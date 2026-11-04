@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "İş emri durumu",
     "back": "Geri",
-    "backToClassic": "Klasik düzene dön",
     "openCustomer": "Müşteriyi aç",
     "serviceHistory": "Servis geçmişi",
     "changeVehicle": "Aracı değiştir",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {Müşteri bağlantıyı açtı} other {Müşteri bağlantıyı # kez açtı}}",
       "paymentTaken": "{amount} tutarında ödeme kaydedildi",
       "statusSet": "Durum {status} olarak ayarlandı"
-    },
-    "invite": {
-      "title": "İş emri sayfası yenilendi.",
-      "body": "Aynı alanlarla daha net bir düzen. İstediğiniz zaman eskisine dönebilirsiniz.",
-      "try": "Şimdi dene",
-      "dismiss": "Şimdi değil",
-      "menu": "Yeni düzeni dene"
     },
     "promised": "{date} için söz verildi",
     "promisedOverdue": "{date} için söz verildi, gecikti",

@@ -48,8 +48,7 @@ interface FilesMediaCardProps {
   /**
    * Status reports: the photos and video the workshop sends the customer
    * while the job is open. They are media about the job, so they live here
-   * with the rest of it. The list is the same one the classic page gives a
-   * tab of its own.
+   * with the rest of it. The list is the one a `?tab=statusReports` link opens.
    */
   statusReports?: { count: number; list: ReactNode }
 }
@@ -58,16 +57,16 @@ interface FilesMediaCardProps {
  * Everything filed on the job in one card: photos, documents, diagnostic
  * reports, video, and the status reports sent to the customer. It opens on
  * all of the files together, since the question is usually "what is on this
- * job", and the tabs after it are the same files one kind at a time. The classic
- * page gives most of these a tab of its own at the top of the page; here they
- * are tabs of one card, each a grid of tiles with the way to add one at the end.
+ * job", and the tabs after it are the same files one kind at a time. They used
+ * to be tabs at the top of the page; here they are tabs of one card, each a
+ * grid of tiles with the way to add one at the end.
  *
  * The card is drawn in the middle of the work order form without belonging to
  * it. A file is saved the moment it is chosen and a caption the moment it is
  * left, so neither may mark the job as having unsaved changes, Enter in a
  * caption must not save the job, and a status report's own form must not
  * submit this one; all three stop here. It also sits outside the form's
- * fieldset: a locked invoice still takes photos, as the classic tabs allowed.
+ * fieldset: a locked invoice still takes photos, as the old tabs allowed.
  */
 export function FilesMediaCard({
   serviceRecordId,
@@ -127,8 +126,8 @@ export function FilesMediaCard({
     }
   }
 
-  // The page hands over diagnostics and documents as one list, as the classic
-  // tab shows them; here each has a tab of its own.
+  // The page hands over diagnostics and documents as one list, as the old
+  // documents tab showed them; here each has a tab of its own.
   const diagnostics = documents.filter((file) => file.category === 'diagnostic')
   const otherDocuments = documents.filter((file) => file.category !== 'diagnostic')
 
@@ -139,7 +138,7 @@ export function FilesMediaCard({
     (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
   )
 
-  // A tab under a plan cap says how much of it is used, as the classic photo tab did.
+  // A tab under a plan cap says how much of it is used, as the old photo tab did.
   const tabs: { value: FileTab; label: string; count: number; max?: number }[] = [
     { value: 'all', label: t('modern.media.tabs.all'), count: total },
     {

@@ -5,13 +5,13 @@ import { AppCard } from '@/components/app-card'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 
 /**
- * One section, two frames. On the classic work order page (and on the quote
- * page, and anywhere else with no layout provider) it draws exactly what the
- * section drew before: the caller's own wrapper classes and its own header,
- * untouched. On the overhauled page the same children sit in the house card.
+ * One section, two frames. On the quote page, and anywhere else with no
+ * layout provider, it draws the caller's own wrapper classes and its own
+ * header, untouched. On the work order page the same children sit in the
+ * house card.
  *
  * The children are the same nodes either way, which is the point: a field
- * lives in one component, so both layouts save the same form.
+ * lives in one component, so both pages save the same form.
  */
 export function SectionFrame({
   className,
@@ -26,9 +26,9 @@ export function SectionFrame({
   testId,
   children,
 }: {
-  /** The classic wrapper's classes, as they were. */
+  /** The wrapper's classes outside the work order page. */
   className: string
-  /** The classic header, as it was. */
+  /** The header outside the work order page. */
   header: ReactNode
   icon?: ComponentType<{ className?: string }>
   title: ReactNode

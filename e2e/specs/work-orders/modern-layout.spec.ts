@@ -5,7 +5,7 @@ import { addPart, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../su
 /**
  * The work order page every browser opens. It is one form, so what these
  * tests hold it to is each field once, and a save that keeps what was on
- * screen. The classic page is still offered in the menu but is not tested.
+ * screen.
  */
 
 test.describe.configure({ mode: 'serial' })
@@ -25,12 +25,11 @@ test.beforeAll(async ({ browser }) => {
 })
 
 test.describe('the work order page', () => {
-  test('opens for a browser that has not chosen a layout', async ({ page }) => {
+  test('opens on the work order', async ({ page }) => {
     await page.goto(jobUrl)
     await settle(page)
 
     await expect(page.getByTestId('service-layout-modern')).toBeVisible()
-    await expect(page.getByTestId('service-layout')).toHaveCount(0)
     // The top of the page is the work order's number and its status, then
     // what the job is called.
     const hero = page.getByTestId('service-hero')

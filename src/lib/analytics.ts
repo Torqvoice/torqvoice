@@ -19,12 +19,8 @@ import posthog from 'posthog-js'
  */
 
 export type AnalyticsEvent =
-  /** A work order opened, with the layout it was drawn in. */
+  /** A work order opened. */
   | 'work_order:page_view'
-  /** A browser moved between the classic and the overhauled work order page. */
-  | 'work_order:layout_switch'
-  /** The invitation to try the overhauled page closed without trying it. */
-  | 'work_order:layout_invite_dismiss'
   /** An account made with email and password. Google sign-ups show as workshop:create. */
   | 'account:sign_up'
   /** The onboarding form made the person's first workshop, with or without sample data. */
@@ -99,7 +95,7 @@ export function reportError(error: unknown, properties?: Properties): void {
 /**
  * Attaches properties to every later event from this browser, autocaptured
  * clicks and page views included (PostHog's super properties). For facts
- * about the browser rather than about one action: the layout it shows, say.
+ * about the browser rather than about one action: the setup step it is on, say.
  */
 export function registerAnalyticsProperties(properties: Properties): void {
   if (ready) posthog.register(properties)

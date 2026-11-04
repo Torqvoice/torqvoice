@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Work order status",
     "back": "Back",
-    "backToClassic": "Back to the classic layout",
     "openCustomer": "Open customer",
     "serviceHistory": "Service history",
     "changeVehicle": "Change vehicle",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {Customer opened the link} other {Customer opened the link # times}}",
       "paymentTaken": "Payment of {amount} recorded",
       "statusSet": "Status set to {status}"
-    },
-    "invite": {
-      "title": "The work order page has been overhauled.",
-      "body": "A clearer layout with the same fields. You can switch back at any time.",
-      "try": "Try it now",
-      "dismiss": "Not now",
-      "menu": "Try the new layout"
     },
     "promised": "Promised {date}",
     "promisedOverdue": "Promised {date}, overdue",

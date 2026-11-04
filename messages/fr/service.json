@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Statut de l'ordre de travail",
     "back": "Retour",
-    "backToClassic": "Revenir à la présentation classique",
     "openCustomer": "Ouvrir le client",
     "serviceHistory": "Historique des services",
     "changeVehicle": "Changer de véhicule",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {Le client a ouvert le lien} other {Le client a ouvert le lien # fois}}",
       "paymentTaken": "Paiement de {amount} enregistré",
       "statusSet": "Statut passé à {status}"
-    },
-    "invite": {
-      "title": "La page de l'ordre de travail a été refaite.",
-      "body": "Une présentation plus claire, avec les mêmes champs. Vous pouvez revenir à l'ancienne à tout moment.",
-      "try": "Essayer maintenant",
-      "dismiss": "Plus tard",
-      "menu": "Essayer la nouvelle présentation"
     },
     "promised": "Promis pour le {date}",
     "promisedOverdue": "Promis pour le {date}, en retard",

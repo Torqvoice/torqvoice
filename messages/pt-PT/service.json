@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Estado da ordem de serviço",
     "back": "Voltar",
-    "backToClassic": "Voltar ao layout clássico",
     "openCustomer": "Abrir cliente",
     "serviceHistory": "Histórico de serviços",
     "changeVehicle": "Mudar de viatura",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {O cliente abriu o link} other {O cliente abriu o link # vezes}}",
       "paymentTaken": "Pagamento de {amount} registado",
       "statusSet": "Estado alterado para {status}"
-    },
-    "invite": {
-      "title": "A página da ordem de serviço foi renovada.",
-      "body": "Um layout mais claro com os mesmos campos. Pode voltar ao anterior a qualquer momento.",
-      "try": "Experimentar agora",
-      "dismiss": "Agora não",
-      "menu": "Experimentar o novo layout"
     },
     "promised": "Prometida para {date}",
     "promisedOverdue": "Prometida para {date}, em atraso",

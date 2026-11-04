@@ -142,7 +142,7 @@ interface MediaGridProps {
  * One kind of file on the job, as tiles: what it is, what it is called, when
  * it arrived, and whether the customer gets to see it. The last tile is the
  * way in, for a click or a drop. The same uploads, limits and actions as the
- * classic page's tabs; only the drawing is new.
+ * old tabs had; only the drawing is new.
  *
  * "Customer can see" is the file's include-on-invoice switch under the name
  * the customer would give it: a marked file is printed on the invoice and
@@ -252,7 +252,7 @@ export function MediaGrid({
           fileSize: data.fileSize,
           category: target,
           // Shown to the customer unless somebody says otherwise, as the
-          // classic tabs do. For a video that means the shared link, which
+          // old tabs did. For a video that means the shared link, which
           // plays it; the printed invoice has nothing to draw for one.
           // A drop-off photo is the workshop's own record, so it starts hidden.
           includeInInvoice: target !== 'dropoff',
@@ -336,7 +336,7 @@ export function MediaGrid({
                 </button>
               ) : isVideo ? (
                 // The first frame as the tile, and a player a click away:
-                // the classic tab played video on the page, not in a new tab.
+                // the old tab played video on the page, not in a new tab.
                 <button
                   type="button"
                   onClick={() => setPlaying(file)}

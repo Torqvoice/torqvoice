@@ -678,7 +678,6 @@
   "modern": {
     "statusLabel": "Status des Arbeitsauftrags",
     "back": "Zurück",
-    "backToClassic": "Zurück zum klassischen Layout",
     "openCustomer": "Kunde öffnen",
     "serviceHistory": "Servicehistorie",
     "changeVehicle": "Fahrzeug ändern",
@@ -696,13 +695,6 @@
       "linkViewed": "{count, plural, one {Kunde hat den Link geöffnet} other {Kunde hat den Link # Mal geöffnet}}",
       "paymentTaken": "Zahlung von {amount} aufgezeichnet",
       "statusSet": "Status auf {status} gesetzt"
-    },
-    "invite": {
-      "title": "Die Seite für Arbeitsaufträge wurde überarbeitet.",
-      "body": "Ein übersichtlicheres Layout mit denselben Feldern. Sie können jederzeit zurückwechseln.",
-      "try": "Jetzt ausprobieren",
-      "dismiss": "Nicht jetzt",
-      "menu": "Neues Layout ausprobieren"
     },
     "promised": "Zugesagt für {date}",
     "promisedOverdue": "Zugesagt für {date}, überfällig",
