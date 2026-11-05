@@ -136,6 +136,32 @@ describe('fault code meanings for a workshop', () => {
     expect(results[1]).toMatchObject({ code: 'P1570', state: 'unavailable', title: null })
   })
 
+  it('asks in batches of 50, so a job with more codes still gets every meaning', async () => {
+    const codes = Array.from({ length: 60 }, (_, i) => `P0${(300 + i).toString(16).toUpperCase()}`)
+    h.lookupCodes.mockImplementation(async (_ctx: unknown, q: { codes: string[] }) =>
+      q.codes.map((code) => ({ ...P0420, code }))
+    )
+    const { available, results } = await lookupMeanings('org1', codes, null, 'en')
+    expect(h.lookupCodes).toHaveBeenCalledTimes(2)
+    expect(h.lookupCodes.mock.calls[0][1].codes).toHaveLength(50)
+    expect(h.lookupCodes.mock.calls[1][1].codes).toHaveLength(10)
+    expect(available).toBe(true)
+    expect(results.filter((r) => r.state === 'found')).toHaveLength(60)
+  })
+
+  it('marks only the codes of a batch that failed as unavailable', async () => {
+    const codes = Array.from({ length: 51 }, (_, i) => `P0${(300 + i).toString(16).toUpperCase()}`)
+    h.lookupCodes
+      .mockImplementationOnce(async (_ctx: unknown, q: { codes: string[] }) =>
+        q.codes.map((code) => ({ ...P0420, code }))
+      )
+      .mockRejectedValueOnce(new Error('fetch failed'))
+    const { available, results } = await lookupMeanings('org1', codes, null, 'en')
+    expect(available).toBe(true)
+    expect(results.slice(0, 50).every((r) => r.state === 'found')).toBe(true)
+    expect(results[50]).toMatchObject({ state: 'unavailable', title: null })
+  })
+
   it('never asks the service when the plan does not include it or nothing is connected', async () => {
     h.features = { faultCodes: false, integrations: true }
     expect((await lookupMeanings('org1', ['P0420'], null, 'en')).available).toBe(false)

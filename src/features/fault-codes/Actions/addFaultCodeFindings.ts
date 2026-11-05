@@ -61,26 +61,43 @@ export async function addFaultCodeFindings(input: unknown) {
       const { results } = await lookupMeanings(organizationId, [...wanted.keys()], vehicle, locale)
       const meanings = new Map(results.map((r) => [r.code, r]))
 
-      const findings = await db.$transaction(
-        [...wanted].map(([code, extra]) => {
+      // The check above saves a lookup; this one keeps a code to one finding
+      // per job when two people add it at once. The job's row is locked for
+      // the transaction, so the second waits, then finds the first's rows.
+      const findings = await db.$transaction(async (tx) => {
+        await tx.$queryRaw`SELECT id FROM "public"."service_records" WHERE id = ${job.id} FOR UPDATE`
+        const taken = await tx.vehicleFinding.findMany({
+          where: {
+            serviceRecordId: job.id,
+            vehicle: { organizationId },
+            faultCode: { in: [...wanted.keys()] },
+          },
+          select: { faultCode: true },
+        })
+        for (const row of taken) if (row.faultCode) wanted.delete(row.faultCode)
+        const created = []
+        for (const [code, extra] of wanted) {
           const view = meanings.get(code)
           const meaning = view?.state === 'found' ? view.title : null
-          return db.vehicleFinding.create({
-            data: {
-              description: faultLine(code, meaning),
-              severity: data.severity,
-              vehicleId: job.vehicleId as string,
-              serviceRecordId: job.id,
-              concernId: data.concernId ?? null,
-              faultCode: code,
-              faultStatus: extra.status,
-              faultModule: extra.module,
-              faultMeaning: meaning,
-              faultMeaningSource: meaning ? (view?.source ?? null) : null,
-            },
-          })
-        })
-      )
+          created.push(
+            await tx.vehicleFinding.create({
+              data: {
+                description: faultLine(code, meaning),
+                severity: data.severity,
+                vehicleId: job.vehicleId as string,
+                serviceRecordId: job.id,
+                concernId: data.concernId ?? null,
+                faultCode: code,
+                faultStatus: extra.status,
+                faultModule: extra.module,
+                faultMeaning: meaning,
+                faultMeaningSource: meaning ? (view?.source ?? null) : null,
+              },
+            })
+          )
+        }
+        return created
+      })
 
       // One audit row, and one finding.create webhook, per finding, the same
       // as adding them one at a time.

@@ -77,6 +77,7 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
     <div className="flex flex-wrap items-center justify-end gap-1.5">
       {faultCodes?.connected && (
         <Button
+          type="button"
           size="sm"
           variant="outline"
           className="h-7 text-xs"
@@ -86,7 +87,13 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
           {tc('button')}
         </Button>
       )}
-      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => onAddFinding?.()}>
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="h-7 text-xs"
+        onClick={() => onAddFinding?.()}
+      >
         <Plus className="mr-1 h-3 w-3" />
         {t('addFinding')}
       </Button>
@@ -129,6 +136,7 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
           </div>
           <div className="flex shrink-0 items-center gap-0.5">
             <Button
+              type="button"
               size="icon"
               variant="ghost"
               className="h-6 w-6"
@@ -138,6 +146,7 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
               <Pencil className="h-3 w-3" />
             </Button>
             <Button
+              type="button"
               size="icon"
               variant="ghost"
               className="h-6 w-6 text-destructive"

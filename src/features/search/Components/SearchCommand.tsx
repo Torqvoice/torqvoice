@@ -532,6 +532,8 @@ export function SearchCommand({
   // never blinks empty between keystrokes.
   useEffect(() => {
     const term = query.trim()
+    // Every change of query, cached or not, makes any answer still on its way stale.
+    const seq = ++seqRef.current
     if (term.length < 2) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing results on a short query is intentional
       setResults(EMPTY)
@@ -545,7 +547,6 @@ export function SearchCommand({
       setLoading(false)
       return
     }
-    const seq = ++seqRef.current
     setLoading(true)
     const timer = setTimeout(() => {
       globalSearch(term).then((res) => {
@@ -566,6 +567,7 @@ export function SearchCommand({
   // service, since they are the workshop's own.
   useEffect(() => {
     const term = query.trim()
+    const seq = ++faultSeqRef.current
     if (!looksLikeFaultCode(term)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing results on a query that is not a code is intentional
       setFaultResults(NO_FAULT_CODES)
@@ -577,7 +579,6 @@ export function SearchCommand({
       setFaultResults(cached)
       return
     }
-    const seq = ++faultSeqRef.current
     const timer = setTimeout(() => {
       searchFaultCodes(term).then((res) => {
         if (seq !== faultSeqRef.current) return

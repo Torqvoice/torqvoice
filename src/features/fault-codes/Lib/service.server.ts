@@ -175,7 +175,14 @@ export function viewOf(
       }
 }
 
-/** What each code means on this vehicle, from the service. One call for every code. */
+/** The most codes the service answers in one lookup (the connector's MAX_CODES_PER_LOOKUP). */
+const LOOKUP_BATCH = 50
+
+/**
+ * What each code means on this vehicle, from the service: one call per 50
+ * codes, so a job that has gathered more still gets every meaning. A code
+ * whose batch failed reads as unavailable, the rest as answered.
+ */
 export async function lookupMeanings(
   organizationId: string,
   codes: string[],
@@ -185,21 +192,30 @@ export async function lookupMeanings(
   const unique = [...new Set(codes)]
   if (unique.length === 0) return { available: true, results: [] }
   const loaded = await connect(organizationId)
-  let answers = new Map<string, FaultCodeAnswer>()
-  let available = false
+  const answers = new Map<string, FaultCodeAnswer>()
+  const answered = new Set<string>()
   if (loaded?.server.lookupCodes) {
     const lookup = loaded.server.lookupCodes
-    const reply = await attempt(() =>
-      lookup(loaded.ctx, { codes: unique, vehicle: vehicle ?? undefined, locale })
-    )
-    if (reply.ok) {
-      available = true
-      answers = new Map(reply.value.map((a) => [a.code.toUpperCase(), a]))
+    const batches: string[][] = []
+    for (let i = 0; i < unique.length; i += LOOKUP_BATCH) {
+      batches.push(unique.slice(i, i + LOOKUP_BATCH))
     }
+    const replies = await Promise.all(
+      batches.map((batch) =>
+        attempt(() => lookup(loaded.ctx, { codes: batch, vehicle: vehicle ?? undefined, locale }))
+      )
+    )
+    replies.forEach((reply, i) => {
+      if (!reply.ok) return
+      for (const a of reply.value) answers.set(a.code.toUpperCase(), a)
+      for (const code of batches[i]) answered.add(code)
+    })
   }
   return {
-    available,
-    results: unique.map((code) => viewOf(code, answers.get(code), available, vehicle?.make)),
+    available: answered.size > 0,
+    results: unique.map((code) =>
+      viewOf(code, answers.get(code), answered.has(code), vehicle?.make)
+    ),
   }
 }
 

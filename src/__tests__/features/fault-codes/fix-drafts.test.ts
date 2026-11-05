@@ -53,6 +53,17 @@ describe('phone photos waiting in a fix draft', () => {
     expect(await drafts.listDraftPhotos('org2', DRAFT)).toHaveLength(0)
   })
 
+  it('never hold more than four, even when uploads land at the same time', async () => {
+    await drafts.addDraftPhoto('org1', DRAFT, JPEG)
+    await drafts.addDraftPhoto('org1', DRAFT, JPEG)
+    await drafts.addDraftPhoto('org1', DRAFT, JPEG)
+    const replies = await Promise.all(
+      Array.from({ length: 4 }, () => drafts.addDraftPhoto('org1', DRAFT, JPEG))
+    )
+    expect(await drafts.listDraftPhotos('org1', DRAFT)).toHaveLength(4)
+    expect(replies.filter((r) => r !== null)).toHaveLength(1)
+  })
+
   it('are discarded through the file manager once the fix is shared', async () => {
     await drafts.addDraftPhoto('org1', DRAFT, JPEG)
     await drafts.addDraftPhoto('org1', DRAFT, JPEG)

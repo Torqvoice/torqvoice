@@ -61,10 +61,31 @@ export async function listDraftPhotos(organizationId: string, draftId: string): 
       return s ? { name, at: s.mtimeMs } : null
     })
   )
+  // By time, then name: every reader orders the draft the same way.
   return dated
     .filter((d): d is { name: string; at: number } => d !== null)
-    .sort((a, b) => a.at - b.at)
+    .sort((a, b) => a.at - b.at || a.name.localeCompare(b.name))
     .map((d) => d.name)
+}
+
+/**
+ * Work on one draft runs one at a time. Two phone uploads landing together
+ * would otherwise both see three photos and both add one; in turn, the second
+ * sees four and is refused. The app serves from one process, so a queue in
+ * memory covers every upload a draft gets.
+ */
+const queues = new Map<string, Promise<unknown>>()
+
+async function inTurn<T>(key: string, work: () => Promise<T>): Promise<T> {
+  const before = queues.get(key) ?? Promise.resolve()
+  const run = before.then(work, work)
+  const tail = run.catch(() => undefined)
+  queues.set(key, tail)
+  try {
+    return await run
+  } finally {
+    if (queues.get(key) === tail) queues.delete(key)
+  }
 }
 
 /** Adds a compressed JPEG; null when the draft already holds four. */
@@ -75,12 +96,14 @@ export async function addDraftPhoto(
 ): Promise<{ name: string; count: number } | null> {
   const dir = folderOf(organizationId)
   if (!dir || !isDraftId(draftId)) return null
-  const existing = await listDraftPhotos(organizationId, draftId)
-  if (existing.length >= MAX_FIX_PHOTOS) return null
-  await mkdir(dir, { recursive: true })
-  const name = `${prefixOf(draftId)}${crypto.randomBytes(6).toString('hex')}.jpg`
-  await writeFile(path.join(dir, name), jpeg)
-  return { name, count: existing.length + 1 }
+  return inTurn(`${organizationId}/${draftId}`, async () => {
+    const existing = await listDraftPhotos(organizationId, draftId)
+    if (existing.length >= MAX_FIX_PHOTOS) return null
+    await mkdir(dir, { recursive: true })
+    const name = `${prefixOf(draftId)}${crypto.randomBytes(6).toString('hex')}.jpg`
+    await writeFile(path.join(dir, name), jpeg)
+    return { name, count: existing.length + 1 }
+  })
 }
 
 /** The draft's photos, for sending with the fix. */
