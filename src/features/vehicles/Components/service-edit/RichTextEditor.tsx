@@ -49,6 +49,8 @@ interface RichTextEditorProps {
    * the plain bordered panels on the quote page and the classic work order.
    */
   gutter?: 'card' | 'panel'
+  /** The editor's accessible name, when no visible label points at it. */
+  ariaLabel?: string
 }
 
 export function RichTextEditor({
@@ -58,6 +60,7 @@ export function RichTextEditor({
   editable = true,
   variant = 'boxed',
   gutter = 'card',
+  ariaLabel,
 }: RichTextEditorProps) {
   const flush = variant === 'flush'
   const linkHint = useLinkHint(editable)
@@ -93,6 +96,9 @@ export function RichTextEditor({
       // Ctrl or Cmd with a click opens a link; see rich-text-links.
       handleClick: openLinkOnModifierClick,
       attributes: {
+        ...(ariaLabel
+          ? { 'aria-label': ariaLabel, role: 'textbox', 'aria-multiline': 'true' }
+          : {}),
         class: cn(
           'tiptap-content text-sm outline-none h-full',
           // In a card the text starts where the card's title does.

@@ -37,7 +37,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               id: true,
               description: true,
               findings: {
-                select: { id: true, description: true, severity: true, status: true },
+                select: {
+                  id: true,
+                  description: true,
+                  severity: true,
+                  status: true,
+                  faultCode: true,
+                  faultStatus: true,
+                  faultModule: true,
+                  faultMeaning: true,
+                },
               },
             },
           },

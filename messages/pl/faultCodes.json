@@ -1,0 +1,249 @@
+{
+  "title": "Kody usterek",
+  "notAvailable": "Obecnie niedostępne",
+  "noMeaning": "Jeszcze nie ma go na naszej liście kodów",
+  "manufacturerUnknown": "Kod producenta: znaczenie zależy od marki.",
+  "chip": {
+    "open": "Otwórz {code}"
+  },
+  "source": {
+    "generic": "Ogólny",
+    "manufacturer": "Producent",
+    "report": "Z raportu diagnostycznego",
+    "machineTranslated": "Tłumaczenie maszynowe"
+  },
+  "status": {
+    "stored": "Zapisany",
+    "pending": "Oczekujący",
+    "permanent": "Trwały",
+    "history": "Historia"
+  },
+  "flags": {
+    "warningLight": "Kontrolka ostrzegawcza",
+    "emissions": "Emisja spalin",
+    "driveCycle": "Wymaga cyklu jazdy",
+    "limpMode": "Tryb awaryjny"
+  },
+  "sections": {
+    "how_it_works": "Jak to działa",
+    "meaning": "Co oznacza kod",
+    "causes": "Typowe przyczyny",
+    "manufacturer": "Dane producentów",
+    "related": "Razem z innymi kodami",
+    "diagnosis": "Wskazówka diagnostyczna",
+    "other": "Warto wiedzieć"
+  },
+  "detail": {
+    "whatItMeans": "Co oznacza",
+    "likelyCauses": "Prawdopodobne przyczyny",
+    "relatedCodes": "Powiązane kody",
+    "inYourWorkshop": "W twoim warsztacie",
+    "noJobs": "W twoim warsztacie nie odczytano go jeszcze przy żadnym zleceniu.",
+    "resolved": "Rozwiązane",
+    "notConnected": "Połącz Torqvoice Codes, aby widzieć, co oznaczają kody.",
+    "connect": "Połącz",
+    "serviceDown": "Znaczenie jest obecnie niedostępne. Twoje zlecenia są poniżej.",
+    "pendingCheck": "Do czasu sprawdzenia tekstu wyświetlany jest tylko tytuł.",
+    "showMore": "Pokaż więcej",
+    "showLess": "Pokaż mniej",
+    "likelihood": {
+      "high": "Wysokie",
+      "medium": "Średnie",
+      "low": "Niskie"
+    },
+    "mostLikelyFirst": "Najbardziej prawdopodobne najpierw"
+  },
+  "report": {
+    "button": "Zgłoś problem",
+    "title": "Co jest nie tak ze znaczeniem kodu {code}?",
+    "reasons": {
+      "wrong_for_vehicle": "Nie pasuje do tego auta",
+      "wrong_for_vehicleMarine": "Nie pasuje do tej jednostki",
+      "text_mismatch": "Tekst nie pasuje do kodu",
+      "wrong_position": "Zła strona lub położenie",
+      "bad_translation": "Złe tłumaczenie",
+      "other": "Inne"
+    },
+    "note": "Notatka (opcjonalnie)",
+    "notePlaceholder": "Co udało się ustalić",
+    "send": "Wyślij",
+    "thanks": "Dziękujemy, sprawdzimy to",
+    "failed": "Nie udało się teraz wysłać zgłoszenia. Spróbuj ponownie za chwilę.",
+    "reportedByYou": "Zgłoszone przez ciebie",
+    "outcome": {
+      "fixed": "Zaktualizowane po twoim zgłoszeniu",
+      "no_change": "Sprawdzone, bez zmian",
+      "duplicate": "Już zgłoszone"
+    }
+  },
+  "share": {
+    "title": "Podziel się rozwiązaniem",
+    "description": "Napisz innym warsztatom, co usunęło {code}. Każde rozwiązanie sprawdza osoba z Torqvoice, zanim zobaczą je inni.",
+    "yourFixes": "Twoje rozwiązania dla {code}",
+    "whatFixedIt": "Co pomogło",
+    "placeholder": "Przetarty przewód przy wtyczce tylnej sondy lambda za skrzynią biegów. Naprawiony, kod zniknął po jeździe próbnej.",
+    "placeholderMarine": "Skorodowane piny we wtyczce czujnika trymu. Wyczyszczone i uszczelnione, kod zniknął po próbnym rejsie.",
+    "photos": "Zdjęcia (opcjonalnie)",
+    "photosHint": "Do {max} zdjęć. Nie pokazuj twarzy, tablic rejestracyjnych ani danych klienta.",
+    "photosHintMarine": "Do {max} zdjęć. Nie pokazuj twarzy, numerów rejestracyjnych jednostki ani danych klienta.",
+    "addPhotos": "Dodaj zdjęcia",
+    "removePhoto": "Usuń zdjęcie {n}",
+    "tooManyPhotos": "Najwyżej {max} zdjęcia",
+    "notAPhoto": "{name} nie jest zdjęciem",
+    "photoTooBig": "{name} ma więcej niż 15 MB",
+    "vehicle": "Pojazd",
+    "vehicleMarine": "Jednostka",
+    "vehicleOptional": "Pojazd (opcjonalnie)",
+    "vehicleOptionalMarine": "Jednostka (opcjonalnie)",
+    "make": "Marka",
+    "model": "Model",
+    "year": "Rok",
+    "vehicleHint": "Udostępniane są tylko marka, model, rok i silnik, nigdy tablica rejestracyjna, VIN, klient ani nazwa twojego warsztatu.",
+    "vehicleHintMarine": "Udostępniane są tylko marka, model, rok i silnik, nigdy numer rejestracyjny, numer kadłuba, klient ani nazwa twojego warsztatu.",
+    "send": "Udostępnij rozwiązanie",
+    "sent": "Dziękujemy. Twoje rozwiązanie czeka na sprawdzenie.",
+    "shareAnother": "Udostępnij kolejne rozwiązanie",
+    "cancel": "Anuluj",
+    "sentOn": "Wysłano {date}",
+    "reason": "Powód: {reason}",
+    "withdraw": "Wycofaj",
+    "withdrawTitle": "Wycofać to rozwiązanie?",
+    "withdrawConfirm": "Zostanie usunięte razem ze zdjęciami i żaden inny warsztat go nie zobaczy.",
+    "withdrawn": "Rozwiązanie wycofane",
+    "withdrawFailed": "Nie udało się teraz wycofać rozwiązania. Spróbuj ponownie za chwilę.",
+    "unavailable": "Udostępnianie rozwiązań jest teraz niedostępne.",
+    "status": {
+      "pending": "Czeka na sprawdzenie",
+      "published": "Opublikowane",
+      "rejected": "Nieopublikowane"
+    },
+    "errors": {
+      "failed": "Nie udało się teraz wysłać twojego rozwiązania. Spróbuj ponownie za chwilę.",
+      "photo": "Nie udało się odczytać jednego ze zdjęć. Spróbuj innego.",
+      "too_large": "Zdjęcia są za duże. Spróbuj mniej lub mniejszych zdjęć.",
+      "paused": "Udostępnianie rozwiązań jest teraz wstrzymane. Spróbuj później.",
+      "demo": "Udostępnianie rozwiązań jest wyłączone w wersji demo."
+    },
+    "invite": "Usunięto {code}? Napisz innym warsztatom, co pomogło.",
+    "inviteHint": "Własnymi słowami, a jeśli są, z kilkoma zdjęciami. Osoba z Torqvoice sprawdza każde rozwiązanie, zanim zobaczą je inne warsztaty.",
+    "start": "Udostępnij rozwiązanie",
+    "dialogTitle": "Udostępnij rozwiązanie dla {code}",
+    "dialogDescription": "Inne warsztaty zobaczą je, gdy sprawdzi je osoba z Torqvoice.",
+    "characters": "{count} / {max}",
+    "writingHint": "Co było nie tak, jak to znaleziono i co pomogło. Numery części i wyniki pomiarów najbardziej pomagają innym.",
+    "dropHere": "albo upuść je tutaj",
+    "tooManyPhotosRemove": "Rozwiązanie może mieć najwyżej {max} zdjęcia. Usuń kilka, aby je udostępnić.",
+    "phone": {
+      "button": "Dodaj z telefonu",
+      "hide": "Ukryj kod telefonu",
+      "title": "Zrób zdjęcia telefonem",
+      "body": "Zeskanuj kod aparatem telefonu. Zrobione zdjęcia pojawią się tutaj, gdy tylko dotrą.",
+      "failed": "Nie udało się utworzyć kodu dla telefonu. Zamknij to okno i spróbuj ponownie.",
+      "expires": "Kod działa do {time}",
+      "copy": "Kopiuj link",
+      "copied": "Skopiowano",
+      "received": "{count, plural, one {# zdjęcie} few {# zdjęcia} many {# zdjęć} other {# zdjęcia}} z telefonu",
+      "badge": "Telefon"
+    }
+  },
+  "fixes": {
+    "title": "Rozwiązania innych warsztatów",
+    "empty": "Żaden inny warsztat nie udostępnił jeszcze rozwiązania dla {code}.",
+    "unavailable": "Rozwiązania innych warsztatów są teraz niedostępne.",
+    "sharedOn": "Udostępniono {date}",
+    "unknownVehicle": "Nie podano pojazdu",
+    "unknownVehicleMarine": "Nie podano jednostki",
+    "writtenIn": "Język: {language}",
+    "photo": "Zdjęcie {n} z {count}",
+    "openPhoto": "Otwórz zdjęcie {n}"
+  },
+  "sheet": {
+    "description": "Znaczenie, prawdopodobne przyczyny i zlecenia twojego warsztatu z tym kodem.",
+    "loadFailed": "Nie udało się otworzyć tego kodu.",
+    "loading": "Wczytywanie…",
+    "openPage": "Otwórz stronę kodu"
+  },
+  "entry": {
+    "button": "Dodaj kody usterek",
+    "title": "Dodaj kody usterek",
+    "description": "Wpisz lub wklej kody z testera diagnostycznego. Każdy staje się obserwacją w tym zleceniu, z zapisanym znaczeniem.",
+    "placeholder": "P0420, P0171",
+    "empty": "Tu pojawią się wpisane lub wklejone kody.",
+    "found": "Znalezione kody",
+    "remove": "Usuń {code}",
+    "concern": "Dotyczy sprawy",
+    "concernNone": "Żadna sprawa",
+    "cancel": "Anuluj",
+    "add": "{count, plural, =0 {Dodaj kody} one {Dodaj # kod} few {Dodaj # kody} many {Dodaj # kodów} other {Dodaj # kodu}}",
+    "added": "{count, plural, one {Dodano # kod usterki} few {Dodano # kody usterek} many {Dodano # kodów usterek} other {Dodano # kodu usterek}}",
+    "skipped": "{count, plural, one {# kod był już w tym zleceniu} few {# kody były już w tym zleceniu} many {# kodów było już w tym zleceniu} other {# kodu było już w tym zleceniu}}",
+    "failed": "Nie udało się dodać kodów"
+  },
+  "finding": {
+    "seenBefore": "Widziany {date}",
+    "seenBeforeTitle": "Odczytany już w tym pojeździe, ostatnio {date}",
+    "seenBeforeTitleMarine": "Odczytany już w tej jednostce, ostatnio {date}",
+    "updatedMeaning": "Nowe znaczenie",
+    "updatedMeaningTitle": "Znaczenie brzmi teraz: {meaning}. Dotknij, aby go użyć.",
+    "taken": "Znaczenie zaktualizowane",
+    "takeFailed": "Nie udało się zaktualizować znaczenia",
+    "noMeaningSaved": "Brak zapisanego znaczenia"
+  },
+  "page": {
+    "title": "Kody usterek",
+    "intro": "Sprawdź kod albo wyszukaj w znaczeniach słowa, takie jak uboga bank 1.",
+    "lookupLabel": "Kod lub słowa",
+    "lookupPlaceholder": "P0420 lub uboga bank 1",
+    "lookup": "Sprawdź",
+    "cloudOnly": "Znaczenia kodów usterek pochodzą z Torqvoice Codes, części Torqvoice Cloud. Kody odczytane przez twój warsztat są tu widoczne niezależnie od tego.",
+    "results": "Kody dla „{query}”",
+    "noResults": "Żaden kod nie pasuje do „{query}”",
+    "recent": "Ostatnio odczytane w twoim warsztacie",
+    "noRecent": "Brak kodów usterek w zleceniach.",
+    "readTimes": "{count, plural, one {Odczytany raz, {date}} few {Odczytany # razy, ostatnio {date}} many {Odczytany # razy, ostatnio {date}} other {Odczytany # razy, ostatnio {date}}}",
+    "notACode": "„{text}” to nie jest kod usterki",
+    "notACodeHint": "Kod usterki to litera i cztery znaki, na przykład P0420 lub U0100.",
+    "recentLookups": "Twoje ostatnie wyszukiwania",
+    "recentLookupsEmpty": "Otwierane kody i wyszukiwane słowa pojawiają się tutaj, na tym urządzeniu.",
+    "clearRecent": "Wyczyść",
+    "tryExamples": "Spróbuj",
+    "exampleWords": "uboga bank 1",
+    "searching": "Wyszukiwanie"
+  },
+  "search": {
+    "group": "Kody usterek",
+    "jobsWith": "Zlecenia z {code}",
+    "searchFor": "Szukaj „{query}” w kodach usterek"
+  },
+  "notice": {
+    "title": "Kody usterek to nowość",
+    "body": "Stale dodajemy kody, więc nie ma tu jeszcze wszystkich. Na razie obejmuje to standardowe kody OBD-II; kodów specyficznych dla producentów jeszcze nie ma."
+  },
+  "support": {
+    "button": "Kontakt z pomocą",
+    "subject": "Kod usterki {code}",
+    "subjectGeneral": "Kody usterek",
+    "message": "Kod usterki {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Układ napędowy",
+    "B": "Nadwozie",
+    "C": "Podwozie",
+    "U": "Sieć"
+  },
+  "phone": {
+    "title": "Zdjęcia do rozwiązania",
+    "forCode": "do rozwiązania pisanego na komputerze",
+    "intro": "Zrób lub wybierz do {max} zdjęć tego, co usunęło usterkę. Pojawią się w rozwiązaniu na komputerze.",
+    "take": "Zrób zdjęcie",
+    "choose": "Wybierz zdjęcia",
+    "added": "Dodano {count} z {max} zdjęć",
+    "full": "Rozwiązanie może mieć najwyżej {max} zdjęcia.",
+    "notAPhoto": "Ten plik nie jest zdjęciem.",
+    "failed": "Nie udało się dodać zdjęcia. Spróbuj ponownie.",
+    "done": "Po zakończeniu wróć do komputera i udostępnij rozwiązanie.",
+    "privacy": "Nie pokazuj na zdjęciach twarzy, tablic rejestracyjnych ani danych klientów.",
+    "expired": "Ten kod wygasł. Wyświetl nowy na komputerze.",
+    "invalid": "Ten kod nie działa. Wyświetl nowy na komputerze."
+  }
+}

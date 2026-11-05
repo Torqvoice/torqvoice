@@ -37,6 +37,14 @@ export type PlanFeatures = {
    * missing configuration, whatever this says.
    */
   platformBackups: boolean
+  /**
+   * Fault code meanings from Torqvoice Codes, the code service Torqvoice runs.
+   * Its own flag rather than `integrations`, so the free cloud plan can have
+   * it: free workshops reading codes is what makes the service worth having.
+   * Only checked on the cloud; the connector does not exist on a self-hosted
+   * install.
+   */
+  faultCodes: boolean
 }
 
 // The admin on torqvoice.com shows the Pro and Enterprise limits a workshop
@@ -71,6 +79,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     tireHotel: false,
     backups: false,
     platformBackups: false,
+    faultCodes: true,
   },
   pro: {
     // One shop and a small team. A bigger team or several locations is what
@@ -101,6 +110,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     tireHotel: true,
     backups: true,
     platformBackups: true,
+    faultCodes: true,
   },
   enterprise: {
     maxOrganizations: 10,
@@ -127,6 +137,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     tireHotel: true,
     backups: true,
     platformBackups: true,
+    faultCodes: true,
   },
   'white-label': {
     maxOrganizations: 999999,
@@ -153,6 +164,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     tireHotel: true,
     backups: true,
     platformBackups: true,
+    faultCodes: true,
   },
 }
 

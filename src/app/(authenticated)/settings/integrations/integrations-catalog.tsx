@@ -6,7 +6,16 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
-import { AlertTriangle, ArrowRight, Check, Lightbulb, Plug, Search, Settings2 } from 'lucide-react'
+import {
+  AlertTriangle,
+  ArrowRight,
+  Check,
+  Cloud,
+  Lightbulb,
+  Plug,
+  Search,
+  Settings2,
+} from 'lucide-react'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -255,6 +264,48 @@ export function IntegrationsCatalog({
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {visible.map((entry) => {
               const m = entry.manifest
+              // A cloud service seen from a self-hosted install: the same card,
+              // greyed, saying where it is offered, with nothing to open.
+              if (entry.cloudOnly) {
+                return (
+                  <div
+                    key={m.id}
+                    aria-disabled="true"
+                    className="flex flex-col gap-3 rounded-lg border border-dashed bg-muted/30 p-4"
+                  >
+                    <div className="flex items-start gap-3">
+                      <Image
+                        src={m.logo}
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="h-10 w-10 shrink-0 rounded-lg opacity-60 grayscale"
+                        unoptimized
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-medium text-muted-foreground">
+                            {connectorName(t, m)}
+                          </span>
+                          <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                            {t('catalog.cloudOnly')}
+                          </span>
+                        </div>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {t(`connectors.${m.id}.description`)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-auto flex items-center justify-between gap-2 text-xs">
+                      <span className="text-muted-foreground">{t(`categories.${m.category}`)}</span>
+                      <span className="inline-flex items-center gap-1 text-muted-foreground">
+                        <Cloud className="h-3.5 w-3.5" />
+                        {t('catalog.cloudOnlyHint')}
+                      </span>
+                    </div>
+                  </div>
+                )
+              }
               return (
                 <Link
                   key={m.id}

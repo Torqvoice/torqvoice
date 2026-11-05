@@ -65,7 +65,9 @@
     "tireSetDetails": "Jogo de pneus",
     "tireForecast": "Próxima temporada",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Lembretes de inspeção"
+    "inspectionReminders": "Lembretes de inspeção",
+    "faultCodes": "Códigos de falha",
+    "faultCode": "Código de falha"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} ordens de serviço abertas",
       "inspections": "{count} inspeções em andamento",
       "reminders": "{count} lembretes vencidos"
-    }
+    },
+    "faultCodes": "Códigos de falha"
   }
 }

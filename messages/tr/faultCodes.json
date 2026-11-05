@@ -1,0 +1,249 @@
+{
+  "title": "Arıza kodları",
+  "notAvailable": "Şu anda kullanılamıyor",
+  "noMeaning": "Henüz kod listemizde yok",
+  "manufacturerUnknown": "Üreticiye özel kod: anlamı markaya göre değişir.",
+  "chip": {
+    "open": "{code} kodunu aç"
+  },
+  "source": {
+    "generic": "Genel",
+    "manufacturer": "Üretici",
+    "report": "Tarama raporundan",
+    "machineTranslated": "Makine çevirisi"
+  },
+  "status": {
+    "stored": "Kayıtlı",
+    "pending": "Beklemede",
+    "permanent": "Kalıcı",
+    "history": "Geçmiş"
+  },
+  "flags": {
+    "warningLight": "Uyarı lambası",
+    "emissions": "Emisyon",
+    "driveCycle": "Sürüş döngüsü gerekir",
+    "limpMode": "Acil durum modu"
+  },
+  "sections": {
+    "how_it_works": "Nasıl çalışır",
+    "meaning": "Kodun anlamı",
+    "causes": "Tipik nedenler",
+    "manufacturer": "Üretici bilgileri",
+    "related": "Diğer kodlarla birlikte",
+    "diagnosis": "Teşhis ipucu",
+    "other": "Bilmekte yarar var"
+  },
+  "detail": {
+    "whatItMeans": "Ne anlama geliyor",
+    "likelyCauses": "Olası nedenler",
+    "relatedCodes": "İlgili kodlar",
+    "inYourWorkshop": "Atölyenizde",
+    "noJobs": "Atölyenizde henüz hiçbir işte okunmadı.",
+    "resolved": "Çözüldü",
+    "notConnected": "Kodların ne anlama geldiğini görmek için Torqvoice Codes bağlantısını kurun.",
+    "connect": "Bağla",
+    "serviceDown": "Anlam şu anda kullanılamıyor. İşleriniz aşağıda.",
+    "pendingCheck": "Metin kontrol edilene kadar yalnızca başlık gösterilir.",
+    "showMore": "Daha fazla göster",
+    "showLess": "Daha az göster",
+    "likelihood": {
+      "high": "Yüksek",
+      "medium": "Orta",
+      "low": "Düşük"
+    },
+    "mostLikelyFirst": "En olası olanlar önce"
+  },
+  "report": {
+    "button": "Sorun bildir",
+    "title": "{code} kodunun anlamında yanlış olan ne?",
+    "reasons": {
+      "wrong_for_vehicle": "Bu araç için yanlış",
+      "wrong_for_vehicleMarine": "Bu tekne için yanlış",
+      "text_mismatch": "Metin koda uymuyor",
+      "wrong_position": "Yanlış taraf veya konum",
+      "bad_translation": "Kötü çeviri",
+      "other": "Diğer"
+    },
+    "note": "Not (isteğe bağlı)",
+    "notePlaceholder": "Ne buldunuz",
+    "send": "Gönder",
+    "thanks": "Teşekkürler, kontrol edeceğiz",
+    "failed": "Bildirim şu anda gönderilemedi. Birazdan tekrar deneyin.",
+    "reportedByYou": "Sizin tarafınızdan bildirildi",
+    "outcome": {
+      "fixed": "Bildiriminizden sonra güncellendi",
+      "no_change": "Kontrol edildi, değişiklik yok",
+      "duplicate": "Zaten bildirildi"
+    }
+  },
+  "share": {
+    "title": "Çözümünüzü paylaşın",
+    "description": "Diğer atölyelere {code} kodunu neyin çözdüğünü anlatın. Her çözümü, başkaları görmeden önce Torqvoice'tan bir kişi kontrol eder.",
+    "yourFixes": "{code} için çözümleriniz",
+    "whatFixedIt": "Sorunu ne çözdü",
+    "placeholder": "Şanzımanın arkasındaki arka oksijen sensörü soketinde sürtünmüş kablo. Onarıldı, test sürüşünden sonra kod silindi.",
+    "placeholderMarine": "Trim sensörü soketinde paslanmış pinler. Temizlendi ve yalıtıldı, deniz testinden sonra kod silindi.",
+    "photos": "Fotoğraflar (isteğe bağlı)",
+    "photosHint": "En fazla {max} fotoğraf. Yüzleri, plakaları ve müşteri bilgilerini kadrajın dışında tutun.",
+    "photosHintMarine": "En fazla {max} fotoğraf. Yüzleri, tekne sicil numaralarını ve müşteri bilgilerini kadrajın dışında tutun.",
+    "addPhotos": "Fotoğraf ekle",
+    "removePhoto": "{n}. fotoğrafı kaldır",
+    "tooManyPhotos": "En fazla {max} fotoğraf",
+    "notAPhoto": "{name} bir fotoğraf değil",
+    "photoTooBig": "{name} 15 MB'tan büyük",
+    "vehicle": "Araç",
+    "vehicleMarine": "Tekne",
+    "vehicleOptional": "Araç (isteğe bağlı)",
+    "vehicleOptionalMarine": "Tekne (isteğe bağlı)",
+    "make": "Marka",
+    "model": "Model",
+    "year": "Yıl",
+    "vehicleHint": "Yalnızca marka, model, yıl ve motor paylaşılır; plaka, şasi numarası (VIN), müşteri veya atölyenizin adı asla paylaşılmaz.",
+    "vehicleHintMarine": "Yalnızca marka, model, yıl ve motor paylaşılır; sicil numarası, gövde numarası, müşteri veya atölyenizin adı asla paylaşılmaz.",
+    "send": "Çözümü paylaş",
+    "sent": "Teşekkürler. Çözümünüz inceleme bekliyor.",
+    "shareAnother": "Başka bir çözüm paylaş",
+    "cancel": "İptal",
+    "sentOn": "Gönderildi: {date}",
+    "reason": "Neden: {reason}",
+    "withdraw": "Geri çek",
+    "withdrawTitle": "Bu çözüm geri çekilsin mi?",
+    "withdrawConfirm": "Fotoğraflarıyla birlikte silinir ve başka hiçbir atölye onu görmez.",
+    "withdrawn": "Çözüm geri çekildi",
+    "withdrawFailed": "Çözüm şu anda geri çekilemedi. Birazdan tekrar deneyin.",
+    "unavailable": "Çözüm paylaşımı şu anda kullanılamıyor.",
+    "status": {
+      "pending": "İnceleme bekliyor",
+      "published": "Yayınlandı",
+      "rejected": "Yayınlanmadı"
+    },
+    "errors": {
+      "failed": "Çözümünüz şu anda gönderilemedi. Birazdan tekrar deneyin.",
+      "photo": "Fotoğraflardan biri okunamadı. Başka bir fotoğraf deneyin.",
+      "too_large": "Fotoğraflar çok büyük. Daha az veya daha küçük fotoğraf deneyin.",
+      "paused": "Çözüm paylaşımı şu anda duraklatıldı. Daha sonra tekrar deneyin.",
+      "demo": "Çözüm paylaşımı demoda kapalı."
+    },
+    "invite": "{code} sorununu çözdünüz mü? Diğer servislere neyin işe yaradığını anlatın.",
+    "inviteHint": "Kendi sözlerinizle, varsa birkaç fotoğrafla. Torqvoice’ta bir kişi, diğer servisler görmeden önce her çözümü kontrol eder.",
+    "start": "Çözümünüzü paylaşın",
+    "dialogTitle": "{code} için çözümünüzü paylaşın",
+    "dialogDescription": "Diğer servisler, Torqvoice’ta bir kişi kontrol ettikten sonra görür.",
+    "characters": "{count} / {max}",
+    "writingHint": "Sorun neydi, nasıl buldunuz ve ne çözdü? Parça numaraları ve ölçüm değerleri başkalarına en çok yardımcı olur.",
+    "dropHere": "ya da buraya bırakın",
+    "tooManyPhotosRemove": "Bir çözümde en fazla {max} fotoğraf olabilir. Paylaşmak için bazılarını kaldırın.",
+    "phone": {
+      "button": "Telefondan ekle",
+      "hide": "Telefon kodunu gizle",
+      "title": "Telefonunuzla fotoğraf çekin",
+      "body": "Kodu telefonunuzun kamerasıyla tarayın. Çektiğiniz fotoğraflar geldikçe burada görünür.",
+      "failed": "Telefon kodu oluşturulamadı. Bunu kapatıp tekrar deneyin.",
+      "expires": "Kod {time} saatine kadar geçerli",
+      "copy": "Bağlantıyı kopyala",
+      "copied": "Kopyalandı",
+      "received": "{count, plural, one {# fotoğraf} other {# fotoğraf}} telefondan",
+      "badge": "Telefon"
+    }
+  },
+  "fixes": {
+    "title": "Diğer atölyelerin çözümleri",
+    "empty": "Henüz başka hiçbir atölye {code} için bir çözüm paylaşmadı.",
+    "unavailable": "Diğer atölyelerin çözümleri şu anda kullanılamıyor.",
+    "sharedOn": "Paylaşıldı: {date}",
+    "unknownVehicle": "Araç belirtilmemiş",
+    "unknownVehicleMarine": "Tekne belirtilmemiş",
+    "writtenIn": "Dil: {language}",
+    "photo": "Fotoğraf {n} / {count}",
+    "openPhoto": "{n}. fotoğrafı aç"
+  },
+  "sheet": {
+    "description": "Bu kodun anlamı, olası nedenleri ve atölyenizde bu kodun okunduğu işler.",
+    "loadFailed": "Bu kod açılamadı.",
+    "loading": "Yükleniyor…",
+    "openPage": "Kod sayfasını aç"
+  },
+  "entry": {
+    "button": "Arıza kodu ekle",
+    "title": "Arıza kodu ekle",
+    "description": "Arıza tespit cihazındaki kodları yazın veya yapıştırın. Her biri, anlamı kaydedilmiş olarak bu işte bir gözlem olur.",
+    "placeholder": "P0420, P0171",
+    "empty": "Yazdığınız veya yapıştırdığınız kodlar burada görünür.",
+    "found": "Bulunan kodlar",
+    "remove": "{code} kodunu kaldır",
+    "concern": "Yanıtladığı madde",
+    "concernNone": "Madde yok",
+    "cancel": "İptal",
+    "add": "{count, plural, =0 {Kod ekle} one {# kod ekle} other {# kod ekle}}",
+    "added": "{count, plural, one {# arıza kodu eklendi} other {# arıza kodu eklendi}}",
+    "skipped": "{count, plural, one {# kod bu işte zaten vardı} other {# kod bu işte zaten vardı}}",
+    "failed": "Kodlar eklenemedi"
+  },
+  "finding": {
+    "seenBefore": "Görüldü: {date}",
+    "seenBeforeTitle": "Bu araçta daha önce okundu, son olarak {date}",
+    "seenBeforeTitleMarine": "Bu teknede daha önce okundu, son olarak {date}",
+    "updatedMeaning": "Güncel anlam",
+    "updatedMeaningTitle": "Anlam artık şöyle: {meaning}. Kullanmak için dokunun.",
+    "taken": "Anlam güncellendi",
+    "takeFailed": "Anlam güncellenemedi",
+    "noMeaningSaved": "Henüz kayıtlı anlam yok"
+  },
+  "page": {
+    "title": "Arıza kodları",
+    "intro": "Bir kod arayın veya anlamlarda fakir bank 1 gibi kelimeler arayın.",
+    "lookupLabel": "Kod veya kelimeler",
+    "lookupPlaceholder": "P0420 veya fakir bank 1",
+    "lookup": "Ara",
+    "cloudOnly": "Arıza kodlarının anlamları, Torqvoice Cloud'un bir parçası olan Torqvoice Codes'tan gelir. Atölyenizin okuduğu kodlar her durumda burada listelenir.",
+    "results": "\"{query}\" ile eşleşen kodlar",
+    "noResults": "\"{query}\" ile eşleşen kod yok",
+    "recent": "Atölyenizde son okunanlar",
+    "noRecent": "Henüz hiçbir işte arıza kodu yok.",
+    "readTimes": "{count, plural, one {Bir kez okundu, {date}} other {# kez okundu, son {date}}}",
+    "notACode": "\"{text}\" bir arıza kodu değil",
+    "notACodeHint": "Arıza kodu bir harf ve dört karakterden oluşur, örneğin P0420 veya U0100.",
+    "recentLookups": "Son aramalarınız",
+    "recentLookupsEmpty": "Açtığınız kodlar ve aradığınız kelimeler bu cihazda burada görünür.",
+    "clearRecent": "Temizle",
+    "tryExamples": "Deneyin",
+    "exampleWords": "fakir bank 1",
+    "searching": "Aranıyor"
+  },
+  "search": {
+    "group": "Arıza kodları",
+    "jobsWith": "{code} olan işler",
+    "searchFor": "Arıza kodlarında \"{query}\" ara"
+  },
+  "notice": {
+    "title": "Arıza kodları yeni",
+    "body": "Sürekli yeni kodlar ekliyoruz, bu yüzden henüz her kod burada değil. Şimdilik standart OBD-II kodları var; üreticiye özel kodlar henüz eklenmedi."
+  },
+  "support": {
+    "button": "Destekle iletişime geç",
+    "subject": "Arıza kodu {code}",
+    "subjectGeneral": "Arıza kodları",
+    "message": "Arıza kodu {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Güç aktarma",
+    "B": "Gövde",
+    "C": "Şasi",
+    "U": "Ağ"
+  },
+  "phone": {
+    "title": "Bir çözüm için fotoğraflar",
+    "forCode": "bilgisayarda yazdığınız çözüm için",
+    "intro": "Kodu çözen şeyin en fazla {max} fotoğrafını çekin veya seçin. Bilgisayardaki çözümde görünürler.",
+    "take": "Fotoğraf çek",
+    "choose": "Fotoğraf seç",
+    "added": "{max} fotoğraftan {count} tanesi eklendi",
+    "full": "Bir çözümde en fazla {max} fotoğraf olabilir.",
+    "notAPhoto": "Bu dosya bir fotoğraf değil.",
+    "failed": "Fotoğraf eklenemedi. Tekrar deneyin.",
+    "done": "Bitirdiğinizde bilgisayara dönün ve çözümü paylaşın.",
+    "privacy": "Yüzleri, plakaları ve müşteri bilgilerini fotoğrafın dışında tutun.",
+    "expired": "Bu kodun süresi doldu. Bilgisayarda yeni bir kod gösterin.",
+    "invalid": "Bu kod çalışmıyor. Bilgisayarda yeni bir kod gösterin."
+  }
+}

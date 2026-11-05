@@ -5,6 +5,7 @@ import {
   Car,
   ClipboardCheck,
   ClipboardList,
+  ScanLine,
   Columns3,
   Disc3,
   FileText,
@@ -45,7 +46,7 @@ export type PageCommand = {
   icon: LucideIcon
   marineIcon?: LucideIcon
   /** Listed only when the module or plan allows it. */
-  needs?: 'tireHotel' | 'ai' | 'reports'
+  needs?: 'tireHotel' | 'ai' | 'reports' | 'faultCodes'
 }
 
 export const PAGE_COMMANDS: PageCommand[] = [
@@ -131,6 +132,23 @@ export const PAGE_COMMANDS: PageCommand[] = [
     keywords: ['tyres', 'tires', 'storage', 'wheels', 'season', 'shelf'],
     icon: Disc3,
     needs: 'tireHotel',
+  },
+  {
+    id: 'page:fault-codes',
+    href: '/fault-codes',
+    titleKey: 'faultCodes',
+    subject: 'vehicles',
+    keywords: [
+      'dtc',
+      'trouble codes',
+      'obd',
+      'diagnostic codes',
+      'scan tool',
+      'check engine',
+      'p0420',
+    ],
+    icon: ScanLine,
+    needs: 'faultCodes',
   },
   {
     id: 'page:quotes',
@@ -277,6 +295,8 @@ export type CommandContext = {
   tireHotelEnabled?: boolean
   aiEnabled?: boolean
   isAdminOrOwner?: boolean
+  /** The code service is connected, so fault codes have a page worth opening. */
+  faultCodesEnabled?: boolean
 }
 
 export function canAccessSubject(ctx: CommandContext, subject: string): boolean {
@@ -289,6 +309,7 @@ export function visiblePageCommands(ctx: CommandContext): PageCommand[] {
     if (page.needs === 'tireHotel') return !!ctx.tireHotelEnabled
     if (page.needs === 'ai') return !!ctx.aiEnabled
     if (page.needs === 'reports') return ctx.features?.reports !== false
+    if (page.needs === 'faultCodes') return !!ctx.faultCodesEnabled
     return true
   })
 }

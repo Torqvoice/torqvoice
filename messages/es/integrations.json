@@ -13,6 +13,8 @@
     "availableTitle": "Disponibles",
     "availableDescription": "Servicios que puede añadir. Cada uno se configura una vez y funciona en segundo plano.",
     "allConnected": "Todos los servicios disponibles están conectados.",
+    "cloudOnly": "Solo en la nube",
+    "cloudOnlyHint": "Disponible en Torqvoice Cloud",
     "searchPlaceholder": "Buscar integraciones",
     "noMatches": "Nada coincide con «{query}».",
     "readMore": "Leer más",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Tiempos de mano de obra en órdenes de trabajo y presupuestos",
       "fluids": "Tipos y capacidades de fluidos"
+    },
+    "diagnostics": {
+      "codes": "Significado de los códigos de avería"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Conservar copias mensuales",
         "keepMonthlyHelp": "Las copias más antiguas se eliminan después de cada ejecución y se conservan las más recientes de cada tipo. Ponga un número a 0 para no conservar ninguna de ese tipo."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Mira qué significa un código de avería en el vehículo que tienes delante, en tu idioma: el significado, las causas probables y los códigos relacionados. Escribe o pega códigos en una orden de trabajo y se convierten en observaciones con su significado guardado, así las impresiones y el historial nunca dependen de una conexión. Lo gestiona Torqvoice y está incluido en todos los planes en la nube. Una consulta solo envía marca, modelo, año y motor, nunca un VIN, una matrícula ni un cliente.",
+      "fields": {
+        "apiToken": "Clave de acceso",
+        "apiTokenHelp": "La clave que Torqvoice te dio para el servicio de códigos."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

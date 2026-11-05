@@ -65,7 +65,9 @@
     "tireSetDetails": "Komplet opon",
     "tireForecast": "Następny sezon",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Przypomnienia o przeglądzie"
+    "inspectionReminders": "Przypomnienia o przeglądzie",
+    "faultCodes": "Kody usterek",
+    "faultCode": "Kod usterki"
   },
   "search": "Szukaj...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} otwarte zlecenia",
       "inspections": "{count} przeglądy w toku",
       "reminders": "{count} zaległe przypomnienia"
-    }
+    },
+    "faultCodes": "Kody usterek"
   }
 }

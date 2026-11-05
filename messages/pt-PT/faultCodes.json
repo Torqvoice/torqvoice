@@ -1,0 +1,249 @@
+{
+  "title": "Códigos de avaria",
+  "notAvailable": "Indisponível de momento",
+  "noMeaning": "Ainda não está na nossa lista de códigos",
+  "manufacturerUnknown": "Código específico do fabricante: o significado depende da marca.",
+  "chip": {
+    "open": "Abrir {code}"
+  },
+  "source": {
+    "generic": "Genérico",
+    "manufacturer": "Fabricante",
+    "report": "Do relatório de diagnóstico",
+    "machineTranslated": "Tradução automática"
+  },
+  "status": {
+    "stored": "Memorizado",
+    "pending": "Pendente",
+    "permanent": "Permanente",
+    "history": "Histórico"
+  },
+  "flags": {
+    "warningLight": "Luz de aviso",
+    "emissions": "Emissões",
+    "driveCycle": "Requer ciclo de condução",
+    "limpMode": "Modo de emergência"
+  },
+  "sections": {
+    "how_it_works": "Como funciona",
+    "meaning": "O que o código significa",
+    "causes": "Causas típicas",
+    "manufacturer": "Dados dos fabricantes",
+    "related": "Juntamente com outros códigos",
+    "diagnosis": "Dica de diagnóstico",
+    "other": "Bom saber"
+  },
+  "detail": {
+    "whatItMeans": "O que significa",
+    "likelyCauses": "Causas prováveis",
+    "relatedCodes": "Códigos relacionados",
+    "inYourWorkshop": "Na sua oficina",
+    "noJobs": "Ainda não foi lido em nenhum trabalho da sua oficina.",
+    "resolved": "Resolvido",
+    "notConnected": "Ligue o Torqvoice Codes para ver o que os códigos significam.",
+    "connect": "Ligar",
+    "serviceDown": "O significado está indisponível de momento. Os seus trabalhos estão abaixo.",
+    "pendingCheck": "Só o título é mostrado até o texto ser verificado.",
+    "showMore": "Mostrar mais",
+    "showLess": "Mostrar menos",
+    "likelihood": {
+      "high": "Alta",
+      "medium": "Média",
+      "low": "Baixa"
+    },
+    "mostLikelyFirst": "Mais prováveis primeiro"
+  },
+  "report": {
+    "button": "Comunicar um problema",
+    "title": "O que está errado no significado de {code}?",
+    "reasons": {
+      "wrong_for_vehicle": "Errado para este carro",
+      "wrong_for_vehicleMarine": "Errado para esta embarcação",
+      "text_mismatch": "O texto não corresponde ao código",
+      "wrong_position": "Lado ou posição errados",
+      "bad_translation": "Má tradução",
+      "other": "Outro"
+    },
+    "note": "Nota (opcional)",
+    "notePlaceholder": "O que encontrou",
+    "send": "Enviar",
+    "thanks": "Obrigado, vamos verificar",
+    "failed": "Não foi possível enviar a comunicação agora. Tente novamente daqui a pouco.",
+    "reportedByYou": "Comunicado por si",
+    "outcome": {
+      "fixed": "Atualizado após a sua comunicação",
+      "no_change": "Verificado, sem alterações",
+      "duplicate": "Já comunicado"
+    }
+  },
+  "share": {
+    "title": "Partilhe a sua solução",
+    "description": "Diga a outras oficinas o que resolveu o {code}. Uma pessoa da Torqvoice verifica cada solução antes de outros a verem.",
+    "yourFixes": "As suas soluções para {code}",
+    "whatFixedIt": "O que resolveu",
+    "placeholder": "Fio desgastado na ficha da sonda lambda traseira, atrás da caixa de velocidades. Reparado, o código desapareceu após um teste de estrada.",
+    "placeholderMarine": "Pinos corroídos na ficha do sensor de trim. Limpos e vedados, o código desapareceu após um teste no mar.",
+    "photos": "Fotografias (opcional)",
+    "photosHint": "Até {max} fotografias. Deixe rostos, matrículas e dados do cliente fora da imagem.",
+    "photosHintMarine": "Até {max} fotografias. Deixe rostos, números de registo da embarcação e dados do cliente fora da imagem.",
+    "addPhotos": "Adicionar fotografias",
+    "removePhoto": "Remover a fotografia {n}",
+    "tooManyPhotos": "No máximo {max} fotografias",
+    "notAPhoto": "{name} não é uma fotografia",
+    "photoTooBig": "{name} tem mais de 15 MB",
+    "vehicle": "Veículo",
+    "vehicleMarine": "Embarcação",
+    "vehicleOptional": "Veículo (opcional)",
+    "vehicleOptionalMarine": "Embarcação (opcional)",
+    "make": "Marca",
+    "model": "Modelo",
+    "year": "Ano",
+    "vehicleHint": "Só são partilhados a marca, o modelo, o ano e o motor, nunca a matrícula, o VIN, o cliente ou o nome da sua oficina.",
+    "vehicleHintMarine": "Só são partilhados a marca, o modelo, o ano e o motor, nunca o registo, o número do casco, o cliente ou o nome da sua oficina.",
+    "send": "Partilhar solução",
+    "sent": "Obrigado. A sua solução aguarda revisão.",
+    "shareAnother": "Partilhar outra solução",
+    "cancel": "Cancelar",
+    "sentOn": "Enviada a {date}",
+    "reason": "Motivo: {reason}",
+    "withdraw": "Retirar",
+    "withdrawTitle": "Retirar esta solução?",
+    "withdrawConfirm": "Será apagada com as fotografias e nenhuma outra oficina a verá.",
+    "withdrawn": "Solução retirada",
+    "withdrawFailed": "Não foi possível retirar a solução de momento. Tente novamente dentro de instantes.",
+    "unavailable": "A partilha de soluções está indisponível de momento.",
+    "status": {
+      "pending": "A aguardar revisão",
+      "published": "Publicada",
+      "rejected": "Não publicada"
+    },
+    "errors": {
+      "failed": "Não foi possível enviar a sua solução de momento. Tente novamente dentro de instantes.",
+      "photo": "Não foi possível ler uma das fotografias. Experimente outra.",
+      "too_large": "As fotografias são demasiado grandes. Experimente menos fotografias ou mais pequenas.",
+      "paused": "A partilha de soluções está em pausa de momento. Tente mais tarde.",
+      "demo": "A partilha de soluções está desativada na demonstração."
+    },
+    "invite": "Resolveu o {code}? Conte às outras oficinas o que resultou.",
+    "inviteHint": "Por palavras suas e, se as tiver, com algumas fotografias. Uma pessoa da Torqvoice verifica cada solução antes de outras oficinas a verem.",
+    "start": "Partilhar a sua solução",
+    "dialogTitle": "Partilhar a sua solução para {code}",
+    "dialogDescription": "As outras oficinas veem-na depois de uma pessoa da Torqvoice a verificar.",
+    "characters": "{count} / {max}",
+    "writingHint": "O que estava mal, como o encontrou e o que o resolveu. Referências de peças e medições são o que mais ajuda os outros.",
+    "dropHere": "ou largue-as aqui",
+    "tooManyPhotosRemove": "Uma solução pode ter no máximo {max} fotografias. Remova algumas para a partilhar.",
+    "phone": {
+      "button": "Adicionar a partir do telemóvel",
+      "hide": "Ocultar código do telemóvel",
+      "title": "Tire fotografias com o telemóvel",
+      "body": "Leia o código com a câmara do telemóvel. As fotografias que tirar aparecem aqui à medida que chegam.",
+      "failed": "Não foi possível criar o código para o telemóvel. Feche e tente novamente.",
+      "expires": "O código funciona até às {time}",
+      "copy": "Copiar ligação",
+      "copied": "Copiado",
+      "received": "{count, plural, one {# fotografia} other {# fotografias}} do telemóvel",
+      "badge": "Telemóvel"
+    }
+  },
+  "fixes": {
+    "title": "Soluções de outras oficinas",
+    "empty": "Nenhuma outra oficina partilhou ainda uma solução para {code}.",
+    "unavailable": "As soluções de outras oficinas estão indisponíveis de momento.",
+    "sharedOn": "Partilhada a {date}",
+    "unknownVehicle": "Veículo não indicado",
+    "unknownVehicleMarine": "Embarcação não indicada",
+    "writtenIn": "Escrita em {language}",
+    "photo": "Fotografia {n} de {count}",
+    "openPhoto": "Abrir a fotografia {n}"
+  },
+  "sheet": {
+    "description": "O significado, as causas prováveis e os trabalhos da sua oficina com este código.",
+    "loadFailed": "Não foi possível abrir este código.",
+    "loading": "A carregar…",
+    "openPage": "Abrir a página do código"
+  },
+  "entry": {
+    "button": "Adicionar códigos de avaria",
+    "title": "Adicionar códigos de avaria",
+    "description": "Escreva ou cole os códigos do equipamento de diagnóstico. Cada um passa a ser uma observação neste trabalho, com o significado guardado.",
+    "placeholder": "P0420, P0171",
+    "empty": "Os códigos que escrever ou colar aparecem aqui.",
+    "found": "Códigos encontrados",
+    "remove": "Remover {code}",
+    "concern": "Responde à queixa",
+    "concernNone": "Nenhuma queixa",
+    "cancel": "Cancelar",
+    "add": "{count, plural, =0 {Adicionar códigos} one {Adicionar # código} other {Adicionar # códigos}}",
+    "added": "{count, plural, one {# código de avaria adicionado} other {# códigos de avaria adicionados}}",
+    "skipped": "{count, plural, one {# código já estava neste trabalho} other {# códigos já estavam neste trabalho}}",
+    "failed": "Não foi possível adicionar os códigos"
+  },
+  "finding": {
+    "seenBefore": "Visto {date}",
+    "seenBeforeTitle": "Já lido neste veículo, a última vez a {date}",
+    "seenBeforeTitleMarine": "Já lido nesta embarcação, a última vez a {date}",
+    "updatedMeaning": "Significado atualizado",
+    "updatedMeaningTitle": "O significado é agora: {meaning}. Toque para o usar.",
+    "taken": "Significado atualizado",
+    "takeFailed": "Não foi possível atualizar o significado",
+    "noMeaningSaved": "Ainda sem significado guardado"
+  },
+  "page": {
+    "title": "Códigos de avaria",
+    "intro": "Consulte um código, ou pesquise nos significados palavras como pobre banco 1.",
+    "lookupLabel": "Código ou palavras",
+    "lookupPlaceholder": "P0420 ou pobre banco 1",
+    "lookup": "Consultar",
+    "cloudOnly": "Os significados dos códigos de avaria vêm do Torqvoice Codes, que faz parte do Torqvoice Cloud. Os códigos lidos pela sua oficina aparecem aqui de qualquer forma.",
+    "results": "Códigos para \"{query}\"",
+    "noResults": "Nenhum código corresponde a \"{query}\"",
+    "recent": "Lidos recentemente na sua oficina",
+    "noRecent": "Ainda não há códigos de avaria em nenhum trabalho.",
+    "readTimes": "{count, plural, one {Lido uma vez, {date}} other {Lido # vezes, a última a {date}}}",
+    "notACode": "\"{text}\" não é um código de avaria",
+    "notACodeHint": "Um código de avaria é uma letra e quatro caracteres, como P0420 ou U0100.",
+    "recentLookups": "As suas pesquisas recentes",
+    "recentLookupsEmpty": "Os códigos que abre e as palavras que pesquisa aparecem aqui, neste dispositivo.",
+    "clearRecent": "Limpar",
+    "tryExamples": "Experimente",
+    "exampleWords": "pobre banco 1",
+    "searching": "A pesquisar"
+  },
+  "search": {
+    "group": "Códigos de avaria",
+    "jobsWith": "Trabalhos com {code}",
+    "searchFor": "Pesquisar \"{query}\" nos códigos de avaria"
+  },
+  "notice": {
+    "title": "Os códigos de avaria são novos",
+    "body": "Estamos sempre a adicionar códigos, por isso ainda não estão todos aqui. Por agora, estão incluídos os códigos OBD-II normalizados; os códigos específicos de cada fabricante ainda não."
+  },
+  "support": {
+    "button": "Contactar o suporte",
+    "subject": "Código de avaria {code}",
+    "subjectGeneral": "Códigos de avaria",
+    "message": "Código de avaria {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Grupo motopropulsor",
+    "B": "Carroçaria",
+    "C": "Chassis",
+    "U": "Rede"
+  },
+  "phone": {
+    "title": "Fotografias para uma solução",
+    "forCode": "para a solução que está a escrever no computador",
+    "intro": "Tire ou escolha até {max} fotografias do que resolveu o código. Aparecem na solução no computador.",
+    "take": "Tirar fotografia",
+    "choose": "Escolher fotografias",
+    "added": "{count} de {max} fotografias adicionadas",
+    "full": "Uma solução pode ter no máximo {max} fotografias.",
+    "notAPhoto": "Esse ficheiro não é uma fotografia.",
+    "failed": "Não foi possível adicionar a fotografia. Tente novamente.",
+    "done": "Quando terminar, volte ao computador e partilhe a solução.",
+    "privacy": "Deixe rostos, matrículas e dados de clientes fora da imagem.",
+    "expired": "Este código expirou. Mostre um novo no computador.",
+    "invalid": "Este código não funciona. Mostre um novo no computador."
+  }
+}

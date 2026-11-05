@@ -90,6 +90,15 @@ export interface CredentialField {
   serverKeyEnv?: string
   /** i18n key with the help shown instead of `help` while the server holds a key. */
   serverKeyHelp?: string
+  /**
+   * While the server holds the key (`serverKeyEnv` set), the field is left
+   * out of the manifest rather than made optional: the server's key is the
+   * only one used, so there is nothing for the workshop to type and no way
+   * to put a key of its own in its place. For a service Torqvoice runs and
+   * includes in the plan. Where the variable is not set, the field is drawn
+   * and required as written.
+   */
+  hiddenWhenServerKey?: boolean
 }
 
 /**
@@ -241,6 +250,21 @@ export interface ConnectorManifest {
    * a way to point the server at whatever else runs next to it.
    */
   selfHostedOnly?: boolean
+  /**
+   * Only offered on the Torqvoice cloud instance, the mirror of
+   * `selfHostedOnly`. The registry leaves the connector out entirely on a
+   * self-hosted install, so it is neither listed nor loadable there. For a
+   * service Torqvoice runs itself, reached over its own network. Lifting the
+   * flag later is how a self-hosted install gets it with a key of its own.
+   */
+  cloudOnly?: boolean
+  /**
+   * Connected for every workshop without a visit to the connect page, once
+   * there is nothing left for the workshop to type: an api-key connector
+   * whose every key the server holds (see `serverKeyEnv`). A workshop that
+   * disconnects it stays disconnected, see `src/features/integrations/Lib/auto-connect.ts`.
+   */
+  autoConnect?: boolean
 }
 
 export type LogLevel = 'info' | 'warn' | 'error'
@@ -563,6 +587,163 @@ export interface RepairDataReply<T> {
 /** The key was refused: revoked, mistyped, or its subscription has ended. */
 export class RepairDataKeyRejected extends Error {}
 
+/**
+ * What a fault code service is told about the vehicle, so it can pick the
+ * meaning for that make. Never a VIN, a plate or anything about the owner.
+ */
+export interface FaultCodeVehicle {
+  make?: string
+  model?: string
+  year?: number
+  /** Engine code, or the size when there is no code. */
+  engine?: string
+}
+
+/** A text in the language it came back in, which is English when the asked one has none yet. */
+export interface FaultCodeText {
+  text: string
+  lang: string
+  machineTranslated: boolean
+}
+
+/** Where a meaning comes from, named neutrally. */
+export type FaultCodeSource = 'standard' | 'manufacturer' | 'scan_report' | 'workshop' | 'editor'
+
+/** One labelled part of a code's description, in the order the text has them. */
+export type FaultCodeSectionKind =
+  | 'how_it_works'
+  | 'meaning'
+  | 'causes'
+  | 'manufacturer'
+  | 'related'
+  | 'diagnosis'
+  | 'other'
+
+export interface FaultCodeMeaning {
+  system: 'P' | 'C' | 'B' | 'U'
+  /** powertrain, chassis, body or network. */
+  category: string
+  /** How narrow the meaning is: every vehicle, one make, one model, one engine. */
+  scope: 'generic' | 'make' | 'model' | 'engine'
+  source: FaultCodeSource
+  /** Sent back with a report that the meaning is wrong. */
+  version: number
+  /** A reviewer has checked it. */
+  verified: boolean
+  /** The service's own checks flagged it, so only the title is served until a person clears it. */
+  pendingCheck: boolean
+  title: FaultCodeText
+  flags: { warningLight: boolean; emissions: boolean; driveCycle: boolean; limpMode: boolean }
+  related: { code: string; title?: string }[]
+  /** Only when details were asked for and the service has them. */
+  description?: FaultCodeText
+  /** The description cut into labelled parts, when the service sends them. */
+  sections?: { kind: FaultCodeSectionKind; text: FaultCodeText }[]
+  causes: { key: string; likelihood: 'low' | 'medium' | 'high'; label: FaultCodeText }[]
+}
+
+/**
+ * Whether a code means the same on every vehicle (SAE J2012's standard
+ * ranges) or depends on the make (the manufacturer ranges).
+ */
+export type FaultCodeRange = 'standard' | 'manufacturer'
+
+export interface FaultCodeAnswer {
+  code: string
+  /** False for a code the service has no meaning for, and for text that is not a code. */
+  found: boolean
+  /** Known for every valid code, found or not. */
+  range: FaultCodeRange
+  meaning?: FaultCodeMeaning
+}
+
+export interface FaultCodeSearchHit {
+  code: string
+  title: FaultCodeText
+}
+
+/** Why a workshop says a meaning is wrong. */
+export type FaultCodeReportReason =
+  | 'wrong_for_vehicle'
+  | 'text_mismatch'
+  | 'wrong_position'
+  | 'bad_translation'
+  | 'other'
+
+export interface FaultCodeReport {
+  code: string
+  /** The version of the meaning that was shown. */
+  version: number
+  lang: string
+  reason: FaultCodeReportReason
+  note?: string
+  /** What the scan tool printed for the code, when the technician has it. */
+  scanText?: string
+  vehicle?: FaultCodeVehicle
+  /** Found by the app rather than sent by a person. */
+  automatic: boolean
+  /** A stable id of the workshop; the service keeps only a keyed hash of it. */
+  workshopRef: string
+}
+
+export interface FaultCodeReportStatus {
+  id: string
+  code: string
+  status: 'open' | 'resolved'
+  outcome: 'fixed' | 'no_change' | 'duplicate' | null
+  resolvedAt: string | null
+  message: string | null
+}
+
+/** A photo on a shared fix, as the service re-encoded it. */
+export interface FaultCodeFixPhoto {
+  /** 0 to 3, in the order they were sent. */
+  n: number
+  width: number
+  height: number
+}
+
+/** What fixed a code, as a workshop shared it and the service publishes it. */
+export interface FaultCodeFix {
+  id: string
+  code: string
+  /** The language the text was written in. */
+  lang: string
+  text: string
+  vehicle: FaultCodeVehicle | null
+  photos: FaultCodeFixPhoto[]
+  createdAt: string
+}
+
+/** A fix this workshop shared, with how its review stands. */
+export interface FaultCodeOwnFix extends FaultCodeFix {
+  status: 'pending' | 'published' | 'rejected'
+  /** The reviewer's reason, when it was not published. */
+  reason: string | null
+  reviewedAt: string | null
+}
+
+export interface FaultCodeFixInput {
+  code: string
+  text: string
+  lang: string
+  vehicle?: FaultCodeVehicle
+  /** A stable id of the workshop; the service keeps only a keyed hash of it. */
+  workshopRef: string
+  /** Up to four photos, already compressed in the browser. */
+  photos: Blob[]
+}
+
+/** Why the service would not take a fix; anything else is FaultCodesUnavailable. */
+export type FaultCodeFixRefusal = 'paused' | 'photo' | 'too_large' | 'invalid'
+
+/**
+ * The fault code service did not answer in time, refused the key, or is not
+ * configured on this server. Callers turn it into "not available right now";
+ * it never reaches a screen as an error.
+ */
+export class FaultCodesUnavailable extends Error {}
+
 export interface ConnectorServer {
   manifest: ConnectorManifest
   /** After connecting: who the account is, shown on the connection page. */
@@ -623,6 +804,58 @@ export interface ConnectorServer {
   laborTimes?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<LaborTime>>
   /** Fluid types and capacities, for connectors with the 'repair.fluids' capability. */
   fluidSpecs?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<FluidSpec>>
+  /**
+   * What each code means on this vehicle, for connectors with the
+   * 'diagnostics.codes' capability. Every code of a job or a scan in one
+   * call. Throws FaultCodesUnavailable when the service cannot answer.
+   */
+  lookupCodes?(
+    ctx: ConnectorContext,
+    query: { codes: string[]; vehicle?: FaultCodeVehicle; locale: string; details?: boolean }
+  ): Promise<FaultCodeAnswer[]>
+  /** One code with its description and causes. Null when the service has no such code. */
+  codeDetail?(
+    ctx: ConnectorContext,
+    query: { code: string; vehicle?: FaultCodeVehicle; locale: string }
+  ): Promise<FaultCodeAnswer | null>
+  /** Codes by prefix ("p04") or by the words of their meaning ("lean bank 1"). */
+  searchCodes?(
+    ctx: ConnectorContext,
+    query: { query: string; locale: string; limit?: number }
+  ): Promise<FaultCodeSearchHit[]>
+  /** Tells the service a meaning looks wrong. Answers with the report's id there. */
+  reportDefinition?(
+    ctx: ConnectorContext,
+    report: FaultCodeReport
+  ): Promise<{ id: string; status: 'open' | 'resolved' }>
+  /** Where the reports this workshop sent stand now. */
+  reportStatus?(ctx: ConnectorContext, ids: string[]): Promise<FaultCodeReportStatus[]>
+  /**
+   * Shares what fixed a code, photos included, for a person at the service to
+   * review. Answers with the fix's id there, or why it was refused. Throws
+   * FaultCodesUnavailable when the service cannot be reached.
+   */
+  shareFix?(
+    ctx: ConnectorContext,
+    fix: FaultCodeFixInput
+  ): Promise<{ ok: true; id: string } | { ok: false; reason: FaultCodeFixRefusal }>
+  /** How the fixes this workshop shared stand now; a withdrawn one is left out. */
+  fixStatus?(ctx: ConnectorContext, ids: string[]): Promise<FaultCodeOwnFix[]>
+  /** Deletes a shared fix and its photos. False when the service has no such fix from it. */
+  withdrawFix?(ctx: ConnectorContext, input: { id: string; workshopRef: string }): Promise<boolean>
+  /** Published fixes for a code, newest first. */
+  publishedFixes?(
+    ctx: ConnectorContext,
+    query: { code: string; limit?: number }
+  ): Promise<FaultCodeFix[]>
+  /**
+   * One photo of a fix as JPEG: a published one, or one of this workshop's
+   * own (`workshopRef`). Null when there is no such photo for it.
+   */
+  fixPhoto?(
+    ctx: ConnectorContext,
+    query: { id: string; n: number; size: 'full' | 'thumb'; workshopRef: string }
+  ): Promise<{ body: ReadableStream<Uint8Array>; length: number | null } | null>
   /**
    * Whether the key's plan still lets the account keep what it fetched, for
    * the daily check on stored answers. Null when the source would not say,

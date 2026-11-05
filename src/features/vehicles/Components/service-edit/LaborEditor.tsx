@@ -9,7 +9,16 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { AlertTriangle, Eye, GripVertical, Layers, Plus, Trash2, Wrench } from 'lucide-react'
+import {
+  AlertTriangle,
+  Eye,
+  GripVertical,
+  Layers,
+  Plus,
+  ScanLine,
+  Trash2,
+  Wrench,
+} from 'lucide-react'
 import { IconActionButton } from '@/components/icon-action-button'
 import { FieldRow } from '@/components/line-item-field'
 import { cn } from '@/lib/utils'
@@ -30,6 +39,7 @@ import { makeEmptyLabor, makeEmptyService } from './form-types'
 import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
 import type { LaborGuideStock } from '../labor-guide/FluidPartButton'
 import { LaborGuideButton } from '../labor-guide/LaborGuideButton'
+import { useFaultCodesOnJob } from '@/features/fault-codes/Components/FaultCodesOnJob'
 import type { LaborGuideJob } from '../labor-guide/LaborGuideDialog'
 import {
   DndContext,
@@ -231,6 +241,8 @@ export function LaborEditor({
   guideStock,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
+  const tFault = useTranslations('faultCodes.entry')
+  const faultCodes = useFaultCodesOnJob()
   const modern = useModernWorkOrder()
   const formatCurrency = useFormatCurrency()
   const { currencyFormat } = useCurrencySettings()
@@ -390,6 +402,13 @@ export function LaborEditor({
       ) : onAddFinding ? (
         <IconActionButton label={t('addFinding')} icon={AlertTriangle} onClick={onAddFinding} />
       ) : null}
+      {faultCodes?.connected && (
+        <IconActionButton
+          label={tFault('button')}
+          icon={ScanLine}
+          onClick={() => faultCodes.openEntry()}
+        />
+      )}
     </div>
   )
 

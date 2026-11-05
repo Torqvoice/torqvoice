@@ -1,0 +1,249 @@
+{
+  "title": "Foutcodes",
+  "notAvailable": "Nu niet beschikbaar",
+  "noMeaning": "Nog niet in onze codelijst",
+  "manufacturerUnknown": "Fabrikantspecifieke code: de betekenis hangt af van het merk.",
+  "chip": {
+    "open": "{code} openen"
+  },
+  "source": {
+    "generic": "Algemeen",
+    "manufacturer": "Fabrikant",
+    "report": "Uit het scanrapport",
+    "machineTranslated": "Machinaal vertaald"
+  },
+  "status": {
+    "stored": "Opgeslagen",
+    "pending": "In afwachting",
+    "permanent": "Permanent",
+    "history": "Historie"
+  },
+  "flags": {
+    "warningLight": "Waarschuwingslampje",
+    "emissions": "Emissies",
+    "driveCycle": "Rijcyclus nodig",
+    "limpMode": "Noodloop"
+  },
+  "sections": {
+    "how_it_works": "Zo werkt het",
+    "meaning": "Wat de code betekent",
+    "causes": "Typische oorzaken",
+    "manufacturer": "Gegevens van fabrikanten",
+    "related": "Samen met andere codes",
+    "diagnosis": "Diagnosetip",
+    "other": "Goed om te weten"
+  },
+  "detail": {
+    "whatItMeans": "Wat het betekent",
+    "likelyCauses": "Waarschijnlijke oorzaken",
+    "relatedCodes": "Verwante codes",
+    "inYourWorkshop": "In uw werkplaats",
+    "noJobs": "Nog bij geen enkele klus in uw werkplaats uitgelezen.",
+    "resolved": "Opgelost",
+    "notConnected": "Koppel Torqvoice Codes om te zien wat codes betekenen.",
+    "connect": "Koppelen",
+    "serviceDown": "De betekenis is nu niet beschikbaar. Uw klussen staan hieronder.",
+    "pendingCheck": "Alleen de titel wordt getoond tot de tekst is gecontroleerd.",
+    "showMore": "Meer tonen",
+    "showLess": "Minder tonen",
+    "likelihood": {
+      "high": "Hoog",
+      "medium": "Gemiddeld",
+      "low": "Laag"
+    },
+    "mostLikelyFirst": "Meest waarschijnlijke eerst"
+  },
+  "report": {
+    "button": "Probleem melden",
+    "title": "Wat klopt er niet aan de betekenis van {code}?",
+    "reasons": {
+      "wrong_for_vehicle": "Verkeerd voor deze auto",
+      "wrong_for_vehicleMarine": "Verkeerd voor dit vaartuig",
+      "text_mismatch": "Tekst past niet bij de code",
+      "wrong_position": "Verkeerde kant of positie",
+      "bad_translation": "Slechte vertaling",
+      "other": "Anders"
+    },
+    "note": "Notitie (optioneel)",
+    "notePlaceholder": "Wat u vond",
+    "send": "Versturen",
+    "thanks": "Bedankt, we kijken ernaar",
+    "failed": "De melding kon nu niet worden verstuurd. Probeer het zo opnieuw.",
+    "reportedByYou": "Door u gemeld",
+    "outcome": {
+      "fixed": "Bijgewerkt na uw melding",
+      "no_change": "Gecontroleerd, geen wijziging",
+      "duplicate": "Al gemeld"
+    }
+  },
+  "share": {
+    "title": "Deel uw oplossing",
+    "description": "Vertel andere werkplaatsen wat {code} heeft opgelost. Een medewerker van Torqvoice controleert elke oplossing voordat anderen die zien.",
+    "yourFixes": "Uw oplossingen voor {code}",
+    "whatFixedIt": "Wat het oploste",
+    "placeholder": "Doorgeschuurde draad bij de stekker van de achterste lambdasonde achter de versnellingsbak. Gerepareerd, code gewist na een proefrit.",
+    "placeholderMarine": "Gecorrodeerde pinnen in de stekker van de trimsensor. Gereinigd en afgedicht, code gewist na een proefvaart.",
+    "photos": "Foto's (optioneel)",
+    "photosHint": "Maximaal {max} foto's. Houd gezichten, kentekens en klantgegevens buiten beeld.",
+    "photosHintMarine": "Maximaal {max} foto's. Houd gezichten, registratienummers en klantgegevens buiten beeld.",
+    "addPhotos": "Foto's toevoegen",
+    "removePhoto": "Foto {n} verwijderen",
+    "tooManyPhotos": "Maximaal {max} foto's",
+    "notAPhoto": "{name} is geen foto",
+    "photoTooBig": "{name} is groter dan 15 MB",
+    "vehicle": "Voertuig",
+    "vehicleMarine": "Vaartuig",
+    "vehicleOptional": "Voertuig (optioneel)",
+    "vehicleOptionalMarine": "Vaartuig (optioneel)",
+    "make": "Merk",
+    "model": "Model",
+    "year": "Bouwjaar",
+    "vehicleHint": "Alleen merk, model, bouwjaar en motor worden gedeeld, nooit het kenteken, het VIN, de klant of de naam van uw werkplaats.",
+    "vehicleHintMarine": "Alleen merk, model, bouwjaar en motor worden gedeeld, nooit het registratienummer, het rompnummer, de klant of de naam van uw werkplaats.",
+    "send": "Oplossing delen",
+    "sent": "Bedankt. Uw oplossing wacht op controle.",
+    "shareAnother": "Nog een oplossing delen",
+    "cancel": "Annuleren",
+    "sentOn": "Verstuurd op {date}",
+    "reason": "Reden: {reason}",
+    "withdraw": "Intrekken",
+    "withdrawTitle": "Deze oplossing intrekken?",
+    "withdrawConfirm": "Ze wordt met haar foto's verwijderd en geen andere werkplaats krijgt haar te zien.",
+    "withdrawn": "Oplossing ingetrokken",
+    "withdrawFailed": "De oplossing kon nu niet worden ingetrokken. Probeer het zo opnieuw.",
+    "unavailable": "Oplossingen delen is nu niet beschikbaar.",
+    "status": {
+      "pending": "Wacht op controle",
+      "published": "Gepubliceerd",
+      "rejected": "Niet gepubliceerd"
+    },
+    "errors": {
+      "failed": "Uw oplossing kon nu niet worden verstuurd. Probeer het zo opnieuw.",
+      "photo": "Een van de foto's kon niet worden gelezen. Probeer een andere.",
+      "too_large": "De foto's zijn te groot. Probeer minder of kleinere foto's.",
+      "paused": "Oplossingen delen is nu gepauzeerd. Probeer het later opnieuw.",
+      "demo": "Oplossingen delen staat uit in de demo."
+    },
+    "invite": "{code} opgelost? Vertel andere werkplaatsen wat werkte.",
+    "inviteHint": "In uw eigen woorden, eventueel met een paar foto’s. Een medewerker van Torqvoice controleert elke oplossing voordat andere werkplaatsen hem zien.",
+    "start": "Uw oplossing delen",
+    "dialogTitle": "Uw oplossing voor {code} delen",
+    "dialogDescription": "Andere werkplaatsen zien hem zodra een medewerker van Torqvoice hem heeft gecontroleerd.",
+    "characters": "{count} / {max}",
+    "writingHint": "Wat er mis was, hoe u het vond en wat het oploste. Onderdeelnummers en meetwaarden helpen anderen het meest.",
+    "dropHere": "of sleep ze hierheen",
+    "tooManyPhotosRemove": "Een oplossing kan maximaal {max} foto’s hebben. Verwijder er een paar om hem te delen.",
+    "phone": {
+      "button": "Toevoegen vanaf telefoon",
+      "hide": "Telefooncode verbergen",
+      "title": "Maak foto’s met uw telefoon",
+      "body": "Scan de code met de camera van uw telefoon. De foto’s die u maakt verschijnen hier zodra ze binnenkomen.",
+      "failed": "De telefooncode kon niet worden gemaakt. Sluit dit en probeer het opnieuw.",
+      "expires": "De code werkt tot {time}",
+      "copy": "Link kopiëren",
+      "copied": "Gekopieerd",
+      "received": "{count, plural, one {# foto} other {# foto’s}} vanaf uw telefoon",
+      "badge": "Telefoon"
+    }
+  },
+  "fixes": {
+    "title": "Oplossingen van andere werkplaatsen",
+    "empty": "Nog geen andere werkplaats heeft een oplossing voor {code} gedeeld.",
+    "unavailable": "Oplossingen van andere werkplaatsen zijn nu niet beschikbaar.",
+    "sharedOn": "Gedeeld op {date}",
+    "unknownVehicle": "Voertuig niet opgegeven",
+    "unknownVehicleMarine": "Vaartuig niet opgegeven",
+    "writtenIn": "Taal: {language}",
+    "photo": "Foto {n} van {count}",
+    "openPhoto": "Foto {n} openen"
+  },
+  "sheet": {
+    "description": "De betekenis, waarschijnlijke oorzaken en de klussen van uw werkplaats met deze code.",
+    "loadFailed": "Deze code kon niet worden geopend.",
+    "loading": "Laden…",
+    "openPage": "Codepagina openen"
+  },
+  "entry": {
+    "button": "Foutcodes toevoegen",
+    "title": "Foutcodes toevoegen",
+    "description": "Typ of plak codes uit de scantool. Elke code wordt een observatie bij deze klus, met de betekenis opgeslagen.",
+    "placeholder": "P0420, P0171",
+    "empty": "Codes die u typt of plakt, verschijnen hier.",
+    "found": "Gevonden codes",
+    "remove": "{code} verwijderen",
+    "concern": "Beantwoordt punt",
+    "concernNone": "Geen punt",
+    "cancel": "Annuleren",
+    "add": "{count, plural, =0 {Codes toevoegen} one {# code toevoegen} other {# codes toevoegen}}",
+    "added": "{count, plural, one {# foutcode toegevoegd} other {# foutcodes toegevoegd}}",
+    "skipped": "{count, plural, one {# code stond al bij deze klus} other {# codes stonden al bij deze klus}}",
+    "failed": "De codes konden niet worden toegevoegd"
+  },
+  "finding": {
+    "seenBefore": "Gezien {date}",
+    "seenBeforeTitle": "Eerder uitgelezen bij dit voertuig, laatst op {date}",
+    "seenBeforeTitleMarine": "Eerder uitgelezen bij dit vaartuig, laatst op {date}",
+    "updatedMeaning": "Nieuwe betekenis",
+    "updatedMeaningTitle": "De betekenis luidt nu: {meaning}. Tik om die te gebruiken.",
+    "taken": "Betekenis bijgewerkt",
+    "takeFailed": "De betekenis kon niet worden bijgewerkt",
+    "noMeaningSaved": "Nog geen betekenis opgeslagen"
+  },
+  "page": {
+    "title": "Foutcodes",
+    "intro": "Zoek een code op, of zoek in de betekenissen naar woorden zoals arm bank 1.",
+    "lookupLabel": "Code of woorden",
+    "lookupPlaceholder": "P0420 of arm bank 1",
+    "lookup": "Opzoeken",
+    "cloudOnly": "De betekenissen van foutcodes komen van Torqvoice Codes, onderdeel van Torqvoice Cloud. Codes die uw werkplaats heeft uitgelezen, staan hier hoe dan ook.",
+    "results": "Codes bij \"{query}\"",
+    "noResults": "Geen code past bij \"{query}\"",
+    "recent": "Onlangs uitgelezen in uw werkplaats",
+    "noRecent": "Nog geen foutcodes bij een klus.",
+    "readTimes": "{count, plural, one {Eén keer uitgelezen, {date}} other {# keer uitgelezen, laatst {date}}}",
+    "notACode": "\"{text}\" is geen foutcode",
+    "notACodeHint": "Een foutcode is een letter met vier tekens, zoals P0420 of U0100.",
+    "recentLookups": "Uw recente zoekopdrachten",
+    "recentLookupsEmpty": "Codes die u opent en woorden waarop u zoekt verschijnen hier, op dit apparaat.",
+    "clearRecent": "Wissen",
+    "tryExamples": "Probeer",
+    "exampleWords": "arm bank 1",
+    "searching": "Bezig met zoeken"
+  },
+  "search": {
+    "group": "Foutcodes",
+    "jobsWith": "Klussen met {code}",
+    "searchFor": "Foutcodes doorzoeken op \"{query}\""
+  },
+  "notice": {
+    "title": "Foutcodes zijn nieuw",
+    "body": "We voegen voortdurend codes toe, dus nog niet elke code staat erin. Voorlopig gaat het om de standaard OBD-II-codes; fabrikantspecifieke codes zitten er nog niet in."
+  },
+  "support": {
+    "button": "Contact met support",
+    "subject": "Foutcode {code}",
+    "subjectGeneral": "Foutcodes",
+    "message": "Foutcode {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Aandrijflijn",
+    "B": "Carrosserie",
+    "C": "Chassis",
+    "U": "Netwerk"
+  },
+  "phone": {
+    "title": "Foto’s voor een oplossing",
+    "forCode": "voor de oplossing die u op de computer schrijft",
+    "intro": "Maak of kies tot {max} foto’s van wat de code oploste. Ze verschijnen in de oplossing op de computer.",
+    "take": "Foto maken",
+    "choose": "Foto’s kiezen",
+    "added": "{count} van {max} foto’s toegevoegd",
+    "full": "Een oplossing kan maximaal {max} foto’s hebben.",
+    "notAPhoto": "Dat bestand is geen foto.",
+    "failed": "De foto kon niet worden toegevoegd. Probeer het opnieuw.",
+    "done": "Als u klaar bent, ga dan terug naar de computer en deel de oplossing.",
+    "privacy": "Houd gezichten, kentekens en klantgegevens buiten beeld.",
+    "expired": "Deze code is verlopen. Toon een nieuwe op de computer.",
+    "invalid": "Deze code werkt niet. Toon een nieuwe op de computer."
+  }
+}

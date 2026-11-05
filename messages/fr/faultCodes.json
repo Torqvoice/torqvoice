@@ -1,0 +1,249 @@
+{
+  "title": "Codes défaut",
+  "notAvailable": "Indisponible pour le moment",
+  "noMeaning": "Pas encore dans notre liste de codes",
+  "manufacturerUnknown": "Code spécifique au constructeur : la signification dépend de la marque.",
+  "chip": {
+    "open": "Ouvrir {code}"
+  },
+  "source": {
+    "generic": "Générique",
+    "manufacturer": "Constructeur",
+    "report": "Du rapport de diagnostic",
+    "machineTranslated": "Traduction automatique"
+  },
+  "status": {
+    "stored": "Mémorisé",
+    "pending": "En attente",
+    "permanent": "Permanent",
+    "history": "Historique"
+  },
+  "flags": {
+    "warningLight": "Voyant allumé",
+    "emissions": "Émissions",
+    "driveCycle": "Cycle de conduite nécessaire",
+    "limpMode": "Mode dégradé"
+  },
+  "sections": {
+    "how_it_works": "Fonctionnement",
+    "meaning": "Ce que signifie le code",
+    "causes": "Causes typiques",
+    "manufacturer": "Données constructeurs",
+    "related": "Avec d'autres codes",
+    "diagnosis": "Conseil de diagnostic",
+    "other": "Bon à savoir"
+  },
+  "detail": {
+    "whatItMeans": "Ce qu'il signifie",
+    "likelyCauses": "Causes probables",
+    "relatedCodes": "Codes associés",
+    "inYourWorkshop": "Dans votre atelier",
+    "noJobs": "Pas encore lu sur un travail de votre atelier.",
+    "resolved": "Résolu",
+    "notConnected": "Connectez Torqvoice Codes pour voir ce que signifient les codes.",
+    "connect": "Connecter",
+    "serviceDown": "La signification est indisponible pour le moment. Vos travaux figurent ci-dessous.",
+    "pendingCheck": "Seul le titre est affiché tant que le texte n'a pas été vérifié.",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "likelihood": {
+      "high": "Élevée",
+      "medium": "Moyenne",
+      "low": "Faible"
+    },
+    "mostLikelyFirst": "Les plus probables d’abord"
+  },
+  "report": {
+    "button": "Signaler un problème",
+    "title": "Qu'est-ce qui ne va pas dans la signification de {code} ?",
+    "reasons": {
+      "wrong_for_vehicle": "Faux pour cette voiture",
+      "wrong_for_vehicleMarine": "Faux pour ce navire",
+      "text_mismatch": "Le texte ne correspond pas au code",
+      "wrong_position": "Mauvais côté ou position",
+      "bad_translation": "Mauvaise traduction",
+      "other": "Autre"
+    },
+    "note": "Note (facultatif)",
+    "notePlaceholder": "Ce que vous avez trouvé",
+    "send": "Envoyer",
+    "thanks": "Merci, nous allons vérifier",
+    "failed": "Le signalement n'a pas pu être envoyé pour le moment. Réessayez dans un instant.",
+    "reportedByYou": "Signalé par vous",
+    "outcome": {
+      "fixed": "Mis à jour après votre signalement",
+      "no_change": "Vérifié, aucun changement",
+      "duplicate": "Déjà signalé"
+    }
+  },
+  "share": {
+    "title": "Partagez votre solution",
+    "description": "Dites aux autres ateliers ce qui a résolu {code}. Une personne chez Torqvoice vérifie chaque solution avant que d'autres la voient.",
+    "yourFixes": "Vos solutions pour {code}",
+    "whatFixedIt": "Ce qui a résolu le problème",
+    "placeholder": "Fil frotté au connecteur de la sonde lambda arrière, derrière la boîte de vitesses. Réparé, code effacé après un essai routier.",
+    "placeholderMarine": "Broches corrodées dans le connecteur du capteur de trim. Nettoyées et étanchéifiées, code effacé après un essai en mer.",
+    "photos": "Photos (facultatif)",
+    "photosHint": "Jusqu'à {max} photos. Laissez hors du cadre les visages, les plaques d'immatriculation et les données du client.",
+    "photosHintMarine": "Jusqu'à {max} photos. Laissez hors du cadre les visages, les immatriculations du navire et les données du client.",
+    "addPhotos": "Ajouter des photos",
+    "removePhoto": "Retirer la photo {n}",
+    "tooManyPhotos": "{max} photos au maximum",
+    "notAPhoto": "{name} n'est pas une photo",
+    "photoTooBig": "{name} dépasse 15 Mo",
+    "vehicle": "Véhicule",
+    "vehicleMarine": "Navire",
+    "vehicleOptional": "Véhicule (facultatif)",
+    "vehicleOptionalMarine": "Navire (facultatif)",
+    "make": "Marque",
+    "model": "Modèle",
+    "year": "Année",
+    "vehicleHint": "Seuls la marque, le modèle, l'année et le moteur sont partagés, jamais la plaque, le VIN, le client ni le nom de votre atelier.",
+    "vehicleHintMarine": "Seuls la marque, le modèle, l'année et le moteur sont partagés, jamais l'immatriculation, le numéro de coque, le client ni le nom de votre atelier.",
+    "send": "Partager la solution",
+    "sent": "Merci. Votre solution attend d'être vérifiée.",
+    "shareAnother": "Partager une autre solution",
+    "cancel": "Annuler",
+    "sentOn": "Envoyée le {date}",
+    "reason": "Motif : {reason}",
+    "withdraw": "Retirer",
+    "withdrawTitle": "Retirer cette solution ?",
+    "withdrawConfirm": "Elle sera supprimée avec ses photos et aucun autre atelier ne la verra.",
+    "withdrawn": "Solution retirée",
+    "withdrawFailed": "La solution n'a pas pu être retirée pour le moment. Réessayez dans un instant.",
+    "unavailable": "Le partage de solutions est indisponible pour le moment.",
+    "status": {
+      "pending": "En attente de vérification",
+      "published": "Publiée",
+      "rejected": "Non publiée"
+    },
+    "errors": {
+      "failed": "Votre solution n'a pas pu être envoyée pour le moment. Réessayez dans un instant.",
+      "photo": "Une des photos n'a pas pu être lue. Essayez-en une autre.",
+      "too_large": "Les photos sont trop lourdes. Essayez avec moins de photos ou des photos plus petites.",
+      "paused": "Le partage de solutions est en pause pour le moment. Réessayez plus tard.",
+      "demo": "Le partage de solutions est désactivé dans la démo."
+    },
+    "invite": "Vous avez résolu {code} ? Dites aux autres garages ce qui a marché.",
+    "inviteHint": "Avec vos propres mots et, si vous en avez, quelques photos. Une personne chez Torqvoice vérifie chaque solution avant que d’autres garages la voient.",
+    "start": "Partager votre solution",
+    "dialogTitle": "Partager votre solution pour {code}",
+    "dialogDescription": "Les autres garages la verront une fois qu’une personne chez Torqvoice l’aura vérifiée.",
+    "characters": "{count} / {max}",
+    "writingHint": "Ce qui n’allait pas, comment vous l’avez trouvé et ce qui l’a résolu. Les références de pièces et les mesures aident le plus les autres.",
+    "dropHere": "ou déposez-les ici",
+    "tooManyPhotosRemove": "Une solution peut avoir au plus {max} photos. Retirez-en pour la partager.",
+    "phone": {
+      "button": "Ajouter depuis le téléphone",
+      "hide": "Masquer le code du téléphone",
+      "title": "Prenez des photos avec votre téléphone",
+      "body": "Scannez le code avec l’appareil photo du téléphone. Les photos que vous prenez apparaissent ici dès leur arrivée.",
+      "failed": "Le code pour le téléphone n’a pas pu être créé. Fermez cette fenêtre et réessayez.",
+      "expires": "Le code est valable jusqu’à {time}",
+      "copy": "Copier le lien",
+      "copied": "Copié",
+      "received": "{count, plural, one {# photo} other {# photos}} depuis votre téléphone",
+      "badge": "Téléphone"
+    }
+  },
+  "fixes": {
+    "title": "Solutions d'autres ateliers",
+    "empty": "Aucun autre atelier n'a encore partagé de solution pour {code}.",
+    "unavailable": "Les solutions d'autres ateliers sont indisponibles pour le moment.",
+    "sharedOn": "Partagée le {date}",
+    "unknownVehicle": "Véhicule non indiqué",
+    "unknownVehicleMarine": "Navire non indiqué",
+    "writtenIn": "Écrite en {language}",
+    "photo": "Photo {n} sur {count}",
+    "openPhoto": "Ouvrir la photo {n}"
+  },
+  "sheet": {
+    "description": "La signification, les causes probables et les travaux de votre atelier avec ce code.",
+    "loadFailed": "Impossible d'ouvrir ce code.",
+    "loading": "Chargement…",
+    "openPage": "Ouvrir la page du code"
+  },
+  "entry": {
+    "button": "Ajouter des codes défaut",
+    "title": "Ajouter des codes défaut",
+    "description": "Saisissez ou collez les codes de l'outil de diagnostic. Chacun devient une observation sur ce travail, avec sa signification enregistrée.",
+    "placeholder": "P0420, P0171",
+    "empty": "Les codes saisis ou collés s'affichent ici.",
+    "found": "Codes trouvés",
+    "remove": "Retirer {code}",
+    "concern": "Répond au point",
+    "concernNone": "Aucun point",
+    "cancel": "Annuler",
+    "add": "{count, plural, =0 {Ajouter des codes} one {Ajouter # code} other {Ajouter # codes}}",
+    "added": "{count, plural, one {# code défaut ajouté} other {# codes défaut ajoutés}}",
+    "skipped": "{count, plural, one {# code figurait déjà sur ce travail} other {# codes figuraient déjà sur ce travail}}",
+    "failed": "Impossible d'ajouter les codes"
+  },
+  "finding": {
+    "seenBefore": "Vu {date}",
+    "seenBeforeTitle": "Déjà lu sur ce véhicule, la dernière fois le {date}",
+    "seenBeforeTitleMarine": "Déjà lu sur ce navire, la dernière fois le {date}",
+    "updatedMeaning": "Signification mise à jour",
+    "updatedMeaningTitle": "La signification est désormais : {meaning}. Touchez pour l'utiliser.",
+    "taken": "Signification mise à jour",
+    "takeFailed": "Impossible de mettre à jour la signification",
+    "noMeaningSaved": "Aucune signification enregistrée"
+  },
+  "page": {
+    "title": "Codes défaut",
+    "intro": "Recherchez un code, ou cherchez dans les significations des mots comme pauvre rangée 1.",
+    "lookupLabel": "Code ou mots",
+    "lookupPlaceholder": "P0420 ou pauvre rangée 1",
+    "lookup": "Rechercher",
+    "cloudOnly": "Les significations des codes défaut proviennent de Torqvoice Codes, qui fait partie de Torqvoice Cloud. Les codes lus par votre atelier s'affichent ici dans tous les cas.",
+    "results": "Codes correspondant à « {query} »",
+    "noResults": "Aucun code ne correspond à « {query} »",
+    "recent": "Lus récemment dans votre atelier",
+    "noRecent": "Aucun code défaut sur un travail pour le moment.",
+    "readTimes": "{count, plural, one {Lu une fois, {date}} other {Lu # fois, la dernière le {date}}}",
+    "notACode": "« {text} » n'est pas un code défaut",
+    "notACodeHint": "Un code défaut est une lettre suivie de quatre caractères, comme P0420 ou U0100.",
+    "recentLookups": "Vos recherches récentes",
+    "recentLookupsEmpty": "Les codes que vous ouvrez et les mots que vous recherchez apparaissent ici, sur cet appareil.",
+    "clearRecent": "Effacer",
+    "tryExamples": "Essayez",
+    "exampleWords": "pauvre rangée 1",
+    "searching": "Recherche en cours"
+  },
+  "search": {
+    "group": "Codes défaut",
+    "jobsWith": "Travaux avec {code}",
+    "searchFor": "Chercher « {query} » dans les codes défaut"
+  },
+  "notice": {
+    "title": "Les codes défaut sont nouveaux",
+    "body": "Nous ajoutons des codes en permanence, donc tous ne sont pas encore là. Pour l’instant, ils couvrent les codes OBD-II standard ; les codes propres aux constructeurs ne sont pas encore inclus."
+  },
+  "support": {
+    "button": "Contacter le support",
+    "subject": "Code défaut {code}",
+    "subjectGeneral": "Codes défaut",
+    "message": "Code défaut {code} : {title}\n\n"
+  },
+  "systems": {
+    "P": "Groupe motopropulseur",
+    "B": "Carrosserie",
+    "C": "Châssis",
+    "U": "Réseau"
+  },
+  "phone": {
+    "title": "Photos pour une solution",
+    "forCode": "pour la solution que vous rédigez sur l’ordinateur",
+    "intro": "Prenez ou choisissez jusqu’à {max} photos de ce qui a résolu le code. Elles apparaissent dans la solution sur l’ordinateur.",
+    "take": "Prendre une photo",
+    "choose": "Choisir des photos",
+    "added": "{count} photos sur {max} ajoutées",
+    "full": "Une solution peut avoir au plus {max} photos.",
+    "notAPhoto": "Ce fichier n’est pas une photo.",
+    "failed": "La photo n’a pas pu être ajoutée. Réessayez.",
+    "done": "Quand vous avez fini, revenez à l’ordinateur et partagez la solution.",
+    "privacy": "Laissez hors de l’image les visages, les plaques et les données des clients.",
+    "expired": "Ce code a expiré. Affichez-en un nouveau sur l’ordinateur.",
+    "invalid": "Ce code ne fonctionne pas. Affichez-en un nouveau sur l’ordinateur."
+  }
+}

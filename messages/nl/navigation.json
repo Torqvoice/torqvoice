@@ -65,7 +65,9 @@
     "tireSetDetails": "Bandenset",
     "tireForecast": "Volgend seizoen",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Keuringsherinneringen"
+    "inspectionReminders": "Keuringsherinneringen",
+    "faultCodes": "Foutcodes",
+    "faultCode": "Foutcode"
   },
   "search": "Zoeken...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} open werkorders",
       "inspections": "{count} lopende inspecties",
       "reminders": "{count} herinneringen vervallen"
-    }
+    },
+    "faultCodes": "Foutcodes"
   }
 }

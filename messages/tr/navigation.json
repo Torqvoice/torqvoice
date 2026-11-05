@@ -65,7 +65,9 @@
     "tireSetDetails": "Lastik takımı",
     "tireForecast": "Gelecek sezon",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Muayene hatırlatmaları"
+    "inspectionReminders": "Muayene hatırlatmaları",
+    "faultCodes": "Arıza kodları",
+    "faultCode": "Arıza kodu"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} açık iş emri",
       "inspections": "{count} devam eden muayene",
       "reminders": "{count} vadesi gelen hatırlatma"
-    }
+    },
+    "faultCodes": "Arıza kodları"
   }
 }

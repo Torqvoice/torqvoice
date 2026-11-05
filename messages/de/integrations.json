@@ -13,6 +13,8 @@
     "availableTitle": "Verfügbar",
     "availableDescription": "Dienste, die Sie hinzufügen können. Jeder wird einmal eingerichtet und läuft im Hintergrund.",
     "allConnected": "Alle verfügbaren Dienste sind verbunden.",
+    "cloudOnly": "Nur Cloud",
+    "cloudOnlyHint": "Verfügbar in Torqvoice Cloud",
     "searchPlaceholder": "Integrationen durchsuchen",
     "noMatches": "Nichts passt zu „{query}“.",
     "readMore": "Mehr erfahren",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Arbeitszeiten in Aufträgen und Angeboten",
       "fluids": "Flüssigkeiten und Füllmengen"
+    },
+    "diagnostics": {
+      "codes": "Bedeutungen von Fehlercodes"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Monatliche Sicherungen behalten",
         "keepMonthlyHelp": "Ältere Sicherungen werden nach jedem Lauf entfernt, wobei jeweils die neuesten jeder Art erhalten bleiben. Setzen Sie eine Zahl auf 0, um von dieser Art keine zu behalten."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Sehen Sie, was ein Fehlercode an dem Fahrzeug vor Ihnen bedeutet, in Ihrer Sprache: die Bedeutung, wahrscheinliche Ursachen und verwandte Codes. Tippen oder fügen Sie Codes in einen Auftrag ein, dann werden sie Beobachtungen mit gespeicherter Bedeutung, sodass Ausdrucke und Verlauf nie auf eine Verbindung warten. Von Torqvoice betrieben und in jedem Cloud-Tarif enthalten. Eine Abfrage sendet nur Marke, Modell, Baujahr und Motor, nie eine FIN, ein Kennzeichen oder einen Kunden.",
+      "fields": {
+        "apiToken": "Zugangsschlüssel",
+        "apiTokenHelp": "Der Schlüssel, den Torqvoice Ihnen für den Codedienst gegeben hat."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

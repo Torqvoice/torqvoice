@@ -288,6 +288,14 @@ model ServiceAttachment {
   concernId String?
   concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
 
+  /// What a scan for fault codes found in this file, when one ran: the codes
+  /// with their status and module, the VIN and odometer the report printed,
+  /// how it was read (text or vision), when, and whether it was dismissed.
+  scan Json?
+
+  /// Findings whose fault code was read from this file.
+  faultFindings VehicleFinding[]
+
   @@index([serviceRecordId])
   @@index([concernId])
   @@map("service_attachments")

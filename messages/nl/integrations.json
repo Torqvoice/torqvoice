@@ -13,6 +13,8 @@
     "availableTitle": "Beschikbaar",
     "availableDescription": "Diensten die u kunt toevoegen. Elke dienst stelt u één keer in en draait daarna op de achtergrond.",
     "allConnected": "Alle beschikbare diensten zijn verbonden.",
+    "cloudOnly": "Alleen cloud",
+    "cloudOnlyHint": "Beschikbaar in Torqvoice Cloud",
     "searchPlaceholder": "Integraties zoeken",
     "noMatches": "Niets komt overeen met \"{query}\".",
     "readMore": "Meer lezen",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Arbeidstijden op werkorders en offertes",
       "fluids": "Vloeistofsoorten en inhoud"
+    },
+    "diagnostics": {
+      "codes": "Betekenis van foutcodes"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Maandelijkse back-ups bewaren",
         "keepMonthlyHelp": "Oudere back-ups worden na elke run verwijderd, waarbij de nieuwste van elk soort blijven. Zet een aantal op 0 om van dat soort niets te bewaren."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Zie wat een foutcode betekent bij het voertuig voor u, in uw eigen taal: de betekenis, waarschijnlijke oorzaken en verwante codes. Typ of plak codes in een werkorder en ze worden observaties met de betekenis opgeslagen, zodat afdrukken en historie nooit op een verbinding wachten. Beheerd door Torqvoice en inbegrepen in elk cloudabonnement. Een opzoeking stuurt alleen merk, model, bouwjaar en motor, nooit een VIN, kenteken of klant.",
+      "fields": {
+        "apiToken": "Toegangssleutel",
+        "apiTokenHelp": "De sleutel die Torqvoice u gaf voor de codedienst."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

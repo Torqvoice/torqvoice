@@ -65,7 +65,9 @@
     "tireSetDetails": "Padangų komplektas",
     "tireForecast": "Kitas sezonas",
     "whatsapp": "„WhatsApp“",
-    "inspectionReminders": "Apžiūros priminimai"
+    "inspectionReminders": "Apžiūros priminimai",
+    "faultCodes": "Gedimų kodai",
+    "faultCode": "Gedimo kodas"
   },
   "search": "Ieškoti...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} atviri darbo užsakymai",
       "inspections": "{count} vykdomos apžiūros",
       "reminders": "{count} priminimai, kurių terminas suėjo"
-    }
+    },
+    "faultCodes": "Gedimų kodai"
   }
 }

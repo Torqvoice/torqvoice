@@ -65,7 +65,9 @@
     "tireSetDetails": "Комплект шин",
     "tireForecast": "Следующий сезон",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Напоминания о техосмотре"
+    "inspectionReminders": "Напоминания о техосмотре",
+    "faultCodes": "Коды неисправностей",
+    "faultCode": "Код неисправности"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} открытых заказ-нарядов",
       "inspections": "{count} проверок в работе",
       "reminders": "{count} напоминаний просрочено"
-    }
+    },
+    "faultCodes": "Коды неисправностей"
   }
 }

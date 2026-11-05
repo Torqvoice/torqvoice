@@ -35,6 +35,7 @@ import { manifest as speechToText } from './speech-to-text/manifest'
 import { manifest as stripe } from './stripe/manifest'
 import { manifest as telegram } from './telegram/manifest'
 import { manifest as telnyxSms } from './telnyx-sms/manifest'
+import { manifest as torqvoiceCodes } from './torqvoice-codes/manifest'
 import { manifest as twilioSms } from './twilio-sms/manifest'
 import { manifest as vegvesen } from './vegvesen/manifest'
 import { manifest as vipps } from './vipps/manifest'
@@ -63,6 +64,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: regcheck, load: () => import('./regcheck/server') },
   { manifest: nhtsa, load: () => import('./nhtsa/server') },
   { manifest: openLaborProject, load: () => import('./openlaborproject/server') },
+  { manifest: torqvoiceCodes, load: () => import('./torqvoice-codes/server') },
   { manifest: twilioSms, load: () => import('./twilio-sms/server') },
   { manifest: vonageSms, load: () => import('./vonage-sms/server') },
   { manifest: telnyxSms, load: () => import('./telnyx-sms/server') },
@@ -127,7 +129,8 @@ function forThisInstall(manifest: ConnectorManifest): ConnectorManifest {
 /**
  * A key the server holds for every workshop, for a service Torqvoice pays
  * for on their behalf. While its variable is set the workshop's own key is
- * optional: left empty, the server's is used.
+ * optional: left empty, the server's is used. A field marked
+ * `hiddenWhenServerKey` goes altogether, so the server's key is the only one.
  */
 export function withServerKeys(
   manifest: ConnectorManifest,
@@ -141,15 +144,50 @@ export function withServerKeys(
     ...manifest,
     auth: {
       ...manifest.auth,
-      fields: manifest.auth.fields.map((f) =>
-        held(f) ? { ...f, required: false, help: f.serverKeyHelp ?? f.help } : f
-      ),
+      fields: manifest.auth.fields
+        .filter((f) => !(held(f) && f.hiddenWhenServerKey))
+        .map((f) => (held(f) ? { ...f, required: false, help: f.serverKeyHelp ?? f.help } : f)),
     },
   }
 }
 
-const ENTRIES: readonly RegistryEntry[] = ALL_ENTRIES.filter(
-  (e) => !(IS_CLOUD && e.manifest.selfHostedOnly)
+/**
+ * Cloud-only connectors a developer may try on a self-hosted dev machine,
+ * without minting a cloud token and putting the whole app in cloud mode:
+ * `TORQVOICE_DEV_CLOUD_CONNECTORS=torqvoice-codes` (ids, comma separated).
+ * Only `next dev` sets NODE_ENV to "development"; a production build never
+ * does, so the list is ignored there whatever the environment says.
+ */
+export function devCloudConnectors(
+  env: Record<string, string | undefined> = process.env
+): ReadonlySet<string> {
+  if (env.NODE_ENV !== 'development') return new Set()
+  return new Set(
+    (env.TORQVOICE_DEV_CLOUD_CONNECTORS ?? '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean)
+  )
+}
+
+/**
+ * Whether a connector exists on this install at all: a self-hosted-only one
+ * not on the cloud instance, a cloud-only one not on a self-hosted install
+ * (unless a developer listed it, see devCloudConnectors).
+ */
+export function availableOnThisInstall(
+  manifest: ConnectorManifest,
+  cloud: boolean,
+  devAllowed: ReadonlySet<string> = new Set()
+): boolean {
+  if (cloud) return !manifest.selfHostedOnly
+  return !manifest.cloudOnly || devAllowed.has(manifest.id)
+}
+
+const DEV_CLOUD_CONNECTORS = devCloudConnectors()
+
+const ENTRIES: readonly RegistryEntry[] = ALL_ENTRIES.filter((e) =>
+  availableOnThisInstall(e.manifest, IS_CLOUD, DEV_CLOUD_CONNECTORS)
 ).map((e) => ({ ...e, manifest: withServerKeys(forThisInstall(e.manifest)) }))
 
 const BY_ID = new Map(ENTRIES.map((e) => [e.manifest.id, e]))
@@ -160,6 +198,21 @@ export function listManifests(): ConnectorManifest[] {
 
 export function getManifest(id: string): ConnectorManifest | null {
   return BY_ID.get(id)?.manifest ?? null
+}
+
+/**
+ * The cloud-only connectors a self-hosted install's catalog shows as cards
+ * that say where they are offered, with nothing behind them. They stay out
+ * of the registry itself, so no settings page, action or job can reach one.
+ */
+export function cloudOnlyElsewhere(
+  cloud: boolean = IS_CLOUD,
+  present: (id: string) => boolean = (id) => BY_ID.has(id)
+): ConnectorManifest[] {
+  if (cloud) return []
+  return ALL_ENTRIES.filter((e) => e.manifest.cloudOnly && !present(e.manifest.id)).map(
+    (e) => e.manifest
+  )
 }
 
 export async function getConnector(id: string): Promise<ConnectorServer> {

@@ -47,6 +47,12 @@ import {
   splitByRanges,
 } from '@/features/search/Lib/matcher'
 import { pushRecent, readRecent, type RecentPick } from '@/features/search/Lib/recent'
+import { searchFaultCodes } from '@/features/fault-codes/Actions/searchFaultCodes'
+import {
+  isManufacturerCode,
+  looksLikeFaultCode,
+  normalizeFaultCode,
+} from '@/features/fault-codes/Lib/codes'
 
 type Vehicle = {
   id: string
@@ -114,6 +120,24 @@ interface SearchResult {
     vehicle: Vehicle | null
   }[]
 }
+
+/** The palette's fault code groups, asked for on their own beside the normal search. */
+interface FaultCodeResult {
+  query: string
+  /** The code service answered. */
+  available: boolean
+  codes: { code: string; title: string }[]
+  jobs: {
+    findingId: string
+    serviceRecordId: string | null
+    title: string | null
+    vehicleId: string
+    vehicle: string
+    licensePlate: string | null
+  }[]
+}
+
+const NO_FAULT_CODES: FaultCodeResult = { query: '', available: false, codes: [], jobs: [] }
 
 const EMPTY: SearchResult = {
   vehicles: [],
@@ -299,6 +323,7 @@ export function SearchCommand({
   supportEnabled,
   isMarine,
   connectors = [],
+  faultCodesEnabled,
 }: SearchCommandProps) {
   const router = useRouter()
   const t = useTranslations('search')
@@ -307,6 +332,8 @@ export function SearchCommand({
   const tIntegrations = useTranslations('integrations')
   const tTire = useTranslations('tireHotel')
   const tPlate = useTranslations('vehicles.plateLookup')
+  const tFault = useTranslations('faultCodes.search')
+  const tCodes = useTranslations('faultCodes')
   const typeKeyEnabled = useTypeKeyEnabled()
   const plateLookup = usePlateLookupAccess()
 
@@ -318,11 +345,21 @@ export function SearchCommand({
   const [recent, setRecent] = useState<RecentPick[]>([])
   const cacheRef = useRef(new Map<string, SearchResult>())
   const seqRef = useRef(0)
+  const [faultResults, setFaultResults] = useState<FaultCodeResult>(NO_FAULT_CODES)
+  const faultCacheRef = useRef(new Map<string, FaultCodeResult>())
+  const faultSeqRef = useRef(0)
 
   const canSettings = !visibleSubjects || visibleSubjects.includes('settings')
   const ctx: CommandContext = useMemo(
-    () => ({ visibleSubjects, features, tireHotelEnabled, aiEnabled, isAdminOrOwner }),
-    [visibleSubjects, features, tireHotelEnabled, aiEnabled, isAdminOrOwner]
+    () => ({
+      visibleSubjects,
+      features,
+      tireHotelEnabled,
+      aiEnabled,
+      isAdminOrOwner,
+      faultCodesEnabled,
+    }),
+    [visibleSubjects, features, tireHotelEnabled, aiEnabled, isAdminOrOwner, faultCodesEnabled]
   )
 
   const settingsItems = useSettingsSearchItems({ isCloud, supportEnabled, features })
@@ -477,6 +514,7 @@ export function SearchCommand({
   useEffect(() => {
     if (!open) return
     cacheRef.current.clear()
+    faultCacheRef.current.clear()
     // eslint-disable-next-line react-hooks/set-state-in-effect -- reading the store on open is the point
     setRecent(readRecent())
     let cancelled = false
@@ -517,6 +555,42 @@ export function SearchCommand({
           setResults(res.data)
         }
         setLoading(false)
+      })
+    }, REMOTE_DEBOUNCE_MS)
+    return () => clearTimeout(timer)
+  }, [query])
+
+  // Fault codes, asked for on their own so the code service can never hold
+  // up vehicles, customers or jobs. Only a query that looks like a code goes
+  // out; the jobs where a whole code was read come back with or without the
+  // service, since they are the workshop's own.
+  useEffect(() => {
+    const term = query.trim()
+    if (!looksLikeFaultCode(term)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing results on a query that is not a code is intentional
+      setFaultResults(NO_FAULT_CODES)
+      return
+    }
+    const key = term.toUpperCase()
+    const cached = faultCacheRef.current.get(key)
+    if (cached) {
+      setFaultResults(cached)
+      return
+    }
+    const seq = ++faultSeqRef.current
+    const timer = setTimeout(() => {
+      searchFaultCodes(term).then((res) => {
+        if (seq !== faultSeqRef.current) return
+        if (res.success && res.data) {
+          const next = {
+            query: key,
+            available: res.data.available,
+            codes: res.data.codes,
+            jobs: res.data.jobs,
+          }
+          faultCacheRef.current.set(key, next)
+          setFaultResults(next)
+        }
       })
     }, REMOTE_DEBOUNCE_MS)
     return () => clearTimeout(timer)
@@ -565,9 +639,30 @@ export function SearchCommand({
     results.reminders.length > 0 ||
     results.inspections.length > 0 ||
     results.tireSets.length > 0
-  const showWeak = !hasRecords && strongGroups.length === 0
+  // The palette's fault code rows: the service's codes for what was typed, and
+  // the whole code itself when the service has nothing for it, so Enter still
+  // opens its page.
+  const faultQuery = query.trim().toUpperCase()
+  const faultCurrent = faultResults.query === faultQuery ? faultResults : NO_FAULT_CODES
+  const typedCode = normalizeFaultCode(faultQuery)
+  const faultCodeRows = faultCodesEnabled
+    ? typedCode && !faultCurrent.codes.some((c) => c.code === typedCode)
+      ? [{ code: typedCode, title: '' }, ...faultCurrent.codes]
+      : faultCurrent.codes
+    : []
+  const faultJobs = faultCurrent.jobs
+  const searchFaultWords =
+    faultCodesEnabled && !looksLikeFaultCode(query) && query.trim().length >= 3
+  const hasFaultRows = faultCodeRows.length > 0 || faultJobs.length > 0
+
+  const showWeak = !hasRecords && !hasFaultRows && strongGroups.length === 0
   const nothing =
-    hasQuery && !loading && !hasRecords && strongGroups.length === 0 && weakGroups.length === 0
+    hasQuery &&
+    !loading &&
+    !hasRecords &&
+    !hasFaultRows &&
+    strongGroups.length === 0 &&
+    weakGroups.length === 0
 
   const groupHeading = (kind: LocalItem['kind']) => {
     switch (kind) {
@@ -727,6 +822,59 @@ export function SearchCommand({
                   subtitle={item.subtitle}
                 />
               ))}
+          </CommandGroup>
+        )}
+
+        {hasQuery && faultCodeRows.length > 0 && (
+          <CommandGroup heading={tFault('group')}>
+            {faultCodeRows.map((c) => (
+              <Row
+                key={c.code}
+                value={`fault-code:${c.code}`}
+                onSelect={() => pickRecord(`/fault-codes/${c.code}`, c.code, c.title || undefined)}
+                icon={ScanLine}
+                title={
+                  <>
+                    <span className="mr-2 font-mono font-semibold">{c.code}</span>
+                    {c.title}
+                  </>
+                }
+                subtitle={
+                  // A whole code the service has no meaning for: say why, when we know.
+                  c.title
+                    ? undefined
+                    : isManufacturerCode(c.code)
+                      ? tCodes('manufacturerUnknown')
+                      : faultCurrent.available && faultCurrent.query === c.code
+                        ? tCodes('noMeaning')
+                        : undefined
+                }
+              />
+            ))}
+          </CommandGroup>
+        )}
+        {hasQuery && faultJobs.length > 0 && (
+          <CommandGroup heading={tFault('jobsWith', { code: faultCurrent.query })}>
+            {faultJobs.map((job) => {
+              const href = job.serviceRecordId
+                ? `/vehicles/${job.vehicleId}/service/${job.serviceRecordId}`
+                : `/vehicles/${job.vehicleId}`
+              const title = job.title ?? job.vehicle
+              const subtitle = [job.title ? job.vehicle : null, job.licensePlate]
+                .filter(Boolean)
+                .join(' · ')
+              return (
+                <Row
+                  key={job.findingId}
+                  value={`fault-job:${job.findingId}`}
+                  onSelect={() => pickRecord(href, title, subtitle || undefined)}
+                  icon={Wrench}
+                  title={title}
+                  subtitle={subtitle}
+                  trailing={job.licensePlate}
+                />
+              )
+            })}
           </CommandGroup>
         )}
 
@@ -912,6 +1060,22 @@ export function SearchCommand({
         )}
 
         {hasQuery && showWeak && renderLocalGroups(weakGroups)}
+
+        {searchFaultWords && (
+          <CommandGroup heading={tFault('group')}>
+            <Row
+              value="fault-code-words"
+              onSelect={() =>
+                pickRecord(
+                  `/fault-codes?q=${encodeURIComponent(query.trim())}`,
+                  tFault('searchFor', { query: query.trim() })
+                )
+              }
+              icon={ScanLine}
+              title={tFault('searchFor', { query: query.trim() })}
+            />
+          </CommandGroup>
+        )}
       </CommandList>
 
       <div className="flex items-center justify-between gap-4 border-t px-3 py-2 text-[11px] text-muted-foreground">

@@ -167,9 +167,29 @@ model VehicleFinding {
   concernId String?
   concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
 
+  /// A diagnostic trouble code, when the finding is one: normalised and
+  /// upper case, such as P0420 (`^[PCBU][0-3][0-9A-F]{3}$`).
+  faultCode          String?
+  /// stored, pending, permanent or history, when the scan tool said.
+  faultStatus        String?
+  /// The control unit the code was read from ("Engine", "ABS"), when known.
+  faultModule        String?
+  /// The meaning as it was when the code was added, in the workshop's
+  /// language. Kept on the finding so prints, history and search never wait
+  /// on the code service and survive a disconnect.
+  faultMeaning       String?
+  /// Where that meaning came from: generic, manufacturer or report.
+  faultMeaningSource String?
+  /// The diagnostic report the code was read from. SetNull: the finding is
+  /// a fact about the vehicle and outlives the file.
+  sourceAttachmentId String?
+  sourceAttachment   ServiceAttachment? @relation(fields: [sourceAttachmentId], references: [id], onDelete: SetNull)
+
   @@index([vehicleId])
   @@index([serviceRecordId])
   @@index([concernId])
+  @@index([vehicleId, faultCode])
+  @@index([sourceAttachmentId])
   @@map("vehicle_findings")
 }
 

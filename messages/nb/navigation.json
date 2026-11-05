@@ -65,7 +65,9 @@
     "tireSetDetails": "Dekksett",
     "tireForecast": "Neste sesong",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "EU-kontroll-påminnelser"
+    "inspectionReminders": "EU-kontroll-påminnelser",
+    "faultCodes": "Feilkoder",
+    "faultCode": "Feilkode"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} åpne arbeidsordrer",
       "inspections": "{count} pågående inspeksjoner",
       "reminders": "{count} forfalte påminnelser"
-    }
+    },
+    "faultCodes": "Feilkoder"
   }
 }

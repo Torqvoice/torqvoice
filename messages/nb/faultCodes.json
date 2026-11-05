@@ -1,0 +1,249 @@
+{
+  "title": "Feilkoder",
+  "notAvailable": "Ikke tilgjengelig akkurat nå",
+  "noMeaning": "Ikke i kodelisten vår ennå",
+  "manufacturerUnknown": "Produsentspesifikk kode: betydningen avhenger av merket.",
+  "chip": {
+    "open": "Åpne {code}"
+  },
+  "source": {
+    "generic": "Generell",
+    "manufacturer": "Produsent",
+    "report": "Fra skannerrapporten",
+    "machineTranslated": "Maskinoversatt"
+  },
+  "status": {
+    "stored": "Lagret",
+    "pending": "Ventende",
+    "permanent": "Permanent",
+    "history": "Historikk"
+  },
+  "flags": {
+    "warningLight": "Varsellampe",
+    "emissions": "Utslipp",
+    "driveCycle": "Krever kjøresyklus",
+    "limpMode": "Nødmodus"
+  },
+  "sections": {
+    "how_it_works": "Slik virker det",
+    "meaning": "Hva koden betyr",
+    "causes": "Vanlige årsaker",
+    "manufacturer": "Fra produsentene",
+    "related": "Sammen med andre koder",
+    "diagnosis": "Diagnosetips",
+    "other": "Greit å vite"
+  },
+  "detail": {
+    "whatItMeans": "Hva den betyr",
+    "likelyCauses": "Sannsynlige årsaker",
+    "relatedCodes": "Relaterte koder",
+    "inYourWorkshop": "I ditt verksted",
+    "noJobs": "Ikke lest ut på noen jobb i verkstedet ditt ennå.",
+    "resolved": "Løst",
+    "notConnected": "Koble til Torqvoice Codes for å se hva kodene betyr.",
+    "connect": "Koble til",
+    "serviceDown": "Betydningen er ikke tilgjengelig akkurat nå. Jobbene dine står under.",
+    "pendingCheck": "Bare tittelen vises til teksten er sjekket.",
+    "showMore": "Vis mer",
+    "showLess": "Vis mindre",
+    "likelihood": {
+      "high": "Høy",
+      "medium": "Middels",
+      "low": "Lav"
+    },
+    "mostLikelyFirst": "Mest sannsynlig først"
+  },
+  "report": {
+    "button": "Meld fra om feil",
+    "title": "Hva er galt med betydningen av {code}?",
+    "reasons": {
+      "wrong_for_vehicle": "Feil for denne bilen",
+      "wrong_for_vehicleMarine": "Feil for dette fartøyet",
+      "text_mismatch": "Teksten passer ikke til koden",
+      "wrong_position": "Feil side eller posisjon",
+      "bad_translation": "Dårlig oversettelse",
+      "other": "Annet"
+    },
+    "note": "Notat (valgfritt)",
+    "notePlaceholder": "Hva du fant",
+    "send": "Send",
+    "thanks": "Takk, vi sjekker det",
+    "failed": "Meldingen kunne ikke sendes akkurat nå. Prøv igjen om litt.",
+    "reportedByYou": "Meldt av deg",
+    "outcome": {
+      "fixed": "Oppdatert etter meldingen din",
+      "no_change": "Sjekket, ingen endring",
+      "duplicate": "Allerede meldt"
+    }
+  },
+  "share": {
+    "title": "Del løsningen din",
+    "description": "Fortell andre verksteder hva som løste {code}. En person hos Torqvoice sjekker hver løsning før andre ser den.",
+    "yourFixes": "Dine løsninger for {code}",
+    "whatFixedIt": "Hva løste det",
+    "placeholder": "Gnagd ledning ved pluggen til den bakre lambdasonden bak girkassen. Reparert, koden forsvant etter prøvekjøring.",
+    "placeholderMarine": "Korroderte pinner i pluggen til trimsensoren. Rengjort og tettet, koden forsvant etter en prøvetur på sjøen.",
+    "photos": "Bilder (valgfritt)",
+    "photosHint": "Opptil {max} bilder. Hold ansikter, skilt og kundeopplysninger utenfor bildet.",
+    "photosHintMarine": "Opptil {max} bilder. Hold ansikter, registreringsnumre og kundeopplysninger utenfor bildet.",
+    "addPhotos": "Legg til bilder",
+    "removePhoto": "Fjern bilde {n}",
+    "tooManyPhotos": "Høyst {max} bilder",
+    "notAPhoto": "{name} er ikke et bilde",
+    "photoTooBig": "{name} er større enn 15 MB",
+    "vehicle": "Kjøretøy",
+    "vehicleMarine": "Fartøy",
+    "vehicleOptional": "Kjøretøy (valgfritt)",
+    "vehicleOptionalMarine": "Fartøy (valgfritt)",
+    "make": "Merke",
+    "model": "Modell",
+    "year": "År",
+    "vehicleHint": "Bare merke, modell, år og motor deles, aldri skiltnummer, VIN, kunde eller navnet på verkstedet ditt.",
+    "vehicleHintMarine": "Bare merke, modell, år og motor deles, aldri registreringsnummer, skrognummer, kunde eller navnet på verkstedet ditt.",
+    "send": "Del løsning",
+    "sent": "Takk. Løsningen din venter på gjennomgang.",
+    "shareAnother": "Del en løsning til",
+    "cancel": "Avbryt",
+    "sentOn": "Sendt {date}",
+    "reason": "Grunn: {reason}",
+    "withdraw": "Trekk tilbake",
+    "withdrawTitle": "Trekke tilbake denne løsningen?",
+    "withdrawConfirm": "Den slettes med bildene, og ingen andre verksteder får se den.",
+    "withdrawn": "Løsningen er trukket tilbake",
+    "withdrawFailed": "Løsningen kunne ikke trekkes tilbake akkurat nå. Prøv igjen om litt.",
+    "unavailable": "Deling av løsninger er ikke tilgjengelig akkurat nå.",
+    "status": {
+      "pending": "Venter på gjennomgang",
+      "published": "Publisert",
+      "rejected": "Ikke publisert"
+    },
+    "errors": {
+      "failed": "Løsningen din kunne ikke sendes akkurat nå. Prøv igjen om litt.",
+      "photo": "Ett av bildene kunne ikke leses. Prøv et annet.",
+      "too_large": "Bildene er for store. Prøv færre eller mindre bilder.",
+      "paused": "Deling av løsninger er satt på pause akkurat nå. Prøv igjen senere.",
+      "demo": "Deling av løsninger er slått av i demoen."
+    },
+    "invite": "Fikset {code}? Fortell andre verksteder hva som virket.",
+    "inviteHint": "Med dine egne ord, gjerne med noen bilder. En person hos Torqvoice sjekker hver løsning før andre verksteder ser den.",
+    "start": "Del løsningen din",
+    "dialogTitle": "Del løsningen din for {code}",
+    "dialogDescription": "Andre verksteder ser den når en person hos Torqvoice har sjekket den.",
+    "characters": "{count} / {max}",
+    "writingHint": "Hva som var galt, hvordan du fant det og hva som løste det. Delenumre og måleverdier hjelper andre mest.",
+    "dropHere": "eller slipp dem her",
+    "tooManyPhotosRemove": "En løsning kan ha maks {max} bilder. Fjern noen for å dele den.",
+    "phone": {
+      "button": "Legg til fra mobil",
+      "hide": "Skjul mobilkoden",
+      "title": "Ta bilder med mobilen",
+      "body": "Skann koden med mobilkameraet. Bildene du tar dukker opp her etter hvert som de kommer.",
+      "failed": "Mobilkoden kunne ikke lages. Lukk dette og prøv igjen.",
+      "expires": "Koden virker til {time}",
+      "copy": "Kopier lenke",
+      "copied": "Kopiert",
+      "received": "{count, plural, one {# bilde} other {# bilder}} fra mobilen",
+      "badge": "Mobil"
+    }
+  },
+  "fixes": {
+    "title": "Løsninger fra andre verksteder",
+    "empty": "Ingen andre verksteder har delt en løsning for {code} ennå.",
+    "unavailable": "Løsninger fra andre verksteder er ikke tilgjengelige akkurat nå.",
+    "sharedOn": "Delt {date}",
+    "unknownVehicle": "Kjøretøy ikke oppgitt",
+    "unknownVehicleMarine": "Fartøy ikke oppgitt",
+    "writtenIn": "Skrevet på {language}",
+    "photo": "Bilde {n} av {count}",
+    "openPhoto": "Åpne bilde {n}"
+  },
+  "sheet": {
+    "description": "Betydningen, sannsynlige årsaker og verkstedets jobber med denne koden.",
+    "loadFailed": "Kunne ikke åpne denne koden.",
+    "loading": "Laster…",
+    "openPage": "Åpne kodesiden"
+  },
+  "entry": {
+    "button": "Legg til feilkoder",
+    "title": "Legg til feilkoder",
+    "description": "Skriv eller lim inn koder fra skanneren. Hver kode blir en observasjon på denne jobben, med betydningen lagret.",
+    "placeholder": "P0420, P0171",
+    "empty": "Koder du skriver eller limer inn, vises her.",
+    "found": "Koder funnet",
+    "remove": "Fjern {code}",
+    "concern": "Svarer på punkt",
+    "concernNone": "Ingen punkt",
+    "cancel": "Avbryt",
+    "add": "{count, plural, =0 {Legg til koder} one {Legg til # kode} other {Legg til # koder}}",
+    "added": "{count, plural, one {# feilkode lagt til} other {# feilkoder lagt til}}",
+    "skipped": "{count, plural, one {# kode var allerede på denne jobben} other {# koder var allerede på denne jobben}}",
+    "failed": "Kunne ikke legge til kodene"
+  },
+  "finding": {
+    "seenBefore": "Sett {date}",
+    "seenBeforeTitle": "Lest ut på denne bilen før, sist {date}",
+    "seenBeforeTitleMarine": "Lest ut på dette fartøyet før, sist {date}",
+    "updatedMeaning": "Ny betydning",
+    "updatedMeaningTitle": "Betydningen er nå: {meaning}. Trykk for å bruke den.",
+    "taken": "Betydningen er oppdatert",
+    "takeFailed": "Kunne ikke oppdatere betydningen",
+    "noMeaningSaved": "Ingen betydning lagret ennå"
+  },
+  "page": {
+    "title": "Feilkoder",
+    "intro": "Slå opp en kode, eller søk i betydningene etter ord som mager bank 1.",
+    "lookupLabel": "Kode eller ord",
+    "lookupPlaceholder": "P0420 eller mager bank 1",
+    "lookup": "Slå opp",
+    "cloudOnly": "Betydningene av feilkodene kommer fra Torqvoice Codes, som er en del av Torqvoice Cloud. Koder verkstedet ditt har lest ut, står her uansett.",
+    "results": "Koder som passer til «{query}»",
+    "noResults": "Ingen kode passer til «{query}»",
+    "recent": "Lest ut nylig i verkstedet ditt",
+    "noRecent": "Ingen feilkoder på noen jobb ennå.",
+    "readTimes": "{count, plural, one {Lest ut én gang, {date}} other {Lest ut # ganger, sist {date}}}",
+    "notACode": "«{text}» er ikke en feilkode",
+    "notACodeHint": "En feilkode er en bokstav og fire tegn, som P0420 eller U0100.",
+    "recentLookups": "Dine siste oppslag",
+    "recentLookupsEmpty": "Koder du åpner og ord du søker etter vises her, på denne enheten.",
+    "clearRecent": "Tøm",
+    "tryExamples": "Prøv",
+    "exampleWords": "mager bank 1",
+    "searching": "Søker"
+  },
+  "search": {
+    "group": "Feilkoder",
+    "jobsWith": "Jobber med {code}",
+    "searchFor": "Søk i feilkoder etter «{query}»"
+  },
+  "notice": {
+    "title": "Feilkoder er nytt",
+    "body": "Vi legger til koder hele tiden, så ikke alle koder er her ennå. Foreløpig dekker det standard OBD-II-koder; produsentspesifikke koder er ikke med ennå."
+  },
+  "support": {
+    "button": "Kontakt support",
+    "subject": "Feilkode {code}",
+    "subjectGeneral": "Feilkoder",
+    "message": "Feilkode {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Drivverk",
+    "B": "Karosseri",
+    "C": "Understell",
+    "U": "Nettverk"
+  },
+  "phone": {
+    "title": "Bilder til en løsning",
+    "forCode": "til løsningen du skriver på datamaskinen",
+    "intro": "Ta eller velg opptil {max} bilder av det som løste koden. De dukker opp i løsningen på datamaskinen.",
+    "take": "Ta bilde",
+    "choose": "Velg bilder",
+    "added": "{count} av {max} bilder lagt til",
+    "full": "En løsning kan ha maks {max} bilder.",
+    "notAPhoto": "Den filen er ikke et bilde.",
+    "failed": "Bildet kunne ikke legges til. Prøv igjen.",
+    "done": "Når du er ferdig, gå tilbake til datamaskinen og del løsningen.",
+    "privacy": "Hold ansikter, skilt og kundeopplysninger utenfor bildet.",
+    "expired": "Denne koden har gått ut. Vis en ny på datamaskinen.",
+    "invalid": "Denne koden virker ikke. Vis en ny på datamaskinen."
+  }
+}

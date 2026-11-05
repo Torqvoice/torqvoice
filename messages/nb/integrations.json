@@ -13,6 +13,8 @@
     "availableTitle": "Tilgjengelig",
     "availableDescription": "Tjenester du kan legge til. Hver settes opp én gang og kjører i bakgrunnen.",
     "allConnected": "Alle tilgjengelige tjenester er tilkoblet.",
+    "cloudOnly": "Kun i skyen",
+    "cloudOnlyHint": "Tilgjengelig i Torqvoice Cloud",
     "searchPlaceholder": "Søk i integrasjoner",
     "noMatches": "Ingenting passer med «{query}».",
     "readMore": "Les mer",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Normtider på arbeidsordrer og tilbud",
       "fluids": "Væsketyper og mengder"
+    },
+    "diagnostics": {
+      "codes": "Betydning av feilkoder"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Behold månedlige sikkerhetskopier",
         "keepMonthlyHelp": "Eldre sikkerhetskopier fjernes etter hver kjøring, og de nyeste av hver type beholdes. Sett et tall til 0 for ikke å beholde noen av den typen."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Se hva en feilkode betyr på kjøretøyet foran deg, på ditt eget språk: betydningen, sannsynlige årsaker og relaterte koder. Skriv eller lim inn koder på en arbeidsordre, så blir de observasjoner med betydningen lagret, slik at utskrifter og historikk aldri venter på en tilkobling. Driftes av Torqvoice og inkludert i alle skyabonnementer. Et oppslag sender bare merke, modell, år og motor, aldri VIN, registreringsnummer eller kunde.",
+      "fields": {
+        "apiToken": "Tilgangsnøkkel",
+        "apiTokenHelp": "Nøkkelen Torqvoice ga deg for kodetjenesten."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

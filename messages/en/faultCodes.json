@@ -1,0 +1,249 @@
+{
+  "title": "Fault codes",
+  "notAvailable": "Not available right now",
+  "noMeaning": "Not in our code list yet",
+  "manufacturerUnknown": "Manufacturer-specific code: the meaning depends on the make.",
+  "chip": {
+    "open": "Open {code}"
+  },
+  "source": {
+    "generic": "Generic",
+    "manufacturer": "Manufacturer",
+    "report": "From the scan report",
+    "machineTranslated": "Machine translated"
+  },
+  "status": {
+    "stored": "Stored",
+    "pending": "Pending",
+    "permanent": "Permanent",
+    "history": "History"
+  },
+  "flags": {
+    "warningLight": "Warning light",
+    "emissions": "Emissions",
+    "driveCycle": "Needs a drive cycle",
+    "limpMode": "Limp mode"
+  },
+  "sections": {
+    "how_it_works": "How it works",
+    "meaning": "What the code means",
+    "causes": "Typical causes",
+    "manufacturer": "Manufacturer details",
+    "related": "Together with other codes",
+    "diagnosis": "Diagnosis tip",
+    "other": "Good to know"
+  },
+  "detail": {
+    "whatItMeans": "What it means",
+    "likelyCauses": "Likely causes",
+    "relatedCodes": "Related codes",
+    "inYourWorkshop": "In your workshop",
+    "noJobs": "Not read on any job in your workshop yet.",
+    "resolved": "Resolved",
+    "notConnected": "Connect Torqvoice Codes to see what codes mean.",
+    "connect": "Connect",
+    "serviceDown": "The meaning is not available right now. Your jobs are below.",
+    "pendingCheck": "Only the title is shown until the text has been checked.",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "likelihood": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "mostLikelyFirst": "Most likely first"
+  },
+  "report": {
+    "button": "Report a problem",
+    "title": "What is wrong with the meaning of {code}?",
+    "reasons": {
+      "wrong_for_vehicle": "Wrong for this car",
+      "wrong_for_vehicleMarine": "Wrong for this vessel",
+      "text_mismatch": "Text doesn't match the code",
+      "wrong_position": "Wrong side or position",
+      "bad_translation": "Bad translation",
+      "other": "Other"
+    },
+    "note": "Note (optional)",
+    "notePlaceholder": "What you found",
+    "send": "Send",
+    "thanks": "Thanks, we'll check it",
+    "failed": "The report could not be sent right now. Try again in a moment.",
+    "reportedByYou": "Reported by you",
+    "outcome": {
+      "fixed": "Updated after your report",
+      "no_change": "Checked, no change",
+      "duplicate": "Already reported"
+    }
+  },
+  "share": {
+    "title": "Share your fix",
+    "description": "Tell other workshops what fixed {code}. A person at Torqvoice checks every fix before others see it.",
+    "yourFixes": "Your fixes for {code}",
+    "whatFixedIt": "What fixed it",
+    "placeholder": "Chafed wire at the rear O2 sensor plug behind the gearbox. Repaired it, code cleared after a test drive.",
+    "placeholderMarine": "Corroded pins in the trim sensor plug. Cleaned and sealed them, code cleared after a sea trial.",
+    "photos": "Photos (optional)",
+    "photosHint": "Up to {max} photos. Keep faces, number plates and customer details out of the picture.",
+    "photosHintMarine": "Up to {max} photos. Keep faces, registration numbers and customer details out of the picture.",
+    "addPhotos": "Add photos",
+    "removePhoto": "Remove photo {n}",
+    "tooManyPhotos": "At most {max} photos",
+    "notAPhoto": "{name} is not a photo",
+    "photoTooBig": "{name} is larger than 15 MB",
+    "vehicle": "Vehicle",
+    "vehicleMarine": "Vessel",
+    "vehicleOptional": "Vehicle (optional)",
+    "vehicleOptionalMarine": "Vessel (optional)",
+    "make": "Make",
+    "model": "Model",
+    "year": "Year",
+    "vehicleHint": "Only make, model, year and engine are shared, never the plate, VIN, customer or your workshop's name.",
+    "vehicleHintMarine": "Only make, model, year and engine are shared, never the registration, hull number, customer or your workshop's name.",
+    "send": "Share fix",
+    "sent": "Thanks. Your fix is waiting for review.",
+    "shareAnother": "Share another fix",
+    "cancel": "Cancel",
+    "sentOn": "Sent {date}",
+    "reason": "Reason: {reason}",
+    "withdraw": "Withdraw",
+    "withdrawTitle": "Withdraw this fix?",
+    "withdrawConfirm": "It is deleted with its photos, and no other workshop will see it.",
+    "withdrawn": "Fix withdrawn",
+    "withdrawFailed": "The fix could not be withdrawn right now. Try again in a moment.",
+    "unavailable": "Sharing fixes is not available right now.",
+    "status": {
+      "pending": "Waiting for review",
+      "published": "Published",
+      "rejected": "Not published"
+    },
+    "errors": {
+      "failed": "Your fix could not be sent right now. Try again in a moment.",
+      "photo": "One of the photos could not be read. Try another one.",
+      "too_large": "The photos are too large. Try fewer or smaller photos.",
+      "paused": "Sharing fixes is paused right now. Try again later.",
+      "demo": "Sharing fixes is turned off on the demo."
+    },
+    "invite": "Fixed {code}? Tell other workshops what worked.",
+    "inviteHint": "In your own words, with a few photos if you have them. A person at Torqvoice checks every fix before other workshops see it.",
+    "start": "Share your fix",
+    "dialogTitle": "Share your fix for {code}",
+    "dialogDescription": "Other workshops see it once a person at Torqvoice has checked it.",
+    "characters": "{count} / {max}",
+    "writingHint": "What was wrong, how you found it and what fixed it. Part numbers and readings help others most.",
+    "dropHere": "or drop them here",
+    "tooManyPhotosRemove": "A fix can have at most {max} photos. Remove some to share it.",
+    "phone": {
+      "button": "Add from phone",
+      "hide": "Hide phone code",
+      "title": "Take photos with your phone",
+      "body": "Scan the code with your phone's camera. The photos you take show up here as they arrive.",
+      "failed": "The phone code could not be made. Close this and try again.",
+      "expires": "The code works until {time}",
+      "copy": "Copy link",
+      "copied": "Copied",
+      "received": "{count, plural, one {# photo} other {# photos}} from your phone",
+      "badge": "Phone"
+    }
+  },
+  "fixes": {
+    "title": "Fixes from other workshops",
+    "empty": "No other workshop has shared a fix for {code} yet.",
+    "unavailable": "Fixes from other workshops are not available right now.",
+    "sharedOn": "Shared {date}",
+    "unknownVehicle": "Vehicle not given",
+    "unknownVehicleMarine": "Vessel not given",
+    "writtenIn": "Written in {language}",
+    "photo": "Photo {n} of {count}",
+    "openPhoto": "Open photo {n}"
+  },
+  "sheet": {
+    "description": "The meaning, likely causes and the jobs in your workshop with this code.",
+    "loadFailed": "Could not open this code.",
+    "loading": "Loading…",
+    "openPage": "Open the code page"
+  },
+  "entry": {
+    "button": "Add fault codes",
+    "title": "Add fault codes",
+    "description": "Type or paste codes from the scan tool. Each one becomes an observation on this job, with its meaning saved.",
+    "placeholder": "P0420, P0171 stored",
+    "empty": "Codes you type or paste show up here.",
+    "found": "Codes found",
+    "remove": "Remove {code}",
+    "concern": "Answers concern",
+    "concernNone": "No concern",
+    "cancel": "Cancel",
+    "add": "{count, plural, =0 {Add codes} one {Add # code} other {Add # codes}}",
+    "added": "{count, plural, one {# fault code added} other {# fault codes added}}",
+    "skipped": "{count, plural, one {# code was already on this job} other {# codes were already on this job}}",
+    "failed": "Could not add the codes"
+  },
+  "finding": {
+    "seenBefore": "Seen {date}",
+    "seenBeforeTitle": "Read on this vehicle before, last on {date}",
+    "seenBeforeTitleMarine": "Read on this vessel before, last on {date}",
+    "updatedMeaning": "Updated meaning",
+    "updatedMeaningTitle": "The meaning now reads: {meaning}. Tap to use it.",
+    "taken": "Meaning updated",
+    "takeFailed": "Could not update the meaning",
+    "noMeaningSaved": "No meaning saved yet"
+  },
+  "page": {
+    "title": "Fault codes",
+    "intro": "Look up a code, or search the meanings for words such as lean bank 1.",
+    "lookupLabel": "Code or words",
+    "lookupPlaceholder": "P0420 or lean bank 1",
+    "lookup": "Look up",
+    "cloudOnly": "Meanings for fault codes come from Torqvoice Codes, which is part of Torqvoice Cloud. Codes your workshop has read are listed here either way.",
+    "results": "Codes matching “{query}”",
+    "noResults": "No code matches “{query}”",
+    "recent": "Read lately in your workshop",
+    "noRecent": "No fault codes on any job yet.",
+    "readTimes": "{count, plural, one {Read once, {date}} other {Read # times, last {date}}}",
+    "notACode": "“{text}” is not a fault code",
+    "notACodeHint": "A fault code is a letter and four characters, such as P0420 or U0100.",
+    "recentLookups": "Your recent lookups",
+    "recentLookupsEmpty": "Codes you open and words you search for show up here, on this device.",
+    "clearRecent": "Clear",
+    "tryExamples": "Try",
+    "exampleWords": "lean bank 1",
+    "searching": "Searching"
+  },
+  "search": {
+    "group": "Fault codes",
+    "jobsWith": "Jobs with {code}",
+    "searchFor": "Search fault codes for “{query}”"
+  },
+  "notice": {
+    "title": "Fault codes are new",
+    "body": "We are adding codes all the time, so not every code is here yet. For now this covers the standard OBD-II codes; manufacturer-specific codes are not included yet."
+  },
+  "support": {
+    "button": "Contact support",
+    "subject": "Fault code {code}",
+    "subjectGeneral": "Fault codes",
+    "message": "Fault code {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Powertrain",
+    "B": "Body",
+    "C": "Chassis",
+    "U": "Network"
+  },
+  "phone": {
+    "title": "Photos for a fix",
+    "forCode": "for the fix you are writing on the computer",
+    "intro": "Take or choose up to {max} photos of what fixed the code. They appear in the fix on the computer.",
+    "take": "Take photo",
+    "choose": "Choose photos",
+    "added": "{count} of {max} photos added",
+    "full": "A fix can have at most {max} photos.",
+    "notAPhoto": "That file is not a photo.",
+    "failed": "The photo could not be added. Try again.",
+    "done": "When you are done, go back to the computer and share the fix.",
+    "privacy": "Keep faces, number plates and customer details out of the picture.",
+    "expired": "This code has run out. Show a new one on the computer.",
+    "invalid": "This code does not work. Show a new one on the computer."
+  }
+}

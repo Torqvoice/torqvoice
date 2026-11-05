@@ -65,7 +65,9 @@
     "tireSetDetails": "Reifensatz",
     "tireForecast": "Nächste Saison",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "HU-Erinnerungen"
+    "inspectionReminders": "HU-Erinnerungen",
+    "faultCodes": "Fehlercodes",
+    "faultCode": "Fehlercode"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} offene Arbeitsaufträge",
       "inspections": "{count} laufende Inspektionen",
       "reminders": "{count} fällige Erinnerungen"
-    }
+    },
+    "faultCodes": "Fehlercodes"
   }
 }
