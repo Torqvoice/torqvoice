@@ -11,7 +11,12 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { FeatureGatedError, getFeatures, isCloudMode } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getConnector, getManifest, listManifests } from '@/integrations/registry'
+import {
+  cloudOnlyElsewhere,
+  getConnector,
+  getManifest,
+  listManifests,
+} from '@/integrations/registry'
 import { conditionMet } from '../Lib/conditions'
 import { invoicesForBackfill } from '../Lib/accounting-sync'
 import { clearPulledEvents } from '../Lib/calendar-sync'
@@ -64,6 +69,7 @@ import {
   paymentWebhook,
 } from '../Lib/payments'
 import { anyConnectorAllowed, connectorAllowed } from '../Lib/plan'
+import { autoConnectAll, markAutoConnectOptOut } from '../Lib/auto-connect'
 
 /**
  * The inbound URL for a messaging connection, from its sealed secret, or the
@@ -184,6 +190,11 @@ export interface CatalogEntry {
   featured: boolean
   /** False when the plan does not include this connector; the card says PRO and connect refuses. */
   enabled: boolean
+  /**
+   * A connector that exists on the cloud only, listed on a self-hosted
+   * install so it can be seen. Not in the registry here: no page, no connect.
+   */
+  cloudOnly: boolean
 }
 
 function manifestForClient(m: ConnectorManifest): ConnectorManifest {
@@ -215,7 +226,12 @@ export async function getIntegrationCatalog() {
       // their own. Adopting here as well as on first use means a workshop
       // that had them switched on opens this page and finds them already
       // connected.
-      await Promise.all([adoptLegacyAi(organizationId), adoptLegacyPayments(organizationId)])
+      // A service that is on for every workshop is connected here too.
+      await Promise.all([
+        adoptLegacyAi(organizationId),
+        adoptLegacyPayments(organizationId),
+        autoConnectAll(organizationId),
+      ])
       const [features, connections, countrySetting] = await Promise.all([
         getFeatures(organizationId),
         db.integrationConnection.findMany({
@@ -247,8 +263,23 @@ export async function getIntegrationCatalog() {
           featured:
             manifest.countries === 'global' ||
             (country ? manifest.countries.includes(country) : false),
+          cloudOnly: false,
         }
       })
+      // A self-hosted install sees the cloud's own services too, greyed out,
+      // so a workshop knows they exist. Nothing behind the card can be opened.
+      for (const manifest of cloudOnlyElsewhere()) {
+        entries.push({
+          manifest: manifestForClient(manifest),
+          enabled: false,
+          status: null,
+          externalAccountName: null,
+          lastError: null,
+          platformApp: false,
+          featured: false,
+          cloudOnly: true,
+        })
+      }
       return {
         entries,
         enabled: anyConnectorAllowed(features),
@@ -906,6 +937,8 @@ export async function disconnectIntegration(connectorId: string) {
       const provider = messagingProvider(connectorId)
       if (provider) await markChannelAdopted(organizationId, provider.channel, userId)
       if (isPaymentConnector(connectorId)) await markPaymentsAdopted(organizationId, userId)
+      // A service that is on for every workshop stays off once turned off.
+      await markAutoConnectOptOut(organizationId, connectorId, userId)
       // Tokens go; links and logs go with the row so nothing dangles.
       await db.integrationConnection.delete({ where: { id: row.id } })
       await clearPulledEvents(row.id)

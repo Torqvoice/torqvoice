@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import {
+  isFixHandoffToken,
+  verifyFixHandoffToken,
   isInspectionHandoffToken,
   verifyInspectionHandoffToken,
   verifyPhotoHandoffToken,
@@ -9,6 +11,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { isDefect } from '@/features/inspections/Lib/conditions'
 import { PhotoHandoffClient } from './photo-handoff-client'
 import { InspectionHandoffClient } from './inspection-handoff-client'
+import { FixHandoffClient } from './fix-handoff-client'
 
 export const metadata: Metadata = { robots: { index: false, follow: false } }
 export const dynamic = 'force-dynamic'
@@ -28,6 +31,7 @@ export default async function PhotoHandoffPage({
   searchParams: Promise<{ item?: string }>
 }) {
   const { token } = await params
+  if (isFixHandoffToken(token)) return <FixHandoffPage token={token} />
   if (isInspectionHandoffToken(token)) {
     const { item } = await searchParams
     return (
@@ -171,4 +175,17 @@ async function InspectionHandoffPage({
       focusItemId={focusItemId}
     />
   )
+}
+
+/**
+ * The same page for a fix being shared from a fault code: the phone adds
+ * photos to that fix's draft. It shows the workshop and the code, nothing else.
+ */
+async function FixHandoffPage({ token }: { token: string }) {
+  const check = verifyFixHandoffToken(token)
+  if (!check.ok) {
+    return <FixHandoffClient token={token} brand={null} code={null} problem={check.reason} />
+  }
+  const brand = await workshopBrand(check.handoff.organizationId)
+  return <FixHandoffClient token={token} brand={brand} code={check.handoff.code} />
 }

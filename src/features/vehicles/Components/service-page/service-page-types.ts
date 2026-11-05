@@ -12,6 +12,7 @@ import type { ServiceDetail } from '../service-detail/types'
 import type { InitialData, InventoryPartOption } from '../service-edit/form-types'
 import type { WarrantyTexts } from '@/lib/warranty'
 import type { LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
+import type { FaultCodesJobInfo } from '@/features/fault-codes/Components/FaultCodesOnJob'
 
 export interface BoardTechnicianOption {
   id: string
@@ -170,7 +171,14 @@ export interface ServicePageClientProps {
     severity: string
     status: string
     notes: string | null
+    faultCode?: string | null
+    faultStatus?: string | null
+    faultModule?: string | null
+    faultMeaning?: string | null
+    faultMeaningSource?: string | null
   }[]
+  /** Fault codes on this job: whether codes can be typed in, and which were read before. */
+  faultCodes?: FaultCodesJobInfo
   openObservations?: {
     id: string
     description: string

@@ -96,6 +96,15 @@ jobs:
           QUICKBOOKS_INTEGRATION_CLIENT_SECRET: ${{ secrets.CLOUD_QUICKBOOKS_INTEGRATION_CLIENT_SECRET }}
           FIKEN_INTEGRATION_CLIENT_ID: ${{ secrets.CLOUD_FIKEN_INTEGRATION_CLIENT_ID }}
           FIKEN_INTEGRATION_CLIENT_SECRET: ${{ secrets.CLOUD_FIKEN_INTEGRATION_CLIENT_SECRET }}
+          # Torqvoice Codes, the fault code service, run beside the app. The address
+          # is the service's on the server's Docker network (http://torqvoice-codes:8090
+          # when it joins the proxy network), and the key is one key with read:codes,
+          # read:fixes and write:fixes (sharing fixes needs the last two), minted
+          # in the torqvoice.com admin under Code service. With both set every workshop
+          # is connected with our key and never sees a key field; with either empty
+          # the fault code lookups stay off.
+          TORQVOICE_CODES_URL: ${{ secrets.CLOUD_TORQVOICE_CODES_URL }}
+          TORQVOICE_CODES_API_TOKEN: ${{ secrets.CLOUD_TORQVOICE_CODES_API_TOKEN }}
         run: |
           mkdir -p $HOME/torqvoice-deploy/prod
           cd $HOME/torqvoice-deploy/prod
@@ -160,6 +169,8 @@ jobs:
                 QUICKBOOKS_INTEGRATION_CLIENT_SECRET: ${QUICKBOOKS_INTEGRATION_CLIENT_SECRET}
                 FIKEN_INTEGRATION_CLIENT_ID: ${FIKEN_INTEGRATION_CLIENT_ID}
                 FIKEN_INTEGRATION_CLIENT_SECRET: ${FIKEN_INTEGRATION_CLIENT_SECRET}
+                TORQVOICE_CODES_URL: ${TORQVOICE_CODES_URL}
+                TORQVOICE_CODES_API_TOKEN: ${TORQVOICE_CODES_API_TOKEN}
               networks:
                 - proxy
           COMPOSE

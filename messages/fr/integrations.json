@@ -13,6 +13,8 @@
     "availableTitle": "Disponibles",
     "availableDescription": "Services que vous pouvez ajouter. Chacun se configure une fois et fonctionne en arrière-plan.",
     "allConnected": "Tous les services disponibles sont connectés.",
+    "cloudOnly": "Cloud uniquement",
+    "cloudOnlyHint": "Disponible sur Torqvoice Cloud",
     "searchPlaceholder": "Rechercher une intégration",
     "noMatches": "Rien ne correspond à « {query} ».",
     "readMore": "En savoir plus",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Temps de main-d'œuvre sur les ordres de travail et devis",
       "fluids": "Types et capacités de fluides"
+    },
+    "diagnostics": {
+      "codes": "Signification des codes défaut"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Sauvegardes mensuelles à conserver",
         "keepMonthlyHelp": "Les sauvegardes plus anciennes sont supprimées après chaque exécution, en gardant les plus récentes de chaque type. Mettez un nombre à 0 pour n'en garder aucune de ce type."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Voyez ce que signifie un code défaut sur le véhicule devant vous, dans votre langue : la signification, les causes probables et les codes associés. Saisissez ou collez des codes sur un ordre de travail et ils deviennent des observations avec leur signification enregistrée, pour que les impressions et l'historique n'attendent jamais une connexion. Géré par Torqvoice et inclus dans toutes les offres cloud. Une recherche n'envoie que la marque, le modèle, l'année et le moteur, jamais un VIN, une immatriculation ni un client.",
+      "fields": {
+        "apiToken": "Clé d'accès",
+        "apiTokenHelp": "La clé que Torqvoice vous a fournie pour le service de codes."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

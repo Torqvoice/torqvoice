@@ -156,6 +156,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'includeInInvoice',
     'createdAt',
     'serviceRecordId',
+    'scan',
   ],
   payments: [
     'id',

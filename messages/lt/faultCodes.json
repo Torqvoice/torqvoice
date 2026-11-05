@@ -1,0 +1,249 @@
+{
+  "title": "Gedimų kodai",
+  "notAvailable": "Šiuo metu nepasiekiama",
+  "noMeaning": "Mūsų kodų sąraše jo dar nėra",
+  "manufacturerUnknown": "Gamintojo kodas: reikšmė priklauso nuo markės.",
+  "chip": {
+    "open": "Atidaryti {code}"
+  },
+  "source": {
+    "generic": "Bendrasis",
+    "manufacturer": "Gamintojas",
+    "report": "Iš diagnostikos ataskaitos",
+    "machineTranslated": "Išversta automatiškai"
+  },
+  "status": {
+    "stored": "Įrašytas",
+    "pending": "Laukiantis",
+    "permanent": "Nuolatinis",
+    "history": "Istorija"
+  },
+  "flags": {
+    "warningLight": "Įspėjamoji lemputė",
+    "emissions": "Išmetamosios dujos",
+    "driveCycle": "Reikia važiavimo ciklo",
+    "limpMode": "Avarinis režimas"
+  },
+  "sections": {
+    "how_it_works": "Kaip tai veikia",
+    "meaning": "Ką reiškia kodas",
+    "causes": "Dažniausios priežastys",
+    "manufacturer": "Gamintojų duomenys",
+    "related": "Kartu su kitais kodais",
+    "diagnosis": "Diagnostikos patarimas",
+    "other": "Verta žinoti"
+  },
+  "detail": {
+    "whatItMeans": "Ką tai reiškia",
+    "likelyCauses": "Tikėtinos priežastys",
+    "relatedCodes": "Susiję kodai",
+    "inYourWorkshop": "Jūsų servise",
+    "noJobs": "Jūsų servise dar nenuskaitytas jokiame darbe.",
+    "resolved": "Išspręsta",
+    "notConnected": "Prijunkite Torqvoice Codes, kad matytumėte, ką reiškia kodai.",
+    "connect": "Prijungti",
+    "serviceDown": "Reikšmė šiuo metu nepasiekiama. Jūsų darbai yra žemiau.",
+    "pendingCheck": "Kol tekstas nepatikrintas, rodomas tik pavadinimas.",
+    "showMore": "Rodyti daugiau",
+    "showLess": "Rodyti mažiau",
+    "likelihood": {
+      "high": "Didelė",
+      "medium": "Vidutinė",
+      "low": "Maža"
+    },
+    "mostLikelyFirst": "Tikėtiniausios pirmiau"
+  },
+  "report": {
+    "button": "Pranešti apie klaidą",
+    "title": "Kas negerai su kodo {code} reikšme?",
+    "reasons": {
+      "wrong_for_vehicle": "Netinka šiam automobiliui",
+      "wrong_for_vehicleMarine": "Netinka šiam laivui",
+      "text_mismatch": "Tekstas neatitinka kodo",
+      "wrong_position": "Netinkama pusė ar padėtis",
+      "bad_translation": "Blogas vertimas",
+      "other": "Kita"
+    },
+    "note": "Pastaba (neprivaloma)",
+    "notePlaceholder": "Ką radote",
+    "send": "Siųsti",
+    "thanks": "Ačiū, patikrinsime",
+    "failed": "Pranešimo šiuo metu nepavyko išsiųsti. Netrukus bandykite dar kartą.",
+    "reportedByYou": "Pranešėte jūs",
+    "outcome": {
+      "fixed": "Atnaujinta po jūsų pranešimo",
+      "no_change": "Patikrinta, be pakeitimų",
+      "duplicate": "Jau pranešta"
+    }
+  },
+  "share": {
+    "title": "Pasidalykite sprendimu",
+    "description": "Papasakokite kitiems servisams, kas pašalino {code}. Kiekvieną sprendimą patikrina Torqvoice darbuotojas, prieš jį pamatant kitiems.",
+    "yourFixes": "Jūsų sprendimai kodui {code}",
+    "whatFixedIt": "Kas padėjo",
+    "placeholder": "Nutrintas laidas prie galinio lambda zondo jungties už pavarų dėžės. Sutaisyta, kodas išsitrynė po bandomojo važiavimo.",
+    "placeholderMarine": "Korozijos pažeisti kontaktai trimo jutiklio jungtyje. Išvalyti ir užsandarinti, kodas išsitrynė po bandomojo plaukimo.",
+    "photos": "Nuotraukos (nebūtina)",
+    "photosHint": "Iki {max} nuotraukų. Į kadrą neturi patekti veidai, valstybiniai numeriai ir kliento duomenys.",
+    "photosHintMarine": "Iki {max} nuotraukų. Į kadrą neturi patekti veidai, laivo registracijos numeriai ir kliento duomenys.",
+    "addPhotos": "Pridėti nuotraukų",
+    "removePhoto": "Pašalinti {n} nuotrauką",
+    "tooManyPhotos": "Ne daugiau kaip {max} nuotraukos",
+    "notAPhoto": "{name} nėra nuotrauka",
+    "photoTooBig": "{name} didesnis nei 15 MB",
+    "vehicle": "Transporto priemonė",
+    "vehicleMarine": "Laivas",
+    "vehicleOptional": "Transporto priemonė (nebūtina)",
+    "vehicleOptionalMarine": "Laivas (nebūtina)",
+    "make": "Markė",
+    "model": "Modelis",
+    "year": "Metai",
+    "vehicleHint": "Dalijamasi tik marke, modeliu, metais ir varikliu, niekada valstybiniu numeriu, VIN, klientu ar jūsų serviso pavadinimu.",
+    "vehicleHintMarine": "Dalijamasi tik marke, modeliu, metais ir varikliu, niekada registracijos numeriu, korpuso numeriu, klientu ar jūsų serviso pavadinimu.",
+    "send": "Pasidalyti sprendimu",
+    "sent": "Ačiū. Jūsų sprendimas laukia peržiūros.",
+    "shareAnother": "Pasidalyti kitu sprendimu",
+    "cancel": "Atšaukti",
+    "sentOn": "Išsiųsta {date}",
+    "reason": "Priežastis: {reason}",
+    "withdraw": "Atsiimti",
+    "withdrawTitle": "Atsiimti šį sprendimą?",
+    "withdrawConfirm": "Jis bus ištrintas kartu su nuotraukomis, ir joks kitas servisas jo nematys.",
+    "withdrawn": "Sprendimas atsiimtas",
+    "withdrawFailed": "Šiuo metu nepavyko atsiimti sprendimo. Pabandykite po akimirkos.",
+    "unavailable": "Dalytis sprendimais šiuo metu negalima.",
+    "status": {
+      "pending": "Laukia peržiūros",
+      "published": "Paskelbta",
+      "rejected": "Nepaskelbta"
+    },
+    "errors": {
+      "failed": "Šiuo metu nepavyko išsiųsti jūsų sprendimo. Pabandykite po akimirkos.",
+      "photo": "Vienos iš nuotraukų nepavyko nuskaityti. Pabandykite kitą.",
+      "too_large": "Nuotraukos per didelės. Pabandykite mažiau arba mažesnių nuotraukų.",
+      "paused": "Dalijimasis sprendimais šiuo metu sustabdytas. Pabandykite vėliau.",
+      "demo": "Demonstracinėje versijoje dalijimasis sprendimais išjungtas."
+    },
+    "invite": "Pašalinote {code}? Papasakokite kitiems servisams, kas padėjo.",
+    "inviteHint": "Savais žodžiais ir, jei turite, su keliomis nuotraukomis. Torqvoice darbuotojas patikrina kiekvieną sprendimą, prieš jį pamatant kitiems servisams.",
+    "start": "Pasidalyti sprendimu",
+    "dialogTitle": "Pasidalyti {code} sprendimu",
+    "dialogDescription": "Kiti servisai jį pamatys, kai Torqvoice darbuotojas jį patikrins.",
+    "characters": "{count} / {max}",
+    "writingHint": "Kas buvo negerai, kaip tai radote ir kas padėjo. Detalių numeriai ir matavimai kitiems padeda labiausiai.",
+    "dropHere": "arba nutempkite jas čia",
+    "tooManyPhotosRemove": "Sprendimas gali turėti ne daugiau kaip {max} nuotraukas. Pašalinkite kelias, kad galėtumėte pasidalyti.",
+    "phone": {
+      "button": "Pridėti iš telefono",
+      "hide": "Slėpti telefono kodą",
+      "title": "Fotografuokite telefonu",
+      "body": "Nuskaitykite kodą telefono kamera. Jūsų nuotraukos atsiras čia, kai tik bus gautos.",
+      "failed": "Nepavyko sukurti telefono kodo. Uždarykite ir bandykite dar kartą.",
+      "expires": "Kodas galioja iki {time}",
+      "copy": "Kopijuoti nuorodą",
+      "copied": "Nukopijuota",
+      "received": "{count, plural, one {# nuotrauka} few {# nuotraukos} other {# nuotraukų}} iš telefono",
+      "badge": "Telefonas"
+    }
+  },
+  "fixes": {
+    "title": "Kitų servisų sprendimai",
+    "empty": "Kol kas joks kitas servisas nepasidalijo sprendimu kodui {code}.",
+    "unavailable": "Kitų servisų sprendimai šiuo metu nepasiekiami.",
+    "sharedOn": "Pasidalyta {date}",
+    "unknownVehicle": "Transporto priemonė nenurodyta",
+    "unknownVehicleMarine": "Laivas nenurodytas",
+    "writtenIn": "Kalba: {language}",
+    "photo": "Nuotrauka {n} iš {count}",
+    "openPhoto": "Atidaryti {n} nuotrauką"
+  },
+  "sheet": {
+    "description": "Šio kodo reikšmė, tikėtinos priežastys ir jūsų serviso darbai su šiuo kodu.",
+    "loadFailed": "Nepavyko atidaryti šio kodo.",
+    "loading": "Įkeliama…",
+    "openPage": "Atidaryti kodo puslapį"
+  },
+  "entry": {
+    "button": "Pridėti gedimų kodus",
+    "title": "Pridėti gedimų kodus",
+    "description": "Įveskite arba įklijuokite kodus iš diagnostikos įrankio. Kiekvienas tampa šio darbo pastebėjimu su išsaugota reikšme.",
+    "placeholder": "P0420, P0171",
+    "empty": "Čia atsiras įvesti ar įklijuoti kodai.",
+    "found": "Rasti kodai",
+    "remove": "Pašalinti {code}",
+    "concern": "Atsako į punktą",
+    "concernNone": "Jokio punkto",
+    "cancel": "Atšaukti",
+    "add": "{count, plural, =0 {Pridėti kodus} one {Pridėti # kodą} few {Pridėti # kodus} many {Pridėti # kodo} other {Pridėti # kodų}}",
+    "added": "{count, plural, one {Pridėtas # gedimo kodas} few {Pridėti # gedimų kodai} many {Pridėta # gedimo kodo} other {Pridėta # gedimų kodų}}",
+    "skipped": "{count, plural, one {# kodas jau buvo šiame darbe} few {# kodai jau buvo šiame darbe} many {# kodo jau buvo šiame darbe} other {# kodų jau buvo šiame darbe}}",
+    "failed": "Nepavyko pridėti kodų"
+  },
+  "finding": {
+    "seenBefore": "Matytas {date}",
+    "seenBeforeTitle": "Jau nuskaitytas šiame automobilyje, paskutinį kartą {date}",
+    "seenBeforeTitleMarine": "Jau nuskaitytas šiame laive, paskutinį kartą {date}",
+    "updatedMeaning": "Nauja reikšmė",
+    "updatedMeaningTitle": "Dabar reikšmė yra: {meaning}. Bakstelėkite, kad ją naudotumėte.",
+    "taken": "Reikšmė atnaujinta",
+    "takeFailed": "Nepavyko atnaujinti reikšmės",
+    "noMeaningSaved": "Reikšmė dar neišsaugota"
+  },
+  "page": {
+    "title": "Gedimų kodai",
+    "intro": "Suraskite kodą arba ieškokite reikšmėse žodžių, pavyzdžiui, liesas bankas 1.",
+    "lookupLabel": "Kodas arba žodžiai",
+    "lookupPlaceholder": "P0420 arba liesas bankas 1",
+    "lookup": "Ieškoti",
+    "cloudOnly": "Gedimų kodų reikšmes teikia Torqvoice Codes, Torqvoice Cloud dalis. Jūsų serviso nuskaityti kodai čia rodomi bet kuriuo atveju.",
+    "results": "Kodai pagal „{query}“",
+    "noResults": "Nė vienas kodas neatitinka „{query}“",
+    "recent": "Neseniai nuskaityti jūsų servise",
+    "noRecent": "Jokiame darbe dar nėra gedimų kodų.",
+    "readTimes": "{count, plural, one {Nuskaitytas # kartą, paskutinį {date}} few {Nuskaitytas # kartus, paskutinį {date}} many {Nuskaitytas # karto, paskutinį {date}} other {Nuskaitytas # kartų, paskutinį {date}}}",
+    "notACode": "„{text}“ nėra gedimo kodas",
+    "notACodeHint": "Gedimo kodas yra raidė ir keturi simboliai, pavyzdžiui, P0420 arba U0100.",
+    "recentLookups": "Jūsų naujausios paieškos",
+    "recentLookupsEmpty": "Čia, šiame įrenginyje, rodomi jūsų atidaryti kodai ir ieškoti žodžiai.",
+    "clearRecent": "Išvalyti",
+    "tryExamples": "Išbandykite",
+    "exampleWords": "liesas bankas 1",
+    "searching": "Ieškoma"
+  },
+  "search": {
+    "group": "Gedimų kodai",
+    "jobsWith": "Darbai su {code}",
+    "searchFor": "Ieškoti gedimų koduose „{query}“"
+  },
+  "notice": {
+    "title": "Gedimų kodai yra nauji",
+    "body": "Kodus pildome nuolat, todėl dar ne visi kodai čia yra. Kol kas yra standartiniai OBD-II kodai; gamintojų kodų dar nėra."
+  },
+  "support": {
+    "button": "Susisiekti su pagalba",
+    "subject": "Gedimo kodas {code}",
+    "subjectGeneral": "Gedimų kodai",
+    "message": "Gedimo kodas {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Jėgos agregatas",
+    "B": "Kėbulas",
+    "C": "Važiuoklė",
+    "U": "Tinklas"
+  },
+  "phone": {
+    "title": "Nuotraukos sprendimui",
+    "forCode": "sprendimui, kurį rašote kompiuteryje",
+    "intro": "Nufotografuokite arba pasirinkite iki {max} nuotraukų to, kas pašalino gedimą. Jos atsiras sprendime kompiuteryje.",
+    "take": "Fotografuoti",
+    "choose": "Pasirinkti nuotraukas",
+    "added": "Pridėta {count} iš {max} nuotraukų",
+    "full": "Sprendimas gali turėti ne daugiau kaip {max} nuotraukas.",
+    "notAPhoto": "Šis failas nėra nuotrauka.",
+    "failed": "Nepavyko pridėti nuotraukos. Bandykite dar kartą.",
+    "done": "Baigę grįžkite prie kompiuterio ir pasidalykite sprendimu.",
+    "privacy": "Į kadrą neįtraukite veidų, numerių ir klientų duomenų.",
+    "expired": "Šio kodo galiojimas baigėsi. Kompiuteryje parodykite naują.",
+    "invalid": "Šis kodas neveikia. Kompiuteryje parodykite naują."
+  }
+}

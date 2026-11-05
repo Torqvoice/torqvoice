@@ -425,6 +425,7 @@ export const UPLOAD_CATEGORIES: readonly string[] = [
   'tire-hotel',
   'portal',
   'email',
+  'fix-drafts',
 ]
 
 /** Entities written at the top level of the backup, with their key. */

@@ -42,6 +42,7 @@ import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { findLookupConnection } from '@/features/integrations/Lib/vehicle-lookup'
+import { faultCodesConnected } from '@/features/fault-codes/Lib/service.server'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { WORKSHOP_CHAT_ENABLED } from '@/features/ai/constants'
 import { getManifest, listManifests } from '@/integrations/registry'
@@ -239,6 +240,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
       : null
   const plateLookupAvailable = lookupConnection !== null
 
+  // The palette's fault code groups and the fault code page, once the code
+  // service is connected. Off on a self-hosted install, where it does not exist.
+  const faultCodesEnabled =
+    visibleSubjects.includes(PermissionSubject.VEHICLES) &&
+    (await faultCodesConnected(data.organizationId))
+
   // What the search palette can reach without asking the server: which
   // settings pages exist on this install, and the connectors the catalog
   // offers, trimmed to a name and a logo.
@@ -400,6 +407,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                 supportEnabled={supportEnabled}
                                 isMarine={data.serviceType === 'marine'}
                                 connectors={searchConnectors}
+                                faultCodesEnabled={faultCodesEnabled}
                               />
                               <PlateLookupCommand />
                               {isOwnerOrAdmin && <NotificationInitializer />}

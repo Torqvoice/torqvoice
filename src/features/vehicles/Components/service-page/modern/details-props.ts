@@ -43,6 +43,11 @@ export interface WorkOrderJobProps {
     status: string
     notes: string | null
     concernId?: string | null
+    faultCode?: string | null
+    faultStatus?: string | null
+    faultModule?: string | null
+    faultMeaning?: string | null
+    faultMeaningSource?: string | null
   }[]
   onAddFinding?: () => void
   onEditFinding?: (finding: {

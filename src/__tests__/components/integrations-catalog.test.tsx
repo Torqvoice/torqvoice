@@ -15,6 +15,7 @@ import { IntegrationsCatalog } from '@/app/(authenticated)/settings/integrations
 import type { CatalogEntry } from '@/features/integrations/Actions/integrationActions'
 import { openSupport } from '@/features/support/Lib/supportVisibility'
 import { getManifest } from '@/integrations/registry'
+import { manifest as torqvoiceCodes } from '@/integrations/torqvoice-codes/manifest'
 
 vi.mock('@/features/support/Lib/supportVisibility', () => ({ openSupport: vi.fn() }))
 
@@ -29,6 +30,7 @@ function entry(id: string, overrides: Partial<CatalogEntry> = {}): CatalogEntry 
     platformApp: true,
     featured: true,
     enabled: true,
+    cloudOnly: false,
     ...overrides,
   }
 }
@@ -160,5 +162,41 @@ describe('suggesting an integration', () => {
     const link = screen.getByRole('link', { name: /Read more/ })
     expect(link).toHaveAttribute('href', 'https://torqvoice.com/docs/integrations')
     expect(link).toHaveAttribute('target', '_blank')
+  })
+})
+
+/**
+ * A service Torqvoice runs on its cloud is not in a self-hosted install's
+ * registry, but the catalog still shows it, greyed, so the workshop knows it
+ * exists and where. There is nothing behind the card to open.
+ */
+describe('a cloud-only service on a self-hosted install', () => {
+  const codes: CatalogEntry = {
+    manifest: torqvoiceCodes,
+    status: null,
+    externalAccountName: null,
+    lastError: null,
+    platformApp: false,
+    featured: false,
+    enabled: false,
+    cloudOnly: true,
+  }
+
+  it('is shown greyed out, saying where it is offered, with nothing to open', () => {
+    render(<IntegrationsCatalog entries={[...ENTRIES, codes]} canSuggest={false} />)
+    expect(screen.getByText('Torqvoice Codes')).toBeInTheDocument()
+    expect(screen.getByText('Cloud only')).toBeInTheDocument()
+    expect(screen.getByText('Available on Torqvoice Cloud')).toBeInTheDocument()
+    const hrefs = screen.queryAllByRole('link').map((l) => l.getAttribute('href'))
+    expect(hrefs).not.toContain('/settings/integrations/torqvoice-codes')
+    // The other cards still offer Connect.
+    expect(offered()).toEqual(['OpenAI', 'Google Calendar', 'Twilio'])
+  })
+
+  it('is found by search like any other card', () => {
+    render(<IntegrationsCatalog entries={[...ENTRIES, codes]} canSuggest={false} />)
+    fireEvent.change(screen.getByRole('searchbox'), { target: { value: 'fault code' } })
+    expect(screen.getByText('Torqvoice Codes')).toBeInTheDocument()
+    expect(offered()).toEqual([])
   })
 })

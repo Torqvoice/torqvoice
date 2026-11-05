@@ -13,6 +13,8 @@
     "availableTitle": "Dostępne",
     "availableDescription": "Usługi, które możesz dodać. Każdą konfiguruje się raz, a potem działa w tle.",
     "allConnected": "Wszystkie dostępne usługi są połączone.",
+    "cloudOnly": "Tylko w chmurze",
+    "cloudOnlyHint": "Dostępne w Torqvoice Cloud",
     "searchPlaceholder": "Szukaj integracji",
     "noMatches": "Nic nie pasuje do „{query}”.",
     "readMore": "Czytaj więcej",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Normy czasowe w zleceniach i wycenach",
       "fluids": "Rodzaje i pojemności płynów"
+    },
+    "diagnostics": {
+      "codes": "Znaczenia kodów usterek"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Zachowaj kopie miesięczne",
         "keepMonthlyHelp": "Starsze kopie są usuwane po każdym uruchomieniu, a najnowsze każdego rodzaju zostają. Ustaw liczbę na 0, aby nie zachowywać żadnej kopii danego rodzaju."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Zobacz, co oznacza kod usterki w pojeździe przed tobą, w twoim języku: znaczenie, prawdopodobne przyczyny i powiązane kody. Wpisz lub wklej kody w zleceniu, a staną się obserwacjami z zapisanym znaczeniem, dzięki czemu wydruki i historia nigdy nie czekają na połączenie. Prowadzone przez Torqvoice i dostępne w każdym planie w chmurze. Wyszukiwanie wysyła tylko markę, model, rok i silnik, nigdy VIN, numer rejestracyjny ani klienta.",
+      "fields": {
+        "apiToken": "Klucz dostępu",
+        "apiTokenHelp": "Klucz, który Torqvoice przekazał ci do usługi kodów."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

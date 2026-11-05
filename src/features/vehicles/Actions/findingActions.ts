@@ -11,6 +11,7 @@ import {
 import { revalidatePath } from 'next/cache'
 import { releaseFiles } from '@/lib/files/manager'
 import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
+import { findingWebhookFields } from '@/features/fault-codes/Lib/findings'
 
 export async function getObservationsPaginated(params: {
   page?: number
@@ -224,7 +225,11 @@ export async function createFinding(input: unknown) {
           key: 'finding_create',
           params: { description: result.description, vehicleId: result.vehicleId },
         },
-        metadata: { findingId: result.id, vehicleId: result.vehicleId },
+        metadata: {
+          findingId: result.id,
+          vehicleId: result.vehicleId,
+          ...findingWebhookFields(result),
+        },
       }),
     }
   )
@@ -263,7 +268,11 @@ export async function updateFinding(input: unknown) {
         entity: 'VehicleFinding',
         entityId: result.id,
         details: { key: 'finding_update', params: { description: result.description } },
-        metadata: { findingId: result.id, vehicleId: result.vehicleId },
+        metadata: {
+          findingId: result.id,
+          vehicleId: result.vehicleId,
+          ...findingWebhookFields(result),
+        },
       }),
     }
   )
@@ -301,7 +310,11 @@ export async function resolveFinding(input: unknown) {
         entity: 'VehicleFinding',
         entityId: result.id,
         details: { key: 'finding_resolve', params: { description: result.description } },
-        metadata: { findingId: result.id, vehicleId: result.vehicleId },
+        metadata: {
+          findingId: result.id,
+          vehicleId: result.vehicleId,
+          ...findingWebhookFields(result),
+        },
       }),
     }
   )

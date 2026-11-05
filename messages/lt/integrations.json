@@ -13,6 +13,8 @@
     "availableTitle": "Galima pridėti",
     "availableDescription": "Paslaugos, kurias galite pridėti. Kiekviena nustatoma vieną kartą ir veikia fone.",
     "allConnected": "Visos galimos paslaugos prijungtos.",
+    "cloudOnly": "Tik debesyje",
+    "cloudOnlyHint": "Galima naudoti Torqvoice Cloud",
     "searchPlaceholder": "Ieškoti integracijų",
     "noMatches": "Nieko nerasta pagal „{query}“.",
     "readMore": "Skaityti daugiau",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Darbo laiko normos užsakymuose ir pasiūlymuose",
       "fluids": "Skysčių tipai ir talpos"
+    },
+    "diagnostics": {
+      "codes": "Gedimų kodų reikšmės"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Laikyti mėnesines atsargines kopijas",
         "keepMonthlyHelp": "Po kiekvieno vykdymo senesnės atsarginės kopijos pašalinamos, paliekant naujausias kiekvienos rūšies. Nustatykite skaičių 0, kad tos rūšies nebūtų laikoma nė vienos."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Matykite, ką gedimo kodas reiškia prieš jus esančiam automobiliui, jūsų kalba: reikšmę, tikėtinas priežastis ir susijusius kodus. Įveskite arba įklijuokite kodus darbo užsakyme, ir jie taps pastebėjimais su išsaugota reikšme, todėl spaudiniai ir istorija niekada nelaukia ryšio. Teikia Torqvoice, įtraukta į kiekvieną debesies planą. Užklausoje siunčiama tik markė, modelis, metai ir variklis, niekada VIN, numeris ar klientas.",
+      "fields": {
+        "apiToken": "Prieigos raktas",
+        "apiTokenHelp": "Raktas, kurį Torqvoice jums suteikė kodų paslaugai."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

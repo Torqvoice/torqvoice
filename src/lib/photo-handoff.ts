@@ -199,3 +199,74 @@ export function verifyInspectionHandoffToken(
   if (e * 1000 <= now) return { ok: false, reason: 'expired' }
   return { ok: true, handoff: { organizationId: o, inspectionId: i, userId: u, expiresAt: e } }
 }
+
+/**
+ * The same kind of code for a fix being written for the code service: the
+ * phone adds photos to that draft, and the share dialog on the computer
+ * shows them as they land. The draft lives only on this server, and only
+ * until the fix is shared (see features/fault-codes/Lib/fixDrafts.server.ts).
+ */
+const FIX_PREFIX = 'fx1'
+
+export interface FixHandoff {
+  organizationId: string
+  /** The fault code the fix is for, for the phone's wording. */
+  code: string
+  /** The draft the photos go into: a random id the dialog made. */
+  draftId: string
+  /** Who showed the code. */
+  userId: string
+  /** Unix seconds. */
+  expiresAt: number
+}
+
+export function isFixHandoffToken(token: string): boolean {
+  return token.startsWith(`${FIX_PREFIX}.`)
+}
+
+export function createFixHandoffToken(
+  handoff: Omit<FixHandoff, 'expiresAt'>,
+  now = Date.now()
+): { token: string; expiresAt: Date } {
+  const expiresAt = Math.floor(now / 1000) + PHOTO_HANDOFF_TTL_SECONDS
+  const body = Buffer.from(
+    JSON.stringify({
+      o: handoff.organizationId,
+      c: handoff.code,
+      d: handoff.draftId,
+      u: handoff.userId,
+      e: expiresAt,
+    })
+  ).toString('base64url')
+  return {
+    token: `${FIX_PREFIX}.${body}.${sign(body, FIX_PREFIX)}`,
+    expiresAt: new Date(expiresAt * 1000),
+  }
+}
+
+export type FixHandoffCheck =
+  | { ok: true; handoff: FixHandoff }
+  | { ok: false; reason: 'invalid' | 'expired' }
+
+export function verifyFixHandoffToken(token: string, now = Date.now()): FixHandoffCheck {
+  const body = signedBody(token, FIX_PREFIX)
+  if (!body) return { ok: false, reason: 'invalid' }
+  let payload: { o?: unknown; c?: unknown; d?: unknown; u?: unknown; e?: unknown }
+  try {
+    payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+  } catch {
+    return { ok: false, reason: 'invalid' }
+  }
+  const { o, c, d, u, e } = payload
+  if (
+    typeof o !== 'string' ||
+    typeof c !== 'string' ||
+    typeof d !== 'string' ||
+    typeof u !== 'string' ||
+    typeof e !== 'number'
+  ) {
+    return { ok: false, reason: 'invalid' }
+  }
+  if (e * 1000 <= now) return { ok: false, reason: 'expired' }
+  return { ok: true, handoff: { organizationId: o, code: c, draftId: d, userId: u, expiresAt: e } }
+}

@@ -120,15 +120,19 @@ export function SupportBubble() {
   }, [])
 
   // The settings page opens the widget for someone who cannot find it, and
-  // other pages open it with a subject already filled in. A subject only
-  // lands on an empty form: someone halfway through describing a problem
-  // does not lose their heading because they clicked another button.
+  // other pages open it with a subject, and sometimes a message, already
+  // filled in. Each only lands on an empty field: someone halfway through
+  // describing a problem does not lose their words because they clicked
+  // another button.
   useEffect(() => {
     const open = (event: Event) => {
-      const subject = (event as CustomEvent<SupportOpenDetail>).detail?.subject
-      if (subject) {
+      const detail = (event as CustomEvent<SupportOpenDetail>).detail
+      const subject = detail?.subject
+      const body = detail?.message
+      if (subject || body) {
         if (status === 'sent') reset()
-        setSubject((current) => current || subject)
+        if (subject) setSubject((current) => current || subject)
+        if (body) setMessage((current) => current || body)
       }
       setIsOpen(true)
     }

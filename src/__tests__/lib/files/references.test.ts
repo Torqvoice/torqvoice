@@ -46,6 +46,10 @@ const NOT_FILES: Record<string, string> = {
     'frozen issuer and customer details; the issued logo is bytes in DocumentAssetSnapshot. The linked inspection results in it remember where a defect photo was, as a note and not a use: the photo belongs to the inspection, and a print leaves out one that has gone',
   'ServiceRecord.issuedLogoSnapshotId': 'the id of a row holding the logo bytes',
   'ServiceAttachment.fileName': 'a label',
+  'ServiceAttachment.scan':
+    'what a fault code scan read out of the file: codes, VIN, odometer; the file is the row itself',
+  'VehicleFinding.sourceAttachmentId':
+    'the id of the diagnostic report a fault code was read from; the file is that row’s fileUrl',
   'ServiceAttachment.fileType': 'a MIME type',
   'QuoteAttachment.fileName': 'a label',
   'QuoteAttachment.fileType': 'a MIME type',

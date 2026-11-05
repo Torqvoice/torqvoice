@@ -180,6 +180,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/ai': [{ key: 'aiAssistant' }],
   '/audit-log': [{ key: 'auditLog' }],
   '/observations': [{ key: 'observations' }],
+  '/fault-codes': [{ key: 'faultCodes' }],
   '/tire-hotel': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'allTireSets' }],
   '/tire-hotel/storage': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireStorage' }],
   '/tire-hotel/forecast': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireForecast' }],
@@ -226,8 +227,12 @@ export function PageHeader() {
   let segments = breadcrumbMap[pathname]
 
   if (!segments) {
+    // /fault-codes/[code]
+    if (/^\/fault-codes\/[^/]+$/.test(pathname)) {
+      segments = [{ key: 'faultCodes', href: '/fault-codes' }, { key: 'faultCode' }]
+    }
     // /tire-hotel/[id]
-    if (/^\/tire-hotel\/[^/]+$/.test(pathname)) {
+    else if (/^\/tire-hotel\/[^/]+$/.test(pathname)) {
       segments = [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireSetDetails' }]
     }
     // /quotes/[id]/edit

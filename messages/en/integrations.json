@@ -13,6 +13,8 @@
     "availableTitle": "Available",
     "availableDescription": "Services you can add. Each one is set up once and runs in the background.",
     "allConnected": "Every available service is connected.",
+    "cloudOnly": "Cloud only",
+    "cloudOnlyHint": "Available on Torqvoice Cloud",
     "searchPlaceholder": "Search integrations",
     "noMatches": "Nothing matches \"{query}\".",
     "readMore": "Read more",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Labor times on work orders and quotes",
       "fluids": "Fluid types and capacities"
+    },
+    "diagnostics": {
+      "codes": "Fault code meanings"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Keep monthly backups",
         "keepMonthlyHelp": "Older backups are removed after each run, keeping the newest of each kind. Set a number to 0 to keep none of that kind."
       }
+    },
+    "torqvoice-codes": {
+      "description": "See what a fault code means on the vehicle in front of you, in your own language: the meaning, likely causes and related codes. Type or paste codes on a work order and they become observations with their meaning saved, so prints and history never wait on a connection. Run by Torqvoice and included in every cloud plan. A lookup sends only make, model, year and engine, never a VIN, a plate or a customer.",
+      "fields": {
+        "apiToken": "Access key",
+        "apiTokenHelp": "The key Torqvoice gave you for the code service."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

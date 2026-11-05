@@ -13,6 +13,8 @@
     "availableTitle": "Disponibili",
     "availableDescription": "Servizi che puoi aggiungere. Ognuno si configura una volta e lavora in background.",
     "allConnected": "Tutti i servizi disponibili sono collegati.",
+    "cloudOnly": "Solo cloud",
+    "cloudOnlyHint": "Disponibile su Torqvoice Cloud",
     "searchPlaceholder": "Cerca integrazioni",
     "noMatches": "Nessun risultato per «{query}».",
     "readMore": "Scopri di più",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "Tempi di manodopera su ordini di lavoro e preventivi",
       "fluids": "Tipi e capacità dei fluidi"
+    },
+    "diagnostics": {
+      "codes": "Significato dei codici di errore"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Backup mensili da conservare",
         "keepMonthlyHelp": "I backup più vecchi vengono rimossi dopo ogni esecuzione, mantenendo i più recenti di ogni tipo. Imposta un numero a 0 per non conservarne nessuno di quel tipo."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Scopri cosa significa un codice di errore sul veicolo che hai davanti, nella tua lingua: il significato, le cause probabili e i codici correlati. Digita o incolla i codici in un ordine di lavoro e diventano osservazioni con il significato salvato, così stampe e storico non aspettano mai una connessione. Gestito da Torqvoice e incluso in ogni piano cloud. Una ricerca invia solo marca, modello, anno e motore, mai un VIN, una targa o un cliente.",
+      "fields": {
+        "apiToken": "Chiave di accesso",
+        "apiTokenHelp": "La chiave che Torqvoice ti ha dato per il servizio dei codici."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

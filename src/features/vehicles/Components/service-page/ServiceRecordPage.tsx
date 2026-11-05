@@ -35,6 +35,7 @@ import { configuredDictation } from '@/features/integrations/Lib/speech'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
+import { faultCodesConnected, seenBefore } from '@/features/fault-codes/Lib/service.server'
 import { db } from '@/lib/db'
 import {
   loadVehicleConditionMarks,
@@ -397,6 +398,19 @@ export async function ServiceRecordPage({
           ),
         }
       : undefined
+  // Fault codes on this job: whether the code service is there to type codes
+  // into, and when each code on the job was read on this vehicle before.
+  const jobFindings = findingsResult.success && findingsResult.data ? findingsResult.data : []
+  const jobCodes = [
+    ...new Set(jobFindings.map((f) => f.faultCode).filter((c): c is string => Boolean(c))),
+  ]
+  const faultCodes =
+    vehicleId && organizationId
+      ? {
+          connected: await faultCodesConnected(organizationId),
+          seenBefore: await seenBefore(organizationId, vehicleId, serviceId, jobCodes),
+        }
+      : { connected: false, seenBefore: {} }
   const openObservations = vehicleId
     ? await db.vehicleFinding.findMany({
         where: { vehicleId, status: { not: 'resolved' } },
@@ -477,7 +491,8 @@ export async function ServiceRecordPage({
           feedbackAt: r.feedbackAt?.toISOString() || null,
           sentAt: r.sentAt?.toISOString() || null,
         }))}
-        findings={findingsResult.success && findingsResult.data ? findingsResult.data : []}
+        findings={jobFindings}
+        faultCodes={faultCodes}
         openObservations={openObservations}
         notificationHistory={notificationHistory.map((n) => ({
           ...n,

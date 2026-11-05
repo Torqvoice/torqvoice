@@ -1507,12 +1507,19 @@ export const TENANCY_SCHEMA: SchemaGraph = {
         required: false,
         relation: 'concern',
       },
+      sourceAttachmentId: {
+        target: 'ServiceAttachment',
+        required: false,
+        relation: 'sourceAttachment',
+      },
     },
     ownerPaths: [
       ['vehicle'],
       ['serviceRecord'],
       ['resolvedServiceRecord'],
       ['concern', 'serviceRecord'],
+      ['sourceAttachment', 'serviceRecord'],
+      ['sourceAttachment', 'concern', 'serviceRecord'],
     ],
   },
   VehicleInspectionStatus: {

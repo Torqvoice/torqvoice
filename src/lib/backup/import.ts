@@ -363,6 +363,8 @@ async function importServiceRecordTree(
         serviceRecordId: sr.id as string,
         // The concern it was filed under, when this record restored it above.
         concernId: keptReference(a.concernId, restoredConcernIds),
+        // What a scan for fault codes found in the file.
+        scan: a.scan === null || a.scan === undefined ? undefined : (a.scan as object),
       })),
     })
   }
@@ -1176,7 +1178,11 @@ export async function restoreBackup(
             const referencedConcerns = findings
               .map(({ finding }) => finding.concernId)
               .filter((id): id is string => typeof id === 'string')
-            const [jobRows, concernRows] = await Promise.all([
+            // The diagnostic report a fault code was read from, likewise.
+            const referencedFiles = findings
+              .map(({ finding }) => finding.sourceAttachmentId)
+              .filter((id): id is string => typeof id === 'string')
+            const [jobRows, concernRows, fileRows] = await Promise.all([
               tx.serviceRecord.findMany({
                 where: { id: { in: referencedJobs }, organizationId },
                 select: { id: true },
@@ -1185,9 +1191,17 @@ export async function restoreBackup(
                 where: { id: { in: referencedConcerns }, serviceRecord: { organizationId } },
                 select: { id: true },
               }),
+              referencedFiles.length > 0
+                ? tx.serviceAttachment.findMany({
+                    where: { id: { in: referencedFiles }, serviceRecord: { organizationId } },
+                    select: { id: true },
+                  })
+                : Promise.resolve([]),
             ])
             const restoredJobIds = new Set(jobRows.map((row) => row.id))
             const restoredConcernIds = new Set(concernRows.map((row) => row.id))
+            const restoredFileIds = new Set(fileRows.map((row) => row.id))
+            const text = (value: unknown) => (typeof value === 'string' && value ? value : null)
 
             await tx.vehicleFinding.createMany({
               data: findings.map(({ finding, vehicleId: findingVehicleId }) => ({
@@ -1208,6 +1222,12 @@ export async function restoreBackup(
                   restoredJobIds
                 ),
                 concernId: keptReference(finding.concernId, restoredConcernIds),
+                faultCode: text(finding.faultCode),
+                faultStatus: text(finding.faultStatus),
+                faultModule: text(finding.faultModule),
+                faultMeaning: text(finding.faultMeaning),
+                faultMeaningSource: text(finding.faultMeaningSource),
+                sourceAttachmentId: keptReference(finding.sourceAttachmentId, restoredFileIds),
               })),
             })
           }

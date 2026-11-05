@@ -7,8 +7,13 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { AlertTriangle, Pencil, Plus, Trash2 } from 'lucide-react'
+import { AlertTriangle, Pencil, Plus, ScanLine, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
+import {
+  FaultCodeFindingLine,
+  useFaultCodesOnJob,
+  useUpdatedMeanings,
+} from '@/features/fault-codes/Components/FaultCodesOnJob'
 import { deleteFinding } from '../../Actions/findingActions'
 
 interface Finding {
@@ -17,6 +22,12 @@ interface Finding {
   severity: string
   status: string
   notes: string | null
+  /** Set when the finding is a diagnostic trouble code. */
+  faultCode?: string | null
+  faultStatus?: string | null
+  faultModule?: string | null
+  faultMeaning?: string | null
+  faultMeaningSource?: string | null
 }
 
 interface ServiceFindingsSectionProps {
@@ -41,7 +52,12 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
   const router = useRouter()
   const t = useTranslations('vehicles.findings')
   const modern = useModernWorkOrder()
+  const tc = useTranslations('faultCodes.entry')
+  const faultCodes = useFaultCodesOnJob()
   const [loading, setLoading] = useState<string | null>(null)
+  const { updates, take } = useUpdatedMeanings(
+    findings.filter((f) => f.faultCode && f.status !== 'resolved').map((f) => f.id)
+  )
 
   if (findings.length === 0) return null
 
@@ -58,10 +74,30 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
   const openCount = findings.filter((f) => f.status === 'open').length
 
   const addButton = (
-    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => onAddFinding?.()}>
-      <Plus className="mr-1 h-3 w-3" />
-      {t('addFinding')}
-    </Button>
+    <div className="flex flex-wrap items-center justify-end gap-1.5">
+      {faultCodes?.connected && (
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          className="h-7 text-xs"
+          onClick={() => faultCodes.openEntry()}
+        >
+          <ScanLine className="mr-1 h-3 w-3" />
+          {tc('button')}
+        </Button>
+      )}
+      <Button
+        type="button"
+        size="sm"
+        variant="outline"
+        className="h-7 text-xs"
+        onClick={() => onAddFinding?.()}
+      >
+        <Plus className="mr-1 h-3 w-3" />
+        {t('addFinding')}
+      </Button>
+    </div>
   )
 
   const list = (
@@ -85,11 +121,22 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
                 )}
               </Badge>
             </div>
-            <p className="mt-0.5 text-sm">{f.description}</p>
+            {f.faultCode ? (
+              <div className="mt-0.5">
+                <FaultCodeFindingLine
+                  finding={{ ...f, faultCode: f.faultCode }}
+                  update={updates[f.id]}
+                  onTake={() => void take(f.id)}
+                />
+              </div>
+            ) : (
+              <p className="mt-0.5 text-sm">{f.description}</p>
+            )}
             {f.notes && <p className="mt-0.5 text-xs text-muted-foreground">{f.notes}</p>}
           </div>
           <div className="flex shrink-0 items-center gap-0.5">
             <Button
+              type="button"
               size="icon"
               variant="ghost"
               className="h-6 w-6"
@@ -99,6 +146,7 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
               <Pencil className="h-3 w-3" />
             </Button>
             <Button
+              type="button"
               size="icon"
               variant="ghost"
               className="h-6 w-6 text-destructive"

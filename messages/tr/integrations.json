@@ -13,6 +13,8 @@
     "availableTitle": "Kullanılabilir",
     "availableDescription": "Ekleyebileceğiniz hizmetler. Her biri bir kez kurulur ve arka planda çalışır.",
     "allConnected": "Kullanılabilir tüm hizmetler bağlı.",
+    "cloudOnly": "Yalnızca bulut",
+    "cloudOnlyHint": "Torqvoice Cloud'da kullanılabilir",
     "searchPlaceholder": "Entegrasyonlarda ara",
     "noMatches": "\"{query}\" ile eşleşen bir şey yok.",
     "readMore": "Daha fazla bilgi",
@@ -78,6 +80,9 @@
     "repair": {
       "labor": "İş emirlerinde ve tekliflerde işçilik süreleri",
       "fluids": "Sıvı türleri ve kapasiteleri"
+    },
+    "diagnostics": {
+      "codes": "Arıza kodu anlamları"
     }
   },
   "statuses": {
@@ -936,6 +941,14 @@
         "keepMonthly": "Aylık yedekleri sakla",
         "keepMonthlyHelp": "Her çalıştırmadan sonra eski yedekler silinir ve her türün en yenileri saklanır. O türden hiç saklamamak için sayıyı 0 yapın."
       }
+    },
+    "torqvoice-codes": {
+      "description": "Önünüzdeki araçta bir arıza kodunun ne anlama geldiğini kendi dilinizde görün: anlamı, olası nedenleri ve ilgili kodlar. Kodları bir iş emrine yazın veya yapıştırın; anlamı kaydedilmiş gözlemlere dönüşürler, böylece çıktılar ve geçmiş hiçbir zaman bir bağlantıyı beklemez. Torqvoice tarafından işletilir ve tüm bulut planlarına dahildir. Bir sorgu yalnızca marka, model, yıl ve motoru gönderir; asla VIN, plaka veya müşteri bilgisi göndermez.",
+      "fields": {
+        "apiToken": "Erişim anahtarı",
+        "apiTokenHelp": "Torqvoice'un kod hizmeti için size verdiği anahtar."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {

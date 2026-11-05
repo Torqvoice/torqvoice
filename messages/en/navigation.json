@@ -65,7 +65,9 @@
     "tireSetDetails": "Tire Set",
     "tireForecast": "Next season",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Inspection reminders"
+    "inspectionReminders": "Inspection reminders",
+    "faultCodes": "Fault codes",
+    "faultCode": "Fault code"
   },
   "search": "Search...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} open work orders",
       "inspections": "{count} inspections in progress",
       "reminders": "{count} reminders due"
-    }
+    },
+    "faultCodes": "Fault codes"
   }
 }

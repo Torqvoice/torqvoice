@@ -65,7 +65,9 @@
     "tireSetDetails": "Treno di pneumatici",
     "tireForecast": "La prossima stagione",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Promemoria revisione"
+    "inspectionReminders": "Promemoria revisione",
+    "faultCodes": "Codici di errore",
+    "faultCode": "Codice di errore"
   },
   "search": "Cerca...",
   "shortcut": "Ctrl+K",
@@ -141,6 +143,7 @@
       "workOrders": "{count} ordini di lavoro aperti",
       "inspections": "{count} ispezioni in corso",
       "reminders": "{count} promemoria in scadenza"
-    }
+    },
+    "faultCodes": "Codici di errore"
   }
 }

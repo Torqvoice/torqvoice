@@ -1,0 +1,249 @@
+{
+  "title": "Fehlercodes",
+  "notAvailable": "Gerade nicht verfügbar",
+  "noMeaning": "Noch nicht in unserer Codeliste",
+  "manufacturerUnknown": "Herstellerspezifischer Code: Die Bedeutung hängt von der Marke ab.",
+  "chip": {
+    "open": "{code} öffnen"
+  },
+  "source": {
+    "generic": "Allgemein",
+    "manufacturer": "Hersteller",
+    "report": "Aus dem Scanbericht",
+    "machineTranslated": "Maschinell übersetzt"
+  },
+  "status": {
+    "stored": "Gespeichert",
+    "pending": "Ausstehend",
+    "permanent": "Permanent",
+    "history": "Historie"
+  },
+  "flags": {
+    "warningLight": "Warnleuchte",
+    "emissions": "Abgasrelevant",
+    "driveCycle": "Fahrzyklus nötig",
+    "limpMode": "Notlauf"
+  },
+  "sections": {
+    "how_it_works": "So funktioniert es",
+    "meaning": "Was der Code bedeutet",
+    "causes": "Typische Ursachen",
+    "manufacturer": "Herstellerangaben",
+    "related": "Zusammen mit anderen Codes",
+    "diagnosis": "Diagnosetipp",
+    "other": "Gut zu wissen"
+  },
+  "detail": {
+    "whatItMeans": "Was er bedeutet",
+    "likelyCauses": "Wahrscheinliche Ursachen",
+    "relatedCodes": "Verwandte Codes",
+    "inYourWorkshop": "In Ihrer Werkstatt",
+    "noJobs": "In Ihrer Werkstatt noch bei keinem Auftrag ausgelesen.",
+    "resolved": "Erledigt",
+    "notConnected": "Verbinden Sie Torqvoice Codes, um zu sehen, was Codes bedeuten.",
+    "connect": "Verbinden",
+    "serviceDown": "Die Bedeutung ist gerade nicht verfügbar. Ihre Aufträge stehen unten.",
+    "pendingCheck": "Bis der Text geprüft ist, wird nur der Titel angezeigt.",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "likelihood": {
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig"
+    },
+    "mostLikelyFirst": "Wahrscheinlichste zuerst"
+  },
+  "report": {
+    "button": "Problem melden",
+    "title": "Was stimmt an der Bedeutung von {code} nicht?",
+    "reasons": {
+      "wrong_for_vehicle": "Falsch für dieses Auto",
+      "wrong_for_vehicleMarine": "Falsch für dieses Wasserfahrzeug",
+      "text_mismatch": "Text passt nicht zum Code",
+      "wrong_position": "Falsche Seite oder Position",
+      "bad_translation": "Schlechte Übersetzung",
+      "other": "Sonstiges"
+    },
+    "note": "Notiz (optional)",
+    "notePlaceholder": "Was Sie gefunden haben",
+    "send": "Senden",
+    "thanks": "Danke, wir prüfen das",
+    "failed": "Die Meldung konnte gerade nicht gesendet werden. Versuchen Sie es gleich noch einmal.",
+    "reportedByYou": "Von Ihnen gemeldet",
+    "outcome": {
+      "fixed": "Nach Ihrer Meldung aktualisiert",
+      "no_change": "Geprüft, keine Änderung",
+      "duplicate": "Bereits gemeldet"
+    }
+  },
+  "share": {
+    "title": "Ihre Lösung teilen",
+    "description": "Erzählen Sie anderen Werkstätten, was {code} behoben hat. Jede Lösung prüft ein Mensch bei Torqvoice, bevor andere sie sehen.",
+    "yourFixes": "Ihre Lösungen für {code}",
+    "whatFixedIt": "Was hat den Fehler behoben?",
+    "placeholder": "Durchgescheuertes Kabel am Stecker der hinteren Lambdasonde hinter dem Getriebe. Repariert, Code nach der Probefahrt gelöscht.",
+    "placeholderMarine": "Korrodierte Kontakte im Stecker des Trimmsensors. Gereinigt und abgedichtet, Code nach einer Probefahrt auf dem Wasser gelöscht.",
+    "photos": "Fotos (optional)",
+    "photosHint": "Bis zu {max} Fotos. Halten Sie Gesichter, Kennzeichen und Kundendaten aus dem Bild.",
+    "photosHintMarine": "Bis zu {max} Fotos. Halten Sie Gesichter, Bootskennzeichen und Kundendaten aus dem Bild.",
+    "addPhotos": "Fotos hinzufügen",
+    "removePhoto": "Foto {n} entfernen",
+    "tooManyPhotos": "Höchstens {max} Fotos",
+    "notAPhoto": "{name} ist kein Foto",
+    "photoTooBig": "{name} ist größer als 15 MB",
+    "vehicle": "Fahrzeug",
+    "vehicleMarine": "Wasserfahrzeug",
+    "vehicleOptional": "Fahrzeug (optional)",
+    "vehicleOptionalMarine": "Wasserfahrzeug (optional)",
+    "make": "Marke",
+    "model": "Modell",
+    "year": "Baujahr",
+    "vehicleHint": "Geteilt werden nur Marke, Modell, Baujahr und Motor, nie Kennzeichen, FIN, Kunde oder der Name Ihrer Werkstatt.",
+    "vehicleHintMarine": "Geteilt werden nur Marke, Modell, Baujahr und Motor, nie Kennzeichen, Rumpfnummer, Kunde oder der Name Ihrer Werkstatt.",
+    "send": "Lösung teilen",
+    "sent": "Danke. Ihre Lösung wartet auf Prüfung.",
+    "shareAnother": "Weitere Lösung teilen",
+    "cancel": "Abbrechen",
+    "sentOn": "Gesendet am {date}",
+    "reason": "Grund: {reason}",
+    "withdraw": "Zurückziehen",
+    "withdrawTitle": "Diese Lösung zurückziehen?",
+    "withdrawConfirm": "Sie wird mit ihren Fotos gelöscht, und keine andere Werkstatt sieht sie.",
+    "withdrawn": "Lösung zurückgezogen",
+    "withdrawFailed": "Die Lösung konnte gerade nicht zurückgezogen werden. Versuchen Sie es gleich noch einmal.",
+    "unavailable": "Das Teilen von Lösungen ist gerade nicht verfügbar.",
+    "status": {
+      "pending": "Wartet auf Prüfung",
+      "published": "Veröffentlicht",
+      "rejected": "Nicht veröffentlicht"
+    },
+    "errors": {
+      "failed": "Ihre Lösung konnte gerade nicht gesendet werden. Versuchen Sie es gleich noch einmal.",
+      "photo": "Eines der Fotos konnte nicht gelesen werden. Versuchen Sie ein anderes.",
+      "too_large": "Die Fotos sind zu groß. Versuchen Sie es mit weniger oder kleineren Fotos.",
+      "paused": "Das Teilen von Lösungen ist gerade pausiert. Versuchen Sie es später noch einmal.",
+      "demo": "Das Teilen von Lösungen ist in der Demo ausgeschaltet."
+    },
+    "invite": "{code} behoben? Erzählen Sie anderen Werkstätten, was geholfen hat.",
+    "inviteHint": "In Ihren eigenen Worten, gern mit ein paar Fotos. Eine Person bei Torqvoice prüft jede Lösung, bevor andere Werkstätten sie sehen.",
+    "start": "Lösung teilen",
+    "dialogTitle": "Lösung für {code} teilen",
+    "dialogDescription": "Andere Werkstätten sehen sie, sobald eine Person bei Torqvoice sie geprüft hat.",
+    "characters": "{count} / {max}",
+    "writingHint": "Was war defekt, wie haben Sie es gefunden und was hat es behoben? Teilenummern und Messwerte helfen anderen am meisten.",
+    "dropHere": "oder hierher ziehen",
+    "tooManyPhotosRemove": "Eine Lösung kann höchstens {max} Fotos haben. Entfernen Sie einige, um sie zu teilen.",
+    "phone": {
+      "button": "Vom Handy hinzufügen",
+      "hide": "Handy-Code ausblenden",
+      "title": "Fotos mit dem Handy aufnehmen",
+      "body": "Scannen Sie den Code mit der Handykamera. Ihre Fotos erscheinen hier, sobald sie ankommen.",
+      "failed": "Der Handy-Code konnte nicht erstellt werden. Schließen Sie das Fenster und versuchen Sie es erneut.",
+      "expires": "Der Code gilt bis {time}",
+      "copy": "Link kopieren",
+      "copied": "Kopiert",
+      "received": "{count, plural, one {# Foto} other {# Fotos}} vom Handy",
+      "badge": "Handy"
+    }
+  },
+  "fixes": {
+    "title": "Lösungen anderer Werkstätten",
+    "empty": "Noch keine andere Werkstatt hat eine Lösung für {code} geteilt.",
+    "unavailable": "Lösungen anderer Werkstätten sind gerade nicht verfügbar.",
+    "sharedOn": "Geteilt am {date}",
+    "unknownVehicle": "Fahrzeug nicht angegeben",
+    "unknownVehicleMarine": "Wasserfahrzeug nicht angegeben",
+    "writtenIn": "Sprache: {language}",
+    "photo": "Foto {n} von {count}",
+    "openPhoto": "Foto {n} öffnen"
+  },
+  "sheet": {
+    "description": "Die Bedeutung, wahrscheinliche Ursachen und die Aufträge Ihrer Werkstatt mit diesem Code.",
+    "loadFailed": "Dieser Code konnte nicht geöffnet werden.",
+    "loading": "Wird geladen…",
+    "openPage": "Codeseite öffnen"
+  },
+  "entry": {
+    "button": "Fehlercodes hinzufügen",
+    "title": "Fehlercodes hinzufügen",
+    "description": "Tippen oder fügen Sie Codes vom Diagnosegerät ein. Jeder wird eine Beobachtung an diesem Auftrag, mit gespeicherter Bedeutung.",
+    "placeholder": "P0420, P0171",
+    "empty": "Eingetippte oder eingefügte Codes erscheinen hier.",
+    "found": "Gefundene Codes",
+    "remove": "{code} entfernen",
+    "concern": "Beantwortet Anliegen",
+    "concernNone": "Kein Anliegen",
+    "cancel": "Abbrechen",
+    "add": "{count, plural, =0 {Codes hinzufügen} one {# Code hinzufügen} other {# Codes hinzufügen}}",
+    "added": "{count, plural, one {# Fehlercode hinzugefügt} other {# Fehlercodes hinzugefügt}}",
+    "skipped": "{count, plural, one {# Code war schon an diesem Auftrag} other {# Codes waren schon an diesem Auftrag}}",
+    "failed": "Die Codes konnten nicht hinzugefügt werden"
+  },
+  "finding": {
+    "seenBefore": "Gesehen {date}",
+    "seenBeforeTitle": "Schon früher an diesem Fahrzeug ausgelesen, zuletzt am {date}",
+    "seenBeforeTitleMarine": "Schon früher an diesem Wasserfahrzeug ausgelesen, zuletzt am {date}",
+    "updatedMeaning": "Neue Bedeutung",
+    "updatedMeaningTitle": "Die Bedeutung lautet jetzt: {meaning}. Tippen, um sie zu übernehmen.",
+    "taken": "Bedeutung aktualisiert",
+    "takeFailed": "Die Bedeutung konnte nicht aktualisiert werden",
+    "noMeaningSaved": "Noch keine Bedeutung gespeichert"
+  },
+  "page": {
+    "title": "Fehlercodes",
+    "intro": "Schlagen Sie einen Code nach oder durchsuchen Sie die Bedeutungen nach Wörtern wie mager Bank 1.",
+    "lookupLabel": "Code oder Wörter",
+    "lookupPlaceholder": "P0420 oder mager Bank 1",
+    "lookup": "Nachschlagen",
+    "cloudOnly": "Die Bedeutungen der Fehlercodes kommen von Torqvoice Codes, einem Teil von Torqvoice Cloud. Codes, die Ihre Werkstatt ausgelesen hat, stehen hier trotzdem.",
+    "results": "Codes zu „{query}“",
+    "noResults": "Kein Code passt zu „{query}“",
+    "recent": "Zuletzt in Ihrer Werkstatt ausgelesen",
+    "noRecent": "Noch keine Fehlercodes an einem Auftrag.",
+    "readTimes": "{count, plural, one {Einmal ausgelesen, {date}} other {# Mal ausgelesen, zuletzt {date}}}",
+    "notACode": "„{text}“ ist kein Fehlercode",
+    "notACodeHint": "Ein Fehlercode ist ein Buchstabe und vier Zeichen, etwa P0420 oder U0100.",
+    "recentLookups": "Ihre letzten Abfragen",
+    "recentLookupsEmpty": "Codes, die Sie öffnen, und Wörter, nach denen Sie suchen, erscheinen hier auf diesem Gerät.",
+    "clearRecent": "Leeren",
+    "tryExamples": "Beispiele",
+    "exampleWords": "mager Bank 1",
+    "searching": "Suche läuft"
+  },
+  "search": {
+    "group": "Fehlercodes",
+    "jobsWith": "Aufträge mit {code}",
+    "searchFor": "Fehlercodes nach „{query}“ durchsuchen"
+  },
+  "notice": {
+    "title": "Fehlercodes sind neu",
+    "body": "Wir fügen laufend Codes hinzu, daher ist noch nicht jeder Code hier. Derzeit sind die standardisierten OBD-II-Codes enthalten; herstellerspezifische Codes noch nicht."
+  },
+  "support": {
+    "button": "Support kontaktieren",
+    "subject": "Fehlercode {code}",
+    "subjectGeneral": "Fehlercodes",
+    "message": "Fehlercode {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Antrieb",
+    "B": "Karosserie",
+    "C": "Fahrwerk",
+    "U": "Netzwerk"
+  },
+  "phone": {
+    "title": "Fotos für eine Lösung",
+    "forCode": "für die Lösung, die Sie am Computer schreiben",
+    "intro": "Nehmen Sie bis zu {max} Fotos davon auf, was den Fehler behoben hat, oder wählen Sie sie aus. Sie erscheinen in der Lösung am Computer.",
+    "take": "Foto aufnehmen",
+    "choose": "Fotos auswählen",
+    "added": "{count} von {max} Fotos hinzugefügt",
+    "full": "Eine Lösung kann höchstens {max} Fotos haben.",
+    "notAPhoto": "Diese Datei ist kein Foto.",
+    "failed": "Das Foto konnte nicht hinzugefügt werden. Versuchen Sie es erneut.",
+    "done": "Wenn Sie fertig sind, kehren Sie zum Computer zurück und teilen Sie die Lösung.",
+    "privacy": "Halten Sie Gesichter, Kennzeichen und Kundendaten aus dem Bild.",
+    "expired": "Dieser Code ist abgelaufen. Zeigen Sie am Computer einen neuen an.",
+    "invalid": "Dieser Code funktioniert nicht. Zeigen Sie am Computer einen neuen an."
+  }
+}

@@ -12,7 +12,7 @@ import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLock
 import { InvoiceDesignMenu } from './InvoiceDesignMenu'
 import { PayCodeButton } from './PayCodeButton'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import {
@@ -58,6 +58,7 @@ import { ServiceHeaderActions } from './ServiceHeaderActions'
 import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
 import { ObservationsManager, type ObservationsControls } from './ObservationsManager'
+import { FaultCodesJobProvider } from '@/features/fault-codes/Components/FaultCodesOnJob'
 import type { ServicePageClientProps, ServiceTab } from './service-page-types'
 import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
 import { track } from '@/lib/analytics'
@@ -120,6 +121,7 @@ export function ServicePageClient({
   statusReports = [],
   initialTab,
   findings = [],
+  faultCodes = { connected: false, seenBefore: {} },
   openObservations = [],
   notificationHistory = [],
   designOptions = [],
@@ -636,44 +638,56 @@ export function ServicePageClient({
             )}
 
             <WorkOrderLayoutProvider value={true}>
-              <ModernDetails
-                {...jobProps}
-                {...sidebarProps}
-                workOrderStatuses={workOrderStatuses}
-                canAddStatus={canAddStatus}
-                onNotifyForStatus={handleNotifyForStatus}
+              <MaybeFaultCodes
+                info={faultCodes}
+                vehicleId={vehicleId}
+                serviceRecordId={record.id}
                 locked={lockState.locked}
-                lockedLabel={t('invoice.lockedFieldsetLabel')}
-                form={{
-                  id: 'service-record-form',
-                  ref: formState.formRef,
-                  onSubmit: actions.handleSubmit,
-                  onInput: formState.markDirty,
-                }}
-                files={{
-                  images: imageAttachmentsForManager,
-                  dropoff: dropoffAttachments,
-                  conditionMap,
-                  videos: videoAttachments,
-                  documents: documentAttachments,
-                  maxImages: maxImagesPerService,
-                  maxDiagnostics: maxDiagnosticsPerService,
-                  maxDocuments: maxDocumentsPerService,
-                  // A link with `?tab=` opens that tab here.
-                  initialTab:
-                    isFileTab || requestedTab === 'statusReports' ? requestedTab : undefined,
-                  statusReports: { count: statusReports.length, list: statusReportList },
-                }}
-                onPreviewInvoice={previewInvoice}
-                onSendToCustomer={shareInvoice}
-                title={title}
-                aiTranscription={aiTranscription}
-                dictationMode={dictationMode}
-                onAddFindingForConcern={(concernId) =>
-                  obsControlsRef.current?.onAddFinding(concernId)
-                }
-                scrollToFiles={isFileTab || requestedTab === 'statusReports'}
-              />
+                // Saved concerns only, as for findings.
+                concerns={formState.concerns.filter(
+                  (c): c is { id: string; description: string; sortOrder: number } =>
+                    Boolean(c.id) && Boolean(c.description.trim())
+                )}
+              >
+                <ModernDetails
+                  {...jobProps}
+                  {...sidebarProps}
+                  workOrderStatuses={workOrderStatuses}
+                  canAddStatus={canAddStatus}
+                  onNotifyForStatus={handleNotifyForStatus}
+                  locked={lockState.locked}
+                  lockedLabel={t('invoice.lockedFieldsetLabel')}
+                  form={{
+                    id: 'service-record-form',
+                    ref: formState.formRef,
+                    onSubmit: actions.handleSubmit,
+                    onInput: formState.markDirty,
+                  }}
+                  files={{
+                    images: imageAttachmentsForManager,
+                    dropoff: dropoffAttachments,
+                    conditionMap,
+                    videos: videoAttachments,
+                    documents: documentAttachments,
+                    maxImages: maxImagesPerService,
+                    maxDiagnostics: maxDiagnosticsPerService,
+                    maxDocuments: maxDocumentsPerService,
+                    // A link with `?tab=` opens that tab here.
+                    initialTab:
+                      isFileTab || requestedTab === 'statusReports' ? requestedTab : undefined,
+                    statusReports: { count: statusReports.length, list: statusReportList },
+                  }}
+                  onPreviewInvoice={previewInvoice}
+                  onSendToCustomer={shareInvoice}
+                  title={title}
+                  aiTranscription={aiTranscription}
+                  dictationMode={dictationMode}
+                  onAddFindingForConcern={(concernId) =>
+                    obsControlsRef.current?.onAddFinding(concernId)
+                  }
+                  scrollToFiles={isFileTab || requestedTab === 'statusReports'}
+                />
+              </MaybeFaultCodes>
               {vehicleId && (
                 <ObservationsManager
                   vehicleId={vehicleId}
@@ -963,5 +977,38 @@ export function ServicePageClient({
         </WorkshopTaxOfferProvider>
       </LineTaxProvider>
     </ShopFeeProvider>
+  )
+}
+
+/**
+ * The fault code tools exist on a job with a vehicle; a counter sale has no
+ * vehicle to read a code from.
+ */
+function MaybeFaultCodes({
+  info,
+  vehicleId,
+  serviceRecordId,
+  concerns,
+  locked,
+  children,
+}: {
+  info: NonNullable<ServicePageClientProps['faultCodes']>
+  vehicleId: string | null
+  serviceRecordId: string
+  concerns: { id: string; description: string }[]
+  locked: boolean
+  children: ReactNode
+}) {
+  if (!vehicleId) return <>{children}</>
+  return (
+    <FaultCodesJobProvider
+      info={info}
+      vehicleId={vehicleId}
+      serviceRecordId={serviceRecordId}
+      concerns={concerns}
+      locked={locked}
+    >
+      {children}
+    </FaultCodesJobProvider>
   )
 }
