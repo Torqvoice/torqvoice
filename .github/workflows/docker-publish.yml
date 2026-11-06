@@ -72,12 +72,20 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          # The POSTHOG_ lines upload the browser source maps to PostHog error
+          # tracking for app.torqvoice.com when the key is set, and skip it
+          # otherwise (see scripts/upload-source-maps.sh).
           build-args: |
             APP_VERSION=${{ steps.version.outputs.value }}
             NEXT_ACTIONS_FINGERPRINT=${{ steps.actions_key.outputs.id }}
+            POSTHOG_SOURCEMAPS=${{ secrets.POSTHOG_SOURCEMAPS_API_KEY != '' && 'on' || 'off' }}
+            POSTHOG_CLI_HOST=https://eu.posthog.com
+            POSTHOG_CLI_PROJECT_ID=142584
+            POSTHOG_UPLOAD_ATTEMPT=${{ github.run_id }}-${{ github.run_attempt }}
           # Keeps server action IDs the same from release to release, so tabs
           # opened before a deploy keep working (see the Dockerfile).
           secrets: |
             next_actions_key=${{ secrets.NEXT_SERVER_ACTIONS_BUILD_KEY }}
+            posthog_cli_api_key=${{ secrets.POSTHOG_SOURCEMAPS_API_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
