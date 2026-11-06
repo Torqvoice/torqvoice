@@ -147,5 +147,13 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
+# Healthy means the server can do its job: the database answers within three
+# seconds, uploads can be written and the background jobs are still firing
+# (src/lib/health.ts). The deploy workflows wait for it. The start period
+# covers the migrations init-db.sh runs before the server is up. busybox wget
+# exits 1 on a 503, and -Y off keeps a proxy set for the app out of the probe.
+HEALTHCHECK --interval=15s --timeout=5s --start-period=60s --retries=3 \
+    CMD wget -q -Y off -T 4 -O /dev/null "http://127.0.0.1:${PORT:-3000}/api/v1/health" || exit 1
+
 ENTRYPOINT ["./init-db.sh"]
 CMD ["node", "server.js"]

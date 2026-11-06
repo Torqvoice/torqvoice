@@ -245,17 +245,20 @@ jobs:
 
       - name: Health check
         run: |
-          echo "Waiting for staging container to be ready..."
-          for i in $(seq 1 12); do
-            STATUS=$(docker inspect --format='{{.State.Status}}' torqvoice-app-staging 2>/dev/null || echo "not found")
-            if [ "$STATUS" = "running" ]; then
+          echo "Waiting for the staging container to report healthy..."
+          # Healthy is the image's own HEALTHCHECK passing: database, uploads and
+          # background jobs (see the Dockerfile). An image from before it has no
+          # health status, and then running is all there is to wait for.
+          for i in $(seq 1 36); do
+            STATUS=$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' torqvoice-app-staging 2>/dev/null || echo "not found")
+            if [ "$STATUS" = "healthy" ] || [ "$STATUS" = "running" ]; then
               echo "Container is running!"
               exit 0
             fi
             echo "Status: $STATUS, retrying in 5s..."
             sleep 5
           done
-          echo "::error::Container failed to start"
+          echo "::error::Container did not become healthy"
           docker logs torqvoice-app-staging --tail 50
           exit 1
 

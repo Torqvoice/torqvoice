@@ -41,4 +41,20 @@ test.describe('smoke', () => {
     expect(body.data?.api).toBe('v1')
     expect(body.data?.minAppVersion).toMatch(/^\d+\.\d+\.\d+$/)
   })
+
+  test('the container health check answers healthy', async ({ request }) => {
+    // Docker and the deploy workflows decide on this answer. The server the
+    // suite starts runs with DISABLE_BACKGROUND_JOBS=1, so "disabled" there
+    // also proves the route sees what instrumentation recorded, which only a
+    // real build shows. A server it is pointed at with E2E_BASE_URL may be
+    // running its jobs, and then "ok" is the healthy answer too.
+    const jobs = process.env.E2E_BASE_URL ? ['ok', 'disabled'] : ['disabled']
+    const response = await request.get('/api/v1/health')
+    expect(response.status()).toBe(200)
+    const body = (await response.json()) as { status: string; checks: Record<string, string> }
+    expect(body.status).toBe('ok')
+    expect(body.checks.database).toBe('ok')
+    expect(body.checks.storage).toBe('ok')
+    expect(jobs).toContain(body.checks.jobs)
+  })
 })
