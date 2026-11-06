@@ -55,6 +55,11 @@ RUN --mount=type=secret,id=next_actions_key \
 ARG APP_VERSION=development
 ARG POSTHOG_CLI_HOST
 ARG POSTHOG_CLI_PROJECT_ID
+# The image workflows give this a new value on every run, rerun included. The
+# upload step then runs again rather than reusing a cached result, so a failed
+# upload, or one made with a key since replaced, is retried. It comes after the
+# build, so the Next build itself stays cached.
+ARG POSTHOG_UPLOAD_ATTEMPT=none
 RUN --mount=type=secret,id=posthog_cli_api_key \
     sh scripts/upload-source-maps.sh
 

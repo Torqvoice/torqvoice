@@ -81,6 +81,7 @@ jobs:
             POSTHOG_SOURCEMAPS=${{ secrets.POSTHOG_SOURCEMAPS_API_KEY != '' && 'on' || 'off' }}
             POSTHOG_CLI_HOST=https://eu.posthog.com
             POSTHOG_CLI_PROJECT_ID=142584
+            POSTHOG_UPLOAD_ATTEMPT=${{ github.run_id }}-${{ github.run_attempt }}
           # Keeps server action IDs the same from release to release, so tabs
           # opened before a deploy keep working (see the Dockerfile).
           secrets: |
