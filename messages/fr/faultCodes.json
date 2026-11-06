@@ -144,7 +144,8 @@
       "copied": "Copié",
       "received": "{count, plural, one {# photo} other {# photos}} depuis votre téléphone",
       "badge": "Téléphone"
-    }
+    },
+    "editedNote": "Modifiée lors de la vérification"
   },
   "fixes": {
     "title": "Solutions d'autres ateliers",

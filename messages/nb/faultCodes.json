@@ -144,7 +144,8 @@
       "copied": "Kopiert",
       "received": "{count, plural, one {# bilde} other {# bilder}} fra mobilen",
       "badge": "Mobil"
-    }
+    },
+    "editedNote": "Redigert under gjennomgang"
   },
   "fixes": {
     "title": "Løsninger fra andre verksteder",

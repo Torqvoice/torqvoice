@@ -494,6 +494,7 @@ function ownFixOf(fix: FaultCodeOwnFix): OwnFix {
     status: fix.status,
     reason: fix.reason,
     reviewedAt: fix.reviewedAt,
+    edited: fix.edited,
   }
 }
 
@@ -561,6 +562,7 @@ export async function shareFix(
       status: 'pending',
       reason: null,
       reviewedAt: null,
+      edited: false,
     },
   }
 }
