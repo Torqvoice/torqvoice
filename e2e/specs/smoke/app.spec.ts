@@ -41,4 +41,16 @@ test.describe('smoke', () => {
     expect(body.data?.api).toBe('v1')
     expect(body.data?.minAppVersion).toMatch(/^\d+\.\d+\.\d+$/)
   })
+
+  test('the container health check answers healthy', async ({ request }) => {
+    // Docker and the deploy workflows decide on this answer. The suite's server
+    // runs with DISABLE_BACKGROUND_JOBS=1, so "disabled" here also proves the
+    // route sees what instrumentation recorded, which only a real build shows.
+    const response = await request.get('/api/v1/health')
+    expect(response.status()).toBe(200)
+    expect(await response.json()).toEqual({
+      status: 'ok',
+      checks: { database: 'ok', storage: 'ok', jobs: 'disabled' },
+    })
+  })
 })
