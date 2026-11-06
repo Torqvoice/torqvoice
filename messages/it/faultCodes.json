@@ -149,7 +149,8 @@
       "copied": "Copiato",
       "received": "{count, plural, one {# foto} other {# foto}} dal telefono",
       "badge": "Telefono"
-    }
+    },
+    "editedNote": "Modificata durante la revisione"
   },
   "fixes": {
     "title": "Soluzioni di altre officine",

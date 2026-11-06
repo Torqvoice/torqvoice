@@ -149,7 +149,8 @@
       "copied": "Copiado",
       "received": "{count, plural, one {# fotografia} other {# fotografias}} do telemóvel",
       "badge": "Telemóvel"
-    }
+    },
+    "editedNote": "Editada durante a revisão"
   },
   "fixes": {
     "title": "Soluções de outras oficinas",

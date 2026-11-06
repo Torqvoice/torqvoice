@@ -272,6 +272,7 @@ function ownFix(patch: Partial<OwnFix> = {}): OwnFix {
     status: 'pending',
     reason: null,
     reviewedAt: null,
+    edited: false,
     ...patch,
   }
 }
@@ -790,6 +791,22 @@ describe('sharing what fixed a code', () => {
       )
     )
     expect(dialog.getByLabelText('What fixed it')).toHaveValue(FIXED_IT)
+  })
+
+  it('says when a reviewer corrected the fix', () => {
+    renderPage(
+      <FaultCodeDetail
+        data={pageData({
+          fixes: {
+            available: true,
+            published: [],
+            own: [ownFix({ status: 'published', edited: true })],
+          },
+        })}
+        layout="page"
+      />
+    )
+    expect(card('Share your fix').getByText(/Edited during review/)).toBeInTheDocument()
   })
 
   it('says why a fix was not published, and withdraws it', async () => {

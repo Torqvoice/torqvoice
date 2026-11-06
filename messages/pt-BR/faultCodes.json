@@ -149,7 +149,8 @@
       "copied": "Copiado",
       "received": "{count, plural, one {# foto} other {# fotos}} do celular",
       "badge": "Celular"
-    }
+    },
+    "editedNote": "Editada durante a revisão"
   },
   "fixes": {
     "title": "Soluções de outras oficinas",

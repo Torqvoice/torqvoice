@@ -149,7 +149,8 @@
       "copied": "Copied",
       "received": "{count, plural, one {# photo} other {# photos}} from your phone",
       "badge": "Phone"
-    }
+    },
+    "editedNote": "Edited during review"
   },
   "fixes": {
     "title": "Fixes from other workshops",

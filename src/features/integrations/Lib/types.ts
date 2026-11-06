@@ -769,6 +769,8 @@ export interface FaultCodeOwnFix extends FaultCodeFix {
   /** The reviewer's reason, when it was not published. */
   reason: string | null
   reviewedAt: string | null
+  /** A reviewer corrected the text, the vehicle or the photos. */
+  edited: boolean
 }
 
 export interface FaultCodeFixInput {

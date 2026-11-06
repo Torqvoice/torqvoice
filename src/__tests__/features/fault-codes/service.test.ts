@@ -332,7 +332,7 @@ describe('shared fixes for a workshop', () => {
   it('remembers only the id of a fix it shared, and shows it waiting for review', async () => {
     h.shareFix.mockResolvedValueOnce({ ok: true, id: 'f1' })
     h.fixStatus.mockResolvedValueOnce([
-      fix('f1', { status: 'pending', reason: null, reviewedAt: null }),
+      fix('f1', { status: 'pending', reason: null, reviewedAt: null, edited: false }),
     ])
     const photo = new Blob(['jpeg'], { type: 'image/jpeg' })
     const result = await shareFix('org1', {
@@ -381,7 +381,12 @@ describe('shared fixes for a workshop', () => {
     h.links.set('fault-code-fix:P0420|gone', { remoteId: 'gone', metadata: null })
     h.publishedFixes.mockResolvedValueOnce([fix('theirs'), fix('mine')])
     h.fixStatus.mockResolvedValueOnce([
-      fix('mine', { status: 'published', reason: null, reviewedAt: '2026-11-06T09:00:00Z' }),
+      fix('mine', {
+        status: 'published',
+        reason: null,
+        reviewedAt: '2026-11-06T09:00:00Z',
+        edited: false,
+      }),
     ])
     const fixes = await fixesFor('org1', 'P0420')
     expect(fixes.available).toBe(true)

@@ -149,7 +149,8 @@
       "copied": "Kopiert",
       "received": "{count, plural, one {# Foto} other {# Fotos}} vom Handy",
       "badge": "Handy"
-    }
+    },
+    "editedNote": "Bei der Prüfung bearbeitet"
   },
   "fixes": {
     "title": "Lösungen anderer Werkstätten",

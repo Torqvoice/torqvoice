@@ -187,6 +187,8 @@ export interface OwnFix extends SharedFix {
   /** Why it was not published, in the reviewer's words. */
   reason: string | null
   reviewedAt: string | null
+  /** A reviewer at Torqvoice corrected the text, the vehicle or the photos. */
+  edited: boolean
 }
 
 /** The fixes on a code's page. */

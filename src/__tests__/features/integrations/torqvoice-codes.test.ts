@@ -538,6 +538,7 @@ describe('Torqvoice Codes shared fixes', () => {
             status: 'rejected',
             reason: 'The photo shows a plate.',
             reviewed_at: '2026-11-06T09:00:00Z',
+            edited: true,
           },
         ],
       })
@@ -550,6 +551,7 @@ describe('Torqvoice Codes shared fixes', () => {
       status: 'rejected',
       reason: 'The photo shows a plate.',
       reviewedAt: '2026-11-06T09:00:00Z',
+      edited: true,
     })
   })
 

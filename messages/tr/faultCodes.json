@@ -149,7 +149,8 @@
       "copied": "Kopyalandı",
       "received": "{count, plural, one {# fotoğraf} other {# fotoğraf}} telefondan",
       "badge": "Telefon"
-    }
+    },
+    "editedNote": "İnceleme sırasında düzenlendi"
   },
   "fixes": {
     "title": "Diğer atölyelerin çözümleri",

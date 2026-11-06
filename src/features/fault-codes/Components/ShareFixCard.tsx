@@ -130,7 +130,9 @@ export function ShareFixCard({
                     {statusLabel[fix.status]}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {t('sentOn', { date: formatDate(fix.createdAt) })}
+                    {fix.edited
+                      ? `${t('sentOn', { date: formatDate(fix.createdAt) })} · ${t('editedNote')}`
+                      : t('sentOn', { date: formatDate(fix.createdAt) })}
                   </span>
                 </div>
                 {fix.status === 'rejected' && fix.reason && (
