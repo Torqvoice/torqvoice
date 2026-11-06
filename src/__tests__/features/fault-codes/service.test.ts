@@ -10,6 +10,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const h = vi.hoisted(() => ({
   connections: [] as { id: string; connectorId: string }[],
   lookupCodes: vi.fn(),
+  oemCode: vi.fn(),
+  oemMakes: vi.fn(async () => ['bmw']),
   shareFix: vi.fn(),
   fixStatus: vi.fn(),
   withdrawFix: vi.fn(),
@@ -63,6 +65,8 @@ vi.mock('@/features/integrations/Lib/connections', () => ({
     ctx: { links },
     server: {
       lookupCodes: h.lookupCodes,
+      oemCode: h.oemCode,
+      oemMakes: h.oemMakes,
       shareFix: h.shareFix,
       fixStatus: h.fixStatus,
       withdrawFix: h.withdrawFix,
@@ -71,9 +75,8 @@ vi.mock('@/features/integrations/Lib/connections', () => ({
   })),
 }))
 
-const { fixesFor, lookupMeanings, shareFix, viewOf, withdrawSharedFix } = await import(
-  '@/features/fault-codes/Lib/service.server'
-)
+const { fixesFor, lookupMeanings, searchOemCodes, shareFix, viewOf, withdrawSharedFix } =
+  await import('@/features/fault-codes/Lib/service.server')
 
 const P0420 = {
   code: 'P0420',
@@ -210,6 +213,119 @@ const fix = (id: string, patch: Record<string, unknown> = {}) => ({
   photos: [],
   createdAt: '2026-11-05T10:00:00Z',
   ...patch,
+})
+
+describe('BMW codes on a BMW', () => {
+  const VANOS = {
+    id: 'einlass-vanos',
+    text: 'Einlass-VANOS',
+    textLang: 'de',
+    textEn: 'Inlet VANOS',
+    modules: [{ ref: 'msd80', family: 'DME', name: null }],
+    vehicles: [],
+    engines: ['N54'],
+    matches: true,
+    lang: null,
+    title: null,
+    description: null,
+    sections: [],
+    causes: [],
+  }
+
+  it('looks a BMW code up in BMW data with the engine, in English where BMW has it', async () => {
+    h.connections = [{ id: 'c1', connectorId: 'torqvoice-codes' }]
+    h.oemCode.mockReset()
+    h.lookupCodes.mockReset()
+    h.oemCode.mockResolvedValueOnce({ source: 'bmw', code: '2A82', meanings: [VANOS] })
+    h.lookupCodes.mockResolvedValueOnce([P0420])
+    const { available, results } = await lookupMeanings(
+      'org1',
+      ['P0420', '2A82'],
+      { make: 'BMW', model: '335i', year: 2008, engine: 'N54B30' },
+      'en'
+    )
+    expect(available).toBe(true)
+    expect(h.oemCode).toHaveBeenCalledWith(expect.anything(), {
+      source: 'bmw',
+      code: '2A82',
+      engine: 'N54B30',
+      locale: 'en',
+    })
+    expect(h.lookupCodes.mock.calls[0][1].codes).toEqual(['P0420'])
+    expect(results[1]).toMatchObject({
+      code: '2A82',
+      state: 'found',
+      title: 'Inlet VANOS',
+      lang: 'en',
+      source: 'manufacturer',
+      range: 'manufacturer',
+    })
+  })
+
+  it("shows BMW's own text where there is no English, and nothing for a code BMW lacks", async () => {
+    h.connections = [{ id: 'c1', connectorId: 'torqvoice-codes' }]
+    h.oemCode.mockReset()
+    h.oemCode
+      .mockResolvedValueOnce({ source: 'bmw', code: '2A82', meanings: [VANOS] })
+      .mockResolvedValueOnce({ source: 'bmw', code: 'CD87', meanings: [] })
+    const { results } = await lookupMeanings(
+      'org1',
+      ['2A82', 'CD87'],
+      { make: 'MINI', model: 'Cooper', year: 2010 },
+      'nb'
+    )
+    expect(results[0]).toMatchObject({ title: 'Einlass-VANOS', lang: 'de' })
+    expect(results[1]).toMatchObject({ code: 'CD87', state: 'unknown', title: null })
+  })
+
+  it("finds a make's code typed in full in each make the service serves", async () => {
+    h.connections = [{ id: 'c1', connectorId: 'torqvoice-codes' }]
+    h.oemCode.mockReset()
+    h.oemCode.mockResolvedValueOnce({
+      source: 'bmw',
+      code: '2A82',
+      meanings: [
+        { ...VANOS, lang: 'en', title: 'Inlet camshaft adjustment (VANOS)' },
+        { ...VANOS, id: 'other', text: 'Lambdasonden' },
+      ],
+    })
+    const hits = await searchOemCodes('org1', '0x2a82', 'en')
+    expect(h.oemCode).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ source: 'bmw', code: '2A82' })
+    )
+    expect(hits).toEqual([
+      {
+        make: 'bmw',
+        makeName: 'BMW',
+        code: '2A82',
+        title: 'Inlet camshaft adjustment (VANOS)',
+        meanings: 2,
+      },
+    ])
+    // Too short to be a whole code, or not one: nothing asked.
+    h.oemCode.mockReset()
+    expect(await searchOemCodes('org1', '2A8', 'en')).toEqual([])
+    expect(await searchOemCodes('org1', 'lean bank', 'en')).toEqual([])
+    expect(h.oemCode).not.toHaveBeenCalled()
+  })
+
+  it('names the code by our own title when we have written text for it', async () => {
+    h.connections = [{ id: 'c1', connectorId: 'torqvoice-codes' }]
+    h.oemCode.mockReset()
+    h.oemCode.mockResolvedValueOnce({
+      source: 'bmw',
+      code: '2A82',
+      meanings: [{ ...VANOS, lang: 'en', title: 'Inlet camshaft adjustment (VANOS)' }],
+    })
+    const { results } = await lookupMeanings(
+      'org1',
+      ['2A82'],
+      { make: 'BMW', model: '335i', year: 2008 },
+      'nb'
+    )
+    expect(results[0]).toMatchObject({ title: 'Inlet camshaft adjustment (VANOS)', lang: 'en' })
+  })
 })
 
 describe('shared fixes for a workshop', () => {

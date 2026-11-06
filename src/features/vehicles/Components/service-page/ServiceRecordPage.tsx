@@ -36,6 +36,7 @@ import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSetting
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { faultCodesConnected, seenBefore } from '@/features/fault-codes/Lib/service.server'
+import { oemSourceFor } from '@/features/fault-codes/Lib/codes'
 import { db } from '@/lib/db'
 import {
   loadVehicleConditionMarks,
@@ -409,6 +410,7 @@ export async function ServiceRecordPage({
       ? {
           connected: await faultCodesConnected(organizationId),
           seenBefore: await seenBefore(organizationId, vehicleId, serviceId, jobCodes),
+          oemSource: oemSourceFor(record.vehicle?.make),
         }
       : { connected: false, seenBefore: {} }
   const openObservations = vehicleId

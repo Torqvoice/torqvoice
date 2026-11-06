@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { MediaLightbox } from '@/features/inspections/Components/MediaLightbox'
-import type { FixPhoto, SharedFix } from '../Lib/types'
+import type { FixPhoto } from '../Lib/types'
 
 /** Where the app serves a shared fix's photo from the code service. */
 export function fixPhotoUrl(id: string, n: number, size: 'full' | 'thumb' = 'full'): string {
@@ -12,7 +12,14 @@ export function fixPhotoUrl(id: string, n: number, size: 'full' | 'thumb' = 'ful
 }
 
 /** "2014 Volkswagen Golf · CAXA", or null when the fix names no vehicle. */
-export function fixVehicleLine(vehicle: SharedFix['vehicle']): string | null {
+export function fixVehicleLine(
+  vehicle: {
+    make?: string | null
+    model?: string | null
+    year?: number | null
+    engine?: string | null
+  } | null
+): string | null {
   if (!vehicle) return null
   const name = [vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(' ')
   const line = [name, vehicle.engine].filter(Boolean).join(' · ')

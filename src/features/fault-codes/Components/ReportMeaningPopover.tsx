@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Flag, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { track } from '@/lib/analytics'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -57,6 +58,7 @@ export function ReportMeaningPopover({
     })
     setSending(false)
     if (result.success && result.data?.sent && result.data.report) {
+      track('fault_code:report_send', { code, reason })
       toast.success(t('thanks'))
       onReported(result.data.report)
       setOpen(false)

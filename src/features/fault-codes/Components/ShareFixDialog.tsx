@@ -2,9 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
-import { QRCodeSVG } from 'qrcode.react'
-import { Check, Copy, ImagePlus, Loader2, Send, Smartphone, X } from 'lucide-react'
+import { ImagePlus, Loader2, Send, Smartphone, X } from 'lucide-react'
 import { toast } from 'sonner'
+import { track } from '@/lib/analytics'
 import { useServiceType } from '@/components/service-type-context'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,12 +19,15 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { compressImage } from '@/lib/compress-image'
-import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { RichTextEditor } from '@/features/vehicles/Components/service-edit/RichTextEditor'
-import { createFixPhoneLink } from '../Actions/createFixPhoneLink'
-import { listFixDraftPhotos } from '../Actions/listFixDraftPhotos'
-import { removeFixDraftPhoto } from '../Actions/removeFixDraftPhoto'
 import { htmlToFixMarkdown } from '../Lib/fixMarkdown'
 import type { CodeVehicle, OwnFix } from '../Lib/types'
 import {
@@ -34,24 +37,14 @@ import {
   MAX_FIX_TEXT,
 } from '../Schema/faultCodeSchema'
 import { fixVehicleLine } from './FixPhotos'
+import { PhoneCodePanel, usePhoneDraft, uuid } from './PhoneCode'
 
 const SHARE_URL = '/api/protected/fault-codes/fixes'
-const POLL_MS = 2500
 
 type Picked = { file: File; url: string }
 type ShareReply = { success: true; data: OwnFix } | { success: false; error?: string }
 const FAILURES = ['photo', 'too_large', 'paused', 'demo'] as const
 type Failure = (typeof FAILURES)[number]
-
-/** A v4 UUID, also where `crypto.randomUUID` is missing (plain http on a LAN). */
-function uuid(): string {
-  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID()
-  const b = crypto.getRandomValues(new Uint8Array(16))
-  b[6] = (b[6] & 0x0f) | 0x40
-  b[8] = (b[8] & 0x3f) | 0x80
-  const h = Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('')
-  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`
-}
 
 /**
  * Writing a fix for other workshops: what fixed the code in the
@@ -64,28 +57,40 @@ export function ShareFixDialog({
   open,
   onOpenChange,
   code,
+  label = code,
+  meaning = null,
+  makes = null,
   vehicle,
   onShared,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   code: string
+  /** The code as people read it ("BMW 283700"); the code itself otherwise. */
+  label?: string
+  /** For a make's own code, the meaning the fix is for, which goes with it. */
+  meaning?: { id: string; title: string } | null
+  /** The makes the code is on (BMW, MINI, Rolls-Royce): the make is picked from them, the first first. */
+  makes?: string[] | null
   vehicle: CodeVehicle | null
   onShared: (fix: OwnFix) => void
 }) {
   const t = useTranslations('faultCodes.share')
   const locale = useLocale()
   const isMarine = useServiceType() === 'marine'
-  const { formatTime } = useFormatDate()
   const [html, setHtml] = useState('')
   const [picked, setPicked] = useState<Picked[]>([])
-  const [phone, setPhone] = useState<{ id: string; url: string }[]>([])
   const [draftId, setDraftId] = useState(uuid)
   const [phoneOpen, setPhoneOpen] = useState(false)
-  const [link, setLink] = useState<{ url: string; expiresAt: Date } | null>(null)
-  const [linkFailed, setLinkFailed] = useState(false)
-  const [copied, setCopied] = useState(false)
-  const [make, setMake] = useState('')
+  const {
+    link,
+    failed: linkFailed,
+    photos: phone,
+    setPhotos: setPhone,
+    remove: removePhone,
+  } = usePhoneDraft({ active: open && phoneOpen, code, draftId, purpose: 'fix' })
+  const defaultMake = makes?.[0] ?? ''
+  const [make, setMake] = useState(defaultMake)
   const [model, setModel] = useState('')
   const [year, setYear] = useState('')
   const [adding, setAdding] = useState(false)
@@ -106,50 +111,6 @@ export function ShareFixDialog({
   const photoCount = picked.length + phone.length
   const tooManyPhotos = photoCount > MAX_FIX_PHOTOS
   const room = Math.max(0, MAX_FIX_PHOTOS - photoCount)
-
-  // A fresh phone code each time the panel opens; the last may have lapsed.
-  useEffect(() => {
-    if (!open || !phoneOpen) return
-    let cancelled = false
-    setLink(null)
-    setLinkFailed(false)
-    createFixPhoneLink({ code, draftId })
-      .then((result) => {
-        if (cancelled) return
-        if (!result.success || !result.data) {
-          setLinkFailed(true)
-          return
-        }
-        setLink({
-          url: `${window.location.origin}/p/${result.data.token}`,
-          expiresAt: new Date(result.data.expiresAt),
-        })
-      })
-      .catch(() => {
-        if (!cancelled) setLinkFailed(true)
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [open, phoneOpen, code, draftId])
-
-  // Phone photos show here as they land, while the code is up.
-  useEffect(() => {
-    if (!open || !phoneOpen) return
-    const read = async () => {
-      const result = await listFixDraftPhotos({ draftId }).catch(() => null)
-      if (result?.success && result.data) setPhone(result.data)
-    }
-    void read()
-    const timer = setInterval(read, POLL_MS)
-    return () => clearInterval(timer)
-  }, [open, phoneOpen, draftId])
-
-  useEffect(() => {
-    if (!copied) return
-    const timer = setTimeout(() => setCopied(false), 1500)
-    return () => clearTimeout(timer)
-  }, [copied])
 
   const addPhotos = async (list: FileList | File[] | null) => {
     if (!list || list.length === 0) return
@@ -186,11 +147,6 @@ export function ShareFixDialog({
     setPicked((current) => current.filter((p) => p.url !== url))
   }
 
-  const removePhone = async (photoId: string) => {
-    setPhone((current) => current.filter((p) => p.id !== photoId))
-    await removeFixDraftPhoto({ draftId, photoId }).catch(() => null)
-  }
-
   const reset = () => {
     for (const p of picked) URL.revokeObjectURL(p.url)
     setHtml('')
@@ -198,7 +154,7 @@ export function ShareFixDialog({
     setPhone([])
     setPhoneOpen(false)
     setDraftId(uuid())
-    setMake('')
+    setMake(defaultMake)
     setModel('')
     setYear('')
   }
@@ -208,6 +164,7 @@ export function ShareFixDialog({
     setSending(true)
     const form = new FormData()
     form.append('code', code)
+    if (meaning) form.append('meaning', meaning.id)
     form.append('text', markdown)
     form.append('lang', locale)
     if (phone.length > 0) form.append('draftId', draftId)
@@ -228,6 +185,11 @@ export function ShareFixDialog({
     }
     setSending(false)
     if (reply?.success) {
+      track('fault_code:fix_share', {
+        code,
+        photos: picked.length + phone.length,
+        from_phone: phone.length > 0,
+      })
       onShared(reply.data)
       reset()
       onOpenChange(false)
@@ -246,11 +208,21 @@ export function ShareFixDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
-          <DialogTitle>{t('dialogTitle', { code })}</DialogTitle>
+          <DialogTitle>{t('dialogTitle', { code: label })}</DialogTitle>
           <DialogDescription>{t('dialogDescription')}</DialogDescription>
         </DialogHeader>
 
         <DialogBody className="space-y-6">
+          {/* A make's code means one thing per control unit: the fix is for the one on screen. */}
+          {meaning && (
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-card-edge bg-muted/30 px-4 py-3">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t('meaning')}
+              </span>
+              <span className="text-sm font-medium">{meaning.title}</span>
+              <span className="w-full text-xs text-muted-foreground">{t('meaningHint')}</span>
+            </div>
+          )}
           {/* The vehicle: from the job, or typed, all of it optional. */}
           {vehicle ? (
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-card-edge bg-muted/30 px-4 py-3">
@@ -272,12 +244,27 @@ export function ShareFixDialog({
                   <Label htmlFor={`fix-make-${code}`} className="text-xs text-muted-foreground">
                     {t('make')}
                   </Label>
-                  <Input
-                    id={`fix-make-${code}`}
-                    value={make}
-                    maxLength={60}
-                    onChange={(e) => setMake(e.target.value)}
-                  />
+                  {makes ? (
+                    <Select value={make} onValueChange={setMake}>
+                      <SelectTrigger id={`fix-make-${code}`} className="w-full">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {makes.map((m) => (
+                          <SelectItem key={m} value={m}>
+                            {m}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  ) : (
+                    <Input
+                      id={`fix-make-${code}`}
+                      value={make}
+                      maxLength={60}
+                      onChange={(e) => setMake(e.target.value)}
+                    />
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label htmlFor={`fix-model-${code}`} className="text-xs text-muted-foreground">
@@ -359,48 +346,13 @@ export function ShareFixDialog({
             </div>
 
             {phoneOpen && (
-              <div className="flex flex-col items-center gap-4 rounded-lg border border-card-edge bg-muted/30 p-4 sm:flex-row sm:items-start">
-                <div className="flex size-[164px] shrink-0 items-center justify-center rounded-lg bg-white p-2 shadow-sm">
-                  {link ? (
-                    <QRCodeSVG value={link.url} size={148} marginSize={0} />
-                  ) : linkFailed ? (
-                    <X className="size-6 text-muted-foreground" aria-hidden />
-                  ) : (
-                    <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
-                  )}
-                </div>
-                <div className="min-w-0 flex-1 space-y-2 text-center sm:text-left">
-                  <p className="text-sm font-medium">{t('phone.title')}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {linkFailed ? t('phone.failed') : t('phone.body')}
-                  </p>
-                  {link && (
-                    <>
-                      <p className="text-xs text-muted-foreground">
-                        {t('phone.expires', { time: formatTime(link.expiresAt) })}
-                      </p>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="xs"
-                        className="text-muted-foreground"
-                        onClick={() => {
-                          void navigator.clipboard?.writeText(link.url)
-                          setCopied(true)
-                        }}
-                      >
-                        {copied ? <Check /> : <Copy />}
-                        {copied ? t('phone.copied') : t('phone.copy')}
-                      </Button>
-                    </>
-                  )}
-                  {phone.length > 0 && (
-                    <p className="text-xs font-medium text-primary" aria-live="polite">
-                      {t('phone.received', { count: phone.length })}
-                    </p>
-                  )}
-                </div>
-              </div>
+              <PhoneCodePanel
+                link={link}
+                failed={linkFailed}
+                title={t('phone.title')}
+                body={t('phone.body')}
+                received={phone.length > 0 ? t('phone.received', { count: phone.length }) : null}
+              />
             )}
 
             <div

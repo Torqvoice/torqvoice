@@ -218,6 +218,11 @@ export interface FixHandoff {
   userId: string
   /** Unix seconds. */
   expiresAt: number
+  /**
+   * What the photos are for: a fix (up to four photos of what fixed it) or a waveform (one
+   * photo of the scope screen). A code made before waveforms is for a fix.
+   */
+  purpose: 'fix' | 'waveform'
 }
 
 export function isFixHandoffToken(token: string): boolean {
@@ -225,7 +230,7 @@ export function isFixHandoffToken(token: string): boolean {
 }
 
 export function createFixHandoffToken(
-  handoff: Omit<FixHandoff, 'expiresAt'>,
+  handoff: Omit<FixHandoff, 'expiresAt' | 'purpose'> & { purpose?: FixHandoff['purpose'] },
   now = Date.now()
 ): { token: string; expiresAt: Date } {
   const expiresAt = Math.floor(now / 1000) + PHOTO_HANDOFF_TTL_SECONDS
@@ -236,6 +241,7 @@ export function createFixHandoffToken(
       d: handoff.draftId,
       u: handoff.userId,
       e: expiresAt,
+      ...(handoff.purpose === 'waveform' ? { p: 'w' } : {}),
     })
   ).toString('base64url')
   return {
@@ -251,13 +257,13 @@ export type FixHandoffCheck =
 export function verifyFixHandoffToken(token: string, now = Date.now()): FixHandoffCheck {
   const body = signedBody(token, FIX_PREFIX)
   if (!body) return { ok: false, reason: 'invalid' }
-  let payload: { o?: unknown; c?: unknown; d?: unknown; u?: unknown; e?: unknown }
+  let payload: { o?: unknown; c?: unknown; d?: unknown; u?: unknown; e?: unknown; p?: unknown }
   try {
     payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
   } catch {
     return { ok: false, reason: 'invalid' }
   }
-  const { o, c, d, u, e } = payload
+  const { o, c, d, u, e, p } = payload
   if (
     typeof o !== 'string' ||
     typeof c !== 'string' ||
@@ -268,5 +274,15 @@ export function verifyFixHandoffToken(token: string, now = Date.now()): FixHando
     return { ok: false, reason: 'invalid' }
   }
   if (e * 1000 <= now) return { ok: false, reason: 'expired' }
-  return { ok: true, handoff: { organizationId: o, code: c, draftId: d, userId: u, expiresAt: e } }
+  return {
+    ok: true,
+    handoff: {
+      organizationId: o,
+      code: c,
+      draftId: d,
+      userId: u,
+      expiresAt: e,
+      purpose: p === 'w' ? 'waveform' : 'fix',
+    },
+  }
 }

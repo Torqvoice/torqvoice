@@ -11,6 +11,19 @@ import {
   type FaultCodeReport,
   type FaultCodeReportStatus,
   type FaultCodeSearchHit,
+  type FaultCodeOwnWaveform,
+  type FaultCodeResearch,
+  type FaultCodeWaveform,
+  type FaultCodeWaveformInput,
+  type WaveformFileRole,
+  type FaultCodeResearchRefusal,
+  type CodeImportChecked,
+  type CodeImportCounts,
+  type CodeImportInput,
+  type CodeImportRefusal,
+  type CodeImportStatus,
+  type OemCodeAnswer,
+  type OemFindHit,
   FaultCodesUnavailable,
   type FaultCodeText,
   type FaultCodeVehicle,
@@ -77,6 +90,9 @@ const SECTION_KINDS = [
   'manufacturer',
   'related',
   'diagnosis',
+  'common_issues',
+  'resolution',
+  'advisory',
   'other',
 ] as const
 
@@ -159,6 +175,7 @@ const fixVehicleSchema = z
 const fixSchema = z.object({
   id: z.string(),
   code: z.string(),
+  meaning: z.string().nullish().catch(null),
   lang: z.string().catch('en'),
   text: z.string(),
   vehicle: fixVehicleSchema,
@@ -262,6 +279,7 @@ export function mapFix(raw: z.infer<typeof fixSchema>): FaultCodeFix {
   return {
     id: raw.id,
     code: raw.code,
+    meaning: raw.meaning ?? null,
     lang: raw.lang,
     text: raw.text,
     vehicle: Object.keys(vehicle).length > 0 ? vehicle : null,
@@ -399,6 +417,642 @@ async function codeDetail(
   return answer.found ? answer : null
 }
 
+const oemReplySchema = z.object({
+  make: z.string(),
+  code: z.string(),
+  meanings: z
+    .array(
+      z.object({
+        id: z.string().catch(''),
+        text: z.string(),
+        text_lang: z.string().catch('de'),
+        text_en: z.string().nullish(),
+        modules: z
+          .array(
+            z.object({
+              ref: z.string(),
+              family: z.string().nullish(),
+              name: z.string().nullish(),
+            })
+          )
+          .catch([]),
+        vehicles: z
+          .array(
+            z.object({
+              chassis: z.string(),
+              model: z.string().nullish(),
+              body: z.string().nullish(),
+              year_from: z.number().int().nullish(),
+              year_to: z.number().int().nullish(),
+            })
+          )
+          .catch([]),
+        engines: z.array(z.string()).catch([]),
+        matches: z.boolean().catch(false),
+        // Our own text for the meaning; a part that does not read drops that part, never the meaning.
+        lang: z.string().nullish().catch(null),
+        title: z.string().nullish().catch(null),
+        description: z.string().nullish().catch(null),
+        sections: z
+          .array(z.object({ kind: z.enum(SECTION_KINDS).catch('other'), text: z.string() }))
+          .catch([]),
+        causes: z
+          .array(
+            z.object({
+              key: z.string(),
+              likelihood: z.enum(['low', 'medium', 'high']).catch('medium'),
+              label: z.string(),
+            })
+          )
+          .catch([]),
+      })
+    )
+    .catch([]),
+})
+
+const waveformSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  meaning: z.string().nullish(),
+  kind: z.enum(['good', 'faulty']),
+  title: z.string(),
+  condition: z
+    .enum(['key_on', 'cranking', 'idle', 'rpm_2500', 'driving', 'under_load'])
+    .nullish()
+    .catch(null),
+  note: z.string().nullish(),
+  lang: z.string().catch('en'),
+  vehicle: fixVehicleSchema,
+  preview: z
+    .object({
+      time_unit: z.string().catch(''),
+      start: z.number(),
+      end: z.number(),
+      channels: z.array(
+        z.object({
+          name: z.string(),
+          unit: z.string().catch(''),
+          min: z.array(z.number().nullable()),
+          max: z.array(z.number().nullable()),
+        })
+      ),
+    })
+    .nullish()
+    .catch(null),
+  files: z
+    .array(
+      z.object({
+        role: z.enum(['psdata', 'pssettings', 'csv', 'image']),
+        name: z.string(),
+        size: z.number().int(),
+        width: z.number().int().nullish(),
+        height: z.number().int().nullish(),
+      })
+    )
+    .catch([]),
+  created_at: z.string(),
+})
+
+const ownWaveformSchema = waveformSchema.extend({
+  status: z.enum(['pending', 'published', 'rejected']),
+  reason: z.string().nullish(),
+  reviewed_at: z.string().nullish(),
+})
+
+function waveformOf(raw: z.infer<typeof waveformSchema>): FaultCodeWaveform {
+  const v = raw.vehicle
+  const vehicle: FaultCodeVehicle = {}
+  if (v?.make) vehicle.make = v.make
+  if (v?.model) vehicle.model = v.model
+  if (v?.year) vehicle.year = v.year
+  if (v?.engine) vehicle.engine = v.engine
+  return {
+    id: raw.id,
+    code: raw.code,
+    meaning: raw.meaning ?? null,
+    kind: raw.kind,
+    title: raw.title,
+    condition: raw.condition ?? null,
+    note: raw.note ?? null,
+    lang: raw.lang,
+    vehicle: Object.keys(vehicle).length > 0 ? vehicle : null,
+    preview: raw.preview
+      ? {
+          timeUnit: raw.preview.time_unit,
+          start: raw.preview.start,
+          end: raw.preview.end,
+          channels: raw.preview.channels,
+        }
+      : null,
+    files: raw.files.map((f) => ({ ...f, width: f.width ?? null, height: f.height ?? null })),
+    createdAt: raw.created_at,
+  }
+}
+
+/** A recording, its settings, a CSV export and a picture: up to about 36 MB to send. */
+const WAVEFORM_TIMEOUT_MS = 120_000
+
+async function shareWaveform(
+  ctx: ConnectorContext,
+  input: FaultCodeWaveformInput
+): Promise<{ ok: true; id: string } | { ok: false; reason: FaultCodeFixRefusal }> {
+  const form = new FormData()
+  form.append(
+    'waveform',
+    new Blob(
+      [
+        JSON.stringify({
+          code: input.code,
+          meaning: input.meaning,
+          kind: input.kind,
+          title: input.title,
+          condition: input.condition,
+          note: input.note,
+          lang: input.lang,
+          vehicle: vehicleBody(input.vehicle),
+          workshop_ref: input.workshopRef,
+        }),
+      ],
+      { type: 'application/json' }
+    )
+  )
+  for (const file of input.files) form.append(file.role, file.blob, file.name)
+  const path = '/v1/waveforms'
+  const res = await send(ctx, path, {
+    method: 'POST',
+    headers: { Accept: 'application/json' },
+    body: form,
+    timeoutMs: WAVEFORM_TIMEOUT_MS,
+  })
+  const body: unknown = await res.json().catch(() => null)
+  if (res.ok) {
+    const parsed = fixReceiptSchema.safeParse(body)
+    if (!parsed.success) invalid('waveform receipt')
+    return { ok: true, id: parsed.data.id }
+  }
+  const detail = await logRefusal(ctx, path, res, body)
+  if (res.status === 503) return { ok: false, reason: 'paused' }
+  if (res.status === 413) return { ok: false, reason: 'too_large' }
+  if (res.status === 400) {
+    return { ok: false, reason: detail?.startsWith('the picture') ? 'photo' : 'invalid' }
+  }
+  throw new FaultCodesUnavailable(`HTTP ${res.status}${detail ? `: ${detail}` : ''}`)
+}
+
+async function publishedWaveforms(
+  ctx: ConnectorContext,
+  query: { code: string }
+): Promise<FaultCodeWaveform[]> {
+  const { status, body } = await call(
+    ctx,
+    `/v1/codes/${encodeURIComponent(query.code)}/waveforms?limit=20`,
+    { timeoutMs: LOOKUP_TIMEOUT_MS, accept: [400, 404] }
+  )
+  if (status === 404 || status === 400) return []
+  const parsed = z.object({ waveforms: z.array(waveformSchema) }).safeParse(body)
+  if (!parsed.success) invalid('waveform list')
+  return parsed.data.waveforms.map(waveformOf)
+}
+
+async function waveformStatus(
+  ctx: ConnectorContext,
+  ids: string[]
+): Promise<FaultCodeOwnWaveform[]> {
+  const unique = [...new Set(ids)].slice(0, 100)
+  if (unique.length === 0) return []
+  const { status, body } = await call(ctx, `/v1/waveforms?ids=${unique.join(',')}`, {
+    timeoutMs: LOOKUP_TIMEOUT_MS,
+    accept: [404],
+  })
+  if (status === 404) return []
+  const parsed = z.object({ waveforms: z.array(ownWaveformSchema) }).safeParse(body)
+  if (!parsed.success) invalid('waveform status')
+  return parsed.data.waveforms.map((w) => ({
+    ...waveformOf(w),
+    status: w.status,
+    reason: w.reason ?? null,
+    reviewedAt: w.reviewed_at ?? null,
+  }))
+}
+
+async function withdrawWaveform(
+  ctx: ConnectorContext,
+  input: { id: string; workshopRef: string }
+): Promise<boolean> {
+  const { status } = await call(ctx, `/v1/waveforms/${encodeURIComponent(input.id)}/withdraw`, {
+    method: 'POST',
+    body: { workshop_ref: input.workshopRef },
+    timeoutMs: LOOKUP_TIMEOUT_MS,
+    accept: [404],
+  })
+  return status === 204
+}
+
+async function waveformFile(
+  ctx: ConnectorContext,
+  query: { id: string; role: WaveformFileRole; size: 'full' | 'thumb'; workshopRef: string }
+): Promise<{
+  body: ReadableStream<Uint8Array>
+  length: number | null
+  contentType: string
+  disposition: string | null
+} | null> {
+  const params = new URLSearchParams({ workshop_ref: query.workshopRef })
+  if (query.size === 'thumb') params.set('size', 'thumb')
+  const path = `/v1/waveforms/${encodeURIComponent(query.id)}/files/${query.role}?${params}`
+  const res = await send(ctx, path, { timeoutMs: WAVEFORM_TIMEOUT_MS })
+  if (res.status === 404 || res.status === 400) return null
+  if (!res.ok || !res.body) {
+    const detail = await logRefusal(ctx, path, res, await res.json().catch(() => null))
+    throw new FaultCodesUnavailable(`HTTP ${res.status}${detail ? `: ${detail}` : ''}`)
+  }
+  const length = Number(res.headers.get('content-length'))
+  return {
+    body: res.body,
+    length: Number.isFinite(length) && length > 0 ? length : null,
+    contentType: res.headers.get('content-type') ?? 'application/octet-stream',
+    disposition: res.headers.get('content-disposition'),
+  }
+}
+
+const researchSchema = z.object({
+  id: z.string(),
+  code: z.string(),
+  meaning: z.string().nullish(),
+  status: z.enum(['running', 'pending', 'published', 'missed']),
+  findings: z
+    .object({
+      title: z.string(),
+      meaning: z.string(),
+      common_issues: z.array(z.string()).catch([]),
+      steps: z.array(z.string()).catch([]),
+      causes: z
+        .array(
+          z.object({
+            label: z.string(),
+            likelihood: z.enum(['low', 'medium', 'high']).catch('medium'),
+          })
+        )
+        .catch([]),
+      advice: z.string().nullish(),
+      sources: z.array(z.object({ url: z.string(), title: z.string().nullish() })).catch([]),
+    })
+    .nullish(),
+  reason: z.string().nullish(),
+  requests: z.number().int().catch(1),
+  helpful: z.number().int().catch(0),
+  not_helpful: z.number().int().catch(0),
+  created_at: z.string(),
+})
+
+function researchOf(raw: z.infer<typeof researchSchema>): FaultCodeResearch {
+  const f = raw.findings
+  return {
+    id: raw.id,
+    code: raw.code,
+    meaning: raw.meaning ?? null,
+    status: raw.status,
+    findings: f
+      ? {
+          title: f.title,
+          meaning: f.meaning,
+          commonIssues: f.common_issues,
+          steps: f.steps,
+          causes: f.causes,
+          advice: f.advice ?? null,
+          // Only web pages: a source is a link a technician opens.
+          sources: f.sources
+            .filter((src) => /^https?:\/\//i.test(src.url))
+            .map((src) => ({ url: src.url, title: src.title ?? null })),
+        }
+      : null,
+    reason: raw.reason ?? null,
+    requests: raw.requests,
+    helpful: raw.helpful,
+    notHelpful: raw.not_helpful,
+    createdAt: raw.created_at,
+  }
+}
+
+/** Searching the web and writing it up takes a while; the page shows it working meanwhile. */
+const RESEARCH_TIMEOUT_MS = 240_000
+
+async function researchFor(
+  ctx: ConnectorContext,
+  query: { code: string }
+): Promise<{ available: boolean; research: FaultCodeResearch[] }> {
+  const { status, body } = await call(ctx, `/v1/research/${encodeURIComponent(query.code)}`, {
+    timeoutMs: LOOKUP_TIMEOUT_MS,
+    accept: [400, 404],
+  })
+  // An older service has no research; a code it cannot read has none either.
+  if (status === 404 || status === 400) return { available: false, research: [] }
+  const parsed = z
+    .object({ available: z.boolean().catch(false), research: z.array(researchSchema).catch([]) })
+    .safeParse(body)
+  if (!parsed.success) invalid('research list')
+  return { available: parsed.data.available, research: parsed.data.research.map(researchOf) }
+}
+
+async function research(
+  ctx: ConnectorContext,
+  input: { code: string; meaning?: string; vehicle?: FaultCodeVehicle; workshopRef: string }
+): Promise<
+  { ok: true; research: FaultCodeResearch } | { ok: false; reason: FaultCodeResearchRefusal }
+> {
+  const { status, body } = await call(ctx, '/v1/research', {
+    method: 'POST',
+    body: {
+      code: input.code,
+      meaning: input.meaning,
+      vehicle: vehicleBody(input.vehicle),
+      workshop_ref: input.workshopRef,
+    },
+    timeoutMs: RESEARCH_TIMEOUT_MS,
+    accept: [404, 409, 429, 502],
+  })
+  if (status === 409) return { ok: false, reason: 'busy' }
+  if (status === 429) return { ok: false, reason: 'limited' }
+  if (status === 404 || status === 502) return { ok: false, reason: 'unavailable' }
+  const parsed = z.object({ research: researchSchema }).safeParse(body)
+  if (!parsed.success) invalid('research')
+  return { ok: true, research: researchOf(parsed.data.research) }
+}
+
+async function rateResearch(
+  ctx: ConnectorContext,
+  input: { id: string; helpful: boolean; workshopRef: string }
+): Promise<boolean> {
+  const { status } = await call(ctx, `/v1/research/${encodeURIComponent(input.id)}/feedback`, {
+    method: 'POST',
+    body: { helpful: input.helpful, workshop_ref: input.workshopRef },
+    timeoutMs: LOOKUP_TIMEOUT_MS,
+    accept: [404],
+  })
+  return status === 204
+}
+
+/** Two thousand rows with a few paragraphs each take a moment to compare. */
+const IMPORT_TIMEOUT_MS = 60_000
+
+const importCountsSchema = z.object({
+  new: z.number().int(),
+  change: z.number().int(),
+  same: z.number().int(),
+  problem: z.number().int(),
+})
+
+const importCheckSchema = z.object({
+  counts: importCountsSchema,
+  rows: z.array(
+    z.object({
+      n: z.number().int(),
+      code: z.string(),
+      state: z.enum(['new', 'change', 'same', 'problem']),
+      problem: z
+        .enum(['code', 'duplicate', 'title', 'empty', 'too_long', 'likelihood', 'meanings'])
+        .nullable()
+        .optional()
+        .catch('code'),
+      fields: z.array(z.string()).catch([]),
+      added_causes: z.number().int().catch(0),
+    })
+  ),
+})
+
+const importStatusSchema = z.object({
+  imports: z.array(
+    z.object({
+      id: z.string(),
+      make: z.string(),
+      lang: z.string(),
+      source: z.string().nullable().optional(),
+      file_name: z.string().nullable().optional(),
+      created_at: z.string(),
+      counts: z.object({
+        new: z.number().int(),
+        change: z.number().int(),
+        pending: z.number().int(),
+        published: z.number().int(),
+        rejected: z.number().int(),
+      }),
+      reviewed_at: z.string().nullable().optional(),
+    })
+  ),
+})
+
+function importBody(
+  input: Omit<CodeImportInput, 'workshopRef' | 'source' | 'fileName'> & Partial<CodeImportInput>
+) {
+  return {
+    make: input.make,
+    lang: input.lang,
+    ...(input.source ? { source: input.source } : {}),
+    ...(input.fileName ? { file_name: input.fileName } : {}),
+    ...(input.workshopRef ? { workshop_ref: input.workshopRef } : {}),
+    codes: input.rows.map((r) => ({
+      code: r.code,
+      ...(r.title ? { title: r.title } : {}),
+      ...(r.description ? { description: r.description } : {}),
+      ...(r.commonIssues ? { common_issues: r.commonIssues } : {}),
+      ...(r.resolution ? { resolution: r.resolution } : {}),
+      ...(r.advisory ? { advisory: r.advisory } : {}),
+      causes: r.causes.map((c) =>
+        c.likelihood ? { label: c.label, likelihood: c.likelihood } : { label: c.label }
+      ),
+    })),
+  }
+}
+
+function importRefusal(status: number, body: unknown): CodeImportRefusal | null {
+  if (status === 503) return 'paused'
+  if (status === 413) return 'too_large'
+  if (status === 400) {
+    const detail = (body as { detail?: unknown } | null)?.detail
+    return typeof detail === 'string' && detail.startsWith('nothing') ? 'nothing' : 'invalid'
+  }
+  return null
+}
+
+async function checkCodeImport(
+  ctx: ConnectorContext,
+  input: Omit<CodeImportInput, 'workshopRef' | 'source' | 'fileName'>
+): Promise<
+  | { ok: true; counts: CodeImportCounts; rows: CodeImportChecked[] }
+  | { ok: false; reason: CodeImportRefusal }
+> {
+  const { status, body } = await call(ctx, '/v1/code-imports/check', {
+    method: 'POST',
+    body: importBody(input),
+    timeoutMs: IMPORT_TIMEOUT_MS,
+    accept: [400, 413],
+  })
+  const refused = importRefusal(status, body)
+  if (refused) return { ok: false, reason: refused }
+  const parsed = importCheckSchema.safeParse(body)
+  if (!parsed.success) invalid('import check')
+  return {
+    ok: true,
+    counts: parsed.data.counts,
+    rows: parsed.data.rows.map((r) => ({
+      n: r.n,
+      code: r.code,
+      state: r.state,
+      problem: r.state === 'problem' ? (r.problem ?? 'code') : null,
+      fields: r.fields,
+      addedCauses: r.added_causes,
+    })),
+  }
+}
+
+async function sendCodeImport(
+  ctx: ConnectorContext,
+  input: CodeImportInput
+): Promise<
+  { ok: true; id: string; counts: CodeImportCounts } | { ok: false; reason: CodeImportRefusal }
+> {
+  const { status, body } = await call(ctx, '/v1/code-imports', {
+    method: 'POST',
+    body: importBody(input),
+    timeoutMs: IMPORT_TIMEOUT_MS,
+    accept: [400, 413, 503],
+  })
+  const refused = importRefusal(status, body)
+  if (refused) return { ok: false, reason: refused }
+  const parsed = z.object({ id: z.string(), counts: importCountsSchema }).safeParse(body)
+  if (!parsed.success) invalid('import')
+  return { ok: true, id: parsed.data.id, counts: parsed.data.counts }
+}
+
+async function codeImportStatus(ctx: ConnectorContext, ids: string[]): Promise<CodeImportStatus[]> {
+  if (ids.length === 0) return []
+  const { body } = await call(
+    ctx,
+    `/v1/code-imports?ids=${ids.slice(0, 100).map(encodeURIComponent).join(',')}`,
+    { timeoutMs: LOOKUP_TIMEOUT_MS }
+  )
+  const parsed = importStatusSchema.safeParse(body)
+  if (!parsed.success) invalid('import status')
+  return parsed.data.imports.map((i) => ({
+    id: i.id,
+    make: i.make,
+    lang: i.lang,
+    source: i.source ?? null,
+    fileName: i.file_name ?? null,
+    createdAt: i.created_at,
+    counts: i.counts,
+    reviewedAt: i.reviewed_at ?? null,
+  }))
+}
+
+const oemMakesSchema = z.object({ makes: z.array(z.string()).catch([]) })
+
+/** The makes the service serves own codes for; none from an older service that has no list. */
+async function oemMakes(ctx: ConnectorContext): Promise<string[]> {
+  const { status, body } = await call(ctx, '/v1/oem', {
+    timeoutMs: LOOKUP_TIMEOUT_MS,
+    accept: [404],
+  })
+  if (status === 404) return []
+  const parsed = oemMakesSchema.safeParse(body)
+  if (!parsed.success) invalid('make list')
+  return parsed.data.makes.map((m) => m.toLowerCase())
+}
+
+const oemFindSchema = z.object({
+  hits: z
+    .array(
+      z.object({
+        make: z.string(),
+        code: z.string(),
+        meanings: z.number().int(),
+        title: z.string().nullable().optional(),
+      })
+    )
+    .catch([]),
+})
+
+/** Every make that has a code; none from an older service that cannot search across makes. */
+async function findOemCode(
+  ctx: ConnectorContext,
+  query: { code: string; locale?: string }
+): Promise<OemFindHit[]> {
+  const params = new URLSearchParams()
+  if (query.locale) params.set('lang', query.locale)
+  const { status, body } = await call(
+    ctx,
+    `/v1/oem/codes/${encodeURIComponent(query.code)}?${params}`,
+    { timeoutMs: LOOKUP_TIMEOUT_MS, accept: [400, 404] }
+  )
+  if (status !== 200) return []
+  const parsed = oemFindSchema.safeParse(body)
+  if (!parsed.success) invalid('manufacturer code search')
+  return parsed.data.hits.map((h) => ({
+    make: h.make.toLowerCase(),
+    code: h.code,
+    meanings: h.meanings,
+    title: h.title?.trim() || null,
+  }))
+}
+
+async function oemCode(
+  ctx: ConnectorContext,
+  query: { source: string; code: string; chassis?: string; engine?: string; locale?: string }
+): Promise<OemCodeAnswer | null> {
+  const params = new URLSearchParams()
+  if (query.chassis) params.set('chassis', query.chassis)
+  if (query.engine) params.set('engine', query.engine)
+  if (query.locale) params.set('lang', query.locale)
+  const { status, body } = await call(
+    ctx,
+    `/v1/oem/${encodeURIComponent(query.source)}/codes/${encodeURIComponent(query.code)}?${params}`,
+    { timeoutMs: LOOKUP_TIMEOUT_MS, accept: [400, 404] }
+  )
+  // 404: the service does not serve this make's codes; 400: not such a code.
+  if (status === 404 || status === 400) return null
+  const parsed = oemReplySchema.safeParse(body)
+  if (!parsed.success) invalid('manufacturer code')
+  return {
+    source: parsed.data.make,
+    code: parsed.data.code,
+    meanings: parsed.data.meanings.map((m) => ({
+      // An older service gives no id; the text then names the meaning on the page.
+      id: m.id || m.text,
+      text: m.text,
+      textLang: m.text_lang,
+      textEn: m.text_en ?? null,
+      modules: m.modules.map((u) => ({
+        ref: u.ref,
+        family: u.family ?? null,
+        name: u.name ?? null,
+      })),
+      vehicles: m.vehicles.map((v) => ({
+        chassis: v.chassis,
+        model: v.model ?? null,
+        body: v.body ?? null,
+        yearFrom: v.year_from ?? null,
+        yearTo: v.year_to ?? null,
+      })),
+      engines: m.engines,
+      matches: m.matches,
+      ...ownText(m),
+    })),
+  }
+}
+
+/** The service's own text on a meaning; without a title there is none to show. */
+function ownText(m: z.infer<typeof oemReplySchema>['meanings'][number]) {
+  const title = m.title?.trim() || null
+  if (!title) return { lang: null, title: null, description: null, sections: [], causes: [] }
+  return {
+    lang: m.lang || 'en',
+    title,
+    description: m.description?.trim() || null,
+    sections: m.sections.filter((s) => s.text.trim()),
+    causes: m.causes.filter((c) => c.label.trim()),
+  }
+}
+
 async function searchCodes(
   ctx: ConnectorContext,
   query: { query: string; locale: string; limit?: number }
@@ -470,6 +1124,7 @@ async function shareFix(
       [
         JSON.stringify({
           code: fix.code,
+          meaning: fix.meaning,
           text: fix.text,
           lang: fix.lang,
           vehicle: vehicleBody(fix.vehicle),
@@ -587,6 +1242,20 @@ export const connector: ConnectorServer = {
 
   lookupCodes,
   codeDetail,
+  researchFor,
+  research,
+  rateResearch,
+  shareWaveform,
+  publishedWaveforms,
+  waveformStatus,
+  withdrawWaveform,
+  waveformFile,
+  oemMakes,
+  oemCode,
+  findOemCode,
+  checkCodeImport,
+  sendCodeImport,
+  codeImportStatus,
   searchCodes,
   reportDefinition,
   reportStatus,

@@ -31,6 +31,9 @@
     "manufacturer": "Datos de los fabricantes",
     "related": "Junto con otros códigos",
     "diagnosis": "Consejo de diagnóstico",
+    "common_issues": "Problemas frecuentes",
+    "resolution": "Solución",
+    "advisory": "Recomendación",
     "other": "Conviene saber"
   },
   "detail": {
@@ -99,6 +102,8 @@
     "model": "Modelo",
     "year": "Año",
     "vehicleHint": "Solo se comparten la marca, el modelo, el año y el motor, nunca la matrícula, el VIN, el cliente ni el nombre de tu taller.",
+    "meaning": "Significado",
+    "meaningHint": "Este código significa otra cosa en otras unidades de control. Tu solución se comparte solo para este significado.",
     "vehicleHintMarine": "Solo se comparten la marca, el modelo, el año y el motor, nunca la matrícula, el número de casco, el cliente ni el nombre de tu taller.",
     "send": "Compartir solución",
     "sent": "Gracias. Tu solución está pendiente de revisión.",
@@ -177,7 +182,9 @@
     "add": "{count, plural, =0 {Añadir códigos} one {Añadir # código} other {Añadir # códigos}}",
     "added": "{count, plural, one {# código de avería añadido} other {# códigos de avería añadidos}}",
     "skipped": "{count, plural, one {# código ya estaba en este trabajo} other {# códigos ya estaban en este trabajo}}",
-    "failed": "No se pudieron añadir los códigos"
+    "failed": "No se pudieron añadir los códigos",
+    "descriptionOem": "Escribe o pega los códigos del equipo de diagnosis, códigos OBD como P0420 o códigos BMW como 2A82. Cada uno se convierte en una observación de este trabajo, con su significado guardado.",
+    "placeholderOem": "P0420, 2A82 almacenado"
   },
   "finding": {
     "seenBefore": "Visto {date}",
@@ -217,7 +224,9 @@
   },
   "notice": {
     "title": "Los códigos de avería son nuevos",
-    "body": "Añadimos códigos continuamente, así que todavía no están todos. Por ahora incluye los códigos OBD-II estándar; los códigos propios de cada fabricante aún no están incluidos."
+    "body": "Incluye los códigos OBD-II estándar. Estamos trabajando para añadir los códigos propios de cada marca, y llegan códigos nuevos continuamente. ¿Sabes dónde encontrar los códigos de una marca? Cuéntanoslo con «Ayúdanos a mejorar».",
+    "bodyBmw": "Incluye los códigos OBD-II estándar y los códigos propios de BMW, que comparten MINI y Rolls-Royce. Estamos trabajando para añadir más marcas, y llegan códigos nuevos continuamente. ¿Sabes dónde encontrar los códigos de una marca? Cuéntanoslo con «Ayúdanos a mejorar».",
+    "bodyMakes": "Incluye los códigos OBD-II estándar y los códigos propios de {makes}. Estamos trabajando para añadir más marcas, y llegan códigos nuevos continuamente. ¿Sabes dónde encontrar los códigos de una marca? Cuéntanoslo con «Ayúdanos a mejorar»."
   },
   "support": {
     "button": "Contactar con soporte",
@@ -244,6 +253,345 @@
     "done": "Cuando termines, vuelve al ordenador y comparte la solución.",
     "privacy": "Deja fuera de la imagen caras, matrículas y datos de clientes.",
     "expired": "Este código ha caducado. Muestra uno nuevo en el ordenador.",
-    "invalid": "Este código no funciona. Muestra uno nuevo en el ordenador."
+    "invalid": "Este código no funciona. Muestra uno nuevo en el ordenador.",
+    "waveform": {
+      "title": "Foto de la pantalla del osciloscopio",
+      "forCode": "para el oscilograma que compartes en el ordenador",
+      "intro": "Haz o elige una foto de la pantalla del osciloscopio. Aparece en el ordenador.",
+      "full": "Un oscilograma lleva una foto. Quítala en el ordenador para hacer otra.",
+      "done": "Vuelve al ordenador y comparte el oscilograma.",
+      "added": "Foto añadida"
+    }
+  },
+  "oem": {
+    "badge": "Código {make}",
+    "summary": "{count, plural, one {# significado} other {# significados}}. Un código BMW puede significar algo distinto en cada unidad de control.",
+    "matches": "Coincide con este coche",
+    "noMatch": "Ninguno de estos significados figura para el motor de este coche. Comprueba de qué unidad de control leyó el código tu equipo de diagnosis.",
+    "inEnglish": "Texto en inglés de {make}: {text}",
+    "bmwText": "Texto de {make}: {text}",
+    "units": "Unidades de control",
+    "moreUnits": "+{count} más",
+    "otherChassis": "Otros chasis",
+    "years": "{from} a {to}",
+    "yearsFrom": "desde {from}",
+    "source": "Los significados proceden de los textos de diagnosis de BMW, la mayoría en alemán.",
+    "notServed": "Los códigos {make} aún no están disponibles.",
+    "notFound": "{code} no está en los datos de {make}.",
+    "whereUsed": "Dónde lo usa {make}",
+    "models": "Modelos",
+    "engineList": "Motores",
+    "fewerUnits": "Mostrar menos",
+    "fitsThisCar": "Este vehículo",
+    "meanings": "Significados",
+    "otherMeanings": "y {count, plural, one {# significado más} other {# significados más}}"
+  },
+  "research": {
+    "inviteTitle": "Buscar una solución en línea",
+    "invite": "Buscamos {code} en documentación del fabricante, boletines técnicos y foros de talleres. Solo se guarda una respuesta concreta con fuentes, y una persona de Torqvoice la revisa.",
+    "button": "Buscar una solución",
+    "working": "Investigando {code}",
+    "steps": {
+      "bulletins": "Buscando en documentación del fabricante y boletines técnicos",
+      "forums": "Leyendo foros de talleres con soluciones confirmadas",
+      "agree": "Comprobando que las fuentes coinciden",
+      "writing": "Redactando los pasos"
+    },
+    "workingHint": "Tarda uno o dos minutos. Lo que se encuentre queda en el código para todos los talleres.",
+    "runningTitle": "Se está investigando ahora",
+    "runningHint": "Otro taller lo pidió hace un momento. Vuelve a mirar en un minuto.",
+    "checkAgain": "Volver a mirar",
+    "title": "Solución investigada",
+    "pending": "Pendiente de revisión por una persona",
+    "published": "Revisado por Torqvoice",
+    "pendingHint": "Encontrado por IA a partir de las fuentes de abajo. Compruébalo en el vehículo antes de cambiar piezas.",
+    "sources": "Fuentes",
+    "helpfulQuestion": "¿Te ayudó?",
+    "helpfulYes": "Sí, lo solucionó",
+    "helpfulNo": "No, no lo solucionó",
+    "thanks": "Gracias, anotado",
+    "missedTitle": "No se encontró una solución fiable en línea",
+    "missed": "No apareció nada concreto sobre {code}, así que no se guardó nada. Hemos anotado que los talleres necesitan este código.",
+    "searchedOn": "Buscado el {date}",
+    "shareInstead": "Comparte tu solución",
+    "errors": {
+      "busy": "Este código se está investigando ahora. Vuelve a mirar en un minuto.",
+      "limited": "Tu taller ya ha usado sus búsquedas de hoy. Inténtalo mañana.",
+      "failed": "La búsqueda no pudo hacerse ahora. Inténtalo más tarde."
+    }
+  },
+  "waveforms": {
+    "title": "Oscilogramas",
+    "description": "Capturas de osciloscopio de otros talleres, correctas y con fallo, para comparar con lo que mides.",
+    "share": "Compartir un oscilograma",
+    "unavailable": "Los oscilogramas no están disponibles ahora mismo.",
+    "empty": "Todavía no hay oscilogramas para {code}",
+    "emptyHint": "¿Tienes una captura correcta? Compártela y el próximo técnico que persiga este código tendrá con qué comparar.",
+    "filter": {
+      "label": "Mostrar",
+      "all": "Todos",
+      "good": "Correcto",
+      "faulty": "Con fallo"
+    },
+    "unknownVehicle": "Vehículo no indicado",
+    "unknownVehicleMarine": "Embarcación no indicada",
+    "status": {
+      "pending": "Pendiente de revisión",
+      "published": "Publicado",
+      "rejected": "No publicado"
+    },
+    "hasRecording": "Archivo de PicoScope para descargar",
+    "hasCsv": "Exportación CSV para descargar",
+    "kind": {
+      "good": "Correcto",
+      "faulty": "Con fallo"
+    },
+    "condition": {
+      "key_on": "Contacto puesto, motor parado",
+      "cranking": "Arranque",
+      "idle": "Ralentí",
+      "rpm_2500": "2500 rpm",
+      "driving": "Circulando",
+      "drivingMarine": "Navegando",
+      "under_load": "Con carga"
+    },
+    "chart": {
+      "label": "Oscilograma de {channels} durante {span}",
+      "perDivision": "{value}/div",
+      "noSample": "sin muestra",
+      "between": "{lo} a {hi}"
+    },
+    "view": {
+      "label": "Mostrar",
+      "trace": "Oscilograma",
+      "picture": "Foto de la pantalla"
+    },
+    "sharedOn": "Compartido el {date}",
+    "reason": "Motivo: {reason}",
+    "compare": {
+      "label": "Comparar con",
+      "none": "Nada",
+      "close": "Dejar de comparar"
+    },
+    "note": "Notas",
+    "writtenIn": "Escrito en {language}",
+    "files": {
+      "title": "Archivos",
+      "psdata": "Captura de PicoScope",
+      "csv": "Exportación CSV",
+      "pssettings": "Ajustes del osciloscopio",
+      "openHint": "Abre la captura en PicoScope para ampliar, medir y ver todos los canales."
+    },
+    "nothingToDraw": "Solo se compartió la captura. Descárgala para abrirla en PicoScope.",
+    "openPicture": "Abrir la foto a tamaño completo",
+    "close": "Cerrar",
+    "withdraw": "Retirar",
+    "withdrawTitle": "¿Retirar este oscilograma?",
+    "withdrawConfirm": "Se borra con sus archivos y ningún otro taller lo verá.",
+    "withdrawn": "Oscilograma retirado",
+    "withdrawFailed": "No se pudo retirar el oscilograma ahora mismo. Inténtalo de nuevo en un momento.",
+    "shareDialog": {
+      "title": "Compartir un oscilograma para {code}",
+      "description": "Otros talleres lo ven cuando una persona de Torqvoice lo ha revisado.",
+      "meaningHint": "Este código significa otra cosa en otras unidades de control. Tu oscilograma se comparte solo para este significado.",
+      "kind": "¿Qué muestra?",
+      "kindHint": {
+        "good": "Cómo se ve en un coche sano",
+        "goodMarine": "Cómo se ve en un motor sano",
+        "faulty": "Cómo se veía con el fallo",
+        "faultyMarine": "Cómo se veía con el fallo"
+      },
+      "measured": "¿Qué mediste?",
+      "measuredPlaceholder": "Sensor de cigüeñal y árbol de levas de admisión",
+      "measurements": {
+        "crank": "Sensor de cigüeñal",
+        "camCrank": "Árbol de levas y cigüeñal",
+        "injector": "Inyector",
+        "ignition": "Bobina de encendido",
+        "compression": "Compresión relativa",
+        "lambda": "Sonda lambda",
+        "maf": "Caudalímetro",
+        "alternator": "Rizado del alternador",
+        "canBus": "Bus CAN",
+        "fuelPump": "Corriente de la bomba de combustible"
+      },
+      "condition": "¿Cómo funcionaba el motor? (opcional)",
+      "files": "Archivos",
+      "filesHint": "Con uno basta. El archivo de PicoScope permite abrirlo en PicoScope; una exportación CSV o una foto permite verlo aquí mismo.",
+      "phone": {
+        "button": "Foto desde el móvil",
+        "title": "Haz una foto de la pantalla del osciloscopio",
+        "body": "Escanea el código con la cámara del móvil y haz una foto de la pantalla. Aparece aquí cuando llega.",
+        "received": "Ha llegado la foto de tu móvil"
+      },
+      "drop": "Suelta aquí tu archivo de PicoScope o haz clic para elegirlo",
+      "dropMore": "Añadir otro archivo",
+      "dropTypes": ".psdata, .pssettings, una exportación CSV o una foto de la pantalla",
+      "role": {
+        "psdata": "Captura de PicoScope",
+        "csv": "Exportación CSV",
+        "image": "Foto de la pantalla",
+        "pssettings": "Ajustes del osciloscopio"
+      },
+      "csvNotScope": "No es una exportación de osciloscopio. Guárdala de nuevo desde PicoScope como CSV.",
+      "remove": "Quitar {name}",
+      "fromPhone": "Desde tu móvil",
+      "previewHint": "Así lo verán otros talleres.",
+      "csvTip": "Consejo: añade también una exportación CSV para que otros vean el oscilograma aquí sin abrir PicoScope. En PicoScope, usa Guardar como y elige CSV.",
+      "note": "Notas (opcional)",
+      "notePlaceholder": "Dónde mediste, la escala que usaste y en qué fijarse. Por ejemplo: pin 2 por detrás del conector del sensor, el hueco de los dientes que faltan aparece una vez por vuelta.",
+      "notePlaceholderMarine": "Dónde mediste, la escala que usaste y en qué fijarse.",
+      "sending": "Enviando {percent} %",
+      "send": "Compartir oscilograma",
+      "sent": "Gracias. Tu oscilograma está pendiente de revisión.",
+      "missing": {
+        "kind": "Elige correcto o con fallo",
+        "title": "Indica qué mediste",
+        "file": "Añade un archivo o una foto",
+        "csv": "Quita el CSV que no es una exportación de osciloscopio"
+      },
+      "notAScopeFile": "{name} no es un archivo de PicoScope, una exportación CSV ni una foto",
+      "fileTooBig": "{name} ocupa más de {size}",
+      "errors": {
+        "failed": "No se pudo enviar tu oscilograma ahora mismo. Inténtalo de nuevo en un momento.",
+        "photo": "No se pudo leer la foto. Prueba con otra.",
+        "csv": "El CSV no es una exportación de osciloscopio. Guárdalo de nuevo desde PicoScope como CSV.",
+        "too_large": "Los archivos son demasiado grandes.",
+        "no_file": "Añade la captura, una exportación CSV o una foto.",
+        "paused": "Compartir oscilogramas está en pausa ahora mismo. Inténtalo más tarde.",
+        "demo": "Compartir oscilogramas está desactivado en la demo."
+      }
+    }
+  },
+  "improve": {
+    "button": "Ayúdanos a mejorar",
+    "title": "Ayúdanos a mejorar los códigos de avería",
+    "description": "¿Sabes dónde publica una marca sus propios códigos, has visto un error o tienes una idea? Cuéntanoslo. Llega directamente al equipo de Torqvoice.",
+    "topic": "¿De qué se trata? (opcional)",
+    "topics": {
+      "makes": "Códigos que faltan",
+      "wrong": "Algo está mal",
+      "source": "Una buena fuente o enlace",
+      "idea": "Una idea"
+    },
+    "message": "Tu mensaje",
+    "placeholders": {
+      "makes": "Dónde encontrarlos, por ejemplo un enlace a la lista de códigos de la marca, y qué modelos cubre.",
+      "wrong": "Qué código, qué dice y qué debería decir. Un enlace a donde lo encontraste ayuda.",
+      "source": "Pega el enlace y di qué contiene.",
+      "idea": "¿Qué haría más útiles los códigos de avería en tu taller? Los enlaces son bienvenidos."
+    },
+    "links": "Enlaces en tu mensaje",
+    "about": "Sobre {code}",
+    "leaveOut": "Quitar",
+    "replyHint": "Respondemos al correo de tu cuenta.",
+    "cancel": "Cancelar",
+    "send": "Enviar",
+    "sent": "Gracias. Tu mensaje va de camino al equipo de Torqvoice.",
+    "errors": {
+      "failed": "No se pudo enviar tu mensaje ahora mismo. Inténtalo de nuevo en un momento.",
+      "limited": "Ya has enviado varios mensajes. Inténtalo de nuevo dentro de una hora."
+    }
+  },
+  "import": {
+    "button": "Importar",
+    "title": "Importar códigos de avería",
+    "description": "Añade los códigos propios de una marca, o más sobre códigos que tenemos. Una persona de Torqvoice revisa cada código antes de que lo vea ningún taller.",
+    "yours": "Tus importaciones",
+    "codes": "{count, plural, one {# código} other {# códigos}}",
+    "status": {
+      "published": "{count} publicados",
+      "pending": "{count} pendientes",
+      "rejected": "{count} no publicados"
+    },
+    "examples": {
+      "title": "Empieza con un ejemplo",
+      "sheet": "Hoja de ejemplo",
+      "sheetHint": "Excel, una fila por código",
+      "json": "JSON de ejemplo",
+      "jsonHint": "Cada campo con su nombre",
+      "columns": "Mantén los nombres de columna: Code, Title, Description, Common issues, How to fix, Good to know y Causes. Solo hacen falta Code y Title. Pon cada causa en su propia línea, con (high), (medium) o (low) detrás si lo sabes.",
+      "csv": "Descárgala como CSV"
+    },
+    "make": "Marca",
+    "pickMake": "Elige una marca",
+    "language": "Idioma del texto",
+    "source": "De dónde viene (opcional)",
+    "sourcePlaceholder": "Enlace o libro",
+    "checking": "Leyendo y comprobando tus códigos",
+    "removeFile": "Quitar el archivo",
+    "drop": "Suelta aquí tu archivo, o haz clic para elegirlo",
+    "dropTypes": ".xlsx, .csv o .json, hasta 2.000 códigos",
+    "fileProblems": {
+      "unreadable": "No se pudo leer el archivo. Guárdalo de nuevo como .xlsx, .csv o .json.",
+      "empty": "El archivo no tiene códigos.",
+      "no_code_column": "No hay columna Code. Empieza con la hoja de ejemplo.",
+      "too_many": "El archivo es demasiado grande: como máximo 2.000 códigos y 5 MB. Divídelo en partes.",
+      "format": "Este tipo de archivo no es compatible. Usa .xlsx, .csv o .json.",
+      "legacy_xls": "Los archivos .xls antiguos no son compatibles. Guárdalo como .xlsx en Excel."
+    },
+    "counts": {
+      "new": "{count} nuevos",
+      "change": "{count} amplían los nuestros",
+      "problem": "{count} hay que corregir",
+      "same": "{count} ya iguales"
+    },
+    "rows": "Códigos del archivo",
+    "row": "Fila {n}",
+    "more": "y {count} más",
+    "problemsLeftOut": "Los códigos que hay que corregir se dejan fuera. Corrígelos en el archivo y suéltalo de nuevo, o envía el resto ahora.",
+    "rights": "Puedo compartir esto. No está copiado de una fuente de pago o protegida.",
+    "missing": {
+      "make": "Elige primero la marca",
+      "file": "Añade tu archivo",
+      "nothing": "Nada del archivo amplía lo que tenemos",
+      "rights": "Marca la casilla para enviar"
+    },
+    "reviewHint": "No se publica nada antes de que una persona lo haya revisado.",
+    "cancel": "Cancelar",
+    "send": "{count, plural, one {Enviar # código a revisión} other {Enviar # códigos a revisión}}",
+    "sendNone": "Enviar a revisión",
+    "sent": "{count, plural, one {Enviado. # código espera revisión.} other {Enviado. # códigos esperan revisión.}}",
+    "errors": {
+      "failed": "No se pudo comprobar ni enviar tu archivo ahora mismo. Inténtalo de nuevo en un momento.",
+      "paused": "El envío de códigos está en pausa ahora mismo. Inténtalo más tarde.",
+      "nothing": "Nada del archivo amplía lo que tenemos.",
+      "demo": "Importar códigos está desactivado en la demo.",
+      "rights": "Marca la casilla para indicar que puedes compartirlo.",
+      "too_large": "El archivo es demasiado grande: como máximo 2.000 códigos y 5 MB."
+    },
+    "problems": {
+      "code": "No es un código que use {make}",
+      "duplicate": "El mismo código dos veces en el archivo",
+      "title": "Necesita un título",
+      "empty": "No tiene nada escrito",
+      "too_long": "Demasiado largo: un título de hasta 200 caracteres, cada texto hasta 4.000",
+      "likelihood": "La probabilidad debe ser low, medium o high",
+      "meanings": "{make} usa este código para más de una cosa. Compártelo en la página del código."
+    },
+    "state": {
+      "new": "Nuevo",
+      "change": "Añade {what}"
+    },
+    "fields": {
+      "title": "título",
+      "description": "qué significa",
+      "common_issues": "problemas frecuentes",
+      "resolution": "cómo arreglarlo",
+      "advisory": "a tener en cuenta",
+      "causes": "causas"
+    },
+    "addsCauses": "{count, plural, one {# causa} other {# causas}}",
+    "searchMake": "Buscar marcas",
+    "noMake": "No se encontró ninguna marca",
+    "useMake": "Usar {name}",
+    "groups": {
+      "cars": "Coches y furgonetas",
+      "marine": "Barcos y motores"
+    }
+  },
+  "makeCodes": {
+    "heading": "Marcas con su propio significado para {code}",
+    "thisCar": "Marca de este vehículo"
   }
 }

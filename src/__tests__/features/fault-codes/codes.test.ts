@@ -3,9 +3,16 @@ import {
   extractFaultCodes,
   faultLine,
   findingLine,
+  fixMakesFor,
   isManufacturerCode,
   looksLikeFaultCode,
+  looksLikeOemCode,
+  normalizeAnyMakeCode,
   normalizeFaultCode,
+  normalizeFixCode,
+  normalizeMakeCode,
+  normalizeOemCode,
+  oemSourceFor,
 } from '@/features/fault-codes/Lib/codes'
 import { visiblePageCommands } from '@/features/search/Lib/commands'
 
@@ -128,5 +135,80 @@ describe('how a code finding reads on a print', () => {
 
   it('leaves a finding without a code as it was', () => {
     expect(findingLine({ description: 'Worn front pads', faultCode: null })).toBe('Worn front pads')
+  })
+})
+
+describe('codes a search or a shared fix can name', () => {
+  it("takes a make's code typed in full, never a word or an OBD code", () => {
+    expect(looksLikeOemCode('283700')).toBe(true)
+    expect(looksLikeOemCode('0x2a82')).toBe(true)
+    expect(looksLikeOemCode('2A8')).toBe(false)
+    expect(looksLikeOemCode('P0420')).toBe(false)
+    expect(looksLikeOemCode('lean')).toBe(false)
+  })
+
+  it("keeps a fix for a make's code under its make", () => {
+    expect(normalizeFixCode('p0420')).toBe('P0420')
+    expect(normalizeFixCode('bmw-0x2a82')).toBe('BMW-2A82')
+    expect(normalizeFixCode('2A82')).toBeNull()
+    // Any make a workshop imported codes for, its codes in whatever shape it uses.
+    expect(normalizeFixCode('ford-p1000')).toBe('FORD-P1000')
+    expect(normalizeFixCode('LAND-ROVER-p1000')).toBe('LAND-ROVER-P1000')
+    // BMW's codes stay hex.
+    expect(normalizeFixCode('BMW-P1000')).toBeNull()
+    expect(normalizeFixCode('FORD-')).toBeNull()
+    expect(fixMakesFor('FORD-P1000')).toEqual(['Ford'])
+    expect(fixMakesFor('LAND-ROVER-P1000')).toEqual(['Land Rover'])
+    expect(fixMakesFor('BMW-2A82')).toEqual(['BMW', 'MINI', 'Rolls-Royce'])
+    expect(fixMakesFor('P0420')).toBeNull()
+  })
+
+  it("reads any make's code in one form", () => {
+    expect(normalizeMakeCode('ford', ' p1000 ')).toBe('P1000')
+    expect(normalizeMakeCode('ford', 'B1342-13')).toBe('B1342')
+    expect(normalizeMakeCode('bmw', '0x2a82')).toBe('2A82')
+    expect(normalizeMakeCode('bmw', 'P1000')).toBeNull()
+    expect(normalizeAnyMakeCode('u0100:87')).toBe('U0100')
+    expect(normalizeAnyMakeCode('x')).toBeNull()
+  })
+})
+
+describe('manufacturer codes (BMW)', () => {
+  it('writes them one way and keeps OBD codes apart', () => {
+    expect(normalizeOemCode(' 0x2a82 ')).toBe('2A82')
+    expect(normalizeOemCode('00A0B1')).toBe('00A0B1')
+    expect(normalizeOemCode('P0420')).toBeNull()
+    expect(normalizeOemCode('B1A2F')).toBeNull()
+    expect(normalizeOemCode('VANOS')).toBeNull()
+  })
+
+  it('finds BMW data for BMW, MINI and Rolls-Royce only', () => {
+    expect(oemSourceFor('BMW')).toBe('bmw')
+    expect(oemSourceFor('Mini')).toBe('bmw')
+    expect(oemSourceFor('Rolls-Royce')).toBe('bmw')
+    expect(oemSourceFor('Volkswagen')).toBeNull()
+    expect(oemSourceFor(null)).toBeNull()
+  })
+
+  it('reads BMW codes beside OBD codes only when asked', () => {
+    expect(extractFaultCodes('P0420, 2A82 stored, CD87').map((c) => c.code)).toEqual(['P0420'])
+    expect(extractFaultCodes('P0420, 2A82 stored, CD87', { oem: true })).toEqual([
+      { code: 'P0420' },
+      { code: '2A82', status: 'stored' },
+      { code: 'CD87' },
+    ])
+  })
+
+  it('takes a number without letters for a code only in a list of codes', () => {
+    expect(extractFaultCodes('4110, 2A82', { oem: true }).map((c) => c.code)).toEqual([
+      '4110',
+      '2A82',
+    ])
+    // A year in a sentence is not a code; the code with letters still is.
+    expect(
+      extractFaultCodes('Since 2014 the car shows 2A82 after a cold start', { oem: true }).map(
+        (c) => c.code
+      )
+    ).toEqual(['2A82'])
   })
 })

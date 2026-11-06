@@ -23,11 +23,20 @@ import { ShareFixDialog } from './ShareFixDialog'
  */
 export function ShareFixCard({
   code,
+  label = code,
+  meaning = null,
+  makes = null,
   vehicle,
   own: initialOwn,
   available,
 }: {
   code: string
+  /** The code as people read it ("BMW 283700"); the code itself otherwise. */
+  label?: string
+  /** For a make's own code, the meaning on screen: fixes are shared for it and listed by it. */
+  meaning?: { id: string; title: string } | null
+  /** The makes the code is on, for the share dialog's make. */
+  makes?: string[] | null
   vehicle: CodeVehicle | null
   own: OwnFix[]
   /** The service answered when the page was read. */
@@ -36,7 +45,11 @@ export function ShareFixCard({
   const t = useTranslations('faultCodes.share')
   const confirm = useConfirm()
   const { formatDate } = useFormatDate()
-  const [own, setOwn] = useState<OwnFix[]>(initialOwn)
+  const [allOwn, setOwn] = useState<OwnFix[]>(initialOwn)
+  // This workshop's fixes for the meaning on screen; one for the code as a whole shows under each.
+  const own = meaning
+    ? allOwn.filter((f) => f.meaning === null || f.meaning === meaning.id)
+    : allOwn
   const [open, setOpen] = useState(false)
   const [withdrawing, setWithdrawing] = useState<string | null>(null)
 
@@ -69,7 +82,7 @@ export function ShareFixCard({
     <AppCard
       icon={Share2}
       title={t('title')}
-      description={t('description', { code })}
+      description={t('description', { code: label })}
       action={
         available && own.length > 0 ? (
           <Button type="button" size="sm" variant="outline" onClick={() => setOpen(true)}>
@@ -88,7 +101,7 @@ export function ShareFixCard({
             <Wrench className="size-5" aria-hidden />
           </span>
           <div className="min-w-0 flex-1 space-y-1">
-            <p className="font-medium">{t('invite', { code })}</p>
+            <p className="font-medium">{t('invite', { code: label })}</p>
             <p className="text-sm text-muted-foreground">{t('inviteHint')}</p>
           </div>
           <Button type="button" onClick={() => setOpen(true)} className="shrink-0">
@@ -99,7 +112,7 @@ export function ShareFixCard({
       ) : null}
 
       {own.length > 0 && (
-        <ul className="space-y-3" aria-label={t('yourFixes', { code })}>
+        <ul className="space-y-3" aria-label={t('yourFixes', { code: label })}>
           {own.map((fix) => {
             const line = fixVehicleLine(fix.vehicle)
             return (
@@ -152,6 +165,9 @@ export function ShareFixCard({
           open={open}
           onOpenChange={setOpen}
           code={code}
+          label={label}
+          meaning={meaning}
+          makes={makes}
           vehicle={vehicle}
           onShared={(fix) => setOwn((current) => [fix, ...current])}
         />

@@ -8,6 +8,7 @@ import {
   BookOpen,
   ChevronRight,
   CloudOff,
+  Cpu,
   Gauge,
   GitBranch,
   Leaf,
@@ -20,15 +21,29 @@ import {
 import { AppCard } from '@/components/app-card'
 import { Button } from '@/components/ui/button'
 import { openSupport } from '@/features/support/Lib/supportVisibility'
+import { track } from '@/lib/analytics'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
+import { OEM_SOURCE_MAKES } from '../Lib/codes'
+import { makeKey } from '../Lib/makes'
 import { pushRecentLookup } from '../Lib/lookups'
-import type { FaultCodeFlags, FaultCodePageData, ReportState } from '../Lib/types'
+import type {
+  FaultCodeFlags,
+  FaultCodePageData,
+  OemMeaningView,
+  OemPageData,
+  OemSearchHit,
+  ReportState,
+} from '../Lib/types'
 import { DescriptionSections } from './DescriptionSections'
+import { Likelihood } from './Likelihood'
+import { ResearchCard } from './ResearchCard'
 import { FaultCodeChip, FaultStatusBadge, MeaningSourceLabel } from './FaultCodeChip'
 import { FaultCodesNotice } from './FaultCodesNotice'
 import { ReportMeaningPopover } from './ReportMeaningPopover'
+import { OemWhereUsed } from './OemWhereUsed'
 import { ShareFixCard } from './ShareFixCard'
+import { WaveformsCard } from './WaveformsCard'
 import { WorkshopFixesCard } from './WorkshopFixesCard'
 
 const LIKELIHOOD_RANK = { high: 0, medium: 1, low: 2 } as const
@@ -50,6 +65,7 @@ export function FaultCodeDetail({
   onOpenCode,
   layout = 'sheet',
   supportEnabled = false,
+  oem,
 }: {
   data: FaultCodePageData
   /** Opens a related code in place, as the sheet does; links to its page otherwise. */
@@ -57,6 +73,11 @@ export function FaultCodeDetail({
   layout?: 'sheet' | 'page'
   /** Whether the support widget is there to receive a question (cloud, switched on). */
   supportEnabled?: boolean
+  /**
+   * A make's own code (BMW's 2A82): its make, the meaning shown and how to
+   * switch to another; see FaultCodeOemView, which holds the choice.
+   */
+  oem?: { data: OemPageData; meaning: OemMeaningView | null; onSelect: (id: string) => void }
 }) {
   const t = useTranslations('faultCodes')
   const { formatDate } = useFormatDate()
@@ -65,16 +86,38 @@ export function FaultCodeDetail({
   const [report, setReport] = useState<ReportState | null>(data.report)
   const title = detail.title
 
+  const oemMake = oem?.data.make
   // Opening a code's page puts it first in this person's recent lookups.
   useEffect(() => {
-    if (page) pushRecentLookup({ kind: 'code', code: data.code, title: title ?? null })
-  }, [page, data.code, title])
+    if (!page) return
+    if (oemMake)
+      pushRecentLookup({ kind: 'oem', make: oemMake, code: data.code, title: title ?? null })
+    else pushRecentLookup({ kind: 'code', code: data.code, title: title ?? null })
+  }, [page, data.code, title, oemMake])
 
-  const askSupport = () =>
-    openSupport({
-      subject: t('support.subject', { code: data.code }),
-      message: t('support.message', { code: data.code, title: title ?? t('noMeaning') }),
+  // Each code opened, and whether we had a meaning for it: the misses say what to add next.
+  const found = Boolean(title)
+  const onJob = Boolean(data.vehicle)
+  useEffect(() => {
+    track('fault_code:page_view', {
+      code: data.code,
+      kind: oemMake ? 'make' : 'obd',
+      make: oemMake ?? null,
+      found,
+      layout: page ? 'page' : 'sheet',
+      on_job: onJob,
     })
+  }, [data.code, oemMake, found, page, onJob])
+
+  // A make's code is named with its make wherever it leaves this page.
+  const named = oem ? `${oem.data.makeName} ${data.code}` : data.code
+  const askSupport = () => {
+    track('fault_code:support_open', { code: data.code, kind: oem ? 'make' : 'obd' })
+    openSupport({
+      subject: t('support.subject', { code: named }),
+      message: t('support.message', { code: named, title: title ?? t('noMeaning') }),
+    })
+  }
 
   const causes = [...detail.causes].sort(
     (a, b) => LIKELIHOOD_RANK[a.likelihood] - LIKELIHOOD_RANK[b.likelihood]
@@ -90,16 +133,31 @@ export function FaultCodeDetail({
           size="lg"
           className={page ? 'px-2.5 py-1 text-lg' : undefined}
         />
-        {page && system && (
-          <span className="rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
-            {t(`systems.${system}`)}
-          </span>
+        {oem ? (
+          <>
+            <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+              {t('oem.badge', { make: oem.data.makeName })}
+            </span>
+            {data.vehicle && oem.meaning?.matches && (
+              <span className="rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
+                {t('oem.matches')}
+              </span>
+            )}
+          </>
+        ) : (
+          <>
+            {page && system && (
+              <span className="rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
+                {t(`systems.${system}`)}
+              </span>
+            )}
+            <MeaningSourceLabel
+              source={detail.source}
+              make={detail.make}
+              machineTranslated={detail.machineTranslated}
+            />
+          </>
         )}
-        <MeaningSourceLabel
-          source={detail.source}
-          make={detail.make}
-          machineTranslated={detail.machineTranslated}
-        />
       </div>
       <Heading
         className={
@@ -112,17 +170,23 @@ export function FaultCodeDetail({
           <span className="font-normal text-muted-foreground">
             {data.connected && !data.available
               ? t('notAvailable')
-              : detail.range === 'manufacturer'
-                ? t('manufacturerUnknown')
-                : t('noMeaning')}
+              : oem
+                ? oem.data.served
+                  ? t('oem.notFound', { code: data.code, make: oem.data.makeName })
+                  : t('oem.notServed', { make: oem.data.makeName })
+                : detail.range === 'manufacturer'
+                  ? t('manufacturerUnknown')
+                  : t('noMeaning')}
           </span>
         )}
       </Heading>
       {detail.flags && <Flags flags={detail.flags} />}
+      {oem?.meaning && <OemOwnWords meaning={oem.meaning} make={oem.data.makeName} />}
+      {oem && <OemMeanings oem={oem} />}
     </div>
   )
 
-  const reportButton = data.connected && (
+  const reportButton = data.connected && !oem && (
     <ReportMeaningPopover
       code={data.code}
       version={detail.version}
@@ -146,6 +210,15 @@ export function FaultCodeDetail({
       {data.connected && !data.available && (
         <Notice icon={CloudOff}>{t('detail.serviceDown')}</Notice>
       )}
+      {!oem && data.makeCodes && data.makeCodes.length > 0 && (
+        <MakeCodes code={data.code} hits={data.makeCodes} vehicleMake={data.vehicle?.make} />
+      )}
+      {oem &&
+        data.vehicle &&
+        oem.data.meanings.some((m) => m.modules.length > 0) &&
+        !oem.data.meanings.some((m) => m.matches) && (
+          <Notice icon={AlertTriangle}>{t('oem.noMatch')}</Notice>
+        )}
     </>
   )
 
@@ -279,21 +352,56 @@ export function FaultCodeDetail({
     </Part>
   )
 
+  // Where the make uses it comes from its control units; a code known only from our text has none.
+  const whereUsed = oem?.meaning && oem.meaning.modules.length > 0 && (
+    <Part card={page} icon={Cpu} title={t('oem.whereUsed', { make: oem.data.makeName })}>
+      <OemWhereUsed meaning={oem.meaning} layout={layout} />
+    </Part>
+  )
+
+  // Researching a fix lives on the code's own page, beside the shared fixes.
+  const researchCard = page && data.connected && data.research && (
+    <ResearchCard
+      code={oem ? oem.data.fixCode : data.code}
+      label={named}
+      meaning={oem?.meaning ? { id: oem.meaning.id, title: oem.meaning.title } : null}
+      vehicleId={data.vehicle?.id ?? null}
+      state={data.research}
+    />
+  )
+
   // Shared fixes live on the code's own page, where there is room for them.
   const fixes = page && data.connected && data.fixes
   const fromOtherWorkshops = fixes && (
     <WorkshopFixesCard
-      code={data.code}
+      code={oem ? oem.data.fixCode : data.code}
+      label={named}
+      meaning={oem?.meaning?.id ?? null}
       fixes={data.fixes?.published ?? []}
       available={data.fixes?.available ?? false}
     />
   )
   const shareFix = fixes && (
     <ShareFixCard
-      code={data.code}
+      code={oem ? oem.data.fixCode : data.code}
+      label={named}
+      meaning={oem?.meaning ? { id: oem.meaning.id, title: oem.meaning.title } : null}
+      makes={oem ? (OEM_SOURCE_MAKES[oem.data.make] ?? [oem.data.makeName]) : null}
       vehicle={data.vehicle}
       own={data.fixes?.own ?? []}
       available={data.fixes?.available ?? false}
+    />
+  )
+
+  // Scope recordings, known good and faulty, beside the fixes on the code's own page.
+  const waveforms = page && data.connected && data.waveforms && (
+    <WaveformsCard
+      code={oem ? oem.data.fixCode : data.code}
+      label={named}
+      meaning={oem?.meaning ? { id: oem.meaning.id, title: oem.meaning.title } : null}
+      makes={oem ? (OEM_SOURCE_MAKES[oem.data.make] ?? [oem.data.makeName]) : null}
+      vehicle={data.vehicle}
+      state={data.waveforms}
     />
   )
 
@@ -307,6 +415,7 @@ export function FaultCodeDetail({
         {notices}
         {meaning}
         {causeList}
+        {whereUsed}
         {related}
         {jobs}
       </div>
@@ -337,16 +446,19 @@ export function FaultCodeDetail({
           </div>
         </div>
       </header>
-      <FaultCodesNotice />
+      <FaultCodesNotice makes={data.oemMakes} improve={data.connected ? { code: named } : null} />
       {notices}
       <div className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_22rem] xl:grid-cols-[minmax(0,1fr)_26rem]">
         <div className="min-w-0 space-y-4">
           {meaning}
           {causeList}
+          {researchCard}
           {fromOtherWorkshops}
-          {shareFix}
+          {waveforms}
+          {shareFix && <div id="share-fix">{shareFix}</div>}
         </div>
         <div className="min-w-0 space-y-4">
+          {whereUsed}
           {related}
           {jobs}
         </div>
@@ -412,23 +524,6 @@ function Notice({
   )
 }
 
-/** High, medium or low as a small bar of three, with the word for screen readers. */
-function Likelihood({ level }: { level: 'low' | 'medium' | 'high' }) {
-  const t = useTranslations('faultCodes.detail.likelihood')
-  const filled = level === 'high' ? 3 : level === 'medium' ? 2 : 1
-  return (
-    <span className="mt-1.5 flex shrink-0 items-center gap-0.5" title={t(level)}>
-      {[1, 2, 3].map((i) => (
-        <span
-          key={i}
-          className={cn('h-1.5 w-3 rounded-full', i <= filled ? 'bg-primary' : 'bg-muted')}
-        />
-      ))}
-      <span className="sr-only">{t(level)}</span>
-    </span>
-  )
-}
-
 function Flags({ flags }: { flags: FaultCodeFlags }) {
   const t = useTranslations('faultCodes.flags')
   const items = [
@@ -453,5 +548,125 @@ function Flags({ flags }: { flags: FaultCodeFlags }) {
         </li>
       ))}
     </ul>
+  )
+}
+
+/**
+ * Makes that give this code a meaning of their own (Ford's P1000), each a link to that
+ * meaning's page; the car's own make first and marked.
+ */
+function MakeCodes({
+  code,
+  hits,
+  vehicleMake,
+}: {
+  code: string
+  hits: OemSearchHit[]
+  vehicleMake?: string | null
+}) {
+  const t = useTranslations('faultCodes.makeCodes')
+  const own = vehicleMake ? makeKey(vehicleMake) : null
+  return (
+    <div className="rounded-lg border border-card-edge bg-card px-4 py-3">
+      <p className="mb-1.5 flex items-center gap-2 text-sm font-medium">
+        <Cpu className="size-4 text-primary" aria-hidden />
+        {t('heading', { code })}
+      </p>
+      <ul className="space-y-1">
+        {hits.map((h) => (
+          <li key={h.make}>
+            <Link
+              href={`/fault-codes/oem/${h.make}/${h.code}`}
+              onClick={() =>
+                track('fault_code:make_code_open', {
+                  code: h.code,
+                  make: h.make,
+                  own_make: h.make === own,
+                })
+              }
+              className="group flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm"
+            >
+              <span className="font-medium">{h.makeName}</span>
+              <span className="text-muted-foreground group-hover:text-foreground group-hover:underline">
+                {h.title}
+              </span>
+              {h.make === own && (
+                <span className="rounded-full border border-primary/30 bg-primary/10 px-1.5 py-px text-[10px] font-medium text-primary">
+                  {t('thisCar')}
+                </span>
+              )}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+/** The make's own words under our title, or its English under its own text. */
+function OemOwnWords({ meaning, make }: { meaning: OemMeaningView; make: string }) {
+  const t = useTranslations('faultCodes.oem')
+  // A code known only from our text has no words of the make's own.
+  if (!meaning.text) return null
+  if (meaning.ownTitle)
+    return (
+      <p className="text-sm text-muted-foreground" lang={meaning.textLang}>
+        {t('bmwText', { text: meaning.text, make })}
+      </p>
+    )
+  if (meaning.textEn && meaning.textLang !== 'en')
+    return (
+      <p className="text-sm text-muted-foreground" lang="en">
+        {t('inEnglish', { text: meaning.textEn, make })}
+      </p>
+    )
+  return null
+}
+
+/**
+ * The meanings a make's code has, one chosen: BMW's 2A82 is the inlet VANOS on
+ * one engine computer and a lambda fault on another. The one fitting the car
+ * comes first and is marked.
+ */
+function OemMeanings({
+  oem,
+}: {
+  oem: { data: OemPageData; meaning: OemMeaningView | null; onSelect: (id: string) => void }
+}) {
+  const t = useTranslations('faultCodes.oem')
+  const { meanings } = oem.data
+  if (meanings.length < 2) return null
+  return (
+    <div className="space-y-2 pt-1">
+      <p className="text-xs text-muted-foreground">{t('summary', { count: meanings.length })}</p>
+      <div className="flex flex-wrap gap-1.5" role="group" aria-label={t('meanings')}>
+        {meanings.map((m) => {
+          const on = m.id === oem.meaning?.id
+          return (
+            <button
+              key={m.id}
+              type="button"
+              aria-pressed={on}
+              onClick={() => oem.onSelect(m.id)}
+              className={cn(
+                'inline-flex max-w-full cursor-pointer items-center gap-1.5 rounded-md border px-2.5 py-1 text-left text-xs transition-colors',
+                on
+                  ? 'border-primary/50 bg-primary/10 font-medium text-foreground'
+                  : 'border-card-edge bg-background/60 text-muted-foreground hover:border-primary/30 hover:text-foreground'
+              )}
+            >
+              <span className="truncate" lang={m.titleLang}>
+                {m.title}
+              </span>
+              {m.matches && (
+                <span className="shrink-0 rounded-full bg-primary/15 px-1.5 py-px text-[10px] font-medium text-primary">
+                  {t('fitsThisCar')}
+                </span>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 }

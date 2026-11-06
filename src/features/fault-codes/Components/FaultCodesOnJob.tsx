@@ -20,6 +20,11 @@ export interface FaultCodesJobInfo {
   connected: boolean
   /** Code to when it was last read on this vehicle in another job (ISO). */
   seenBefore: Record<string, string>
+  /**
+   * The manufacturer data the car's own codes are looked up in ("bmw" for a
+   * BMW, MINI or Rolls-Royce), so BMW codes can be typed in; null otherwise.
+   */
+  oemSource?: string | null
 }
 
 interface JobFaultCodes extends FaultCodesJobInfo {
@@ -77,11 +82,13 @@ export function FaultCodesJobProvider({
           serviceRecordId={serviceRecordId}
           vehicleId={vehicleId}
           concerns={concerns}
+          oemSource={info.oemSource ?? null}
         />
       )}
       <FaultCodeSheet
         code={sheetCode}
         vehicleId={vehicleId}
+        oemSource={info.oemSource ?? null}
         onOpenChange={(open) => !open && setSheetCode(null)}
       />
     </Ctx.Provider>

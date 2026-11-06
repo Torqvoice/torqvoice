@@ -5,7 +5,15 @@ import { getManifest, listManifests } from '@/integrations/registry'
 import { FAULT_CODES_CAPABILITY } from '@/integrations/torqvoice-codes/manifest'
 import { loadConnection } from '@/features/integrations/Lib/connections'
 import { autoConnectFor } from '@/features/integrations/Lib/auto-connect'
-import { isManufacturerCode } from './codes'
+import {
+  isFaultCode,
+  isManufacturerCode,
+  isOemCode,
+  normalizeAnyMakeCode,
+  normalizeOemCode,
+  oemSourceFor,
+} from './codes'
+import { isMakeKey, makeName } from './makes'
 import { connectorAllowed } from '@/features/integrations/Lib/plan'
 import type {
   ConnectorContext,
@@ -16,7 +24,18 @@ import type {
   FaultCodeMeaning,
   FaultCodeOwnFix,
   FaultCodeReportReason,
+  FaultCodeOwnWaveform,
+  FaultCodeResearch,
+  FaultCodeResearchRefusal,
+  FaultCodeWaveformInput,
+  WaveformFileRole,
   FaultCodeVehicle,
+  OemMeaning,
+  CodeImportChecked,
+  CodeImportCounts,
+  CodeImportInput,
+  CodeImportRefusal,
+  CodeImportStatus,
 } from '@/features/integrations/Lib/types'
 import type {
   CodeFixes,
@@ -24,8 +43,12 @@ import type {
   FaultCodeJob,
   FaultCodeView,
   MeaningSource,
+  OemMeaningView,
+  OemSearchHit,
   OwnFix,
+  CodeWaveforms,
   ReportState,
+  ResearchState,
   SharedFix,
 } from './types'
 
@@ -194,11 +217,22 @@ export async function lookupMeanings(
   const loaded = await connect(organizationId)
   const answers = new Map<string, FaultCodeAnswer>()
   const answered = new Set<string>()
-  if (loaded?.server.lookupCodes) {
+  // A manufacturer's own code (BMW's 2A82) is looked up in that make's data,
+  // one call per code; it only counts on a car of that make.
+  const source = oemSourceFor(vehicle?.make)
+  const oemCodes = source ? unique.filter((c) => !isFaultCode(c) && isOemCode(c)) : []
+  const obdCodes = unique.filter((c) => isFaultCode(c))
+  const oem = new Map<string, FaultCodeView>()
+  if (source && oemCodes.length > 0) {
+    for (const view of await oemViews(loaded, source, oemCodes, vehicle, locale)) {
+      oem.set(view.code, view)
+    }
+  }
+  if (loaded?.server.lookupCodes && obdCodes.length > 0) {
     const lookup = loaded.server.lookupCodes
     const batches: string[][] = []
-    for (let i = 0; i < unique.length; i += LOOKUP_BATCH) {
-      batches.push(unique.slice(i, i + LOOKUP_BATCH))
+    for (let i = 0; i < obdCodes.length; i += LOOKUP_BATCH) {
+      batches.push(obdCodes.slice(i, i + LOOKUP_BATCH))
     }
     const replies = await Promise.all(
       batches.map((batch) =>
@@ -211,12 +245,393 @@ export async function lookupMeanings(
       for (const code of batches[i]) answered.add(code)
     })
   }
+  const oemAnswered = [...oem.values()].some((v) => v.state !== 'unavailable')
   return {
-    available: answered.size > 0,
-    results: unique.map((code) =>
-      viewOf(code, answers.get(code), answered.has(code), vehicle?.make)
+    available: answered.size > 0 || oemAnswered || (obdCodes.length === 0 && oem.size === 0),
+    results: unique.map(
+      (code) => oem.get(code) ?? viewOf(code, answers.get(code), answered.has(code), vehicle?.make)
     ),
   }
+}
+
+/** The text of a manufacturer meaning to show: its English when the reader's language is English and the manufacturer has one. */
+export function oemText(meaning: OemMeaning, locale: string): { text: string; lang: string } {
+  if (locale.toLowerCase().startsWith('en') && meaning.textEn)
+    return { text: meaning.textEn, lang: 'en' }
+  return { text: meaning.text, lang: meaning.textLang }
+}
+
+/**
+ * Manufacturer codes on a car of that make, for lists and findings: the
+ * meaning that fits the car (the service puts it first), or the first one.
+ */
+async function oemViews(
+  loaded: Loaded | null,
+  source: string,
+  codes: string[],
+  vehicle: FaultCodeVehicle | null,
+  locale: string
+): Promise<FaultCodeView[]> {
+  const lookup = loaded?.server.oemCode
+  if (!loaded || !lookup) return codes.map((code) => emptyView(code, 'unavailable'))
+  const replies = await Promise.all(
+    codes.map((code) =>
+      attempt(() =>
+        lookup(loaded.ctx, { source, code, engine: vehicle?.engine ?? undefined, locale })
+      )
+    )
+  )
+  return codes.map((code, i) => {
+    const reply = replies[i]
+    if (!reply.ok) return emptyView(code, 'unavailable')
+    const meaning = reply.value?.meanings[0]
+    if (!meaning) return { ...emptyView(code, 'unknown'), range: 'manufacturer' as const }
+    // Our own title reads better than the control unit's text, when there is one.
+    const shown = meaning.title
+      ? { text: meaning.title, lang: meaning.lang ?? 'en' }
+      : oemText(meaning, locale)
+    return {
+      ...emptyView(code, 'found'),
+      range: 'manufacturer' as const,
+      title: shown.text,
+      lang: shown.lang,
+      source: 'manufacturer' as const,
+      make: vehicle?.make ?? null,
+    }
+  })
+}
+
+/** Where this workshop's code imports are kept, one link per import. */
+const IMPORT_LINK = 'fault-code-import'
+
+export type CodeImportCheck =
+  | { ok: true; counts: CodeImportCounts; rows: CodeImportChecked[] }
+  | { ok: false; reason: CodeImportRefusal | 'unavailable' }
+
+/** What each row of an import file would do for the make, keeping nothing. */
+export async function checkCodeImportFor(
+  organizationId: string,
+  input: Omit<CodeImportInput, 'workshopRef' | 'source' | 'fileName'>
+): Promise<CodeImportCheck> {
+  const loaded = await connect(organizationId)
+  if (!loaded?.server.checkCodeImport) return { ok: false, reason: 'unavailable' }
+  const check = loaded.server.checkCodeImport
+  const reply = await attempt(() => check(loaded.ctx, input))
+  if (!reply.ok) return { ok: false, reason: 'unavailable' }
+  return reply.value
+}
+
+/** Sends an import's new and changed codes for review, and keeps its id for its status. */
+export async function sendCodeImportFor(
+  organizationId: string,
+  input: Omit<CodeImportInput, 'workshopRef'>
+): Promise<
+  | { ok: true; id: string; counts: CodeImportCounts }
+  | { ok: false; reason: CodeImportRefusal | 'unavailable' }
+> {
+  const loaded = await connect(organizationId)
+  if (!loaded?.server.sendCodeImport) return { ok: false, reason: 'unavailable' }
+  const send = loaded.server.sendCodeImport
+  const reply = await attempt(() => send(loaded.ctx, { ...input, workshopRef: organizationId }))
+  if (!reply.ok) return { ok: false, reason: 'unavailable' }
+  if (!reply.value.ok) return reply.value
+  await loaded.ctx.links.set(IMPORT_LINK, reply.value.id, {
+    remoteId: reply.value.id,
+    metadata: { make: input.make, sentAt: new Date().toISOString() },
+  })
+  return reply.value
+}
+
+/** This workshop's imports, newest first, with how their codes stand. */
+export async function codeImportsFor(organizationId: string): Promise<CodeImportStatus[]> {
+  const loaded = await connect(organizationId)
+  const status = loaded?.server.codeImportStatus
+  if (!loaded || !status) return []
+  const { links } = loaded.ctx
+  const ids = [...(await links.remoteIds(IMPORT_LINK))]
+  if (ids.length === 0) return []
+  const reply = await attempt(() => status(loaded.ctx, ids))
+  if (!reply.ok) return []
+  const answered = new Set(reply.value.map((i) => i.id))
+  await Promise.all(
+    ids.filter((id) => !answered.has(id)).map((id) => links.remove(IMPORT_LINK, id))
+  )
+  return reply.value.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
+/** Where this workshop's shared waveforms are kept, one link per waveform under its code. */
+export function waveformLink(code: string): string {
+  return `fault-code-waveform:${code}`
+}
+
+/**
+ * A code's waveforms for its page: the published ones from other workshops, and this
+ * workshop's own with how their review stands. One the service no longer has is forgotten.
+ */
+export async function waveformsFor(organizationId: string, code: string): Promise<CodeWaveforms> {
+  const none: CodeWaveforms = { available: false, published: [], own: [] }
+  const loaded = await connect(organizationId)
+  if (!loaded?.server.publishedWaveforms) return none
+  const { links } = loaded.ctx
+  const ownIds = [...(await links.remoteIds(waveformLink(code)))]
+  const listing = loaded.server.publishedWaveforms
+  const status = loaded.server.waveformStatus
+  const [published, own] = await Promise.all([
+    attempt(() => listing(loaded.ctx, { code })),
+    ownIds.length > 0 && status
+      ? attempt(() => status(loaded.ctx, ownIds))
+      : Promise.resolve({ ok: true as const, value: [] as FaultCodeOwnWaveform[] }),
+  ])
+  if (!published.ok) return none
+  const mine = new Set(ownIds)
+  let ownWaveforms: FaultCodeOwnWaveform[] = []
+  if (own.ok) {
+    const answered = new Set(own.value.map((w) => w.id))
+    await Promise.all(
+      ownIds.filter((id) => !answered.has(id)).map((id) => links.remove(waveformLink(code), id))
+    )
+    ownWaveforms = own.value.sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+  }
+  return {
+    available: true,
+    published: published.value.filter((w) => !mine.has(w.id)),
+    own: ownWaveforms,
+  }
+}
+
+export type ShareWaveformResult =
+  | { ok: true; waveform: FaultCodeOwnWaveform }
+  | { ok: false; reason: FaultCodeFixRefusal | 'unavailable' }
+
+/** Shares a scope recording with the service and keeps its id, so the page shows its review. */
+export async function shareWaveform(
+  organizationId: string,
+  input: Omit<FaultCodeWaveformInput, 'workshopRef'>
+): Promise<ShareWaveformResult> {
+  const loaded = await connect(organizationId)
+  if (!loaded?.server.shareWaveform) return { ok: false, reason: 'unavailable' }
+  const share = loaded.server.shareWaveform
+  const reply = await attempt(() => share(loaded.ctx, { ...input, workshopRef: organizationId }))
+  if (!reply.ok) return { ok: false, reason: 'unavailable' }
+  if (!reply.value.ok) return { ok: false, reason: reply.value.reason }
+  const id = reply.value.id
+  await loaded.ctx.links.set(waveformLink(input.code), id, {
+    remoteId: id,
+    metadata: { code: input.code, sentAt: new Date().toISOString() },
+  })
+  const status = loaded.server.waveformStatus
+  const fresh = status ? await attempt(() => status(loaded.ctx, [id])) : null
+  const found = fresh?.ok ? fresh.value.find((w) => w.id === id) : undefined
+  if (found) return { ok: true, waveform: found }
+  return {
+    ok: true,
+    waveform: {
+      id,
+      code: input.code,
+      meaning: input.meaning ?? null,
+      kind: input.kind,
+      title: input.title,
+      condition: input.condition ?? null,
+      note: input.note ?? null,
+      lang: input.lang,
+      vehicle: input.vehicle ?? null,
+      preview: null,
+      files: input.files.map((f) => ({
+        role: f.role,
+        name: f.name,
+        size: f.blob.size,
+        width: null,
+        height: null,
+      })),
+      createdAt: new Date().toISOString(),
+      status: 'pending',
+      reason: null,
+      reviewedAt: null,
+    },
+  }
+}
+
+/** Withdraws a waveform this workshop shared; only one in its link store. */
+export async function withdrawSharedWaveform(
+  organizationId: string,
+  code: string,
+  id: string
+): Promise<'withdrawn' | 'not_found' | 'unavailable'> {
+  const loaded = await connect(organizationId)
+  if (!loaded?.server.withdrawWaveform) return 'unavailable'
+  const { links } = loaded.ctx
+  const ids = await links.remoteIds(waveformLink(code))
+  if (!ids.has(id)) return 'not_found'
+  const withdraw = loaded.server.withdrawWaveform
+  const reply = await attempt(() => withdraw(loaded.ctx, { id, workshopRef: organizationId }))
+  if (!reply.ok) return 'unavailable'
+  await links.remove(waveformLink(code), id)
+  return 'withdrawn'
+}
+
+/** One file of a waveform, streamed from the service: a published one's, or this workshop's own. */
+export async function sharedWaveformFile(
+  organizationId: string,
+  query: { id: string; role: WaveformFileRole; size: 'full' | 'thumb' }
+) {
+  const loaded = await connect(organizationId)
+  if (!loaded?.server.waveformFile) return null
+  const file = loaded.server.waveformFile
+  const reply = await attempt(() => file(loaded.ctx, { ...query, workshopRef: organizationId }))
+  return reply.ok ? reply.value : null
+}
+
+/** A code's researched fixes for its page (P0420, BMW-2A82), and whether research is on. */
+export async function researchFor(organizationId: string, code: string): Promise<ResearchState> {
+  const loaded = await connect(organizationId)
+  const read = loaded?.server.researchFor
+  if (!loaded || !read) return { available: false, items: [] }
+  const reply = await attempt(() => read(loaded.ctx, { code }))
+  return reply.ok
+    ? { available: reply.value.available, items: reply.value.research }
+    : { available: false, items: [] }
+}
+
+export type ResearchOutcome =
+  | { outcome: 'done'; research: FaultCodeResearch }
+  | { outcome: FaultCodeResearchRefusal | 'failed' }
+
+/** Researches a code, or one meaning of a make's code, for this workshop. */
+export async function requestResearch(
+  organizationId: string,
+  input: { code: string; meaning?: string; vehicle: FaultCodeVehicle | null }
+): Promise<ResearchOutcome> {
+  const loaded = await connect(organizationId)
+  const ask = loaded?.server.research
+  if (!loaded || !ask) return { outcome: 'unavailable' }
+  const reply = await attempt(() =>
+    ask(loaded.ctx, {
+      code: input.code,
+      meaning: input.meaning,
+      vehicle: input.vehicle ?? undefined,
+      workshopRef: organizationId,
+    })
+  )
+  if (!reply.ok) return { outcome: 'failed' }
+  return reply.value.ok
+    ? { outcome: 'done', research: reply.value.research }
+    : { outcome: reply.value.reason }
+}
+
+/** "Did this fix it?" for a research, once per workshop. */
+export async function rateResearch(
+  organizationId: string,
+  id: string,
+  helpful: boolean
+): Promise<boolean> {
+  const loaded = await connect(organizationId)
+  const rate = loaded?.server.rateResearch
+  if (!loaded || !rate) return false
+  const reply = await attempt(() => rate(loaded.ctx, { id, helpful, workshopRef: organizationId }))
+  return reply.ok && reply.value
+}
+
+/** The makes whose own codes the service answers for ("bmw"); none when it serves none. */
+export async function oemMakesFor(organizationId: string): Promise<string[]> {
+  const loaded = await connect(organizationId)
+  const list = loaded?.server.oemMakes
+  if (!loaded || !list) return []
+  const reply = await attempt(() => list(loaded.ctx))
+  return reply.ok ? reply.value.filter(isMakeKey) : []
+}
+
+/** A make's meanings as its code's page shows them, the one fitting the car first. */
+export function oemMeaningViews(meanings: OemMeaning[], locale: string): OemMeaningView[] {
+  return meanings.map((m) => {
+    const own = oemText(m, locale)
+    return {
+      id: m.id,
+      title: m.title ?? own.text,
+      titleLang: m.title ? (m.lang ?? 'en') : own.lang,
+      ownTitle: Boolean(m.title),
+      text: own.text,
+      textLang: own.lang,
+      textEn: m.textEn,
+      description: m.description,
+      sections: m.sections,
+      causes: m.causes,
+      modules: m.modules,
+      vehicles: m.vehicles,
+      engines: m.engines,
+      matches: m.matches,
+    }
+  })
+}
+
+/**
+ * A make's own code on its page: whether the service serves the make, and
+ * every meaning the code has there. `available` is false when the service
+ * could not be reached.
+ */
+export async function oemCodeFor(
+  organizationId: string,
+  make: string,
+  code: string,
+  vehicle: FaultCodeVehicle | null,
+  locale: string
+): Promise<{ available: boolean; served: boolean; meanings: OemMeaningView[] }> {
+  const loaded = await connect(organizationId)
+  const lookup = loaded?.server.oemCode
+  if (!loaded || !lookup) return { available: false, served: false, meanings: [] }
+  const reply = await attempt(() =>
+    lookup(loaded.ctx, { source: make, code, engine: vehicle?.engine ?? undefined, locale })
+  )
+  if (!reply.ok) return { available: false, served: false, meanings: [] }
+  if (!reply.value) return { available: true, served: false, meanings: [] }
+  return { available: true, served: true, meanings: oemMeaningViews(reply.value.meanings, locale) }
+}
+
+/**
+ * A make's own codes for what was typed (BMW's 283700), for the lookup page
+ * and the search palette: one hit per make the service serves that has it.
+ * Too short to be a whole code, or not one at all, finds nothing.
+ */
+export async function searchOemCodes(
+  organizationId: string,
+  query: string,
+  locale: string,
+  served?: string[]
+): Promise<OemSearchHit[]> {
+  const loaded = await connect(organizationId)
+  // One call across every make, where the service can; else one call per make it serves.
+  if (loaded?.server.findOemCode) {
+    const find = loaded.server.findOemCode
+    const anyCode = normalizeAnyMakeCode(query)
+    if (!anyCode || anyCode.length < 4) return []
+    const reply = await attempt(() => find(loaded.ctx, { code: anyCode, locale }))
+    if (!reply.ok) return []
+    return reply.value.map((h) => ({
+      make: h.make,
+      makeName: makeName(h.make),
+      code: h.code,
+      title: h.title ?? h.code,
+      meanings: h.meanings,
+    }))
+  }
+  const code = normalizeOemCode(query)
+  if (!code || code.length < 4) return []
+  const makes = served ?? (await oemMakesFor(organizationId))
+  const found = await Promise.all(
+    makes.map(async (make) => {
+      const answer = await oemCodeFor(organizationId, make, code, null, locale)
+      const first = answer.meanings[0]
+      return first
+        ? {
+            make,
+            makeName: makeName(make),
+            code,
+            title: first.title,
+            meanings: answer.meanings.length,
+          }
+        : null
+    })
+  )
+  return found.filter((h): h is OemSearchHit => h !== null)
 }
 
 /** One code with its description, causes and related codes. */
@@ -473,6 +888,7 @@ export function fixLink(code: string): string {
 function sharedFixOf(fix: FaultCodeFix): SharedFix {
   return {
     id: fix.id,
+    meaning: fix.meaning,
     lang: fix.lang,
     text: fix.text,
     vehicle: fix.vehicle
@@ -510,6 +926,7 @@ export async function shareFix(
   organizationId: string,
   input: {
     code: string
+    meaning?: string
     text: string
     lang: string
     vehicle: FaultCodeVehicle | null
@@ -522,6 +939,7 @@ export async function shareFix(
   const reply = await attempt(() =>
     share(loaded.ctx, {
       code: input.code,
+      meaning: input.meaning,
       text: input.text,
       lang: input.lang,
       vehicle: input.vehicle ?? undefined,
@@ -546,6 +964,7 @@ export async function shareFix(
     ok: true,
     fix: {
       id,
+      meaning: input.meaning ?? null,
       lang: input.lang,
       text: input.text,
       vehicle: input.vehicle

@@ -199,6 +199,159 @@ describe('Torqvoice Codes lookups', () => {
     expect(without?.meaning?.description?.text).toContain('stores oxygen')
   })
 
+  it('reads research for a code, and maps what asking for one comes to', async () => {
+    const row = {
+      id: '0190f3c2-7d1a-7000-8000-0000000000aa',
+      code: 'BMW-2A82',
+      meaning: 'einlass-vanos',
+      status: 'pending',
+      findings: {
+        title: 'Inlet VANOS solenoid stuck',
+        meaning: 'The inlet camshaft did not reach its position.',
+        common_issues: [],
+        steps: ['Measure the solenoid: 6 to 8 ohms.', 'Swap the solenoids.'],
+        causes: [{ label: 'Solenoid', likelihood: 'certain' }],
+        advice: null,
+        sources: [
+          { url: 'https://bimmerforums.com/t/1', title: 'Fixed' },
+          { url: 'javascript:alert(1)', title: 'x' },
+        ],
+      },
+      reason: null,
+      requests: 2,
+      helpful: 1,
+      not_helpful: 0,
+      created_at: '2026-11-06T10:00:00Z',
+    }
+    fetchMock.mockResolvedValueOnce(reply(200, { available: true, research: [row] }))
+    const list = await connector.researchFor!(ctx(), { code: 'BMW-2A82' })
+    expect(fetchMock.mock.calls[0][0]).toBe('http://torqvoice-codes:8090/v1/research/BMW-2A82')
+    expect(list.available).toBe(true)
+    expect(list.research[0]).toMatchObject({
+      meaning: 'einlass-vanos',
+      notHelpful: 0,
+      findings: {
+        commonIssues: [],
+        causes: [{ label: 'Solenoid', likelihood: 'medium' }],
+        // Only web pages are sources.
+        sources: [{ url: 'https://bimmerforums.com/t/1', title: 'Fixed' }],
+      },
+    })
+
+    fetchMock.mockResolvedValueOnce(reply(200, { research: row }))
+    const done = await connector.research!(ctx(), {
+      code: 'BMW-2A82',
+      meaning: 'einlass-vanos',
+      workshopRef: 'org1',
+    })
+    expect(done).toMatchObject({ ok: true, research: { id: row.id } })
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toMatchObject({
+      code: 'BMW-2A82',
+      meaning: 'einlass-vanos',
+      workshop_ref: 'org1',
+    })
+    for (const [status, reason] of [
+      [409, 'busy'],
+      [429, 'limited'],
+      [404, 'unavailable'],
+      [502, 'unavailable'],
+    ] as const) {
+      fetchMock.mockResolvedValueOnce(reply(status, { title: 'x', status }))
+      expect(await connector.research!(ctx(), { code: 'P0420', workshopRef: 'org1' })).toEqual({
+        ok: false,
+        reason,
+      })
+    }
+    // An older service without research: none, and not available.
+    fetchMock.mockResolvedValueOnce(reply(404, { title: 'Not Found', status: 404 }))
+    expect(await connector.researchFor!(ctx(), { code: 'P0420' })).toEqual({
+      available: false,
+      research: [],
+    })
+  })
+
+  it('lists the makes whose own codes are served, and none from a service without the list', async () => {
+    fetchMock.mockResolvedValueOnce(reply(200, { makes: ['BMW'] }))
+    expect(await connector.oemMakes!(ctx())).toEqual(['bmw'])
+    expect(fetchMock.mock.calls[0][0]).toBe('http://torqvoice-codes:8090/v1/oem')
+    fetchMock.mockResolvedValueOnce(reply(404, { title: 'Not Found', status: 404 }))
+    expect(await connector.oemMakes!(ctx())).toEqual([])
+  })
+
+  it('reads a BMW code with its meanings, and says null when BMW codes are not served', async () => {
+    fetchMock.mockResolvedValueOnce(
+      reply(200, {
+        make: 'bmw',
+        code: '2A82',
+        found: true,
+        meanings: [
+          {
+            text: 'Einlass-VANOS',
+            text_lang: 'de',
+            text_en: 'Inlet VANOS',
+            modules: [{ ref: 'msd80', family: 'DME', name: 'Motorsteuerung MSD80' }],
+            vehicles: [
+              { chassis: 'E90', model: '3 Series', body: 'Sedan', year_from: 2005, year_to: 2013 },
+            ],
+            engines: ['N54'],
+            matches: true,
+            lang: 'nb',
+            title: 'Innløps-VANOS',
+            description: 'Rens magnetventilen. Nyere type del.',
+            sections: [
+              { kind: 'resolution', text: 'Rens magnetventilen.' },
+              { kind: 'tips', text: 'Nyere type del.' },
+            ],
+            causes: [{ key: 'solenoid', likelihood: 'certain', label: 'Magnetventil' }],
+          },
+          {
+            text: 'Lambdasonden nach Katalysator, vertauscht',
+            text_lang: 'de',
+            modules: [],
+            vehicles: [],
+            engines: [],
+            matches: false,
+            lang: 'en',
+            title: '  ',
+            sections: [],
+            causes: [],
+          },
+        ],
+      })
+    )
+    const answer = await connector.oemCode!(ctx(), {
+      source: 'bmw',
+      code: '2A82',
+      engine: 'N54B30',
+      locale: 'nb',
+    })
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      'http://torqvoice-codes:8090/v1/oem/bmw/codes/2A82?engine=N54B30&lang=nb'
+    )
+    expect(answer?.meanings[0]).toMatchObject({
+      text: 'Einlass-VANOS',
+      textEn: 'Inlet VANOS',
+      matches: true,
+      vehicles: [{ chassis: 'E90', model: '3 Series', yearFrom: 2005, yearTo: 2013 }],
+    })
+    // Our own text comes along; a section kind or likelihood the app does not know reads safely.
+    expect(answer?.meanings[0]).toMatchObject({
+      lang: 'nb',
+      title: 'Innløps-VANOS',
+      description: 'Rens magnetventilen. Nyere type del.',
+      sections: [
+        { kind: 'resolution', text: 'Rens magnetventilen.' },
+        { kind: 'other', text: 'Nyere type del.' },
+      ],
+      causes: [{ key: 'solenoid', likelihood: 'medium', label: 'Magnetventil' }],
+    })
+    // Without a title there is no text of ours.
+    expect(answer?.meanings[1]).toMatchObject({ lang: null, title: null, sections: [] })
+
+    fetchMock.mockResolvedValueOnce(reply(404, { title: 'Not Found', status: 404 }))
+    expect(await connector.oemCode!(ctx(), { source: 'bmw', code: '2A82' })).toBeNull()
+  })
+
   it('reads one code with details, and says null for a code the service does not have', async () => {
     fetchMock.mockResolvedValueOnce(reply(200, P0420))
     const answer = await connector.codeDetail!(ctx(), {
@@ -367,6 +520,7 @@ describe('Torqvoice Codes shared fixes', () => {
       {
         id: FIX.id,
         code: 'P0420',
+        meaning: null,
         lang: 'nb',
         text: FIX.text,
         vehicle: { make: 'Volkswagen', model: 'Golf', year: 2014, engine: 'CAXA' },
@@ -391,6 +545,7 @@ describe('Torqvoice Codes shared fixes', () => {
     const own = await connector.fixStatus!(ctx(), [FIX.id, FIX.id])
     expect(fetchMock.mock.calls[1][0]).toBe(`http://torqvoice-codes:8090/v1/fixes?ids=${FIX.id}`)
     expect(own[0]).toMatchObject({
+      meaning: null,
       vehicle: null,
       status: 'rejected',
       reason: 'The photo shows a plate.',

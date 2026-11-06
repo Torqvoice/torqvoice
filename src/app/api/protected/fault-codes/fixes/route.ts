@@ -8,6 +8,7 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { locales } from '@/i18n/config'
 import { discardDraft, readDraftPhotos } from '@/features/fault-codes/Lib/fixDrafts.server'
+import { fixMakesFor } from '@/features/fault-codes/Lib/codes'
 import { shareFix, vehicleForCodes } from '@/features/fault-codes/Lib/service.server'
 import type { FaultCodeVehicle } from '@/features/integrations/Lib/types'
 import {
@@ -82,6 +83,7 @@ export async function POST(request: NextRequest) {
   }
   const parsed = shareFixSchema.safeParse({
     code: text('code'),
+    meaning: text('meaning') || undefined,
     text: text('text'),
     vehicleId: text('vehicleId') || undefined,
     draftId: text('draftId') || undefined,
@@ -121,9 +123,16 @@ export async function POST(request: NextRequest) {
   } else if (data.make || data.model || data.year) {
     vehicle = { make: data.make, model: data.model, year: data.year }
   }
+  // A make's own code is only on that make's cars: a BMW code on a Toyota is a typo.
+  const makes = fixMakesFor(data.code)
+  if (makes && vehicle?.make && !makes.some((m) => m.toLowerCase() === vehicle.make?.toLowerCase()))
+    return fail(400, 'invalid')
+  // Only a make's own code has meanings to tell apart.
+  if (data.meaning && !makes) return fail(400, 'invalid')
 
   const result = await shareFix(ctx.organizationId, {
     code: data.code,
+    meaning: data.meaning,
     text: data.text,
     lang: lang.data,
     vehicle,

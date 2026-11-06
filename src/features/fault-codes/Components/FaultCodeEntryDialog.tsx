@@ -62,12 +62,15 @@ export function FaultCodeEntryDialog({
   serviceRecordId,
   vehicleId,
   concerns = [],
+  oemSource = null,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   serviceRecordId: string
   vehicleId: string
   concerns?: { id: string; description: string }[]
+  /** The car has manufacturer code data ("bmw"), so BMW codes are read too. */
+  oemSource?: string | null
 }) {
   const t = useTranslations('faultCodes.entry')
   const router = useRouter()
@@ -87,7 +90,10 @@ export function FaultCodeEntryDialog({
     setConcernId('none')
   }, [open])
 
-  const found = useMemo(() => extractFaultCodes(text), [text])
+  const found = useMemo(
+    () => extractFaultCodes(text, { oem: oemSource !== null }),
+    [text, oemSource]
+  )
   const codes = found.filter((c) => !removed.has(c.code))
 
   // Ask once per code, for the codes not asked about yet.
@@ -155,7 +161,7 @@ export function FaultCodeEntryDialog({
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>{t('title')}</DialogTitle>
-          <DialogDescription>{t('description')}</DialogDescription>
+          <DialogDescription>{t(oemSource ? 'descriptionOem' : 'description')}</DialogDescription>
         </DialogHeader>
         <DialogBody className="min-w-0 space-y-4">
           <div className="space-y-2">
@@ -167,7 +173,7 @@ export function FaultCodeEntryDialog({
               autoFocus
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder={t('placeholder')}
+              placeholder={t(oemSource ? 'placeholderOem' : 'placeholder')}
               rows={3}
               className="font-mono"
               spellCheck={false}

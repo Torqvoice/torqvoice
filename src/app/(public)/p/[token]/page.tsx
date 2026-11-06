@@ -184,8 +184,23 @@ async function InspectionHandoffPage({
 async function FixHandoffPage({ token }: { token: string }) {
   const check = verifyFixHandoffToken(token)
   if (!check.ok) {
-    return <FixHandoffClient token={token} brand={null} code={null} problem={check.reason} />
+    return (
+      <FixHandoffClient
+        token={token}
+        brand={null}
+        code={null}
+        purpose="fix"
+        problem={check.reason}
+      />
+    )
   }
   const brand = await workshopBrand(check.handoff.organizationId)
-  return <FixHandoffClient token={token} brand={brand} code={check.handoff.code} />
+  return (
+    <FixHandoffClient
+      token={token}
+      brand={brand}
+      code={check.handoff.code.replace(/^([A-Z]{2,8})-/, '$1 ')}
+      purpose={check.handoff.purpose}
+    />
+  )
 }
