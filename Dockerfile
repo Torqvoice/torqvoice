@@ -22,6 +22,14 @@ RUN npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Browser source maps for PostHog error tracking, so an exception on Torqvoice
+# Cloud names the file and line it came from instead of a minified chunk. The
+# image workflows set this to "on" only when they hold the upload key; any other
+# build (a fork, a self-hosted build, a plain docker build) leaves it off and
+# makes no maps. A change here is a new cache key, so a build made without maps
+# is never reused for an upload.
+ARG POSTHOG_SOURCEMAPS=off
+
 # Server action IDs are hashed from this key, the action's file path and its
 # name. Without one, Next makes a random key for every build, so each release
 # gives every action a new ID and a tab opened before the deploy fails its next
@@ -38,7 +46,17 @@ RUN --mount=type=secret,id=next_actions_key \
     if [ -s /run/secrets/next_actions_key ]; then \
       export NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$(cat /run/secrets/next_actions_key)"; \
     fi && \
+    if [ "$POSTHOG_SOURCEMAPS" = "on" ]; then export BROWSER_SOURCE_MAPS=true; fi && \
     npm run build
+
+# Upload those maps, filed under this image's version, and delete them again,
+# since self-hosted installs run this same image. A failed upload is logged and
+# the build goes on; a map that could not be deleted fails it. See the script.
+ARG APP_VERSION=development
+ARG POSTHOG_CLI_HOST
+ARG POSTHOG_CLI_PROJECT_ID
+RUN --mount=type=secret,id=posthog_cli_api_key \
+    sh scripts/upload-source-maps.sh
 
 # What the container runs beside the server: the Prisma CLI for the migrations
 # at start, and tsx with a full Prisma client for the demo seed. Installed in
