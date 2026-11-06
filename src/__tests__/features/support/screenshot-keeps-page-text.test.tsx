@@ -48,20 +48,35 @@ function makeTruncated(element: HTMLElement) {
   })
 }
 
-// The same call the support form makes. In jsdom the capture itself cannot
-// finish (no canvas), which is fine: the text has been shortened and put back
-// by the time it gives up. Waiting is capped so a capture that never settles
-// cannot hang the test.
-async function takeScreenshot() {
+// The same call the support form makes. In jsdom the capture cannot finish
+// rendering (no canvas), so a rejection is expected; what matters is that the
+// label was shortened and put back on the way. Returns every text the label
+// showed during the capture, so the test can prove that happened rather than
+// pass against a capture that gave up before reaching it. A capture that
+// never settles fails the test instead of passing quietly.
+async function takeScreenshot(label: HTMLElement) {
   const { snapdom } = await import('@zumer/snapdom')
-  await act(async () => {
-    await Promise.race([
-      snapdom
-        .toBlob(document.body, { type: 'jpeg', quality: 0.7, backgroundColor: '#ffffff' })
-        .catch(() => undefined),
-      new Promise((resolve) => setTimeout(resolve, 2000)),
-    ])
-  })
+  const shown: string[] = []
+  const observer = new MutationObserver(() => shown.push(label.textContent ?? ''))
+  observer.observe(label, { characterData: true, childList: true, subtree: true })
+  let timer: ReturnType<typeof setTimeout> | undefined
+  try {
+    await act(async () => {
+      await Promise.race([
+        snapdom
+          .toBlob(document.body, { type: 'jpeg', quality: 0.7, backgroundColor: '#ffffff' })
+          .catch(() => undefined),
+        new Promise((_, reject) => {
+          timer = setTimeout(() => reject(new Error('the capture did not settle')), 2000)
+        }),
+      ])
+    })
+  } finally {
+    clearTimeout(timer)
+    if (observer.takeRecords().length > 0) shown.push(label.textContent ?? '')
+    observer.disconnect()
+  }
+  return shown
 }
 
 afterEach(() => {
@@ -74,7 +89,10 @@ describe('Taking a support screenshot', () => {
     const label = screen.getByTestId('label')
     makeTruncated(label)
 
-    await takeScreenshot()
+    const shownDuringCapture = await takeScreenshot(label)
+    // The capture really reached the label: it was cut to an ellipsis...
+    expect(shownDuringCapture.some((text) => text.endsWith('…'))).toBe(true)
+    // ...and put back afterwards
     expect(label.textContent).toBe('2 open jobs (urgent)')
 
     fireEvent.click(screen.getByRole('button', { name: 'Add job' }))
