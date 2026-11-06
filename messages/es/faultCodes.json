@@ -144,7 +144,8 @@
       "copied": "Copiado",
       "received": "{count, plural, one {# foto} other {# fotos}} desde el móvil",
       "badge": "Móvil"
-    }
+    },
+    "editedNote": "Editada durante la revisión"
   },
   "fixes": {
     "title": "Soluciones de otros talleres",

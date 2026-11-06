@@ -144,7 +144,8 @@
       "copied": "Gekopieerd",
       "received": "{count, plural, one {# foto} other {# foto’s}} vanaf uw telefoon",
       "badge": "Telefoon"
-    }
+    },
+    "editedNote": "Bewerkt tijdens de controle"
   },
   "fixes": {
     "title": "Oplossingen van andere werkplaatsen",

@@ -144,7 +144,8 @@
       "copied": "Nukopijuota",
       "received": "{count, plural, one {# nuotrauka} few {# nuotraukos} other {# nuotraukų}} iš telefono",
       "badge": "Telefonas"
-    }
+    },
+    "editedNote": "Redaguota tikrinant"
   },
   "fixes": {
     "title": "Kitų servisų sprendimai",

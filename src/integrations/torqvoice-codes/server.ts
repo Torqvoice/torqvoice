@@ -171,6 +171,8 @@ const ownFixSchema = fixSchema.extend({
   status: z.enum(['pending', 'published', 'rejected']).catch('pending'),
   reason: z.string().nullish().catch(null),
   reviewed_at: z.string().nullish().catch(null),
+  // A reviewer at Torqvoice corrected the text, the vehicle or the photos.
+  edited: z.boolean().optional().catch(false),
 })
 const fixesReplySchema = z.object({ fixes: z.array(fixSchema) })
 const ownFixesReplySchema = z.object({ fixes: z.array(ownFixSchema) })
@@ -516,6 +518,7 @@ async function fixStatus(ctx: ConnectorContext, ids: string[]): Promise<FaultCod
     status: f.status,
     reason: f.reason ?? null,
     reviewedAt: f.reviewed_at ?? null,
+    edited: f.edited ?? false,
   }))
 }
 
