@@ -26,13 +26,22 @@ function languageName(lang: string, locale: string): string | null {
  */
 export function WorkshopFixesCard({
   code,
-  fixes,
+  label = code,
+  meaning = null,
+  fixes: allFixes,
   available,
 }: {
   code: string
+  /** The code as people read it ("BMW 283700"); the code itself otherwise. */
+  label?: string
+  /** For a make's own code, the meaning on screen: only its fixes, and those for the code as a whole. */
+  meaning?: string | null
   fixes: SharedFix[]
   available: boolean
 }) {
+  const fixes = meaning
+    ? allFixes.filter((f) => f.meaning === null || f.meaning === meaning)
+    : allFixes
   const t = useTranslations('faultCodes.fixes')
   const locale = useLocale()
   const isMarine = useServiceType() === 'marine'
@@ -48,7 +57,7 @@ export function WorkshopFixesCard({
       {!available ? (
         <p className="text-sm text-muted-foreground">{t('unavailable')}</p>
       ) : fixes.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t('empty', { code })}</p>
+        <p className="text-sm text-muted-foreground">{t('empty', { code: label })}</p>
       ) : (
         <ul className="divide-y divide-card-edge/60">
           {fixes.map((fix) => {

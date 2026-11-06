@@ -7,6 +7,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import {
   ChevronRight,
   CloudOff,
+  FileUp,
   History,
   LifeBuoy,
   Loader2,
@@ -18,10 +19,13 @@ import { AppCard } from '@/components/app-card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { openSupport } from '@/features/support/Lib/supportVisibility'
+import { track } from '@/lib/analytics'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { suggestFaultCodes } from '../Actions/suggestFaultCodes'
-import { normalizeFaultCode } from '../Lib/codes'
+import type { OemSearchHit } from '../Lib/types'
+import { normalizeFaultCode, normalizeOemCode } from '../Lib/codes'
+import { makeName } from '../Lib/makes'
 import {
   clearRecentLookups,
   pushRecentLookup,
@@ -30,6 +34,7 @@ import {
 } from '../Lib/lookups'
 import { FaultCodeChip } from './FaultCodeChip'
 import { FaultCodesNotice } from './FaultCodesNotice'
+import { ImportCodesDialog } from './ImportCodesDialog'
 
 export interface FaultCodeOverview {
   connected: boolean
@@ -37,10 +42,19 @@ export interface FaultCodeOverview {
   query: string
   available: boolean
   hits: { code: string; title: string }[]
+  /** A make's own code matching what was typed (BMW's 283700). */
+  oemHits: OemSearchHit[]
+  /** The makes whose own codes the service serves ("bmw"). */
+  oemMakes: string[]
   recent: { code: string; meaning: string | null; at: string; count: number }[]
 }
 
-type Results = { query: string; available: boolean; hits: { code: string; title: string }[] }
+type Results = {
+  query: string
+  available: boolean
+  hits: { code: string; title: string }[]
+  oemHits: OemSearchHit[]
+}
 
 /** Codes to try that every workshop knows. */
 const EXAMPLE_CODES = ['P0420', 'P0300', 'P0171']
@@ -69,10 +83,16 @@ export function FaultCodeLookup({
   const [value, setValue] = useState(overview.query)
   const [results, setResults] = useState<Results | null>(
     overview.query
-      ? { query: overview.query, available: overview.available, hits: overview.hits }
+      ? {
+          query: overview.query,
+          available: overview.available,
+          hits: overview.hits,
+          oemHits: overview.oemHits,
+        }
       : null
   )
   const [loading, setLoading] = useState(false)
+  const [importing, setImporting] = useState(false)
   const latest = useRef(overview.query)
   const [recent, setRecent] = useState<RecentLookup[]>([])
   const [now, setNow] = useState(0)
@@ -99,7 +119,12 @@ export function FaultCodeLookup({
       return
     }
     if (text === overview.query) {
-      setResults({ query: overview.query, available: overview.available, hits: overview.hits })
+      setResults({
+        query: overview.query,
+        available: overview.available,
+        hits: overview.hits,
+        oemHits: overview.oemHits,
+      })
       setLoading(false)
       return
     }
@@ -111,16 +136,43 @@ export function FaultCodeLookup({
       if (reply.success && reply.data) setResults(reply.data)
     }, DEBOUNCE_MS)
     return () => clearTimeout(timer)
-  }, [value, overview.connected, overview.query, overview.available, overview.hits])
+  }, [
+    value,
+    overview.connected,
+    overview.query,
+    overview.available,
+    overview.hits,
+    overview.oemHits,
+  ])
 
   const go = (raw: string) => {
     const text = raw.trim()
     if (!text) return
     const code = normalizeFaultCode(text)
     if (code) {
+      track('fault_code:search', { kind: 'code' })
       router.push(`/fault-codes/${code}`)
       return
     }
+    // A make's own code (BMW's 283700): straight to it when the results show one make with it,
+    // else the server finds it, opening it when one make has it and listing them otherwise.
+    const oem = normalizeOemCode(text)
+    if (oem && oem.length >= 4 && overview.oemMakes.length > 0) {
+      track('fault_code:search', { kind: 'make_code' })
+      const makes = new Set(
+        [...(results?.oemHits ?? []), ...overview.oemHits]
+          .filter((hit) => hit.code === oem)
+          .map((hit) => hit.make)
+      )
+      const [only] = makes
+      router.push(
+        makes.size === 1
+          ? `/fault-codes/oem/${only}/${oem}`
+          : `/fault-codes?q=${encodeURIComponent(oem)}`
+      )
+      return
+    }
+    track('fault_code:search', { kind: 'words' })
     setRecent(pushRecentLookup({ kind: 'words', query: text }))
     router.push(`/fault-codes?q=${encodeURIComponent(text)}`)
   }
@@ -149,6 +201,24 @@ export function FaultCodeLookup({
               </div>
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
+              {overview.connected && (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="xs"
+                    className="gap-1.5"
+                    onClick={() => {
+                      track('fault_code:import_open')
+                      setImporting(true)
+                    }}
+                  >
+                    <FileUp className="size-3.5" />
+                    {tc('import.button')}
+                  </Button>
+                  <ImportCodesDialog open={importing} onOpenChange={setImporting} />
+                </>
+              )}
               {supportEnabled && (
                 <Button
                   type="button"
@@ -164,7 +234,11 @@ export function FaultCodeLookup({
             </div>
           </div>
 
-          <FaultCodesNotice className="bg-background/60" />
+          <FaultCodesNotice
+            className="bg-background/60"
+            makes={overview.oemMakes}
+            improve={overview.connected ? {} : null}
+          />
 
           <form onSubmit={submit} className="flex flex-col gap-2 sm:flex-row" role="search">
             <label htmlFor="fault-code-lookup" className="sr-only">
@@ -227,39 +301,56 @@ export function FaultCodeLookup({
       )}
       {!overview.connectable && <p className="text-sm text-muted-foreground">{t('cloudOnly')}</p>}
 
-      {results && (
-        <AppCard
-          icon={Search}
-          title={t('results', { query: results.query })}
-          badge={results.available && results.hits.length > 0 ? results.hits.length : undefined}
-          contentClassName={results.available && results.hits.length > 0 ? 'p-0' : undefined}
-          className={cn('transition-opacity', loading && 'opacity-60')}
-        >
-          {!results.available ? (
-            <p className="text-sm text-muted-foreground">{tc('notAvailable')}</p>
-          ) : results.hits.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {t('noResults', { query: results.query })}
-            </p>
-          ) : (
-            <ul className="grid md:grid-cols-2">
-              {results.hits.map((hit, i) => (
-                <li
-                  key={hit.code}
-                  className={cn(
-                    'border-card-edge/60',
-                    i > 0 && 'border-t',
-                    i === 1 && 'md:border-t-0',
-                    i % 2 === 0 && 'md:border-r'
-                  )}
-                >
-                  <CodeRow code={hit.code} title={hit.title} />
-                </li>
-              ))}
-            </ul>
-          )}
-        </AppCard>
-      )}
+      {results &&
+        (() => {
+          // A make's own code first: typed in full, it is what was meant.
+          const rows = [
+            ...(results.oemHits ?? []).map((hit) => ({ key: `${hit.make}:${hit.code}`, oem: hit })),
+            ...(results.available ? results.hits.map((hit) => ({ key: hit.code, obd: hit })) : []),
+          ] as { key: string; oem?: OemSearchHit; obd?: { code: string; title: string } }[]
+          return (
+            <AppCard
+              icon={Search}
+              title={t('results', { query: results.query })}
+              badge={rows.length > 0 ? rows.length : undefined}
+              contentClassName={rows.length > 0 ? 'p-0' : undefined}
+              className={cn('transition-opacity', loading && 'opacity-60')}
+            >
+              {rows.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  {results.available
+                    ? t('noResults', { query: results.query })
+                    : tc('notAvailable')}
+                </p>
+              ) : (
+                <ul className="grid md:grid-cols-2">
+                  {rows.map((row, i) => (
+                    <li
+                      key={row.key}
+                      className={cn(
+                        'border-card-edge/60',
+                        i > 0 && 'border-t',
+                        i === 1 && 'md:border-t-0',
+                        i % 2 === 0 && 'md:border-r'
+                      )}
+                    >
+                      {row.oem ? (
+                        <OemRow
+                          make={row.oem.make}
+                          code={row.oem.code}
+                          title={row.oem.title}
+                          meanings={row.oem.meanings}
+                        />
+                      ) : row.obd ? (
+                        <CodeRow code={row.obd.code} title={row.obd.title} />
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </AppCard>
+          )
+        })()}
 
       <div className="grid items-start gap-4 lg:grid-cols-2">
         <AppCard
@@ -288,8 +379,23 @@ export function FaultCodeLookup({
           ) : (
             <ul className="divide-y divide-card-edge/60">
               {recent.map((r) => (
-                <li key={r.kind === 'code' ? `c:${r.code}` : `w:${r.query}`}>
-                  {r.kind === 'code' ? (
+                <li
+                  key={
+                    r.kind === 'code'
+                      ? `c:${r.code}`
+                      : r.kind === 'oem'
+                        ? `o:${r.make}:${r.code}`
+                        : `w:${r.query}`
+                  }
+                >
+                  {r.kind === 'oem' ? (
+                    <OemRow
+                      make={r.make}
+                      code={r.code}
+                      title={r.title}
+                      meta={now ? timeAgo(r.at, now, locale) : undefined}
+                    />
+                  ) : r.kind === 'code' ? (
                     <CodeRow
                       code={r.code}
                       title={r.title}
@@ -372,6 +478,46 @@ function CodeRow({ code, title, meta }: { code: string; title: string | null; me
       <FaultCodeChip code={code} />
       <span className="min-w-0 flex-1 truncate text-sm">
         {title ?? <span className="text-muted-foreground">{code}</span>}
+      </span>
+      {meta && (
+        <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">{meta}</span>
+      )}
+      <ChevronRight className="size-4 shrink-0 text-muted-foreground/60" />
+    </Link>
+  )
+}
+
+/** A make's own code: its chip, the make, the meaning to name it by, opening its page. */
+function OemRow({
+  make,
+  code,
+  title,
+  meanings = 1,
+  meta,
+}: {
+  make: string
+  code: string
+  title: string | null
+  meanings?: number
+  meta?: string
+}) {
+  const t = useTranslations('faultCodes.oem')
+  return (
+    <Link
+      href={`/fault-codes/oem/${make}/${code}`}
+      className="group flex items-center gap-3 px-5 py-2.5 transition-colors hover:bg-muted/50"
+    >
+      <FaultCodeChip code={code} />
+      <span className="shrink-0 rounded-full border border-primary/30 bg-primary/10 px-1.5 py-px text-[10px] font-medium text-primary">
+        {t('badge', { make: makeName(make) })}
+      </span>
+      <span className="min-w-0 flex-1 truncate text-sm">
+        {title ?? <span className="text-muted-foreground">{code}</span>}
+        {meanings > 1 && (
+          <span className="ml-1.5 text-xs text-muted-foreground">
+            {t('otherMeanings', { count: meanings - 1 })}
+          </span>
+        )}
       </span>
       {meta && (
         <span className="hidden shrink-0 text-xs text-muted-foreground sm:inline">{meta}</span>

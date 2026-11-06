@@ -4,7 +4,7 @@ import { getLocale } from 'next-intl/server'
 import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
-import { normalizeFaultCode } from '../Lib/codes'
+import { normalizeFaultCode, normalizeOemCode } from '../Lib/codes'
 import { lookupMeanings, vehicleForCodes } from '../Lib/service.server'
 import { lookupFaultCodesSchema } from '../Schema/faultCodeSchema'
 
@@ -18,7 +18,7 @@ export async function lookupFaultCodes(input: unknown) {
     async ({ organizationId }) => {
       const data = lookupFaultCodesSchema.parse(input)
       const codes = data.codes
-        .map((c) => normalizeFaultCode(c))
+        .map((c) => normalizeFaultCode(c) ?? normalizeOemCode(c))
         .filter((c): c is string => c !== null)
       const [vehicle, locale] = await Promise.all([
         vehicleForCodes(organizationId, data.vehicleId),

@@ -71,6 +71,7 @@ import {
   Users,
   UserRound,
   Sparkles,
+  ScanSearch,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
@@ -132,6 +133,7 @@ export function AppSidebar({
   features,
   tireHotelEnabled = false,
   aiEnabled = false,
+  faultCodesEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
   announcement = null,
@@ -147,6 +149,8 @@ export function AppSidebar({
   tireHotelEnabled?: boolean
   /** An AI vendor is connected and the plan includes AI, so the assistant page can answer. */
   aiEnabled?: boolean
+  /** The code service is connected, so the fault code page can answer. */
+  faultCodesEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
   /** The one product announcement to show, worked out on the server. */
@@ -221,6 +225,17 @@ export function AppSidebar({
       count: counts?.inspections,
       countKey: 'sidebar.badges.inspections',
     },
+    // Only once the code service is connected: without it the page can only say so.
+    ...(faultCodesEnabled
+      ? [
+          {
+            titleKey: 'sidebar.faultCodes' as const,
+            url: '/fault-codes',
+            icon: ScanSearch,
+            subject: 'vehicles',
+          },
+        ]
+      : []),
     {
       titleKey: 'sidebar.calendar' as const,
       url: '/calendar',

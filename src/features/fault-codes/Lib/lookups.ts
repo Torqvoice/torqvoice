@@ -10,6 +10,8 @@ const MAX = 10
 /** A lookup as it is recorded: a code that was opened, or words that were searched. */
 export type NewLookup =
   | { kind: 'code'; code: string; title: string | null }
+  /** A make's own code (BMW's 2A82), which opens on its make's page. */
+  | { kind: 'oem'; make: string; code: string; title: string | null }
   | { kind: 'words'; query: string }
 
 export type RecentLookup = NewLookup & { at: number }
@@ -17,15 +19,18 @@ export type RecentLookup = NewLookup & { at: number }
 const sameAs = (a: RecentLookup, b: NewLookup) =>
   a.kind === 'code' && b.kind === 'code'
     ? a.code === b.code
-    : a.kind === 'words' && b.kind === 'words'
-      ? a.query.toLowerCase() === b.query.toLowerCase()
-      : false
+    : a.kind === 'oem' && b.kind === 'oem'
+      ? a.make === b.make && a.code === b.code
+      : a.kind === 'words' && b.kind === 'words'
+        ? a.query.toLowerCase() === b.query.toLowerCase()
+        : false
 
 function valid(x: unknown): x is RecentLookup {
   if (!x || typeof x !== 'object') return false
   const r = x as Record<string, unknown>
   if (typeof r.at !== 'number') return false
   if (r.kind === 'code') return typeof r.code === 'string'
+  if (r.kind === 'oem') return typeof r.code === 'string' && typeof r.make === 'string'
   if (r.kind === 'words') return typeof r.query === 'string'
   return false
 }

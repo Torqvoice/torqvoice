@@ -4,7 +4,11 @@ import { compressPhoto } from '@/lib/image-upload.server'
 import { verifyFixHandoffToken } from '@/lib/photo-handoff'
 import { rateLimit } from '@/lib/rate-limit'
 import { addDraftPhoto, listDraftPhotos } from '@/features/fault-codes/Lib/fixDrafts.server'
-import { MAX_FIX_PHOTOS } from '@/features/fault-codes/Schema/faultCodeSchema'
+import { MAX_FIX_PHOTOS, MAX_WAVEFORM_PHOTOS } from '@/features/fault-codes/Schema/faultCodeSchema'
+
+/** A fix takes up to four photos; a waveform one picture of the scope screen. */
+const maxFor = (purpose: 'fix' | 'waveform') =>
+  purpose === 'waveform' ? MAX_WAVEFORM_PHOTOS : MAX_FIX_PHOTOS
 
 const PHOTO_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/heic'])
 /** What a phone camera sends before compression. */
@@ -28,7 +32,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   const { token } = await params
   const check = verifyFixHandoffToken(token)
   if (!check.ok) return refuse(check.reason === 'expired' ? 410 : 404, check.reason)
-  const { organizationId, draftId } = check.handoff
+  const { organizationId, draftId, purpose } = check.handoff
+  const max = maxFor(purpose)
   // No session here, so the restore freeze is checked on the route itself.
   if (isRestoring(organizationId)) {
     return NextResponse.json(
@@ -51,9 +56,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ tok
   } catch {
     return refuse(400, 'type')
   }
-  const added = await addDraftPhoto(organizationId, draftId, jpeg)
+  const added = await addDraftPhoto(organizationId, draftId, jpeg, max)
   if (!added) return refuse(409, 'limit')
-  return NextResponse.json({ count: added.count, max: MAX_FIX_PHOTOS })
+  return NextResponse.json({ count: added.count, max })
 }
 
 /** How many photos the draft holds, so a reopened phone page starts right. */
@@ -62,5 +67,5 @@ export async function GET(_request: Request, { params }: { params: Promise<{ tok
   const check = verifyFixHandoffToken(token)
   if (!check.ok) return refuse(check.reason === 'expired' ? 410 : 404, check.reason)
   const photos = await listDraftPhotos(check.handoff.organizationId, check.handoff.draftId)
-  return NextResponse.json({ count: photos.length, max: MAX_FIX_PHOTOS })
+  return NextResponse.json({ count: photos.length, max: maxFor(check.handoff.purpose) })
 }

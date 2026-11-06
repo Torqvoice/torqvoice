@@ -381,6 +381,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                 features={features}
                                 tireHotelEnabled={tireHotelEnabled}
                                 aiEnabled={aiEnabled}
+                                faultCodesEnabled={faultCodesEnabled}
                                 visibleSubjects={visibleSubjects}
                                 announcement={announcements[0] ?? null}
                                 isAdminOrOwner={isOwnerOrAdmin}

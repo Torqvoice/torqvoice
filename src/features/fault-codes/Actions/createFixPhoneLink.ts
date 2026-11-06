@@ -18,6 +18,7 @@ export async function createFixPhoneLink(input: unknown) {
         code: data.code,
         draftId: data.draftId,
         userId,
+        purpose: data.purpose ?? 'fix',
       })
       return { token, expiresAt: expiresAt.toISOString() }
     },

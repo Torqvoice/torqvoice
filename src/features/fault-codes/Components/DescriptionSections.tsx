@@ -16,6 +16,9 @@ const HEADINGS: readonly FaultCodeSectionKind[] = [
   'manufacturer',
   'related',
   'diagnosis',
+  'common_issues',
+  'resolution',
+  'advisory',
   'other',
 ]
 

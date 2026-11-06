@@ -31,6 +31,9 @@
     "manufacturer": "Gegevens van fabrikanten",
     "related": "Samen met andere codes",
     "diagnosis": "Diagnosetip",
+    "common_issues": "Veelvoorkomende problemen",
+    "resolution": "Oplossing",
+    "advisory": "Advies",
     "other": "Goed om te weten"
   },
   "detail": {
@@ -99,6 +102,8 @@
     "model": "Model",
     "year": "Bouwjaar",
     "vehicleHint": "Alleen merk, model, bouwjaar en motor worden gedeeld, nooit het kenteken, het VIN, de klant of de naam van uw werkplaats.",
+    "meaning": "Betekenis",
+    "meaningHint": "Deze code betekent in andere regeleenheden iets anders. Uw oplossing wordt alleen voor deze betekenis gedeeld.",
     "vehicleHintMarine": "Alleen merk, model, bouwjaar en motor worden gedeeld, nooit het registratienummer, het rompnummer, de klant of de naam van uw werkplaats.",
     "send": "Oplossing delen",
     "sent": "Bedankt. Uw oplossing wacht op controle.",
@@ -178,7 +183,9 @@
     "add": "{count, plural, =0 {Codes toevoegen} one {# code toevoegen} other {# codes toevoegen}}",
     "added": "{count, plural, one {# foutcode toegevoegd} other {# foutcodes toegevoegd}}",
     "skipped": "{count, plural, one {# code stond al bij deze klus} other {# codes stonden al bij deze klus}}",
-    "failed": "De codes konden niet worden toegevoegd"
+    "failed": "De codes konden niet worden toegevoegd",
+    "descriptionOem": "Typ of plak codes uit het diagnoseapparaat, OBD-codes zoals P0420 of BMW-codes zoals 2A82. Elke code wordt een observatie op deze opdracht, met de betekenis opgeslagen.",
+    "placeholderOem": "P0420, 2A82 opgeslagen"
   },
   "finding": {
     "seenBefore": "Gezien {date}",
@@ -218,7 +225,9 @@
   },
   "notice": {
     "title": "Foutcodes zijn nieuw",
-    "body": "We voegen voortdurend codes toe, dus nog niet elke code staat erin. Voorlopig gaat het om de standaard OBD-II-codes; fabrikantspecifieke codes zitten er nog niet in."
+    "body": "Het gaat om de standaard OBD-II-codes. We werken eraan om ook de eigen codes van merken toe te voegen, en er komen steeds nieuwe codes bij. Weet je waar de codes van een merk te vinden zijn? Laat het ons weten via “Help ons verbeteren”.",
+    "bodyBmw": "Het gaat om de standaard OBD-II-codes en de eigen codes van BMW, die MINI en Rolls-Royce delen. We werken eraan om meer merken toe te voegen, en er komen steeds nieuwe codes bij. Weet je waar de codes van een merk te vinden zijn? Laat het ons weten via “Help ons verbeteren”.",
+    "bodyMakes": "Het gaat om de standaard OBD-II-codes en de eigen codes van {makes}. We werken eraan om meer merken toe te voegen, en er komen steeds nieuwe codes bij. Weet je waar de codes van een merk te vinden zijn? Laat het ons weten via “Help ons verbeteren”."
   },
   "support": {
     "button": "Contact met support",
@@ -245,6 +254,345 @@
     "done": "Als u klaar bent, ga dan terug naar de computer en deel de oplossing.",
     "privacy": "Houd gezichten, kentekens en klantgegevens buiten beeld.",
     "expired": "Deze code is verlopen. Toon een nieuwe op de computer.",
-    "invalid": "Deze code werkt niet. Toon een nieuwe op de computer."
+    "invalid": "Deze code werkt niet. Toon een nieuwe op de computer.",
+    "waveform": {
+      "title": "Foto van het scopescherm",
+      "forCode": "voor het meetbeeld dat je op de computer deelt",
+      "intro": "Maak of kies één foto van het scopescherm. Hij verschijnt op de computer.",
+      "full": "Een meetbeeld heeft één foto. Verwijder hem op de computer om een nieuwe te maken.",
+      "done": "Ga terug naar de computer en deel het meetbeeld.",
+      "added": "Foto toegevoegd"
+    }
+  },
+  "oem": {
+    "badge": "{make}-code",
+    "summary": "{count, plural, one {# betekenis} other {# betekenissen}}. Een BMW-code kan in elke regeleenheid iets anders betekenen.",
+    "matches": "Past bij deze auto",
+    "noMatch": "Geen van deze betekenissen staat vermeld voor de motor van deze auto. Controleer uit welke regeleenheid uw diagnoseapparaat de code las.",
+    "inEnglish": "Engelse tekst van {make}: {text}",
+    "bmwText": "Tekst van {make}: {text}",
+    "units": "Regeleenheden",
+    "moreUnits": "+{count} meer",
+    "otherChassis": "Andere chassis",
+    "years": "{from} tot {to}",
+    "yearsFrom": "vanaf {from}",
+    "source": "De betekenissen komen uit de eigen diagnoseteksten van BMW, de meeste in het Duits.",
+    "notServed": "{make}-codes zijn nog niet beschikbaar.",
+    "notFound": "{code} staat niet in de gegevens van {make}.",
+    "whereUsed": "Waar {make} hem gebruikt",
+    "models": "Modellen",
+    "engineList": "Motoren",
+    "fewerUnits": "Minder tonen",
+    "fitsThisCar": "Deze auto",
+    "meanings": "Betekenissen",
+    "otherMeanings": "en {count, plural, one {# andere betekenis} other {# andere betekenissen}}"
+  },
+  "research": {
+    "inviteTitle": "Online een oplossing zoeken",
+    "invite": "We zoeken {code} op in fabrieksdocumentatie, servicebulletins en werkplaatsforums. Alleen een concreet antwoord met bronnen wordt bewaard, en iemand van Torqvoice controleert het.",
+    "button": "Oplossing zoeken",
+    "working": "Onderzoek naar {code}",
+    "steps": {
+      "bulletins": "Zoeken in fabrieksdocumentatie en servicebulletins",
+      "forums": "Werkplaatsforums lezen voor bevestigde oplossingen",
+      "agree": "Controleren of de bronnen overeenkomen",
+      "writing": "De stappen uitschrijven"
+    },
+    "workingHint": "Dit duurt een minuut of twee. Wat gevonden wordt, blijft bij de code voor alle werkplaatsen.",
+    "runningTitle": "Wordt nu onderzocht",
+    "runningHint": "Een andere werkplaats vroeg er net om. Kijk over een minuut opnieuw.",
+    "checkAgain": "Opnieuw kijken",
+    "title": "Onderzochte oplossing",
+    "pending": "Wacht op controle door een persoon",
+    "published": "Gecontroleerd door Torqvoice",
+    "pendingHint": "Door AI gevonden uit de bronnen hieronder. Controleer het aan de auto voordat u onderdelen vervangt.",
+    "sources": "Bronnen",
+    "helpfulQuestion": "Heeft dit het opgelost?",
+    "helpfulYes": "Ja, het is opgelost",
+    "helpfulNo": "Nee, niet opgelost",
+    "thanks": "Bedankt, genoteerd",
+    "missedTitle": "Geen betrouwbare oplossing online gevonden",
+    "missed": "Er kwam niets concreets over {code} naar boven, dus er is niets bewaard. We hebben genoteerd dat werkplaatsen deze code nodig hebben.",
+    "searchedOn": "Gezocht op {date}",
+    "shareInstead": "Uw oplossing delen",
+    "errors": {
+      "busy": "Deze code wordt nu onderzocht. Kijk over een minuut opnieuw.",
+      "limited": "Uw werkplaats heeft de zoekopdrachten van vandaag gebruikt. Probeer het morgen opnieuw.",
+      "failed": "Het onderzoek kon nu niet worden uitgevoerd. Probeer het later opnieuw."
+    }
+  },
+  "waveforms": {
+    "title": "Meetbeelden",
+    "description": "Scoopopnames van andere werkplaatsen, goed en defect, om naast je eigen meting te leggen.",
+    "share": "Meetbeeld delen",
+    "unavailable": "Meetbeelden zijn nu niet beschikbaar.",
+    "empty": "Nog geen meetbeelden voor {code}",
+    "emptyHint": "Heb je een goed meetbeeld? Deel het, dan heeft de volgende monteur met deze code iets om mee te vergelijken.",
+    "filter": {
+      "label": "Toon",
+      "all": "Alle",
+      "good": "Goed",
+      "faulty": "Defect"
+    },
+    "unknownVehicle": "Voertuig niet opgegeven",
+    "unknownVehicleMarine": "Boot niet opgegeven",
+    "status": {
+      "pending": "Wacht op controle",
+      "published": "Gepubliceerd",
+      "rejected": "Niet gepubliceerd"
+    },
+    "hasRecording": "PicoScope-bestand om te downloaden",
+    "hasCsv": "CSV-export om te downloaden",
+    "kind": {
+      "good": "Goed",
+      "faulty": "Defect"
+    },
+    "condition": {
+      "key_on": "Contact aan, motor uit",
+      "cranking": "Starten",
+      "idle": "Stationair",
+      "rpm_2500": "2500 tpm",
+      "driving": "Tijdens het rijden",
+      "drivingMarine": "Tijdens het varen",
+      "under_load": "Onder belasting"
+    },
+    "chart": {
+      "label": "Meetbeeld van {channels} over {span}",
+      "perDivision": "{value}/div",
+      "noSample": "geen meetwaarde",
+      "between": "{lo} tot {hi}"
+    },
+    "view": {
+      "label": "Toon",
+      "trace": "Meetbeeld",
+      "picture": "Foto van het scherm"
+    },
+    "sharedOn": "Gedeeld op {date}",
+    "reason": "Reden: {reason}",
+    "compare": {
+      "label": "Vergelijk met",
+      "none": "Niets",
+      "close": "Stop met vergelijken"
+    },
+    "note": "Opmerkingen",
+    "writtenIn": "Geschreven in het {language}",
+    "files": {
+      "title": "Bestanden",
+      "psdata": "PicoScope-opname",
+      "csv": "CSV-export",
+      "pssettings": "Scope-instellingen",
+      "openHint": "Open de opname in PicoScope om in te zoomen, te meten en elk kanaal te zien."
+    },
+    "nothingToDraw": "Alleen de opname is gedeeld. Download hem om hem in PicoScope te openen.",
+    "openPicture": "Foto op volle grootte openen",
+    "close": "Sluiten",
+    "withdraw": "Intrekken",
+    "withdrawTitle": "Dit meetbeeld intrekken?",
+    "withdrawConfirm": "Het wordt met de bestanden verwijderd en geen andere werkplaats ziet het.",
+    "withdrawn": "Meetbeeld ingetrokken",
+    "withdrawFailed": "Het meetbeeld kon nu niet worden ingetrokken. Probeer het zo opnieuw.",
+    "shareDialog": {
+      "title": "Meetbeeld delen voor {code}",
+      "description": "Andere werkplaatsen zien het zodra iemand van Torqvoice het heeft gecontroleerd.",
+      "meaningHint": "Deze code betekent iets anders in andere regeleenheden. Je meetbeeld wordt alleen voor deze betekenis gedeeld.",
+      "kind": "Wat laat het zien?",
+      "kindHint": {
+        "good": "Hoe het eruitziet bij een gezonde auto",
+        "goodMarine": "Hoe het eruitziet bij een gezonde motor",
+        "faulty": "Hoe het eruitzag met de storing",
+        "faultyMarine": "Hoe het eruitzag met de storing"
+      },
+      "measured": "Wat heb je gemeten?",
+      "measuredPlaceholder": "Krukassensor en inlaatnokkenas",
+      "measurements": {
+        "crank": "Krukassensor",
+        "camCrank": "Nokkenas en krukas",
+        "injector": "Injector",
+        "ignition": "Bobine",
+        "compression": "Relatieve compressie",
+        "lambda": "Lambdasonde",
+        "maf": "Luchtmassameter",
+        "alternator": "Rimpel van de dynamo",
+        "canBus": "CAN-bus",
+        "fuelPump": "Stroom van de brandstofpomp"
+      },
+      "condition": "Hoe liep de motor? (optioneel)",
+      "files": "Bestanden",
+      "filesHint": "Eén is genoeg. Met het PicoScope-bestand openen anderen het in PicoScope; met een CSV-export of foto zien ze het meteen hier.",
+      "phone": {
+        "button": "Foto van telefoon",
+        "title": "Maak een foto van het scopescherm",
+        "body": "Scan de code met de camera van je telefoon en maak één foto van het scherm. Hij verschijnt hier zodra hij binnen is.",
+        "received": "De foto van je telefoon is binnen"
+      },
+      "drop": "Zet je PicoScope-bestand hier neer, of klik om te kiezen",
+      "dropMore": "Nog een bestand toevoegen",
+      "dropTypes": ".psdata, .pssettings, een CSV-export of een foto van het scherm",
+      "role": {
+        "psdata": "PicoScope-opname",
+        "csv": "CSV-export",
+        "image": "Foto van het scherm",
+        "pssettings": "Scope-instellingen"
+      },
+      "csvNotScope": "Dit is geen scope-export. Sla hem opnieuw op vanuit PicoScope als CSV.",
+      "remove": "{name} verwijderen",
+      "fromPhone": "Van je telefoon",
+      "previewHint": "Zo zien andere werkplaatsen het.",
+      "csvTip": "Tip: voeg ook een CSV-export toe, zodat anderen het meetbeeld hier zien zonder PicoScope te openen. Kies in PicoScope Opslaan als en dan CSV.",
+      "note": "Opmerkingen (optioneel)",
+      "notePlaceholder": "Waar je hebt gemeten, welk bereik je gebruikte en waar je op moet letten. Bijvoorbeeld: pin 2 achter in de sensorstekker gemeten, de opening van de ontbrekende tanden komt één keer per omwenteling.",
+      "notePlaceholderMarine": "Waar je hebt gemeten, welk bereik je gebruikte en waar je op moet letten.",
+      "sending": "Versturen {percent}%",
+      "send": "Meetbeeld delen",
+      "sent": "Bedankt. Je meetbeeld wacht op controle.",
+      "missing": {
+        "kind": "Kies goed of defect",
+        "title": "Geef aan wat je hebt gemeten",
+        "file": "Voeg een bestand of foto toe",
+        "csv": "Verwijder de CSV die geen scope-export is"
+      },
+      "notAScopeFile": "{name} is geen PicoScope-bestand, CSV-export of foto",
+      "fileTooBig": "{name} is groter dan {size}",
+      "errors": {
+        "failed": "Je meetbeeld kon nu niet worden verstuurd. Probeer het zo opnieuw.",
+        "photo": "De foto kon niet worden gelezen. Probeer een andere.",
+        "csv": "De CSV is geen scope-export. Sla hem opnieuw op vanuit PicoScope als CSV.",
+        "too_large": "De bestanden zijn te groot.",
+        "no_file": "Voeg de opname, een CSV-export of een foto toe.",
+        "paused": "Meetbeelden delen is nu gepauzeerd. Probeer het later opnieuw.",
+        "demo": "Meetbeelden delen staat uit in de demo."
+      }
+    }
+  },
+  "improve": {
+    "button": "Help ons verbeteren",
+    "title": "Help ons de foutcodes te verbeteren",
+    "description": "Weet je waar een merk zijn eigen codes publiceert, zag je een fout of heb je een idee? Laat het ons weten. Het gaat rechtstreeks naar het Torqvoice-team.",
+    "topic": "Waar gaat het over? (optioneel)",
+    "topics": {
+      "makes": "Codes die ontbreken",
+      "wrong": "Er klopt iets niet",
+      "source": "Een goede bron of link",
+      "idea": "Een idee"
+    },
+    "message": "Je bericht",
+    "placeholders": {
+      "makes": "Waar ze te vinden zijn, bijvoorbeeld een link naar de codelijst van het merk, en voor welke modellen die geldt.",
+      "wrong": "Welke code, wat er staat en wat er zou moeten staan. Een link naar waar je het vond helpt.",
+      "source": "Plak de link en zeg wat erin staat.",
+      "idea": "Wat zou de foutcodes nuttiger maken in jouw werkplaats? Links zijn welkom."
+    },
+    "links": "Links in je bericht",
+    "about": "Over {code}",
+    "leaveOut": "Weglaten",
+    "replyHint": "We antwoorden naar het e-mailadres van je account.",
+    "cancel": "Annuleren",
+    "send": "Versturen",
+    "sent": "Bedankt. Je bericht is onderweg naar het Torqvoice-team.",
+    "errors": {
+      "failed": "Je bericht kon nu niet worden verstuurd. Probeer het zo opnieuw.",
+      "limited": "Je hebt al een paar berichten gestuurd. Probeer het over een uur opnieuw."
+    }
+  },
+  "import": {
+    "button": "Importeren",
+    "title": "Foutcodes importeren",
+    "description": "Voeg de eigen codes van een merk toe, of meer over codes die we hebben. Iemand van Torqvoice controleert elke code voordat een werkplaats hem ziet.",
+    "yours": "Je imports",
+    "codes": "{count, plural, one {# code} other {# codes}}",
+    "status": {
+      "published": "{count} gepubliceerd",
+      "pending": "{count} wachten",
+      "rejected": "{count} niet gepubliceerd"
+    },
+    "examples": {
+      "title": "Begin met een voorbeeld",
+      "sheet": "Voorbeeldspreadsheet",
+      "sheetHint": "Excel, één rij per code",
+      "json": "Voorbeeld-JSON",
+      "jsonHint": "Elk veld benoemd",
+      "columns": "Houd de kolomnamen aan: Code, Title, Description, Common issues, How to fix, Good to know en Causes. Alleen Code en Title zijn nodig. Zet elke oorzaak op een eigen regel, met (high), (medium) of (low) erachter als je het weet.",
+      "csv": "Download als CSV"
+    },
+    "make": "Merk",
+    "pickMake": "Kies een merk",
+    "language": "Taal van de tekst",
+    "source": "Waar het vandaan komt (optioneel)",
+    "sourcePlaceholder": "Link of boek",
+    "checking": "Je codes worden gelezen en gecontroleerd",
+    "removeFile": "Bestand verwijderen",
+    "drop": "Zet je bestand hier neer, of klik om te kiezen",
+    "dropTypes": ".xlsx, .csv of .json, tot 2.000 codes",
+    "fileProblems": {
+      "unreadable": "Het bestand kon niet worden gelezen. Sla het opnieuw op als .xlsx, .csv of .json.",
+      "empty": "Het bestand bevat geen codes.",
+      "no_code_column": "Geen kolom Code gevonden. Begin met de voorbeeldspreadsheet.",
+      "too_many": "Het bestand is te groot: hooguit 2.000 codes en 5 MB. Splits het op.",
+      "format": "Dit bestandstype wordt niet ondersteund. Gebruik .xlsx, .csv of .json.",
+      "legacy_xls": "Oude .xls-bestanden worden niet ondersteund. Sla het in Excel op als .xlsx."
+    },
+    "counts": {
+      "new": "{count} nieuw",
+      "change": "{count} vullen de onze aan",
+      "problem": "{count} moeten worden verbeterd",
+      "same": "{count} al hetzelfde"
+    },
+    "rows": "Codes in het bestand",
+    "row": "Rij {n}",
+    "more": "en nog {count}",
+    "problemsLeftOut": "Codes die verbeterd moeten worden, worden weggelaten. Verbeter ze in het bestand en zet het opnieuw neer, of stuur de rest nu.",
+    "rights": "Ik mag dit delen. Het is niet gekopieerd uit een betaalde of beschermde bron.",
+    "missing": {
+      "make": "Kies eerst het merk",
+      "file": "Voeg je bestand toe",
+      "nothing": "Niets in het bestand vult aan wat we hebben",
+      "rights": "Vink het vakje aan om te versturen"
+    },
+    "reviewHint": "Niets wordt gepubliceerd voordat iemand het heeft gecontroleerd.",
+    "cancel": "Annuleren",
+    "send": "{count, plural, one {# code ter controle sturen} other {# codes ter controle sturen}}",
+    "sendNone": "Ter controle sturen",
+    "sent": "{count, plural, one {Verstuurd. # code wacht op controle.} other {Verstuurd. # codes wachten op controle.}}",
+    "errors": {
+      "failed": "Je bestand kon nu niet worden gecontroleerd of verstuurd. Probeer het zo opnieuw.",
+      "paused": "Codes versturen is nu gepauzeerd. Probeer het later opnieuw.",
+      "nothing": "Niets in het bestand vult aan wat we hebben.",
+      "demo": "Codes importeren staat uit in de demo.",
+      "rights": "Vink aan dat je dit mag delen.",
+      "too_large": "Het bestand is te groot: hooguit 2.000 codes en 5 MB."
+    },
+    "problems": {
+      "code": "Geen code die {make} gebruikt",
+      "duplicate": "Dezelfde code twee keer in het bestand",
+      "title": "Heeft een titel nodig",
+      "empty": "Er staat niets bij",
+      "too_long": "Te lang: een titel tot 200 tekens, elke tekst tot 4.000",
+      "likelihood": "De waarschijnlijkheid moet low, medium of high zijn",
+      "meanings": "{make} gebruikt deze code voor meer dan één ding. Deel het liever op de pagina van de code."
+    },
+    "state": {
+      "new": "Nieuw",
+      "change": "Voegt {what} toe"
+    },
+    "fields": {
+      "title": "titel",
+      "description": "betekenis",
+      "common_issues": "veelvoorkomende problemen",
+      "resolution": "hoe te verhelpen",
+      "advisory": "goed om te weten",
+      "causes": "oorzaken"
+    },
+    "addsCauses": "{count, plural, one {# oorzaak} other {# oorzaken}}",
+    "searchMake": "Merken zoeken",
+    "noMake": "Geen merk gevonden",
+    "useMake": "{name} gebruiken",
+    "groups": {
+      "cars": "Auto’s en bestelwagens",
+      "marine": "Boten en motoren"
+    }
+  },
+  "makeCodes": {
+    "heading": "Merken met een eigen betekenis voor {code}",
+    "thisCar": "Merk van dit voertuig"
   }
 }

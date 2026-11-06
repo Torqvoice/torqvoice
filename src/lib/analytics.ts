@@ -52,6 +52,47 @@ export type AnalyticsEvent =
   | 'plan:gate_show'
   /** The upgrade dialog's button to the plans. */
   | 'plan:upgrade_click'
+  /**
+   * A fault code opened, on its page or in the sheet beside a job: `kind` obd or make,
+   * `make` for a make's own code, and `found`, whether we had a meaning for it. The misses
+   * say which codes and makes to add next.
+   */
+  | 'fault_code:page_view'
+  /** The lookup box submitted: `kind` code, make_code or words. The words are never sent. */
+  | 'fault_code:search'
+  /** A make's own meaning opened from a standard code's page (Ford's P1000 from P1000). */
+  | 'fault_code:make_code_open'
+  /** Support asked about the code on screen. */
+  | 'fault_code:support_open'
+  /** A wrong meaning reported, with its `reason`. */
+  | 'fault_code:report_send'
+  /** A fix shared for review, with how many photos and whether any came from a phone. */
+  | 'fault_code:fix_share'
+  /** Research a fix pressed. */
+  | 'fault_code:research_start'
+  /** What research came back with: `outcome` pending, published, missed, busy, limited or failed. */
+  | 'fault_code:research_result'
+  /** A researched fix rated, `helpful` or not. */
+  | 'fault_code:research_rate'
+  /** A shared waveform opened full size, `kind` good or faulty. */
+  | 'fault_code:waveform_open'
+  /** Another waveform drawn under the open one to compare. */
+  | 'fault_code:waveform_compare'
+  /** A waveform's file downloaded: `role` psdata, csv or pssettings. */
+  | 'fault_code:waveform_download'
+  /** A waveform shared for review, with which files it carried. */
+  | 'fault_code:waveform_share'
+  /** Help us improve opened, and sent with its `topic`. */
+  | 'fault_code:improve_open'
+  | 'fault_code:improve_send'
+  /** The import dialog opened. */
+  | 'fault_code:import_open'
+  /** An example file downloaded: `format` xlsx, csv or json. */
+  | 'fault_code:import_example_download'
+  /** A file checked: its `make`, `file_type` and how many rows were new, changes, the same or problems. */
+  | 'fault_code:import_check'
+  /** An import sent for review: its `make` and how many `codes`. */
+  | 'fault_code:import_send'
 
 type Properties = Record<string, string | number | boolean | null>
 

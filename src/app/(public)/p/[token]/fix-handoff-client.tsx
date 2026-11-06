@@ -27,14 +27,22 @@ export function FixHandoffClient({
   token,
   brand,
   code,
+  purpose = 'fix',
   problem,
 }: {
   token: string
   brand: { name: string; logoUrl: string | null } | null
   code: string | null
+  /** A fix's photos, or one picture of the scope screen for a waveform. */
+  purpose?: 'fix' | 'waveform'
   problem?: 'invalid' | 'expired'
 }) {
-  const t = useTranslations('faultCodes.phone')
+  const phone = useTranslations('faultCodes.phone')
+  // A waveform's code has its own words for the few lines that differ.
+  const t = (key: string, values?: Record<string, string | number>) =>
+    purpose === 'waveform' && ['title', 'forCode', 'intro', 'full', 'done', 'added'].includes(key)
+      ? phone(`waveform.${key}` as Parameters<typeof phone>[0], values)
+      : phone(key as Parameters<typeof phone>[0], values)
   const [logoFailed, setLogoFailed] = useState(false)
   const [count, setCount] = useState(0)
   const [max, setMax] = useState(4)
@@ -177,7 +185,7 @@ export function FixHandoffClient({
                   ref={library}
                   type="file"
                   accept="image/*"
-                  multiple
+                  multiple={purpose !== 'waveform'}
                   hidden
                   onChange={(e) => void send(e.target.files)}
                 />

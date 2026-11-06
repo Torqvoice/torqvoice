@@ -31,6 +31,9 @@
     "manufacturer": "Gamintojų duomenys",
     "related": "Kartu su kitais kodais",
     "diagnosis": "Diagnostikos patarimas",
+    "common_issues": "Dažnos problemos",
+    "resolution": "Sprendimas",
+    "advisory": "Rekomendacija",
     "other": "Verta žinoti"
   },
   "detail": {
@@ -99,6 +102,8 @@
     "model": "Modelis",
     "year": "Metai",
     "vehicleHint": "Dalijamasi tik marke, modeliu, metais ir varikliu, niekada valstybiniu numeriu, VIN, klientu ar jūsų serviso pavadinimu.",
+    "meaning": "Reikšmė",
+    "meaningHint": "Kituose valdymo blokuose šis kodas reiškia ką kita. Jūsų sprendimu dalijamasi tik šiai reikšmei.",
     "vehicleHintMarine": "Dalijamasi tik marke, modeliu, metais ir varikliu, niekada registracijos numeriu, korpuso numeriu, klientu ar jūsų serviso pavadinimu.",
     "send": "Pasidalyti sprendimu",
     "sent": "Ačiū. Jūsų sprendimas laukia peržiūros.",
@@ -178,7 +183,9 @@
     "add": "{count, plural, =0 {Pridėti kodus} one {Pridėti # kodą} few {Pridėti # kodus} many {Pridėti # kodo} other {Pridėti # kodų}}",
     "added": "{count, plural, one {Pridėtas # gedimo kodas} few {Pridėti # gedimų kodai} many {Pridėta # gedimo kodo} other {Pridėta # gedimų kodų}}",
     "skipped": "{count, plural, one {# kodas jau buvo šiame darbe} few {# kodai jau buvo šiame darbe} many {# kodo jau buvo šiame darbe} other {# kodų jau buvo šiame darbe}}",
-    "failed": "Nepavyko pridėti kodų"
+    "failed": "Nepavyko pridėti kodų",
+    "descriptionOem": "Įveskite arba įklijuokite kodus iš diagnostikos įrangos: OBD kodus, pvz., P0420, arba BMW kodus, pvz., 2A82. Kiekvienas tampa šio darbo pastaba su išsaugota reikšme.",
+    "placeholderOem": "P0420, 2A82 išsaugotas"
   },
   "finding": {
     "seenBefore": "Matytas {date}",
@@ -218,7 +225,9 @@
   },
   "notice": {
     "title": "Gedimų kodai yra nauji",
-    "body": "Kodus pildome nuolat, todėl dar ne visi kodai čia yra. Kol kas yra standartiniai OBD-II kodai; gamintojų kodų dar nėra."
+    "body": "Yra standartiniai OBD-II kodai. Dirbame, kad pridėtume ir gamintojų savus kodus, o nauji kodai atsiranda nuolat. Žinote, kur rasti gamintojo kodus? Praneškite mums per „Padėkite mums tobulėti“.",
+    "bodyBmw": "Yra standartiniai OBD-II kodai ir BMW kodai, kuriuos naudoja ir MINI bei Rolls-Royce. Dirbame, kad pridėtume daugiau gamintojų, o nauji kodai atsiranda nuolat. Žinote, kur rasti gamintojo kodus? Praneškite mums per „Padėkite mums tobulėti“.",
+    "bodyMakes": "Yra standartiniai OBD-II kodai ir šių gamintojų kodai: {makes}. Dirbame, kad pridėtume daugiau gamintojų, o nauji kodai atsiranda nuolat. Žinote, kur rasti gamintojo kodus? Praneškite mums per „Padėkite mums tobulėti“."
   },
   "support": {
     "button": "Susisiekti su pagalba",
@@ -245,6 +254,345 @@
     "done": "Baigę grįžkite prie kompiuterio ir pasidalykite sprendimu.",
     "privacy": "Į kadrą neįtraukite veidų, numerių ir klientų duomenų.",
     "expired": "Šio kodo galiojimas baigėsi. Kompiuteryje parodykite naują.",
-    "invalid": "Šis kodas neveikia. Kompiuteryje parodykite naują."
+    "invalid": "Šis kodas neveikia. Kompiuteryje parodykite naują.",
+    "waveform": {
+      "title": "Oscilografo ekrano nuotrauka",
+      "forCode": "oscilogramai, kuria dalinatės kompiuteryje",
+      "intro": "Padarykite arba pasirinkite vieną oscilografo ekrano nuotrauką. Ji atsiras kompiuteryje.",
+      "full": "Oscilograma turi vieną nuotrauką. Pašalinkite ją kompiuteryje, kad padarytumėte kitą.",
+      "done": "Grįžkite prie kompiuterio ir pasidalinkite oscilograma.",
+      "added": "Nuotrauka pridėta"
+    }
+  },
+  "oem": {
+    "badge": "{make} kodas",
+    "summary": "{count, plural, one {# reikšmė} few {# reikšmės} other {# reikšmių}}. BMW kodas kiekviename valdymo bloke gali reikšti ką kita.",
+    "matches": "Tinka šiam automobiliui",
+    "noMatch": "Nė viena iš šių reikšmių nenurodyta šio automobilio varikliui. Patikrinkite, iš kurio valdymo bloko diagnostikos įranga nuskaitė kodą.",
+    "inEnglish": "{make} tekstas anglų kalba: {text}",
+    "bmwText": "{make} tekstas: {text}",
+    "units": "Valdymo blokai",
+    "moreUnits": "dar {count}",
+    "otherChassis": "Kiti kėbulai",
+    "years": "{from}–{to}",
+    "yearsFrom": "nuo {from}",
+    "source": "Reikšmės paimtos iš BMW diagnostikos tekstų, dauguma jų vokiečių kalba.",
+    "notServed": "{make} kodų dar nėra.",
+    "notFound": "{code} nėra {make} duomenyse.",
+    "whereUsed": "Kur {make} jį naudoja",
+    "models": "Modeliai",
+    "engineList": "Varikliai",
+    "fewerUnits": "Rodyti mažiau",
+    "fitsThisCar": "Šis automobilis",
+    "meanings": "Reikšmės",
+    "otherMeanings": "ir dar {count, plural, one {# reikšmė} few {# reikšmės} other {# reikšmių}}"
+  },
+  "research": {
+    "inviteTitle": "Ieškoti sprendimo internete",
+    "invite": "Ieškome {code} gamintojo dokumentuose, techniniuose biuleteniuose ir servisų forumuose. Išsaugomas tik konkretus atsakymas su šaltiniais, o Torqvoice darbuotojas jį patikrina.",
+    "button": "Ieškoti sprendimo",
+    "working": "Ieškoma informacijos apie {code}",
+    "steps": {
+      "bulletins": "Ieškoma gamintojo dokumentuose ir techniniuose biuleteniuose",
+      "forums": "Skaitomi servisų forumai su patvirtintais sprendimais",
+      "agree": "Tikrinama, ar šaltiniai sutampa",
+      "writing": "Aprašomi žingsniai"
+    },
+    "workingHint": "Tai užtrunka minutę ar dvi. Kas randama, lieka prie kodo visiems servisams.",
+    "runningTitle": "Šiuo metu ieškoma",
+    "runningHint": "Kitas servisas ką tik paprašė. Patikrinkite po minutės.",
+    "checkAgain": "Patikrinti dar kartą",
+    "title": "Rastas sprendimas",
+    "pending": "Laukia žmogaus patikros",
+    "published": "Patikrinta Torqvoice",
+    "pendingHint": "Rasta DI iš toliau nurodytų šaltinių. Prieš keisdami dalis patikrinkite automobilyje.",
+    "sources": "Šaltiniai",
+    "helpfulQuestion": "Ar tai padėjo?",
+    "helpfulYes": "Taip, padėjo",
+    "helpfulNo": "Ne, nepadėjo",
+    "thanks": "Ačiū, pažymėta",
+    "missedTitle": "Patikimo sprendimo internete nerasta",
+    "missed": "Apie {code} nieko konkretaus nerasta, todėl nieko neišsaugota. Pažymėjome, kad servisams reikia šio kodo.",
+    "searchedOn": "Ieškota {date}",
+    "shareInstead": "Pasidalykite savo sprendimu",
+    "errors": {
+      "busy": "Šio kodo šiuo metu ieškoma. Patikrinkite po minutės.",
+      "limited": "Jūsų servisas šiandien jau išnaudojo paieškas. Bandykite rytoj.",
+      "failed": "Paieška šiuo metu nepavyko. Bandykite vėliau."
+    }
+  },
+  "waveforms": {
+    "title": "Oscilogramos",
+    "description": "Kitų servisų oscilografo įrašai, tvarkingi ir su gedimu, palyginti su tuo, ką matuojate.",
+    "share": "Dalintis oscilograma",
+    "unavailable": "Oscilogramos šiuo metu nepasiekiamos.",
+    "empty": "Kol kas nėra oscilogramų kodui {code}",
+    "emptyHint": "Turite tvarkingos sistemos įrašą? Pasidalinkite, ir kitas meistras, ieškantis šio kodo, turės su kuo palyginti.",
+    "filter": {
+      "label": "Rodyti",
+      "all": "Visos",
+      "good": "Tvarkinga",
+      "faulty": "Su gedimu"
+    },
+    "unknownVehicle": "Transporto priemonė nenurodyta",
+    "unknownVehicleMarine": "Laivas nenurodytas",
+    "status": {
+      "pending": "Laukia peržiūros",
+      "published": "Paskelbta",
+      "rejected": "Nepaskelbta"
+    },
+    "hasRecording": "PicoScope failas atsisiųsti",
+    "hasCsv": "CSV eksportas atsisiųsti",
+    "kind": {
+      "good": "Tvarkinga",
+      "faulty": "Su gedimu"
+    },
+    "condition": {
+      "key_on": "Uždegimas įjungtas, variklis išjungtas",
+      "cranking": "Užvedimas",
+      "idle": "Laisva eiga",
+      "rpm_2500": "2500 aps./min",
+      "driving": "Važiuojant",
+      "drivingMarine": "Plaukiant",
+      "under_load": "Su apkrova"
+    },
+    "chart": {
+      "label": "{channels} oscilograma per {span}",
+      "perDivision": "{value}/padal.",
+      "noSample": "nėra reikšmės",
+      "between": "nuo {lo} iki {hi}"
+    },
+    "view": {
+      "label": "Rodyti",
+      "trace": "Oscilograma",
+      "picture": "Ekrano nuotrauka"
+    },
+    "sharedOn": "Pasidalinta {date}",
+    "reason": "Priežastis: {reason}",
+    "compare": {
+      "label": "Palyginti su",
+      "none": "Niekuo",
+      "close": "Baigti lyginti"
+    },
+    "note": "Pastabos",
+    "writtenIn": "Parašyta kalba: {language}",
+    "files": {
+      "title": "Failai",
+      "psdata": "PicoScope įrašas",
+      "csv": "CSV eksportas",
+      "pssettings": "Oscilografo nustatymai",
+      "openHint": "Atidarykite įrašą PicoScope programoje, kad galėtumėte priartinti, matuoti ir matyti kiekvieną kanalą."
+    },
+    "nothingToDraw": "Pasidalinta tik įrašu. Atsisiųskite jį ir atidarykite PicoScope programoje.",
+    "openPicture": "Atidaryti nuotrauką visu dydžiu",
+    "close": "Uždaryti",
+    "withdraw": "Atšaukti",
+    "withdrawTitle": "Atšaukti šią oscilogramą?",
+    "withdrawConfirm": "Ji ištrinama kartu su failais, ir jokie kiti servisai jos nematys.",
+    "withdrawn": "Oscilograma atšaukta",
+    "withdrawFailed": "Šiuo metu nepavyko atšaukti oscilogramos. Bandykite dar kartą po akimirkos.",
+    "shareDialog": {
+      "title": "Dalintis oscilograma kodui {code}",
+      "description": "Kiti servisai ją pamatys, kai Torqvoice darbuotojas ją patikrins.",
+      "meaningHint": "Kituose valdymo blokuose šis kodas reiškia ką kita. Jūsų oscilograma dalinama tik šiai reikšmei.",
+      "kind": "Ką ji rodo?",
+      "kindHint": {
+        "good": "Kaip atrodo tvarkingame automobilyje",
+        "goodMarine": "Kaip atrodo tvarkingame variklyje",
+        "faulty": "Kaip atrodė esant gedimui",
+        "faultyMarine": "Kaip atrodė esant gedimui"
+      },
+      "measured": "Ką matavote?",
+      "measuredPlaceholder": "Alkūninio veleno jutiklis ir įsiurbimo skirstomasis velenas",
+      "measurements": {
+        "crank": "Alkūninio veleno jutiklis",
+        "camCrank": "Skirstomasis ir alkūninis velenai",
+        "injector": "Purkštukas",
+        "ignition": "Uždegimo ritė",
+        "compression": "Santykinė kompresija",
+        "lambda": "Lambda zondas",
+        "maf": "Oro srauto matuoklis",
+        "alternator": "Generatoriaus pulsacija",
+        "canBus": "CAN magistralė",
+        "fuelPump": "Kuro siurblio srovė"
+      },
+      "condition": "Kaip veikė variklis? (neprivaloma)",
+      "files": "Failai",
+      "filesHint": "Pakanka vieno. PicoScope failą kiti gali atidaryti PicoScope programoje; CSV eksportą ar nuotrauką jie mato čia pat.",
+      "phone": {
+        "button": "Nuotrauka iš telefono",
+        "title": "Nufotografuokite oscilografo ekraną",
+        "body": "Nuskenuokite kodą telefono kamera ir padarykite vieną ekrano nuotrauką. Ji atsiras čia, kai tik ateis.",
+        "received": "Nuotrauka iš jūsų telefono atėjo"
+      },
+      "drop": "Įmeskite PicoScope failą čia arba spustelėkite ir pasirinkite",
+      "dropMore": "Pridėti kitą failą",
+      "dropTypes": ".psdata, .pssettings, CSV eksportas arba ekrano nuotrauka",
+      "role": {
+        "psdata": "PicoScope įrašas",
+        "csv": "CSV eksportas",
+        "image": "Ekrano nuotrauka",
+        "pssettings": "Oscilografo nustatymai"
+      },
+      "csvNotScope": "Tai ne oscilografo eksportas. Išsaugokite jį iš PicoScope dar kartą kaip CSV.",
+      "remove": "Pašalinti {name}",
+      "fromPhone": "Iš jūsų telefono",
+      "previewHint": "Taip ją matys kiti servisai.",
+      "csvTip": "Patarimas: pridėkite ir CSV eksportą, kad kiti matytų oscilogramą čia neatidarę PicoScope. PicoScope programoje pasirinkite Išsaugoti kaip ir CSV.",
+      "note": "Pastabos (neprivaloma)",
+      "notePlaceholder": "Kur matavote, kokią skalę naudojote ir į ką žiūrėti. Pavyzdžiui: 2 kontaktas iš jutiklio jungties galo, trūkstamų dantų tarpas matosi kartą per apsisukimą.",
+      "notePlaceholderMarine": "Kur matavote, kokią skalę naudojote ir į ką žiūrėti.",
+      "sending": "Siunčiama {percent} %",
+      "send": "Dalintis oscilograma",
+      "sent": "Ačiū. Jūsų oscilograma laukia peržiūros.",
+      "missing": {
+        "kind": "Pasirinkite tvarkinga arba su gedimu",
+        "title": "Nurodykite, ką matavote",
+        "file": "Pridėkite failą arba nuotrauką",
+        "csv": "Pašalinkite CSV, kuris nėra oscilografo eksportas"
+      },
+      "notAScopeFile": "{name} nėra nei PicoScope failas, nei CSV eksportas, nei nuotrauka",
+      "fileTooBig": "{name} didesnis nei {size}",
+      "errors": {
+        "failed": "Šiuo metu nepavyko išsiųsti jūsų oscilogramos. Bandykite dar kartą po akimirkos.",
+        "photo": "Nepavyko perskaityti nuotraukos. Pabandykite kitą.",
+        "csv": "CSV nėra oscilografo eksportas. Išsaugokite jį iš PicoScope dar kartą kaip CSV.",
+        "too_large": "Failai per dideli.",
+        "no_file": "Pridėkite įrašą, CSV eksportą arba nuotrauką.",
+        "paused": "Dalijimasis oscilogramomis šiuo metu sustabdytas. Bandykite vėliau.",
+        "demo": "Demonstracinėje versijoje dalijimasis oscilogramomis išjungtas."
+      }
+    }
+  },
+  "improve": {
+    "button": "Padėkite mums tobulėti",
+    "title": "Padėkite mums patobulinti gedimų kodus",
+    "description": "Žinote, kur gamintojas skelbia savo kodus, pastebėjote klaidą ar turite idėją? Parašykite mums. Žinutė keliauja tiesiai Torqvoice komandai.",
+    "topic": "Apie ką tai? (neprivaloma)",
+    "topics": {
+      "makes": "Trūkstami kodai",
+      "wrong": "Kažkas negerai",
+      "source": "Geras šaltinis ar nuoroda",
+      "idea": "Idėja"
+    },
+    "message": "Jūsų žinutė",
+    "placeholders": {
+      "makes": "Kur juos rasti, pavyzdžiui, nuoroda į gamintojo kodų sąrašą, ir kuriems modeliams jis tinka.",
+      "wrong": "Koks kodas, kas parašyta ir kas turėtų būti parašyta. Nuoroda į šaltinį padeda.",
+      "source": "Įklijuokite nuorodą ir parašykite, kas joje yra.",
+      "idea": "Kas padarytų gedimų kodus naudingesnius jūsų servise? Nuorodos laukiamos."
+    },
+    "links": "Nuorodos jūsų žinutėje",
+    "about": "Apie {code}",
+    "leaveOut": "Neįtraukti",
+    "replyHint": "Atsakysime jūsų paskyros el. paštu.",
+    "cancel": "Atšaukti",
+    "send": "Siųsti",
+    "sent": "Ačiū. Jūsų žinutė keliauja Torqvoice komandai.",
+    "errors": {
+      "failed": "Šiuo metu nepavyko išsiųsti žinutės. Bandykite dar kartą po akimirkos.",
+      "limited": "Jau išsiuntėte kelias žinutes. Bandykite po valandos."
+    }
+  },
+  "import": {
+    "button": "Importuoti",
+    "title": "Importuoti gedimų kodus",
+    "description": "Pridėkite gamintojo savus kodus arba daugiau apie mūsų turimus kodus. Torqvoice darbuotojas patikrina kiekvieną kodą, kol jo dar nemato joks servisas.",
+    "yours": "Jūsų importai",
+    "codes": "{count, plural, one {# kodas} few {# kodai} other {# kodų}}",
+    "status": {
+      "published": "paskelbta: {count}",
+      "pending": "laukia: {count}",
+      "rejected": "nepaskelbta: {count}"
+    },
+    "examples": {
+      "title": "Pradėkite nuo pavyzdžio",
+      "sheet": "Pavyzdinė lentelė",
+      "sheetHint": "Excel, viena eilutė kodui",
+      "json": "Pavyzdinis JSON",
+      "jsonHint": "Kiekvienas laukas pavadintas",
+      "columns": "Palikite stulpelių pavadinimus: Code, Title, Description, Common issues, How to fix, Good to know ir Causes. Būtini tik Code ir Title. Kiekvieną priežastį rašykite atskiroje eilutėje, jei žinote, su (high), (medium) arba (low) gale.",
+      "csv": "Atsisiųsti kaip CSV"
+    },
+    "make": "Gamintojas",
+    "pickMake": "Pasirinkite gamintoją",
+    "language": "Teksto kalba",
+    "source": "Iš kur tai (neprivaloma)",
+    "sourcePlaceholder": "Nuoroda arba knyga",
+    "checking": "Skaitomi ir tikrinami jūsų kodai",
+    "removeFile": "Pašalinti failą",
+    "drop": "Įmeskite failą čia arba spustelėkite ir pasirinkite",
+    "dropTypes": ".xlsx, .csv arba .json, iki 2 000 kodų",
+    "fileProblems": {
+      "unreadable": "Nepavyko perskaityti failo. Išsaugokite jį dar kartą kaip .xlsx, .csv arba .json.",
+      "empty": "Faile nėra kodų.",
+      "no_code_column": "Nerastas stulpelis Code. Pradėkite nuo pavyzdinės lentelės.",
+      "too_many": "Failas per didelis: daugiausia 2 000 kodų ir 5 MB. Padalykite jį į dalis.",
+      "format": "Šis failo tipas nepalaikomas. Naudokite .xlsx, .csv arba .json.",
+      "legacy_xls": "Seni .xls failai nepalaikomi. Išsaugokite jį Excel kaip .xlsx."
+    },
+    "counts": {
+      "new": "nauji: {count}",
+      "change": "papildo mūsų: {count}",
+      "problem": "reikia pataisyti: {count}",
+      "same": "jau tokie patys: {count}"
+    },
+    "rows": "Kodai faile",
+    "row": "{n} eilutė",
+    "more": "ir dar {count}",
+    "problemsLeftOut": "Kodai, kuriuos reikia pataisyti, praleidžiami. Pataisykite juos faile ir įmeskite iš naujo arba siųskite likusius dabar.",
+    "rights": "Galiu tuo dalintis. Tai nenukopijuota iš mokamo ar saugomo šaltinio.",
+    "missing": {
+      "make": "Pirmiausia pasirinkite gamintoją",
+      "file": "Pridėkite failą",
+      "nothing": "Niekas faile nepapildo to, ką turime",
+      "rights": "Pažymėkite langelį, kad galėtumėte siųsti"
+    },
+    "reviewHint": "Niekas neskelbiama, kol to nepatikrina žmogus.",
+    "cancel": "Atšaukti",
+    "send": "{count, plural, one {Siųsti # kodą peržiūrai} few {Siųsti # kodus peržiūrai} other {Siųsti # kodų peržiūrai}}",
+    "sendNone": "Siųsti peržiūrai",
+    "sent": "{count, plural, one {Išsiųsta. # kodas laukia peržiūros.} few {Išsiųsta. # kodai laukia peržiūros.} other {Išsiųsta. # kodų laukia peržiūros.}}",
+    "errors": {
+      "failed": "Šiuo metu nepavyko patikrinti ar išsiųsti failo. Bandykite dar kartą po akimirkos.",
+      "paused": "Kodų siuntimas šiuo metu sustabdytas. Bandykite vėliau.",
+      "nothing": "Niekas faile nepapildo to, ką turime.",
+      "demo": "Demonstracinėje versijoje kodų importas išjungtas.",
+      "rights": "Pažymėkite langelį, kad galite tuo dalintis.",
+      "too_large": "Failas per didelis: daugiausia 2 000 kodų ir 5 MB."
+    },
+    "problems": {
+      "code": "Tai ne {make} naudojamas kodas",
+      "duplicate": "Tas pats kodas faile du kartus",
+      "title": "Reikia pavadinimo",
+      "empty": "Nieko neparašyta",
+      "too_long": "Per ilga: pavadinimas iki 200 simbolių, kiekvienas tekstas iki 4 000",
+      "likelihood": "Tikimybė turi būti low, medium arba high",
+      "meanings": "{make} šį kodą naudoja daugiau nei vienam dalykui. Geriau pasidalinkite juo kodo puslapyje."
+    },
+    "state": {
+      "new": "Naujas",
+      "change": "Papildo: {what}"
+    },
+    "fields": {
+      "title": "pavadinimas",
+      "description": "reikšmė",
+      "common_issues": "dažnos problemos",
+      "resolution": "kaip pataisyti",
+      "advisory": "verta žinoti",
+      "causes": "priežastys"
+    },
+    "addsCauses": "{count, plural, one {# priežastis} few {# priežastys} other {# priežasčių}}",
+    "searchMake": "Ieškoti gamintojų",
+    "noMake": "Gamintojas nerastas",
+    "useMake": "Naudoti {name}",
+    "groups": {
+      "cars": "Automobiliai ir furgonai",
+      "marine": "Laivai ir varikliai"
+    }
+  },
+  "makeCodes": {
+    "heading": "Gamintojai, turintys savo {code} reikšmę",
+    "thisCar": "Šio automobilio gamintojas"
   }
 }

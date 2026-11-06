@@ -92,13 +92,14 @@ async function inTurn<T>(key: string, work: () => Promise<T>): Promise<T> {
 export async function addDraftPhoto(
   organizationId: string,
   draftId: string,
-  jpeg: Uint8Array
+  jpeg: Uint8Array,
+  max: number = MAX_FIX_PHOTOS
 ): Promise<{ name: string; count: number } | null> {
   const dir = folderOf(organizationId)
   if (!dir || !isDraftId(draftId)) return null
   return inTurn(`${organizationId}/${draftId}`, async () => {
     const existing = await listDraftPhotos(organizationId, draftId)
-    if (existing.length >= MAX_FIX_PHOTOS) return null
+    if (existing.length >= max) return null
     await mkdir(dir, { recursive: true })
     const name = `${prefixOf(draftId)}${crypto.randomBytes(6).toString('hex')}.jpg`
     await writeFile(path.join(dir, name), jpeg)

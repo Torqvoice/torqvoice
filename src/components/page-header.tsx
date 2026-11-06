@@ -227,8 +227,8 @@ export function PageHeader() {
   let segments = breadcrumbMap[pathname]
 
   if (!segments) {
-    // /fault-codes/[code]
-    if (/^\/fault-codes\/[^/]+$/.test(pathname)) {
+    // /fault-codes/[code] and a make's own code, /fault-codes/oem/[make]/[code]
+    if (/^\/fault-codes\/([^/]+|oem\/[^/]+\/[^/]+)$/.test(pathname)) {
       segments = [{ key: 'faultCodes', href: '/fault-codes' }, { key: 'faultCode' }]
     }
     // /tire-hotel/[id]

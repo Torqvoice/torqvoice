@@ -617,6 +617,9 @@ export type FaultCodeSectionKind =
   | 'manufacturer'
   | 'related'
   | 'diagnosis'
+  | 'common_issues'
+  | 'resolution'
+  | 'advisory'
   | 'other'
 
 export interface FaultCodeMeaning {
@@ -655,6 +658,49 @@ export interface FaultCodeAnswer {
   /** Known for every valid code, found or not. */
   range: FaultCodeRange
   meaning?: FaultCodeMeaning
+}
+
+/** A vehicle a manufacturer code's meaning applies to: the chassis, with its model when known. */
+export interface OemVehicle {
+  chassis: string
+  model: string | null
+  body: string | null
+  yearFrom: number | null
+  yearTo: number | null
+}
+
+/** One meaning of a manufacturer code, as the manufacturer words it. */
+export interface OemMeaning {
+  /** The meaning's id in the make's data ("einlass-vanos"). */
+  id: string
+  /** The text as the control unit has it. */
+  text: string
+  /** The language of `text` ("de" for most BMW units). */
+  textLang: string
+  /** The manufacturer's English text, when it has one. */
+  textEn: string | null
+  modules: { ref: string; family: string | null; name: string | null }[]
+  vehicles: OemVehicle[]
+  engines: string[]
+  /** One of its control units fits the vehicle asked about. */
+  matches: boolean
+  /**
+   * The service's own text for this meaning, as for an OBD-II code: a plain
+   * title, the description (in labelled parts when it is cut so) and likely
+   * causes, in `lang` (the language asked, or English). `lang` and `title`
+   * are null when nothing is written for this meaning yet.
+   */
+  lang: string | null
+  title: string | null
+  description: string | null
+  sections: { kind: FaultCodeSectionKind; text: string }[]
+  causes: { key: string; likelihood: 'low' | 'medium' | 'high'; label: string }[]
+}
+
+export interface OemCodeAnswer {
+  source: string
+  code: string
+  meanings: OemMeaning[]
 }
 
 export interface FaultCodeSearchHit {
@@ -707,6 +753,8 @@ export interface FaultCodeFixPhoto {
 export interface FaultCodeFix {
   id: string
   code: string
+  /** For a make's own code, the meaning the fix is for ("einlass-vanos"). */
+  meaning: string | null
   /** The language the text was written in. */
   lang: string
   text: string
@@ -727,6 +775,8 @@ export interface FaultCodeOwnFix extends FaultCodeFix {
 
 export interface FaultCodeFixInput {
   code: string
+  /** For a make's own code, the meaning the fix is for. */
+  meaning?: string
   text: string
   lang: string
   vehicle?: FaultCodeVehicle
@@ -735,6 +785,173 @@ export interface FaultCodeFixInput {
   /** Up to four photos, already compressed in the browser. */
   photos: Blob[]
 }
+
+/**
+ * A researched fix for a code, or for one meaning of a make's code: what an AI found on the
+ * web, waiting for a person's check (pending) or checked (published); or a search that found
+ * nothing specific (missed); or one running right now.
+ */
+export interface FaultCodeResearch {
+  id: string
+  code: string
+  meaning: string | null
+  status: 'running' | 'pending' | 'published' | 'missed'
+  findings: {
+    title: string
+    meaning: string
+    commonIssues: string[]
+    steps: string[]
+    causes: { label: string; likelihood: 'low' | 'medium' | 'high' }[]
+    advice: string | null
+    sources: { url: string; title: string | null }[]
+  } | null
+  /** Why nothing was kept, for a miss. */
+  reason: string | null
+  /** How many times workshops asked for it. */
+  requests: number
+  helpful: number
+  notHelpful: number
+  createdAt: string
+}
+
+/** Why a research did not run: another one is running, the daily limit, or no research. */
+export type FaultCodeResearchRefusal = 'busy' | 'limited' | 'unavailable'
+
+/** Whether a shared waveform shows how it should look or what was wrong. */
+export type WaveformKind = 'good' | 'faulty'
+/** How the engine ran when it was recorded. */
+export type WaveformCondition =
+  | 'key_on'
+  | 'cranking'
+  | 'idle'
+  | 'rpm_2500'
+  | 'driving'
+  | 'under_load'
+/** The recording (PicoScope's .psdata), its settings, a CSV export, a picture of the screen. */
+export type WaveformFileRole = 'psdata' | 'pssettings' | 'csv' | 'image'
+
+/** A CSV export drawn small: each channel's lowest and highest value per time slice. */
+export interface WaveformPreview {
+  timeUnit: string
+  start: number
+  end: number
+  channels: { name: string; unit: string; min: (number | null)[]; max: (number | null)[] }[]
+}
+
+/** A scope recording a workshop shared for a code, known good or faulty. */
+export interface FaultCodeWaveform {
+  id: string
+  code: string
+  meaning: string | null
+  kind: WaveformKind
+  /** What was measured, in the workshop's words. */
+  title: string
+  condition: WaveformCondition | null
+  note: string | null
+  lang: string
+  vehicle: FaultCodeVehicle | null
+  preview: WaveformPreview | null
+  files: {
+    role: WaveformFileRole
+    name: string
+    size: number
+    width: number | null
+    height: number | null
+  }[]
+  createdAt: string
+}
+
+/** A waveform this workshop shared, with how its review stands. */
+export interface FaultCodeOwnWaveform extends FaultCodeWaveform {
+  status: 'pending' | 'published' | 'rejected'
+  reason: string | null
+  reviewedAt: string | null
+}
+
+export interface FaultCodeWaveformInput {
+  code: string
+  meaning?: string
+  kind: WaveformKind
+  title: string
+  condition?: WaveformCondition
+  note?: string
+  lang: string
+  vehicle?: FaultCodeVehicle
+  workshopRef: string
+  files: { role: WaveformFileRole; blob: Blob; name: string }[]
+}
+
+/** A make's code found without knowing the make: Ford's P1000, BMW's 2A82. */
+export interface OemFindHit {
+  make: string
+  code: string
+  meanings: number
+  title: string | null
+}
+
+/** One code from a workshop's import file, field by field. */
+export interface CodeImportRow {
+  code: string
+  title?: string
+  description?: string
+  commonIssues?: string
+  resolution?: string
+  advisory?: string
+  causes: { label: string; likelihood?: string }[]
+}
+
+/** Why a row of an import cannot go. */
+export type CodeImportProblem =
+  | 'code'
+  | 'duplicate'
+  | 'title'
+  | 'empty'
+  | 'too_long'
+  | 'likelihood'
+  | 'meanings'
+
+/** What a row would do: new for the make, a change to our text, the same, or a problem. */
+export interface CodeImportChecked {
+  n: number
+  code: string
+  state: 'new' | 'change' | 'same' | 'problem'
+  problem: CodeImportProblem | null
+  /** What a change sets: title, description, common_issues, resolution, advisory, causes. */
+  fields: string[]
+  addedCauses: number
+}
+
+export interface CodeImportCounts {
+  new: number
+  change: number
+  same: number
+  problem: number
+}
+
+export interface CodeImportInput {
+  /** The make as the service keys it: ford, land-rover. */
+  make: string
+  lang: string
+  rows: CodeImportRow[]
+  source?: string
+  fileName?: string
+  workshopRef: string
+}
+
+/** An import this workshop sent, with how its codes stand. */
+export interface CodeImportStatus {
+  id: string
+  make: string
+  lang: string
+  source: string | null
+  fileName: string | null
+  createdAt: string
+  counts: { new: number; change: number; pending: number; published: number; rejected: number }
+  reviewedAt: string | null
+}
+
+/** Why the service would not take an import; anything else is FaultCodesUnavailable. */
+export type CodeImportRefusal = 'paused' | 'too_large' | 'invalid' | 'nothing'
 
 /** Why the service would not take a fix; anything else is FaultCodesUnavailable. */
 export type FaultCodeFixRefusal = 'paused' | 'photo' | 'too_large' | 'invalid'
@@ -820,6 +1037,83 @@ export interface ConnectorServer {
     ctx: ConnectorContext,
     query: { code: string; vehicle?: FaultCodeVehicle; locale: string }
   ): Promise<FaultCodeAnswer | null>
+  /**
+   * A manufacturer's own code (BMW's 2A82) from one make's data (`source`,
+   * such as "bmw"): every meaning it has, with the control units, vehicles
+   * and engines behind each. Null when the service does not serve that
+   * make's codes, or does not know the code.
+   */
+  /** Whether research can be asked for, and each meaning's research of a code (P0420, BMW-2A82). */
+  researchFor?(
+    ctx: ConnectorContext,
+    query: { code: string }
+  ): Promise<{ available: boolean; research: FaultCodeResearch[] }>
+  /**
+   * Researches a code (or a meaning of a make's code) with AI and web search, or answers with
+   * what is known. Can take a minute or two.
+   */
+  research?(
+    ctx: ConnectorContext,
+    input: { code: string; meaning?: string; vehicle?: FaultCodeVehicle; workshopRef: string }
+  ): Promise<
+    { ok: true; research: FaultCodeResearch } | { ok: false; reason: FaultCodeResearchRefusal }
+  >
+  /** "Did this fix it?" for a research; false when there is no such research. */
+  rateResearch?(
+    ctx: ConnectorContext,
+    input: { id: string; helpful: boolean; workshopRef: string }
+  ): Promise<boolean>
+  /** Shares a scope recording for a code; it waits for a person's review. */
+  shareWaveform?(
+    ctx: ConnectorContext,
+    input: FaultCodeWaveformInput
+  ): Promise<{ ok: true; id: string } | { ok: false; reason: FaultCodeFixRefusal }>
+  /** Published waveforms for a code (P0420, BMW-2A82), newest first. */
+  publishedWaveforms?(ctx: ConnectorContext, query: { code: string }): Promise<FaultCodeWaveform[]>
+  /** This workshop's own waveforms among `ids`, with how their review stands. */
+  waveformStatus?(ctx: ConnectorContext, ids: string[]): Promise<FaultCodeOwnWaveform[]>
+  withdrawWaveform?(
+    ctx: ConnectorContext,
+    input: { id: string; workshopRef: string }
+  ): Promise<boolean>
+  /** One of a waveform's files, streamed; null when there is none to see. */
+  waveformFile?(
+    ctx: ConnectorContext,
+    query: { id: string; role: WaveformFileRole; size: 'full' | 'thumb'; workshopRef: string }
+  ): Promise<{
+    body: ReadableStream<Uint8Array>
+    length: number | null
+    contentType: string
+    disposition: string | null
+  } | null>
+  /** The makes whose own codes the service answers for ("bmw"); none while it serves none. */
+  oemMakes?(ctx: ConnectorContext): Promise<string[]>
+  /** Every make that has a code, for a search box that does not know the make. */
+  findOemCode?(
+    ctx: ConnectorContext,
+    query: { code: string; locale?: string }
+  ): Promise<OemFindHit[]>
+  /** What each row of an import file would do, keeping nothing. */
+  checkCodeImport?(
+    ctx: ConnectorContext,
+    input: Omit<CodeImportInput, 'workshopRef' | 'source' | 'fileName'>
+  ): Promise<
+    | { ok: true; counts: CodeImportCounts; rows: CodeImportChecked[] }
+    | { ok: false; reason: CodeImportRefusal }
+  >
+  /** Sends an import's new and changed codes for a person to review. */
+  sendCodeImport?(
+    ctx: ConnectorContext,
+    input: CodeImportInput
+  ): Promise<
+    { ok: true; id: string; counts: CodeImportCounts } | { ok: false; reason: CodeImportRefusal }
+  >
+  /** This workshop's imports among `ids`, with how their codes stand. */
+  codeImportStatus?(ctx: ConnectorContext, ids: string[]): Promise<CodeImportStatus[]>
+  oemCode?(
+    ctx: ConnectorContext,
+    query: { source: string; code: string; chassis?: string; engine?: string; locale?: string }
+  ): Promise<OemCodeAnswer | null>
   /** Codes by prefix ("p04") or by the words of their meaning ("lean bank 1"). */
   searchCodes?(
     ctx: ConnectorContext,

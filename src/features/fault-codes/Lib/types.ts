@@ -1,4 +1,10 @@
-import type { FaultCodeReportReason, FaultCodeSectionKind } from '@/features/integrations/Lib/types'
+import type {
+  FaultCodeOwnWaveform,
+  FaultCodeReportReason,
+  FaultCodeResearch,
+  FaultCodeSectionKind,
+  FaultCodeWaveform,
+} from '@/features/integrations/Lib/types'
 
 /**
  * What the screens get about a code, in one shape. Plain data, so it crosses
@@ -58,6 +64,60 @@ export interface FaultCodeDetailView extends FaultCodeView {
 }
 
 /** A job in this workshop where the code was read. */
+/**
+ * One meaning of a make's own code as its page shows it: our title and text
+ * when written, BMW's own words always, and where BMW uses it.
+ */
+export interface OemMeaningView {
+  id: string
+  /** Our title, else the make's text (its English where the reader reads English). */
+  title: string
+  titleLang: string
+  /** Whether `title` is ours; the make's own text then reads under it. */
+  ownTitle: boolean
+  /** The make's text as its units give it, and its language. */
+  text: string
+  textLang: string
+  textEn: string | null
+  description: string | null
+  sections: FaultCodeSection[]
+  causes: { key: string; likelihood: 'low' | 'medium' | 'high'; label: string }[]
+  modules: { ref: string; family: string | null; name: string | null }[]
+  vehicles: {
+    chassis: string
+    model: string | null
+    body: string | null
+    yearFrom: number | null
+    yearTo: number | null
+  }[]
+  engines: string[]
+  /** One of its units fits the job's car. */
+  matches: boolean
+}
+
+/** What a make's own code adds to a code's page: its make and every meaning. */
+export interface OemPageData {
+  /** The make's data the code is from ("bmw") and how people write it ("BMW"). */
+  make: string
+  makeName: string
+  /** The code as shared fixes keep it: BMW-2A82. */
+  fixCode: string
+  /** The service serves this make's codes (it may still not know this one). */
+  served: boolean
+  /** The meaning fitting the car first. */
+  meanings: OemMeaningView[]
+}
+
+/** A make's code in a search: where it opens, and the meaning to name it by. */
+export interface OemSearchHit {
+  make: string
+  makeName: string
+  code: string
+  title: string
+  /** How many meanings it has; the title is the first. */
+  meanings: number
+}
+
 export interface FaultCodeJob {
   findingId: string
   serviceRecordId: string | null
@@ -105,6 +165,8 @@ export interface FixPhoto {
  */
 export interface SharedFix {
   id: string
+  /** For a make's own code, the meaning the fix is for; null when it is for the code as a whole. */
+  meaning: string | null
   /** The language it was written in. */
   lang: string
   text: string
@@ -154,4 +216,30 @@ export interface FaultCodePageData {
   fixes: CodeFixes | null
   report: ReportState | null
   vehicle: CodeVehicle | null
+  /** The makes whose own codes the service serves ("bmw"), for what the page says it covers. */
+  oemMakes?: string[]
+  /** Only on a make's own code (BMW's 2A82). */
+  oem?: OemPageData
+  /** On the code's own page: whether research can be asked for, and each meaning's research. */
+  research?: ResearchState | null
+  /** On the code's own page: shared scope recordings. */
+  waveforms?: CodeWaveforms | null
+  /** Makes that give an OBD-shaped code a meaning of their own (Ford's P1000), the car's first. */
+  makeCodes?: OemSearchHit[]
+}
+
+/**
+ * Waveforms on a code's page: whether the service could be asked, the published ones, and
+ * this workshop's own with how their review stands.
+ */
+export interface CodeWaveforms {
+  available: boolean
+  published: FaultCodeWaveform[]
+  own: FaultCodeOwnWaveform[]
+}
+
+/** Researched fixes on a code's page: whether one can be asked for, and those there are. */
+export interface ResearchState {
+  available: boolean
+  items: FaultCodeResearch[]
 }

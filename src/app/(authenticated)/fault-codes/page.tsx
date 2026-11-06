@@ -24,6 +24,11 @@ export default async function FaultCodesPage({
     getFaultCodeOverview({ query: q.slice(0, 100) }),
     isSupportEnabled(),
   ])
+  // So does a make's own code (BMW's 283700) that one make has.
+  const oemHits = result.success ? (result.data?.oemHits ?? []) : []
+  if (oemHits.length === 1 && oemHits[0].code === q.trim().toUpperCase())
+    redirect(`/fault-codes/oem/${oemHits[0].make}/${oemHits[0].code}`)
+
   if (!result.success || !result.data) {
     return (
       <>

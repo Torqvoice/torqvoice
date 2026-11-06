@@ -6,7 +6,7 @@ import { logAudit } from '@/lib/audit'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
-import { faultLine } from '../Lib/codes'
+import { faultLine, isOemCode, oemSourceFor } from '../Lib/codes'
 import { findingWebhookFields } from '../Lib/findings'
 import { lookupMeanings, vehicleForCodes } from '../Lib/service.server'
 import { addFaultCodeFindingsSchema } from '../Schema/faultCodeSchema'
@@ -58,6 +58,12 @@ export async function addFaultCodeFindings(input: unknown) {
         vehicleForCodes(organizationId, job.vehicleId),
         resolveDocumentLocale(organizationId),
       ])
+      // A manufacturer code (BMW's 2A82) only means something on that make's
+      // cars; on any other car it is not added.
+      if (!oemSourceFor(vehicle?.make)) {
+        for (const code of [...wanted.keys()]) if (isOemCode(code)) wanted.delete(code)
+        if (wanted.size === 0) return { added: 0, skipped: data.codes.length, findings: [] }
+      }
       const { results } = await lookupMeanings(organizationId, [...wanted.keys()], vehicle, locale)
       const meanings = new Map(results.map((r) => [r.code, r]))
 

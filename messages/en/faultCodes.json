@@ -31,6 +31,9 @@
     "manufacturer": "Manufacturer details",
     "related": "Together with other codes",
     "diagnosis": "Diagnosis tip",
+    "common_issues": "Common issues",
+    "resolution": "How to fix it",
+    "advisory": "Advice",
     "other": "Good to know"
   },
   "detail": {
@@ -99,6 +102,8 @@
     "model": "Model",
     "year": "Year",
     "vehicleHint": "Only make, model, year and engine are shared, never the plate, VIN, customer or your workshop's name.",
+    "meaning": "Meaning",
+    "meaningHint": "This code means something else in other control units. Your fix is shared for this meaning only.",
     "vehicleHintMarine": "Only make, model, year and engine are shared, never the registration, hull number, customer or your workshop's name.",
     "send": "Share fix",
     "sent": "Thanks. Your fix is waiting for review.",
@@ -178,7 +183,9 @@
     "add": "{count, plural, =0 {Add codes} one {Add # code} other {Add # codes}}",
     "added": "{count, plural, one {# fault code added} other {# fault codes added}}",
     "skipped": "{count, plural, one {# code was already on this job} other {# codes were already on this job}}",
-    "failed": "Could not add the codes"
+    "failed": "Could not add the codes",
+    "descriptionOem": "Type or paste codes from the scan tool, OBD codes like P0420 or BMW codes like 2A82. Each one becomes an observation on this job, with its meaning saved.",
+    "placeholderOem": "P0420, 2A82 stored"
   },
   "finding": {
     "seenBefore": "Seen {date}",
@@ -218,7 +225,9 @@
   },
   "notice": {
     "title": "Fault codes are new",
-    "body": "We are adding codes all the time, so not every code is here yet. For now this covers the standard OBD-II codes; manufacturer-specific codes are not included yet."
+    "body": "This covers the standard OBD-II codes. We're working on adding makes' own codes, and new codes arrive all the time. Know where to find a make's codes? Tell us with Help us improve.",
+    "bodyBmw": "This covers the standard OBD-II codes and BMW's own codes, which MINI and Rolls-Royce share. We're working on adding more makes, and new codes arrive all the time. Know where to find a make's codes? Tell us with Help us improve.",
+    "bodyMakes": "This covers the standard OBD-II codes and the own codes of {makes}. We're working on adding more makes, and new codes arrive all the time. Know where to find a make's codes? Tell us with Help us improve."
   },
   "support": {
     "button": "Contact support",
@@ -245,6 +254,345 @@
     "done": "When you are done, go back to the computer and share the fix.",
     "privacy": "Keep faces, number plates and customer details out of the picture.",
     "expired": "This code has run out. Show a new one on the computer.",
-    "invalid": "This code does not work. Show a new one on the computer."
+    "invalid": "This code does not work. Show a new one on the computer.",
+    "waveform": {
+      "title": "Photo of the scope screen",
+      "forCode": "for the waveform you are sharing on the computer",
+      "intro": "Take or choose one photo of the scope screen. It appears on the computer.",
+      "full": "A waveform takes one photo. Remove it on the computer to take another.",
+      "done": "Go back to the computer and share the waveform.",
+      "added": "Photo added"
+    }
+  },
+  "oem": {
+    "badge": "{make} code",
+    "summary": "{count, plural, one {# meaning} other {# meanings}}. A BMW code can mean something different in each control unit.",
+    "matches": "Matches this car",
+    "noMatch": "None of these meanings is listed for this car's engine. Check which control unit your scan tool read the code from.",
+    "inEnglish": "{make}'s English text: {text}",
+    "bmwText": "{make}'s text: {text}",
+    "units": "Control units",
+    "moreUnits": "+{count} more",
+    "otherChassis": "Other chassis",
+    "years": "{from} to {to}",
+    "yearsFrom": "from {from}",
+    "source": "Meanings come from BMW's own diagnostic texts, most of them in German.",
+    "notServed": "{make} codes are not available yet.",
+    "notFound": "{code} is not in {make}'s data.",
+    "whereUsed": "Where {make} uses it",
+    "models": "Models",
+    "engineList": "Engines",
+    "fewerUnits": "Show fewer",
+    "fitsThisCar": "This car",
+    "meanings": "Meanings",
+    "otherMeanings": "and {count, plural, one {# other meaning} other {# other meanings}}"
+  },
+  "research": {
+    "inviteTitle": "Research a fix online",
+    "invite": "We search manufacturer documents, service bulletins and workshop forums for {code}. Only a specific answer with sources is kept, and a person at Torqvoice checks it.",
+    "button": "Research a fix",
+    "working": "Researching {code}",
+    "steps": {
+      "bulletins": "Searching manufacturer documents and service bulletins",
+      "forums": "Reading workshop forums for confirmed fixes",
+      "agree": "Checking that the sources agree",
+      "writing": "Writing up the steps"
+    },
+    "workingHint": "This takes a minute or two. What is found stays with the code for every workshop.",
+    "runningTitle": "Being researched right now",
+    "runningHint": "Another workshop asked a moment ago. Check again in a minute.",
+    "checkAgain": "Check again",
+    "title": "Researched fix",
+    "pending": "Waiting for a person to check it",
+    "published": "Checked by Torqvoice",
+    "pendingHint": "Found by AI from the sources below. Check it against the car before replacing parts.",
+    "sources": "Sources",
+    "helpfulQuestion": "Did this fix it?",
+    "helpfulYes": "Yes, it fixed it",
+    "helpfulNo": "No, it did not",
+    "thanks": "Thanks, noted",
+    "missedTitle": "No reliable fix found online",
+    "missed": "Nothing specific to {code} came up, so nothing was saved. We've noted that workshops need this code.",
+    "searchedOn": "Searched {date}",
+    "shareInstead": "Share your fix",
+    "errors": {
+      "busy": "This code is being researched right now. Check again in a minute.",
+      "limited": "Your workshop has used its research for today. Try again tomorrow.",
+      "failed": "The research could not run right now. Try again later."
+    }
+  },
+  "waveforms": {
+    "title": "Waveforms",
+    "description": "Scope recordings from other workshops, known good and faulty, to hold against what you measure.",
+    "share": "Share a waveform",
+    "unavailable": "Waveforms are not available right now.",
+    "empty": "No waveforms for {code} yet",
+    "emptyHint": "Have a known good recording? Share it, and the next technician chasing this code has something to compare with.",
+    "filter": {
+      "label": "Show",
+      "all": "All",
+      "good": "Known good",
+      "faulty": "Faulty"
+    },
+    "unknownVehicle": "Vehicle not given",
+    "unknownVehicleMarine": "Vessel not given",
+    "status": {
+      "pending": "Waiting for review",
+      "published": "Published",
+      "rejected": "Not published"
+    },
+    "hasRecording": "PicoScope file to download",
+    "hasCsv": "CSV export to download",
+    "kind": {
+      "good": "Known good",
+      "faulty": "Faulty"
+    },
+    "condition": {
+      "key_on": "Key on, engine off",
+      "cranking": "Cranking",
+      "idle": "Idle",
+      "rpm_2500": "2500 rpm",
+      "driving": "Driving",
+      "drivingMarine": "Under way",
+      "under_load": "Under load"
+    },
+    "chart": {
+      "label": "Waveform of {channels} over {span}",
+      "perDivision": "{value}/div",
+      "noSample": "no sample",
+      "between": "{lo} to {hi}"
+    },
+    "view": {
+      "label": "Show",
+      "trace": "Waveform",
+      "picture": "Picture of the screen"
+    },
+    "sharedOn": "Shared {date}",
+    "reason": "Reason: {reason}",
+    "compare": {
+      "label": "Compare with",
+      "none": "Nothing",
+      "close": "Stop comparing"
+    },
+    "note": "Notes",
+    "writtenIn": "Written in {language}",
+    "files": {
+      "title": "Files",
+      "psdata": "PicoScope recording",
+      "csv": "CSV export",
+      "pssettings": "Scope settings",
+      "openHint": "Open the recording in PicoScope to zoom in, measure and see every channel."
+    },
+    "nothingToDraw": "Only the recording was shared. Download it to open it in PicoScope.",
+    "openPicture": "Open the picture full size",
+    "close": "Close",
+    "withdraw": "Withdraw",
+    "withdrawTitle": "Withdraw this waveform?",
+    "withdrawConfirm": "It is deleted with its files, and no other workshop will see it.",
+    "withdrawn": "Waveform withdrawn",
+    "withdrawFailed": "The waveform could not be withdrawn right now. Try again in a moment.",
+    "shareDialog": {
+      "title": "Share a waveform for {code}",
+      "description": "Other workshops see it once a person at Torqvoice has checked it.",
+      "meaningHint": "This code means something else in other control units. Your waveform is shared for this meaning only.",
+      "kind": "What does it show?",
+      "kindHint": {
+        "good": "How it looks on a healthy car",
+        "goodMarine": "How it looks on a healthy engine",
+        "faulty": "What it looked like with the fault",
+        "faultyMarine": "What it looked like with the fault"
+      },
+      "measured": "What did you measure?",
+      "measuredPlaceholder": "Crankshaft sensor and inlet camshaft",
+      "measurements": {
+        "crank": "Crankshaft sensor",
+        "camCrank": "Camshaft and crankshaft",
+        "injector": "Injector",
+        "ignition": "Ignition coil",
+        "compression": "Relative compression",
+        "lambda": "Lambda sensor",
+        "maf": "Mass air flow sensor",
+        "alternator": "Alternator ripple",
+        "canBus": "CAN bus",
+        "fuelPump": "Fuel pump current"
+      },
+      "condition": "How was the engine running? (optional)",
+      "files": "Files",
+      "filesHint": "Any one is enough. The PicoScope file lets others open it in PicoScope; a CSV export or a picture lets them see it right here.",
+      "phone": {
+        "button": "Photo from phone",
+        "title": "Take a photo of the scope screen",
+        "body": "Scan the code with your phone's camera and take one photo of the screen. It shows up here when it arrives.",
+        "received": "The photo from your phone has arrived"
+      },
+      "drop": "Drop your PicoScope file here, or click to choose",
+      "dropMore": "Add another file",
+      "dropTypes": ".psdata, .pssettings, a CSV export or a picture of the screen",
+      "role": {
+        "psdata": "PicoScope recording",
+        "csv": "CSV export",
+        "image": "Picture of the screen",
+        "pssettings": "Scope settings"
+      },
+      "csvNotScope": "This is not a scope export. Save it again from PicoScope as CSV.",
+      "remove": "Remove {name}",
+      "fromPhone": "From your phone",
+      "previewHint": "This is how other workshops will see it.",
+      "csvTip": "Tip: add a CSV export too, so others can see the waveform here without opening PicoScope. In PicoScope, use Save As and pick CSV.",
+      "note": "Notes (optional)",
+      "notePlaceholder": "Where you probed, the scale you used and what to look for. For example: back-probed pin 2 at the sensor plug, the gap for the missing teeth shows once per turn.",
+      "notePlaceholderMarine": "Where you probed, the scale you used and what to look for.",
+      "sending": "Sending {percent}%",
+      "send": "Share waveform",
+      "sent": "Thanks. Your waveform is waiting for review.",
+      "missing": {
+        "kind": "Pick known good or faulty",
+        "title": "Say what you measured",
+        "file": "Add a file or a picture",
+        "csv": "Remove the CSV that is not a scope export"
+      },
+      "notAScopeFile": "{name} is not a PicoScope file, a CSV export or a picture",
+      "fileTooBig": "{name} is larger than {size}",
+      "errors": {
+        "failed": "Your waveform could not be sent right now. Try again in a moment.",
+        "photo": "The picture could not be read. Try another one.",
+        "csv": "The CSV is not a scope export. Save it again from PicoScope as CSV.",
+        "too_large": "The files are too large.",
+        "no_file": "Add the recording, a CSV export or a picture.",
+        "paused": "Sharing waveforms is paused right now. Try again later.",
+        "demo": "Sharing waveforms is turned off on the demo."
+      }
+    }
+  },
+  "improve": {
+    "button": "Help us improve",
+    "title": "Help us improve fault codes",
+    "description": "Know where a make's own codes are published, spotted a mistake, or have an idea? Tell us. It goes straight to the Torqvoice team.",
+    "topic": "What is it about? (optional)",
+    "topics": {
+      "makes": "Codes we are missing",
+      "wrong": "Something is wrong",
+      "source": "A good source or link",
+      "idea": "An idea"
+    },
+    "message": "Your message",
+    "placeholders": {
+      "makes": "Where to find them, for example a link to the make's code list, and which models it covers.",
+      "wrong": "Which code, what it says and what it should say. A link to where you found it helps.",
+      "source": "Paste the link and say what is in it.",
+      "idea": "What would make fault codes more useful in your workshop? Links are welcome."
+    },
+    "links": "Links in your message",
+    "about": "About {code}",
+    "leaveOut": "Leave out",
+    "replyHint": "We reply to the email on your account.",
+    "cancel": "Cancel",
+    "send": "Send",
+    "sent": "Thanks. Your message is on its way to the Torqvoice team.",
+    "errors": {
+      "failed": "Your message could not be sent right now. Try again in a moment.",
+      "limited": "You have sent a few messages already. Try again in an hour."
+    }
+  },
+  "import": {
+    "button": "Import",
+    "title": "Import fault codes",
+    "description": "Add a make's own codes, or more about codes we have. A person at Torqvoice checks every code before any workshop sees it.",
+    "yours": "Your imports",
+    "codes": "{count, plural, one {# code} other {# codes}}",
+    "status": {
+      "published": "{count} published",
+      "pending": "{count} waiting",
+      "rejected": "{count} not published"
+    },
+    "examples": {
+      "title": "Start from an example",
+      "sheet": "Example spreadsheet",
+      "sheetHint": "Excel, one row per code",
+      "json": "Example JSON",
+      "jsonHint": "Every field named",
+      "columns": "Keep the column names: Code, Title, Description, Common issues, How to fix, Good to know and Causes. Only Code and Title are needed. Put each cause on its own line, with (high), (medium) or (low) after it if you know.",
+      "csv": "Download it as CSV"
+    },
+    "make": "Make",
+    "pickMake": "Pick a make",
+    "language": "Language of the text",
+    "source": "Where it comes from (optional)",
+    "sourcePlaceholder": "Link or book",
+    "checking": "Reading and checking your codes",
+    "removeFile": "Remove the file",
+    "drop": "Drop your file here, or click to choose",
+    "dropTypes": ".xlsx, .csv or .json, up to 2,000 codes",
+    "fileProblems": {
+      "unreadable": "The file could not be read. Save it again as .xlsx, .csv or .json.",
+      "empty": "The file has no codes.",
+      "no_code_column": "No Code column was found. Start from the example spreadsheet.",
+      "too_many": "The file is too large: at most 2,000 codes and 5 MB. Split it into parts.",
+      "format": "This file type is not supported. Use .xlsx, .csv or .json.",
+      "legacy_xls": "Old .xls files are not supported. Save it as .xlsx in Excel."
+    },
+    "counts": {
+      "new": "{count} new",
+      "change": "{count} add to ours",
+      "problem": "{count} need a fix",
+      "same": "{count} already the same"
+    },
+    "rows": "Codes in the file",
+    "row": "Row {n}",
+    "more": "and {count} more",
+    "problemsLeftOut": "Codes that need a fix are left out. Fix them in the file and drop it again, or send the rest now.",
+    "rights": "I may share this. It is not copied from a paid or protected source.",
+    "missing": {
+      "make": "Pick the make first",
+      "file": "Add your file",
+      "nothing": "Nothing in the file adds to what we have",
+      "rights": "Tick the box to send"
+    },
+    "reviewHint": "Nothing is published before a person has checked it.",
+    "cancel": "Cancel",
+    "send": "{count, plural, one {Send # code for review} other {Send # codes for review}}",
+    "sendNone": "Send for review",
+    "sent": "{count, plural, one {Sent. # code waits for review.} other {Sent. # codes wait for review.}}",
+    "errors": {
+      "failed": "Your file could not be checked or sent right now. Try again in a moment.",
+      "paused": "Sending codes is paused right now. Try again later.",
+      "nothing": "Nothing in the file adds to what we have.",
+      "demo": "Importing codes is turned off on the demo.",
+      "rights": "Tick the box to say you may share this.",
+      "too_large": "The file is too large: at most 2,000 codes and 5 MB."
+    },
+    "problems": {
+      "code": "Not a code {make} uses",
+      "duplicate": "The same code twice in the file",
+      "title": "Needs a title",
+      "empty": "Nothing written for it",
+      "too_long": "Too long: a title up to 200 characters, each text up to 4,000",
+      "likelihood": "Likelihood must be low, medium or high",
+      "meanings": "{make} uses this code for more than one thing. Share it on the code's page instead."
+    },
+    "state": {
+      "new": "New",
+      "change": "Adds {what}"
+    },
+    "fields": {
+      "title": "title",
+      "description": "what it means",
+      "common_issues": "common issues",
+      "resolution": "how to fix",
+      "advisory": "good to know",
+      "causes": "causes"
+    },
+    "addsCauses": "{count, plural, one {# cause} other {# causes}}",
+    "searchMake": "Search makes",
+    "noMake": "No make found",
+    "useMake": "Use {name}",
+    "groups": {
+      "cars": "Cars and vans",
+      "marine": "Boats and engines"
+    }
+  },
+  "makeCodes": {
+    "heading": "Makes with their own meaning for {code}",
+    "thisCar": "This car's make"
   }
 }

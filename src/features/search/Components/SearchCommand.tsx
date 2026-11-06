@@ -51,8 +51,10 @@ import { searchFaultCodes } from '@/features/fault-codes/Actions/searchFaultCode
 import {
   isManufacturerCode,
   looksLikeFaultCode,
+  looksLikeOemCode,
   normalizeFaultCode,
 } from '@/features/fault-codes/Lib/codes'
+import type { OemSearchHit } from '@/features/fault-codes/Lib/types'
 
 type Vehicle = {
   id: string
@@ -127,6 +129,8 @@ interface FaultCodeResult {
   /** The code service answered. */
   available: boolean
   codes: { code: string; title: string }[]
+  /** A make's own code typed in full (BMW's 283700), from each make that has it. */
+  oem: OemSearchHit[]
   jobs: {
     findingId: string
     serviceRecordId: string | null
@@ -137,7 +141,13 @@ interface FaultCodeResult {
   }[]
 }
 
-const NO_FAULT_CODES: FaultCodeResult = { query: '', available: false, codes: [], jobs: [] }
+const NO_FAULT_CODES: FaultCodeResult = {
+  query: '',
+  available: false,
+  codes: [],
+  oem: [],
+  jobs: [],
+}
 
 const EMPTY: SearchResult = {
   vehicles: [],
@@ -568,7 +578,7 @@ export function SearchCommand({
   useEffect(() => {
     const term = query.trim()
     const seq = ++faultSeqRef.current
-    if (!looksLikeFaultCode(term)) {
+    if (!looksLikeFaultCode(term) && !looksLikeOemCode(term)) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing results on a query that is not a code is intentional
       setFaultResults(NO_FAULT_CODES)
       return
@@ -587,6 +597,7 @@ export function SearchCommand({
             query: key,
             available: res.data.available,
             codes: res.data.codes,
+            oem: res.data.oem,
             jobs: res.data.jobs,
           }
           faultCacheRef.current.set(key, next)
@@ -654,7 +665,8 @@ export function SearchCommand({
   const faultJobs = faultCurrent.jobs
   const searchFaultWords =
     faultCodesEnabled && !looksLikeFaultCode(query) && query.trim().length >= 3
-  const hasFaultRows = faultCodeRows.length > 0 || faultJobs.length > 0
+  const faultOemRows = faultCodesEnabled ? faultCurrent.oem : []
+  const hasFaultRows = faultCodeRows.length > 0 || faultOemRows.length > 0 || faultJobs.length > 0
 
   const showWeak = !hasRecords && !hasFaultRows && strongGroups.length === 0
   const nothing =
@@ -826,8 +838,32 @@ export function SearchCommand({
           </CommandGroup>
         )}
 
-        {hasQuery && faultCodeRows.length > 0 && (
+        {hasQuery && (faultCodeRows.length > 0 || faultOemRows.length > 0) && (
           <CommandGroup heading={tFault('group')}>
+            {faultOemRows.map((c) => (
+              <Row
+                key={`${c.make}:${c.code}`}
+                value={`fault-oem:${c.make}:${c.code}`}
+                onSelect={() =>
+                  pickRecord(`/fault-codes/oem/${c.make}/${c.code}`, c.code, c.title || undefined)
+                }
+                icon={ScanLine}
+                title={
+                  <>
+                    <span className="mr-2 font-mono font-semibold">{c.code}</span>
+                    <span className="mr-2 rounded-full border border-primary/30 bg-primary/10 px-1.5 py-px text-[10px] font-medium text-primary">
+                      {tCodes('oem.badge', { make: c.makeName })}
+                    </span>
+                    {c.title}
+                  </>
+                }
+                subtitle={
+                  c.meanings > 1
+                    ? tCodes('oem.otherMeanings', { count: c.meanings - 1 })
+                    : undefined
+                }
+              />
+            ))}
             {faultCodeRows.map((c) => (
               <Row
                 key={c.code}
