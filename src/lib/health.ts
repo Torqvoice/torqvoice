@@ -24,13 +24,29 @@ export type HealthChecks = {
 
 export type HealthReport = { healthy: boolean; checks: HealthChecks }
 
+/**
+ * The query a probe started and nobody has heard back from. A probe that gives
+ * up after three seconds cannot cancel it, and it keeps one of the app's ten
+ * pooled connections until the database answers. The next probe waits on that
+ * same query instead of taking another connection, so a database that stops
+ * answering costs the health check one connection however long it lasts.
+ */
+let pendingQuery: Promise<unknown> | undefined
+
 async function checkDatabase(): Promise<HealthChecks['database']> {
+  if (!pendingQuery) {
+    const query: Promise<unknown> = db.$queryRaw`SELECT 1`.finally(() => {
+      if (pendingQuery === query) pendingQuery = undefined
+    })
+    pendingQuery = query
+  }
+  const query = pendingQuery
   let timer: ReturnType<typeof setTimeout> | undefined
   const timeout = new Promise<'timeout'>((resolve) => {
     timer = setTimeout(() => resolve('timeout'), DATABASE_TIMEOUT_MS)
   })
   try {
-    return await Promise.race([db.$queryRaw`SELECT 1`.then(() => 'ok' as const), timeout])
+    return await Promise.race([query.then(() => 'ok' as const), timeout])
   } catch {
     return 'unreachable'
   } finally {
@@ -40,14 +56,16 @@ async function checkDatabase(): Promise<HealthChecks['database']> {
 
 /**
  * The uploads folder is made on the first upload, so until it exists the
- * nearest folder above it has to take it. A volume owned by the wrong user is
- * the usual reason this fails: the app starts and every photo is refused.
+ * nearest folder above it has to take it. Making a folder in a folder takes
+ * both write and search (execute) permission on it. A volume owned by the
+ * wrong user is the usual reason this fails: the app starts and every photo is
+ * refused.
  */
 async function checkStorage(): Promise<HealthChecks['storage']> {
   let dir = uploadsRoot()
   for (;;) {
     try {
-      await access(dir, constants.W_OK)
+      await access(dir, constants.W_OK | constants.X_OK)
       return 'ok'
     } catch (error) {
       const parent = path.dirname(dir)

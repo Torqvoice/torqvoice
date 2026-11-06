@@ -83,6 +83,27 @@ describe('GET /api/v1/health', () => {
     expect(body.checks.database).toBe('timeout')
   })
 
+  it('asks a hung database once however many probes come in, and recovers when it answers', async () => {
+    // Each query that never comes back holds one of the app's ten pooled
+    // connections, so a probe every fifteen seconds must not open a new one.
+    vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] })
+    let answer: (value: unknown) => void = () => undefined
+    state.queryRaw.mockReturnValue(new Promise((resolve) => (answer = resolve)))
+
+    for (let i = 0; i < 3; i++) {
+      const pending = probe()
+      await vi.advanceTimersByTimeAsync(DATABASE_TIMEOUT_MS)
+      expect((await pending).body.checks.database).toBe('timeout')
+    }
+    expect(state.queryRaw).toHaveBeenCalledTimes(1)
+
+    answer([{ ok: 1 }])
+    state.queryRaw.mockResolvedValue([{ ok: 1 }])
+    const { status, body } = await probe()
+    expect(status).toBe(200)
+    expect(body.checks.database).toBe('ok')
+  })
+
   it('is healthy before the first upload has made the uploads folder', async () => {
     state.uploads = path.join(tmp, 'data', 'uploads')
     const { status, body } = await probe()
@@ -96,6 +117,18 @@ describe('GET /api/v1/health', () => {
     expect(status).toBe(503)
     expect(body.checks.storage).toBe('not_writable')
   })
+
+  it.skipIf(process.getuid?.() === 0)(
+    'answers 503 when the uploads folder is writable but cannot be entered',
+    async () => {
+      // Write without search (execute) permission: making a workshop's folder
+      // inside it fails with EACCES, so uploads are broken.
+      await chmod(state.uploads, 0o600)
+      const { status, body } = await probe()
+      expect(status).toBe(503)
+      expect(body.checks.storage).toBe('not_writable')
+    }
+  )
 
   it('answers 503 when the background jobs never started', async () => {
     delete (globalThis as { __torqvoiceBackgroundJobs?: unknown }).__torqvoiceBackgroundJobs
