@@ -4,10 +4,7 @@ import { compressPhoto } from '@/lib/image-upload.server'
 import { verifyFixHandoffToken } from '@/lib/photo-handoff'
 import { rateLimit } from '@/lib/rate-limit'
 import { addDraftPhoto, listDraftPhotos } from '@/features/fault-codes/Lib/fixDrafts.server'
-import {
-  MAX_FIX_PHOTOS,
-  MAX_WAVEFORM_PHOTOS,
-} from '@/features/fault-codes/Schema/faultCodeSchema'
+import { MAX_FIX_PHOTOS, MAX_WAVEFORM_PHOTOS } from '@/features/fault-codes/Schema/faultCodeSchema'
 
 /** A fix takes up to four photos; a waveform one picture of the scope screen. */
 const maxFor = (purpose: 'fix' | 'waveform') =>
