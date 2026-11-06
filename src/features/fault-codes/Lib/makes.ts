@@ -9,6 +9,8 @@ export interface Make {
   name: string
   /** Outboards and marine engines, offered to a marine workshop. */
   marine?: boolean
+  /** Other ways a vehicle's make is written, as keys: a Vauxhall is an Opel, a VW a Volkswagen. */
+  aliases?: string[]
 }
 
 export const MAKES: Make[] = [
@@ -18,7 +20,7 @@ export const MAKES: Make[] = [
   { key: 'bmw', name: 'BMW' },
   { key: 'byd', name: 'BYD' },
   { key: 'cadillac', name: 'Cadillac' },
-  { key: 'chevrolet', name: 'Chevrolet' },
+  { key: 'chevrolet', name: 'Chevrolet', aliases: ['chevy'] },
   { key: 'chrysler', name: 'Chrysler' },
   { key: 'citroen', name: 'Citroën' },
   { key: 'cupra', name: 'Cupra' },
@@ -36,15 +38,15 @@ export const MAKES: Make[] = [
   { key: 'jaguar', name: 'Jaguar' },
   { key: 'jeep', name: 'Jeep' },
   { key: 'kia', name: 'Kia' },
-  { key: 'land-rover', name: 'Land Rover' },
+  { key: 'land-rover', name: 'Land Rover', aliases: ['landrover', 'range-rover'] },
   { key: 'lexus', name: 'Lexus' },
   { key: 'man', name: 'MAN' },
   { key: 'mazda', name: 'Mazda' },
-  { key: 'mercedes-benz', name: 'Mercedes-Benz' },
+  { key: 'mercedes-benz', name: 'Mercedes-Benz', aliases: ['mercedes', 'mb', 'mercedesbenz'] },
   { key: 'mg', name: 'MG' },
   { key: 'mitsubishi', name: 'Mitsubishi' },
   { key: 'nissan', name: 'Nissan' },
-  { key: 'opel', name: 'Opel / Vauxhall' },
+  { key: 'opel', name: 'Opel / Vauxhall', aliases: ['vauxhall', 'opel-vauxhall'] },
   { key: 'peugeot', name: 'Peugeot' },
   { key: 'polestar', name: 'Polestar' },
   { key: 'porsche', name: 'Porsche' },
@@ -58,7 +60,7 @@ export const MAKES: Make[] = [
   { key: 'suzuki', name: 'Suzuki' },
   { key: 'tesla', name: 'Tesla' },
   { key: 'toyota', name: 'Toyota' },
-  { key: 'volkswagen', name: 'Volkswagen' },
+  { key: 'volkswagen', name: 'Volkswagen', aliases: ['vw'] },
   { key: 'volvo', name: 'Volvo' },
   { key: 'evinrude', name: 'Evinrude', marine: true },
   { key: 'honda-marine', name: 'Honda Marine', marine: true },
@@ -92,6 +94,18 @@ export function makeKey(name: string): string | null {
     .slice(0, 30)
     .replace(/-+$/, '')
   return isMakeKey(key) ? key : null
+}
+
+/**
+ * The make a vehicle's make names, as the service keys it: "Vauxhall" and "Opel / Vauxhall"
+ * are opel, "Škoda" is skoda, "VW" volkswagen. A make not listed keeps its own key.
+ */
+export function canonicalMakeKey(name: string | null | undefined): string | null {
+  if (!name) return null
+  const key = makeKey(name)
+  if (!key) return null
+  if (BY_KEY.has(key)) return key
+  return MAKES.find((m) => m.aliases?.includes(key))?.key ?? key
 }
 
 /** How people write a make: "BMW", "Land Rover"; a key not listed as its words. */

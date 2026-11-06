@@ -29,11 +29,13 @@ export async function searchFaultCodes(query: unknown) {
       const locale = await getLocale()
       if (looksLikeFaultCode(q)) {
         const code = normalizeFaultCode(q)
-        const [service, jobs] = await Promise.all([
+        // A make can give an OBD-shaped code a meaning of its own (Ford's P1000).
+        const [service, oem, jobs] = await Promise.all([
           searchServiceCodes(organizationId, q, locale),
+          searchOemCodes(organizationId, q, locale),
           code ? jobsWithCode(organizationId, code, 6) : Promise.resolve([]),
         ])
-        return { query: q, available: service.available, codes: service.hits, oem: [], jobs }
+        return { query: q, available: service.available, codes: service.hits, oem, jobs }
       }
       const oemCode = looksLikeOemCode(q) ? normalizeOemCode(q) : null
       if (oemCode) {

@@ -78,9 +78,13 @@ export function MakeCombobox({
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) min-w-64 p-0" align="start">
         <Command
-          filter={(value, query) =>
-            value.toLowerCase().includes(query.trim().toLowerCase()) ? 1 : 0
-          }
+          filter={(value, query) => {
+            const v = value.toLowerCase()
+            const key = makeKey(query)
+            return v.includes(query.trim().toLowerCase()) || (key !== null && v.includes(key))
+              ? 1
+              : 0
+          }}
         >
           <CommandInput placeholder={t('searchMake')} value={search} onValueChange={setSearch} />
           <CommandList>

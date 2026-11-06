@@ -246,6 +246,29 @@ describe('waveforms on a code page', () => {
     expect(h.withdraw).toHaveBeenCalledWith({ code: 'P0420', id: own.id })
     expect(toast.success).toHaveBeenCalledWith('Waveform withdrawn')
   })
+
+  it('shows the rest when the last of the kind filtered on is withdrawn', async () => {
+    h.withdraw.mockResolvedValueOnce({ success: true, data: { withdrawn: true } })
+    const faulty: FaultCodeOwnWaveform = {
+      ...waveform({
+        id: '0190f3c2-7d1a-7000-8000-0000000000a2',
+        kind: 'faulty',
+        title: 'Crankshaft sensor, missing tooth',
+      }),
+      status: 'pending',
+      reason: null,
+      reviewedAt: null,
+    }
+    renderPage(pageData({ available: true, published: [waveform()], own: [faulty] }))
+    fireEvent.click(card().getByRole('button', { name: 'Faulty' }))
+    expect(card().queryByText('Crankshaft sensor')).not.toBeInTheDocument()
+    fireEvent.click(card().getByRole('button', { name: /missing tooth/ }))
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Withdraw' }))
+    const confirm = await screen.findByRole('alertdialog')
+    fireEvent.click(within(confirm).getByRole('button', { name: 'Withdraw' }))
+    // The known good one shows, not an empty list behind a filter that is gone.
+    await waitFor(() => expect(card().getByText('Crankshaft sensor')).toBeInTheDocument())
+  })
 })
 
 describe('sharing a waveform', () => {

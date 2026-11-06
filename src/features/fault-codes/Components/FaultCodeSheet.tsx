@@ -98,7 +98,13 @@ export function FaultCodeSheet({
         {shown && (
           <div className="mt-auto border-t p-4">
             <Button asChild variant="outline" size="sm">
-              <Link href={`/fault-codes/${shown}${vehicleId ? `?vehicle=${vehicleId}` : ''}`}>
+              <Link
+                href={`${
+                  oem && oem.code === shown
+                    ? `/fault-codes/oem/${oem.oem.make}/${shown}`
+                    : `/fault-codes/${shown}`
+                }${vehicleId ? `?vehicle=${vehicleId}` : ''}`}
+              >
                 <ExternalLink />
                 {t('sheet.openPage')}
               </Link>

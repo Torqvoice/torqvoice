@@ -280,6 +280,9 @@ describe('the import dialog', () => {
     expect(screen.queryByRole('option', { name: 'Use rover' })).not.toBeInTheDocument()
     fireEvent.change(search, { target: { value: 'for' } })
     expect(screen.getAllByRole('option').map((o) => o.textContent)).toEqual(['Ford'])
+    // Written with a space instead of the dash, the make is still found.
+    fireEvent.change(search, { target: { value: 'Mercedes Benz' } })
+    expect(screen.getAllByRole('option').map((o) => o.textContent)).toEqual(['Mercedes-Benz'])
     fireEvent.change(search, { target: { value: 'Ferrari' } })
     fireEvent.click(screen.getByRole('option', { name: 'Use Ferrari' }))
     expect(dialog.getByRole('combobox', { name: 'Make' })).toHaveTextContent('Ferrari')

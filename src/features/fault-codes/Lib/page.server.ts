@@ -110,7 +110,7 @@ export async function loadOemCodePage(
   const fixCode = oemFixCode(make, code)
   const [answer, jobs, fixes, oemMakes, research, waveforms] = await Promise.all([
     oemCodeFor(organizationId, make, code, vehicle, locale),
-    jobsWithCode(organizationId, code),
+    jobsWithCode(organizationId, code, 20, make),
     options.fixes && connected
       ? fixesFor(organizationId, fixCode)
       : Promise.resolve<CodeFixes | null>(null),

@@ -12,6 +12,7 @@ import {
   normalizeAnyMakeCode,
   normalizeOemCode,
   oemSourceFor,
+  vehicleCarriesMake,
 } from './codes'
 import { isMakeKey, makeName } from './makes'
 import { connectorAllowed } from '@/features/integrations/Lib/plan'
@@ -695,9 +696,11 @@ export async function searchServiceCodes(
 export async function jobsWithCode(
   organizationId: string,
   code: string,
-  take = 20
+  take = 20,
+  /** For a make's own code: only jobs on cars that carry that make's codes (a MINI carries BMW's). */
+  make?: string
 ): Promise<FaultCodeJob[]> {
-  const rows = await db.vehicleFinding.findMany({
+  const found = await db.vehicleFinding.findMany({
     where: { faultCode: code, vehicle: { organizationId } },
     select: {
       id: true,
@@ -710,8 +713,12 @@ export async function jobsWithCode(
       vehicle: { select: { make: true, model: true, year: true, licensePlate: true } },
     },
     orderBy: { createdAt: 'desc' },
-    take,
+    // Room to drop other makes' jobs before keeping `take`: a make is written many ways.
+    take: make ? Math.max(take * 10, 200) : take,
   })
+  const rows = make
+    ? found.filter((r) => vehicleCarriesMake(make, r.vehicle.make)).slice(0, take)
+    : found
   return rows.map((r) => ({
     findingId: r.id,
     serviceRecordId: r.serviceRecord?.id ?? null,

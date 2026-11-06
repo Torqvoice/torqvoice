@@ -13,6 +13,7 @@ import {
   normalizeMakeCode,
   normalizeOemCode,
   oemSourceFor,
+  vehicleCarriesMake,
 } from '@/features/fault-codes/Lib/codes'
 import { visiblePageCommands } from '@/features/search/Lib/commands'
 
@@ -210,5 +211,37 @@ describe('manufacturer codes (BMW)', () => {
         (c) => c.code
       )
     ).toEqual(['2A82'])
+  })
+
+  it('reads a word of hex letters as a code only with 0x or in a list of codes', () => {
+    expect(
+      extractFaultCodes('2A82 stored; battery dead after a cold start, face plate loose', {
+        oem: true,
+      }).map((c) => c.code)
+    ).toEqual(['2A82'])
+    expect(extractFaultCodes('Fault 0xDEAD logged', { oem: true }).map((c) => c.code)).toEqual([
+      'DEAD',
+    ])
+    expect(extractFaultCodes('DEAD, 2A82', { oem: true }).map((c) => c.code)).toEqual([
+      'DEAD',
+      '2A82',
+    ])
+  })
+})
+
+describe("which cars carry a make's codes", () => {
+  it("goes by the make, however the car's make is written", () => {
+    expect(vehicleCarriesMake('opel', 'Vauxhall')).toBe(true)
+    expect(vehicleCarriesMake('opel', 'Opel / Vauxhall')).toBe(true)
+    expect(vehicleCarriesMake('skoda', 'Skoda')).toBe(true)
+    expect(vehicleCarriesMake('skoda', 'ŠKODA')).toBe(true)
+    expect(vehicleCarriesMake('citroen', 'Citroen')).toBe(true)
+    expect(vehicleCarriesMake('mercedes-benz', 'Mercedes')).toBe(true)
+    expect(vehicleCarriesMake('volkswagen', 'VW')).toBe(true)
+    // BMW's codes are on MINIs and Rolls-Royces too.
+    expect(vehicleCarriesMake('bmw', 'MINI')).toBe(true)
+    expect(vehicleCarriesMake('bmw', 'Rolls Royce')).toBe(true)
+    expect(vehicleCarriesMake('ford', 'Mazda')).toBe(false)
+    expect(vehicleCarriesMake('ford', null)).toBe(false)
   })
 })

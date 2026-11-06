@@ -154,11 +154,22 @@ export function FaultCodeLookup({
       router.push(`/fault-codes/${code}`)
       return
     }
-    // A make's own code (BMW's 283700) opens on its make's page, when the service has that make.
+    // A make's own code (BMW's 283700): straight to it when the results show one make with it,
+    // else the server finds it, opening it when one make has it and listing them otherwise.
     const oem = normalizeOemCode(text)
-    if (oem && oem.length >= 4 && overview.oemMakes.includes('bmw')) {
+    if (oem && oem.length >= 4 && overview.oemMakes.length > 0) {
       track('fault_code:search', { kind: 'make_code' })
-      router.push(`/fault-codes/oem/bmw/${oem}`)
+      const makes = new Set(
+        [...(results?.oemHits ?? []), ...overview.oemHits]
+          .filter((hit) => hit.code === oem)
+          .map((hit) => hit.make)
+      )
+      const [only] = makes
+      router.push(
+        makes.size === 1
+          ? `/fault-codes/oem/${only}/${oem}`
+          : `/fault-codes?q=${encodeURIComponent(oem)}`
+      )
       return
     }
     track('fault_code:search', { kind: 'words' })

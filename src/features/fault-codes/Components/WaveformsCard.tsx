@@ -71,7 +71,9 @@ export function WaveformsCard({
   }, [own, published, meaning])
 
   const kinds = new Set(all.map((w) => w.kind))
-  const shown = filter === 'all' ? all : all.filter((w) => w.kind === filter)
+  // A kind no longer there (the last one withdrawn, another meaning chosen) shows them all.
+  const active = filter !== 'all' && kinds.has(filter) ? filter : 'all'
+  const shown = active === 'all' ? all : all.filter((w) => w.kind === active)
   const open = all.find((w) => w.id === viewing) ?? null
 
   const removed = (id: string) => {
@@ -124,11 +126,11 @@ export function WaveformsCard({
                 <button
                   key={f}
                   type="button"
-                  aria-pressed={filter === f}
+                  aria-pressed={active === f}
                   onClick={() => setFilter(f)}
                   className={cn(
                     'rounded px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground',
-                    filter === f && 'bg-background text-foreground shadow-sm'
+                    active === f && 'bg-background text-foreground shadow-sm'
                   )}
                 >
                   {t(`filter.${f}`)}

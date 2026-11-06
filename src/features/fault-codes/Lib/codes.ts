@@ -8,7 +8,7 @@
  * P0420, U0100, B1A2F. Stored upper case, with nothing around it.
  */
 
-import { isMakeKey, makeName } from './makes'
+import { canonicalMakeKey, isMakeKey, makeName } from './makes'
 
 export const FAULT_CODE_PATTERN = /^[PCBU][0-3][0-9A-F]{3}$/
 
@@ -67,6 +67,23 @@ export function splitFixCode(fixCode: string): { make: string; code: string } | 
   if (!isMakeKey(make)) return null
   const code = normalizeMakeCode(make, fixCode.slice(at + 1))
   return code ? { make, code } : null
+}
+
+/** The make whose codes a vehicle make carries: a MINI and a Rolls-Royce carry BMW's. */
+const CODE_SOURCES: Record<string, string> = { mini: 'bmw', 'rolls-royce': 'bmw' }
+
+/**
+ * Whether a vehicle of `vehicleMake` carries `codeMake`'s own codes, by the make each names
+ * rather than how it is written: an Opel, a "Vauxhall" and an "Opel / Vauxhall" all carry
+ * opel's, a MINI carries BMW's.
+ */
+export function vehicleCarriesMake(
+  codeMake: string,
+  vehicleMake: string | null | undefined
+): boolean {
+  const key = canonicalMakeKey(vehicleMake)
+  if (!key) return false
+  return key === codeMake || CODE_SOURCES[key] === codeMake
 }
 
 /** A make's own code as shared fixes keep it, with its make: BMW-2A82. */
@@ -200,7 +217,10 @@ export function extractFaultCodes(text: string, options?: { oem?: boolean }): Ex
     for (const m of text.matchAll(OEM_IN_TEXT)) {
       const code = m[1].toUpperCase()
       if (isFaultCode(code)) continue
-      if (!/[A-F]/.test(code) && !onlyCodes) continue
+      // In running text a code mixes digits and letters (2A82, CD87): a year is all digits and
+      // "dead" or "face" all letters. Written with 0x, or in a list of nothing but codes, it is one.
+      const explicit = m[0].toLowerCase().startsWith('0x')
+      if (!onlyCodes && !explicit && !(/[A-F]/.test(code) && /[0-9]/.test(code))) continue
       oem.push({ code, index: m.index ?? 0, length: m[0].length })
     }
   }

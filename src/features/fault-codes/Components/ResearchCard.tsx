@@ -54,6 +54,10 @@ export function ResearchCard({
   const t = useTranslations('faultCodes.research')
   const router = useRouter()
   const [items, setItems] = useState(state.items)
+  // "Check again" reads the page again: take what it brings, a finished research or a review.
+  useEffect(() => {
+    setItems(state.items)
+  }, [state.items])
   const [working, setWorking] = useState(false)
   const item = items.find((i) => (i.meaning ?? null) === (meaning?.id ?? null)) ?? null
 

@@ -605,6 +605,30 @@ describe('researching a fix online', () => {
     expect(h.rate).toHaveBeenCalledWith({ id: RESEARCHED.id, helpful: true })
   })
 
+  it('shows the finished research when the page is read again', () => {
+    const running = { ...RESEARCHED, status: 'running' as const, findings: null }
+    const { rerender } = renderPage(
+      <FaultCodeDetail
+        data={pageData({ research: { available: true, items: [running] } })}
+        layout="page"
+      />
+    )
+    expect(screen.getByText('Being researched right now')).toBeInTheDocument()
+    // "Check again" reads the page again; the card takes what it brings.
+    rerender(
+      <ConfirmProvider>
+        <TooltipProvider>
+          <FaultCodeDetail
+            data={pageData({ research: { available: true, items: [RESEARCHED] } })}
+            layout="page"
+          />
+        </TooltipProvider>
+      </ConfirmProvider>
+    )
+    expect(screen.getByText('Catalyst efficiency below threshold, bank 1')).toBeInTheDocument()
+    expect(screen.queryByText('Being researched right now')).not.toBeInTheDocument()
+  })
+
   it('says plainly when nothing reliable was found, and is not there when research is off', () => {
     const missed = { ...RESEARCHED, status: 'missed' as const, findings: null }
     const { unmount } = renderPage(
@@ -973,6 +997,22 @@ describe('the lookup page', () => {
     const box = screen.getByLabelText('Code or words')
     fireEvent.submit(box.closest('form') as HTMLFormElement)
     expect(h.push).toHaveBeenLastCalledWith('/fault-codes/oem/bmw/283700')
+  })
+
+  it('lists the makes, rather than guessing one, when two makes have the code', () => {
+    const shared = {
+      ...overview,
+      query: '4A10',
+      oemMakes: ['bmw', 'ford'],
+      oemHits: [
+        { make: 'bmw', makeName: 'BMW', code: '4A10', title: 'Fuel pump', meanings: 1 },
+        { make: 'ford', makeName: 'Ford', code: '4A10', title: 'Body module', meanings: 1 },
+      ],
+    }
+    renderPage(<FaultCodeLookup overview={shared} />)
+    const box = screen.getByLabelText('Code or words')
+    fireEvent.submit(box.closest('form') as HTMLFormElement)
+    expect(h.push).toHaveBeenLastCalledWith('/fault-codes?q=4A10')
   })
 
   it('searches words for a BMW-looking number when BMW codes are not served', () => {

@@ -8,7 +8,7 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { locales } from '@/i18n/config'
 import { discardDraft, readDraftPhotos } from '@/features/fault-codes/Lib/fixDrafts.server'
-import { fixMakesFor } from '@/features/fault-codes/Lib/codes'
+import { fixMakesFor, splitFixCode, vehicleCarriesMake } from '@/features/fault-codes/Lib/codes'
 import { shareWaveform, vehicleForCodes } from '@/features/fault-codes/Lib/service.server'
 import type {
   FaultCodeVehicle,
@@ -140,7 +140,8 @@ export async function POST(request: NextRequest) {
   }
   // A make's own code is only on that make's cars.
   const makes = fixMakesFor(data.code)
-  if (makes && vehicle?.make && !makes.some((m) => m.toLowerCase() === vehicle.make?.toLowerCase()))
+  const codeMake = splitFixCode(data.code)?.make
+  if (codeMake && vehicle?.make && !vehicleCarriesMake(codeMake, vehicle.make))
     return fail(400, 'invalid')
   if (data.meaning && !makes) return fail(400, 'invalid')
 
