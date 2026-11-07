@@ -50,7 +50,10 @@
     "chooseAnother": "Choose another file",
     "missingRequired": "Still needed: {fields}",
     "dryRunHint": "The dry run checks every row against your existing data without writing anything.",
-    "runDryRun": "Run dry run"
+    "runDryRun": "Run dry run",
+    "usedBy": "In use by {column}",
+    "searchFields": "Search fields...",
+    "fieldFor": "Field for {column}"
   },
   "options": {
     "dateFormat": "Date format",
@@ -66,7 +69,9 @@
     "duplicates": "When a row matches an existing record",
     "duplicatesUpdate": "Update the existing record",
     "duplicatesSkip": "Skip the row",
-    "duplicatesCreate": "Create a new record anyway"
+    "duplicatesCreate": "Create a new record anyway",
+    "dateReadsAs": "\"{value}\" reads as {date}",
+    "dateUnreadable": "\"{value}\" cannot be read as a date"
   },
   "summary": {
     "create": "Will be created",
@@ -114,7 +119,11 @@
     "next": "Next",
     "backToMapping": "Back to mapping",
     "import": "Import {count, plural, one {# row} other {# rows}}",
-    "nothingWrittenYet": "Nothing has been written yet. The import can be undone afterwards from Settings → Data."
+    "nothingWrittenYet": "Nothing has been written yet. The import can be undone afterwards from Settings → Data.",
+    "issuesTitle": "Why some rows cannot be imported",
+    "issueCount": "{count, plural, one {# row} other {# rows}}, first on row {row}",
+    "issuesHint": "Usually a column mapped to the wrong field, or cells left empty in the file. Go back to mapping to change it, or import the rest and add these later.",
+    "showIssueRows": "Show these rows"
   },
   "importing": {
     "title": "Importing...",
@@ -212,7 +221,9 @@
     "invalid_date": "{field} \"{value}\" could not be read and was left out",
     "invalid_number": "{field} \"{value}\" is not a number and was left out",
     "duplicate_invoice_number": "Invoice number {value} already exists",
-    "write_failed": "Could not be written: {value}"
+    "write_failed": "Could not be written: {value}",
+    "invalid_mileage": "{field} \"{value}\" is too high to be a real reading and was left out",
+    "service_title_placeholder": "No title or description, so it is named \"{value}\""
   },
   "errors": {
     "uploadFailed": "The file could not be read",
@@ -227,5 +238,8 @@
     "customers": "Import customers",
     "vehicles": "Import vehicles",
     "services": "Import service history"
+  },
+  "placeholders": {
+    "serviceTitle": "Imported service"
   }
 }

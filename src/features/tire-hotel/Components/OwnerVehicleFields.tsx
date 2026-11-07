@@ -3,13 +3,7 @@
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { X } from 'lucide-react'
 
@@ -127,23 +121,18 @@ export function OwnerVehicleFields({
       <div className="space-y-2">
         <Label htmlFor={`${idPrefix}Vehicle`}>{t('checkIn.vehicle')}</Label>
         <div className="flex items-center gap-1.5">
-          <Select
+          <SearchableSelect
+            id={`${idPrefix}Vehicle`}
             value={vehicleId}
             onValueChange={handleVehicle}
             disabled={visibleVehicles.length === 0}
-          >
-            <SelectTrigger id={`${idPrefix}Vehicle`} className="min-w-0 flex-1">
-              <SelectValue placeholder={t('checkIn.selectVehicle')} />
-            </SelectTrigger>
-            <SelectContent>
-              {visibleVehicles.map((vehicle) => (
-                <SelectItem key={vehicle.id} value={vehicle.id}>
-                  {vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}
-                  {vehicle.year} {vehicle.make} {vehicle.model}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={t('checkIn.selectVehicle')}
+            className="min-w-0 flex-1"
+            options={visibleVehicles.map((vehicle) => ({
+              value: vehicle.id,
+              label: `${vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+            }))}
+          />
           {/* The way back to another customer, since choosing a car narrows
               the list to that customer's cars. */}
           {vehicleId && (

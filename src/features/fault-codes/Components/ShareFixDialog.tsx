@@ -20,13 +20,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { compressImage } from '@/lib/compress-image'
 import { cn } from '@/lib/utils'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { RichTextEditor } from '@/features/vehicles/Components/service-edit/RichTextEditor'
 import { htmlToFixMarkdown } from '../Lib/fixMarkdown'
 import type { CodeVehicle, OwnFix } from '../Lib/types'
@@ -245,18 +239,12 @@ export function ShareFixDialog({
                     {t('make')}
                   </Label>
                   {makes ? (
-                    <Select value={make} onValueChange={setMake}>
-                      <SelectTrigger id={`fix-make-${code}`} className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {makes.map((m) => (
-                          <SelectItem key={m} value={m}>
-                            {m}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <SearchableSelect
+                      id={`fix-make-${code}`}
+                      value={make}
+                      onValueChange={setMake}
+                      options={makes.map((m) => ({ value: m, label: m }))}
+                    />
                   ) : (
                     <Input
                       id={`fix-make-${code}`}

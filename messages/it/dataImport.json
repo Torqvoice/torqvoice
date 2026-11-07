@@ -50,7 +50,10 @@
     "chooseAnother": "Scegli un altro file",
     "missingRequired": "Ancora necessari: {fields}",
     "dryRunHint": "La simulazione confronta ogni riga con i tuoi dati esistenti senza scrivere nulla.",
-    "runDryRun": "Esegui simulazione"
+    "runDryRun": "Esegui simulazione",
+    "usedBy": "Usato da {column}",
+    "searchFields": "Cerca campi...",
+    "fieldFor": "Campo per {column}"
   },
   "options": {
     "dateFormat": "Formato data",
@@ -66,7 +69,9 @@
     "duplicates": "Quando una riga corrisponde a un record esistente",
     "duplicatesUpdate": "Aggiorna il record esistente",
     "duplicatesSkip": "Salta la riga",
-    "duplicatesCreate": "Crea comunque un nuovo record"
+    "duplicatesCreate": "Crea comunque un nuovo record",
+    "dateReadsAs": "\"{value}\" viene letto come {date}",
+    "dateUnreadable": "\"{value}\" non può essere letto come data"
   },
   "summary": {
     "create": "Verranno creati",
@@ -114,7 +119,11 @@
     "next": "Successivo",
     "backToMapping": "Torna alla mappatura",
     "import": "Importa {count, plural, one {# riga} other {# righe}}",
-    "nothingWrittenYet": "Non è ancora stato scritto nulla. L'importazione può essere annullata in seguito da Impostazioni → Dati."
+    "nothingWrittenYet": "Non è ancora stato scritto nulla. L'importazione può essere annullata in seguito da Impostazioni → Dati.",
+    "issuesTitle": "Perché alcune righe non possono essere importate",
+    "issueCount": "{count, plural, one {# riga} other {# righe}}, la prima alla riga {row}",
+    "issuesHint": "Di solito una colonna è associata al campo sbagliato, oppure le celle sono vuote nel file. Torna alla mappatura per cambiarla, oppure importa il resto e aggiungi queste in seguito.",
+    "showIssueRows": "Mostra queste righe"
   },
   "importing": {
     "title": "Importazione in corso...",
@@ -212,7 +221,9 @@
     "invalid_date": "Impossibile leggere {field} \"{value}\", omesso",
     "invalid_number": "{field} \"{value}\" non è un numero ed è stato omesso",
     "duplicate_invoice_number": "Il numero fattura {value} esiste già",
-    "write_failed": "Impossibile scrivere: {value}"
+    "write_failed": "Impossibile scrivere: {value}",
+    "invalid_mileage": "{field} \"{value}\" è troppo alto per essere una lettura reale ed è stato omesso",
+    "service_title_placeholder": "Nessun titolo né descrizione, quindi si chiamerà \"{value}\""
   },
   "errors": {
     "uploadFailed": "Impossibile leggere il file",
@@ -227,5 +238,8 @@
     "customers": "Importa clienti",
     "vehicles": "Importa veicoli",
     "services": "Importa storico interventi"
+  },
+  "placeholders": {
+    "serviceTitle": "Intervento importato"
   }
 }

@@ -165,5 +165,10 @@
     "title": "Sua sessão foi encerrada",
     "description": "Entre novamente para continuar trabalhando. Copie antes o que estava digitando.",
     "signIn": "Entrar"
+  },
+  "searchableSelect": {
+    "choose": "Escolher...",
+    "search": "Buscar...",
+    "noMatch": "Nada encontrado"
   }
 }

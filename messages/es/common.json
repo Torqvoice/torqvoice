@@ -165,5 +165,10 @@
     "title": "Se ha cerrado tu sesión",
     "description": "Inicia sesión de nuevo para seguir trabajando. Copia primero lo que estabas escribiendo.",
     "signIn": "Iniciar sesión"
+  },
+  "searchableSelect": {
+    "choose": "Elegir...",
+    "search": "Buscar...",
+    "noMatch": "Nada coincide"
   }
 }

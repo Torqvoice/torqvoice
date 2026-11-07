@@ -165,5 +165,10 @@
     "title": "Du er logget ut",
     "description": "Logg inn igjen for å fortsette. Kopier det du holdt på å skrive først.",
     "signIn": "Logg inn"
+  },
+  "searchableSelect": {
+    "choose": "Velg...",
+    "search": "Søk...",
+    "noMatch": "Ingen treff"
   }
 }

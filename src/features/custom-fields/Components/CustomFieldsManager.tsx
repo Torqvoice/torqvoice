@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   Dialog,
   DialogBody,
@@ -519,28 +520,20 @@ export function CustomFieldsManager({
                 </div>
               )}
               {formData.fieldType === 'select' && (
-                <Select
+                <SearchableSelect
                   value={formData.defaultValue || 'none'}
                   onValueChange={(v) =>
                     setFormData({ ...formData, defaultValue: v === 'none' ? '' : v })
                   }
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">{t('customFields.defaultValueNone')}</SelectItem>
-                    {formData.options
+                  options={[
+                    { value: 'none', label: t('customFields.defaultValueNone') },
+                    ...formData.options
                       .split(',')
                       .map((o) => o.trim())
                       .filter(Boolean)
-                      .map((option) => (
-                        <SelectItem key={option} value={option}>
-                          {option}
-                        </SelectItem>
-                      ))}
-                  </SelectContent>
-                </Select>
+                      .map((option) => ({ value: option, label: option })),
+                  ]}
+                />
               )}
               <p className="text-xs text-muted-foreground">{t('customFields.defaultValueHint')}</p>
             </div>
@@ -579,26 +572,25 @@ export function CustomFieldsManager({
                 <Label>{t('customFields.active')}</Label>
               </div>
             </div>
-
           </DialogBody>
           <DialogFooter>
-              <Button
-                variant="ghost"
-                onClick={() => {
-                  setShowDialog(false)
-                  resetForm()
-                }}
-              >
-                {t('customFields.cancel')}
-              </Button>
-              <Button
-                data-save-shortcut
-                onClick={handleSave}
-                disabled={loading || !formData.name || !formData.label}
-              >
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editing ? t('customFields.update') : t('customFields.create')}
-              </Button>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setShowDialog(false)
+                resetForm()
+              }}
+            >
+              {t('customFields.cancel')}
+            </Button>
+            <Button
+              data-save-shortcut
+              onClick={handleSave}
+              disabled={loading || !formData.name || !formData.label}
+            >
+              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {editing ? t('customFields.update') : t('customFields.create')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

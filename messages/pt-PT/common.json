@@ -165,5 +165,10 @@
     "title": "A sua sessão terminou",
     "description": "Inicie sessão novamente para continuar a trabalhar. Copie primeiro o que estava a escrever.",
     "signIn": "Iniciar sessão"
+  },
+  "searchableSelect": {
+    "choose": "Escolher...",
+    "search": "Pesquisar...",
+    "noMatch": "Nada encontrado"
   }
 }

@@ -7,13 +7,7 @@ import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   Table,
   TableBody,
@@ -177,45 +171,41 @@ export function AuditLogClient({
           )}
         </div>
         <div className="flex flex-wrap gap-2">
-          <Select value={actionFilter} onValueChange={(v) => navigate({ action: v })}>
-            <SelectTrigger className="h-9 w-[180px]">
-              <SelectValue placeholder={t('allActions')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('allActions')}</SelectItem>
-              {data.filters.actions.map((a) => (
-                <SelectItem key={a} value={a}>
-                  {getActionLabel(a)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={entityFilter} onValueChange={(v) => navigate({ entity: v })}>
-            <SelectTrigger className="h-9 w-[160px]">
-              <SelectValue placeholder={t('allEntities')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('allEntities')}</SelectItem>
-              {data.filters.entities.map((e) => (
-                <SelectItem key={e} value={e}>
-                  {e}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={userFilter} onValueChange={(v) => navigate({ userId: v })}>
-            <SelectTrigger className="h-9 w-[160px]">
-              <SelectValue placeholder={t('allUsers')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('allUsers')}</SelectItem>
-              {data.filters.users.map((u) => (
-                <SelectItem key={u.id} value={u.id}>
-                  {u.name || u.email || u.id.substring(0, 8)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={actionFilter}
+            onValueChange={(v) => navigate({ action: v })}
+            className="w-[180px]"
+            options={[
+              { value: 'all', label: t('allActions') },
+              ...data.filters.actions.map((a) => ({
+                value: a,
+                label: getActionLabel(a),
+                keywords: a,
+              })),
+            ]}
+          />
+          <SearchableSelect
+            value={entityFilter}
+            onValueChange={(v) => navigate({ entity: v })}
+            className="w-[160px]"
+            options={[
+              { value: 'all', label: t('allEntities') },
+              ...data.filters.entities.map((e) => ({ value: e, label: e })),
+            ]}
+          />
+          <SearchableSelect
+            value={userFilter}
+            onValueChange={(v) => navigate({ userId: v })}
+            className="w-[160px]"
+            options={[
+              { value: 'all', label: t('allUsers') },
+              ...data.filters.users.map((u) => ({
+                value: u.id,
+                label: u.name || u.email || u.id.substring(0, 8),
+                keywords: u.email ?? '',
+              })),
+            ]}
+          />
         </div>
       </div>
 

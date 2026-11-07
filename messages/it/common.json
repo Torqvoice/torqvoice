@@ -165,5 +165,10 @@
     "title": "La sessione è scaduta",
     "description": "Accedi di nuovo per continuare a lavorare. Copia prima ciò che stavi scrivendo.",
     "signIn": "Accedi"
+  },
+  "searchableSelect": {
+    "choose": "Scegli...",
+    "search": "Cerca...",
+    "noMatch": "Nessuna corrispondenza"
   }
 }

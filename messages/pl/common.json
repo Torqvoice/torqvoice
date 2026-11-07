@@ -165,5 +165,10 @@
     "title": "Sesja wygasła",
     "description": "Zaloguj się ponownie, aby kontynuować pracę. Najpierw skopiuj wpisany tekst.",
     "signIn": "Zaloguj się"
+  },
+  "searchableSelect": {
+    "choose": "Wybierz...",
+    "search": "Szukaj...",
+    "noMatch": "Brak wyników"
   }
 }

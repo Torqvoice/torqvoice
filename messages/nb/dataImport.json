@@ -50,7 +50,10 @@
     "chooseAnother": "Velg en annen fil",
     "missingRequired": "Mangler fortsatt: {fields}",
     "dryRunHint": "Prøvekjøringen sjekker hver rad mot eksisterende data uten å skrive noe.",
-    "runDryRun": "Kjør prøvekjøring"
+    "runDryRun": "Kjør prøvekjøring",
+    "usedBy": "Brukt av {column}",
+    "searchFields": "Søk i felt...",
+    "fieldFor": "Felt for {column}"
   },
   "options": {
     "dateFormat": "Datoformat",
@@ -66,7 +69,9 @@
     "duplicates": "Når en rad samsvarer med en eksisterende post",
     "duplicatesUpdate": "Oppdater den eksisterende posten",
     "duplicatesSkip": "Hopp over raden",
-    "duplicatesCreate": "Opprett en ny post likevel"
+    "duplicatesCreate": "Opprett en ny post likevel",
+    "dateReadsAs": "\"{value}\" leses som {date}",
+    "dateUnreadable": "\"{value}\" kan ikke leses som en dato"
   },
   "summary": {
     "create": "Vil bli opprettet",
@@ -114,7 +119,11 @@
     "next": "Neste",
     "backToMapping": "Tilbake til kobling",
     "import": "Importer {count, plural, one {# rad} other {# rader}}",
-    "nothingWrittenYet": "Ingenting er skrevet ennå. Importen kan angres etterpå fra Innstillinger → Data."
+    "nothingWrittenYet": "Ingenting er skrevet ennå. Importen kan angres etterpå fra Innstillinger → Data.",
+    "issuesTitle": "Hvorfor noen rader ikke kan importeres",
+    "issueCount": "{count, plural, one {# rad} other {# rader}}, første på rad {row}",
+    "issuesHint": "Som regel er en kolonne koblet til feil felt, eller cellene er tomme i filen. Gå tilbake til kobling for å endre det, eller importer resten og legg til disse senere.",
+    "showIssueRows": "Vis disse radene"
   },
   "importing": {
     "title": "Importerer...",
@@ -212,7 +221,9 @@
     "invalid_date": "{field} \"{value}\" kunne ikke leses og ble utelatt",
     "invalid_number": "{field} \"{value}\" er ikke et tall og ble utelatt",
     "duplicate_invoice_number": "Fakturanummer {value} finnes allerede",
-    "write_failed": "Kunne ikke skrives: {value}"
+    "write_failed": "Kunne ikke skrives: {value}",
+    "invalid_mileage": "{field} \"{value}\" er for høy til å være en ekte avlesning og ble utelatt",
+    "service_title_placeholder": "Ingen tittel eller beskrivelse, så den får navnet \"{value}\""
   },
   "errors": {
     "uploadFailed": "Filen kunne ikke leses",
@@ -227,5 +238,8 @@
     "customers": "Importer kunder",
     "vehicles": "Importer kjøretøy",
     "services": "Importer servicehistorikk"
+  },
+  "placeholders": {
+    "serviceTitle": "Importert service"
   }
 }

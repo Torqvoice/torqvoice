@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Switch } from '@/components/ui/switch'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -223,18 +224,13 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
         <p className="text-sm text-muted-foreground">{t('localization.languageDescription')}</p>
         <div id="localization-workshop-language" className="space-y-2">
           <Label>{t('localization.language')}</Label>
-          <Select value={workshopLocale} onValueChange={handleLanguageChange}>
-            <SelectTrigger className="w-64">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {locales.map((loc) => (
-                <SelectItem key={loc} value={loc}>
-                  {localeNames[loc]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={workshopLocale}
+            onValueChange={handleLanguageChange}
+            className="w-64"
+            aria-label={t('localization.language')}
+            options={locales.map((loc) => ({ value: loc, label: localeNames[loc], keywords: loc }))}
+          />
         </div>
 
         <Separator />

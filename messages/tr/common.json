@@ -165,5 +165,10 @@
     "title": "Oturumunuz kapandı",
     "description": "Çalışmaya devam etmek için yeniden giriş yapın. Önce yazmakta olduğunuz metni kopyalayın.",
     "signIn": "Giriş yap"
+  },
+  "searchableSelect": {
+    "choose": "Seçin...",
+    "search": "Ara...",
+    "noMatch": "Eşleşme yok"
   }
 }

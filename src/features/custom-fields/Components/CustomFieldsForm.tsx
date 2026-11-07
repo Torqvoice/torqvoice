@@ -1,18 +1,13 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { AppCard } from '@/components/app-card'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -44,6 +39,7 @@ export function CustomFieldsForm({
   onValuesReady?: (save: () => Promise<{ valid: boolean }>) => void
   onChange?: () => void
 }) {
+  const tSettings = useTranslations('settings.customFields')
   const [fields, setFields] = useState<FieldWithValue[]>([])
   const [values, setValues] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
@@ -189,28 +185,21 @@ export function CustomFieldsForm({
             )}
 
             {field.fieldType === 'select' && (
-              <Select
-                value={val || 'none'}
+              <SearchableSelect
+                value={val || (field.required ? null : 'none')}
                 onValueChange={(v) => updateValue(field.id, v === 'none' ? '' : v)}
-              >
-                <SelectTrigger
-                  className={cn(hasError && 'border-destructive focus-visible:ring-destructive')}
-                >
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {!field.required && <SelectItem value="none">None</SelectItem>}
-                  {(field.options || '')
+                aria-invalid={hasError || undefined}
+                options={[
+                  ...(field.required
+                    ? []
+                    : [{ value: 'none', label: tSettings('defaultValueNone') }]),
+                  ...(field.options || '')
                     .split(',')
                     .map((o) => o.trim())
                     .filter(Boolean)
-                    .map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
+                    .map((option) => ({ value: option, label: option })),
+                ]}
+              />
             )}
 
             {hasError && <p className="text-xs text-destructive">{errors[field.id]}</p>}

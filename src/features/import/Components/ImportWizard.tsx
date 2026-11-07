@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -31,12 +31,11 @@ import {
 import { DocsLink } from '@/components/docs-link'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { SearchableSelect, type SearchableOption } from '@/components/ui/searchable-select'
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
@@ -63,7 +62,7 @@ import {
   undoImportBatch,
 } from '@/features/import/Actions/importActions'
 import type { ImportEntity } from '@/features/import/Lib/fields'
-import type { DateFormat, DecimalSeparator } from '@/features/import/Lib/normalize'
+import { type DateFormat, type DecimalSeparator, parseDate } from '@/features/import/Lib/normalize'
 import type { DuplicateRule, RowAction, RowIssue } from '@/features/import/Lib/pipeline'
 import type { ColumnMapping } from '@/features/import/Lib/suggest'
 import { type AnalyzeResponse, IMPORT_ENTITIES, missingRequired } from '@/features/import/Lib/types'
@@ -103,6 +102,7 @@ export function ImportWizard({
   onImported?: () => void
 }) {
   const t = useTranslations('dataImport')
+  const locale = useLocale()
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -362,6 +362,50 @@ export function ImportWizard({
     return [...groups.entries()].sort((a, b) => order[a[0]] - order[b[0]])
   }, [analysis, entity])
 
+  // The fields a column can become, under their group, each saying which other
+  // column already has it: picking it here moves it, since a field comes from one column.
+  const fieldOptions = (col: number): SearchableOption[] => {
+    if (!analysis) return []
+    const usedBy = new Map<string, string>()
+    for (const [c, key] of Object.entries(mapping)) {
+      if (c !== String(col)) usedBy.set(key, analysis.columns[Number(c)] ?? '')
+    }
+    return [
+      { value: IGNORE, label: t('mapping.ignore') },
+      ...groupsInOrder.flatMap(([group, fields]) =>
+        fields.map((f) => {
+          const other = usedBy.get(f.key)
+          return {
+            value: f.key,
+            label: fieldLabel(f.key),
+            group: t(`groups.${group}`),
+            hint: other != null ? t('mapping.usedBy', { column: other }) : undefined,
+          }
+        })
+      ),
+    ]
+  }
+
+  // How the first date in the file reads with the chosen format, so a day-first
+  // file read month-first is caught before the dry run, not after the import.
+  const datePreview = useMemo(() => {
+    if (!analysis) return null
+    const dateKeys = analysis.fields.filter((f) => f.type === 'date').map((f) => f.key)
+    const col = dateKeys
+      .map((key) => Object.entries(mapping).find(([, k]) => k === key)?.[0])
+      .find((c) => c != null)
+    if (col == null) return null
+    const raw = analysis.sampleRows.map((r) => r[Number(col)]?.trim()).find(Boolean)
+    if (!raw) return null
+    const date = parseDate(raw, dateFormat)
+    return {
+      raw,
+      text: date
+        ? new Intl.DateTimeFormat(locale, { dateStyle: 'long', timeZone: 'UTC' }).format(date)
+        : null,
+    }
+  }, [analysis, mapping, dateFormat, locale])
+
   const sampleFor = (col: number) =>
     (analysis?.sampleRows ?? [])
       .map((r) => r[col])
@@ -548,24 +592,16 @@ export function ImportWizard({
                           ))}
                         </TableCell>
                         <TableCell className="align-top">
-                          <Select value={key ?? IGNORE} onValueChange={(v) => setColumn(col, v)}>
-                            <SelectTrigger className={`h-8 ${key ? '' : 'text-muted-foreground'}`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value={IGNORE}>{t('mapping.ignore')}</SelectItem>
-                              {groupsInOrder.map(([group, fields]) => (
-                                <SelectGroup key={group}>
-                                  <SelectLabel>{t(`groups.${group}`)}</SelectLabel>
-                                  {fields.map((f) => (
-                                    <SelectItem key={f.key} value={f.key}>
-                                      {fieldLabel(f.key)}
-                                    </SelectItem>
-                                  ))}
-                                </SelectGroup>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <SearchableSelect
+                            size="sm"
+                            value={key ?? IGNORE}
+                            onValueChange={(v) => setColumn(col, v)}
+                            options={fieldOptions(col)}
+                            searchPlaceholder={t('mapping.searchFields')}
+                            aria-label={t('mapping.fieldFor', { column: name })}
+                            className={key ? '' : 'text-muted-foreground'}
+                            contentClassName="w-80"
+                          />
                         </TableCell>
                       </TableRow>
                     )
@@ -588,6 +624,15 @@ export function ImportWizard({
                     <SelectItem value="YMD">{t('options.dateYMD')}</SelectItem>
                   </SelectContent>
                 </Select>
+                {datePreview && (
+                  <p
+                    className={`text-[11px] ${datePreview.text ? 'text-muted-foreground' : 'text-destructive'}`}
+                  >
+                    {datePreview.text
+                      ? t('options.dateReadsAs', { value: datePreview.raw, date: datePreview.text })
+                      : t('options.dateUnreadable', { value: datePreview.raw })}
+                  </p>
+                )}
               </div>
               <div className="space-y-1">
                 <Label className="text-xs">{t('options.decimal')}</Label>
@@ -733,6 +778,42 @@ export function ImportWizard({
                     needed: dryRun.summary.customersToCreate,
                   })}
                 </span>
+              </div>
+            )}
+
+            {dryRun.issues.length > 0 && (
+              <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="flex items-center gap-2 font-medium">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-destructive" />
+                    {t('preview.issuesTitle')}
+                  </p>
+                  {filter !== 'error' && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 text-xs"
+                      onClick={() => loadPage(0, 'error')}
+                      disabled={busy}
+                    >
+                      {t('preview.showIssueRows')}
+                    </Button>
+                  )}
+                </div>
+                <ul className="mt-1 space-y-0.5">
+                  {dryRun.issues.slice(0, 6).map((issue) => (
+                    <li
+                      key={`${issue.code}|${issue.field ?? ''}`}
+                      className="flex flex-wrap items-baseline justify-between gap-x-3"
+                    >
+                      <span>{issueText(issue)}</span>
+                      <span className="text-xs text-muted-foreground tabular-nums">
+                        {t('preview.issueCount', { count: issue.count, row: issue.firstRow })}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-1 text-xs text-muted-foreground">{t('preview.issuesHint')}</p>
               </div>
             )}
 

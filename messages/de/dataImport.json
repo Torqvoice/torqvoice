@@ -50,7 +50,10 @@
     "chooseAnother": "Andere Datei wählen",
     "missingRequired": "Noch erforderlich: {fields}",
     "dryRunHint": "Der Testlauf prüft jede Zeile gegen Ihre vorhandenen Daten, ohne etwas zu schreiben.",
-    "runDryRun": "Testlauf starten"
+    "runDryRun": "Testlauf starten",
+    "usedBy": "Belegt durch {column}",
+    "searchFields": "Felder suchen...",
+    "fieldFor": "Feld für {column}"
   },
   "options": {
     "dateFormat": "Datumsformat",
@@ -66,7 +69,9 @@
     "duplicates": "Wenn eine Zeile einem vorhandenen Datensatz entspricht",
     "duplicatesUpdate": "Vorhandenen Datensatz aktualisieren",
     "duplicatesSkip": "Zeile überspringen",
-    "duplicatesCreate": "Trotzdem neuen Datensatz anlegen"
+    "duplicatesCreate": "Trotzdem neuen Datensatz anlegen",
+    "dateReadsAs": "\"{value}\" wird gelesen als {date}",
+    "dateUnreadable": "\"{value}\" kann nicht als Datum gelesen werden"
   },
   "summary": {
     "create": "Wird angelegt",
@@ -114,7 +119,11 @@
     "next": "Weiter",
     "backToMapping": "Zurück zur Zuordnung",
     "import": "{count, plural, one {# Zeile} other {# Zeilen}} importieren",
-    "nothingWrittenYet": "Es wurde noch nichts geschrieben. Der Import kann anschließend unter Einstellungen → Daten rückgängig gemacht werden."
+    "nothingWrittenYet": "Es wurde noch nichts geschrieben. Der Import kann anschließend unter Einstellungen → Daten rückgängig gemacht werden.",
+    "issuesTitle": "Warum einige Zeilen nicht importiert werden können",
+    "issueCount": "{count, plural, one {# Zeile} other {# Zeilen}}, zuerst in Zeile {row}",
+    "issuesHint": "Meist ist eine Spalte dem falschen Feld zugeordnet, oder die Zellen sind in der Datei leer. Gehen Sie zurück zur Zuordnung, um das zu ändern, oder importieren Sie den Rest und ergänzen Sie diese später.",
+    "showIssueRows": "Diese Zeilen anzeigen"
   },
   "importing": {
     "title": "Import läuft...",
@@ -212,7 +221,9 @@
     "invalid_date": "{field} \"{value}\" konnte nicht gelesen werden und wurde weggelassen",
     "invalid_number": "{field} \"{value}\" ist keine Zahl und wurde weggelassen",
     "duplicate_invoice_number": "Rechnungsnummer {value} existiert bereits",
-    "write_failed": "Konnte nicht geschrieben werden: {value}"
+    "write_failed": "Konnte nicht geschrieben werden: {value}",
+    "invalid_mileage": "{field} \"{value}\" ist zu hoch für einen echten Zählerstand und wurde weggelassen",
+    "service_title_placeholder": "Kein Titel und keine Beschreibung, daher heißt er \"{value}\""
   },
   "errors": {
     "uploadFailed": "Die Datei konnte nicht gelesen werden",
@@ -227,5 +238,8 @@
     "customers": "Kunden importieren",
     "vehicles": "Fahrzeuge importieren",
     "services": "Servicehistorie importieren"
+  },
+  "placeholders": {
+    "serviceTitle": "Importierter Auftrag"
   }
 }

@@ -45,7 +45,12 @@ const ENTITY_OVERRIDES: Partial<Record<ImportEntity, Record<string, string>>> = 
     remarks: 'service.notes',
     mileage: 'service.mileage',
     odometer: 'service.mileage',
+    odo: 'service.mileage',
+    odometerreading: 'service.mileage',
     km: 'service.mileage',
+    kms: 'service.mileage',
+    mileagein: 'service.mileage',
+    odometerin: 'service.mileage',
     kilometers: 'service.mileage',
     miles: 'service.mileage',
     kilometerstand: 'service.mileage',
@@ -145,7 +150,8 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const VIN = /^[A-HJ-NPR-Z0-9]{17}$/i
 const YEAR = /^(19|20)\d{2}$/
 const PHONE = /^\+?[\d\s().-]{7,20}$/
-const DATE = /^(\d{1,4}[./-]\d{1,2}[./-]\d{1,4})([T ]\d{1,2}:\d{2}.*)?$/
+// A time may follow, padded or not: "2014-12-10 0:0:0", "10/12/2014 2:15 PM".
+const DATE = /^(\d{1,4}[./-]\d{1,2}[./-]\d{1,4})((?:T|\s+)\d{1,2}:\d{1,2}.*)?$/
 const PLATE = /^[A-Z]{1,3}[\s-]?\d{2,5}[\s-]?[A-Z]{0,3}$/i
 
 export function suggestMapping(

@@ -35,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -588,19 +589,15 @@ export default function RecurringInvoicesClient({
               </div>
               <div className="space-y-1.5">
                 <Label>{t('recurring.vehicleLabel')}</Label>
-                <Select value={vehicleId} onValueChange={setVehicleId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('recurring.selectVehicle')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {vehicles.map((v) => (
-                      <SelectItem key={v.id} value={v.id}>
-                        {v.year} {v.make} {v.model}
-                        {v.customer ? ` (${v.customer.name})` : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  value={vehicleId}
+                  onValueChange={setVehicleId}
+                  placeholder={t('recurring.selectVehicle')}
+                  options={vehicles.map((v) => ({
+                    value: v.id,
+                    label: `${v.year} ${v.make} ${v.model}${v.customer ? ` (${v.customer.name})` : ''}`,
+                  }))}
+                />
               </div>
             </div>
 
@@ -814,19 +811,19 @@ export default function RecurringInvoicesClient({
             {/* Actions */}
           </DialogBody>
           <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowCreate(false)
-                  resetForm()
-                }}
-              >
-                {t('recurring.cancel')}
-              </Button>
-              <Button data-save-shortcut onClick={handleCreate} disabled={isPending}>
-                {isPending && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
-                {t('recurring.create')}
-              </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCreate(false)
+                resetForm()
+              }}
+            >
+              {t('recurring.cancel')}
+            </Button>
+            <Button data-save-shortcut onClick={handleCreate} disabled={isPending}>
+              {isPending && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
+              {t('recurring.create')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

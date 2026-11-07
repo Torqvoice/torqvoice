@@ -165,5 +165,10 @@
     "title": "Sesija baigėsi",
     "description": "Prisijunkite iš naujo, kad galėtumėte tęsti darbą. Pirmiausia nukopijuokite tai, ką rašėte.",
     "signIn": "Prisijungti"
+  },
+  "searchableSelect": {
+    "choose": "Pasirinkite...",
+    "search": "Ieškoti...",
+    "noMatch": "Nieko nerasta"
   }
 }

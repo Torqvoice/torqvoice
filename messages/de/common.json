@@ -165,5 +165,10 @@
     "title": "Sie wurden abgemeldet",
     "description": "Melden Sie sich erneut an, um weiterzuarbeiten. Kopieren Sie vorher, was Sie gerade eingegeben haben.",
     "signIn": "Anmelden"
+  },
+  "searchableSelect": {
+    "choose": "Auswählen...",
+    "search": "Suchen...",
+    "noMatch": "Nichts gefunden"
   }
 }

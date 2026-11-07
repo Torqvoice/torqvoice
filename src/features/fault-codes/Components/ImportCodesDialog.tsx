@@ -18,13 +18,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { useFormatDate } from '@/lib/use-format-date'
 import { track } from '@/lib/analytics'
 import { cn } from '@/lib/utils'
@@ -359,18 +353,16 @@ export function ImportCodesDialog({
               <Label htmlFor="import-lang" className="text-xs text-muted-foreground">
                 {t('language')}
               </Label>
-              <Select value={lang} onValueChange={setLang}>
-                <SelectTrigger id="import-lang" className="w-full">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {locales.map((l) => (
-                    <SelectItem key={l} value={l}>
-                      {localeNames[l as Locale]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                id="import-lang"
+                value={lang}
+                onValueChange={setLang}
+                options={locales.map((l) => ({
+                  value: l,
+                  label: localeNames[l as Locale],
+                  keywords: l,
+                }))}
+              />
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="import-source" className="text-xs text-muted-foreground">

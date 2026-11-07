@@ -235,6 +235,79 @@ describe('import plan', () => {
     expect(plan.summary).toMatchObject({ create: 1, error: 3, servicesToCreate: 1 })
   })
 
+  it('names a job from its description or notes and keeps their lines', () => {
+    const plan = planImport(
+      [
+        ['2014-12-10 0:0:0', 'AB 12345', '', 'Replaced pads\r\nMachined rotors', ''],
+        ['2014-12-12 0:0:0', 'AB 12345', '', '', 'Customer reports noise'],
+        ['2014-12-16 0:0:0', 'AB 12345', '', '', ''],
+      ],
+      {
+        '0': 'service.date',
+        '1': 'vehicle.licensePlate',
+        '2': 'service.title',
+        '3': 'service.description',
+        '4': 'service.notes',
+      },
+      options('services'),
+      existing
+    )
+    expect(plan.rows[0].action).toBe('create')
+    expect(plan.rows[0].service).toMatchObject({
+      title: 'Replaced pads',
+      description: 'Replaced pads\nMachined rotors',
+    })
+    expect(plan.rows[0].service?.date?.slice(0, 10)).toBe('2014-12-10')
+    expect(plan.rows[1].service?.title).toBe('Customer reports noise')
+    expect(plan.rows[2].errors.map((e) => e.code)).toEqual(['service_title_required'])
+  })
+
+  it('imports a job with no words under the stand-in name and says so', () => {
+    const plan = planImport(
+      [
+        ['2014-12-16 0:0:0', 'AB 12345', '', '', '', '412.50'],
+        ['2014-12-17 0:0:0', 'AB 12345', 'Brakes', '', '', '88'],
+      ],
+      {
+        '0': 'service.date',
+        '1': 'vehicle.licensePlate',
+        '2': 'service.title',
+        '3': 'service.description',
+        '4': 'service.notes',
+        '5': 'service.total',
+      },
+      options('services', { untitledServiceTitle: 'Imported service' }),
+      existing
+    )
+    expect(plan.rows[0].action).toBe('create')
+    expect(plan.rows[0].service).toMatchObject({ title: 'Imported service', total: 412.5 })
+    expect(plan.rows[0].warnings).toEqual([
+      { code: 'service_title_placeholder', field: 'service.title', value: 'Imported service' },
+    ])
+    expect(plan.rows[1].service?.title).toBe('Brakes')
+    expect(plan.rows[1].warnings).toEqual([])
+    expect(plan.summary).toMatchObject({ create: 2, error: 0, servicesToCreate: 2 })
+  })
+
+  it('leaves out an odometer reading no vehicle could have', () => {
+    const plan = planImport(
+      [['2024-03-15', 'AB 12345', 'Service', '61412345678']],
+      {
+        '0': 'service.date',
+        '1': 'vehicle.licensePlate',
+        '2': 'service.title',
+        '3': 'service.mileage',
+      },
+      options('services'),
+      existing
+    )
+    expect(plan.rows[0].action).toBe('create')
+    expect(plan.rows[0].service?.mileage).toBeNull()
+    expect(plan.rows[0].warnings).toEqual([
+      { code: 'invalid_mileage', field: 'service.mileage', value: '61412345678' },
+    ])
+  })
+
   it('creates the vehicle for a history row when the row describes it', () => {
     const plan = planImport(
       [['2024-03-15', 'GH 22222', 'Volvo', 'V60', '2016', 'Service', 'Kari Hansen']],

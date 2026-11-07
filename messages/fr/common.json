@@ -165,5 +165,10 @@
     "title": "Votre session a expiré",
     "description": "Reconnectez-vous pour continuer. Copiez d'abord ce que vous étiez en train de saisir.",
     "signIn": "Se connecter"
+  },
+  "searchableSelect": {
+    "choose": "Choisir...",
+    "search": "Rechercher...",
+    "noMatch": "Aucun résultat"
   }
 }

@@ -23,13 +23,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
@@ -687,21 +681,15 @@ export function QuotePageClient({
                         )}
                       {state.convertMode === 'existing' && hasConvertTargets && (
                         <>
-                          <Select
+                          <SearchableSelect
                             value={state.convertTargetId}
                             onValueChange={state.setConvertTargetId}
-                          >
-                            <SelectTrigger className="w-full">
-                              <SelectValue placeholder={t('page.convertSelectWorkOrder')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {state.convertTargets.map((target) => (
-                                <SelectItem key={target.id} value={target.id}>
-                                  {convertTargetLabel(target)}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            placeholder={t('page.convertSelectWorkOrder')}
+                            options={state.convertTargets.map((target) => ({
+                              value: target.id,
+                              label: convertTargetLabel(target),
+                            }))}
+                          />
                           <p className="text-xs text-muted-foreground">
                             {t('page.convertExistingHint')}
                           </p>
