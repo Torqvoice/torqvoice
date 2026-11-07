@@ -165,5 +165,9 @@
     "title": "Oturumunuz kapandı",
     "description": "Çalışmaya devam etmek için yeniden giriş yapın. Önce yazmakta olduğunuz metni kopyalayın.",
     "signIn": "Giriş yap"
+  },
+  "connectionLost": {
+    "title": "Torqvoice'a ulaşılamadı",
+    "description": "Son değişikliğiniz kaydedilmemiş olabilir. Bağlantınızı kontrol edip tekrar deneyin."
   }
 }

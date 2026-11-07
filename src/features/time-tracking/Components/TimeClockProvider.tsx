@@ -69,8 +69,13 @@ export function TimeClockProvider({
 
   const refresh = useCallback(async () => {
     if (idsRef.current.length === 0) return
-    const result = await getMyClock()
-    if (result.success && result.data) setOpen(result.data.open)
+    try {
+      const result = await getMyClock()
+      if (result.success && result.data) setOpen(result.data.open)
+    } catch {
+      // The connection dropped, often a laptop waking up on another network:
+      // the clock stays as shown, and the next reconnection reads it again
+    }
   }, [])
 
   useEffect(() => {

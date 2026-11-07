@@ -165,5 +165,9 @@
     "title": "Je bent afgemeld",
     "description": "Meld je opnieuw aan om verder te werken. Kopieer eerst wat je aan het typen was.",
     "signIn": "Aanmelden"
+  },
+  "connectionLost": {
+    "title": "Torqvoice is niet bereikbaar",
+    "description": "Je laatste wijziging is mogelijk niet opgeslagen. Controleer je verbinding en probeer het opnieuw."
   }
 }

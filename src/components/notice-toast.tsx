@@ -11,13 +11,15 @@ export interface Notice {
   icon: LucideIcon
   title: string
   description: string
-  actionLabel: string
-  onAction: () => void
+  /** Left out when there is nothing to press, only something to know. */
+  actionLabel?: string
+  onAction?: () => void
   dismissLabel: string
 }
 
 /**
- * A notice that needs the person to do one thing: reload, sign in again.
+ * A notice that needs the person to do one thing: reload, sign in again, or
+ * just know that something they did did not reach the server.
  *
  * Drawn in the app's own look rather than sonner's plain card, because these
  * are the moments the app talks about itself, and they should look like it:
@@ -54,9 +56,11 @@ export function NoticeToast({
         <div className="min-w-0 flex-1 pr-5">
           <p className="font-semibold text-sm tracking-tight">{title}</p>
           <p className="mt-0.5 text-muted-foreground text-xs leading-relaxed">{description}</p>
-          <Button size="sm" className="mt-3 h-7 px-3 text-xs" onClick={onAction}>
-            {actionLabel}
-          </Button>
+          {actionLabel && onAction && (
+            <Button size="sm" className="mt-3 h-7 px-3 text-xs" onClick={onAction}>
+              {actionLabel}
+            </Button>
+          )}
         </div>
         <button
           type="button"

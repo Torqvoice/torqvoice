@@ -25,14 +25,18 @@ export function useNotificationWebSocket() {
     let alive = true
 
     // Fetch initial notifications
-    getNotifications().then((result) => {
-      if (!alive) return
-      if (result.success && result.data) {
-        useNotificationStore
-          .getState()
-          .setNotifications(result.data.notifications, result.data.unreadCount)
-      }
-    })
+    getNotifications()
+      .then((result) => {
+        if (!alive) return
+        if (result.success && result.data) {
+          useNotificationStore
+            .getState()
+            .setNotifications(result.data.notifications, result.data.unreadCount)
+        }
+      })
+      .catch(() => {
+        // Offline for a moment: the bell stays empty until the next page load
+      })
 
     return () => {
       alive = false
@@ -52,7 +56,10 @@ export function useNotificationWebSocket() {
       if (data.type.endsWith('_inbound') && isActiveConversation(data.entityUrl)) {
         useNotificationStore.getState().addNotification({ ...data, read: true })
         useNotificationStore.setState((s) => ({ unreadCount: Math.max(0, s.unreadCount - 1) }))
-        markNotificationRead(data.id)
+        markNotificationRead(data.id).catch(() => {
+          // Offline for a moment: it stays unread on the server, and shows so
+          // on the next page load
+        })
         return
       }
 
