@@ -1478,6 +1478,7 @@
       "paused": "Planınız artık Torqvoice yedeklerini içermiyor. Çalıştırmalar durduruldu; geri yükleme noktaları {date} tarihine kadar saklanır ve ardından silinir.",
       "upsell": "Pro'da mevcut: Torqvoice tarafından alınan saatlik yedekler ve geri dönebileceğiniz geri yükleme noktaları.",
       "planLink": "Planları görün",
+      "example": "Örnek",
       "pointsEmpty": "İlk yedekleme henüz çalışmadı.",
       "needsOwner": "Yalnızca atölyenin sahibi geri yükleyebilir.",
       "listTitle": "Yedekler",

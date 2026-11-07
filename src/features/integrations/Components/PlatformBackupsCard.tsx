@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Clock,
   DatabaseBackup,
+  Eye,
   HardDrive,
   History,
   Loader2,
@@ -16,6 +17,7 @@ import {
   MinusCircle,
   RotateCcw,
   ShieldCheck,
+  Sparkles,
   XCircle,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -40,6 +42,27 @@ const PLAN_HREF = '/settings/subscription'
 
 /** Backups the list shows at first, and adds each time it is scrolled to its end. */
 const PAGE_SIZE = 20
+
+/** The example a workshop without backups sees: hourly points of about 101 MB. */
+const EXAMPLE_POINTS = 8
+const EXAMPLE_POINT_BYTES = 106_115_891
+const EXAMPLE_REPOSITORY_BYTES = 200_697_446
+/** How long before the page was opened the example's newest backup ran. */
+const EXAMPLE_LAST_RUN_MS = 32 * 60_000
+const HOUR_MS = 60 * 60_000
+
+/** Hourly example restore points, newest first, ending a little before `now`. */
+function examplePoints(now: Date): PlatformSnapshotView[] {
+  const newest = now.getTime() - EXAMPLE_LAST_RUN_MS
+  return Array.from({ length: EXAMPLE_POINTS }, (_, i) => ({
+    id: `example-${i}`,
+    shortId: `example${i}`,
+    time: new Date(newest - i * HOUR_MS).toISOString(),
+    bytes: EXAMPLE_POINT_BYTES,
+    trigger: 'scheduled',
+    preRestore: false,
+  }))
+}
 
 /**
  * One line of the list: a restore point, with the run that took it when that
@@ -87,8 +110,9 @@ function backupEntries(overview: PlatformBackupOverview): BackupEntry[] {
  * backups by day, each restore point with its Explore and Restore actions
  * and the runs that left none (in progress, failed, or a restore) in their
  * place. The list shows twenty and adds twenty more each time it is scrolled
- * to its end. On a plan without them it says so, and while a paused
- * repository waits out its grace period it says until when. While a backup
+ * to its end. On a plan without them it shows a labelled example of the
+ * card with a way to the plans, and while a paused repository waits out its
+ * grace period it says until when. While a backup
  * or a restore is in progress the card asks for its own data every ten
  * seconds, which works during a restore when the rest of the page's data is
  * refused, and refreshes the page once the run is done.
@@ -104,6 +128,7 @@ export function PlatformBackupsCard({
   now: Date
 }) {
   const t = useTranslations('settings.data.platformBackups')
+  const tNav = useTranslations('settings.nav')
   const format = useFormatter()
   const router = useRouter()
   const errorText = useActionErrorText()
@@ -145,30 +170,39 @@ export function PlatformBackupsCard({
   const when = (iso: string) =>
     format.dateTime(new Date(iso), { dateStyle: 'medium', timeStyle: 'short' })
 
-  const planLink = (
-    <Link href={PLAN_HREF} className="font-medium text-primary underline-offset-2 hover:underline">
-      {t('planLink')}
-    </Link>
-  )
-
   if (!overview.active) {
     return (
       <AppCard
         id="platform-backups"
         icon={DatabaseBackup}
         title={t('title')}
+        badge={tNav('pro')}
         description={t('description')}
+        action={
+          <Button size="sm" asChild>
+            <Link href={PLAN_HREF}>
+              <Sparkles className="mr-1 h-3.5 w-3.5" />
+              {t('planLink')}
+            </Link>
+          </Button>
+        }
+        contentClassName="pb-0"
+        footer={
+          <p className="flex items-start gap-2 text-sm">
+            <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+            <span>
+              {overview.paused
+                ? t('paused', {
+                    date: overview.purgeDueAt
+                      ? format.dateTime(new Date(overview.purgeDueAt), { dateStyle: 'long' })
+                      : '-',
+                  })
+                : t('upsell')}
+            </span>
+          </p>
+        }
       >
-        <p className="text-sm text-muted-foreground">
-          {overview.paused
-            ? t('paused', {
-                date: overview.purgeDueAt
-                  ? format.dateTime(new Date(overview.purgeDueAt), { dateStyle: 'long' })
-                  : '-',
-              })
-            : t('upsell')}{' '}
-          {planLink}
-        </p>
+        <ExamplePreview now={now} />
       </AppCard>
     )
   }
@@ -266,15 +300,22 @@ function Stat({
   icon: Icon,
   label,
   tone = 'muted',
+  className,
   children,
 }: {
   icon: ComponentType<{ className?: string }>
   label: string
   tone?: Tone
+  className?: string
   children: ReactNode
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-card-edge/70 bg-muted/30 px-3.5 py-3">
+    <div
+      className={cn(
+        'flex items-start gap-3 rounded-lg border border-card-edge/70 bg-muted/30 px-3.5 py-3',
+        className
+      )}
+    >
       <div
         className={cn(
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-md ring-1 ring-inset',
@@ -296,6 +337,68 @@ function Stat({
 }
 
 /**
+ * What the card looks like on a plan with backups, filled with made-up
+ * hourly restore points, so a workshop deciding whether to pay sees what it
+ * would get. Sharp and readable, labelled as an example so nobody takes it
+ * for the workshop's own backups, dimmed a little and faded out at the
+ * bottom. Inert: nothing in it can be clicked, tabbed to or read aloud.
+ * On a phone the three figures would stack and push the restore points out
+ * of the frame, so only the first is shown there.
+ */
+function ExamplePreview({ now }: { now: Date }) {
+  const t = useTranslations('settings.data.platformBackups')
+  const format = useFormatter()
+  const points = examplePoints(now)
+  const entries: BackupEntry[] = points.map((point) => ({
+    type: 'point',
+    key: `point:${point.id}`,
+    time: point.time,
+    point,
+  }))
+  const lastRun = new Date(points[0].time)
+
+  return (
+    <div className="relative">
+      <span className="absolute top-2 right-2 z-10 inline-flex items-center gap-1.5 rounded-full bg-card px-2.5 py-1 text-xs font-semibold text-primary shadow-sm ring-1 ring-inset ring-primary/30">
+        <Eye className="h-3.5 w-3.5" />
+        {t('example')}
+      </span>
+      <div
+        aria-hidden
+        inert
+        data-testid="platform-backups-example"
+        className="pointer-events-none max-h-96 select-none space-y-4 overflow-hidden opacity-75 [mask-image:linear-gradient(to_bottom,black_40%,transparent)] sm:max-h-80"
+      >
+        <dl className="grid gap-3 sm:grid-cols-3">
+          <Stat icon={CheckCircle2} tone="good" label={t('lastGood')}>
+            <span suppressHydrationWarning>{format.relativeTime(lastRun, now)}</span>
+          </Stat>
+          <Stat icon={CalendarClock} label={t('nextRun')} className="hidden sm:flex">
+            {format.dateTime(new Date(lastRun.getTime() + HOUR_MS), {
+              dateStyle: 'medium',
+              timeStyle: 'short',
+            })}
+          </Stat>
+          <Stat icon={HardDrive} label={t('repositorySize')} className="hidden sm:flex">
+            {formatBytes(EXAMPLE_REPOSITORY_BYTES)}
+          </Stat>
+        </dl>
+        <BackupList
+          entries={entries}
+          snapshots={points}
+          pointCount={points.length}
+          canRestore
+          mayRestore
+          now={now}
+          onRestore={() => undefined}
+          example
+        />
+      </div>
+    </div>
+  )
+}
+
+/**
  * The backups, grouped by day under a header that stays in view while the
  * day scrolls past. Scrolls inside its own frame so the rest of Settings,
  * Data stays a short scroll away, and shows the next twenty as its end
@@ -309,6 +412,7 @@ function BackupList({
   mayRestore,
   now,
   onRestore,
+  example = false,
 }: {
   entries: BackupEntry[]
   /** Every restore point, to name the one a restore went back to. */
@@ -318,6 +422,8 @@ function BackupList({
   mayRestore: boolean
   now: Date
   onRestore: (point: PlatformSnapshotView) => void
+  /** Made-up points for the preview: nothing links to a restore point page. */
+  example?: boolean
 }) {
   const t = useTranslations('settings.data.platformBackups')
   const format = useFormatter()
@@ -432,6 +538,7 @@ function BackupList({
                         latest={entry.point.id === latestId}
                         mayRestore={mayRestore}
                         onRestore={onRestore}
+                        example={example}
                       />
                     ) : (
                       <RunRow key={entry.key} run={entry.run} snapshots={snapshots} now={now} />
@@ -529,11 +636,14 @@ function PointRow({
   latest,
   mayRestore,
   onRestore,
+  example = false,
 }: {
   point: PlatformSnapshotView
   latest: boolean
   mayRestore: boolean
   onRestore: (point: PlatformSnapshotView) => void
+  /** A made-up point: Explore has no page to open, so it is a plain button. */
+  example?: boolean
 }) {
   const t = useTranslations('settings.data.platformBackups')
   const format = useFormatter()
@@ -576,11 +686,17 @@ function PointRow({
       )}
       <div className="flex w-full shrink-0 gap-1.5 pl-10 sm:w-auto sm:pl-0">
         {/* Open to look inside; the page refuses anyone but an admin. */}
-        <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs" asChild>
-          <Link href={`/settings/data/restore-points/${point.id}?source=platform`}>
+        {example ? (
+          <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs" tabIndex={-1}>
             {t('explore')}
-          </Link>
-        </Button>
+          </Button>
+        ) : (
+          <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs" asChild>
+            <Link href={`/settings/data/restore-points/${point.id}?source=platform`}>
+              {t('explore')}
+            </Link>
+          </Button>
+        )}
         <Button
           variant="outline"
           size="sm"

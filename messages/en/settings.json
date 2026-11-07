@@ -1478,6 +1478,7 @@
       "paused": "Your plan no longer includes backups by Torqvoice. Runs have stopped; the restore points are kept until {date} and then deleted.",
       "upsell": "Available on Pro: hourly backups run by Torqvoice with restore points you can go back to.",
       "planLink": "See plans",
+      "example": "Example",
       "pointsEmpty": "The first backup has not run yet.",
       "needsOwner": "Only the workshop owner can restore.",
       "listTitle": "Backups",

@@ -1478,6 +1478,7 @@
       "paused": "Uw abonnement bevat geen back-ups door Torqvoice meer. De runs zijn gestopt; de herstelpunten worden bewaard tot {date} en daarna verwijderd.",
       "upsell": "Beschikbaar met Pro: back-ups elk uur door Torqvoice, met herstelpunten waarnaar u terug kunt gaan.",
       "planLink": "Abonnementen bekijken",
+      "example": "Voorbeeld",
       "pointsEmpty": "De eerste back-up is nog niet gemaakt.",
       "needsOwner": "Alleen de eigenaar van de werkplaats kan terugzetten.",
       "listTitle": "Back-ups",

@@ -1478,6 +1478,7 @@
       "paused": "Votre offre n'inclut plus les sauvegardes par Torqvoice. Les exécutions sont arrêtées ; les points de restauration sont conservés jusqu'au {date}, puis supprimés.",
       "upsell": "Disponible avec Pro : des sauvegardes horaires effectuées par Torqvoice, avec des points de restauration auxquels revenir.",
       "planLink": "Voir les offres",
+      "example": "Exemple",
       "pointsEmpty": "La première sauvegarde n'a pas encore eu lieu.",
       "needsOwner": "Seul le propriétaire de l'atelier peut restaurer.",
       "listTitle": "Sauvegardes",

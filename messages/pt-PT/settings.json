@@ -1478,6 +1478,7 @@
       "paused": "O seu plano já não inclui as cópias de segurança do Torqvoice. As execuções pararam; os pontos de restauro são guardados até {date} e depois eliminados.",
       "upsell": "Disponível no Pro: cópias de segurança de hora a hora feitas pelo Torqvoice, com pontos de restauro aos quais pode voltar.",
       "planLink": "Ver planos",
+      "example": "Exemplo",
       "pointsEmpty": "A primeira cópia de segurança ainda não foi feita.",
       "needsOwner": "Só o proprietário da oficina pode repor.",
       "listTitle": "Cópias de segurança",

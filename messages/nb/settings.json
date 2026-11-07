@@ -1478,6 +1478,7 @@
       "paused": "Planen din inkluderer ikke lenger sikkerhetskopier fra Torqvoice. Kjøringene er stoppet; gjenopprettingspunktene beholdes til {date} og slettes deretter.",
       "upsell": "Tilgjengelig med Pro: sikkerhetskopier hver time fra Torqvoice, med gjenopprettingspunkter du kan gå tilbake til.",
       "planLink": "Se planer",
+      "example": "Eksempel",
       "pointsEmpty": "Den første sikkerhetskopien har ikke kjørt ennå.",
       "needsOwner": "Bare verkstedets eier kan gjenopprette.",
       "listTitle": "Sikkerhetskopier",
