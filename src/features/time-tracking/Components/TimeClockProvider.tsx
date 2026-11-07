@@ -67,11 +67,26 @@ export function TimeClockProvider({
   idsRef.current = technicianIds
   const isTechnician = technicianIds.length > 0
 
-  const refresh = useCallback(async () => {
+  /** Reads the clock, and throws when the server cannot be reached. */
+  const read = useCallback(async () => {
     if (idsRef.current.length === 0) return
     const result = await getMyClock()
     if (result.success && result.data) setOpen(result.data.open)
   }, [])
+
+  /**
+   * Reads the clock for whoever is not waiting on it: the page loading, a
+   * reconnection, an event from the phone. A dropped connection, often a
+   * laptop waking up on another network, leaves the clock as shown, and the
+   * next reconnection reads it again.
+   */
+  const refresh = useCallback(async () => {
+    try {
+      await read()
+    } catch {
+      // Nobody to tell: see above
+    }
+  }, [read])
 
   useEffect(() => {
     void refresh()
@@ -124,13 +139,17 @@ export function TimeClockProvider({
         if (result.data.closed) {
           toast(t('switched', { minutes: formatMinutes(result.data.closed.minutes ?? 0) }))
         }
-        await refresh()
+        // Not the quiet refresh: when the clock cannot be read back, start
+        // must not say it worked with the old clock still on screen. The
+        // error reaches the caller and the connection notice, and the
+        // clock_started event or the next reconnection shows the clock.
+        await read()
         return true
       } finally {
         setBusy(false)
       }
     },
-    [busy, refresh, t]
+    [busy, read, t]
   )
 
   const stop = useCallback(async () => {

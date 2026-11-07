@@ -166,6 +166,10 @@
     "description": "Sign in again to keep working. Copy anything you were typing first.",
     "signIn": "Sign in"
   },
+  "connectionLost": {
+    "title": "Couldn't reach Torqvoice",
+    "description": "Your last change may not have been saved. Check your connection and try again."
+  },
   "searchableSelect": {
     "choose": "Choose...",
     "search": "Search...",

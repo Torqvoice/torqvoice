@@ -166,6 +166,10 @@
     "description": "Inicie sessão novamente para continuar a trabalhar. Copie primeiro o que estava a escrever.",
     "signIn": "Iniciar sessão"
   },
+  "connectionLost": {
+    "title": "Não foi possível contactar o Torqvoice",
+    "description": "A sua última alteração pode não ter sido guardada. Verifique a sua ligação e tente novamente."
+  },
   "searchableSelect": {
     "choose": "Escolher...",
     "search": "Pesquisar...",

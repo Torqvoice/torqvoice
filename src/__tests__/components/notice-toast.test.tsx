@@ -59,4 +59,20 @@ describe('NoticeToast', () => {
     render(renderCard('app-update'))
     expect(screen.getByTestId('notice-toast')).toHaveTextContent('Reload')
   })
+
+  it('shows only the close button when there is nothing to do but know', () => {
+    render(
+      <NoticeToast
+        toastId="t1"
+        icon={RefreshCw}
+        title="Couldn't reach Torqvoice"
+        description="Your last change may not have been saved."
+        dismissLabel="Dismiss"
+      />
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent("Couldn't reach Torqvoice")
+    expect(screen.getAllByRole('button')).toHaveLength(1)
+    expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()
+  })
 })

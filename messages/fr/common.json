@@ -166,6 +166,10 @@
     "description": "Reconnectez-vous pour continuer. Copiez d'abord ce que vous étiez en train de saisir.",
     "signIn": "Se connecter"
   },
+  "connectionLost": {
+    "title": "Impossible de joindre Torqvoice",
+    "description": "Votre dernière modification n'a peut-être pas été enregistrée. Vérifiez votre connexion et réessayez."
+  },
   "searchableSelect": {
     "choose": "Choisir...",
     "search": "Rechercher...",

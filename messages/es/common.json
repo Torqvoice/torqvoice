@@ -166,6 +166,10 @@
     "description": "Inicia sesión de nuevo para seguir trabajando. Copia primero lo que estabas escribiendo.",
     "signIn": "Iniciar sesión"
   },
+  "connectionLost": {
+    "title": "No se pudo conectar con Torqvoice",
+    "description": "Puede que tu último cambio no se haya guardado. Revisa tu conexión e inténtalo de nuevo."
+  },
   "searchableSelect": {
     "choose": "Elegir...",
     "search": "Buscar...",

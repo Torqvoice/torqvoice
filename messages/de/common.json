@@ -166,6 +166,10 @@
     "description": "Melden Sie sich erneut an, um weiterzuarbeiten. Kopieren Sie vorher, was Sie gerade eingegeben haben.",
     "signIn": "Anmelden"
   },
+  "connectionLost": {
+    "title": "Torqvoice ist nicht erreichbar",
+    "description": "Ihre letzte Änderung wurde möglicherweise nicht gespeichert. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  },
   "searchableSelect": {
     "choose": "Auswählen...",
     "search": "Suchen...",

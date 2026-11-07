@@ -166,6 +166,10 @@
     "description": "Logg inn igjen for å fortsette. Kopier det du holdt på å skrive først.",
     "signIn": "Logg inn"
   },
+  "connectionLost": {
+    "title": "Får ikke kontakt med Torqvoice",
+    "description": "Den siste endringen din ble kanskje ikke lagret. Sjekk tilkoblingen og prøv igjen."
+  },
   "searchableSelect": {
     "choose": "Velg...",
     "search": "Søk...",
