@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Check, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -227,28 +228,26 @@ export function InvoiceDetailsSection({
       {designOptions.length > 0 && (
         <div className="space-y-1">
           <Label className="text-xs">{t('design')}</Label>
-          <Select value={design} onValueChange={(v) => void changeDesign(v)}>
-            <SelectTrigger className="w-full" disabled={savingDesign}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={FOLLOW_DEFAULT}>
-                {designFollowsName && designFollowsRule
-                  ? t('designFollowingRule', {
-                      name: designFollowsName,
-                      rule: t(`designRule.${designFollowsRule}`),
-                    })
-                  : designFollowsName
-                    ? t('designFollowing', { name: designFollowsName })
-                    : t('designDefault')}
-              </SelectItem>
-              {designOptions.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={design}
+            onValueChange={(v) => void changeDesign(v)}
+            disabled={savingDesign}
+            options={[
+              {
+                value: FOLLOW_DEFAULT,
+                label:
+                  designFollowsName && designFollowsRule
+                    ? t('designFollowingRule', {
+                        name: designFollowsName,
+                        rule: t(`designRule.${designFollowsRule}`),
+                      })
+                    : designFollowsName
+                      ? t('designFollowing', { name: designFollowsName })
+                      : t('designDefault'),
+              },
+              ...designOptions.map((option) => ({ value: option.id, label: option.name })),
+            ]}
+          />
         </div>
       )}
     </>

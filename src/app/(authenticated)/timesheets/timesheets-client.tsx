@@ -34,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -413,28 +414,29 @@ export default function TimesheetsClient({
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
           {loading && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
-          <Select
+          <SearchableSelect
+            size="sm"
             value={technicianId}
             onValueChange={(v) => {
               setTechnicianId(v)
               void load(data.fromKey, data.toKey, v)
             }}
-          >
-            <SelectTrigger className="h-8 w-44" size="sm">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">{t('allTechnicians')}</SelectItem>
-              {data.technicians.map((tech) => (
-                <SelectItem key={tech.id} value={tech.id}>
-                  <span className="flex items-center gap-2">
-                    <span className="size-2 rounded-full" style={{ backgroundColor: tech.color }} />
-                    {tech.name}
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            className="w-44"
+            options={[
+              { value: 'all', label: t('allTechnicians') },
+              ...data.technicians.map((tech) => ({
+                value: tech.id,
+                label: tech.name,
+                icon: (
+                  <span
+                    className="size-2 shrink-0 rounded-full"
+                    style={{ backgroundColor: tech.color }}
+                    aria-hidden
+                  />
+                ),
+              })),
+            ]}
+          />
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as TimesheetSort)}>
             <SelectTrigger className="h-8 w-44" size="sm" aria-label={t('sortBy')}>
               <SelectValue />

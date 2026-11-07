@@ -10,13 +10,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import {
   Dialog,
@@ -341,19 +335,14 @@ export function CustomerForm({
               {designOptions.length > 0 && (
                 <div className="space-y-2">
                   <Label>{t('invoiceDesign')}</Label>
-                  <Select value={invoiceDesignId} onValueChange={setInvoiceDesignId}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value={FOLLOW_DEFAULT}>{t('invoiceDesignDefault')}</SelectItem>
-                      {designOptions.map((option) => (
-                        <SelectItem key={option.id} value={option.id}>
-                          {option.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <SearchableSelect
+                    value={invoiceDesignId}
+                    onValueChange={setInvoiceDesignId}
+                    options={[
+                      { value: FOLLOW_DEFAULT, label: t('invoiceDesignDefault') },
+                      ...designOptions.map((option) => ({ value: option.id, label: option.name })),
+                    ]}
+                  />
                   <p className="text-xs text-muted-foreground">{t('invoiceDesignHint')}</p>
                 </div>
               )}

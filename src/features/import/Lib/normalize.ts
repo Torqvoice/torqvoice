@@ -41,6 +41,29 @@ export function cleanText(value: string | null | undefined): string | null {
   return trimmed.length ? trimmed : null
 }
 
+/**
+ * Like `cleanText`, but keeps the line breaks: what was done on a job is often
+ * a list, one item per line, and run together it reads as one long sentence.
+ */
+export function cleanMultiline(value: string | null | undefined): string | null {
+  if (value == null) return null
+  const text = String(value)
+    .replace(/_x000D_/gi, '')
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map((line) => line.replace(/\s+/g, ' ').trim())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+  return text.length ? text : null
+}
+
+/** The first line of a text, for a title made from a description. */
+export function firstLine(text: string, max = 80): string {
+  const line = text.split('\n').find((l) => l.trim()) ?? ''
+  return line.length > max ? `${line.slice(0, max - 3).trimEnd()}...` : line
+}
+
 export function normalizeEmail(value: string | null | undefined): {
   value: string | null
   valid: boolean
@@ -161,6 +184,8 @@ export type DateFormat = 'auto' | 'DMY' | 'MDY' | 'YMD'
 const MONTHS: Record<string, number> = {
   jan: 1,
   january: 1,
+  januari: 1,
+  janner: 1,
   januar: 1,
   janvier: 1,
   enero: 1,
@@ -176,6 +201,7 @@ const MONTHS: Record<string, number> = {
   yanvar: 1,
   feb: 2,
   february: 2,
+  februari: 2,
   februar: 2,
   fevrier: 2,
   fev: 2,
@@ -190,6 +216,8 @@ const MONTHS: Record<string, number> = {
   fevral: 2,
   mar: 3,
   march: 3,
+  maart: 3,
+  mrt: 3,
   marz: 3,
   maerz: 3,
   mars: 3,
@@ -214,6 +242,7 @@ const MONTHS: Record<string, number> = {
   aprel: 4,
   may: 5,
   mai: 5,
+  mei: 5,
   mayo: 5,
   maggio: 5,
   mag: 5,
@@ -252,6 +281,8 @@ const MONTHS: Record<string, number> = {
   iyul: 7,
   aug: 8,
   august: 8,
+  augusti: 8,
+  augustus: 8,
   aout: 8,
   agosto: 8,
   ago: 8,
@@ -304,6 +335,8 @@ const MONTHS: Record<string, number> = {
   noyabr: 11,
   dec: 12,
   december: 12,
+  des: 12,
+  desember: 12,
   dezember: 12,
   dez: 12,
   decembre: 12,
@@ -317,6 +350,31 @@ const MONTHS: Record<string, number> = {
   gruodis: 12,
   dezembro: 12,
   dekabr: 12,
+}
+
+/**
+ * A time after the date, which the import drops however it is written: "14:30",
+ * "09:00:00", "0:0:0" from systems that do not pad, "2:15 PM", "T10:00:00.000Z".
+ * A date never holds a colon, so everything from the first h:m on is the time.
+ */
+const TIME_PART = /(?:T|\s+)\d{1,2}:\d{1,2}.*$/
+
+/** Lowercase without accents, so "März" finds "marz". */
+function foldAccents(text: string): string {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+}
+
+/**
+ * A cell with its time and any weekday in front dropped: "Wed 10 Dec 2014" and
+ * "Mon, 10/12/2014 0:0:0" say nothing the date itself does not.
+ */
+function dateOnly(value: string): string {
+  const s = value.trim().replace(TIME_PART, '').trim()
+  const weekday = s.match(/^(\p{L}+)\.?,?\s+(?=[\p{L}\d])/u)
+  return weekday && !MONTHS[foldAccents(weekday[1])] ? s.slice(weekday[0].length) : s
 }
 
 function utcDate(y: number, m: number, d: number): Date | null {
@@ -369,10 +427,8 @@ export function parseDate(
   }
   if (typeof value === 'number') return fromExcelSerial(value)
 
-  let s = String(value).trim()
+  const s = dateOnly(String(value))
   if (!s) return null
-  // Drop a time part: "2024-03-15 14:30", "15/03/2024 09:00:00", ISO "T".
-  s = s.replace(/[T ]\d{1,2}:\d{2}(:\d{2})?(\.\d+)?(Z|[+-]\d{2}:?\d{2})?$/i, '').trim()
 
   if (/^\d{5}(\.\d+)?$/.test(s)) return fromExcelSerial(Number(s))
 
@@ -382,11 +438,13 @@ export function parseDate(
   m = s.match(/^(\d{4})(\d{2})(\d{2})$/)
   if (m) return utcDate(Number(m[1]), Number(m[2]), Number(m[3]))
 
-  // Month names: "15 Mar 2024", "Mar 15, 2024", "15. März 2024", "March 2024" is not a day.
-  const lower = s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-  m = lower.match(/^(\d{1,2})\.?\s*([a-z]+)\.?,?\s*(\d{2,4})$/)
+  // Month names: "15 Mar 2024", "15-Mar-24", "Mar 15th, 2024", "15. März 2024",
+  // "10 de diciembre de 2014", "Dec 10 2014". "March 2024" is not a day.
+  const lower = foldAccents(s).replace(/\s+de\s+/g, ' ')
+  m = lower.match(/^(\d{1,2})(?:st|nd|rd|th)?\.?[\s/-]*([a-z]+)\.?,?[\s/-]*(\d{2,4})$/)
   if (m && MONTHS[m[2]]) return utcDate(fullYear(Number(m[3]), m[3]), MONTHS[m[2]], Number(m[1]))
-  m = lower.match(/^([a-z]+)\.?\s*(\d{1,2}),?\s*(\d{2,4})$/)
+  // The day and the year need something between them, or "Dec 2014" reads as 20 December 2014.
+  m = lower.match(/^([a-z]+)\.?[\s/-]*(\d{1,2})(?:st|nd|rd|th)?(?:,\s*|[\s/-]+)(\d{2,4})$/)
   if (m && MONTHS[m[1]]) return utcDate(fullYear(Number(m[3]), m[3]), MONTHS[m[1]], Number(m[2]))
 
   const p = numericParts(s)
@@ -422,9 +480,7 @@ export function detectDateFormat(values: readonly (string | null | undefined)[])
   let yearFirst = 0
   for (const v of values) {
     if (!v) continue
-    const s = String(v)
-      .trim()
-      .replace(/[T ]\d{1,2}:\d{2}.*$/, '')
+    const s = dateOnly(String(v))
     if (/^\d{4}[./-]\d{1,2}[./-]\d{1,2}$/.test(s)) {
       yearFirst++
       continue

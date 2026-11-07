@@ -169,5 +169,10 @@
   "connectionLost": {
     "title": "Nepavyko pasiekti Torqvoice",
     "description": "Paskutinis pakeitimas galėjo būti neišsaugotas. Patikrinkite ryšį ir bandykite dar kartą."
+  },
+  "searchableSelect": {
+    "choose": "Pasirinkite...",
+    "search": "Ieškoti...",
+    "noMatch": "Nieko nerasta"
   }
 }

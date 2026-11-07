@@ -16,13 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Command,
@@ -180,24 +174,23 @@ export function TimeEntryDialog({
             {editing ? (
               <Input id="te-technician" value={entry?.technicianName ?? ''} disabled />
             ) : (
-              <Select value={technicianId} onValueChange={setTechnicianId}>
-                <SelectTrigger id="te-technician" className="w-full">
-                  <SelectValue placeholder={t('pickTechnician')} />
-                </SelectTrigger>
-                <SelectContent>
-                  {technicians.map((tech) => (
-                    <SelectItem key={tech.id} value={tech.id}>
-                      <span className="flex items-center gap-2">
-                        <span
-                          className="size-2 rounded-full"
-                          style={{ backgroundColor: tech.color }}
-                        />
-                        {tech.name}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <SearchableSelect
+                id="te-technician"
+                value={technicianId}
+                onValueChange={setTechnicianId}
+                placeholder={t('pickTechnician')}
+                options={technicians.map((tech) => ({
+                  value: tech.id,
+                  label: tech.name,
+                  icon: (
+                    <span
+                      className="size-2 shrink-0 rounded-full"
+                      style={{ backgroundColor: tech.color }}
+                      aria-hidden
+                    />
+                  ),
+                }))}
+              />
             )}
           </div>
 

@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { DateInput } from '@/components/ui/date-input'
 import { Loader2, Plus, X } from 'lucide-react'
 import {
@@ -183,10 +184,7 @@ export function CustomCardDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className="max-h-[90vh] sm:max-w-2xl"
-        aria-describedby={undefined}
-      >
+      <DialogContent className="max-h-[90vh] sm:max-w-2xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{widget ? t('editCard') : t('addCard')}</DialogTitle>
           <DocsLink href="/docs/features/dashboard" variant="hint" className="self-start" />
@@ -227,23 +225,14 @@ export function CustomCardDialog({
               const def = getField(entity, filter.field)
               return (
                 <div key={index} className="flex items-center gap-2">
-                  <Select
+                  <SearchableSelect
                     value={filter.field}
                     onValueChange={(v) => updateFilter(index, { field: v })}
-                  >
-                    <SelectTrigger className="h-9 w-[34%]">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {fields
-                        .filter((f) => f.filterable !== false)
-                        .map((f) => (
-                          <SelectItem key={f.id} value={f.id}>
-                            {t(`fields.${f.labelKey}`)}
-                          </SelectItem>
-                        ))}
-                    </SelectContent>
-                  </Select>
+                    className="w-[34%] shrink-0"
+                    options={fields
+                      .filter((f) => f.filterable !== false)
+                      .map((f) => ({ value: f.id, label: t(`fields.${f.labelKey}`) }))}
+                  />
                   <Select
                     value={filter.operator}
                     onValueChange={(v) => updateFilter(index, { operator: v })}
@@ -309,20 +298,19 @@ export function CustomCardDialog({
               </SelectContent>
             </Select>
           </div>
-
         </DialogBody>
         <DialogFooter>
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
-              {t('cancel')}
-            </Button>
-            <Button
-              data-save-shortcut
-              onClick={handleSave}
-              disabled={saving || !name.trim() || columns.length === 0}
-            >
-              {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('save')}
-            </Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            {t('cancel')}
+          </Button>
+          <Button
+            data-save-shortcut
+            onClick={handleSave}
+            disabled={saving || !name.trim() || columns.length === 0}
+          >
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {t('save')}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

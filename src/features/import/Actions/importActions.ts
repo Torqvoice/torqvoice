@@ -38,6 +38,8 @@ import {
   detectDecimalSeparator,
 } from '../Lib/normalize'
 import { releaseFiles } from '@/lib/files/manager'
+import { escapeHtml } from '@/features/email/Render/escape'
+import { organizationTranslator } from '@/i18n/organization-translator'
 import { serviceRecordFileUrls, vehicleFileUrls } from '@/lib/files/collect'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
@@ -81,10 +83,44 @@ export interface PlanPage {
   pageSize: number
 }
 
+/** One reason rows cannot be imported, and how many rows it stops. */
+export interface IssueCount {
+  code: RowIssue['code']
+  field?: string
+  count: number
+  /** The first spreadsheet row it happens on, so the user can find it. */
+  firstRow: number
+  /** The value on that row, when the issue is about one. */
+  value?: string
+}
+
 export interface DryRunResult {
   summary: PlanSummary
   limit: { maxCustomers: number; remaining: number; exceeded: boolean } | null
   page: PlanPage
+  /** Why rows cannot be imported, most common first. */
+  issues: IssueCount[]
+}
+
+function countIssues(plan: ImportPlan): IssueCount[] {
+  const counts = new Map<string, IssueCount>()
+  for (const row of plan.rows) {
+    if (row.action !== 'error') continue
+    for (const issue of row.errors) {
+      const key = `${issue.code}|${issue.field ?? ''}`
+      const hit = counts.get(key)
+      if (hit) hit.count++
+      else
+        counts.set(key, {
+          code: issue.code,
+          field: issue.field,
+          count: 1,
+          firstRow: row.index + 2,
+          value: issue.value,
+        })
+    }
+  }
+  return [...counts.values()].sort((a, b) => b.count - a.count)
 }
 
 export interface CommitResult {
@@ -158,6 +194,16 @@ function pageOf(plan: ImportPlan, page: number, filter: RowFilter): PlanPage {
   }
 }
 
+/**
+ * The stand-in name for a job with no words in the file. It is stored on the
+ * job, so it is in the workshop's language, not the language of whoever runs
+ * the import.
+ */
+async function untitledServiceTitle(organizationId: string): Promise<string> {
+  const t = await organizationTranslator(organizationId, 'dataImport')
+  return t('placeholders.serviceTitle')
+}
+
 async function buildPlan(
   organizationId: string,
   input: RunImportInput
@@ -172,7 +218,12 @@ async function buildPlan(
   if (staged.entity !== input.options.entity) {
     throw new Error('The uploaded file is a different kind of import')
   }
-  const options: ImportOptions = { ...input.options, entity: staged.entity }
+  const options: ImportOptions = {
+    ...input.options,
+    entity: staged.entity,
+    untitledServiceTitle:
+      staged.entity === 'services' ? await untitledServiceTitle(organizationId) : undefined,
+  }
   const mapping = sanitizeMapping(
     input.mapping,
     staged.entity,
@@ -208,7 +259,12 @@ export async function dryRunImport(raw: unknown, page = 0, filter: RowFilter = '
         plan.summary.customersToCreate > 0 || staged.entity === 'customers'
           ? await customerLimit(organizationId, plan.summary.customersToCreate)
           : null
-      return { summary: plan.summary, limit, page: pageOf(plan, page, filter) }
+      return {
+        summary: plan.summary,
+        limit,
+        page: pageOf(plan, page, filter),
+        issues: countIssues(plan),
+      }
     },
     { requiredPermissions: permissionsFor(input.options.entity) }
   )
@@ -305,17 +361,38 @@ interface CommitState {
   nextCustomerNumber: number
 }
 
-async function nextCustomerNumberStart(organizationId: string): Promise<number> {
+/**
+ * Where numbers for customers without one start: above every number in use and
+ * every number the file itself brings, so a number handed out early in the
+ * import never collides with one a later row carries.
+ */
+async function nextCustomerNumberStart(organizationId: string, rows: RowPlan[]): Promise<number> {
   const existing = await db.customer.findMany({
     where: { organizationId, customerNumber: { not: null } },
     select: { customerNumber: true },
   })
+  const numbers = [
+    ...existing.map((c) => c.customerNumber),
+    ...rows.map((r) => r.customer?.customerNumber),
+  ]
   return (
-    existing.reduce((acc, c) => {
-      const n = Number.parseInt(c.customerNumber ?? '', 10)
+    numbers.reduce<number>((acc, value) => {
+      const n = Number.parseInt(value ?? '', 10)
       return Number.isFinite(n) && n > acc ? n : acc
     }, 1000) + 1
   )
+}
+
+/**
+ * Imported text as the rich text the work order's editors hold, one paragraph
+ * per line, so a list of work done keeps its lines and a "<" stays a "<".
+ */
+function textToHtml(text: string | null): string | null {
+  if (!text) return null
+  return text
+    .split('\n')
+    .map((line) => `<p>${escapeHtml(line)}</p>`)
+    .join('')
 }
 
 /** Only the values the row actually carries; an update never blanks a field. */
@@ -325,6 +402,28 @@ function definedOnly<T extends Record<string, unknown>>(
   const out: Record<string, unknown> = {}
   for (const [k, v] of Object.entries(data)) if (v != null) out[k] = v
   return out as { [K in keyof T]?: NonNullable<T[K]> }
+}
+
+/**
+ * A row that created a customer or vehicle in place of the row meant to (which
+ * could not be written) files it under that row too, so the rows after it
+ * that share it find it there instead of each creating their own.
+ */
+function standIn(ids: Map<number, string>, origin: number | undefined, id: string) {
+  if (origin != null) ids.set(origin, id)
+}
+
+/**
+ * Forget the ids a row handed out, after its transaction rolled back: under
+ * its own index, and under the row it stood in for.
+ */
+function forgetRow(state: CommitState, row: RowPlan) {
+  for (const ids of [state.customerIds, state.vehicleIds]) {
+    const own = ids.get(row.index)
+    ids.delete(row.index)
+    if (own == null) continue
+    for (const [index, id] of ids) if (id === own) ids.delete(index)
+  }
 }
 
 async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void> {
@@ -349,9 +448,11 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           }),
         })
       }
-    } else if (row.customerSameAs != null) {
+    } else if (row.customerSameAs != null && state.customerIds.has(row.customerSameAs)) {
       customerId = state.customerIds.get(row.customerSameAs) ?? null
     } else if (row.customer.name) {
+      // Also reached when the row that was to create this customer could not be
+      // written: this row creates it instead (see standIn below).
       const customerNumber = row.customer.customerNumber ?? String(state.nextCustomerNumber++)
       const created = await tx.customer.create({
         data: {
@@ -371,6 +472,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
       })
       customerId = created.id
       state.customerIds.set(row.index, customerId)
+      standIn(state.customerIds, row.customerSameAs, customerId)
     }
   }
 
@@ -409,9 +511,10 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           data: { customerId },
         })
       }
-    } else if (row.vehicleSameAs != null) {
+    } else if (row.vehicleSameAs != null && state.vehicleIds.has(row.vehicleSameAs)) {
       vehicleId = state.vehicleIds.get(row.vehicleSameAs) ?? null
     } else if (v.make && v.model && v.year != null) {
+      // Also reached when the row that was to create this vehicle could not be written.
       const created = await tx.vehicle.create({
         data: {
           make: v.make,
@@ -439,6 +542,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
       })
       vehicleId = created.id
       state.vehicleIds.set(row.index, vehicleId)
+      standIn(state.vehicleIds, row.vehicleSameAs, vehicleId)
     }
   }
 
@@ -452,7 +556,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
     await tx.serviceRecord.create({
       data: {
         title: s.title,
-        description: s.description,
+        description: textToHtml(s.description),
         type: 'maintenance',
         status: 'completed',
         cost: total,
@@ -465,7 +569,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
         startDateTime: serviceDate,
         invoiceNumber: s.invoiceNumber,
         invoiceDate: s.invoiceNumber ? new Date(s.date) : null,
-        diagnosticNotes: s.notes,
+        diagnosticNotes: textToHtml(s.notes),
         techName: s.technician,
         // Historical jobs are settled; without this they would show as receivables.
         manuallyPaid: total > 0,
@@ -486,9 +590,9 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
 
 /**
  * Execute the plan. Rows are written in chunks, each chunk in its own
- * transaction, so one bad row costs its chunk and not the whole file; the
- * result lists exactly which rows failed. Every created row carries the
- * batch id, which is what makes undo possible.
+ * transaction; a chunk that fails is written again a row at a time, so one
+ * bad row costs only itself, and the result lists exactly which rows failed.
+ * Every created row carries the batch id, which is what makes undo possible.
  */
 export async function commitImport(raw: unknown) {
   const parsed = parseRun(raw)
@@ -531,7 +635,7 @@ export async function commitImport(raw: unknown) {
         entity,
         customerIds: new Map(),
         vehicleIds: new Map(),
-        nextCustomerNumber: await nextCustomerNumberStart(organizationId),
+        nextCustomerNumber: await nextCustomerNumberStart(organizationId, plan.rows),
       }
 
       const runnable = plan.rows.filter((r) => r.action === 'create' || r.action === 'update')
@@ -542,8 +646,16 @@ export async function commitImport(raw: unknown) {
       const total = runnable.length
       await writeImportProgress(organizationId, input.token, { phase: 'writing', done: 0, total })
 
+      const count = (row: RowPlan) => {
+        if (row.action === 'create') created++
+        else updated++
+      }
+      // The transaction rolled back, so ids handed out inside it are void.
+      const forget = (row: RowPlan) => forgetRow(state, row)
+
       for (let start = 0; start < runnable.length; start += CHUNK) {
         const chunk = runnable.slice(start, start + CHUNK)
+        const numberBefore = state.nextCustomerNumber
         try {
           await db.$transaction(
             async (tx) => {
@@ -551,22 +663,26 @@ export async function commitImport(raw: unknown) {
             },
             { timeout: 60_000 }
           )
+          chunk.forEach(count)
+        } catch {
+          // One bad row must not cost the rows around it: run the chunk again a
+          // row at a time, so only the row that cannot be written fails.
+          chunk.forEach(forget)
+          state.nextCustomerNumber = numberBefore
           for (const row of chunk) {
-            if (row.action === 'create') created++
-            else updated++
-          }
-        } catch (err) {
-          // The transaction rolled the chunk back, so ids handed out inside it are void.
-          for (const row of chunk) {
-            state.customerIds.delete(row.index)
-            state.vehicleIds.delete(row.index)
-            failures.push({
-              index: row.index,
-              issue: {
-                code: 'write_failed',
-                value: err instanceof Error ? err.message.slice(0, 200) : undefined,
-              },
-            })
+            try {
+              await db.$transaction((tx) => writeRow(tx, state, row), { timeout: 30_000 })
+              count(row)
+            } catch (err) {
+              forget(row)
+              failures.push({
+                index: row.index,
+                issue: {
+                  code: 'write_failed',
+                  value: err instanceof Error ? err.message.slice(0, 200) : undefined,
+                },
+              })
+            }
           }
         }
         done += chunk.length

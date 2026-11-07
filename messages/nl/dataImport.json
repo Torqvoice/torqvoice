@@ -50,7 +50,11 @@
     "chooseAnother": "Ander bestand kiezen",
     "missingRequired": "Nog nodig: {fields}",
     "dryRunHint": "De proefimport controleert elke rij tegen uw bestaande gegevens zonder iets weg te schrijven.",
-    "runDryRun": "Proefimport uitvoeren"
+    "runDryRun": "Proefimport uitvoeren",
+    "usedBy": "In gebruik door {column}",
+    "searchFields": "Velden zoeken...",
+    "fieldFor": "Veld voor {column}",
+    "noJobText": "Er is geen kolom gekoppeld aan titel, omschrijving of notities, dus elke werkorder krijgt een tijdelijke naam. Koppel de kolom die beschrijft wat er is gedaan, als het bestand die heeft."
   },
   "options": {
     "dateFormat": "Datumnotatie",
@@ -66,7 +70,9 @@
     "duplicates": "Als een rij overeenkomt met een bestaand record",
     "duplicatesUpdate": "Bestaand record bijwerken",
     "duplicatesSkip": "Rij overslaan",
-    "duplicatesCreate": "Toch een nieuw record aanmaken"
+    "duplicatesCreate": "Toch een nieuw record aanmaken",
+    "dateReadsAs": "\"{value}\" wordt gelezen als {date}",
+    "dateUnreadable": "\"{value}\" kan niet als datum worden gelezen"
   },
   "summary": {
     "create": "Wordt aangemaakt",
@@ -114,7 +120,11 @@
     "next": "Volgende",
     "backToMapping": "Terug naar toewijzing",
     "import": "{count, plural, one {# rij} other {# rijen}} importeren",
-    "nothingWrittenYet": "Er is nog niets weggeschreven. De import kan achteraf ongedaan worden gemaakt via Instellingen → Gegevens."
+    "nothingWrittenYet": "Er is nog niets weggeschreven. De import kan achteraf ongedaan worden gemaakt via Instellingen → Gegevens.",
+    "issuesTitle": "Waarom sommige rijen niet kunnen worden geïmporteerd",
+    "issueCount": "{count, plural, one {# rij} other {# rijen}}, eerst op rij {row}",
+    "issuesHint": "Meestal is een kolom aan het verkeerde veld gekoppeld, of zijn cellen in het bestand leeg. Ga terug naar de toewijzing om dat te wijzigen, of importeer de rest en voeg deze later toe.",
+    "showIssueRows": "Deze rijen tonen"
   },
   "importing": {
     "title": "Importeren...",
@@ -212,7 +222,9 @@
     "invalid_date": "{field} \"{value}\" kon niet worden gelezen en is weggelaten",
     "invalid_number": "{field} \"{value}\" is geen getal en is weggelaten",
     "duplicate_invoice_number": "Factuurnummer {value} bestaat al",
-    "write_failed": "Kon niet worden weggeschreven: {value}"
+    "write_failed": "Kon niet worden weggeschreven: {value}",
+    "invalid_mileage": "{field} \"{value}\" is te hoog voor een echte stand en is weggelaten",
+    "service_title_placeholder": "Geen titel of omschrijving, dus de naam wordt \"{value}\""
   },
   "errors": {
     "uploadFailed": "Het bestand kon niet worden gelezen",
@@ -227,5 +239,8 @@
     "customers": "Klanten importeren",
     "vehicles": "Voertuigen importeren",
     "services": "Servicegeschiedenis importeren"
+  },
+  "placeholders": {
+    "serviceTitle": "Geïmporteerde werkorder"
   }
 }

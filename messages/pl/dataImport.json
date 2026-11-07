@@ -50,7 +50,11 @@
     "chooseAnother": "Wybierz inny plik",
     "missingRequired": "Nadal wymagane: {fields}",
     "dryRunHint": "Próbny import sprawdza każdy wiersz względem istniejących danych, niczego nie zapisując.",
-    "runDryRun": "Uruchom próbny import"
+    "runDryRun": "Uruchom próbny import",
+    "usedBy": "Używane przez {column}",
+    "searchFields": "Szukaj pól...",
+    "fieldFor": "Pole dla {column}",
+    "noJobText": "Żadna kolumna nie jest przypisana do tytułu, opisu ani notatek, więc każde zlecenie otrzyma nazwę zastępczą. Przypisz kolumnę opisującą wykonaną pracę, jeśli plik ją zawiera."
   },
   "options": {
     "dateFormat": "Format daty",
@@ -66,7 +70,9 @@
     "duplicates": "Gdy wiersz pasuje do istniejącego rekordu",
     "duplicatesUpdate": "Zaktualizuj istniejący rekord",
     "duplicatesSkip": "Pomiń wiersz",
-    "duplicatesCreate": "Mimo to utwórz nowy rekord"
+    "duplicatesCreate": "Mimo to utwórz nowy rekord",
+    "dateReadsAs": "\"{value}\" odczytano jako {date}",
+    "dateUnreadable": "\"{value}\" nie da się odczytać jako daty"
   },
   "summary": {
     "create": "Zostanie utworzonych",
@@ -114,7 +120,11 @@
     "next": "Następna",
     "backToMapping": "Wróć do mapowania",
     "import": "Importuj {count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wiersza}}",
-    "nothingWrittenYet": "Nic nie zostało jeszcze zapisane. Import można później cofnąć w Ustawienia → Dane."
+    "nothingWrittenYet": "Nic nie zostało jeszcze zapisane. Import można później cofnąć w Ustawienia → Dane.",
+    "issuesTitle": "Dlaczego niektórych wierszy nie można zaimportować",
+    "issueCount": "{count, plural, one {# wiersz} few {# wiersze} many {# wierszy} other {# wiersza}}, pierwszy w wierszu {row}",
+    "issuesHint": "Zwykle kolumna jest przypisana do złego pola albo komórki w pliku są puste. Wróć do mapowania, aby to zmienić, albo zaimportuj resztę i dodaj te później.",
+    "showIssueRows": "Pokaż te wiersze"
   },
   "importing": {
     "title": "Importowanie...",
@@ -212,7 +222,9 @@
     "invalid_date": "Nie udało się odczytać {field} \"{value}\" i pole zostało pominięte",
     "invalid_number": "{field} \"{value}\" nie jest liczbą i pole zostało pominięte",
     "duplicate_invoice_number": "Numer faktury {value} już istnieje",
-    "write_failed": "Nie udało się zapisać: {value}"
+    "write_failed": "Nie udało się zapisać: {value}",
+    "invalid_mileage": "{field} \"{value}\" jest zbyt wysoki jak na prawdziwy odczyt i pole zostało pominięte",
+    "service_title_placeholder": "Brak tytułu i opisu, więc otrzyma nazwę \"{value}\""
   },
   "errors": {
     "uploadFailed": "Nie udało się odczytać pliku",
@@ -227,5 +239,8 @@
     "customers": "Importuj klientów",
     "vehicles": "Importuj pojazdy",
     "services": "Importuj historię serwisową"
+  },
+  "placeholders": {
+    "serviceTitle": "Zaimportowane zlecenie"
   }
 }

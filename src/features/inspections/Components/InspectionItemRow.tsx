@@ -4,13 +4,7 @@ import { useEffect, useId, useRef, useState, useTransition } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -640,25 +634,19 @@ export function InspectionItemRow({
           <label htmlFor={`${fieldId}-choice`} className="text-muted-foreground text-xs">
             {t('answer')}
           </label>
-          <Select
-            value={textValue || undefined}
+          <SearchableSelect
+            id={`${fieldId}-choice`}
+            size="sm"
+            value={textValue}
             disabled={isCompleted}
             onValueChange={(v) => {
               setTextValue(v)
               save({ textValue: v })
             }}
-          >
-            <SelectTrigger id={`${fieldId}-choice`} className="h-8 w-full text-sm sm:w-56">
-              <SelectValue placeholder={t('selectAnswer')} />
-            </SelectTrigger>
-            <SelectContent>
-              {item.choices?.map((choice) => (
-                <SelectItem key={choice} value={choice}>
-                  {choice}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={t('selectAnswer')}
+            className="w-full sm:w-56"
+            options={(item.choices ?? []).map((choice) => ({ value: choice, label: choice }))}
+          />
         </div>
       )}
 

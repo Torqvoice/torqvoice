@@ -26,13 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -404,22 +398,16 @@ export function InventoryClient({
                 {...tableNav.searchInputProps}
               />
             </form>
-            <Select
+            <SearchableSelect
               value={category || 'all'}
               onValueChange={(v) => navigate({ category: v === 'all' ? undefined : v })}
-            >
-              <SelectTrigger className="h-9 w-[120px] shrink-0 sm:w-[150px]">
-                <SelectValue placeholder={t('categoryPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('allCategories')}</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder={t('categoryPlaceholder')}
+              className="w-[120px] shrink-0 sm:w-[150px]"
+              options={[
+                { value: 'all', label: t('allCategories') },
+                ...categories.map((cat) => ({ value: cat, label: cat })),
+              ]}
+            />
             {/* Toggle rather than a third dropdown: low stock is a yes/no lens
                 on the list, and it needs to be reachable from the page itself
                 (the dashboard card links straight here with ?lowStock=1). */}

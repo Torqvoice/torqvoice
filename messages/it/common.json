@@ -169,5 +169,10 @@
   "connectionLost": {
     "title": "Impossibile raggiungere Torqvoice",
     "description": "L'ultima modifica potrebbe non essere stata salvata. Controlla la connessione e riprova."
+  },
+  "searchableSelect": {
+    "choose": "Scegli...",
+    "search": "Cerca...",
+    "noMatch": "Nessuna corrispondenza"
   }
 }

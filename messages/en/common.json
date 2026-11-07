@@ -169,5 +169,10 @@
   "connectionLost": {
     "title": "Couldn't reach Torqvoice",
     "description": "Your last change may not have been saved. Check your connection and try again."
+  },
+  "searchableSelect": {
+    "choose": "Choose...",
+    "search": "Search...",
+    "noMatch": "Nothing matches"
   }
 }

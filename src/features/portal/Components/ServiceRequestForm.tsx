@@ -9,14 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { AppCard } from '@/components/app-card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Loader2, Plus, Wrench } from 'lucide-react'
 import { createServiceRequest } from '@/features/portal/Actions/portalActions'
 
@@ -99,26 +92,23 @@ export function ServiceRequestForm({ orgId, vehicles }: { orgId: string; vehicle
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="vehicle">{t('vehicleLabel')}</Label>
-          <Select value={vehicleId} onValueChange={setVehicleId}>
-            <SelectTrigger id="vehicle">
-              <SelectValue placeholder={t('vehiclePlaceholder')} />
-            </SelectTrigger>
-            <SelectContent>
-              {vehicles.map((v) => (
-                <SelectItem key={v.id} value={v.id}>
-                  {v.year} {v.make} {v.model}
-                  {v.licensePlate ? ` (${v.licensePlate})` : ''}
-                </SelectItem>
-              ))}
-              {vehicles.length > 0 && <SelectSeparator />}
-              <SelectItem value={NEW_VEHICLE}>
-                <span className="flex items-center gap-1.5">
-                  <Plus className="h-3.5 w-3.5" />
-                  {t('notListedOption')}
-                </span>
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            id="vehicle"
+            value={vehicleId}
+            onValueChange={setVehicleId}
+            placeholder={t('vehiclePlaceholder')}
+            options={[
+              ...vehicles.map((v) => ({
+                value: v.id,
+                label: `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`,
+              })),
+              {
+                value: NEW_VEHICLE,
+                label: t('notListedOption'),
+                icon: <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden />,
+              },
+            ]}
+          />
         </div>
 
         {isNewVehicle && (

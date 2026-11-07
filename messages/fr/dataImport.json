@@ -50,7 +50,11 @@
     "chooseAnother": "Choisir un autre fichier",
     "missingRequired": "Encore requis : {fields}",
     "dryRunHint": "La simulation vérifie chaque ligne par rapport à vos données existantes sans rien écrire.",
-    "runDryRun": "Lancer la simulation"
+    "runDryRun": "Lancer la simulation",
+    "usedBy": "Utilisé par {column}",
+    "searchFields": "Rechercher un champ...",
+    "fieldFor": "Champ pour {column}",
+    "noJobText": "Aucune colonne n'est associée au titre, à la description ou aux notes, donc chaque intervention recevra un nom provisoire. Associez la colonne qui décrit le travail effectué, si le fichier en contient une."
   },
   "options": {
     "dateFormat": "Format de date",
@@ -66,7 +70,9 @@
     "duplicates": "Quand une ligne correspond à un enregistrement existant",
     "duplicatesUpdate": "Mettre à jour l'enregistrement existant",
     "duplicatesSkip": "Ignorer la ligne",
-    "duplicatesCreate": "Créer quand même un nouvel enregistrement"
+    "duplicatesCreate": "Créer quand même un nouvel enregistrement",
+    "dateReadsAs": "\"{value}\" se lit comme {date}",
+    "dateUnreadable": "\"{value}\" ne peut pas être lu comme une date"
   },
   "summary": {
     "create": "Seront créés",
@@ -114,7 +120,11 @@
     "next": "Suivant",
     "backToMapping": "Retour à la correspondance",
     "import": "Importer {count, plural, one {# ligne} other {# lignes}}",
-    "nothingWrittenYet": "Rien n'a encore été écrit. L'import pourra ensuite être annulé depuis Paramètres → Données."
+    "nothingWrittenYet": "Rien n'a encore été écrit. L'import pourra ensuite être annulé depuis Paramètres → Données.",
+    "issuesTitle": "Pourquoi certaines lignes ne peuvent pas être importées",
+    "issueCount": "{count, plural, one {# ligne} other {# lignes}}, la première à la ligne {row}",
+    "issuesHint": "Le plus souvent, une colonne est associée au mauvais champ ou des cellules sont vides dans le fichier. Revenez à la correspondance pour la modifier, ou importez le reste et ajoutez celles-ci plus tard.",
+    "showIssueRows": "Afficher ces lignes"
   },
   "importing": {
     "title": "Import en cours...",
@@ -212,7 +222,9 @@
     "invalid_date": "{field} \"{value}\" n'a pas pu être lu et a été ignoré",
     "invalid_number": "{field} \"{value}\" n'est pas un nombre et a été ignoré",
     "duplicate_invoice_number": "Le numéro de facture {value} existe déjà",
-    "write_failed": "Impossible d'écrire : {value}"
+    "write_failed": "Impossible d'écrire : {value}",
+    "invalid_mileage": "{field} \"{value}\" est trop élevé pour être un relevé réel et a été ignoré",
+    "service_title_placeholder": "Ni titre ni description, elle sera donc nommée \"{value}\""
   },
   "errors": {
     "uploadFailed": "Le fichier n'a pas pu être lu",
@@ -227,5 +239,8 @@
     "customers": "Importer des clients",
     "vehicles": "Importer des véhicules",
     "services": "Importer l'historique de service"
+  },
+  "placeholders": {
+    "serviceTitle": "Intervention importée"
   }
 }

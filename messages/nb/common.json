@@ -169,5 +169,10 @@
   "connectionLost": {
     "title": "Får ikke kontakt med Torqvoice",
     "description": "Den siste endringen din ble kanskje ikke lagret. Sjekk tilkoblingen og prøv igjen."
+  },
+  "searchableSelect": {
+    "choose": "Velg...",
+    "search": "Søk...",
+    "noMatch": "Ingen treff"
   }
 }

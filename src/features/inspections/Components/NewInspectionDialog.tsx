@@ -8,13 +8,7 @@ import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Loader2, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -149,19 +143,15 @@ export function NewInspectionDialog({
                 {t('manageTemplates')}
               </Link>
             </div>
-            <Select value={templateId} onValueChange={setTemplateId} required>
-              <SelectTrigger>
-                <SelectValue placeholder={t('selectTemplate')} />
-              </SelectTrigger>
-              <SelectContent>
-                {templates.map((t) => (
-                  <SelectItem key={t.id} value={t.id}>
-                    {t.name}
-                    {t.isDefault ? ' (Default)' : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <SearchableSelect
+              value={templateId}
+              onValueChange={setTemplateId}
+              placeholder={t('selectTemplate')}
+              options={templates.map((template) => ({
+                value: template.id,
+                label: `${template.name}${template.isDefault ? ' (Default)' : ''}`,
+              }))}
+            />
           </div>
 
           <div className="space-y-2">

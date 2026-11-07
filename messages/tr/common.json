@@ -169,5 +169,10 @@
   "connectionLost": {
     "title": "Torqvoice'a ulaşılamadı",
     "description": "Son değişikliğiniz kaydedilmemiş olabilir. Bağlantınızı kontrol edip tekrar deneyin."
+  },
+  "searchableSelect": {
+    "choose": "Seçin...",
+    "search": "Ara...",
+    "noMatch": "Eşleşme yok"
   }
 }

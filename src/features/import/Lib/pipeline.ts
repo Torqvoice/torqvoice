@@ -12,7 +12,9 @@ import type { ImportEntity } from './fields'
 import {
   type DateFormat,
   type DecimalSeparator,
+  cleanMultiline,
   cleanText,
+  firstLine,
   joinAddress,
   joinName,
   mapFuelType,
@@ -40,6 +42,12 @@ export interface ImportOptions {
   decimalSeparator: DecimalSeparator
   defaultCountryCode: string | null
   duplicates: DuplicateRule
+  /**
+   * What a job with no title, description or notes in the file is called, in
+   * the workshop's language. Set by the server, never by the browser; without
+   * it such a row cannot be imported.
+   */
+  untitledServiceTitle?: string
 }
 
 export interface CustomerDraft {
@@ -96,8 +104,10 @@ export type RowIssueCode =
   | 'service_date_required'
   | 'service_date_invalid'
   | 'service_title_required'
+  | 'service_title_placeholder'
   | 'invalid_date'
   | 'invalid_number'
+  | 'invalid_mileage'
   | 'duplicate_invoice_number'
   | 'write_failed'
 
@@ -190,6 +200,29 @@ export type RowOverrides = Record<string, RowAction>
 
 // ── Extraction ────────────────────────────────────────────────────────────────
 
+/**
+ * The highest odometer reading taken as real. Anything above is a phone number
+ * or an id in the wrong column, and the database could not store it anyway.
+ */
+const MAX_MILEAGE = 9_999_999
+
+/** An odometer reading, or null with a warning when it cannot be one. */
+function readMileage(
+  v: Values,
+  field: 'vehicle.mileage' | 'service.mileage',
+  options: ImportOptions,
+  warnings: RowIssue[]
+): number | null {
+  const raw = v[field]
+  if (!raw) return null
+  const n = parseInteger(raw, options.decimalSeparator)
+  if (n == null || n > MAX_MILEAGE) {
+    warnings.push({ code: n == null ? 'invalid_number' : 'invalid_mileage', field, value: raw })
+    return null
+  }
+  return n < 0 ? null : n
+}
+
 type Values = Record<string, string>
 
 /** Pick the mapped cells of one row, keyed by field. */
@@ -278,17 +311,7 @@ function extractVehicle(
         value: v['vehicle.purchaseDate'],
       })
   }
-  let mileage: number | null = null
-  if (v['vehicle.mileage']) {
-    mileage = parseInteger(v['vehicle.mileage'], options.decimalSeparator)
-    if (mileage == null)
-      warnings.push({
-        code: 'invalid_number',
-        field: 'vehicle.mileage',
-        value: v['vehicle.mileage'],
-      })
-    else if (mileage < 0) mileage = null
-  }
+  const mileage = readMileage(v, 'vehicle.mileage', options, warnings)
   let purchasePrice: number | null = null
   if (v['vehicle.purchasePrice']) {
     purchasePrice = parseNumber(v['vehicle.purchasePrice'], options.decimalSeparator)
@@ -340,20 +363,19 @@ function extractService(
     if (total == null)
       warnings.push({ code: 'invalid_number', field: 'service.total', value: v['service.total'] })
   }
-  let mileage: number | null = null
-  if (v['service.mileage']) {
-    mileage = parseInteger(v['service.mileage'], options.decimalSeparator)
-    if (mileage == null)
-      warnings.push({
-        code: 'invalid_number',
-        field: 'service.mileage',
-        value: v['service.mileage'],
-      })
+  const mileage = readMileage(v, 'service.mileage', options, warnings)
+  const description = cleanMultiline(v['service.description'])
+  const notes = cleanMultiline(v['service.notes'])
+  // A job needs a name. Without a title it is the first line of what was done,
+  // then the first line of the notes. A job with no words at all still has its
+  // date, car and total, which is the history the workshop is bringing over, so
+  // it comes in under a stand-in name and the preview says so.
+  const fallback = description ?? notes
+  let title = cleanText(v['service.title']) ?? (fallback ? firstLine(fallback) : null)
+  if (!title && options.untitledServiceTitle) {
+    title = options.untitledServiceTitle
+    warnings.push({ code: 'service_title_placeholder', field: 'service.title', value: title })
   }
-  const description = cleanText(v['service.description'])
-  let title = cleanText(v['service.title'])
-  if (!title && description)
-    title = description.length > 80 ? `${description.slice(0, 77)}...` : description
   if (!title) errors.push({ code: 'service_title_required', field: 'service.title' })
 
   return {
@@ -363,7 +385,7 @@ function extractService(
     total,
     mileage,
     invoiceNumber: cleanText(v['service.invoiceNumber']),
-    notes: cleanText(v['service.notes']),
+    notes,
     technician: cleanText(v['service.technician']),
   }
 }

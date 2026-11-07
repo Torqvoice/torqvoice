@@ -29,13 +29,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { formatBytes } from '@/features/integrations/Lib/format-bytes'
@@ -571,18 +565,12 @@ export function ShareWaveformDialog({
                     {ts('make')}
                   </Label>
                   {makes ? (
-                    <Select value={make} onValueChange={setMake}>
-                      <SelectTrigger id={`wave-make-${code}`} className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {makes.map((m) => (
-                          <SelectItem key={m} value={m}>
-                            {m}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <SearchableSelect
+                      id={`wave-make-${code}`}
+                      value={make}
+                      onValueChange={setMake}
+                      options={makes.map((m) => ({ value: m, label: m }))}
+                    />
                   ) : (
                     <Input
                       id={`wave-make-${code}`}
