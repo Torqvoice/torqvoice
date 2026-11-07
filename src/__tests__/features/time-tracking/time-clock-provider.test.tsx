@@ -1,10 +1,12 @@
-import { act, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
+import { useState } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getMyClock = vi.fn()
+const startMyClock = vi.fn()
 vi.mock('@/features/time-tracking/Actions/timeClockActions', () => ({
   getMyClock: () => getMyClock(),
-  startMyClock: vi.fn(),
+  startMyClock: (input: unknown) => startMyClock(input),
   stopMyClock: vi.fn(),
 }))
 
@@ -31,6 +33,28 @@ function ClockLine() {
   return <p>{open ? `Clocked in on ${open.jobTitle}` : 'Not clocked in'}</p>
 }
 
+/** A start button that says what start() told it. */
+function StartButton() {
+  const { start } = useTimeClock()
+  const [outcome, setOutcome] = useState('')
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() =>
+          start('sr-2').then(
+            (ok) => setOutcome(ok ? 'Start worked' : 'Start refused'),
+            () => setOutcome('Start not confirmed')
+          )
+        }
+      >
+        Start
+      </button>
+      <p>{outcome}</p>
+    </>
+  )
+}
+
 const running = {
   success: true,
   data: {
@@ -48,6 +72,7 @@ const running = {
 describe('TimeClockProvider', () => {
   beforeEach(() => {
     getMyClock.mockReset()
+    startMyClock.mockReset()
     resyncHandlers.clear()
   })
 
@@ -91,5 +116,27 @@ describe('TimeClockProvider', () => {
     })
 
     expect(await screen.findByText('Not clocked in')).toBeInTheDocument()
+  })
+
+  it('does not say a start worked when the clock cannot be read back', async () => {
+    getMyClock.mockResolvedValueOnce(running)
+    render(
+      <TimeClockProvider technicianIds={['tech-1']}>
+        <ClockLine />
+        <StartButton />
+      </TimeClockProvider>
+    )
+    await screen.findByText('Clocked in on Front brake pads')
+
+    // The start reaches the server, the read after it does not
+    startMyClock.mockResolvedValueOnce({
+      success: true,
+      data: { startedAt: '2026-11-07T09:00:00.000Z', closed: null },
+    })
+    getMyClock.mockRejectedValueOnce(new TypeError('Failed to fetch'))
+    fireEvent.click(screen.getByRole('button', { name: 'Start' }))
+
+    expect(await screen.findByText('Start not confirmed')).toBeInTheDocument()
+    expect(screen.queryByText('Start worked')).not.toBeInTheDocument()
   })
 })

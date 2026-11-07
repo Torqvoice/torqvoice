@@ -74,6 +74,14 @@ describe('ConnectionWatcher', () => {
     expect(toast).toHaveBeenCalledTimes(1)
   })
 
+  it('also counts a click on its own, the way a screen reader presses a button', () => {
+    render(<ConnectionWatcher />)
+    fireEvent.click(document.body)
+    failUncaught(offline())
+
+    expect(toast).toHaveBeenCalledTimes(1)
+  })
+
   it('stays quiet about a request the page made by itself, like a laptop waking up', () => {
     render(<ConnectionWatcher />)
     failUncaught(offline())

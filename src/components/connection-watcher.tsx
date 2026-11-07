@@ -66,12 +66,13 @@ export function ConnectionWatcher() {
       })
     }
 
-    window.addEventListener('pointerdown', onInput, { capture: true })
-    window.addEventListener('keydown', onInput, { capture: true })
+    // A screen reader can press a button with a click alone, no pointer or
+    // key before it, so the click counts as well
+    const inputEvents = ['pointerdown', 'keydown', 'click'] as const
+    for (const type of inputEvents) window.addEventListener(type, onInput, { capture: true })
     window.addEventListener('unhandledrejection', onRejection)
     return () => {
-      window.removeEventListener('pointerdown', onInput, { capture: true })
-      window.removeEventListener('keydown', onInput, { capture: true })
+      for (const type of inputEvents) window.removeEventListener(type, onInput, { capture: true })
       window.removeEventListener('unhandledrejection', onRejection)
     }
   }, [t, tDismiss])
