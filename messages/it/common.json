@@ -165,5 +165,9 @@
     "title": "La sessione è scaduta",
     "description": "Accedi di nuovo per continuare a lavorare. Copia prima ciò che stavi scrivendo.",
     "signIn": "Accedi"
+  },
+  "connectionLost": {
+    "title": "Impossibile raggiungere Torqvoice",
+    "description": "L'ultima modifica potrebbe non essere stata salvata. Controlla la connessione e riprova."
   }
 }

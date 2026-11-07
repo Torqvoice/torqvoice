@@ -20,6 +20,7 @@ import { BroadcastLive } from '@/components/broadcast-live'
 import { CurrencySettingsProvider } from '@/components/currency-settings-context'
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { ConnectionWatcher } from '@/components/connection-watcher'
 import { OnlineTracker } from '@/components/online-tracker'
 import { UpdateWatcher } from '@/components/update-watcher'
 import { buildVersion } from '@/lib/build-version.server'
@@ -413,6 +414,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                               <PlateLookupCommand />
                               {isOwnerOrAdmin && <NotificationInitializer />}
                               <OnlineTracker />
+                              <ConnectionWatcher />
                               <UpdateWatcher version={buildVersion()} />
                               <InstallBanner
                                 appName={appBranding.name}

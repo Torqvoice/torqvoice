@@ -165,5 +165,9 @@
     "title": "Sesja wygasła",
     "description": "Zaloguj się ponownie, aby kontynuować pracę. Najpierw skopiuj wpisany tekst.",
     "signIn": "Zaloguj się"
+  },
+  "connectionLost": {
+    "title": "Nie można połączyć się z Torqvoice",
+    "description": "Ostatnia zmiana mogła nie zostać zapisana. Sprawdź połączenie i spróbuj ponownie."
   }
 }

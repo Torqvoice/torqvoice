@@ -165,5 +165,9 @@
     "title": "Sua sessão foi encerrada",
     "description": "Entre novamente para continuar trabalhando. Copie antes o que estava digitando.",
     "signIn": "Entrar"
+  },
+  "connectionLost": {
+    "title": "Não foi possível conectar ao Torqvoice",
+    "description": "Sua última alteração pode não ter sido salva. Verifique sua conexão e tente novamente."
   }
 }
