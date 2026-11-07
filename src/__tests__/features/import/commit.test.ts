@@ -107,7 +107,7 @@ vi.mock('@/features/import/Lib/staging', () => ({
     createdAt: new Date().toISOString(),
   }),
   writeImportProgress: vi.fn(),
-  discardStagedImport: vi.fn(async () => {}),
+  discardStagedImport: vi.fn(async () => undefined),
   readImportProgress: vi.fn(),
 }))
 
