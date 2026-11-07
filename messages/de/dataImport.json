@@ -53,7 +53,8 @@
     "runDryRun": "Testlauf starten",
     "usedBy": "Belegt durch {column}",
     "searchFields": "Felder suchen...",
-    "fieldFor": "Feld für {column}"
+    "fieldFor": "Feld für {column}",
+    "noJobText": "Keine Spalte ist Titel, Beschreibung oder Notizen zugeordnet, daher erhält jeder Auftrag einen Platzhalternamen. Ordnen Sie die Spalte zu, die beschreibt, was gemacht wurde, falls die Datei eine hat."
   },
   "options": {
     "dateFormat": "Datumsformat",

@@ -53,7 +53,8 @@
     "runDryRun": "Kjør prøvekjøring",
     "usedBy": "Brukt av {column}",
     "searchFields": "Søk i felt...",
-    "fieldFor": "Felt for {column}"
+    "fieldFor": "Felt for {column}",
+    "noJobText": "Ingen kolonne er koblet til tittel, beskrivelse eller notater, så hver jobb får et midlertidig navn. Koble kolonnen som sier hva som ble gjort, hvis filen har en."
   },
   "options": {
     "dateFormat": "Datoformat",

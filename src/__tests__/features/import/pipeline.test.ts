@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { type ExistingData, type ImportOptions, planImport } from '@/features/import/Lib/pipeline'
+import { missingRequired } from '@/features/import/Lib/types'
 
 const options = (
   entity: ImportOptions['entity'],
@@ -287,6 +288,13 @@ describe('import plan', () => {
     expect(plan.rows[1].service?.title).toBe('Brakes')
     expect(plan.rows[1].warnings).toEqual([])
     expect(plan.summary).toMatchObject({ create: 2, error: 0, servicesToCreate: 2 })
+  })
+
+  it('needs only a date and a vehicle to run a service history', () => {
+    expect(
+      missingRequired('services', { '0': 'service.date', '1': 'vehicle.licensePlate' })
+    ).toEqual([])
+    expect(missingRequired('services', { '1': 'vehicle.licensePlate' })).toEqual(['service.date'])
   })
 
   it('leaves out an odometer reading no vehicle could have', () => {

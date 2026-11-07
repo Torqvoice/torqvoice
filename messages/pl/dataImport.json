@@ -53,7 +53,8 @@
     "runDryRun": "Uruchom próbny import",
     "usedBy": "Używane przez {column}",
     "searchFields": "Szukaj pól...",
-    "fieldFor": "Pole dla {column}"
+    "fieldFor": "Pole dla {column}",
+    "noJobText": "Żadna kolumna nie jest przypisana do tytułu, opisu ani notatek, więc każde zlecenie otrzyma nazwę zastępczą. Przypisz kolumnę opisującą wykonaną pracę, jeśli plik ją zawiera."
   },
   "options": {
     "dateFormat": "Format daty",

@@ -404,6 +404,28 @@ function definedOnly<T extends Record<string, unknown>>(
   return out as { [K in keyof T]?: NonNullable<T[K]> }
 }
 
+/**
+ * A row that created a customer or vehicle in place of the row meant to (which
+ * could not be written) files it under that row too, so the rows after it
+ * that share it find it there instead of each creating their own.
+ */
+function standIn(ids: Map<number, string>, origin: number | undefined, id: string) {
+  if (origin != null) ids.set(origin, id)
+}
+
+/**
+ * Forget the ids a row handed out, after its transaction rolled back: under
+ * its own index, and under the row it stood in for.
+ */
+function forgetRow(state: CommitState, row: RowPlan) {
+  for (const ids of [state.customerIds, state.vehicleIds]) {
+    const own = ids.get(row.index)
+    ids.delete(row.index)
+    if (own == null) continue
+    for (const [index, id] of ids) if (id === own) ids.delete(index)
+  }
+}
+
 async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void> {
   const { organizationId, userId, batchId, entity } = state
 
@@ -426,9 +448,11 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           }),
         })
       }
-    } else if (row.customerSameAs != null) {
+    } else if (row.customerSameAs != null && state.customerIds.has(row.customerSameAs)) {
       customerId = state.customerIds.get(row.customerSameAs) ?? null
     } else if (row.customer.name) {
+      // Also reached when the row that was to create this customer could not be
+      // written: this row creates it instead (see standIn below).
       const customerNumber = row.customer.customerNumber ?? String(state.nextCustomerNumber++)
       const created = await tx.customer.create({
         data: {
@@ -448,6 +472,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
       })
       customerId = created.id
       state.customerIds.set(row.index, customerId)
+      standIn(state.customerIds, row.customerSameAs, customerId)
     }
   }
 
@@ -486,9 +511,10 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           data: { customerId },
         })
       }
-    } else if (row.vehicleSameAs != null) {
+    } else if (row.vehicleSameAs != null && state.vehicleIds.has(row.vehicleSameAs)) {
       vehicleId = state.vehicleIds.get(row.vehicleSameAs) ?? null
     } else if (v.make && v.model && v.year != null) {
+      // Also reached when the row that was to create this vehicle could not be written.
       const created = await tx.vehicle.create({
         data: {
           make: v.make,
@@ -516,6 +542,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
       })
       vehicleId = created.id
       state.vehicleIds.set(row.index, vehicleId)
+      standIn(state.vehicleIds, row.vehicleSameAs, vehicleId)
     }
   }
 
@@ -624,10 +651,7 @@ export async function commitImport(raw: unknown) {
         else updated++
       }
       // The transaction rolled back, so ids handed out inside it are void.
-      const forget = (row: RowPlan) => {
-        state.customerIds.delete(row.index)
-        state.vehicleIds.delete(row.index)
-      }
+      const forget = (row: RowPlan) => forgetRow(state, row)
 
       for (let start = 0; start < runnable.length; start += CHUNK) {
         const chunk = runnable.slice(start, start + CHUNK)

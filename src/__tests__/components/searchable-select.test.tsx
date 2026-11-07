@@ -87,4 +87,22 @@ describe('SearchableSelect', () => {
     expect(screen.queryByPlaceholderText('Search...')).not.toBeInTheDocument()
     expect(screen.getAllByRole('option')).toHaveLength(3)
   })
+
+  it('can be worked from the keyboard when the list has no search box', () => {
+    const onValueChange = vi.fn()
+    render(
+      <SearchableSelect
+        value="service.date"
+        onValueChange={onValueChange}
+        options={fields.slice(0, 3)}
+      />
+    )
+    open()
+    // The list has the focus, starting on the current choice.
+    const focused = document.activeElement as HTMLElement
+    expect(focused).toHaveAttribute('data-slot', 'command')
+    fireEvent.keyDown(focused, { key: 'ArrowDown' })
+    fireEvent.keyDown(focused, { key: 'Enter' })
+    expect(onValueChange).toHaveBeenCalledWith('service.title')
+  })
 })

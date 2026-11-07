@@ -53,7 +53,8 @@
     "runDryRun": "Paleisti bandomąjį importą",
     "usedBy": "Naudoja {column}",
     "searchFields": "Ieškoti laukų...",
-    "fieldFor": "Laukas stulpeliui {column}"
+    "fieldFor": "Laukas stulpeliui {column}",
+    "noJobText": "Nė vienas stulpelis nesusietas su pavadinimu, aprašymu ar pastabomis, todėl kiekvienas darbas gaus laikiną pavadinimą. Susiekite stulpelį, kuriame aprašyta, kas atlikta, jei faile toks yra."
   },
   "options": {
     "dateFormat": "Datos formatas",

@@ -11,6 +11,7 @@ import {
   Download,
   FileSpreadsheet,
   FileUp,
+  Info,
   Loader2,
   Sparkles,
   Undo2,
@@ -208,6 +209,13 @@ export function ImportWizard({
   )
 
   const missing = useMemo(() => missingRequired(entity, mapping), [entity, mapping])
+  // A history with nothing mapped to say what was done still imports, under a
+  // stand-in name; most often it means the column was forgotten, so say so.
+  const noJobText =
+    entity === 'services' &&
+    !Object.values(mapping).some(
+      (k) => k === 'service.title' || k === 'service.description' || k === 'service.notes'
+    )
 
   const setColumn = (col: number, key: string) => {
     setMapping((prev) => {
@@ -673,6 +681,13 @@ export function ImportWizard({
                 </Select>
               </div>
             </div>
+
+            {noJobText && (
+              <div className="flex items-start gap-2 rounded-lg border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+                <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                <span>{t('mapping.noJobText')}</span>
+              </div>
+            )}
 
             {missing.length > 0 && (
               <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-50 px-3 py-2 text-sm text-amber-900 dark:bg-amber-950/20 dark:text-amber-200">

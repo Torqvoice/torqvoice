@@ -53,7 +53,8 @@
     "runDryRun": "Esegui simulazione",
     "usedBy": "Usato da {column}",
     "searchFields": "Cerca campi...",
-    "fieldFor": "Campo per {column}"
+    "fieldFor": "Campo per {column}",
+    "noJobText": "Nessuna colonna è associata a titolo, descrizione o note, quindi ogni intervento riceverà un nome provvisorio. Associa la colonna che descrive il lavoro svolto, se il file ne ha una."
   },
   "options": {
     "dateFormat": "Formato data",

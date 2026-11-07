@@ -53,7 +53,8 @@
     "runDryRun": "Proefimport uitvoeren",
     "usedBy": "In gebruik door {column}",
     "searchFields": "Velden zoeken...",
-    "fieldFor": "Veld voor {column}"
+    "fieldFor": "Veld voor {column}",
+    "noJobText": "Er is geen kolom gekoppeld aan titel, omschrijving of notities, dus elke werkorder krijgt een tijdelijke naam. Koppel de kolom die beschrijft wat er is gedaan, als het bestand die heeft."
   },
   "options": {
     "dateFormat": "Datumnotatie",

@@ -53,7 +53,8 @@
     "runDryRun": "Deneme çalıştırması yap",
     "usedBy": "{column} tarafından kullanılıyor",
     "searchFields": "Alan ara...",
-    "fieldFor": "{column} için alan"
+    "fieldFor": "{column} için alan",
+    "noJobText": "Başlık, açıklama veya notlarla eşlenmiş bir sütun yok, bu yüzden her iş geçici bir ad alacak. Dosyada varsa, yapılan işi anlatan sütunu eşleyin."
   },
   "options": {
     "dateFormat": "Tarih biçimi",

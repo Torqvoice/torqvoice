@@ -153,6 +153,12 @@ export function SearchableSelect({
         <Command
           // Matches what the user can read, never the value: an id would match random letters.
           filter={(_, query, keywords) => pickerScore(keywords?.join(' ') ?? '', query)}
+          // Opens on the current choice, so Enter keeps it and the arrows move from it.
+          defaultValue={value ?? undefined}
+          // Without a search box nothing inside can take focus, and the arrow keys
+          // and Enter would never reach the list: the list itself takes it instead.
+          tabIndex={withSearch ? undefined : 0}
+          className={withSearch ? undefined : 'outline-none'}
         >
           {withSearch && (
             <CommandInput

@@ -53,7 +53,8 @@
     "runDryRun": "Run dry run",
     "usedBy": "In use by {column}",
     "searchFields": "Search fields...",
-    "fieldFor": "Field for {column}"
+    "fieldFor": "Field for {column}",
+    "noJobText": "No column is mapped to the service title, description or notes, so every job gets a stand-in name. Map the column that says what was done, if the file has one."
   },
   "options": {
     "dateFormat": "Date format",

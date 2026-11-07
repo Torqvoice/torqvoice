@@ -53,7 +53,8 @@
     "runDryRun": "Executar simulação",
     "usedBy": "Em uso por {column}",
     "searchFields": "Buscar campos...",
-    "fieldFor": "Campo para {column}"
+    "fieldFor": "Campo para {column}",
+    "noJobText": "Nenhuma coluna está mapeada para título, descrição ou notas, então cada serviço receberá um nome provisório. Mapeie a coluna que descreve o que foi feito, se o arquivo tiver uma."
   },
   "options": {
     "dateFormat": "Formato de data",
