@@ -1478,6 +1478,7 @@
       "paused": "Jūsų plane nebėra Torqvoice atsarginių kopijų. Vykdymai sustabdyti; atkūrimo taškai saugomi iki {date}, o tada ištrinami.",
       "upsell": "Prieinama su Pro planu: Torqvoice kas valandą kuriamos atsarginės kopijos su atkūrimo taškais, į kuriuos galite grįžti.",
       "planLink": "Peržiūrėti planus",
+      "example": "Pavyzdys",
       "pointsEmpty": "Pirmoji atsarginė kopija dar nesukurta.",
       "needsOwner": "Atkurti gali tik dirbtuvės savininkas.",
       "listTitle": "Atsarginės kopijos",

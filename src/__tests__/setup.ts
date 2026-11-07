@@ -86,6 +86,20 @@ vi.mock('next-intl', () => ({
       new Intl.NumberFormat('en', options).format(value),
     dateTime: (value: Date | number, options?: Intl.DateTimeFormatOptions) =>
       new Intl.DateTimeFormat('en', options).format(value),
+    // The largest whole unit, the way next-intl picks one: "32 minutes ago".
+    relativeTime: (value: Date | number, now: Date | number = Date.now()) => {
+      const seconds = Math.round((Number(value) - Number(now)) / 1000)
+      const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+      const units: [Intl.RelativeTimeFormatUnit, number][] = [
+        ['day', 86_400],
+        ['hour', 3_600],
+        ['minute', 60],
+      ]
+      for (const [unit, size] of units) {
+        if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit)
+      }
+      return rtf.format(seconds, 'second')
+    },
   }),
   useMessages: () => ({}),
   NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,

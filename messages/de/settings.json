@@ -1478,6 +1478,7 @@
       "paused": "Ihr Tarif enthält keine Sicherungen von Torqvoice mehr. Die Läufe wurden gestoppt; die Wiederherstellungspunkte werden bis {date} aufbewahrt und danach gelöscht.",
       "upsell": "Verfügbar mit Pro: stündliche Sicherungen durch Torqvoice mit Wiederherstellungspunkten, zu denen Sie zurückkehren können.",
       "planLink": "Tarife ansehen",
+      "example": "Beispiel",
       "pointsEmpty": "Die erste Sicherung ist noch nicht gelaufen.",
       "needsOwner": "Nur der Inhaber der Werkstatt kann wiederherstellen.",
       "listTitle": "Sicherungen",

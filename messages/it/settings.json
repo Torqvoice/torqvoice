@@ -1478,6 +1478,7 @@
       "paused": "Il tuo piano non include più i backup di Torqvoice. Le esecuzioni si sono fermate; i punti di ripristino vengono conservati fino al {date} e poi eliminati.",
       "upsell": "Disponibile con Pro: backup orari eseguiti da Torqvoice, con punti di ripristino a cui puoi tornare.",
       "planLink": "Vedi i piani",
+      "example": "Esempio",
       "pointsEmpty": "Il primo backup non è ancora stato eseguito.",
       "needsOwner": "Solo il proprietario dell'officina può eseguire il ripristino.",
       "listTitle": "Backup",

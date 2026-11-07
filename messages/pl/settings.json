@@ -1478,6 +1478,7 @@
       "paused": "Twój plan nie obejmuje już kopii zapasowych Torqvoice. Uruchomienia zostały wstrzymane; punkty przywracania są przechowywane do {date}, a potem zostaną usunięte.",
       "upsell": "Dostępne w planie Pro: cogodzinne kopie zapasowe wykonywane przez Torqvoice z punktami przywracania, do których możesz wrócić.",
       "planLink": "Zobacz plany",
+      "example": "Przykład",
       "pointsEmpty": "Pierwsza kopia zapasowa nie została jeszcze utworzona.",
       "needsOwner": "Tylko właściciel warsztatu może przywracać.",
       "listTitle": "Kopie zapasowe",
