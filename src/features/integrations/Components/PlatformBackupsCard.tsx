@@ -300,15 +300,22 @@ function Stat({
   icon: Icon,
   label,
   tone = 'muted',
+  className,
   children,
 }: {
   icon: ComponentType<{ className?: string }>
   label: string
   tone?: Tone
+  className?: string
   children: ReactNode
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-lg border border-card-edge/70 bg-muted/30 px-3.5 py-3">
+    <div
+      className={cn(
+        'flex items-start gap-3 rounded-lg border border-card-edge/70 bg-muted/30 px-3.5 py-3',
+        className
+      )}
+    >
       <div
         className={cn(
           'flex h-8 w-8 shrink-0 items-center justify-center rounded-md ring-1 ring-inset',
@@ -335,6 +342,8 @@ function Stat({
  * would get. Sharp and readable, labelled as an example so nobody takes it
  * for the workshop's own backups, dimmed a little and faded out at the
  * bottom. Inert: nothing in it can be clicked, tabbed to or read aloud.
+ * On a phone the three figures would stack and push the restore points out
+ * of the frame, so only the first is shown there.
  */
 function ExamplePreview({ now }: { now: Date }) {
   const t = useTranslations('settings.data.platformBackups')
@@ -358,19 +367,19 @@ function ExamplePreview({ now }: { now: Date }) {
         aria-hidden
         inert
         data-testid="platform-backups-example"
-        className="pointer-events-none max-h-80 select-none space-y-4 overflow-hidden opacity-75 [mask-image:linear-gradient(to_bottom,black_40%,transparent)]"
+        className="pointer-events-none max-h-96 select-none space-y-4 overflow-hidden opacity-75 [mask-image:linear-gradient(to_bottom,black_40%,transparent)] sm:max-h-80"
       >
         <dl className="grid gap-3 sm:grid-cols-3">
           <Stat icon={CheckCircle2} tone="good" label={t('lastGood')}>
             <span suppressHydrationWarning>{format.relativeTime(lastRun, now)}</span>
           </Stat>
-          <Stat icon={CalendarClock} label={t('nextRun')}>
+          <Stat icon={CalendarClock} label={t('nextRun')} className="hidden sm:flex">
             {format.dateTime(new Date(lastRun.getTime() + HOUR_MS), {
               dateStyle: 'medium',
               timeStyle: 'short',
             })}
           </Stat>
-          <Stat icon={HardDrive} label={t('repositorySize')}>
+          <Stat icon={HardDrive} label={t('repositorySize')} className="hidden sm:flex">
             {formatBytes(EXAMPLE_REPOSITORY_BYTES)}
           </Stat>
         </dl>
