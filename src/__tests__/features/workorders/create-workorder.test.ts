@@ -718,6 +718,87 @@ describe('createDraftServiceRecord — scheduling', () => {
     vi.useRealTimers()
   })
 
+  /**
+   * A customer asking for a day through the portal names a day, not a time.
+   * The day used to be passed as the start time, so the job was booked from
+   * midnight to one in the morning. It now takes the first free slot that day.
+   */
+  it('books a day the customer asked for from its opening, not at midnight', async () => {
+    vi.useFakeTimers()
+    // Tuesday 1 September, 11:00; the customer asked for Monday 7 September.
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-asked' } as any)
+
+    const asked = new Date(Date.UTC(2026, 8, 7, 0, 0, 0))
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, undefined, undefined, asked)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    const startDT: Date = createCall.data.startDateTime
+    expect(startDT.toISOString()).toBe('2026-09-07T08:30:00.000Z')
+    vi.useRealTimers()
+  })
+
+  it("does not book over the default technician's job on the asked-for day", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      ...SHOP_HOURS,
+      { key: 'workshop.defaultTechnician', value: 'Default Tech' },
+    ])
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.technician.findFirst)
+      .mockResolvedValueOnce({ id: 'default-tech-id', name: 'Default Tech' } as any)
+      .mockResolvedValue({ name: 'Default Tech' } as any)
+    // The default technician already has the morning of Monday 7 September.
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
+      {
+        id: 'busy',
+        title: 'Clutch',
+        startDateTime: new Date(Date.UTC(2026, 8, 7, 8, 30)),
+        endDateTime: new Date(Date.UTC(2026, 8, 7, 11, 0)),
+        technicianId: 'default-tech-id',
+        workBayId: null,
+        vehicle: null,
+      },
+    ] as any)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-default-busy' } as any)
+
+    const asked = new Date(Date.UTC(2026, 8, 7, 0, 0, 0))
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, undefined, undefined, asked)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    expect(createCall.data.technicianId).toBe('default-tech-id')
+    expect(createCall.data.startDateTime.toISOString()).toBe('2026-09-07T11:00:00.000Z')
+    vi.useRealTimers()
+  })
+
+  it('ignores an asked-for day that has already gone and books the next free slot', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-past' } as any)
+
+    const past = new Date(Date.UTC(2026, 7, 20, 0, 0, 0))
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, undefined, undefined, past)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    const startDT: Date = createCall.data.startDateTime
+    expect(startDT.toISOString().slice(0, 13)).toBe('2026-09-01T11')
+    vi.useRealTimers()
+  })
+
   it('steps past a booking the technician already has', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 6, 0, 0)))
