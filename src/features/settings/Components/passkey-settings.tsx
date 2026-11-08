@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Fingerprint, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { describeUserAgent } from '@/lib/user-agent-label'
 
 interface Passkey {
   id: string
@@ -59,7 +60,12 @@ export function PasskeySettings() {
   const handleRegister = async () => {
     setRegistering(true)
     try {
-      const result = await authClient.passkey.addPasskey()
+      // Named after the device it is made on, the way the signed-in devices
+      // list names it, so a second passkey is not another "Unnamed passkey".
+      const label = describeUserAgent(navigator.userAgent)
+      const result = await authClient.passkey.addPasskey(
+        label === 'Unknown device' ? undefined : { name: label }
+      )
       if (result?.error) {
         // User dismissed the passkey prompt — not an error state
         if ('code' in result.error && result.error.code === 'REGISTRATION_CANCELLED') return
