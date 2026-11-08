@@ -77,25 +77,41 @@ export function useServiceActions({
     notesRef,
     initialData,
     customFieldsSaveRef,
+    lastSaveErrorRef,
+    leavingRef,
   } = formState
+
+  /**
+   * A save the rules refused. The reason is kept for the leave dialog; when a
+   * link is waiting on this save, the dialog says it instead of a toast.
+   */
+  const refuse = (message: string, show: () => void = () => toast.error(message)) => {
+    lastSaveErrorRef.current = message
+    if (!leavingRef.current) show()
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    // Running from here: the custom fields go to the server before the rest,
+    // and a link waiting on this save has to wait for that part too.
+    isSavingRef.current = true
 
     // Validate and save custom fields before saving
     if (customFieldsSaveRef.current) {
       try {
         const { valid } = await customFieldsSaveRef.current()
         if (!valid) {
-          toast.error(t('page.customFieldsInvalid'))
+          isSavingRef.current = false
+          refuse(t('page.customFieldsInvalid'))
           return
         }
       } catch (err) {
         console.error('Custom fields save error:', err)
-        toast.error(t('page.customFieldsSaveFailed'))
+        isSavingRef.current = false
+        refuse(t('page.customFieldsSaveFailed'))
         return
       }
     }
@@ -124,11 +140,11 @@ export function useServiceActions({
       concerns,
     })
     if (problem) {
-      toast.error(t(`page.problems.${problem}`))
+      isSavingRef.current = false
+      refuse(t(`page.problems.${problem}`))
       return
     }
 
-    isSavingRef.current = true
     setLoading(true)
 
     // A field the layout does not render at all is left alone; an emptied one
@@ -217,7 +233,8 @@ export function useServiceActions({
         router.refresh()
       }
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('page.failedUpdate'))
+      const message = result.error || t('page.failedUpdate')
+      refuse(message, () => modal.open('error', tc('errors.error'), message))
     }
 
     isSavingRef.current = false

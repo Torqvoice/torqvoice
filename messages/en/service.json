@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Hi {customer_name}, an update on your {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Your changes are not saved",
+    "fallbackReason": "The latest changes could not be saved.",
+    "hint": "Stay to fix it, or leave and lose the changes made since the last save.",
+    "stay": "Stay and fix",
+    "leave": "Leave without saving"
   }
 }

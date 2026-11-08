@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Olá {customer_name}, uma atualização sobre a sua {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "As suas alterações não foram guardadas",
+    "fallbackReason": "Não foi possível guardar as últimas alterações.",
+    "hint": "Fique para corrigir ou saia e perca as alterações feitas desde a última gravação.",
+    "stay": "Ficar e corrigir",
+    "leave": "Sair sem guardar"
   }
 }

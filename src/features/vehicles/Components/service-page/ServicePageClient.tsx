@@ -63,6 +63,7 @@ import type { ServicePageClientProps, ServiceTab } from './service-page-types'
 import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
 import { track } from '@/lib/analytics'
 import { LaborAddedBanner } from './LaborAddedBanner'
+import { LeaveUnsavedDialog } from './LeaveUnsavedDialog'
 import { useLiveRecord } from '@/features/realtime/hooks'
 import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
 import { ModernDetails } from './modern/ModernDetails'
@@ -628,6 +629,13 @@ export function ServicePageClient({
                 formState.applyLaborAddedElsewhere()
                 formState.applyPartsAddedElsewhere()
               }}
+            />
+
+            <LeaveUnsavedDialog
+              open={formState.blockedLeave !== null}
+              reason={formState.blockedLeave?.reason ?? null}
+              onStay={formState.stayOnPage}
+              onLeave={formState.leaveWithoutSaving}
             />
 
             {(lockState.locked || lockState.unlockedAt) && (

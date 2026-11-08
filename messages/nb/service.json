@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Hei {customer_name}, en oppdatering om din {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Endringene er ikke lagret",
+    "fallbackReason": "De siste endringene kunne ikke lagres.",
+    "hint": "Bli for å rette det, eller gå og mist endringene siden forrige lagring.",
+    "stay": "Bli og rett opp",
+    "leave": "Gå uten å lagre"
   }
 }

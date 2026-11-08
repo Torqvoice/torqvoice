@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Hallo {customer_name}, ein Update zu Ihrem {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Ihre Änderungen sind nicht gespeichert",
+    "fallbackReason": "Die letzten Änderungen konnten nicht gespeichert werden.",
+    "hint": "Bleiben Sie, um es zu korrigieren, oder verlassen Sie die Seite und verlieren Sie die Änderungen seit dem letzten Speichern.",
+    "stay": "Bleiben und korrigieren",
+    "leave": "Ohne Speichern verlassen"
   }
 }

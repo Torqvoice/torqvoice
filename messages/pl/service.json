@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Dzień dobry {customer_name}, aktualizacja dotycząca {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Zmiany nie zostały zapisane",
+    "fallbackReason": "Nie udało się zapisać ostatnich zmian.",
+    "hint": "Zostań, aby to poprawić, albo wyjdź i strać zmiany wprowadzone od ostatniego zapisu.",
+    "stay": "Zostań i popraw",
+    "leave": "Wyjdź bez zapisywania"
   }
 }

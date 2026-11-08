@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Sveiki, {customer_name}, naujiena apie jūsų {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Pakeitimai neišsaugoti",
+    "fallbackReason": "Paskutinių pakeitimų nepavyko išsaugoti.",
+    "hint": "Likite ir pataisykite arba išeikite ir praraskite pakeitimus nuo paskutinio išsaugojimo.",
+    "stay": "Likti ir pataisyti",
+    "leave": "Išeiti neišsaugojus"
   }
 }

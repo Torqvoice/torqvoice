@@ -195,6 +195,9 @@ export function useServiceFormState({
   useEffect(() => {
     if (!hasUnsavedChanges) return
     const handler = (e: BeforeUnloadEvent) => {
+      // Read live: "Leave without saving" drops the edits and goes in the
+      // same moment, before this listener is taken down.
+      if (!hasUnsavedChangesRef.current) return
       e.preventDefault()
     }
     window.addEventListener('beforeunload', handler)
@@ -222,12 +225,58 @@ export function useServiceFormState({
    * arrow pressed within those seconds went nowhere, and in-app navigation
    * raised no warning about it. So a click on any link to another page of
    * the app is held until the pending save has run, and the same click is
-   * then let through; a save the rules refuse has already said why, and the
-   * edit stays on screen to be fixed.
+   * then let through. A save the rules refuse holds the link and asks: stay
+   * and fix it, or leave without the unsaved changes (blockedLeave below).
    */
   const saveNowRef = useRef(saveNow)
   saveNowRef.current = saveNow
   const releasedLink = useRef<HTMLAnchorElement | null>(null)
+
+  /**
+   * Why the latest save was refused, in words, so the way out can say it.
+   * Set by the save itself; cleared when a link starts a new attempt.
+   */
+  const lastSaveErrorRef = useRef<string | null>(null)
+  /**
+   * True while a link waits on its save. A refusal then goes into the leave
+   * dialog rather than a toast or an error box on top of it.
+   */
+  const leavingRef = useRef(false)
+  /**
+   * The link a refused save held back, and why it was refused.
+   *
+   * Holding the link used to be the end of it: a required custom field left
+   * empty refused every save, so a note typed on the job could neither be
+   * saved nor left behind, and every link on the page answered with the same
+   * error. The person now chooses: stay and fix it, or leave without the
+   * changes made since the last save.
+   */
+  const [blockedLeave, setBlockedLeave] = useState<{
+    anchor: HTMLAnchorElement
+    reason: string | null
+  } | null>(null)
+
+  const stayOnPage = useCallback(() => setBlockedLeave(null), [])
+
+  const leaveWithoutSaving = useCallback(() => {
+    if (!blockedLeave) return
+    if (autosaveTimer.current) {
+      clearTimeout(autosaveTimer.current)
+      autosaveTimer.current = null
+    }
+    hasUnsavedChangesRef.current = false
+    setHasUnsavedChanges(false)
+    setBlockedLeave(null)
+    const { anchor } = blockedLeave
+    if (!anchor.isConnected) {
+      // A link inside a menu that has since closed: go by its address.
+      window.location.assign(anchor.href)
+      return
+    }
+    releasedLink.current = anchor
+    anchor.click()
+  }, [blockedLeave])
+
   useEffect(() => {
     if (!hasUnsavedChanges) return
     const handler = (event: MouseEvent) => {
@@ -249,11 +298,25 @@ export function useServiceFormState({
 
       event.preventDefault()
       event.stopPropagation()
-      void saveNowRef.current().then(() => {
-        if (hasUnsavedChangesRef.current) return
-        releasedLink.current = anchor
-        anchor.click()
+      leavingRef.current = true
+      lastSaveErrorRef.current = null
+      // An autosave already under way answers first; a second save would be
+      // turned away while it runs and read as a refusal.
+      const settled = new Promise<void>((resolve) => {
+        const check = () => (isSavingRef.current ? setTimeout(check, 50) : resolve())
+        check()
       })
+      void settled
+        .then(() => (hasUnsavedChangesRef.current ? saveNowRef.current() : undefined))
+        .then(() => {
+          leavingRef.current = false
+          if (hasUnsavedChangesRef.current) {
+            setBlockedLeave({ anchor, reason: lastSaveErrorRef.current })
+            return
+          }
+          releasedLink.current = anchor
+          anchor.click()
+        })
     }
     document.addEventListener('click', handler, true)
     return () => document.removeEventListener('click', handler, true)
@@ -534,6 +597,12 @@ export function useServiceFormState({
   )
 
   return {
+    /** A link the save refused to let through, waiting on the person: stay or leave. */
+    blockedLeave,
+    stayOnPage,
+    leaveWithoutSaving,
+    lastSaveErrorRef,
+    leavingRef,
     // State
     loading,
     setLoading,
