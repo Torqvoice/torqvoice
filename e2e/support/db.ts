@@ -1496,6 +1496,30 @@ export async function permissionDenialsFor(email: string, since: Date): Promise<
 }
 
 /**
+ * What the audit log says about one person's sign-in security since a moment:
+ * two-factor sign-in turned on or off, a backup code used, a passkey added or
+ * removed. Read as the English line the log shows.
+ *
+ * The writes are fire-and-forget, so poll this rather than read it once.
+ */
+export async function accountSecurityEntries(email: string, since: Date): Promise<string[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{ message: string }>(
+      `select coalesce(a.message, a.action) as message
+         from audit_logs a
+         join users u on u.id = a."userId"
+        where lower(u.email) = lower($1)
+          and a.action in ('auth.twoFactorEnabled', 'auth.twoFactorDisabled', 'auth.backupCodeUsed',
+                           'auth.passkeyAdded', 'auth.passkeyRemoved')
+          and a.timestamp >= $2
+        order by a.timestamp`,
+      [email, since]
+    )
+    return result.rows.map((row) => row.message)
+  })
+}
+
+/**
  * Sets one of a workshop's settings directly, returning what was there before
  * (null when the key had never been saved), so a spec can put it back.
  *
