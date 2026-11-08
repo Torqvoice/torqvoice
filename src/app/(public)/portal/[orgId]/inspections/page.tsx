@@ -14,6 +14,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { portalConditionCounts } from '@/features/portal/Lib/inspectionSummary'
 
 export default async function PortalInspectionsPage({
   params,
@@ -55,13 +56,7 @@ export default async function PortalInspectionsPage({
             {/* Card list (phones + small tablets) */}
             <div className="space-y-2 md:hidden">
               {inspections.map((insp) => {
-                const conditions = insp.items.reduce(
-                  (acc, item) => {
-                    acc[item.condition] = (acc[item.condition] || 0) + 1
-                    return acc
-                  },
-                  {} as Record<string, number>
-                )
+                const conditions = portalConditionCounts(insp.items)
 
                 return (
                   <div key={insp.id} className="rounded-lg border bg-card p-3">
@@ -83,17 +78,17 @@ export default async function PortalInspectionsPage({
                     </div>
                     <p className="truncate text-xs text-muted-foreground">{insp.template.name}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                      {conditions.good && (
+                      {conditions.good > 0 && (
                         <span className="text-green-600">
                           {t('good', { count: conditions.good })}
                         </span>
                       )}
-                      {conditions.fair && (
+                      {conditions.fair > 0 && (
                         <span className="text-yellow-600">
                           {t('fair', { count: conditions.fair })}
                         </span>
                       )}
-                      {conditions.poor && (
+                      {conditions.poor > 0 && (
                         <span className="text-red-600">
                           {t('poor', { count: conditions.poor })}
                         </span>
@@ -130,13 +125,7 @@ export default async function PortalInspectionsPage({
                 </TableHeader>
                 <TableBody>
                   {inspections.map((insp) => {
-                    const conditions = insp.items.reduce(
-                      (acc, item) => {
-                        acc[item.condition] = (acc[item.condition] || 0) + 1
-                        return acc
-                      },
-                      {} as Record<string, number>
-                    )
+                    const conditions = portalConditionCounts(insp.items)
 
                     return (
                       <TableRow key={insp.id}>
@@ -159,17 +148,17 @@ export default async function PortalInspectionsPage({
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-2 text-xs">
-                            {conditions.good && (
+                            {conditions.good > 0 && (
                               <span className="text-green-600">
                                 {t('good', { count: conditions.good })}
                               </span>
                             )}
-                            {conditions.fair && (
+                            {conditions.fair > 0 && (
                               <span className="text-yellow-600">
                                 {t('fair', { count: conditions.fair })}
                               </span>
                             )}
-                            {conditions.poor && (
+                            {conditions.poor > 0 && (
                               <span className="text-red-600">
                                 {t('poor', { count: conditions.poor })}
                               </span>

@@ -13,6 +13,7 @@ import { db } from '@/lib/db'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
 import { ReportSoldButton } from '@/features/portal/Components/ReportSoldButton'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
+import { portalConditionCounts } from '@/features/portal/Lib/inspectionSummary'
 
 const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
   active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -192,13 +193,7 @@ export default async function PortalVehicleDetailPage({
               ) : (
                 <div className="divide-y">
                   {v.inspections.map((insp) => {
-                    const conditions = insp.items.reduce(
-                      (acc, item) => {
-                        acc[item.condition] = (acc[item.condition] || 0) + 1
-                        return acc
-                      },
-                      {} as Record<string, number>
-                    )
+                    const conditions = portalConditionCounts(insp.items)
 
                     return (
                       <div
@@ -213,17 +208,17 @@ export default async function PortalVehicleDetailPage({
                               ` - ${t('completed', { date: new Date(insp.completedAt).toLocaleDateString(undefined, { timeZone }) })}`}
                           </p>
                           <div className="mt-1 flex gap-2">
-                            {conditions.good && (
+                            {conditions.good > 0 && (
                               <span className="text-xs text-green-600">
                                 {t('good', { count: conditions.good })}
                               </span>
                             )}
-                            {conditions.fair && (
+                            {conditions.fair > 0 && (
                               <span className="text-xs text-yellow-600">
                                 {t('fair', { count: conditions.fair })}
                               </span>
                             )}
-                            {conditions.poor && (
+                            {conditions.poor > 0 && (
                               <span className="text-xs text-red-600">
                                 {t('poor', { count: conditions.poor })}
                               </span>
