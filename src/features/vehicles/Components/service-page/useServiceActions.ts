@@ -57,9 +57,9 @@ export function useServiceActions({
     partItems,
     laborItems,
     laborItemsForSave,
-    clearLaborAddedElsewhere,
+    commitLaborAddedElsewhere,
     partItemsForSave,
-    clearPartsAddedElsewhere,
+    commitPartsAddedElsewhere,
     subtotal,
     taxRate,
     taxInclusive,
@@ -207,8 +207,8 @@ export function useServiceActions({
     const result = await updateServiceRecord(payload)
 
     if (result.success) {
-      clearLaborAddedElsewhere()
-      clearPartsAddedElsewhere()
+      commitLaborAddedElsewhere()
+      commitPartsAddedElsewhere()
       setHasUnsavedChanges(false)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {

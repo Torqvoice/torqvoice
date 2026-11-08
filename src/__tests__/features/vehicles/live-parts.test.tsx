@@ -16,7 +16,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { addedPartLines } from '@/features/vehicles/Lib/partLines'
 import { useServiceFormState } from '@/features/vehicles/Components/service-page/useServiceFormState'
 import { LaborAddedBanner } from '@/features/vehicles/Components/service-page/LaborAddedBanner'
-import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
+import type { ServiceLaborInput, ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 
 vi.mock('@/hooks/use-deferred-commit', () => ({
   useDeferredCommit: () => ({ schedule: vi.fn(), cancel: vi.fn() }),
@@ -37,7 +37,7 @@ const part = (name: string, unitPrice = 50, quantity = 1, inventoryPartId?: stri
 const DESK = part('Brake cleaner', 12)
 const SCANNED = part('Front brake pad set, ceramic', 72, 1, 'inv-pads')
 
-function props(partItems: ServicePartInput[]) {
+function props(partItems: ServicePartInput[], laborItems: ServiceLaborInput[] = []) {
   return {
     vehicleId: 'veh-1',
     defaultTaxRate: 0,
@@ -47,7 +47,7 @@ function props(partItems: ServicePartInput[]) {
       id: 'rec-1',
       concerns: [],
       partItems,
-      laborItems: [],
+      laborItems,
       taxRate: 0,
       taxInclusive: false,
       discountValue: 0,
@@ -96,15 +96,79 @@ describe('a part scanned on from the technician app', () => {
   })
 })
 
+describe('saving with lines still waiting', () => {
+  it('counts them in the totals the save sends', () => {
+    const { result, rerender } = openPage()
+
+    act(() => result.current.dirtySetPartItems([DESK]))
+    rerender(props([DESK, SCANNED]))
+
+    // The list on screen is still the desk's, but the money matches the lines a save writes.
+    expect(result.current.partItems).toEqual([DESK])
+    expect(result.current.subtotal).toBe(DESK.total + SCANNED.total)
+  })
+
+  it('keeps them in the list once a save has written them', () => {
+    const { result, rerender } = openPage()
+
+    act(() => result.current.dirtySetPartItems([DESK]))
+    rerender(props([DESK, SCANNED]))
+    act(() => result.current.commitPartsAddedElsewhere())
+
+    // The re-read after the save reads the same as before, so nothing else
+    // would bring the part back; the next save must still include it.
+    rerender(props([DESK, SCANNED]))
+    expect(result.current.partItems).toEqual([DESK, SCANNED])
+    expect(result.current.partsAddedElsewhere).toEqual([])
+    expect(result.current.partItemsForSave).toEqual([DESK, SCANNED])
+  })
+
+  it('leaves a part that arrived while the save ran waiting', () => {
+    const { result, rerender } = openPage()
+    const late = part('Caliper grease', 9)
+
+    act(() => result.current.dirtySetPartItems([DESK]))
+    rerender(props([DESK, SCANNED]))
+    // The save goes out with what was waiting then...
+    const commitSent = result.current.commitPartsAddedElsewhere
+    // ...and another part lands before it comes back.
+    rerender(props([DESK, SCANNED, late]))
+    act(() => commitSent())
+
+    expect(result.current.partItems).toEqual([DESK, SCANNED])
+    expect(result.current.partsAddedElsewhere).toEqual([late])
+  })
+
+  it('does the same for labour', () => {
+    const { result, rerender } = openPage([])
+    const billed: ServiceLaborInput = {
+      description: 'Replaced front pads',
+      hours: 1,
+      rate: 125,
+      total: 125,
+      pricingType: 'hourly',
+    }
+
+    act(() => result.current.dirtySetPartItems([DESK]))
+    rerender(props([], [billed]))
+    expect(result.current.laborAddedElsewhere).toEqual([billed])
+    expect(result.current.subtotal).toBe(DESK.total + 125)
+
+    act(() => result.current.commitLaborAddedElsewhere())
+    expect(result.current.laborItems).toEqual([billed])
+    expect(result.current.laborAddedElsewhere).toEqual([])
+  })
+})
+
 describe('the banner', () => {
   it('names parts, labour, or both', () => {
-    const { rerender } = render(<LaborAddedBanner count={0} parts={1} onShow={() => {}} />)
+    const { rerender } = render(<LaborAddedBanner count={0} parts={1} onShow={vi.fn()} />)
     expect(screen.getByText('A technician added a part to this job')).toBeInTheDocument()
 
-    rerender(<LaborAddedBanner count={1} parts={2} onShow={() => {}} />)
+    rerender(<LaborAddedBanner count={1} parts={2} onShow={vi.fn()} />)
     expect(screen.getByText('A technician added labor and parts to this job')).toBeInTheDocument()
 
-    rerender(<LaborAddedBanner count={0} parts={0} onShow={() => {}} />)
+    rerender(<LaborAddedBanner count={0} parts={0} onShow={vi.fn()} />)
     expect(screen.queryByTestId('labor-added-banner')).toBeNull()
   })
 })
