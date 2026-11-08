@@ -5,6 +5,7 @@ import {
 } from '@/lib/currencies'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { formatCurrency, formatDate, type CurrencyFormat } from '@/lib/format'
+import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
 import type { EmailKind } from './emailKinds'
 import { kindSpec } from './emailKinds'
 import type { SummaryRowKey } from './emailTemplate'
@@ -230,15 +231,32 @@ export interface SampleFormat {
   date: DateFormatter
 }
 
-/** The sample format from a workshop's settings, as `getSettings` returns them. */
+/**
+ * The sample format from a workshop's settings, as `getSettings` returns them:
+ * the caller asks for SAMPLE_FORMAT_KEYS. The time zone is resolved the way a
+ * send resolves it (the one set, else the one detected, else UTC), so the
+ * preview and a test mail show the same day.
+ */
 export function sampleFormatFrom(settings: Record<string, string | undefined>): SampleFormat {
   const dateFormat = settings[SETTING_KEYS.DATE_FORMAT] || undefined
-  const timezone = settings[SETTING_KEYS.TIMEZONE] || undefined
+  const timezone = resolveWorkshopTimeZone(
+    settings[SETTING_KEYS.TIMEZONE],
+    settings[SETTING_KEYS.TIMEZONE_DETECTED]
+  )
   return {
     currency: resolveCurrencySettings(settings),
     date: (date) => formatDate(date, dateFormat, timezone),
   }
 }
+
+/** The settings `sampleFormatFrom` reads, for the page that loads them. */
+export const SAMPLE_FORMAT_KEYS = [
+  SETTING_KEYS.CURRENCY_CODE,
+  SETTING_KEYS.CURRENCY_FORMAT,
+  SETTING_KEYS.DATE_FORMAT,
+  SETTING_KEYS.TIMEZONE,
+  SETTING_KEYS.TIMEZONE_DETECTED,
+]
 
 const DEFAULT_SAMPLE_FORMAT = sampleFormatFrom({})
 
@@ -246,6 +264,8 @@ const DEFAULT_SAMPLE_FORMAT = sampleFormatFrom({})
 const SAMPLE_TOTAL = 1250
 const SAMPLE_PAID = 1000
 const SAMPLE_DUE = new Date('2026-09-30T12:00:00Z')
+/** When the stand-in team invitation runs out. */
+const SAMPLE_INVITE_EXPIRES = new Date('2026-09-16T12:00:00Z')
 
 function sampleMoney(format: SampleFormat): (amount: number) => string {
   return (amount) =>
@@ -262,6 +282,7 @@ export function sampleValuesFor(
     total: money(SAMPLE_TOTAL),
     balance_due: money(SAMPLE_TOTAL - SAMPLE_PAID),
     due_date: format.date(SAMPLE_DUE),
+    invite_expires: format.date(SAMPLE_INVITE_EXPIRES),
   })
   // The workshop's real details replace the samples wholesale: a missing
   // phone shows as no phone, because that is what the customer would see.
@@ -316,7 +337,7 @@ export function sampleContextFor(
         ...base,
         inviteLink: TAGS.invite_link.sample,
         role: TAGS.role.sample,
-        expiresAt: new Date('2026-09-16T12:00:00Z'),
+        expiresAt: SAMPLE_INVITE_EXPIRES,
       }
     case 'message':
       return { ...base, message: TAGS.message.sample, portalLink: TAGS.portal_link.sample }

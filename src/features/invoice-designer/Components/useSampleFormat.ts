@@ -16,7 +16,9 @@ export function useSampleFormat(): SampleFormat {
   return useMemo(
     () => ({
       money: (amount: number) => formatMoney(amount),
-      date: (date: Date) => formatDateForPdf(date, dateFormat),
+      // The sample's dates are calendar dates, set at noon UTC: read in UTC they
+      // are the same day on the server and in every browser, wherever it is.
+      date: (date: Date) => formatDateForPdf(date, dateFormat, 'UTC'),
     }),
     [formatMoney, dateFormat]
   )

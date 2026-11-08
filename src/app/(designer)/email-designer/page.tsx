@@ -11,6 +11,7 @@ import {
 } from '@/features/email/Actions/emailTemplateActions'
 import { EmailDesigner } from '@/features/email/Components/EmailDesigner'
 import {
+  SAMPLE_FORMAT_KEYS,
   sampleFormatFrom,
   sampleSummaryRows,
   sampleValuesFor,
@@ -51,6 +52,7 @@ export default async function EmailDesignerPage({
         SETTING_KEYS.WORKSHOP_PHONE,
         SETTING_KEYS.WORKSHOP_EMAIL,
         SETTING_KEYS.WORKSHOP_ADDRESS,
+        ...SAMPLE_FORMAT_KEYS,
       ]),
       db.organization.findUnique({
         where: { id: data.organizationId },

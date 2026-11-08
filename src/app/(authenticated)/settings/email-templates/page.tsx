@@ -11,6 +11,7 @@ import {
 } from '@/features/email/Actions/emailTemplateActions'
 import type { EmailSampleData } from '@/features/email/Components/EmailThumbnail'
 import {
+  SAMPLE_FORMAT_KEYS,
   sampleFormatFrom,
   sampleSummaryRows,
   sampleValuesFor,
@@ -45,6 +46,7 @@ export default async function EmailTemplatesPage() {
         SETTING_KEYS.WORKSHOP_PHONE,
         SETTING_KEYS.WORKSHOP_EMAIL,
         SETTING_KEYS.WORKSHOP_ADDRESS,
+        ...SAMPLE_FORMAT_KEYS,
       ]),
       db.organization.findUnique({
         where: { id: data.organizationId },

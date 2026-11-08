@@ -369,6 +369,28 @@ describe('emailContext', () => {
     expect(test.document?.currencyCode).toBe('USD')
   })
 
+  it('previews the same day a test mail shows, in the time zone the workshop was detected in', () => {
+    // On automatic, a send uses the detected zone; the preview must too, or a
+    // workshop in Auckland sees the 30th in the preview and the 1st in its inbox.
+    const format = sampleFormatFrom({
+      'workshop.dateFormat': 'dd.MM.yyyy',
+      'workshop.timezoneDetected': 'Pacific/Auckland',
+    })
+    const due = Object.fromEntries(
+      sampleSummaryRows('invoice_sent', messages.summary, format).map((r) => [r.key, r.value])
+    ).due
+    const sent = summaryRowsFor(
+      'invoice_sent',
+      sampleContextFor('invoice_sent', null, format.currency),
+      messages.summary,
+      format.date
+    ).find((r) => r.key === 'due')?.value
+    expect(due).toBe('01.10.2026')
+    expect(due).toBe(sent)
+    // The invitation's expiry is written the workshop's way as well.
+    expect(sampleValuesFor('team_invitation', {}, format).invite_expires).toBe('17.09.2026')
+  })
+
   it.each(EMAIL_KINDS)('%s renders its preset from sample data without a literal tag', (kind) => {
     const context = sampleContextFor(kind)
     const spec = buildEmailSpec(preset(kind), {

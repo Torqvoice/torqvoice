@@ -49,7 +49,7 @@ export interface SampleFormat {
 
 export const DEFAULT_SAMPLE_FORMAT: SampleFormat = {
   money: (amount) => formatCurrency(amount),
-  date: (date) => formatDateForPdf(date),
+  date: (date) => formatDateForPdf(date, undefined, 'UTC'),
 }
 
 /** The sample job's dates, at noon so no time zone moves them to another day. */
