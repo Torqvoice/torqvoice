@@ -7,6 +7,7 @@ import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useFormatDate } from '@/lib/use-format-date'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
@@ -126,6 +127,7 @@ export function InvoiceDesigner({
   const typeKeyEnabled = useTypeKeyEnabled()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
+  const { formatDate } = useFormatDate()
   const messages = useMessages() as {
     pdf?: Record<string, Record<string, string>>
   }
@@ -826,7 +828,7 @@ export function InvoiceDesigner({
                         <SpecThumbnail spec={specForDesign(design)} />
                         <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
                         <div className="text-xs leading-snug text-[#71767e]">
-                          {t('savedOn', { date: new Date(design.savedAt).toLocaleDateString() })}
+                          {t('savedOn', { date: formatDate(design.savedAt) })}
                           {design.autoRule && ` · ${t(`autoRule.${design.autoRule}`)}`}
                         </div>
                       </button>
