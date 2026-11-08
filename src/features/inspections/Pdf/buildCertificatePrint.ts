@@ -23,6 +23,7 @@ import type {
 import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import {
+  CHECK_RESULT_COPY,
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
   type Condition,
@@ -144,6 +145,23 @@ const RESULT_DETAIL_KEY = {
   incomplete: 'resultDetailIncomplete',
 } as const
 
+/** The basic scale's summary instead of a test verdict; see CHECK_RESULT_COPY. */
+const CHECK_LABEL_KEY = {
+  pass: 'checkPass',
+  pass_minor: 'checkPassMinor',
+  fail: 'checkFail',
+  fail_dangerous: 'checkFailDangerous',
+  incomplete: 'checkIncomplete',
+} as const
+
+const CHECK_DETAIL_KEY = {
+  pass: 'checkDetailPass',
+  pass_minor: 'checkDetailPassMinor',
+  fail: 'checkDetailFail',
+  fail_dangerous: 'checkDetailFailDangerous',
+  incomplete: 'checkDetailIncomplete',
+} as const
+
 /** A plain note as the rich-text block expects it: paragraphs, nothing else. */
 function notesHtml(notes: string | null): string | undefined {
   const text = notes?.trim()
@@ -251,11 +269,18 @@ export function certificateDataFor(input: {
   }
 
   return {
-    result: {
-      label: L(RESULT_LABEL_KEY[result], resultToken.label),
-      detail: L(RESULT_DETAIL_KEY[result], resultToken.detail),
-      color: resultToken.pdf,
-    },
+    result:
+      scale === 'basic'
+        ? {
+            label: L(CHECK_LABEL_KEY[result], CHECK_RESULT_COPY[result].label),
+            detail: L(CHECK_DETAIL_KEY[result], CHECK_RESULT_COPY[result].detail),
+            color: resultToken.pdf,
+          }
+        : {
+            label: L(RESULT_LABEL_KEY[result], resultToken.label),
+            detail: L(RESULT_DETAIL_KEY[result], resultToken.detail),
+            color: resultToken.pdf,
+          },
     summary: summaryParts.join(' · '),
     defects: defectsWorstFirst(graded).map((item) => ({
       code: item.code ?? null,

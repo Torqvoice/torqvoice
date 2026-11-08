@@ -195,7 +195,18 @@
     "basicNotApplicable": "Ikke aktuelt",
     "allResults": "Alle resultater",
     "signature": "Signatur",
-    "sectionColumn": "Seksjon"
+    "sectionColumn": "Seksjon",
+    "checkPass": "Alt i orden",
+    "checkPassMinor": "Noen punkter å følge med på",
+    "checkFail": "Noen punkter må repareres",
+    "checkFailDangerous": "Noen punkter må repareres snarest",
+    "checkIncomplete": "Ikke fullført",
+    "checkDetailPass": "Ingenting trengte oppfølging.",
+    "checkDetailPassMinor": "Ikke noe som haster. Punktene som er merket bør planlegges inn.",
+    "checkDetailFail": "Noen punkter må repareres. Notatene forteller hva som ble funnet.",
+    "checkDetailFailDangerous": "Noen punkter er ikke trygge og bør repareres før videre bruk.",
+    "checkDetailIncomplete": "Denne kontrollen pågår fortsatt.",
+    "overallCheck": "Oppsummering"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEHISTORIKK",

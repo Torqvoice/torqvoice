@@ -195,7 +195,18 @@
     "basicNotApplicable": "Uygulanamaz",
     "allResults": "Tüm sonuçlar",
     "signature": "İmza",
-    "sectionColumn": "Bölüm"
+    "sectionColumn": "Bölüm",
+    "checkPass": "Her şey yolunda",
+    "checkPassMinor": "Takip edilmesi gereken birkaç nokta",
+    "checkFail": "Onarım gereken birkaç nokta",
+    "checkFailDangerous": "Acil onarım gereken birkaç nokta",
+    "checkIncomplete": "Tamamlanmadı",
+    "checkDetailPass": "Dikkat gerektiren bir şey yoktu.",
+    "checkDetailPassMinor": "Acil bir şey yok. İşaretli noktaları planlamakta fayda var.",
+    "checkDetailFail": "Bazı noktaların onarılması gerekiyor. Notlar neyin bulunduğunu anlatıyor.",
+    "checkDetailFailDangerous": "Bazı noktalar güvenli değil ve kullanıma devam etmeden önce onarılmalı.",
+    "checkDetailIncomplete": "Bu kontrol hâlâ sürüyor.",
+    "overallCheck": "Özet"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVİS GEÇMİŞİ",

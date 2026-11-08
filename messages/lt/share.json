@@ -202,7 +202,21 @@
     "deficienciesFound": "Nustatyti trūkumai ({count})",
     "allResults": "Visi rezultatai",
     "privacyNotice": "Šią ataskaitą jums pateikia dirbtuvės, atlikusios apžiūrą. Ją gali peržiūrėti kiekvienas, turintis šią nuorodą, todėl neperduokite jos kitiems. Kreipkitės į dirbtuves, jei norite, kad nuoroda būtų panaikinta arba jūsų duomenys ištrinti.",
-    "inspectionPhotos": "Nuotraukos ir dokumentai"
+    "inspectionPhotos": "Nuotraukos ir dokumentai",
+    "checkResult": {
+      "pass": "Viskas tvarkoje",
+      "pass_minor": "Keli punktai, kuriuos verta stebėti",
+      "fail": "Kelis punktus reikia sutaisyti",
+      "fail_dangerous": "Kelis punktus reikia skubiai sutaisyti",
+      "incomplete": "Nebaigta"
+    },
+    "checkResultDetail": {
+      "pass": "Nieko nereikėjo taisyti.",
+      "pass_minor": "Nieko skubaus. Pažymėtus punktus verta suplanuoti.",
+      "fail": "Kai kuriuos punktus reikia sutaisyti. Pastabose nurodyta, kas rasta.",
+      "fail_dangerous": "Kai kurie punktai nesaugūs, juos reikia sutaisyti prieš toliau naudojant.",
+      "incomplete": "Ši patikra dar vyksta."
+    }
   },
   "terms": {
     "title": "Pardavimo sąlygos",

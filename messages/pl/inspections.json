@@ -494,5 +494,19 @@
     "photos": "Zdjęcia",
     "documents": "Dokumenty",
     "video": "Wideo"
+  },
+  "checkResults": {
+    "pass": "Wszystko w porządku",
+    "pass_minor": "Kilka punktów do obserwacji",
+    "fail": "Kilka punktów wymaga naprawy",
+    "fail_dangerous": "Kilka punktów wymaga pilnej naprawy",
+    "incomplete": "Nie zakończono",
+    "detail": {
+      "pass": "Nic nie wymagało uwagi.",
+      "pass_minor": "Nic pilnego. Warto zaplanować oznaczone punkty.",
+      "fail": "Niektóre punkty wymagają naprawy. Notatki opisują, co znaleziono.",
+      "fail_dangerous": "Niektóre punkty nie są bezpieczne i należy je naprawić przed dalszym użytkowaniem.",
+      "incomplete": "Ta kontrola wciąż trwa."
+    }
   }
 }

@@ -494,5 +494,19 @@
     "photos": "Fotos",
     "documents": "Dokumente",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Alle Punkte in Ordnung",
+    "pass_minor": "Einige Punkte im Auge behalten",
+    "fail": "Einige Punkte müssen repariert werden",
+    "fail_dangerous": "Einige Punkte müssen dringend repariert werden",
+    "incomplete": "Nicht abgeschlossen",
+    "detail": {
+      "pass": "Nichts musste beanstandet werden.",
+      "pass_minor": "Nichts Dringendes. Die markierten Punkte sollten Sie einplanen.",
+      "fail": "Einige Punkte müssen repariert werden. Die Notizen beschreiben, was gefunden wurde.",
+      "fail_dangerous": "Einige Punkte sind nicht sicher und sollten vor der weiteren Nutzung repariert werden.",
+      "incomplete": "Diese Prüfung läuft noch."
+    }
   }
 }

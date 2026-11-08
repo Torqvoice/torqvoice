@@ -195,7 +195,18 @@
     "basicNotApplicable": "Nicht zutreffend",
     "allResults": "Alle Ergebnisse",
     "signature": "Unterschrift",
-    "sectionColumn": "Abschnitt"
+    "sectionColumn": "Abschnitt",
+    "checkPass": "Alle Punkte in Ordnung",
+    "checkPassMinor": "Einige Punkte im Auge behalten",
+    "checkFail": "Einige Punkte müssen repariert werden",
+    "checkFailDangerous": "Einige Punkte müssen dringend repariert werden",
+    "checkIncomplete": "Nicht abgeschlossen",
+    "checkDetailPass": "Nichts musste beanstandet werden.",
+    "checkDetailPassMinor": "Nichts Dringendes. Die markierten Punkte sollten Sie einplanen.",
+    "checkDetailFail": "Einige Punkte müssen repariert werden. Die Notizen beschreiben, was gefunden wurde.",
+    "checkDetailFailDangerous": "Einige Punkte sind nicht sicher und sollten vor der weiteren Nutzung repariert werden.",
+    "checkDetailIncomplete": "Diese Prüfung läuft noch.",
+    "overallCheck": "Zusammenfassung"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEHISTORIE",

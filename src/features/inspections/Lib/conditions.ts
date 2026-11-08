@@ -295,6 +295,31 @@ export const TEST_RESULT_TOKENS: Record<TestResult, TestResultToken> = {
   },
 }
 
+/**
+ * The same outcome in a workshop's words, for checklists graded on the basic
+ * scale: a multi-point check, a check-in, a pre-purchase look. Only the EU
+ * scale is a roadworthiness test, so only it gets a verdict with legal weight.
+ * The basic scale used to borrow that verdict, so one worn tyre on a
+ * multi-point check read "The vehicle fails ... must be retested". English
+ * fallbacks; the translations live under `checkResults` and friends.
+ */
+export const CHECK_RESULT_COPY: Record<TestResult, { label: string; detail: string }> = {
+  pass: { label: 'All checks passed', detail: 'Nothing needed attention.' },
+  pass_minor: {
+    label: 'Some items to keep an eye on',
+    detail: 'Nothing urgent. The items marked for attention are worth planning for.',
+  },
+  fail: {
+    label: 'Some items need work',
+    detail: 'Some items need repairing. The notes say what was found.',
+  },
+  fail_dangerous: {
+    label: 'Some items need urgent work',
+    detail: 'Some items are unsafe and should be repaired before further use.',
+  },
+  incomplete: { label: 'Not completed', detail: 'This check is still in progress.' },
+}
+
 export interface ConditionCounts {
   total: number
   inspected: number

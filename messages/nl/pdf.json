@@ -195,7 +195,18 @@
     "basicNotApplicable": "Niet van toepassing",
     "allResults": "Alle resultaten",
     "signature": "Handtekening",
-    "sectionColumn": "Sectie"
+    "sectionColumn": "Sectie",
+    "checkPass": "Alles in orde",
+    "checkPassMinor": "Enkele punten om in de gaten te houden",
+    "checkFail": "Enkele punten moeten worden gerepareerd",
+    "checkFailDangerous": "Enkele punten moeten dringend worden gerepareerd",
+    "checkIncomplete": "Niet voltooid",
+    "checkDetailPass": "Er hoefde niets te gebeuren.",
+    "checkDetailPassMinor": "Niets dringends. De gemarkeerde punten zijn het inplannen waard.",
+    "checkDetailFail": "Enkele punten moeten worden gerepareerd. De notities zeggen wat er is gevonden.",
+    "checkDetailFailDangerous": "Enkele punten zijn niet veilig en moeten worden gerepareerd voor verder gebruik.",
+    "checkDetailIncomplete": "Deze controle is nog bezig.",
+    "overallCheck": "Samenvatting"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICEGESCHIEDENIS",

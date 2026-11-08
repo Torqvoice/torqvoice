@@ -494,5 +494,19 @@
     "photos": "Foto's",
     "documents": "Documenten",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Alles in orde",
+    "pass_minor": "Enkele punten om in de gaten te houden",
+    "fail": "Enkele punten moeten worden gerepareerd",
+    "fail_dangerous": "Enkele punten moeten dringend worden gerepareerd",
+    "incomplete": "Niet voltooid",
+    "detail": {
+      "pass": "Er hoefde niets te gebeuren.",
+      "pass_minor": "Niets dringends. De gemarkeerde punten zijn het inplannen waard.",
+      "fail": "Enkele punten moeten worden gerepareerd. De notities zeggen wat er is gevonden.",
+      "fail_dangerous": "Enkele punten zijn niet veilig en moeten worden gerepareerd voor verder gebruik.",
+      "incomplete": "Deze controle is nog bezig."
+    }
   }
 }

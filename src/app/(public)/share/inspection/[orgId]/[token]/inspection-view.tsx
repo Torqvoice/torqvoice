@@ -358,10 +358,13 @@ export function InspectionView({
             aria-labelledby="result-heading"
             className={`mb-6 rounded-xl border-2 p-5 ${resultToken.soft}`}
           >
+            {/* A roadworthiness test gives a verdict; a workshop's own check gives a summary. */}
             <h2 id="result-heading" className="text-xl font-bold">
-              {t(`result.${result}`)}
+              {t(scale === 'basic' ? `checkResult.${result}` : `result.${result}`)}
             </h2>
-            <p className="mt-1 text-sm">{t(`resultDetail.${result}`)}</p>
+            <p className="mt-1 text-sm">
+              {t(scale === 'basic' ? `checkResultDetail.${result}` : `resultDetail.${result}`)}
+            </p>
           </section>
 
           {/* Test details */}

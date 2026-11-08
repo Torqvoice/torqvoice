@@ -195,7 +195,18 @@
     "basicNotApplicable": "Not applicable",
     "allResults": "All results",
     "signature": "Signature",
-    "sectionColumn": "Section"
+    "sectionColumn": "Section",
+    "checkPass": "All checks passed",
+    "checkPassMinor": "Some items to keep an eye on",
+    "checkFail": "Some items need work",
+    "checkFailDangerous": "Some items need urgent work",
+    "checkIncomplete": "Not completed",
+    "checkDetailPass": "Nothing needed attention.",
+    "checkDetailPassMinor": "Nothing urgent. The items marked for attention are worth planning for.",
+    "checkDetailFail": "Some items need repairing. The notes say what was found.",
+    "checkDetailFailDangerous": "Some items are unsafe and should be repaired before further use.",
+    "checkDetailIncomplete": "This check is still in progress.",
+    "overallCheck": "Summary"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICE HISTORY",

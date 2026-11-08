@@ -195,7 +195,18 @@
     "basicNotApplicable": "Netaikoma",
     "allResults": "Visi rezultatai",
     "signature": "Parašas",
-    "sectionColumn": "Skyrius"
+    "sectionColumn": "Skyrius",
+    "checkPass": "Viskas tvarkoje",
+    "checkPassMinor": "Keli punktai, kuriuos verta stebėti",
+    "checkFail": "Kelis punktus reikia sutaisyti",
+    "checkFailDangerous": "Kelis punktus reikia skubiai sutaisyti",
+    "checkIncomplete": "Nebaigta",
+    "checkDetailPass": "Nieko nereikėjo taisyti.",
+    "checkDetailPassMinor": "Nieko skubaus. Pažymėtus punktus verta suplanuoti.",
+    "checkDetailFail": "Kai kuriuos punktus reikia sutaisyti. Pastabose nurodyta, kas rasta.",
+    "checkDetailFailDangerous": "Kai kurie punktai nesaugūs, juos reikia sutaisyti prieš toliau naudojant.",
+    "checkDetailIncomplete": "Ši patikra dar vyksta.",
+    "overallCheck": "Santrauka"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "PASLAUGŲ ISTORIJA",

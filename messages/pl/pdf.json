@@ -195,7 +195,18 @@
     "basicNotApplicable": "Nie dotyczy",
     "allResults": "Wszystkie wyniki",
     "signature": "Podpis",
-    "sectionColumn": "Sekcja"
+    "sectionColumn": "Sekcja",
+    "checkPass": "Wszystko w porządku",
+    "checkPassMinor": "Kilka punktów do obserwacji",
+    "checkFail": "Kilka punktów wymaga naprawy",
+    "checkFailDangerous": "Kilka punktów wymaga pilnej naprawy",
+    "checkIncomplete": "Nie zakończono",
+    "checkDetailPass": "Nic nie wymagało uwagi.",
+    "checkDetailPassMinor": "Nic pilnego. Warto zaplanować oznaczone punkty.",
+    "checkDetailFail": "Niektóre punkty wymagają naprawy. Notatki opisują, co znaleziono.",
+    "checkDetailFailDangerous": "Niektóre punkty nie są bezpieczne i należy je naprawić przed dalszym użytkowaniem.",
+    "checkDetailIncomplete": "Ta kontrola wciąż trwa.",
+    "overallCheck": "Podsumowanie"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTORIA SERWISOWA",

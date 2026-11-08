@@ -202,7 +202,21 @@
     "deficienciesFound": "Deficiências encontradas ({count})",
     "allResults": "Todos os resultados",
     "privacyNotice": "Este relatório é compartilhado com você pela oficina que realizou a inspeção. Qualquer pessoa com este link pode acessá-lo, portanto não o encaminhe. Entre em contato com a oficina para revogar o link ou solicitar a exclusão dos seus dados.",
-    "inspectionPhotos": "Fotos e documentos"
+    "inspectionPhotos": "Fotos e documentos",
+    "checkResult": {
+      "pass": "Tudo em ordem",
+      "pass_minor": "Alguns itens para acompanhar",
+      "fail": "Alguns itens precisam de reparo",
+      "fail_dangerous": "Alguns itens precisam de reparo urgente",
+      "incomplete": "Não concluída"
+    },
+    "checkResultDetail": {
+      "pass": "Nada precisou de atenção.",
+      "pass_minor": "Nada urgente. Vale planejar os itens marcados.",
+      "fail": "Alguns itens precisam de reparo. As anotações dizem o que foi encontrado.",
+      "fail_dangerous": "Alguns itens não são seguros e devem ser reparados antes de continuar o uso.",
+      "incomplete": "Esta verificação ainda está em andamento."
+    }
   },
   "terms": {
     "title": "Termos de Venda",

@@ -202,7 +202,21 @@
     "deficienciesFound": "Festgestellte Mängel ({count})",
     "allResults": "Alle Ergebnisse",
     "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen.",
-    "inspectionPhotos": "Fotos und Dokumente"
+    "inspectionPhotos": "Fotos und Dokumente",
+    "checkResult": {
+      "pass": "Alle Punkte in Ordnung",
+      "pass_minor": "Einige Punkte im Auge behalten",
+      "fail": "Einige Punkte müssen repariert werden",
+      "fail_dangerous": "Einige Punkte müssen dringend repariert werden",
+      "incomplete": "Nicht abgeschlossen"
+    },
+    "checkResultDetail": {
+      "pass": "Nichts musste beanstandet werden.",
+      "pass_minor": "Nichts Dringendes. Die markierten Punkte sollten Sie einplanen.",
+      "fail": "Einige Punkte müssen repariert werden. Die Notizen beschreiben, was gefunden wurde.",
+      "fail_dangerous": "Einige Punkte sind nicht sicher und sollten vor der weiteren Nutzung repariert werden.",
+      "incomplete": "Diese Prüfung läuft noch."
+    }
   },
   "terms": {
     "title": "Verkaufsbedingungen",
