@@ -76,16 +76,33 @@ export function ServiceHeaderActions({
     <div className="flex shrink-0 flex-wrap items-center gap-2">
       {showSave && (
         <>
-          {hasUnsavedChanges && (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-              {t('unsavedChanges')}
-            </span>
-          )}
-          {showSaved && !hasUnsavedChanges && (
-            <span className="text-xs font-medium text-green-600 dark:text-green-400">
-              {t('saved')}
-            </span>
-          )}
+          {/* The label slot is always as wide as the longer of the two labels,
+              so the buttons stay put when "Unsaved changes" or "Saved" comes and
+              goes. Before, the extra width pushed the whole row onto a second
+              line on every edit. The sizers draw their words as CSS content, so
+              they are not text a reader or a test finds. */}
+          <span className="grid items-center justify-items-end text-xs font-medium">
+            <span
+              aria-hidden="true"
+              data-size={t('unsavedChanges')}
+              className="invisible col-start-1 row-start-1 whitespace-nowrap after:content-[attr(data-size)]"
+            />
+            <span
+              aria-hidden="true"
+              data-size={t('saved')}
+              className="invisible col-start-1 row-start-1 whitespace-nowrap after:content-[attr(data-size)]"
+            />
+            {hasUnsavedChanges && (
+              <span className="col-start-1 row-start-1 whitespace-nowrap text-amber-600 dark:text-amber-400">
+                {t('unsavedChanges')}
+              </span>
+            )}
+            {showSaved && !hasUnsavedChanges && (
+              <span className="col-start-1 row-start-1 whitespace-nowrap text-green-600 dark:text-green-400">
+                {t('saved')}
+              </span>
+            )}
+          </span>
           <IconActionButton
             type="submit"
             form="service-record-form"
