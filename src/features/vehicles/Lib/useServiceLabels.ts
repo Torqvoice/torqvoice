@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { statusMessageKeys } from '../Components/service-detail/types'
 
@@ -25,9 +26,13 @@ const TYPES = new Set(['maintenance', 'repair', 'upgrade', 'inspection'])
  */
 export function useServiceLabels() {
   const t = useTranslations('service.basicInfo')
-  return {
-    status: (value: string) =>
-      STATUS_KEYS[value] ? t(`statusOptions.${STATUS_KEYS[value]}`) : value,
-    type: (value: string) => (TYPES.has(value) ? t(`typeOptions.${value}`) : value),
-  }
+  // Stable between renders, so a list can filter and sort by them inside a memo.
+  return useMemo(
+    () => ({
+      status: (value: string) =>
+        STATUS_KEYS[value] ? t(`statusOptions.${STATUS_KEYS[value]}`) : value,
+      type: (value: string) => (TYPES.has(value) ? t(`typeOptions.${value}`) : value),
+    }),
+    [t]
+  )
 }
