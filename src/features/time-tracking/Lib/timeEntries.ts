@@ -164,14 +164,16 @@ export async function startEntry(args: {
 
       // Before the entry, so the job it returns already reads In Progress. The
       // stage changes, so a status of the workshop's own goes with it, as when
-      // the app moves the stage itself.
-      const started = NOT_STARTED.has(job.status)
-        ? await tx.serviceRecord.update({
-            where: { id: job.id },
+      // the app moves the stage itself. Conditional on the stage it has now,
+      // not the one read above: the desk may have finished the job or marked
+      // it waiting for parts since, and that is not this tap's to undo.
+      const moved = NOT_STARTED.has(job.status)
+        ? await tx.serviceRecord.updateMany({
+            where: { id: job.id, organizationId, status: { in: [...NOT_STARTED] } },
             data: statusColumns('in-progress'),
-            select: { id: true, status: true },
           })
-        : null
+        : { count: 0 }
+      const started = moved.count > 0
 
       const entry = await tx.timeEntry.create({
         data: {
@@ -215,11 +217,11 @@ export async function startEntry(args: {
         announceJobStatusChanged({
           organizationId,
           serviceRecordId: job.id,
-          status: result.started.status,
+          status: 'in-progress',
           serviceRecord: {
             id: job.id,
             title: job.title,
-            status: result.started.status,
+            status: 'in-progress',
             vehicle: job.vehicle,
           },
         })

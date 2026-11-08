@@ -8,7 +8,9 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const state = { status: 'pending' as string }
+// status: what the clock's first read sees; current: the row by the time the write runs, when the desk
+// changed it in between.
+const state = { status: 'pending' as string, current: null as string | null }
 
 vi.mock('@/lib/db', () => {
   const tx = {
@@ -19,14 +21,25 @@ vi.mock('@/lib/db', () => {
         startedAt: new Date(),
         technicianId: 'tech-1',
         serviceRecordId: 'job-1',
-        serviceRecord: { id: 'job-1', title: 'Brake pads', status: state.status },
+        serviceRecord: { id: 'job-1', title: 'Brake pads', status: state.current ?? state.status },
       })),
     },
     serviceRecord: {
-      update: vi.fn(async ({ data }: { data: { status: string } }) => {
-        state.status = data.status
-        return { id: 'job-1', status: data.status }
-      }),
+      // Moves the row only while it is still in a stage the write names, as the database would.
+      updateMany: vi.fn(
+        async ({
+          where,
+          data,
+        }: {
+          where: { status: { in: string[] } }
+          data: { status: string }
+        }) => {
+          const current = state.current ?? state.status
+          if (!where.status.in.includes(current)) return { count: 0 }
+          state.status = data.status
+          return { count: 1 }
+        }
+      ),
     },
   }
   return {
@@ -56,11 +69,13 @@ import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
 import { startEntry } from '@/features/time-tracking/Lib/timeEntries'
 
-const tx = (db as unknown as { __tx: { serviceRecord: { update: ReturnType<typeof vi.fn> } } }).__tx
+const tx = (db as unknown as { __tx: { serviceRecord: { updateMany: ReturnType<typeof vi.fn> } } })
+  .__tx
 
 let heard: { type: string; status?: string }[]
 beforeEach(() => {
   vi.clearAllMocks()
+  state.current = null
   heard = []
   notificationBus.removeAllListeners('workboard')
   notificationBus.on('workboard', (event: { type: string; status?: string }) => heard.push(event))
@@ -82,9 +97,9 @@ describe('starting work on a job', () => {
     state.status = from
     const { entry } = await start()
 
-    expect(tx.serviceRecord.update).toHaveBeenCalledWith(
+    expect(tx.serviceRecord.updateMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { id: 'job-1' },
+        where: { id: 'job-1', organizationId: 'org-1', status: { in: ['pending', 'scheduled'] } },
         // A status of the workshop's own belonged to the stage it left.
         data: { status: 'in-progress', customStatusId: null, customStatusSince: null },
       })
@@ -103,7 +118,17 @@ describe('starting work on a job', () => {
     state.status = from
     await start()
 
-    expect(tx.serviceRecord.update).not.toHaveBeenCalled()
+    expect(tx.serviceRecord.updateMany).not.toHaveBeenCalled()
+    expect(heard.map((e) => e.type)).toEqual(['clock_started'])
+  })
+
+  it('leaves a job the desk moved on since the clock read it', async () => {
+    // Pending when the clock looked, finished by the desk before it wrote.
+    state.status = 'pending'
+    state.current = 'completed'
+    await start()
+
+    expect(state.current).toBe('completed')
     expect(heard.map((e) => e.type)).toEqual(['clock_started'])
   })
 })
