@@ -73,6 +73,7 @@ import { SendSmsDialog } from '@/features/sms/Components/SendSmsDialog'
 import { TelegramQrCode } from '@/features/telegram/Components/TelegramQrCode'
 import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 interface ServiceRequestItem {
   id: string
@@ -198,6 +199,8 @@ export function CustomerDetailClient({
 }) {
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
+  const serviceLabel = useServiceLabels()
+  const tQuoteStatus = useTranslations('quotes.statusLabels')
   const serviceType = useServiceType()
   // A vessel's reading is engine hours, the same number the header calls it.
   const readingUnit = serviceType === 'marine' ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
@@ -658,6 +661,7 @@ export function CustomerDetailClient({
           <DocumentList
             rows={invoiceRows}
             statusStyles={statusColors}
+            statusLabel={serviceLabel.status}
             numberLabel={t('documentTable.invoiceNumber')}
             emptyLabel={t('noInvoices')}
             search={search}
@@ -671,6 +675,7 @@ export function CustomerDetailClient({
           <DocumentList
             rows={quoteRows}
             statusStyles={quoteStatusColors}
+            statusLabel={(status) => (tQuoteStatus.has(status) ? tQuoteStatus(status) : status)}
             numberLabel={t('documentTable.quoteNumber')}
             emptyLabel={t('noQuotes')}
             search={search}
@@ -785,6 +790,7 @@ const DOCUMENT_SORT_KEYS: DocumentSortKey[] = [
 function DocumentList({
   rows,
   statusStyles,
+  statusLabel,
   numberLabel,
   emptyLabel,
   search,
@@ -794,6 +800,8 @@ function DocumentList({
 }: {
   rows: DocumentRow[]
   statusStyles: Record<string, string>
+  /** The status as the reader's language says it: invoices and quotes have their own. */
+  statusLabel: (status: string) => string
   numberLabel: string
   emptyLabel: string
   search: string
@@ -967,7 +975,7 @@ function DocumentList({
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   <Badge variant="outline" className={`text-xs ${statusStyles[row.status] || ''}`}>
-                    {row.status}
+                    {statusLabel(row.status)}
                   </Badge>
                   <span className="font-mono">{formatDate(row.date)}</span>
                   <span className="truncate">{displayVehicle(row.vehicle)}</span>
@@ -1022,7 +1030,7 @@ function DocumentList({
                         variant="outline"
                         className={`text-xs ${statusStyles[row.status] || ''}`}
                       >
-                        {row.status}
+                        {statusLabel(row.status)}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs">{formatDate(row.date)}</TableCell>

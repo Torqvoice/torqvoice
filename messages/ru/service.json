@@ -92,6 +92,7 @@
       "inspection": "Осмотр"
     },
     "statusOptions": {
+      "scheduled": "Запланировано",
       "pending": "Ожидает",
       "in_progress": "В работе",
       "waiting_parts": "Ожидание запчастей",

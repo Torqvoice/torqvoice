@@ -92,6 +92,7 @@
       "inspection": "Inspeksjon"
     },
     "statusOptions": {
+      "scheduled": "Planlagt",
       "pending": "Avventende",
       "in_progress": "Pågår",
       "waiting_parts": "Venter på deler",

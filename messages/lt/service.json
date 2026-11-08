@@ -92,6 +92,7 @@
       "inspection": "Apžiūra"
     },
     "statusOptions": {
+      "scheduled": "Suplanuota",
       "pending": "Laukia",
       "in_progress": "Vykdoma",
       "waiting_parts": "Laukia dalių",

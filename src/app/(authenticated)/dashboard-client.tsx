@@ -97,6 +97,7 @@ import { customCardId, type CustomWidget } from '@/features/dashboard/custom-car
 import { useConfirm } from '@/components/confirm-dialog'
 import { GettingStartedCard } from '@/features/onboarding/Components/GettingStartedCard'
 import type { OnboardingChecklistData } from '@/features/onboarding/Actions/checklistActions'
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 interface ServiceItem {
   id: string
@@ -338,6 +339,7 @@ export function DashboardClient({
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('dashboard')
   const tcm = useTranslations('common.contextMenu')
+  const serviceLabel = useServiceLabels()
   const tAudit = useTranslations('audit')
   // Empty-state actions reuse the labels their own sections already ship,
   // so a card with nothing in it can still offer the next step without
@@ -1805,7 +1807,7 @@ export function DashboardClient({
                                 variant="outline"
                                 className={`shrink-0 text-xs ${statusColors[s.status] || ''}`}
                               >
-                                {s.status}
+                                {serviceLabel.status(s.status)}
                               </Badge>
                             </div>
                             <p className="truncate text-xs text-muted-foreground">
@@ -1891,7 +1893,7 @@ export function DashboardClient({
                                           variant="outline"
                                           className={`text-xs ${statusColors[s.status] || ''}`}
                                         >
-                                          {s.status}
+                                          {serviceLabel.status(s.status)}
                                         </Badge>
                                       </span>
                                     </TableCell>

@@ -42,6 +42,7 @@ import { Download, ExternalLink, Gauge, Loader2, Paperclip, Plus, Search, User }
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
   active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -116,6 +117,7 @@ export function ServiceRecordsTable({
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState(false)
   const t = useTranslations('vehicles.services')
+  const serviceLabel = useServiceLabels()
   const tcm = useTranslations('common.contextMenu')
   const serviceType = useServiceType()
 
@@ -293,13 +295,13 @@ export function ServiceRecordsTable({
 
                 <div className="mt-2 flex flex-wrap items-center gap-1.5">
                   <Badge variant="outline" className={`text-xs ${typeColors[record.type] || ''}`}>
-                    {record.type}
+                    {serviceLabel.type(record.type)}
                   </Badge>
                   <Badge
                     variant="outline"
                     className={`text-xs ${statusColors[record.status] || ''}`}
                   >
-                    {record.status}
+                    {serviceLabel.status(record.status)}
                   </Badge>
                   {warranty !== 'none' && <WarrantyBadge status={warranty} t={t} />}
                 </div>
@@ -394,7 +396,7 @@ export function ServiceRecordsTable({
                             variant="outline"
                             className={`text-xs ${typeColors[record.type] || ''}`}
                           >
-                            {record.type}
+                            {serviceLabel.type(record.type)}
                           </Badge>
                         </TableCell>
                         <TableCell>
@@ -402,7 +404,7 @@ export function ServiceRecordsTable({
                             variant="outline"
                             className={`text-xs ${statusColors[record.status] || ''}`}
                           >
-                            {record.status}
+                            {serviceLabel.status(record.status)}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right font-mono text-xs">
