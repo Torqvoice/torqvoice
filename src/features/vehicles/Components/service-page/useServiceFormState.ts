@@ -72,6 +72,10 @@ export function useServiceFormState({
 
   // Autosave state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  // The same, readable from callbacks and the link handler without waiting
+  // for a render.
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
+  hasUnsavedChangesRef.current = hasUnsavedChanges
   const [showSaved, setShowSaved] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -88,10 +92,20 @@ export function useServiceFormState({
     savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
   }, [])
 
+  /**
+   * Counts edits. A save notes the count it started from and clears the
+   * unsaved flag only if nothing was edited while it ran (markSaved): a note
+   * typed during an autosave used to read as saved, and a link waiting on that
+   * autosave left without it.
+   */
+  const editRevisionRef = useRef(0)
+
   const markDirty = useCallback(() => {
     // A locked invoice cannot be saved, so nothing may queue an autosave that
     // the server will only refuse five seconds later.
     if (lockedRef.current) return
+    editRevisionRef.current += 1
+    hasUnsavedChangesRef.current = true
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
@@ -100,6 +114,24 @@ export function useServiceFormState({
       }
     }, 5000)
   }, [])
+
+  /**
+   * A save that started at `revision` went through. Edits made while it ran
+   * keep the page unsaved and queue a save of their own.
+   */
+  const markSaved = useCallback(
+    (revision: number) => {
+      if (editRevisionRef.current === revision) {
+        // The ref at once: a link waiting on this save reads it before the
+        // page has rendered again.
+        hasUnsavedChangesRef.current = false
+        setHasUnsavedChanges(false)
+        return
+      }
+      markDirty()
+    },
+    [markDirty]
+  )
 
   // When the lock engages mid-session — the invoice was just sent, or an
   // admin re-locked it — any save already queued can only be refused, and
@@ -111,8 +143,6 @@ export function useServiceFormState({
   // this a concern typed in this session went back without an id on the next
   // save, was taken for a new one, and the saved row was deleted with every
   // finding that pointed at it.
-  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
-  hasUnsavedChangesRef.current = hasUnsavedChanges
   const savedConcernsKey = JSON.stringify(initialData.concerns ?? [])
   useEffect(() => {
     const saved: ConcernRow[] = JSON.parse(savedConcernsKey)
@@ -298,6 +328,9 @@ export function useServiceFormState({
 
       event.preventDefault()
       event.stopPropagation()
+      // One way out at a time: a second link clicked while the first waits
+      // would start its own wait, and both would navigate once the save landed.
+      if (leavingRef.current) return
       leavingRef.current = true
       lastSaveErrorRef.current = null
       // An autosave already under way answers first; a second save would be
@@ -634,6 +667,8 @@ export function useServiceFormState({
     isSavingRef,
     flashSaved,
     markDirty,
+    markSaved,
+    editRevisionRef,
     saveNow,
     /**
      * Whether edits are still unsaved, read at the moment of the call. For

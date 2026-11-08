@@ -214,6 +214,82 @@ describe('leaving with unsaved changes', () => {
     expect(result.current.blockedLeave).toBeNull()
   })
 
+  it('saves an edit made while an autosave ran before leaving', async () => {
+    const { result } = renderForm()
+    const form = document.createElement('form')
+    document.body.appendChild(form)
+    result.current.formRef.current = form
+    // Each save covers the edits made before it started, as handleSubmit does.
+    const saves: number[] = []
+    const requestSubmit = vi.spyOn(form, 'requestSubmit').mockImplementation(() => {
+      const revision = result.current.editRevisionRef.current
+      saves.push(revision)
+      result.current.isSavingRef.current = true
+      setTimeout(() => {
+        act(() => result.current.markSaved(revision))
+        result.current.isSavingRef.current = false
+      }, 100)
+    })
+
+    act(() => result.current.markDirty())
+    // The autosave goes out...
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000)
+    })
+    expect(requestSubmit).toHaveBeenCalledOnce()
+    // ...a note is typed while it is on its way, and a link is clicked.
+    act(() => result.current.markDirty())
+    const anchor = link()
+    const released = vi.fn((e: Event) => e.preventDefault())
+    anchor.addEventListener('click', released)
+    click(anchor)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(400)
+    })
+
+    expect(saves).toHaveLength(2)
+    expect(saves[1]).toBeGreaterThan(saves[0])
+    expect(released).toHaveBeenCalledOnce()
+    expect(result.current.hasUnsavedChanges).toBe(false)
+  })
+
+  it('follows only the first link while a save is on its way', async () => {
+    const { result } = renderForm()
+    const form = document.createElement('form')
+    document.body.appendChild(form)
+    result.current.formRef.current = form
+    vi.spyOn(form, 'requestSubmit').mockImplementation(() => {
+      const revision = result.current.editRevisionRef.current
+      result.current.isSavingRef.current = true
+      setTimeout(() => {
+        act(() => result.current.markSaved(revision))
+        result.current.isSavingRef.current = false
+      }, 100)
+    })
+
+    act(() => result.current.markDirty())
+    // The autosave is on its way when both links are clicked.
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(5000)
+    })
+    expect(result.current.isSavingRef.current).toBe(true)
+    const first = link('/vehicles/v-1')
+    const second = link('/work-orders')
+    const toFirst = vi.fn((e: Event) => e.preventDefault())
+    const toSecond = vi.fn((e: Event) => e.preventDefault())
+    first.addEventListener('click', toFirst)
+    second.addEventListener('click', toSecond)
+    click(first)
+    expect(click(second).defaultPrevented).toBe(true)
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(400)
+    })
+
+    expect(toFirst).toHaveBeenCalledOnce()
+    expect(toSecond).not.toHaveBeenCalled()
+    expect(result.current.blockedLeave).toBeNull()
+  })
+
   it('leaves links elsewhere, and clean pages, alone', () => {
     const { result } = renderForm()
     const external = link('https://example.com/docs')

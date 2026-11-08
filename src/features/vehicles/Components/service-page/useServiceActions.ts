@@ -79,6 +79,8 @@ export function useServiceActions({
     customFieldsSaveRef,
     lastSaveErrorRef,
     leavingRef,
+    editRevisionRef,
+    markSaved,
   } = formState
 
   /**
@@ -98,6 +100,9 @@ export function useServiceActions({
     // Running from here: the custom fields go to the server before the rest,
     // and a link waiting on this save has to wait for that part too.
     isSavingRef.current = true
+    // What this save covers. An edit made while it runs is newer, and keeps
+    // the page unsaved once it lands.
+    const revision = editRevisionRef.current
 
     // Validate and save custom fields before saving
     if (customFieldsSaveRef.current) {
@@ -220,12 +225,22 @@ export function useServiceActions({
       warrantyNotes: warranty.warrantyNotes ?? '',
     }
 
-    const result = await updateServiceRecord(payload)
+    let result: Awaited<ReturnType<typeof updateServiceRecord>>
+    try {
+      result = await updateServiceRecord(payload)
+    } catch (err) {
+      // The request never came back (the connection dropped). Saving has to
+      // end here, or the next save, and a link waiting on this one, waits
+      // forever.
+      isSavingRef.current = false
+      setLoading(false)
+      throw err
+    }
 
     if (result.success) {
       commitLaborAddedElsewhere()
       commitPartsAddedElsewhere()
-      setHasUnsavedChanges(false)
+      markSaved(revision)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {
         router.push(`/vehicles/${selectedVehicleId}/service/${initialData.id}`)
