@@ -175,6 +175,25 @@ describe('PasskeySettings', () => {
       expect(mockToastSuccess).toHaveBeenCalledWith('Passkey registered successfully')
     })
 
+    it('names the new passkey after the device it is made on', async () => {
+      mockListUserPasskeys.mockResolvedValue({ data: [] })
+      mockAddPasskey.mockResolvedValue({})
+      const ua = vi
+        .spyOn(navigator, 'userAgent', 'get')
+        .mockReturnValue(
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36'
+        )
+      render(<PasskeySettings />)
+      await waitFor(() => {
+        expect(screen.getByText(/register passkey/i)).toBeInTheDocument()
+      })
+      await userEvent.click(screen.getByText(/register passkey/i))
+      await waitFor(() => {
+        expect(mockAddPasskey).toHaveBeenCalledWith({ name: 'Chrome on Mac' })
+      })
+      ua.mockRestore()
+    })
+
     it('shows error toast when registration fails', async () => {
       mockListUserPasskeys.mockResolvedValue({ data: [] })
       mockAddPasskey.mockRejectedValue(new Error('WebAuthn not supported'))

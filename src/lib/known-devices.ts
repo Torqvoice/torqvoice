@@ -3,6 +3,8 @@ import { createHash } from 'node:crypto'
 import { db } from '@/lib/db'
 import { type AccountMail, type AccountMailRow, sendAccountMail } from '@/lib/account-mail'
 import { DEVICE_COOKIE, readDeviceCookie } from '@/lib/device-cookie'
+import { describeUserAgent } from '@/lib/user-agent-label'
+export { classifyUserAgent, describeUserAgent, type DeviceKind } from '@/lib/user-agent-label'
 
 /**
  * What better-auth hands a database hook: the endpoint context of the request
@@ -20,64 +22,6 @@ export interface DeviceSighting {
   /** The account had no devices at all; recorded quietly, nothing to warn about. */
   isFirst: boolean
   label: string
-}
-
-/**
- * "Chrome on Windows", "Safari on iPhone": enough for a person to recognise
- * their own device in a mail or a list, from a user agent string. Not a
- * fingerprint; the cookie does that.
- */
-export function describeUserAgent(userAgent: string | null | undefined): string {
-  const ua = userAgent ?? ''
-  if (!ua) return 'Unknown device'
-  if (/Torqvoice|Expo|okhttp|Dart|CFNetwork/i.test(ua) && !/Mozilla/i.test(ua)) {
-    return 'Torqvoice technician app'
-  }
-  const os = /iPhone/.test(ua)
-    ? 'iPhone'
-    : /iPad/.test(ua)
-      ? 'iPad'
-      : /Android/.test(ua)
-        ? 'Android'
-        : /Windows/.test(ua)
-          ? 'Windows'
-          : /Mac OS X|Macintosh/.test(ua)
-            ? 'Mac'
-            : /CrOS/.test(ua)
-              ? 'ChromeOS'
-              : /Linux/.test(ua)
-                ? 'Linux'
-                : null
-  const browser = /Edg\//.test(ua)
-    ? 'Edge'
-    : /OPR\/|Opera/.test(ua)
-      ? 'Opera'
-      : /SamsungBrowser/.test(ua)
-        ? 'Samsung Internet'
-        : /Firefox\//.test(ua)
-          ? 'Firefox'
-          : /Chrome\/|CriOS\//.test(ua)
-            ? 'Chrome'
-            : /Safari\//.test(ua)
-              ? 'Safari'
-              : null
-  if (browser && os) return `${browser} on ${os}`
-  return browser ?? os ?? 'Unknown device'
-}
-
-export type DeviceKind = 'phone' | 'tablet' | 'desktop' | 'app' | 'unknown'
-
-/** Phone, tablet or computer: which picture to draw beside a session. */
-export function classifyUserAgent(userAgent: string | null | undefined): DeviceKind {
-  const ua = userAgent ?? ''
-  if (!ua) return 'unknown'
-  if (/Torqvoice|Expo|okhttp|Dart|CFNetwork/i.test(ua) && !/Mozilla/i.test(ua)) return 'app'
-  if (/iPad|Tablet|PlayBook|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) {
-    return 'tablet'
-  }
-  if (/iPhone|iPod|Android|Mobile|Windows Phone/i.test(ua)) return 'phone'
-  if (/Windows|Macintosh|Mac OS X|CrOS|Linux|X11/i.test(ua)) return 'desktop'
-  return 'unknown'
 }
 
 function useSecureCookies(): boolean {
