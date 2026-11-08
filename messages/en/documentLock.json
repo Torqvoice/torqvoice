@@ -9,7 +9,7 @@
       "accepted": "This quote is locked because it has been accepted"
     }
   },
-  "lockedBody": "Its parts, labour, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
+  "lockedBody": "Its parts, labor, prices, discount, tax, number and date can no longer be changed. Payments, status changes, sending and attachments all still work.",
   "lockedAdminHint": "As an owner or admin you can unlock it if something genuinely needs correcting. The unlock is recorded in the audit log.",
   "lockedMemberHint": "Ask an owner or admin to unlock it if something needs correcting.",
   "unlock": "Unlock for editing",
