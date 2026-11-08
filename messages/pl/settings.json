@@ -564,6 +564,7 @@
     "noAccessTitle": "Brak dostępu",
     "noAccessBody": "Twoje konto należy do {workshop}, ale nie ma jeszcze przypisanej roli, więc nie ma tu nic, co możesz otworzyć. Poproś właściciela lub administratora warsztatu o rolę.",
     "setupPageInstall": "Pobierz z Google Play",
+    "setupPageInstallIos": "Pobierz z App Store",
     "invalidInviteEmail": "Sprawdź adres e-mail. Powinien wyglądać tak: imie@przyklad.pl."
   },
   "invoice": {

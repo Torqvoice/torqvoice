@@ -564,6 +564,7 @@
     "noAccessTitle": "Nog geen toegang",
     "noAccessBody": "Uw account hoort bij {workshop}, maar heeft nog geen rol, dus er is hier niets te openen. Vraag een eigenaar of beheerder van uw werkplaats om een rol.",
     "setupPageInstall": "Downloaden via Google Play",
+    "setupPageInstallIos": "Download in de App Store",
     "invalidInviteEmail": "Controleer het e-mailadres. Het moet eruitzien als naam@voorbeeld.nl."
   },
   "invoice": {

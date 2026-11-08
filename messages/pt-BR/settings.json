@@ -564,6 +564,7 @@
     "noAccessTitle": "Ainda sem acesso",
     "noAccessBody": "Sua conta faz parte da {workshop}, mas ainda não recebeu uma função, então não há nada aqui que você possa abrir. Peça uma função ao proprietário ou a um administrador da sua oficina.",
     "setupPageInstall": "Baixar no Google Play",
+    "setupPageInstallIos": "Baixar na App Store",
     "invalidInviteEmail": "Confira o endereço de e-mail. Ele deve ter o formato nome@exemplo.com."
   },
   "invoice": {

@@ -564,6 +564,7 @@
     "noAccessTitle": "Sin acceso todavía",
     "noAccessBody": "Su cuenta pertenece a {workshop}, pero no tiene un rol asignado, así que aquí no hay nada que pueda abrir. Pida un rol a un propietario o administrador de su taller.",
     "setupPageInstall": "Consíguelo en Google Play",
+    "setupPageInstallIos": "Descárgalo en el App Store",
     "invalidInviteEmail": "Revisa la dirección de correo. Debe tener la forma nombre@ejemplo.com."
   },
   "invoice": {
