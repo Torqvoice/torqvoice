@@ -2350,7 +2350,7 @@
       "unitSet": "juego",
       "unitEach": "x",
       "findingPads": "Pastillas traseras al 15 %",
-      "findingPadsNote": "Sustituir antes de 5.000 km",
+      "findingPadsNote": "{unit, select, mi {Sustituir antes de 3.000 millas} other {Sustituir antes de 5.000 km}}",
       "findingOilWeep": "Ligero rezume de aceite en la tapa de balancines",
       "notes": "Gracias por elegir nuestro taller. Contacta con nosotros si tienes alguna duda.",
       "warranty": "12 meses de garantía en piezas y mano de obra.",

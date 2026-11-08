@@ -88,7 +88,9 @@ export interface SampleTables {
 export function sampleTables(
   t: SampleT,
   labels: PrintLabels,
-  format: SampleFormat = DEFAULT_SAMPLE_FORMAT
+  format: SampleFormat = DEFAULT_SAMPLE_FORMAT,
+  /** The workshop's distance unit, for the one observation that names a distance. */
+  unitSystem: DesignerWorkshop['unitSystem'] = 'imperial'
 ): SampleTables {
   const L = (key: string, fallback: string) => labels[key] || fallback
   const m = format.money
@@ -144,7 +146,7 @@ export function sampleTables(
         severity: L('findingSeverityNeedsWork', 'Medium'),
         color: '#f59e0b',
         description: t('sample.findingPads'),
-        notes: t('sample.findingPadsNote'),
+        notes: t('sample.findingPadsNote', { unit: unitSystem === 'metric' ? 'km' : 'mi' }),
       },
       {
         severity: L('findingSeverityMonitor', 'Low'),
@@ -198,7 +200,8 @@ export function fieldValues(
       ? fillTemplate(L('typeKey', 'HSN/TSN: {typeKey}'), { typeKey: '9101 / ABC' })
       : '',
     mileage: fillTemplate(L('mileage', 'Mileage: {mileage}'), {
-      mileage: `84,120 ${L('km', 'km')}`,
+      // In the workshop's unit; unset prints miles, as its invoices do.
+      mileage: `84,120 ${workshop.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')}`,
     }),
     // A made-up job.
     service_title: t('sample.serviceTitle'),
@@ -322,7 +325,7 @@ export function buildSampleData(
   format: SampleFormat = DEFAULT_SAMPLE_FORMAT
 ): DocumentData {
   const L = (key: string, fallback: string) => labels[key] || fallback
-  const sample = sampleTables(t, labels, format)
+  const sample = sampleTables(t, labels, format, workshop.unitSystem)
   const values = fieldValues(workshop, t, labels)
   const tax = sampleTax(workshop, sample, labels, format)
   return {

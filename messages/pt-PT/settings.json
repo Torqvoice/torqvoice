@@ -2350,7 +2350,7 @@
       "unitSet": "jogo",
       "unitEach": "x",
       "findingPads": "Pastilhas traseiras a 15%",
-      "findingPadsNote": "Substituir nos próximos 5000 km",
+      "findingPadsNote": "{unit, select, mi {Substituir nas próximas 3000 milhas} other {Substituir nos próximos 5000 km}}",
       "findingOilWeep": "Ligeira fuga de óleo na tampa das válvulas",
       "notes": "Obrigado por escolher a nossa oficina. Contacte-nos se tiver alguma dúvida.",
       "warranty": "12 meses de garantia em peças e mão de obra.",

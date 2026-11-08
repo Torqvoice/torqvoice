@@ -2350,7 +2350,7 @@
       "unitSet": "set",
       "unitEach": "x",
       "findingPads": "Rear pads at 15%",
-      "findingPadsNote": "Replace within 5,000 km",
+      "findingPadsNote": "{unit, select, mi {Replace within 3,000 mi} other {Replace within 5,000 km}}",
       "findingOilWeep": "Small oil weep at valve cover",
       "notes": "Thank you for choosing our workshop. Contact us if you have any questions.",
       "warranty": "12 months warranty on parts and labour.",

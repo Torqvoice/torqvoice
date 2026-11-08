@@ -2350,7 +2350,7 @@
       "unitSet": "set",
       "unitEach": "x",
       "findingPads": "Achterblokken op 15%",
-      "findingPadsNote": "Binnen 5.000 km vervangen",
+      "findingPadsNote": "{unit, select, mi {Binnen 3.000 mijl vervangen} other {Binnen 5.000 km vervangen}}",
       "findingOilWeep": "Lichte olielekkage bij klepdeksel",
       "notes": "Bedankt dat u voor onze werkplaats hebt gekozen. Neem gerust contact op bij vragen.",
       "warranty": "12 maanden garantie op onderdelen en arbeid.",

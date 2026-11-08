@@ -2350,7 +2350,7 @@
       "unitSet": "kpl.",
       "unitEach": "x",
       "findingPads": "Tylne klocki na poziomie 15%",
-      "findingPadsNote": "Wymienić w ciągu 5000 km",
+      "findingPadsNote": "{unit, select, mi {Wymienić w ciągu 3000 mil} other {Wymienić w ciągu 5000 km}}",
       "findingOilWeep": "Lekki wyciek oleju przy pokrywie zaworów",
       "notes": "Dziękujemy za wybór naszego warsztatu. W razie pytań prosimy o kontakt.",
       "warranty": "12 miesięcy gwarancji na części i robociznę.",
