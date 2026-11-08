@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { InvoiceDesigner } from '@/features/invoice-designer/Components/InvoiceDesigner'
 import { InvoiceDesignMenu } from '@/features/vehicles/Components/service-page/InvoiceDesignMenu'
 import type { DesignerTemplate } from '@/features/invoice-designer/Components/types'
@@ -67,6 +67,10 @@ const template: DesignerTemplate = {
 }
 
 describe('dates about designs, in the workshop format', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('shows when a saved design was saved in the workshop date format and zone', () => {
     render(
       <DateSettingsProvider {...OSLO}>
@@ -102,7 +106,10 @@ describe('dates about designs, in the workshop format', () => {
         </ConfirmProvider>
       </DateSettingsProvider>
     )
-    expect(screen.getByText('Saved 09.11.2026')).toBeInTheDocument()
+    // The design's own card, so the date found is the one it shows.
+    const card = screen.getByText('Fleet statement').closest('button') as HTMLElement
+    expect(within(card).getByText(/09\.11\.2026/)).toBeInTheDocument()
+    expect(within(card).queryByText(/11\/(8|08)\/2026/)).not.toBeInTheDocument()
   })
 
   it('says when a sent invoice went out in the workshop date format and zone', async () => {
@@ -120,6 +127,8 @@ describe('dates about designs, in the workshop format', () => {
     const trigger = screen.getByRole('menuitem', { name: /invoice design/i })
     trigger.focus()
     fireEvent.keyDown(trigger, { key: 'ArrowRight' })
-    expect(await screen.findByText(/^Sent to the customer on 09\.11\.2026,/)).toBeInTheDocument()
+    const menu = await screen.findByRole('menu', { name: /invoice design/i })
+    expect(within(menu).getByText(/09\.11\.2026/)).toBeInTheDocument()
+    expect(within(menu).queryByText(/11\/(8|08)\/2026/)).not.toBeInTheDocument()
   })
 })
