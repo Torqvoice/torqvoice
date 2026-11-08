@@ -20,6 +20,7 @@ import { getOrgFromAddress, sendOrgMail } from '@/lib/email'
 import { missingTags, unknownTags } from '../Lib/tags'
 import { buildTemplatedMail } from '../Lib/sendTemplatedMail'
 import { sampleContextFor } from '../Lib/emailContext'
+import { workshopCurrencySettings } from '@/lib/workshop-currency'
 import { missingAssets, sweepEmailAssets } from '../Lib/emailAssets.server'
 import { requireFeature } from '@/lib/features'
 import { requireEmailSending, withPlatformMailAllowance } from '@/features/email/Lib/emailAllowance'
@@ -322,7 +323,12 @@ export async function sendTestEmail(input: SaveEmailTemplateInput, recipientEmai
       const mail = await buildTemplatedMail(organizationId, {
         kind: data.kind,
         to,
-        context: sampleContextFor(data.kind, sender?.name),
+        // In the workshop's own currency, as the designer previews it.
+        context: sampleContextFor(
+          data.kind,
+          sender?.name,
+          await workshopCurrencySettings(organizationId)
+        ),
         template: data,
         attached: kindSpec(data.kind).hasAttachment,
       })

@@ -11,6 +11,7 @@ import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
 import type { TaxComponentDefinition } from '@/lib/tax'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildSampleData, type PrintLabels } from './sample'
+import { useSampleFormat } from './useSampleFormat'
 import { specForDesign, specForPreset } from './presetSpec'
 import type { DocumentType, SavedDesign } from './types'
 
@@ -35,6 +36,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
   const t = useTranslations('settings.designer')
   const typeKeyEnabled = useTypeKeyEnabled()
   const messages = useMessages() as { pdf?: Record<string, Record<string, string>> }
+  const sampleFormat = useSampleFormat()
 
   return useMemo(() => {
     const pdf = messages.pdf ?? {}
@@ -62,9 +64,10 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
       [],
       t,
       labels,
-      docType
+      docType,
+      sampleFormat
     )
-  }, [docType, workshop, logoUrl, t, messages, typeKeyEnabled])
+  }, [docType, workshop, logoUrl, t, messages, typeKeyEnabled, sampleFormat])
 }
 
 export function PresetPreview({

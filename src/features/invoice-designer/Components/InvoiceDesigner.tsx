@@ -56,6 +56,7 @@ import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
+import { useSampleFormat } from './useSampleFormat'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { specForPreset } from './presetSpec'
 import { themeOf } from './designTheme'
@@ -346,9 +347,17 @@ export function InvoiceDesigner({
   }, [telegramOn, telegramBotLink])
 
   /** What a workshop's own sheet says, with the sample standing in for a job. */
+  const sampleFormat = useSampleFormat()
   const data: DocumentData = useMemo(
     () => ({
-      ...buildSampleData({ ...workshop, typeKeyEnabled }, customFields, t, printLabels, docType),
+      ...buildSampleData(
+        { ...workshop, typeKeyEnabled },
+        customFields,
+        t,
+        printLabels,
+        docType,
+        sampleFormat
+      ),
       telegramQr:
         telegramOn && telegramQrDataUri
           ? { dataUri: telegramQrDataUri, label: L('telegramConnect', 'Chat with us on Telegram') }
@@ -361,6 +370,7 @@ export function InvoiceDesigner({
       t,
       printLabels,
       docType,
+      sampleFormat,
       telegramOn,
       telegramQrDataUri,
       L,
