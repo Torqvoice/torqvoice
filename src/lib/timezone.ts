@@ -121,6 +121,17 @@ export function isZonedWeekend(date: Date, timeZone: string): boolean {
   return w === 0 || w === 6
 }
 
+/**
+ * The zone a workshop's times are read in: the one it chose, else the one its
+ * browser was detected in when it saved its settings, else UTC.
+ */
+export function resolveWorkshopTimeZone(
+  explicit: string | null | undefined,
+  detected: string | null | undefined
+): string {
+  return safeTimeZone(explicit?.trim() || detected?.trim() || null)
+}
+
 /** A zone the runtime accepts, or the fallback when the setting is empty or misspelt. */
 export function safeTimeZone(value: string | null | undefined, fallback = 'UTC'): string {
   if (!value) return fallback

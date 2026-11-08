@@ -5,7 +5,7 @@ import {
 } from '@/lib/currencies'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { formatCurrency, formatDate, type CurrencyFormat } from '@/lib/format'
-import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
+import { resolveWorkshopTimeZone } from '@/lib/timezone'
 import type { EmailKind } from './emailKinds'
 import { kindSpec } from './emailKinds'
 import type { SummaryRowKey } from './emailTemplate'
