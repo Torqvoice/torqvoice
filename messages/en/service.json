@@ -21,7 +21,7 @@
       "title": "The job needs a title before it can be saved.",
       "negative": "Quantities, hours, prices and costs cannot be negative.",
       "partName": "Every priced part needs a name.",
-      "laborDescription": "Every labour line with hours or a rate needs a description.",
+      "laborDescription": "Every labor line with hours or a rate needs a description.",
       "concernCondition": "A concern with a cause, correction or confirmation needs its condition filled in."
     }
   },
