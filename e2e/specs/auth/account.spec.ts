@@ -117,10 +117,13 @@ test.describe('two-factor authentication', () => {
     await dialog.getByRole('button', { name: 'Verify', exact: true }).click()
 
     // The codes the owner is asked to keep, for the backup-code sign-in below.
+    // Read once they are on screen: the step appears when the code is accepted.
+    const saved = dialog.getByRole('button', { name: /saved my backup codes/i })
+    await expect(saved).toBeVisible()
     backupCodes = (await dialog.innerText()).match(/\b[A-Za-z0-9]{5}-[A-Za-z0-9]{5}\b/g) ?? []
     expect(backupCodes.length, 'the dialog shows backup codes to keep').toBeGreaterThan(0)
 
-    await dialog.getByRole('button', { name: /saved my backup codes/i }).click()
+    await saved.click()
     await expect(page.getByText(/two-factor authentication (is )?enabled/i).first()).toBeVisible()
     await expect
       .poll(() => accountSecurityEntries(email, since))
