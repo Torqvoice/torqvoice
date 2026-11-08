@@ -255,8 +255,9 @@
     },
     "request": {
       "pending": "Ожидает",
-      "converted": "Записан",
-      "dismissed": "Закрыт"
+      "converted": "Записана",
+      "dismissed": "Закрыта",
+      "cancelled": "Отменена"
     },
     "inspection": {
       "inProgress": "В работе",

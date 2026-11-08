@@ -23,6 +23,7 @@ describe('statuses in the customer portal', () => {
     expect(portalStatusLabel('job', 'waiting-parts', t)).toBe('Waiting for parts')
     expect(portalStatusLabel('job', 'pending', t)).toBe('Booked')
     expect(portalStatusLabel('request', 'converted', t)).toBe('Booked')
+    expect(portalStatusLabel('request', 'cancelled', t)).toBe('Cancelled')
     expect(portalStatusLabel('inspection', 'in_progress', t)).toBe('In progress')
   })
 
@@ -34,7 +35,7 @@ describe('statuses in the customer portal', () => {
     const tl = tFor(locale)
     for (const [kind, statuses] of Object.entries({
       job: ['pending', 'scheduled', 'in-progress', 'waiting-parts', 'completed'],
-      request: ['pending', 'converted', 'dismissed'],
+      request: ['pending', 'converted', 'dismissed', 'cancelled'],
       inspection: ['in_progress', 'completed'],
     })) {
       for (const status of statuses) {

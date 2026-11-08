@@ -256,7 +256,8 @@
     "request": {
       "pending": "Pending",
       "converted": "Booked",
-      "dismissed": "Closed"
+      "dismissed": "Closed",
+      "cancelled": "Cancelled"
     },
     "inspection": {
       "inProgress": "In progress",

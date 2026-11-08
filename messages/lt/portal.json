@@ -256,7 +256,8 @@
     "request": {
       "pending": "Laukiama",
       "converted": "Užregistruota",
-      "dismissed": "Uždaryta"
+      "dismissed": "Uždaryta",
+      "cancelled": "Atšaukta"
     },
     "inspection": {
       "inProgress": "Vykdoma",

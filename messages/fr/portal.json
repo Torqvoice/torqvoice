@@ -255,8 +255,9 @@
     },
     "request": {
       "pending": "En attente",
-      "converted": "Réservé",
-      "dismissed": "Clôturée"
+      "converted": "Réservée",
+      "dismissed": "Clôturée",
+      "cancelled": "Annulée"
     },
     "inspection": {
       "inProgress": "En cours",

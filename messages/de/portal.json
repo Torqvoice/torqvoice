@@ -256,7 +256,8 @@
     "request": {
       "pending": "Offen",
       "converted": "Gebucht",
-      "dismissed": "Geschlossen"
+      "dismissed": "Geschlossen",
+      "cancelled": "Abgesagt"
     },
     "inspection": {
       "inProgress": "In Arbeit",

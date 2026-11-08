@@ -256,7 +256,8 @@
     "request": {
       "pending": "Venter",
       "converted": "Booket",
-      "dismissed": "Avsluttet"
+      "dismissed": "Avsluttet",
+      "cancelled": "Avlyst"
     },
     "inspection": {
       "inProgress": "Pågår",

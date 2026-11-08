@@ -256,7 +256,8 @@
     "request": {
       "pending": "In behandeling",
       "converted": "Geboekt",
-      "dismissed": "Gesloten"
+      "dismissed": "Gesloten",
+      "cancelled": "Geannuleerd"
     },
     "inspection": {
       "inProgress": "Bezig",

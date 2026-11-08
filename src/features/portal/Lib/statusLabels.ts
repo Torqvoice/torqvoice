@@ -18,7 +18,13 @@ const KEYS: Record<PortalStatusKind, Record<string, string>> = {
     'waiting-parts': 'waitingParts',
     completed: 'completed',
   },
-  request: { pending: 'pending', converted: 'converted', dismissed: 'dismissed' },
+  request: {
+    pending: 'pending',
+    converted: 'converted',
+    dismissed: 'dismissed',
+    // A customer who cancels an online inspection booking cancels its request.
+    cancelled: 'cancelled',
+  },
   inspection: { in_progress: 'inProgress', completed: 'completed' },
 }
 

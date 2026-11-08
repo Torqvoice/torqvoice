@@ -256,7 +256,8 @@
     "request": {
       "pending": "Oczekuje",
       "converted": "Zarezerwowane",
-      "dismissed": "Zamknięte"
+      "dismissed": "Zamknięte",
+      "cancelled": "Anulowane"
     },
     "inspection": {
       "inProgress": "W toku",

@@ -256,7 +256,8 @@
     "request": {
       "pending": "Beklemede",
       "converted": "Rezerve edildi",
-      "dismissed": "Kapatıldı"
+      "dismissed": "Kapatıldı",
+      "cancelled": "İptal edildi"
     },
     "inspection": {
       "inProgress": "Devam ediyor",
