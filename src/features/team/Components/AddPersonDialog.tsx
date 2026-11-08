@@ -226,7 +226,9 @@ export function AddPersonDialog({
 
   // Team member
   const [email, setEmail] = useState('')
-  const [roleValue, setRoleValue] = useState('member')
+  // "No role" until someone is chosen: the old 'member' default matched none
+  // of the choices, so the box showed nothing while it meant exactly this.
+  const [roleValue, setRoleValue] = useState('none')
 
   const reset = useCallback(() => {
     setKind(null)
@@ -240,7 +242,7 @@ export function AddPersonDialog({
     setScanned(false)
     setEmail('')
     setColor(BOARD_COLOURS[0])
-    setRoleValue('member')
+    setRoleValue('none')
   }, [])
 
   const close = useCallback(() => {
@@ -624,7 +626,7 @@ export function AddPersonDialog({
             <div className="space-y-2">
               <Label>{t('team.role')}</Label>
               <Select value={roleValue} onValueChange={setRoleValue}>
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
