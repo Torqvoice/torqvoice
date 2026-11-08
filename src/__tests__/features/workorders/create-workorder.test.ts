@@ -743,6 +743,43 @@ describe('createDraftServiceRecord — scheduling', () => {
     vi.useRealTimers()
   })
 
+  it("does not book over the default technician's job on the asked-for day", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      ...SHOP_HOURS,
+      { key: 'workshop.defaultTechnician', value: 'Default Tech' },
+    ])
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.technician.findFirst)
+      .mockResolvedValueOnce({ id: 'default-tech-id', name: 'Default Tech' } as any)
+      .mockResolvedValue({ name: 'Default Tech' } as any)
+    // The default technician already has the morning of Monday 7 September.
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
+      {
+        id: 'busy',
+        title: 'Clutch',
+        startDateTime: new Date(Date.UTC(2026, 8, 7, 8, 30)),
+        endDateTime: new Date(Date.UTC(2026, 8, 7, 11, 0)),
+        technicianId: 'default-tech-id',
+        workBayId: null,
+        vehicle: null,
+      },
+    ] as any)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-default-busy' } as any)
+
+    const asked = new Date(Date.UTC(2026, 8, 7, 0, 0, 0))
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, undefined, undefined, asked)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    expect(createCall.data.technicianId).toBe('default-tech-id')
+    expect(createCall.data.startDateTime.toISOString()).toBe('2026-09-07T11:00:00.000Z')
+    vi.useRealTimers()
+  })
+
   it('ignores an asked-for day that has already gone and books the next free slot', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))

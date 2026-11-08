@@ -215,7 +215,10 @@ export async function createDraftRecord(
       durationMinutes: DEFAULT_JOB_MINUTES,
       bookings,
       hours,
-      technicianId: opts.technicianId,
+      // Whoever the job will be assigned to, the default technician included:
+      // searching only for one passed in let a default technician's day be
+      // double-booked.
+      technicianId: resolvedTechId || undefined,
       workBayId: opts.workBayId,
     })
     if (slot) {
