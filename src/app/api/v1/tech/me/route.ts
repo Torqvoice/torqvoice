@@ -3,6 +3,7 @@ import { apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry, loggedMinutes } from '@/features/time-tracking/Lib/timeEntries'
 import { TECH_API_FEATURES } from '@/lib/tech-api-features'
 import { MIN_APP_VERSION } from '@/lib/tech-app-version'
+import { contactFor, isPlaceholderEmail } from '@/features/team/Lib/technicianRole'
 
 /**
  * Who the app is signed in as, which workshop it is looking at, and whether a
@@ -20,7 +21,7 @@ export async function GET(request: Request) {
       const [user, organization, technicians] = await Promise.all([
         db.user.findUnique({
           where: { id: ctx.userId },
-          select: { id: true, name: true, email: true, image: true },
+          select: { id: true, name: true, email: true, phone: true, image: true },
         }),
         db.organization.findUnique({
           where: { id: ctx.organizationId },
@@ -44,7 +45,17 @@ export async function GET(request: Request) {
         // What a newer app may rely on here. An app that finds a name missing
         // switches that part off rather than letting it fail.
         features: TECH_API_FEATURES,
-        user,
+        // A technician the desk set up by phone number has a placeholder
+        // address, which the app printed under their name. It gets null in
+        // its place, and `contact` is the line to show there instead: the
+        // email, or the number they sign in with.
+        user: user && {
+          id: user.id,
+          name: user.name,
+          image: user.image,
+          email: isPlaceholderEmail(user.email) ? null : user.email,
+          contact: contactFor(user),
+        },
         organization,
         technicians,
         isTechnician: technicians.length > 0,
