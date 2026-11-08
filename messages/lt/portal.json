@@ -244,5 +244,24 @@
     "confirmationSubject": "Jūsų rezervacija: {workshop}",
     "confirmationBody": "Jūsų {vehicle} rezervuota {when} dirbtuvėse {workshop}. Reikia pakeisti? Naudokite nuorodą ankstesnėje žinutėje arba skambinkite {phone}.",
     "confirmationBodyRequest": "Ačiū, {workshop} gavo jūsų užklausą dėl {when} jūsų {vehicle} ir netrukus patvirtins. Klausimai? Skambinkite {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Užregistruota",
+      "scheduled": "Suplanuota",
+      "inProgress": "Vykdoma",
+      "waitingParts": "Laukiama dalių",
+      "completed": "Baigta"
+    },
+    "request": {
+      "pending": "Laukiama",
+      "converted": "Užregistruota",
+      "dismissed": "Uždaryta",
+      "cancelled": "Atšaukta"
+    },
+    "inspection": {
+      "inProgress": "Vykdoma",
+      "completed": "Baigta"
+    }
   }
 }

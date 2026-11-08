@@ -244,5 +244,24 @@
     "confirmationSubject": "A sua marcação na {workshop}",
     "confirmationBody": "A sua viatura {vehicle} está marcada para {when} na {workshop}. Precisa de alterar? Use o link da nossa mensagem anterior ou ligue para o {phone}.",
     "confirmationBodyRequest": "Obrigado! A {workshop} recebeu o seu pedido para {when} para a sua viatura {vehicle} e irá confirmá-lo em breve. Dúvidas? Ligue para o {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Marcado",
+      "scheduled": "Agendado",
+      "inProgress": "Em curso",
+      "waitingParts": "A aguardar peças",
+      "completed": "Concluído"
+    },
+    "request": {
+      "pending": "Pendente",
+      "converted": "Marcado",
+      "dismissed": "Encerrado",
+      "cancelled": "Cancelado"
+    },
+    "inspection": {
+      "inProgress": "Em curso",
+      "completed": "Concluída"
+    }
   }
 }
