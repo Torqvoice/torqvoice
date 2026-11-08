@@ -623,7 +623,11 @@ export function ServicePageClient({
 
             <LaborAddedBanner
               count={formState.laborAddedElsewhere.length}
-              onShow={formState.applyLaborAddedElsewhere}
+              parts={formState.partsAddedElsewhere.length}
+              onShow={() => {
+                formState.applyLaborAddedElsewhere()
+                formState.applyPartsAddedElsewhere()
+              }}
             />
 
             {(lockState.locked || lockState.unlockedAt) && (

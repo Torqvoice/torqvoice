@@ -255,6 +255,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {Mechanikas pridėjo # darbo eilutę prie šio užsakymo} few {Mechanikas pridėjo # darbo eilutes prie šio užsakymo} many {Mechanikas pridėjo # darbo eilutės prie šio užsakymo} other {Mechanikas pridėjo # darbo eilučių prie šio užsakymo}}",
+    "titleParts": "{count, plural, one {Mechanikas pridėjo # dalį prie šio užsakymo} few {Mechanikas pridėjo # dalis prie šio užsakymo} many {Mechanikas pridėjo # dalies prie šio užsakymo} other {Mechanikas pridėjo # dalių prie šio užsakymo}}",
+    "titleBoth": "Mechanikas pridėjo darbų ir dalių prie šio užsakymo",
     "body": "Kol redaguojate, ji nerodoma sąraše. Kitą kartą išsaugant ji bus įtraukta.",
     "show": "Rodyti"
   },

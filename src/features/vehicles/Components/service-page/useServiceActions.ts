@@ -58,6 +58,8 @@ export function useServiceActions({
     laborItems,
     laborItemsForSave,
     clearLaborAddedElsewhere,
+    partItemsForSave,
+    clearPartsAddedElsewhere,
     subtotal,
     taxRate,
     taxInclusive,
@@ -178,7 +180,10 @@ export function useServiceActions({
           confirmation: c.confirmation ?? null,
           confirmed: c.confirmed ?? false,
         })),
-      partItems: partItems.filter((p) => p.name),
+      // Parts and labour a technician added while this page was open go with
+      // the save even if the offer to show them was never taken: this action
+      // replaces every line, so one left out of the payload is deleted.
+      partItems: partItemsForSave.filter((p) => p.name),
       // A line a technician added while this page was open goes with the save
       // even if the offer to show it was never taken: this action replaces
       // every labour line, so one left out of the payload is deleted.
@@ -203,6 +208,7 @@ export function useServiceActions({
 
     if (result.success) {
       clearLaborAddedElsewhere()
+      clearPartsAddedElsewhere()
       setHasUnsavedChanges(false)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {

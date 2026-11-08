@@ -12,6 +12,7 @@ import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
 import { addedLaborLines } from '@/features/vehicles/Lib/laborLines'
+import { addedPartLines } from '@/features/vehicles/Lib/partLines'
 import {
   recalculateShopFeeLines,
   shopFeeLinesLast,
@@ -161,6 +162,26 @@ export function useServiceFormState({
     const added = addedLaborLines(previous, saved)
     if (added.length > 0) setLaborAddedElsewhere((current) => [...current, ...added])
   }, [savedLaborKey])
+
+  // Parts the same way: a technician scanning a part onto the job from the
+  // app. The list used to be read once when the page opened, so the part never
+  // showed, and the desk's next save, which replaces every part line, deleted
+  // it and put its stock back.
+  const [partsAddedElsewhere, setPartsAddedElsewhere] = useState<ServicePartInput[]>([])
+  const savedPartsKey = JSON.stringify(initialData.partItems ?? [])
+  const syncedPartsRef = useRef<ServicePartInput[]>(initialData.partItems ?? [])
+  useEffect(() => {
+    const saved: ServicePartInput[] = JSON.parse(savedPartsKey)
+    const previous = syncedPartsRef.current
+    syncedPartsRef.current = saved
+    if (!hasUnsavedChangesRef.current) {
+      setPartItems(saved)
+      setPartsAddedElsewhere([])
+      return
+    }
+    const added = addedPartLines(previous, saved)
+    if (added.length > 0) setPartsAddedElsewhere((current) => [...current, ...added])
+  }, [savedPartsKey])
 
   useEffect(() => {
     if (!locked) return
@@ -428,6 +449,17 @@ export function useServiceFormState({
 
   const clearLaborAddedElsewhere = useCallback(() => setLaborAddedElsewhere([]), [])
 
+  const applyPartsAddedElsewhere = useCallback(() => {
+    if (partsAddedElsewhere.length === 0) return
+    dirtySetPartItems((prev) => [...prev, ...partsAddedElsewhere])
+    setPartsAddedElsewhere([])
+  }, [partsAddedElsewhere, dirtySetPartItems])
+
+  const clearPartsAddedElsewhere = useCallback(() => setPartsAddedElsewhere([]), [])
+
+  /** What a save has to write: the parts on screen plus any added elsewhere. */
+  const partItemsForSave = [...partItems, ...partsAddedElsewhere]
+
   /**
    * What a save has to write: the list on screen plus anything added
    * elsewhere that has not been shown yet. A save replaces every labour line
@@ -560,6 +592,11 @@ export function useServiceFormState({
     laborItemsForSave,
     /** After a save has written them: they are ordinary saved lines now. */
     clearLaborAddedElsewhere,
+    /** The same three for parts. */
+    partsAddedElsewhere,
+    applyPartsAddedElsewhere,
+    partItemsForSave,
+    clearPartsAddedElsewhere,
     dirtySetDiscountType,
     dirtySetDiscountValue,
     dirtySetTaxRate,
