@@ -144,6 +144,12 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/inventory': [{ key: 'inventory', href: '/inventory' }, { key: 'allParts' }],
   '/reports': [{ key: 'reports' }],
   '/timesheets': [{ key: 'timesheets' }],
+  '/calendar': [{ key: 'calendar' }],
+  '/messages': [{ key: 'messages' }],
+  '/inspections': [{ key: 'inspections' }],
+  '/labor-presets': [{ key: 'laborPresets' }],
+  '/telegram': [{ key: 'telegram' }],
+  '/whatsapp': [{ key: 'whatsapp' }],
   '/reminders': [{ key: 'reminders', href: '/reminders' }, { key: 'allReminders' }],
   '/work-board': [{ key: 'workBoard' }],
   '/work-board/presenter': [{ key: 'workBoard', href: '/work-board' }, { key: 'presenter' }],
@@ -272,6 +278,14 @@ export function PageHeader() {
     // /customers/[id]
     else if (pathname.startsWith('/customers/')) {
       segments = [{ key: 'customers', href: '/customers' }, { key: 'customerDetails' }]
+    }
+    // /inspections/[id]
+    else if (/^\/inspections\/[^/]+$/.test(pathname)) {
+      segments = [{ key: 'inspections', href: '/inspections' }, { key: 'inspectionDetails' }]
+    }
+    // /sales/[serviceId], a counter sale: a work order without a vehicle
+    else if (/^\/sales\/[^/]+$/.test(pathname)) {
+      segments = [{ key: 'workOrders', href: '/work-orders' }, { key: 'serviceDetails' }]
     }
     // A settings page the map above does not list: named as the settings
     // menu names it, so a new page never reads "Home".

@@ -67,7 +67,11 @@
     "whatsapp": "WhatsApp",
     "inspectionReminders": "HU-Erinnerungen",
     "faultCodes": "Fehlercodes",
-    "faultCode": "Fehlercode"
+    "faultCode": "Fehlercode",
+    "calendar": "Kalender",
+    "messages": "Nachrichten",
+    "inspections": "Inspektionen",
+    "inspectionDetails": "Inspektionsdetails"
   },
   "search": "Suchen...",
   "shortcut": "Ctrl+K",

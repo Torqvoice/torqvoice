@@ -67,7 +67,11 @@
     "whatsapp": "WhatsApp",
     "inspectionReminders": "Напоминания о техосмотре",
     "faultCodes": "Коды неисправностей",
-    "faultCode": "Код неисправности"
+    "faultCode": "Код неисправности",
+    "calendar": "Календарь",
+    "messages": "Сообщения",
+    "inspections": "Осмотры",
+    "inspectionDetails": "Детали осмотра"
   },
   "search": "Поиск...",
   "shortcut": "Ctrl+K",

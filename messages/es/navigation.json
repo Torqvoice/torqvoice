@@ -67,7 +67,11 @@
     "whatsapp": "WhatsApp",
     "inspectionReminders": "Recordatorios de inspección",
     "faultCodes": "Códigos de avería",
-    "faultCode": "Código de avería"
+    "faultCode": "Código de avería",
+    "calendar": "Calendario",
+    "messages": "Mensajes",
+    "inspections": "Inspecciones",
+    "inspectionDetails": "Detalles de la inspección"
   },
   "search": "Buscar...",
   "shortcut": "Ctrl+K",

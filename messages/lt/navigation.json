@@ -67,7 +67,11 @@
     "whatsapp": "„WhatsApp“",
     "inspectionReminders": "Apžiūros priminimai",
     "faultCodes": "Gedimų kodai",
-    "faultCode": "Gedimo kodas"
+    "faultCode": "Gedimo kodas",
+    "calendar": "Kalendorius",
+    "messages": "Žinutės",
+    "inspections": "Apžiūros",
+    "inspectionDetails": "Apžiūros informacija"
   },
   "search": "Ieškoti...",
   "shortcut": "Ctrl+K",

@@ -67,7 +67,11 @@
     "whatsapp": "WhatsApp",
     "inspectionReminders": "EU-kontroll-påminnelser",
     "faultCodes": "Feilkoder",
-    "faultCode": "Feilkode"
+    "faultCode": "Feilkode",
+    "calendar": "Kalender",
+    "messages": "Meldinger",
+    "inspections": "Inspeksjoner",
+    "inspectionDetails": "Inspeksjonsdetaljer"
   },
   "search": "Søk...",
   "shortcut": "Ctrl+K",

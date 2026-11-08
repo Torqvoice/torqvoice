@@ -96,3 +96,21 @@ describe('top-level breadcrumbs', () => {
     cleanup()
   })
 })
+
+/** Calendar, Messages, Inspections and four more fell through to "Home". */
+describe('pages outside settings', () => {
+  it.each([
+    ['/calendar', ['Calendar']],
+    ['/messages', ['Messages']],
+    ['/inspections', ['Inspections']],
+    ['/inspections/insp-1', ['Inspections', 'Inspection Details']],
+    ['/labor-presets', ['Labor Presets']],
+    ['/sales/rec-1', ['Work Orders', 'Service Details']],
+  ])('%s says where you are', (path, expected) => {
+    pathname = path
+    render(<PageHeader />)
+    expect(crumbs()).toEqual(expected)
+    expect(screen.queryByText('Home')).toBeNull()
+    cleanup()
+  })
+})
