@@ -244,5 +244,23 @@
     "confirmationSubject": "Votre réservation chez {workshop}",
     "confirmationBody": "Votre {vehicle} est réservé pour {when} chez {workshop}. Besoin de changer ? Utilisez le lien de notre message précédent ou appelez le {phone}.",
     "confirmationBodyRequest": "Merci, {workshop} a reçu votre demande pour {when} pour votre {vehicle} et confirmera sous peu. Des questions ? Appelez le {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Réservé",
+      "scheduled": "Planifié",
+      "inProgress": "En cours",
+      "waitingParts": "En attente de pièces",
+      "completed": "Terminé"
+    },
+    "request": {
+      "pending": "En attente",
+      "converted": "Réservé",
+      "dismissed": "Clôturée"
+    },
+    "inspection": {
+      "inProgress": "En cours",
+      "completed": "Terminée"
+    }
   }
 }

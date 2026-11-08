@@ -14,6 +14,7 @@ import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
 import { ReportSoldButton } from '@/features/portal/Components/ReportSoldButton'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { portalConditionCounts } from '@/features/portal/Lib/inspectionSummary'
+import { portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 
 const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
   active: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -33,6 +34,7 @@ export default async function PortalVehicleDetailPage({
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const money = await workshopMoneyFormatter(org?.id)
   const t = await getTranslations('portal.vehicles')
+  const tStatus = await getTranslations('portal.status')
   const tInvoices = await getTranslations('portal.invoices')
   const tWarranty = await getTranslations('vehicles.services.warranty.status')
   const [result, serviceTypeSetting, ownership] = await Promise.all([
@@ -137,7 +139,9 @@ export default async function PortalVehicleDetailPage({
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <Badge variant="outline">{sr.status}</Badge>
+                        <Badge variant="outline">
+                          {portalStatusLabel('job', sr.status, tStatus)}
+                        </Badge>
                         {(() => {
                           const ws = getWarrantyStatus(
                             sr.warrantyExpiresAt,
@@ -226,7 +230,9 @@ export default async function PortalVehicleDetailPage({
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline">{insp.status}</Badge>
+                          <Badge variant="outline">
+                            {portalStatusLabel('inspection', insp.status, tStatus)}
+                          </Badge>
                           {insp.publicToken && (
                             <Link
                               href={`/share/inspection/${orgId}/${insp.publicToken}`}

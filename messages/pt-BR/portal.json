@@ -244,5 +244,23 @@
     "confirmationSubject": "Seu agendamento na {workshop}",
     "confirmationBody": "Seu {vehicle} está agendado para {when} na {workshop}. Precisa alterar? Use o link da mensagem anterior ou ligue para {phone}.",
     "confirmationBodyRequest": "Obrigado, a {workshop} recebeu sua solicitação para {when} para o seu {vehicle} e confirmará em breve. Dúvidas? Ligue para {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Agendado",
+      "scheduled": "Programado",
+      "inProgress": "Em andamento",
+      "waitingParts": "Aguardando peças",
+      "completed": "Concluído"
+    },
+    "request": {
+      "pending": "Pendente",
+      "converted": "Agendado",
+      "dismissed": "Encerrado"
+    },
+    "inspection": {
+      "inProgress": "Em andamento",
+      "completed": "Concluída"
+    }
   }
 }

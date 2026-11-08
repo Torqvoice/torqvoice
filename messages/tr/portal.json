@@ -244,5 +244,23 @@
     "confirmationSubject": "{workshop} randevunuz",
     "confirmationBody": "{vehicle} aracınız {when} için {workshop} adresinde randevulandı. Değiştirmek mi gerekiyor? Önceki mesajımızdaki bağlantıyı kullanın veya {phone} numarasını arayın.",
     "confirmationBodyRequest": "Teşekkürler, {workshop} {vehicle} aracınız için {when} talebinizi aldı ve kısa süre içinde onaylayacak. Sorunuz mu var? {phone} numarasını arayın."
+  },
+  "status": {
+    "job": {
+      "pending": "Rezerve edildi",
+      "scheduled": "Planlandı",
+      "inProgress": "Devam ediyor",
+      "waitingParts": "Parça bekleniyor",
+      "completed": "Tamamlandı"
+    },
+    "request": {
+      "pending": "Beklemede",
+      "converted": "Rezerve edildi",
+      "dismissed": "Kapatıldı"
+    },
+    "inspection": {
+      "inProgress": "Devam ediyor",
+      "completed": "Tamamlandı"
+    }
   }
 }

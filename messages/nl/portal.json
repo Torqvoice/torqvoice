@@ -244,5 +244,23 @@
     "confirmationSubject": "Uw boeking bij {workshop}",
     "confirmationBody": "Uw {vehicle} is geboekt voor {when} bij {workshop}. Wijzigen? Gebruik de link in ons vorige bericht of bel {phone}.",
     "confirmationBodyRequest": "Bedankt, {workshop} heeft uw verzoek voor {when} voor uw {vehicle} ontvangen en bevestigt binnenkort. Vragen? Bel {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Geboekt",
+      "scheduled": "Ingepland",
+      "inProgress": "Bezig",
+      "waitingParts": "Wacht op onderdelen",
+      "completed": "Afgerond"
+    },
+    "request": {
+      "pending": "In behandeling",
+      "converted": "Geboekt",
+      "dismissed": "Gesloten"
+    },
+    "inspection": {
+      "inProgress": "Bezig",
+      "completed": "Afgerond"
+    }
   }
 }

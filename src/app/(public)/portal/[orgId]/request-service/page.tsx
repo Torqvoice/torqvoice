@@ -9,6 +9,7 @@ import { AppCard } from '@/components/app-card'
 import { getTranslations } from 'next-intl/server'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 
 export default async function PortalRequestServicePage({
   params,
@@ -20,6 +21,7 @@ export default async function PortalRequestServicePage({
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.requestService')
+  const tStatus = await getTranslations('portal.status')
   const [vehiclesResult, requestsResult] = await Promise.all([
     getPortalVehicles(),
     getPortalServiceRequests(),
@@ -92,7 +94,9 @@ export default async function PortalRequestServicePage({
                       </p>
                     )}
                   </div>
-                  <Badge variant={statusVariant(req.status)}>{req.status}</Badge>
+                  <Badge variant={statusVariant(req.status)}>
+                    {portalStatusLabel('request', req.status, tStatus)}
+                  </Badge>
                 </div>
               ))}
             </div>

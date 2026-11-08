@@ -244,5 +244,23 @@
     "confirmationSubject": "Din time hos {workshop}",
     "confirmationBody": "{vehicle} er bestilt til {when} hos {workshop}. Må du endre? Bruk lenken i forrige melding eller ring {phone}.",
     "confirmationBodyRequest": "Takk, {workshop} har mottatt forespørselen din om {when} for {vehicle} og bekrefter snart. Spørsmål? Ring {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Booket",
+      "scheduled": "Planlagt",
+      "inProgress": "Pågår",
+      "waitingParts": "Venter på deler",
+      "completed": "Fullført"
+    },
+    "request": {
+      "pending": "Venter",
+      "converted": "Booket",
+      "dismissed": "Avsluttet"
+    },
+    "inspection": {
+      "inProgress": "Pågår",
+      "completed": "Fullført"
+    }
   }
 }

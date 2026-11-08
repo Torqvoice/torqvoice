@@ -15,6 +15,7 @@ import { getTranslations } from 'next-intl/server'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { portalConditionCounts } from '@/features/portal/Lib/inspectionSummary'
+import { portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 
 export default async function PortalInspectionsPage({
   params,
@@ -26,6 +27,7 @@ export default async function PortalInspectionsPage({
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.inspections')
+  const tStatus = await getTranslations('portal.status')
   const result = await getPortalInspections()
 
   if (!result.success || !result.data) {
@@ -73,7 +75,7 @@ export default async function PortalInspectionsPage({
                         variant={insp.status === 'completed' ? 'default' : 'secondary'}
                         className="shrink-0"
                       >
-                        {insp.status.replace('_', ' ')}
+                        {portalStatusLabel('inspection', insp.status, tStatus)}
                       </Badge>
                     </div>
                     <p className="truncate text-xs text-muted-foreground">{insp.template.name}</p>
@@ -140,7 +142,7 @@ export default async function PortalInspectionsPage({
                         <TableCell>{insp.template.name}</TableCell>
                         <TableCell>
                           <Badge variant={insp.status === 'completed' ? 'default' : 'secondary'}>
-                            {insp.status.replace('_', ' ')}
+                            {portalStatusLabel('inspection', insp.status, tStatus)}
                           </Badge>
                         </TableCell>
                         <TableCell>

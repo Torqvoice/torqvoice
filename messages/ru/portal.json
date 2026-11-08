@@ -244,5 +244,23 @@
     "confirmationSubject": "Ваша запись в {workshop}",
     "confirmationBody": "Ваш {vehicle} записан на {when} в {workshop}. Нужно изменить? Воспользуйтесь ссылкой из предыдущего сообщения или позвоните {phone}.",
     "confirmationBodyRequest": "Спасибо, {workshop} получила ваш запрос на {when} для {vehicle} и скоро подтвердит. Вопросы? Звоните {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Записан",
+      "scheduled": "Запланирован",
+      "inProgress": "В работе",
+      "waitingParts": "Ожидает запчасти",
+      "completed": "Завершён"
+    },
+    "request": {
+      "pending": "Ожидает",
+      "converted": "Записан",
+      "dismissed": "Закрыт"
+    },
+    "inspection": {
+      "inProgress": "В работе",
+      "completed": "Завершена"
+    }
   }
 }

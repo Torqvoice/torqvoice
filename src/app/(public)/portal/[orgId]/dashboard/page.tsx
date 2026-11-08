@@ -18,6 +18,7 @@ import { getTranslations } from 'next-intl/server'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 
 export default async function PortalDashboardPage({
   params,
@@ -29,6 +30,7 @@ export default async function PortalDashboardPage({
   const org = await resolvePortalOrg(orgId)
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.dashboard')
+  const tStatus = await getTranslations('portal.status')
   const tQuoteStatus = await getTranslations('quotes.statusLabels')
   const tInvoices = await getTranslations('portal.invoices')
   const result = await getPortalDashboard()
@@ -145,7 +147,7 @@ export default async function PortalDashboardPage({
                     </div>
                     <div className="flex shrink-0 items-center gap-3">
                       <Badge variant="outline" className="text-xs">
-                        {inv.status}
+                        {portalStatusLabel('job', inv.status, tStatus)}
                       </Badge>
                       {inv.publicToken && (
                         <Link
@@ -241,7 +243,7 @@ export default async function PortalDashboardPage({
                     </p>
                   </div>
                   <Badge variant="secondary" className="text-xs">
-                    {job.status}
+                    {portalStatusLabel('job', job.status, tStatus)}
                   </Badge>
                 </li>
               ))}

@@ -244,5 +244,23 @@
     "confirmationSubject": "Your booking at {workshop}",
     "confirmationBody": "Your {vehicle} is booked for {when} at {workshop}. Need to change it? Use the link in our previous message or call {phone}.",
     "confirmationBodyRequest": "Thanks, {workshop} has received your request for {when} for your {vehicle} and will confirm shortly. Questions? Call {phone}."
+  },
+  "status": {
+    "job": {
+      "pending": "Booked",
+      "scheduled": "Scheduled",
+      "inProgress": "In progress",
+      "waitingParts": "Waiting for parts",
+      "completed": "Completed"
+    },
+    "request": {
+      "pending": "Pending",
+      "converted": "Booked",
+      "dismissed": "Closed"
+    },
+    "inspection": {
+      "inProgress": "In progress",
+      "completed": "Completed"
+    }
   }
 }

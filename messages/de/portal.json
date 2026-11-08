@@ -244,5 +244,23 @@
     "confirmationSubject": "Ihre Buchung bei {workshop}",
     "confirmationBody": "Ihr {vehicle} ist für {when} bei {workshop} gebucht. Änderung nötig? Nutzen Sie den Link aus unserer letzten Nachricht oder rufen Sie {phone} an.",
     "confirmationBodyRequest": "Danke, {workshop} hat Ihre Anfrage für {when} für Ihren {vehicle} erhalten und bestätigt in Kürze. Fragen? Rufen Sie {phone} an."
+  },
+  "status": {
+    "job": {
+      "pending": "Gebucht",
+      "scheduled": "Geplant",
+      "inProgress": "In Arbeit",
+      "waitingParts": "Wartet auf Teile",
+      "completed": "Abgeschlossen"
+    },
+    "request": {
+      "pending": "Offen",
+      "converted": "Gebucht",
+      "dismissed": "Geschlossen"
+    },
+    "inspection": {
+      "inProgress": "In Arbeit",
+      "completed": "Abgeschlossen"
+    }
   }
 }
