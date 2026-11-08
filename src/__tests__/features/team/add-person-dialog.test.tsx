@@ -158,6 +158,11 @@ describe('AddPersonDialog, invite address', () => {
     expect(screen.queryByText(/Check the email address/)).toBeNull()
   })
 
+  it('shows the role a new person gets, No role until one is picked', async () => {
+    await openForm()
+    expect(screen.getByRole('combobox')).toHaveTextContent('No role')
+  })
+
   it('sends a good address on to the invite action', async () => {
     const field = await openForm()
     fireEvent.change(field, { target: { value: ' kari@gmail.com ' } })
