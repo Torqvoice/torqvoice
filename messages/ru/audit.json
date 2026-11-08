@@ -147,6 +147,11 @@
     "work_bay_delete": "Удалён пост",
     "auth_appSetupRedeemed": "Вход по коду настройки",
     "auth_technicianCodeSignIn": "Вход по одноразовому коду",
+    "auth_twoFactorEnabled": "Двухфакторный вход включён",
+    "auth_twoFactorDisabled": "Двухфакторный вход отключён",
+    "auth_passkeyAdded": "Добавлен ключ доступа",
+    "auth_passkeyRemoved": "Удалён ключ доступа",
+    "auth_backupCodeUsed": "Вход по резервному коду",
     "team_createAppSetupCode": "Выдан код настройки приложения",
     "team_createTechnicianAccount": "Создана учётная запись механика",
     "team_removeTechnicianAccess": "Механик удалён, доступ отозван",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Восстановлена резервная копия"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Включён двухфакторный вход",
+    "auth_twoFactorDisabled": "Отключён двухфакторный вход",
+    "auth_passkeyAdded": "Добавлен ключ доступа «{name}»",
+    "auth_passkeyRemoved": "Удалён ключ доступа «{name}»",
+    "auth_backupCodeUsed": "Вход по резервному коду",
     "customField_create": "Создано настраиваемое поле «{name}»",
     "customField_delete": "Удалено настраиваемое поле «{name}»",
     "customField_update": "Обновлено настраиваемое поле «{name}»",

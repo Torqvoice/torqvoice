@@ -147,6 +147,11 @@
     "work_bay_delete": "Poste de travail supprimé",
     "auth_appSetupRedeemed": "Connexion avec un code de configuration",
     "auth_technicianCodeSignIn": "Connexion avec un code à usage unique",
+    "auth_twoFactorEnabled": "Connexion à deux facteurs activée",
+    "auth_twoFactorDisabled": "Connexion à deux facteurs désactivée",
+    "auth_passkeyAdded": "Passkey ajoutée",
+    "auth_passkeyRemoved": "Passkey supprimée",
+    "auth_backupCodeUsed": "Connexion avec un code de secours",
     "team_createAppSetupCode": "Code de configuration de l'application émis",
     "team_createTechnicianAccount": "Compte technicien créé",
     "team_removeTechnicianAccess": "Technicien retiré et accès révoqué",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Sauvegarde restaurée"
   },
   "summary": {
+    "auth_twoFactorEnabled": "A activé la connexion à deux facteurs",
+    "auth_twoFactorDisabled": "A désactivé la connexion à deux facteurs",
+    "auth_passkeyAdded": "A ajouté la passkey « {name} »",
+    "auth_passkeyRemoved": "A supprimé la passkey « {name} »",
+    "auth_backupCodeUsed": "Connexion avec un code de secours",
     "customField_create": "Champ personnalisé « {name} » créé",
     "customField_delete": "Champ personnalisé « {name} » supprimé",
     "customField_update": "Champ personnalisé « {name} » mis à jour",

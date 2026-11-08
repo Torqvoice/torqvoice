@@ -147,6 +147,11 @@
     "work_bay_delete": "Usunięto stanowisko",
     "auth_appSetupRedeemed": "Zalogowano kodem konfiguracji",
     "auth_technicianCodeSignIn": "Zalogowano kodem jednorazowym",
+    "auth_twoFactorEnabled": "Włączono logowanie dwuskładnikowe",
+    "auth_twoFactorDisabled": "Wyłączono logowanie dwuskładnikowe",
+    "auth_passkeyAdded": "Dodano passkey",
+    "auth_passkeyRemoved": "Usunięto passkey",
+    "auth_backupCodeUsed": "Zalogowano kodem zapasowym",
     "team_createAppSetupCode": "Wydano kod konfiguracji aplikacji",
     "team_createTechnicianAccount": "Utworzono konto technika",
     "team_removeTechnicianAccess": "Usunięto technika i cofnięto dostęp",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Przywrócono kopię zapasową"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Włączono logowanie dwuskładnikowe",
+    "auth_twoFactorDisabled": "Wyłączono logowanie dwuskładnikowe",
+    "auth_passkeyAdded": "Dodano passkey „{name}”",
+    "auth_passkeyRemoved": "Usunięto passkey „{name}”",
+    "auth_backupCodeUsed": "Zalogowano kodem zapasowym",
     "customField_create": "Utworzono pole niestandardowe „{name}”",
     "customField_delete": "Usunięto pole niestandardowe „{name}”",
     "customField_update": "Zaktualizowano pole niestandardowe „{name}”",
