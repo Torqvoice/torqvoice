@@ -130,7 +130,9 @@ export function HtmlToPdf({
 
   function renderNode(node: ASTNode): React.ReactNode {
     const k = nextKey()
-    const children = renderNodes(node.children)
+    // A quote lays its children out as blocks itself; rendering them here too
+    // would draw every nested quote twice, and twice again per level.
+    const children = node.tag === 'blockquote' ? [] : renderNodes(node.children)
 
     switch (node.tag) {
       case 'p':

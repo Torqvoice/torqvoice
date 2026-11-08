@@ -41,4 +41,11 @@ describe('notes on the invoice PDF', () => {
     expect(text).toContain('A listed part')
     expect(text).toContain('Quoted line')
   })
+
+  it('prints a deeply nested quote once, without the work doubling per level', async () => {
+    const depth = 22
+    const html = `${'<blockquote>'.repeat(depth)}Deep quote${'</blockquote>'.repeat(depth)}`
+    const text = await printed(html)
+    expect(text.match(/Deep quote/g)).toHaveLength(1)
+  })
 })
