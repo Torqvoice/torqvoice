@@ -1,5 +1,7 @@
 import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
+import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
+import { statusColumns } from '@/features/work-order-statuses/Lib/stages'
 
 /**
  * Clocking a technician on and off a job.
@@ -110,6 +112,11 @@ export async function loggedMinutes(serviceRecordId: string): Promise<number> {
  * really a product rule. A technician who taps start on a second job has
  * moved on from the first, so the open one is closed rather than refused.
  * Refusing would leave them staring at an error in a bay with oily gloves.
+ *
+ * A job that has not been started yet moves to In Progress with the clock.
+ * The app's button says "Start work", and a job whose clock is running while
+ * its stage still reads "Not started" tells the desk the opposite of what is
+ * happening in the bay. A job already further along is left where it is.
  */
 export async function startEntry(args: {
   organizationId: string
@@ -122,7 +129,13 @@ export async function startEntry(args: {
 
   const job = await db.serviceRecord.findFirst({
     where: { id: serviceRecordId, organizationId },
-    select: { id: true },
+    select: {
+      id: true,
+      status: true,
+      title: true,
+      // Enough for the board to redraw the card, as the app's own status change sends.
+      vehicle: { select: { id: true, make: true, model: true, year: true, licensePlate: true } },
+    },
   })
   if (!job) {
     throw new TimeEntryError('job_not_found', 'That job does not exist in this workshop.')
@@ -149,6 +162,17 @@ export async function startEntry(args: {
         })
       }
 
+      // Before the entry, so the job it returns already reads In Progress. The
+      // stage changes, so a status of the workshop's own goes with it, as when
+      // the app moves the stage itself.
+      const started = NOT_STARTED.has(job.status)
+        ? await tx.serviceRecord.update({
+            where: { id: job.id },
+            data: statusColumns('in-progress'),
+            select: { id: true, status: true },
+          })
+        : null
+
       const entry = await tx.timeEntry.create({
         data: {
           organizationId,
@@ -166,7 +190,7 @@ export async function startEntry(args: {
         },
       })
 
-      return { entry, closed }
+      return { entry, closed, started }
     })
     .then((result) => {
       // After the commit, never inside it: a listener that refetches on the
@@ -187,9 +211,25 @@ export async function startEntry(args: {
         serviceRecordId,
         entryId: result.entry.id,
       })
-      return result
+      if (result.started) {
+        announceJobStatusChanged({
+          organizationId,
+          serviceRecordId: job.id,
+          status: result.started.status,
+          serviceRecord: {
+            id: job.id,
+            title: job.title,
+            status: result.started.status,
+            vehicle: job.vehicle,
+          },
+        })
+      }
+      return { entry: result.entry, closed: result.closed }
     })
 }
+
+/** Stages a job sits in before anybody has worked on it: listed, or booked for a day. */
+const NOT_STARTED = new Set(['pending', 'scheduled'])
 
 /** Stop whatever is running. Idempotent: stopping nothing is not an error the app should have to handle twice. */
 export async function stopEntry(args: {
