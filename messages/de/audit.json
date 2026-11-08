@@ -147,6 +147,11 @@
     "work_bay_delete": "Arbeitsplatz gelöscht",
     "auth_appSetupRedeemed": "Mit Einrichtungscode angemeldet",
     "auth_technicianCodeSignIn": "Mit Einmalcode angemeldet",
+    "auth_twoFactorEnabled": "Zwei-Faktor-Anmeldung aktiviert",
+    "auth_twoFactorDisabled": "Zwei-Faktor-Anmeldung deaktiviert",
+    "auth_passkeyAdded": "Passkey hinzugefügt",
+    "auth_passkeyRemoved": "Passkey entfernt",
+    "auth_backupCodeUsed": "Mit Backup-Code angemeldet",
     "team_createAppSetupCode": "App-Einrichtungscode ausgestellt",
     "team_createTechnicianAccount": "Technikerkonto angelegt",
     "team_removeTechnicianAccess": "Techniker entfernt und Zugriff entzogen",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Sicherung wiederhergestellt"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Zwei-Faktor-Anmeldung aktiviert",
+    "auth_twoFactorDisabled": "Zwei-Faktor-Anmeldung deaktiviert",
+    "auth_passkeyAdded": "Passkey „{name}“ hinzugefügt",
+    "auth_passkeyRemoved": "Passkey „{name}“ entfernt",
+    "auth_backupCodeUsed": "Mit einem Backup-Code angemeldet",
     "customField_create": "Benutzerdefiniertes Feld „{name}“ erstellt",
     "customField_delete": "Benutzerdefiniertes Feld „{name}“ gelöscht",
     "customField_update": "Benutzerdefiniertes Feld „{name}“ aktualisiert",

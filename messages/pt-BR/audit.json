@@ -147,6 +147,11 @@
     "work_bay_delete": "Baia excluída",
     "auth_appSetupRedeemed": "Entrou com código de configuração",
     "auth_technicianCodeSignIn": "Entrou com código de uso único",
+    "auth_twoFactorEnabled": "Login em duas etapas ativado",
+    "auth_twoFactorDisabled": "Login em duas etapas desativado",
+    "auth_passkeyAdded": "Passkey adicionada",
+    "auth_passkeyRemoved": "Passkey removida",
+    "auth_backupCodeUsed": "Entrou com código de backup",
     "team_createAppSetupCode": "Código de configuração do aplicativo emitido",
     "team_createTechnicianAccount": "Conta de técnico criada",
     "team_removeTechnicianAccess": "Técnico removido e acesso revogado",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Backup restaurado"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Ativou o login em duas etapas",
+    "auth_twoFactorDisabled": "Desativou o login em duas etapas",
+    "auth_passkeyAdded": "Adicionou a passkey \"{name}\"",
+    "auth_passkeyRemoved": "Removeu a passkey \"{name}\"",
+    "auth_backupCodeUsed": "Entrou com um código de backup",
     "customField_create": "Campo personalizado \"{name}\" criado",
     "customField_delete": "Campo personalizado \"{name}\" excluído",
     "customField_update": "Campo personalizado \"{name}\" atualizado",

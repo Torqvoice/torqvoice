@@ -147,6 +147,11 @@
     "work_bay_delete": "Deleted Work Bay",
     "auth_appSetupRedeemed": "Signed in with a setup code",
     "auth_technicianCodeSignIn": "Signed in with a one-time code",
+    "auth_twoFactorEnabled": "Two-Factor Sign-In Turned On",
+    "auth_twoFactorDisabled": "Two-Factor Sign-In Turned Off",
+    "auth_passkeyAdded": "Passkey Added",
+    "auth_passkeyRemoved": "Passkey Removed",
+    "auth_backupCodeUsed": "Signed in with a backup code",
     "team_createAppSetupCode": "Issued an app setup code",
     "team_createTechnicianAccount": "Created a technician account",
     "team_removeTechnicianAccess": "Removed a technician and revoked their access",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Restored Backup"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Turned on two-factor sign-in",
+    "auth_twoFactorDisabled": "Turned off two-factor sign-in",
+    "auth_passkeyAdded": "Added the passkey \"{name}\"",
+    "auth_passkeyRemoved": "Removed the passkey \"{name}\"",
+    "auth_backupCodeUsed": "Signed in with a backup code",
     "customField_create": "Created custom field \"{name}\"",
     "customField_delete": "Deleted custom field \"{name}\"",
     "customField_update": "Updated custom field \"{name}\"",

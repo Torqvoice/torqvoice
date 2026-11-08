@@ -147,6 +147,11 @@
     "work_bay_delete": "Ištrinta darbo vieta",
     "auth_appSetupRedeemed": "Prisijungta su nustatymo kodu",
     "auth_technicianCodeSignIn": "Prisijungta su vienkartiniu kodu",
+    "auth_twoFactorEnabled": "Įjungtas dviejų veiksnių prisijungimas",
+    "auth_twoFactorDisabled": "Išjungtas dviejų veiksnių prisijungimas",
+    "auth_passkeyAdded": "Pridėtas prieigos raktas",
+    "auth_passkeyRemoved": "Pašalintas prieigos raktas",
+    "auth_backupCodeUsed": "Prisijungta su atsarginiu kodu",
     "team_createAppSetupCode": "Išduotas programėlės nustatymo kodas",
     "team_createTechnicianAccount": "Sukurta techniko paskyra",
     "team_removeTechnicianAccess": "Technikas pašalintas, prieiga atšaukta",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Atkurta atsarginė kopija"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Įjungtas dviejų veiksnių prisijungimas",
+    "auth_twoFactorDisabled": "Išjungtas dviejų veiksnių prisijungimas",
+    "auth_passkeyAdded": "Pridėtas prieigos raktas „{name}“",
+    "auth_passkeyRemoved": "Pašalintas prieigos raktas „{name}“",
+    "auth_backupCodeUsed": "Prisijungta su atsarginiu kodu",
     "customField_create": "Sukurtas pasirinktinis laukas „{name}“",
     "customField_delete": "Ištrintas pasirinktinis laukas „{name}“",
     "customField_update": "Atnaujintas pasirinktinis laukas „{name}“",

@@ -12,6 +12,12 @@ import { sendAccountMail } from '@/lib/account-mail'
 import { isDemoMode } from './demo'
 import { googleSignInConfig } from './auth-providers'
 import { scopedSessionMayCall, sessionTokensInHeaders } from './session-scope'
+import {
+  AUTH_IP_HEADERS,
+  auditAccountSecurityRoute,
+  auditTwoFactorChange,
+  rememberPasskeyBeforeRemoval,
+} from './account-security-audit'
 
 const baseURL = process.env.NEXT_PUBLIC_APP_URL
 const google = googleSignInConfig()
@@ -203,6 +209,9 @@ export const auth = betterAuth({
     // its own session and a sign-out. The rest of it is the account's: the
     // other sessions and their tokens, passkeys, the password, the name.
     before: createAuthMiddleware(async (ctx) => {
+      await rememberPasskeyBeforeRemoval(ctx).catch((error) =>
+        console.error('[auth] could not read the passkey being removed:', error)
+      )
       if (scopedSessionMayCall(ctx.path)) return
       const tokens = [
         ...sessionTokensInHeaders(ctx.request?.headers, ctx.context.authCookies.sessionToken.name),
@@ -219,6 +228,13 @@ export const auth = betterAuth({
         })
       }
     }),
+    // Passkeys added and removed, and sign-ins with a backup code, for the
+    // audit log. Best effort: the change has happened either way.
+    after: createAuthMiddleware(async (ctx) => {
+      await auditAccountSecurityRoute(ctx).catch((error) =>
+        console.error('[audit] account security event failed:', error)
+      )
+    }),
   },
   advanced: {
     useSecureCookies: isProduction,
@@ -229,10 +245,7 @@ export const auth = betterAuth({
       // it does not while production runs grey-clouded. Trusting it let a
       // caller change one digit and become a different person to every
       // per-address limit in the product. See lib/rate-limit.ts.
-      ipAddressHeaders:
-        process.env.TRUST_CF_CONNECTING_IP === 'true'
-          ? ['cf-connecting-ip', 'x-real-ip']
-          : ['x-real-ip'],
+      ipAddressHeaders: AUTH_IP_HEADERS,
     },
   },
   databaseHooks: {
@@ -304,6 +317,14 @@ export const auth = betterAuth({
       },
     },
     user: {
+      update: {
+        // Two-factor sign-in turned on or off, for the audit log.
+        after: async (user, ctx) => {
+          await auditTwoFactorChange(user, ctx).catch((error) =>
+            console.error('[audit] two-factor change failed:', error)
+          )
+        },
+      },
       create: {
         before: async (user) => {
           // Block registration if disabled via system settings (always disabled in demo mode)

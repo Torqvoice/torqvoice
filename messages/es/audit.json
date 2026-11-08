@@ -147,6 +147,11 @@
     "work_bay_delete": "Puesto de trabajo eliminado",
     "auth_appSetupRedeemed": "Sesión iniciada con código de configuración",
     "auth_technicianCodeSignIn": "Sesión iniciada con código de un solo uso",
+    "auth_twoFactorEnabled": "Inicio de sesión en dos pasos activado",
+    "auth_twoFactorDisabled": "Inicio de sesión en dos pasos desactivado",
+    "auth_passkeyAdded": "Passkey añadida",
+    "auth_passkeyRemoved": "Passkey eliminada",
+    "auth_backupCodeUsed": "Sesión iniciada con código de respaldo",
     "team_createAppSetupCode": "Código de configuración de la aplicación emitido",
     "team_createTechnicianAccount": "Cuenta de técnico creada",
     "team_removeTechnicianAccess": "Técnico eliminado y acceso revocado",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Copia de seguridad restaurada"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Activó el inicio de sesión en dos pasos",
+    "auth_twoFactorDisabled": "Desactivó el inicio de sesión en dos pasos",
+    "auth_passkeyAdded": "Añadió la passkey «{name}»",
+    "auth_passkeyRemoved": "Eliminó la passkey «{name}»",
+    "auth_backupCodeUsed": "Inició sesión con un código de respaldo",
     "customField_create": "Campo personalizado «{name}» creado",
     "customField_delete": "Campo personalizado «{name}» eliminado",
     "customField_update": "Campo personalizado «{name}» actualizado",

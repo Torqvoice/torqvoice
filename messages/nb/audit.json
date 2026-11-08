@@ -147,6 +147,11 @@
     "work_bay_delete": "Slettet arbeidsplass",
     "auth_appSetupRedeemed": "Logget inn med oppsettskode",
     "auth_technicianCodeSignIn": "Logget inn med engangskode",
+    "auth_twoFactorEnabled": "Tofaktorinnlogging slått på",
+    "auth_twoFactorDisabled": "Tofaktorinnlogging slått av",
+    "auth_passkeyAdded": "Passkey lagt til",
+    "auth_passkeyRemoved": "Passkey fjernet",
+    "auth_backupCodeUsed": "Logget inn med sikkerhetskode",
     "team_createAppSetupCode": "Utstedte en oppsettskode for appen",
     "team_createTechnicianAccount": "Opprettet en teknikerkonto",
     "team_removeTechnicianAccess": "Fjernet en tekniker og trakk tilbake tilgangen",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Gjenopprettet sikkerhetskopi"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Slo på tofaktorinnlogging",
+    "auth_twoFactorDisabled": "Slo av tofaktorinnlogging",
+    "auth_passkeyAdded": "La til passkeyen «{name}»",
+    "auth_passkeyRemoved": "Fjernet passkeyen «{name}»",
+    "auth_backupCodeUsed": "Logget inn med en sikkerhetskode",
     "customField_create": "Opprettet egendefinert felt «{name}»",
     "customField_delete": "Slettet egendefinert felt «{name}»",
     "customField_update": "Oppdaterte egendefinert felt «{name}»",

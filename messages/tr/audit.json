@@ -147,6 +147,11 @@
     "work_bay_delete": "Çalışma alanı silindi",
     "auth_appSetupRedeemed": "Kurulum koduyla giriş",
     "auth_technicianCodeSignIn": "Tek kullanımlık kodla giriş",
+    "auth_twoFactorEnabled": "İki adımlı giriş açıldı",
+    "auth_twoFactorDisabled": "İki adımlı giriş kapatıldı",
+    "auth_passkeyAdded": "Passkey eklendi",
+    "auth_passkeyRemoved": "Passkey kaldırıldı",
+    "auth_backupCodeUsed": "Yedek kodla giriş",
     "team_createAppSetupCode": "Uygulama kurulum kodu verildi",
     "team_createTechnicianAccount": "Teknisyen hesabı oluşturuldu",
     "team_removeTechnicianAccess": "Teknisyen kaldırıldı ve erişimi iptal edildi",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Yedek geri yüklendi"
   },
   "summary": {
+    "auth_twoFactorEnabled": "İki adımlı giriş açıldı",
+    "auth_twoFactorDisabled": "İki adımlı giriş kapatıldı",
+    "auth_passkeyAdded": "\"{name}\" passkey'i eklendi",
+    "auth_passkeyRemoved": "\"{name}\" passkey'i kaldırıldı",
+    "auth_backupCodeUsed": "Yedek kodla giriş yapıldı",
     "customField_create": "\"{name}\" özel alanı oluşturuldu",
     "customField_delete": "\"{name}\" özel alanı silindi",
     "customField_update": "\"{name}\" özel alanı güncellendi",

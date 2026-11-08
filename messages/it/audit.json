@@ -147,6 +147,11 @@
     "work_bay_delete": "Postazione eliminata",
     "auth_appSetupRedeemed": "Accesso con codice di configurazione",
     "auth_technicianCodeSignIn": "Accesso con codice monouso",
+    "auth_twoFactorEnabled": "Accesso a due fattori attivato",
+    "auth_twoFactorDisabled": "Accesso a due fattori disattivato",
+    "auth_passkeyAdded": "Passkey aggiunta",
+    "auth_passkeyRemoved": "Passkey rimossa",
+    "auth_backupCodeUsed": "Accesso con codice di backup",
     "team_createAppSetupCode": "Codice di configurazione dell'app emesso",
     "team_createTechnicianAccount": "Account tecnico creato",
     "team_removeTechnicianAccess": "Tecnico rimosso e accesso revocato",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Backup ripristinato"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Ha attivato l'accesso a due fattori",
+    "auth_twoFactorDisabled": "Ha disattivato l'accesso a due fattori",
+    "auth_passkeyAdded": "Ha aggiunto la passkey \"{name}\"",
+    "auth_passkeyRemoved": "Ha rimosso la passkey \"{name}\"",
+    "auth_backupCodeUsed": "Accesso con un codice di backup",
     "customField_create": "Campo personalizzato «{name}» creato",
     "customField_delete": "Campo personalizzato «{name}» eliminato",
     "customField_update": "Campo personalizzato «{name}» aggiornato",

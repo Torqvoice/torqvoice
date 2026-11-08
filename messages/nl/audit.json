@@ -147,6 +147,11 @@
     "work_bay_delete": "Werkplek verwijderd",
     "auth_appSetupRedeemed": "Ingelogd met installatiecode",
     "auth_technicianCodeSignIn": "Ingelogd met eenmalige code",
+    "auth_twoFactorEnabled": "Inloggen in twee stappen ingeschakeld",
+    "auth_twoFactorDisabled": "Inloggen in twee stappen uitgeschakeld",
+    "auth_passkeyAdded": "Passkey toegevoegd",
+    "auth_passkeyRemoved": "Passkey verwijderd",
+    "auth_backupCodeUsed": "Ingelogd met een back-upcode",
     "team_createAppSetupCode": "Installatiecode voor de app uitgegeven",
     "team_createTechnicianAccount": "Monteursaccount aangemaakt",
     "team_removeTechnicianAccess": "Monteur verwijderd en toegang ingetrokken",
@@ -202,6 +207,11 @@
     "integration_backup_restore": "Back-up teruggezet"
   },
   "summary": {
+    "auth_twoFactorEnabled": "Inloggen in twee stappen ingeschakeld",
+    "auth_twoFactorDisabled": "Inloggen in twee stappen uitgeschakeld",
+    "auth_passkeyAdded": "Passkey \"{name}\" toegevoegd",
+    "auth_passkeyRemoved": "Passkey \"{name}\" verwijderd",
+    "auth_backupCodeUsed": "Ingelogd met een back-upcode",
     "customField_create": "Aangepast veld \"{name}\" aangemaakt",
     "customField_delete": "Aangepast veld \"{name}\" verwijderd",
     "customField_update": "Aangepast veld \"{name}\" bijgewerkt",
