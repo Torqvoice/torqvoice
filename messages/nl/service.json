@@ -92,6 +92,7 @@
       "inspection": "Inspectie"
     },
     "statusOptions": {
+      "scheduled": "Ingepland",
       "pending": "In afwachting",
       "in_progress": "In uitvoering",
       "waiting_parts": "Wacht op onderdelen",

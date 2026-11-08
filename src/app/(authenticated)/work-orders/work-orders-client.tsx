@@ -67,6 +67,7 @@ import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templat
 import { statusColorClasses } from '@/features/work-order-statuses/Lib/stages'
 import { cn } from '@/lib/utils'
 import { ListEmpty } from '@/components/list-empty'
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 /** The workshop's own status, in its colour, beside the stage. */
 function CustomStatusChip({ status }: { status: { name: string; color: string } }) {
@@ -208,6 +209,7 @@ export function WorkOrdersClient({
     Boolean
   ).length
   const t = useTranslations('workOrders.list')
+  const serviceLabel = useServiceLabels()
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const [showNotifyDialog, setShowNotifyDialog] = useState(false)
@@ -464,7 +466,7 @@ export function WorkOrdersClient({
                   )}
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
                     <Badge variant="outline" className={`text-xs ${statusColors[r.status] || ''}`}>
-                      {r.status}
+                      {serviceLabel.status(r.status)}
                     </Badge>
                     {r.customStatus && <CustomStatusChip status={r.customStatus} />}
                     <span className="font-mono">
@@ -672,7 +674,7 @@ export function WorkOrdersClient({
                               variant="outline"
                               className={`text-xs ${statusColors[r.status] || ''}`}
                             >
-                              {r.status}
+                              {serviceLabel.status(r.status)}
                             </Badge>
                             {r.customStatus && <CustomStatusChip status={r.customStatus} />}
                           </div>

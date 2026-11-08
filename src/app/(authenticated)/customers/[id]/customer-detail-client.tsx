@@ -73,6 +73,7 @@ import { SendSmsDialog } from '@/features/sms/Components/SendSmsDialog'
 import { TelegramQrCode } from '@/features/telegram/Components/TelegramQrCode'
 import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 interface ServiceRequestItem {
   id: string
@@ -198,6 +199,12 @@ export function CustomerDetailClient({
 }) {
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
+  const serviceLabel = useServiceLabels()
+  const tQuoteStatus = useTranslations('quotes.statusLabels')
+  const quoteStatusLabel = useCallback(
+    (status: string) => (tQuoteStatus.has(status) ? tQuoteStatus(status) : status),
+    [tQuoteStatus]
+  )
   const serviceType = useServiceType()
   // A vessel's reading is engine hours, the same number the header calls it.
   const readingUnit = serviceType === 'marine' ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
@@ -658,6 +665,7 @@ export function CustomerDetailClient({
           <DocumentList
             rows={invoiceRows}
             statusStyles={statusColors}
+            statusLabel={serviceLabel.status}
             numberLabel={t('documentTable.invoiceNumber')}
             emptyLabel={t('noInvoices')}
             search={search}
@@ -671,6 +679,7 @@ export function CustomerDetailClient({
           <DocumentList
             rows={quoteRows}
             statusStyles={quoteStatusColors}
+            statusLabel={quoteStatusLabel}
             numberLabel={t('documentTable.quoteNumber')}
             emptyLabel={t('noQuotes')}
             search={search}
@@ -756,7 +765,7 @@ const quoteStatusColors: Record<string, string> = {
   converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
 }
 
-interface DocumentRow {
+export interface DocumentRow {
   id: string
   href: string
   number: string | null
@@ -767,7 +776,7 @@ interface DocumentRow {
   total: number
 }
 
-type DocumentSortKey = 'number' | 'title' | 'vehicle' | 'status' | 'date' | 'total'
+export type DocumentSortKey = 'number' | 'title' | 'vehicle' | 'status' | 'date' | 'total'
 
 const DOCUMENT_SORT_KEYS: DocumentSortKey[] = [
   'number',
@@ -778,6 +787,73 @@ const DOCUMENT_SORT_KEYS: DocumentSortKey[] = [
   'total',
 ]
 
+/**
+ * The rows a customer's invoice or quote list shows, searched and sorted as the
+ * reader sees them: a status matches and sorts by its label, not its stored value.
+ */
+export function visibleDocuments(
+  rows: DocumentRow[],
+  {
+    search,
+    sortBy,
+    sortOrder,
+    vehicleLabel,
+    statusLabel,
+  }: {
+    search: string
+    sortBy: DocumentSortKey
+    sortOrder: 'asc' | 'desc'
+    vehicleLabel: (v: DocumentRow['vehicle']) => string
+    statusLabel: (status: string) => string
+  }
+): DocumentRow[] {
+  const term = search.trim().toLowerCase()
+  const filtered = term
+    ? rows.filter((row) =>
+        [
+          row.number,
+          row.title,
+          vehicleLabel(row.vehicle),
+          row.vehicle?.licensePlate,
+          row.status,
+          // What the badge says, so searching for the status you see finds it.
+          statusLabel(row.status),
+        ]
+          .filter(Boolean)
+          .some((field) => field!.toLowerCase().includes(term))
+      )
+    : rows
+
+  const dir = sortOrder === 'asc' ? 1 : -1
+  // Sorting a copy: `rows` is derived from props on every render, but
+  // mutating it would still reorder the array the caller just built.
+  return [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case 'number':
+        // Unnumbered drafts sort to the end either way rather than
+        // bunching at the top under an empty string.
+        if (!a.number || !b.number) return a.number ? -1 : b.number ? 1 : 0
+        return a.number.localeCompare(b.number, undefined, { numeric: true }) * dir
+      case 'title':
+        return a.title.localeCompare(b.title) * dir
+      case 'vehicle': {
+        // Parts-only rows have no vehicle; keep them at the end either way
+        // rather than letting an empty label head the ascending sort.
+        const av = vehicleLabel(a.vehicle)
+        const bv = vehicleLabel(b.vehicle)
+        if (!av || !bv) return av ? -1 : bv ? 1 : 0
+        return av.localeCompare(bv) * dir
+      }
+      case 'status':
+        return statusLabel(a.status).localeCompare(statusLabel(b.status)) * dir
+      case 'total':
+        return (a.total - b.total) * dir
+      default:
+        return (a.date.getTime() - b.date.getTime()) * dir
+    }
+  })
+}
+
 /// Shared list for the customer's invoices and quotes: the two differ only in
 /// which number and date they carry, so the rows are normalised before they
 /// get here. Both lists are loaded whole (one customer's documents, not the
@@ -785,6 +861,7 @@ const DOCUMENT_SORT_KEYS: DocumentSortKey[] = [
 function DocumentList({
   rows,
   statusStyles,
+  statusLabel,
   numberLabel,
   emptyLabel,
   search,
@@ -794,6 +871,8 @@ function DocumentList({
 }: {
   rows: DocumentRow[]
   statusStyles: Record<string, string>
+  /** The status as the reader's language says it: invoices and quotes have their own. */
+  statusLabel: (status: string) => string
   numberLabel: string
   emptyLabel: string
   search: string
@@ -822,45 +901,10 @@ function DocumentList({
     commitNow: handleSearchSubmit,
   } = useDebouncedSearch(search, (term) => onQueryChange({ search: term }))
 
-  const visibleRows = useMemo(() => {
-    const term = search.trim().toLowerCase()
-    const filtered = term
-      ? rows.filter((row) =>
-          [row.number, row.title, vehicleLabel(row.vehicle), row.vehicle?.licensePlate, row.status]
-            .filter(Boolean)
-            .some((field) => field!.toLowerCase().includes(term))
-        )
-      : rows
-
-    const dir = sortOrder === 'asc' ? 1 : -1
-    // Sorting a copy: `rows` is derived from props on every render, but
-    // mutating it would still reorder the array the caller just built.
-    return [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case 'number':
-          // Unnumbered drafts sort to the end either way rather than
-          // bunching at the top under an empty string.
-          if (!a.number || !b.number) return a.number ? -1 : b.number ? 1 : 0
-          return a.number.localeCompare(b.number, undefined, { numeric: true }) * dir
-        case 'title':
-          return a.title.localeCompare(b.title) * dir
-        case 'vehicle': {
-          // Parts-only rows have no vehicle; keep them at the end either way
-          // rather than letting an empty label head the ascending sort.
-          const av = vehicleLabel(a.vehicle)
-          const bv = vehicleLabel(b.vehicle)
-          if (!av || !bv) return av ? -1 : bv ? 1 : 0
-          return av.localeCompare(bv) * dir
-        }
-        case 'status':
-          return a.status.localeCompare(b.status) * dir
-        case 'total':
-          return (a.total - b.total) * dir
-        default:
-          return (a.date.getTime() - b.date.getTime()) * dir
-      }
-    })
-  }, [rows, search, sortBy, sortOrder, vehicleLabel])
+  const visibleRows = useMemo(
+    () => visibleDocuments(rows, { search, sortBy, sortOrder, vehicleLabel, statusLabel }),
+    [rows, search, sortBy, sortOrder, vehicleLabel, statusLabel]
+  )
 
   const handleSort = (column: DocumentSortKey) => {
     // First click on a new column sorts descending for dates and amounts and
@@ -967,7 +1011,7 @@ function DocumentList({
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                   <Badge variant="outline" className={`text-xs ${statusStyles[row.status] || ''}`}>
-                    {row.status}
+                    {statusLabel(row.status)}
                   </Badge>
                   <span className="font-mono">{formatDate(row.date)}</span>
                   <span className="truncate">{displayVehicle(row.vehicle)}</span>
@@ -1022,7 +1066,7 @@ function DocumentList({
                         variant="outline"
                         className={`text-xs ${statusStyles[row.status] || ''}`}
                       >
-                        {row.status}
+                        {statusLabel(row.status)}
                       </Badge>
                     </TableCell>
                     <TableCell className="font-mono text-xs">{formatDate(row.date)}</TableCell>

@@ -92,6 +92,7 @@
       "inspection": "Inspección"
     },
     "statusOptions": {
+      "scheduled": "Programado",
       "pending": "Pendiente",
       "in_progress": "En Progreso",
       "waiting_parts": "Esperando Piezas",

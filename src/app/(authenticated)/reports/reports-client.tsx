@@ -123,6 +123,7 @@ import {
 } from '@/features/reports/Components/csv-export'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { pdf } from '@react-pdf/renderer'
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 type ReportTab =
   | 'financial'
@@ -169,6 +170,7 @@ export default function ReportsClient({
 }: ReportsClientProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('reports')
+  const serviceLabel = useServiceLabels()
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -1181,7 +1183,13 @@ export default function ReportsClient({
                     />
                   </AppCard>
                   <AppCard title={t('revenue.revenueByType')} className="lg:col-span-2">
-                    <RevenueTypeDonut data={revenueData.byType} formatCurrency={fmtCurrency} />
+                    <RevenueTypeDonut
+                      data={revenueData.byType.map((row) => ({
+                        ...row,
+                        type: serviceLabel.type(row.type),
+                      }))}
+                      formatCurrency={fmtCurrency}
+                    />
                   </AppCard>
                 </div>
 
@@ -1625,7 +1633,12 @@ export default function ReportsClient({
               )}
               {serviceData.byType.length > 0 && (
                 <AppCard title={t('services.byType')}>
-                  <ServiceTypeDonut data={serviceData.byType} />
+                  <ServiceTypeDonut
+                    data={serviceData.byType.map((row) => ({
+                      ...row,
+                      type: serviceLabel.type(row.type),
+                    }))}
+                  />
                 </AppCard>
               )}
             </div>
@@ -2263,7 +2276,9 @@ export default function ReportsClient({
                   <TableBody>
                     {jobAnalyticsData.topServiceTypes.map((row) => (
                       <TableRow key={row.type}>
-                        <TableCell className="text-sm font-medium">{row.type}</TableCell>
+                        <TableCell className="text-sm font-medium">
+                          {serviceLabel.type(row.type)}
+                        </TableCell>
                         <TableCell className="text-right text-sm">{row.count}</TableCell>
                         <TableCell className="text-right text-sm">
                           {fmtCurrency(row.avgValue)}
@@ -2488,7 +2503,7 @@ export default function ReportsClient({
                     return (
                       <div key={item.type}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm capitalize">{item.type}</span>
+                          <span className="text-sm">{serviceLabel.type(item.type)}</span>
                           <span className="text-sm font-medium tabular-nums">
                             {fmtCurrency(item.totalCost)}
                           </span>
@@ -2645,7 +2660,7 @@ export default function ReportsClient({
                                 </TableCell>
                                 <TableCell className="text-sm font-medium">{row.title}</TableCell>
                                 <TableCell className="text-sm">
-                                  <Badge variant="secondary">{row.type}</Badge>
+                                  <Badge variant="secondary">{serviceLabel.type(row.type)}</Badge>
                                 </TableCell>
                                 <TableCell className="text-right text-sm">
                                   {fmtCurrency(row.totalAmount)}

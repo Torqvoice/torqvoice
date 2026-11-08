@@ -92,6 +92,7 @@
       "inspection": "Muayene"
     },
     "statusOptions": {
+      "scheduled": "Planlandı",
       "pending": "Beklemede",
       "in_progress": "Devam Ediyor",
       "waiting_parts": "Parça Bekleniyor",
