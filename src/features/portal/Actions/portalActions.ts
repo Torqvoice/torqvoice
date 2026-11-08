@@ -48,6 +48,13 @@ async function withPortalAuth<T>(
 
 // ─── Dashboard ────────────────────────────────────────────────────────────
 
+/**
+ * A quote the customer may see: one the workshop has sent, whatever became of
+ * it since. A draft is the workshop's own working copy, with prices it may
+ * still change, so it stays out of the portal until it goes out.
+ */
+const SENT_TO_CUSTOMER = { status: { not: 'draft' } } as const
+
 export async function getPortalDashboard() {
   return withPortalAuth(async ({ customerId, organizationId }) => {
     const [customer, vehicles, recentInvoices, activeJobs, recentQuotes, pendingRequests] =
@@ -101,7 +108,7 @@ export async function getPortalDashboard() {
           take: 5,
         }),
         db.quote.findMany({
-          where: { customerId, organizationId },
+          where: { customerId, organizationId, ...SENT_TO_CUSTOMER },
           select: {
             id: true,
             title: true,
@@ -358,7 +365,7 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
 export async function getPortalQuotes() {
   return withPortalAuth(async ({ customerId, organizationId }) => {
     const quotes = await db.quote.findMany({
-      where: { customerId, organizationId },
+      where: { customerId, organizationId, ...SENT_TO_CUSTOMER },
       select: {
         id: true,
         title: true,
