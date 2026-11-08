@@ -67,7 +67,11 @@
     "whatsapp": "WhatsApp",
     "inspectionReminders": "Muayene hatırlatmaları",
     "faultCodes": "Arıza kodları",
-    "faultCode": "Arıza kodu"
+    "faultCode": "Arıza kodu",
+    "calendar": "Takvim",
+    "messages": "Mesajlar",
+    "inspections": "Muayeneler",
+    "inspectionDetails": "Muayene Detayları"
   },
   "search": "Ara...",
   "shortcut": "Ctrl+K",
