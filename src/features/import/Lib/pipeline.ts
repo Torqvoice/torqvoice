@@ -483,8 +483,17 @@ class ExistingIndex {
       if (m) return m
     }
     if (k.phone) {
-      const m = hit(this.byPhone.get(k.phone), 'phone')
-      if (m) return m
+      const found = this.byPhone.get(k.phone)
+      // A phone is often shared: a household's landline, a company's switchboard.
+      // It is only the same customer when the row's email and customer number do
+      // not say it is someone else; otherwise the update would rename one person
+      // into another.
+      if (found) {
+        const emailClash = k.email && found.email && found.email.toLowerCase() !== k.email
+        const numberClash =
+          k.number && found.customerNumber && found.customerNumber.toLowerCase() !== k.number
+        if (!emailClash && !numberClash) return hit(found, 'phone')
+      }
     }
     if (k.name) {
       const found = this.byName.get(k.name)
@@ -492,7 +501,9 @@ class ExistingIndex {
       if (found) {
         const emailClash = k.email && found.email && found.email.toLowerCase() !== k.email
         const phoneClash = k.phone && found.phone && phoneKey(found.phone) !== k.phone
-        if (!emailClash && !phoneClash) return hit(found, 'name')
+        const numberClash =
+          k.number && found.customerNumber && found.customerNumber.toLowerCase() !== k.number
+        if (!emailClash && !phoneClash && !numberClash) return hit(found, 'name')
       }
     }
     return undefined

@@ -106,6 +106,31 @@ describe('import plan', () => {
     ])
   })
 
+  it('does not take a shared phone for the same customer when the email or number differs', () => {
+    // Anna's household: her partner has the same landline but an email and a
+    // customer number of his own. Matching on the phone renamed Anna into him.
+    const rows = [
+      ['Erik Berg', 'erik@example.com', '91234567', ''],
+      ['Erik Berg', '', '91234567', '2001'],
+      // Same name and phone, but a customer number of someone else: not Anna either.
+      ['Anna Berg', '', '91234567', '2001'],
+      ['Anna Berg', 'anna@example.com', '91234567', '1001'],
+    ]
+    const plan = planImport(
+      rows,
+      {
+        '0': 'customer.name',
+        '1': 'customer.email',
+        '2': 'customer.phone',
+        '3': 'customer.customerNumber',
+      },
+      options('customers'),
+      existing
+    )
+    expect(plan.rows.map((r) => r.action)).toEqual(['create', 'create', 'create', 'update'])
+    expect(plan.rows[3].customerMatch).toMatchObject({ id: 'c1' })
+  })
+
   it('applies the duplicate rule and per-row overrides', () => {
     const rows = [
       ['Anna Berg', 'anna@example.com'],
