@@ -30,6 +30,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { DocsLink } from '@/components/docs-link'
+import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { SearchableSelect, type SearchableOption } from '@/components/ui/searchable-select'
@@ -1053,6 +1054,7 @@ function PreviewRow({
   onAction: (action: RowAction) => void
 }) {
   const t = useTranslations('dataImport')
+  const formatCurrency = useFormatCurrency()
   const matched =
     entity === 'customers'
       ? row.customerMatch
@@ -1129,7 +1131,13 @@ function PreviewRow({
             {row.vehicle?.licensePlate ?? row.vehicle?.vin ?? '-'}
           </TableCell>
           <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-            {row.customer?.name ?? '-'}
+            {/* Files often name the owner by email or phone only; the customer it
+                links to is then the owner to show. */}
+            {row.customer?.name ??
+              row.customerMatch?.name ??
+              row.customer?.email ??
+              row.customer?.phone ??
+              '-'}
           </TableCell>
         </>
       )}
@@ -1142,12 +1150,12 @@ function PreviewRow({
             {row.service?.title ?? '-'}
           </TableCell>
           <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
-            {row.vehicleMatch?.label ??
-              [vehicle, row.vehicle?.licensePlate].filter(Boolean).join(' ') ??
+            {row.vehicleMatch?.label ||
+              [vehicle, row.vehicle?.licensePlate].filter(Boolean).join(' ') ||
               '-'}
           </TableCell>
           <TableCell className="whitespace-nowrap text-right text-sm tabular-nums">
-            {row.service?.total ?? '-'}
+            {row.service?.total != null ? formatCurrency(row.service.total) : '-'}
           </TableCell>
         </>
       )}
