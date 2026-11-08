@@ -35,6 +35,9 @@ function tokenize(html: string): Token[] {
   return tokens
 }
 
+/** Tags drawn as their own Text or View; everything else sits inside a line of text. */
+const BLOCK_TAGS = new Set(['p', 'h2', 'h3', 'ul', 'ol', 'li', 'blockquote'])
+
 interface ASTNode {
   tag: string
   children: (ASTNode | string)[]
@@ -91,6 +94,38 @@ export function HtmlToPdf({
       if (typeof node === 'string') return node
       return renderNode(node)
     })
+  }
+
+  /**
+   * Children of a View. react-pdf draws text only inside a Text, so a run of
+   * loose words, bold or line breaks between the blocks goes into one. Notes
+   * written as plain lines with <br> and no <p> (as AI Write saves them)
+   * printed only their line breaks before: an empty, page-long Notes box.
+   */
+  function renderBlocks(nodes: (ASTNode | string)[]): React.ReactNode[] {
+    const out: React.ReactNode[] = []
+    let run: (ASTNode | string)[] = []
+    const flush = () => {
+      // Whitespace between two blocks was never drawn and still is not.
+      if (run.some((n) => typeof n !== 'string' || n.trim() !== '')) {
+        out.push(
+          <Text key={nextKey()} style={base}>
+            {renderNodes(run)}
+          </Text>
+        )
+      }
+      run = []
+    }
+    for (const node of nodes) {
+      if (typeof node !== 'string' && BLOCK_TAGS.has(node.tag)) {
+        flush()
+        out.push(renderNode(node))
+      } else {
+        run.push(node)
+      }
+    }
+    flush()
+    return out
   }
 
   function renderNode(node: ASTNode): React.ReactNode {
@@ -196,7 +231,7 @@ export function HtmlToPdf({
               opacity: 0.8,
             }}
           >
-            {children}
+            {renderBlocks(node.children)}
           </View>
         )
       case 'br':
@@ -206,5 +241,5 @@ export function HtmlToPdf({
     }
   }
 
-  return <View>{renderNodes(ast)}</View>
+  return <View>{renderBlocks(ast)}</View>
 }
