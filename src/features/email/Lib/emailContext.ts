@@ -1,5 +1,10 @@
-import { resolveCurrencyCode } from '@/lib/currencies'
-import { formatCurrency, type CurrencyFormat } from '@/lib/format'
+import {
+  type CurrencySettings,
+  resolveCurrencyCode,
+  resolveCurrencySettings,
+} from '@/lib/currencies'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { formatCurrency, formatDate, type CurrencyFormat } from '@/lib/format'
 import type { EmailKind } from './emailKinds'
 import { kindSpec } from './emailKinds'
 import type { SummaryRowKey } from './emailTemplate'
@@ -215,8 +220,49 @@ export function summaryRowsFor<K extends EmailKind>(
  * because seeing your own name in the footer is what tells you it is right,
  * and an invented customer and job for everything else.
  */
-export function sampleValuesFor(kind: EmailKind, workshop: WorkshopContext): TagValues {
-  const samples = sampleTagValues()
+/**
+ * The workshop's currency and date format, for the stand-in amounts and dates.
+ * A sent mail writes them the workshop's way, so the preview does too: a
+ * workshop in dollars should not see euros in its designer.
+ */
+export interface SampleFormat {
+  currency: CurrencySettings
+  date: DateFormatter
+}
+
+/** The sample format from a workshop's settings, as `getSettings` returns them. */
+export function sampleFormatFrom(settings: Record<string, string | undefined>): SampleFormat {
+  const dateFormat = settings[SETTING_KEYS.DATE_FORMAT] || undefined
+  const timezone = settings[SETTING_KEYS.TIMEZONE] || undefined
+  return {
+    currency: resolveCurrencySettings(settings),
+    date: (date) => formatDate(date, dateFormat, timezone),
+  }
+}
+
+const DEFAULT_SAMPLE_FORMAT = sampleFormatFrom({})
+
+/** The stand-in invoice: what it comes to, what is paid, and when the rest is due. */
+const SAMPLE_TOTAL = 1250
+const SAMPLE_PAID = 1000
+const SAMPLE_DUE = new Date('2026-09-30T12:00:00Z')
+
+function sampleMoney(format: SampleFormat): (amount: number) => string {
+  return (amount) =>
+    formatCurrency(amount, format.currency.currencyCode, format.currency.currencyFormat)
+}
+
+export function sampleValuesFor(
+  kind: EmailKind,
+  workshop: WorkshopContext,
+  format: SampleFormat = DEFAULT_SAMPLE_FORMAT
+): TagValues {
+  const money = sampleMoney(format)
+  const samples = sampleTagValues({
+    total: money(SAMPLE_TOTAL),
+    balance_due: money(SAMPLE_TOTAL - SAMPLE_PAID),
+    due_date: format.date(SAMPLE_DUE),
+  })
   // The workshop's real details replace the samples wholesale: a missing
   // phone shows as no phone, because that is what the customer would see.
   samples.workshop_name = text(workshop.name) ?? samples.workshop_name
@@ -231,14 +277,19 @@ export function sampleValuesFor(kind: EmailKind, workshop: WorkshopContext): Tag
   return values
 }
 
-export function sampleSummaryRows(kind: EmailKind, labels: SummaryLabels): SummaryRow[] {
+export function sampleSummaryRows(
+  kind: EmailKind,
+  labels: SummaryLabels,
+  format: SampleFormat = DEFAULT_SAMPLE_FORMAT
+): SummaryRow[] {
   if (!kindSpec(kind).hasSummary) return []
+  const money = sampleMoney(format)
   return [
     { key: 'reference', label: labels.reference, value: 'INV-1042' },
     { key: 'vehicle', label: labels.vehicle, value: '2019 Volvo V70' },
-    { key: 'total', label: labels.total, value: '1 250,00' },
-    { key: 'balance', label: labels.balance, value: '250,00' },
-    { key: 'due', label: labels.due, value: '30 Sep 2026' },
+    { key: 'total', label: labels.total, value: money(SAMPLE_TOTAL) },
+    { key: 'balance', label: labels.balance, value: money(SAMPLE_TOTAL - SAMPLE_PAID) },
+    { key: 'due', label: labels.due, value: format.date(SAMPLE_DUE) },
   ]
 }
 
@@ -246,7 +297,11 @@ export function sampleSummaryRows(kind: EmailKind, labels: SummaryLabels): Summa
  * A context with the same stand-in data the preview shows, for a test send
  * through the real pipeline.
  */
-export function sampleContextFor(kind: EmailKind, currentUser?: string | null): EmailContext {
+export function sampleContextFor(
+  kind: EmailKind,
+  currentUser?: string | null,
+  currency: CurrencySettings = DEFAULT_SAMPLE_FORMAT.currency
+): EmailContext {
   const base: BaseContext = {
     customerName: TAGS.customer_name.sample,
     vehicle: { year: 2019, make: 'Volvo', model: 'V70', licensePlate: 'AB 12345', mileage: 92000 },
@@ -271,10 +326,11 @@ export function sampleContextFor(kind: EmailKind, currentUser?: string | null): 
         document: {
           number: TAGS.document_number.sample,
           title: TAGS.document_title.sample,
-          total: 1250,
-          paid: 1000,
-          dueDate: new Date('2026-09-30T12:00:00Z'),
-          currencyCode: 'EUR',
+          total: SAMPLE_TOTAL,
+          paid: SAMPLE_PAID,
+          dueDate: SAMPLE_DUE,
+          currencyCode: currency.currencyCode,
+          currencyFormat: currency.currencyFormat,
         },
         shareLink: TAGS.share_link.sample,
       }

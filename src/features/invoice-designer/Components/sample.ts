@@ -1,4 +1,5 @@
 import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { formatCurrency, formatDateForPdf } from '@/lib/format'
 import { calculateTotals } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
 import type { DocumentData, LineGroup, PaymentPair, TotalLine } from '../Spec/buildSpec'
@@ -36,6 +37,25 @@ export function fillTemplate(template: string, values: Record<string, string>): 
   return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
 
+/**
+ * How the sample writes its money and dates: the workshop's own currency and
+ * date format, the way its printed sheets do, so a workshop in dollars does
+ * not preview euros. Left out, the app's defaults apply.
+ */
+export interface SampleFormat {
+  money: (amount: number) => string
+  date: (date: Date) => string
+}
+
+export const DEFAULT_SAMPLE_FORMAT: SampleFormat = {
+  money: (amount) => formatCurrency(amount),
+  date: (date) => formatDateForPdf(date),
+}
+
+/** The sample job's dates, at noon so no time zone moves them to another day. */
+const SAMPLE_DATE = new Date('2026-08-14T12:00:00Z')
+const SAMPLE_DUE = new Date('2026-08-28T12:00:00Z')
+
 export interface SampleTables {
   items: {
     n: number
@@ -47,9 +67,13 @@ export interface SampleTables {
     category?: string
     price: string
     total: string
+    /** The line total as a number, for the sums built from it. */
+    amount: number
   }[]
   findings: { severity: string; color: string; description: string; notes: string }[]
   subtotal: string
+  /** The subtotal as a number, for a split tax worked out from it. */
+  subtotalAmount: number
   tax: string
   total: string
   number: string
@@ -61,8 +85,13 @@ export interface SampleTables {
   title: string
 }
 
-export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
+export function sampleTables(
+  t: SampleT,
+  labels: PrintLabels,
+  format: SampleFormat = DEFAULT_SAMPLE_FORMAT
+): SampleTables {
   const L = (key: string, fallback: string) => labels[key] || fallback
+  const m = format.money
   return {
     items: [
       {
@@ -70,8 +99,9 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         qty: '2.5',
         unit: L('hrs', 'hrs'),
         desc: t('sample.itemLabor'),
-        price: '€ 89.00',
-        total: '€ 222.50',
+        price: m(89),
+        total: m(222.5),
+        amount: 222.5,
       },
       {
         n: 2,
@@ -80,8 +110,9 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         desc: t('sample.itemDisc'),
         sku: 'BD-1042',
         category: t('sample.categoryBrakes'),
-        price: '€ 149.00',
-        total: '€ 149.00',
+        price: m(149),
+        total: m(149),
+        amount: 149,
       },
       {
         n: 3,
@@ -90,8 +121,9 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         desc: t('sample.itemPads'),
         sku: 'BP-2210',
         category: t('sample.categoryBrakes'),
-        price: '€ 96.50',
-        total: '€ 96.50',
+        price: m(96.5),
+        total: m(96.5),
+        amount: 96.5,
       },
       {
         n: 4,
@@ -102,8 +134,9 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         // category previews two groups rather than one.
         sku: 'WS-0001',
         category: t('sample.categoryConsumables'),
-        price: '€ 12.00',
-        total: '€ 12.00',
+        price: m(12),
+        total: m(12),
+        amount: 12,
       },
     ],
     findings: [
@@ -120,12 +153,13 @@ export function sampleTables(t: SampleT, labels: PrintLabels): SampleTables {
         notes: '',
       },
     ],
-    subtotal: '€ 480.00',
-    tax: '€ 120.00',
-    total: '€ 600.00',
+    subtotal: m(480),
+    subtotalAmount: 480,
+    tax: m(120),
+    total: m(600),
     number: 'INV-2026-0042',
-    date: '14.08.2026',
-    due: '28.08.2026',
+    date: format.date(SAMPLE_DATE),
+    due: format.date(SAMPLE_DUE),
     customerNumber: 'C-0117',
     notes: t('sample.notes'),
     warranty: t('sample.warranty'),
@@ -191,11 +225,6 @@ export function fieldValues(
   }
 }
 
-/** The sample's money, written the way its other figures are. */
-function sampleMoney(value: number): string {
-  return `€ ${value.toFixed(2)}`
-}
-
 /**
  * The tax rows of the sample, and the registration numbers they bring: the
  * workshop's own split when it has one, taxed on the sample's net subtotal
@@ -205,7 +234,8 @@ function sampleMoney(value: number): string {
 function sampleTax(
   workshop: DesignerWorkshop,
   sample: SampleTables,
-  labels: PrintLabels
+  labels: PrintLabels,
+  format: SampleFormat
 ): { lines: TotalLine[]; total: string; registrations: PaymentPair[] } {
   const L = (key: string, fallback: string) => labels[key] || fallback
   const components = workshop.taxComponents ?? null
@@ -223,9 +253,8 @@ function sampleTax(
       registrations: [],
     }
   }
-  const subtotal = Number(sample.subtotal.replace(/[^\d.]/g, ''))
   const totals = calculateTotals({
-    subtotal,
+    subtotal: sample.subtotalAmount,
     discountAmount: 0,
     taxRate: 0,
     taxInclusive: false,
@@ -234,10 +263,10 @@ function sampleTax(
   return {
     lines: (totals.components ?? []).map((component) => ({
       label: taxComponentLabel(component),
-      value: sampleMoney(component.amount),
+      value: format.money(component.amount),
       kind: 'line' as const,
     })),
-    total: sampleMoney(totals.totalAmount),
+    total: format.money(totals.totalAmount),
     registrations: components
       .filter((component) => component.registrationNumber)
       .map((component) => ({
@@ -253,11 +282,14 @@ function sampleTax(
  * template cards in settings preview exactly the same paper.
  */
 /** The sample's line groups, summed from its own rows. */
-function sampleLineGroups(sample: SampleTables, labels: PrintLabels): LineGroup[] {
+function sampleLineGroups(
+  sample: SampleTables,
+  labels: PrintLabels,
+  format: SampleFormat
+): LineGroup[] {
   const L = (key: string, fallback: string) => labels[key] || fallback
-  const amount = (total: string) => Number(total.replace(/[^\d.]/g, ''))
   const sum = (rows: SampleTables['items']) =>
-    `€ ${rows.reduce((acc, row) => acc + amount(row.total), 0).toFixed(2)}`
+    format.money(rows.reduce((acc, row) => acc + row.amount, 0))
   const group = (key: string, title: string, rows: SampleTables['items']) => ({
     key,
     title,
@@ -286,12 +318,13 @@ export function buildSampleData(
   customFields: { id: string; label?: string | null; name: string; isActive: boolean }[],
   t: SampleT,
   labels: PrintLabels,
-  docType: DocumentType
+  docType: DocumentType,
+  format: SampleFormat = DEFAULT_SAMPLE_FORMAT
 ): DocumentData {
   const L = (key: string, fallback: string) => labels[key] || fallback
-  const sample = sampleTables(t, labels)
+  const sample = sampleTables(t, labels, format)
   const values = fieldValues(workshop, t, labels)
-  const tax = sampleTax(workshop, sample, labels)
+  const tax = sampleTax(workshop, sample, labels, format)
   return {
     fields: {
       ...values,
@@ -335,7 +368,7 @@ export function buildSampleData(
       })),
     // The groups a table divided by category shows: the brake parts added
     // up on their own, the consumables after them, the labor first.
-    lineGroups: sampleLineGroups(sample, labels),
+    lineGroups: sampleLineGroups(sample, labels, format),
     labor: sample.items
       .filter((item) => !item.sku)
       .map((item) => ({

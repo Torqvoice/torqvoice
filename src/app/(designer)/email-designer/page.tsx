@@ -10,7 +10,11 @@ import {
   listEmailTemplates,
 } from '@/features/email/Actions/emailTemplateActions'
 import { EmailDesigner } from '@/features/email/Components/EmailDesigner'
-import { sampleSummaryRows, sampleValuesFor } from '@/features/email/Lib/emailContext'
+import {
+  sampleFormatFrom,
+  sampleSummaryRows,
+  sampleValuesFor,
+} from '@/features/email/Lib/emailContext'
 import { isEmailKind } from '@/features/email/Lib/emailKinds'
 import { loadEmailMessages } from '@/features/email/Lib/emailMessages.server'
 import { presetTemplate } from '@/features/email/Lib/emailPresets'
@@ -79,6 +83,8 @@ export default async function EmailDesignerPage({
     email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
     address: settings[SETTING_KEYS.WORKSHOP_ADDRESS],
   }
+  // The stand-in amounts and dates, written the way this workshop's mail writes them.
+  const sampleFormat = sampleFormatFrom(settings)
 
   const saved = (
     templatesResult.success && templatesResult.data ? templatesResult.data : []
@@ -102,8 +108,8 @@ export default async function EmailDesignerPage({
         savedNames={saved.map((template) => ({ id: template.id, name: template.name }))}
         activeId={active}
         sample={{
-          values: sampleValuesFor(kind, workshop),
-          summary: sampleSummaryRows(kind, messages.summary),
+          values: sampleValuesFor(kind, workshop, sampleFormat),
+          summary: sampleSummaryRows(kind, messages.summary, sampleFormat),
         }}
         userEmail={user?.email ?? ''}
       />

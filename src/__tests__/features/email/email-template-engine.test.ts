@@ -3,6 +3,8 @@ import en from '../../../../messages/en/email.json'
 import { buildEmailSpec } from '@/features/email/Lib/buildEmailSpec'
 import {
   sampleContextFor,
+  sampleFormatFrom,
+  sampleSummaryRows,
   sampleValuesFor,
   summaryRowsFor,
   tagValuesFor,
@@ -344,6 +346,27 @@ describe('emailContext', () => {
     expect(values.workshop_phone).toBeUndefined()
     expect(values.customer_name).toBeTruthy()
     expect(sampleValuesFor('invoice_sent', {}).workshop_name).toBeTruthy()
+  })
+
+  it("previews amounts and dates in the workshop's own currency and date format", () => {
+    // A workshop in dollars used to preview "1 250,00" and a European date.
+    const format = sampleFormatFrom({
+      'workshop.currencyCode': 'USD',
+      'workshop.dateFormat': 'MM/dd/yyyy',
+    })
+    const rows = Object.fromEntries(
+      sampleSummaryRows('invoice_sent', messages.summary, format).map((r) => [r.key, r.value])
+    )
+    expect(rows.total).toBe('$1,250.00')
+    expect(rows.balance).toBe('$250.00')
+    expect(rows.due).toBe('09/30/2026')
+    const values = sampleValuesFor('invoice_sent', {}, format)
+    expect(values.total).toBe('$1,250.00')
+    expect(values.due_date).toBe('09/30/2026')
+    const test = sampleContextFor('invoice_sent', null, format.currency) as {
+      document?: { currencyCode?: string }
+    }
+    expect(test.document?.currencyCode).toBe('USD')
   })
 
   it.each(EMAIL_KINDS)('%s renders its preset from sample data without a literal tag', (kind) => {
