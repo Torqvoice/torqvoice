@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 let pathname = '/settings'
@@ -55,5 +55,44 @@ describe('settings breadcrumbs', () => {
     render(<PageHeader />)
     expect(screen.getByText('Settings')).toBeInTheDocument()
     expect(screen.queryByText('Home')).toBeNull()
+  })
+})
+
+/** The crumbs in the header, in order. */
+function crumbs() {
+  return Array.from(
+    document.querySelectorAll('[data-slot="breadcrumb-link"], [data-slot="breadcrumb-page"]')
+  ).map((el) => el.textContent)
+}
+
+/** A page that sits at the top level is named once, not as "Reports > Reports". */
+describe('top-level breadcrumbs', () => {
+  it('names the reports page once', () => {
+    pathname = '/reports'
+    render(<PageHeader />)
+    expect(crumbs()).toEqual(['Reports'])
+  })
+
+  it.each([
+    '/',
+    '/vehicles',
+    '/customers',
+    '/work-orders',
+    '/quotes',
+    '/billing',
+    '/inventory',
+    '/reports',
+    '/timesheets',
+    '/reminders',
+    '/work-board',
+    '/audit-log',
+    '/tire-hotel',
+  ])('never repeats the crumb before it on %s', (path) => {
+    pathname = path
+    render(<PageHeader />)
+    const names = crumbs()
+    expect(names.length).toBeGreaterThan(0)
+    names.slice(1).forEach((name, i) => expect(name).not.toBe(names[i]))
+    cleanup()
   })
 })
