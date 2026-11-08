@@ -467,9 +467,17 @@ export async function createWorkOrderFromRequest(requestId: string) {
         throw new Error('Work order already created for this request')
 
       const vehicleId = request.vehicleId
-      const serviceDate = request.preferredDate ?? undefined
 
-      const result = await createDraftServiceRecord(vehicleId, serviceDate)
+      // The customer named a day, not a time: book the first free slot from
+      // that day on. Passed as the start time, it booked the job at midnight.
+      const result = await createDraftServiceRecord(
+        vehicleId,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        request.preferredDate ?? undefined
+      )
       if (!result.success || !result.data) {
         throw new Error(result.error ?? 'Failed to create work order')
       }
@@ -485,6 +493,10 @@ export async function createWorkOrderFromRequest(requestId: string) {
         data: {
           title: truncatedTitle,
           description: request.description,
+          // The job description is told as concerns, the first step of which
+          // is the customer's own words. Without one the job opened with
+          // "Not written yet" and the request text only in the cut-short title.
+          concerns: { create: { description: request.description, sortOrder: 0 } },
         },
       })
 

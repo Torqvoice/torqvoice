@@ -54,6 +54,14 @@ export async function createDraftRecord(
     /** Bay the job was booked into, when it was created from the work board. */
     workBayId?: string
     /**
+     * The day the job is wanted, when a day was asked for but no time: a
+     * customer's preferred date on a portal request. The first free slot is
+     * looked for from that day on, rather than from now. A day already past is
+     * ignored. Passing the day itself as startDateTime booked the job at
+     * midnight.
+     */
+    bookFrom?: Date
+    /**
      * The transaction the record is written in, when the caller has more to
      * write that must land with it or not at all. Reads stay on the pool.
      */
@@ -200,9 +208,10 @@ export async function createDraftRecord(
       opts.startDateTime ??
       atZonedTime(now, settingsMap['workboard.workDayStart'] || '07:00', timeZone)
   } else {
-    const { bookings, hours } = await loadBookingContext(organizationId, now)
+    const from = opts.bookFrom && opts.bookFrom.getTime() > now.getTime() ? opts.bookFrom : now
+    const { bookings, hours } = await loadBookingContext(organizationId, from)
     const slot = nextAvailableSlot({
-      from: now,
+      from,
       durationMinutes: DEFAULT_JOB_MINUTES,
       bookings,
       hours,
@@ -215,7 +224,7 @@ export async function createDraftRecord(
     } else {
       // Booked solid for weeks. Falling back to opening time keeps the job on
       // the board rather than refusing to create it over a scheduling detail.
-      defaultStart = atZonedTime(now, hours.start || '07:00', timeZone)
+      defaultStart = atZonedTime(from, hours.start || '07:00', timeZone)
     }
   }
   // serviceDate should be date-only (start of the workshop's day)
