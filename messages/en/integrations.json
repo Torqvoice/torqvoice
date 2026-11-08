@@ -720,7 +720,7 @@
         "includeVehicle": "Name the vehicle on the invoice",
         "includeVehicleHelp": "A text line above the charges with the year, make, model, plate and mileage, so the books say which car.",
         "laborItemId": "Item for labor lines",
-        "laborItemIdHelp": "Leave empty and an item named Labor is created under your income account the first time.",
+        "laborItemIdHelp": "Leave empty and an item called \"Labour\" is created under your income account the first time.",
         "partsItemId": "Item for parts lines",
         "partsItemIdHelp": "Leave empty and an item named Parts is created under your income account the first time.",
         "taxAmounts": "Tax amounts",
