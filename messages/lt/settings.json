@@ -2350,7 +2350,7 @@
       "unitSet": "kompl.",
       "unitEach": "x",
       "findingPads": "Galinės kaladėlės 15 %",
-      "findingPadsNote": "Pakeisti per 5 000 km",
+      "findingPadsNote": "{unit, select, mi {Pakeisti per 3 000 mylių} other {Pakeisti per 5 000 km}}",
       "findingOilWeep": "Nedidelis alyvos sunkimasis ties vožtuvų dangteliu",
       "notes": "Ačiū, kad pasirinkote mūsų servisą. Kilus klausimų, susisiekite su mumis.",
       "warranty": "12 mėnesių garantija dalims ir darbui.",

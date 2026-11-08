@@ -123,6 +123,10 @@ export default async function TemplatePage() {
     slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN],
     // Its own taxes too: a split-tax workshop's cards show its GST and QST lines.
     taxComponents: readWorkshopTax(settings).components,
+    // Its distance unit, so the sample car's mileage reads the way its invoices do.
+    unitSystem: (settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'metric' : 'imperial') as
+      | 'metric'
+      | 'imperial',
   }
 
   const smsDefaultMap: Record<string, string> = {

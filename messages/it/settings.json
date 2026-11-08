@@ -2350,7 +2350,7 @@
       "unitSet": "kit",
       "unitEach": "x",
       "findingPads": "Pastiglie posteriori al 15%",
-      "findingPadsNote": "Sostituire entro 5.000 km",
+      "findingPadsNote": "{unit, select, mi {Sostituire entro 3.000 miglia} other {Sostituire entro 5.000 km}}",
       "findingOilWeep": "Lieve trafilamento d'olio dal coperchio punterie",
       "notes": "Grazie per aver scelto la nostra officina. Contattaci per qualsiasi domanda.",
       "warranty": "12 mesi di garanzia su ricambi e manodopera.",

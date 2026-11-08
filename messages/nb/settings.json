@@ -2350,7 +2350,7 @@
       "unitSet": "sett",
       "unitEach": "x",
       "findingPads": "Bakre klosser på 15 %",
-      "findingPadsNote": "Skiftes innen 5 000 km",
+      "findingPadsNote": "{unit, select, mi {Skiftes innen 3 000 miles} other {Skiftes innen 5 000 km}}",
       "findingOilWeep": "Liten oljelekkasje ved ventildeksel",
       "notes": "Takk for at du valgte verkstedet vårt. Ta kontakt hvis du har spørsmål.",
       "warranty": "12 måneders garanti på deler og arbeid.",

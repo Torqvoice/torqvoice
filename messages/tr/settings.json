@@ -2350,7 +2350,7 @@
       "unitSet": "takım",
       "unitEach": "x",
       "findingPads": "Arka balatalar %15 seviyesinde",
-      "findingPadsNote": "5.000 km içinde değiştirin",
+      "findingPadsNote": "{unit, select, mi {3.000 mil içinde değiştirin} other {5.000 km içinde değiştirin}}",
       "findingOilWeep": "Külbütör kapağında hafif yağ sızıntısı",
       "notes": "Servisimizi seçtiğiniz için teşekkür ederiz. Sorunuz olursa bize ulaşın.",
       "warranty": "Parça ve işçilikte 12 ay garanti.",

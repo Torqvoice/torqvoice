@@ -2350,7 +2350,7 @@
       "unitSet": "jeu",
       "unitEach": "x",
       "findingPads": "Plaquettes arrière à 15 %",
-      "findingPadsNote": "À remplacer sous 5 000 km",
+      "findingPadsNote": "{unit, select, mi {À remplacer sous 3 000 miles} other {À remplacer sous 5 000 km}}",
       "findingOilWeep": "Léger suintement d'huile au cache-culbuteurs",
       "notes": "Merci d'avoir choisi notre atelier. Contactez-nous pour toute question.",
       "warranty": "12 mois de garantie sur les pièces et la main-d'œuvre.",

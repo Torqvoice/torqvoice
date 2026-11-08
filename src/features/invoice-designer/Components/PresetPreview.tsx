@@ -29,6 +29,8 @@ interface PreviewWorkshop {
   slogan?: string
   /** The workshop's split tax, so a card shows its GST and QST lines. */
   taxComponents?: TaxComponentDefinition[] | null
+  /** How the workshop writes distance, for the sample car's mileage. */
+  unitSystem?: 'metric' | 'imperial'
 }
 
 /** The sample document on this workshop's own details, for a card's picture. */
@@ -60,6 +62,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         typeKeyEnabled,
         logoUrl: logoUrl ?? '',
         taxComponents: workshop?.taxComponents ?? null,
+        unitSystem: workshop?.unitSystem,
       },
       [],
       t,

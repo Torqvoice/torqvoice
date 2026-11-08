@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { IntlMessageFormat } from 'intl-messageformat'
 import { describe, expect, it } from 'vitest'
 import { buildSampleData } from '@/features/invoice-designer/Components/sample'
 import type { DesignerWorkshop } from '@/features/invoice-designer/Components/types'
@@ -35,5 +38,25 @@ describe('the sample mileage in the workshop distance unit', () => {
 
   it('writes miles when the workshop never chose, as its invoices do', () => {
     expect(mileage()).toBe('Mileage: 84,120 mi')
+  })
+})
+
+describe('the sample observation in the workshop distance unit', () => {
+  // The real next-intl formatter, so the select in the message is exercised.
+  const messages = JSON.parse(
+    readFileSync(resolve(process.cwd(), 'messages/en/settings.json'), 'utf8')
+  ).designer.sample
+  const intl = (key: string, values?: Record<string, string | number>) =>
+    String(new IntlMessageFormat(messages[key.replace('sample.', '')] ?? key, 'en').format(values))
+  const note = (unitSystem?: 'metric' | 'imperial') =>
+    buildSampleData({ ...workshop, unitSystem }, [], intl, labels, 'invoice').findings[0]?.notes
+
+  it('says miles for a workshop in miles, and when it never chose', () => {
+    expect(note('imperial')).toBe('Replace within 3,000 mi')
+    expect(note()).toBe('Replace within 3,000 mi')
+  })
+
+  it('says kilometres for a workshop in kilometres', () => {
+    expect(note('metric')).toBe('Replace within 5,000 km')
   })
 })

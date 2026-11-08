@@ -80,6 +80,7 @@ interface WorkshopPreviewInfo {
   email?: string
   slogan?: string
   taxComponents?: TaxComponentDefinition[] | null
+  unitSystem?: 'metric' | 'imperial'
 }
 
 const fontMap: Record<string, string> = {

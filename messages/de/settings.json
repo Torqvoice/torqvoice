@@ -2350,7 +2350,7 @@
       "unitSet": "Satz",
       "unitEach": "x",
       "findingPads": "Hintere Beläge bei 15 %",
-      "findingPadsNote": "Innerhalb von 5.000 km ersetzen",
+      "findingPadsNote": "{unit, select, mi {Innerhalb von 3.000 Meilen ersetzen} other {Innerhalb von 5.000 km ersetzen}}",
       "findingOilWeep": "Leichter Ölaustritt am Ventildeckel",
       "notes": "Danke, dass Sie unsere Werkstatt gewählt haben. Melden Sie sich bei Fragen gerne.",
       "warranty": "12 Monate Garantie auf Teile und Arbeit.",
