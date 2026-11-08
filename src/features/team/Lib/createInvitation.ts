@@ -1,6 +1,7 @@
 import { randomUUID } from 'crypto'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
 import { db } from '@/lib/db'
+import { customRoleName } from './customRoleName'
 import type { InvitableRole } from './invitationRules'
 
 export type CreateInvitationInput = {
@@ -35,16 +36,7 @@ export async function createAndSendInvitation(input: CreateInvitationInput) {
     where: { email, organizationId, status: { not: 'pending' } },
   })
 
-  // Validate and look up the custom role name if roleId is provided.
-  let customRoleName: string | undefined
-  if (roleId) {
-    const customRole = await db.role.findFirst({
-      where: { id: roleId, organizationId },
-      select: { name: true },
-    })
-    if (!customRole) throw new Error('Role not found')
-    customRoleName = customRole.name
-  }
+  const roleLabel = (await customRoleName(organizationId, roleId)) ?? role
 
   const token = randomUUID()
   const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -66,7 +58,7 @@ export async function createAndSendInvitation(input: CreateInvitationInput) {
       organizationId,
       organizationName,
       email,
-      roleLabel: customRoleName || role,
+      roleLabel,
       token,
       invitedById,
       expiresAt,
@@ -77,7 +69,7 @@ export async function createAndSendInvitation(input: CreateInvitationInput) {
     throw new Error('Failed to send invitation email. Please try again.')
   }
 
-  return invitation
+  return { invitation, roleLabel }
 }
 
 export type InvitationMailInput = {
