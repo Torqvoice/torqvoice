@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
+  Check,
   Download,
   Eye,
   Globe,
@@ -76,41 +77,44 @@ export function ServiceHeaderActions({
     <div className="flex shrink-0 flex-wrap items-center gap-2">
       {showSave && (
         <>
-          {/* The label slot is always as wide as the longer of the two labels,
-              so the buttons stay put when "Unsaved changes" or "Saved" comes and
-              goes. Before, the extra width pushed the whole row onto a second
-              line on every edit. The sizers draw their words as CSS content, so
-              they are not text a reader or a test finds. */}
-          <span className="grid items-center justify-items-end text-xs font-medium">
-            <span
-              aria-hidden="true"
-              data-size={t('unsavedChanges')}
-              className="invisible col-start-1 row-start-1 whitespace-nowrap after:content-[attr(data-size)]"
-            />
-            <span
-              aria-hidden="true"
-              data-size={t('saved')}
-              className="invisible col-start-1 row-start-1 whitespace-nowrap after:content-[attr(data-size)]"
-            />
-            {hasUnsavedChanges && (
-              <span className="col-start-1 row-start-1 whitespace-nowrap text-amber-600 dark:text-amber-400">
-                {t('unsavedChanges')}
-              </span>
-            )}
-            {showSaved && !hasUnsavedChanges && (
-              <span className="col-start-1 row-start-1 whitespace-nowrap text-green-600 dark:text-green-400">
-                {t('saved')}
-              </span>
-            )}
+          {/* The save state is shown on the Save button itself, as a dot while
+              there are unsaved changes and a check once saved, with the words
+              in its tooltip. A text label beside it changed the row's width,
+              which pushed the buttons onto a second line on every edit. Screen
+              readers still hear the words, from this status line. */}
+          <span role="status" className="sr-only">
+            {hasUnsavedChanges ? t('unsavedChanges') : showSaved ? t('saved') : ''}
           </span>
           <IconActionButton
             type="submit"
             form="service-record-form"
             label={t('save')}
+            tooltip={
+              hasUnsavedChanges
+                ? `${t('save')} · ${t('unsavedChanges')}`
+                : showSaved
+                  ? t('saved')
+                  : t('save')
+            }
             icon={Save}
             loading={saving}
             variant={hasUnsavedChanges ? 'default' : 'outline'}
             className={hasUnsavedChanges ? 'animate-pulse' : ''}
+            badge={
+              hasUnsavedChanges ? (
+                <span
+                  aria-hidden="true"
+                  className="-right-1 -top-1 absolute size-2.5 rounded-full bg-amber-500 ring-2 ring-background"
+                />
+              ) : showSaved ? (
+                <span
+                  aria-hidden="true"
+                  className="-right-1.5 -top-1.5 absolute flex size-3.5 items-center justify-center rounded-full bg-green-600 text-white ring-2 ring-background"
+                >
+                  <Check className="size-2.5" />
+                </span>
+              ) : undefined
+            }
           />
         </>
       )}
