@@ -327,7 +327,7 @@
     "work_bay_update": "Oppdaterte arbeidsplass «{name}»",
     "work_bay_delete": "Slettet arbeidsplass {id}",
     "settings_setCustomFieldPlacement": "Endret hvor et egendefinert felt skrives ut",
-    "import_commit": "Importerte et regneark: {count} poster opprettet",
+    "import_commit": "Importerte et regneark: {created} poster opprettet",
     "import_undo": "Angret en regnearkimport: {records} poster fjernet",
     "integration_connect": "Koblet til {name}",
     "integration_disconnect": "Koblet fra {name}",

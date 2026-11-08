@@ -327,7 +327,7 @@
     "work_bay_update": "\"{name}\" çalışma alanı güncellendi",
     "work_bay_delete": "{id} çalışma alanı silindi",
     "settings_setCustomFieldPlacement": "Bir özel alanın yazdırıldığı yer değiştirildi",
-    "import_commit": "Bir hesap tablosu içe aktarıldı: {count} kayıt oluşturuldu",
+    "import_commit": "Bir hesap tablosu içe aktarıldı: {created} kayıt oluşturuldu",
     "import_undo": "Bir hesap tablosu içe aktarması geri alındı: {records} kayıt kaldırıldı",
     "integration_connect": "{name} bağlandı",
     "integration_disconnect": "{name} bağlantısı kesildi",

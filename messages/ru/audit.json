@@ -327,7 +327,7 @@
     "work_bay_update": "Обновлён пост «{name}»",
     "work_bay_delete": "Удалён пост {id}",
     "settings_setCustomFieldPlacement": "Изменено место печати пользовательского поля",
-    "import_commit": "Импортирована таблица, создано записей: {count}",
+    "import_commit": "Импортирована таблица, создано записей: {created}",
     "import_undo": "Отменён импорт таблицы, удалено записей: {records}",
     "integration_connect": "Подключена интеграция {name}",
     "integration_disconnect": "Отключена интеграция {name}",

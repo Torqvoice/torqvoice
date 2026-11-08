@@ -327,7 +327,7 @@
     "work_bay_update": "Baia \"{name}\" atualizada",
     "work_bay_delete": "Baia {id} excluída",
     "settings_setCustomFieldPlacement": "Alterou onde um campo personalizado é impresso",
-    "import_commit": "Importou uma planilha: {count} registros criados",
+    "import_commit": "Importou uma planilha: {created} registros criados",
     "import_undo": "Desfez uma importação de planilha: {records} registros removidos",
     "integration_connect": "{name} conectado",
     "integration_disconnect": "{name} desconectado",

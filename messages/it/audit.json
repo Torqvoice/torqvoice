@@ -327,7 +327,7 @@
     "work_bay_update": "Postazione «{name}» aggiornata",
     "work_bay_delete": "Postazione {id} eliminata",
     "settings_setCustomFieldPlacement": "Ha modificato dove viene stampato un campo personalizzato",
-    "import_commit": "Foglio di calcolo importato: {count} record creati",
+    "import_commit": "Foglio di calcolo importato: {created} record creati",
     "import_undo": "Importazione da foglio di calcolo annullata: {records} record rimossi",
     "integration_connect": "{name} collegato",
     "integration_disconnect": "{name} scollegato",

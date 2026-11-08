@@ -327,7 +327,7 @@
     "work_bay_update": "Arbeitsplatz „{name}“ aktualisiert",
     "work_bay_delete": "Arbeitsplatz {id} gelöscht",
     "settings_setCustomFieldPlacement": "Hat geändert, wo ein benutzerdefiniertes Feld gedruckt wird",
-    "import_commit": "Tabelle importiert: {count} Datensätze angelegt",
+    "import_commit": "Tabelle importiert: {created} Datensätze angelegt",
     "import_undo": "Tabellenimport rückgängig gemacht: {records} Datensätze entfernt",
     "integration_connect": "{name} verbunden",
     "integration_disconnect": "{name} getrennt",
