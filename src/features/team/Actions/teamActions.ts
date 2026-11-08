@@ -24,6 +24,7 @@ import {
 import { demoGuard } from '@/lib/demo'
 import { canInvite } from '../Lib/invitationRules'
 import { createAndSendInvitation } from '../Lib/createInvitation'
+import { customRoleName } from '../Lib/customRoleName'
 import { memberSeats } from '../Lib/memberSeats'
 
 export async function getOrganization() {
@@ -196,7 +197,7 @@ export async function inviteMember(input: unknown) {
       const seatsDirectly =
         !!invitedUser && (invitedUser.emailVerified || !(await emailVerificationRequired()))
       if (!seatsDirectly) {
-        await createAndSendInvitation({
+        const { roleLabel } = await createAndSendInvitation({
           organizationId,
           organizationName: membership.organization.name,
           invitedById: userId,
@@ -205,7 +206,7 @@ export async function inviteMember(input: unknown) {
           roleId: data.roleId,
         })
         revalidatePath('/settings/team')
-        return { invited: true, email: data.email, role: data.role }
+        return { invited: true, email: data.email, role: data.role, roleLabel }
       }
 
       const existingMembership = await db.organizationMember.findFirst({
@@ -214,6 +215,7 @@ export async function inviteMember(input: unknown) {
       if (existingMembership) {
         throw new Error('This person is already on the team')
       }
+      const roleLabel = (await customRoleName(organizationId, data.roleId)) ?? data.role
 
       await db.organizationMember.create({
         data: {
@@ -225,7 +227,7 @@ export async function inviteMember(input: unknown) {
       })
 
       revalidatePath('/settings/team')
-      return { invited: true, email: data.email, role: data.role }
+      return { invited: true, email: data.email, role: data.role, roleLabel }
     },
     {
       requiredPermissions: [
@@ -234,7 +236,10 @@ export async function inviteMember(input: unknown) {
       audit: ({ result }) => ({
         action: 'team.invite',
         entity: 'OrganizationMember',
-        message: `Invited ${result.email} as ${result.role}`,
+        details: {
+          key: 'team_sendInvitation',
+          params: { email: result.email, role: result.roleLabel },
+        },
         metadata: { email: result.email, role: result.role },
       }),
     }

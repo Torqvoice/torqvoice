@@ -210,7 +210,12 @@ describe('inviteMember agrees with sendInvitation', () => {
     const known = await inviteMember({ email: 'new@example.com', role: 'member' })
 
     expect(unknown).toEqual(known)
-    expect(unknown.data).toEqual({ invited: true, email: 'new@example.com', role: 'member' })
+    expect(unknown.data).toEqual({
+      invited: true,
+      email: 'new@example.com',
+      role: 'member',
+      roleLabel: 'member',
+    })
     // The unknown address got an invitation mail; the known one joined directly.
     expect(db.teamInvitation.create).toHaveBeenCalledTimes(1)
     expect(db.organizationMember.create).toHaveBeenCalledTimes(1)
@@ -228,7 +233,12 @@ describe('inviteMember agrees with sendInvitation', () => {
     } as any)
     const result = await inviteMember({ email: 'anna@garage.test', role: 'member' })
 
-    expect(result.data).toEqual({ invited: true, email: 'anna@garage.test', role: 'member' })
+    expect(result.data).toEqual({
+      invited: true,
+      email: 'anna@garage.test',
+      role: 'member',
+      roleLabel: 'member',
+    })
     expect(db.organizationMember.create).not.toHaveBeenCalled()
     expect(db.teamInvitation.create).toHaveBeenCalledTimes(1)
   })
@@ -246,7 +256,12 @@ describe('inviteMember agrees with sendInvitation', () => {
       .mockResolvedValueOnce(null)
     const result = await inviteMember({ email: 'anna@garage.test', role: 'member' })
 
-    expect(result.data).toEqual({ invited: true, email: 'anna@garage.test', role: 'member' })
+    expect(result.data).toEqual({
+      invited: true,
+      email: 'anna@garage.test',
+      role: 'member',
+      roleLabel: 'member',
+    })
     expect(db.organizationMember.create).toHaveBeenCalledTimes(1)
     expect(db.teamInvitation.create).not.toHaveBeenCalled()
   })
