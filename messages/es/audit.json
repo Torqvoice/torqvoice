@@ -327,7 +327,7 @@
     "work_bay_update": "Puesto de trabajo «{name}» actualizado",
     "work_bay_delete": "Puesto de trabajo {id} eliminado",
     "settings_setCustomFieldPlacement": "Cambió dónde se imprime un campo personalizado",
-    "import_commit": "Importó una hoja de cálculo: {count} registros creados",
+    "import_commit": "Importó una hoja de cálculo: {created} registros creados",
     "import_undo": "Deshizo una importación de hoja de cálculo: {records} registros eliminados",
     "integration_connect": "{name} conectado",
     "integration_disconnect": "{name} desconectado",

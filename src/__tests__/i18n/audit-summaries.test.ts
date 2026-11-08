@@ -209,6 +209,7 @@ describe('audit summaries', () => {
       type: 'wash_tires',
       count: 2,
       records: 2,
+      created: 2,
       quotes: 2,
       technician: 'Kari',
       job: 'Brakes',

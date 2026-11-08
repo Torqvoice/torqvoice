@@ -327,7 +327,7 @@
     "work_bay_update": "Atnaujinta darbo vieta „{name}“",
     "work_bay_delete": "Ištrinta darbo vieta {id}",
     "settings_setCustomFieldPlacement": "Pakeitė, kur spausdinamas pasirinktinis laukas",
-    "import_commit": "Importuota skaičiuoklė: sukurta įrašų: {count}",
+    "import_commit": "Importuota skaičiuoklė: sukurta įrašų: {created}",
     "import_undo": "Atšauktas skaičiuoklės importas: pašalinta įrašų: {records}",
     "integration_connect": "Prijungta {name}",
     "integration_disconnect": "Atjungta {name}",

@@ -327,7 +327,7 @@
     "work_bay_update": "Werkplek \"{name}\" bijgewerkt",
     "work_bay_delete": "Werkplek {id} verwijderd",
     "settings_setCustomFieldPlacement": "Wijzigde waar een aangepast veld wordt afgedrukt",
-    "import_commit": "Spreadsheet geïmporteerd: {count} records aangemaakt",
+    "import_commit": "Spreadsheet geïmporteerd: {created} records aangemaakt",
     "import_undo": "Spreadsheetimport ongedaan gemaakt: {records} records verwijderd",
     "integration_connect": "{name} gekoppeld",
     "integration_disconnect": "{name} losgekoppeld",

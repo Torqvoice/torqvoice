@@ -327,7 +327,7 @@
     "work_bay_update": "Updated work bay \"{name}\"",
     "work_bay_delete": "Deleted work bay {id}",
     "settings_setCustomFieldPlacement": "Changed where a custom field prints",
-    "import_commit": "Imported a spreadsheet: {count} records created",
+    "import_commit": "Imported a spreadsheet: {created} records created",
     "import_undo": "Undid a spreadsheet import: {records} records removed",
     "integration_connect": "Connected {name}",
     "integration_disconnect": "Disconnected {name}",

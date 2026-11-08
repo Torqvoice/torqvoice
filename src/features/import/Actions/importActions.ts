@@ -721,8 +721,6 @@ export async function commitImport(raw: unknown) {
         details: {
           key: 'import_commit',
           params: {
-            // The sentence counts the records created.
-            count: result.created,
             entity: input.options.entity,
             created: result.created,
             updated: result.updated,
