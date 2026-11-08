@@ -195,7 +195,18 @@
     "basicNotApplicable": "Non applicabile",
     "allResults": "Tutti gli esiti",
     "signature": "Firma",
-    "sectionColumn": "Sezione"
+    "sectionColumn": "Sezione",
+    "checkPass": "Tutto in ordine",
+    "checkPassMinor": "Alcuni punti da tenere d'occhio",
+    "checkFail": "Alcuni punti da riparare",
+    "checkFailDangerous": "Alcuni punti da riparare con urgenza",
+    "checkIncomplete": "Non completato",
+    "checkDetailPass": "Nulla richiedeva attenzione.",
+    "checkDetailPassMinor": "Niente di urgente. Conviene pianificare i punti segnalati.",
+    "checkDetailFail": "Alcuni punti vanno riparati. Le note indicano cosa è stato trovato.",
+    "checkDetailFailDangerous": "Alcuni punti non sono sicuri e vanno riparati prima di continuare a usarlo.",
+    "checkDetailIncomplete": "Questo controllo è ancora in corso.",
+    "overallCheck": "Riepilogo"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "STORICO ASSISTENZA",

@@ -202,7 +202,21 @@
     "deficienciesFound": "Deficiencies found ({count})",
     "allResults": "All results",
     "privacyNotice": "This report is shared with you by the workshop that carried out the inspection. It is available to anyone holding this link, so please do not forward it. Contact the workshop to have the link withdrawn or your data erased.",
-    "inspectionPhotos": "Photos and documents"
+    "inspectionPhotos": "Photos and documents",
+    "checkResult": {
+      "pass": "All checks passed",
+      "pass_minor": "Some items to keep an eye on",
+      "fail": "Some items need work",
+      "fail_dangerous": "Some items need urgent work",
+      "incomplete": "Not completed"
+    },
+    "checkResultDetail": {
+      "pass": "Nothing needed attention.",
+      "pass_minor": "Nothing urgent. The items marked for attention are worth planning for.",
+      "fail": "Some items need repairing. The notes say what was found.",
+      "fail_dangerous": "Some items are unsafe and should be repaired before further use.",
+      "incomplete": "This check is still in progress."
+    }
   },
   "terms": {
     "title": "Terms of Sale",

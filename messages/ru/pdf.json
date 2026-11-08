@@ -195,7 +195,18 @@
     "basicNotApplicable": "Не применимо",
     "allResults": "Все результаты",
     "signature": "Подпись",
-    "sectionColumn": "Раздел"
+    "sectionColumn": "Раздел",
+    "checkPass": "Всё в порядке",
+    "checkPassMinor": "Несколько пунктов под наблюдением",
+    "checkFail": "Несколько пунктов требуют ремонта",
+    "checkFailDangerous": "Несколько пунктов требуют срочного ремонта",
+    "checkIncomplete": "Не завершено",
+    "checkDetailPass": "Ничего не требовало внимания.",
+    "checkDetailPassMinor": "Ничего срочного. Отмеченные пункты стоит запланировать.",
+    "checkDetailFail": "Некоторые пункты требуют ремонта. В заметках сказано, что найдено.",
+    "checkDetailFailDangerous": "Некоторые пункты небезопасны, их нужно отремонтировать до дальнейшей эксплуатации.",
+    "checkDetailIncomplete": "Эта проверка ещё не завершена.",
+    "overallCheck": "Итог"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "ИСТОРИЯ ОБСЛУЖИВАНИЯ",

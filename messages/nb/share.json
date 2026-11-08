@@ -202,7 +202,21 @@
     "deficienciesFound": "Mangler funnet ({count})",
     "allResults": "Alle resultater",
     "privacyNotice": "Denne rapporten deles med deg av verkstedet som utførte kontrollen. Alle som har lenken kan se den, så ikke send den videre. Ta kontakt med verkstedet for å trekke tilbake lenken eller få slettet opplysningene dine.",
-    "inspectionPhotos": "Bilder og dokumenter"
+    "inspectionPhotos": "Bilder og dokumenter",
+    "checkResult": {
+      "pass": "Alt i orden",
+      "pass_minor": "Noen punkter å følge med på",
+      "fail": "Noen punkter må repareres",
+      "fail_dangerous": "Noen punkter må repareres snarest",
+      "incomplete": "Ikke fullført"
+    },
+    "checkResultDetail": {
+      "pass": "Ingenting trengte oppfølging.",
+      "pass_minor": "Ikke noe som haster. Punktene som er merket bør planlegges inn.",
+      "fail": "Noen punkter må repareres. Notatene forteller hva som ble funnet.",
+      "fail_dangerous": "Noen punkter er ikke trygge og bør repareres før videre bruk.",
+      "incomplete": "Denne kontrollen pågår fortsatt."
+    }
   },
   "terms": {
     "title": "Salgsvilkår",

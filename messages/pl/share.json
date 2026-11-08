@@ -202,7 +202,21 @@
     "deficienciesFound": "Stwierdzone usterki ({count})",
     "allResults": "Wszystkie wyniki",
     "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane.",
-    "inspectionPhotos": "Zdjęcia i dokumenty"
+    "inspectionPhotos": "Zdjęcia i dokumenty",
+    "checkResult": {
+      "pass": "Wszystko w porządku",
+      "pass_minor": "Kilka punktów do obserwacji",
+      "fail": "Kilka punktów wymaga naprawy",
+      "fail_dangerous": "Kilka punktów wymaga pilnej naprawy",
+      "incomplete": "Nie zakończono"
+    },
+    "checkResultDetail": {
+      "pass": "Nic nie wymagało uwagi.",
+      "pass_minor": "Nic pilnego. Warto zaplanować oznaczone punkty.",
+      "fail": "Niektóre punkty wymagają naprawy. Notatki opisują, co znaleziono.",
+      "fail_dangerous": "Niektóre punkty nie są bezpieczne i należy je naprawić przed dalszym użytkowaniem.",
+      "incomplete": "Ta kontrola wciąż trwa."
+    }
   },
   "terms": {
     "title": "Warunki sprzedaży",

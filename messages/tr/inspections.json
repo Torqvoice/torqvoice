@@ -494,5 +494,19 @@
     "photos": "Fotoğraflar",
     "documents": "Belgeler",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Her şey yolunda",
+    "pass_minor": "Takip edilmesi gereken birkaç nokta",
+    "fail": "Onarım gereken birkaç nokta",
+    "fail_dangerous": "Acil onarım gereken birkaç nokta",
+    "incomplete": "Tamamlanmadı",
+    "detail": {
+      "pass": "Dikkat gerektiren bir şey yoktu.",
+      "pass_minor": "Acil bir şey yok. İşaretli noktaları planlamakta fayda var.",
+      "fail": "Bazı noktaların onarılması gerekiyor. Notlar neyin bulunduğunu anlatıyor.",
+      "fail_dangerous": "Bazı noktalar güvenli değil ve kullanıma devam etmeden önce onarılmalı.",
+      "incomplete": "Bu kontrol hâlâ sürüyor."
+    }
   }
 }

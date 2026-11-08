@@ -494,5 +494,19 @@
     "photos": "Foto",
     "documents": "Documenti",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Tutto in ordine",
+    "pass_minor": "Alcuni punti da tenere d'occhio",
+    "fail": "Alcuni punti da riparare",
+    "fail_dangerous": "Alcuni punti da riparare con urgenza",
+    "incomplete": "Non completato",
+    "detail": {
+      "pass": "Nulla richiedeva attenzione.",
+      "pass_minor": "Niente di urgente. Conviene pianificare i punti segnalati.",
+      "fail": "Alcuni punti vanno riparati. Le note indicano cosa è stato trovato.",
+      "fail_dangerous": "Alcuni punti non sono sicuri e vanno riparati prima di continuare a usarlo.",
+      "incomplete": "Questo controllo è ancora in corso."
+    }
   }
 }

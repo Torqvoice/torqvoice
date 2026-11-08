@@ -4,6 +4,7 @@ import { createStyles, gray, getFontBold } from '@/features/vehicles/Components/
 import type { TemplateConfig } from '@/features/vehicles/Components/invoice-pdf/types'
 import {
   CONDITION_TOKENS,
+  CHECK_RESULT_COPY,
   TEST_RESULT_TOKENS,
   gradedConditionLabel,
   countConditions,
@@ -92,6 +93,13 @@ const FALLBACK: Record<string, string> = {
   resultFailDangerous: 'Fail — dangerous defects',
   resultIncomplete: 'Not completed',
   overallResult: 'Result of the test',
+  // A workshop's own check (basic scale) is summed up, not given a test verdict.
+  overallCheck: 'Summary',
+  checkPass: CHECK_RESULT_COPY.pass.label,
+  checkPassMinor: CHECK_RESULT_COPY.pass_minor.label,
+  checkFail: CHECK_RESULT_COPY.fail.label,
+  checkFailDangerous: CHECK_RESULT_COPY.fail_dangerous.label,
+  checkIncomplete: CHECK_RESULT_COPY.incomplete.label,
   testDetails: 'Test details',
   testDate: 'Date of test',
   testLocation: 'Place of test',
@@ -191,20 +199,41 @@ export function InspectionPDF({
   const counts = countConditions(gradedItems)
   const result = deriveTestResult(gradedItems)
   const resultToken = TEST_RESULT_TOKENS[result]
-  const resultLabelKey = {
-    pass: 'resultPass',
-    pass_minor: 'resultPassMinor',
-    fail: 'resultFail',
-    fail_dangerous: 'resultFailDangerous',
-    incomplete: 'resultIncomplete',
-  }[result]
-  const resultDetailKey = {
-    pass: 'resultDetailPass',
-    pass_minor: 'resultDetailPassMinor',
-    fail: 'resultDetailFail',
-    fail_dangerous: 'resultDetailFailDangerous',
-    incomplete: 'resultDetailIncomplete',
-  }[result]
+  const resultLabelKey = (
+    isBasic
+      ? {
+          pass: 'checkPass',
+          pass_minor: 'checkPassMinor',
+          fail: 'checkFail',
+          fail_dangerous: 'checkFailDangerous',
+          incomplete: 'checkIncomplete',
+        }
+      : {
+          pass: 'resultPass',
+          pass_minor: 'resultPassMinor',
+          fail: 'resultFail',
+          fail_dangerous: 'resultFailDangerous',
+          incomplete: 'resultIncomplete',
+        }
+  )[result]
+  const resultDetailKey = (
+    isBasic
+      ? {
+          pass: 'checkDetailPass',
+          pass_minor: 'checkDetailPassMinor',
+          fail: 'checkDetailFail',
+          fail_dangerous: 'checkDetailFailDangerous',
+          incomplete: 'checkDetailIncomplete',
+        }
+      : {
+          pass: 'resultDetailPass',
+          pass_minor: 'resultDetailPassMinor',
+          fail: 'resultDetailFail',
+          fail_dangerous: 'resultDetailFailDangerous',
+          incomplete: 'resultDetailIncomplete',
+        }
+  )[result]
+  const resultDetailFallback = isBasic ? CHECK_RESULT_COPY[result].detail : resultToken.detail
   const deficiencies = gradedItems.filter((i) => isDefect(i.condition))
 
   /**
@@ -471,13 +500,13 @@ export function InspectionPDF({
           }}
         >
           <Text style={{ fontSize: 8, color: resultToken.pdf.text, marginBottom: 2 }}>
-            {label('overallResult')}
+            {label(isBasic ? 'overallCheck' : 'overallResult')}
           </Text>
           <Text style={{ fontSize: 15, fontFamily: fontBold, color: resultToken.pdf.text }}>
             {label(resultLabelKey)}
           </Text>
           <Text style={{ fontSize: 8, color: resultToken.pdf.text, marginTop: 3 }}>
-            {labels[resultDetailKey] || resultToken.detail}
+            {labels[resultDetailKey] || resultDetailFallback}
           </Text>
         </View>
 

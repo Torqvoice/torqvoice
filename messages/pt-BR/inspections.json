@@ -494,5 +494,19 @@
     "photos": "Fotos",
     "documents": "Documentos",
     "video": "Vídeo"
+  },
+  "checkResults": {
+    "pass": "Tudo em ordem",
+    "pass_minor": "Alguns itens para acompanhar",
+    "fail": "Alguns itens precisam de reparo",
+    "fail_dangerous": "Alguns itens precisam de reparo urgente",
+    "incomplete": "Não concluída",
+    "detail": {
+      "pass": "Nada precisou de atenção.",
+      "pass_minor": "Nada urgente. Vale planejar os itens marcados.",
+      "fail": "Alguns itens precisam de reparo. As anotações dizem o que foi encontrado.",
+      "fail_dangerous": "Alguns itens não são seguros e devem ser reparados antes de continuar o uso.",
+      "incomplete": "Esta verificação ainda está em andamento."
+    }
   }
 }

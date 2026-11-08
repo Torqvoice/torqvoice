@@ -195,7 +195,18 @@
     "basicNotApplicable": "Não aplicável",
     "allResults": "Todos os resultados",
     "signature": "Assinatura",
-    "sectionColumn": "Seção"
+    "sectionColumn": "Seção",
+    "checkPass": "Tudo em ordem",
+    "checkPassMinor": "Alguns itens para acompanhar",
+    "checkFail": "Alguns itens precisam de reparo",
+    "checkFailDangerous": "Alguns itens precisam de reparo urgente",
+    "checkIncomplete": "Não concluída",
+    "checkDetailPass": "Nada precisou de atenção.",
+    "checkDetailPassMinor": "Nada urgente. Vale planejar os itens marcados.",
+    "checkDetailFail": "Alguns itens precisam de reparo. As anotações dizem o que foi encontrado.",
+    "checkDetailFailDangerous": "Alguns itens não são seguros e devem ser reparados antes de continuar o uso.",
+    "checkDetailIncomplete": "Esta verificação ainda está em andamento.",
+    "overallCheck": "Resumo"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTÓRICO DE SERVIÇO",

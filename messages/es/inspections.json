@@ -494,5 +494,19 @@
     "photos": "Fotos",
     "documents": "Documentos",
     "video": "Vídeo"
+  },
+  "checkResults": {
+    "pass": "Todo en orden",
+    "pass_minor": "Algunos puntos a vigilar",
+    "fail": "Algunos puntos necesitan reparación",
+    "fail_dangerous": "Algunos puntos necesitan reparación urgente",
+    "incomplete": "Sin completar",
+    "detail": {
+      "pass": "No había nada que requiriera atención.",
+      "pass_minor": "Nada urgente. Conviene planificar los puntos marcados.",
+      "fail": "Algunos puntos necesitan reparación. Las notas indican lo que se encontró.",
+      "fail_dangerous": "Algunos puntos no son seguros y deben repararse antes de seguir usándolo.",
+      "incomplete": "Esta revisión aún está en curso."
+    }
   }
 }

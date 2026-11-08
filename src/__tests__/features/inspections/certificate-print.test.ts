@@ -312,3 +312,55 @@ describe('the certificate result switches', () => {
     ).toEqual([])
   })
 })
+
+/**
+ * Only the EU scale is a roadworthiness test. A workshop's own check on the
+ * basic scale (a multi-point check, a check-in) is summed up in plain words: it
+ * used to borrow the test verdict, so one worn tyre on a pre-track check read
+ * "The vehicle fails ... must be retested".
+ */
+describe('the result of a workshop check rather than a roadworthiness test', () => {
+  const basic = () => {
+    const d = data()
+    return {
+      ...d,
+      severityScale: 'basic',
+      country: null,
+      template: { name: 'Standard multi-point inspection', severityScale: 'basic', country: null },
+      items: [
+        item({ id: 'p', name: 'Lights', condition: 'pass', sortOrder: 1 }),
+        item({
+          id: 't',
+          name: 'Tread depth',
+          condition: 'fail',
+          notes: 'Worn inside edge',
+          sortOrder: 2,
+        }),
+      ],
+    }
+  }
+  const resultOf = (inspection: unknown) => {
+    const spec = buildCertificatePrintSpec({
+      data: inspection as any,
+      workshop: { name: 'Shop', address: 'Road 1', phone: '555', email: 's@x.no' },
+      labels: {},
+      layoutConfig: getDefaultLayout('certificate'),
+    }) as any
+    return texts(spec.blocks.find((b: any) => b.id === 'result')?.content)
+  }
+
+  it('sums up a failed item as work to do, not a failed test', () => {
+    const t = resultOf(basic())
+    expect(t[0]).toBe('Some items need work')
+    expect(t.join(' ')).not.toMatch(/fails|retested/i)
+  })
+
+  it('keeps the test verdict for an inspection on the EU scale', () => {
+    const eu = {
+      ...basic(),
+      severityScale: 'eu',
+      template: { ...basic().template, severityScale: 'eu' },
+    }
+    expect(resultOf(eu)[0]).toBe('Fail — major defects')
+  })
+})

@@ -195,7 +195,18 @@
     "basicNotApplicable": "Sans objet",
     "allResults": "Tous les résultats",
     "signature": "Signature",
-    "sectionColumn": "Section"
+    "sectionColumn": "Section",
+    "checkPass": "Tous les points sont conformes",
+    "checkPassMinor": "Quelques points à surveiller",
+    "checkFail": "Quelques points à réparer",
+    "checkFailDangerous": "Quelques points à réparer d'urgence",
+    "checkIncomplete": "Non terminé",
+    "checkDetailPass": "Rien ne nécessitait d'intervention.",
+    "checkDetailPassMinor": "Rien d'urgent. Pensez à prévoir les points signalés.",
+    "checkDetailFail": "Certains points doivent être réparés. Les notes indiquent ce qui a été constaté.",
+    "checkDetailFailDangerous": "Certains points ne sont pas sûrs et doivent être réparés avant toute nouvelle utilisation.",
+    "checkDetailIncomplete": "Ce contrôle est encore en cours.",
+    "overallCheck": "Résumé"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTORIQUE D'ENTRETIEN",
