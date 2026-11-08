@@ -50,6 +50,73 @@ function keysInUse(): { file: string; key: string }[] {
   return found
 }
 
+/** The value names an ICU sentence asks for, from its syntax tree. */
+function namesIn(text: string): Set<string> {
+  const names = new Set<string>()
+  const walk = (elements: unknown[]) => {
+    for (const el of elements as {
+      type: number
+      value?: string
+      options?: Record<string, { value: unknown[] }>
+    }[]) {
+      // 1 argument, 2 number, 3 date, 4 time, 5 select, 6 plural
+      if (el.type >= 1 && el.type <= 6 && el.value) names.add(el.value)
+      for (const option of Object.values(el.options ?? {})) walk(option.value)
+    }
+  }
+  walk(new IntlMessageFormat(text, 'en').getAst() as unknown[])
+  return names
+}
+
+/** The top-level keys of each `details: { key, params: { ... } }` literal. */
+function paramsInUse(): { file: string; key: string; params: Set<string> }[] {
+  const found: { file: string; key: string; params: Set<string> }[] = []
+  const walk = (dir: string) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name)
+      if (entry.isDirectory()) {
+        if (entry.name !== '__tests__') walk(full)
+        continue
+      }
+      if (!entry.name.endsWith('.ts') && !entry.name.endsWith('.tsx')) continue
+      const source = readFileSync(full, 'utf-8')
+      for (const m of source.matchAll(
+        /details:\s*\{\s*key:\s*['"]([a-zA-Z_]+)['"]\s*,\s*params:\s*\{/g
+      )) {
+        // The params object, braces balanced; spread objects cannot be read here.
+        let depth = 1
+        let i = (m.index ?? 0) + m[0].length
+        const start = i
+        while (depth > 0 && i < source.length) {
+          if (source[i] === '{') depth++
+          else if (source[i] === '}') depth--
+          i++
+        }
+        const body = source.slice(start, i - 1)
+        if (body.includes('...')) continue
+        const params = new Set<string>()
+        let level = 0
+        let token = ''
+        for (const ch of `${body},`) {
+          if ('{[('.includes(ch)) level++
+          if ('}])'.includes(ch)) level--
+          if (ch === ',' && level === 0) {
+            const name = token
+              .replace(/\/\/.*$/gm, '')
+              .trim()
+              .match(/^([a-zA-Z_]\w*)/)
+            if (name) params.add(name[1])
+            token = ''
+          } else token += ch
+        }
+        found.push({ file: full, key: m[1], params })
+      }
+    }
+  }
+  walk('src')
+  return found
+}
+
 describe('audit summaries', () => {
   it('finds the call sites at all', () => {
     // Without this the sweeps below pass by inspecting nothing.
@@ -66,6 +133,24 @@ describe('audit summaries', () => {
       ),
     ]
     expect(orphans, `no English for:\n${orphans.join('\n')}`).toEqual([])
+  })
+
+  it('passes every value its sentence names', () => {
+    // The render test below fills in every name it knows, so a call site that
+    // passes the wrong ones still renders there. On the audit page the
+    // sentence then fails and the row shows its key: the spreadsheet import
+    // sent created and updated to a sentence that counts {count}.
+    const en = summary('en')
+    const sites = paramsInUse()
+    expect(sites.length).toBeGreaterThan(20)
+    const wrong = sites
+      .filter((site) => en[site.key])
+      .flatMap((site) =>
+        [...namesIn(en[site.key])]
+          .filter((name) => !site.params.has(name))
+          .map((name) => `${site.key} (${site.file}) does not pass {${name}}`)
+      )
+    expect(wrong, wrong.join('\n')).toEqual([])
   })
 
   it('uses every key it defines', () => {
