@@ -24,6 +24,7 @@ import { QuickCreateMenu } from '@/components/quick-create-menu'
 import { DocsLink } from '@/components/docs-link'
 import { RunningClockPill } from '@/features/time-tracking/Components/RunningClockPill'
 import { useServiceType } from '@/components/service-type-context'
+import { SETTINGS_PAGES } from '@/features/settings/Lib/settingsPages'
 
 function SearchTrigger() {
   const t = useTranslations('navigation')
@@ -73,7 +74,8 @@ function PlateTrigger() {
   )
 }
 
-type BreadcrumbSegment = { key: string; href?: string }
+/** `label` is already words, for a crumb named somewhere else than the breadcrumb keys. */
+type BreadcrumbSegment = { key: string; href?: string; label?: string }
 
 /**
  * Pages that have a documentation page of their own, so the header can offer a
@@ -212,6 +214,8 @@ export function PageHeader() {
   const tn = useTranslations('navigation')
   const isMarine = useServiceType() === 'marine'
   const crumb = (key: string) => t(isMarine ? (marineBreadcrumbKeys[key] ?? key) : key)
+  const tSettings = useTranslations('settings')
+  const label = (segment: BreadcrumbSegment) => segment.label ?? crumb(segment.key)
 
   // A set's own page is still the tire hotel, and somebody reading a set is
   // as likely to want the manual as somebody reading the list.
@@ -268,6 +272,17 @@ export function PageHeader() {
     // /customers/[id]
     else if (pathname.startsWith('/customers/')) {
       segments = [{ key: 'customers', href: '/customers' }, { key: 'customerDetails' }]
+    }
+    // A settings page the map above does not list: named as the settings
+    // menu names it, so a new page never reads "Home".
+    else if (pathname.startsWith('/settings/')) {
+      const page = SETTINGS_PAGES.find((p) => p.href === pathname)
+      segments = page
+        ? [
+            { key: 'settings', href: '/settings' },
+            { key: page.key, label: tSettings(`nav.items.${page.key}.title`) },
+          ]
+        : [{ key: 'settings', href: '/settings' }]
     } else {
       segments = [{ key: 'home' }]
     }
@@ -290,7 +305,7 @@ export function PageHeader() {
                     <BreadcrumbPage
                       className={segments.length === 1 ? 'text-base font-semibold' : undefined}
                     >
-                      {crumb(segment.key)}
+                      {label(segment)}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 )
@@ -299,9 +314,9 @@ export function PageHeader() {
                 <Fragment key={i}>
                   <BreadcrumbItem className="hidden md:block">
                     {segment.href ? (
-                      <BreadcrumbLink href={segment.href}>{crumb(segment.key)}</BreadcrumbLink>
+                      <BreadcrumbLink href={segment.href}>{label(segment)}</BreadcrumbLink>
                     ) : (
-                      <BreadcrumbPage>{crumb(segment.key)}</BreadcrumbPage>
+                      <BreadcrumbPage>{label(segment)}</BreadcrumbPage>
                     )}
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
