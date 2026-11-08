@@ -46,6 +46,12 @@ export function DataTablePagination({
   const t = useTranslations('common.pagination')
   if (total === 0) return null
 
+  // The size in use is always one of the choices. Most lists open at 20, which
+  // the default choices do not offer, and a Select whose value is not among its
+  // items shows nothing at all.
+  const sizes = pageSizes.includes(String(pageSize))
+    ? pageSizes
+    : [...pageSizes, String(pageSize)].sort((a, b) => Number(a) - Number(b))
   const startItem = (page - 1) * pageSize + 1
   const endItem = Math.min(page * pageSize, total)
   const goTo = (target: number) => onNavigate({ [pageParam]: target })
@@ -62,7 +68,7 @@ export function DataTablePagination({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            {pageSizes.map((size) => (
+            {sizes.map((size) => (
               <SelectItem key={size} value={size}>
                 {size}
               </SelectItem>
