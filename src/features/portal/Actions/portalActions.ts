@@ -2,6 +2,7 @@
 
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import type { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
 import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
 import { notify } from '@/lib/notify'
@@ -49,11 +50,22 @@ async function withPortalAuth<T>(
 // ─── Dashboard ────────────────────────────────────────────────────────────
 
 /**
- * A quote the customer may see: one the workshop has sent, whatever became of
- * it since. A draft is the workshop's own working copy, with prices it may
- * still change, so it stays out of the portal until it goes out.
+ * A quote the customer may see: one that reached them, whatever became of it
+ * since. A draft is the workshop's own working copy, with prices it may still
+ * change, so it never shows. Status alone is not enough either: a draft can be
+ * turned straight into a work order and become "converted" without ever being
+ * sent. So a quote shows when a send or a share link was recorded, or when its
+ * status is one only a sent quote reaches, which also covers quotes sent before
+ * sends were recorded.
  */
-const SENT_TO_CUSTOMER = { status: { not: 'draft' } } as const
+const SENT_TO_CUSTOMER = {
+  status: { not: 'draft' },
+  OR: [
+    { sentAt: { not: null } },
+    { sharedAt: { not: null } },
+    { status: { in: ['sent', 'accepted', 'rejected', 'changes_requested'] } },
+  ],
+} satisfies Prisma.QuoteWhereInput
 
 export async function getPortalDashboard() {
   return withPortalAuth(async ({ customerId, organizationId }) => {

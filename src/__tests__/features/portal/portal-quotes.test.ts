@@ -12,17 +12,39 @@ type Quote = {
   status: string
   customerId: string
   organizationId: string
+  sentAt?: Date | null
+  sharedAt?: Date | null
 }
 
 const quotes: Quote[] = []
 
-/** The part of a Prisma `where` the portal uses, applied to the rows above. */
-function matches(q: Quote, where: Record<string, unknown>) {
-  if (where.customerId && q.customerId !== where.customerId) return false
-  if (where.organizationId && q.organizationId !== where.organizationId) return false
-  const status = where.status as { not?: string } | string | undefined
-  if (typeof status === 'string' && q.status !== status) return false
-  if (status && typeof status === 'object' && status.not && q.status === status.not) return false
+/**
+ * The parts of a Prisma `where` the portal uses (equals, `not`, `in`, `OR`),
+ * applied to the rows above. A key it does not understand fails the row, so a
+ * new condition cannot pass by being ignored.
+ */
+function matches(q: Quote, where: Record<string, unknown>): boolean {
+  for (const [key, cond] of Object.entries(where)) {
+    if (key === 'OR') {
+      if (!(cond as Record<string, unknown>[]).some((w) => matches(q, w))) return false
+      continue
+    }
+    const value = q[key as keyof Quote] ?? null
+    if (cond !== null && typeof cond === 'object') {
+      const c = cond as Record<string, unknown>
+      for (const op of Object.keys(c)) {
+        if (op === 'not') {
+          if (c.not === null ? value === null : value === c.not) return false
+        } else if (op === 'in') {
+          if (!(c.in as unknown[]).includes(value)) return false
+        } else {
+          return false
+        }
+      }
+    } else if (value !== cond) {
+      return false
+    }
+  }
   return true
 }
 
@@ -75,13 +97,39 @@ describe('quotes in the customer portal', () => {
         status: 'accepted',
         customerId: 'c1',
         organizationId: 'org1',
+      },
+      // Turned straight into a work order from a draft: converted, but never sent.
+      {
+        id: 'q4',
+        title: 'Clutch kit',
+        status: 'converted',
+        customerId: 'c1',
+        organizationId: 'org1',
+      },
+      // Sent, then converted when the customer said yes.
+      {
+        id: 'q5',
+        title: 'Timing belt',
+        status: 'converted',
+        customerId: 'c1',
+        organizationId: 'org1',
+        sentAt: new Date('2026-10-01T12:00:00Z'),
       }
     )
   })
 
   it('lists the quotes the workshop sent, and not its drafts', async () => {
     const result = await getPortalQuotes()
-    expect(result.data?.map((q) => q.title)).toEqual(['Brake overhaul', 'Annual service'])
+    expect(result.data?.map((q) => q.title)).toEqual([
+      'Brake overhaul',
+      'Annual service',
+      'Timing belt',
+    ])
+  })
+
+  it('leaves out a draft that became a work order without ever being sent', async () => {
+    const result = await getPortalQuotes()
+    expect(result.data?.map((q) => q.title)).not.toContain('Clutch kit')
   })
 
   it('keeps drafts off the dashboard too', async () => {
@@ -90,6 +138,7 @@ describe('quotes in the customer portal', () => {
       (q) => q.title
     )
     expect(titles).not.toContain('Suspension refresh')
+    expect(titles).not.toContain('Clutch kit')
     expect(titles).toContain('Brake overhaul')
   })
 })
