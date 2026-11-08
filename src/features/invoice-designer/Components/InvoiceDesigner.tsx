@@ -867,7 +867,12 @@ export function InvoiceDesigner({
                     {tPreset.has(`${preset.id}.name`) ? tPreset(`${preset.id}.name`) : preset.id}
                   </div>
                   <div className="text-xs leading-snug text-[#71767e]">
-                    {t(`headerStyle.${preset.template.headerStyle}.desc`)}
+                    {/* The template's own words, as the Templates settings page
+                        describes it. Its header style's line was shared by two
+                        templates each, so different sheets read the same. */}
+                    {tPreset.has(`${preset.id}.description`)
+                      ? tPreset(`${preset.id}.description`)
+                      : t(`headerStyle.${preset.template.headerStyle}.desc`)}
                   </div>
                 </button>
               )
