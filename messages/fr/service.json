@@ -256,6 +256,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {Un technicien a ajouté de la main-d’œuvre à cette intervention} other {Un technicien a ajouté # lignes de main-d’œuvre à cette intervention}}",
+    "titleParts": "{count, plural, one {Un technicien a ajouté une pièce à cette intervention} other {Un technicien a ajouté # pièces à cette intervention}}",
+    "titleBoth": "Un technicien a ajouté de la main-d’œuvre et des pièces à cette intervention",
     "body": "Elle reste hors de la liste pendant votre saisie. Votre prochain enregistrement l’inclura de toute façon.",
     "show": "Afficher"
   },

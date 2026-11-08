@@ -256,6 +256,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {Een monteur heeft arbeid aan deze order toegevoegd} other {Een monteur heeft # arbeidsregels aan deze order toegevoegd}}",
+    "titleParts": "{count, plural, one {Een monteur heeft een onderdeel aan deze order toegevoegd} other {Een monteur heeft # onderdelen aan deze order toegevoegd}}",
+    "titleBoth": "Een monteur heeft arbeid en onderdelen aan deze order toegevoegd",
     "body": "Die blijft buiten de lijst terwijl je bewerkt. Bij je volgende keer opslaan gaat die sowieso mee.",
     "show": "Tonen"
   },

@@ -12,6 +12,7 @@ import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
 import { addedLaborLines } from '@/features/vehicles/Lib/laborLines'
+import { addedPartLines } from '@/features/vehicles/Lib/partLines'
 import {
   recalculateShopFeeLines,
   shopFeeLinesLast,
@@ -162,6 +163,26 @@ export function useServiceFormState({
     if (added.length > 0) setLaborAddedElsewhere((current) => [...current, ...added])
   }, [savedLaborKey])
 
+  // Parts the same way: a technician scanning a part onto the job from the
+  // app. The list used to be read once when the page opened, so the part never
+  // showed, and the desk's next save, which replaces every part line, deleted
+  // it and put its stock back.
+  const [partsAddedElsewhere, setPartsAddedElsewhere] = useState<ServicePartInput[]>([])
+  const savedPartsKey = JSON.stringify(initialData.partItems ?? [])
+  const syncedPartsRef = useRef<ServicePartInput[]>(initialData.partItems ?? [])
+  useEffect(() => {
+    const saved: ServicePartInput[] = JSON.parse(savedPartsKey)
+    const previous = syncedPartsRef.current
+    syncedPartsRef.current = saved
+    if (!hasUnsavedChangesRef.current) {
+      setPartItems(saved)
+      setPartsAddedElsewhere([])
+      return
+    }
+    const added = addedPartLines(previous, saved)
+    if (added.length > 0) setPartsAddedElsewhere((current) => [...current, ...added])
+  }, [savedPartsKey])
+
   useEffect(() => {
     if (!locked) return
     if (autosaveTimer.current) {
@@ -260,8 +281,19 @@ export function useServiceFormState({
     [markDirty]
   )
 
-  // Computed totals
-  const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0)
+  /**
+   * What a save has to write: the lists on screen plus anything added
+   * elsewhere that has not been shown yet. A save replaces every part and
+   * labour line of the job, so a line left out of these is a line deleted.
+   * The shop fee goes last, under the work it is charged on.
+   */
+  const partItemsForSave = [...partItems, ...partsAddedElsewhere]
+  const laborItemsForSave = shopFeeLinesLast([...laborItems, ...laborAddedElsewhere])
+
+  // Computed totals. They count the lines waiting behind the banner too: those
+  // are on the job already, and a save sends them, so the money it sends has
+  // to include them or the invoice is saved short.
+  const partsSubtotal = partItemsForSave.reduce((sum, p) => sum + p.total, 0)
 
   // A percentage shop fee follows the lines it is a percentage of. Returns the
   // same array when the fee is already right, so this settles after one pass.
@@ -278,18 +310,18 @@ export function useServiceFormState({
 
   // Internal-only: what the parts cost the workshop before markup. Shown in
   // the totals card for the mechanic, never on the PDF or share views.
-  const partsCostSubtotal = partItems.reduce(
+  const partsCostSubtotal = partItemsForSave.reduce(
     (sum, p) => sum + (Number(p.unitCost) || 0) * (Number(p.quantity) || 0),
     0
   )
-  const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0)
+  const laborSubtotal = laborItemsForSave.reduce((sum, l) => sum + l.total, 0)
   const subtotal = partsSubtotal + laborSubtotal
   const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
   // The tax is charged on the taxable lines alone. A line says whether it
   // is taxed, and one that has not been asked follows the workshop's rule
   // for its kind; the server settles it the same way when the job is saved.
-  const taxableParts = taxablePartsTotal(partItems, taxApplies)
-  const taxableLabor = taxableLaborTotal(laborItems, taxApplies)
+  const taxableParts = taxablePartsTotal(partItemsForSave, taxApplies)
+  const taxableLabor = taxableLaborTotal(laborItemsForSave, taxApplies)
   const taxableSubtotal = storedTaxableSubtotal(subtotal, taxableParts + taxableLabor)
   const {
     taxAmount,
@@ -426,15 +458,30 @@ export function useServiceFormState({
     setLaborAddedElsewhere([])
   }, [laborAddedElsewhere, dirtySetLaborItems])
 
-  const clearLaborAddedElsewhere = useCallback(() => setLaborAddedElsewhere([]), [])
-
   /**
-   * What a save has to write: the list on screen plus anything added
-   * elsewhere that has not been shown yet. A save replaces every labour line
-   * of the job, so a line left out of this is a line deleted. The shop fee
-   * goes last, under the work it is charged on.
+   * After a save has written them: they are ordinary saved lines now, so they
+   * go into the list. Dropping them instead lost them, because the re-read
+   * that follows a save can read exactly as it did before and so never brings
+   * them back, and the next save then deleted them. Only the lines that save
+   * sent are moved; one that arrived while it ran keeps waiting.
    */
-  const laborItemsForSave = shopFeeLinesLast([...laborItems, ...laborAddedElsewhere])
+  const commitLaborAddedElsewhere = useCallback(() => {
+    if (laborAddedElsewhere.length === 0) return
+    setLaborItems((prev) => shopFeeLinesLast([...prev, ...laborAddedElsewhere]))
+    setLaborAddedElsewhere((current) => current.slice(laborAddedElsewhere.length))
+  }, [laborAddedElsewhere])
+
+  const applyPartsAddedElsewhere = useCallback(() => {
+    if (partsAddedElsewhere.length === 0) return
+    dirtySetPartItems((prev) => [...prev, ...partsAddedElsewhere])
+    setPartsAddedElsewhere([])
+  }, [partsAddedElsewhere, dirtySetPartItems])
+
+  const commitPartsAddedElsewhere = useCallback(() => {
+    if (partsAddedElsewhere.length === 0) return
+    setPartItems((prev) => [...prev, ...partsAddedElsewhere])
+    setPartsAddedElsewhere((current) => current.slice(partsAddedElsewhere.length))
+  }, [partsAddedElsewhere])
 
   const dirtySetDiscountType = useCallback(
     (v: string) => {
@@ -558,8 +605,13 @@ export function useServiceFormState({
     applyLaborAddedElsewhere,
     /** The list a save must write: what is on screen, plus those. */
     laborItemsForSave,
-    /** After a save has written them: they are ordinary saved lines now. */
-    clearLaborAddedElsewhere,
+    /** After a save has written them: they join the list as ordinary saved lines. */
+    commitLaborAddedElsewhere,
+    /** The same four for parts. */
+    partsAddedElsewhere,
+    applyPartsAddedElsewhere,
+    partItemsForSave,
+    commitPartsAddedElsewhere,
     dirtySetDiscountType,
     dirtySetDiscountValue,
     dirtySetTaxRate,

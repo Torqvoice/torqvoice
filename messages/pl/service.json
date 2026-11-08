@@ -256,6 +256,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {Mechanik dodał pozycję robocizny do tego zlecenia} few {Mechanik dodał # pozycje robocizny do tego zlecenia} many {Mechanik dodał # pozycji robocizny do tego zlecenia} other {Mechanik dodał # pozycji robocizny do tego zlecenia}}",
+    "titleParts": "{count, plural, one {Mechanik dodał część do tego zlecenia} few {Mechanik dodał # części do tego zlecenia} many {Mechanik dodał # części do tego zlecenia} other {Mechanik dodał # części do tego zlecenia}}",
+    "titleBoth": "Mechanik dodał robociznę i części do tego zlecenia",
     "body": "Pozostaje poza listą podczas edycji. Następny zapis i tak ją uwzględni.",
     "show": "Pokaż"
   },

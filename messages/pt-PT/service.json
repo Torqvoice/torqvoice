@@ -256,6 +256,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {Um técnico adicionou mão de obra a esta folha de obra} other {Um técnico adicionou # linhas de mão de obra a esta folha de obra}}",
+    "titleParts": "{count, plural, one {Um técnico adicionou uma peça a esta folha de obra} other {Um técnico adicionou # peças a esta folha de obra}}",
+    "titleBoth": "Um técnico adicionou mão de obra e peças a esta folha de obra",
     "body": "Fica fora da lista enquanto edita. A próxima gravação inclui-a de qualquer forma.",
     "show": "Mostrar"
   },

@@ -256,6 +256,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {A technician added labor to this job} other {A technician added # labor lines to this job}}",
+    "titleParts": "{count, plural, one {A technician added a part to this job} other {A technician added # parts to this job}}",
+    "titleBoth": "A technician added labor and parts to this job",
     "body": "It stays out of the list while you are editing. Your next save includes it either way.",
     "show": "Show it"
   },

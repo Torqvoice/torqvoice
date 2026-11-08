@@ -256,6 +256,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {Un tecnico ha aggiunto manodopera a questo lavoro} other {Un tecnico ha aggiunto # righe di manodopera a questo lavoro}}",
+    "titleParts": "{count, plural, one {Un tecnico ha aggiunto un ricambio a questo lavoro} other {Un tecnico ha aggiunto # ricambi a questo lavoro}}",
+    "titleBoth": "Un tecnico ha aggiunto manodopera e ricambi a questo lavoro",
     "body": "Resta fuori dall’elenco mentre modifichi. Verrà salvata comunque al prossimo salvataggio.",
     "show": "Mostra"
   },

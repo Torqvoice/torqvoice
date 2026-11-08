@@ -256,6 +256,8 @@
   },
   "liveLabor": {
     "title": "{count, plural, one {Bir teknisyen bu işe işçilik ekledi} other {Bir teknisyen bu işe # işçilik satırı ekledi}}",
+    "titleParts": "{count, plural, one {Bir teknisyen bu işe bir parça ekledi} other {Bir teknisyen bu işe # parça ekledi}}",
+    "titleBoth": "Bir teknisyen bu işe işçilik ve parça ekledi",
     "body": "Siz düzenlerken listeye eklenmez. Bir sonraki kaydetmede yine de kaydedilir.",
     "show": "Göster"
   },
