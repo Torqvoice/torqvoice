@@ -17,6 +17,8 @@ export interface IconActionButtonProps extends Omit<ButtonProps, 'children' | 's
   size?: 'icon-xs' | 'icon-sm' | 'icon' | 'icon-lg'
   /** Small overlay on the icon, e.g. a count of open observations. */
   badge?: React.ReactNode
+  /** Tooltip text when it should say more than the label, e.g. a state. Defaults to the label. */
+  tooltip?: React.ReactNode
 }
 
 /**
@@ -37,6 +39,7 @@ export function IconActionButton({
   className,
   disabled,
   badge,
+  tooltip,
   ...props
 }: IconActionButtonProps) {
   return (
@@ -55,7 +58,7 @@ export function IconActionButton({
           {badge}
         </Button>
       </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
+      <TooltipContent>{tooltip ?? label}</TooltipContent>
     </Tooltip>
   )
 }

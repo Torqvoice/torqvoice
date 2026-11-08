@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
+  Check,
   Download,
   Eye,
   Globe,
@@ -76,24 +77,44 @@ export function ServiceHeaderActions({
     <div className="flex shrink-0 flex-wrap items-center gap-2">
       {showSave && (
         <>
-          {hasUnsavedChanges && (
-            <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
-              {t('unsavedChanges')}
-            </span>
-          )}
-          {showSaved && !hasUnsavedChanges && (
-            <span className="text-xs font-medium text-green-600 dark:text-green-400">
-              {t('saved')}
-            </span>
-          )}
+          {/* The save state is shown on the Save button itself, as a dot while
+              there are unsaved changes and a check once saved, with the words
+              in its tooltip. A text label beside it changed the row's width,
+              which pushed the buttons onto a second line on every edit. Screen
+              readers still hear the words, from this status line. */}
+          <span role="status" className="sr-only">
+            {hasUnsavedChanges ? t('unsavedChanges') : showSaved ? t('saved') : ''}
+          </span>
           <IconActionButton
             type="submit"
             form="service-record-form"
             label={t('save')}
+            tooltip={
+              hasUnsavedChanges
+                ? `${t('save')} · ${t('unsavedChanges')}`
+                : showSaved
+                  ? t('saved')
+                  : t('save')
+            }
             icon={Save}
             loading={saving}
             variant={hasUnsavedChanges ? 'default' : 'outline'}
             className={hasUnsavedChanges ? 'animate-pulse' : ''}
+            badge={
+              hasUnsavedChanges ? (
+                <span
+                  aria-hidden="true"
+                  className="-right-1 -top-1 absolute size-2.5 rounded-full bg-amber-500 ring-2 ring-background"
+                />
+              ) : showSaved ? (
+                <span
+                  aria-hidden="true"
+                  className="-right-1.5 -top-1.5 absolute flex size-3.5 items-center justify-center rounded-full bg-green-600 text-white ring-2 ring-background"
+                >
+                  <Check className="size-2.5" />
+                </span>
+              ) : undefined
+            }
           />
         </>
       )}
