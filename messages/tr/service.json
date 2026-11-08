@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Merhaba {customer_name}, {vehicle} aracınızla ilgili bir güncelleme: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Değişiklikleriniz kaydedilmedi",
+    "fallbackReason": "Son değişiklikler kaydedilemedi.",
+    "hint": "Düzeltmek için kalın ya da çıkın ve son kayıttan bu yana yapılan değişiklikleri kaybedin.",
+    "stay": "Kal ve düzelt",
+    "leave": "Kaydetmeden çık"
   }
 }

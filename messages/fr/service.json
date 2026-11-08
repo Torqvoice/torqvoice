@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Bonjour {customer_name}, des nouvelles de votre {vehicle} : {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Vos modifications ne sont pas enregistrées",
+    "fallbackReason": "Les dernières modifications n'ont pas pu être enregistrées.",
+    "hint": "Restez pour corriger, ou partez et perdez les modifications faites depuis le dernier enregistrement.",
+    "stay": "Rester et corriger",
+    "leave": "Quitter sans enregistrer"
   }
 }

@@ -843,5 +843,12 @@
   },
   "customStatus": {
     "defaultMessage": "Hallo {customer_name}, een update over uw {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Je wijzigingen zijn niet opgeslagen",
+    "fallbackReason": "De laatste wijzigingen konden niet worden opgeslagen.",
+    "hint": "Blijf om het te herstellen, of ga weg en verlies de wijzigingen sinds de laatste keer opslaan.",
+    "stay": "Blijven en herstellen",
+    "leave": "Weggaan zonder opslaan"
   }
 }
