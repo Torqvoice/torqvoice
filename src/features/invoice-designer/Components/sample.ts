@@ -198,7 +198,8 @@ export function fieldValues(
       ? fillTemplate(L('typeKey', 'HSN/TSN: {typeKey}'), { typeKey: '9101 / ABC' })
       : '',
     mileage: fillTemplate(L('mileage', 'Mileage: {mileage}'), {
-      mileage: `84,120 ${L('km', 'km')}`,
+      // In the workshop's unit; unset prints miles, as its invoices do.
+      mileage: `84,120 ${workshop.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')}`,
     }),
     // A made-up job.
     service_title: t('sample.serviceTitle'),

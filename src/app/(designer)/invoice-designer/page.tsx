@@ -195,6 +195,8 @@ export default async function InvoiceDesignerPage({
           orgNumberLabel: settings[SETTING_KEYS.ORG_NUMBER_LABEL] || '',
           paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
           logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
+          // Unset prints miles, as the invoices themselves do.
+          unitSystem: settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'metric' : 'imperial',
           signatureUrl,
           taxComponents: readWorkshopTax(settings).components,
         }}
