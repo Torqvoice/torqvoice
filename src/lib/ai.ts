@@ -83,11 +83,28 @@ function isReasoningModel(model: string): boolean {
   return /^(o\d|gpt-5)/i.test(model)
 }
 
+/**
+ * The Claude models that still take a temperature: the 3.x line and Claude 4
+ * up to 4.6, with or without a date in the id. Claude 4.7 and every later
+ * model (the 5 family, Fable, whatever comes next) answer a temperature with
+ * a 400, so it is only sent to the models listed here. Those later models
+ * also think before they answer, inside the same token cap, so they get the
+ * same headroom as OpenAI's reasoning models.
+ */
+function isLegacyClaude(model: string): boolean {
+  return /^claude-(?:[23]|instant)|^claude-(?:opus|sonnet|haiku)-4(?:-[0-6])?(?:-\d{8})?$/i.test(
+    model
+  )
+}
+
 export function completionTuning(
   config: AiConfig,
   maxTokens: number,
   temperature?: number
 ): { max_tokens?: number; max_completion_tokens?: number; temperature?: number } {
+  if (config.provider === 'anthropic' && !isLegacyClaude(config.model)) {
+    return { max_tokens: maxTokens + REASONING_HEADROOM }
+  }
   if (config.provider !== 'openai') {
     return { max_tokens: maxTokens, ...(temperature !== undefined && { temperature }) }
   }
