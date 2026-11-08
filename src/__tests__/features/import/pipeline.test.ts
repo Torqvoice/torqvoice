@@ -112,6 +112,8 @@ describe('import plan', () => {
     const rows = [
       ['Erik Berg', 'erik@example.com', '91234567', ''],
       ['Erik Berg', '', '91234567', '2001'],
+      // Same name and phone, but a customer number of someone else: not Anna either.
+      ['Anna Berg', '', '91234567', '2001'],
       ['Anna Berg', 'anna@example.com', '91234567', '1001'],
     ]
     const plan = planImport(
@@ -125,8 +127,8 @@ describe('import plan', () => {
       options('customers'),
       existing
     )
-    expect(plan.rows.map((r) => r.action)).toEqual(['create', 'create', 'update'])
-    expect(plan.rows[2].customerMatch).toMatchObject({ id: 'c1' })
+    expect(plan.rows.map((r) => r.action)).toEqual(['create', 'create', 'create', 'update'])
+    expect(plan.rows[3].customerMatch).toMatchObject({ id: 'c1' })
   })
 
   it('applies the duplicate rule and per-row overrides', () => {

@@ -501,7 +501,9 @@ class ExistingIndex {
       if (found) {
         const emailClash = k.email && found.email && found.email.toLowerCase() !== k.email
         const phoneClash = k.phone && found.phone && phoneKey(found.phone) !== k.phone
-        if (!emailClash && !phoneClash) return hit(found, 'name')
+        const numberClash =
+          k.number && found.customerNumber && found.customerNumber.toLowerCase() !== k.number
+        if (!emailClash && !phoneClash && !numberClash) return hit(found, 'name')
       }
     }
     return undefined
