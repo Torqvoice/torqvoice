@@ -129,7 +129,13 @@
     "descriptionPlaceholder": "Beschrijving van het onderdeel...",
     "cancel": "Annuleren",
     "saveChanges": "Wijzigingen opslaan",
-    "addPart": "Onderdeel toevoegen"
+    "addPart": "Onderdeel toevoegen",
+    "tags": "Tags",
+    "tagsPlaceholder": "Merken, modellen of iets anders om het op te vinden",
+    "tagsHint": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het voertuig bovenaan.",
+    "tagsHintMarine": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het vaartuig bovenaan.",
+    "removeTag": "{tag} verwijderen",
+    "tagTooLong": "Een tag mag maximaal {max} tekens lang zijn. Maak hem korter voordat je opslaat."
   },
   "openMenu": "Menu openen",
   "history": {
@@ -157,5 +163,11 @@
     "inStock": "{quantity} in voorraad",
     "outOfStock": "Niet op voorraad",
     "onBackorder": "In nabestelling ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Alle tags",
+    "filterBy": "Onderdelen met tag {tag} tonen",
+    "more": "+{count} meer"
   }
 }

@@ -47,6 +47,9 @@ import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
+import { PartTagChips } from '@/features/inventory/Components/PartTagChips'
+import { sameTag } from '@/features/inventory/Lib/partTags'
+import { cn } from '@/lib/utils'
 import {
   deleteInventoryPart,
   deleteInventoryParts,
@@ -111,7 +114,11 @@ interface InventoryPart {
     sortOrder: number
   }[]
   location: string | null
+  tags: string[]
 }
+
+/** The tag filter's "every tag" choice; not a value a tag can collide with. */
+const ALL_TAGS = '__all__'
 
 interface PaginatedData {
   parts: InventoryPart[]
@@ -126,6 +133,8 @@ export function InventoryClient({
   search,
   category,
   categories,
+  tag = '',
+  tags = [],
   currencyCode = DEFAULT_CURRENCY_CODE,
   markupMultiplier: initialMarkup = 1.0,
   defaultUnit = '',
@@ -140,6 +149,10 @@ export function InventoryClient({
   search: string
   category: string
   categories: string[]
+  /** The tag the list is filtered by, or empty. */
+  tag?: string
+  /** Every tag the workshop's parts carry, for the filter and the form. */
+  tags?: string[]
   currencyCode?: string
   markupMultiplier?: number
   /** Unit pre-filled on new parts (inventory.defaultUnit setting). */
@@ -223,7 +236,7 @@ export function InventoryClient({
       }
       if (
         !('page' in params) &&
-        ('search' in params || 'category' in params || 'lowStock' in params)
+        ('search' in params || 'category' in params || 'tag' in params || 'lowStock' in params)
       ) {
         newParams.delete('page')
       }
@@ -356,7 +369,7 @@ export function InventoryClient({
         </Link>
       </div>
     )
-  ) : search || category ? (
+  ) : search || category || tag ? (
     t('empty.noMatch')
   ) : (
     <ListEmpty
@@ -371,6 +384,14 @@ export function InventoryClient({
       }
     />
   )
+
+  // The filter is offered once any part has a tag, and kept while one is
+  // applied even if no part carries it any more, so it can be cleared.
+  const selectedTag = tag ? (tags.find((option) => sameTag(option, tag)) ?? tag) : ''
+  const tagOptions = selectedTag && !tags.includes(selectedTag) ? [selectedTag, ...tags] : tags
+  const showTagFilter = tagOptions.length > 0
+  const filterByTag = (picked: string) =>
+    navigate({ tag: sameTag(picked, selectedTag) ? undefined : picked })
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
@@ -387,8 +408,21 @@ export function InventoryClient({
             </Button>
           </div>
         ) : (
-          <div className="flex flex-1 items-center gap-2">
-            <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
+          <div
+            className={cn(
+              'flex flex-1 items-center gap-2',
+              // Two dropdowns and the search do not fit one phone row; the
+              // search takes its own and the filters sit under it.
+              showTagFilter && 'flex-wrap sm:flex-nowrap'
+            )}
+          >
+            <form
+              onSubmit={handleSearch}
+              className={cn(
+                'relative flex-1 sm:max-w-sm',
+                showTagFilter && 'basis-full sm:basis-0'
+              )}
+            >
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={t('searchPlaceholder')}
@@ -408,6 +442,18 @@ export function InventoryClient({
                 ...categories.map((cat) => ({ value: cat, label: cat })),
               ]}
             />
+            {showTagFilter && (
+              <SearchableSelect
+                value={selectedTag || ALL_TAGS}
+                onValueChange={(v) => navigate({ tag: v === ALL_TAGS ? undefined : v })}
+                placeholder={t('tags.filterPlaceholder')}
+                className="w-[120px] shrink-0 sm:w-[150px]"
+                options={[
+                  { value: ALL_TAGS, label: t('tags.all') },
+                  ...tagOptions.map((option) => ({ value: option, label: option })),
+                ]}
+              />
+            )}
             {/* Toggle rather than a third dropdown: low stock is a yes/no lens
                 on the list, and it needs to be reachable from the page itself
                 (the dashboard card links straight here with ?lowStock=1). */}
@@ -488,7 +534,7 @@ export function InventoryClient({
         {data.parts.length === 0 ? (
           <div
             className={
-              search || category || lowStockOnly
+              search || category || tag || lowStockOnly
                 ? 'rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground'
                 : 'rounded-lg border border-dashed'
             }
@@ -548,6 +594,13 @@ export function InventoryClient({
                       {part.location && <span className="truncate">{part.location}</span>}
                       {part.supplier && <span className="truncate">{part.supplier}</span>}
                     </div>
+                    {/* Read only: the card is a button, and one cannot hold another. */}
+                    <PartTagChips
+                      tags={part.tags}
+                      max={3}
+                      active={selectedTag || undefined}
+                      className="mt-2"
+                    />
                   </div>
                 </button>
                 <DropdownMenu>
@@ -704,7 +757,7 @@ export function InventoryClient({
                 <TableCell
                   colSpan={11}
                   className={
-                    search || category || lowStockOnly
+                    search || category || tag || lowStockOnly
                       ? 'h-32 text-center text-muted-foreground'
                       : 'p-0'
                   }
@@ -766,7 +819,14 @@ export function InventoryClient({
                                 }}
                               />
                             )}
-                            {part.name}
+                            <div className="min-w-0 space-y-1">
+                              <span>{part.name}</span>
+                              <PartTagChips
+                                tags={part.tags}
+                                active={selectedTag || undefined}
+                                onPick={filterByTag}
+                              />
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell text-muted-foreground">
@@ -918,6 +978,7 @@ export function InventoryClient({
         unitSystem={unitSystem}
         initialBarcode={!editPart ? scannedBarcode : undefined}
         categories={categories}
+        tagSuggestions={tags}
         onViewImages={(urls, startIndex) => {
           setGalleryImages(urls)
           setGalleryIndex(startIndex)

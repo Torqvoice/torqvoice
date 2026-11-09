@@ -19,17 +19,21 @@ export interface PartSuggestion {
   unitCost: number
   sellPrice: number
   quantity: number
+  tags?: string[]
 }
 
 const MAX_SUGGESTIONS = 3
 const MIN_QUERY_LENGTH = 2
+/** The rank of a part that does not answer the query at all. */
+const NO_MATCH = 7
 
 /**
  * Rank matches so the most useful three surface.
  *
  * A prefix match on the name is what someone typing "bra..." for "Brake pad"
  * expects to see first; an exact part-number hit is even stronger, since that
- * is a deliberate lookup rather than a guess.
+ * is a deliberate lookup rather than a guess. A tag match ("hilux") comes
+ * last, after anything the name or number says.
  */
 function rank(part: PartSuggestion, query: string): number {
   const name = part.name.toLowerCase()
@@ -41,11 +45,12 @@ function rank(part: PartSuggestion, query: string): number {
   if (name.startsWith(query)) return 3
   if (name.includes(query)) return 4
   if (number.includes(query)) return 5
-  return 6
+  if (part.tags?.some((tag) => tag.toLowerCase().includes(query))) return 6
+  return NO_MATCH
 }
 
 function matches(part: PartSuggestion, query: string): boolean {
-  return rank(part, query) < 6
+  return rank(part, query) < NO_MATCH
 }
 
 /**

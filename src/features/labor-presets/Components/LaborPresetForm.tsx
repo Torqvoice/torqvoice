@@ -79,6 +79,8 @@ interface LaborPresetFormProps {
     sellPrice: number
     unitCost: number
     quantity: number
+    /** Searched by the preset's part picker and name suggestions. */
+    tags?: string[]
   }[]
   currencyCode?: string
 }
@@ -373,10 +375,7 @@ export function LaborPresetForm({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent
-        className="max-h-[90vh] sm:max-w-2xl"
-        aria-describedby={undefined}
-      >
+      <DialogContent className="max-h-[90vh] sm:max-w-2xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{preset ? t('form.editPackage') : t('form.addPackage')}</DialogTitle>
           <DocsLink
@@ -387,217 +386,216 @@ export function LaborPresetForm({
 
           {/* Mode tabs, pinned with the title so the switch is always in reach */}
           <div className="mt-1 flex rounded-lg border bg-muted/50 p-0.5">
-          <button
-            type="button"
-            className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-              mode === 'single'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-            onClick={() => handleModeChange('single')}
-          >
-            {t('form.singleItem')}
-          </button>
-          <button
-            type="button"
-            className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-              mode === 'package'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-            onClick={() => handleModeChange('package')}
-          >
-            {t('form.package')}
-          </button>
+            <button
+              type="button"
+              className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                mode === 'single'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              onClick={() => handleModeChange('single')}
+            >
+              {t('form.singleItem')}
+            </button>
+            <button
+              type="button"
+              className={`flex-1 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                mode === 'package'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+              onClick={() => handleModeChange('package')}
+            >
+              {t('form.package')}
+            </button>
           </div>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
           <DialogBody className="space-y-4">
-          {mode === 'single' ? (
-            <div className="space-y-2">
-              <div className="hidden grid-cols-[2fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-                <span>{t('form.singleNameLabel')}</span>
-                <span>{t('form.itemQtyOrHours')}</span>
-                <span>{t('form.itemRate')}</span>
-                <span />
-              </div>
-
-              {singleItems.map((item, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
-                    <div className="col-span-2 flex gap-2 sm:col-span-1">
-                      <Input
-                        placeholder={t('form.singleNamePlaceholder')}
-                        value={item.name}
-                        onChange={(e) => updateSingleItem(i, 'name', e.target.value)}
-                        className="flex-1"
-                      />
-                      <PricingTypeToggle
-                        value={item.pricingType}
-                        onChange={(v) => updateSingleItem(i, 'pricingType', v)}
-                        tHourly={t('form.hourlyTag')}
-                        tService={t('form.serviceTag')}
-                      />
-                    </div>
-                    <Input
-                      type="number"
-                      min="0"
-                      step={item.pricingType === 'service' ? '1' : 'any'}
-                      placeholder={
-                        item.pricingType === 'service' ? t('form.itemQty') : t('form.itemHours')
-                      }
-                      value={item.hours}
-                      onChange={(e) => updateSingleItem(i, 'hours', e.target.value)}
-                    />
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={item.rate}
-                      onChange={(e) => updateSingleItem(i, 'rate', e.target.value)}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-muted-foreground hover:text-destructive"
-                      onClick={() => removeSingleItem(i)}
-                      disabled={singleItems.length <= 1}
-                      aria-label={t('actions.delete')}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Textarea
-                    placeholder={t('form.descriptionPlaceholder')}
-                    value={item.description}
-                    onChange={(e) => updateSingleItem(i, 'description', e.target.value)}
-                    rows={2}
-                  />
-                </div>
-              ))}
-
-              <button
-                type="button"
-                className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
-                onClick={addSingleItem}
-              >
-                <Plus className="h-4 w-4" />
-              </button>
-
-              <PresetPartsEditor
-                parts={parts}
-                onPartsChange={setParts}
-                inventoryParts={inventoryParts}
-                currencyCode={currencyCode}
-              />
-            </div>
-          ) : (
-            <>
+            {mode === 'single' ? (
               <div className="space-y-2">
-                <Label htmlFor="preset-name">{t('form.nameLabel')}</Label>
-                <Input
-                  id="preset-name"
-                  placeholder={t('form.namePlaceholder')}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="preset-description">{t('form.descriptionLabel')}</Label>
-                <Textarea
-                  id="preset-description"
-                  placeholder={t('form.descriptionPlaceholder')}
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  rows={2}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label>{t('form.itemsTitle')}</Label>
-                  <Button type="button" variant="outline" size="sm" onClick={addItem}>
-                    <Plus className="mr-1 h-3.5 w-3.5" />
-                    {t('form.addItem')}
-                  </Button>
-                </div>
-
                 <div className="hidden grid-cols-[2fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
-                  <span>{t('form.itemDescription')}</span>
+                  <span>{t('form.singleNameLabel')}</span>
                   <span>{t('form.itemQtyOrHours')}</span>
                   <span>{t('form.itemRate')}</span>
                   <span />
                 </div>
 
-                {items.map((item, i) => (
-                  <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
-                    <div className="col-span-2 flex gap-2 sm:col-span-1">
+                {singleItems.map((item, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
+                      <div className="col-span-2 flex gap-2 sm:col-span-1">
+                        <Input
+                          placeholder={t('form.singleNamePlaceholder')}
+                          value={item.name}
+                          onChange={(e) => updateSingleItem(i, 'name', e.target.value)}
+                          className="flex-1"
+                        />
+                        <PricingTypeToggle
+                          value={item.pricingType}
+                          onChange={(v) => updateSingleItem(i, 'pricingType', v)}
+                          tHourly={t('form.hourlyTag')}
+                          tService={t('form.serviceTag')}
+                        />
+                      </div>
                       <Input
-                        placeholder={t('form.itemDescriptionPlaceholder')}
-                        value={item.description}
-                        onChange={(e) => updateItem(i, 'description', e.target.value)}
-                        className="flex-1"
+                        type="number"
+                        min="0"
+                        step={item.pricingType === 'service' ? '1' : 'any'}
+                        placeholder={
+                          item.pricingType === 'service' ? t('form.itemQty') : t('form.itemHours')
+                        }
+                        value={item.hours}
+                        onChange={(e) => updateSingleItem(i, 'hours', e.target.value)}
                       />
-                      <PricingTypeToggle
-                        value={item.pricingType}
-                        onChange={(v) => updateItem(i, 'pricingType', v)}
-                        tHourly={t('form.hourlyTag')}
-                        tService={t('form.serviceTag')}
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={item.rate}
+                        onChange={(e) => updateSingleItem(i, 'rate', e.target.value)}
                       />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeSingleItem(i)}
+                        disabled={singleItems.length <= 1}
+                        aria-label={t('actions.delete')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                    <Input
-                      type="number"
-                      min="0"
-                      step={item.pricingType === 'service' ? '1' : 'any'}
-                      placeholder={
-                        item.pricingType === 'service' ? t('form.itemQty') : t('form.itemHours')
-                      }
-                      value={item.hours}
-                      onChange={(e) => updateItem(i, 'hours', e.target.value)}
+                    <Textarea
+                      placeholder={t('form.descriptionPlaceholder')}
+                      value={item.description}
+                      onChange={(e) => updateSingleItem(i, 'description', e.target.value)}
+                      rows={2}
                     />
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={item.rate}
-                      onChange={(e) => updateItem(i, 'rate', e.target.value)}
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 text-muted-foreground hover:text-destructive"
-                      onClick={() => removeItem(i)}
-                      disabled={items.length <= 1}
-                      aria-label={t('actions.delete')}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
                   </div>
                 ))}
 
                 <button
                   type="button"
                   className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
-                  onClick={addItem}
+                  onClick={addSingleItem}
                 >
                   <Plus className="h-4 w-4" />
                 </button>
+
+                <PresetPartsEditor
+                  parts={parts}
+                  onPartsChange={setParts}
+                  inventoryParts={inventoryParts}
+                  currencyCode={currencyCode}
+                />
               </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="preset-name">{t('form.nameLabel')}</Label>
+                  <Input
+                    id="preset-name"
+                    placeholder={t('form.namePlaceholder')}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                  />
+                </div>
 
-              <PresetPartsEditor
-                parts={parts}
-                onPartsChange={setParts}
-                inventoryParts={inventoryParts}
-                currencyCode={currencyCode}
-              />
-            </>
-          )}
+                <div className="space-y-2">
+                  <Label htmlFor="preset-description">{t('form.descriptionLabel')}</Label>
+                  <Textarea
+                    id="preset-description"
+                    placeholder={t('form.descriptionPlaceholder')}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    rows={2}
+                  />
+                </div>
 
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>{t('form.itemsTitle')}</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={addItem}>
+                      <Plus className="mr-1 h-3.5 w-3.5" />
+                      {t('form.addItem')}
+                    </Button>
+                  </div>
+
+                  <div className="hidden grid-cols-[2fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+                    <span>{t('form.itemDescription')}</span>
+                    <span>{t('form.itemQtyOrHours')}</span>
+                    <span>{t('form.itemRate')}</span>
+                    <span />
+                  </div>
+
+                  {items.map((item, i) => (
+                    <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
+                      <div className="col-span-2 flex gap-2 sm:col-span-1">
+                        <Input
+                          placeholder={t('form.itemDescriptionPlaceholder')}
+                          value={item.description}
+                          onChange={(e) => updateItem(i, 'description', e.target.value)}
+                          className="flex-1"
+                        />
+                        <PricingTypeToggle
+                          value={item.pricingType}
+                          onChange={(v) => updateItem(i, 'pricingType', v)}
+                          tHourly={t('form.hourlyTag')}
+                          tService={t('form.serviceTag')}
+                        />
+                      </div>
+                      <Input
+                        type="number"
+                        min="0"
+                        step={item.pricingType === 'service' ? '1' : 'any'}
+                        placeholder={
+                          item.pricingType === 'service' ? t('form.itemQty') : t('form.itemHours')
+                        }
+                        value={item.hours}
+                        onChange={(e) => updateItem(i, 'hours', e.target.value)}
+                      />
+                      <Input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        value={item.rate}
+                        onChange={(e) => updateItem(i, 'rate', e.target.value)}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 text-muted-foreground hover:text-destructive"
+                        onClick={() => removeItem(i)}
+                        disabled={items.length <= 1}
+                        aria-label={t('actions.delete')}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
+                    onClick={addItem}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <PresetPartsEditor
+                  parts={parts}
+                  onPartsChange={setParts}
+                  inventoryParts={inventoryParts}
+                  currencyCode={currencyCode}
+                />
+              </>
+            )}
           </DialogBody>
 
           <DialogFooter>

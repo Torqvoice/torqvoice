@@ -4,6 +4,7 @@ import { resolveListSort } from '@/lib/list-sort-preference.server'
 import {
   getInventoryPartsPaginated,
   getInventoryCategories,
+  getInventoryTags,
   hasAnyReorderPoint,
 } from '@/features/inventory/Actions/inventoryActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -20,6 +21,7 @@ export default async function InventoryPage({
     pageSize?: string
     search?: string
     category?: string
+    tag?: string
     sortBy?: string
     sortOrder?: string
     lowStock?: string
@@ -30,17 +32,19 @@ export default async function InventoryPage({
     sortBy: 'updatedAt',
     sortOrder: 'desc',
   })
-  const [result, categoriesResult, settingsResult, reorderResult] = await Promise.all([
+  const [result, categoriesResult, tagsResult, settingsResult, reorderResult] = await Promise.all([
     getInventoryPartsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
       category: params.category,
+      tag: params.tag,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
       lowStock: params.lowStock === '1',
     }),
     getInventoryCategories(),
+    getInventoryTags(),
     getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
@@ -64,6 +68,7 @@ export default async function InventoryPage({
   }
 
   const categories = categoriesResult.success && categoriesResult.data ? categoriesResult.data : []
+  const tags = tagsResult.success && tagsResult.data ? tagsResult.data : []
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
   const markupMultiplier = Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1.0
@@ -77,6 +82,8 @@ export default async function InventoryPage({
           search={params.search || ''}
           category={params.category || ''}
           categories={categories}
+          tag={params.tag || ''}
+          tags={tags}
           currencyCode={currencyCode}
           markupMultiplier={markupMultiplier}
           defaultUnit={settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''}

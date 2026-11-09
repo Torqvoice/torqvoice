@@ -129,7 +129,13 @@
     "descriptionPlaceholder": "Descrição da peça...",
     "cancel": "Cancelar",
     "saveChanges": "Salvar alterações",
-    "addPart": "Adicionar peça"
+    "addPart": "Adicionar peça",
+    "tags": "Tags",
+    "tagsPlaceholder": "Marcas, modelos ou o que ajudar a encontrá-la",
+    "tagsHint": "Pressione Enter ou vírgula após cada tag. Em uma ordem de serviço, as peças com a marca ou o modelo do veículo aparecem primeiro.",
+    "tagsHintMarine": "Pressione Enter ou vírgula após cada tag. Em uma ordem de serviço, as peças com a marca ou o modelo da embarcação aparecem primeiro.",
+    "removeTag": "Remover {tag}",
+    "tagTooLong": "Uma tag pode ter no máximo {max} caracteres. Encurte-a antes de salvar."
   },
   "openMenu": "Abrir menu",
   "history": {
@@ -157,5 +163,11 @@
     "inStock": "{quantity} em estoque",
     "outOfStock": "Fora de estoque",
     "onBackorder": "Sob encomenda ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Todas as tags",
+    "filterBy": "Mostrar peças com a tag {tag}",
+    "more": "+{count} mais"
   }
 }

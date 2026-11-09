@@ -303,6 +303,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'imageUrl',
     'location',
     'isArchived',
+    'tags',
     'lowStockAlertedAt',
     'createdAt',
     'updatedAt',

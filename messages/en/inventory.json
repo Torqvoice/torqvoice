@@ -129,7 +129,13 @@
     "descriptionPlaceholder": "Part description...",
     "cancel": "Cancel",
     "saveChanges": "Save Changes",
-    "addPart": "Add Part"
+    "addPart": "Add Part",
+    "tags": "Tags",
+    "tagsPlaceholder": "Makes, models or anything to find it by",
+    "tagsHint": "Press Enter or a comma after each one. On a job, parts tagged with the vehicle's make or model are listed first.",
+    "tagsHintMarine": "Press Enter or a comma after each one. On a job, parts tagged with the vessel's make or model are listed first.",
+    "removeTag": "Remove {tag}",
+    "tagTooLong": "A tag can be at most {max} characters. Shorten it before saving."
   },
   "openMenu": "Open menu",
   "history": {
@@ -157,5 +163,11 @@
     "inStock": "{quantity} in stock",
     "outOfStock": "Out of stock",
     "onBackorder": "On backorder ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "All Tags",
+    "filterBy": "Show parts tagged {tag}",
+    "more": "+{count} more"
   }
 }

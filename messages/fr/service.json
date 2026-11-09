@@ -147,7 +147,8 @@
     "deleteRow": "Supprimer la ligne",
     "outOfStock": "En rupture de stock",
     "onBackorder": "En réapprovisionnement ({count})",
-    "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées."
+    "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées.",
+    "fitsVehicleFirst": "Les pièces étiquetées pour {vehicle} apparaissent en premier."
   },
   "labor": {
     "title": "Main-d'œuvre",

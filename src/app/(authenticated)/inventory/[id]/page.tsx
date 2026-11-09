@@ -5,7 +5,10 @@ import {
   getInventoryPart,
   getStockMovementsPaginated,
 } from '@/features/inventory/Actions/getStockMovements'
-import { getInventoryCategories } from '@/features/inventory/Actions/inventoryActions'
+import {
+  getInventoryCategories,
+  getInventoryTags,
+} from '@/features/inventory/Actions/inventoryActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
@@ -25,26 +28,28 @@ export default async function InventoryPartDetailPage({
   const sp = await searchParams
   const page = Math.max(1, Number(sp.page) || 1)
 
-  const [partResult, movementsResult, categoriesResult, settingsResult] = await Promise.all([
-    getInventoryPart(id),
-    getStockMovementsPaginated({
-      inventoryPartId: id,
-      page,
-      pageSize: PAGE_SIZE,
-      reason: sp.reason,
-    }),
-    getInventoryCategories(),
-    getDisplaySettings([
-      SETTING_KEYS.CURRENCY_CODE,
-      SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
-      SETTING_KEYS.UNIT_SYSTEM,
-      SETTING_KEYS.MEASURE_SYSTEM,
-      SETTING_KEYS.DATE_FORMAT,
-      SETTING_KEYS.TIME_FORMAT,
-      SETTING_KEYS.TIMEZONE,
-      SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
-    ]),
-  ])
+  const [partResult, movementsResult, categoriesResult, tagsResult, settingsResult] =
+    await Promise.all([
+      getInventoryPart(id),
+      getStockMovementsPaginated({
+        inventoryPartId: id,
+        page,
+        pageSize: PAGE_SIZE,
+        reason: sp.reason,
+      }),
+      getInventoryCategories(),
+      getInventoryTags(),
+      getDisplaySettings([
+        SETTING_KEYS.CURRENCY_CODE,
+        SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
+        SETTING_KEYS.UNIT_SYSTEM,
+        SETTING_KEYS.MEASURE_SYSTEM,
+        SETTING_KEYS.DATE_FORMAT,
+        SETTING_KEYS.TIME_FORMAT,
+        SETTING_KEYS.TIMEZONE,
+        SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
+      ]),
+    ])
 
   // Covers both "no such part" and "belongs to another organization", since
   // the action scopes by organizationId.
@@ -91,6 +96,7 @@ export default async function InventoryPartDetailPage({
         currencyCode={resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])}
         markupMultiplier={Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1}
         categories={categoriesResult.data ?? []}
+        tagSuggestions={tagsResult.data ?? []}
         lowStockDefault={Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0}
         unitSystem={measureSystemIn(settings)}
       />

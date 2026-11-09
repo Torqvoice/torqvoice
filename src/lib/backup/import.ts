@@ -912,6 +912,10 @@ export async function restoreBackup(
                 imageUrl: rewriteFileUrl(p.imageUrl as string, ctx.organizationId),
                 location: (p.location as string) || null,
                 isArchived: (p.isArchived as boolean) || false,
+                // Backups from before tags have none.
+                tags: Array.isArray(p.tags)
+                  ? (p.tags as unknown[]).filter((tag): tag is string => typeof tag === 'string')
+                  : [],
                 createdAt: toSafeDate(p.createdAt as string),
                 updatedAt: toSafeDate(p.updatedAt as string),
                 userId: ctx.userId,

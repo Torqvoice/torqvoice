@@ -147,7 +147,8 @@
     "deleteRow": "Rij verwijderen",
     "outOfStock": "Niet op voorraad",
     "onBackorder": "In nabestelling ({count})",
-    "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen."
+    "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen.",
+    "fitsVehicleFirst": "Onderdelen met tags voor {vehicle} staan bovenaan."
   },
   "labor": {
     "title": "Arbeidskosten",

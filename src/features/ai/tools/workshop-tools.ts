@@ -690,7 +690,7 @@ quote_parts (id, "partNumber", name, quantity, unit, category, "unitPrice", tota
 
 quote_labor (id, description, hours, rate, total, excluded, "quoteId")
 
-inventory_parts (id, "partNumber", name, description, category, quantity, "minQuantity", unit, "unitCost", "sellPrice", supplier, "supplierPhone", "supplierEmail", "supplierUrl", location, "isArchived", "createdAt", "updatedAt")
+inventory_parts (id, "partNumber", name, description, category, quantity, "minQuantity", unit, "unitCost", "sellPrice", supplier, "supplierPhone", "supplierEmail", "supplierUrl", location, "isArchived", tags, "createdAt", "updatedAt") -- tags is text[]: the makes and models a part fits, or any label; match with array_to_string(tags, ',') ILIKE '%hilux%'
 
 notes (id, title, content, "isPinned", "createdAt", "updatedAt", "vehicleId")
 

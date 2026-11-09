@@ -12,6 +12,7 @@ import { partTaxable } from '@/lib/taxable-lines'
 import { cn } from '@/lib/utils'
 import { InventoryPickerDialog } from '@/features/vehicles/Components/service-edit/InventoryPickerDialog'
 import type { InventoryPartOption } from '@/features/vehicles/Components/service-edit/form-types'
+import type { FitVehicle } from '@/features/inventory/Lib/partTags'
 import type { QuotePartInput } from './quote-page-types'
 import {
   PartNameSuggestions,
@@ -201,6 +202,8 @@ interface QuotePartsEditorProps {
   onAdd: () => void
   onAddBulk?: (items: QuotePartInput[]) => void
   inventoryParts?: InventoryPartOption[]
+  /** The quote's vehicle, so stock tagged for it is listed first. */
+  vehicle?: FitVehicle | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }
@@ -214,6 +217,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   onAdd,
   onAddBulk,
   inventoryParts = [],
+  vehicle,
   t,
 }: QuotePartsEditorProps) {
   const formatCurrency = useFormatCurrency()
@@ -333,6 +337,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
           onOpenChange={setPickerOpen}
           inventoryParts={inventoryParts}
           currencyCode={currencyCode}
+          vehicle={vehicle}
           onSelectPart={(picked) => {
             onAddBulk?.([
               {

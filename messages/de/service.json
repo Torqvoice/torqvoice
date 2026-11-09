@@ -147,7 +147,8 @@
     "deleteRow": "Zeile löschen",
     "outOfStock": "Nicht auf Lager",
     "onBackorder": "Im Rückstand ({count})",
-    "nameMissingHint": "Zeilen ohne Teilenamen werden nicht gespeichert."
+    "nameMissingHint": "Zeilen ohne Teilenamen werden nicht gespeichert.",
+    "fitsVehicleFirst": "Teile mit Tags für {vehicle} stehen oben."
   },
   "labor": {
     "title": "Arbeit",

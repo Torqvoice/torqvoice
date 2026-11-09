@@ -147,7 +147,8 @@
     "deleteRow": "Usuń wiersz",
     "outOfStock": "Brak w magazynie",
     "onBackorder": "W zamówieniu ({count})",
-    "nameMissingHint": "Wiersze bez nazwy części nie są zapisywane."
+    "nameMissingHint": "Wiersze bez nazwy części nie są zapisywane.",
+    "fitsVehicleFirst": "Części z tagami dla {vehicle} są na początku listy."
   },
   "labor": {
     "title": "Praca",

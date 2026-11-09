@@ -147,7 +147,8 @@
     "deleteRow": "Eliminar fila",
     "outOfStock": "Agotado",
     "onBackorder": "En pedido pendiente ({count})",
-    "nameMissingHint": "Las filas sin nombre de pieza no se guardan."
+    "nameMissingHint": "Las filas sin nombre de pieza no se guardan.",
+    "fitsVehicleFirst": "Las piezas etiquetadas para {vehicle} aparecen primero."
   },
   "labor": {
     "title": "Mano de Obra",

@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { imageUrlSchema } from '@/lib/upload-url'
+import { MAX_PART_TAGS, MAX_TAG_LENGTH } from '../Lib/partTags'
 
 export const createInventoryPartSchema = z.object({
   name: z.string().min(1, 'Part name is required'),
@@ -29,6 +30,14 @@ export const createInventoryPartSchema = z.object({
     .optional()
     .default([]),
   location: z.string().optional(),
+  // No default: on an update, leaving tags out keeps the part's own, and a
+  // page opened before tags existed sends none.
+  tags: z
+    .array(
+      z.string().trim().max(MAX_TAG_LENGTH, `A tag can be at most ${MAX_TAG_LENGTH} characters`)
+    )
+    .max(MAX_PART_TAGS, `A part can have at most ${MAX_PART_TAGS} tags`)
+    .optional(),
 })
 
 export const updateInventoryPartSchema = createInventoryPartSchema.partial().extend({

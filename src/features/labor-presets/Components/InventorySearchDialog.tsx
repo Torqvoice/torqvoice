@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Search } from 'lucide-react'
+import { partMatchesQuery } from '@/features/inventory/Lib/partTags'
 
 export interface InventoryPartOption {
   id: string
@@ -16,6 +17,7 @@ export interface InventoryPartOption {
   unitCost: number
   /** On-hand stock, shown by the inline name suggestions. */
   quantity: number
+  tags?: string[]
 }
 
 interface InventorySearchDialogProps {
@@ -34,13 +36,9 @@ export function InventorySearchDialog({
   const t = useTranslations('laborPresets')
   const [search, setSearch] = useState('')
 
-  const filtered = inventoryParts.filter((p) => {
-    if (!search) return true
-    const q = search.toLowerCase()
-    return (
-      p.name.toLowerCase().includes(q) || (p.partNumber && p.partNumber.toLowerCase().includes(q))
-    )
-  })
+  const filtered = search
+    ? inventoryParts.filter((p) => partMatchesQuery(p, search))
+    : inventoryParts
 
   return (
     <Dialog

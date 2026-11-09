@@ -92,6 +92,7 @@ export function LaborPresetsClient({
     sellPrice: number
     unitCost: number
     quantity: number
+    tags?: string[]
   }[]
 }) {
   const router = useRouter()

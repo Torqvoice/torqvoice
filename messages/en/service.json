@@ -147,7 +147,8 @@
     "deleteRow": "Delete row",
     "outOfStock": "Out of stock",
     "onBackorder": "On backorder ({count})",
-    "nameMissingHint": "Rows without a part name are not saved."
+    "nameMissingHint": "Rows without a part name are not saved.",
+    "fitsVehicleFirst": "Parts tagged for {vehicle} are listed first."
   },
   "labor": {
     "title": "Labor & Services",

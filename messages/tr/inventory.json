@@ -129,7 +129,13 @@
     "descriptionPlaceholder": "Parça açıklaması...",
     "cancel": "İptal",
     "saveChanges": "Değişiklikleri kaydet",
-    "addPart": "Parça ekle"
+    "addPart": "Parça ekle",
+    "tags": "Etiketler",
+    "tagsPlaceholder": "Markalar, modeller veya bulmaya yarayan her şey",
+    "tagsHint": "Her etiketten sonra Enter'a veya virgüle basın. Bir işte, aracın markası veya modeliyle etiketlenmiş parçalar önce listelenir.",
+    "tagsHintMarine": "Her etiketten sonra Enter'a veya virgüle basın. Bir işte, teknenin markası veya modeliyle etiketlenmiş parçalar önce listelenir.",
+    "removeTag": "{tag} kaldır",
+    "tagTooLong": "Bir etiket en fazla {max} karakter olabilir. Kaydetmeden önce kısaltın."
   },
   "openMenu": "Menüyü aç",
   "history": {
@@ -157,5 +163,11 @@
     "inStock": "{quantity} stokta",
     "outOfStock": "Stokta yok",
     "onBackorder": "Ön siparişte ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Etiket",
+    "all": "Tüm etiketler",
+    "filterBy": "{tag} etiketli parçaları göster",
+    "more": "+{count} daha"
   }
 }
