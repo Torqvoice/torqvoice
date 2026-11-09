@@ -132,6 +132,9 @@ export async function getInventoryPart(id: string) {
           category: true,
           quantity: true,
           minQuantity: true,
+          // The edit form saves back every field it is given, so a field left
+          // out here would be cleared when the part is saved from this page.
+          unit: true,
           unitCost: true,
           sellPrice: true,
           supplier: true,
@@ -140,6 +143,7 @@ export async function getInventoryPart(id: string) {
           supplierUrl: true,
           imageUrl: true,
           location: true,
+          tags: true,
           gallery: {
             select: {
               id: true,

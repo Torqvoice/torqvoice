@@ -728,6 +728,7 @@ export function ServicePageClient({
               onSelectPart={(part) => formState.dirtySetPartItems((prev) => [part, ...prev])}
               defaultMarkupPercent={defaultMarkupPercent}
               markupAppliesToInventory={markupAppliesToInventory}
+              vehicle={record.vehicle}
             />
 
             <LaborPresetPickerDialog

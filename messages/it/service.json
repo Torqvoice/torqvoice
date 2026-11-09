@@ -147,7 +147,8 @@
     "deleteRow": "Elimina riga",
     "outOfStock": "Esaurito",
     "onBackorder": "In arretrato ({count})",
-    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate."
+    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate.",
+    "fitsVehicleFirst": "I ricambi con tag per {vehicle} compaiono per primi."
   },
   "labor": {
     "title": "Manodopera",

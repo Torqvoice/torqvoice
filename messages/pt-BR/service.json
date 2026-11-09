@@ -147,7 +147,8 @@
     "deleteRow": "Excluir linha",
     "outOfStock": "Fora de estoque",
     "onBackorder": "Sob encomenda ({count})",
-    "nameMissingHint": "Linhas sem nome da peça não são salvas."
+    "nameMissingHint": "Linhas sem nome da peça não são salvas.",
+    "fitsVehicleFirst": "As peças com tags de {vehicle} aparecem primeiro."
   },
   "labor": {
     "title": "Mão de Obra e Serviços",

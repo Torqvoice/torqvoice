@@ -129,7 +129,12 @@
     "descriptionPlaceholder": "Delbeskrivelse...",
     "cancel": "Avbryt",
     "saveChanges": "Lagre endringer",
-    "addPart": "Legg til del"
+    "addPart": "Legg til del",
+    "tags": "Stikkord",
+    "tagsPlaceholder": "Merker, modeller eller annet du vil finne den på",
+    "tagsHint": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med kjøretøyets merke eller modell først.",
+    "tagsHintMarine": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med båtens merke eller modell først.",
+    "removeTag": "Fjern {tag}"
   },
   "openMenu": "Åpne meny",
   "history": {
@@ -157,5 +162,11 @@
     "inStock": "{quantity} på lager",
     "outOfStock": "Utsolgt",
     "onBackorder": "På restordre ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Stikkord",
+    "all": "Alle stikkord",
+    "filterBy": "Vis deler med stikkordet {tag}",
+    "more": "+{count} til"
   }
 }

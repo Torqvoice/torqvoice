@@ -147,7 +147,8 @@
     "deleteRow": "Slett rad",
     "outOfStock": "Utsolgt",
     "onBackorder": "På restordre ({count})",
-    "nameMissingHint": "Rader uten delenavn lagres ikke."
+    "nameMissingHint": "Rader uten delenavn lagres ikke.",
+    "fitsVehicleFirst": "Deler med stikkord for {vehicle} vises først."
   },
   "labor": {
     "title": "Arbeid",

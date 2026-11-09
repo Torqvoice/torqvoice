@@ -27,8 +27,9 @@ const TEMPLATE_START =
 const TABLE_REF = /\b(FROM|JOIN|UPDATE|INTO)\s+("[^"]+"|[A-Za-z_][A-Za-z0-9_]*)/gi
 
 // Names that are not tables: a schema qualifier, a placeholder for an
-// interpolated fragment, or the keywords that can follow the clause word.
-const NOT_A_TABLE = new Set(['public', 'pg_temp', 'only', 'lateral', 'select', 'values'])
+// interpolated fragment, the keywords that can follow the clause word, or
+// unnest, which reads the rows out of an array column (part tags).
+const NOT_A_TABLE = new Set(['public', 'pg_temp', 'only', 'lateral', 'select', 'values', 'unnest'])
 
 function sourceFiles(dir: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {

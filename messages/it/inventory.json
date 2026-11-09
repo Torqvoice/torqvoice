@@ -129,7 +129,12 @@
     "descriptionPlaceholder": "Descrizione del ricambio...",
     "cancel": "Annulla",
     "saveChanges": "Salva modifiche",
-    "addPart": "Aggiungi ricambio"
+    "addPart": "Aggiungi ricambio",
+    "tags": "Tag",
+    "tagsPlaceholder": "Marche, modelli o altro per trovarlo",
+    "tagsHint": "Premi Invio o una virgola dopo ogni tag. In un lavoro, i ricambi con la marca o il modello del veicolo compaiono per primi.",
+    "tagsHintMarine": "Premi Invio o una virgola dopo ogni tag. In un lavoro, i ricambi con la marca o il modello dell'imbarcazione compaiono per primi.",
+    "removeTag": "Rimuovi {tag}"
   },
   "openMenu": "Apri menu",
   "history": {
@@ -157,5 +162,11 @@
     "inStock": "{quantity} in magazzino",
     "outOfStock": "Esaurito",
     "onBackorder": "In arretrato ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Tutti i tag",
+    "filterBy": "Mostra i ricambi con il tag {tag}",
+    "more": "+{count} altri"
   }
 }

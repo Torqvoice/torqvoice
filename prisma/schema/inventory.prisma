@@ -51,27 +51,31 @@ model LaborPresetPart {
 }
 
 model InventoryPart {
-  id            String  @id @default(cuid())
+  id            String   @id @default(cuid())
   partNumber    String?
   barcode       String?
   name          String
   description   String?
   category      String?
-  quantity      Float   @default(0)
-  minQuantity   Float   @default(0)
+  quantity      Float    @default(0)
+  minQuantity   Float    @default(0)
   /// Unit of measure for `quantity` (e.g. "pcs", "l", "kg"). Free text,
   /// snapshotted onto part lines at pick time so invoices keep the unit the
   /// part had when it was billed.
   unit          String?
-  unitCost      Float   @default(0)
-  sellPrice     Float   @default(0)
+  unitCost      Float    @default(0)
+  sellPrice     Float    @default(0)
   supplier      String?
   supplierPhone String?
   supplierEmail String?
   supplierUrl   String?
   imageUrl      String?
   location      String?
-  isArchived    Boolean @default(false)
+  isArchived    Boolean  @default(false)
+  /// Free-text labels the workshop gives a part, such as the makes and models
+  /// it fits ("Toyota", "Hilux 2015-2020"). Searched wherever parts are, and
+  /// matched against the job's vehicle to list fitting parts first.
+  tags          String[] @default([])
 
   /// Set when a low-stock alert has been sent for the current dip below
   /// `minQuantity`, and cleared once stock climbs back above it. This

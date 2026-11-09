@@ -275,6 +275,7 @@ export function QuotePageClient({
         onAdd={state.addPart}
         onAddBulk={state.addPartBulk}
         inventoryParts={inventoryParts}
+        vehicle={state.selectedVehicle}
         t={t}
       />
       <QuoteLaborEditor

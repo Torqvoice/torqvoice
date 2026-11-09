@@ -129,7 +129,12 @@
     "descriptionPlaceholder": "Description de la pièce...",
     "cancel": "Annuler",
     "saveChanges": "Enregistrer les modifications",
-    "addPart": "Ajouter une pièce"
+    "addPart": "Ajouter une pièce",
+    "tags": "Étiquettes",
+    "tagsPlaceholder": "Marques, modèles ou tout ce qui aide à la retrouver",
+    "tagsHint": "Appuyez sur Entrée ou une virgule après chaque étiquette. Sur une intervention, les pièces étiquetées avec la marque ou le modèle du véhicule apparaissent en premier.",
+    "tagsHintMarine": "Appuyez sur Entrée ou une virgule après chaque étiquette. Sur une intervention, les pièces étiquetées avec la marque ou le modèle du bateau apparaissent en premier.",
+    "removeTag": "Retirer {tag}"
   },
   "openMenu": "Ouvrir le menu",
   "history": {
@@ -157,5 +162,11 @@
     "inStock": "{quantity} en stock",
     "outOfStock": "En rupture de stock",
     "onBackorder": "En réapprovisionnement ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Étiquette",
+    "all": "Toutes les étiquettes",
+    "filterBy": "Afficher les pièces étiquetées {tag}",
+    "more": "+{count} de plus"
   }
 }

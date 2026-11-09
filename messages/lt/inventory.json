@@ -129,7 +129,12 @@
     "descriptionPlaceholder": "Dalies aprašymas...",
     "cancel": "Atšaukti",
     "saveChanges": "Išsaugoti pakeitimus",
-    "addPart": "Pridėti dalį"
+    "addPart": "Pridėti dalį",
+    "tags": "Žymos",
+    "tagsPlaceholder": "Markės, modeliai ar kita, pagal ką ją rasti",
+    "tagsHint": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos transporto priemonės marke ar modeliu.",
+    "tagsHintMarine": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos laivo marke ar modeliu.",
+    "removeTag": "Pašalinti {tag}"
   },
   "openMenu": "Atidaryti meniu",
   "history": {
@@ -157,5 +162,11 @@
     "inStock": "{quantity} sandėlyje",
     "outOfStock": "Nėra sandėlyje",
     "onBackorder": "Užsakoma ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Žyma",
+    "all": "Visos žymos",
+    "filterBy": "Rodyti dalis su žyma {tag}",
+    "more": "dar {count}"
   }
 }

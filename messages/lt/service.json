@@ -147,7 +147,8 @@
     "deleteRow": "Ištrinti eilutę",
     "outOfStock": "Nėra sandėlyje",
     "onBackorder": "Užsakoma ({count})",
-    "nameMissingHint": "Eilutės be dalies pavadinimo neišsaugomos."
+    "nameMissingHint": "Eilutės be dalies pavadinimo neišsaugomos.",
+    "fitsVehicleFirst": "Dalys su žymomis {vehicle} rodomos pirmiausia."
   },
   "labor": {
     "title": "Darbai ir paslaugos",

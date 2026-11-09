@@ -147,7 +147,8 @@
     "deleteRow": "Satırı sil",
     "outOfStock": "Stokta yok",
     "onBackorder": "Ön siparişte ({count})",
-    "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez."
+    "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez.",
+    "fitsVehicleFirst": "{vehicle} için etiketlenmiş parçalar önce listelenir."
   },
   "labor": {
     "title": "İşçilik",

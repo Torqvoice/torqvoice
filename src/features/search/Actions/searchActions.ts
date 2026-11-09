@@ -7,6 +7,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
 import { searchWordsOf, typeKeySearchTerms } from '@/features/vehicles/Lib/typeKey'
+import { partIdsWithTagContaining } from '@/features/inventory/Lib/tagSearch.server'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 
 export async function getRecentCustomers() {
@@ -211,27 +212,38 @@ export async function globalSearch(query: string) {
             },
             take: 10,
           }),
-          db.inventoryPart.findMany({
-            where: {
-              organizationId,
-              isArchived: false,
-              AND: words.map((word) => ({
-                OR: [
-                  { name: { contains: word, mode } },
-                  { partNumber: { contains: word, mode } },
-                  { supplier: { contains: word, mode } },
-                ],
-              })),
-            },
-            select: {
-              id: true,
-              name: true,
-              partNumber: true,
-              quantity: true,
-              unit: true,
-            },
-            take: 10,
-          }),
+          (async () => {
+            // Tags are a text array Prisma cannot search by "contains", so the
+            // parts a word finds in a tag are looked up first, per word, for
+            // the first few words of a query.
+            const tagged = await Promise.all(
+              words.map((word, i) =>
+                i < 8 ? partIdsWithTagContaining(organizationId, word) : Promise.resolve([])
+              )
+            )
+            return db.inventoryPart.findMany({
+              where: {
+                organizationId,
+                isArchived: false,
+                AND: words.map((word, i) => ({
+                  OR: [
+                    { name: { contains: word, mode } },
+                    { partNumber: { contains: word, mode } },
+                    { supplier: { contains: word, mode } },
+                    { id: { in: tagged[i] } },
+                  ],
+                })),
+              },
+              select: {
+                id: true,
+                name: true,
+                partNumber: true,
+                quantity: true,
+                unit: true,
+              },
+              take: 10,
+            })
+          })(),
           db.quote.findMany({
             where: {
               organizationId,

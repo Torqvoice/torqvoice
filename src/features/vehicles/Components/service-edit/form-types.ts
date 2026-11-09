@@ -17,6 +17,8 @@ export interface InventoryPartOption {
   sellPrice: number
   quantity: number
   category: string | null
+  /** The part's tags; makes and models in them rank it for the job's vehicle. */
+  tags?: string[]
 }
 
 export interface InitialData {

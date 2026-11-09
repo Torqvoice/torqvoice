@@ -129,7 +129,12 @@
     "descriptionPlaceholder": "Opis części...",
     "cancel": "Anuluj",
     "saveChanges": "Zapisz zmiany",
-    "addPart": "Dodaj część"
+    "addPart": "Dodaj część",
+    "tags": "Tagi",
+    "tagsPlaceholder": "Marki, modele lub cokolwiek, po czym ją znaleźć",
+    "tagsHint": "Po każdym tagu naciśnij Enter lub przecinek. W zleceniu najpierw widać części oznaczone marką lub modelem pojazdu.",
+    "tagsHintMarine": "Po każdym tagu naciśnij Enter lub przecinek. W zleceniu najpierw widać części oznaczone marką lub modelem jednostki pływającej.",
+    "removeTag": "Usuń {tag}"
   },
   "openMenu": "Otwórz menu",
   "history": {
@@ -157,5 +162,11 @@
     "inStock": "{quantity} w magazynie",
     "outOfStock": "Brak w magazynie",
     "onBackorder": "W zamówieniu ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Wszystkie tagi",
+    "filterBy": "Pokaż części z tagiem {tag}",
+    "more": "+{count} więcej"
   }
 }

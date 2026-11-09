@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { formatQuantity } from '@/lib/format-quantity'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
@@ -10,6 +10,14 @@ import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { InventoryPartOption } from './form-types'
 import { resolvePartPrice } from '@/features/inventory/Lib/partPricing'
+import {
+  type FitVehicle,
+  fittingTags,
+  partMatchesQuery,
+  rankByVehicleFit,
+  vehicleFitScore,
+} from '@/features/inventory/Lib/partTags'
+import { PartTagChips } from '@/features/inventory/Components/PartTagChips'
 
 const PAGE_SIZE = 100
 
@@ -23,6 +31,8 @@ interface InventoryPickerDialogProps {
   defaultMarkupPercent?: number
   /** When true, picked inventory parts use cost + default markup instead of sellPrice. */
   markupAppliesToInventory?: boolean
+  /** The job's vehicle: parts tagged with its make or model are listed first. */
+  vehicle?: FitVehicle | null
 }
 
 export function InventoryPickerDialog({
@@ -33,6 +43,7 @@ export function InventoryPickerDialog({
   onSelectPart,
   defaultMarkupPercent = 0,
   markupAppliesToInventory = false,
+  vehicle,
 }: InventoryPickerDialogProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.parts')
@@ -40,16 +51,14 @@ export function InventoryPickerDialog({
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const listRef = useRef<HTMLDivElement>(null)
 
-  const filtered = inventoryParts.filter((p) => {
-    if (!search) return true
-    const q = search.toLowerCase()
-    return (
-      p.name.toLowerCase().includes(q) ||
-      (p.partNumber && p.partNumber.toLowerCase().includes(q)) ||
-      (p.barcode && p.barcode.toLowerCase().includes(q)) ||
-      (p.category && p.category.toLowerCase().includes(q))
-    )
-  })
+  // Ranked once per list and vehicle; the search then keeps that order.
+  const ranked = useMemo(() => rankByVehicleFit(inventoryParts, vehicle), [inventoryParts, vehicle])
+  const filtered = search ? ranked.filter((p) => partMatchesQuery(p, search)) : ranked
+  const vehicleName = [vehicle?.make, vehicle?.model].filter(Boolean).join(' ')
+  const anyFits = useMemo(
+    () => !!vehicle && inventoryParts.some((p) => vehicleFitScore(p.tags, vehicle) > 0),
+    [inventoryParts, vehicle]
+  )
 
   const visible = filtered.slice(0, visibleCount)
 
@@ -90,6 +99,11 @@ export function InventoryPickerDialog({
             className="pl-9"
           />
         </div>
+        {anyFits && vehicleName && (
+          <p className="-mt-2 text-xs text-muted-foreground">
+            {t('fitsVehicleFirst', { vehicle: vehicleName })}
+          </p>
+        )}
         <div ref={listRef} onScroll={handleScroll} className="max-h-75 overflow-y-auto space-y-1">
           {visible.map((ip) => (
             <button
@@ -138,6 +152,13 @@ export function InventoryPickerDialog({
                 </div>
                 {ip.description && (
                   <p className="text-xs text-muted-foreground truncate">{ip.description}</p>
+                )}
+                {ip.tags && ip.tags.length > 0 && (
+                  <PartTagChips
+                    tags={ip.tags}
+                    highlight={fittingTags(ip.tags, vehicle)}
+                    className="mt-1"
+                  />
                 )}
               </div>
               <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">

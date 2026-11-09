@@ -15,13 +15,20 @@ import { releaseFiles, parseStoredFileUrl } from '@/lib/files/manager'
 import { inventoryPartFileUrls } from '@/lib/files/collect'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { normalizeBarcode, withBarcodeConflictMessage } from '../Lib/barcode'
+import { distinctTags, normalizePartTags } from '../Lib/partTags'
+import { partIdsWithTag, partIdsWithTagContaining } from '../Lib/tagSearch.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+
+/** Words of a list search looked at; the rest of a pasted paragraph is ignored. */
+const MAX_SEARCH_WORDS = 8
 
 export async function getInventoryPartsPaginated(params: {
   page?: number
   pageSize?: number
   search?: string
   category?: string
+  /** Restrict to parts carrying this tag, in any case. */
+  tag?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
   /** Restrict to parts at or below their reorder point. */
@@ -34,23 +41,38 @@ export async function getInventoryPartsPaginated(params: {
       const skip = (page - 1) * pageSize
       const mode = 'insensitive' as Prisma.QueryMode
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const where: any = { organizationId, isArchived: false }
+      const where: Prisma.InventoryPartWhereInput = { organizationId, isArchived: false }
+      const and: Prisma.InventoryPartWhereInput[] = []
 
-      if (params.search) {
-        const q = params.search.trim()
-        where.OR = [
-          { name: { contains: q, mode } },
-          { partNumber: { contains: q, mode } },
-          { barcode: { contains: q, mode } },
-          { description: { contains: q, mode } },
-          { supplier: { contains: q, mode } },
-          { location: { contains: q, mode } },
-        ]
+      // Every word has to match some field or tag, in any order, so "filter
+      // hilux" finds the fuel filter tagged Hilux.
+      const words = (params.search ?? '').trim().split(/\s+/).filter(Boolean)
+      if (words.length > 0) {
+        const searched = words.slice(0, MAX_SEARCH_WORDS)
+        const tagged = await Promise.all(
+          searched.map((word) => partIdsWithTagContaining(organizationId, word))
+        )
+        searched.forEach((word, i) => {
+          and.push({
+            OR: [
+              { name: { contains: word, mode } },
+              { partNumber: { contains: word, mode } },
+              { barcode: { contains: word, mode } },
+              { description: { contains: word, mode } },
+              { supplier: { contains: word, mode } },
+              { location: { contains: word, mode } },
+              { id: { in: tagged[i] } },
+            ],
+          })
+        })
       }
 
       if (params.category && params.category !== 'all') {
         where.category = params.category
+      }
+
+      if (params.tag?.trim()) {
+        and.push({ id: { in: await partIdsWithTag(organizationId, params.tag) } })
       }
 
       if (params.lowStock) {
@@ -76,8 +98,10 @@ export async function getInventoryPartsPaginated(params: {
           AND COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault}) > 0
           AND "quantity" <= COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault})
       `
-        where.id = { in: lowRows.map((r) => r.id) }
+        and.push({ id: { in: lowRows.map((r) => r.id) } })
       }
+
+      if (and.length > 0) where.AND = and
 
       const dir = params.sortOrder || 'desc'
       const sortableColumns = [
@@ -161,6 +185,7 @@ export async function createInventoryPart(input: unknown) {
             supplierUrl: rest.supplierUrl || undefined,
             imageUrl: gallery?.[0]?.url || undefined,
             location: rest.location || undefined,
+            tags: normalizePartTags(rest.tags ?? []),
             userId,
             organizationId,
           },
@@ -269,6 +294,7 @@ export async function updateInventoryPart(input: unknown) {
             supplierUrl:
               updateData.supplierUrl !== undefined ? updateData.supplierUrl || null : undefined,
             location: updateData.location !== undefined ? updateData.location || null : undefined,
+            tags: updateData.tags !== undefined ? normalizePartTags(updateData.tags) : undefined,
           },
         })
       )
@@ -397,6 +423,27 @@ export async function getInventoryCategories() {
   )
 }
 
+/**
+ * Every tag the workshop's parts carry, sorted, for the list's tag filter and
+ * the suggestions under the part form's tag field.
+ */
+export async function getInventoryTags() {
+  return withAuth(
+    async ({ organizationId }) => {
+      const rows = await db.inventoryPart.findMany({
+        where: { organizationId, isArchived: false, tags: { isEmpty: false } },
+        select: { tags: true },
+      })
+      return distinctTags(rows.map((row) => row.tags))
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.INVENTORY },
+      ],
+    }
+  )
+}
+
 export async function getInventoryPartsList() {
   return withAuth(
     async ({ userId, organizationId }) => {
@@ -416,6 +463,7 @@ export async function getInventoryPartsList() {
           sellPrice: true,
           quantity: true,
           category: true,
+          tags: true,
           gallery: {
             select: { id: true, url: true, sortOrder: true },
             orderBy: { sortOrder: 'asc' },

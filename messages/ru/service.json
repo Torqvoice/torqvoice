@@ -147,7 +147,8 @@
     "deleteRow": "Удалить строку",
     "outOfStock": "Нет в наличии",
     "onBackorder": "Под заказ ({count})",
-    "nameMissingHint": "Строки без названия детали не сохраняются."
+    "nameMissingHint": "Строки без названия детали не сохраняются.",
+    "fitsVehicleFirst": "Запчасти с тегами {vehicle} показаны первыми."
   },
   "labor": {
     "title": "Работа",

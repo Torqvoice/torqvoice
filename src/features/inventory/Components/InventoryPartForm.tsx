@@ -54,6 +54,14 @@ import { compressImage } from '@/lib/compress-image'
 import { priceFromCostAndMultiplier } from '@/features/inventory/Lib/partPricing'
 import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 import { clearableInput } from '@/lib/clearable'
+import { TagInput } from '@/components/tag-input'
+import { useServiceType } from '@/components/service-type-context'
+import {
+  MAX_PART_TAGS,
+  MAX_TAG_LENGTH,
+  normalizePartTags,
+  splitTagInput,
+} from '@/features/inventory/Lib/partTags'
 
 interface InventoryPartFormProps {
   open: boolean
@@ -65,6 +73,8 @@ interface InventoryPartFormProps {
   unitSystem?: string
   initialBarcode?: string
   categories?: string[]
+  /** Tags the workshop's parts already carry, suggested in the tag field. */
+  tagSuggestions?: string[]
   onViewImages?: (urls: string[], startIndex: number) => void
   part?: {
     id: string
@@ -91,6 +101,8 @@ interface InventoryPartFormProps {
       sortOrder: number
     }[]
     location: string | null
+    /** Required: a part opened without its tags would lose them on Save. */
+    tags: string[]
   }
 }
 
@@ -103,11 +115,13 @@ export function InventoryPartForm({
   unitSystem,
   initialBarcode,
   categories = [],
+  tagSuggestions = [],
   onViewImages,
 }: InventoryPartFormProps) {
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('inventory')
+  const isMarine = useServiceType() === 'marine'
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -117,6 +131,7 @@ export function InventoryPartForm({
   const [unit, setUnit] = useState(part ? (part.unit ?? '') : (defaultUnit ?? ''))
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [categorySearch, setCategorySearch] = useState('')
+  const [tags, setTags] = useState<string[]>(part?.tags ?? [])
   const sellPriceManualRef = useRef(false)
   const [gallery, setGallery] = useState<
     {
@@ -144,6 +159,7 @@ export function InventoryPartForm({
       setCategory(part?.category ?? '')
       setUnit(part ? (part.unit ?? '') : (defaultUnit ?? ''))
       setCategorySearch('')
+      setTags(part?.tags ?? [])
       sellPriceManualRef.current = !!(part?.sellPrice && part.sellPrice > 0)
       if (part?.gallery && part.gallery.length > 0) {
         setGallery(part.gallery)
@@ -355,6 +371,11 @@ export function InventoryPartForm({
     // An emptied field reaches the update action as '' so it can be cleared.
     const optional = (value: FormDataEntryValue | string | null) =>
       clearableInput(value, Boolean(part))
+    // Text still in the tag box (saved with the keyboard shortcut, say) is a
+    // tag too. A part that reached the form without its tags keeps the stored
+    // ones rather than being saved with none.
+    const typedTags = splitTagInput(String(formData.get('tagDraft') ?? ''))
+    const knowsTags = !part || Array.isArray(part.tags)
     const data = {
       name: formData.get('name') as string,
       partNumber: optional(formData.get('partNumber')),
@@ -378,6 +399,7 @@ export function InventoryPartForm({
         sortOrder: i,
       })),
       location: optional(formData.get('location')),
+      tags: knowsTags ? normalizePartTags([...tags, ...typedTags]) : undefined,
     }
 
     const result = part
@@ -432,88 +454,108 @@ export function InventoryPartForm({
 
         <form ref={formRef} onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
           <DialogBody className="space-y-4">
-          {/* Supplier Link */}
-          <div className="space-y-2">
-            <Label htmlFor="supplierUrl">{t('form.supplierLink')}</Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Input
-                  id="supplierUrl"
-                  placeholder={t('form.supplierLinkPlaceholder')}
-                  value={supplierUrl}
-                  onChange={(e) => setSupplierUrl(e.target.value)}
-                />
-                {supplierUrl &&
-                  (() => {
-                    try {
-                      new URL(supplierUrl)
-                      return true
-                    } catch {
-                      return false
-                    }
-                  })() && (
-                    <a
-                      href={supplierUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  )}
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={fetching || !supplierUrl}
-                onClick={() => handleFetchMetadata()}
-              >
-                {fetching ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}
-                {t('form.fetch')}
-              </Button>
-            </div>
-          </div>
-
-          {/* Image + fields: stacked on mobile, side-by-side on sm+ */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
-            {/* Image area */}
-            <div className={`flex-shrink-0 ${gallery.length > 0 ? 'sm:w-52' : 'sm:w-44'}`}>
-              <Label className="mb-2 block">{t('form.image')}</Label>
-              {gallery.length > 0 ? (
-                <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-2">
-                  {gallery.map((g, i) => (
-                    <div
-                      key={g.url}
-                      className="relative aspect-square overflow-hidden rounded-lg border bg-muted cursor-pointer"
-                      {...interactiveRow(() => {
-                        onOpenChange(false)
-                        onViewImages?.(
-                          gallery.map((img) => img.url),
-                          i
-                        )
-                      })}
-                    >
-                      <img
-                        src={g.url}
-                        alt={`Part ${i + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setGallery((prev) => prev.filter((_, j) => j !== i))
-                        }}
-                        className="absolute right-0.5 top-0.5 rounded-full bg-background/80 p-0.5 text-muted-foreground hover:text-foreground"
+            {/* Supplier Link */}
+            <div className="space-y-2">
+              <Label htmlFor="supplierUrl">{t('form.supplierLink')}</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    id="supplierUrl"
+                    placeholder={t('form.supplierLinkPlaceholder')}
+                    value={supplierUrl}
+                    onChange={(e) => setSupplierUrl(e.target.value)}
+                  />
+                  {supplierUrl &&
+                    (() => {
+                      try {
+                        new URL(supplierUrl)
+                        return true
+                      } catch {
+                        return false
+                      }
+                    })() && (
+                      <a
+                        href={supplierUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       >
-                        <X className="h-3 w-3" />
-                      </button>
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  disabled={fetching || !supplierUrl}
+                  onClick={() => handleFetchMetadata()}
+                >
+                  {fetching ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}
+                  {t('form.fetch')}
+                </Button>
+              </div>
+            </div>
+
+            {/* Image + fields: stacked on mobile, side-by-side on sm+ */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
+              {/* Image area */}
+              <div className={`flex-shrink-0 ${gallery.length > 0 ? 'sm:w-52' : 'sm:w-44'}`}>
+                <Label className="mb-2 block">{t('form.image')}</Label>
+                {gallery.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-2">
+                    {gallery.map((g, i) => (
+                      <div
+                        key={g.url}
+                        className="relative aspect-square overflow-hidden rounded-lg border bg-muted cursor-pointer"
+                        {...interactiveRow(() => {
+                          onOpenChange(false)
+                          onViewImages?.(
+                            gallery.map((img) => img.url),
+                            i
+                          )
+                        })}
+                      >
+                        <img
+                          src={g.url}
+                          alt={`Part ${i + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setGallery((prev) => prev.filter((_, j) => j !== i))
+                          }}
+                          className="absolute right-0.5 top-0.5 rounded-full bg-background/80 p-0.5 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {/* Add more */}
+                    <div
+                      className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors ${
+                        dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
+                      }`}
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                        setDragOver(true)
+                      }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleDrop}
+                      {...interactiveRow(() => fileInputRef.current?.click())}
+                    >
+                      {uploading ? (
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Plus className="h-6 w-6 text-muted-foreground" />
+                      )}
                     </div>
-                  ))}
-                  {/* Add more */}
+                  </div>
+                ) : (
                   <div
-                    className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors ${
+                    className={`flex h-36 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors sm:h-44 ${
                       dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
                     }`}
                     onDragOver={(e) => {
@@ -525,343 +567,349 @@ export function InventoryPartForm({
                     {...interactiveRow(() => fileInputRef.current?.click())}
                   >
                     {uploading ? (
-                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                     ) : (
-                      <Plus className="h-6 w-6 text-muted-foreground" />
+                      <>
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                        <span className="mt-2 text-xs text-muted-foreground">
+                          {t('form.dropOrClick')}
+                        </span>
+                      </>
                     )}
                   </div>
+                )}
+                {/* Hidden file inputs */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <div className="mt-2 flex gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() => cameraInputRef.current?.click()}
+                    disabled={uploading}
+                  >
+                    <Camera className="mr-1 h-3 w-3" />
+                    {t('form.camera')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                  >
+                    <Upload className="mr-1 h-3 w-3" />
+                    {t('form.upload')}
+                  </Button>
                 </div>
-              ) : (
-                <div
-                  className={`flex h-36 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors sm:h-44 ${
-                    dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
-                  }`}
-                  onDragOver={(e) => {
-                    e.preventDefault()
-                    setDragOver(true)
-                  }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={handleDrop}
-                  {...interactiveRow(() => fileInputRef.current?.click())}
-                >
-                  {uploading ? (
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  ) : (
-                    <>
-                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                      <span className="mt-2 text-xs text-muted-foreground">
-                        {t('form.dropOrClick')}
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-              {/* Hidden file inputs */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/avif"
-                multiple
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/jpeg,image/png"
-                capture="environment"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <div className="mt-2 flex gap-1">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 text-xs"
-                  onClick={() => cameraInputRef.current?.click()}
-                  disabled={uploading}
-                >
-                  <Camera className="mr-1 h-3 w-3" />
-                  {t('form.camera')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 text-xs"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                >
-                  <Upload className="mr-1 h-3 w-3" />
-                  {t('form.upload')}
-                </Button>
-              </div>
-              {gallery.length > 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-1 w-full text-xs"
-                  onClick={handleAiAnalyze}
-                  disabled={analyzing}
-                >
-                  {analyzing ? (
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                  ) : (
-                    <Sparkles className="mr-1 h-3 w-3" />
-                  )}
-                  {t('form.aiAnalyze')}
-                </Button>
-              )}
-            </div>
-
-            {/* Fields */}
-            <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
-                  <Input
-                    id="partNumber"
-                    name="partNumber"
-                    placeholder={t('form.partNumberPlaceholder')}
-                    defaultValue={part?.partNumber ?? ''}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="barcode">{t('form.barcode')}</Label>
-                  <Input
-                    id="barcode"
-                    name="barcode"
-                    placeholder={t('form.barcodePlaceholder')}
-                    defaultValue={part?.barcode ?? initialBarcode ?? ''}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="name">{t('form.nameLabel')}</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    placeholder={t('form.namePlaceholder')}
-                    defaultValue={part?.name}
-                    required
-                  />
-                </div>
+                {gallery.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-1 w-full text-xs"
+                    onClick={handleAiAnalyze}
+                    disabled={analyzing}
+                  >
+                    {analyzing ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-1 h-3 w-3" />
+                    )}
+                    {t('form.aiAnalyze')}
+                  </Button>
+                )}
               </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label>{t('form.category')}</Label>
-                  <Popover open={categoryOpen} onOpenChange={setCategoryOpen} modal>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={categoryOpen}
-                        className="w-full justify-between font-normal h-9"
+              {/* Fields */}
+              <div className="flex-1 space-y-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
+                    <Input
+                      id="partNumber"
+                      name="partNumber"
+                      placeholder={t('form.partNumberPlaceholder')}
+                      defaultValue={part?.partNumber ?? ''}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="barcode">{t('form.barcode')}</Label>
+                    <Input
+                      id="barcode"
+                      name="barcode"
+                      placeholder={t('form.barcodePlaceholder')}
+                      defaultValue={part?.barcode ?? initialBarcode ?? ''}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="name">{t('form.nameLabel')}</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder={t('form.namePlaceholder')}
+                      defaultValue={part?.name}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-2">
+                    <Label>{t('form.category')}</Label>
+                    <Popover open={categoryOpen} onOpenChange={setCategoryOpen} modal>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={categoryOpen}
+                          className="w-full justify-between font-normal h-9"
+                        >
+                          <span className={category ? '' : 'text-muted-foreground'}>
+                            {category || t('form.categoryPlaceholder')}
+                          </span>
+                          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-(--radix-popover-trigger-width) min-w-64 p-0"
+                        align="start"
                       >
-                        <span className={category ? '' : 'text-muted-foreground'}>
-                          {category || t('form.categoryPlaceholder')}
-                        </span>
-                        <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-(--radix-popover-trigger-width) min-w-64 p-0"
-                      align="start"
-                    >
-                      <Command>
-                        <CommandInput
-                          placeholder={t('form.categorySearch')}
-                          value={categorySearch}
-                          onValueChange={setCategorySearch}
-                        />
-                        <CommandList>
-                          <CommandEmpty>
-                            {categorySearch.trim() ? (
-                              <button
-                                type="button"
-                                className="flex w-full items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
-                                onClick={() => {
-                                  setCategory(categorySearch.trim())
-                                  setCategorySearch('')
-                                  setCategoryOpen(false)
-                                }}
-                              >
-                                <Plus className="h-3.5 w-3.5" />
-                                {t('form.categoryCreate', { name: categorySearch.trim() })}
-                              </button>
-                            ) : (
-                              <span className="text-muted-foreground text-xs">
-                                {t('form.categoryNone')}
-                              </span>
-                            )}
-                          </CommandEmpty>
-                          <CommandGroup>
-                            {categories.map((cat) => (
-                              <CommandItem
-                                key={cat}
-                                value={cat}
-                                onSelect={() => {
-                                  setCategory(cat === category ? '' : cat)
-                                  setCategorySearch('')
-                                  setCategoryOpen(false)
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    'mr-2 h-3.5 w-3.5',
-                                    category === cat ? 'opacity-100' : 'opacity-0'
-                                  )}
-                                />
-                                {cat}
-                              </CommandItem>
-                            ))}
-                            {categorySearch.trim() &&
-                              !categories.some(
-                                (c) => c.toLowerCase() === categorySearch.trim().toLowerCase()
-                              ) && (
-                                <CommandItem
-                                  value={`__create__${categorySearch.trim()}`}
-                                  onSelect={() => {
+                        <Command>
+                          <CommandInput
+                            placeholder={t('form.categorySearch')}
+                            value={categorySearch}
+                            onValueChange={setCategorySearch}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              {categorySearch.trim() ? (
+                                <button
+                                  type="button"
+                                  className="flex w-full items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
+                                  onClick={() => {
                                     setCategory(categorySearch.trim())
                                     setCategorySearch('')
                                     setCategoryOpen(false)
                                   }}
                                 >
-                                  <Plus className="mr-2 h-3.5 w-3.5" />
+                                  <Plus className="h-3.5 w-3.5" />
                                   {t('form.categoryCreate', { name: categorySearch.trim() })}
-                                </CommandItem>
+                                </button>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">
+                                  {t('form.categoryNone')}
+                                </span>
                               )}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {categories.map((cat) => (
+                                <CommandItem
+                                  key={cat}
+                                  value={cat}
+                                  onSelect={() => {
+                                    setCategory(cat === category ? '' : cat)
+                                    setCategorySearch('')
+                                    setCategoryOpen(false)
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      'mr-2 h-3.5 w-3.5',
+                                      category === cat ? 'opacity-100' : 'opacity-0'
+                                    )}
+                                  />
+                                  {cat}
+                                </CommandItem>
+                              ))}
+                              {categorySearch.trim() &&
+                                !categories.some(
+                                  (c) => c.toLowerCase() === categorySearch.trim().toLowerCase()
+                                ) && (
+                                  <CommandItem
+                                    value={`__create__${categorySearch.trim()}`}
+                                    onSelect={() => {
+                                      setCategory(categorySearch.trim())
+                                      setCategorySearch('')
+                                      setCategoryOpen(false)
+                                    }}
+                                  >
+                                    <Plus className="mr-2 h-3.5 w-3.5" />
+                                    {t('form.categoryCreate', { name: categorySearch.trim() })}
+                                  </CommandItem>
+                                )}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location">{t('form.location')}</Label>
+                    <Input
+                      id="location"
+                      name="location"
+                      placeholder={t('form.locationPlaceholder')}
+                      defaultValue={part?.location ?? ''}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">{t('form.location')}</Label>
-                  <Input
-                    id="location"
-                    name="location"
-                    placeholder={t('form.locationPlaceholder')}
-                    defaultValue={part?.location ?? ''}
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="quantity">{t('form.quantity')}</Label>
-                  <Input
-                    id="quantity"
-                    name="quantity"
-                    type="number"
-                    min="0"
-                    step="any"
-                    defaultValue={part?.quantity ?? 1}
+                  <Label htmlFor="part-tags">{t('form.tags')}</Label>
+                  <TagInput
+                    id="part-tags"
+                    name="tagDraft"
+                    value={tags}
+                    onChange={setTags}
+                    suggestions={tagSuggestions}
+                    placeholder={t('form.tagsPlaceholder')}
+                    maxTags={MAX_PART_TAGS}
+                    maxLength={MAX_TAG_LENGTH}
+                    removeLabel={(tag) => t('form.removeTag', { tag })}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {isMarine ? t('form.tagsHintMarine') : t('form.tagsHint')}
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="unit">{t('form.unit')}</Label>
-                  <UnitCombobox id="unit" value={unit} onChange={setUnit} unitSystem={unitSystem} />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
-                  <Input
-                    id="minQuantity"
-                    name="minQuantity"
-                    type="number"
-                    min="0"
-                    step="any"
-                    defaultValue={part?.minQuantity ?? 0}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="unitCost">{t('form.unitCost')}</Label>
-                  <Input
-                    id="unitCost"
-                    name="unitCost"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    defaultValue={part?.unitCost ?? 0}
-                    onChange={(e) => {
-                      if (!markupMultiplier || markupMultiplier <= 0 || sellPriceManualRef.current)
-                        return
-                      const cost = Number(e.target.value) || 0
-                      const sellPriceInput = document.getElementById(
-                        'sellPrice'
-                      ) as HTMLInputElement | null
-                      if (sellPriceInput) {
-                        sellPriceInput.value = String(
-                          priceFromCostAndMultiplier(cost, markupMultiplier)
+
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="quantity">{t('form.quantity')}</Label>
+                    <Input
+                      id="quantity"
+                      name="quantity"
+                      type="number"
+                      min="0"
+                      step="any"
+                      defaultValue={part?.quantity ?? 1}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="unit">{t('form.unit')}</Label>
+                    <UnitCombobox
+                      id="unit"
+                      value={unit}
+                      onChange={setUnit}
+                      unitSystem={unitSystem}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
+                    <Input
+                      id="minQuantity"
+                      name="minQuantity"
+                      type="number"
+                      min="0"
+                      step="any"
+                      defaultValue={part?.minQuantity ?? 0}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="unitCost">{t('form.unitCost')}</Label>
+                    <Input
+                      id="unitCost"
+                      name="unitCost"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      defaultValue={part?.unitCost ?? 0}
+                      onChange={(e) => {
+                        if (
+                          !markupMultiplier ||
+                          markupMultiplier <= 0 ||
+                          sellPriceManualRef.current
                         )
-                      }
-                    }}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sellPrice">{t('form.sellPrice')}</Label>
-                  <Input
-                    id="sellPrice"
-                    name="sellPrice"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    defaultValue={part?.sellPrice ?? 0}
-                    onChange={() => {
-                      sellPriceManualRef.current = true
-                    }}
-                  />
+                          return
+                        const cost = Number(e.target.value) || 0
+                        const sellPriceInput = document.getElementById(
+                          'sellPrice'
+                        ) as HTMLInputElement | null
+                        if (sellPriceInput) {
+                          sellPriceInput.value = String(
+                            priceFromCostAndMultiplier(cost, markupMultiplier)
+                          )
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sellPrice">{t('form.sellPrice')}</Label>
+                    <Input
+                      id="sellPrice"
+                      name="sellPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      defaultValue={part?.sellPrice ?? 0}
+                      onChange={() => {
+                        sellPriceManualRef.current = true
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="supplier">{t('form.supplier')}</Label>
+                <Input
+                  id="supplier"
+                  name="supplier"
+                  placeholder={t('form.supplierPlaceholder')}
+                  defaultValue={part?.supplier ?? ''}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="supplierPhone">{t('form.supplierPhone')}</Label>
+                <Input
+                  id="supplierPhone"
+                  name="supplierPhone"
+                  placeholder={t('form.supplierPhonePlaceholder')}
+                  defaultValue={part?.supplierPhone ?? ''}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="supplierEmail">{t('form.supplierEmail')}</Label>
+                <Input
+                  id="supplierEmail"
+                  name="supplierEmail"
+                  type="email"
+                  placeholder={t('form.supplierEmailPlaceholder')}
+                  defaultValue={part?.supplierEmail ?? ''}
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="supplier">{t('form.supplier')}</Label>
-              <Input
-                id="supplier"
-                name="supplier"
-                placeholder={t('form.supplierPlaceholder')}
-                defaultValue={part?.supplier ?? ''}
+              <Label htmlFor="description">{t('form.description')}</Label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder={t('form.descriptionPlaceholder')}
+                rows={3}
+                defaultValue={part?.description ?? ''}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="supplierPhone">{t('form.supplierPhone')}</Label>
-              <Input
-                id="supplierPhone"
-                name="supplierPhone"
-                placeholder={t('form.supplierPhonePlaceholder')}
-                defaultValue={part?.supplierPhone ?? ''}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="supplierEmail">{t('form.supplierEmail')}</Label>
-              <Input
-                id="supplierEmail"
-                name="supplierEmail"
-                type="email"
-                placeholder={t('form.supplierEmailPlaceholder')}
-                defaultValue={part?.supplierEmail ?? ''}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">{t('form.description')}</Label>
-            <Textarea
-              id="description"
-              name="description"
-              placeholder={t('form.descriptionPlaceholder')}
-              rows={3}
-              defaultValue={part?.description ?? ''}
-            />
-          </div>
-
           </DialogBody>
 
           <DialogFooter>
