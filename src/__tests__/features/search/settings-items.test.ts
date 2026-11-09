@@ -2,7 +2,10 @@ import { renderHook } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import { useSettingsSearchItems } from '@/features/search/Lib/settingsItems'
 import { prepareQuery, rank } from '@/features/search/Lib/matcher'
-import { visibleActionCommands, visiblePageCommands } from '@/features/search/Lib/commands'
+import {
+  visibleActionCommands,
+  visiblePageCommands,
+} from '@/features/search/Lib/commands'
 
 /**
  * The real index, titled in English through the test setup's next-intl

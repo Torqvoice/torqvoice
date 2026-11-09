@@ -162,7 +162,7 @@ describe('runBackupNow', () => {
     expect(await runBackupNow('s3')).toMatchObject({ success: true, data: { runId: 'run1' } })
   })
 
-  it("queues the run in the member's name and returns its id without waiting for it", async () => {
+  it('queues the run in the member\'s name and returns its id without waiting for it', async () => {
     // The drain never settles; the action must still return.
     const result = await runBackupNow('s3')
     expect(result).toEqual({ success: true, data: { runId: 'run1' } })
