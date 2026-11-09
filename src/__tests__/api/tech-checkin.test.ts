@@ -97,6 +97,8 @@ const matches = (row: Record<string, unknown>, where: Record<string, unknown>) =
   Object.entries(where).every(([k, v]) => {
     if (v && typeof v === 'object' && 'in' in (v as object))
       return (v as { in: unknown[] }).in.includes(row[k])
+    if (v && typeof v === 'object' && 'not' in (v as object))
+      return row[k] !== (v as { not: unknown }).not
     if (v && typeof v === 'object' && 'lt' in (v as object))
       return (row[k] as number) < (v as { lt: number }).lt
     return row[k] === v
@@ -263,6 +265,7 @@ import { POST as carry } from '@/app/api/v1/tech/jobs/[id]/checkin/marks/carry/r
 import { POST as addPhoto } from '@/app/api/v1/tech/jobs/[id]/checkin/photos/route'
 import { POST as addMarkPhoto } from '@/app/api/v1/tech/jobs/[id]/checkin/marks/[markId]/photos/route'
 import { publishRecordChange } from '@/lib/realtime/publish.server'
+import { db } from '@/lib/db'
 
 const req = (body?: unknown, init: RequestInit & { lang?: string } = {}) =>
   new Request('http://app.test/api', {
@@ -395,6 +398,7 @@ describe('marks', () => {
 
   it('refuses a mark that is not a mark, and a kind the workshop does not have', async () => {
     expect((await addMark(req({ view: 'left', x: 2 }), job())).status).toBe(400)
+    expect(JOB.status).toBe('scheduled')
     const own = await addMark(
       req({
         bodyType: 'pickup',
@@ -407,6 +411,8 @@ describe('marks', () => {
       job()
     )
     expect(own.status).toBe(400)
+    // A refused mark is no arrival: the booking is left as it was.
+    expect(JOB.status).toBe('scheduled')
   })
 
   it('changes and removes this check-in’s marks, never an earlier visit’s', async () => {
@@ -460,6 +466,21 @@ describe('earlier visits’ marks', () => {
     expect(publishRecordChange).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'serviceRecord', id: JOB.id, hint: 'conditionMarks' })
     )
+  })
+
+  it('does not clear a mark the desk confirmed a moment ago', async () => {
+    // Read as open, then confirmed at the desk before the clear lands.
+    const open = mark({
+      id: 'before',
+      serviceRecordId: OLD_JOB.id,
+      recordedAt: new Date('2026-05-01'),
+    })
+    state.marks = [{ ...open, resolvedAt: new Date(), carriedToId: 'now' }]
+    vi.mocked(db.conditionMark.findMany).mockResolvedValueOnce([
+      { ...open, serviceRecord: { createdAt: OLD_JOB.createdAt }, inspection: null },
+    ] as never)
+    expect((await resolve(req({ resolved: true }), onMark('before'))).status).toBe(409)
+    expect(state.marks[0].carriedToId).toBe('now')
   })
 
   it('does not clear this check-in’s own mark: that one is removed', async () => {

@@ -2,7 +2,7 @@ import { logAudit } from '@/lib/audit'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { markInputSchema } from '@/features/condition-map/Lib/marks'
-import { createMark } from '@/features/condition-map/Lib/markStore.server'
+import { assertKnownKind, createMark } from '@/features/condition-map/Lib/markStore.server'
 import { checkinMarkList } from '@/features/condition-map/Lib/checkin.server'
 import {
   answeringRefusals,
@@ -38,6 +38,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (!parsed.success) return apiError(400, 'invalid_request', 'That mark is not complete.')
 
       return answeringRefusals(async () => {
+        // Refused before the booking is touched: a mark that will not be
+        // saved is no arrival.
+        await assertKnownKind(ctx.organizationId, parsed.data.kind)
         await noteArrival(ctx.organizationId, job)
         const mark = await createMark(ctx.organizationId, ctx.userId, parsed.data)
         await logAudit(ctx, {

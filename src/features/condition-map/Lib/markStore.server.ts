@@ -316,11 +316,51 @@ export async function removeMarkPhoto(
 ): Promise<{ mark: ConditionMarkData; imageUrls: string[] }> {
   const mark = await ownMark(organizationId, id)
   await assertSheetOpen(organizationId, mark)
-  const imageUrls = mark.imageUrls.filter((u) => u !== url)
-  await db.conditionMark.update({ where: { id }, data: { imageUrls } })
-  // Only a photo this mark had: a URL it never held is not ours to release.
-  if (imageUrls.length !== mark.imageUrls.length) {
+  // Read and written under the row lock, as an upload is: a photo that
+  // landed while this one was being taken off stays on the mark.
+  const { imageUrls, removed } = await db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "public"."condition_marks" WHERE id = ${id} FOR UPDATE`
+    const current = await tx.conditionMark.findFirst({
+      where: { id, organizationId },
+      select: { imageUrls: true },
+    })
+    if (!current) throw new Error('Mark not found')
+    const next = current.imageUrls.filter((u) => u !== url)
+    if (next.length !== current.imageUrls.length) {
+      await tx.conditionMark.update({
+        where: { id },
+        data: { imageUrls: next },
+        select: { serviceRecordId: true, inspectionId: true },
+      })
+    }
+    return { imageUrls: next, removed: next.length !== current.imageUrls.length }
+  })
+  // Only a photo this mark had, and only once the row no longer names it.
+  if (removed) {
     await releaseFiles([url], { organizationId, reason: 'condition mark photo removed' })
   }
   return { mark, imageUrls }
+}
+
+/**
+ * Closes an earlier visit's mark as gone, or opens it again, only if nobody
+ * else has closed, reopened or carried it since it was read: the state it
+ * was read in is the condition of the write. False when another writer got
+ * there first.
+ */
+export async function setMarkResolvedIfUnchanged(
+  organizationId: string,
+  userId: string | null,
+  id: string,
+  resolved: boolean
+): Promise<boolean> {
+  const claimed = await db.conditionMark.updateMany({
+    where: resolved
+      ? { id, organizationId, resolvedAt: null, carriedToId: null }
+      : { id, organizationId, resolvedAt: { not: null }, carriedToId: null },
+    data: resolved
+      ? { resolvedAt: new Date(), resolvedById: userId }
+      : { resolvedAt: null, resolvedById: null },
+  })
+  return claimed.count === 1
 }

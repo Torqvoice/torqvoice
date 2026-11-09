@@ -3,7 +3,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { splitMarks } from '@/features/condition-map/Lib/marks'
 import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
-import { setMarkResolved } from '@/features/condition-map/Lib/markStore.server'
+import { setMarkResolvedIfUnchanged } from '@/features/condition-map/Lib/markStore.server'
 import { checkinMarkList } from '@/features/condition-map/Lib/checkin.server'
 import {
   answeringRefusals,
@@ -64,8 +64,18 @@ export async function POST(
       }
 
       return answeringRefusals(async () => {
+        // Written only in the state it was checked in: the desk may have
+        // confirmed or cleared the same mark a moment ago.
+        const changed = await setMarkResolvedIfUnchanged(
+          ctx.organizationId,
+          ctx.userId,
+          markId,
+          resolved
+        )
+        if (!changed) {
+          return apiError(409, 'conflict', 'That mark was changed meanwhile. Pull to refresh.')
+        }
         await noteArrival(ctx.organizationId, job)
-        await setMarkResolved(ctx.organizationId, ctx.userId, markId, resolved)
         // The write names the earlier visit's job; this one's page is told too.
         announceMarksChanged(ctx.organizationId, job.id)
         const marks = await checkinMarkList(
