@@ -7,6 +7,7 @@ import {
   appUrl,
   loadConnection,
   setConnectionStatus,
+  writeLog,
 } from '@/features/integrations/Lib/connections'
 import {
   exchangeCode,
@@ -123,6 +124,33 @@ export async function GET(
       err instanceof Error ? err.message : 'Could not read the account'
     )
     return fail('identify')
+  }
+
+  // Settings the vendor already knows, such as the one organisation that was
+  // allowed, so the form does not ask for them. A failure here leaves them
+  // for the workshop to choose; the connection itself is good.
+  try {
+    const { ctx: connectorCtx, server } = await loadConnection(connection.id)
+    const outcome = server.onConnect ? await server.onConnect(connectorCtx) : undefined
+    if (outcome?.settings) {
+      const row = await db.integrationConnection.findUnique({
+        where: { id: connection.id },
+        select: { settings: true },
+      })
+      await db.integrationConnection.update({
+        where: { id: connection.id },
+        data: {
+          settings: {
+            ...((row?.settings as Record<string, unknown> | null) ?? {}),
+            ...outcome.settings,
+          } as object,
+        },
+      })
+    }
+  } catch (err) {
+    await writeLog(connection.id, 'warn', 'Connection setup could not finish on its own', {
+      error: err instanceof Error ? err.message : String(err),
+    })
   }
 
   await logAudit(

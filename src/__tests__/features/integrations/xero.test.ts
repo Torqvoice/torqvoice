@@ -600,6 +600,46 @@ describe('rounding against the printed invoice', () => {
 })
 
 describe('review fixes', () => {
+  it('leaves purchase rates out of the sales lists, as a global organisation reports them', () => {
+    // A Norwegian organisation on Xero's global edition, as read on 9 Nov 2026.
+    const rates = salesRates([
+      {
+        Name: 'Tax Exempt',
+        TaxType: 'NONE',
+        EffectiveRate: 0,
+        Status: 'ACTIVE',
+        ReportTaxType: 'NONE',
+        CanApplyToRevenue: true,
+      },
+      {
+        Name: 'Tax on Purchases',
+        TaxType: 'INPUT',
+        EffectiveRate: 0,
+        Status: 'ACTIVE',
+        ReportTaxType: 'INPUT',
+        CanApplyToRevenue: true,
+      },
+      {
+        Name: 'Tax on Sales',
+        TaxType: 'OUTPUT',
+        EffectiveRate: 0,
+        Status: 'ACTIVE',
+        ReportTaxType: 'OUTPUT',
+        CanApplyToRevenue: true,
+      },
+      {
+        Name: 'MVA 25%',
+        TaxType: 'TAX001',
+        EffectiveRate: 25,
+        Status: 'ACTIVE',
+        ReportTaxType: 'OUTPUT',
+        CanApplyToRevenue: true,
+      },
+    ])
+    expect(rates.map((r) => r.taxType)).toEqual(['NONE', 'OUTPUT', 'TAX001'])
+    expect(pickTaxedRate(rates, 25, null).entry?.taxType).toBe('TAX001')
+  })
+
   it('never books an untaxed line under a rate with a percentage, even when one was chosen', () => {
     const rates = salesRates(AU_RATES)
     expect(pickZeroRate(rates, 'OUTPUT')?.taxType).toBe('EXEMPTOUTPUT')

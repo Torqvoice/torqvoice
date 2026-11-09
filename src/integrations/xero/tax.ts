@@ -45,6 +45,8 @@ export function salesRates(rates: XeroTaxRate[]): TaxRateEntry[] {
   for (const r of rates) {
     if (!r.TaxType || (r.Status && r.Status !== 'ACTIVE')) continue
     if (r.CanApplyToRevenue === false) continue
+    // Xero's global edition lets its purchase rate onto sales too; it is still a purchase rate.
+    if (r.ReportTaxType === 'INPUT' || r.ReportTaxType === 'GSTONIMPORTS') continue
     const percent = percentOf(r)
     if (percent === null) continue
     out.push({
