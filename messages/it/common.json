@@ -153,6 +153,35 @@
     "use": "Usa questo video",
     "limit": "La registrazione si ferma da sola dopo {minutes} minuti."
   },
+  "photoCapture": {
+    "title": "Scatta una foto",
+    "description": "Con la fotocamera di questo computer o una webcam collegata.",
+    "starting": "Avvio della fotocamera...",
+    "live": "Anteprima della fotocamera",
+    "preview": "La foto appena scattata",
+    "camera": "Fotocamera",
+    "take": "Scatta foto",
+    "retake": "Scatta di nuovo",
+    "use": "Usa questa foto",
+    "tryAgain": "Riprova",
+    "uploadInstead": "Carica un file",
+    "denied": {
+      "title": "L'accesso alla fotocamera è bloccato",
+      "body": "Consenti la fotocamera per questo sito nel browser, dall'icona della fotocamera o del lucchetto nella barra degli indirizzi, poi premi Riprova."
+    },
+    "insecure": {
+      "title": "La fotocamera richiede HTTPS",
+      "body": "I browser consentono la fotocamera solo su una connessione sicura, e questa pagina è in HTTP ({host}). Apri Torqvoice in HTTPS, oppure carica un file."
+    },
+    "notFound": {
+      "title": "Nessuna fotocamera trovata",
+      "body": "Collega una webcam e premi Riprova, oppure carica un file."
+    },
+    "failed": {
+      "title": "Impossibile avviare la fotocamera",
+      "body": "Forse un'altra app la sta usando. Chiudila e premi Riprova."
+    }
+  },
   "richText": {
     "openLinkHint": "Tieni premuto {key} e fai clic per aprire"
   },

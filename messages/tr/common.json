@@ -153,6 +153,35 @@
     "use": "Bu videoyu kullan",
     "limit": "Kayıt {minutes} dakika sonra kendiliğinden durur."
   },
+  "photoCapture": {
+    "title": "Kamerayla fotoğraf çek",
+    "description": "Bu bilgisayarın kamerasıyla ya da bağlı bir web kamerasıyla.",
+    "starting": "Kamera başlatılıyor...",
+    "live": "Kamera önizlemesi",
+    "preview": "Az önce çekilen fotoğraf",
+    "camera": "Kamera",
+    "take": "Fotoğraf çek",
+    "retake": "Yeniden çek",
+    "use": "Bu fotoğrafı kullan",
+    "tryAgain": "Tekrar dene",
+    "uploadInstead": "Dosya yükle",
+    "denied": {
+      "title": "Kamera erişimi engellendi",
+      "body": "Tarayıcınızda bu site için kameraya izin verin (adres çubuğundaki kamera ya da kilit simgesinden), ardından Tekrar dene'ye basın."
+    },
+    "insecure": {
+      "title": "Kamera HTTPS gerektirir",
+      "body": "Tarayıcılar kameraya yalnızca güvenli bağlantıda izin verir ve bu sayfa HTTP ({host}) üzerinde. Torqvoice'u HTTPS ile açın ya da bir dosya yükleyin."
+    },
+    "notFound": {
+      "title": "Kamera bulunamadı",
+      "body": "Bir web kamerası bağlayıp Tekrar dene'ye basın ya da bir dosya yükleyin."
+    },
+    "failed": {
+      "title": "Kamera başlatılamadı",
+      "body": "Kamerayı başka bir uygulama kullanıyor olabilir. O uygulamayı kapatıp Tekrar dene'ye basın."
+    }
+  },
   "richText": {
     "openLinkHint": "Açmak için {key} tuşunu basılı tutup tıklayın"
   },

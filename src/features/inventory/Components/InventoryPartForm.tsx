@@ -56,6 +56,8 @@ import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 import { clearableInput } from '@/lib/clearable'
 import { TagInput } from '@/components/tag-input'
 import { useServiceType } from '@/components/service-type-context'
+import { CameraPhotoDialog } from '@/components/camera-photo-dialog'
+import { useNativeCamera } from '@/hooks/use-native-camera'
 import {
   MAX_PART_TAGS,
   MAX_TAG_LENGTH,
@@ -150,6 +152,10 @@ export function InventoryPartForm({
   const formRef = useRef<HTMLFormElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+  // A phone opens its camera app from the capture input; a desk browser would
+  // only show the file picker, so it gets the page's own camera instead.
+  const nativeCamera = useNativeCamera()
+  const [cameraOpen, setCameraOpen] = useState(false)
   const uploadedUrlsRef = useRef<string[]>([])
 
   useEffect(() => {
@@ -608,7 +614,9 @@ export function InventoryPartForm({
                     variant="outline"
                     size="sm"
                     className="flex-1 text-xs"
-                    onClick={() => cameraInputRef.current?.click()}
+                    onClick={() =>
+                      nativeCamera ? cameraInputRef.current?.click() : setCameraOpen(true)
+                    }
                     disabled={uploading}
                   >
                     <Camera className="mr-1 h-3 w-3" />
@@ -626,6 +634,12 @@ export function InventoryPartForm({
                     {t('form.upload')}
                   </Button>
                 </div>
+                <CameraPhotoDialog
+                  open={cameraOpen}
+                  onOpenChange={setCameraOpen}
+                  onCaptured={(file) => void uploadFile(file)}
+                  onUploadInstead={() => fileInputRef.current?.click()}
+                />
                 {gallery.length > 0 && (
                   <Button
                     type="button"

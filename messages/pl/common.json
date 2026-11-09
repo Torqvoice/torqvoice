@@ -153,6 +153,35 @@
     "use": "Użyj tego nagrania",
     "limit": "Nagrywanie zatrzyma się samo po {minutes} min."
   },
+  "photoCapture": {
+    "title": "Zdjęcie z kamery",
+    "description": "Kamerą tego komputera lub podłączoną kamerą internetową.",
+    "starting": "Uruchamianie kamery...",
+    "live": "Podgląd z kamery",
+    "preview": "Właśnie zrobione zdjęcie",
+    "camera": "Kamera",
+    "take": "Zrób zdjęcie",
+    "retake": "Zrób ponownie",
+    "use": "Użyj tego zdjęcia",
+    "tryAgain": "Spróbuj ponownie",
+    "uploadInstead": "Prześlij plik",
+    "denied": {
+      "title": "Dostęp do kamery jest zablokowany",
+      "body": "Zezwól tej stronie na użycie kamery w przeglądarce, ikoną kamery lub kłódki na pasku adresu, a potem kliknij Spróbuj ponownie."
+    },
+    "insecure": {
+      "title": "Kamera wymaga HTTPS",
+      "body": "Przeglądarki pozwalają używać kamery tylko przy bezpiecznym połączeniu, a ta strona działa przez HTTP ({host}). Otwórz Torqvoice przez HTTPS albo prześlij plik."
+    },
+    "notFound": {
+      "title": "Nie znaleziono kamery",
+      "body": "Podłącz kamerę internetową i kliknij Spróbuj ponownie albo prześlij plik."
+    },
+    "failed": {
+      "title": "Nie udało się uruchomić kamery",
+      "body": "Być może używa jej inna aplikacja. Zamknij ją i kliknij Spróbuj ponownie."
+    }
+  },
   "richText": {
     "openLinkHint": "Przytrzymaj {key} i kliknij, aby otworzyć"
   },

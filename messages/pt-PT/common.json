@@ -153,6 +153,35 @@
     "use": "Usar este vídeo",
     "limit": "A gravação para sozinha ao fim de {minutes} minutos."
   },
+  "photoCapture": {
+    "title": "Tirar uma fotografia",
+    "description": "Com a câmara deste computador ou uma webcam ligada.",
+    "starting": "A iniciar a câmara...",
+    "live": "Pré-visualização da câmara",
+    "preview": "A fotografia que acabou de tirar",
+    "camera": "Câmara",
+    "take": "Tirar fotografia",
+    "retake": "Tirar novamente",
+    "use": "Usar esta fotografia",
+    "tryAgain": "Tentar novamente",
+    "uploadInstead": "Carregar um ficheiro",
+    "denied": {
+      "title": "O acesso à câmara está bloqueado",
+      "body": "Permita a câmara para este site no navegador, através do ícone da câmara ou do cadeado na barra de endereço, e clique em Tentar novamente."
+    },
+    "insecure": {
+      "title": "A câmara precisa de HTTPS",
+      "body": "Os navegadores só permitem a câmara numa ligação segura, e esta página está em HTTP ({host}). Abra o Torqvoice por HTTPS, ou carregue um ficheiro."
+    },
+    "notFound": {
+      "title": "Nenhuma câmara encontrada",
+      "body": "Ligue uma webcam e clique em Tentar novamente, ou carregue um ficheiro."
+    },
+    "failed": {
+      "title": "Não foi possível iniciar a câmara",
+      "body": "Talvez outra aplicação a esteja a usar. Feche essa aplicação e clique em Tentar novamente."
+    }
+  },
   "richText": {
     "openLinkHint": "Mantenha {key} premido e clique para abrir"
   },

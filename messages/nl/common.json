@@ -153,6 +153,35 @@
     "use": "Deze video gebruiken",
     "limit": "De opname stopt vanzelf na {minutes} minuten."
   },
+  "photoCapture": {
+    "title": "Een foto maken",
+    "description": "Met de camera van deze computer of een aangesloten webcam.",
+    "starting": "Camera wordt gestart...",
+    "live": "Cameravoorbeeld",
+    "preview": "De foto die u net hebt gemaakt",
+    "camera": "Camera",
+    "take": "Foto maken",
+    "retake": "Opnieuw maken",
+    "use": "Deze foto gebruiken",
+    "tryAgain": "Opnieuw proberen",
+    "uploadInstead": "Bestand uploaden",
+    "denied": {
+      "title": "Toegang tot de camera is geblokkeerd",
+      "body": "Sta de camera toe voor deze site in uw browser, via het camera- of slotpictogram in de adresbalk, en klik daarna op Opnieuw proberen."
+    },
+    "insecure": {
+      "title": "De camera heeft HTTPS nodig",
+      "body": "Browsers staan de camera alleen toe via een beveiligde verbinding, en deze pagina draait op HTTP ({host}). Open Torqvoice via HTTPS, of upload een bestand."
+    },
+    "notFound": {
+      "title": "Geen camera gevonden",
+      "body": "Sluit een webcam aan en klik op Opnieuw proberen, of upload een bestand."
+    },
+    "failed": {
+      "title": "De camera kon niet starten",
+      "body": "Misschien gebruikt een andere app hem. Sluit die app en klik op Opnieuw proberen."
+    }
+  },
   "richText": {
     "openLinkHint": "Houd {key} ingedrukt en klik om te openen"
   },
