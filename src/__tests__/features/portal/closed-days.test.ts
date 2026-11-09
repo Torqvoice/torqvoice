@@ -76,6 +76,19 @@ describe('asking for service on a closed day', () => {
     expect(db.serviceRequest.create).not.toHaveBeenCalled()
   })
 
+  it('is refused when the closed day comes with a time of day', async () => {
+    const res = await createServiceRequest({
+      vehicleId: 'v1',
+      description: 'Brakes squeal',
+      preferredDate: '2027-01-26T12:00',
+    })
+    expect(res).toEqual({
+      success: false,
+      error: 'The workshop is closed on that day (Australia Day). Please pick another day.',
+    })
+    expect(db.serviceRequest.create).not.toHaveBeenCalled()
+  })
+
   it('is refused on a weekday the workshop never opens', async () => {
     const res = await createServiceRequest({
       vehicleId: 'v1',

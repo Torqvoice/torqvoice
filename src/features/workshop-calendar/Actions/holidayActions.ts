@@ -21,11 +21,12 @@ import { closuresEnabled, weekFromSettings } from '../Lib/loadCalendar.server'
 import { fetchNagerCountries, syncPublicHolidays } from '../Lib/holidaySync.server'
 import {
   FeedReadError,
+  applyFeedRead,
   eventsFromText,
+  readFeedAgain,
   readFeeds,
-  refreshFeed,
+  updateFeeds,
   workshopYear,
-  writeFeeds,
 } from '../Lib/feedSync.server'
 import { fetchIcs } from '../Lib/icsFetch.server'
 import { readSettings, writeSetting } from '../Lib/settingsStore.server'
@@ -280,7 +281,18 @@ export async function addHolidayFeed(input: unknown) {
         fetchedAt: new Date().toISOString(),
         error: null,
       }
-      await writeFeeds(organizationId, [...feeds, feed], userId)
+      // Checked again under the lock: another tab may have added one meanwhile.
+      await updateFeeds(
+        organizationId,
+        (current) => {
+          if (current.length >= MAX_FEEDS)
+            throw new Error(`A workshop can add up to ${MAX_FEEDS} calendars`)
+          if (url && current.some((f) => f.url === url))
+            throw new Error('That calendar is already added')
+          return { feeds: [...current, feed], result: undefined }
+        },
+        userId
+      )
       revalidate()
       return feedView(feed, year)
     },
@@ -292,14 +304,21 @@ export async function addHolidayFeed(input: unknown) {
 export async function refreshHolidayFeed(feedId: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      const feeds = await readFeeds(organizationId)
-      const index = feeds.findIndex((f) => f.id === feedId)
-      if (index < 0) throw new Error('Calendar not found')
+      const found = (await readFeeds(organizationId)).find((f) => f.id === feedId)
+      if (!found) throw new Error('Calendar not found')
       const year = await workshopYear(organizationId)
-      feeds[index] = await refreshFeed(feeds[index], year)
-      await writeFeeds(organizationId, feeds, userId)
+      const read = found.url ? await readFeedAgain({ ...found, url: found.url }, year) : null
+      const updated = await updateFeeds(
+        organizationId,
+        (feeds) => {
+          const next = read ? applyFeedRead(feeds, read) : feeds
+          return { feeds: next, result: next.find((f) => f.id === feedId) }
+        },
+        userId
+      )
+      if (!updated) throw new Error('Calendar not found')
       revalidate()
-      return feedView(feeds[index], year)
+      return feedView(updated, year)
     },
     { requiredPermissions: [UPDATE] }
   )
@@ -308,10 +327,9 @@ export async function refreshHolidayFeed(feedId: string) {
 export async function removeHolidayFeed(feedId: string) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      const feeds = await readFeeds(organizationId)
-      await writeFeeds(
+      await updateFeeds(
         organizationId,
-        feeds.filter((f) => f.id !== feedId),
+        (feeds) => ({ feeds: feeds.filter((f) => f.id !== feedId), result: undefined }),
         userId
       )
       revalidate()
@@ -331,14 +349,19 @@ export async function setHolidayFeedChoice(input: unknown) {
       const { feedId, name, closed } = z
         .object({ feedId: z.string(), name: z.string().max(300).optional(), closed: z.boolean() })
         .parse(input)
-      const feeds = await readFeeds(organizationId)
-      const feed = feeds.find((f) => f.id === feedId)
-      if (!feed) throw new Error('Calendar not found')
-      const names = name === undefined ? [...new Set(feed.events.map((e) => e.name))] : [name]
-      // Written down either way: closed is the default for a holiday but not
-      // for an observance, so leaving a name out does not say which it was.
-      for (const n of names) feed.choices[n] = closed
-      await writeFeeds(organizationId, feeds, userId)
+      await updateFeeds(
+        organizationId,
+        (feeds) => {
+          const feed = feeds.find((f) => f.id === feedId)
+          if (!feed) throw new Error('Calendar not found')
+          const names = name === undefined ? [...new Set(feed.events.map((e) => e.name))] : [name]
+          // Written down either way: closed is the default for a holiday but
+          // not for an observance, so leaving a name out does not say which.
+          for (const n of names) feed.choices[n] = closed
+          return { feeds, result: undefined }
+        },
+        userId
+      )
       revalidate()
       return { feedId, closed }
     },

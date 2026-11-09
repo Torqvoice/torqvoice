@@ -18,7 +18,8 @@ export async function readSettings(
   return new Map(rows.map((r) => [r.key, r.value]))
 }
 
-async function ownerOf(organizationId: string): Promise<string> {
+/** Who an automated write is recorded as: an owner of the workshop. */
+export async function ownerOf(organizationId: string): Promise<string> {
   const owner = await db.organizationMember.findFirst({
     where: { organizationId, role: 'owner' },
     select: { userId: true },

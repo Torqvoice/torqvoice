@@ -137,6 +137,10 @@ export async function syncPublicHolidays(
       error: error instanceof Error ? error.message : 'Could not fetch holidays',
     }
   }
+  // The fetch takes seconds. When the country changed meanwhile, the sync
+  // the change started writes that country's holidays; this one gives way.
+  const now = await readSettings(organizationId, [SETTING_KEYS.HOLIDAY_COUNTRY])
+  if ((now.get(SETTING_KEYS.HOLIDAY_COUNTRY) || '').toUpperCase() !== country) return null
   await writeSetting(organizationId, SETTING_KEYS.HOLIDAY_CACHE, JSON.stringify(cache), opts.userId)
   return cache
 }

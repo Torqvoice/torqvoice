@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { CalendarCheck, UserX } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
+import { DocsLink } from '@/components/docs-link'
 import { Switch } from '@/components/ui/switch'
 import { OpeningHoursCard } from '@/features/workshop-calendar/Components/OpeningHoursCard'
 import { PublicHolidaysCard } from '@/features/workshop-calendar/Components/PublicHolidaysCard'
@@ -76,7 +77,10 @@ export function OpeningHoursSettings({
   return (
     <div className="space-y-6">
       <ReadOnlyBanner />
-      <p className="text-sm text-muted-foreground">{t('page.description')}</p>
+      <div>
+        <p className="text-sm text-muted-foreground">{t('page.description')}</p>
+        <DocsLink href="/docs/configuration/opening-hours" variant="hint" className="mt-1" />
+      </div>
 
       <OpeningHoursCard week={settings.week} canEdit={canEdit} />
 

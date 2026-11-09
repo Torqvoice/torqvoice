@@ -6,7 +6,7 @@ import { zonedDayKey, zonedParts } from '@/lib/timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import type { DayHours } from '@/features/workshop-calendar/Lib/calendar'
 import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
-import { addDays, dayState, isDateKey } from '@/features/workshop-calendar/Lib/calendar'
+import { addDays, dayState } from '@/features/workshop-calendar/Lib/calendar'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import type { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
@@ -444,9 +444,13 @@ export async function createServiceRequest(input: {
 }) {
   return withPortalAuth(async ({ customerId, organizationId }) => {
     // A preferred day the workshop is closed on (a holiday, a closure, a day
-    // it never opens) is refused before anything is created.
-    if (input.preferredDate && isDateKey(input.preferredDate)) {
-      const day = input.preferredDate
+    // it never opens) is refused before anything is created. The day checked
+    // is the one stored, whatever form the date came in ("2027-01-26" or
+    // "2027-01-26T12:00").
+    const timeZone = await workshopTimeZone(organizationId)
+    const preferredDate = toSafeWorkshopDate(input.preferredDate, timeZone) ?? null
+    if (preferredDate) {
+      const day = zonedDayKey(preferredDate, timeZone)
       const { calendar } = await loadWorkshopCalendar(organizationId, { from: day, to: day })
       const state = dayState(calendar, day)
       if (!state.open) {
@@ -523,8 +527,7 @@ export async function createServiceRequest(input: {
     const serviceRequest = await db.serviceRequest.create({
       data: {
         description: input.description,
-        preferredDate:
-          toSafeWorkshopDate(input.preferredDate, await workshopTimeZone(organizationId)) ?? null,
+        preferredDate,
         customerId,
         vehicleId: vehicle.id,
         organizationId,

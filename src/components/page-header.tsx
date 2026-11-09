@@ -132,6 +132,7 @@ const docsMap: Record<string, string> = {
   '/tire-hotel/storage': '/docs/features/tire-hotel',
   '/tire-hotel/forecast': '/docs/features/tire-hotel',
   '/settings/tire-hotel': '/docs/features/tire-hotel',
+  '/settings/opening-hours': '/docs/configuration/opening-hours',
 }
 
 const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {

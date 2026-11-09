@@ -10,6 +10,7 @@ import {
   subtract,
   windowOn,
 } from './calendar'
+import { zonedParts } from '@/lib/timezone'
 
 /**
  * The calendar as the work board draws it: stretches of each day in minutes
@@ -21,12 +22,17 @@ export interface MinuteSpan {
   endMins: number
 }
 
-/** Minutes from the start of `key` to `instant`, kept inside the day. */
+/**
+ * Where `instant` falls on the workshop's clock on `key`, in minutes from
+ * midnight, kept inside the day (0 to 1440). Clock time, not time elapsed:
+ * the board lays a day out by its clock, so on the night the clocks change
+ * a 13:00 absence must still sit at 13:00, not an hour off.
+ */
 function minutesInto(key: string, instant: Date, timeZone: string): number {
-  const start = startOfDay(key, timeZone).getTime()
-  const end = startOfDay(addDays(key, 1), timeZone).getTime()
-  const at = Math.min(Math.max(instant.getTime(), start), end)
-  return Math.round((at - start) / 60_000)
+  if (instant.getTime() <= startOfDay(key, timeZone).getTime()) return 0
+  if (instant.getTime() >= startOfDay(addDays(key, 1), timeZone).getTime()) return 24 * 60
+  const { hour, minute } = zonedParts(instant, timeZone)
+  return hour * 60 + minute
 }
 
 function toSpans(key: string, intervals: Interval[], timeZone: string): MinuteSpan[] {

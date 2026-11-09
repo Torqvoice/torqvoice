@@ -203,9 +203,43 @@ describe('a day the clocks change', () => {
     expect(clock(open.start, 'Europe/Oslo')).toBe('08:00')
     expect(clock(open.end, 'Europe/Oslo')).toBe('16:00')
     expect(open.end.getTime() - open.start.getTime()).toBe(8 * 3600_000)
-    // The board's minutes for the closed parts still add up to the shortened day.
-    const closed = closedDay(c, '2026-03-29')
-    expect(closed.spans.at(-1)?.endMins).toBe(23 * 60)
+    // The board lays the day out by its clock, so the shut hours sit at
+    // 00:00-08:00 and 16:00-24:00 even on a 23-hour day.
+    expect(closedDay(c, '2026-03-29').spans).toEqual([
+      { startMins: 0, endMins: 8 * 60 },
+      { startMins: 16 * 60, endMins: 24 * 60 },
+    ])
+  })
+
+  it('draws leave at its own clock time on both nights the clocks change', () => {
+    const c = cal({
+      timeZone: 'Europe/Oslo',
+      week: defaultWeek('08:00', '16:00', true),
+      absences: [
+        {
+          id: 'spring',
+          technicianId: 'tech-1',
+          reason: 'holiday',
+          startDate: '2026-03-29',
+          endDate: '2026-03-29',
+          startTime: '13:00',
+        },
+        {
+          id: 'autumn',
+          technicianId: 'tech-1',
+          reason: 'holiday',
+          startDate: '2026-10-25',
+          endDate: '2026-10-25',
+          startTime: '13:00',
+        },
+      ],
+    })
+    expect(awayDay(c, 'tech-1', '2026-03-29')?.spans).toEqual([
+      { startMins: 13 * 60, endMins: 24 * 60 },
+    ])
+    expect(awayDay(c, 'tech-1', '2026-10-25')?.spans).toEqual([
+      { startMins: 13 * 60, endMins: 24 * 60 },
+    ])
   })
 })
 

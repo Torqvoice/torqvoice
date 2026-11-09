@@ -14,15 +14,17 @@ vi.mock('@/lib/cached-session', () => ({
   getCachedMembership: vi.fn(),
 }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn(), revalidateTag: vi.fn() }))
-vi.mock('@/features/webhooks/Lib/ssrf', () => ({
-  checkWebhookUrl: vi.fn(async () => ({ ok: true })),
+vi.mock('@/features/workshop-calendar/Lib/icsFetch.server', () => ({
+  fetchIcs: vi.fn(),
 }))
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
     auditLog: { create: vi.fn() },
     organizationMember: { findFirst: vi.fn() },
-    appSetting: { findMany: vi.fn(), upsert: vi.fn() },
+    appSetting: { findMany: vi.fn(), findUnique: vi.fn(), upsert: vi.fn() },
+    $transaction: vi.fn(),
+    $executeRaw: vi.fn(),
     technician: { findFirst: vi.fn() },
     technicianAbsence: {
       create: vi.fn(),
@@ -41,11 +43,18 @@ vi.mock('@/lib/db', () => ({
 
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
+import { fetchIcs } from '@/features/workshop-calendar/Lib/icsFetch.server'
+import { refreshLinkedFeeds } from '@/features/workshop-calendar/Lib/feedSync.server'
 import { createAbsence } from '@/features/workshop-calendar/Actions/absenceActions'
 import { createClosure } from '@/features/workshop-calendar/Actions/closureActions'
+import { getWorkshopCalendar } from '@/features/workshop-calendar/Actions/calendarActions'
+import { canEditTimeOff } from '@/features/workshop-calendar/Lib/access.server'
 import {
   addHolidayFeed,
+  refreshHolidayFeed,
+  removeHolidayFeed,
   saveHolidayCountry,
+  setHolidayFeedChoice,
   saveOpeningHours,
   setHolidayChoice,
 } from '@/features/workshop-calendar/Actions/holidayActions'
@@ -75,6 +84,15 @@ beforeEach(() => {
     args.where.key.in
       .filter((k) => settings.has(k))
       .map((k) => ({ key: k, value: settings.get(k) }))) as never)
+  vi.mocked(db.appSetting.findUnique).mockImplementation((async (args: {
+    where: { organizationId_key: { key: string } }
+  }) => {
+    const key = args.where.organizationId_key.key
+    return settings.has(key) ? { value: settings.get(key) } : null
+  }) as never)
+  // The lock is Postgres's; here a transaction just runs.
+  vi.mocked(db.$transaction).mockImplementation((async (fn: (tx: unknown) => unknown) =>
+    fn(db)) as never)
   vi.mocked(db.appSetting.upsert).mockImplementation((async (args: {
     where: { organizationId_key: { key: string } }
     update: { value: string }
@@ -158,6 +176,39 @@ describe('time off', () => {
     expect(backwards.success).toBe(false)
     expect(crossed.success).toBe(false)
     expect(db.technicianAbsence.create).not.toHaveBeenCalled()
+  })
+})
+
+describe('who may see and set leave', () => {
+  const member = (customRole: unknown) =>
+    vi.mocked(getCachedMembership).mockResolvedValue({
+      organizationId: ORG,
+      role: 'member',
+      roleId: customRole ? 'role-1' : null,
+      customRole,
+    } as never)
+  const board = (action: string) => ({ action, subject: 'work_board' })
+
+  it('keeps the board calendar, with its leave notes, from a role without the board', async () => {
+    member({ isAdmin: false, permissions: [{ action: 'read', subject: 'customers' }] })
+    const res = await getWorkshopCalendar({ from: '2026-11-16', to: '2026-11-22' })
+    expect(res).toMatchObject({ success: false, forbidden: true })
+    expect(db.technicianAbsence.findMany).not.toHaveBeenCalled()
+  })
+
+  it('offers the leave buttons exactly where the actions accept them', async () => {
+    member({ isAdmin: true, permissions: [] })
+    expect(await canEditTimeOff('user-a', 'member')).toBe(true)
+
+    member({ isAdmin: false, permissions: [board('update')] })
+    expect(await canEditTimeOff('user-a', 'member')).toBe(true)
+
+    member({ isAdmin: false, permissions: [board('read')] })
+    expect(await canEditTimeOff('user-a', 'member')).toBe(false)
+
+    // A member with no role has no permissions, in withAuth and here.
+    member(null)
+    expect(await canEditTimeOff('user-a', 'member')).toBe(false)
   })
 })
 
@@ -304,12 +355,53 @@ describe('holiday calendars', () => {
   })
 
   it('reads a webcal link as https and stores its days', async () => {
-    const fetchMock = vi.fn(async (_url: string) => new Response(ics, { status: 200 }))
-    vi.stubGlobal('fetch', fetchMock)
+    vi.mocked(fetchIcs).mockResolvedValue(ics)
     const res = await addHolidayFeed({ url: 'webcal://example.com/holidays.ics' })
     expect(res.success).toBe(true)
-    expect(String(fetchMock.mock.calls[0][0])).toBe('https://example.com/holidays.ics')
+    expect(fetchIcs).toHaveBeenCalledWith('https://example.com/holidays.ics')
     const [feed] = JSON.parse(settings.get('holidays.feeds') as string)
     expect(feed.url).toBe('https://example.com/holidays.ics')
+  })
+
+  const stored = () =>
+    JSON.parse(settings.get('holidays.feeds') ?? '[]') as {
+      id: string
+      events: { name: string }[]
+      choices: Record<string, boolean>
+    }[]
+
+  async function addLinked() {
+    vi.mocked(fetchIcs).mockResolvedValue(ics)
+    await addHolidayFeed({ url: 'https://example.com/holidays.ics' })
+    return stored()[0].id
+  }
+
+  it('clears the days of a calendar that has lost its last one', async () => {
+    const id = await addLinked()
+    vi.mocked(fetchIcs).mockResolvedValue('BEGIN:VCALENDAR\r\nEND:VCALENDAR')
+    const res = await refreshHolidayFeed(id)
+    expect(res.success).toBe(true)
+    expect(stored()[0].events).toEqual([])
+  })
+
+  it('keeps a switch made while the calendar was being read', async () => {
+    const id = await addLinked()
+    vi.mocked(fetchIcs).mockImplementation(async () => {
+      await setHolidayFeedChoice({ feedId: id, name: 'Christmas Day', closed: false })
+      return ics
+    })
+    await refreshLinkedFeeds(ORG)
+    expect(stored()[0].choices).toEqual({ 'Christmas Day': false })
+  })
+
+  it('does not bring back a calendar removed while it was being read', async () => {
+    const id = await addLinked()
+    vi.mocked(fetchIcs).mockImplementation(async () => {
+      await removeHolidayFeed(id)
+      return ics
+    })
+    const res = await refreshHolidayFeed(id)
+    expect(res).toMatchObject({ success: false, error: 'Calendar not found' })
+    expect(stored()).toEqual([])
   })
 })
