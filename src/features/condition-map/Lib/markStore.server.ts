@@ -278,6 +278,37 @@ export async function addMarkPhotos(
   return { mark, imageUrls }
 }
 
+/**
+ * One photo added to a mark, at most `max` on it. The row is locked for the
+ * read and the write, so two uploads at once each land, and the limit holds
+ * against both. Null when the mark is already full.
+ */
+export async function appendMarkPhoto(
+  organizationId: string,
+  id: string,
+  url: string,
+  max: number
+): Promise<{ mark: ConditionMarkData; imageUrls: string[] } | null> {
+  assertOwnUploads(url, organizationId)
+  const mark = await ownMark(organizationId, id)
+  await assertSheetOpen(organizationId, mark)
+  return db.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM "public"."condition_marks" WHERE id = ${id} FOR UPDATE`
+    const current = await tx.conditionMark.findFirst({
+      where: { id, organizationId },
+      select: { imageUrls: true },
+    })
+    if (!current) throw new Error('Mark not found')
+    if (current.imageUrls.length >= max) return null
+    const updated = await tx.conditionMark.update({
+      where: { id },
+      data: { imageUrls: { push: url } },
+      select: { imageUrls: true, serviceRecordId: true, inspectionId: true },
+    })
+    return { mark, imageUrls: updated.imageUrls }
+  })
+}
+
 export async function removeMarkPhoto(
   organizationId: string,
   id: string,

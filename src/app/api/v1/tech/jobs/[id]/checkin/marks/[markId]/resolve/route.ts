@@ -7,8 +7,10 @@ import { setMarkResolved } from '@/features/condition-map/Lib/markStore.server'
 import { checkinMarkList } from '@/features/condition-map/Lib/checkin.server'
 import {
   answeringRefusals,
+  announceMarksChanged,
   appLocale,
   checkinJobFor,
+  noteArrival,
 } from '@/features/condition-map/Lib/checkinAccess.server'
 
 /**
@@ -48,12 +50,24 @@ export async function POST(
         if (!previous.some((m) => m.id === markId)) {
           return apiError(409, 'conflict', 'That mark is already closed.')
         }
-      } else if (!mark.resolvedAt || mark.carriedToId) {
-        return apiError(409, 'conflict', 'That mark is not cleared.')
+      } else {
+        if (!mark.resolvedAt || mark.carriedToId) {
+          return apiError(409, 'conflict', 'That mark is not cleared.')
+        }
+        // Only a mark this check-in could have cleared: one that, open again,
+        // would be an earlier visit's mark on this job's map. A later visit's
+        // or the linked inspection's is not this job's to reopen.
+        const reopened = all.map((m) => (m.id === markId ? { ...m, resolvedAt: null } : m))
+        if (!splitMarks(reopened, job.scope).previous.some((m) => m.id === markId)) {
+          return apiError(409, 'conflict', "That mark is not this check-in's to reopen.")
+        }
       }
 
       return answeringRefusals(async () => {
+        await noteArrival(ctx.organizationId, job)
         await setMarkResolved(ctx.organizationId, ctx.userId, markId, resolved)
+        // The write names the earlier visit's job; this one's page is told too.
+        announceMarksChanged(ctx.organizationId, job.id)
         const marks = await checkinMarkList(
           ctx.organizationId,
           job.vehicleId,

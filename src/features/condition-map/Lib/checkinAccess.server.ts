@@ -1,6 +1,9 @@
 import 'server-only'
 import type { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { publishRecordChange } from '@/lib/realtime/publish.server'
+import { statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
 import { type ApiAuthContext, apiError } from '@/lib/with-api-auth'
 import { getBestLocaleFromHeader, resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { type MarkScope } from './marks'
@@ -97,4 +100,32 @@ export async function editableMark(
     where: { id: markId, organizationId, vehicleId: job.vehicleId, serviceRecordId: job.id },
     select: { id: true, imageUrls: true },
   })
+}
+
+/**
+ * A booking whose car is being checked in has arrived. Its first check-in
+ * write moves it from `scheduled` to `pending`, before the write itself:
+ * until then an online booking is a placeholder the customer's cancel link
+ * deletes with everything on it, and a car standing in the yard with its
+ * photos taken is no longer that.
+ */
+export async function noteArrival(organizationId: string, job: { id: string; status: string }) {
+  if (job.status !== 'scheduled') return
+  const moved = await db.serviceRecord.updateMany({
+    where: { id: job.id, organizationId, status: 'scheduled' },
+    data: statusColumns('pending'),
+  })
+  if (moved.count > 0) {
+    job.status = 'pending'
+    announceJobStatusChanged({ organizationId, serviceRecordId: job.id, status: 'pending' })
+  }
+}
+
+/**
+ * Tells a work order page open on this job that its marks changed, for a
+ * write the mark itself does not name the job in: clearing an earlier
+ * visit's mark touches that visit's row, not this one.
+ */
+export function announceMarksChanged(organizationId: string, jobId: string) {
+  publishRecordChange({ kind: 'serviceRecord', id: jobId, organizationId, hint: 'conditionMarks' })
 }

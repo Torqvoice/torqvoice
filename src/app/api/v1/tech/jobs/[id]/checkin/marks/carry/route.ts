@@ -7,6 +7,7 @@ import {
   answeringRefusals,
   appLocale,
   checkinJobFor,
+  noteArrival,
 } from '@/features/condition-map/Lib/checkinAccess.server'
 
 /**
@@ -26,6 +27,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
 
       return answeringRefusals(async () => {
+        await noteArrival(ctx.organizationId, job)
         const { marks: created } = await carryMarks(ctx.organizationId, ctx.userId, {
           vehicleId: job.vehicleId,
           serviceRecordId: job.id,

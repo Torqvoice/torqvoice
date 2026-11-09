@@ -129,6 +129,14 @@ vi.mock('@/lib/db', () => {
         JOB.mileage = data.mileage
         return JOB
       }),
+      updateMany: vi.fn(
+        async ({ where, data }: { where: Record<string, unknown>; data: { status: string } }) => {
+          const job = jobs.find((j) => matches(j as Record<string, unknown>, where))
+          if (!job) return { count: 0 }
+          job.status = data.status
+          return { count: 1 }
+        }
+      ),
     },
     vehicle: {
       updateMany: vi.fn(
@@ -152,10 +160,15 @@ vi.mock('@/lib/db', () => {
       findMany: vi.fn(async () =>
         state.marks.map((m) => ({
           ...m,
-          serviceRecord:
-            m.serviceRecordId === JOB.id
-              ? { createdAt: JOB.createdAt }
-              : { createdAt: OLD_JOB.createdAt },
+          // When each visit was opened: this job, an earlier one, a later one.
+          serviceRecord: {
+            createdAt:
+              m.serviceRecordId === JOB.id
+                ? JOB.createdAt
+                : m.serviceRecordId === 'job-later'
+                  ? new Date('2026-11-20T08:00:00Z')
+                  : OLD_JOB.createdAt,
+          },
           inspection: null,
         }))
       ),
@@ -172,11 +185,23 @@ vi.mock('@/lib/db', () => {
         state.marks.push(created)
         return created
       }),
-      update: vi.fn(async ({ where, data }: { where: { id: string }; data: Partial<Mark> }) => {
-        const m = state.marks.find((x) => x.id === where.id) as Mark
-        Object.assign(m, data)
-        return m
-      }),
+      update: vi.fn(
+        async ({
+          where,
+          data,
+        }: {
+          where: { id: string }
+          data: Omit<Partial<Mark>, 'imageUrls'> & { imageUrls?: string[] | { push: string } }
+        }) => {
+          const m = state.marks.find((x) => x.id === where.id) as Mark
+          const { imageUrls, ...rest } = data
+          Object.assign(m, rest)
+          if (imageUrls) {
+            m.imageUrls = Array.isArray(imageUrls) ? imageUrls : [...m.imageUrls, imageUrls.push]
+          }
+          return m
+        }
+      ),
       updateMany: vi.fn(
         async ({ where, data }: { where: Record<string, unknown>; data: Partial<Mark> }) => {
           const found = state.marks.filter((m) => matches(m as Record<string, unknown>, where))
@@ -199,11 +224,14 @@ vi.mock('@/lib/db', () => {
       ),
     },
     $transaction: vi.fn(async (run: (tx: unknown) => Promise<unknown>) => run(db)),
+    $queryRaw: vi.fn(async () => []),
   }
   return { db }
 })
 
 vi.mock('@/lib/audit', () => ({ logAudit: vi.fn(async () => undefined) }))
+vi.mock('@/lib/realtime/publish.server', () => ({ publishRecordChange: vi.fn() }))
+vi.mock('@/features/vehicles/Lib/jobEvents', () => ({ announceJobStatusChanged: vi.fn() }))
 vi.mock('@/lib/files/manager', () => ({
   releaseFiles: vi.fn(async () => undefined),
   discardUnsavedUpload: vi.fn(async () => undefined),
@@ -233,6 +261,8 @@ import {
 import { POST as resolve } from '@/app/api/v1/tech/jobs/[id]/checkin/marks/[markId]/resolve/route'
 import { POST as carry } from '@/app/api/v1/tech/jobs/[id]/checkin/marks/carry/route'
 import { POST as addPhoto } from '@/app/api/v1/tech/jobs/[id]/checkin/photos/route'
+import { POST as addMarkPhoto } from '@/app/api/v1/tech/jobs/[id]/checkin/marks/[markId]/photos/route'
+import { publishRecordChange } from '@/lib/realtime/publish.server'
 
 const req = (body?: unknown, init: RequestInit & { lang?: string } = {}) =>
   new Request('http://app.test/api', {
@@ -259,6 +289,7 @@ beforeEach(() => {
     isAdmin: false,
   }
   JOB.mileage = null
+  JOB.status = 'scheduled'
 })
 
 describe('reading a check-in', () => {
@@ -301,6 +332,20 @@ describe('reading a check-in', () => {
   it('does not open a job that is not on the technician’s list', async () => {
     state.ctx = { ...state.ctx, technicianIds: ['someone-else'] }
     expect((await GET(new Request('http://app.test/api'), job())).status).toBe(404)
+  })
+})
+
+describe('a booking checked in', () => {
+  it('stops being a placeholder the customer can cancel away at the first write', async () => {
+    expect(JOB.status).toBe('scheduled')
+    await PATCH(req({ mileage: 125400 }), job())
+    // A cancelled online booking deletes only a job still `scheduled`.
+    expect(JOB.status).toBe('pending')
+  })
+
+  it('is not moved by reading it', async () => {
+    await GET(new Request('http://app.test/api'), job())
+    expect(JOB.status).toBe('scheduled')
   })
 })
 
@@ -391,6 +436,32 @@ describe('earlier visits’ marks', () => {
     expect(state.marks[0].resolvedAt).toBeNull()
   })
 
+  it('reopens only a mark this check-in could have cleared', async () => {
+    // Cleared on a visit opened after this job: not this job's to reopen.
+    state.marks = [
+      mark({
+        id: 'later',
+        serviceRecordId: 'job-later',
+        recordedAt: new Date('2026-11-20'),
+        resolvedAt: new Date('2026-11-21'),
+      }),
+    ]
+    const later = await resolve(req({ resolved: false }), onMark('later'))
+    expect(later.status).toBe(409)
+    expect(state.marks[0].resolvedAt).not.toBeNull()
+  })
+
+  it('tells this job’s page when an earlier mark is cleared', async () => {
+    state.marks = [
+      mark({ id: 'before', serviceRecordId: OLD_JOB.id, recordedAt: new Date('2026-05-01') }),
+    ]
+    vi.mocked(publishRecordChange).mockClear()
+    await resolve(req({ resolved: true }), onMark('before'))
+    expect(publishRecordChange).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'serviceRecord', id: JOB.id, hint: 'conditionMarks' })
+    )
+  })
+
   it('does not clear this check-in’s own mark: that one is removed', async () => {
     state.marks = [mark({ id: 'now' })]
     expect((await resolve(req({ resolved: true }), onMark('now'))).status).toBe(400)
@@ -440,6 +511,23 @@ describe('drop-off photos', () => {
       description: 'front',
       includeInInvoice: false,
     })
+  })
+
+  it('takes a close-up onto a mark, and no more than a mark holds', async () => {
+    state.marks = [mark({ id: 'now' })]
+    const form = () => {
+      const f = new FormData()
+      f.append('file', new File([PNG], 'dent.png', { type: 'image/png' }))
+      return new Request('http://app.test/api', { method: 'POST', body: f })
+    }
+    expect((await addMarkPhoto(form(), onMark('now'))).status).toBe(201)
+    expect(state.marks[0].imageUrls).toHaveLength(1)
+    state.marks[0].imageUrls = Array.from(
+      { length: 10 },
+      (_, i) => `/api/protected/files/org-1/services/p${i}.jpg`
+    )
+    expect((await addMarkPhoto(form(), onMark('now'))).status).toBe(409)
+    expect(state.marks[0].imageUrls).toHaveLength(10)
   })
 
   it('refuses what is not a photo', async () => {

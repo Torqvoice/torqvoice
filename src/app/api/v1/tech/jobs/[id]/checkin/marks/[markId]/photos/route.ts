@@ -2,7 +2,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { assertContentLength } from '@/lib/backup/zip-guard'
 import { discardUnsavedUpload } from '@/lib/files/manager'
-import { addMarkPhotos, removeMarkPhoto } from '@/features/condition-map/Lib/markStore.server'
+import { appendMarkPhoto, removeMarkPhoto } from '@/features/condition-map/Lib/markStore.server'
 import { checkinMarkList } from '@/features/condition-map/Lib/checkin.server'
 import {
   answeringRefusals,
@@ -52,12 +52,17 @@ export async function POST(request: Request, { params }: Params) {
       if ('refused' in saved) return apiError(400, 'invalid_request', PHOTO_REFUSALS[saved.refused])
 
       return answeringRefusals(async () => {
+        // The photo is only kept if the mark holds it.
+        let added: Awaited<ReturnType<typeof appendMarkPhoto>>
         try {
-          await addMarkPhotos(ctx.organizationId, markId, [saved.url])
+          added = await appendMarkPhoto(ctx.organizationId, markId, saved.url, PHOTOS_PER_MARK)
         } catch (err) {
-          // The photo is only kept if the mark holds it.
           await discardUnsavedUpload(ctx.organizationId, 'services', saved.filename)
           throw err
+        }
+        if (!added) {
+          await discardUnsavedUpload(ctx.organizationId, 'services', saved.filename)
+          return apiError(409, 'conflict', `A mark can have at most ${PHOTOS_PER_MARK} photos.`)
         }
         const marks = await checkinMarkList(
           ctx.organizationId,

@@ -5,7 +5,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { assertContentLength } from '@/lib/backup/zip-guard'
 import { isDropoffSlot } from '@/lib/dropoff-slots'
-import { checkinJobFor } from '@/features/condition-map/Lib/checkinAccess.server'
+import { checkinJobFor, noteArrival } from '@/features/condition-map/Lib/checkinAccess.server'
 import {
   MAX_CHECKIN_PHOTO_BYTES,
   PHOTO_REFUSALS,
@@ -56,6 +56,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
       const saved = await saveCheckinPhoto(ctx.organizationId, form?.get('file') ?? null)
       if ('refused' in saved) return apiError(400, 'invalid_request', PHOTO_REFUSALS[saved.refused])
+      await noteArrival(ctx.organizationId, job)
 
       // The file is only kept if its row is: a file on disk that no attachment
       // points at is one nothing will ever delete.

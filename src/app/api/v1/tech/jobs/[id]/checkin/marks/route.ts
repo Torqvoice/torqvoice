@@ -8,6 +8,7 @@ import {
   answeringRefusals,
   appLocale,
   checkinJobFor,
+  noteArrival,
 } from '@/features/condition-map/Lib/checkinAccess.server'
 
 /**
@@ -37,6 +38,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (!parsed.success) return apiError(400, 'invalid_request', 'That mark is not complete.')
 
       return answeringRefusals(async () => {
+        await noteArrival(ctx.organizationId, job)
         const mark = await createMark(ctx.organizationId, ctx.userId, parsed.data)
         await logAudit(ctx, {
           action: 'conditionMark.add',

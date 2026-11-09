@@ -5,7 +5,11 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { BODY_TYPES } from '@/features/condition-map/Lib/drawingTypes'
 import { loadCheckin } from '@/features/condition-map/Lib/checkin.server'
-import { appLocale, checkinJobFor } from '@/features/condition-map/Lib/checkinAccess.server'
+import {
+  appLocale,
+  checkinJobFor,
+  noteArrival,
+} from '@/features/condition-map/Lib/checkinAccess.server'
 
 /**
  * A job's check-in, for the technician walking round the car as it arrives:
@@ -59,6 +63,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       const parsed = patchSchema.safeParse(await request.json().catch(() => null))
       if (!parsed.success) return apiError(400, 'invalid_request', 'Send a mileage or a body type.')
       const { mileage, bodyType } = parsed.data
+      await noteArrival(ctx.organizationId, job)
 
       if (mileage !== undefined) {
         await db.serviceRecord.update({ where: { id: job.id }, data: { mileage } })
