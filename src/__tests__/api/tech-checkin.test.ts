@@ -132,10 +132,16 @@ vi.mock('@/lib/db', () => {
         return JOB
       }),
       updateMany: vi.fn(
-        async ({ where, data }: { where: Record<string, unknown>; data: { status: string } }) => {
+        async ({
+          where,
+          data,
+        }: {
+          where: Record<string, unknown>
+          data: Record<string, unknown>
+        }) => {
           const job = jobs.find((j) => matches(j as Record<string, unknown>, where))
           if (!job) return { count: 0 }
-          job.status = data.status
+          Object.assign(job, data)
           return { count: 1 }
         }
       ),

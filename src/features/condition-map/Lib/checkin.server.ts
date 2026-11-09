@@ -5,7 +5,7 @@ import { DROPOFF_SLOTS, isDropoffSlot } from '@/lib/dropoff-slots'
 import { getBodyDrawing } from '../Drawings'
 import { composeViews, placedLines, placedPanels } from './compose'
 import { BODY_TYPES, type BodyType, VIEW_SIZE } from './drawingTypes'
-import { loadConditionMapMessages } from './labels'
+import { type ConditionMapMessages, loadConditionMapMessages } from './labels'
 import { loadVehicleConditionMarks, markTypeCatalogue } from './loadMarks.server'
 import {
   type ConditionMarkData,
@@ -88,9 +88,8 @@ export interface Checkin {
   slots: readonly string[]
 }
 
-/** The drawing for a body, placed on the sheet, named in a language. */
-export async function checkinSheet(body: BodyType, locale: string): Promise<CheckinSheet> {
-  const messages = await loadConditionMapMessages(locale)
+/** The drawing for a body, placed on the sheet, named in a language's words. */
+export function checkinSheet(body: BodyType, messages: ConditionMapMessages): CheckinSheet {
   const drawing = getBodyDrawing(body)
   const composition = composeViews()
   return {
@@ -217,7 +216,7 @@ export async function loadCheckin(
     },
     serviceType,
     bodies: BODY_TYPES.map((key) => ({ key, name: messages.bodies[key] ?? key })),
-    sheet: await checkinSheet(body, locale),
+    sheet: checkinSheet(body, messages),
     kinds: kinds.map((kind) => ({
       key: kind.key,
       name: kind.name,

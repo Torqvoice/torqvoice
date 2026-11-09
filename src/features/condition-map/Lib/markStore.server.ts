@@ -289,7 +289,7 @@ export async function appendMarkPhoto(
   url: string,
   max: number
 ): Promise<{ mark: ConditionMarkData; imageUrls: string[] } | null> {
-  assertOwnUploads(url, organizationId)
+  assertOwnUploads([url], organizationId)
   const mark = await ownMark(organizationId, id)
   await assertSheetOpen(organizationId, mark)
   return db.$transaction(async (tx) => {

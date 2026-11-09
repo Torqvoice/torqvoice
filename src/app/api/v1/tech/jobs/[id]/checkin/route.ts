@@ -66,7 +66,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       await noteArrival(ctx.organizationId, job)
 
       if (mileage !== undefined) {
-        await db.serviceRecord.update({ where: { id: job.id }, data: { mileage } })
+        await db.serviceRecord.updateMany({
+          where: { id: job.id, organizationId: ctx.organizationId },
+          data: { mileage },
+        })
         // The vehicle's reading only ever goes up, as it does when the job is
         // saved on the web: a typo on an old job must not wind the clock back.
         if (mileage !== null) {
