@@ -15,6 +15,8 @@ export function getEventLink(event: {
   vehicleId: string | null
 }): string {
   if (event.type === 'external') return '/settings/integrations'
+  if (event.type === 'closure') return '/settings/opening-hours'
+  if (event.type === 'absence') return '/work-board'
   if (event.type === 'quote') return `/quotes/${event.id}`
   if (event.type === 'message') return '/messages?tab=scheduled'
   if (event.type === 'reminder')
@@ -124,6 +126,8 @@ export const TYPE_HUE: Record<CalendarEvent['type'], Hue> = {
   quote: 'violet',
   message: 'teal',
   external: 'slate',
+  closure: 'red',
+  absence: 'orange',
 }
 
 export function typePalette(type: CalendarEvent['type']): EventPalette {
@@ -154,6 +158,10 @@ export function eventHue(event: Pick<CalendarEvent, 'type' | 'status'>): Hue {
       return event.status === 'approved' ? 'emerald' : 'violet'
     case 'message':
       return event.status === 'failed' ? 'red' : 'teal'
+    case 'closure':
+      return 'red'
+    case 'absence':
+      return 'orange'
     default:
       return 'slate'
   }

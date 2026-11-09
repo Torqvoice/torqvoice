@@ -68,7 +68,9 @@
       "reminder": "Hatırlatıcıyı aç",
       "quote": "Teklifi aç",
       "message": "Mesajları aç",
-      "external": "Aç"
+      "external": "Aç",
+      "closure": "Çalışma saatlerini aç",
+      "absence": "İş panosunu aç"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Hatırlatıcılar",
     "quotes": "Teklifler",
     "messages": "Mesajlar",
-    "external": "Bağlı takvimler"
+    "external": "Bağlı takvimler",
+    "closures": "Kapalı günler",
+    "absences": "İzinler"
   },
   "selectVehicle": "İş emri için araç seçin",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Yaklaşan",
       "failed": "Başarısız",
       "queued": "Sırada",
-      "busy": "Meşgul"
+      "busy": "Meşgul",
+      "closed": "Kapalı",
+      "away": "Müsait değil"
     },
     "type": {
       "service": "İş emri",
       "reminder": "Hatırlatıcı",
       "quote": "Teklif",
       "message": "Mesaj",
-      "external": "Bağlı takvim"
+      "external": "Bağlı takvim",
+      "closure": "Kapalı",
+      "absence": "İzin"
     },
     "noEvents": "Etkinlik yok",
     "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun.",

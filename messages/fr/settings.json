@@ -79,6 +79,10 @@
         "title": "Atelier",
         "description": "Valeurs par défaut technicien et main-d'oeuvre"
       },
+      "openingHours": {
+        "title": "Horaires et jours fériés",
+        "description": "Horaires, jours fériés, jours de fermeture, congés"
+      },
       "laborPresets": {
         "title": "Forfaits main-d'oeuvre",
         "description": "Forfaits de travail predefinis"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Échec de l'assignation des ordres",
     "noTechnician": "Aucun",
     "weekStartDay": "Début de semaine",
-    "workDayStart": "Début de journee",
-    "workDayEnd": "Fin de journee",
     "titleTemplateTitle": "Titre de l'ordre de travail",
     "titleTemplateDescription": "Le nom d'un nouvel ordre de travail avant que quelqu'un saisisse un titre. Composez-le avec les balises ci-dessous ; chaque travail s'ouvre avec les balises remplies et le titre reste modifiable sur le travail.",
     "titleTemplate": "Modèle de titre",
@@ -1249,7 +1251,9 @@
       "4": "Jeudi",
       "5": "Vendredi",
       "6": "Samedi"
-    }
+    },
+    "openingHoursMoved": "Les horaires d'ouverture se définissent pour chaque jour de la semaine, à côté des jours fériés, des jours de fermeture et des congés.",
+    "openingHoursLink": "Ouvrir les horaires et jours fériés"
   },
   "maintenance": {
     "title": "Maintenance predictive",
@@ -2937,6 +2941,16 @@
       "square": "Carré",
       "cross": "Croix",
       "hex": "Hexagone"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Horaires d'ouverture",
+      "switch": "Jours de fermeture et absences",
+      "publicHolidays": "Jours fériés",
+      "calendars": "Calendriers de jours fériés",
+      "closedDays": "Jours de fermeture",
+      "timeOff": "Congés et absences"
     }
   }
 }

@@ -1,6 +1,10 @@
 'use server'
 
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { getTranslations } from 'next-intl/server'
+import { zonedDayKey } from '@/lib/timezone'
+import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
+import { addDays, dayState, isDateKey } from '@/features/workshop-calendar/Lib/calendar'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import type { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
@@ -437,6 +441,22 @@ export async function createServiceRequest(input: {
   preferredDate?: string
 }) {
   return withPortalAuth(async ({ customerId, organizationId }) => {
+    // A preferred day the workshop is closed on (a holiday, a closure, a day
+    // it never opens) is refused before anything is created.
+    if (input.preferredDate && isDateKey(input.preferredDate)) {
+      const day = input.preferredDate
+      const { calendar } = await loadWorkshopCalendar(organizationId, { from: day, to: day })
+      const state = dayState(calendar, day)
+      if (!state.open) {
+        const tc = await getTranslations('workshopCalendar.portal')
+        throw new Error(
+          state.closures.length > 0
+            ? tc('closedDay', { name: state.closures.map((c) => c.name).join(', ') })
+            : tc('closedWeekday')
+        )
+      }
+    }
+
     let vehicle: { id: string; make: string; model: string; licensePlate: string | null } | null =
       null
 
@@ -684,5 +704,26 @@ export async function reportVehicleSold(vehicleId: string) {
       entityUrl: `/vehicles/${vehicle.id}`,
     })
     return { reportedAt: now.toISOString() }
+  })
+}
+
+/**
+ * The days in the coming weeks the workshop is closed for a holiday or
+ * closure, so the request form can say so before a customer picks one.
+ */
+export async function getPortalClosedDays() {
+  return withPortalAuth(async ({ organizationId }) => {
+    const timeZone = await workshopTimeZone(organizationId)
+    const today = zonedDayKey(new Date(), timeZone)
+    const last = addDays(today, 90)
+    const { calendar } = await loadWorkshopCalendar(organizationId, { from: today, to: last })
+    const days: { date: string; name: string }[] = []
+    for (const closure of calendar.closures) {
+      for (let day = closure.startDate; day <= closure.endDate; day = addDays(day, 1)) {
+        if (day < today || day > last) continue
+        if (!dayState(calendar, day).open) days.push({ date: day, name: closure.name })
+      }
+    }
+    return days.sort((a, b) => a.date.localeCompare(b.date))
   })
 }

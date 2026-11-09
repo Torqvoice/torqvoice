@@ -151,6 +151,33 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [],
   },
+  WorkshopClosure: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  TechnicianAbsence: {
+    organizationId: true,
+    foreignKeys: {
+      technicianId: {
+        target: 'Technician',
+        required: true,
+        relation: 'technician',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
   ConditionMark: {
     organizationId: true,
     foreignKeys: {

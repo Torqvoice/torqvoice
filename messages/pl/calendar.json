@@ -68,7 +68,9 @@
       "reminder": "Otwórz przypomnienie",
       "quote": "Otwórz wycenę",
       "message": "Otwórz wiadomości",
-      "external": "Otwórz"
+      "external": "Otwórz",
+      "closure": "Otwórz godziny otwarcia",
+      "absence": "Otwórz tablicę zleceń"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Przypomnienia",
     "quotes": "Wyceny",
     "messages": "Wiadomości",
-    "external": "Połączone kalendarze"
+    "external": "Połączone kalendarze",
+    "closures": "Dni zamknięcia",
+    "absences": "Nieobecności"
   },
   "selectVehicle": "Wybierz pojazd do zlecenia",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Nadchodzące",
       "failed": "Nieudane",
       "queued": "W kolejce",
-      "busy": "Zajęte"
+      "busy": "Zajęte",
+      "closed": "Zamknięte",
+      "away": "Nieobecność"
     },
     "type": {
       "service": "Zlecenie",
       "reminder": "Przypomnienie",
       "quote": "Wycena",
       "message": "Wiadomość",
-      "external": "Połączony kalendarz"
+      "external": "Połączony kalendarz",
+      "closure": "Zamknięte",
+      "absence": "Nieobecność"
     },
     "noEvents": "Brak wydarzeń",
     "selectDay": "Wybierz dzień z wydarzeniami lub utwórz nowe zlecenie.",

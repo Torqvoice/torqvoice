@@ -26,6 +26,7 @@ import { warrantyEntries } from './warranty'
 import { webhooksEntries } from './webhooks'
 import { workOrderStatusesEntries } from './workOrderStatuses'
 import { workshopEntries } from './workshop'
+import { openingHoursEntries } from './openingHours'
 
 export type { SettingsEntry } from './types'
 
@@ -51,6 +52,7 @@ export const SETTINGS_SEARCH_INDEX: readonly SettingsEntry[] = [
   ...emailTemplatesEntries,
   ...customerPortalEntries,
   ...workshopEntries,
+  ...openingHoursEntries,
   ...workOrderStatusesEntries,
   ...maintenanceEntries,
   ...inspectionRemindersEntries,

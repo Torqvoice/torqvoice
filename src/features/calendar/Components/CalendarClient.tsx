@@ -55,7 +55,15 @@ interface CalendarClientProps {
   messageChannels: MessageChannel[]
 }
 
-const ALL_TYPES: CalendarEventType[] = ['service', 'reminder', 'quote', 'message', 'external']
+const ALL_TYPES: CalendarEventType[] = [
+  'service',
+  'reminder',
+  'quote',
+  'message',
+  'external',
+  'closure',
+  'absence',
+]
 
 /** Minutes a work order started from a time slot is booked for. */
 const SLOT_WORK_ORDER_MINUTES = 60
@@ -109,6 +117,8 @@ export default function CalendarClient({
     quote: true,
     message: true,
     external: true,
+    closure: true,
+    absence: true,
   })
 
   // Dialogs the calendar can open
@@ -177,6 +187,8 @@ export default function CalendarClient({
       quote: 0,
       message: 0,
       external: 0,
+      closure: 0,
+      absence: 0,
     }
     const startKey = toLocalDateStr(range.start)
     const endKey = toLocalDateStr(range.end)

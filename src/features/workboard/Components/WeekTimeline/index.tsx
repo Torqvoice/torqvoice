@@ -1,5 +1,6 @@
 'use client'
 
+import { type AwayByLaneDay, type ClosedByDay, awayKey } from '../../hooks/useBoardCalendar'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDndMonitor } from '@dnd-kit/core'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -87,6 +88,8 @@ export function WeekTimeline({
   onShowWholeWeek,
   owners,
   readOnly = false,
+  closedByDay,
+  awayByLaneDay,
 }: {
   days: string[]
   /** Days left out of the grid, so work on them can still be accounted for. */
@@ -119,6 +122,10 @@ export function WeekTimeline({
   owners?: Map<string, { name: string; color: string }>
   /** Wall-display mode: the same board, with nothing to drag or open. */
   readOnly?: boolean
+  /** Closed days and hours from the workshop calendar, by day. */
+  closedByDay?: ClosedByDay
+  /** Technicians away, by `awayKey(lane, day)`. */
+  awayByLaneDay?: AwayByLaneDay
 }) {
   const t = useTranslations('workBoard.week')
   const locale = useLocale()
@@ -392,19 +399,30 @@ export function WeekTimeline({
             />
             {days.map((day) => {
               const isToday = day === todayStr
+              const closed = closedByDay?.[day]
               return (
                 <div
                   key={`day-${day}`}
                   className={cn(
-                    'sticky top-0 z-40 border-b border-r bg-background px-2 py-1 text-center text-xs font-medium',
-                    isToday && 'text-primary'
+                    'sticky top-0 z-40 truncate border-b border-r bg-background px-2 py-1 text-center text-xs font-medium',
+                    isToday && 'text-primary',
+                    closed?.allDay && 'bg-muted text-muted-foreground'
                   )}
                   style={{
                     gridColumn: `span ${lanes.length}`,
                     height: DAY_HEADER_HEIGHT,
                   }}
+                  title={closed?.label ?? undefined}
                 >
                   {dayFormatter.format(new Date(`${day}T12:00:00`))}
+                  {closed?.label && (
+                    <span
+                      className="ml-1.5 font-normal text-muted-foreground"
+                      data-testid="day-closed"
+                    >
+                      · {closed.label}
+                    </span>
+                  )}
                 </div>
               )
             })}
@@ -425,6 +443,7 @@ export function WeekTimeline({
                       lane.dailyCapacity > 0
                         ? Math.round((booked / lane.dailyCapacity) * 100)
                         : null
+                    const away = awayByLaneDay?.[awayKey(lane.id, day)]
                     return (
                       <LaneHeaderTooltip
                         key={`lane-${day}-${lane.id}`}
@@ -433,6 +452,7 @@ export function WeekTimeline({
                         days={[day]}
                         capacityMinutes={lane.dailyCapacity}
                         periodLabel={dayFormatter.format(new Date(`${day}T12:00:00`))}
+                        awayLabel={away?.label}
                       >
                         <button
                           type="button"
@@ -451,20 +471,29 @@ export function WeekTimeline({
                             />
                             <span className="truncate text-[11px] font-medium">{lane.name}</span>
                           </span>
-                          {pct !== null && (
-                            <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
-                              <span
-                                className={cn(
-                                  'block h-full rounded-full',
-                                  pct > 100
-                                    ? 'bg-red-500'
-                                    : pct >= 75
-                                      ? 'bg-amber-500'
-                                      : 'bg-emerald-500'
-                                )}
-                                style={{ width: `${Math.min(pct, 100)}%` }}
-                              />
+                          {away ? (
+                            <span
+                              className="truncate text-[10px] font-medium text-muted-foreground"
+                              data-testid="lane-away"
+                            >
+                              {away.label}
                             </span>
+                          ) : (
+                            pct !== null && (
+                              <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
+                                <span
+                                  className={cn(
+                                    'block h-full rounded-full',
+                                    pct > 100
+                                      ? 'bg-red-500'
+                                      : pct >= 75
+                                        ? 'bg-amber-500'
+                                        : 'bg-emerald-500'
+                                  )}
+                                  style={{ width: `${Math.min(pct, 100)}%` }}
+                                />
+                              </span>
+                            )
                           )}
                         </button>
                       </LaneHeaderTooltip>
@@ -514,6 +543,8 @@ export function WeekTimeline({
                   lookup={owners}
                   workDayStart={dayStartMins}
                   workDayEnd={dayEndMins}
+                  closed={closedByDay?.[day]}
+                  away={awayByLaneDay?.[awayKey(lane.id, day)]}
                   nowMinutes={day === todayStr ? nowMinutes : null}
                   draggingJobId={drag.isDragging ? (drag.preview?.jobId ?? null) : null}
                   registerColumn={drag.registerColumn}

@@ -67,7 +67,7 @@ export const BACKUP_LAYOUT: Record<string, LayoutNode> = {
       attachments: { model: 'QuoteAttachment' },
     },
   },
-  technicians: { model: 'Technician' },
+  technicians: { model: 'Technician', children: { absences: { model: 'TechnicianAbsence' } } },
   workBays: { model: 'WorkBay' },
   inspectionTemplates: {
     model: 'InspectionTemplate',
@@ -99,6 +99,7 @@ export const BACKUP_LAYOUT: Record<string, LayoutNode> = {
   },
   workOrderStatuses: { model: 'WorkOrderStatus' },
   conditionMarkTypes: { model: 'ConditionMarkType' },
+  workshopClosures: { model: 'WorkshopClosure' },
   laborPresets: {
     model: 'LaborPreset',
     children: { items: { model: 'LaborPresetItem' }, parts: { model: 'LaborPresetPart' } },

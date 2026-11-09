@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
+import { formatDay } from '@/features/workshop-calendar/Lib/format'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -24,8 +25,19 @@ type Vehicle = {
 /** Sentinel for "my vehicle isn't listed" — never collides with a cuid. */
 const NEW_VEHICLE = '__new__'
 
-export function ServiceRequestForm({ orgId, vehicles }: { orgId: string; vehicles: Vehicle[] }) {
+export function ServiceRequestForm({
+  orgId,
+  vehicles,
+  closedDays = [],
+}: {
+  orgId: string
+  vehicles: Vehicle[]
+  /** Holidays and closures in the coming weeks, so they can be avoided. */
+  closedDays?: { date: string; name: string }[]
+}) {
   const t = useTranslations('portal.requestService')
+  const tc = useTranslations('workshopCalendar.portal')
+  const locale = useLocale()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   // A customer with no registered vehicles starts straight in "new vehicle"
@@ -53,6 +65,11 @@ export function ServiceRequestForm({ orgId, vehicles }: { orgId: string; vehicle
     }
     if (!description.trim()) {
       toast.error(t('describeIssue'))
+      return
+    }
+    const closed = closedDays.find((d) => d.date === preferredDate)
+    if (closed) {
+      toast.error(tc('closedDay', { name: closed.name }))
       return
     }
 
@@ -193,6 +210,16 @@ export function ServiceRequestForm({ orgId, vehicles }: { orgId: string; vehicle
             onChange={(e) => setPreferredDate(e.target.value)}
             min={new Date().toISOString().split('T')[0]}
           />
+          {closedDays.length > 0 && (
+            <p className="text-xs text-muted-foreground" data-testid="portal-closed-days">
+              {tc('upcomingClosed', {
+                days: closedDays
+                  .slice(0, 8)
+                  .map((d) => `${formatDay(d.date, locale, { year: false })} (${d.name})`)
+                  .join(', '),
+              })}
+            </p>
+          )}
         </div>
 
         <div className="flex justify-end">

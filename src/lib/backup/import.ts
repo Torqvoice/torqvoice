@@ -598,6 +598,7 @@ export async function restoreBackup(
           InventoryPart: () => tx.inventoryPart.deleteMany({ where: { organizationId } }),
           Technician: () => tx.technician.deleteMany({ where: { organizationId } }),
           WorkBay: () => tx.workBay.deleteMany({ where: { organizationId } }),
+          WorkshopClosure: () => tx.workshopClosure.deleteMany({ where: { organizationId } }),
           Customer: () => tx.customer.deleteMany({ where: { organizationId } }),
           LaborPreset: () => tx.laborPreset.deleteMany({ where: { organizationId } }),
           ConditionMarkType: () => tx.conditionMarkType.deleteMany({ where: { organizationId } }),
@@ -806,6 +807,17 @@ export async function restoreBackup(
               select: { id: true },
             })
           ).map((t) => t.id)
+        )
+
+        // Each technician's time off, for the technicians this restore has.
+        const absences = ((data.technicians as Record<string, unknown>[] | undefined) ?? [])
+          .flatMap((t) => (t.absences as Record<string, unknown>[] | undefined) ?? [])
+          .filter((a) => technicianIds.has(a.technicianId as string))
+        await restoreRows(
+          'time off',
+          (rows) => tx.technicianAbsence.createMany({ data: rows as never }),
+          absences,
+          { organizationId: ctx.organizationId }
         )
 
         // 4b. Insert work bays. Service records and inspections point at them, so
@@ -1719,8 +1731,14 @@ export async function restoreBackup(
           )
         }
 
-        // Workshop configuration: the kinds of mark, labour presets, webhooks,
-        // report schedules.
+        // Workshop configuration: the kinds of mark, closed days, labour
+        // presets, webhooks, report schedules.
+        await restoreRows(
+          'closed days',
+          (rows) => tx.workshopClosure.createMany({ data: rows as never }),
+          data.workshopClosures,
+          { organizationId }
+        )
         const markTypes = data.conditionMarkTypes as Record<string, unknown>[] | undefined
         if (markTypes?.length) {
           await restoreRows(

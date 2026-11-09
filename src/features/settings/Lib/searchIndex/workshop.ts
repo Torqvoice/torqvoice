@@ -49,20 +49,6 @@ export const workshopEntries: SettingsEntry[] = [
     ],
   },
   {
-    id: 'workshop.workDayStart',
-    page: 'workshop',
-    title: 'workshop.workDayStart',
-    anchor: 'workDayStart',
-    keywords: ['work day start', 'opening hours', 'opening time', 'start of day', 'business hours'],
-  },
-  {
-    id: 'workshop.workDayEnd',
-    page: 'workshop',
-    title: 'workshop.workDayEnd',
-    anchor: 'workDayEnd',
-    keywords: ['work day end', 'closing time', 'opening hours', 'end of day', 'business hours'],
-  },
-  {
     id: 'workshop.titleTemplate',
     page: 'workshop',
     title: 'workshop.titleTemplateTitle',

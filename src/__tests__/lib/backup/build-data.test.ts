@@ -104,6 +104,7 @@ describe('organisation scope', () => {
       'tireSets',
       'workOrderStatuses',
       'conditionMarkTypes',
+      'workshopClosures',
       'laborPresets',
       'webhooks',
       'reportSchedules',

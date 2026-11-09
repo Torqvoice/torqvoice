@@ -79,6 +79,10 @@
         "title": "Warsztat",
         "description": "Domyślne ustawienia technika i robocizny"
       },
+      "openingHours": {
+        "title": "Godziny otwarcia i święta",
+        "description": "Godziny, święta, dni zamknięcia, urlopy"
+      },
       "laborPresets": {
         "title": "Pakiety robocizny",
         "description": "Predefiniowane pakiety pracy"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Nie udało się przypisać zleceń",
     "noTechnician": "Brak",
     "weekStartDay": "Poczatek tygodnia",
-    "workDayStart": "Poczatek dnia pracy",
-    "workDayEnd": "Koniec dnia pracy",
     "titleTemplateTitle": "Tytuł zlecenia",
     "titleTemplateDescription": "Jak nazywa się nowe zlecenie, zanim ktoś wpisze tytuł. Zbuduj go z poniższych tagów; każde zlecenie otwiera się z wypełnionymi tagami, a tytuł nadal można zmienić w zleceniu.",
     "titleTemplate": "Szablon tytułu",
@@ -1249,7 +1251,9 @@
       "4": "Czwartek",
       "5": "Piątek",
       "6": "Sobota"
-    }
+    },
+    "openingHoursMoved": "Godziny otwarcia ustawia się dla każdego dnia tygodnia, obok świąt, dni zamknięcia i urlopów.",
+    "openingHoursLink": "Otwórz godziny otwarcia i święta"
   },
   "maintenance": {
     "title": "Przewidywana konserwacja",
@@ -2937,6 +2941,16 @@
       "square": "Kwadrat",
       "cross": "Krzyżyk",
       "hex": "Sześciokąt"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Godziny otwarcia",
+      "switch": "Dni zamknięcia i nieobecności",
+      "publicHolidays": "Święta",
+      "calendars": "Kalendarze świąt",
+      "closedDays": "Dni zamknięcia",
+      "timeOff": "Urlopy i nieobecności"
     }
   }
 }

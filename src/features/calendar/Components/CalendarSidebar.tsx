@@ -9,7 +9,18 @@ import type { CalendarEventType } from '../Actions/calendarActions'
 
 export type TypeFilters = Record<CalendarEventType, boolean>
 
-const FILTER_ORDER: CalendarEventType[] = ['service', 'reminder', 'quote', 'message', 'external']
+const FILTER_ORDER: CalendarEventType[] = [
+  'service',
+  'reminder',
+  'quote',
+  'message',
+  'closure',
+  'absence',
+  'external',
+]
+
+/** Shown only when there is something of the kind in view. */
+const ONLY_WHEN_PRESENT: CalendarEventType[] = ['external', 'closure', 'absence']
 
 const FILTER_LABEL: Record<CalendarEventType, string> = {
   service: 'services',
@@ -17,6 +28,8 @@ const FILTER_LABEL: Record<CalendarEventType, string> = {
   quote: 'quotes',
   message: 'messages',
   external: 'external',
+  closure: 'closures',
+  absence: 'absences',
 }
 
 interface CalendarSidebarProps {
@@ -74,7 +87,7 @@ export function CalendarSidebar({
         </div>
         <ul className="space-y-0.5">
           {FILTER_ORDER.map((type) => {
-            if (type === 'external' && counts.external === 0) return null
+            if (ONLY_WHEN_PRESENT.includes(type) && counts[type] === 0) return null
             const palette = typePalette(type)
             return (
               <li key={type}>

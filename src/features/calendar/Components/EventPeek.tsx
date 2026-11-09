@@ -26,6 +26,8 @@ import {
   User,
   Wrench,
   X,
+  CalendarOff,
+  UserX,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -129,6 +131,10 @@ function typeIcon(event: CalendarEvent) {
       return FileText
     case 'message':
       return event.channel === 'email' ? Mail : event.channel === 'sms' ? MessageSquare : Send
+    case 'closure':
+      return CalendarOff
+    case 'absence':
+      return UserX
     default:
       return CalendarClock
   }
@@ -157,6 +163,8 @@ function statusKey(event: CalendarEvent): string {
     return event.status === 'sent' ? 'sent' : event.status === 'approved' ? 'approved' : 'draft'
   }
   if (event.type === 'external') return 'busy'
+  if (event.type === 'closure') return 'closed'
+  if (event.type === 'absence') return 'away'
   return event.status === 'completed' ? 'done' : event.status === 'overdue' ? 'overdue' : 'upcoming'
 }
 

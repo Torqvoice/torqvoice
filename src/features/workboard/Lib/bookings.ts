@@ -1,6 +1,11 @@
 import { db } from '@/lib/db'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
-import type { Booking, WorkingHours } from './availability'
+import { dayOf } from '@/features/workshop-calendar/Lib/calendar'
+import {
+  loadWorkshopCalendar,
+  rangeAround,
+} from '@/features/workshop-calendar/Lib/loadCalendar.server'
+import { type Booking, type WorkingHours, absenceBookings } from './availability'
 
 /**
  * Everything currently holding a person or a bay, and the hours the shop works.
@@ -16,7 +21,7 @@ const WINDOW_DAYS = 45
 export async function loadBookingContext(
   organizationId: string,
   from: Date
-): Promise<{ bookings: Booking[]; hours: WorkingHours }> {
+): Promise<{ bookings: Booking[]; hours: WorkingHours; closuresEnabled: boolean }> {
   const windowStart = new Date(from)
   windowStart.setDate(windowStart.getDate() - 1)
   const windowEnd = new Date(from)
@@ -97,13 +102,25 @@ export async function loadBookingContext(
   ]
 
   const map = Object.fromEntries(settings.map((s) => [s.key, s.value]))
+  const timeZone = resolveWorkshopTimeZone(
+    map['workshop.timezone'],
+    map['workshop.timezoneDetected']
+  )
+  // Opening hours per weekday, closed days and time off for the same window.
+  // Time off joins the bookings, so a technician away is never free.
+  const { enabled, calendar } = await loadWorkshopCalendar(
+    organizationId,
+    rangeAround(dayOf(from, timeZone), WINDOW_DAYS)
+  )
   return {
-    bookings,
+    bookings: [...bookings, ...absenceBookings(calendar)],
     hours: {
       start: map['workboard.workDayStart'] || '07:00',
       end: map['workboard.workDayEnd'] || '15:00',
       includeWeekends: map['workboard.showWeekends'] === 'true',
-      timeZone: resolveWorkshopTimeZone(map['workshop.timezone'], map['workshop.timezoneDetected']),
+      timeZone,
+      calendar,
     },
+    closuresEnabled: enabled,
   }
 }

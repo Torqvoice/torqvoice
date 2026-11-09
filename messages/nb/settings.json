@@ -79,6 +79,10 @@
         "title": "Verksted",
         "description": "Tekniker- og arbeidsstandarder"
       },
+      "openingHours": {
+        "title": "Åpningstider og helligdager",
+        "description": "Tider, helligdager, stengte dager, fravær"
+      },
       "laborPresets": {
         "title": "Arbeidspakker",
         "description": "Forhåndsdefinerte arbeidspakker"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Kunne ikke tildele arbeidsordre",
     "noTechnician": "Ingen",
     "weekStartDay": "Ukens startdag",
-    "workDayStart": "Arbeidsdagen starter",
-    "workDayEnd": "Arbeidsdagen slutter",
     "titleTemplateTitle": "Tittel på arbeidsordre",
     "titleTemplateDescription": "Hva en ny arbeidsordre heter før noen skriver inn en tittel. Sett den sammen av taggene under; hver jobb åpnes med taggene fylt ut, og tittelen kan fortsatt endres på jobben.",
     "titleTemplate": "Tittelmal",
@@ -1249,7 +1251,9 @@
       "4": "Torsdag",
       "5": "Fredag",
       "6": "Lørdag"
-    }
+    },
+    "openingHoursMoved": "Åpningstider settes for hver ukedag, sammen med helligdager, stengte dager og fravær.",
+    "openingHoursLink": "Åpne åpningstider og helligdager"
   },
   "maintenance": {
     "title": "Predikert vedlikehold",
@@ -2937,6 +2941,16 @@
       "square": "Firkant",
       "cross": "Kryss",
       "hex": "Sekskant"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Åpningstider",
+      "switch": "Stengte dager og fravær",
+      "publicHolidays": "Helligdager",
+      "calendars": "Helligdagskalendere",
+      "closedDays": "Stengte dager",
+      "timeOff": "Ferie og fravær"
     }
   }
 }

@@ -1,0 +1,60 @@
+/// A day, or run of days, the whole workshop is closed, entered by hand: a
+/// shutdown week, a staff day, the afternoon of Christmas Eve. Public holidays
+/// from the workshop's country and holiday calendars are not stored here; they
+/// are read from settings and joined with these when a calendar is built.
+model WorkshopClosure {
+  id   String @id @default(cuid())
+  name String
+
+  /// First and last closed day, both included, as dates on the workshop's
+  /// own calendar. Kept as dates, not instants, so a time zone change cannot
+  /// move a holiday.
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  /// "HH:mm" the closure begins on its first day. Null closes the whole day.
+  startTime String?
+  /// "HH:mm" the closure ends on its last day. Null keeps it closed to the
+  /// end of that day.
+  endTime   String?
+  /// Closed on the same dates every year (a national day, a staff holiday).
+  repeatsYearly Boolean @default(false)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId, startDate])
+  @@map("workshop_closures")
+}
+
+/// Time a technician is away: holiday, sick leave, a course. The work board,
+/// the scheduler and online booking read it so nobody is booked while away.
+model TechnicianAbsence {
+  id String @id @default(cuid())
+
+  /// First and last day away, both included, on the workshop's calendar.
+  startDate DateTime @db.Date
+  endDate   DateTime @db.Date
+  /// "HH:mm" the absence begins on its first day. Null is the whole day.
+  startTime String?
+  /// "HH:mm" it ends on its last day. Null is to the end of that day.
+  endTime   String?
+  /// holiday, sick, training or other.
+  reason    String  @default("holiday")
+  note      String?
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId, startDate])
+  @@index([technicianId])
+  @@map("technician_absences")
+}

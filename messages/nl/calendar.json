@@ -68,7 +68,9 @@
       "reminder": "Herinnering openen",
       "quote": "Offerte openen",
       "message": "Berichten openen",
-      "external": "Openen"
+      "external": "Openen",
+      "closure": "Openingstijden openen",
+      "absence": "Werkbord openen"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Herinneringen",
     "quotes": "Offertes",
     "messages": "Berichten",
-    "external": "Gekoppelde agenda's"
+    "external": "Gekoppelde agenda's",
+    "closures": "Sluitingsdagen",
+    "absences": "Verlof"
   },
   "selectVehicle": "Selecteer voertuig voor werkorder",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Aanstaand",
       "failed": "Mislukt",
       "queued": "In wachtrij",
-      "busy": "Bezet"
+      "busy": "Bezet",
+      "closed": "Gesloten",
+      "away": "Afwezig"
     },
     "type": {
       "service": "Werkorder",
       "reminder": "Herinnering",
       "quote": "Offerte",
       "message": "Bericht",
-      "external": "Gekoppelde agenda"
+      "external": "Gekoppelde agenda",
+      "closure": "Gesloten",
+      "absence": "Verlof"
     },
     "noEvents": "Geen evenementen",
     "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan.",

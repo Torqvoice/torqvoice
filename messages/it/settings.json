@@ -79,6 +79,10 @@
         "title": "Officina",
         "description": "Tecnico e valori predefiniti manodopera"
       },
+      "openingHours": {
+        "title": "Orari e festività",
+        "description": "Orari, festività, giorni di chiusura, assenze"
+      },
       "laborPresets": {
         "title": "Pacchetti manodopera",
         "description": "Pacchetti di lavoro predefiniti"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Impossibile assegnare gli ordini di lavoro",
     "noTechnician": "Nessuno",
     "weekStartDay": "Inizio settimana",
-    "workDayStart": "Inizio giornata",
-    "workDayEnd": "Fine giornata",
     "titleTemplateTitle": "Titolo dell'ordine di lavoro",
     "titleTemplateDescription": "Come si chiama un nuovo ordine di lavoro prima che qualcuno scriva un titolo. Componilo con i tag qui sotto; ogni lavoro si apre con i tag compilati e il titolo resta modificabile sul lavoro.",
     "titleTemplate": "Modello del titolo",
@@ -1249,7 +1251,9 @@
       "4": "Giovedi",
       "5": "Venerdi",
       "6": "Sabato"
-    }
+    },
+    "openingHoursMoved": "Gli orari di apertura si impostano per ogni giorno della settimana, accanto a festività, giorni di chiusura e assenze.",
+    "openingHoursLink": "Apri orari e festività"
   },
   "maintenance": {
     "title": "Manutenzione prevista",
@@ -2937,6 +2941,16 @@
       "square": "Quadrato",
       "cross": "Croce",
       "hex": "Esagono"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Orari di apertura",
+      "switch": "Giorni di chiusura e assenze",
+      "publicHolidays": "Festività",
+      "calendars": "Calendari delle festività",
+      "closedDays": "Giorni di chiusura",
+      "timeOff": "Ferie e assenze"
     }
   }
 }

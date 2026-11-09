@@ -93,6 +93,8 @@ model Organization {
   documentDesignSnapshots     DocumentDesignSnapshot[]
   documentAssetSnapshots      DocumentAssetSnapshot[]
   backupRuns                  BackupRun[]
+  workshopClosures            WorkshopClosure[]
+  technicianAbsences          TechnicianAbsence[]
   platformBackup              PlatformBackup?
 
   @@map("organizations")

@@ -48,6 +48,9 @@ vi.mock('@/lib/db', () => ({
     serviceRecord: { findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn() },
     inspection: { findMany: vi.fn() },
     technician: { findFirst: vi.fn() },
+    // The workshop's closed days and time off, read with what is booked.
+    workshopClosure: { findMany: vi.fn() },
+    technicianAbsence: { findMany: vi.fn() },
     $transaction: vi.fn(),
   },
 }))
@@ -92,6 +95,8 @@ beforeEach(() => {
   // to read and every other test keeps asserting what it always did.
   vi.mocked(db.serviceRecord.findMany).mockResolvedValue([])
   vi.mocked(db.inspection.findMany).mockResolvedValue([])
+  vi.mocked(db.workshopClosure.findMany).mockResolvedValue([])
+  vi.mocked(db.technicianAbsence.findMany).mockResolvedValue([])
 })
 
 // ---------------------------------------------------------------------------

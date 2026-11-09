@@ -59,6 +59,10 @@ import { useTranslations } from 'next-intl'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { timeToMinutes } from '../utils/datetime'
 import { useDateSettings } from '@/components/date-settings-context'
+import { awayKey, useBoardCalendar } from '../hooks/useBoardCalendar'
+import { overlapsSpans } from '@/features/workshop-calendar/Lib/boardDays'
+import { TimeOffDialog } from '@/features/workshop-calendar/Components/TimeOffDialog'
+import { TimeOffManagerDialog } from '@/features/workshop-calendar/Components/TimeOffManagerDialog'
 
 /** Minutes a job gets when it is dropped onto the week with no duration of its own. */
 const DEFAULT_JOB_MINUTES = 60
@@ -149,6 +153,7 @@ export function WorkBoardClient({
   const store = useWorkBoardStore()
   const t = useTranslations('workBoard.board')
   const tToolbar = useTranslations('workBoard.toolbar')
+  const tCal = useTranslations('workshopCalendar')
   const { timeFormat } = useDateSettings()
   const tUnassigned = useTranslations('workBoard.unassigned')
   const searchParams = useSearchParams()
@@ -250,6 +255,51 @@ export function WorkBoardClient({
     for (const job of store.jobs) ids.add(laneIdForJob(job, preferences.grouping))
     return lanes.filter((lane) => ids.has(lane.id)).map((lane) => lane.id)
   }, [store.jobs, lanes, preferences.grouping])
+
+  // The workshop calendar for the week: closed days and, on a board grouped
+  // by technician, who is away. Nothing here stops a drop; it only shows and
+  // warns.
+  const technicianLaneIds = useMemo(
+    () =>
+      preferences.grouping === 'technician'
+        ? lanes.filter((lane) => !lane.isPlaceholder).map((lane) => lane.id)
+        : [],
+    [lanes, preferences.grouping]
+  )
+  const boardCalendar = useBoardCalendar({ days: allDays, technicianLaneIds })
+  const [timeOffOpen, setTimeOffOpen] = useState(false)
+  const [timeOffFor, setTimeOffFor] = useState<string | null>(null)
+  const timeOffTechnicians = useMemo(
+    () => store.technicians.map((tech) => ({ id: tech.id, name: tech.name, color: tech.color })),
+    [store.technicians]
+  )
+
+  /**
+   * After a job lands on the board: say so when the workshop is closed then
+   * or the technician is away. The job stays where it was put.
+   */
+  const warnAboutCalendar = useCallback(
+    (laneId: string, start: Date, end: Date) => {
+      const date = toLocalDateString(start)
+      const startMins = start.getHours() * 60 + start.getMinutes()
+      const endMins =
+        toLocalDateString(end) === date ? end.getHours() * 60 + end.getMinutes() : 24 * 60
+      const closed = boardCalendar.closedByDay?.[date]
+      if (closed) {
+        if (closed.names.length > 0 && overlapsSpans(closed.closureSpans, startMins, endMins)) {
+          toast.warning(tCal('board.dropClosed', { name: closed.names.join(', ') }))
+        } else if (closed.allDay) {
+          toast.warning(tCal('board.dropClosedWeekday'))
+        }
+      }
+      const away = boardCalendar.awayByLaneDay?.[awayKey(laneId, date)]
+      if (away && overlapsSpans(away.spans, startMins, endMins)) {
+        const name = store.technicians.find((tech) => tech.id === laneId)?.name ?? ''
+        toast.warning(tCal('board.dropAway', { name, reason: away.label }))
+      }
+    },
+    [boardCalendar.closedByDay, boardCalendar.awayByLaneDay, store.technicians, tCal]
+  )
 
   /** Every lane the shop has, by id, whichever grouping is on. */
   const owners = useMemo(() => {
@@ -421,11 +471,12 @@ export function WorkBoardClient({
       if (!res.success) {
         store.optimisticSchedule(job.id, previous)
         toast.error(t('failedMove'), { description: res.error })
-      } else if (res.data) {
-        store.updateJob(res.data as WorkBoardJob)
+      } else {
+        if (res.data) store.updateJob(res.data as WorkBoardJob)
+        warnAboutCalendar(laneId, start, end)
       }
     },
-    [preferences.grouping, store, t]
+    [preferences.grouping, store, t, warnAboutCalendar]
   )
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -549,8 +600,9 @@ export function WorkBoardClient({
         if (!res.success) {
           toast.error(t('failedAssign'), { description: res.error })
           store.addToUnassigned(activeData.job, type)
-        } else if (res.data) {
-          store.addJob(res.data as WorkBoardJob)
+        } else {
+          if (res.data) store.addJob(res.data as WorkBoardJob)
+          warnAboutCalendar(laneId, start, end)
         }
       }
       return
@@ -708,6 +760,7 @@ export function WorkBoardClient({
       onToday={handleToday}
       onAddTech={openAddTech}
       onAddBay={openAddBay}
+      onTimeOff={boardCalendar.enabled ? () => setTimeOffOpen(true) : undefined}
       onViewChange={setView}
       onGroupingChange={setGrouping}
       onLayoutChange={(layout) => updatePreferences({ layout })}
@@ -786,6 +839,8 @@ export function WorkBoardClient({
               lookup={owners}
               onOpenJob={handleCardClick}
               onLaneClick={handleLaneClick}
+              closedByDay={boardCalendar.closedByDay}
+              awayByLaneDay={boardCalendar.awayByLaneDay}
             />
           ) : (
             <WeekTimeline
@@ -807,6 +862,8 @@ export function WorkBoardClient({
               onLaneClick={handleLaneClick}
               onShowHiddenDays={() => updatePreferences({ showWeekends: true })}
               onShowWholeWeek={view === 'week' ? () => setGrouping('none') : undefined}
+              closedByDay={boardCalendar.closedByDay}
+              awayByLaneDay={boardCalendar.awayByLaneDay}
             />
           )}
           <UnassignedJobsPanel />
@@ -845,6 +902,24 @@ export function WorkBoardClient({
         open={techDialogOpen}
         onOpenChange={setTechDialogOpen}
         technician={editingTech}
+        onSetTimeOff={boardCalendar.enabled ? (tech) => setTimeOffFor(tech.id) : undefined}
+      />
+      <TimeOffManagerDialog
+        open={timeOffOpen}
+        onOpenChange={setTimeOffOpen}
+        technicians={timeOffTechnicians}
+        today={toLocalDateString(new Date())}
+        onChanged={boardCalendar.reload}
+      />
+      <TimeOffDialog
+        open={timeOffFor !== null}
+        onOpenChange={(open) => {
+          if (!open) setTimeOffFor(null)
+        }}
+        technicians={timeOffTechnicians}
+        defaultTechnicianId={timeOffFor ?? undefined}
+        defaultDate={toLocalDateString(new Date())}
+        onSaved={boardCalendar.reload}
       />
       <WorkBayDialog open={bayDialogOpen} onOpenChange={setBayDialogOpen} workBay={editingBay} />
       <VehiclePickerDialog

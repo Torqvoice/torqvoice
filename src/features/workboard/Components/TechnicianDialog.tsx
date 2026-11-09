@@ -6,7 +6,7 @@ import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2 } from 'lucide-react'
+import { Loader2, UserX } from 'lucide-react'
 import {
   createTechnician,
   updateTechnician,
@@ -36,10 +36,13 @@ export function TechnicianDialog({
   open,
   onOpenChange,
   technician,
+  onSetTimeOff,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   technician?: Technician | null
+  /** Set this technician on leave; left out when time off is switched off. */
+  onSetTimeOff?: (technician: Technician) => void
 }) {
   const [name, setName] = useState('')
   const [color, setColor] = useState(PRESET_COLORS[0])
@@ -54,6 +57,7 @@ export function TechnicianDialog({
   const confirm = useConfirm()
   const t = useTranslations('workBoard.technician')
   const tc = useTranslations('common.buttons')
+  const tw = useTranslations('workshopCalendar')
 
   useEffect(() => {
     if (open) {
@@ -190,6 +194,21 @@ export function TechnicianDialog({
             </div>
           ) : (
             <p className="text-muted-foreground text-xs">{t('standaloneOnly')}</p>
+          )}
+
+          {technician && onSetTimeOff && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                onOpenChange(false)
+                onSetTimeOff(technician)
+              }}
+            >
+              <UserX className="mr-2 h-4 w-4" />
+              {tw('timeOff.setForTechnician', { name: technician.name })}
+            </Button>
           )}
 
           <div className="flex justify-between gap-2">

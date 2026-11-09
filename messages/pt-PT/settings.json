@@ -79,6 +79,10 @@
         "title": "Oficina",
         "description": "Predefinições de técnicos e mão de obra"
       },
+      "openingHours": {
+        "title": "Horário e feriados",
+        "description": "Horas, feriados, dias de encerramento, férias"
+      },
       "laborPresets": {
         "title": "Modelos de mão de obra",
         "description": "Pacotes de mão de obra predefinidos"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Não foi possível atribuir as ordens de serviço",
     "noTechnician": "Nenhum",
     "weekStartDay": "Início da semana",
-    "workDayStart": "Início do dia de trabalho",
-    "workDayEnd": "Fim do dia de trabalho",
     "titleTemplateTitle": "Título da ordem de serviço",
     "titleTemplateDescription": "O nome de uma nova ordem de serviço antes de alguém escrever um título. Construa-o com as etiquetas abaixo; cada trabalho abre com elas preenchidas e o título pode continuar a ser alterado no trabalho.",
     "titleTemplate": "Modelo do título",
@@ -1249,7 +1251,9 @@
       "4": "Quinta-feira",
       "5": "Sexta-feira",
       "6": "Sábado"
-    }
+    },
+    "openingHoursMoved": "O horário de funcionamento é definido para cada dia da semana, junto dos feriados, dos dias de encerramento e das férias.",
+    "openingHoursLink": "Abrir horário e feriados"
   },
   "maintenance": {
     "title": "Manutenção prevista",
@@ -2937,6 +2941,16 @@
       "square": "Quadrado",
       "cross": "Cruz",
       "hex": "Hexágono"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Horário de funcionamento",
+      "switch": "Dias de encerramento e ausências",
+      "publicHolidays": "Feriados",
+      "calendars": "Calendários de feriados",
+      "closedDays": "Dias de encerramento",
+      "timeOff": "Férias e ausências"
     }
   }
 }

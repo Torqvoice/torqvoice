@@ -24,6 +24,7 @@ export type SettingsPageKey =
   | 'emailTemplates'
   | 'customerPortal'
   | 'workshop'
+  | 'openingHours'
   | 'workOrderStatuses'
   | 'maintenance'
   | 'inspectionReminders'
@@ -98,6 +99,7 @@ export const SETTINGS_PAGES: SettingsPage[] = [
   },
 
   { key: 'workshop', href: '/settings/workshop', category: 'workshop' },
+  { key: 'openingHours', href: '/settings/opening-hours', category: 'workshop' },
   { key: 'workOrderStatuses', href: '/settings/work-order-statuses', category: 'workshop' },
   { key: 'maintenance', href: '/settings/maintenance', category: 'workshop' },
   { key: 'inspectionReminders', href: '/settings/inspection-reminders', category: 'workshop' },

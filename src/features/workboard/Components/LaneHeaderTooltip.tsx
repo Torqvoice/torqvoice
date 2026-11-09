@@ -21,6 +21,7 @@ export function LaneHeaderTooltip({
   days,
   capacityMinutes,
   periodLabel,
+  awayLabel,
   children,
 }: {
   lane: BoardLane
@@ -30,9 +31,12 @@ export function LaneHeaderTooltip({
   capacityMinutes: number
   /** "Tuesday" or "This week", depending on what the header covers. */
   periodLabel: string
+  /** Why the technician is away, when they are. */
+  awayLabel?: string
   children: React.ReactNode
 }) {
   const t = useTranslations('workBoard.lane')
+  const tc = useTranslations('workshopCalendar')
 
   const booked = days.reduce((sum, day) => sum + bookedMinutesOnDay(jobs, day), 0)
   const jobCount = jobs.filter((job) => days.some((day) => touchesDay(job, day))).length
@@ -63,6 +67,9 @@ export function LaneHeaderTooltip({
         </dl>
         {pct !== null && (
           <p className="mt-1 tabular-nums text-background/70">{t('utilisation', { pct })}</p>
+        )}
+        {awayLabel && (
+          <p className="mt-1 font-medium">{tc('board.awayTooltip', { reason: awayLabel })}</p>
         )}
         {lane.isPlaceholder && <p className="mt-1 text-background/70">{t('placeholder')}</p>}
       </TooltipContent>

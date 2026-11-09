@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
@@ -112,9 +113,6 @@ export function WorkshopSettings({
   const [defaultUnit, setDefaultUnit] = useState(
     settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''
   )
-  const [workDayStart, setWorkDayStart] = useState(
-    settings[SETTING_KEYS.WORKBOARD_WORK_DAY_START] || '07:00'
-  )
   // Unset means the default; a template saved empty means the plain name,
   // so the two are kept apart here rather than folded into one falsy value.
   const [titleTemplate, setTitleTemplate] = useState(
@@ -140,9 +138,6 @@ export function WorkshopSettings({
   }
   const titlePreview = resolveWorkOrderTitle(titleTemplate, SAMPLE_WORK_ORDER_TITLE_VALUES)
   const unknownTitleTags = unknownTokensIn(titleTemplate)
-  const [workDayEnd, setWorkDayEnd] = useState(
-    settings[SETTING_KEYS.WORKBOARD_WORK_DAY_END] || '15:00'
-  )
   const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
     settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT] || '0'
   )
@@ -209,8 +204,6 @@ export function WorkshopSettings({
       [SETTING_KEYS.MEASURE_SYSTEM]: measureSystem,
       [SETTING_KEYS.ENGINE_SIZE_UNIT]: engineSizeUnit,
       [SETTING_KEYS.INVENTORY_DEFAULT_UNIT]: defaultUnit.trim(),
-      [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
-      [SETTING_KEYS.WORKBOARD_WORK_DAY_END]: workDayEnd,
       [SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE]: titleTemplate.trim(),
       [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
       [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
@@ -372,26 +365,14 @@ export function WorkshopSettings({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="workDayStart">{t('workshop.workDayStart')}</Label>
-              <Input
-                id="workDayStart"
-                type="time"
-                value={workDayStart}
-                onChange={(e) => setWorkDayStart(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="workDayEnd">{t('workshop.workDayEnd')}</Label>
-              <Input
-                id="workDayEnd"
-                type="time"
-                value={workDayEnd}
-                onChange={(e) => setWorkDayEnd(e.target.value)}
-              />
-            </div>
-          </div>
+          {/* Hours are set per weekday on their own page now, beside the
+              holidays and time off that shorten them. */}
+          <p className="text-sm text-muted-foreground">
+            {t('workshop.openingHoursMoved')}{' '}
+            <Link href="/settings/opening-hours" className="underline underline-offset-4">
+              {t('workshop.openingHoursLink')}
+            </Link>
+          </p>
 
           <Separator />
 

@@ -18,6 +18,8 @@ import { type TimeWindow, layoutLaneDay } from '../../utils/layout'
 import { columnKey, minutesAtPoint, percentForMinutes, percentForSpan } from './geometry'
 import { WeekJobBlock } from './WeekJobBlock'
 import type { WeekDragMode } from './useWeekDrag'
+import type { BoardAway, BoardClosed } from '../../hooks/useBoardCalendar'
+import type { MinuteSpan } from '@/features/workshop-calendar/Lib/boardDays'
 
 /** Blocks thinner than this are unreadable, so short jobs get a floor. */
 const MIN_BLOCK_HEIGHT = 14
@@ -35,6 +37,8 @@ function WeekLaneColumnImpl({
   lookup,
   workDayStart,
   workDayEnd,
+  closed,
+  away,
   nowMinutes,
   readOnly,
   draggingJobId,
@@ -59,6 +63,13 @@ function WeekLaneColumnImpl({
   lookup?: Map<string, { name: string; color: string }>
   workDayStart: number
   workDayEnd: number
+  /**
+   * When the workshop is closed that day, from its calendar. When given it
+   * replaces the shading worked out from the work day above.
+   */
+  closed?: BoardClosed
+  /** When this lane's technician is away that day. */
+  away?: BoardAway
   /** Minutes from midnight to draw the "now" line at, or null on other days. */
   nowMinutes: number | null
   readOnly?: boolean
@@ -109,6 +120,17 @@ function WeekLaneColumnImpl({
   const closedBefore = percentForSpan(Math.max(workDayStart - timeWindow.startMins, 0), timeWindow)
   const closedAfter = percentForSpan(Math.max(timeWindow.endMins - workDayEnd, 0), timeWindow)
 
+  /** A span of the day as a top offset and height inside the visible window. */
+  const place = (span: MinuteSpan) => {
+    const from = Math.max(span.startMins, timeWindow.startMins)
+    const to = Math.min(span.endMins, timeWindow.endMins)
+    if (to <= from) return null
+    return {
+      top: `${percentForMinutes(from, timeWindow)}%`,
+      height: `${percentForSpan(to - from, timeWindow)}%`,
+    }
+  }
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild disabled={!onCreateJob}>
@@ -136,20 +158,58 @@ function WeekLaneColumnImpl({
           }}
         >
           <div aria-hidden className="absolute inset-0" style={rules} />
-          {closedBefore > 0 && (
-            <div
-              aria-hidden
-              className="absolute inset-x-0 top-0 bg-muted/40"
-              style={{ height: `${closedBefore}%` }}
-            />
+          {closed ? (
+            closed.spans.map((span) => {
+              const at = place(span)
+              return at ? (
+                <div
+                  key={`closed-${span.startMins}`}
+                  aria-hidden
+                  className={cn(
+                    'absolute inset-x-0',
+                    closed.allDay ? 'bg-muted/70' : 'bg-muted/40'
+                  )}
+                  style={at}
+                />
+              ) : null
+            })
+          ) : (
+            <>
+              {closedBefore > 0 && (
+                <div
+                  aria-hidden
+                  className="absolute inset-x-0 top-0 bg-muted/40"
+                  style={{ height: `${closedBefore}%` }}
+                />
+              )}
+              {closedAfter > 0 && (
+                <div
+                  aria-hidden
+                  className="absolute inset-x-0 bottom-0 bg-muted/40"
+                  style={{ height: `${closedAfter}%` }}
+                />
+              )}
+            </>
           )}
-          {closedAfter > 0 && (
-            <div
-              aria-hidden
-              className="absolute inset-x-0 bottom-0 bg-muted/40"
-              style={{ height: `${closedAfter}%` }}
-            />
-          )}
+          {away?.spans.map((span) => {
+            const at = place(span)
+            return at ? (
+              <div
+                key={`away-${span.startMins}`}
+                className="pointer-events-none absolute inset-x-0 z-10 overflow-hidden border-y border-dashed border-muted-foreground/40"
+                style={{
+                  ...at,
+                  backgroundImage:
+                    'repeating-linear-gradient(135deg, color-mix(in oklch, var(--muted-foreground) 18%, transparent) 0 6px, transparent 6px 12px)',
+                }}
+                data-testid="away-span"
+              >
+                <span className="block truncate px-1 pt-0.5 text-[10px] font-medium text-muted-foreground">
+                  {away.label}
+                </span>
+              </div>
+            ) : null
+          })}
 
           {nowMinutes !== null && <NowLine minutes={nowMinutes} window={timeWindow} />}
 

@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  type AwayByLaneDay,
+  type BoardAway,
+  type ClosedByDay,
+  awayKey,
+} from '../hooks/useBoardCalendar'
 import { useDroppable } from '@dnd-kit/core'
 import { ClipboardCheck, Wrench } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -31,6 +37,8 @@ export function WeekCardGrid({
   readOnly = false,
   onOpenJob,
   onLaneClick,
+  closedByDay,
+  awayByLaneDay,
 }: {
   days: string[]
   lanes: BoardLane[]
@@ -43,6 +51,10 @@ export function WeekCardGrid({
   readOnly?: boolean
   onOpenJob: (job: WorkBoardJob) => void
   onLaneClick?: (lane: BoardLane) => void
+  /** Closed days from the workshop calendar, by day. */
+  closedByDay?: ClosedByDay
+  /** Technicians away, by `awayKey(lane, day)`. */
+  awayByLaneDay?: AwayByLaneDay
 }) {
   const t = useTranslations('workBoard.board')
 
@@ -55,15 +67,22 @@ export function WeekCardGrid({
         {days.map((day) => {
           const date = new Date(`${day}T12:00:00`)
           const isToday = day === todayStr
+          const closed = closedByDay?.[day]
           return (
             <div
               key={`head-${day}`}
               className={cn(
-                'sticky top-0 z-20 bg-background px-2 py-1 text-center text-xs font-medium',
+                'sticky top-0 z-20 truncate bg-background px-2 py-1 text-center text-xs font-medium',
                 isToday ? 'text-primary' : 'text-muted-foreground'
               )}
+              title={closed?.label ?? undefined}
             >
               {t(`days.${DAY_KEYS[date.getDay()]}`)} {date.getDate()}
+              {closed?.label && (
+                <span className="block truncate text-[10px] font-normal" data-testid="day-closed">
+                  {closed.label}
+                </span>
+              )}
             </div>
           )
         })}
@@ -102,6 +121,8 @@ export function WeekCardGrid({
                   date={day}
                   jobs={laneJobs.filter((job) => jobOverlapsDate(job, day))}
                   isToday={day === todayStr}
+                  closedAllDay={!!closedByDay?.[day]?.allDay}
+                  away={awayByLaneDay?.[awayKey(lane.id, day)]}
                   readOnly={readOnly}
                   timeFormat={timeFormat}
                   lookup={lookup}
@@ -123,6 +144,8 @@ function DayCell({
   date,
   jobs,
   isToday,
+  closedAllDay,
+  away,
   readOnly,
   timeFormat,
   lookup,
@@ -132,6 +155,10 @@ function DayCell({
   date: string
   jobs: WorkBoardJob[]
   isToday: boolean
+  /** The workshop is closed the whole day. */
+  closedAllDay?: boolean
+  /** The lane's technician is away that day. */
+  away?: BoardAway
   readOnly?: boolean
   timeFormat: ClockFormat
   lookup?: Map<string, { name: string; color: string }>
@@ -155,9 +182,18 @@ function DayCell({
       className={cn(
         'flex min-h-[84px] flex-col gap-1 bg-background p-1.5 transition-colors',
         isToday && 'bg-primary/[0.04]',
+        closedAllDay && 'bg-muted/70',
         isOver && 'bg-primary/10'
       )}
     >
+      {away && (
+        <p
+          className="truncate rounded-sm border border-dashed border-muted-foreground/40 px-1 text-[10px] font-medium text-muted-foreground"
+          data-testid="lane-away"
+        >
+          {away.label}
+        </p>
+      )}
       {jobs.map((job) => (
         <JobTooltip
           key={job.id}
