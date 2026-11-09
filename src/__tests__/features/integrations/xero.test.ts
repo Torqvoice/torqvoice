@@ -110,6 +110,7 @@ const options: InvoiceOptions = {
   accounts: { labor: '210', parts: '200', shopFee: '220', fallback: '200' },
   items: { labor: null, parts: null },
   partItemCodes: new Set(),
+  itemAccounts: new Map(),
   registeredForTax: true,
   taxType: 'OUTPUT',
   zeroTaxType: 'EXEMPTOUTPUT',
@@ -402,16 +403,19 @@ describe('buildInvoice', () => {
         accounts: { labor: null, parts: null, shopFee: null, fallback: '200' },
         items: { labor: 'LAB', parts: null },
         partItemCodes: new Set(['BP-100']),
+        itemAccounts: new Map([['LAB', '210']]),
         tracking: [{ Name: 'Branch', Option: 'Parramatta' }],
       })
     )
+    // Every line names an account: the item's own, else the default sales
+    // account, since Xero refuses a line without one (seen live, 9 Nov 2026).
     expect(lines[0]).toMatchObject({
       ItemCode: 'LAB',
+      AccountCode: '210',
       Tracking: [{ Name: 'Branch', Option: 'Parramatta' }],
     })
-    expect(lines[0]).not.toHaveProperty('AccountCode')
-    expect(lines[1]).toMatchObject({ ItemCode: 'BP-100' })
-    expect(lines[2]).toMatchObject({ ItemCode: 'LAB' })
+    expect(lines[1]).toMatchObject({ ItemCode: 'BP-100', AccountCode: '200' })
+    expect(lines[2]).toMatchObject({ ItemCode: 'LAB', AccountCode: '210' })
   })
 
   it('leaves out the vehicle, notes and part numbers when switched off', () => {

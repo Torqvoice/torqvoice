@@ -172,7 +172,8 @@ interface Catalog {
   rates: TaxRateEntry[]
   defaultSalesAccount: string | null
   bankAccountId: string | null
-  itemCodes: string[]
+  /** Items that can be sold, with their own sales account when they have one. */
+  items: { code: string; salesAccount: string | null }[]
   tracking: { id: string; name: string; categoryId: string; categoryName: string }[]
 }
 
@@ -301,7 +302,14 @@ async function loadCatalog(
   const tenantId = settingsOf(ctx).tenantId
   if (!tenantId) throw new Error(`No Xero organisation chosen; ${NO_TENANT}`)
   const cached = stateOf(ctx).catalog
-  if (!opts.refresh && cached?.tenantId === tenantId && fresh(cached.fetchedAt)) return cached
+  if (
+    !opts.refresh &&
+    cached?.tenantId === tenantId &&
+    fresh(cached.fetchedAt) &&
+    Array.isArray(cached.items)
+  ) {
+    return cached
+  }
   const [rates, accounts, items, tracking] = await Promise.all([
     api<{ TaxRates?: XeroTaxRate[] }>(ctx, 'TaxRates'),
     api<{ Accounts?: XeroAccount[] }>(ctx, 'Accounts'),
@@ -323,7 +331,9 @@ async function loadCatalog(
     rates: salesRates(rates.TaxRates ?? []),
     defaultSalesAccount: sales?.Code ?? null,
     bankAccountId: bank?.AccountID ?? null,
-    itemCodes: (items.Items ?? []).filter((i) => i.IsSold !== false).map((i) => i.Code),
+    items: (items.Items ?? [])
+      .filter((i) => i.IsSold !== false)
+      .map((i) => ({ code: i.Code, salesAccount: i.SalesDetails?.AccountCode ?? null })),
     tracking: (tracking.TrackingCategories ?? [])
       .filter((c) => !c.Status || c.Status === 'ACTIVE')
       .flatMap((c) =>
@@ -608,6 +618,47 @@ async function readInvoice(ctx: ConnectorContext, invoiceId: string): Promise<Xe
   return inv
 }
 
+function isGone(inv: XeroInvoice): boolean {
+  return inv.Status === 'VOIDED' || inv.Status === 'DELETED'
+}
+
+/** The invoice's number belongs to one voided or deleted in Xero, which Xero never gives out again. */
+class NumberTaken extends Error {
+  invoice: XeroInvoice
+  constructor(invoice: XeroInvoice) {
+    super(
+      `Invoice number ${invoice.InvoiceNumber} is taken by a ${invoice.Status?.toLowerCase()} invoice in Xero`
+    )
+    this.invoice = invoice
+  }
+}
+
+/**
+ * An invoice voided or deleted in Xero cannot come back under its number.
+ * With Torqvoice numbers it is left out, and the link remembers that so later
+ * edits are skipped without failing; given a new number here, it is sent as
+ * a new invoice. With Xero numbering it simply goes over again as new.
+ */
+async function markGone(
+  ctx: ConnectorContext,
+  inv: AccountingInvoice,
+  remote: XeroInvoice
+): Promise<JobOutcome> {
+  const status = (remote.Status ?? 'voided').toLowerCase()
+  await setLink(
+    ctx,
+    INVOICE_ENTITY,
+    inv.id,
+    { remoteId: remote.InvoiceID, remoteUrl: null, checksum: null },
+    { goneInXero: status, invoiceNumber: inv.invoiceNumber }
+  )
+  await ctx.log(
+    'warn',
+    `Invoice ${inv.invoiceNumber} was ${status} in Xero, and Xero does not give its number out again, so edits here are not sent. Give the invoice a new number in Torqvoice to send it as a new invoice.`
+  )
+  return { summary: `invoice ${inv.invoiceNumber} ${status} in Xero; not sent again` }
+}
+
 function hasMoney(inv: XeroInvoice): boolean {
   return (inv.AmountPaid ?? 0) > 0 || (inv.Payments?.length ?? 0) > 0 || inv.Status === 'PAID'
 }
@@ -703,7 +754,10 @@ async function buildBody(
       fallback: fallback ?? settings.laborAccount ?? '',
     },
     items: { labor: settings.laborItem, parts: settings.partsItem },
-    partItemCodes: new Set(settings.matchItemsByPartNumber ? catalog.itemCodes : []),
+    partItemCodes: new Set(settings.matchItemsByPartNumber ? catalog.items.map((i) => i.code) : []),
+    itemAccounts: new Map(
+      catalog.items.flatMap((i) => (i.salesAccount ? [[i.code, i.salesAccount] as const] : []))
+    ),
     registeredForTax: tax.registered,
     taxType: tax.taxType,
     zeroTaxType: tax.zeroTaxType,
@@ -725,15 +779,17 @@ async function createInvoice(
   body: Record<string, unknown>,
   inv: AccountingInvoice,
   checksum: string
-): Promise<XeroInvoice> {
+): Promise<{ invoice: XeroInvoice; adopted: boolean }> {
   const number = typeof body.InvoiceNumber === 'string' ? body.InvoiceNumber : null
   if (number) {
     const found = await api<{ Invoices?: XeroInvoice[] }>(ctx, 'Invoices', {
       query: { InvoiceNumbers: number, summaryOnly: 'true' },
     })
-    const live = (found.Invoices ?? []).filter(
-      (i) => i.Type === 'ACCREC' && i.Status !== 'VOIDED' && i.Status !== 'DELETED'
-    )
+    const sales = (found.Invoices ?? []).filter((i) => i.Type === 'ACCREC')
+    const live = sales.filter((i) => !isGone(i))
+    // Xero keeps a voided or deleted invoice's number taken for good.
+    const gone = sales.find(isGone)
+    if (!live.length && gone) throw new NumberTaken(gone)
     if (live.length) {
       const full = (await readInvoice(ctx, live[0].InvoiceID)) as XeroInvoice & { Url?: string }
       // Ours when it links back to this job, or, without a link to compare,
@@ -745,7 +801,10 @@ async function createInvoice(
       if (ours) {
         await ctx.log('info', `Invoice ${number} was already in Xero; linked to it`)
         await relinkPayments(ctx, inv, full)
-        return hasMoney(full) ? full : saveInvoice(ctx, full, body)
+        return {
+          invoice: hasMoney(full) ? full : await saveInvoice(ctx, full, body),
+          adopted: true,
+        }
       }
       // Xero keeps sales invoice numbers unique and would refuse a second one.
       throw new Error(
@@ -763,7 +822,7 @@ async function createInvoice(
   })
   const made = res.Invoices?.[0]
   if (!made) throw new Error('Xero did not return the new invoice')
-  return made
+  return { invoice: made, adopted: false }
 }
 
 /**
@@ -838,6 +897,16 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   const { body, note } = await buildBody(ctx, inv, contact, org)
   const checksum = checksumOf(body)
   let link = await linkFor(ctx, INVOICE_ENTITY, serviceRecordId)
+  if (link?.metadata?.goneInXero) {
+    if (!settings.xeroNumbers && link.metadata.invoiceNumber === inv.invoiceNumber) {
+      return {
+        summary: `invoice ${inv.invoiceNumber} ${link.metadata.goneInXero} in Xero; not sent again`,
+      }
+    }
+    // Renumbered here, or numbered by Xero: it goes over as a new invoice.
+    await ctx.links.remove(INVOICE_ENTITY, serviceRecordId)
+    link = null
+  }
 
   let saved: XeroInvoice | null = null
   let action = 'unchanged'
@@ -846,8 +915,10 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
     if (link) {
       try {
         const current = await readInvoice(ctx, link.remoteId)
-        if (current.Status === 'VOIDED' || current.Status === 'DELETED') {
-          // Gone in Xero: a new one is made below.
+        if (isGone(current)) {
+          // Gone in Xero: with Xero numbering a new one is made below; under
+          // the same Torqvoice number Xero would refuse it.
+          if (!settings.xeroNumbers) return markGone(ctx, inv, current)
           await ctx.links.remove(INVOICE_ENTITY, serviceRecordId)
           link = null
         } else if (hasMoney(current)) {
@@ -864,8 +935,14 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
       }
     }
     if (!link) {
-      saved = await createInvoice(ctx, body, inv, checksum)
-      action = 'created'
+      try {
+        const made = await createInvoice(ctx, body, inv, checksum)
+        saved = made.invoice
+        action = made.adopted ? 'found in Xero and linked again' : 'created'
+      } catch (err) {
+        if (err instanceof NumberTaken) return markGone(ctx, inv, err.invoice)
+        throw err
+      }
     }
     if (saved && action !== 'left as paid') {
       await setLink(
@@ -1295,12 +1372,31 @@ async function pullChanges(ctx: ConnectorContext): Promise<JobOutcome> {
   for (const remote of invoices) {
     const link = await ctx.links.byRemoteId(INVOICE_ENTITY, remote.InvoiceID)
     if (!link || link.metadata?.tenantId !== settings.tenantId) continue
-    if (remote.Status === 'VOIDED' || remote.Status === 'DELETED') {
-      await ctx.links.remove(INVOICE_ENTITY, link.entityId)
-      await ctx.log(
-        'warn',
-        `Invoice ${remote.InvoiceNumber ?? remote.InvoiceID} was ${remote.Status.toLowerCase()} in Xero; it will be sent again if edited here`
-      )
+    if (isGone(remote)) {
+      if (link.metadata?.goneInXero) continue
+      const status = (remote.Status ?? 'voided').toLowerCase()
+      if (settings.xeroNumbers) {
+        await ctx.links.remove(INVOICE_ENTITY, link.entityId)
+        await ctx.log(
+          'warn',
+          `Invoice ${remote.InvoiceNumber ?? remote.InvoiceID} was ${status} in Xero; it will be sent again as a new invoice if edited here`
+        )
+      } else {
+        await ctx.links.set(INVOICE_ENTITY, link.entityId, {
+          remoteId: link.remoteId,
+          remoteUrl: link.remoteUrl,
+          checksum: link.checksum,
+          metadata: {
+            ...(link.metadata ?? {}),
+            goneInXero: status,
+            invoiceNumber: remote.InvoiceNumber ?? link.metadata?.invoiceNumber ?? null,
+          },
+        })
+        await ctx.log(
+          'warn',
+          `Invoice ${remote.InvoiceNumber ?? remote.InvoiceID} was ${status} in Xero, and Xero does not give its number out again, so edits here are not sent. Give the invoice a new number in Torqvoice to send it as a new invoice.`
+        )
+      }
       unlinked++
       continue
     }
@@ -1316,7 +1412,7 @@ async function pullChanges(ctx: ConnectorContext): Promise<JobOutcome> {
   const parts = [
     recorded ? `${recorded} payments recorded` : null,
     removed ? `${removed} payments removed` : null,
-    unlinked ? `${unlinked} invoices unlinked` : null,
+    unlinked ? `${unlinked} invoices voided or deleted in Xero` : null,
     released ? `${released} waiting payments sent` : null,
   ].filter(Boolean)
   return { summary: parts.length ? parts.join(', ') : 'no changes' }

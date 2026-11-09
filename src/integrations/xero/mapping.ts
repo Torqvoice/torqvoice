@@ -66,6 +66,7 @@ export interface XeroItem {
   Name?: string
   IsSold?: boolean
   IsTrackedAsInventory?: boolean
+  SalesDetails?: { AccountCode?: string }
 }
 
 export interface XeroTrackingCategory {
@@ -278,6 +279,8 @@ export interface InvoiceOptions {
   items: { labor: string | null; parts: string | null }
   /** Codes of Xero items sold by part number; empty when that is off. */
   partItemCodes: ReadonlySet<string>
+  /** Each Xero item's own sales account, used when no account is chosen for the line. */
+  itemAccounts: ReadonlyMap<string, string>
   /** 'NoTax' when the organisation is not registered for tax. */
   registeredForTax: boolean
   taxType: string | null
@@ -444,9 +447,9 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
       }
     }
     if (item) xl.ItemCode = item
-    // A chosen account wins over the item's; with neither, the default sales account.
-    if (account) xl.AccountCode = account
-    else if (!item) xl.AccountCode = o.accounts.fallback
+    // Always an account, since Xero refuses a line without one: the chosen
+    // one, else the item's own sales account, else the default sales account.
+    xl.AccountCode = account ?? (item ? o.itemAccounts.get(item) : undefined) ?? o.accounts.fallback
     if (o.registeredForTax) {
       const type = taxedLine(line) ? o.taxType : o.zeroTaxType
       if (type) xl.TaxType = type
@@ -473,7 +476,9 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
   // rules for this field are not published, and a local http one may be refused.
   if (o.url.startsWith('https://')) body.Url = o.url.slice(0, 2000)
   if (o.invoiceNumber) body.InvoiceNumber = o.invoiceNumber.slice(0, 255)
-  if (o.reference) body.Reference = o.reference
+  // Always sent: on an update a missing field keeps Xero's old value, so
+  // "Nothing" has to be an empty reference to clear one set before.
+  body.Reference = o.reference ?? ''
   if (o.brandingThemeId) body.BrandingThemeID = o.brandingThemeId
   if (o.currency) body.CurrencyCode = o.currency
   if (o.sentToContact && o.status === 'AUTHORISED') body.SentToContact = true

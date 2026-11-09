@@ -90,7 +90,7 @@ function makeCtx(input: { settings?: Record<string, unknown>; answer: Answer }) 
       ]),
       defaultSalesAccount: '200',
       bankAccountId: 'bank-1',
-      itemCodes: [],
+      items: [],
       tracking: [],
     },
   }
@@ -534,7 +534,7 @@ describe('a job deleted here', () => {
 })
 
 describe('pulling from Xero', () => {
-  it('records a payment taken in Xero, removes one deleted there, and unlinks a voided invoice', async () => {
+  it('records a payment taken in Xero, removes one deleted there, and keeps a voided invoice out', async () => {
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(new Date('2026-11-09T12:00:00.500Z'))
     const { ctx, calls, links, logs } = makeCtx({
@@ -584,7 +584,9 @@ describe('pulling from Xero', () => {
     })
 
     const outcome = (await connector.jobs['accounting.pull'](ctx, {})) as JobOutcome
-    expect(outcome.summary).toBe('1 payments recorded, 1 payments removed, 1 invoices unlinked')
+    expect(outcome.summary).toBe(
+      '1 payments recorded, 1 payments removed, 1 invoices voided or deleted in Xero'
+    )
 
     const [payments] = api(calls, 'GET', '/Payments')
     // A day back on a first pull, less a minute of overlap, to the second and without a zone.
@@ -601,7 +603,8 @@ describe('pulling from Xero', () => {
       note: 'Recorded in Xero. Ref EFT',
     })
     expect(removePulledPayment).toHaveBeenCalledWith('org1', 'pulled', 'xero')
-    expect(links.has('ServiceRecord:svc2')).toBe(false)
+    // Xero never gives a voided invoice's number out again, so it is not resent under it.
+    expect(links.get('ServiceRecord:svc2')?.metadata).toMatchObject({ goneInXero: 'voided' })
     expect(logs.some((l) => l.message.includes('INV-2 was voided in Xero'))).toBe(true)
   })
 })
@@ -664,5 +667,57 @@ describe('after a reconnect', () => {
       remoteId: 'pmt-old',
       metadata: expect.objectContaining({ relinked: true }),
     })
+  })
+})
+
+describe('an invoice voided in Xero', () => {
+  // Seen live on 9 Nov 2026: Xero answers "Invoice # must be unique." to a new
+  // invoice under the number of a voided one.
+  const voided = {
+    InvoiceID: 'inv-void',
+    InvoiceNumber: 'INV-1001',
+    Type: 'ACCREC',
+    Status: 'VOIDED',
+  }
+
+  it('is not sent again under its number, and the log says why once', async () => {
+    const { ctx, calls, links, logs } = makeCtx({
+      answer: emptyOrganisation({ 'GET /Invoices': () => ({ Invoices: [voided] }) }),
+    })
+    const first = (await connector.jobs['accounting.invoice'](ctx, {
+      entityId: 'svc1',
+    })) as JobOutcome
+    expect(first.summary).toBe('invoice INV-1001 voided in Xero; not sent again')
+    expect(api(calls, 'PUT', '/Invoices')).toHaveLength(0)
+    expect(links.get('ServiceRecord:svc1')?.metadata).toMatchObject({ goneInXero: 'voided' })
+    calls.length = 0
+    const again = (await connector.jobs['accounting.invoice'](ctx, {
+      entityId: 'svc1',
+    })) as JobOutcome
+    expect(again.summary).toBe('invoice INV-1001 voided in Xero; not sent again')
+    expect(calls.filter((c) => c.path.includes('/Invoices'))).toHaveLength(0)
+    expect(
+      logs.filter((l) => l.message.includes('does not give its number out again'))
+    ).toHaveLength(1)
+  })
+
+  it('is sent as a new invoice once it has a new number here', async () => {
+    const { ctx, calls, links } = makeCtx({
+      answer: emptyOrganisation({
+        'GET /Invoices': (c) =>
+          c.query.InvoiceNumbers === 'INV-1001' ? { Invoices: [voided] } : { Invoices: [] },
+      }),
+    })
+    await connector.jobs['accounting.invoice'](ctx, { entityId: 'svc1' })
+    loadInvoice.mockResolvedValue({ ...invoice, invoiceNumber: 'INV-1001B' })
+    const outcome = (await connector.jobs['accounting.invoice'](ctx, {
+      entityId: 'svc1',
+    })) as JobOutcome
+    expect(outcome.summary).toBe('invoice INV-1001B created')
+    expect(
+      (api(calls, 'PUT', '/Invoices')[0].body?.Invoices as Record<string, unknown>[])[0]
+        .InvoiceNumber
+    ).toBe('INV-1001B')
+    expect(links.get('ServiceRecord:svc1')?.metadata).not.toHaveProperty('goneInXero')
   })
 })
