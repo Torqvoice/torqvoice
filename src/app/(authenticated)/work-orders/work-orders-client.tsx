@@ -2,6 +2,7 @@
 
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -118,16 +119,9 @@ interface PaginatedData {
   statusCounts: Record<string, number>
 }
 
-const statusTabKeys = [
-  'all',
-  'active',
-  'pending',
-  'in-progress',
-  'waiting-parts',
-  'completed',
-] as const
+const statusTabKeys = LIST_STATUS_TABS.workOrders
 
-const statusTabI18nMap: Record<string, string> = {
+const statusTabI18nMap: Record<ListStatus<'workOrders'>, string> = {
   all: 'all',
   active: 'active',
   pending: 'pending',
@@ -338,7 +332,11 @@ export function WorkOrdersClient({
               variant={isActive ? 'default' : 'outline'}
               size="sm"
               className="h-9 shrink-0 sm:h-8"
-              onClick={() => navigate({ status: key || undefined })}
+              aria-pressed={isActive}
+              onClick={() => {
+                rememberListStatus('workOrders', key)
+                navigate({ status: key })
+              }}
             >
               {t(`statusTabs.${statusTabI18nMap[key]}`)}
               {count !== undefined && (

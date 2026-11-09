@@ -1,6 +1,7 @@
 'use client'
 
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -78,11 +79,16 @@ interface TemplateOption {
   isDefault: boolean
 }
 
-const statusTabs = [
-  { key: 'all', labelKey: 'tabAll' },
-  { key: 'in_progress', labelKey: 'tabInProgress' },
-  { key: 'completed', labelKey: 'tabCompleted' },
-] as const
+const statusLabelKeys: Record<ListStatus<'inspections'>, string> = {
+  all: 'tabAll',
+  in_progress: 'tabInProgress',
+  completed: 'tabCompleted',
+}
+
+const statusTabs = LIST_STATUS_TABS.inspections.map((key) => ({
+  key,
+  labelKey: statusLabelKeys[key],
+}))
 
 const statusColors: Record<string, string> = {
   in_progress: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
@@ -273,7 +279,12 @@ export function InspectionsClient({
               variant={isActive ? 'default' : 'outline'}
               size="sm"
               className="h-9 shrink-0 sm:h-8"
-              onClick={() => navigate({ status: tab.key === 'all' ? undefined : tab.key })}
+              aria-pressed={isActive}
+              onClick={() => {
+                rememberListStatus('inspections', tab.key)
+                // "all" stays in the URL: a bare path means the remembered tab.
+                navigate({ status: tab.key })
+              }}
             >
               {t(tab.labelKey)}
               {count !== undefined && (

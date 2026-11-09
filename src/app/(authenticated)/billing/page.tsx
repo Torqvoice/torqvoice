@@ -1,5 +1,6 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
+import { resolveListStatus } from '@/lib/list-status-preference.server'
 import { getBillingHistory } from '@/features/billing/Actions/billingActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -27,7 +28,7 @@ export default async function BillingPage({
   const page = Number(params.page) || 1
   const pageSize = Number(params.pageSize) || 20
   const search = params.search || ''
-  const statusFilter = params.status || 'all'
+  const statusFilter = await resolveListStatus('billing', params.status)
   const deliveryFilter = params.delivery === 'unviewed' ? 'unviewed' : ''
   // The URL wins, as with sorting; otherwise the switch as this browser left it.
   const completedOnly =
