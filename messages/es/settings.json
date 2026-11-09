@@ -79,6 +79,10 @@
         "title": "Taller",
         "description": "Valores predeterminados de técnico y mano de obra"
       },
+      "openingHours": {
+        "title": "Horario y festivos",
+        "description": "Horario, festivos, días de cierre, ausencias"
+      },
       "laborPresets": {
         "title": "Paquetes de mano de obra",
         "description": "Paquetes de trabajo predefinidos"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Error al asignar órdenes de trabajo",
     "noTechnician": "Ninguno",
     "weekStartDay": "Inicio de semana",
-    "workDayStart": "Inicio de jornada",
-    "workDayEnd": "Fin de jornada",
     "titleTemplateTitle": "Título de la orden de trabajo",
     "titleTemplateDescription": "Cómo se llama una orden de trabajo nueva antes de que alguien escriba un título. Constrúyalo con las etiquetas de abajo; cada trabajo se abre con ellas rellenadas y el título se puede cambiar en el trabajo.",
     "titleTemplate": "Plantilla del título",
@@ -1249,7 +1251,9 @@
       "4": "Jueves",
       "5": "Viernes",
       "6": "Sábado"
-    }
+    },
+    "openingHoursMoved": "El horario de apertura se define para cada día de la semana, junto a los festivos, los días de cierre y las ausencias.",
+    "openingHoursLink": "Abrir horario y festivos"
   },
   "maintenance": {
     "title": "Mantenimiento predictivo",
@@ -2937,6 +2941,16 @@
       "square": "Cuadrado",
       "cross": "Cruz",
       "hex": "Hexágono"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Horario de apertura",
+      "switch": "Días de cierre y ausencias",
+      "publicHolidays": "Festivos",
+      "calendars": "Calendarios de festivos",
+      "closedDays": "Días de cierre",
+      "timeOff": "Vacaciones y ausencias"
     }
   }
 }

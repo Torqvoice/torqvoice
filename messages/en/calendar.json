@@ -68,7 +68,9 @@
       "reminder": "Open reminder",
       "quote": "Open quote",
       "message": "Open messages",
-      "external": "Open"
+      "external": "Open",
+      "closure": "Open opening hours",
+      "absence": "Open the work board"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Reminders",
     "quotes": "Quotes",
     "messages": "Messages",
-    "external": "Connected calendars"
+    "external": "Connected calendars",
+    "closures": "Closed days",
+    "absences": "Leave"
   },
   "selectVehicle": "Select Vehicle for Work Order",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Upcoming",
       "failed": "Failed",
       "queued": "Queued",
-      "busy": "Busy"
+      "busy": "Busy",
+      "closed": "Closed",
+      "away": "Away"
     },
     "type": {
       "service": "Work order",
       "reminder": "Reminder",
       "quote": "Quote",
       "message": "Message",
-      "external": "Connected calendar"
+      "external": "Connected calendar",
+      "closure": "Closed",
+      "absence": "Leave"
     },
     "noEvents": "No events",
     "selectDay": "Select a day with events or create a new work order.",
@@ -145,5 +153,10 @@
     }
   },
   "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "nextMonth": "Next month",
+  "range": {
+    "from": "From {time}",
+    "until": "Until {time}"
+  },
+  "timeOffMissing": "That leave was changed or removed in the meantime."
 }

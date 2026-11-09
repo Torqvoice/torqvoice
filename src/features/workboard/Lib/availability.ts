@@ -1,4 +1,11 @@
 import { addZonedDays, atZonedTime, isZonedWeekend, startOfZonedDay } from '@/lib/timezone'
+import {
+  type WorkshopCalendar,
+  dayOf,
+  isOpenFor,
+  openIntervalsOn,
+  spanOf,
+} from '@/features/workshop-calendar/Lib/calendar'
 /**
  * Whether a slot in the shop is free, and where the next free one is.
  *
@@ -13,8 +20,12 @@ import { addZonedDays, atZonedTime, isZonedWeekend, startOfZonedDay } from '@/li
 
 export interface Booking {
   id: string
-  /** What it is, so a clash can name it. */
-  kind: 'serviceRecord' | 'inspection'
+  /**
+   * What it is, so a clash can name it. An absence is a technician's time
+   * off, held like a booking so nothing is offered while they are away.
+   */
+  kind: 'serviceRecord' | 'inspection' | 'absence'
+  /** For an absence: its reason (holiday, sick, training, other). */
   label: string
   start: Date
   end: Date
@@ -45,6 +56,12 @@ export interface WorkingHours {
    * Sunday morning as its next free slot.
    */
   includeWeekends?: boolean
+  /**
+   * Hours per weekday and the days the workshop is closed. When set it
+   * decides when the shop is open, and the three fields above only describe
+   * the usual day.
+   */
+  calendar?: WorkshopCalendar
 }
 
 /** Two half-open intervals overlap when each starts before the other ends. */
@@ -86,6 +103,7 @@ function dayEnd(date: Date, hours: WorkingHours): Date {
 
 /** Whether the whole slot sits inside one bookable day. */
 export function withinWorkingHours(slot: Slot, hours: WorkingHours): boolean {
+  if (hours.calendar) return isOpenFor(hours.calendar, slot.start, slot.end)
   if (!hours.includeWeekends && isWeekend(slot.start, hours)) return false
   const open = dayStart(slot.start, hours)
   const close = dayEnd(slot.start, hours)
@@ -126,35 +144,63 @@ export function nextAvailableSlot({
 
   for (let i = 0; i < searchDays; i++) {
     const cursorDay = addZonedDays(day, i, zone)
-    if (!hours.includeWeekends && isWeekend(cursorDay, hours)) continue
+    // The open stretches of the day: its hours, less any closure. Without a
+    // calendar, the one usual day on weekdays.
+    const stretches = hours.calendar
+      ? openIntervalsOn(hours.calendar, dayOf(cursorDay, zone))
+      : !hours.includeWeekends && isWeekend(cursorDay, hours)
+        ? []
+        : [{ start: dayStart(cursorDay, hours), end: dayEnd(cursorDay, hours) }]
 
-    const close = dayEnd(cursorDay, hours)
-    // Today starts from now rather than from opening time, so a search at
-    // half past two is not offered nine in the morning.
-    let cursor = dayStart(cursorDay, hours)
-    if (from > cursor) cursor = new Date(from)
-    // Whole minutes: a slot starting at 09:07:23 is noise on a booking sheet.
-    cursor.setSeconds(0, 0)
-    if (cursor.getTime() % 60_000 !== 0)
-      cursor = new Date(Math.ceil(cursor.getTime() / 60_000) * 60_000)
+    for (const stretch of stretches) {
+      const close = stretch.end
+      // Today starts from now rather than from opening time, so a search at
+      // half past two is not offered nine in the morning.
+      let cursor = new Date(stretch.start)
+      if (from > cursor) cursor = new Date(from)
+      // Whole minutes: a slot starting at 09:07:23 is noise on a booking sheet.
+      cursor.setSeconds(0, 0)
+      if (cursor.getTime() % 60_000 !== 0)
+        cursor = new Date(Math.ceil(cursor.getTime() / 60_000) * 60_000)
 
-    while (cursor.getTime() + durationMs <= close.getTime()) {
-      const candidate: Slot = {
-        start: new Date(cursor),
-        end: new Date(cursor.getTime() + durationMs),
-        technicianId,
-        workBayId,
+      while (cursor.getTime() + durationMs <= close.getTime()) {
+        const candidate: Slot = {
+          start: new Date(cursor),
+          end: new Date(cursor.getTime() + durationMs),
+          technicianId,
+          workBayId,
+        }
+        const clashes = findConflicts(candidate, bookings, excludeId)
+        if (clashes.length === 0) return candidate
+        // Jump to the moment the last thing in the way finishes; stepping by a
+        // fixed interval would try the same occupied minutes over and over.
+        const freeAt = Math.max(...clashes.map((c) => c.end.getTime()))
+        cursor = new Date(Math.max(freeAt, cursor.getTime() + 60_000))
       }
-      const clashes = findConflicts(candidate, bookings, excludeId)
-      if (clashes.length === 0) return candidate
-      // Jump to the moment the last thing in the way finishes; stepping by a
-      // fixed interval would try the same occupied minutes over and over.
-      const freeAt = Math.max(...clashes.map((c) => c.end.getTime()))
-      cursor = new Date(Math.max(freeAt, cursor.getTime() + 60_000))
     }
   }
 
   return null
+}
+
+/**
+ * Each technician's time off as a booking of their time, so a clash check or
+ * a slot search treats them as taken while they are away.
+ */
+export function absenceBookings(calendar: WorkshopCalendar | undefined): Booking[] {
+  if (!calendar) return []
+  return calendar.absences.map((absence) => {
+    const span = spanOf(absence, calendar.timeZone)
+    return {
+      id: `absence:${absence.id}`,
+      kind: 'absence' as const,
+      label: absence.reason,
+      start: span.start,
+      end: span.end,
+      technicianId: absence.technicianId,
+      workBayId: null,
+    }
+  })
 }
 
 /**
@@ -172,7 +218,8 @@ export function technicianMinutesInDay(
 ): Record<string, number> {
   const minutes: Record<string, number> = {}
   for (const booking of bookings) {
-    if (!booking.technicianId) continue
+    // Time off is not work: the board shows it as time away, not as load.
+    if (!booking.technicianId || booking.kind === 'absence') continue
     const from = Math.max(booking.start.getTime(), dayStart.getTime())
     const to = Math.min(booking.end.getTime(), dayEnd.getTime())
     if (to <= from) continue

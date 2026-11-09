@@ -68,7 +68,9 @@
       "reminder": "Abrir lembrete",
       "quote": "Abrir orçamento",
       "message": "Abrir mensagens",
-      "external": "Abrir"
+      "external": "Abrir",
+      "closure": "Abrir horário de funcionamento",
+      "absence": "Abrir o quadro de trabalho"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Lembretes",
     "quotes": "Orçamentos",
     "messages": "Mensagens",
-    "external": "Calendários ligados"
+    "external": "Calendários ligados",
+    "closures": "Dias de encerramento",
+    "absences": "Ausências"
   },
   "selectVehicle": "Selecionar viatura para a ordem de serviço",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Próximo",
       "failed": "Falhou",
       "queued": "Em fila",
-      "busy": "Ocupado"
+      "busy": "Ocupado",
+      "closed": "Encerrado",
+      "away": "Ausente"
     },
     "type": {
       "service": "Ordem de serviço",
       "reminder": "Lembrete",
       "quote": "Orçamento",
       "message": "Mensagem",
-      "external": "Calendário ligado"
+      "external": "Calendário ligado",
+      "closure": "Encerrado",
+      "absence": "Ausência"
     },
     "noEvents": "Sem eventos",
     "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço.",
@@ -145,5 +153,10 @@
     }
   },
   "previousMonth": "Mês anterior",
-  "nextMonth": "Mês seguinte"
+  "nextMonth": "Mês seguinte",
+  "range": {
+    "from": "A partir das {time}",
+    "until": "Até às {time}"
+  },
+  "timeOffMissing": "Essa ausência foi alterada ou removida entretanto."
 }

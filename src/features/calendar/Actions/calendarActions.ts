@@ -8,8 +8,19 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getManifest } from '@/integrations/registry'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
+import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
+import { type ClosedPeriod, eachDay } from '@/features/workshop-calendar/Lib/calendar'
 
-export type CalendarEventType = 'service' | 'reminder' | 'quote' | 'message' | 'external'
+export type CalendarEventType =
+  | 'service'
+  | 'reminder'
+  | 'quote'
+  | 'message'
+  | 'external'
+  /** A day the workshop is closed: a public holiday, a holiday calendar, its own closure. */
+  | 'closure'
+  /** A technician on leave or out of office. */
+  | 'absence'
 
 export type CalendarEvent = {
   id: string
@@ -191,6 +202,86 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
       const vehicleLabel = (v: { year: number; make: string; model: string } | null) =>
         v ? `${v.year} ${v.make} ${v.model}` : ''
 
+      // Closed days and time off, one all-day (or part-day) entry per day.
+      const { calendar } = await loadWorkshopCalendar(organizationId, {
+        from: params.start,
+        to: params.end,
+      })
+      const tc = await getTranslations('workshopCalendar')
+      const technicianNames = calendar.absences.length
+        ? new Map(
+            (
+              await db.technician.findMany({
+                where: {
+                  organizationId,
+                  id: { in: [...new Set(calendar.absences.map((a) => a.technicianId))] },
+                },
+                select: { id: true, name: true },
+              })
+            ).map((tech) => [tech.id, tech.name])
+          )
+        : new Map<string, string>()
+      const dayEntries = (
+        stretch: Pick<ClosedPeriod, 'startDate' | 'endDate' | 'startTime' | 'endTime'>,
+        make: (day: string, time: string | null, endTime: string | null) => CalendarEvent
+      ) => {
+        const first = stretch.startDate < params.start ? params.start : stretch.startDate
+        const last = stretch.endDate > params.end ? params.end : stretch.endDate
+        if (first > last) return []
+        return eachDay(first, last).map((day) => {
+          const time = day === stretch.startDate ? (stretch.startTime ?? null) : null
+          const until = day === stretch.endDate ? (stretch.endTime ?? null) : null
+          // Part of a day is a timed block; a whole day stays an all-day item.
+          return time || until
+            ? make(day, time ?? '00:00', until ?? '23:59')
+            : make(day, null, null)
+        })
+      }
+      const blank = {
+        vehicleId: null,
+        vehicleLabel: '',
+        customerName: null,
+        invoiceNumber: null,
+        amount: null,
+      }
+      // A holiday listed by two sources is one entry a day.
+      const seenClosure = new Set<string>()
+      const closureEvents: CalendarEvent[] = calendar.closures.flatMap((c, i) =>
+        dayEntries(c, (day, time, endTime) => ({
+          ...blank,
+          id: `closure:${i}:${day}`,
+          title: c.name,
+          date: day,
+          time,
+          endTime,
+          type: 'closure',
+          status: 'closed',
+          allDay: time === null,
+          source: c.source,
+        })).filter((event) => {
+          const id = `${event.date}|${event.title.toLocaleLowerCase()}|${event.time ?? ''}`
+          if (seenClosure.has(id)) return false
+          seenClosure.add(id)
+          return true
+        })
+      )
+      const absenceEvents: CalendarEvent[] = calendar.absences.flatMap((a) =>
+        dayEntries(a, (day, time, endTime) => ({
+          ...blank,
+          id: `absence:${a.id}:${day}`,
+          title: tc('calendar.absenceTitle', {
+            name: technicianNames.get(a.technicianId) ?? '',
+            reason: tc.has(`reasons.${a.reason}`) ? tc(`reasons.${a.reason}`) : a.reason,
+          }),
+          date: day,
+          time,
+          endTime,
+          type: 'absence',
+          status: 'away',
+          allDay: time === null,
+        }))
+      )
+
       const ti = await getTranslations('integrations')
       const externalEvents: CalendarEvent[] = []
       for (const e of external) {
@@ -231,6 +322,8 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
       }
 
       const events: CalendarEvent[] = [
+        ...closureEvents,
+        ...absenceEvents,
         ...externalEvents,
         ...services.map((s) => {
           const startsAt = s.startDateTime

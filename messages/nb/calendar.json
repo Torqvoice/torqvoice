@@ -68,7 +68,9 @@
       "reminder": "Åpne påminnelse",
       "quote": "Åpne tilbud",
       "message": "Åpne meldinger",
-      "external": "Åpne"
+      "external": "Åpne",
+      "closure": "Åpne åpningstider",
+      "absence": "Åpne arbeidstavlen"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Påminnelser",
     "quotes": "Tilbud",
     "messages": "Meldinger",
-    "external": "Tilkoblede kalendere"
+    "external": "Tilkoblede kalendere",
+    "closures": "Stengte dager",
+    "absences": "Fravær"
   },
   "selectVehicle": "Velg kjøretøy for arbeidsordre",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Kommende",
       "failed": "Mislyktes",
       "queued": "I kø",
-      "busy": "Opptatt"
+      "busy": "Opptatt",
+      "closed": "Stengt",
+      "away": "Borte"
     },
     "type": {
       "service": "Arbeidsordre",
       "reminder": "Påminnelse",
       "quote": "Tilbud",
       "message": "Melding",
-      "external": "Tilkoblet kalender"
+      "external": "Tilkoblet kalender",
+      "closure": "Stengt",
+      "absence": "Fravær"
     },
     "noEvents": "Ingen hendelser",
     "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre.",
@@ -145,5 +153,10 @@
     }
   },
   "previousMonth": "Forrige måned",
-  "nextMonth": "Neste måned"
+  "nextMonth": "Neste måned",
+  "range": {
+    "from": "Fra {time}",
+    "until": "Til {time}"
+  },
+  "timeOffMissing": "Dette fraværet ble endret eller fjernet i mellomtiden."
 }

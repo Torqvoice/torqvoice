@@ -68,7 +68,9 @@
       "reminder": "Atidaryti priminimą",
       "quote": "Atidaryti pasiūlymą",
       "message": "Atidaryti žinutes",
-      "external": "Atidaryti"
+      "external": "Atidaryti",
+      "closure": "Atidaryti darbo laiką",
+      "absence": "Atidaryti darbų lentą"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Priminimai",
     "quotes": "Pasiūlymai",
     "messages": "Žinutės",
-    "external": "Prijungti kalendoriai"
+    "external": "Prijungti kalendoriai",
+    "closures": "Nedarbo dienos",
+    "absences": "Nebuvimas darbe"
   },
   "selectVehicle": "Pasirinkite transporto priemonę darbo užsakymui",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Artėja",
       "failed": "Nepavyko",
       "queued": "Eilėje",
-      "busy": "Užimta"
+      "busy": "Užimta",
+      "closed": "Uždaryta",
+      "away": "Nėra"
     },
     "type": {
       "service": "Darbo užsakymas",
       "reminder": "Priminimas",
       "quote": "Pasiūlymas",
       "message": "Žinutė",
-      "external": "Prijungtas kalendorius"
+      "external": "Prijungtas kalendorius",
+      "closure": "Uždaryta",
+      "absence": "Nebuvimas darbe"
     },
     "noEvents": "Įvykių nėra",
     "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą.",
@@ -145,5 +153,10 @@
     }
   },
   "previousMonth": "Ankstesnis mėnuo",
-  "nextMonth": "Kitas mėnuo"
+  "nextMonth": "Kitas mėnuo",
+  "range": {
+    "from": "Nuo {time}",
+    "until": "Iki {time}"
+  },
+  "timeOffMissing": "Šis nebuvimas per tą laiką buvo pakeistas arba pašalintas."
 }

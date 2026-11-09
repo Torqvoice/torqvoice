@@ -1,6 +1,12 @@
 'use server'
 
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { getTranslations } from 'next-intl/server'
+import { zonedDayKey, zonedParts } from '@/lib/timezone'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import type { DayHours } from '@/features/workshop-calendar/Lib/calendar'
+import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
+import { addDays, dayState } from '@/features/workshop-calendar/Lib/calendar'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import type { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
@@ -437,6 +443,26 @@ export async function createServiceRequest(input: {
   preferredDate?: string
 }) {
   return withPortalAuth(async ({ customerId, organizationId }) => {
+    // A preferred day the workshop is closed on (a holiday, a closure, a day
+    // it never opens) is refused before anything is created. The day checked
+    // is the one stored, whatever form the date came in ("2027-01-26" or
+    // "2027-01-26T12:00").
+    const timeZone = await workshopTimeZone(organizationId)
+    const preferredDate = toSafeWorkshopDate(input.preferredDate, timeZone) ?? null
+    if (preferredDate) {
+      const day = zonedDayKey(preferredDate, timeZone)
+      const { calendar } = await loadWorkshopCalendar(organizationId, { from: day, to: day })
+      const state = dayState(calendar, day)
+      if (!state.open) {
+        const tc = await getTranslations('workshopCalendar.portal')
+        throw new Error(
+          state.closures.length > 0
+            ? tc('closedDay', { name: state.closures.map((c) => c.name).join(', ') })
+            : tc('closedWeekday')
+        )
+      }
+    }
+
     let vehicle: { id: string; make: string; model: string; licensePlate: string | null } | null =
       null
 
@@ -501,8 +527,7 @@ export async function createServiceRequest(input: {
     const serviceRequest = await db.serviceRequest.create({
       data: {
         description: input.description,
-        preferredDate:
-          toSafeWorkshopDate(input.preferredDate, await workshopTimeZone(organizationId)) ?? null,
+        preferredDate,
         customerId,
         vehicleId: vehicle.id,
         organizationId,
@@ -684,5 +709,90 @@ export async function reportVehicleSold(vehicleId: string) {
       entityUrl: `/vehicles/${vehicle.id}`,
     })
     return { reportedAt: now.toISOString() }
+  })
+}
+
+/**
+ * The days in the coming weeks the workshop is closed for a holiday or
+ * closure, so the request form can say so before a customer picks one.
+ */
+/** The workshop's week and what changes in it soon, for the customer to plan around. */
+export interface PortalOpeningHours {
+  /** Sunday first, as Date#getDay. */
+  week: DayHours[]
+  /** The workshop's today, "YYYY-MM-DD". */
+  today: string
+  timeFormat: '12h' | '24h'
+  /**
+   * Days soon that the workshop is shut or opens for less than usual, with
+   * the hours it is still open ("HH:mm"; none when closed all day).
+   */
+  closedSoon: { date: string; name: string; open: { start: string; end: string }[] }[]
+}
+
+/** How far ahead, and how many, of the closed days the portal names. */
+const CLOSED_SOON_DAYS = 60
+const CLOSED_SOON_MAX = 5
+
+/**
+ * Opening hours for the customer portal. The week always shows; closed days
+ * only while the workshop tracks them, and only on days it would otherwise
+ * open, since a holiday on a Sunday changes nothing for a closed-on-Sunday shop.
+ */
+export async function getPortalOpeningHours() {
+  return withPortalAuth(async ({ organizationId }): Promise<PortalOpeningHours> => {
+    const timeZone = await workshopTimeZone(organizationId)
+    const today = zonedDayKey(new Date(), timeZone)
+    const last = addDays(today, CLOSED_SOON_DAYS)
+    const [{ calendar }, format] = await Promise.all([
+      loadWorkshopCalendar(organizationId, { from: today, to: last }),
+      db.appSetting.findFirst({
+        where: { organizationId, key: SETTING_KEYS.TIME_FORMAT },
+        select: { value: true },
+      }),
+    ])
+    const clock = (at: Date) => {
+      const p = zonedParts(at, timeZone)
+      return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`
+    }
+    const closedSoon: PortalOpeningHours['closedSoon'] = []
+    for (
+      let day = today;
+      day <= last && closedSoon.length < CLOSED_SOON_MAX;
+      day = addDays(day, 1)
+    ) {
+      const state = dayState(calendar, day)
+      if (state.closures.length === 0 || state.closedWeekday) continue
+      if (state.open && !state.shortened) continue
+      closedSoon.push({
+        date: day,
+        name: state.closures.map((c) => c.name).join(', '),
+        open: state.intervals.map((i) => ({ start: clock(i.start), end: clock(i.end) })),
+      })
+    }
+    return {
+      week: calendar.week,
+      today,
+      timeFormat: format?.value === '24h' ? '24h' : '12h',
+      closedSoon,
+    }
+  })
+}
+
+export async function getPortalClosedDays() {
+  return withPortalAuth(async ({ organizationId }) => {
+    const timeZone = await workshopTimeZone(organizationId)
+    const today = zonedDayKey(new Date(), timeZone)
+    const last = addDays(today, 90)
+    const { calendar } = await loadWorkshopCalendar(organizationId, { from: today, to: last })
+    // One entry per closed day, naming each holiday once whatever lists it.
+    const days: { date: string; name: string }[] = []
+    for (let day = today; day <= last; day = addDays(day, 1)) {
+      const state = dayState(calendar, day)
+      if (!state.open && state.closures.length > 0) {
+        days.push({ date: day, name: state.closures.map((c) => c.name).join(', ') })
+      }
+    }
+    return days
   })
 }

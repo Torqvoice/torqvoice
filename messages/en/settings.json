@@ -79,6 +79,10 @@
         "title": "Workshop",
         "description": "Technician & labor defaults"
       },
+      "openingHours": {
+        "title": "Opening hours and holidays",
+        "description": "Hours, public holidays, closed days, leave"
+      },
       "laborPresets": {
         "title": "Labor Presets",
         "description": "Predefined labor packages"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Failed to assign work orders",
     "noTechnician": "None",
     "weekStartDay": "Week Start Day",
-    "workDayStart": "Work Day Start",
-    "workDayEnd": "Work Day End",
     "titleTemplateTitle": "Work Order Title",
     "titleTemplateDescription": "What a new work order is called before anybody types a title. Build it from the tags below; every job opens with them filled in, and the title can still be changed on the job.",
     "titleTemplate": "Title template",
@@ -1249,7 +1251,9 @@
       "4": "Thursday",
       "5": "Friday",
       "6": "Saturday"
-    }
+    },
+    "openingHoursMoved": "Opening hours are set for each day of the week, beside public holidays, closed days and leave.",
+    "openingHoursLink": "Open opening hours and holidays"
   },
   "maintenance": {
     "title": "Predicted Maintenance",
@@ -2937,6 +2941,16 @@
       "square": "Square",
       "cross": "Cross",
       "hex": "Hexagon"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Opening hours",
+      "switch": "Closed days and leave",
+      "publicHolidays": "Public holidays",
+      "calendars": "Holiday calendars",
+      "closedDays": "Closed days",
+      "timeOff": "Leave and out of office"
     }
   }
 }

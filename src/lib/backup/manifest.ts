@@ -142,6 +142,13 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
     clearOrder: 71,
   },
+  // Time off belongs to its technician and goes and comes back with them.
+  {
+    model: 'TechnicianAbsence',
+    option: 'technicians',
+    nestedUnder: 'Technician',
+    restore: 'replace',
+  },
   {
     model: 'InspectionTemplate',
     key: 'inspectionTemplates',
@@ -254,6 +261,13 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   {
     model: 'ConditionMarkType',
     key: 'conditionMarkTypes',
+    option: 'workshopConfig',
+    restore: 'replace',
+    clearOrder: 85,
+  },
+  {
+    model: 'WorkshopClosure',
+    key: 'workshopClosures',
     option: 'workshopConfig',
     restore: 'replace',
     clearOrder: 85,

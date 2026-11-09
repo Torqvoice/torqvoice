@@ -15,6 +15,8 @@ export function getEventLink(event: {
   vehicleId: string | null
 }): string {
   if (event.type === 'external') return '/settings/integrations'
+  if (event.type === 'closure') return '/settings/opening-hours'
+  if (event.type === 'absence') return '/work-board'
   if (event.type === 'quote') return `/quotes/${event.id}`
   if (event.type === 'message') return '/messages?tab=scheduled'
   if (event.type === 'reminder')
@@ -124,6 +126,8 @@ export const TYPE_HUE: Record<CalendarEvent['type'], Hue> = {
   quote: 'violet',
   message: 'teal',
   external: 'slate',
+  closure: 'red',
+  absence: 'orange',
 }
 
 export function typePalette(type: CalendarEvent['type']): EventPalette {
@@ -154,6 +158,10 @@ export function eventHue(event: Pick<CalendarEvent, 'type' | 'status'>): Hue {
       return event.status === 'approved' ? 'emerald' : 'violet'
     case 'message':
       return event.status === 'failed' ? 'red' : 'teal'
+    case 'closure':
+      return 'red'
+    case 'absence':
+      return 'orange'
     default:
       return 'slate'
   }
@@ -170,6 +178,21 @@ export function isEventDone(event: Pick<CalendarEvent, 'type' | 'status'>): bool
     (event.type === 'reminder' && event.status === 'completed') ||
     (event.type === 'message' && event.status === 'sent')
   )
+}
+
+/**
+ * A closure or time off that takes the rest of a day is drawn up to 23:59,
+ * and one that ends partway through starts at midnight. Neither clock is
+ * something anyone set, so the label says "From 12:00" or "Until 14:00".
+ */
+export function openEndedSide(
+  event: Pick<CalendarEvent, 'type' | 'time' | 'endTime'>
+): 'from' | 'until' | null {
+  if (event.type !== 'closure' && event.type !== 'absence') return null
+  if (!event.time) return null
+  if (event.endTime === '23:59') return 'from'
+  if (event.time === '00:00' && event.endTime) return 'until'
+  return null
 }
 
 /** All-day items come first, then by clock time, then by title. */

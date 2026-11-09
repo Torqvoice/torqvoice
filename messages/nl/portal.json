@@ -263,5 +263,12 @@
       "inProgress": "Bezig",
       "completed": "Afgerond"
     }
+  },
+  "openingHours": {
+    "title": "Openingstijden",
+    "closed": "Gesloten",
+    "today": "Vandaag",
+    "closedSoon": "Binnenkort gesloten",
+    "openOnly": "Open {hours}"
   }
 }

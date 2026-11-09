@@ -231,6 +231,25 @@ export const SETTING_KEYS = {
   WORKBOARD_WEEK_START_DAY: 'workboard.weekStartDay',
   WORKBOARD_WORK_DAY_START: 'workboard.workDayStart',
   WORKBOARD_WORK_DAY_END: 'workboard.workDayEnd',
+  /// JSON: seven days, Sunday first, each `{ open, start, end }`. Missing means
+  /// the work day above on weekdays, which is how every workshop started.
+  OPENING_HOURS: 'workshop.openingHours',
+  /// "false" turns closed days, public holidays and time off off everywhere.
+  /// Unset or anything else is on.
+  CLOSURES_ENABLED: 'workshop.closuresEnabled',
+  /// ISO 3166-1 alpha-2 code whose public holidays close the workshop; empty
+  /// means none.
+  HOLIDAY_COUNTRY: 'holidays.country',
+  /// JSON array of ISO 3166-2 codes ("AU-QLD") whose regional holidays count.
+  HOLIDAY_REGIONS: 'holidays.regions',
+  /// JSON object: holiday name to true (closed) or false (open), overriding
+  /// the default that public holidays close and other days do not.
+  HOLIDAY_CHOICES: 'holidays.choices',
+  /// JSON: the country's holidays by year as last fetched from Nager.Date.
+  /// Written by the sync, never by the settings form.
+  HOLIDAY_CACHE: 'holidays.cache',
+  /// JSON array of holiday calendars (.ics) with their events and choices.
+  HOLIDAY_FEEDS: 'holidays.feeds',
   INVOICE_LAYOUT_CONFIG: 'invoice.layoutConfig',
   QUOTE_LAYOUT_CONFIG: 'quote.layoutConfig',
   CERTIFICATE_LAYOUT_CONFIG: 'certificate.layoutConfig',

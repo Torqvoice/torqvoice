@@ -79,6 +79,10 @@
         "title": "Dirbtuvės",
         "description": "Techniko ir darbų numatytosios reikšmės"
       },
+      "openingHours": {
+        "title": "Darbo laikas ir šventės",
+        "description": "Valandos, šventinės dienos, nedarbo dienos, atostogos"
+      },
       "laborPresets": {
         "title": "Darbų šablonai",
         "description": "Iš anksto apibrėžti darbų paketai"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Nepavyko priskirti darbo užsakymų",
     "noTechnician": "Nėra",
     "weekStartDay": "Savaitės pradžios diena",
-    "workDayStart": "Darbo dienos pradžia",
-    "workDayEnd": "Darbo dienos pabaiga",
     "titleTemplateTitle": "Darbo užsakymo pavadinimas",
     "titleTemplateDescription": "Kaip vadinamas naujas darbo užsakymas, kol niekas neįrašė pavadinimo. Sudarykite jį iš žymų žemiau; kiekvienas darbas atsidaro su užpildytomis žymomis, o pavadinimą vis dar galima keisti pačiame darbe.",
     "titleTemplate": "Pavadinimo šablonas",
@@ -1249,7 +1251,9 @@
       "4": "Ketvirtadienis",
       "5": "Penktadienis",
       "6": "Šeštadienis"
-    }
+    },
+    "openingHoursMoved": "Darbo laikas nustatomas kiekvienai savaitės dienai, kartu su šventinėmis dienomis, nedarbo dienomis ir atostogomis.",
+    "openingHoursLink": "Atidaryti darbo laiką ir šventes"
   },
   "maintenance": {
     "title": "Numatoma priežiūra",
@@ -2937,6 +2941,16 @@
       "square": "Kvadratas",
       "cross": "Kryžius",
       "hex": "Šešiakampis"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Darbo laikas",
+      "switch": "Nedarbo dienos ir nebuvimas darbe",
+      "publicHolidays": "Šventinės dienos",
+      "calendars": "Švenčių kalendoriai",
+      "closedDays": "Nedarbo dienos",
+      "timeOff": "Atostogos ir nebuvimas"
     }
   }
 }

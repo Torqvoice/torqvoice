@@ -263,5 +263,12 @@
       "inProgress": "Vykdoma",
       "completed": "Baigta"
     }
+  },
+  "openingHours": {
+    "title": "Darbo laikas",
+    "closed": "Nedirba",
+    "today": "Šiandien",
+    "closedSoon": "Artimiausios nedarbo dienos",
+    "openOnly": "Dirba {hours}"
   }
 }

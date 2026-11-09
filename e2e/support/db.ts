@@ -2091,3 +2091,37 @@ export async function quoteConversion(
     return row
   })
 }
+
+/** A technician's time off as stored, soonest first. */
+export async function absencesOf(
+  technicianId: string
+): Promise<{ startDate: string; endDate: string; reason: string; startTime: string | null }[]> {
+  return withDb(async (db) => {
+    const result = await db.query(
+      `select to_char("startDate", 'YYYY-MM-DD') as "startDate",
+              to_char("endDate", 'YYYY-MM-DD') as "endDate", reason, "startTime"
+         from technician_absences where "technicianId" = $1 order by "startDate"`,
+      [technicianId]
+    )
+    return result.rows
+  })
+}
+
+/** The workshop's own closed days with this name, as stored. */
+export async function closuresNamed(
+  name: string
+): Promise<{ startDate: string; endDate: string; repeatsYearly: boolean }[]> {
+  return withDb(async (db) => {
+    const result = await db.query(
+      `select to_char("startDate", 'YYYY-MM-DD') as "startDate",
+              to_char("endDate", 'YYYY-MM-DD') as "endDate", "repeatsYearly"
+         from workshop_closures where name = $1`,
+      [name]
+    )
+    return result.rows
+  })
+}
+
+export async function deleteClosuresNamed(name: string): Promise<void> {
+  await withDb((db) => db.query(`delete from workshop_closures where name = $1`, [name]))
+}

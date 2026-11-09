@@ -1,5 +1,6 @@
 import { PortalShell } from '@/features/portal/Components/PortalShell'
-import { getPortalDashboard } from '@/features/portal/Actions/portalActions'
+import { getPortalDashboard, getPortalOpeningHours } from '@/features/portal/Actions/portalActions'
+import { PortalOpeningHours } from '@/features/portal/Components/PortalOpeningHours'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,7 +34,7 @@ export default async function PortalDashboardPage({
   const tStatus = await getTranslations('portal.status')
   const tQuoteStatus = await getTranslations('quotes.statusLabels')
   const tInvoices = await getTranslations('portal.invoices')
-  const result = await getPortalDashboard()
+  const [result, hours] = await Promise.all([getPortalDashboard(), getPortalOpeningHours()])
 
   if (!result.success || !result.data) {
     return (
@@ -286,6 +287,8 @@ export default async function PortalDashboardPage({
             </ul>
           </AppCard>
         )}
+
+        {hours.success && hours.data && <PortalOpeningHours hours={hours.data} wide />}
       </div>
     </PortalShell>
   )

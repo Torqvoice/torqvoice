@@ -263,5 +263,12 @@
       "inProgress": "Pågår",
       "completed": "Fullført"
     }
+  },
+  "openingHours": {
+    "title": "Åpningstider",
+    "closed": "Stengt",
+    "today": "I dag",
+    "closedSoon": "Stengt snart",
+    "openOnly": "Åpent {hours}"
   }
 }

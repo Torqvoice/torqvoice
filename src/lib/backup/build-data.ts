@@ -219,7 +219,8 @@ const DATASETS: readonly Dataset[] = [
   {
     key: 'technicians',
     option: 'technicians',
-    read: (organizationId, page) => db.technician.findMany({ ...page, where: { organizationId } }),
+    read: (organizationId, page) =>
+      db.technician.findMany({ ...page, where: { organizationId }, include: { absences: true } }),
   },
   {
     key: 'workBays',
@@ -285,6 +286,12 @@ const DATASETS: readonly Dataset[] = [
     option: 'workshopConfig',
     read: (organizationId, page) =>
       db.conditionMarkType.findMany({ ...page, where: { organizationId } }),
+  },
+  {
+    key: 'workshopClosures',
+    option: 'workshopConfig',
+    read: (organizationId, page) =>
+      db.workshopClosure.findMany({ ...page, where: { organizationId } }),
   },
   {
     key: 'laborPresets',

@@ -35,6 +35,7 @@ export async function register() {
       processIntegrationJobs,
       cleanupIntegrationLogs,
       processBackupRuns,
+      syncWorkshopHolidays,
       startHeartbeat,
     } = await import('./cronTasks')
     const { warnAboutAppUrl } = await import('./lib/auth-origin-hint')
@@ -55,6 +56,7 @@ export async function register() {
     processIntegrationJobs()
     cleanupIntegrationLogs()
     processBackupRuns()
+    syncWorkshopHolidays()
     // Last, so the health check only sees beats once everything above started.
     startHeartbeat()
   }

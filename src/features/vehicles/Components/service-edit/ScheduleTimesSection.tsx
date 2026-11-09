@@ -1,7 +1,7 @@
 'use client'
 
 import { SectionFrame } from '@/components/section-frame'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { useRouter } from 'next/navigation'
 import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/command'
 import {
   AlertTriangle,
+  CalendarOff,
   Check,
   ChevronsUpDown,
   Clock,
@@ -121,6 +122,7 @@ export function ScheduleTimesSection({
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
+  const tCal = useTranslations('workshopCalendar')
   const router = useRouter()
   const modern = useModernWorkOrder()
   // Booked times belong to the workshop's clock, not to the clock of whoever
@@ -143,7 +145,6 @@ export function ScheduleTimesSection({
   // somebody to change something first.
   useEffect(() => {
     if (!initialStartDateTime || !initialEndDateTime) return
-    if (!initialTechnicianId && !initialWorkBayId) return
     void checkSlotAvailability({
       start: new Date(initialStartDateTime).toISOString(),
       end: new Date(initialEndDateTime).toISOString(),
@@ -151,7 +152,13 @@ export function ScheduleTimesSection({
       workBayId: initialWorkBayId || null,
       excludeId: serviceRecordId,
     }).then((res) => {
-      if (res.success && res.data) setConflicts(res.data.conflicts)
+      if (res.success && res.data) {
+        setConflicts(res.data.conflicts)
+        setClosed({
+          names: res.data.closures?.map((c) => c.name) ?? [],
+          weekday: !!res.data.closedWeekday,
+        })
+      }
     })
   }, [
     initialStartDateTime,
@@ -192,6 +199,8 @@ export function ScheduleTimesSection({
   const [conflicts, setConflicts] = useState<
     {
       id: string
+      /** `absence` is the technician's time off rather than other work. */
+      kind?: string
       label: string
       start: string
       end: string
@@ -199,21 +208,41 @@ export function ScheduleTimesSection({
       onBay: boolean
     }[]
   >([])
+  /** The workshop's own closures the booking falls in, whoever it is for. */
+  const [closed, setClosed] = useState<{ names: string[]; weekday: boolean }>({
+    names: [],
+    weekday: false,
+  })
   const [checking, setChecking] = useState(false)
   const [finding, setFinding] = useState(false)
 
   // How full each technician's day is, on the day this job is booked. Only
   // the overhauled page draws it, so only that page asks.
   const [dayLoad, setDayLoad] = useState<Record<string, number>>({})
+  // Who is away that day, so the list can say so beside their name.
+  const [dayAway, setDayAway] = useState<
+    Record<string, { reason: string; allDay: boolean; from: string | null; until: string | null }>
+  >({})
   const loadDay = startDateTime ? startDateTime.toISOString() : null
+  // Read through a ref: a save calls this from a closure made before the
+  // date changed, and asking about that old day afterwards drew the old day's
+  // load (and nobody away) under the new date.
+  const loadDayRef = useRef(loadDay)
+  loadDayRef.current = loadDay
   const refreshDayLoad = useCallback(async () => {
-    if (!modern || !loadDay) return
-    const res = await getTechnicianDayLoad({ day: loadDay })
-    if (res.success && res.data) setDayLoad(res.data.minutes)
-  }, [modern, loadDay])
+    const day = loadDayRef.current
+    if (!modern || !day) return
+    const res = await getTechnicianDayLoad({ day })
+    // A newer day was asked for while this one was on its way.
+    if (day !== loadDayRef.current) return
+    if (res.success && res.data) {
+      setDayLoad(res.data.minutes)
+      setDayAway(res.data.away ?? {})
+    }
+  }, [modern])
   useEffect(() => {
     void refreshDayLoad()
-  }, [refreshDayLoad])
+  }, [refreshDayLoad, loadDay])
 
   const bayId = selectedBayId === NO_BAY ? null : selectedBayId
 
@@ -225,8 +254,9 @@ export function ScheduleTimesSection({
    * what the day actually looks like. Saying so plainly is the useful part.
    */
   const checkSlot = async (start: Date, end: Date, techId: string, bay: string | null) => {
-    if ((!techId && !bay) || end <= start) {
+    if (end <= start) {
       setConflicts([])
+      setClosed({ names: [], weekday: false })
       return
     }
     setChecking(true)
@@ -239,6 +269,10 @@ export function ScheduleTimesSection({
     })
     setChecking(false)
     setConflicts(res.success && res.data ? res.data.conflicts : [])
+    setClosed({
+      names: res.success && res.data ? (res.data.closures?.map((c) => c.name) ?? []) : [],
+      weekday: res.success && res.data ? !!res.data.closedWeekday : false,
+    })
   }
 
   /** Move the booking to the first slot that fits, inside working hours. */
@@ -555,6 +589,12 @@ export function ScheduleTimesSection({
               const capacity = tech.dailyCapacity || DEFAULT_DAILY_CAPACITY
               const booked = dayLoad[tech.id] ?? 0
               const full = booked >= capacity
+              const away = dayAway[tech.id]
+              const awayReason = away
+                ? tCal.has(`reasons.${away.reason}`)
+                  ? tCal(`reasons.${away.reason}`)
+                  : away.reason
+                : null
               return (
                 <button
                   key={tech.id}
@@ -581,12 +621,23 @@ export function ScheduleTimesSection({
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-sm font-semibold">{tech.name}</span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      {tech.skills ||
-                        (full
-                          ? t('loadFull')
-                          : t('loadFree', { hours: hoursOf(capacity - booked) }))}
-                    </span>
+                    {away ? (
+                      <span
+                        className="block truncate text-xs font-medium text-amber-700 dark:text-amber-400"
+                        data-testid="tech-away"
+                      >
+                        {away.allDay
+                          ? tCal('schedule.away', { reason: awayReason ?? '' })
+                          : `${tCal('schedule.away', { reason: awayReason ?? '' })} · ${[away.from, away.until].filter(Boolean).join('-')}`}
+                      </span>
+                    ) : (
+                      <span className="block truncate text-xs text-muted-foreground">
+                        {tech.skills ||
+                          (full
+                            ? t('loadFull')
+                            : t('loadFree', { hours: hoursOf(capacity - booked) }))}
+                      </span>
+                    )}
                   </span>
                   <span className="flex flex-col gap-1">
                     <span className="text-right text-xs tabular-nums text-muted-foreground">
@@ -769,13 +820,36 @@ export function ScheduleTimesSection({
           </div>
         </div>
 
+        {(closed.names.length > 0 || closed.weekday) && (
+          <div
+            className="rounded-md border border-amber-300 bg-amber-50 p-2.5 dark:border-amber-900/60 dark:bg-amber-950/40"
+            data-testid="schedule-closed"
+          >
+            <div className="flex items-start gap-2">
+              <CalendarOff className="mt-px h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-500" />
+              <div className="min-w-0 flex-1 space-y-1">
+                <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
+                  {closed.names.length > 0
+                    ? tCal('schedule.closed', { names: closed.names.join(', ') })
+                    : tCal('schedule.closedWeekday')}
+                </p>
+                <p className="text-[11px] text-amber-700 dark:text-amber-400">
+                  {tCal('schedule.bookedAnyway')}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {conflicts.length > 0 && (
           <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 dark:border-amber-900/60 dark:bg-amber-950/40">
             <div className="flex items-start gap-2">
               <AlertTriangle className="mt-px h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-500" />
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
-                  {t('slotTaken', { count: conflicts.length })}
+                  {conflicts.every((c) => c.kind === 'absence')
+                    ? tCal('schedule.awayHeading')
+                    : t('slotTaken', { count: conflicts.length })}
                 </p>
                 <ul className="space-y-0.5">
                   {conflicts.slice(0, 3).map((c) => (
@@ -783,26 +857,42 @@ export function ScheduleTimesSection({
                       key={c.id}
                       className="text-[11px] leading-snug text-amber-800 dark:text-amber-300"
                     >
-                      {c.label || t('anotherJob')} ·{' '}
-                      {new Date(c.start).toLocaleString(undefined, {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZone: timezone || undefined,
-                      })}
-                      {' – '}
-                      {new Date(c.end).toLocaleTimeString(undefined, {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZone: timezone || undefined,
-                      })}
-                      {' · '}
-                      {c.onTechnician && c.onBay
-                        ? t('clashBoth')
-                        : c.onTechnician
-                          ? t('clashTechnician')
-                          : t('clashBay')}
+                      {c.kind === 'absence' ? (
+                        // Time off is days, not a slot: say which days, and
+                        // the clock only where it starts or ends in a day.
+                        <>
+                          {tCal('schedule.awayConflict', {
+                            reason: tCal.has(`reasons.${c.label}`)
+                              ? tCal(`reasons.${c.label}`)
+                              : c.label,
+                          })}
+                          {' · '}
+                          {awayWhen(c.start, c.end, timezone)}
+                        </>
+                      ) : (
+                        <>
+                          {c.label || t('anotherJob')} ·{' '}
+                          {new Date(c.start).toLocaleString(undefined, {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZone: timezone || undefined,
+                          })}
+                          {' – '}
+                          {new Date(c.end).toLocaleTimeString(undefined, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZone: timezone || undefined,
+                          })}
+                          {' · '}
+                          {c.onTechnician && c.onBay
+                            ? t('clashBoth')
+                            : c.onTechnician
+                              ? t('clashTechnician')
+                              : t('clashBay')}
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -864,4 +954,44 @@ export function ScheduleTimesSection({
       </div>
     </SectionFrame>
   )
+}
+
+/** Hours and minutes past local midnight of an instant in the workshop's zone. */
+function clockIn(at: Date, timeZone: string | undefined): number {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone,
+  }).formatToParts(at)
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 0)
+  const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? 0)
+  return hour * 60 + minute
+}
+
+/**
+ * When a technician is away, as days: "16 Nov – 17 Nov", or with a clock
+ * only where the time off starts or ends inside a day. The end of a stretch
+ * is the midnight after its last day, which reads as that last day.
+ */
+function awayWhen(startIso: string, endIso: string, timeZone: string | null | undefined): string {
+  const zone = timeZone || undefined
+  const start = new Date(startIso)
+  let end = new Date(endIso)
+  const startsAtMidnight = clockIn(start, zone) === 0
+  const endsAtMidnight = clockIn(end, zone) === 0
+  if (endsAtMidnight) end = new Date(end.getTime() - 60_000)
+  const day = (at: Date) =>
+    at.toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: zone })
+  const dayAndClock = (at: Date) =>
+    at.toLocaleString(undefined, {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: zone,
+    })
+  const from = startsAtMidnight ? day(start) : dayAndClock(start)
+  const to = endsAtMidnight ? day(end) : dayAndClock(end)
+  return from === to ? from : `${from} – ${to}`
 }

@@ -263,5 +263,12 @@
       "inProgress": "In Arbeit",
       "completed": "Abgeschlossen"
     }
+  },
+  "openingHours": {
+    "title": "Öffnungszeiten",
+    "closed": "Geschlossen",
+    "today": "Heute",
+    "closedSoon": "Demnächst geschlossen",
+    "openOnly": "Geöffnet {hours}"
   }
 }

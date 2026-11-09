@@ -20,6 +20,7 @@ model Technician {
   inspections    Inspection[]
   statusReports  StatusReport[]
   timeEntries    TimeEntry[]
+  absences       TechnicianAbsence[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

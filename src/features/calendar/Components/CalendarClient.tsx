@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { useDayFormatter } from './useDayFormatter'
 import { CalendarDays, CalendarOff, Plus } from 'lucide-react'
 import { useDateSettings } from '@/components/date-settings-context'
@@ -15,6 +16,11 @@ import { ReminderFormDialog } from '@/features/vehicles/Components/ReminderFormD
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 import { ScheduleMessageDialog } from '@/features/scheduled-messages/Components/ScheduleMessageDialog'
 import type { MessageChannel } from '@/features/scheduled-messages/Schema/scheduledMessageSchema'
+import {
+  TimeOffDialog,
+  type TechnicianOption,
+} from '@/features/workshop-calendar/Components/TimeOffDialog'
+import { listAbsences, type AbsenceView } from '@/features/workshop-calendar/Actions/absenceActions'
 import { getCalendarEvents } from '../Actions/calendarActions'
 import type { CalendarEvent, CalendarEventType } from '../Actions/calendarActions'
 import {
@@ -53,9 +59,22 @@ interface CalendarClientProps {
   currencyCode: string
   /** Channels the workshop can actually send on, resolved on the server */
   messageChannels: MessageChannel[]
+  /**
+   * The technicians this person may set on leave; null when they may not, or
+   * the workshop does not track time off.
+   */
+  timeOff?: { technicians: TechnicianOption[] } | null
 }
 
-const ALL_TYPES: CalendarEventType[] = ['service', 'reminder', 'quote', 'message', 'external']
+const ALL_TYPES: CalendarEventType[] = [
+  'service',
+  'reminder',
+  'quote',
+  'message',
+  'external',
+  'closure',
+  'absence',
+]
 
 /** Minutes a work order started from a time slot is booked for. */
 const SLOT_WORK_ORDER_MINUTES = 60
@@ -83,6 +102,7 @@ export default function CalendarClient({
   todayStr,
   currencyCode,
   messageChannels,
+  timeOff = null,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
   const tWorkOrders = useTranslations('workOrders.list')
@@ -109,6 +129,8 @@ export default function CalendarClient({
     quote: true,
     message: true,
     external: true,
+    closure: true,
+    absence: true,
   })
 
   // Dialogs the calendar can open
@@ -121,6 +143,11 @@ export default function CalendarClient({
   const [menuDateStr, setMenuDateStr] = useState<string | undefined>(undefined)
   const [menuTime, setMenuTime] = useState<string | undefined>(undefined)
   const [daySheetOpen, setDaySheetOpen] = useState(false)
+  /** The leave being added (absence null) or edited, and the day it starts on. */
+  const [timeOffEdit, setTimeOffEdit] = useState<{
+    date: string
+    absence: AbsenceView | null
+  } | null>(null)
 
   const dateStr = toLocalDateStr(date)
   const range = useMemo(() => visibleRange(view, date, weekStartDay), [view, date, weekStartDay])
@@ -177,6 +204,8 @@ export default function CalendarClient({
       quote: 0,
       message: 0,
       external: 0,
+      closure: 0,
+      absence: 0,
     }
     const startKey = toLocalDateStr(range.start)
     const endKey = toLocalDateStr(range.end)
@@ -326,6 +355,9 @@ export default function CalendarClient({
         case 'message':
           setShowMessageDialog(true)
           break
+        case 'timeOff':
+          setTimeOffEdit({ date: dateStr, absence: null })
+          break
       }
     },
     [dateStr, todayStr, openWorkOrderPicker]
@@ -367,8 +399,25 @@ export default function CalendarClient({
         setMenuTime(time)
         setShowMessageDialog(true)
       },
+      onTimeOff: timeOff ? (day) => setTimeOffEdit({ date: day, absence: null }) : undefined,
     }),
-    [openWorkOrderPicker]
+    [openWorkOrderPicker, timeOff]
+  )
+
+  /** A leave entry is one row a day; its id carries the stretch it belongs to. */
+  const editAbsence = useCallback(
+    async (event: CalendarEvent) => {
+      const id = event.id.split(':')[1]
+      const res = await listAbsences({ from: event.date })
+      const absence = res.success ? res.data?.find((a) => a.id === id) : undefined
+      if (!absence) {
+        toast.error(res.error ?? t('timeOffMissing'))
+        refresh()
+        return
+      }
+      setTimeOffEdit({ date: absence.startDate, absence })
+    },
+    [refresh, t]
   )
 
   // Noon parse, so the seeded day survives any timezone the workshop sits in.
@@ -461,7 +510,11 @@ export default function CalendarClient({
   })()
 
   return (
-    <EventPeekProvider currencyCode={currencyCode} onRefresh={refresh}>
+    <EventPeekProvider
+      currencyCode={currencyCode}
+      onRefresh={refresh}
+      onEditAbsence={timeOff ? editAbsence : undefined}
+    >
       {/*
         A definite height, not flex-1: nothing above this in the layout has
         one (the shell is min-h-svh), so a flexed calendar would grow to the
@@ -483,6 +536,7 @@ export default function CalendarClient({
           onToggleSidebar={() => updatePreferences({ sidebarOpen: !preferences.sidebarOpen })}
           onPreferenceChange={updatePreferences}
           onCreate={handleCreate}
+          canSetTimeOff={timeOff !== null}
         />
         <div className="flex min-h-0 flex-1">
           {preferences.sidebarOpen && (
@@ -589,6 +643,18 @@ export default function CalendarClient({
         title={t('selectVehicle')}
         redirectQuery={workOrderQuery}
       />
+      {timeOff && (
+        <TimeOffDialog
+          open={timeOffEdit !== null}
+          onOpenChange={(open) => {
+            if (!open) setTimeOffEdit(null)
+          }}
+          absence={timeOffEdit?.absence ?? null}
+          technicians={timeOff.technicians}
+          defaultDate={timeOffEdit?.date ?? dateStr}
+          onSaved={refresh}
+        />
+      )}
     </EventPeekProvider>
   )
 }

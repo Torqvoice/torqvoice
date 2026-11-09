@@ -68,7 +68,9 @@
       "reminder": "Erinnerung öffnen",
       "quote": "Angebot öffnen",
       "message": "Nachrichten öffnen",
-      "external": "Öffnen"
+      "external": "Öffnen",
+      "closure": "Öffnungszeiten öffnen",
+      "absence": "Auftragsboard öffnen"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Erinnerungen",
     "quotes": "Angebote",
     "messages": "Nachrichten",
-    "external": "Verbundene Kalender"
+    "external": "Verbundene Kalender",
+    "closures": "Schließtage",
+    "absences": "Abwesenheiten"
   },
   "selectVehicle": "Fahrzeug für Arbeitsauftrag auswählen",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "Bevorstehend",
       "failed": "Fehlgeschlagen",
       "queued": "In Warteschlange",
-      "busy": "Belegt"
+      "busy": "Belegt",
+      "closed": "Geschlossen",
+      "away": "Abwesend"
     },
     "type": {
       "service": "Arbeitsauftrag",
       "reminder": "Erinnerung",
       "quote": "Angebot",
       "message": "Nachricht",
-      "external": "Verbundener Kalender"
+      "external": "Verbundener Kalender",
+      "closure": "Geschlossen",
+      "absence": "Abwesenheit"
     },
     "noEvents": "Keine Ereignisse",
     "selectDay": "Wählen Sie einen Tag mit Ereignissen oder erstellen Sie einen neuen Arbeitsauftrag.",
@@ -145,5 +153,10 @@
     }
   },
   "previousMonth": "Vorheriger Monat",
-  "nextMonth": "Nächster Monat"
+  "nextMonth": "Nächster Monat",
+  "range": {
+    "from": "Ab {time}",
+    "until": "Bis {time}"
+  },
+  "timeOffMissing": "Diese Abwesenheit wurde inzwischen geändert oder entfernt."
 }

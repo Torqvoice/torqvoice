@@ -27,14 +27,22 @@ export function BookingClient({ token, initial }: { token: string; initial: Book
   const [note, setNote] = useState('')
   const [busy, setBusy] = useState(false)
 
+  // Times on the workshop's clock: next-intl would format in the server's
+  // zone, which put a 07:00 opening in Oslo at "6:00 AM".
   const when = (iso: string) =>
-    format.dateTime(new Date(iso), { dateStyle: 'full', timeStyle: 'short' })
-  const time = (iso: string) => format.dateTime(new Date(iso), { timeStyle: 'short' })
+    format.dateTime(new Date(iso), {
+      dateStyle: 'full',
+      timeStyle: 'short',
+      timeZone: page.timeZone,
+    })
+  const time = (iso: string) =>
+    format.dateTime(new Date(iso), { timeStyle: 'short', timeZone: page.timeZone })
   const dayLabel = (key: string) =>
-    format.dateTime(new Date(`${key}T12:00:00`), {
+    format.dateTime(new Date(`${key}T12:00:00Z`), {
       weekday: 'short',
       day: 'numeric',
       month: 'short',
+      timeZone: 'UTC',
     })
 
   const openDays = useMemo(() => page.days.filter((d) => d.status !== 'closed'), [page.days])
@@ -95,7 +103,12 @@ export function BookingClient({ token, initial }: { token: string; initial: Book
         )}
       </p>
       <p className="text-muted-foreground">
-        {t('due', { date: format.dateTime(new Date(page.dueAt), { dateStyle: 'long' }) })}
+        {t('due', {
+          date: format.dateTime(new Date(page.dueAt), {
+            dateStyle: 'long',
+            timeZone: page.timeZone,
+          }),
+        })}
       </p>
     </div>
   )

@@ -1,5 +1,6 @@
 'use client'
 
+import { useBoardCalendar } from '../hooks/useBoardCalendar'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DndContext } from '@dnd-kit/core'
@@ -307,6 +308,17 @@ export function WorkBoardPresenter({
     [grouping, store.technicians, store.workBays, store.jobs, tb]
   )
 
+  // Closed days and who is away, the same as on the board itself.
+  const calendarDays = useMemo(() => getWeekDays(weekStart), [weekStart])
+  const technicianLaneIds = useMemo(
+    () =>
+      grouping === 'technician'
+        ? lanes.filter((lane) => !lane.isPlaceholder).map((lane) => lane.id)
+        : [],
+    [lanes, grouping]
+  )
+  const boardCalendar = useBoardCalendar({ days: calendarDays, technicianLaneIds })
+
   const owners = useMemo(() => {
     const map = new Map<string, { name: string; color: string }>()
     for (const tech of store.technicians) map.set(tech.id, { name: tech.name, color: tech.color })
@@ -482,6 +494,8 @@ export function WorkBoardPresenter({
                 lookup={owners}
                 readOnly
                 onOpenJob={noop}
+                closedByDay={boardCalendar.closedByDay}
+                awayByLaneDay={boardCalendar.awayByLaneDay}
               />
             ) : (
               <WeekTimeline
@@ -496,6 +510,8 @@ export function WorkBoardPresenter({
                 onOpenJob={noop}
                 onSchedule={noop}
                 readOnly
+                closedByDay={boardCalendar.closedByDay}
+                awayByLaneDay={boardCalendar.awayByLaneDay}
               />
             )}
           </DndContext>

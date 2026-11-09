@@ -9,6 +9,12 @@ import {
   zonedDayKey,
 } from '@/lib/timezone'
 import type { InspectionReminderSettings } from './settings'
+import {
+  type Interval,
+  type WorkshopCalendar,
+  dayState,
+  openIntervalsOn,
+} from '@/features/workshop-calendar/Lib/calendar'
 
 /**
  * What a customer may book from a reminder link: whole slots of the
@@ -31,6 +37,8 @@ export interface BookableDay {
   status: DayStatus
   /** ISO start times that are free. Empty when full or closed. */
   starts: string[]
+  /** Why a closed day is closed, when a holiday or closure says ("Christmas Day"). */
+  closedFor?: string | null
 }
 
 const STEP_MINUTES = 30
@@ -75,38 +83,74 @@ export function firstBookableDay(now: Date, leadDays: number, timeZone: string):
 }
 
 /**
+ * When the shop takes bookings on `day`: its open stretches from the calendar
+ * (hours per weekday, less closures), or the one usual day on weekdays when
+ * there is no calendar.
+ */
+function bookingStretches(
+  day: Date,
+  settings: InspectionReminderSettings,
+  calendar: WorkshopCalendar | undefined
+): Interval[] {
+  const zone = settings.timeZone
+  if (calendar) return openIntervalsOn(calendar, dayKey(day, zone))
+  if (!settings.workingHours.includeWeekends && isZonedWeekend(day, zone)) return []
+  return [
+    {
+      start: atZonedTime(day, settings.workingHours.start, zone),
+      end: atZonedTime(day, settings.workingHours.end, zone),
+    },
+  ]
+}
+
+/** The grid of start times in a stretch: every STEP_MINUTES from its start. */
+function startsIn(stretch: Interval, durationMinutes: number): Date[] {
+  const out: Date[] = []
+  for (
+    let cursor = stretch.start;
+    cursor.getTime() + durationMinutes * 60_000 <= stretch.end.getTime();
+    cursor = new Date(cursor.getTime() + STEP_MINUTES * 60_000)
+  ) {
+    out.push(cursor)
+  }
+  return out
+}
+
+/**
  * Every day in the booking window with its free start times. A start is
  * free when more resources are free than the walk-in reserve keeps back.
+ * Closed days, holidays and closed hours come from the calendar when given.
  */
 export function bookableDays(input: {
   now: Date
   settings: InspectionReminderSettings
   resources: Resource[]
   bookings: Booking[]
+  calendar?: WorkshopCalendar
 }): BookableDay[] {
-  const { settings, resources, bookings } = input
+  const { settings, resources, bookings, calendar } = input
   const zone = settings.timeZone
   const days: BookableDay[] = []
   const first = firstBookableDay(input.now, settings.leadDays, zone)
   const totalDays = settings.horizonWeeks * 7
   for (let i = 0; i < totalDays; i++) {
     const day = addZonedDays(first, i, zone)
-    if (!settings.workingHours.includeWeekends && isZonedWeekend(day, zone)) {
-      days.push({ date: dayKey(day, zone), status: 'closed', starts: [] })
+    const stretches = bookingStretches(day, settings, calendar)
+    if (stretches.length === 0) {
+      const closedFor = calendar
+        ? (dayState(calendar, dayKey(day, zone)).closures[0]?.name ?? null)
+        : null
+      days.push({ date: dayKey(day, zone), status: 'closed', starts: [], closedFor })
       continue
     }
-    const open = atZonedTime(day, settings.workingHours.start, zone)
-    const close = atZonedTime(day, settings.workingHours.end, zone)
     const starts: string[] = []
     let possible = 0
-    for (
-      let cursor = open;
-      cursor.getTime() + settings.durationMinutes * 60_000 <= close.getTime();
-      cursor = new Date(cursor.getTime() + STEP_MINUTES * 60_000)
-    ) {
-      possible += 1
-      const free = freeResources(cursor, settings.durationMinutes, resources, bookings)
-      if (free.length > settings.walkInReserve) starts.push(cursor.toISOString())
+    for (const stretch of stretches) {
+      for (const cursor of startsIn(stretch, settings.durationMinutes)) {
+        possible += 1
+        const free = freeResources(cursor, settings.durationMinutes, resources, bookings)
+        if (free.length > settings.walkInReserve) starts.push(cursor.toISOString())
+      }
     }
     const status: DayStatus =
       starts.length === 0 ? 'full' : starts.length * 2 < possible ? 'limited' : 'open'
@@ -123,8 +167,11 @@ export async function availabilityFor(
 ): Promise<{ resources: Resource[]; days: BookableDay[]; firstStart: string | null }> {
   const resources = await bookingResources(organizationId)
   if (resources.length === 0) return { resources, days: [], firstStart: null }
-  const { bookings } = await loadBookingContext(organizationId, now)
-  const days = bookableDays({ now, settings, resources, bookings })
+  // The whole window the page offers: lead days, the horizon, and a day spare.
+  const { bookings, hours } = await loadBookingContext(organizationId, now, {
+    days: settings.leadDays + settings.horizonWeeks * 7 + 1,
+  })
+  const days = bookableDays({ now, settings, resources, bookings, calendar: hours.calendar })
   const firstStart = days.find((d) => d.starts.length > 0)?.starts[0] ?? null
   return { resources, days, firstStart }
 }
@@ -144,16 +191,17 @@ export async function claimableResource(
   if (start < first) return null
   const horizonEnd = addZonedDays(first, settings.horizonWeeks * 7, zone)
   if (start >= horizonEnd) return null
-  if (!settings.workingHours.includeWeekends && isZonedWeekend(start, zone)) return null
-  const open = atZonedTime(start, settings.workingHours.start, zone)
-  const close = atZonedTime(start, settings.workingHours.end, zone)
-  const end = new Date(start.getTime() + settings.durationMinutes * 60_000)
-  if (start < open || end > close) return null
-  if ((start.getTime() - open.getTime()) % (STEP_MINUTES * 60_000) !== 0) return null
 
   const resources = await bookingResources(organizationId)
   if (resources.length === 0) return null
-  const { bookings } = await loadBookingContext(organizationId, now)
+  // Read around the start itself, however far into the horizon it is.
+  const { bookings, hours } = await loadBookingContext(organizationId, start, { days: 2 })
+  // The same stretches and grid the page offered, read again: a closure added
+  // since the page opened takes the time away.
+  const offered = bookingStretches(start, settings, hours.calendar).some((stretch) =>
+    startsIn(stretch, settings.durationMinutes).some((s) => s.getTime() === start.getTime())
+  )
+  if (!offered) return null
   const free = freeResources(start, settings.durationMinutes, resources, bookings)
   return free.length > settings.walkInReserve ? free[0] : null
 }

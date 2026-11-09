@@ -68,7 +68,9 @@
       "reminder": "Apri promemoria",
       "quote": "Apri preventivo",
       "message": "Apri messaggi",
-      "external": "Apri"
+      "external": "Apri",
+      "closure": "Apri orari di apertura",
+      "absence": "Apri la bacheca lavori"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Promemoria",
     "quotes": "Preventivi",
     "messages": "Messaggi",
-    "external": "Calendari collegati"
+    "external": "Calendari collegati",
+    "closures": "Giorni di chiusura",
+    "absences": "Assenze"
   },
   "selectVehicle": "Seleziona veicolo per ordine di lavoro",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "In arrivo",
       "failed": "Non riuscito",
       "queued": "In coda",
-      "busy": "Occupato"
+      "busy": "Occupato",
+      "closed": "Chiuso",
+      "away": "Assente"
     },
     "type": {
       "service": "Ordine di lavoro",
       "reminder": "Promemoria",
       "quote": "Preventivo",
       "message": "Messaggio",
-      "external": "Calendario collegato"
+      "external": "Calendario collegato",
+      "closure": "Chiuso",
+      "absence": "Assenza"
     },
     "noEvents": "Nessun evento",
     "selectDay": "Seleziona un giorno con eventi o crea un nuovo ordine di lavoro.",
@@ -145,5 +153,10 @@
     }
   },
   "previousMonth": "Mese precedente",
-  "nextMonth": "Mese successivo"
+  "nextMonth": "Mese successivo",
+  "range": {
+    "from": "Dalle {time}",
+    "until": "Fino alle {time}"
+  },
+  "timeOffMissing": "Quell'assenza è stata modificata o rimossa nel frattempo."
 }

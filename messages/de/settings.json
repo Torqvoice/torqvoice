@@ -79,6 +79,10 @@
         "title": "Werkstatt",
         "description": "Techniker- & Arbeitsstandards"
       },
+      "openingHours": {
+        "title": "Öffnungszeiten und Feiertage",
+        "description": "Zeiten, Feiertage, Schließtage, Abwesenheiten"
+      },
       "laborPresets": {
         "title": "Arbeitspakete",
         "description": "Vordefinierte Arbeitspakete"
@@ -1220,8 +1224,6 @@
     "assignFailed": "Aufträge konnten nicht zugewiesen werden",
     "noTechnician": "Keine",
     "weekStartDay": "Wochenstart",
-    "workDayStart": "Arbeitsbeginn",
-    "workDayEnd": "Arbeitsende",
     "titleTemplateTitle": "Titel des Arbeitsauftrags",
     "titleTemplateDescription": "Wie ein neuer Arbeitsauftrag heißt, bevor jemand einen Titel eingibt. Setzen Sie ihn aus den Tags unten zusammen; jeder Auftrag öffnet mit ausgefüllten Tags, und der Titel lässt sich am Auftrag weiterhin ändern.",
     "titleTemplate": "Titelvorlage",
@@ -1249,7 +1251,9 @@
       "4": "Donnerstag",
       "5": "Freitag",
       "6": "Samstag"
-    }
+    },
+    "openingHoursMoved": "Öffnungszeiten werden für jeden Wochentag festgelegt, zusammen mit Feiertagen, Schließtagen und Abwesenheiten.",
+    "openingHoursLink": "Öffnungszeiten und Feiertage öffnen"
   },
   "maintenance": {
     "title": "Vorhergesagte Wartung",
@@ -2937,6 +2941,16 @@
       "square": "Quadrat",
       "cross": "Kreuz",
       "hex": "Sechseck"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Öffnungszeiten",
+      "switch": "Schließtage und Abwesenheiten",
+      "publicHolidays": "Feiertage",
+      "calendars": "Feiertagskalender",
+      "closedDays": "Schließtage",
+      "timeOff": "Urlaub und Abwesenheit"
     }
   }
 }

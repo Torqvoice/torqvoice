@@ -79,6 +79,10 @@
         "title": "Atölye",
         "description": "Teknisyen & işçilik varsayılanları"
       },
+      "openingHours": {
+        "title": "Çalışma saatleri ve tatiller",
+        "description": "Saatler, resmi tatiller, kapalı günler, izinler"
+      },
       "laborPresets": {
         "title": "İşçilik Paketleri",
         "description": "Önceden tanımlı işçilik paketleri"
@@ -1220,8 +1224,6 @@
     "assignFailed": "İş emirleri atanamadı",
     "noTechnician": "Yok",
     "weekStartDay": "Hafta Baslangici",
-    "workDayStart": "Is Gunu Baslangici",
-    "workDayEnd": "Is Gunu Bitisi",
     "titleTemplateTitle": "İş emri başlığı",
     "titleTemplateDescription": "Biri başlık yazmadan önce yeni bir iş emrinin adı. Aşağıdaki etiketlerden oluşturun; her iş etiketler doldurulmuş olarak açılır ve başlık iş üzerinde yine değiştirilebilir.",
     "titleTemplate": "Başlık şablonu",
@@ -1249,7 +1251,9 @@
       "4": "Persembe",
       "5": "Cuma",
       "6": "Cumartesi"
-    }
+    },
+    "openingHoursMoved": "Çalışma saatleri, resmi tatiller, kapalı günler ve izinlerle birlikte haftanın her günü için ayrı ayarlanır.",
+    "openingHoursLink": "Çalışma saatleri ve tatilleri aç"
   },
   "maintenance": {
     "title": "Öngörülen Bakım",
@@ -2937,6 +2941,16 @@
       "square": "Kare",
       "cross": "Çarpı",
       "hex": "Altıgen"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Çalışma saatleri",
+      "switch": "Kapalı günler ve izinler",
+      "publicHolidays": "Resmi tatiller",
+      "calendars": "Tatil takvimleri",
+      "closedDays": "Kapalı günler",
+      "timeOff": "İzinler"
     }
   }
 }

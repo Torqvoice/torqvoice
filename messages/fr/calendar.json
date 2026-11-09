@@ -68,7 +68,9 @@
       "reminder": "Ouvrir le rappel",
       "quote": "Ouvrir le devis",
       "message": "Ouvrir les messages",
-      "external": "Ouvrir"
+      "external": "Ouvrir",
+      "closure": "Ouvrir les horaires d'ouverture",
+      "absence": "Ouvrir le tableau de travail"
     }
   },
   "filters": {
@@ -76,7 +78,9 @@
     "reminders": "Rappels",
     "quotes": "Devis",
     "messages": "Messages",
-    "external": "Calendriers connectés"
+    "external": "Calendriers connectés",
+    "closures": "Jours de fermeture",
+    "absences": "Absences"
   },
   "selectVehicle": "Sélectionner un véhicule pour l’ordre de travail",
   "dateChoice": {
@@ -123,14 +127,18 @@
       "upcoming": "À venir",
       "failed": "Échec",
       "queued": "En file",
-      "busy": "Occupé"
+      "busy": "Occupé",
+      "closed": "Fermé",
+      "away": "Absent"
     },
     "type": {
       "service": "Ordre de travail",
       "reminder": "Rappel",
       "quote": "Devis",
       "message": "Message",
-      "external": "Calendrier connecté"
+      "external": "Calendrier connecté",
+      "closure": "Fermé",
+      "absence": "Absence"
     },
     "noEvents": "Aucun événement",
     "selectDay": "Sélectionnez un jour avec des événements ou créez un nouvel ordre de travail.",
@@ -145,5 +153,10 @@
     }
   },
   "previousMonth": "Mois précédent",
-  "nextMonth": "Mois suivant"
+  "nextMonth": "Mois suivant",
+  "range": {
+    "from": "À partir de {time}",
+    "until": "Jusqu'à {time}"
+  },
+  "timeOffMissing": "Cette absence a été modifiée ou supprimée entre-temps."
 }
