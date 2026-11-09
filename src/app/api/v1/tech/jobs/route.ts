@@ -2,6 +2,8 @@ import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry } from '@/features/time-tracking/Lib/timeEntries'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
 
 /** Statuses that mean "this is on my plate right now". */
 const ACTIVE_STATUSES = ['in-progress', 'pending', 'waiting-parts']
@@ -18,11 +20,20 @@ export async function GET(request: Request) {
   return withApiAuth(
     request,
     async (ctx) => {
+      // A booking (an online one, or one the desk made ahead) is `scheduled`
+      // until work starts. From its day on it is the car arriving, the one a
+      // technician checks in, so it is on the list; a booking for next week
+      // is not yet.
+      const timeZone = await workshopTimeZone(ctx.organizationId)
+      const endOfToday = addZonedDays(startOfZonedDay(new Date(), timeZone), 1, timeZone)
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId: ctx.organizationId,
-          status: { in: ACTIVE_STATUSES },
           technicianId: { in: ctx.technicianIds },
+          OR: [
+            { status: { in: ACTIVE_STATUSES } },
+            { status: 'scheduled', startDateTime: { lt: endOfToday } },
+          ],
         },
         select: {
           id: true,

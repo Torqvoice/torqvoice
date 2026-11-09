@@ -13,5 +13,8 @@
  * - `job-video`: videos on a job play in the app (the file route answers byte
  *   ranges), a video may be up to 250 MB and is scaled down to 1080p, and the
  *   job carries each attachment's description.
+ * - `checkin`: a job's check-in under `/jobs/:id/checkin`: mileage, drop-off
+ *   photos by position and the condition map with its marks. A booking is
+ *   on the job list from its day on.
  */
-export const TECH_API_FEATURES = ['job-video'] as const
+export const TECH_API_FEATURES = ['job-video', 'checkin'] as const

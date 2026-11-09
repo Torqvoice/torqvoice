@@ -11,13 +11,21 @@ import { releaseFiles } from '@/lib/files/manager'
 import { BODY_TYPES } from '../Lib/drawingTypes'
 import {
   type ConditionMarkData,
-  type MarkScope,
   markInputSchema,
   markPatchSchema,
   numberedMarks,
-  splitMarks,
 } from '../Lib/marks'
-import { loadVehicleConditionMarks, MARK_SELECT } from '../Lib/loadMarks.server'
+import { MARK_SELECT } from '../Lib/loadMarks.server'
+import {
+  addMarkPhotos,
+  carryMarks,
+  createMark,
+  deleteMark,
+  markPaths,
+  patchMark,
+  removeMarkPhoto,
+  setMarkResolved,
+} from '../Lib/markStore.server'
 
 /**
  * The marks on a vehicle's condition map.
@@ -50,110 +58,14 @@ export async function listVehicleConditionMarks(vehicleId: string) {
   )
 }
 
-/**
- * Checks that the sheet a mark is drawn on is this workshop's, is this
- * vehicle's, and is still open: a completed inspection and an issued
- * invoice keep their marks as they were. Answers with the visit the sheet
- * records, for the one action that has to tell its marks from earlier ones.
- */
-async function assertSheetOpen(
-  organizationId: string,
-  scope: {
-    vehicleId: string
-    inspectionId?: string | null
-    inspectionItemId?: string | null
-    serviceRecordId?: string | null
-  }
-): Promise<MarkScope> {
-  if (scope.inspectionId) {
-    const inspection = await db.inspection.findFirst({
-      where: { id: scope.inspectionId, organizationId, vehicleId: scope.vehicleId },
-      select: {
-        status: true,
-        createdAt: true,
-        items: { where: { id: scope.inspectionItemId ?? '' }, select: { id: true } },
-      },
-    })
-    if (!inspection) throw new Error('Inspection not found')
-    if (inspection.status === 'completed')
-      throw new Error('Reopen the inspection to change its condition map')
-    if (scope.inspectionItemId && inspection.items.length === 0) throw new Error('Check not found')
-    return {
-      inspectionId: scope.inspectionId,
-      inspectionItemId: scope.inspectionItemId ?? '',
-      openedAt: inspection.createdAt,
-    }
-  }
-  if (scope.serviceRecordId) {
-    const job = await db.serviceRecord.findFirst({
-      where: { id: scope.serviceRecordId, organizationId, vehicleId: scope.vehicleId },
-      select: { id: true, inspectionId: true, createdAt: true },
-    })
-    if (!job) throw new Error('Work order not found')
-    return {
-      serviceRecordId: job.id,
-      linkedInspectionId: job.inspectionId,
-      openedAt: job.createdAt,
-    }
-  }
-  throw new Error('A mark needs a sheet to be drawn on')
-}
-
-function pathsFor(scope: {
-  vehicleId: string
-  inspectionId?: string | null
-  serviceRecordId?: string | null
-}) {
-  const paths = [`/vehicles/${scope.vehicleId}`]
-  if (scope.inspectionId) paths.push(`/inspections/${scope.inspectionId}`)
-  if (scope.serviceRecordId)
-    paths.push(`/vehicles/${scope.vehicleId}/service/${scope.serviceRecordId}`)
-  return paths
-}
-
-/**
- * A kind of the workshop's own has to be one of its own. A built-in key is
- * always known; the schema has already refused anything else.
- */
-async function assertKnownKind(organizationId: string, kind: string | undefined) {
-  if (!kind || !kind.startsWith('own_')) return
-  const known = await db.conditionMarkType.count({ where: { organizationId, key: kind } })
-  if (!known) throw new Error('Unknown kind of mark')
-}
-
 export async function addConditionMark(input: unknown) {
   const result = markInputSchema.safeParse(input)
   if (!result.success) return { success: false as const, error: 'Invalid mark' }
   const parsed = result.data
   return withAuth(
     async ({ organizationId, userId }): Promise<ConditionMarkData> => {
-      await assertSheetOpen(organizationId, parsed)
-      await assertKnownKind(organizationId, parsed.kind)
-      const mark = await db.conditionMark.create({
-        data: {
-          organizationId,
-          vehicleId: parsed.vehicleId,
-          inspectionId: parsed.inspectionId ?? null,
-          inspectionItemId: parsed.inspectionItemId ?? null,
-          serviceRecordId: parsed.serviceRecordId ?? null,
-          bodyType: parsed.bodyType,
-          view: parsed.view,
-          panel: parsed.panel,
-          x: parsed.x,
-          y: parsed.y,
-          kind: parsed.kind,
-          severity: parsed.severity,
-          note: parsed.note?.trim() || null,
-          recordedById: userId,
-        },
-        select: MARK_SELECT,
-      })
-      // The vehicle remembers which drawing it is marked on.
-      await db.vehicle.updateMany({
-        where: { id: parsed.vehicleId, organizationId, bodyType: null },
-        data: { bodyType: parsed.bodyType },
-      })
-      for (const path of pathsFor(parsed)) revalidatePath(path)
+      const mark = await createMark(organizationId, userId, parsed)
+      for (const path of markPaths(parsed)) revalidatePath(path)
       return mark
     },
     {
@@ -169,39 +81,15 @@ export async function addConditionMark(input: unknown) {
   )
 }
 
-async function ownMark(organizationId: string, id: string) {
-  const mark = await db.conditionMark.findFirst({
-    where: { id, organizationId },
-    select: MARK_SELECT,
-  })
-  if (!mark) throw new Error('Mark not found')
-  return mark
-}
-
 export async function updateConditionMark(id: string, input: unknown) {
   const result = markPatchSchema.safeParse(input)
   if (!result.success) return { success: false as const, error: 'Invalid mark' }
   const patch = result.data
   return withAuth(
     async ({ organizationId }): Promise<ConditionMarkData> => {
-      const mark = await ownMark(organizationId, id)
-      await assertSheetOpen(organizationId, mark)
-      await assertKnownKind(organizationId, patch.kind)
-      const updated = await db.conditionMark.update({
-        where: { id },
-        data: {
-          ...(patch.kind ? { kind: patch.kind } : {}),
-          ...(patch.severity ? { severity: patch.severity } : {}),
-          ...(patch.note !== undefined ? { note: patch.note?.trim() || null } : {}),
-          ...(patch.x !== undefined ? { x: patch.x } : {}),
-          ...(patch.y !== undefined ? { y: patch.y } : {}),
-          ...(patch.view ? { view: patch.view } : {}),
-          ...(patch.panel ? { panel: patch.panel } : {}),
-        },
-        select: MARK_SELECT,
-      })
-      for (const path of pathsFor(mark)) revalidatePath(path)
-      return updated
+      const { before, after } = await patchMark(organizationId, id, patch)
+      for (const path of markPaths(before)) revalidatePath(path)
+      return after
     },
     {
       requiredPermissions: [
@@ -214,13 +102,8 @@ export async function updateConditionMark(id: string, input: unknown) {
 export async function removeConditionMark(id: string) {
   return withAuth(
     async ({ organizationId }) => {
-      const mark = await ownMark(organizationId, id)
-      await assertSheetOpen(organizationId, mark)
-      await db.conditionMark.delete({ where: { id } })
-      // Its photos go with it, through the file manager like every delete:
-      // to the trash, unless some other row still uses the same file.
-      await releaseFiles(mark.imageUrls, { organizationId, reason: 'condition mark removed' })
-      for (const path of pathsFor(mark)) revalidatePath(path)
+      const mark = await deleteMark(organizationId, id)
+      for (const path of markPaths(mark)) revalidatePath(path)
       return { id, vehicleId: mark.vehicleId }
     },
     {
@@ -246,18 +129,10 @@ export async function removeConditionMark(id: string) {
 export async function resolveConditionMark(id: string, resolved: boolean) {
   return withAuth(
     async ({ organizationId, userId }): Promise<ConditionMarkData> => {
-      const mark = await ownMark(organizationId, id)
-      const updated = await db.conditionMark.update({
-        where: { id },
-        data: resolved
-          ? { resolvedAt: new Date(), resolvedById: userId }
-          : { resolvedAt: null, resolvedById: null },
-        select: MARK_SELECT,
-      })
+      const { before, after } = await setMarkResolved(organizationId, userId, id, resolved)
       // The vehicle page and the sheet the mark was drawn on both show it.
-      revalidatePath(`/vehicles/${mark.vehicleId}`)
-      for (const path of pathsFor(mark)) revalidatePath(path)
-      return updated
+      for (const path of markPaths(before)) revalidatePath(path)
+      return after
     },
     {
       requiredPermissions: [
@@ -281,21 +156,7 @@ const carrySchema = z
       : Boolean(sheet.inspectionId && sheet.inspectionItemId)
   )
 
-/**
- * Every mark still open from an earlier visit, confirmed as still there in
- * one go: each is recorded again on this sheet as this visit's own, and the
- * earlier one is closed in the same transaction, so the vehicle never carries
- * the same dent twice and the next visit meets it once.
- *
- * The earlier mark is kept rather than moved, because it is the earlier
- * visit's record: it points at the newer mark, so its own sheet goes on
- * showing it while every other sheet meets the newer one. The new mark
- * keeps the old one's photos by pointing at the same files; the file manager
- * counts both rows, so removing a photo from one leaves the other's in place.
- *
- * Safe to ask twice, or by two people at once: an earlier mark is taken only
- * while it is still open, and whoever comes second finds none left to take.
- */
+/** Every mark still open from an earlier visit, confirmed as still there; see carryMarks. */
 export async function carryConditionMarks(input: unknown) {
   const result = carrySchema.safeParse(input)
   if (!result.success) return { success: false as const, error: 'Invalid sheet' }
@@ -305,61 +166,10 @@ export async function carryConditionMarks(input: unknown) {
       organizationId,
       userId,
     }): Promise<{ vehicleId: string; marks: ConditionMarkData[]; carried: string[] }> => {
-      const scope = await assertSheetOpen(organizationId, sheet)
-      const all = await loadVehicleConditionMarks(organizationId, sheet.vehicleId)
-      const earlier = splitMarks(all, scope).previous
-      if (earlier.length === 0) return { vehicleId: sheet.vehicleId, marks: [], carried: [] }
-
-      const now = new Date()
-      const carried: ConditionMarkData[] = []
-      const marks = await db.$transaction(async (tx) => {
-        const created: ConditionMarkData[] = []
-        for (const [index, mark] of earlier.entries()) {
-          // Closing it is what claims it. Somebody else who carried or
-          // cleared it a moment ago has closed it already, and it is left.
-          const claimed = await tx.conditionMark.updateMany({
-            where: { id: mark.id, organizationId, resolvedAt: null },
-            data: { resolvedAt: now, resolvedById: userId },
-          })
-          if (claimed.count === 0) continue
-          carried.push(mark)
-          const next = await tx.conditionMark.create({
-            data: {
-              organizationId,
-              vehicleId: mark.vehicleId,
-              inspectionId: sheet.inspectionId ?? null,
-              inspectionItemId: sheet.inspectionItemId ?? null,
-              serviceRecordId: sheet.serviceRecordId ?? null,
-              bodyType: mark.bodyType,
-              view: mark.view,
-              panel: mark.panel,
-              x: mark.x,
-              y: mark.y,
-              kind: mark.kind,
-              severity: mark.severity,
-              note: mark.note,
-              imageUrls: mark.imageUrls,
-              // Marks are numbered by when they were recorded, so each gets
-              // a moment of its own and they keep the order they had.
-              recordedAt: new Date(now.getTime() + index),
-              recordedById: userId,
-            },
-            select: MARK_SELECT,
-          })
-          // Closed because it was superseded, not repaired: the earlier
-          // sheet still prints it as its own record.
-          await tx.conditionMark.update({
-            where: { id: mark.id },
-            data: { carriedToId: next.id },
-          })
-          created.push(next)
-        }
-        return created
-      })
-
+      const { marks, carried } = await carryMarks(organizationId, userId, sheet)
       // This sheet, and every sheet a mark was carried from.
-      const paths = new Set(pathsFor(sheet))
-      for (const mark of carried) for (const path of pathsFor(mark)) paths.add(path)
+      const paths = new Set(markPaths(sheet))
+      for (const mark of carried) for (const path of markPaths(mark)) paths.add(path)
       for (const path of paths) revalidatePath(path)
       return { vehicleId: sheet.vehicleId, marks, carried: carried.map((mark) => mark.id) }
     },
@@ -392,13 +202,9 @@ export async function addConditionMarkPhotos(input: unknown) {
   const { id, urls } = result.data
   return withAuth(
     async ({ organizationId }): Promise<string[]> => {
-      assertOwnUploads(urls, organizationId)
-      const mark = await ownMark(organizationId, id)
-      await assertSheetOpen(organizationId, mark)
-      const next = [...mark.imageUrls, ...urls.filter((u) => !mark.imageUrls.includes(u))]
-      await db.conditionMark.update({ where: { id }, data: { imageUrls: next } })
-      for (const path of pathsFor(mark)) revalidatePath(path)
-      return next
+      const { mark, imageUrls } = await addMarkPhotos(organizationId, id, urls)
+      for (const path of markPaths(mark)) revalidatePath(path)
+      return imageUrls
     },
     {
       requiredPermissions: [
@@ -414,16 +220,9 @@ export async function removeConditionMarkPhoto(input: unknown) {
   const { id, url } = parsed.data
   return withAuth(
     async ({ organizationId }): Promise<string[]> => {
-      const mark = await ownMark(organizationId, id)
-      await assertSheetOpen(organizationId, mark)
-      const next = mark.imageUrls.filter((u) => u !== url)
-      await db.conditionMark.update({ where: { id }, data: { imageUrls: next } })
-      // Only a photo this mark had: a URL it never held is not ours to release.
-      if (next.length !== mark.imageUrls.length) {
-        await releaseFiles([url], { organizationId, reason: 'condition mark photo removed' })
-      }
-      for (const path of pathsFor(mark)) revalidatePath(path)
-      return next
+      const { mark, imageUrls } = await removeMarkPhoto(organizationId, id, url)
+      for (const path of markPaths(mark)) revalidatePath(path)
+      return imageUrls
     },
     {
       requiredPermissions: [
