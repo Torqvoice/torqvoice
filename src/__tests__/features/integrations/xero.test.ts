@@ -308,6 +308,8 @@ describe('buildInvoice', () => {
     const edited = {
       ...invoice,
       subtotal: 250,
+      taxAmount: 25,
+      totalAmount: 275,
       lines: [{ ...invoice.lines[0], quantity: 3, unitPrice: 100, total: 250 }],
     }
     expect(priced(buildInvoice(edited, options))[0]).toMatchObject({
@@ -360,6 +362,8 @@ describe('buildInvoice', () => {
     const hourly = {
       ...invoice,
       subtotal: 1425,
+      taxAmount: 142.5,
+      totalAmount: 1567.5,
       lines: [{ ...invoice.lines[0], quantity: 1.5, unitPrice: 950, total: 1425 }],
     }
     expect(priced(buildInvoice(hourly, options))[0]).toMatchObject({
@@ -592,5 +596,65 @@ describe('rounding against the printed invoice', () => {
       expect(seen.totalCents, label).toBe(Math.round(totals.totalAmount * 100))
       expect(seen.taxCents, label).toBe(Math.round(totals.taxAmount * 100))
     }
+  })
+})
+
+describe('review fixes', () => {
+  it('never books an untaxed line under a rate with a percentage, even when one was chosen', () => {
+    const rates = salesRates(AU_RATES)
+    expect(pickZeroRate(rates, 'OUTPUT')?.taxType).toBe('EXEMPTOUTPUT')
+    expect(pickZeroRate(rates, 'BASEXCLUDED')?.taxType).toBe('BASEXCLUDED')
+  })
+
+  it('keeps a payment on its day in New Zealand, where noon UTC is already tomorrow', async () => {
+    const { paymentDay } = await import('@/integrations/xero/mapping')
+    const { zonedDayKey } = await import('@/lib/timezone')
+    // Xero's 9 Nov 2026, midnight UTC.
+    const day = paymentDay('/Date(1762646400000+0000)/', 'Pacific/Auckland')
+    expect(zonedDayKey(day, 'Pacific/Auckland')).toBe('2025-11-09')
+  })
+
+  it('sends an old invoice that carries only its total as one line for that total', () => {
+    const costOnly: AccountingInvoice = {
+      ...invoice,
+      subtotal: 0,
+      taxAmount: 0,
+      totalAmount: 450,
+      taxRate: 0,
+      lines: [],
+    }
+    const body = buildInvoice(costOnly, options)
+    expect(priced(body)).toEqual([
+      expect.objectContaining({ Description: 'Brake service', Quantity: 1, UnitAmount: 450 }),
+    ])
+  })
+
+  it('carries the printed figures of an amount stored a hair off half a cent', () => {
+    // 0.18 plus 25%, stored before totals were held to the cent: it prints as 0.22.
+    const legacy: AccountingInvoice = {
+      ...invoice,
+      subtotal: 0.18,
+      taxRate: 25,
+      taxAmount: 0.04499999999999999,
+      totalAmount: 0.22499999999999998,
+      lines: [{ ...invoice.lines[0], quantity: 1, unitPrice: 0.18, total: 0.18 }],
+    }
+    const lines = priced(buildInvoice(legacy, options))
+    const sum = lines.reduce((a, l) => a + (l.UnitAmount as number) + (l.TaxAmount as number), 0)
+    expect(Number(sum.toFixed(2))).toBe(0.22)
+  })
+
+  it('keeps the quantity of a stock item, so Xero takes the right count off the shelf', () => {
+    const stock: AccountingInvoice = {
+      ...invoice,
+      subtotal: 49.975,
+      taxAmount: 5,
+      totalAmount: 54.98,
+      lines: [{ ...invoice.lines[1], quantity: 2.5, unitPrice: 19.99, total: 49.975 }],
+    }
+    const [line] = priced(buildInvoice(stock, { ...options, partItemCodes: new Set(['BP-100']) }))
+    expect(line).toMatchObject({ ItemCode: 'BP-100', Quantity: 2.5, UnitAmount: 19.992 })
+    // 2.5 x 19.992 is exactly the 49.98 the invoice printed.
+    expect((line.Quantity as number) * (line.UnitAmount as number)).toBeCloseTo(49.98, 10)
   })
 })

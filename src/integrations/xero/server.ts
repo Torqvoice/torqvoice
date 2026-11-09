@@ -57,6 +57,7 @@ import {
   parseXeroDate,
   paymentDay,
   referenceFor,
+  xeroDayKey,
   round2,
   whereString,
 } from './mapping'
@@ -741,11 +742,11 @@ async function createInvoice(
         ? full.Url === body.Url
         : full.Contact?.ContactID === (body.Contact as { ContactID?: string }).ContactID &&
           zonedDayKey(parseXeroDate(full.Date) ?? new Date(0), 'UTC') === body.Date
-      if (ours && !hasMoney(full)) {
+      if (ours) {
         await ctx.log('info', `Invoice ${number} was already in Xero; linked to it`)
-        return saveInvoice(ctx, full, body)
+        await relinkPayments(ctx, inv, full)
+        return hasMoney(full) ? full : saveInvoice(ctx, full, body)
       }
-      if (ours) return full
       // Xero keeps sales invoice numbers unique and would refuse a second one.
       throw new Error(
         `Xero already has an invoice numbered ${number} that did not come from Torqvoice, so invoice ${inv.invoiceNumber} cannot be added under that number. Renumber one of them, or choose "Let Xero number them" in the integration settings.`
@@ -763,6 +764,43 @@ async function createInvoice(
   const made = res.Invoices?.[0]
   if (!made) throw new Error('Xero did not return the new invoice')
   return made
+}
+
+/**
+ * After a lost link (a reconnect forgets what was sent), the payments Xero
+ * already holds for an invoice found again are linked to the ones here by
+ * amount and day, so they are not recorded a second time. A payment that
+ * came from Xero is known by its own id.
+ */
+async function relinkPayments(
+  ctx: ConnectorContext,
+  inv: AccountingInvoice,
+  remote: XeroInvoice
+): Promise<void> {
+  const theirs = (remote.Payments ?? []).filter((x) => x.Status !== 'DELETED')
+  const taken = new Set<string>()
+  for (const p of inv.payments) {
+    if (await linkFor(ctx, PAYMENT_ENTITY, p.id)) continue
+    const fromXero = p.provider === PROVIDER && p.externalId
+    const day = zonedDayKey(p.date, ctx.timezone)
+    const match = fromXero
+      ? theirs.find((x) => x.PaymentID === p.externalId)
+      : theirs.find(
+          (x) =>
+            !taken.has(x.PaymentID) &&
+            Math.abs((x.Amount ?? 0) - round2(p.amount)) <= ROUNDING_SLACK &&
+            xeroDayKey(x.Date) === day
+        )
+    if (!match) continue
+    taken.add(match.PaymentID)
+    await setLink(
+      ctx,
+      PAYMENT_ENTITY,
+      p.id,
+      { remoteId: match.PaymentID },
+      { createdByUs: !fromXero, serviceRecordId: inv.id, relinked: true }
+    )
+  }
 }
 
 /**
@@ -1227,7 +1265,7 @@ async function pullChanges(ctx: ConnectorContext): Promise<JobOutcome> {
       const made = await recordPulledPayment(orgId, {
         serviceRecordId: invoiceLink.entityId,
         amount: round2(amount),
-        date: paymentDay(p.Date),
+        date: paymentDay(p.Date, ctx.timezone),
         method: 'other',
         provider: PROVIDER,
         externalId: p.PaymentID,
@@ -1385,7 +1423,16 @@ export const connector: ConnectorServer = {
     }),
     taxRates: forTenant(async (ctx) => {
       const catalog = await loadCatalog(ctx, { refresh: true })
-      return catalog.rates.map((r) => ({ value: r.taxType, label: rateLabel(r) }))
+      return catalog.rates
+        .filter((r) => r.percent > 0)
+        .map((r) => ({ value: r.taxType, label: rateLabel(r) }))
+    }),
+    /** Only zero rates: a rate with a percentage on an untaxed line would add tax nobody billed. */
+    zeroTaxRates: forTenant(async (ctx) => {
+      const catalog = await loadCatalog(ctx, { refresh: true })
+      return catalog.rates
+        .filter((r) => r.percent === 0)
+        .map((r) => ({ value: r.taxType, label: rateLabel(r) }))
     }),
     trackingOptions: forTenant(async (ctx) => {
       const catalog = await loadCatalog(ctx, { refresh: true })

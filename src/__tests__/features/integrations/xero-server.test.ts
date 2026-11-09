@@ -593,7 +593,8 @@ describe('pulling from Xero', () => {
     expect(recordPulledPayment).toHaveBeenCalledWith('org1', {
       serviceRecordId: 'svc1',
       amount: 100,
-      date: new Date('2025-11-09T12:00:00Z'),
+      // Noon in Sydney on the day Xero names, so it shows on that day there.
+      date: new Date('2025-11-09T01:00:00Z'),
       method: 'other',
       provider: 'xero',
       externalId: 'x1',
@@ -624,5 +625,44 @@ describe('connecting', () => {
     })
     expect(await connector.onConnect?.(ctx)).toEqual({ settings: { tenantId: 'tenant-9' } })
     expect(await connector.identify?.(ctx)).toMatchObject({ name: 'Demo Garage' })
+  })
+})
+
+describe('after a reconnect', () => {
+  it('finds the invoice already in Xero by its number and does not record its payment twice', async () => {
+    const appUrl = 'https://shop.example.com/vehicles/veh1/service/svc1'
+    const { ctx, calls, links } = makeCtx({
+      answer: emptyOrganisation({
+        'GET /Invoices': () => ({
+          Invoices: [{ InvoiceID: 'inv-old', Type: 'ACCREC', Status: 'AUTHORISED' }],
+        }),
+        'GET /Invoices/inv-old': () => ({
+          Invoices: [
+            {
+              InvoiceID: 'inv-old',
+              Status: 'AUTHORISED',
+              Url: appUrl,
+              Total: 363,
+              AmountPaid: 100,
+              AmountDue: 263,
+              Payments: [{ PaymentID: 'pmt-old', Amount: 100, Date: '/Date(1762300800000+0000)/' }],
+            },
+          ],
+        }),
+      }),
+    })
+    // The payment here is on the day Xero holds it (5 Nov 2025 in Xero's date above).
+    loadInvoice.mockResolvedValue({
+      ...invoice,
+      payments: [{ ...cardPayment, amount: 100, date: new Date('2025-11-05T01:00:00Z') }],
+    })
+    await connector.jobs['accounting.invoice'](ctx, { entityId: 'svc1' })
+    expect(api(calls, 'PUT', '/Invoices')).toHaveLength(0)
+    expect(api(calls, 'PUT', '/Payments')).toHaveLength(0)
+    expect(links.get('ServiceRecord:svc1')?.remoteId).toBe('inv-old')
+    expect(links.get('Payment:pay1')).toMatchObject({
+      remoteId: 'pmt-old',
+      metadata: expect.objectContaining({ relinked: true }),
+    })
   })
 })

@@ -228,7 +228,7 @@ export const manifest: ConnectorManifest = {
       type: 'remote-select',
       label: 'zeroTaxType',
       help: 'zeroTaxTypeHelp',
-      source: 'taxRates',
+      source: 'zeroTaxRates',
       showWhen: { key: 'pushInvoices', equals: true },
     },
 

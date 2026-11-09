@@ -10,8 +10,8 @@ import type {
   AccountingLine,
   AccountingPayment,
 } from '@/features/integrations/Lib/accounting-sync'
-import { roundAsPrinted, roundMoney } from '@/lib/money'
-import { zonedDayKey } from '@/lib/timezone'
+import { roundAsPrinted } from '@/lib/money'
+import { zonedDate, zonedDayKey } from '@/lib/timezone'
 
 export const API_BASE = 'https://api.xero.com/api.xro/2.0'
 export const CONNECTIONS_URL = 'https://api.xero.com/connections'
@@ -147,11 +147,22 @@ export function parseXeroDate(value: string | undefined | null): Date | null {
   return Number.isFinite(parsed) ? new Date(parsed) : null
 }
 
-/** A payment's day, noon UTC, so no time zone moves it to the day before. */
-export function paymentDay(value: string | undefined): Date {
+/** The day a Xero date names. Xero sends it as midnight UTC of that day. */
+export function xeroDayKey(value: string | undefined | null): string | null {
   const d = parseXeroDate(value)
-  if (!d) return new Date()
-  return new Date(`${d.toISOString().slice(0, 10)}T12:00:00Z`)
+  return d ? d.toISOString().slice(0, 10) : null
+}
+
+/**
+ * A payment's day as an instant here: noon on that day in the workshop's
+ * time zone, so it shows on the same day in every zone, New Zealand's +13
+ * included, where noon UTC would already be the next day.
+ */
+export function paymentDay(value: string | undefined, timeZone: string): Date {
+  const day = xeroDayKey(value)
+  if (!day) return new Date()
+  const [y, m, d] = day.split('-').map(Number)
+  return zonedDate(y, m, d, 12, 0, timeZone)
 }
 
 /**
@@ -159,7 +170,7 @@ export function paymentDay(value: string | undefined): Date {
  * largest shares first, so the parts add up to exactly the whole.
  */
 export function distribute(total: number, weights: number[]): number[] {
-  const cents = Math.round(roundMoney(total) * 100)
+  const cents = Math.round(roundAsPrinted(total) * 100)
   const sum = weights.reduce((a, b) => a + Math.max(0, b), 0)
   if (sum <= 0 || cents === 0) return weights.map(() => 0)
   const raw = weights.map((w) => (Math.max(0, w) / sum) * cents)
@@ -359,35 +370,40 @@ function plainNumber(n: number): string {
  */
 export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<string, unknown> {
   const taxed = o.registeredForTax && inv.taxRate > 0 && !o.taxExempt
+  // What the customer was asked to pay, as printed: that is the figure a
+  // ledger must carry (see roundAsPrinted). The lines add up to the printed
+  // total less its tax (the gross itself when prices include tax), plus the
+  // discount that comes off them.
+  const total = round2(inv.totalAmount)
+  const tax = round2(inv.taxAmount)
+  const discount = round2(inv.discountAmount)
+  const linesSum = Math.max(0, round2((inv.taxInclusive ? total : total - tax) + discount))
   let priced = inv.lines.filter((l) => Math.abs(l.total) > 0 || l.quantity > 0)
   // Records from before itemised lines carry only their total.
-  if (priced.length === 0 && inv.subtotal > 0) {
+  if (priced.reduce((a, l) => a + Math.max(0, l.total), 0) <= 0 && linesSum > 0) {
     priced = [
       {
         kind: 'labor',
         description: inv.title?.trim() || 'Service',
         partNumber: null,
         quantity: 1,
-        unitPrice: inv.subtotal,
-        total: inv.subtotal,
+        unitPrice: linesSum,
+        total: linesSum,
         taxable: true,
       },
     ]
   }
-  const subtotal = roundMoney(
-    inv.subtotal > 0 ? inv.subtotal : priced.reduce((a, l) => a + l.total, 0)
-  )
   const amounts = distribute(
-    subtotal,
+    linesSum,
     priced.map((l) => l.total)
   )
-  const discount = Math.min(roundMoney(inv.discountAmount), subtotal)
-  const discounts = discount > 0 ? distribute(discount, amounts) : priced.map(() => 0)
+  const discounts =
+    discount > 0 ? distribute(Math.min(discount, linesSum), amounts) : priced.map(() => 0)
   const taxedLine = (l: AccountingLine) => taxed && l.taxable
   const taxes =
     taxed && o.billedTax
       ? distribute(
-          roundMoney(inv.taxAmount),
+          tax,
           priced.map((l, i) => (taxedLine(l) ? amounts[i] - discounts[i] : 0))
         )
       : priced.map(() => 0)
@@ -398,23 +414,35 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
 
   priced.forEach((line, i) => {
     const cents = Math.round(amounts[i] * 100)
-    const exact = exactCents(line.quantity, line.unitPrice) === cents
     const description = lineDescription(line, o.includePartNumbers)
-    const xl: XeroLine = exact
-      ? { Description: description, Quantity: line.quantity, UnitAmount: line.unitPrice }
-      : {
-          Description:
-            line.quantity === 1 && Math.abs(line.unitPrice - amounts[i]) < 0.005
-              ? description
-              : `${description} (${plainNumber(line.quantity)} × ${plainNumber(line.unitPrice)})`.slice(
-                  0,
-                  4000
-                ),
-          Quantity: 1,
-          UnitAmount: amounts[i],
-        }
     const account = accountFor(line, o)
     const item = itemFor(line, o)
+    let xl: XeroLine
+    if (exactCents(line.quantity, line.unitPrice) === cents) {
+      xl = { Description: description, Quantity: line.quantity, UnitAmount: line.unitPrice }
+    } else if (item && line.quantity > 0) {
+      // An item keeps its quantity, or Xero takes the wrong count off the
+      // shelf. The unit price moves by a fraction of a cent to make the line
+      // exact where four places allow it; otherwise Xero rounds this line.
+      const unit = round4(amounts[i] / line.quantity)
+      xl = {
+        Description: description,
+        Quantity: line.quantity,
+        UnitAmount: exactCents(line.quantity, unit) === cents ? unit : line.unitPrice,
+      }
+    } else {
+      xl = {
+        Description:
+          line.quantity === 1 && Math.abs(line.unitPrice - amounts[i]) < 0.005
+            ? description
+            : `${description} (${plainNumber(line.quantity)} × ${plainNumber(line.unitPrice)})`.slice(
+                0,
+                4000
+              ),
+        Quantity: 1,
+        UnitAmount: amounts[i],
+      }
+    }
     if (item) xl.ItemCode = item
     // A chosen account wins over the item's; with neither, the default sales account.
     if (account) xl.AccountCode = account

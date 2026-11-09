@@ -80,10 +80,15 @@ export function pickTaxedRate(
   return { entry, matched: Boolean(entry) }
 }
 
-/** The rate for lines without tax: the workshop's choice, else the best zero rate there is. */
+/**
+ * The rate for lines without tax: the workshop's choice when it is a zero
+ * rate, else the best zero rate there is. A rate with a percentage is never
+ * used here, since Xero would then add tax that was never billed.
+ */
 export function pickZeroRate(rates: TaxRateEntry[], chosen: string | null): TaxRateEntry | null {
-  if (chosen) return rates.find((r) => r.taxType === chosen) ?? null
   const zero = rates.filter((r) => samePercent(r.percent, 0))
+  const picked = chosen ? zero.find((r) => r.taxType === chosen) : null
+  if (picked) return picked
   for (const code of ZERO_PREFERENCE) {
     const hit = zero.find((r) => r.taxType === code)
     if (hit) return hit
