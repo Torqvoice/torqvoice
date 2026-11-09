@@ -76,6 +76,14 @@ const CHILD_MODELS: Record<
   InspectionAttachment: { parent: 'inspection', fk: 'inspectionId', hint: 'attachments' },
   VehicleFinding: { parent: 'vehicle', fk: 'vehicleId', hint: 'findings' },
   TireSetAttachment: { parent: 'tireSet', fk: 'tireSetId', hint: 'attachments' },
+  // A mark is drawn on a work order's drop-off or on an inspection, so the
+  // page open on that one redraws its map when a mark changes elsewhere.
+  ConditionMark: {
+    parent: 'serviceRecord',
+    fk: 'serviceRecordId',
+    hint: 'conditionMarks',
+    also: { parent: 'inspection', fk: 'inspectionId' },
+  },
   TireMeasurement: { parent: 'tireSet', fk: 'tireSetId', hint: 'measurements' },
 }
 

@@ -130,6 +130,28 @@ describe('a row that belongs to a record', () => {
       'clock',
     ])
   })
+  it('redraws the map on the job or inspection a damage mark is drawn on', async () => {
+    const org = async () => 'org-1'
+    // A mark changed by id names its sheet only in the row the write returns.
+    await write(
+      'ConditionMark',
+      'update',
+      { where: { id: 'm-1' }, data: { kind: 'dent' } },
+      { id: 'm-1', serviceRecordId: 'job-1', inspectionId: null },
+      org
+    )
+    await write(
+      'ConditionMark',
+      'create',
+      { data: { inspectionId: 'insp-1', serviceRecordId: null } },
+      { id: 'm-2', inspectionId: 'insp-1', serviceRecordId: null },
+      org
+    )
+    expect(published.map((p) => [(p as { kind: string }).kind, (p as { id: string }).id])).toEqual([
+      ['serviceRecord', 'job-1'],
+      ['inspection', 'insp-1'],
+    ])
+  })
   it('tells the inspection about a status report sent from it, and the job about its own', async () => {
     const org = async () => 'org-1'
     await write(
