@@ -110,13 +110,14 @@ export async function fetchIcs(url: string): Promise<string> {
       const status = res.statusCode ?? 0
       if (status >= 300 && status < 400) {
         const location = res.headers.location
-        res.resume()
+        // Dropped, not drained: a body nobody reads must not keep downloading.
+        res.destroy()
         if (!location) throw new FeedFetchError('The calendar link redirects nowhere')
         current = new URL(location, current).toString()
         continue
       }
       if (status < 200 || status >= 300) {
-        res.resume()
+        res.destroy()
         throw new FeedFetchError(`The calendar link answered ${status}`)
       }
       const text = await readCapped(res, MAX_FEED_BYTES)

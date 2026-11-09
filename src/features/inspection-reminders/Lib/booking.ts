@@ -167,7 +167,10 @@ export async function availabilityFor(
 ): Promise<{ resources: Resource[]; days: BookableDay[]; firstStart: string | null }> {
   const resources = await bookingResources(organizationId)
   if (resources.length === 0) return { resources, days: [], firstStart: null }
-  const { bookings, hours } = await loadBookingContext(organizationId, now)
+  // The whole window the page offers: lead days, the horizon, and a day spare.
+  const { bookings, hours } = await loadBookingContext(organizationId, now, {
+    days: settings.leadDays + settings.horizonWeeks * 7 + 1,
+  })
   const days = bookableDays({ now, settings, resources, bookings, calendar: hours.calendar })
   const firstStart = days.find((d) => d.starts.length > 0)?.starts[0] ?? null
   return { resources, days, firstStart }
@@ -191,7 +194,8 @@ export async function claimableResource(
 
   const resources = await bookingResources(organizationId)
   if (resources.length === 0) return null
-  const { bookings, hours } = await loadBookingContext(organizationId, now)
+  // Read around the start itself, however far into the horizon it is.
+  const { bookings, hours } = await loadBookingContext(organizationId, start, { days: 2 })
   // The same stretches and grid the page offered, read again: a closure added
   // since the page opened takes the time away.
   const offered = bookingStretches(start, settings, hours.calendar).some((stretch) =>
