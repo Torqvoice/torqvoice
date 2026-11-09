@@ -1,5 +1,6 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
+import { resolveListStatus } from '@/lib/list-status-preference.server'
 import { resolveListColumns } from '@/lib/list-columns.server'
 import { WORK_ORDER_COLUMNS } from '@/lib/list-columns'
 import { getTranslations } from 'next-intl/server'
@@ -33,12 +34,13 @@ export default async function WorkOrdersPage({
     sortOrder: 'desc',
   })
   const columns = await resolveListColumns('workOrders', WORK_ORDER_COLUMNS)
+  const status = await resolveListStatus('workOrders', params.status)
   const [result, settingsResult, authCtx] = await Promise.all([
     getWorkOrders({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
-      status: params.status,
+      status,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
       due: params.due,
@@ -74,7 +76,7 @@ export default async function WorkOrdersPage({
           data={result.data}
           currencyCode={currencyCode}
           search={params.search || ''}
-          statusFilter={params.status || 'all'}
+          statusFilter={status}
           dueFilter={params.due === 'today' ? 'today' : ''}
           columns={columns}
           sortBy={sort.sortBy || ''}

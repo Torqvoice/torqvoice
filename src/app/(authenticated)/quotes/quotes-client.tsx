@@ -2,6 +2,7 @@
 
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -80,15 +81,17 @@ interface PaginatedData {
   statusCounts: Record<string, number>
 }
 
-const statusTabs = [
-  { key: 'all', titleKey: 'list.statusAll' },
-  { key: 'attention', titleKey: 'list.statusAttention' },
-  { key: 'draft', titleKey: 'list.statusDraft' },
-  { key: 'sent', titleKey: 'list.statusSent' },
-  { key: 'accepted', titleKey: 'list.statusAccepted' },
-  { key: 'rejected', titleKey: 'list.statusRejected' },
-  { key: 'converted', titleKey: 'list.statusConverted' },
-] as const
+const statusTitleKeys: Record<ListStatus<'quotes'>, string> = {
+  all: 'list.statusAll',
+  attention: 'list.statusAttention',
+  draft: 'list.statusDraft',
+  sent: 'list.statusSent',
+  accepted: 'list.statusAccepted',
+  rejected: 'list.statusRejected',
+  converted: 'list.statusConverted',
+}
+
+const statusTabs = LIST_STATUS_TABS.quotes.map((key) => ({ key, titleKey: statusTitleKeys[key] }))
 
 const statusColors: Record<string, string> = {
   draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
@@ -222,7 +225,12 @@ export function QuotesClient({
               variant={isActive ? 'default' : 'outline'}
               size="sm"
               className="h-9 shrink-0 sm:h-8"
-              onClick={() => navigate({ status: tab.key === 'all' ? undefined : tab.key })}
+              aria-pressed={isActive}
+              onClick={() => {
+                rememberListStatus('quotes', tab.key)
+                // "all" stays in the URL: a bare path means the remembered tab.
+                navigate({ status: tab.key })
+              }}
             >
               {t(tab.titleKey)}
               {count !== undefined && (

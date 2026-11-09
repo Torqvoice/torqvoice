@@ -41,6 +41,7 @@ import { cn } from '@/lib/utils'
 import { deliveryState } from '@/features/billing/Lib/deliveryState'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { rememberCompletedOnly } from '@/lib/completed-only-preference'
 import { ListEmpty } from '@/components/list-empty'
 
@@ -98,12 +99,17 @@ interface BillingClientProps {
   sortOrder?: 'asc' | 'desc'
 }
 
-const STATUS_TABS = [
-  { titleKey: 'history.statusAll', value: 'all' },
-  { titleKey: 'history.statusPaid', value: 'paid' },
-  { titleKey: 'history.statusPartial', value: 'partial' },
-  { titleKey: 'history.statusUnpaid', value: 'unpaid' },
-] as const
+const STATUS_TITLE_KEYS: Record<ListStatus<'billing'>, string> = {
+  all: 'history.statusAll',
+  paid: 'history.statusPaid',
+  partial: 'history.statusPartial',
+  unpaid: 'history.statusUnpaid',
+}
+
+const STATUS_TABS = LIST_STATUS_TABS.billing.map((value) => ({
+  value,
+  titleKey: STATUS_TITLE_KEYS[value],
+}))
 
 export default function BillingClient({
   data,
@@ -162,14 +168,12 @@ export default function BillingClient({
     )
   }
 
-  const handleStatusChange = (status: string) => {
+  // Remembered as well as put in the URL, like the completed-only switch.
+  // "all" stays in the URL too: a bare path means the remembered tab.
+  const handleStatusChange = (status: ListStatus<'billing'>) => {
+    rememberListStatus('billing', status)
     startTransition(() => {
-      router.push(
-        `${pathname}?${createQueryString({
-          status: status === 'all' ? '' : status,
-          page: '1',
-        })}`
-      )
+      router.push(`${pathname}?${createQueryString({ status, page: '1' })}`)
     })
   }
 
@@ -384,6 +388,7 @@ export default function BillingClient({
               }
               size="sm"
               className="h-9 shrink-0 sm:h-8"
+              aria-pressed={statusFilter === tab.value}
               onClick={() => handleStatusChange(tab.value)}
               disabled={isPending}
             >
