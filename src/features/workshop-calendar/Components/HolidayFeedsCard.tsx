@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useFormatter, useLocale, useTranslations } from 'next-intl'
+import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
   CalendarRange,
@@ -62,6 +62,12 @@ export function HolidayFeedsCard({
   const tc = useTranslations('common')
   const locale = useLocale()
   const format = useFormatter()
+  const now = useNow({ updateInterval: 60_000 })
+  // A fetch made after the page's clock last ticked reads "just now", not "in 42 seconds".
+  const since = (iso: string) => {
+    const at = new Date(iso)
+    return format.relativeTime(at, at > now ? at : now)
+  }
   const router = useRouter()
   const confirm = useConfirm()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -191,8 +197,7 @@ export function HolidayFeedsCard({
                       {feed.url
                         ? t('fromLink', { host: hostOf(feed.url) })
                         : t('fromFile', { file: feed.fileName ?? '' })}
-                      {feed.fetchedAt &&
-                        ` · ${t('updated', { when: format.relativeTime(new Date(feed.fetchedAt)) })}`}
+                      {feed.fetchedAt && ` · ${t('updated', { when: since(feed.fetchedAt) })}`}
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {t('days', { count: feed.rows.length, first: year, second: year + 1 })}

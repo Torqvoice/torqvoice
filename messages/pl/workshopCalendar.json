@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} w latach {first} i {second}",
     "closeAll": "Zamknij we wszystkie dni",
     "openAll": "Otwórz we wszystkie dni",
-    "choose": "Każdy dzień zamyka warsztat, chyba że go wyłączysz. Kalendarze Google zawierają też dni okolicznościowe, jak walentynki, które możesz chcieć wyłączyć.",
+    "choose": "Każdy dzień zamyka warsztat, chyba że go wyłączysz. Dni, które kalendarz Google oznacza jako święta okolicznościowe, na przykład walentynki, są na początku wyłączone.",
     "show": "Pokaż dni",
     "hide": "Ukryj dni",
     "empty": "Nie dodano kalendarzy."
@@ -95,7 +95,6 @@
     "from": "Pierwszy dzień",
     "to": "Ostatni dzień",
     "allDay": "Cały dzień",
-    "partOfDay": "Część dnia",
     "startTime": "Od",
     "endTime": "Do",
     "startTimeHint": "Pierwszego dnia. Zostaw puste, aby objąć cały dzień.",
@@ -159,6 +158,7 @@
     "away": "Nieobecność: {reason}",
     "awayPart": "Nieobecność {when}",
     "awayConflict": "Nieobecność ({reason})",
+    "awayHeading": "Technik jest wtedy nieobecny",
     "bookedAnyway": "Możesz zachować ten termin, jeśli praca jest uzgodniona."
   },
   "calendar": {

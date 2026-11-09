@@ -68,7 +68,7 @@
     "days": "{first} ve {second} yıllarında {count, plural, one {# gün} other {# gün}}",
     "closeAll": "Tümünde kapalı",
     "openAll": "Tümünde açık",
-    "choose": "Her gün, siz devre dışı bırakmadıkça atölyeyi kapatır. Google takvimleri, devre dışı bırakmak isteyebileceğiniz Sevgililer Günü gibi özel günleri de listeler.",
+    "choose": "Her gün, siz kapatmadıkça atölyeyi kapatır. Bir Google takviminin anma günü olarak işaretlediği günler, örneğin Sevgililer Günü, başta kapalı gelir.",
     "show": "Günleri göster",
     "hide": "Günleri gizle",
     "empty": "Eklenmiş takvim yok."
@@ -95,7 +95,6 @@
     "from": "İlk gün",
     "to": "Son gün",
     "allDay": "Tüm gün",
-    "partOfDay": "Günün bir kısmı",
     "startTime": "Başlangıç",
     "endTime": "Bitiş",
     "startTimeHint": "İlk günde. Tüm gün için boş bırakın.",
@@ -159,6 +158,7 @@
     "away": "Müsait değil: {reason}",
     "awayPart": "{when} müsait değil",
     "awayConflict": "Müsait değil ({reason})",
+    "awayHeading": "Teknisyen o sırada müsait değil",
     "bookedAnyway": "İş üzerinde anlaşıldıysa bu saati yine de koruyabilirsiniz."
   },
   "calendar": {

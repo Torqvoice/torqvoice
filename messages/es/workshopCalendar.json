@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# día} other {# días}} en {first} y {second}",
     "closeAll": "Cerrar todos",
     "openAll": "Abrir todos",
-    "choose": "Cada día cierra el taller salvo que lo desactives. Los calendarios de Google también incluyen fechas señaladas, como San Valentín, que quizá quieras desactivar.",
+    "choose": "Cada día cierra el taller salvo que lo desactives. Los días que un calendario de Google marca como conmemoraciones, como San Valentín, empiezan desactivados.",
     "show": "Mostrar días",
     "hide": "Ocultar días",
     "empty": "No hay calendarios añadidos."
@@ -95,7 +95,6 @@
     "from": "Primer día",
     "to": "Último día",
     "allDay": "Todo el día",
-    "partOfDay": "Parte del día",
     "startTime": "Desde",
     "endTime": "Hasta",
     "startTimeHint": "El primer día. Déjalo vacío para todo el día.",
@@ -159,6 +158,7 @@
     "away": "Ausente: {reason}",
     "awayPart": "Ausente {when}",
     "awayConflict": "Ausente ({reason})",
+    "awayHeading": "El técnico no está disponible entonces",
     "bookedAnyway": "Puedes mantener esta hora si el trabajo está acordado."
   },
   "calendar": {

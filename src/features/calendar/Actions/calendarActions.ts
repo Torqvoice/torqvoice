@@ -244,6 +244,8 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
         invoiceNumber: null,
         amount: null,
       }
+      // A holiday listed by two sources is one entry a day.
+      const seenClosure = new Set<string>()
       const closureEvents: CalendarEvent[] = calendar.closures.flatMap((c, i) =>
         dayEntries(c, (day, time, endTime) => ({
           ...blank,
@@ -256,7 +258,12 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
           status: 'closed',
           allDay: time === null,
           source: c.source,
-        }))
+        })).filter((event) => {
+          const id = `${event.date}|${event.title.toLocaleLowerCase()}|${event.time ?? ''}`
+          if (seenClosure.has(id)) return false
+          seenClosure.add(id)
+          return true
+        })
       )
       const absenceEvents: CalendarEvent[] = calendar.absences.flatMap((a) =>
         dayEntries(a, (day, time, endTime) => ({

@@ -108,7 +108,12 @@ describe('setting a technician on leave', () => {
         onSaved={vi.fn()}
       />
     )
-    await userEvent.click(screen.getByRole('switch', { name: 'Part of the day' }))
+    // Whole days is the usual case, so the switch starts on and reads "All day".
+    const allDay = screen.getByRole('switch', { name: 'All day' })
+    expect(allDay).toBeChecked()
+    expect(screen.queryByLabelText('From')).not.toBeInTheDocument()
+    await userEvent.click(allDay)
+    expect(allDay).not.toBeChecked()
     const from = screen.getByLabelText('From')
     const until = screen.getByLabelText('Until')
     await userEvent.type(from, '15:00')

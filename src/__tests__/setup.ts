@@ -102,5 +102,6 @@ vi.mock('next-intl', () => ({
     },
   }),
   useMessages: () => ({}),
+  useNow: () => new Date(),
   NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
 }))

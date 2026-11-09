@@ -213,21 +213,6 @@ export function WorkBoardClient({
 
   const weekStart = store.weekStart || initialWeekStart
   const allDays = useMemo(() => getWeekDays(weekStart), [weekStart])
-  // Day is the same board with one day's worth of columns, not a different
-  // component. Switching period used to swap in an entirely separate view,
-  // which threw away the grouping, the lane filter, the zoom and the tooltips.
-  const weekDays = useMemo(
-    () => (preferences.showWeekends ? allDays : allDays.filter((d) => !isWeekend(d))),
-    [allDays, preferences.showWeekends]
-  )
-  const days = useMemo(
-    () => (view === 'day' ? [selectedDate] : weekDays),
-    [view, selectedDate, weekDays]
-  )
-  const hiddenDays = useMemo(
-    () => (view === 'day' || preferences.showWeekends ? [] : allDays.filter(isWeekend)),
-    [view, allDays, preferences.showWeekends]
-  )
 
   const lanes = useMemo(
     () =>
@@ -267,6 +252,29 @@ export function WorkBoardClient({
     [lanes, preferences.grouping]
   )
   const boardCalendar = useBoardCalendar({ days: allDays, technicianLaneIds })
+  // A weekend day the workshop opens on is a working day: the Weekends
+  // switch only hides the ones it is closed on.
+  const openWeekdays = boardCalendar.calendar?.week
+  const isHiddenWeekend = useCallback(
+    (d: string) => isWeekend(d) && !openWeekdays?.[new Date(`${d}T12:00:00Z`).getUTCDay()]?.open,
+    [openWeekdays]
+  )
+
+  // Day is the same board with one day's worth of columns, not a different
+  // component. Switching period used to swap in an entirely separate view,
+  // which threw away the grouping, the lane filter, the zoom and the tooltips.
+  const weekDays = useMemo(
+    () => (preferences.showWeekends ? allDays : allDays.filter((d) => !isHiddenWeekend(d))),
+    [allDays, preferences.showWeekends, isHiddenWeekend]
+  )
+  const days = useMemo(
+    () => (view === 'day' ? [selectedDate] : weekDays),
+    [view, selectedDate, weekDays]
+  )
+  const hiddenDays = useMemo(
+    () => (view === 'day' || preferences.showWeekends ? [] : allDays.filter(isHiddenWeekend)),
+    [view, allDays, preferences.showWeekends, isHiddenWeekend]
+  )
   const [timeOffOpen, setTimeOffOpen] = useState(false)
   const [timeOffFor, setTimeOffFor] = useState<string | null>(null)
   const timeOffTechnicians = useMemo(

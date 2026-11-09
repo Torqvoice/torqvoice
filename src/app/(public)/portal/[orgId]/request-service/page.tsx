@@ -2,9 +2,11 @@ import { PortalShell } from '@/features/portal/Components/PortalShell'
 import { ServiceRequestForm } from '@/features/portal/Components/ServiceRequestForm'
 import {
   getPortalClosedDays,
+  getPortalOpeningHours,
   getPortalVehicles,
   getPortalServiceRequests,
 } from '@/features/portal/Actions/portalActions'
+import { PortalOpeningHours } from '@/features/portal/Components/PortalOpeningHours'
 import { Badge } from '@/components/ui/badge'
 import { AppCard } from '@/components/app-card'
 import { getTranslations } from 'next-intl/server'
@@ -23,10 +25,11 @@ export default async function PortalRequestServicePage({
   const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
   const t = await getTranslations('portal.requestService')
   const tStatus = await getTranslations('portal.status')
-  const [vehiclesResult, requestsResult, closedResult] = await Promise.all([
+  const [vehiclesResult, requestsResult, closedResult, hoursResult] = await Promise.all([
     getPortalVehicles(),
     getPortalServiceRequests(),
     getPortalClosedDays(),
+    getPortalOpeningHours(),
   ])
 
   if (!vehiclesResult.success || !vehiclesResult.data) {
@@ -68,11 +71,19 @@ export default async function PortalRequestServicePage({
 
         {/* The form handles the no-vehicles case itself: it opens in
             "describe your vehicle" mode, so new customers can still ask. */}
-        <ServiceRequestForm
-          orgId={orgId}
-          vehicles={vehicles}
-          closedDays={closedResult.success ? (closedResult.data ?? []) : []}
-        />
+        {/* The hours sit beside the form, where the customer picks a day. */}
+        <div className="grid items-start gap-6 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <ServiceRequestForm
+              orgId={orgId}
+              vehicles={vehicles}
+              closedDays={closedResult.success ? (closedResult.data ?? []) : []}
+            />
+          </div>
+          {hoursResult.success && hoursResult.data && (
+            <PortalOpeningHours hours={hoursResult.data} />
+          )}
+        </div>
 
         {requests.length > 0 && (
           <AppCard title={t('yourRequests')}>

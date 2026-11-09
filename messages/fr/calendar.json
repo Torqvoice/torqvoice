@@ -153,5 +153,10 @@
     }
   },
   "previousMonth": "Mois précédent",
-  "nextMonth": "Mois suivant"
+  "nextMonth": "Mois suivant",
+  "range": {
+    "from": "À partir de {time}",
+    "until": "Jusqu'à {time}"
+  },
+  "timeOffMissing": "Cette absence a été modifiée ou supprimée entre-temps."
 }

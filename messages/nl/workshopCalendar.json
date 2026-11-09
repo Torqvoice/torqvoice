@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# dag} other {# dagen}} in {first} en {second}",
     "closeAll": "Op alle dagen sluiten",
     "openAll": "Op alle dagen open",
-    "choose": "Elke dag sluit de werkplaats, tenzij je hem uitzet. Agenda's van Google bevatten ook gedenkdagen, zoals Valentijnsdag, die je misschien wilt uitzetten.",
+    "choose": "Elke dag sluit de werkplaats, tenzij je hem uitzet. Dagen die een Google-agenda als gedenkdag markeert, zoals Valentijnsdag, staan eerst uit.",
     "show": "Dagen tonen",
     "hide": "Dagen verbergen",
     "empty": "Geen agenda's toegevoegd."
@@ -95,7 +95,6 @@
     "from": "Eerste dag",
     "to": "Laatste dag",
     "allDay": "Hele dag",
-    "partOfDay": "Deel van de dag",
     "startTime": "Vanaf",
     "endTime": "Tot",
     "startTimeHint": "Op de eerste dag. Laat leeg voor de hele dag.",
@@ -159,6 +158,7 @@
     "away": "Afwezig: {reason}",
     "awayPart": "Afwezig {when}",
     "awayConflict": "Afwezig ({reason})",
+    "awayHeading": "De monteur is dan afwezig",
     "bookedAnyway": "Je kunt deze tijd toch houden als het werk is afgesproken."
   },
   "calendar": {

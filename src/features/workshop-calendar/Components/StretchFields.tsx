@@ -103,13 +103,15 @@ export function StretchFields({
         </div>
       </div>
 
+      {/* On means whole days, the usual case; off shows the clock fields. The
+          label never changes, so the switch always reads the same way. */}
       <label className="flex items-center gap-2 text-sm">
         <Switch
-          checked={value.partOfDay}
-          onCheckedChange={(partOfDay) => set({ partOfDay })}
-          aria-label={t('partOfDay')}
+          checked={!value.partOfDay}
+          onCheckedChange={(allDay) => set({ partOfDay: !allDay })}
+          aria-label={t('allDay')}
         />
-        {value.partOfDay ? t('partOfDay') : t('allDay')}
+        {t('allDay')}
       </label>
 
       {value.partOfDay && (

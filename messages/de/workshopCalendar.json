@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# Tag} other {# Tage}} in {first} und {second}",
     "closeAll": "An allen schließen",
     "openAll": "An allen öffnen",
-    "choose": "Jeder Tag schließt die Werkstatt, sofern Sie ihn nicht ausschalten. Kalender von Google enthalten auch Gedenk- und Aktionstage wie den Valentinstag, die Sie vielleicht ausschalten möchten.",
+    "choose": "Jeder Tag schließt die Werkstatt, sofern Sie ihn nicht ausschalten. Tage, die ein Google-Kalender als Gedenk- oder Aktionstag markiert, wie der Valentinstag, sind zu Beginn ausgeschaltet.",
     "show": "Tage anzeigen",
     "hide": "Tage ausblenden",
     "empty": "Keine Kalender hinzugefügt."
@@ -95,7 +95,6 @@
     "from": "Erster Tag",
     "to": "Letzter Tag",
     "allDay": "Ganztägig",
-    "partOfDay": "Teil des Tages",
     "startTime": "Ab",
     "endTime": "Bis",
     "startTimeHint": "Am ersten Tag. Leer lassen für den ganzen Tag.",
@@ -159,6 +158,7 @@
     "away": "Abwesend: {reason}",
     "awayPart": "Abwesend {when}",
     "awayConflict": "Abwesend ({reason})",
+    "awayHeading": "Der Techniker ist dann abwesend",
     "bookedAnyway": "Sie können diese Zeit trotzdem behalten, wenn die Arbeit so vereinbart ist."
   },
   "calendar": {

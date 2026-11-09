@@ -153,5 +153,10 @@
     }
   },
   "previousMonth": "Ankstesnis mėnuo",
-  "nextMonth": "Kitas mėnuo"
+  "nextMonth": "Kitas mėnuo",
+  "range": {
+    "from": "Nuo {time}",
+    "until": "Iki {time}"
+  },
+  "timeOffMissing": "Šis nebuvimas per tą laiką buvo pakeistas arba pašalintas."
 }

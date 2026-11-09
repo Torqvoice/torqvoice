@@ -153,5 +153,10 @@
     }
   },
   "previousMonth": "Önceki ay",
-  "nextMonth": "Sonraki ay"
+  "nextMonth": "Sonraki ay",
+  "range": {
+    "from": "{time} itibarıyla",
+    "until": "{time} saatine kadar"
+  },
+  "timeOffMissing": "Bu izin bu arada değiştirildi veya kaldırıldı."
 }

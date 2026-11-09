@@ -335,11 +335,9 @@ export async function setHolidayFeedChoice(input: unknown) {
       const feed = feeds.find((f) => f.id === feedId)
       if (!feed) throw new Error('Calendar not found')
       const names = name === undefined ? [...new Set(feed.events.map((e) => e.name))] : [name]
-      for (const n of names) {
-        // Closed is the default, so only the days kept open are written down.
-        if (closed) delete feed.choices[n]
-        else feed.choices[n] = false
-      }
+      // Written down either way: closed is the default for a holiday but not
+      // for an observance, so leaving a name out does not say which it was.
+      for (const n of names) feed.choices[n] = closed
       await writeFeeds(organizationId, feeds, userId)
       revalidate()
       return { feedId, closed }

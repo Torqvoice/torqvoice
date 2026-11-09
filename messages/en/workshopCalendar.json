@@ -3,8 +3,8 @@
     "description": "When the workshop is open, the days it is closed, and who is away. The work board, scheduling, the calendar, online booking and the customer portal all follow it."
   },
   "switch": {
-    "title": "Closed days and time off",
-    "label": "Use closed days, public holidays and time off",
+    "title": "Closed days and leave",
+    "label": "Use closed days, public holidays and leave",
     "hint": "When this is off, nothing on this page except the opening hours changes the work board, scheduling, the calendar or online booking. Everything you entered is kept.",
     "saved": "Saved",
     "failed": "Could not save"
@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# day} other {# days}} in {first} and {second}",
     "closeAll": "Close on all",
     "openAll": "Open on all",
-    "choose": "Each day closes the workshop unless you switch it off. Calendars from Google also list observances, such as Valentine's Day, that you may want to switch off.",
+    "choose": "Each day closes the workshop unless you switch it off. Days a Google calendar marks as observances, such as Valentine's Day, start switched off.",
     "show": "Show days",
     "hide": "Hide days",
     "empty": "No calendars added."
@@ -95,7 +95,6 @@
     "from": "First day",
     "to": "Last day",
     "allDay": "All day",
-    "partOfDay": "Part of the day",
     "startTime": "From",
     "endTime": "Until",
     "startTimeHint": "On the first day. Leave empty for the whole day.",
@@ -106,7 +105,7 @@
     "pickDate": "Pick a date"
   },
   "timeOff": {
-    "title": "Time off",
+    "title": "Leave and out of office",
     "description": "Set a technician on leave or out of office: holidays, sick days, courses. While away they are not offered for bookings, and the work board and scheduling show it.",
     "add": "Set on leave or out of office",
     "edit": "Edit leave or out of office",
@@ -116,14 +115,14 @@
     "note": "Note",
     "notePlaceholder": "Optional, such as the name of the course",
     "empty": "Nobody is on leave or out of office in the coming weeks.",
-    "saved": "Time off saved",
-    "deleted": "Time off removed",
+    "saved": "Leave saved",
+    "deleted": "Leave removed",
     "deleteTitle": "Remove this leave?",
     "deleteDescription": "{name} counts as available on these days again.",
     "noTechnicians": "Add technicians on the work board first.",
     "manage": "Leave and out of office",
     "upcoming": "Upcoming and recent leave",
-    "disabled": "Time off is switched off for this workshop. Turn it on under Settings, Opening hours and holidays.",
+    "disabled": "Leave is switched off for this workshop. Turn it on under Settings, Opening hours and holidays.",
     "button": "Leave",
     "setForTechnician": "Set {name} on leave or out of office"
   },
@@ -159,11 +158,12 @@
     "away": "Away: {reason}",
     "awayPart": "Away {when}",
     "awayConflict": "Away ({reason})",
+    "awayHeading": "The technician is away then",
     "bookedAnyway": "You can still keep this time if the work is agreed."
   },
   "calendar": {
     "closure": "Closed",
-    "absence": "Time off",
+    "absence": "Leave",
     "absenceTitle": "{name}: {reason}"
   },
   "portal": {

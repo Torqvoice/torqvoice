@@ -23,6 +23,7 @@ import {
   weekSpan,
 } from '@/features/workshop-calendar/Lib/calendar'
 import { closedDay, awayDay } from '@/features/workshop-calendar/Lib/boardDays'
+import { formatDays } from '@/features/workshop-calendar/Lib/format'
 
 const ZONE = 'Australia/Brisbane' // UTC+10, no daylight saving
 
@@ -97,6 +98,14 @@ describe('closures', () => {
     expect(state.open).toBe(false)
     expect(state.closedWeekday).toBe(false)
     expect(state.closures.map((c) => c.name)).toEqual(['Christmas Day'])
+  })
+
+  it('names a holiday once when the public holidays and a calendar both list it', () => {
+    const fromFeed = { ...christmas, name: 'christmas day', source: 'feed' as const }
+    const both = cal({ closures: [christmas, fromFeed] })
+    expect(dayState(both, '2026-12-25').closures.map((c) => c.name)).toEqual(['Christmas Day'])
+    const day = { start: new Date('2026-12-25T00:00:00Z'), end: new Date('2026-12-25T23:00:00Z') }
+    expect(closuresDuring(both, day.start, day.end).map((c) => c.name)).toEqual(['Christmas Day'])
   })
 
   it('shortens a day closed from a time, and says it is shortened', () => {
@@ -240,5 +249,13 @@ describe('time off', () => {
     expect(part?.allDay).toBe(false)
     expect(part?.spans).toEqual([{ startMins: 13 * 60, endMins: 15 * 60 }])
     expect(awayDay(c, 'tech-2', addDays('2026-11-17', 1))).toBeNull()
+  })
+})
+
+describe('dates for people to read', () => {
+  it('writes a range with plain spaces, so the server and the browser agree', () => {
+    const range = formatDays('2026-11-16', '2026-11-17', 'en', { weekday: true })
+    expect(range).toBe('Mon, Nov 16 – Tue, Nov 17, 2026')
+    expect(range).not.toMatch(/[\u2009\u202f]/)
   })
 })

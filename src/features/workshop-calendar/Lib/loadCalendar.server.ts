@@ -65,6 +65,15 @@ export function closuresEnabled(value: string | null | undefined): boolean {
   return value !== 'false'
 }
 
+/** Whether this workshop tracks closures and time off at all. */
+export async function calendarEnabled(organizationId: string): Promise<boolean> {
+  const row = await db.appSetting.findFirst({
+    where: { organizationId, key: SETTING_KEYS.CLOSURES_ENABLED },
+    select: { value: true },
+  })
+  return closuresEnabled(row?.value)
+}
+
 /**
  * The calendar from `from` to `to` (both "YYYY-MM-DD", included). Closures
  * and absences outside the stretch are left out; one that runs into it is in.

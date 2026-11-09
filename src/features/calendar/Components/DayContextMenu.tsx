@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
-import { Bell, ExternalLink, FileText, Send, Wrench } from 'lucide-react'
+import { Bell, ExternalLink, FileText, Send, UserX, Wrench } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -29,6 +29,8 @@ export interface DayActions {
   onNewReminder: (dateStr: string, time?: string) => void
   onNewQuote: (dateStr: string, time?: string) => void
   onScheduleMessage: (dateStr: string, time?: string) => void
+  /** Set a technician on leave from this day. Absent when this person may not. */
+  onTimeOff?: (dateStr: string) => void
 }
 
 /** How many of the day's events the right-click menu lists before it stops */
@@ -62,6 +64,7 @@ export function DayContextMenu({
   children: ReactNode
 }) {
   const t = useTranslations('calendar')
+  const tTimeOff = useTranslations('workshopCalendar.timeOff')
   const { formatDate } = useFormatDate()
   const { timeFormat } = useDateSettings()
   const { openPeek } = useEventPeek()
@@ -94,6 +97,15 @@ export function DayContextMenu({
           <Send className="mr-2 h-4 w-4" />
           {t('contextMenu.scheduleMessage')}
         </ContextMenuItem>
+        {actions.onTimeOff && (
+          <>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={() => actions.onTimeOff?.(dateStr)}>
+              <UserX className="mr-2 h-4 w-4" />
+              {tTimeOff('add')}
+            </ContextMenuItem>
+          </>
+        )}
         {events.length > 0 && (
           <>
             <ContextMenuSeparator />

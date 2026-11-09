@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# dia} other {# dias}} em {first} e {second}",
     "closeAll": "Encerrar em todos os dias",
     "openAll": "Abrir em todos os dias",
-    "choose": "Cada dia encerra a oficina, a menos que o desligue. Os calendários da Google também incluem datas comemorativas, como o Dia dos Namorados, que talvez queira desligar.",
+    "choose": "Cada dia fecha a oficina, a menos que o desative. Os dias que um calendário do Google marca como datas comemorativas, como o Dia dos Namorados, começam desativados.",
     "show": "Mostrar dias",
     "hide": "Ocultar dias",
     "empty": "Nenhum calendário adicionado."
@@ -95,7 +95,6 @@
     "from": "Primeiro dia",
     "to": "Último dia",
     "allDay": "Todo o dia",
-    "partOfDay": "Parte do dia",
     "startTime": "De",
     "endTime": "Até",
     "startTimeHint": "No primeiro dia. Deixe em branco para o dia inteiro.",
@@ -159,6 +158,7 @@
     "away": "Ausente: {reason}",
     "awayPart": "Ausente {when}",
     "awayConflict": "Ausente ({reason})",
+    "awayHeading": "O técnico está ausente nessa altura",
     "bookedAnyway": "Pode manter esta hora se o trabalho estiver combinado."
   },
   "calendar": {

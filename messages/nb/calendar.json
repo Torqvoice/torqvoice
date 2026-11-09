@@ -153,5 +153,10 @@
     }
   },
   "previousMonth": "Forrige måned",
-  "nextMonth": "Neste måned"
+  "nextMonth": "Neste måned",
+  "range": {
+    "from": "Fra {time}",
+    "until": "Til {time}"
+  },
+  "timeOffMissing": "Dette fraværet ble endret eller fjernet i mellomtiden."
 }

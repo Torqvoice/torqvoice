@@ -197,6 +197,8 @@ export interface FeedEvent {
   /** First and last day, both included. */
   startDate: string
   endDate: string
+  /** A day the calendar marks as an observance, not a holiday: open unless chosen. */
+  observance?: boolean
 }
 
 /** A calendar of holidays added by link or file. */
@@ -207,7 +209,10 @@ export interface HolidayFeed {
   url: string | null
   fileName: string | null
   events: FeedEvent[]
-  /** On or off by event name; a name missing closes the workshop. */
+  /**
+   * On or off by event name. A name missing closes the workshop, unless the
+   * calendar marks it as an observance.
+   */
   choices: HolidayChoices
   fetchedAt: string | null
   error: string | null
@@ -218,7 +223,7 @@ export function feedClosures(feeds: readonly HolidayFeed[]): ClosedPeriod[] {
   const out: ClosedPeriod[] = []
   for (const feed of feeds) {
     for (const event of feed.events) {
-      if (feed.choices[event.name] === false) continue
+      if (!(feed.choices[event.name] ?? !event.observance)) continue
       out.push({
         name: event.name,
         source: 'feed',
@@ -244,7 +249,7 @@ export function feedRows(feed: HolidayFeed, from: string, to: string): FeedRow[]
     const row = rows.get(event.name) ?? {
       name: event.name,
       dates: [],
-      closed: feed.choices[event.name] !== false,
+      closed: feed.choices[event.name] ?? !event.observance,
     }
     row.dates.push(event.startDate)
     rows.set(event.name, row)

@@ -23,13 +23,20 @@ function formatter(locale: string, withYear: boolean, withWeekday: boolean): Int
 
 const noon = (key: string) => new Date(`${key}T12:00:00Z`)
 
+/**
+ * Plain spaces for the thin and narrow ones some ICU versions use: Node
+ * writes "16 – 17" with thin spaces where Chrome writes ordinary ones, and
+ * a label rendered on the server must read the same in the browser.
+ */
+const plainSpaces = (text: string) => text.replace(/[\u2009\u202f]/g, ' ')
+
 /** "Fri 25 Dec 2026", or without the year or weekday. */
 export function formatDay(
   key: string,
   locale: string,
   opts: { year?: boolean; weekday?: boolean } = {}
 ): string {
-  return formatter(locale, opts.year ?? true, opts.weekday ?? false).format(noon(key))
+  return plainSpaces(formatter(locale, opts.year ?? true, opts.weekday ?? false).format(noon(key)))
 }
 
 /** One day, or a range of days the way the locale writes ranges. */
@@ -40,12 +47,14 @@ export function formatDays(
   opts: { year?: boolean; weekday?: boolean } = {}
 ): string {
   const f = formatter(locale, opts.year ?? true, opts.weekday ?? false)
-  if (start === end) return f.format(noon(start))
+  if (start === end) return plainSpaces(f.format(noon(start)))
   const range = (f as Intl.DateTimeFormat & { formatRange?: (a: Date, b: Date) => string })
     .formatRange
-  return range
-    ? range.call(f, noon(start), noon(end))
-    : `${f.format(noon(start))} - ${f.format(noon(end))}`
+  return plainSpaces(
+    range
+      ? range.call(f, noon(start), noon(end))
+      : `${f.format(noon(start))} - ${f.format(noon(end))}`
+  )
 }
 
 /** A weekday's name: 0 is Sunday. */

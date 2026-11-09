@@ -153,5 +153,10 @@
     }
   },
   "previousMonth": "Vorige maand",
-  "nextMonth": "Volgende maand"
+  "nextMonth": "Volgende maand",
+  "range": {
+    "from": "Vanaf {time}",
+    "until": "Tot {time}"
+  },
+  "timeOffMissing": "Die afwezigheid is intussen gewijzigd of verwijderd."
 }

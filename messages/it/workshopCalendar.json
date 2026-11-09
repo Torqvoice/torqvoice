@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# giorno} other {# giorni}} nel {first} e nel {second}",
     "closeAll": "Chiudi in tutti i giorni",
     "openAll": "Apri in tutti i giorni",
-    "choose": "Ogni giorno chiude l'officina a meno che tu non lo disattivi. I calendari di Google elencano anche ricorrenze, come San Valentino, che potresti voler disattivare.",
+    "choose": "Ogni giorno chiude l'officina, a meno che non lo disattivi. I giorni che un calendario Google indica come ricorrenze, come San Valentino, partono disattivati.",
     "show": "Mostra giorni",
     "hide": "Nascondi giorni",
     "empty": "Nessun calendario aggiunto."
@@ -95,7 +95,6 @@
     "from": "Primo giorno",
     "to": "Ultimo giorno",
     "allDay": "Tutto il giorno",
-    "partOfDay": "Parte del giorno",
     "startTime": "Dalle",
     "endTime": "Fino alle",
     "startTimeHint": "Il primo giorno. Lascia vuoto per l'intera giornata.",
@@ -159,6 +158,7 @@
     "away": "Assente: {reason}",
     "awayPart": "Assente {when}",
     "awayConflict": "Assente ({reason})",
+    "awayHeading": "Il tecnico è assente in quel momento",
     "bookedAnyway": "Puoi comunque mantenere questo orario se il lavoro è concordato."
   },
   "calendar": {

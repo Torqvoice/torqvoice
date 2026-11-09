@@ -22,6 +22,7 @@ import {
   Hash,
   Mail,
   MessageSquare,
+  Pencil,
   Send,
   User,
   Wrench,
@@ -36,7 +37,7 @@ import { useDateSettings } from '@/components/date-settings-context'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { formatClock } from '@/features/workboard/utils/clock'
 import { timeToMinutes } from '../Lib/calendar-range'
-import { eventPalette, getEventLink, isEventDone } from './calendar-utils'
+import { eventPalette, getEventLink, isEventDone, openEndedSide } from './calendar-utils'
 import { ExternalEventDialog } from './ExternalEventDialog'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
@@ -58,6 +59,12 @@ interface PeekApi {
   refresh: () => void
 }
 
+/** What the card can do beyond linking out, handed down by the calendar. */
+interface PeekActions {
+  /** Open a technician's leave for editing. Absent when this person may not. */
+  onEditAbsence?: (event: CalendarEvent) => void
+}
+
 const PeekContext = createContext<PeekApi>({
   openPeek: () => undefined,
   closePeek: () => undefined,
@@ -71,10 +78,12 @@ export function useEventPeek() {
 export function EventPeekProvider({
   currencyCode,
   onRefresh,
+  onEditAbsence,
   children,
 }: {
   currencyCode: string
   onRefresh?: () => void
+  onEditAbsence?: PeekActions['onEditAbsence']
   children: ReactNode
 }) {
   const [peek, setPeek] = useState<PeekState | null>(null)
@@ -113,7 +122,21 @@ export function EventPeekProvider({
           className="w-[22rem] max-w-[calc(100vw-1.5rem)] p-0 shadow-xl"
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          {peek && <PeekCard event={peek.event} currencyCode={currencyCode} onClose={closePeek} />}
+          {peek && (
+            <PeekCard
+              event={peek.event}
+              currencyCode={currencyCode}
+              onClose={closePeek}
+              onEditAbsence={
+                onEditAbsence
+                  ? (event) => {
+                      closePeek()
+                      onEditAbsence(event)
+                    }
+                  : undefined
+              }
+            />
+          )}
         </PopoverContent>
       </Popover>
       <ExternalEventDialog event={external} onClose={() => setExternal(null)} />
@@ -172,23 +195,33 @@ function PeekCard({
   event,
   currencyCode,
   onClose,
+  onEditAbsence,
 }: {
   event: CalendarEvent
   currencyCode: string
   onClose: () => void
+  onEditAbsence?: PeekActions['onEditAbsence']
 }) {
   const t = useTranslations('calendar')
+  const tc = useTranslations('common')
   const format = useDayFormatter()
   const { timeFormat } = useDateSettings()
   const formatCurrency = useFormatCurrency()
   const palette = eventPalette(event)
   const Icon = typeIcon(event)
   const day = new Date(`${event.date}T12:00:00`)
-  const when = event.time
-    ? event.endTime
-      ? `${formatClock(timeToMinutes(event.time), timeFormat)} – ${formatClock(timeToMinutes(event.endTime), timeFormat)}`
-      : formatClock(timeToMinutes(event.time), timeFormat)
-    : t('events.external.allDay')
+  const side = openEndedSide(event)
+  const when = side
+    ? side === 'from'
+      ? t('range.from', { time: formatClock(timeToMinutes(event.time ?? '00:00'), timeFormat) })
+      : t('range.until', {
+          time: formatClock(timeToMinutes(event.endTime ?? '00:00'), timeFormat),
+        })
+    : event.time
+      ? event.endTime
+        ? `${formatClock(timeToMinutes(event.time), timeFormat)} – ${formatClock(timeToMinutes(event.endTime), timeFormat)}`
+        : formatClock(timeToMinutes(event.time), timeFormat)
+      : t('events.external.allDay')
   const done = isEventDone(event)
 
   return (
@@ -228,9 +261,12 @@ function PeekCard({
           <Badge variant="secondary" className={`text-[10px] ${palette.chip}`}>
             {t(`events.type.${event.type}`)}
           </Badge>
-          <Badge variant="outline" className="text-[10px]">
-            {t(`events.status.${statusKey(event)}`)}
-          </Badge>
+          {/* "Closed" and "Leave" already say it all; a second badge repeated them. */}
+          {event.type !== 'closure' && event.type !== 'absence' && (
+            <Badge variant="outline" className="text-[10px]">
+              {t(`events.status.${statusKey(event)}`)}
+            </Badge>
+          )}
         </div>
 
         <dl className="mt-3 space-y-1.5 text-sm">
@@ -264,6 +300,12 @@ function PeekCard({
         </dl>
 
         <div className="mt-4 flex items-center justify-end gap-2">
+          {event.type === 'absence' && onEditAbsence && (
+            <Button size="sm" variant="outline" onClick={() => onEditAbsence(event)}>
+              <Pencil className="mr-1.5 h-3.5 w-3.5" />
+              {tc('buttons.edit')}
+            </Button>
+          )}
           <Button asChild size="sm">
             <Link href={getEventLink(event)}>
               {t(`peek.open.${event.type}`)}

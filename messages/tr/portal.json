@@ -263,5 +263,12 @@
       "inProgress": "Devam ediyor",
       "completed": "Tamamlandı"
     }
+  },
+  "openingHours": {
+    "title": "Çalışma saatleri",
+    "closed": "Kapalı",
+    "today": "Bugün",
+    "closedSoon": "Yakında kapalı",
+    "openOnly": "Açık {hours}"
   }
 }

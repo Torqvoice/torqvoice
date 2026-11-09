@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useFormatter, useLocale, useTranslations } from 'next-intl'
+import { useFormatter, useLocale, useNow, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Flag, Loader2, RefreshCw, RotateCcw } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
@@ -48,6 +48,12 @@ export function PublicHolidaysCard({
   const t = useTranslations('workshopCalendar.holidays')
   const locale = useLocale()
   const format = useFormatter()
+  const now = useNow({ updateInterval: 60_000 })
+  // A fetch made after the page's clock last ticked reads "just now", not "in 42 seconds".
+  const since = (iso: string) => {
+    const at = new Date(iso)
+    return format.relativeTime(at, at > now ? at : now)
+  }
   const router = useRouter()
   const [codes, setCodes] = useState<string[] | null>(null)
   const [codesError, setCodesError] = useState<string | null>(null)
@@ -158,9 +164,7 @@ export function PublicHolidaysCard({
               </Button>
             )}
             <span className="text-xs text-muted-foreground">
-              {fetchedAt
-                ? t('updated', { when: format.relativeTime(new Date(fetchedAt)) })
-                : t('neverUpdated')}
+              {fetchedAt ? t('updated', { when: since(fetchedAt) }) : t('neverUpdated')}
             </span>
           </div>
         )}

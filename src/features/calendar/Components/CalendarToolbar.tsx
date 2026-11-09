@@ -11,6 +11,7 @@ import {
   PanelLeft,
   Plus,
   Send,
+  UserX,
   Wrench,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -29,7 +30,7 @@ import { cn } from '@/lib/utils'
 import type { CalendarView } from '../Lib/calendar-range'
 import type { CalendarPreferences } from './useCalendarPreferences'
 
-export type CreateKind = 'workOrder' | 'reminder' | 'quote' | 'message'
+export type CreateKind = 'workOrder' | 'reminder' | 'quote' | 'message' | 'timeOff'
 
 /** The keys the view switcher shows and the keyboard listens for. */
 export const VIEW_SHORTCUTS: Record<CalendarView, string> = {
@@ -56,6 +57,8 @@ interface CalendarToolbarProps {
   onToggleSidebar: () => void
   onPreferenceChange: (patch: Partial<CalendarPreferences>) => void
   onCreate: (kind: CreateKind) => void
+  /** Whether this person may set technicians on leave, and the workshop tracks it. */
+  canSetTimeOff?: boolean
 }
 
 /**
@@ -76,8 +79,10 @@ export function CalendarToolbar({
   onToggleSidebar,
   onPreferenceChange,
   onCreate,
+  canSetTimeOff = false,
 }: CalendarToolbarProps) {
   const t = useTranslations('calendar')
+  const tTimeOff = useTranslations('workshopCalendar.timeOff')
 
   return (
     <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border/70 px-2 py-2 sm:px-3">
@@ -175,7 +180,7 @@ export function CalendarToolbar({
               <span className="hidden sm:inline">{t('toolbar.create')}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuContent align="end" className="w-60">
             <DropdownMenuItem onClick={() => onCreate('workOrder')}>
               <Wrench className="mr-2 h-4 w-4" />
               {t('contextMenu.newWorkOrder')}
@@ -192,6 +197,15 @@ export function CalendarToolbar({
               <Send className="mr-2 h-4 w-4" />
               {t('contextMenu.scheduleMessage')}
             </DropdownMenuItem>
+            {canSetTimeOff && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onCreate('timeOff')}>
+                  <UserX className="mr-2 h-4 w-4" />
+                  {tTimeOff('add')}
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

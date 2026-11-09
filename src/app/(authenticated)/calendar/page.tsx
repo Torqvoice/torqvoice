@@ -8,6 +8,9 @@ import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availabl
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
 import CalendarClient from '@/features/calendar/Components/CalendarClient'
+import { getTechnicians } from '@/features/workboard/Actions/technicianActions'
+import { canEditTimeOff } from '@/features/workshop-calendar/Lib/access.server'
+import { calendarEnabled } from '@/features/workshop-calendar/Lib/loadCalendar.server'
 import {
   getMonthGridDays,
   isCalendarView,
@@ -60,6 +63,22 @@ export default async function CalendarPage({
 
   const eventsResult = await getCalendarEvents(rangeKeys)
 
+  // Who can be set on leave, offered only to people who may edit the work
+  // board and only while the workshop tracks time off at all.
+  const timeOffAllowed =
+    ctx !== null &&
+    (await calendarEnabled(ctx.organizationId)) &&
+    (await canEditTimeOff(ctx.userId, ctx.role))
+  const technicians = timeOffAllowed ? await getTechnicians() : null
+  const timeOff =
+    technicians?.success && technicians.data
+      ? {
+          technicians: technicians.data
+            .filter((tech) => tech.isActive)
+            .map((tech) => ({ id: tech.id, name: tech.name, color: tech.color })),
+        }
+      : null
+
   const events = eventsResult.success && eventsResult.data ? eventsResult.data : []
 
   return (
@@ -74,6 +93,7 @@ export default async function CalendarPage({
           todayStr={todayStr}
           currencyCode={currencyCode}
           messageChannels={messageChannels}
+          timeOff={timeOff}
         />
       </div>
     </>

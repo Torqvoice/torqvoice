@@ -180,6 +180,21 @@ export function isEventDone(event: Pick<CalendarEvent, 'type' | 'status'>): bool
   )
 }
 
+/**
+ * A closure or time off that takes the rest of a day is drawn up to 23:59,
+ * and one that ends partway through starts at midnight. Neither clock is
+ * something anyone set, so the label says "From 12:00" or "Until 14:00".
+ */
+export function openEndedSide(
+  event: Pick<CalendarEvent, 'type' | 'time' | 'endTime'>
+): 'from' | 'until' | null {
+  if (event.type !== 'closure' && event.type !== 'absence') return null
+  if (!event.time) return null
+  if (event.endTime === '23:59') return 'from'
+  if (event.time === '00:00' && event.endTime) return 'until'
+  return null
+}
+
 /** All-day items come first, then by clock time, then by title. */
 export function compareEvents(a: CalendarEvent, b: CalendarEvent): number {
   if (!a.time !== !b.time) return a.time ? 1 : -1

@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# dag} other {# dager}} i {first} og {second}",
     "closeAll": "Stengt på alle",
     "openAll": "Åpent på alle",
-    "choose": "Hver dag stenger verkstedet med mindre du slår den av. Kalendere fra Google tar også med merkedager, som valentinsdagen, som du kanskje vil slå av.",
+    "choose": "Hver dag stenger verkstedet med mindre du slår den av. Dager en Google-kalender merker som merkedager, som valentinsdagen, er slått av fra start.",
     "show": "Vis dager",
     "hide": "Skjul dager",
     "empty": "Ingen kalendere lagt til."
@@ -95,7 +95,6 @@
     "from": "Første dag",
     "to": "Siste dag",
     "allDay": "Hele dagen",
-    "partOfDay": "Deler av dagen",
     "startTime": "Fra",
     "endTime": "Til",
     "startTimeHint": "På den første dagen. La stå tomt for hele dagen.",
@@ -159,6 +158,7 @@
     "away": "Borte: {reason}",
     "awayPart": "Borte {when}",
     "awayConflict": "Borte ({reason})",
+    "awayHeading": "Teknikeren er borte da",
     "bookedAnyway": "Du kan likevel beholde denne tiden hvis arbeidet er avtalt."
   },
   "calendar": {

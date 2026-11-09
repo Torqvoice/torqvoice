@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# jour} other {# jours}} en {first} et {second}",
     "closeAll": "Tout fermer",
     "openAll": "Tout ouvrir",
-    "choose": "Chaque jour ferme l'atelier, sauf si vous le désactivez. Les calendriers Google listent aussi des journées particulières, comme la Saint-Valentin, que vous voudrez peut-être désactiver.",
+    "choose": "Chaque jour ferme l'atelier, sauf si vous le désactivez. Les journées qu'un calendrier Google marque comme journées particulières, comme la Saint-Valentin, sont désactivées au départ.",
     "show": "Afficher les jours",
     "hide": "Masquer les jours",
     "empty": "Aucun calendrier ajouté."
@@ -95,7 +95,6 @@
     "from": "Premier jour",
     "to": "Dernier jour",
     "allDay": "Toute la journée",
-    "partOfDay": "Une partie de la journée",
     "startTime": "De",
     "endTime": "Jusqu'à",
     "startTimeHint": "Le premier jour. Laissez vide pour toute la journée.",
@@ -159,6 +158,7 @@
     "away": "Absent : {reason}",
     "awayPart": "Absent {when}",
     "awayConflict": "Absent ({reason})",
+    "awayHeading": "Le technicien est absent à ce moment-là",
     "bookedAnyway": "Vous pouvez garder ce créneau si le travail est convenu."
   },
   "calendar": {

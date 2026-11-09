@@ -197,3 +197,68 @@ describe('reading an .ics calendar', () => {
     expect(short.events.filter((e) => e.name === 'New Year')).toEqual([])
   })
 })
+
+describe("Google's holiday calendars", () => {
+  // As Google writes them: a holiday has one line of description, an
+  // observance a second line on how to hide observances, in the calendar's
+  // own language.
+  const google = [
+    'BEGIN:VCALENDAR',
+    'BEGIN:VEVENT',
+    'UID:20261225_a@google.com',
+    'DTSTART;VALUE=DATE:20261225',
+    'DTEND;VALUE=DATE:20261226',
+    'SUMMARY:Første juledag',
+    'DESCRIPTION:Offentlig høytidsdag',
+    'END:VEVENT',
+    'BEGIN:VEVENT',
+    'UID:20261129_b@google.com',
+    'DTSTART;VALUE=DATE:20261129',
+    'DTEND;VALUE=DATE:20261130',
+    'SUMMARY:Første søndag i advent',
+    'DESCRIPTION:Helligdag\\nDu kan skjule helligdager ved å gå til Google Kalender',
+    'END:VEVENT',
+    'BEGIN:VEVENT',
+    'UID:20260214_c@google.com',
+    'DTSTART;VALUE=DATE:20260214',
+    'DTEND;VALUE=DATE:20260215',
+    "SUMMARY:Valentine's Day",
+    'DESCRIPTION:Observance\\nTo hide observances\\, go to Google Calendar Settings',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ].join('\r\n')
+  const parsed = parseIcs(google, { fromYear: 2026, toYear: 2026 })
+  const feed: HolidayFeed = {
+    id: 'g',
+    name: 'Holidays',
+    url: null,
+    fileName: null,
+    events: parsed.events,
+    choices: {},
+    fetchedAt: null,
+    error: null,
+  }
+
+  it('closes for the holidays and stays open on observances', () => {
+    expect(feedClosures([feed]).map((c) => c.name)).toEqual(['Første juledag'])
+    expect(feedRows(feed, '2026-01-01', '2026-12-31').map((r) => `${r.name}: ${r.closed}`)).toEqual(
+      ["Valentine's Day: false", 'Første søndag i advent: false', 'Første juledag: true']
+    )
+  })
+
+  it('closes on an observance once the workshop says so', () => {
+    const chosen = { ...feed, choices: { 'Første søndag i advent': true } }
+    expect(feedClosures([chosen]).map((c) => c.name)).toEqual([
+      'Første søndag i advent',
+      'Første juledag',
+    ])
+  })
+
+  it('reads a second line from any other calendar as just a description', () => {
+    const other = parseIcs(google.replaceAll('@google.com', '@example.gov'), {
+      fromYear: 2026,
+      toYear: 2026,
+    })
+    expect(other.events.every((e) => !e.observance)).toBe(true)
+  })
+})

@@ -2,11 +2,12 @@
 
 import type { CSSProperties, MouseEvent, ReactNode } from 'react'
 import { Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
 import { formatClock } from '@/features/workboard/utils/clock'
 import { cn } from '@/lib/utils'
 import { timeToMinutes } from '../Lib/calendar-range'
-import { eventPalette, isEventDone } from './calendar-utils'
+import { eventPalette, isEventDone, openEndedSide } from './calendar-utils'
 import { EventContextMenu } from './EventContextMenu'
 import { useEventPeek } from './EventPeek'
 import type { CalendarEvent } from '../Actions/calendarActions'
@@ -42,6 +43,18 @@ export function EventChip({
   const done = isEventDone(event)
   const start = event.time ? formatClock(timeToMinutes(event.time), timeFormat) : null
   const end = event.endTime ? formatClock(timeToMinutes(event.endTime), timeFormat) : null
+  const t = useTranslations('calendar.range')
+  const side = openEndedSide(event)
+  const range =
+    side === 'from'
+      ? t('from', { time: start ?? '' })
+      : side === 'until'
+        ? t('until', { time: end ?? '' })
+        : start
+          ? end
+            ? `${start} – ${end}`
+            : start
+          : null
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
@@ -105,7 +118,7 @@ export function EventChip({
         type="button"
         onClick={onClick}
         onContextMenu={onContextMenu}
-        title={end ? `${start} – ${end} ${event.title}` : label}
+        title={range ? `${range} ${event.title}` : event.title}
         style={style}
         className={cn(
           'absolute flex flex-col overflow-hidden rounded-md border px-1.5 py-1 text-left text-xs leading-tight shadow-sm transition-[filter,box-shadow] hover:z-20 hover:shadow-md',
@@ -121,8 +134,7 @@ export function EventChip({
         </span>
         {!compact && (
           <span className="truncate text-[11px] opacity-90">
-            {start}
-            {end ? ` – ${end}` : ''}
+            {range}
             {event.vehicleLabel ? ` · ${event.vehicleLabel}` : ''}
           </span>
         )}
@@ -141,7 +153,7 @@ export function EventChip({
         )}
       >
         <span className="w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground">
-          {start ? (end ? `${start} – ${end}` : start) : null}
+          {range}
         </span>
         <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', palette.dot)} />
         <span className="min-w-0 flex-1">

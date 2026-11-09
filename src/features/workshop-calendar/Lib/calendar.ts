@@ -262,9 +262,23 @@ export function spanOf(
   return { start, end }
 }
 
-/** Closures touching `key`, in the order given. */
+/**
+ * The same holiday from two sources (the country's list and a calendar, say)
+ * is one closure: the first is kept, so a name is never said twice.
+ */
+function oncePerName(periods: ClosedPeriod[]): ClosedPeriod[] {
+  const seen = new Set<string>()
+  return periods.filter((p) => {
+    const id = `${p.name.toLocaleLowerCase()}|${p.startTime ?? ''}|${p.endTime ?? ''}`
+    if (seen.has(id)) return false
+    seen.add(id)
+    return true
+  })
+}
+
+/** Closures touching `key`, in the order given, each name once. */
 export function closuresOn(cal: WorkshopCalendar, key: string): ClosedPeriod[] {
-  return cal.closures.filter((c) => key >= c.startDate && key <= c.endDate)
+  return oncePerName(cal.closures.filter((c) => key >= c.startDate && key <= c.endDate))
 }
 
 /** The weekday's hours as instants on `key`, or null on a closed weekday. */
@@ -341,10 +355,12 @@ export function isOpenFor(cal: WorkshopCalendar, start: Date, end: Date): boolea
 
 /** The closures that overlap start-to-end, for naming them in a warning. */
 export function closuresDuring(cal: WorkshopCalendar, start: Date, end: Date): ClosedPeriod[] {
-  return cal.closures.filter((c) => {
-    const span = spanOf(c, cal.timeZone)
-    return span.start < end && span.end > start
-  })
+  return oncePerName(
+    cal.closures.filter((c) => {
+      const span = spanOf(c, cal.timeZone)
+      return span.start < end && span.end > start
+    })
+  )
 }
 
 // ─── Technicians away ────────────────────────────────────────────────────────

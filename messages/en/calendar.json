@@ -153,5 +153,10 @@
     }
   },
   "previousMonth": "Previous month",
-  "nextMonth": "Next month"
+  "nextMonth": "Next month",
+  "range": {
+    "from": "From {time}",
+    "until": "Until {time}"
+  },
+  "timeOffMissing": "That leave was changed or removed in the meantime."
 }

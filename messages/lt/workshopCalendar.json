@@ -68,7 +68,7 @@
     "days": "{count, plural, one {# diena} few {# dienos} many {# dienos} other {# dienų}} {first} ir {second} m.",
     "closeAll": "Uždaryti visomis dienomis",
     "openAll": "Atidaryti visomis dienomis",
-    "choose": "Kiekviena kalendoriaus diena uždaro dirbtuves, nebent ją išjungsite. Google kalendoriuose yra ir atmintinų dienų, pvz., Valentino dienos, kurias galbūt norėsite išjungti.",
+    "choose": "Kiekviena diena uždaro dirbtuves, nebent ją išjungsite. Dienos, kurias Google kalendorius žymi kaip minėtinas, pavyzdžiui, Valentino diena, iš pradžių būna išjungtos.",
     "show": "Rodyti dienas",
     "hide": "Slėpti dienas",
     "empty": "Kalendorių nepridėta."
@@ -95,7 +95,6 @@
     "from": "Pirma diena",
     "to": "Paskutinė diena",
     "allDay": "Visą dieną",
-    "partOfDay": "Dalį dienos",
     "startTime": "Nuo",
     "endTime": "Iki",
     "startTimeHint": "Pirmąją dieną. Palikite tuščią, jei visą dieną.",
@@ -159,6 +158,7 @@
     "away": "Nėra: {reason}",
     "awayPart": "Nėra {when}",
     "awayConflict": "Nėra ({reason})",
+    "awayHeading": "Technikas tuo metu nedirba",
     "bookedAnyway": "Šį laiką vis tiek galite palikti, jei darbas suderintas."
   },
   "calendar": {

@@ -263,5 +263,12 @@
       "inProgress": "В работе",
       "completed": "Завершена"
     }
+  },
+  "openingHours": {
+    "title": "Часы работы",
+    "closed": "Закрыто",
+    "today": "Сегодня",
+    "closedSoon": "Скоро закрыто",
+    "openOnly": "Открыто {hours}"
   }
 }

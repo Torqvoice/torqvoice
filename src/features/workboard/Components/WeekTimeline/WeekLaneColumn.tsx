@@ -159,20 +159,37 @@ function WeekLaneColumnImpl({
         >
           <div aria-hidden className="absolute inset-0" style={rules} />
           {closed ? (
-            closed.spans.map((span) => {
-              const at = place(span)
-              return at ? (
-                <div
-                  key={`closed-${span.startMins}`}
-                  aria-hidden
-                  className={cn(
-                    'absolute inset-x-0',
-                    closed.allDay ? 'bg-muted/70' : 'bg-muted/40'
-                  )}
-                  style={at}
-                />
-              ) : null
-            })
+            <>
+              {closed.spans.map((span) => {
+                const at = place(span)
+                return at ? (
+                  <div
+                    key={`closed-${span.startMins}`}
+                    aria-hidden
+                    className={cn(
+                      'absolute inset-x-0',
+                      closed.allDay ? 'bg-muted/70' : 'bg-muted/40'
+                    )}
+                    style={at}
+                  />
+                ) : null
+              })}
+              {/* A holiday or closure is darker than the hours the shop is
+                  simply shut, so a short day reads as one at a glance. */}
+              {!closed.allDay &&
+                closed.closureSpans.map((span) => {
+                  const at = place(span)
+                  return at ? (
+                    <div
+                      key={`closure-${span.startMins}`}
+                      aria-hidden
+                      className="absolute inset-x-0 bg-muted/50"
+                      style={at}
+                      data-testid="closure-span"
+                    />
+                  ) : null
+                })}
+            </>
           ) : (
             <>
               {closedBefore > 0 && (

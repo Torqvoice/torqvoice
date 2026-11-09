@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,7 +25,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { createAbsence, updateAbsence, type AbsenceView } from '../Actions/absenceActions'
+import {
+  createAbsence,
+  deleteAbsence,
+  updateAbsence,
+  type AbsenceView,
+} from '../Actions/absenceActions'
 import { ABSENCE_REASONS, type AbsenceReason } from '../Lib/calendar'
 import {
   StretchFields,
@@ -69,6 +75,7 @@ export function TimeOffDialog({
   )
   const [saving, setSaving] = useState(false)
   const [tried, setTried] = useState(false)
+  const confirm = useConfirm()
 
   useEffect(() => {
     if (!open) return
@@ -101,6 +108,27 @@ export function TimeOffDialog({
     toast.success(t('saved'))
     onOpenChange(false)
     onSaved(absence ? undefined : (res.data as AbsenceView))
+  }
+
+  const remove = async () => {
+    if (!absence) return
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription', { name: absence.technicianName }),
+      confirmLabel: tc('buttons.delete'),
+      destructive: true,
+    })
+    if (!ok) return
+    setSaving(true)
+    const res = await deleteAbsence(absence.id)
+    setSaving(false)
+    if (!res.success) {
+      toast.error(res.error ?? tc('errors.unexpected'))
+      return
+    }
+    toast.success(t('deleted'))
+    onOpenChange(false)
+    onSaved()
   }
 
   return (
@@ -162,6 +190,17 @@ export function TimeOffDialog({
           )}
         </DialogBody>
         <DialogFooter>
+          {absence && (
+            <Button
+              variant="ghost"
+              className="text-destructive hover:text-destructive sm:mr-auto"
+              onClick={remove}
+              disabled={saving}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              {tc('buttons.delete')}
+            </Button>
+          )}
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             {tc('buttons.cancel')}
           </Button>

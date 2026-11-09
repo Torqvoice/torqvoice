@@ -90,6 +90,19 @@ interface RawEvent {
   duration: string | null
   rrule: string | null
   cancelled: boolean
+  /** The DESCRIPTION exactly as written, escapes and all. */
+  description: string
+}
+
+/**
+ * Google's holiday calendars mix observances in with public holidays
+ * (Valentine's Day, the Sundays of Advent) and tell them apart only in the
+ * description: an observance carries a second line on how to hide
+ * observances, in the calendar's own language; a holiday has one line. A
+ * workshop does not close for an observance, so those start open.
+ */
+function isGoogleObservance(event: RawEvent): boolean {
+  return event.uid.endsWith('@google.com') && /\\n/i.test(event.description)
 }
 
 function lastDayOf(event: RawEvent, startDate: string): string | null {
@@ -158,6 +171,7 @@ export function parseIcs(
           duration: null,
           rrule: null,
           cancelled: false,
+          description: '',
         }
         depth = 0
       } else if (current) {
@@ -185,6 +199,9 @@ export function parseIcs(
         break
       case 'SUMMARY':
         current.summary = unescapeText(prop.value)
+        break
+      case 'DESCRIPTION':
+        current.description = prop.value
         break
       case 'DTSTART':
         current.start = prop
@@ -232,7 +249,8 @@ export function parseIcs(
       continue
     }
     const uid = raw.uid || `${startDate}-${name}`
-    add({ uid, name, startDate, endDate })
+    const observance = isGoogleObservance(raw) ? { observance: true } : {}
+    add({ uid, name, startDate, endDate, ...observance })
     if (raw.rrule) {
       const length = Math.round(
         (Date.parse(`${endDate}T00:00:00Z`) - Date.parse(`${startDate}T00:00:00Z`)) / 86_400_000
@@ -244,6 +262,7 @@ export function parseIcs(
           name,
           startDate: repeatStart,
           endDate: addDays(repeatStart, length),
+          ...observance,
         })
       }
     }

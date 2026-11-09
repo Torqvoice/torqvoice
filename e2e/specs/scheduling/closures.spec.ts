@@ -13,7 +13,8 @@ import { fillSettled, settle } from '../../support/hydration'
  * Leave and closed days, from where they are entered to the work board.
  *
  * A technician set on leave from the board's own Leave button shows as away
- * in their lane, and a closed day added under Settings → Opening hours and
+ * in their lane, leave set from the calendar shows there and can be removed
+ * from its card, and a closed day added under Settings → Opening hours and
  * holidays is named in the board's day header. Both are what a service
  * advisor looks at before handing out work; nothing here stops a booking.
  */
@@ -79,6 +80,52 @@ test('a technician set on leave from the board shows as away in their lane', asy
   await expect(
     page.getByTestId('lane-away').filter({ hasText: 'On leave' }).filter({ visible: true }).first()
   ).toBeVisible()
+})
+
+test('leave set from the calendar shows there and can be taken back', async ({ page }) => {
+  // The Thursday after the board's leave, so the two never meet.
+  const day = new Date(Date.parse(`${DAY}T12:00:00Z`) + 86_400_000).toISOString().slice(0, 10)
+  await page.goto(`/calendar?view=week&date=${day}`)
+  await settle(page)
+
+  // The Create menu starts it on the day the calendar is on.
+  await expect(async () => {
+    await page.getByRole('button', { name: 'Create', exact: true }).click()
+    await expect(
+      page.getByRole('menuitem', { name: 'Set on leave or out of office' })
+    ).toBeVisible()
+  }).toPass()
+  await page.getByRole('menuitem', { name: 'Set on leave or out of office' }).click()
+
+  const dialog = page.getByRole('dialog', { name: 'Set on leave or out of office' })
+  await dialog.getByLabel('Technician').click()
+  await page.getByRole('option', { name: TECH }).click()
+  await dialog.getByLabel('Reason').click()
+  await page.getByRole('option', { name: 'Sick leave' }).click()
+  await dialog.getByRole('button', { name: 'Save' }).click()
+  await expect(dialog).toBeHidden()
+
+  await expect
+    .poll(async () => (await absencesOf(technicianId)).filter((a) => a.startDate === day))
+    .toEqual([{ startDate: day, endDate: day, reason: 'sick', startTime: null }])
+
+  const entry = page.getByRole('button', { name: `${TECH}: Sick leave` }).first()
+  await expect(entry).toBeVisible()
+
+  // Its card offers Edit, and the dialog it opens removes it.
+  await entry.click()
+  await page.getByRole('button', { name: 'Edit', exact: true }).click()
+  const edit = page.getByRole('dialog', { name: 'Edit leave or out of office' })
+  await edit.getByRole('button', { name: 'Delete' }).click()
+  await page
+    .getByRole('alertdialog', { name: 'Remove this leave?' })
+    .getByRole('button', { name: 'Delete' })
+    .click()
+
+  await expect
+    .poll(async () => (await absencesOf(technicianId)).filter((a) => a.startDate === day))
+    .toEqual([])
+  await expect(page.getByRole('button', { name: `${TECH}: Sick leave` })).toHaveCount(0)
 })
 
 test('a closed day added in settings is named on the board', async ({ page }) => {
