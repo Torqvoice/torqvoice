@@ -153,6 +153,35 @@
     "use": "Bruk denne videoen",
     "limit": "Opptaket stopper av seg selv etter {minutes} minutter."
   },
+  "photoCapture": {
+    "title": "Ta et bilde",
+    "description": "Med kameraet på denne datamaskinen eller et tilkoblet webkamera.",
+    "starting": "Starter kameraet...",
+    "live": "Forhåndsvisning fra kameraet",
+    "preview": "Bildet du nettopp tok",
+    "camera": "Kamera",
+    "take": "Ta bilde",
+    "retake": "Ta på nytt",
+    "use": "Bruk dette bildet",
+    "tryAgain": "Prøv igjen",
+    "uploadInstead": "Last opp en fil i stedet",
+    "denied": {
+      "title": "Tilgang til kameraet er blokkert",
+      "body": "Tillat kameraet for dette nettstedet i nettleseren, fra kamera- eller hengelåsikonet i adressefeltet, og trykk deretter Prøv igjen."
+    },
+    "insecure": {
+      "title": "Kameraet krever HTTPS",
+      "body": "Nettlesere tillater bare kameraet over en sikker tilkobling, og denne siden er på HTTP ({host}). Åpne Torqvoice over HTTPS, eller last opp en fil i stedet."
+    },
+    "notFound": {
+      "title": "Fant ikke noe kamera",
+      "body": "Koble til et webkamera og trykk Prøv igjen, eller last opp en fil i stedet."
+    },
+    "failed": {
+      "title": "Kameraet kunne ikke starte",
+      "body": "Kanskje en annen app bruker det. Lukk den appen og trykk Prøv igjen."
+    }
+  },
   "richText": {
     "openLinkHint": "Hold {key} og klikk for å åpne"
   },

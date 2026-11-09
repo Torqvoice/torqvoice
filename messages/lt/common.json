@@ -153,6 +153,35 @@
     "use": "Naudoti šį įrašą",
     "limit": "Įrašymas sustoja savaime po {minutes} min."
   },
+  "photoCapture": {
+    "title": "Padaryti nuotrauką",
+    "description": "Šio kompiuterio kamera arba prijungta internetine kamera.",
+    "starting": "Paleidžiama kamera...",
+    "live": "Kameros vaizdas",
+    "preview": "Ką tik padaryta nuotrauka",
+    "camera": "Kamera",
+    "take": "Fotografuoti",
+    "retake": "Fotografuoti iš naujo",
+    "use": "Naudoti šią nuotrauką",
+    "tryAgain": "Bandyti dar kartą",
+    "uploadInstead": "Įkelti failą",
+    "denied": {
+      "title": "Prieiga prie kameros užblokuota",
+      "body": "Leiskite naudoti kamerą šiai svetainei naršyklėje, paspaudę kameros arba spynos piktogramą adreso juostoje, tada spauskite Bandyti dar kartą."
+    },
+    "insecure": {
+      "title": "Kamerai reikia HTTPS",
+      "body": "Naršyklės leidžia naudoti kamerą tik saugiu ryšiu, o šis puslapis atidarytas per HTTP ({host}). Atidarykite Torqvoice per HTTPS arba įkelkite failą."
+    },
+    "notFound": {
+      "title": "Kamera nerasta",
+      "body": "Prijunkite internetinę kamerą ir spauskite Bandyti dar kartą arba įkelkite failą."
+    },
+    "failed": {
+      "title": "Nepavyko įjungti kameros",
+      "body": "Galbūt ją naudoja kita programa. Uždarykite ją ir spauskite Bandyti dar kartą."
+    }
+  },
   "richText": {
     "openLinkHint": "Laikykite {key} ir spustelėkite, kad atidarytumėte"
   },
