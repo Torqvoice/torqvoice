@@ -9,7 +9,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { CameraPhotoDialog } from '@/components/camera-photo-dialog'
 
@@ -193,5 +193,54 @@ describe('CameraPhotoDialog', () => {
 
     const picker = await screen.findByRole('combobox', { name: 'Camera' })
     expect(picker).toHaveTextContent('FaceTime HD Camera')
+  })
+
+  it('keeps the camera working when the list of cameras cannot be read', async () => {
+    const { track, stream } = fakeStream('laptop')
+    getUserMedia.mockResolvedValue(stream)
+    enumerateDevices.mockRejectedValue(new DOMException('no list', 'NotSupportedError'))
+    renderDialog()
+
+    await pictureArrives()
+    expect(await screen.findByRole('button', { name: 'Take photo' })).toBeEnabled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(track.stop).not.toHaveBeenCalled()
+  })
+
+  it('turns the camera off when it fails after it has started', async () => {
+    const { track, stream } = fakeStream('laptop')
+    track.getSettings = () => {
+      throw new Error('track ended')
+    }
+    getUserMedia.mockResolvedValue(stream)
+    renderDialog()
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('The camera could not start')
+    expect(track.stop).toHaveBeenCalled()
+  })
+
+  it('does not show a photo still being made when the dialog was closed', async () => {
+    getUserMedia.mockImplementation(async () => fakeStream('laptop').stream)
+    let finish: (() => void) | null = null
+    vi.mocked(HTMLCanvasElement.prototype.toBlob).mockImplementation(function (
+      this: HTMLCanvasElement,
+      callback: BlobCallback,
+      type?: string
+    ) {
+      finish = () => callback(new Blob(['jpeg'], { type }))
+    })
+    const props = { onOpenChange: vi.fn(), onCaptured: vi.fn() }
+    const { rerender } = render(<CameraPhotoDialog open {...props} />)
+    await pictureArrives()
+    await userEvent.click(await screen.findByRole('button', { name: 'Take photo' }))
+
+    rerender(<CameraPhotoDialog open={false} {...props} />)
+    act(() => finish?.())
+    rerender(<CameraPhotoDialog open {...props} />)
+
+    expect(await screen.findByLabelText('Camera preview')).toBeInTheDocument()
+    expect(screen.queryByAltText('The photo you just took')).not.toBeInTheDocument()
+    await pictureArrives()
+    expect(await screen.findByRole('button', { name: 'Take photo' })).toBeEnabled()
   })
 })

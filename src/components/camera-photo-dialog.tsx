@@ -108,6 +108,10 @@ export function CameraPhotoDialog({
   const [activeId, setActiveId] = useState<string | null>(null)
   const [attempt, setAttempt] = useState(0)
   const [shot, setShot] = useState<{ file: File; url: string } | null>(null)
+  // Bumped whenever the dialog closes, so a photo still being made from before
+  // is thrown away rather than shown when the dialog opens again.
+  const sessionRef = useRef(0)
+  const takingRef = useRef(false)
 
   const stopStream = useCallback(() => {
     for (const track of streamRef.current?.getTracks() ?? []) track.stop()
@@ -150,13 +154,18 @@ export function CameraPhotoDialog({
         streamRef.current = stream
         setActiveId(stream.getVideoTracks()[0]?.getSettings().deviceId ?? null)
         if (liveRef.current) liveRef.current.srcObject = stream
-        // Names are only given out once the camera is allowed, so list them now.
-        const devices = await navigator.mediaDevices.enumerateDevices()
+        // Names are only given out once the camera is allowed, so list them
+        // now. Without the list the camera still works, only without a picker.
+        const devices = await navigator.mediaDevices
+          .enumerateDevices()
+          .catch((): MediaDeviceInfo[] => [])
         if (cancelled) return
         setCameras(devices.filter((d) => d.kind === 'videoinput' && d.deviceId))
         setProblem(null)
       } catch (err) {
         if (cancelled) return
+        // Nothing is left filming behind the message.
+        stopStream()
         setProblem(problemOf(err))
         setPhase('failed')
       }
@@ -171,6 +180,8 @@ export function CameraPhotoDialog({
   // A dialog closed before the photo was used keeps nothing.
   useEffect(() => {
     if (open) return
+    sessionRef.current += 1
+    takingRef.current = false
     dropShot()
     setProblem(null)
     setPhase('starting')
@@ -183,15 +194,19 @@ export function CameraPhotoDialog({
 
   function takePhoto() {
     const video = liveRef.current
-    if (!video || !video.videoWidth || !video.videoHeight) return
+    if (takingRef.current || !video || !video.videoWidth || !video.videoHeight) return
     const canvas = document.createElement('canvas')
     canvas.width = video.videoWidth
     canvas.height = video.videoHeight
     const context = canvas.getContext('2d')
     if (!context) return
     context.drawImage(video, 0, 0, canvas.width, canvas.height)
+    takingRef.current = true
+    const session = sessionRef.current
     canvas.toBlob(
       (blob) => {
+        if (session !== sessionRef.current) return
+        takingRef.current = false
         if (!blob) return
         const file = new File([blob], `photo-${Date.now()}.jpg`, { type: 'image/jpeg' })
         setShot({ file, url: URL.createObjectURL(blob) })
