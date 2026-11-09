@@ -6,6 +6,8 @@
  * same rules.
  */
 
+import { MAKES, canonicalMakeKey } from '@/features/fault-codes/Lib/makes'
+
 /** Longest tag a part can carry, in characters. */
 export const MAX_TAG_LENGTH = 40
 
@@ -128,16 +130,54 @@ function containsPhrase(words: string[], phrase: string[]): boolean {
 const isYear = (word: string) => /^(19|20)\d{2}$/.test(word)
 const hasLetter = (word: string) => /\p{L}/u.test(word)
 
+/** Every way a known make is written, as words: its name, its key and its aliases. */
+const MAKE_PHRASES: { key: string; words: string[] }[] = MAKES.flatMap((make) =>
+  [make.name, make.key, ...(make.aliases ?? [])].map((text) => ({
+    key: make.key,
+    words: wordsOf(text),
+  }))
+)
+
+/** Whether `words` begins with `phrase`. */
+function startsWith(words: string[], phrase: string[]): boolean {
+  return (
+    phrase.length > 0 && phrase.length <= words.length && phrase.every((w, i) => words[i] === w)
+  )
+}
+
+/**
+ * Whether the tag opens with a make other than the vehicle's: "Toyota
+ * Sprinter" on a Mercedes-Benz. Only the start is read, so "Hilux seat cover"
+ * is not taken for a SEAT; the longest make wins, so "Volvo Penta" is not a
+ * Volvo; and another way of writing the vehicle's own make ("Mercedes", "VW",
+ * "Vauxhall" for an Opel) is the same make.
+ */
+function opensWithAnotherMake(tagWords: string[], vehicle: FitVehicle): boolean {
+  const ownWords = wordsOf(vehicle.make)
+  if (ownWords.length === 0) return false
+  const own = canonicalMakeKey(vehicle.make)
+  const opening = MAKE_PHRASES.filter(({ words }) => startsWith(tagWords, words)).sort(
+    (a, b) => b.words.length - a.words.length
+  )[0]
+  if (!opening || opening.key === own) return false
+  // A make the list does not know, written out in full ("Volvo Penta" when the
+  // list only had "Volvo"), is still the vehicle's own.
+  return !(startsWith(tagWords, ownWords) && ownWords.length >= opening.words.length)
+}
+
 /**
  * How a tag relates to the vehicle: `model` when it names the vehicle's
  * model ("Hilux", "Toyota Hilux", "Hilux 2015-2020"), `make` when it names
  * only the make, perhaps with years ("Toyota", "Toyota 2010"), else null.
  *
  * A tag naming the make and some other model ("Toyota Corolla" on a Hilux) is
- * no match: it says which Toyota the part fits, and it is not this one.
+ * no match: it says which Toyota the part fits, and it is not this one. Nor
+ * is a tag opening with another make ("Toyota Sprinter" on a Mercedes-Benz
+ * Sprinter), whatever model follows.
  */
 export function tagFit(tag: string, vehicle: FitVehicle): 'model' | 'make' | null {
   const tagWords = wordsOf(tag)
+  if (opensWithAnotherMake(tagWords, vehicle)) return null
   // Years narrow a tag ("Hilux 2015-2020") but do not name anything. Other
   // numbers do ("3-Serie" is not a "5-Serie"), though a tag needs a word with
   // letters in it: "50" alone, from "BT-50", is too weak to count.

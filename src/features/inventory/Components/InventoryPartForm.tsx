@@ -365,17 +365,24 @@ export function InventoryPartForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
 
     const formData = new FormData(e.currentTarget)
-    // An emptied field reaches the update action as '' so it can be cleared.
-    const optional = (value: FormDataEntryValue | string | null) =>
-      clearableInput(value, Boolean(part))
     // Text still in the tag box (saved with the keyboard shortcut, say) is a
     // tag too. A part that reached the form without its tags keeps the stored
     // ones rather than being saved with none.
     const typedTags = splitTagInput(String(formData.get('tagDraft') ?? ''))
     const knowsTags = !part || Array.isArray(part.tags)
+    // The box keeps a tag that is too long, with a note under it; saving it
+    // would only come back refused, so it is shortened first.
+    if (typedTags.some((tag) => tag.length > MAX_TAG_LENGTH)) {
+      modal.open('error', t('errors.error'), t('form.tagTooLong', { max: MAX_TAG_LENGTH }))
+      return
+    }
+
+    setLoading(true)
+    // An emptied field reaches the update action as '' so it can be cleared.
+    const optional = (value: FormDataEntryValue | string | null) =>
+      clearableInput(value, Boolean(part))
     const data = {
       name: formData.get('name') as string,
       partNumber: optional(formData.get('partNumber')),
@@ -784,6 +791,7 @@ export function InventoryPartForm({
                     placeholder={t('form.tagsPlaceholder')}
                     maxTags={MAX_PART_TAGS}
                     maxLength={MAX_TAG_LENGTH}
+                    tooLongMessage={t('form.tagTooLong', { max: MAX_TAG_LENGTH })}
                     removeLabel={(tag) => t('form.removeTag', { tag })}
                   />
                   <p className="text-xs text-muted-foreground">

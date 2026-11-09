@@ -116,6 +116,34 @@ describe('tagFit', () => {
     expect(tagFit('Golf 7', { make: 'Volkswagen', model: 'Golf 6' })).toBeNull()
   })
 
+  it('does not match a tag that opens with another make, whatever model follows', () => {
+    const sprinter = { make: 'Mercedes-Benz', model: 'Sprinter' }
+    expect(tagFit('Toyota Sprinter', sprinter)).toBeNull()
+    expect(tagFit('VW Crafter', sprinter)).toBeNull()
+    // The vehicle's own make, however it is written, is not another make.
+    expect(tagFit('Mercedes Sprinter', sprinter)).toBe('model')
+    expect(tagFit('Mercedes-Benz Sprinter 2018', sprinter)).toBe('model')
+    expect(tagFit('Vauxhall Astra', { make: 'Opel', model: 'Astra' })).toBe('model')
+    expect(tagFit('VW Golf', { make: 'Volkswagen', model: 'Golf' })).toBe('model')
+  })
+
+  it('reads only the start of a tag for a make, so a common word is not taken for one', () => {
+    // SEAT is a make, but a tag that merely mentions a seat is about the Hilux.
+    expect(tagFit('Hilux seat cover', { make: 'Toyota', model: 'Hilux' })).toBe('model')
+  })
+
+  it('takes the longest make, so Volvo Penta is not a Volvo', () => {
+    const penta = { make: 'Volvo Penta', model: 'D2-40' }
+    expect(tagFit('Volvo Penta D2-40', penta)).toBe('model')
+    expect(tagFit('Volvo Penta D2-40', { make: 'Volvo', model: 'D2-40' })).toBeNull()
+  })
+
+  it('still matches by model when the vehicle’s make is not in the list, or missing', () => {
+    expect(tagFit('Holden Colorado', { make: 'Holden', model: 'Colorado' })).toBe('model')
+    expect(tagFit('Colorado', { make: 'Holden', model: 'Colorado' })).toBe('model')
+    expect(tagFit('Toyota Hilux', { make: '', model: 'Hilux' })).toBe('model')
+  })
+
   it('does not match on a number or a part of a word', () => {
     expect(tagFit('50', { make: 'Mazda', model: 'BT-50' })).toBeNull()
     expect(tagFit('Hi', hilux)).toBeNull()

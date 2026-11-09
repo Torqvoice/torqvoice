@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Merker, modeller eller annet du vil finne den på",
     "tagsHint": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med kjøretøyets merke eller modell først.",
     "tagsHintMarine": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med båtens merke eller modell først.",
-    "removeTag": "Fjern {tag}"
+    "removeTag": "Fjern {tag}",
+    "tagTooLong": "Et stikkord kan være på høyst {max} tegn. Gjør det kortere før du lagrer."
   },
   "openMenu": "Åpne meny",
   "history": {

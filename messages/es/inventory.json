@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Marcas, modelos o lo que ayude a encontrarla",
     "tagsHint": "Pulsa Intro o una coma después de cada una. En un trabajo, las piezas etiquetadas con la marca o el modelo del vehículo aparecen primero.",
     "tagsHintMarine": "Pulsa Intro o una coma después de cada una. En un trabajo, las piezas etiquetadas con la marca o el modelo de la embarcación aparecen primero.",
-    "removeTag": "Quitar {tag}"
+    "removeTag": "Quitar {tag}",
+    "tagTooLong": "Una etiqueta puede tener como máximo {max} caracteres. Acórtala antes de guardar."
   },
   "openMenu": "Abrir menú",
   "history": {

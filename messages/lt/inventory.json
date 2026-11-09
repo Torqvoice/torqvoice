@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Markės, modeliai ar kita, pagal ką ją rasti",
     "tagsHint": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos transporto priemonės marke ar modeliu.",
     "tagsHintMarine": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos laivo marke ar modeliu.",
-    "removeTag": "Pašalinti {tag}"
+    "removeTag": "Pašalinti {tag}",
+    "tagTooLong": "Žyma gali būti ne ilgesnė nei {max} simbolių. Sutrumpinkite ją prieš išsaugodami."
   },
   "openMenu": "Atidaryti meniu",
   "history": {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useId, useMemo, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { cn } from '@/lib/utils'
@@ -27,7 +27,13 @@ interface TagInputProps {
   name?: string
   placeholder?: string
   maxTags?: number
+  /**
+   * Longest tag accepted. Not a limit on the box itself, which would cut a
+   * pasted list short: a longer tag stays in the box with `tooLongMessage`.
+   */
   maxLength?: number
+  /** Shown under the box while it holds a tag longer than `maxLength`. */
+  tooLongMessage?: string
   /** Accessible name of a tag's remove button. */
   removeLabel: (tag: string) => string
   className?: string
@@ -47,6 +53,7 @@ export function TagInput({
   placeholder,
   maxTags,
   maxLength,
+  tooLongMessage,
   removeLabel,
   className,
 }: TagInputProps) {
@@ -55,6 +62,10 @@ export function TagInput({
   const [highlighted, setHighlighted] = useState(-1)
   const anchorRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const baseId = useId()
+  const listId = `${baseId}-list`
+  const optionId = (index: number) => `${baseId}-option-${index}`
+  const messageId = `${baseId}-message`
 
   const full = maxTags !== undefined && value.length >= maxTags
 
@@ -67,12 +78,18 @@ export function TagInput({
   }, [draft, suggestions, value])
 
   const showList = open && !full && matches.length > 0
+  const isTooLong = (tag: string) => maxLength !== undefined && tag.length > maxLength
+  const draftTooLong = splitTagInput(draft).some(isTooLong)
 
-  const add = (tags: string[]) => {
-    const next = normalizePartTags([...value, ...tags])
+  /**
+   * Adds the tags that fit. One that is too long stays in the box, in front of
+   * `rest` (text still being typed), to be shortened rather than lost.
+   */
+  const add = (tags: string[], rest = '') => {
+    const next = normalizePartTags([...value, ...tags.filter((tag) => !isTooLong(tag))])
     const capped = maxTags !== undefined ? next.slice(0, maxTags) : next
     if (capped.length !== value.length) onChange(capped)
-    setDraft('')
+    setDraft([...tags.filter(isTooLong), rest].filter(Boolean).join(', '))
     setHighlighted(-1)
   }
 
@@ -117,8 +134,7 @@ export function TagInput({
     if (/[,;\n]/.test(text)) {
       const parts = text.split(/[,;\n]/)
       const rest = parts.pop() ?? ''
-      add(parts.flatMap(splitTagInput))
-      setDraft(rest.trimStart())
+      add(parts.flatMap(splitTagInput), rest.trimStart())
     } else {
       setDraft(text)
       setHighlighted(-1)
@@ -139,6 +155,7 @@ export function TagInput({
           className={cn(
             'flex min-h-9 w-full flex-wrap items-center gap-1 rounded-md border border-input bg-transparent px-2 py-1 shadow-xs transition-[color,box-shadow] dark:bg-input/30',
             'focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50',
+            draftTooLong && 'border-destructive focus-within:border-destructive',
             className
           )}
           onClick={() => inputRef.current?.focus()}
@@ -169,12 +186,17 @@ export function TagInput({
               id={id}
               name={name}
               value={draft}
-              maxLength={maxLength}
               placeholder={value.length === 0 ? placeholder : undefined}
               autoComplete="off"
               role="combobox"
               aria-expanded={showList}
               aria-autocomplete="list"
+              aria-controls={showList ? listId : undefined}
+              aria-activedescendant={
+                showList && highlighted >= 0 ? optionId(highlighted) : undefined
+              }
+              aria-invalid={draftTooLong || undefined}
+              aria-describedby={draftTooLong && tooLongMessage ? messageId : undefined}
               className="h-7 min-w-24 flex-1 bg-transparent px-1 text-base outline-none placeholder:text-muted-foreground md:text-sm"
               onChange={(e) => onDraftChange(e.target.value)}
               onKeyDown={onKeyDown}
@@ -187,6 +209,11 @@ export function TagInput({
           )}
         </div>
       </PopoverAnchor>
+      {draftTooLong && tooLongMessage && (
+        <p id={messageId} className="text-xs text-destructive">
+          {tooLongMessage}
+        </p>
+      )}
       <PopoverContent
         align="start"
         className="max-h-60 w-(--radix-popover-trigger-width) min-w-56 overflow-y-auto p-1"
@@ -202,10 +229,11 @@ export function TagInput({
         onWheel={(e) => e.stopPropagation()}
         onTouchMove={(e) => e.stopPropagation()}
       >
-        <div role="listbox">
+        <div role="listbox" id={listId}>
           {matches.map((tag, i) => (
             <button
               key={tag}
+              id={optionId(i)}
               type="button"
               role="option"
               aria-selected={i === highlighted}

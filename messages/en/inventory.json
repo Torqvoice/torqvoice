@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Makes, models or anything to find it by",
     "tagsHint": "Press Enter or a comma after each one. On a job, parts tagged with the vehicle's make or model are listed first.",
     "tagsHintMarine": "Press Enter or a comma after each one. On a job, parts tagged with the vessel's make or model are listed first.",
-    "removeTag": "Remove {tag}"
+    "removeTag": "Remove {tag}",
+    "tagTooLong": "A tag can be at most {max} characters. Shorten it before saving."
   },
   "openMenu": "Open menu",
   "history": {

@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Merken, modellen of iets anders om het op te vinden",
     "tagsHint": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het voertuig bovenaan.",
     "tagsHintMarine": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het vaartuig bovenaan.",
-    "removeTag": "{tag} verwijderen"
+    "removeTag": "{tag} verwijderen",
+    "tagTooLong": "Een tag mag maximaal {max} tekens lang zijn. Maak hem korter voordat je opslaat."
   },
   "openMenu": "Menu openen",
   "history": {

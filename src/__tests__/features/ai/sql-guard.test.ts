@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/db', () => ({ db: {} }))
 
-import { validateSql } from '@/features/ai/tools/workshop-tools'
+import { DB_SCHEMA, validateSql } from '@/features/ai/tools/workshop-tools'
 
 /**
  * The AI writes its own SQL, and the allow-list of tables is what keeps it
@@ -22,6 +22,16 @@ const rejected = (sql: string, message?: string | RegExp) => {
 describe('validateSql: allowed shapes', () => {
   it('accepts a single allowed table', () => {
     ok('SELECT id, make, model FROM vehicles WHERE year > 2015 LIMIT 10')
+  })
+
+  it('accepts the tag lookup the schema tells the model to write for inventory parts', () => {
+    const hint = DB_SCHEMA.match(/^inventory_parts .*match with (.+)$/m)?.[1]
+    expect(hint).toBeTruthy()
+    ok(`SELECT id, name FROM inventory_parts WHERE ${hint}`)
+    // A function as a row source is refused, so the hint must not be one.
+    rejected(
+      "SELECT id FROM inventory_parts WHERE EXISTS (SELECT 1 FROM unnest(tags) t WHERE t ILIKE '%hilux%')"
+    )
   })
 
   it('accepts a JOIN between two allowed tables', () => {

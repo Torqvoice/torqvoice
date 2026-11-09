@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Marques, modèles ou tout ce qui aide à la retrouver",
     "tagsHint": "Appuyez sur Entrée ou une virgule après chaque étiquette. Sur une intervention, les pièces étiquetées avec la marque ou le modèle du véhicule apparaissent en premier.",
     "tagsHintMarine": "Appuyez sur Entrée ou une virgule après chaque étiquette. Sur une intervention, les pièces étiquetées avec la marque ou le modèle du bateau apparaissent en premier.",
-    "removeTag": "Retirer {tag}"
+    "removeTag": "Retirer {tag}",
+    "tagTooLong": "Une étiquette peut contenir au plus {max} caractères. Raccourcissez-la avant d'enregistrer."
   },
   "openMenu": "Ouvrir le menu",
   "history": {

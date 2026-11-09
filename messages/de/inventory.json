@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Marken, Modelle oder andere Suchbegriffe",
     "tagsHint": "Nach jedem Tag Enter oder ein Komma drücken. In einem Auftrag stehen Teile mit der Marke oder dem Modell des Fahrzeugs ganz oben.",
     "tagsHintMarine": "Nach jedem Tag Enter oder ein Komma drücken. In einem Auftrag stehen Teile mit der Marke oder dem Modell des Bootes ganz oben.",
-    "removeTag": "{tag} entfernen"
+    "removeTag": "{tag} entfernen",
+    "tagTooLong": "Ein Tag darf höchstens {max} Zeichen lang sein. Bitte vor dem Speichern kürzen."
   },
   "openMenu": "Menü öffnen",
   "history": {

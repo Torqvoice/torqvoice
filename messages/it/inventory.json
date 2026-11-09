@@ -134,7 +134,8 @@
     "tagsPlaceholder": "Marche, modelli o altro per trovarlo",
     "tagsHint": "Premi Invio o una virgola dopo ogni tag. In un lavoro, i ricambi con la marca o il modello del veicolo compaiono per primi.",
     "tagsHintMarine": "Premi Invio o una virgola dopo ogni tag. In un lavoro, i ricambi con la marca o il modello dell'imbarcazione compaiono per primi.",
-    "removeTag": "Rimuovi {tag}"
+    "removeTag": "Rimuovi {tag}",
+    "tagTooLong": "Un tag può avere al massimo {max} caratteri. Accorcialo prima di salvare."
   },
   "openMenu": "Apri menu",
   "history": {
