@@ -288,6 +288,55 @@ severity is 1-5 based on how widely reported the issue is (5 = extremely common/
   return chatCompletion(organizationId, systemPrompt, userPrompt)
 }
 
+/**
+ * The answer budget of a connection test. The reply is never read, so this
+ * is the smallest cap no model turns down: OpenAI's Responses API refuses
+ * one under 16 outright, and a cap of 1 made its GPT-5 models fail other
+ * tools' health checks. `completionTuning` adds the thinking headroom on top
+ * for the models that need it, as it does for a real request. The cap is a
+ * ceiling; the test costs the few tokens of a one-word reply.
+ */
+const PROBE_TOKENS = 16
+
+/**
+ * OpenAI's GPT-5 family answers a cap that ran out before the reply was
+ * whole with a 400 where the other models return a cut-off reply. Either way
+ * the key was accepted, the account could pay and the model ran.
+ */
+function cutOffByTokenCap(error: unknown): boolean {
+  return (
+    error instanceof OpenAI.APIError &&
+    error.status === 400 &&
+    /max_tokens or model output limit was reached/i.test(error.message)
+  )
+}
+
+/**
+ * One tiny completion on the model the workshop chose, for a connector's
+ * connection test. Listing models proves the key exists; only a completion
+ * proves the account has credit and the key may use that model, and without
+ * it a test passed on a connection where every request then failed. It goes
+ * out the way real requests do, and a failure is worded the way theirs is.
+ *
+ * Any reply passes, an empty or cut-off one included: what it says is not
+ * the question. No temperature is sent, because several models refuse one.
+ */
+export async function probeAiModel(config: AiConfig): Promise<{ ok: boolean; message?: string }> {
+  const client = createClient(config)
+  try {
+    await client.chat.completions.create({
+      model: config.model,
+      messages: [{ role: 'user', content: 'Reply with OK.' }],
+      ...completionTuning(config, PROBE_TOKENS),
+    })
+    return { ok: true }
+  } catch (error) {
+    if (cutOffByTokenCap(error)) return { ok: true }
+    console.error('[ai] connection test failed:', error)
+    return { ok: false, message: describeAiError(error) }
+  }
+}
+
 export async function testAiConnection(organizationId: string): Promise<boolean> {
   const config = await getAiConfig(organizationId)
   const client = createClient(config)

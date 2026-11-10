@@ -1,6 +1,20 @@
 import OpenAI from 'openai'
 
 /**
+ * What OpenAI puts in `error.code` when the account cannot pay. It answers
+ * these with HTTP 429, the status of a real rate limit, so the status alone
+ * told a workshop with an empty balance to "try again in a moment".
+ * `insufficient_quota` is the older spelling and is still the `error.type`
+ * of all of them.
+ */
+const NO_CREDIT_CODES = new Set(['insufficient_quota', 'credit_balance_exhausted'])
+const SPEND_LIMIT_CODES = new Set([
+  'organization_spend_limit_exceeded',
+  'project_spend_limit_exceeded',
+  'organization_usage_limit_exceeded',
+])
+
+/**
  * Turns whatever a provider threw into one short line fit for a toast.
  *
  * A rejected key rarely comes back as tidy JSON: a gateway in front of the
@@ -9,7 +23,22 @@ import OpenAI from 'openai'
  */
 export function describeAiError(error: unknown): string {
   const generic = 'The AI provider returned an unexpected response.'
-  const status = error instanceof OpenAI.APIError ? error.status : undefined
+  const apiError = error instanceof OpenAI.APIError ? error : undefined
+  const status = apiError?.status
+  const code = typeof apiError?.code === 'string' ? apiError.code : ''
+
+  // The provider's own code says more than the status it travels under: a
+  // key that may not use a model comes back as 404 or as 403, and an account
+  // without credit as 429.
+  if (code === 'model_not_found') {
+    return 'This API key has no access to the selected model. Pick another in Settings → Integrations.'
+  }
+  if (SPEND_LIMIT_CODES.has(code)) {
+    return 'This OpenAI account has reached its spending limit. Check the limits at platform.openai.com.'
+  }
+  if (NO_CREDIT_CODES.has(code) || apiError?.type === 'insufficient_quota') {
+    return 'This OpenAI account has no credit left. Add billing at platform.openai.com.'
+  }
 
   switch (status) {
     case 401:
