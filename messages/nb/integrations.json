@@ -1085,5 +1085,17 @@
     "restoredBySupport": "Torqvoice-supporten gjorde dette etter forespørsel fra deg. Oppgitt grunn: {reason}",
     "noReason": "ingen oppgitt",
     "restoredUndo": "Først ble det tatt en kopi av verkstedet slik det var rett før gjenopprettingen, og den beholdes i 90 dager. Kontakt supporten for å gå tilbake til den."
+  },
+  "aiErrors": {
+    "modelAccess": "Denne API-nøkkelen har ikke tilgang til den valgte modellen. Velg en annen under Innstillinger → Integrasjoner.",
+    "spendLimit": "Denne OpenAI-kontoen har nådd forbruksgrensen sin. Sjekk grensene på platform.openai.com.",
+    "noCredit": "Denne OpenAI-kontoen har ikke mer kreditt. Legg til betaling på platform.openai.com.",
+    "keyRejected": "AI-leverandøren avviste API-nøkkelen. Sjekk den under Innstillinger → Integrasjoner.",
+    "noUsableCredit": "AI-leverandøren melder at denne API-nøkkelen ikke har kreditt som kan brukes.",
+    "modelUnavailable": "AI-leverandøren tilbyr ikke den valgte modellen. Velg en annen under Innstillinger → Integrasjoner.",
+    "imageTooLarge": "Bildet var for stort for AI-leverandøren.",
+    "rateLimited": "AI-leverandøren begrenser forespørslene fra denne API-nøkkelen. Prøv igjen om litt.",
+    "providerDown": "AI-leverandøren er utilgjengelig akkurat nå. Prøv igjen om litt.",
+    "unexpected": "AI-leverandøren ga et uventet svar."
   }
 }

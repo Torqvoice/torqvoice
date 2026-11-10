@@ -1085,5 +1085,17 @@
     "restoredBySupport": "Torqvoice support did this at your request. Reason given: {reason}",
     "noReason": "none given",
     "restoredUndo": "A safety copy of the workshop as it was right before the restore was taken first and is kept for 90 days. Contact support to go back to it."
+  },
+  "aiErrors": {
+    "modelAccess": "This API key has no access to the selected model. Pick another in Settings → Integrations.",
+    "spendLimit": "This OpenAI account has reached its spending limit. Check the limits at platform.openai.com.",
+    "noCredit": "This OpenAI account has no credit left. Add billing at platform.openai.com.",
+    "keyRejected": "The AI provider rejected the API key. Check it in Settings → Integrations.",
+    "noUsableCredit": "The AI provider reports no usable credit for this API key.",
+    "modelUnavailable": "The AI provider does not offer the selected model. Pick another in Settings → Integrations.",
+    "imageTooLarge": "The image was too large for the AI provider.",
+    "rateLimited": "The AI provider is rate limiting this API key. Try again in a moment.",
+    "providerDown": "The AI provider is unavailable right now. Try again in a moment.",
+    "unexpected": "The AI provider returned an unexpected response."
   }
 }

@@ -1085,5 +1085,17 @@
     "restoredBySupport": "Bunu Torqvoice destek ekibi sizin isteğiniz üzerine yaptı. Belirtilen neden: {reason}",
     "noReason": "belirtilmedi",
     "restoredUndo": "Önce atölyenin geri yüklemeden hemen önceki hâlinin bir güvenlik kopyası alındı ve 90 gün saklanıyor. Ona geri dönmek için destek ekibiyle iletişime geçin."
+  },
+  "aiErrors": {
+    "modelAccess": "Bu API anahtarının seçilen modele erişimi yok. Ayarlar → Entegrasyonlar bölümünden başka bir model seçin.",
+    "spendLimit": "Bu OpenAI hesabı harcama sınırına ulaştı. Sınırları platform.openai.com adresinden kontrol edin.",
+    "noCredit": "Bu OpenAI hesabında kredi kalmadı. platform.openai.com adresinden ödeme bilgisi ekleyin.",
+    "keyRejected": "Yapay zekâ sağlayıcısı API anahtarını reddetti. Ayarlar → Entegrasyonlar bölümünden kontrol edin.",
+    "noUsableCredit": "Yapay zekâ sağlayıcısı bu API anahtarı için kullanılabilir kredi olmadığını bildiriyor.",
+    "modelUnavailable": "Yapay zekâ sağlayıcısı seçilen modeli sunmuyor. Ayarlar → Entegrasyonlar bölümünden başka bir model seçin.",
+    "imageTooLarge": "Görsel, yapay zekâ sağlayıcısı için çok büyüktü.",
+    "rateLimited": "Yapay zekâ sağlayıcısı bu API anahtarının isteklerini sınırlıyor. Birazdan tekrar deneyin.",
+    "providerDown": "Yapay zekâ sağlayıcısına şu anda ulaşılamıyor. Birazdan tekrar deneyin.",
+    "unexpected": "Yapay zekâ sağlayıcısı beklenmeyen bir yanıt döndürdü."
   }
 }

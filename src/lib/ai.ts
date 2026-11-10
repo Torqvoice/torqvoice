@@ -2,7 +2,8 @@ import 'server-only'
 import { aiSetup } from '@/features/integrations/Lib/ai'
 import { localeNames, type Locale } from '@/i18n/config'
 import OpenAI from 'openai'
-import { describeAiError, isAccountLimitError } from '@/lib/ai-error'
+import { isAccountLimitError } from '@/lib/ai-error'
+import { aiErrorDescriber } from '@/lib/ai-error-message'
 import {
   ANTHROPIC_BASE,
   ANTHROPIC_VERSION,
@@ -142,7 +143,7 @@ async function chatCompletion(
     return response.choices[0]?.message?.content ?? ''
   } catch (error) {
     console.error('[ai] chat completion failed:', error)
-    throw new Error(describeAiError(error))
+    throw new Error((await aiErrorDescriber())(error))
   }
 }
 
@@ -176,7 +177,7 @@ export async function visionCompletion(
     return response.choices[0]?.message?.content ?? ''
   } catch (error) {
     console.error('[ai] vision completion failed:', error)
-    throw new Error(describeAiError(error))
+    throw new Error((await aiErrorDescriber())(error))
   }
 }
 
@@ -361,7 +362,7 @@ export async function probeAiModel(
     console.error('[ai] connection test failed:', error)
     return {
       ok: false,
-      message: describeAiError(error),
+      message: (await aiErrorDescriber())(error),
       ...(providerTrouble(error) && { inconclusive: true }),
     }
   }

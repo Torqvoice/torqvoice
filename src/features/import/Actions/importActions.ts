@@ -8,7 +8,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { FeatureGatedError, getFeatures } from '@/lib/features'
 import { countCustomersTowardLimit } from '@/lib/customer-limit'
 import { completionTuning, createClient, getAiConfig } from '@/lib/ai'
-import { describeAiError } from '@/lib/ai-error'
+import { aiErrorDescriber } from '@/lib/ai-error-message'
 import { demoGuard } from '@/lib/demo'
 import { type ImportEntity, fieldsFor } from '../Lib/fields'
 import { permissionsFor } from '../Lib/permissions'
@@ -936,7 +936,7 @@ export async function suggestMappingWithAi(token: string) {
         })
         content = response.choices[0]?.message?.content ?? ''
       } catch (error) {
-        throw new Error(describeAiError(error))
+        throw new Error((await aiErrorDescriber())(error))
       }
 
       const json = content.match(/\{[\s\S]*\}/)?.[0]
