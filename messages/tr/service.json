@@ -526,7 +526,13 @@
     "loadOn": "{date} tarihindeki dolu saatler",
     "promisedAt": "Müşteriye söz verilen zaman",
     "promisedPlaceholder": "Henüz söz verilmedi",
-    "promisedClear": "Temizle"
+    "promisedClear": "Temizle",
+    "lead": "Sorumlu",
+    "alsoOnJob": "Bu işte de çalışıyor",
+    "helperAdd": "Bu işe ekle: {name}",
+    "helperRemove": "Bu işten çıkar: {name}",
+    "failedHelper": "İşteki kişiler güncellenemedi",
+    "clashPeople": "{count, plural, one {{names} meşgul} other {{names} meşgul}}"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",

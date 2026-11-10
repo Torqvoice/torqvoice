@@ -159,7 +159,8 @@
     "awayPart": "Abwesend {when}",
     "awayConflict": "Abwesend ({reason})",
     "awayHeading": "Der Techniker ist dann abwesend",
-    "bookedAnyway": "Sie können diese Zeit trotzdem behalten, wenn die Arbeit so vereinbart ist."
+    "bookedAnyway": "Sie können diese Zeit trotzdem behalten, wenn die Arbeit so vereinbart ist.",
+    "awayHeadingTeam": "Jemand an diesem Auftrag ist dann abwesend"
   },
   "calendar": {
     "closure": "Geschlossen",

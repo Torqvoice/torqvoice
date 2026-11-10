@@ -2,6 +2,11 @@ export type WorkBoardJob = {
   id: string
   type: 'serviceRecord' | 'inspection'
   technicianId: string | null
+  /**
+   * Everybody else on the job with that technician, as technician ids. Always
+   * empty for an inspection, which is one person's work.
+   */
+  helperIds: string[]
   /** Bay the job occupies, independent of who works on it. */
   workBayId: string | null
   sortOrder: number

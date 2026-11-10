@@ -21,6 +21,8 @@ model Technician {
   statusReports  StatusReport[]
   timeEntries    TimeEntry[]
   absences       TechnicianAbsence[]
+  /// Jobs this person works on beside the job's own technician.
+  helping        ServiceRecordHelper[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -82,6 +84,41 @@ model TimeEntry {
   /// runs on every launch and every job screen.
   @@index([technicianId, endedAt])
   @@map("time_entries")
+}
+
+/// Somebody working a job alongside its technician.
+///
+/// A job keeps one technician, `ServiceRecord.technicianId`: the name on the
+/// invoice, the lane the card sits in, the person the job's revenue is
+/// counted for. That had to stay a single answer. But a job is often two
+/// people, an apprentice beside whoever is teaching them, or three on a truck
+/// to turn it round in a morning, and they are on the job as much as its
+/// technician is: it is in their day, on their phone and against their hours.
+/// Each of those people is a row here.
+///
+/// The technician is never also a helper. Whatever makes a helper the
+/// technician removes their row in the same write (Lib/jobTeam.ts), so "who
+/// is on this job" is the technician plus these rows with nobody counted
+/// twice. A job without a technician has no helpers either.
+model ServiceRecordHelper {
+  id String @id @default(cuid())
+
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  technicianId String
+  technician   Technician @relation(fields: [technicianId], references: [id], onDelete: Cascade)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+
+  @@unique([serviceRecordId, technicianId])
+  /// "What am I helping on" is asked on every launch of the technician app.
+  @@index([technicianId])
+  @@index([organizationId])
+  @@map("service_record_helpers")
 }
 
 /// A phone that has asked to be told about its technician's work.

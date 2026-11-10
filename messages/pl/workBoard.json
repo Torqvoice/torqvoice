@@ -90,7 +90,9 @@
     "endTime": "Czas zakończenia",
     "failedDuration": "Nie udało się zaktualizować czasu trwania",
     "failedTimes": "Nie udało się zaktualizować godzin",
-    "startTime": "Czas rozpoczęcia"
+    "startTime": "Czas rozpoczęcia",
+    "alsoOnJob": "Także przy tym zleceniu",
+    "failedHelper": "Nie udało się zaktualizować osób przy zleceniu"
   },
   "presenter": {
     "title": "Tablica Pracy",
@@ -160,6 +162,9 @@
     "none": "Jeszcze nikt",
     "promised": "Obiecane",
     "promiseLate": "Po terminie",
-    "promiseOverdue": "Obiecane klientowi na termin, który już minął"
+    "promiseOverdue": "Obiecane klientowi na termin, który już minął",
+    "alsoOnJob": "Także przy zleceniu",
+    "with": "Prowadzący: {name}",
+    "helping": "Pomaga"
   }
 }

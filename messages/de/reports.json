@@ -150,7 +150,7 @@
       "tableTitle": "Erfasst gegen abgerechnet",
       "clocked": "Erfasst",
       "billed": "Abgerechnet",
-      "hint": "Erfasste Stunden stammen von der Stempeluhr. Abgerechnete Stunden sind die Arbeitspositionen der dem Techniker zugewiesenen Aufträge, die im Zeitraum begonnen haben. Effizienz ist abgerechnet geteilt durch erfasst.",
+      "hint": "Erfasste Stunden stammen von der Stempeluhr. Abgerechnete Stunden sind die Arbeitspositionen der dem Techniker zugewiesenen Aufträge, die im Zeitraum begonnen haben. Ein Auftrag mit mehreren Personen teilt seine abgerechneten Stunden nach der Zeit auf, die jede davon darauf gestempelt hat; hat jemand davon nicht darauf gestempelt, bleiben die Stunden beim Techniker. Effizienz ist abgerechnet geteilt durch erfasst.",
       "noClock": "Keine Zeit",
       "jobsClocked": "Erfasste Aufträge"
     }

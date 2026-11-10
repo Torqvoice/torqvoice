@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { releaseFiles } from '@/lib/files/manager'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * Removes a photo or video from a job.
@@ -32,7 +33,7 @@ export async function DELETE(
           serviceRecord: {
             id,
             organizationId: ctx.organizationId,
-            ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+            ...jobScopeFor(ctx),
           },
         },
         select: { id: true, fileUrl: true },

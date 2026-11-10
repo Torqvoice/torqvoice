@@ -8,7 +8,13 @@ import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { Wrench, ClipboardCheck, ExternalLink, Trash2 } from 'lucide-react'
 import type { WorkBoardJob } from '../Actions/boardActions'
-import { updateServiceTimes, updateInspectionTimes } from '../Actions/boardActions'
+import {
+  addJobHelper,
+  removeJobHelper,
+  updateServiceTimes,
+  updateInspectionTimes,
+} from '../Actions/boardActions'
+import { cn } from '@/lib/utils'
 import { useWorkBoardStore } from '../store/workboardStore'
 import { DurationPicker } from './DurationSlider'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
@@ -29,6 +35,7 @@ export function JobDetailPopover({
   onRemove: () => void
 }) {
   const t = useTranslations('workBoard.jobDetail')
+  const tJob = useTranslations('workBoard.job')
   // The board's own clock: the workshop's, not the viewer's browser.
   const { timezone } = useDateSettings()
   const store = useWorkBoardStore()
@@ -78,6 +85,32 @@ export function JobDetailPopover({
     [job, store, t, isServiceRecord]
   )
 
+  // Everybody who could also be put on the job: the board's technicians,
+  // less the one who has it.
+  const others = store.technicians.filter(
+    (tech) => tech.isActive && tech.id !== liveJob.technicianId
+  )
+  const technicianName = store.technicians.find((tech) => tech.id === liveJob.technicianId)?.name
+
+  /** Put somebody on the job beside its technician, or take them off it. */
+  const toggleHelper = async (technicianId: string) => {
+    const before = liveJob
+    const helping = before.helperIds.includes(technicianId)
+    store.updateJob({
+      ...before,
+      helperIds: helping
+        ? before.helperIds.filter((id) => id !== technicianId)
+        : [...before.helperIds, technicianId],
+    })
+    const res = await (helping ? removeJobHelper : addJobHelper)({ id: before.id, technicianId })
+    if (res.success && res.data) {
+      store.updateJob(res.data)
+    } else {
+      store.updateJob(before)
+      toast.error(t('failedHelper'))
+    }
+  }
+
   const handleDurationChange = (hours: number | null) => {
     if (hours && startDate) {
       const newEnd = new Date(startDate.getTime() + hours * 3600000)
@@ -114,6 +147,43 @@ export function JobDetailPopover({
             <Badge variant="secondary" className="capitalize">
               {liveJob.status.replace(/_/g, ' ')}
             </Badge>
+          )}
+
+          {/* Who else is on the job. A work order with a technician only: an
+              inspection is one person's work, and nobody can help on a job
+              that nobody has. */}
+          {isServiceRecord && liveJob.technicianId && others.length > 0 && (
+            <div className="space-y-1.5">
+              {/* "Also" on a job needs saying who has it. */}
+              {technicianName && (
+                <p className="text-sm">
+                  <span className="text-muted-foreground">{tJob('technician')}: </span>
+                  <span className="font-medium">{technicianName}</span>
+                </p>
+              )}
+              <Label className="text-xs">{t('alsoOnJob')}</Label>
+              <div className="flex flex-wrap gap-1">
+                {others.map((tech) => {
+                  const helping = liveJob.helperIds.includes(tech.id)
+                  return (
+                    <button
+                      key={tech.id}
+                      type="button"
+                      aria-pressed={helping}
+                      onClick={() => void toggleHelper(tech.id)}
+                      className={cn(
+                        'cursor-pointer rounded-md border px-2.5 py-1 text-xs font-medium transition-colors',
+                        helping
+                          ? 'border-primary bg-primary text-primary-foreground'
+                          : 'border-border bg-background text-foreground hover:bg-muted'
+                      )}
+                    >
+                      {tech.name}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
           )}
 
           <DurationPicker value={currentHours} onChange={handleDurationChange} />

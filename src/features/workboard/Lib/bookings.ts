@@ -6,6 +6,7 @@ import {
   rangeAround,
 } from '@/features/workshop-calendar/Lib/loadCalendar.server'
 import { type Booking, type WorkingHours, absenceBookings } from './availability'
+import { ACTIVE_HELPERS } from './jobTeam'
 
 /**
  * Everything currently holding a person or a bay, and the hours the shop works.
@@ -54,6 +55,8 @@ export async function loadBookingContext(
         startDateTime: true,
         endDateTime: true,
         technicianId: true,
+        // A helper's time is taken by the job as much as the technician's.
+        helpers: ACTIVE_HELPERS,
         workBayId: true,
         vehicle: { select: { make: true, model: true, licensePlate: true } },
       },
@@ -97,6 +100,7 @@ export async function loadBookingContext(
       start: r.startDateTime as Date,
       end: r.endDateTime as Date,
       technicianId: r.technicianId,
+      helperIds: r.helpers.map((h) => h.technicianId),
       workBayId: r.workBayId,
     })),
     ...inspections.map((i) => ({

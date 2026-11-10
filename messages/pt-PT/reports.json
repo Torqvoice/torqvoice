@@ -150,7 +150,7 @@
       "tableTitle": "Registado face ao faturado",
       "clocked": "Registado",
       "billed": "Faturado",
-      "hint": "As horas registadas vêm do relógio de ponto. As horas faturadas são as linhas de mão de obra dos trabalhos atribuídos ao técnico que começaram no período. A eficiência é o faturado a dividir pelo registado.",
+      "hint": "As horas registadas vêm do relógio de ponto. As horas faturadas são as linhas de mão de obra dos trabalhos atribuídos ao técnico que começaram no período. Um trabalho com mais de uma pessoa divide as horas faturadas pelo tempo que cada uma registou nele; se alguma não registou tempo nele, as horas ficam com o técnico. A eficiência é o faturado a dividir pelo registado.",
       "noClock": "Sem registo",
       "jobsClocked": "Trabalhos registados"
     }

@@ -3,6 +3,7 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { onJobWhere } from '@/features/workboard/Lib/jobTeam'
 
 export interface MyActiveJob {
   id: string
@@ -44,7 +45,8 @@ export async function getMyActiveJobs() {
         where: {
           organizationId,
           status: { in: ['in-progress', 'pending', 'waiting-parts'] },
-          technicianId: { in: techIds },
+          // Theirs, or one they are helping on.
+          ...onJobWhere(techIds),
         },
         select: {
           id: true,

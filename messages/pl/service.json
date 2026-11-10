@@ -526,7 +526,13 @@
     "loadOn": "Zajęte godziny w dniu {date}",
     "promisedAt": "Termin obiecany klientowi",
     "promisedPlaceholder": "Jeszcze nie obiecano",
-    "promisedClear": "Wyczyść"
+    "promisedClear": "Wyczyść",
+    "lead": "Prowadzący",
+    "alsoOnJob": "Także przy tym zleceniu",
+    "helperAdd": "Dodaj do tego zlecenia: {name}",
+    "helperRemove": "Zdejmij z tego zlecenia: {name}",
+    "failedHelper": "Nie udało się zaktualizować osób przy zleceniu",
+    "clashPeople": "{count, plural, one {{names} jest zajęty} few {{names} są zajęci} many {{names} są zajęci} other {{names} są zajęci}}"
   },
   "notifications": {
     "title": "Powiadomienia klienta",

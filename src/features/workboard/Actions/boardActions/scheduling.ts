@@ -17,6 +17,7 @@ import {
   serviceRecordToJob,
 } from './mappers'
 import type { WorkBoardJob } from './types'
+import { lockJobTeam, settleHelpers } from '../../Lib/jobTeam'
 
 export async function updateServiceTimes(input: unknown) {
   return withAuth(
@@ -187,22 +188,33 @@ export async function scheduleJob(input: unknown) {
       let job: WorkBoardJob
 
       if (data.type === 'serviceRecord') {
-        const owned = await db.serviceRecord.findFirst({
-          where: { id: data.id, organizationId },
-          select: { id: true },
-        })
-        if (!owned) throw new Error('Service record not found')
-
-        const sr = await db.serviceRecord.update({
-          where: { id: data.id },
-          data: {
-            ...lane,
-            ...times,
-            // techName is the printed-invoice copy of the technician's name and
-            // has to follow the assignment, including when it is cleared.
-            ...(technicianName !== undefined ? { techName: technicianName } : {}),
-          },
-          select: SERVICE_JOB_SELECT,
+        const sr = await db.$transaction(async (tx) => {
+          // Locked on every drag, not only one that names the technician:
+          // it is also the check that the job is this workshop's, and a
+          // drag in time waits behind a team change rather than racing it.
+          const team = await lockJobTeam(tx, { organizationId, serviceRecordId: data.id })
+          if (!team) throw new Error('Service record not found')
+          // Only a drag or a pick that names the technician touches the
+          // helpers; moving a job in time or between bays leaves them be.
+          if (data.technicianId !== undefined) {
+            await settleHelpers(tx, {
+              organizationId,
+              serviceRecordId: data.id,
+              previousId: team.technicianId,
+              nextId: data.technicianId,
+            })
+          }
+          return tx.serviceRecord.update({
+            where: { id: data.id },
+            data: {
+              ...lane,
+              ...times,
+              // techName is the printed-invoice copy of the technician's name and
+              // has to follow the assignment, including when it is cleared.
+              ...(technicianName !== undefined ? { techName: technicianName } : {}),
+            },
+            select: SERVICE_JOB_SELECT,
+          })
         })
         job = serviceRecordToJob(sr)
       } else {

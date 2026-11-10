@@ -272,6 +272,44 @@ export async function stopEntry(args: {
 }
 
 /**
+ * Stop every clock running on one job, whoever started it.
+ *
+ * For the moment the work itself ends: the job is finished, or parked for
+ * parts. Two people can be clocked on the same job, and the one who says it
+ * is done should not leave the other's clock running against it.
+ *
+ * Each entry is closed only if it is still open, so a technician stopping
+ * their own clock in the same second is not stopped twice.
+ */
+export async function stopJobClocks(args: { organizationId: string; serviceRecordId: string }) {
+  const { organizationId, serviceRecordId } = args
+  const running = await db.timeEntry.findMany({
+    where: { organizationId, serviceRecordId, endedAt: null },
+    select: { id: true, startedAt: true, technicianId: true },
+  })
+
+  const now = new Date()
+  const stopped: { id: string; technicianId: string; durationMinutes: number }[] = []
+  for (const entry of running) {
+    const minutes = durationMinutes(entry.startedAt, now)
+    const closed = await db.timeEntry.updateMany({
+      where: { id: entry.id, organizationId, endedAt: null },
+      data: { endedAt: now, durationMinutes: minutes },
+    })
+    if (closed.count === 0) continue
+    stopped.push({ id: entry.id, technicianId: entry.technicianId, durationMinutes: minutes })
+    announce({
+      type: 'clock_stopped',
+      organizationId,
+      technicianId: entry.technicianId,
+      serviceRecordId,
+      entryId: entry.id,
+    })
+  }
+  return stopped
+}
+
+/**
  * Everything the technician clocked between two instants.
  *
  * The caller passes the range rather than the server assuming "today",

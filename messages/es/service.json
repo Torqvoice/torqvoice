@@ -526,7 +526,13 @@
     "loadOn": "Horas reservadas el {date}",
     "promisedAt": "Prometido al cliente",
     "promisedPlaceholder": "Sin prometer todavía",
-    "promisedClear": "Borrar"
+    "promisedClear": "Borrar",
+    "lead": "Responsable",
+    "alsoOnJob": "También en este trabajo",
+    "helperAdd": "Añadir a {name} a este trabajo",
+    "helperRemove": "Quitar a {name} de este trabajo",
+    "failedHelper": "Error al actualizar quién está en el trabajo",
+    "clashPeople": "{count, plural, one {{names} está ocupado} other {{names} están ocupados}}"
   },
   "notifications": {
     "title": "Notificaciones al cliente",

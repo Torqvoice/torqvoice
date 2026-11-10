@@ -159,7 +159,8 @@
     "awayPart": "{when} müsait değil",
     "awayConflict": "Müsait değil ({reason})",
     "awayHeading": "Teknisyen o sırada müsait değil",
-    "bookedAnyway": "İş üzerinde anlaşıldıysa bu saati yine de koruyabilirsiniz."
+    "bookedAnyway": "İş üzerinde anlaşıldıysa bu saati yine de koruyabilirsiniz.",
+    "awayHeadingTeam": "Bu işteki biri o sırada müsait değil"
   },
   "calendar": {
     "closure": "Kapalı",

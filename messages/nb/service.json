@@ -526,7 +526,13 @@
     "loadOn": "Bookede timer {date}",
     "promisedAt": "Lovet kunden",
     "promisedPlaceholder": "Ikke lovet ennå",
-    "promisedClear": "Fjern"
+    "promisedClear": "Fjern",
+    "lead": "Ansvarlig",
+    "alsoOnJob": "Også på denne jobben",
+    "helperAdd": "Legg {name} til denne jobben",
+    "helperRemove": "Ta {name} av denne jobben",
+    "failedHelper": "Kunne ikke oppdatere hvem som er på jobben",
+    "clashPeople": "{count, plural, one {{names} er opptatt} other {{names} er opptatt}}"
   },
   "notifications": {
     "title": "Kundevarsler",

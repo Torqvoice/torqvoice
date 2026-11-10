@@ -526,7 +526,13 @@
     "loadOn": "Užimtos valandos {date}",
     "promisedAt": "Pažadėta klientui",
     "promisedPlaceholder": "Dar nepažadėta",
-    "promisedClear": "Išvalyti"
+    "promisedClear": "Išvalyti",
+    "lead": "Vadovas",
+    "alsoOnJob": "Taip pat dirba prie šio darbo",
+    "helperAdd": "Pridėti prie šio darbo: {name}",
+    "helperRemove": "Pašalinti iš šio darbo: {name}",
+    "failedHelper": "Nepavyko atnaujinti, kas dirba prie darbo",
+    "clashPeople": "{count, plural, one {{names} užimtas} few {{names} užimti} many {{names} užimti} other {{names} užimti}}"
   },
   "notifications": {
     "title": "Kliento pranešimai",
