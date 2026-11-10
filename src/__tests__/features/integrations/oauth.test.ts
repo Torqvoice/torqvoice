@@ -109,6 +109,59 @@ describe('integration oauth', () => {
     expect(refreshed.refreshToken).toBe('r1')
   })
 
+  it('does not carry the refresh token of the consent a new one replaces', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ access_token: 'new', expires_in: 3600 }), { status: 200 })
+    )
+    const creds = await exchangeCode({
+      spec,
+      client: { clientId: 'ws', clientSecret: 's', ownership: 'tenant' },
+      code: 'code',
+      redirectUri: 'https://x/cb',
+      previous: {
+        accessToken: 'old',
+        refreshToken: 'old-refresh',
+        clientId: 'ws',
+        clientSecret: 's',
+      },
+    })
+    expect(creds.accessToken).toBe('new')
+    expect(creds.refreshToken).toBeUndefined()
+    expect(creds).toMatchObject({ clientId: 'ws', clientSecret: 's' })
+  })
+
+  it('keeps a pending reconnect verifier through a token refresh, and spends it on the exchange', async () => {
+    const fetchMock = vi.spyOn(globalThis, 'fetch')
+    const client = { clientId: 'cid', clientSecret: 'sec', ownership: 'platform' as const }
+    // A sync refreshes the live tokens after Reconnect was pressed.
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ access_token: 'a2', expires_in: 3600 }), { status: 200 })
+    )
+    const refreshed = await refreshToken({
+      spec,
+      client,
+      credentials: { accessToken: 'a1', refreshToken: 'r1', expiresAt: 0, codeVerifier: 'v' },
+    })
+    expect(refreshed.codeVerifier).toBe('v')
+
+    // The callback then finishes the reconnect with that verifier.
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ access_token: 'a3', refresh_token: 'r3' }), { status: 200 })
+    )
+    const reconnected = await exchangeCode({
+      spec,
+      client,
+      code: 'code',
+      redirectUri: 'https://x/cb',
+      codeVerifier: refreshed.codeVerifier,
+      previous: refreshed,
+    })
+    const sent = new URLSearchParams(String(fetchMock.mock.calls[1][1]?.body))
+    expect(sent.get('code_verifier')).toBe('v')
+    expect(reconnected.codeVerifier).toBeUndefined()
+    expect(reconnected.refreshToken).toBe('r3')
+  })
+
   it('surfaces the vendor error message on a failed exchange', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ error: 'invalid_grant', error_description: 'Bad code' }), {

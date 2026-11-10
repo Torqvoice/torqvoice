@@ -52,7 +52,9 @@ export async function GET(
 
   const state = newState()
   const codeVerifier = spec.pkce ? newCodeVerifier() : undefined
-  // Keep a tenant-owned client id and secret; drop stale tokens.
+  // Keep a tenant-owned client id and secret. The tokens stay until the new
+  // consent replaces them in the callback, so a reconnect that is cancelled
+  // or refused leaves a working connection working.
   const credentials: Record<string, unknown> = {
     ...(client.ownership === 'tenant' && {
       clientId: client.clientId,
@@ -76,12 +78,7 @@ export async function GET(
     update: {
       status: existing?.status === 'active' ? 'active' : 'pending',
       oauthState: state,
-      credentials: sealCredentials({
-        ...previous,
-        ...credentials,
-        accessToken: undefined,
-        refreshToken: undefined,
-      }),
+      credentials: sealCredentials({ ...previous, ...credentials }),
     },
   })
 
