@@ -111,7 +111,11 @@ beforeAll(async () => {
 afterAll(async () => {
   if (!db) return
   if (organizationId) await db.organization.deleteMany({ where: { id: organizationId } })
-  if (userId) await db.user.deleteMany({ where: { id: userId } })
+  if (userId) {
+    // Deleting the user only blanks the audit row's user, so remove it first.
+    await db.auditLog.deleteMany({ where: { userId } })
+    await db.user.deleteMany({ where: { id: userId } })
+  }
 })
 
 describe('an account that signed up with Google', () => {
@@ -157,8 +161,13 @@ describe('an account that signed up with Google', () => {
         subject: 'A password was added to your Torqvoice account',
       })
     )
-    const audit = await db.auditLog.findFirst({ where: { userId, action: 'auth.passwordSet' } })
-    expect(audit?.organizationId ?? null).toBeNull()
+    // The action writes it without waiting, so look until it is there.
+    const audit = await vi.waitFor(async () => {
+      const row = await db.auditLog.findFirst({ where: { userId, action: 'auth.passwordSet' } })
+      if (!row) throw new Error('no audit row yet')
+      return row
+    })
+    expect(audit).toMatchObject({ action: 'auth.passwordSet', organizationId: null })
   })
 
   it('cannot set it a second time, only change it by proving the first', async () => {
