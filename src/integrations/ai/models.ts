@@ -52,26 +52,82 @@ export function anthropicHeaders(apiKey: string): Record<string, string> {
 /** Chat-capable OpenAI models; the rest of the list is embeddings, audio and images. */
 const OPENAI_CHAT_PREFIXES = ['gpt-', 'o1', 'o3', 'o4', 'chatgpt-']
 
+/**
+ * Words in an id that carries a chat prefix and still cannot answer the app,
+ * which sends text and photos to Chat Completions. A workshop that picked one
+ * of these would get an error from every AI feature.
+ */
+const OPENAI_NOT_CHAT = [
+  // Served by another endpoint: images, speech, transcription, voice sessions.
+  'image',
+  'tts',
+  'transcribe',
+  'realtime',
+  'live',
+  // Chat Completions takes these, but only for sound in and out or a web search.
+  'audio',
+  'search',
+  // Answered by the Responses API only.
+  'pro',
+  'deep-research',
+  'codex',
+  'oss',
+  // Security research models for approved organisations, Responses only until GPT-6.
+  'cyber',
+  'daybreak',
+  // The legacy Completions endpoint.
+  'instruct',
+]
+
 function isOpenAiChatModel(id: string): boolean {
-  return OPENAI_CHAT_PREFIXES.some((prefix) => id.startsWith(prefix))
+  if (!OPENAI_CHAT_PREFIXES.some((prefix) => id.startsWith(prefix))) return false
+  // Whole words between hyphens, so "pro" does not take a model named Proxima with it.
+  return !OPENAI_NOT_CHAT.some((word) => `${id}-`.includes(`-${word}-`))
 }
 
 /**
- * Sort OpenAI models: newest version first, within a version full > mini >
- * nano. The o-series leads, then GPT-4.x, then GPT-4o, then the rest.
+ * Size within a version. The GPT-5.6 naming put Sol where the unsuffixed
+ * model was, Terra where mini was and Luna where nano was, with Astra above.
  */
-function openAiModelOrder(id: string): number {
+function openAiModelSize(id: string): number {
+  const words = id.split('-')
+  if (words.includes('astra')) return 0
+  if (words.includes('terra') || words.includes('mini')) return 2
+  if (words.includes('luna') || words.includes('nano')) return 3
+  return 1
+}
+
+/**
+ * Where an OpenAI model sorts, lowest first. The version is read out of the
+ * id rather than looked up, so a model released next month lands at the top
+ * without a change here: GPT-5 and later, then the o-series that GPT-5
+ * replaced, then GPT-4.x. Within a version the larger model leads, and a
+ * dated snapshot follows the alias it pins, the latest snapshot first.
+ */
+function openAiModelRank(id: string): number[] {
   const l = id.toLowerCase()
-  if (l.startsWith('o4')) return 100 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('o3')) return 200 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('o1')) return 300 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4.1')) return 400 + (l.includes('nano') ? 2 : l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4.5')) return 350 + (l.includes('nano') ? 2 : l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4o')) return 500 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4'))
-    return 600 + (l.includes('turbo') ? 0 : 1) + (l.includes('mini') ? 2 : 0)
-  if (l.startsWith('chatgpt')) return 700
-  return 900
+  const gpt = l.match(/^gpt-(\d+)(?:\.(\d+))?(o?)(?=-|$)/)
+  const oSeries = l.match(/^o(\d+)(?=-|$)/)
+  const major = Number.parseInt(gpt?.[1] ?? oSeries?.[1] ?? '0', 10)
+  const minor = Number.parseInt(gpt?.[2] ?? '0', 10)
+  const line = gpt ? (major >= 5 ? 0 : 2) : oSeries ? 1 : 3
+  // Within GPT-4: GPT-4o, then GPT-4 Turbo (its previews included), then the
+  // original GPT-4. GPT-4.1 came after all three and has its own minor.
+  const words = l.split('-')
+  const turbo = major === 4 && (words.includes('turbo') || words.includes('preview'))
+  const generation = gpt?.[3] ? 0 : turbo ? 1 : 2
+  const snapshot = l.match(/-(\d{4})-(\d{2})-(\d{2})$/)
+  const age = snapshot ? 1e8 - Number.parseInt(snapshot.slice(1).join(''), 10) : 0
+  return [line, -major, -minor, generation, openAiModelSize(l), age]
+}
+
+function compareOpenAiModels(a: string, b: string): number {
+  const rankA = openAiModelRank(a)
+  const rankB = openAiModelRank(b)
+  for (let i = 0; i < rankA.length; i++) {
+    if (rankA[i] !== rankB[i]) return rankA[i] - rankB[i]
+  }
+  return a.localeCompare(b)
 }
 
 /** Sort Anthropic models: newest version first, within a version opus > sonnet > haiku. */
@@ -110,7 +166,7 @@ export async function listOpenAiModels(ctx: ConnectorContext): Promise<SettingOp
   const ids = await fetchModelIds(ctx, OPENAI_BASE)
   return ids
     .filter(isOpenAiChatModel)
-    .sort((a, b) => openAiModelOrder(a) - openAiModelOrder(b))
+    .sort(compareOpenAiModels)
     .map((id) => ({ value: id, label: formatModelLabel(id) }))
 }
 
