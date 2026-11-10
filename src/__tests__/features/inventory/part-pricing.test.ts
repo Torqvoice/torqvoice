@@ -15,8 +15,11 @@
 
 import { describe, it, expect } from 'vitest'
 import {
+  initialCatalogMarkupPercent,
   lineTotal,
   markupFromCostAndPrice,
+  markupPercentFromMultiplier,
+  multiplierFromMarkupPercent,
   isPriceOverridden,
   parseQuantity,
   repricePartRow,
@@ -591,5 +594,95 @@ describe('what the markup field shows while a cost is being typed', () => {
     // entered rather than sitting still.
     const shown = keystrokes(freshRow, 'unitCost', '1500').map((r) => r.unitPrice)
     expect(shown).toEqual([1, 15, 150, 1500])
+  })
+})
+
+describe('the catalog markup as a percentage', () => {
+  // The catalog markup is stored as a multiplier and typed as a percentage.
+  // A workshop that typed 30 for "30%" into a field that took the multiplier
+  // itself had every part priced at thirty times its cost.
+  it('turns a typed percentage into the multiplier that is stored', () => {
+    expect(multiplierFromMarkupPercent('30')).toBe(1.3)
+    expect(multiplierFromMarkupPercent(50)).toBe(1.5)
+    expect(multiplierFromMarkupPercent('12.5')).toBe(1.125)
+    expect(multiplierFromMarkupPercent('0')).toBe(1)
+  })
+
+  it('prices a part at cost plus the percentage, not cost times it', () => {
+    const multiplier = multiplierFromMarkupPercent('30')
+    expect(priceFromCostAndMultiplier(10, multiplier)).toBe(13)
+    expect(priceFromCostAndMultiplier(200, multiplier)).toBe(260)
+  })
+
+  it('agrees with the percentage a job line uses', () => {
+    for (const percent of [0, 7.5, 30, 50, 125]) {
+      for (const cost of [0.01, 9.99, 44.99, 100, 137.5]) {
+        expect(priceFromCostAndMultiplier(cost, multiplierFromMarkupPercent(percent))).toBe(
+          priceFromCostAndMarkup(cost, percent)
+        )
+      }
+    }
+  })
+
+  it('allows selling below cost, down to but not including giving parts away', () => {
+    expect(multiplierFromMarkupPercent('-10')).toBe(0.9)
+    expect(multiplierFromMarkupPercent('-100')).toBeNull()
+    expect(multiplierFromMarkupPercent('-250')).toBeNull()
+  })
+
+  it('refuses a percentage so close to -100 that it rounds to a multiplier of zero', () => {
+    // The smallest multiplier that can be stored is 0.0001, a markup of -99.99%.
+    expect(multiplierFromMarkupPercent('-99.99')).toBe(0.0001)
+    expect(multiplierFromMarkupPercent('-99.999')).toBeNull()
+    expect(multiplierFromMarkupPercent('-99.99999999')).toBeNull()
+    expect(multiplierFromMarkupPercent('1e400')).toBeNull()
+  })
+
+  it('has nothing to apply for a blank or unreadable field', () => {
+    // A blank box read as 0% would reprice the whole catalog at cost.
+    expect(multiplierFromMarkupPercent('')).toBeNull()
+    expect(multiplierFromMarkupPercent('   ')).toBeNull()
+    expect(multiplierFromMarkupPercent('abc')).toBeNull()
+    expect(multiplierFromMarkupPercent(undefined)).toBeNull()
+    expect(multiplierFromMarkupPercent(null)).toBeNull()
+  })
+
+  it('reads a stored multiplier back as the percentage that was typed', () => {
+    expect(markupPercentFromMultiplier(1.3)).toBe(30)
+    expect(markupPercentFromMultiplier('1.125')).toBe(12.5)
+    expect(markupPercentFromMultiplier(1)).toBe(0)
+    expect(markupPercentFromMultiplier(0.9)).toBe(-10)
+    // What the workshop in the report had stored after typing 30.
+    expect(markupPercentFromMultiplier(30)).toBe(2900)
+  })
+
+  it('survives the round trip for every percentage the field accepts', () => {
+    for (const percent of [-99.99, -10, 0, 0.1, 7.25, 30, 33.33, 150, 2900]) {
+      expect(markupPercentFromMultiplier(multiplierFromMarkupPercent(percent))).toBe(percent)
+    }
+  })
+
+  it('has no percentage for a multiplier that was never saved', () => {
+    expect(markupPercentFromMultiplier(undefined)).toBe(0)
+    expect(markupPercentFromMultiplier('')).toBe(0)
+    expect(markupPercentFromMultiplier(0)).toBe(0)
+  })
+})
+
+describe('initialCatalogMarkupPercent', () => {
+  it('opens with the catalog markup that was applied last', () => {
+    expect(initialCatalogMarkupPercent('1.3', '50')).toBe(30)
+    expect(initialCatalogMarkupPercent('1', '50')).toBe(0)
+  })
+
+  it("offers the workshop's Default Markup % when no catalog markup was ever applied", () => {
+    expect(initialCatalogMarkupPercent(undefined, '30')).toBe(30)
+    expect(initialCatalogMarkupPercent('', '12.5')).toBe(12.5)
+  })
+
+  it('opens at 0 when the workshop has set neither', () => {
+    expect(initialCatalogMarkupPercent(undefined, undefined)).toBe(0)
+    expect(initialCatalogMarkupPercent(undefined, 'abc')).toBe(0)
+    expect(initialCatalogMarkupPercent(undefined, '-5')).toBe(0)
   })
 })

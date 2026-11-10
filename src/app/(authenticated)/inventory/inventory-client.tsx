@@ -46,25 +46,16 @@ import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
+import { ApplyMarkupDialog } from '@/features/inventory/Components/ApplyMarkupDialog'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
 import { PartTagChips } from '@/features/inventory/Components/PartTagChips'
+import { markupPercentFromMultiplier } from '@/features/inventory/Lib/partPricing'
 import { sameTag } from '@/features/inventory/Lib/partTags'
 import { cn } from '@/lib/utils'
 import {
   deleteInventoryPart,
   deleteInventoryParts,
-  applyMarkupToAll,
 } from '@/features/inventory/Actions/inventoryActions'
-import { setSetting } from '@/features/settings/Actions/settingsActions'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import {
-  Dialog as MarkupDialog,
-  DialogContent as MarkupDialogContent,
-  DialogHeader as MarkupDialogHeader,
-  DialogTitle as MarkupDialogTitle,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   ArrowDown,
   ArrowUp,
@@ -136,7 +127,8 @@ export function InventoryClient({
   tag = '',
   tags = [],
   currencyCode = DEFAULT_CURRENCY_CODE,
-  markupMultiplier: initialMarkup = 1.0,
+  markupMultiplier = 1.0,
+  applyMarkupPercent = 0,
   defaultUnit = '',
   unitSystem = 'imperial',
   sortBy: initialSortBy = 'updatedAt',
@@ -154,7 +146,10 @@ export function InventoryClient({
   /** Every tag the workshop's parts carry, for the filter and the form. */
   tags?: string[]
   currencyCode?: string
+  /** The saved catalog markup, as the multiplier a new part's sell price fills in with. */
   markupMultiplier?: number
+  /** The percentage the Apply Markup dialog opens with. */
+  applyMarkupPercent?: number
   /** Unit pre-filled on new parts (inventory.defaultUnit setting). */
   defaultUnit?: string
   /** workshop.unitSystem, orders unit suggestions in the part form. */
@@ -179,9 +174,11 @@ export function InventoryClient({
   const [showForm, setShowForm] = useState(false)
   const [editPart, setEditPart] = useState<InventoryPart | null>(null)
   const [showMarkup, setShowMarkup] = useState(false)
-  const [markupValue, setMarkupValue] = useState(String(initialMarkup))
-  const [applyingMarkup, setApplyingMarkup] = useState(false)
-  const [overrideExisting, setOverrideExisting] = useState(false)
+  // What Apply Markup just saved. The page's own copy only arrives with the
+  // refresh that follows, and a part added in between would otherwise fill in
+  // at the markup that was just replaced.
+  const [appliedMultiplier, setAppliedMultiplier] = useState<number | null>(null)
+  const catalogMultiplier = appliedMultiplier ?? markupMultiplier
   const [showScanner, setShowScanner] = useState(false)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
@@ -324,31 +321,6 @@ export function InventoryClient({
       modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
     }
     setIsBulkDeleting(false)
-  }
-
-  const handleApplyMarkup = async () => {
-    const multiplier = Number(markupValue)
-    if (!multiplier || multiplier <= 0) {
-      modal.open('error', t('errors.error'), t('errors.multiplierPositive'))
-      return
-    }
-    setApplyingMarkup(true)
-    try {
-      const [result] = await Promise.all([
-        applyMarkupToAll({ multiplier, overrideExisting }),
-        setSetting(SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER, String(multiplier)),
-      ])
-      if (result.success) {
-        setShowMarkup(false)
-        router.refresh()
-      } else {
-        modal.open('error', t('errors.error'), result.error || t('errors.applyFailed'))
-      }
-    } catch {
-      modal.open('error', t('errors.error'), t('errors.applyFailed'))
-    } finally {
-      setApplyingMarkup(false)
-    }
   }
 
   // An empty Low view is ambiguous on its own: it means either "nothing is
@@ -973,7 +945,7 @@ export function InventoryClient({
           }
         }}
         part={editPart ?? undefined}
-        markupMultiplier={Number(markupValue) || initialMarkup}
+        markupMultiplier={catalogMultiplier}
         defaultUnit={defaultUnit}
         unitSystem={unitSystem}
         initialBarcode={!editPart ? scannedBarcode : undefined}
@@ -985,48 +957,21 @@ export function InventoryClient({
         }}
       />
 
-      {/* Bulk Markup Dialog */}
-      <MarkupDialog open={showMarkup} onOpenChange={setShowMarkup}>
-        <MarkupDialogContent className="sm:max-w-sm">
-          <MarkupDialogHeader>
-            <MarkupDialogTitle>{t('markup.title')}</MarkupDialogTitle>
-          </MarkupDialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="markupMultiplier">{t('markup.multiplierLabel')}</Label>
-              <Input
-                id="markupMultiplier"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={markupValue}
-                onChange={(e) => setMarkupValue(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('markup.description', { multiplier: markupValue || '?', count: data.total })}
-                {Number(markupValue) > 1 &&
-                  ` ${t('markup.percentage', { percent: Math.round((Number(markupValue) - 1) * 100) })}`}
-              </p>
-            </div>
-            <label className="flex items-center gap-2">
-              <Switch checked={overrideExisting} onCheckedChange={setOverrideExisting} />
-              <span className="text-sm">{t('markup.overrideExisting')}</span>
-            </label>
-            <p className="text-xs text-muted-foreground">
-              {overrideExisting ? t('markup.overrideExistingHint') : t('markup.skipExistingHint')}
-            </p>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowMarkup(false)}>
-                {t('markup.cancel')}
-              </Button>
-              <Button size="sm" onClick={handleApplyMarkup} disabled={applyingMarkup}>
-                {applyingMarkup && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('markup.apply')}
-              </Button>
-            </div>
-          </div>
-        </MarkupDialogContent>
-      </MarkupDialog>
+      {/* The form above takes the saved markup, never what is being typed
+          here: a percentage that is cancelled must not price the next part. */}
+      <ApplyMarkupDialog
+        open={showMarkup}
+        onOpenChange={setShowMarkup}
+        initialPercent={
+          appliedMultiplier === null
+            ? applyMarkupPercent
+            : markupPercentFromMultiplier(appliedMultiplier)
+        }
+        onApplied={(multiplier) => {
+          setAppliedMultiplier(multiplier)
+          router.refresh()
+        }}
+      />
 
       <BarcodeScannerDialog
         open={showScanner}
