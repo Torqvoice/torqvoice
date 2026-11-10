@@ -5,6 +5,7 @@ import { FAULT_STATUSES, faultLine, normalizeFaultCode } from '@/features/fault-
 import { lookupMeanings, vehicleForCodes } from '@/features/fault-codes/Lib/service.server'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * Records something the technician noticed that is not part of this job.
@@ -67,7 +68,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: { id: true, vehicleId: true },
       })

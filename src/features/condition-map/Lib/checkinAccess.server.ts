@@ -8,6 +8,7 @@ import { type ApiAuthContext, apiError } from '@/lib/with-api-auth'
 import { getBestLocaleFromHeader, resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { type MarkScope } from './marks'
 import { jobScope } from './checkin.server'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * The job a technician app request is about, when it is theirs to check in:
@@ -30,7 +31,7 @@ export async function checkinJobFor(
     where: {
       id,
       organizationId: ctx.organizationId,
-      ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+      ...jobScopeFor(ctx),
     },
     select: {
       id: true,

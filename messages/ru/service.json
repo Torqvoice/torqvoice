@@ -526,7 +526,13 @@
     "loadOn": "Занятые часы на {date}",
     "promisedAt": "Обещано клиенту",
     "promisedPlaceholder": "Срок ещё не обещан",
-    "promisedClear": "Очистить"
+    "promisedClear": "Очистить",
+    "lead": "Ведущий",
+    "alsoOnJob": "Тоже на этом заказе",
+    "helperAdd": "Добавить к этому заказу: {name}",
+    "helperRemove": "Снять с этого заказа: {name}",
+    "failedHelper": "Не удалось обновить, кто работает над заказом",
+    "clashPeople": "{count, plural, one {{names} занят} few {{names} заняты} many {{names} заняты} other {{names} заняты}}"
   },
   "notifications": {
     "title": "Уведомления клиента",

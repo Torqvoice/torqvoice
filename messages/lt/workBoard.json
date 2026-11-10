@@ -90,7 +90,9 @@
     "endTime": "Pabaigos laikas",
     "failedDuration": "Nepavyko atnaujinti trukmės",
     "failedTimes": "Nepavyko atnaujinti laikų",
-    "endBeforeStart": "Pabaigos laikas turi būti po pradžios laiko"
+    "endBeforeStart": "Pabaigos laikas turi būti po pradžios laiko",
+    "alsoOnJob": "Taip pat dirba prie šio darbo",
+    "failedHelper": "Nepavyko atnaujinti, kas dirba prie darbo"
   },
   "presenter": {
     "title": "Darbų lenta",
@@ -160,6 +162,9 @@
     "none": "Kol kas niekas",
     "promised": "Pažadėta",
     "promiseLate": "Vėluoja",
-    "promiseOverdue": "Klientui pažadėta jau praėjusiam laikui"
+    "promiseOverdue": "Klientui pažadėta jau praėjusiam laikui",
+    "alsoOnJob": "Taip pat prie darbo",
+    "with": "Vadovas: {name}",
+    "helping": "Padeda"
   }
 }

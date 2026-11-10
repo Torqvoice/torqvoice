@@ -120,6 +120,13 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'ServiceConcern', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
   { model: 'StatusReport', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
   { model: 'TimeEntry', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
+  // Who is on a job besides its technician goes and comes back with the job.
+  {
+    model: 'ServiceRecordHelper',
+    option: 'vehicles',
+    nestedUnder: 'ServiceRecord',
+    restore: 'replace',
+  },
   {
     model: 'Reminder',
     key: 'orgReminders',

@@ -526,7 +526,13 @@
     "loadOn": "Geboekte uren op {date}",
     "promisedAt": "Toegezegd aan klant",
     "promisedPlaceholder": "Nog niet toegezegd",
-    "promisedClear": "Wissen"
+    "promisedClear": "Wissen",
+    "lead": "Leiding",
+    "alsoOnJob": "Ook op deze klus",
+    "helperAdd": "{name} aan deze klus toevoegen",
+    "helperRemove": "{name} van deze klus halen",
+    "failedHelper": "Bijwerken wie op de klus staat mislukt",
+    "clashPeople": "{count, plural, one {{names} is bezet} other {{names} zijn bezet}}"
   },
   "notifications": {
     "title": "Klantmeldingen",

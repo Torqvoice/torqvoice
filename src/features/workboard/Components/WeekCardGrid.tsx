@@ -7,14 +7,15 @@ import {
   awayKey,
 } from '../hooks/useBoardCalendar'
 import { useDroppable } from '@dnd-kit/core'
-import { ClipboardCheck, Wrench } from 'lucide-react'
+import { ClipboardCheck, Users, Wrench } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../Actions/boardActions'
 import { getDurationMinutes, getJobDateRange, jobOverlapsDate } from '../utils/datetime'
 import type { ClockFormat } from '../utils/clock'
-import type { BoardLane } from '../utils/lanes'
-import { BoardJobCard } from './BoardJobCard'
+import { type BoardLane, isHelperLane } from '../utils/lanes'
+import { interactiveRow } from '@/lib/interactive-row'
+import { BoardJobCard, TeamCount } from './BoardJobCard'
 import { formatDuration } from './DurationSlider'
 import { JobTooltip } from './JobTooltip'
 import { LaneHeaderTooltip } from './LaneHeaderTooltip'
@@ -61,7 +62,9 @@ export function WeekCardGrid({
   const gridTemplateColumns = `minmax(120px, 160px) repeat(${days.length}, minmax(140px, 1fr))`
 
   return (
-    <div className="min-h-0 min-w-0 flex-1 overflow-auto rounded-md border">
+    // `isolate` so the sticky row and column stack against each other only,
+    // never against the app's top bar when the page scrolls under it.
+    <div className="isolate min-h-0 min-w-0 flex-1 overflow-auto rounded-md border">
       <div className="grid min-w-full gap-px bg-border/60" style={{ gridTemplateColumns }}>
         <div className="sticky left-0 top-0 z-30 bg-background" />
         {days.map((day) => {
@@ -194,24 +197,39 @@ function DayCell({
           {away.label}
         </p>
       )}
-      {jobs.map((job) => (
-        <JobTooltip
-          key={job.id}
-          job={job}
-          timeFormat={timeFormat}
-          ownerName={job.technicianId ? lookup?.get(job.technicianId)?.name : null}
-          ownerColor={job.technicianId ? lookup?.get(job.technicianId)?.color : null}
-          bayName={job.workBayId ? lookup?.get(job.workBayId)?.name : null}
-        >
-          <div>
-            {readOnly ? (
-              <StaticJobCard job={job} />
-            ) : (
-              <BoardJobCard job={job} onClick={() => onOpenJob(job)} />
-            )}
-          </div>
-        </JobTooltip>
-      ))}
+      {jobs.map((job) => {
+        const technician = job.technicianId ? lookup?.get(job.technicianId) : null
+        return (
+          <JobTooltip
+            key={job.id}
+            job={job}
+            timeFormat={timeFormat}
+            ownerName={technician?.name}
+            ownerColor={technician?.color}
+            helperNames={job.helperIds
+              .map((id) => lookup?.get(id)?.name)
+              .filter((name): name is string => !!name)}
+            bayName={job.workBayId ? lookup?.get(job.workBayId)?.name : null}
+          >
+            <div>
+              {isHelperLane(job, lane.id, lane.grouping) ? (
+                // Here because this lane's technician is helping on it. It
+                // opens the job and cannot be picked up: the card that moves
+                // the job is the one in its own technician's lane.
+                <ShadowJobCard
+                  job={job}
+                  technicianName={technician?.name ?? null}
+                  onClick={readOnly ? undefined : () => onOpenJob(job)}
+                />
+              ) : readOnly ? (
+                <StaticJobCard job={job} />
+              ) : (
+                <BoardJobCard job={job} onClick={() => onOpenJob(job)} />
+              )}
+            </div>
+          </JobTooltip>
+        )
+      })}
 
       {booked > 0 && (
         <div className="mt-auto space-y-0.5 pt-1">
@@ -263,6 +281,47 @@ function StaticJobCard({ job }: { job: WorkBoardJob }) {
           {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
         </p>
       )}
+      <TeamCount count={job.helperIds.length} />
+    </div>
+  )
+}
+
+/**
+ * A job as it sits in the day of somebody helping on it: an outline rather
+ * than a card, saying whose job it is.
+ */
+function ShadowJobCard({
+  job,
+  technicianName,
+  onClick,
+}: {
+  job: WorkBoardJob
+  technicianName: string | null
+  onClick?: () => void
+}) {
+  const t = useTranslations('workBoard.job')
+  return (
+    <div
+      data-testid="job-shadow"
+      className={cn(
+        'rounded-md border border-dashed border-foreground/40 bg-background/80 p-1.5 text-xs',
+        onClick && 'cursor-pointer hover:bg-muted/60'
+      )}
+      {...(onClick ? interactiveRow(onClick) : {})}
+    >
+      <div className="flex items-center gap-1">
+        <Users className="h-3 w-3 shrink-0 text-muted-foreground" />
+        <span className="truncate font-medium">{job.title}</span>
+      </div>
+      {job.vehicle && (
+        <p className="truncate text-muted-foreground">
+          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+          {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
+        </p>
+      )}
+      <p className="truncate text-[10px] font-medium text-muted-foreground">
+        {technicianName ? t('with', { name: technicianName }) : t('helping')}
+      </p>
     </div>
   )
 }

@@ -526,7 +526,13 @@
     "loadOn": "Booked hours on {date}",
     "promisedAt": "Promised to customer",
     "promisedPlaceholder": "Not promised yet",
-    "promisedClear": "Clear"
+    "promisedClear": "Clear",
+    "lead": "Lead",
+    "alsoOnJob": "Also on this job",
+    "helperAdd": "Add {name} to this job",
+    "helperRemove": "Take {name} off this job",
+    "failedHelper": "Failed to update who is on the job",
+    "clashPeople": "{count, plural, one {{names} is busy} other {{names} are busy}}"
   },
   "notifications": {
     "title": "Customer Notifications",

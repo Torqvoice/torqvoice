@@ -2,7 +2,8 @@ import 'server-only'
 import { aiSetup } from '@/features/integrations/Lib/ai'
 import { localeNames, type Locale } from '@/i18n/config'
 import OpenAI from 'openai'
-import { describeAiError } from '@/lib/ai-error'
+import { isAccountLimitError } from '@/lib/ai-error'
+import { aiErrorDescriber } from '@/lib/ai-error-message'
 import {
   ANTHROPIC_BASE,
   ANTHROPIC_VERSION,
@@ -146,7 +147,7 @@ async function chatCompletion(
     return response.choices[0]?.message?.content ?? ''
   } catch (error) {
     console.error('[ai] chat completion failed:', error)
-    throw new Error(describeAiError(error))
+    throw new Error((await aiErrorDescriber())(error))
   }
 }
 
@@ -180,7 +181,7 @@ export async function visionCompletion(
     return response.choices[0]?.message?.content ?? ''
   } catch (error) {
     console.error('[ai] vision completion failed:', error)
-    throw new Error(describeAiError(error))
+    throw new Error((await aiErrorDescriber())(error))
   }
 }
 
@@ -290,6 +291,85 @@ severity is 1-5 based on how widely reported the issue is (5 = extremely common/
   const userPrompt = `What are the 5 most critical and common issues with the ${vehicle.year} ${vehicle.make} ${vehicle.model}? Return JSON only.`
 
   return chatCompletion(organizationId, systemPrompt, userPrompt)
+}
+
+/**
+ * The answer budget of a connection test. The reply is never read, so this
+ * is the smallest cap no model turns down: OpenAI's Responses API refuses
+ * one under 16 outright, and a cap of 1 made its GPT-5 models fail other
+ * tools' health checks. `completionTuning` adds the thinking headroom on top
+ * for the models that need it, as it does for a real request. The cap is a
+ * ceiling; the test costs the few tokens of a one-word reply.
+ */
+const PROBE_TOKENS = 16
+
+/**
+ * OpenAI's GPT-5 family answers a cap that ran out before the reply was
+ * whole with a 400 where the other models return a cut-off reply. Either way
+ * the key was accepted, the account could pay and the model ran.
+ */
+function cutOffByTokenCap(error: unknown): boolean {
+  return (
+    error instanceof OpenAI.APIError &&
+    error.status === 400 &&
+    /max_tokens or model output limit was reached/i.test(error.message)
+  )
+}
+
+/** How long a connection test waits on the model before it gives up. */
+const PROBE_TIMEOUT_MS = 30_000
+
+/**
+ * A failure that says nothing about the key: the provider was busy, down or
+ * slow, or never answered. A real rate limit is one of these; an account
+ * that cannot pay is not, though it arrives under the same status.
+ */
+function providerTrouble(error: unknown): boolean {
+  if (!(error instanceof OpenAI.APIError)) return false
+  if (error.status === undefined || error.status >= 500) return true
+  return error.status === 429 && !isAccountLimitError(error)
+}
+
+/**
+ * One tiny completion on the model the workshop chose, for a connector's
+ * connection test. Listing models proves the key exists; only a completion
+ * proves the account has credit and the key may use that model, and without
+ * it a test passed on a connection where every request then failed. It goes
+ * out the way real requests do, and a failure is worded the way theirs is.
+ *
+ * Any reply passes, an empty or cut-off one included: what it says is not
+ * the question. No temperature is sent, because several models refuse one.
+ *
+ * It is asked once and not for long. The SDK would otherwise try a refusal
+ * three times and wait as long as the provider told it to, with somebody
+ * watching a spinner. And a failed test switches the connection off, so when
+ * the provider was merely busy the answer is `inconclusive`: the caller
+ * falls back to the check it had before rather than turn off an AI
+ * connection that works.
+ */
+export async function probeAiModel(
+  config: AiConfig
+): Promise<{ ok: boolean; message?: string; inconclusive?: boolean }> {
+  const client = createClient(config)
+  try {
+    await client.chat.completions.create(
+      {
+        model: config.model,
+        messages: [{ role: 'user', content: 'Reply with OK.' }],
+        ...completionTuning(config, PROBE_TOKENS),
+      },
+      { maxRetries: 0, timeout: PROBE_TIMEOUT_MS }
+    )
+    return { ok: true }
+  } catch (error) {
+    if (cutOffByTokenCap(error)) return { ok: true }
+    console.error('[ai] connection test failed:', error)
+    return {
+      ok: false,
+      message: (await aiErrorDescriber())(error),
+      ...(providerTrouble(error) && { inconclusive: true }),
+    }
+  }
 }
 
 export async function testAiConnection(organizationId: string): Promise<boolean> {

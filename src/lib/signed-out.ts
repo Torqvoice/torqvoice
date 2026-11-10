@@ -18,3 +18,14 @@ export function signInUrlFor(pathname: string, search = ''): string {
 export function leaveForSignInNow(lastInputAt: number, now: number): boolean {
   return now - lastInputAt > RECENT_INPUT_MS
 }
+
+/**
+ * The two-factor page, carrying on the sign-in page's `redirect` so that a
+ * person who signs in with a code still lands where they were heading.
+ */
+export function twoFactorUrlFor(signInSearch: string): string {
+  const target = safeRedirectPath(new URLSearchParams(signInSearch).get('redirect'))
+  return target === '/'
+    ? '/auth/verify-2fa'
+    : `/auth/verify-2fa?redirect=${encodeURIComponent(target)}`
+}

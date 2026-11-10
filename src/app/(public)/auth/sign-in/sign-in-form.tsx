@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { signIn, authClient } from '@/lib/auth-client'
+import { isPasskeyPromptClosed, passkeyErrorCode } from '@/lib/passkey-prompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -161,10 +162,15 @@ function SignInFormInner({
     try {
       const result = await authClient.signIn.passkey()
       if (result?.error) {
-        // User dismissed the passkey prompt — not an error state
-        if ('code' in result.error && result.error.code === 'AUTH_CANCELLED') return
+        // The browser's prompt was closed or timed out: the person chose not
+        // to use a passkey, and the password form is right there.
+        if (isPasskeyPromptClosed(result.error)) return
+        // Anything else that went wrong in the browser arrives with the
+        // client's fixed English "Auth cancelled", which is not what happened.
+        const code = passkeyErrorCode(result.error)
+        const fromBrowser = code === 'AUTH_CANCELLED' || code?.startsWith('ERROR_')
         const msg = typeof result.error.message === 'string' ? result.error.message : ''
-        setError(msg || t('errors.passkeyFailed'))
+        setError((!fromBrowser && msg) || t('errors.passkeyFailed'))
       } else {
         router.push(safeRedirectPath(redirectParam))
         router.refresh()

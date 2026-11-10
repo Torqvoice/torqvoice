@@ -10,6 +10,7 @@ import { uploadsRoot } from '@/lib/upload-root'
 import { assertContentLength } from '@/lib/backup/zip-guard'
 import { queueVideoDownscale } from '@/lib/video-downscale'
 import { isDeclaredVideo, sniffDeclaredVideo, type VideoContainer } from '@/lib/video-sniff'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * Attaches a photo or video shot in the bay to a job.
@@ -71,7 +72,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: { id: true },
       })

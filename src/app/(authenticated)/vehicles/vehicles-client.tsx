@@ -261,11 +261,13 @@ export function VehiclesClient({
       destructive: true,
     })
     if (!ok) return
-    const result = await deleteVehicle(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteVehicle(id).catch(() => null)
+    if (result?.success) {
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || t('deleteError'))
+      modal.open('error', 'Error', result?.error || t('deleteError'))
     }
   }
 

@@ -38,6 +38,8 @@ const JOB = {
   organizationId: 'org-1',
   vehicleId: 'veh-1',
   technicianId: 'tech-1',
+  // Nobody else is on the job with its technician.
+  helpers: [] as { technicianId: string }[],
   status: 'scheduled',
   mileage: null as number | null,
   inspectionId: null,
@@ -93,8 +95,14 @@ function mark(over: Partial<Mark>): Mark {
 }
 
 const jobs = [JOB, OLD_JOB]
-const matches = (row: Record<string, unknown>, where: Record<string, unknown>) =>
+const matches = (row: Record<string, unknown>, where: Record<string, unknown>): boolean =>
   Object.entries(where).every(([k, v]) => {
+    // A job is somebody's when they are its technician or helping on it.
+    if (k === 'OR') return (v as Record<string, unknown>[]).some((c) => matches(row, c))
+    if (v && typeof v === 'object' && 'some' in (v as object))
+      return ((row[k] as Record<string, unknown>[] | undefined) ?? []).some((child) =>
+        matches(child, (v as { some: Record<string, unknown> }).some)
+      )
     if (v && typeof v === 'object' && 'in' in (v as object))
       return (v as { in: unknown[] }).in.includes(row[k])
     if (v && typeof v === 'object' && 'not' in (v as object))

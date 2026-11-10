@@ -159,7 +159,8 @@
     "awayPart": "Absent {when}",
     "awayConflict": "Absent ({reason})",
     "awayHeading": "Le technicien est absent à ce moment-là",
-    "bookedAnyway": "Vous pouvez garder ce créneau si le travail est convenu."
+    "bookedAnyway": "Vous pouvez garder ce créneau si le travail est convenu.",
+    "awayHeadingTeam": "Quelqu'un sur ce travail est absent à ce moment-là"
   },
   "calendar": {
     "closure": "Fermé",

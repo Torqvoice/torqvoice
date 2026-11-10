@@ -88,6 +88,7 @@
     "auth_login": "Пользователь вошёл в систему",
     "auth_sessionRevoked": "Отключено устройство",
     "auth_sessionsRevoked": "Отключены другие устройства",
+    "auth_passwordSet": "Задан пароль аккаунта",
     "auth_loginFailed": "Неудачная попытка входа",
     "auth_register": "Пользователь зарегистрировался",
     "auth_passwordReset": "Запрошен сброс пароля",

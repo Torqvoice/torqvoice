@@ -156,6 +156,8 @@ model ServiceRecord {
 
   technicianId String?
   technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+  /// Everybody else working the job with that technician.
+  helpers      ServiceRecordHelper[]
 
   /// Where in the shop the job is booked in: a lift, a ramp, an alignment
   /// stand. Independent of the technician, because a shop plans its bays and

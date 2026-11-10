@@ -90,7 +90,9 @@
     "endTime": "Endzeit",
     "failedDuration": "Dauer konnte nicht aktualisiert werden",
     "failedTimes": "Zeiten konnten nicht aktualisiert werden",
-    "startTime": "Startzeit"
+    "startTime": "Startzeit",
+    "alsoOnJob": "Auch an diesem Auftrag",
+    "failedHelper": "Beteiligte am Auftrag konnten nicht aktualisiert werden"
   },
   "presenter": {
     "title": "Arbeitsboard",
@@ -160,6 +162,9 @@
     "none": "Noch niemand",
     "promised": "Zugesagt",
     "promiseLate": "Überfällig",
-    "promiseOverdue": "Dem Kunden für einen bereits vergangenen Zeitpunkt zugesagt"
+    "promiseOverdue": "Dem Kunden für einen bereits vergangenen Zeitpunkt zugesagt",
+    "alsoOnJob": "Auch am Auftrag",
+    "with": "Mit {name}",
+    "helping": "Hilft mit"
   }
 }

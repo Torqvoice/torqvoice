@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * Appends to the job's internal notes.
@@ -32,7 +33,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: { id: true, diagnosticNotes: true },
       })

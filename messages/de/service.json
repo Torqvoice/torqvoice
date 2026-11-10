@@ -526,7 +526,13 @@
     "loadOn": "Gebuchte Stunden am {date}",
     "promisedAt": "Dem Kunden zugesagt",
     "promisedPlaceholder": "Noch nicht zugesagt",
-    "promisedClear": "Leeren"
+    "promisedClear": "Leeren",
+    "lead": "Leitung",
+    "alsoOnJob": "Auch an diesem Auftrag",
+    "helperAdd": "{name} zu diesem Auftrag hinzufügen",
+    "helperRemove": "{name} von diesem Auftrag nehmen",
+    "failedHelper": "Beteiligte am Auftrag konnten nicht aktualisiert werden",
+    "clashPeople": "{count, plural, one {{names} ist belegt} other {{names} sind belegt}}"
   },
   "notifications": {
     "title": "Kundenbenachrichtigungen",

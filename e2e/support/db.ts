@@ -1067,6 +1067,47 @@ export async function jobAssignment(serviceRecordId: string): Promise<JobAssignm
   })
 }
 
+/** Everybody on a job beside its technician, as technician ids, sorted. */
+export async function jobHelperIds(serviceRecordId: string): Promise<string[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{ technicianId: string }>(
+      `select "technicianId" from service_record_helpers
+        where "serviceRecordId" = $1 order by "technicianId"`,
+      [serviceRecordId]
+    )
+    return result.rows.map((row) => row.technicianId)
+  })
+}
+
+/**
+ * When a job is booked to start. The column has no zone and holds UTC, which
+ * pg would read in the test process's zone, so it is read as UTC text.
+ */
+export async function jobStart(serviceRecordId: string): Promise<Date | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ start: string | null }>(
+      `select to_char("startDateTime", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as start
+         from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    const start = result.rows[0]?.start
+    return start ? new Date(start) : null
+  })
+}
+
+/** A workshop's technician by name, for one the desk made through the page. */
+export async function technicianIdNamed(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `select id from technicians where "organizationId" = $1 and name = $2 limit 1`,
+      [organizationId, name]
+    )
+    const id = result.rows[0]?.id
+    if (!id) throw new Error(`no technician named ${name}`)
+    return id
+  })
+}
+
 /** How many jobs a vehicle has, before and after an attempt to add one. */
 export async function jobCount(vehicleId: string): Promise<number> {
   return withDb(async (db) => {
@@ -1108,6 +1149,22 @@ export async function sessionCountFor(email: string): Promise<number> {
       [email]
     )
     return Number(result.rows[0].n)
+  })
+}
+
+/**
+ * Makes every open sign-in of a person look `minutes` old, the way a tab left
+ * open ages. What the app asks of a sign-in that is no longer recent cannot
+ * be waited for in a test.
+ */
+export async function ageSessionsOf(email: string, minutes: number): Promise<void> {
+  await withDb(async (db) => {
+    await db.query(
+      `update sessions s set "createdAt" = now() - make_interval(mins => $2::int)
+         from users u
+        where u.id = s."userId" and lower(u.email) = lower($1)`,
+      [email, minutes]
+    )
   })
 }
 

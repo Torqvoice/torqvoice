@@ -135,6 +135,53 @@ describe('SignInForm — Passkey', () => {
     })
   })
 
+  // What the passkey client returns when the browser's prompt is dismissed or
+  // times out (NotAllowedError) or is replaced by a newer one (AbortError):
+  // the WebAuthn code, with its own fixed message "Auth cancelled".
+  it.each([
+    'ERROR_PASSTHROUGH_SEE_CAUSE_PROPERTY',
+    'ERROR_CEREMONY_ABORTED',
+  ])('says nothing when the passkey prompt is closed (%s) and keeps the form usable', async (code) => {
+    mockSignInPasskey.mockResolvedValue({
+      data: null,
+      error: { code, message: 'Auth cancelled', status: 400, statusText: 'BAD_REQUEST' },
+    })
+    mockSignInEmail.mockResolvedValue({ error: null })
+    render(<SignInForm registrationDisabled={false} />)
+
+    await userEvent.click(screen.getByText(/sign in with passkey/i))
+    await waitFor(() => expect(mockSignInPasskey).toHaveBeenCalled())
+
+    expect(screen.queryByText(/auth cancelled/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(/passkey sign-in failed/i)).not.toBeInTheDocument()
+    expect(screen.getByText(/sign in with passkey/i).closest('button')).toBeEnabled()
+
+    await userEvent.type(screen.getByLabelText('Email'), 'user@test.com')
+    await userEvent.type(screen.getByLabelText('Password'), 'password123')
+    await userEvent.click(screen.getByText('Sign In'))
+    await waitFor(() => expect(mockPush).toHaveBeenCalledWith('/'))
+  })
+
+  it('shows a real message, not "Auth cancelled", when the browser refuses the passkey', async () => {
+    mockSignInPasskey.mockResolvedValue({
+      data: null,
+      error: {
+        code: 'ERROR_INVALID_RP_ID',
+        message: 'Auth cancelled',
+        status: 400,
+        statusText: 'BAD_REQUEST',
+      },
+    })
+    render(<SignInForm registrationDisabled={false} />)
+
+    await userEvent.click(screen.getByText(/sign in with passkey/i))
+
+    await waitFor(() => {
+      expect(screen.getByText(/passkey sign-in failed/i)).toBeInTheDocument()
+    })
+    expect(screen.queryByText(/auth cancelled/i)).not.toBeInTheDocument()
+  })
+
   it('shows fallback error when passkey sign-in throws', async () => {
     mockSignInPasskey.mockRejectedValue(new Error('Network error'))
     render(<SignInForm registrationDisabled={false} />)

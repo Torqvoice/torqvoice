@@ -62,6 +62,8 @@ export interface ServiceDetail {
   shopName: string | null
   techName: string | null
   technicianId: string | null
+  /** Everybody else on the job with that technician. */
+  helpers?: { technicianId: string }[]
   workBayId: string | null
   parts: string | null
   laborHours: number | null

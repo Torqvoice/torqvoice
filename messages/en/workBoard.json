@@ -90,7 +90,9 @@
     "endTime": "End Time",
     "failedDuration": "Failed to update duration",
     "failedTimes": "Failed to update times",
-    "endBeforeStart": "End time must be after start time"
+    "endBeforeStart": "End time must be after start time",
+    "alsoOnJob": "Also on this job",
+    "failedHelper": "Failed to update who is on the job"
   },
   "presenter": {
     "title": "Work Board",
@@ -160,6 +162,9 @@
     "none": "Nobody yet",
     "promised": "Promised",
     "promiseLate": "Late",
-    "promiseOverdue": "Promised to the customer before now"
+    "promiseOverdue": "Promised to the customer before now",
+    "alsoOnJob": "Also on the job",
+    "with": "With {name}",
+    "helping": "Helping"
   }
 }

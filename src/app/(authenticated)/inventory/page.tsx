@@ -1,3 +1,4 @@
+import { initialCatalogMarkupPercent } from '@/features/inventory/Lib/partPricing'
 import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
@@ -48,6 +49,7 @@ export default async function InventoryPage({
     getDisplaySettings([
       SETTING_KEYS.CURRENCY_CODE,
       SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
+      SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
       SETTING_KEYS.INVENTORY_DEFAULT_UNIT,
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.MEASURE_SYSTEM,
@@ -71,7 +73,12 @@ export default async function InventoryPage({
   const tags = tagsResult.success && tagsResult.data ? tagsResult.data : []
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
-  const markupMultiplier = Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1.0
+  const savedMarkupMultiplier = settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]
+  const markupMultiplier = Number(savedMarkupMultiplier) || 1.0
+  const applyMarkupPercent = initialCatalogMarkupPercent(
+    savedMarkupMultiplier,
+    settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]
+  )
 
   return (
     <>
@@ -86,6 +93,7 @@ export default async function InventoryPage({
           tags={tags}
           currencyCode={currencyCode}
           markupMultiplier={markupMultiplier}
+          applyMarkupPercent={applyMarkupPercent}
           defaultUnit={settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''}
           unitSystem={measureSystemIn(settings)}
           sortBy={sort.sortBy || ''}

@@ -5,6 +5,7 @@
     "clearAll": "Wyczyść wszystko",
     "confirmClearAll": "Usunąć wszystkie powiadomienia?",
     "clearAllFailed": "Nie udało się wyczyścić powiadomień",
+    "deleteFailed": "Nie udało się usunąć powiadomienia",
     "empty": "Brak powiadomień",
     "confirmDelete": "Czy na pewno?",
     "delete": "Usuń",

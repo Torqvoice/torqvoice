@@ -90,7 +90,9 @@
     "endTime": "Sluttid",
     "failedDuration": "Kunne ikke oppdatere varighet",
     "failedTimes": "Kunne ikke oppdatere tider",
-    "endBeforeStart": "Sluttid må være etter starttid"
+    "endBeforeStart": "Sluttid må være etter starttid",
+    "alsoOnJob": "Også på denne jobben",
+    "failedHelper": "Kunne ikke oppdatere hvem som er på jobben"
   },
   "presenter": {
     "title": "Arbeidstavle",
@@ -160,6 +162,9 @@
     "none": "Ingen ennå",
     "promised": "Lovet",
     "promiseLate": "Forsinket",
-    "promiseOverdue": "Lovet kunden tidligere enn nå"
+    "promiseOverdue": "Lovet kunden tidligere enn nå",
+    "alsoOnJob": "Også på jobben",
+    "with": "Med {name}",
+    "helping": "Hjelper til"
   }
 }

@@ -585,7 +585,17 @@ export function ConnectionSettings({
               variant="outline"
               size="sm"
               onClick={() =>
-                run('test', () => testIntegration(manifest.id), t('connection.testPassed'))
+                run('test', async () => {
+                  const res = await testIntegration(manifest.id)
+                  // The action succeeds whenever the check ran. What the check
+                  // found is in the data, and a failed one used to be told
+                  // "Connection works" in green above the red banner.
+                  if (res.success && res.data) {
+                    if (res.data.ok) toast.success(t('connection.testPassed'))
+                    else toast.error(res.data.message || t('connection.testFailed'))
+                  }
+                  return res
+                })
               }
               disabled={busy !== null}
             >

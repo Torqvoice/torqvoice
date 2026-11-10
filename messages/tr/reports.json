@@ -150,7 +150,7 @@
       "tableTitle": "Kaydedilen ve faturalanan",
       "clocked": "Kaydedilen",
       "billed": "Faturalanan",
-      "hint": "Kaydedilen saatler zaman sayacından gelir. Faturalanan saatler, teknisyene atanan ve aralıkta başlayan işlerdeki işçilik satırlarıdır. Verimlilik, faturalananın kaydedilene bölümüdür.",
+      "hint": "Kaydedilen saatler zaman sayacından gelir. Faturalanan saatler, teknisyene atanan ve aralıkta başlayan işlerdeki işçilik satırlarıdır. Birden fazla kişinin çalıştığı bir işin faturalanan saatleri, her birinin bu işe kaydettiği süreye göre paylaştırılır; içlerinden biri bu işe süre kaydetmediyse saatler teknisyende kalır. Verimlilik, faturalananın kaydedilene bölümüdür.",
       "noClock": "Süre yok",
       "jobsClocked": "Kaydedilen işler"
     }

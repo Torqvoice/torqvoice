@@ -159,7 +159,8 @@
     "awayPart": "Nėra {when}",
     "awayConflict": "Nėra ({reason})",
     "awayHeading": "Technikas tuo metu nedirba",
-    "bookedAnyway": "Šį laiką vis tiek galite palikti, jei darbas suderintas."
+    "bookedAnyway": "Šį laiką vis tiek galite palikti, jei darbas suderintas.",
+    "awayHeadingTeam": "Kažkas iš dirbančių prie šio darbo tuo metu nedirba"
   },
   "calendar": {
     "closure": "Uždaryta",

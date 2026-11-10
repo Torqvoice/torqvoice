@@ -88,6 +88,7 @@
     "auth_login": "Usuario conectado",
     "auth_sessionRevoked": "Cerró sesión en un dispositivo",
     "auth_sessionsRevoked": "Cerró sesión en otros dispositivos",
+    "auth_passwordSet": "Estableció una contraseña de cuenta",
     "auth_loginFailed": "Intento de inicio de sesión fallido",
     "auth_register": "Usuario registrado",
     "auth_passwordReset": "Restablecimiento de contraseña solicitado",

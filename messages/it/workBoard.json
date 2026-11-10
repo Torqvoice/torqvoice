@@ -90,7 +90,9 @@
     "endTime": "Ora di fine",
     "failedDuration": "Impossibile aggiornare la durata",
     "failedTimes": "Impossibile aggiornare gli orari",
-    "startTime": "Ora di inizio"
+    "startTime": "Ora di inizio",
+    "alsoOnJob": "Anche su questo lavoro",
+    "failedHelper": "Impossibile aggiornare chi lavora a questo lavoro"
   },
   "presenter": {
     "title": "Lavagna di Lavoro",
@@ -160,6 +162,9 @@
     "none": "Ancora nessuno",
     "promised": "Promesso",
     "promiseLate": "In ritardo",
-    "promiseOverdue": "Promesso al cliente per un momento già passato"
+    "promiseOverdue": "Promesso al cliente per un momento già passato",
+    "alsoOnJob": "Anche sul lavoro",
+    "with": "Con {name}",
+    "helping": "In aiuto"
   }
 }

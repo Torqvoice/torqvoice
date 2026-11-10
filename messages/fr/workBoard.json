@@ -90,7 +90,9 @@
     "endTime": "Heure de fin",
     "failedDuration": "Échec de la mise à jour de la durée",
     "failedTimes": "Échec de la mise à jour des horaires",
-    "startTime": "Heure de début"
+    "startTime": "Heure de début",
+    "alsoOnJob": "Aussi sur ce travail",
+    "failedHelper": "Échec de la mise à jour des intervenants"
   },
   "presenter": {
     "title": "Tableau de Bord des Travaux",
@@ -160,6 +162,9 @@
     "none": "Personne pour l'instant",
     "promised": "Promis",
     "promiseLate": "En retard",
-    "promiseOverdue": "Promis au client pour un moment déjà passé"
+    "promiseOverdue": "Promis au client pour un moment déjà passé",
+    "alsoOnJob": "Aussi sur le travail",
+    "with": "Avec {name}",
+    "helping": "En renfort"
   }
 }

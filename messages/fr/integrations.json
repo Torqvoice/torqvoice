@@ -1085,5 +1085,17 @@
     "restoredBySupport": "L'assistance Torqvoice l'a fait à votre demande. Motif indiqué : {reason}",
     "noReason": "aucun",
     "restoredUndo": "Une copie de sécurité de l'atelier tel qu'il était juste avant la restauration a d'abord été réalisée et est conservée pendant 90 jours. Contactez l'assistance pour y revenir."
+  },
+  "aiErrors": {
+    "modelAccess": "Cette clé d'API n'a pas accès au modèle sélectionné. Choisissez-en un autre dans Paramètres → Intégrations.",
+    "spendLimit": "Ce compte OpenAI a atteint sa limite de dépenses. Vérifiez les limites sur platform.openai.com.",
+    "noCredit": "Ce compte OpenAI n'a plus de crédit. Ajoutez un moyen de paiement sur platform.openai.com.",
+    "keyRejected": "Le fournisseur d'IA a refusé la clé d'API. Vérifiez-la dans Paramètres → Intégrations.",
+    "noUsableCredit": "Le fournisseur d'IA n'indique aucun crédit utilisable pour cette clé d'API.",
+    "modelUnavailable": "Le fournisseur d'IA ne propose pas le modèle sélectionné. Choisissez-en un autre dans Paramètres → Intégrations.",
+    "imageTooLarge": "L'image était trop volumineuse pour le fournisseur d'IA.",
+    "rateLimited": "Le fournisseur d'IA limite les requêtes de cette clé d'API. Réessayez dans un instant.",
+    "providerDown": "Le fournisseur d'IA est indisponible pour le moment. Réessayez dans un instant.",
+    "unexpected": "Le fournisseur d'IA a renvoyé une réponse inattendue."
   }
 }

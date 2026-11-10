@@ -23,6 +23,7 @@ type NotificationState = {
   markRead: (id: string) => void
   markAllRead: () => void
   removeNotification: (id: string) => void
+  restoreNotification: (notification: Notification) => void
   clearAll: () => void
   setConnected: (connected: boolean) => void
   setPanelOpen: (open: boolean) => void
@@ -65,6 +66,23 @@ export const useNotificationStore = create<NotificationState>((set) => ({
       return {
         notifications: state.notifications.filter((n) => n.id !== id),
         unreadCount: Math.max(0, state.unreadCount - (target && !target.read ? 1 : 0)),
+      }
+    }),
+  // Puts back a notification whose delete did not go through. The feed is
+  // newest first, so it goes back by its date rather than by the place it
+  // had: others can have arrived or gone while the request was out.
+  restoreNotification: (notification) =>
+    set((state) => {
+      if (state.notifications.some((n) => n.id === notification.id)) return state
+      const createdAt = new Date(notification.createdAt).getTime()
+      const older = state.notifications.findIndex(
+        (n) => new Date(n.createdAt).getTime() < createdAt
+      )
+      const notifications = [...state.notifications]
+      notifications.splice(older === -1 ? notifications.length : older, 0, notification)
+      return {
+        notifications,
+        unreadCount: state.unreadCount + (notification.read ? 0 : 1),
       }
     }),
   clearAll: () => set({ notifications: [], unreadCount: 0 }),

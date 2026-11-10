@@ -431,6 +431,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                   initialStartDateTime={formState.initialData.startDateTime}
                   initialEndDateTime={formState.initialData.endDateTime}
                   initialTechnicianId={record.technicianId}
+                  initialHelperIds={record.helpers?.map((h) => h.technicianId)}
                   initialWorkBayId={record.workBayId}
                   initialPromisedAt={
                     record.promisedAt ? new Date(record.promisedAt).toISOString() : null

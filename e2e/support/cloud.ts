@@ -72,6 +72,27 @@ export async function routeGoogleToStandin(context: BrowserContext): Promise<voi
   })
 }
 
+/**
+ * Presses "Continue with Google" on the page that is open and picks an
+ * account in the stand-in's chooser.
+ */
+export async function chooseGoogleAccount(page: Page, email: string): Promise<void> {
+  await settle(page)
+  await expect(async () => {
+    await page.getByRole('button', { name: 'Continue with Google' }).click()
+    await expect(page.getByRole('heading', { name: 'Choose an account' })).toBeVisible({
+      timeout: 5_000,
+    })
+  }).toPass({ timeout: 30_000 })
+  await page.getByRole('button', { name: email, exact: true }).click()
+}
+
+/** Opens `from`, presses "Continue with Google" and picks an account in the chooser. */
+export async function continueWithGoogle(page: Page, from: string, email: string): Promise<void> {
+  await page.goto(from)
+  await chooseGoogleAccount(page, email)
+}
+
 /** Signs up with a password on the cloud sign-up page, landing in onboarding. */
 export async function signUpWithPassword(
   page: Page,

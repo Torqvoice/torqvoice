@@ -95,6 +95,7 @@ model Organization {
   backupRuns                  BackupRun[]
   workshopClosures            WorkshopClosure[]
   technicianAbsences          TechnicianAbsence[]
+  serviceRecordHelpers        ServiceRecordHelper[]
   platformBackup              PlatformBackup?
 
   @@map("organizations")

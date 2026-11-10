@@ -63,6 +63,11 @@ async function joinTeam(browser: Browser, email: string, name: string) {
   }).toPass({ timeout: 30_000 })
   await page.getByText('Someone in the office').click()
   await page.locator('#member-email').fill(email)
+  // The form sends nothing until a role is chosen; these two start with none
+  // and are given theirs through the database below.
+  const dialog = page.getByRole('dialog').filter({ has: page.locator('#member-email') })
+  await dialog.getByRole('combobox').click()
+  await page.getByRole('option', { name: 'No role', exact: true }).click()
   await page.getByRole('button', { name: 'Invite', exact: true }).click()
   await expect(page.getByText(email).first()).toBeVisible({ timeout: 30_000 })
   await owner.close()

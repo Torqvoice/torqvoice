@@ -1085,5 +1085,17 @@
     "restoredBySupport": "Der Torqvoice-Support hat dies auf Ihre Anfrage hin durchgeführt. Angegebener Grund: {reason}",
     "noReason": "keiner angegeben",
     "restoredUndo": "Vorher wurde eine Sicherheitskopie der Werkstatt im Zustand direkt vor der Wiederherstellung erstellt, die 90 Tage lang aufbewahrt wird. Wenden Sie sich an den Support, um zu ihr zurückzukehren."
+  },
+  "aiErrors": {
+    "modelAccess": "Dieser API-Schlüssel hat keinen Zugriff auf das ausgewählte Modell. Wählen Sie unter Einstellungen → Integrationen ein anderes.",
+    "spendLimit": "Dieses OpenAI-Konto hat sein Ausgabenlimit erreicht. Prüfen Sie die Limits auf platform.openai.com.",
+    "noCredit": "Dieses OpenAI-Konto hat kein Guthaben mehr. Hinterlegen Sie eine Zahlungsmethode auf platform.openai.com.",
+    "keyRejected": "Der KI-Anbieter hat den API-Schlüssel abgelehnt. Prüfen Sie ihn unter Einstellungen → Integrationen.",
+    "noUsableCredit": "Der KI-Anbieter meldet kein nutzbares Guthaben für diesen API-Schlüssel.",
+    "modelUnavailable": "Der KI-Anbieter bietet das ausgewählte Modell nicht an. Wählen Sie unter Einstellungen → Integrationen ein anderes.",
+    "imageTooLarge": "Das Bild war für den KI-Anbieter zu groß.",
+    "rateLimited": "Der KI-Anbieter begrenzt die Anfragen dieses API-Schlüssels. Versuchen Sie es gleich noch einmal.",
+    "providerDown": "Der KI-Anbieter ist gerade nicht erreichbar. Versuchen Sie es gleich noch einmal.",
+    "unexpected": "Der KI-Anbieter hat eine unerwartete Antwort geliefert."
   }
 }

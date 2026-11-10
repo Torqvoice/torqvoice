@@ -91,6 +91,7 @@ const serviceRecordTree = {
   payments: true,
   statusReports: true,
   timeEntries: true,
+  helpers: true,
 } as const
 
 /** In file order. */
@@ -203,6 +204,7 @@ const DATASETS: readonly Dataset[] = [
           attachments: true,
           payments: true,
           timeEntries: true,
+          helpers: true,
         },
       }),
   },

@@ -425,13 +425,15 @@ export function InspectionItemRow({
     const url = imageUrls[index]
     if (!url) return
     setImageUrls((prev) => prev.filter((u) => u !== url))
-    const result = await removeInspectionItemMedia({ itemId: item.id, url })
-    if (result.success && result.data) {
+    // A request that never reaches the server throws instead of answering;
+    // the photo is still there, so it comes back like one the server refused.
+    const result = await removeInspectionItemMedia({ itemId: item.id, url }).catch(() => null)
+    if (result?.success && result.data) {
       setImageUrls(result.data)
       onChanged(item.id, { condition, photoCount: result.data.length })
     } else {
       setImageUrls((prev) => (prev.includes(url) ? prev : [...prev, url]))
-      toast.error(result.error || t('saveFailed'))
+      toast.error(result?.error || t('saveFailed'))
     }
   }
 

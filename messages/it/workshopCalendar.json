@@ -159,7 +159,8 @@
     "awayPart": "Assente {when}",
     "awayConflict": "Assente ({reason})",
     "awayHeading": "Il tecnico è assente in quel momento",
-    "bookedAnyway": "Puoi comunque mantenere questo orario se il lavoro è concordato."
+    "bookedAnyway": "Puoi comunque mantenere questo orario se il lavoro è concordato.",
+    "awayHeadingTeam": "Qualcuno su questo lavoro è assente in quel momento"
   },
   "calendar": {
     "closure": "Chiuso",

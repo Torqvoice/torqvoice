@@ -90,7 +90,9 @@
     "endTime": "Eindtijd",
     "failedDuration": "Kan duur niet bijwerken",
     "failedTimes": "Kan tijden niet bijwerken",
-    "startTime": "Starttijd"
+    "startTime": "Starttijd",
+    "alsoOnJob": "Ook op deze klus",
+    "failedHelper": "Bijwerken wie op de klus staat mislukt"
   },
   "presenter": {
     "title": "Werkbord",
@@ -160,6 +162,9 @@
     "none": "Nog niemand",
     "promised": "Beloofd",
     "promiseLate": "Te laat",
-    "promiseOverdue": "Aan de klant beloofd voor een moment dat al voorbij is"
+    "promiseOverdue": "Aan de klant beloofd voor een moment dat al voorbij is",
+    "alsoOnJob": "Ook op de klus",
+    "with": "Met {name}",
+    "helping": "Helpt mee"
   }
 }
