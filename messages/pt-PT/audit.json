@@ -88,6 +88,7 @@
     "auth_login": "Utilizador iniciou sessão",
     "auth_sessionRevoked": "Terminou a sessão num dispositivo",
     "auth_sessionsRevoked": "Terminou a sessão nos outros dispositivos",
+    "auth_passwordSet": "Definiu uma palavra-passe da conta",
     "auth_loginFailed": "Tentativa de início de sessão falhada",
     "auth_register": "Utilizador registado",
     "auth_passwordReset": "Reposição da palavra-passe pedida",

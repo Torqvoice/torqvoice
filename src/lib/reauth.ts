@@ -2,7 +2,8 @@
  * What the delete-account and delete-workshop dialogs ask for before the
  * server will go ahead, and the sentences it refuses with. Shared by the
  * server check (reauth.server.ts) and the dialogs, which show the refusal in
- * the person's own language by looking its key up here.
+ * the person's own language by looking its key up here. Giving an account
+ * with no password its first one asks for the same recent sign-in.
  *
  * - 'password': the account has a password, and must type it.
  * - 'totp': no password, but two-factor is on: a code from the app.
@@ -21,6 +22,7 @@ export const REAUTH_ERRORS = {
   signInAgainAccount: 'Sign in again before deleting your account.',
   signInAgainWorkshop: 'Sign in again before deleting the workshop.',
   signInAgainRestore: 'Sign in again before restoring the workshop.',
+  signInAgainPassword: 'Sign in again before setting a password.',
 } as const
 
 export type ReauthError = keyof typeof REAUTH_ERRORS

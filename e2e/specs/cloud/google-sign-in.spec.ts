@@ -1,7 +1,8 @@
-import { expect, type Page, test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import {
   clearGoogleStandin,
   completeOnboarding,
+  continueWithGoogle,
   googleStandin,
   registerGoogleAccount,
   routeGoogleToStandin,
@@ -73,19 +74,6 @@ test.beforeAll(async ({ browser }) => {
 test.beforeEach(async ({ context }) => {
   await routeGoogleToStandin(context)
 })
-
-/** Presses "Continue with Google" and picks an account in the chooser. */
-async function continueWithGoogle(page: Page, from: string, email: string): Promise<void> {
-  await page.goto(from)
-  await settle(page)
-  await expect(async () => {
-    await page.getByRole('button', { name: 'Continue with Google' }).click()
-    await expect(page.getByRole('heading', { name: 'Choose an account' })).toBeVisible({
-      timeout: 5_000,
-    })
-  }).toPass({ timeout: 30_000 })
-  await page.getByRole('button', { name: email, exact: true }).click()
-}
 
 test.describe('Google sign-in', () => {
   test('is offered on the sign-in and the sign-up page', async ({ page }) => {

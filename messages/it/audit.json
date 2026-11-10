@@ -88,6 +88,7 @@
     "auth_login": "Utente connesso",
     "auth_sessionRevoked": "Dispositivo disconnesso",
     "auth_sessionsRevoked": "Altri dispositivi disconnessi",
+    "auth_passwordSet": "Password dell'account impostata",
     "auth_loginFailed": "Tentativo di accesso fallito",
     "auth_register": "Utente registrato",
     "auth_passwordReset": "Reimpostazione password richiesta",

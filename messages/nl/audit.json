@@ -88,6 +88,7 @@
     "auth_login": "Gebruiker ingelogd",
     "auth_sessionRevoked": "Apparaat uitgelogd",
     "auth_sessionsRevoked": "Andere apparaten uitgelogd",
+    "auth_passwordSet": "Accountwachtwoord ingesteld",
     "auth_loginFailed": "Mislukte inlogpoging",
     "auth_register": "Gebruiker geregistreerd",
     "auth_passwordReset": "Wachtwoord reset aangevraagd",
