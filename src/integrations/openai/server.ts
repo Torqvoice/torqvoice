@@ -21,7 +21,12 @@ export const connector: ConnectorServer = {
     const apiKey = apiKeyOf(ctx)
     if (!apiKey) return { ok: false, message: 'OpenAI: an API key is required' }
     const model = chosenModelOf(ctx)
-    if (model) return probeAiModel({ provider: 'openai', apiKey, model })
+    if (model) {
+      const probe = await probeAiModel({ provider: 'openai', apiKey, model })
+      // A provider that was busy or down says nothing about the key, and a
+      // failed test turns the connection off: fall through to the key check.
+      if (!probe.inconclusive) return { ok: probe.ok, message: probe.message }
+    }
     const res = await ctx.http.fetch(`${OPENAI_BASE}/models`, { headers: openAiHeaders(apiKey) })
     if (res.status === 401 || res.status === 403)
       return { ok: false, message: 'OpenAI rejected the key' }

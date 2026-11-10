@@ -2,7 +2,7 @@ import 'server-only'
 import { aiSetup } from '@/features/integrations/Lib/ai'
 import { localeNames, type Locale } from '@/i18n/config'
 import OpenAI from 'openai'
-import { describeAiError } from '@/lib/ai-error'
+import { describeAiError, isAccountLimitError } from '@/lib/ai-error'
 import {
   ANTHROPIC_BASE,
   ANTHROPIC_VERSION,
@@ -311,6 +311,20 @@ function cutOffByTokenCap(error: unknown): boolean {
   )
 }
 
+/** How long a connection test waits on the model before it gives up. */
+const PROBE_TIMEOUT_MS = 30_000
+
+/**
+ * A failure that says nothing about the key: the provider was busy, down or
+ * slow, or never answered. A real rate limit is one of these; an account
+ * that cannot pay is not, though it arrives under the same status.
+ */
+function providerTrouble(error: unknown): boolean {
+  if (!(error instanceof OpenAI.APIError)) return false
+  if (error.status === undefined || error.status >= 500) return true
+  return error.status === 429 && !isAccountLimitError(error)
+}
+
 /**
  * One tiny completion on the model the workshop chose, for a connector's
  * connection test. Listing models proves the key exists; only a completion
@@ -320,20 +334,36 @@ function cutOffByTokenCap(error: unknown): boolean {
  *
  * Any reply passes, an empty or cut-off one included: what it says is not
  * the question. No temperature is sent, because several models refuse one.
+ *
+ * It is asked once and not for long. The SDK would otherwise try a refusal
+ * three times and wait as long as the provider told it to, with somebody
+ * watching a spinner. And a failed test switches the connection off, so when
+ * the provider was merely busy the answer is `inconclusive`: the caller
+ * falls back to the check it had before rather than turn off an AI
+ * connection that works.
  */
-export async function probeAiModel(config: AiConfig): Promise<{ ok: boolean; message?: string }> {
+export async function probeAiModel(
+  config: AiConfig
+): Promise<{ ok: boolean; message?: string; inconclusive?: boolean }> {
   const client = createClient(config)
   try {
-    await client.chat.completions.create({
-      model: config.model,
-      messages: [{ role: 'user', content: 'Reply with OK.' }],
-      ...completionTuning(config, PROBE_TOKENS),
-    })
+    await client.chat.completions.create(
+      {
+        model: config.model,
+        messages: [{ role: 'user', content: 'Reply with OK.' }],
+        ...completionTuning(config, PROBE_TOKENS),
+      },
+      { maxRetries: 0, timeout: PROBE_TIMEOUT_MS }
+    )
     return { ok: true }
   } catch (error) {
     if (cutOffByTokenCap(error)) return { ok: true }
     console.error('[ai] connection test failed:', error)
-    return { ok: false, message: describeAiError(error) }
+    return {
+      ok: false,
+      message: describeAiError(error),
+      ...(providerTrouble(error) && { inconclusive: true }),
+    }
   }
 }
 

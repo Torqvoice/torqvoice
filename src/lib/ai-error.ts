@@ -15,6 +15,19 @@ const SPEND_LIMIT_CODES = new Set([
 ])
 
 /**
+ * Whether the provider refused because of the account's money rather than
+ * its traffic: no credit, or a spending limit reached. Both travel as 429,
+ * and unlike a real rate limit neither goes away by trying again.
+ */
+export function isAccountLimitError(error: unknown): boolean {
+  if (!(error instanceof OpenAI.APIError)) return false
+  const code = typeof error.code === 'string' ? error.code : ''
+  return (
+    NO_CREDIT_CODES.has(code) || SPEND_LIMIT_CODES.has(code) || error.type === 'insufficient_quota'
+  )
+}
+
+/**
  * Turns whatever a provider threw into one short line fit for a toast.
  *
  * A rejected key rarely comes back as tidy JSON: a gateway in front of the

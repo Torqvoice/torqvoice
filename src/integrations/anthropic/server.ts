@@ -26,7 +26,12 @@ export const connector: ConnectorServer = {
     const apiKey = apiKeyOf(ctx)
     if (!apiKey) return { ok: false, message: 'Anthropic: an API key is required' }
     const model = chosenModelOf(ctx)
-    if (model) return probeAiModel({ provider: 'anthropic', apiKey, model })
+    if (model) {
+      const probe = await probeAiModel({ provider: 'anthropic', apiKey, model })
+      // A provider that was busy or down says nothing about the key, and a
+      // failed test turns the connection off: fall through to the key check.
+      if (!probe.inconclusive) return { ok: probe.ok, message: probe.message }
+    }
     const res = await ctx.http.fetch(`${ANTHROPIC_BASE}/models?limit=1`, {
       headers: anthropicHeaders(apiKey),
     })

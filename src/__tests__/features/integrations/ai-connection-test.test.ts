@@ -156,6 +156,59 @@ describe('AI connection test', () => {
       })
     })
 
+    it('asks once, so a refusal is not sat through three times', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      const calls = provider(() =>
+        refusal(429, {
+          message: 'You exceeded your current quota, please check your plan and billing details.',
+          type: 'insufficient_quota',
+          code: 'insufficient_quota',
+        })
+      )
+
+      await openai.test(connection('openai', { model: 'gpt-4.1' }))
+
+      expect(calls).toHaveLength(1)
+    })
+
+    it('does not fail a working connection because the provider was busy', async () => {
+      // A failed test switches the connection off, and a rate limit says
+      // nothing about the key: the key check decides instead.
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      provider(() =>
+        refusal(429, {
+          message: 'Rate limit reached for requests.',
+          type: 'requests',
+          code: 'rate_limit_exceeded',
+        })
+      )
+      const ctx = connection('openai', { model: 'gpt-4.1' })
+
+      await expect(openai.test(ctx)).resolves.toEqual({ ok: true })
+      expect(ctx.http.fetch).toHaveBeenCalledWith(
+        'https://api.openai.com/v1/models',
+        expect.objectContaining({ headers: { Authorization: 'Bearer sk-test' } })
+      )
+    })
+
+    it('nor because the provider was down', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      provider(() => json(503, { error: { message: 'Service unavailable', type: 'server_error' } }))
+
+      await expect(openai.test(connection('openai', { model: 'gpt-4.1' }))).resolves.toEqual({
+        ok: true,
+      })
+    })
+
+    it('still fails when the provider is busy and the key check fails too', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      provider(() => json(503, { error: { message: 'Service unavailable', type: 'server_error' } }))
+
+      await expect(
+        openai.test(connection('openai', { model: 'gpt-4.1' }, json(401, { error: {} })))
+      ).resolves.toEqual({ ok: false, message: 'OpenAI rejected the key' })
+    })
+
     it('lists models, and asks for no completion, while no model is chosen', async () => {
       const calls = provider(() => cutOff('gpt-4.1'))
       const ctx = connection('openai', {})
@@ -206,6 +259,18 @@ describe('AI connection test', () => {
       expect(calls[0].url).toBe('https://api.anthropic.com/v1/chat/completions')
       expect(calls[0].body.model).toBe('claude-opus-5-5')
       expect(calls[0].body).not.toHaveProperty('temperature')
+    })
+
+    it('does not fail a working connection because the provider was overloaded', async () => {
+      vi.spyOn(console, 'error').mockImplementation(() => undefined)
+      provider(() => json(529, { error: { message: 'Overloaded', type: 'overloaded_error' } }))
+      const ctx = connection('anthropic', { model: 'claude-sonnet-4-6' })
+
+      await expect(anthropic.test(ctx)).resolves.toEqual({ ok: true })
+      expect(ctx.http.fetch).toHaveBeenCalledWith(
+        'https://api.anthropic.com/v1/models?limit=1',
+        expect.anything()
+      )
     })
 
     it('lists models, and asks for no completion, while no model is chosen', async () => {
