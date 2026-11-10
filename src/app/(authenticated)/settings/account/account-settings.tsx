@@ -71,6 +71,7 @@ export function AccountSettings({
   const { data: session } = useSession()
   const router = useRouter()
   const t = useTranslations('settings')
+  const tCommon = useTranslations('common')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
@@ -317,12 +318,17 @@ export function AccountSettings({
   // again means signing out first. It comes back here afterwards.
   const handleSignInAgain = async () => {
     setLeavingToSignIn(true)
+    let signedOut = true
     try {
-      await authClient.signOut()
+      const result = await authClient.signOut()
+      if (result?.error) signedOut = false
     } catch {
+      signedOut = false
+    }
+    if (!signedOut) {
       // Without a sign-out the sign-in page would bounce straight back here.
       setLeavingToSignIn(false)
-      toast.error(t('account.failedSetPassword'))
+      toast.error(tCommon('errors.unexpected'))
       return
     }
     window.location.assign(signInUrlFor('/settings/account'))

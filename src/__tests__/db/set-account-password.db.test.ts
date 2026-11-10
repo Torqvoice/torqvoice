@@ -84,10 +84,8 @@ beforeAll(async () => {
   // What a first "Continue with Google" leaves behind: a person, and one
   // account row that says Google vouches for them. No credential row.
   const ctx = await auth.$context
-  const user = await ctx.internalAdapter.createUser({
-    email: EMAIL,
-    name: 'Google Only',
-    emailVerified: true,
+  const user = await db.user.create({
+    data: { email: EMAIL, name: 'Google Only', emailVerified: true },
   })
   userId = user.id
   await ctx.internalAdapter.linkAccount({

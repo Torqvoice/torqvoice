@@ -127,6 +127,27 @@ describe('an account that signed up with Google and has no password', () => {
     expect(signOut.mock.invocationCallOrder[0]).toBeLessThan(assign.mock.invocationCallOrder[0])
   })
 
+  it('stays on the page and says so when signing out for the new sign-in fails', async () => {
+    setAccountPassword.mockResolvedValue({
+      success: false,
+      error: 'Sign in again before setting a password.',
+    })
+    // Still signed in: the sign-in page would only send them straight back
+    signOut.mockResolvedValue({ data: null, error: { message: 'Server error', status: 500 } })
+    renderPage(false)
+    typePasswords('correct horse battery')
+    fireEvent.click(screen.getByRole('button', { name: 'Set Password' }))
+    await screen.findByRole('alert')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Sign in again' }))
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('An unexpected error occurred. Please try again.')
+    )
+    expect(assign).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Sign in again' })).toBeEnabled()
+  })
+
   it('sends nothing when the two passwords differ', () => {
     renderPage(false)
     typePasswords('correct horse battery', 'correct horse batteri')
