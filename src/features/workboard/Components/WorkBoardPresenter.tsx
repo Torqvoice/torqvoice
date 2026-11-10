@@ -1,6 +1,7 @@
 'use client'
 
 import { useBoardCalendar } from '../hooks/useBoardCalendar'
+import { useWorkshopDayRollover } from '../hooks/useWorkshopDayRollover'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import { DndContext } from '@dnd-kit/core'
@@ -274,20 +275,15 @@ export function WorkBoardPresenter({
     loadWeekData(getWeekStart(new Date(`${today}T12:00:00`), weekStartDay))
   }
 
-  // A wall display moves on to the next day by itself, at the workshop's
-  // midnight. Checked every minute rather than timed to the browser's own
-  // midnight, which is a different moment when the screen sits in another zone.
-  useEffect(() => {
-    let current = boardNow(timezone).dayKey
-    const timer = setInterval(() => {
-      const today = boardNow(timezone).dayKey
-      if (today === current) return
-      current = today
+  // A wall display moves on to the next day by itself, at the workshop's midnight.
+  const showNewDay = useCallback(
+    (today: string) => {
       setSelectedDate(today)
       loadWeekData(getWeekStart(new Date(`${today}T12:00:00`), weekStartDay))
-    }, 60_000)
-    return () => clearInterval(timer)
-  }, [loadWeekData, setSelectedDate, weekStartDay, timezone])
+    },
+    [loadWeekData, setSelectedDate, weekStartDay]
+  )
+  useWorkshopDayRollover(timezone, showNewDay)
 
   const dateLabel =
     period === 'week' ? formatWeekRange(weekStart, locale) : formatDayDate(selectedDate, locale)

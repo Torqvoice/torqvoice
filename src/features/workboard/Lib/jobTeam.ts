@@ -12,8 +12,8 @@ import type { TxClient } from '@/lib/db'
  * technician is: it is in their day and on their phone.
  *
  * Two rules keep "who is on this job" one list with nobody in it twice, and
- * every write that changes a job's technician goes through `settleHelpers`
- * to hold them:
+ * every write that changes a job's technician takes `lockJobTeam` and then
+ * goes through `settleHelpers` to hold them:
  *
  * - The technician is never also a helper.
  * - A job with no technician has no helpers.
@@ -58,6 +58,32 @@ export function jobScopeFor(ctx: {
   technicianIds: string[]
 }): ServiceRecordWhereInput {
   return ctx.isAdmin ? {} : onJobWhere(ctx.technicianIds)
+}
+
+/**
+ * Hold the job's team still for the rest of the transaction, and say who
+ * leads it now.
+ *
+ * Every write that changes a job's technician or its helpers starts here.
+ * Two desks changing the same team at once then take turns: the second waits
+ * on the row lock until the first commits, and reads the technician the
+ * first one left, not the one its page showed. Without it a helper could be
+ * added to a job the other desk had just emptied, or the old technician
+ * kept on as a helper of themselves, and a helper row is what opens the job
+ * in the technician app.
+ *
+ * Scoped by workshop in the statement itself, so another workshop's job is
+ * neither locked nor read. Null when the job is not this workshop's.
+ */
+export async function lockJobTeam(
+  tx: TxClient,
+  args: { organizationId: string; serviceRecordId: string }
+): Promise<{ technicianId: string | null } | null> {
+  const rows = await tx.$queryRaw<{ technicianId: string | null }[]>`
+    SELECT "technicianId" FROM "public"."service_records"
+    WHERE id = ${args.serviceRecordId} AND "organizationId" = ${args.organizationId}
+    FOR UPDATE`
+  return rows[0] ? { technicianId: rows[0].technicianId } : null
 }
 
 /**

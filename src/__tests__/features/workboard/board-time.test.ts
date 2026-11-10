@@ -12,6 +12,7 @@ import type { WorkBoardJob } from '@/features/workboard/Actions/boardActions'
 import {
   boardNow,
   fromBoardDate,
+  fromBoardSpan,
   toBoardDate,
   toBoardJob,
 } from '@/features/workboard/utils/board-time'
@@ -129,5 +130,66 @@ describe('boardNow', () => {
       dayKey: '2026-11-10',
       minutes: 15 * 60 + 30,
     })
+  })
+})
+
+/**
+ * A job dragged across the night the viewer's clocks change. The workshop is
+ * on UTC, which never changes; the screen is in Oslo, which leaves summer
+ * time early on 25 October 2026. A two day job over that night is 49 hours
+ * apart on the Oslo screen, and still 48 hours long.
+ */
+describe('a job moved across the viewer’s clock change', () => {
+  const stored = job('2026-10-24T08:00:00.000Z', '2026-10-26T08:00:00.000Z')
+  const HOUR = 60 * 60 * 1000
+
+  it('keeps its real length when it is moved to another week', () => {
+    viewerIn('Europe/Oslo')
+    const drawn = toBoardJob(stored, 'UTC')
+    const drawnStart = new Date(drawn.startDateTime as string)
+    const drawnEnd = new Date(drawn.endDateTime as string)
+    // The premise: on the Oslo screen the two ends are 49 hours apart.
+    expect(drawnEnd.getTime() - drawnStart.getTime()).toBe(49 * HOUR)
+    // Moved on the board as the drag does it: the drawn length, from the new start.
+    const boardStart = new Date('2026-10-20T08:00:00')
+    const boardEnd = new Date(boardStart.getTime() + (drawnEnd.getTime() - drawnStart.getTime()))
+
+    const saved = fromBoardSpan({ stored, drawn, boardStart, boardEnd, timeZone: 'UTC' })
+
+    expect(saved.start.toISOString()).toBe('2026-10-20T08:00:00.000Z')
+    expect(saved.end.toISOString()).toBe('2026-10-22T08:00:00.000Z')
+    expect(saved.end.getTime() - saved.start.getTime()).toBe(48 * HOUR)
+  })
+
+  it('saves a stretched edge at the time it was dragged to on the workshop clock', () => {
+    viewerIn('Europe/Oslo')
+    const drawn = toBoardJob(stored, 'UTC')
+    // The end pulled from 08:00 to 10:00 on the 26th; the start stays put.
+    const boardStart = new Date(drawn.startDateTime as string)
+    const boardEnd = new Date('2026-10-26T10:00:00')
+
+    const saved = fromBoardSpan({ stored, drawn, boardStart, boardEnd, timeZone: 'UTC' })
+
+    expect(saved.start.toISOString()).toBe('2026-10-24T08:00:00.000Z')
+    expect(saved.end.toISOString()).toBe('2026-10-26T10:00:00.000Z')
+  })
+
+  it('saves both ends where they were dropped for a job that had no times yet', () => {
+    viewerIn('Europe/Oslo')
+    const unscheduled = job(null, null)
+    // Dropped as a block running over the night the clocks change.
+    const boardStart = new Date('2026-10-24T08:00:00')
+    const boardEnd = new Date('2026-10-26T08:00:00')
+
+    const saved = fromBoardSpan({
+      stored: unscheduled,
+      drawn: toBoardJob(unscheduled, 'UTC'),
+      boardStart,
+      boardEnd,
+      timeZone: 'UTC',
+    })
+
+    expect(saved.start.toISOString()).toBe('2026-10-24T08:00:00.000Z')
+    expect(saved.end.toISOString()).toBe('2026-10-26T08:00:00.000Z')
   })
 })

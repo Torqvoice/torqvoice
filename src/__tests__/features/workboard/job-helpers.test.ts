@@ -23,6 +23,12 @@ type Helper = { serviceRecordId: string; technicianId: string; organizationId: s
 const state = {
   /** The job's technician. */
   technicianId: 'andy' as string | null,
+  /**
+   * Who an ordinary read of the job says leads it, when that differs from the
+   * row: what a desk saw before another desk changed the team. The row lock
+   * always reads the row itself.
+   */
+  staleTechnicianId: undefined as string | null | undefined,
   helpers: [] as Helper[],
   technicians: [
     { id: 'andy', name: 'Andy', isActive: true, organizationId: 'org-a' },
@@ -73,7 +79,15 @@ vi.mock('@/lib/db', () => {
     workBay: { findFirst: vi.fn(async () => null) },
     serviceRecord: {
       findFirst: vi.fn(async ({ where }: { where: { id: string } }) =>
-        where.id === 'job-1' ? job() : null
+        where.id === 'job-1'
+          ? {
+              ...job(),
+              technicianId:
+                state.staleTechnicianId === undefined
+                  ? state.technicianId
+                  : state.staleTechnicianId,
+            }
+          : null
       ),
       findFirstOrThrow: vi.fn(async () => job()),
       update: vi.fn(async ({ data }: { data: { technicianId?: string | null } }) => {
@@ -98,6 +112,12 @@ vi.mock('@/lib/db', () => {
       }),
     },
     inspection: { findFirst: vi.fn(), update: vi.fn() },
+    // The team lock: answers with the row as it is, and only for this
+    // workshop's job. Called as a tagged template, so the values follow the
+    // strings in the order the statement names them: the job, then the workshop.
+    $queryRaw: vi.fn(async (_sql: TemplateStringsArray, id: string, organizationId: string) =>
+      id === 'job-1' && organizationId === 'org-a' ? [{ technicianId: state.technicianId }] : []
+    ),
     $transaction: vi.fn(async (run: (tx: unknown) => unknown) => run(db)),
   }
   return { db }
@@ -105,6 +125,7 @@ vi.mock('@/lib/db', () => {
 
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { pushToTechnician } from '@/features/notifications/Lib/pushToTechnician'
+import { db } from '@/lib/db'
 import {
   addJobHelper,
   assignTechnician,
@@ -124,6 +145,7 @@ const helper = (technicianId: string): Helper => ({
 beforeEach(() => {
   vi.clearAllMocks()
   state.technicianId = 'andy'
+  state.staleTechnicianId = undefined
   state.helpers = []
   vi.mocked(getCachedSession).mockResolvedValue({
     user: { id: 'user-a', email: 'a@example.com' },
@@ -267,6 +289,103 @@ describe('changing the technician of a job that has helpers', () => {
     expect(result.data?.technicianId).toBe('andy')
     expect(result.data?.helperIds).toEqual(['sam'])
   })
+})
+
+/**
+ * Two desks changing the same team at once. Each change reads who leads the
+ * job under a lock on it, so it acts on the team the other desk left behind,
+ * not on the one its own page showed.
+ */
+describe('when another desk changed the team first', () => {
+  it('refuses a helper once the technician has been taken off the job', async () => {
+    // The page showed Andy on the job; another desk has since taken him off.
+    state.staleTechnicianId = 'andy'
+    state.technicianId = null
+
+    const result = await addJobHelper({ id: 'job-1', technicianId: 'sam' })
+
+    expect(result.success).toBe(false)
+    expect(helperIds()).toEqual([])
+    expect(pushToTechnician).not.toHaveBeenCalled()
+  })
+
+  it('does not make somebody a helper of the job they now lead', async () => {
+    // The page showed Andy leading; another desk has since made Sam the technician.
+    state.staleTechnicianId = 'andy'
+    state.technicianId = 'sam'
+
+    const result = await addJobHelper({ id: 'job-1', technicianId: 'sam' })
+
+    expect(result.success).toBe(true)
+    expect(helperIds()).toEqual([])
+    expect(pushToTechnician).not.toHaveBeenCalled()
+  })
+
+  const handOvers = {
+    assigning: () => assignTechnician({ id: 'job-1', technicianId: 'jo', type: 'serviceRecord' }),
+    'moving the card': () =>
+      moveJob({ id: 'job-1', technicianId: 'jo', sortOrder: 0, type: 'serviceRecord' }),
+    'dragging on the week': () =>
+      scheduleJob({ id: 'job-1', type: 'serviceRecord', technicianId: 'jo' }),
+  }
+
+  for (const [name, handOver] of Object.entries(handOvers)) {
+    it(`hands the job over from whoever leads it now when ${name}`, async () => {
+      // An earlier read said Andy leads, but Sam already took over and Andy
+      // is off the job. Jo, helping, now takes it from Sam.
+      state.staleTechnicianId = 'andy'
+      state.technicianId = 'sam'
+      state.helpers = [helper('jo')]
+
+      const result = await handOver()
+
+      expect(result.data?.technicianId).toBe('jo')
+      // Sam swaps down to helping; Andy, who had left the job, is not put back on it.
+      expect(result.data?.helperIds).toEqual(['sam'])
+    })
+  }
+
+  it('takes the helpers off the team as it is now when the job leaves the board', async () => {
+    state.staleTechnicianId = 'andy'
+    state.technicianId = 'sam'
+    state.helpers = [helper('jo')]
+
+    const result = await unassignJob({ id: 'job-1', type: 'serviceRecord' })
+
+    expect(result.success).toBe(true)
+    expect(state.technicianId).toBeNull()
+    expect(helperIds()).toEqual([])
+  })
+})
+
+describe('a job from another workshop', () => {
+  const foreign = 'somebody-elses-job'
+  const actions = {
+    'adding a helper': () => addJobHelper({ id: foreign, technicianId: 'sam' }),
+    'removing a helper': () => removeJobHelper({ id: foreign, technicianId: 'sam' }),
+    assigning: () => assignTechnician({ id: foreign, technicianId: 'jo', type: 'serviceRecord' }),
+    'moving the card': () =>
+      moveJob({ id: foreign, technicianId: 'jo', sortOrder: 0, type: 'serviceRecord' }),
+    'dragging on the week': () =>
+      scheduleJob({ id: foreign, type: 'serviceRecord', technicianId: 'jo' }),
+    'taking it off the board': () => unassignJob({ id: foreign, type: 'serviceRecord' }),
+  }
+
+  for (const [name, run] of Object.entries(actions)) {
+    it(`is refused when ${name}, and nobody's helpers change`, async () => {
+      // Sam helps on this workshop's job; nothing done to the other one may touch that.
+      state.helpers = [helper('sam')]
+
+      const result = await run()
+
+      expect(result.success).toBe(false)
+      expect(helperIds()).toEqual(['sam'])
+      expect(state.technicianId).toBe('andy')
+      expect(db.serviceRecordHelper.deleteMany).not.toHaveBeenCalled()
+      expect(db.serviceRecordHelper.createMany).not.toHaveBeenCalled()
+      expect(db.serviceRecord.update).not.toHaveBeenCalled()
+    })
+  }
 })
 
 /**

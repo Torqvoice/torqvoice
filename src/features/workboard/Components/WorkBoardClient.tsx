@@ -59,7 +59,13 @@ import { Users, Wrench, ClipboardCheck, Columns3, Inbox, Plus } from 'lucide-rea
 import { useTranslations } from 'next-intl'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { timeToMinutes } from '../utils/datetime'
-import { boardNow, fromBoardDate, toBoardDate, toBoardJob } from '../utils/board-time'
+import {
+  boardNow,
+  fromBoardDate,
+  fromBoardSpan,
+  toBoardDate,
+  toBoardJob,
+} from '../utils/board-time'
 import { useDateSettings } from '@/components/date-settings-context'
 import { awayKey, useBoardCalendar } from '../hooks/useBoardCalendar'
 import { overlapsSpans } from '@/features/workshop-calendar/Lib/boardDays'
@@ -482,8 +488,15 @@ export function WorkBoardClient({
   const handleWeekSchedule = useCallback(
     async ({ job: drawn, laneId, start: boardStart, end: boardEnd }: WeekScheduleChange) => {
       const job = realJob(drawn)
-      const start = fromBoardDate(boardStart, timezone)
-      const end = fromBoardDate(boardEnd, timezone)
+      // A move keeps the job's real length; see fromBoardSpan for why the
+      // two board dates cannot simply be converted on their own.
+      const { start, end } = fromBoardSpan({
+        stored: job,
+        drawn,
+        boardStart,
+        boardEnd,
+        timeZone: timezone,
+      })
       const assignment = laneAssignment(laneId, preferences.grouping)
       const previous = {
         technicianId: job.technicianId,
@@ -686,9 +699,14 @@ export function WorkBoardClient({
 
       // Update dates if dropped on a different day
       if (!sameDay && dropDate) {
+        // The time of day from the drawn job, the length from the stored one:
+        // two board dates are a different distance apart when the viewer's
+        // own clocks change between them.
         const oldStart = job.startDateTime ? new Date(job.startDateTime) : null
-        const oldEnd = job.endDateTime ? new Date(job.endDateTime) : null
-        const duration = oldStart && oldEnd ? oldEnd.getTime() - oldStart.getTime() : 60 * 60 * 1000
+        const realStart = stored.startDateTime ? new Date(stored.startDateTime) : null
+        const realEnd = stored.endDateTime ? new Date(stored.endDateTime) : null
+        const duration =
+          realStart && realEnd ? realEnd.getTime() - realStart.getTime() : 60 * 60 * 1000
         const timeOfDay = oldStart
           ? `${String(oldStart.getHours()).padStart(2, '0')}:${String(oldStart.getMinutes()).padStart(2, '0')}`
           : boardSettings.workDayStart

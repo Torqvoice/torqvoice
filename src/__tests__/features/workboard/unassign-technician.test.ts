@@ -28,6 +28,7 @@ vi.mock('@/lib/db', () => ({
     serviceRecord: { findFirst: vi.fn(), update: vi.fn() },
     serviceRecordHelper: { deleteMany: vi.fn(), createMany: vi.fn() },
     inspection: { findFirst: vi.fn(), update: vi.fn() },
+    $queryRaw: vi.fn(),
     $transaction: vi.fn(),
   },
 }))
@@ -52,6 +53,8 @@ beforeEach(() => {
     id: 'sr-a',
     technicianId: 'tech-0',
   } as any)
+  // The lock the team change takes on the job reads who leads it now.
+  vi.mocked(db.$queryRaw).mockResolvedValue([{ technicianId: 'tech-0' }] as any)
   vi.mocked(db.serviceRecord.update).mockResolvedValue({ id: 'sr-a' } as any)
   vi.mocked(db.serviceRecordHelper.deleteMany).mockResolvedValue({ count: 0 } as any)
   // The technician and the helpers are written together; the transaction is
@@ -77,5 +80,16 @@ describe('scheduleJob with a null technician', () => {
 
     const { data } = vi.mocked(db.serviceRecord.update).mock.calls[0][0] as any
     expect(data).toEqual({ technicianId: 'tech-1', techName: 'Kim' })
+  })
+
+  it('refuses a job that is not this workshop’s, and writes nothing', async () => {
+    // The lock is scoped by workshop, so another workshop's job reads as no row.
+    vi.mocked(db.$queryRaw).mockResolvedValue([] as any)
+
+    const result = await scheduleJob({ id: 'sr-b', type: 'serviceRecord', technicianId: null })
+
+    expect(result.success).toBe(false)
+    expect(vi.mocked(db.serviceRecordHelper.deleteMany)).not.toHaveBeenCalled()
+    expect(vi.mocked(db.serviceRecord.update)).not.toHaveBeenCalled()
   })
 })

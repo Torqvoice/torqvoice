@@ -6,7 +6,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import { notificationBus } from '@/lib/notification-bus'
 import { pushToTechnician } from '@/features/notifications/Lib/pushToTechnician'
-import { settleHelpers } from '../../Lib/jobTeam'
+import { lockJobTeam, settleHelpers } from '../../Lib/jobTeam'
 import {
   assignTechnicianSchema,
   moveJobSchema,
@@ -154,19 +154,16 @@ export async function assignTechnician(input: unknown) {
           : {}
 
       if (data.type === 'serviceRecord') {
-        const owned = await db.serviceRecord.findFirst({
-          where: { id: data.id, organizationId },
-          select: { id: true, technicianId: true },
-        })
-        if (!owned) throw new Error('Service record not found')
-
         // One transaction with the helpers: a helper made the technician
-        // must never be read as both, however briefly.
+        // must never be read as both, however briefly. The technician being
+        // replaced is the one the lock reads, not one read before it.
         const sr = await db.$transaction(async (tx) => {
+          const team = await lockJobTeam(tx, { organizationId, serviceRecordId: data.id })
+          if (!team) throw new Error('Service record not found')
           await settleHelpers(tx, {
             organizationId,
-            serviceRecordId: owned.id,
-            previousId: owned.technicianId,
+            serviceRecordId: data.id,
+            previousId: team.technicianId,
             nextId: data.technicianId,
           })
           return tx.serviceRecord.update({
@@ -238,17 +235,13 @@ export async function moveJob(input: unknown) {
       let job: WorkBoardJob
 
       if (data.type === 'serviceRecord') {
-        const owned = await db.serviceRecord.findFirst({
-          where: { id: data.id, organizationId },
-          select: { id: true, technicianId: true },
-        })
-        if (!owned) throw new Error('Service record not found')
-
         const sr = await db.$transaction(async (tx) => {
+          const team = await lockJobTeam(tx, { organizationId, serviceRecordId: data.id })
+          if (!team) throw new Error('Service record not found')
           await settleHelpers(tx, {
             organizationId,
-            serviceRecordId: owned.id,
-            previousId: owned.technicianId,
+            serviceRecordId: data.id,
+            previousId: team.technicianId,
             nextId: data.technicianId,
           })
           return tx.serviceRecord.update({
@@ -303,19 +296,15 @@ export async function unassignJob(input: unknown) {
       const data = unassignJobSchema.parse(input)
 
       if (data.type === 'serviceRecord') {
-        const sr = await db.serviceRecord.findFirst({
-          where: { id: data.id, organizationId },
-          select: { id: true, technicianId: true },
-        })
-        if (!sr) throw new Error('Service record not found')
-
         // Off the board means nobody is on it: the helpers go with the
         // technician rather than staying on a job that has no one's name.
         await db.$transaction(async (tx) => {
+          const team = await lockJobTeam(tx, { organizationId, serviceRecordId: data.id })
+          if (!team) throw new Error('Service record not found')
           await settleHelpers(tx, {
             organizationId,
-            serviceRecordId: sr.id,
-            previousId: sr.technicianId,
+            serviceRecordId: data.id,
+            previousId: team.technicianId,
             nextId: null,
           })
           await tx.serviceRecord.update({

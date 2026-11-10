@@ -41,6 +41,63 @@ export function fromBoardDate(date: Date, timeZone: string): Date {
   return timeZone ? fromZonedWallClock(date, timeZone) : date
 }
 
+type JobTimes = { startDateTime: string | null; endDateTime: string | null }
+
+const MINUTE_MS = 60_000
+
+/** Whole minutes between two times, or null when either is missing or unreadable. */
+function minutesBetween(start: string | null, end: string | null): number | null {
+  if (!start || !end) return null
+  const ms = new Date(end).getTime() - new Date(start).getTime()
+  return Number.isNaN(ms) ? null : Math.round(ms / MINUTE_MS)
+}
+
+/**
+ * The real start and end for a span placed on the board by a drag or a drop.
+ *
+ * Each board date converts to the right instant on its own; a length measured
+ * between two of them does not. Board dates are local `Date`s, so when the
+ * viewer's own clocks change between the two, the gap between them gains or
+ * loses that hour although the workshop's clock did not: a two day job over
+ * the night Oslo leaves summer time is 49 hours on an Oslo screen. Converting
+ * both ends of a moved job would then save its end an hour off.
+ *
+ * - A move, where the span is as long on the board as the job was drawn,
+ *   keeps the job's real length: only the start is converted, and the end is
+ *   that much later.
+ * - A resize, where the length changed, converts both ends, because each edge
+ *   was put against the workshop's clock where it now sits.
+ * - A job with no stored times, from the unassigned panel or the Not
+ *   scheduled strip, has no length to keep, and converts both ends.
+ *
+ * `stored` is the job with real instants, `drawn` the same job as the board
+ * drew it (`toBoardJob`).
+ */
+export function fromBoardSpan(args: {
+  stored: JobTimes
+  drawn: JobTimes
+  boardStart: Date
+  boardEnd: Date
+  timeZone: string
+}): { start: Date; end: Date } {
+  const { stored, drawn, boardStart, boardEnd, timeZone } = args
+  const start = fromBoardDate(boardStart, timeZone)
+  const drawnLength = minutesBetween(drawn.startDateTime, drawn.endDateTime)
+  const spanLength = Math.round((boardEnd.getTime() - boardStart.getTime()) / MINUTE_MS)
+  const realStart = stored.startDateTime ? new Date(stored.startDateTime).getTime() : Number.NaN
+  const realEnd = stored.endDateTime ? new Date(stored.endDateTime).getTime() : Number.NaN
+
+  if (
+    !Number.isNaN(realStart) &&
+    !Number.isNaN(realEnd) &&
+    drawnLength !== null &&
+    spanLength === drawnLength
+  ) {
+    return { start, end: new Date(start.getTime() + (realEnd - realStart)) }
+  }
+  return { start, end: fromBoardDate(boardEnd, timeZone) }
+}
+
 function toBoardString(value: string | null, timeZone: string): string | null {
   if (!value) return value
   const instant = new Date(value)
