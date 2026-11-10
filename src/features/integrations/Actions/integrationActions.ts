@@ -645,9 +645,17 @@ export async function getIntegrationRemoteOptions(connectorId: string, source: s
       await requireConnectorPlan(organizationId, connectorId)
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
-        select: { id: true, status: true },
+        select: { id: true, status: true, credentials: true },
       })
       if (!row || row.status === 'pending' || row.status === 'disconnected') return []
+      // An OAuth sign-in that never finished, such as one the vendor refused,
+      // leaves no tokens. Asking the vendor would only fail; the list stays
+      // empty until the workshop connects, and the page says why.
+      const manifest = getManifest(connectorId)
+      if (manifest && oauthSpec(manifest)) {
+        const tokens = openCredentials(row.credentials)
+        if (!tokens.accessToken && !tokens.refreshToken) return []
+      }
       const { ctx, server } = await loadConnection(row.id)
       const provider = server.remoteOptions?.[source]
       if (!provider) return []

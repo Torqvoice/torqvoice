@@ -164,7 +164,14 @@ export async function exchangeCode(input: {
     ...(input.codeVerifier && { code_verifier: input.codeVerifier }),
     ...(input.spec.stateOnExchange && input.state && { state: input.state }),
   })
-  return toCredentials(body, input.previous ?? { accessToken: '' })
+  // A new consent starts its own tokens: a refresh token kept from the one
+  // it replaces may belong to another app or account, so it is not carried.
+  return toCredentials(body, {
+    ...(input.previous ?? {}),
+    accessToken: '',
+    refreshToken: undefined,
+    expiresAt: undefined,
+  })
 }
 
 export async function refreshToken(input: {

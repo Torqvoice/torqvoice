@@ -109,6 +109,27 @@ describe('integration oauth', () => {
     expect(refreshed.refreshToken).toBe('r1')
   })
 
+  it('does not carry the refresh token of the consent a new one replaces', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
+      new Response(JSON.stringify({ access_token: 'new', expires_in: 3600 }), { status: 200 })
+    )
+    const creds = await exchangeCode({
+      spec,
+      client: { clientId: 'ws', clientSecret: 's', ownership: 'tenant' },
+      code: 'code',
+      redirectUri: 'https://x/cb',
+      previous: {
+        accessToken: 'old',
+        refreshToken: 'old-refresh',
+        clientId: 'ws',
+        clientSecret: 's',
+      },
+    })
+    expect(creds.accessToken).toBe('new')
+    expect(creds.refreshToken).toBeUndefined()
+    expect(creds).toMatchObject({ clientId: 'ws', clientSecret: 's' })
+  })
+
   it('surfaces the vendor error message on a failed exchange', async () => {
     vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
       new Response(JSON.stringify({ error: 'invalid_grant', error_description: 'Bad code' }), {

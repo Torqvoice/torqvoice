@@ -70,14 +70,20 @@ export async function GET(
       previous,
     })
   } catch (err) {
+    // The vendor's own words, such as invalid_client for a wrong secret, are
+    // the only clue to what is misconfigured. The browser only gets a code,
+    // so they go to the server log and the connection's activity log as well.
+    const reason = err instanceof Error ? err.message : 'Token exchange failed'
+    console.error(`[integrations] ${connector} refused the sign-in: ${reason}`)
     await db.integrationConnection.update({
       where: { id: connection.id },
       data: {
         oauthState: null,
         status: connection.status === 'active' ? 'active' : 'error',
-        lastError: err instanceof Error ? err.message : 'Token exchange failed',
+        lastError: reason,
       },
     })
+    await writeLog(connection.id, 'error', 'The provider refused the sign-in', { error: reason })
     return fail('exchange')
   }
 
