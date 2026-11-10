@@ -49,6 +49,11 @@ test.describe('a member with no role', () => {
     }).toPass({ timeout: 30_000 })
     await ownerPage.getByText('Someone in the office').click()
     await ownerPage.locator('#member-email').fill(COLLEAGUE)
+    // No role is a choice the owner has to make: the form starts with none
+    // chosen and will not send the invitation until one is.
+    const dialog = ownerPage.getByRole('dialog').filter({ has: ownerPage.locator('#member-email') })
+    await dialog.getByRole('combobox').click()
+    await ownerPage.getByRole('option', { name: 'No role', exact: true }).click()
     await ownerPage.getByRole('button', { name: 'Invite', exact: true }).click()
     await expect(ownerPage.getByText(COLLEAGUE).first()).toBeVisible({ timeout: 30_000 })
     await owner.close()

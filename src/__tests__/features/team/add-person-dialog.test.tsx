@@ -55,6 +55,18 @@ function officeChoice() {
   return screen.getByRole('button', { name: new RegExp(OFFICE) })
 }
 
+/**
+ * Picks a role by the name a person reads in the list. The list itself opens
+ * in a popper jsdom cannot lay out, so the choice goes through the native
+ * select the form control keeps in step with it.
+ */
+function chooseRole(name: string) {
+  const native = document.querySelector('select')
+  const option = Array.from(native?.options ?? []).find((o) => o.textContent === name)
+  if (!native || !option) throw new Error(`The role list has no "${name}"`)
+  fireEvent.change(native, { target: { value: option.value } })
+}
+
 describe('AddPersonDialog, office seats', () => {
   beforeEach(() => {
     getMemberSeats.mockReset()
@@ -158,20 +170,109 @@ describe('AddPersonDialog, invite address', () => {
     expect(screen.queryByText(/Check the email address/)).toBeNull()
   })
 
-  it('shows the role a new person gets, No role until one is picked', async () => {
-    await openForm()
-    expect(screen.getByRole('combobox')).toHaveTextContent('No role')
-  })
-
   it('sends a good address on to the invite action', async () => {
     const field = await openForm()
     fireEvent.change(field, { target: { value: ' kari@gmail.com ' } })
+    chooseRole('Desk')
     fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
 
     await waitFor(() =>
       expect(inviteMember).toHaveBeenCalledWith(
         expect.objectContaining({ email: 'kari@gmail.com' })
       )
+    )
+  })
+})
+
+describe('AddPersonDialog, the role of someone invited', () => {
+  beforeEach(() => {
+    getMemberSeats.mockReset()
+    getMemberSeats.mockResolvedValue({ success: true, data: { used: 1, limit: 5, full: false } })
+    inviteMember.mockReset()
+    inviteMember.mockResolvedValue({ success: true, data: { invited: true } })
+  })
+
+  async function openForm() {
+    renderDialog()
+    await waitFor(() => expect(getMemberSeats).toHaveBeenCalled())
+    fireEvent.click(officeChoice())
+    fireEvent.change(screen.getByLabelText('Invite by Email'), {
+      target: { value: 'kari@gmail.com' },
+    })
+  }
+
+  it('starts with no role chosen, not with No role', async () => {
+    await openForm()
+    expect(screen.getByRole('combobox')).toHaveTextContent('Choose a role')
+    expect(screen.getByRole('combobox')).not.toHaveTextContent('No role')
+  })
+
+  it('does not send an invitation until a role is chosen, and says so', async () => {
+    // The person who joined a workshop and met "No access yet" was invited
+    // by someone who never touched this field
+    await openForm()
+    fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
+
+    const message = await screen.findByRole('alert')
+    expect(message).toHaveTextContent(
+      'Choose a role before inviting. Someone with no role can sign in but cannot open anything.'
+    )
+    const picker = screen.getByRole('combobox')
+    expect(picker).toHaveAttribute('aria-invalid', 'true')
+    expect(picker).toHaveAttribute('aria-describedby', message.id)
+    expect(inviteMember).not.toHaveBeenCalled()
+  })
+
+  it('drops the message once a role is chosen, and invites with that role', async () => {
+    await openForm()
+    fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
+    await screen.findByRole('alert')
+
+    chooseRole('Desk')
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(screen.getByRole('combobox')).toHaveTextContent('Desk')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
+    await waitFor(() =>
+      expect(inviteMember).toHaveBeenCalledWith({
+        email: 'kari@gmail.com',
+        role: 'member',
+        roleId: 'role-desk',
+      })
+    )
+  })
+
+  it('invites an admin as an admin', async () => {
+    await openForm()
+    chooseRole('Admin')
+    fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
+
+    await waitFor(() =>
+      expect(inviteMember).toHaveBeenCalledWith({
+        email: 'kari@gmail.com',
+        role: 'admin',
+        roleId: undefined,
+      })
+    )
+  })
+
+  it('still invites with no role when that is chosen on purpose, and says what it means', async () => {
+    await openForm()
+    chooseRole('No role')
+    expect(screen.getByRole('combobox')).toHaveTextContent('No role')
+    expect(
+      screen.getByText(
+        'They can sign in, but they cannot open anything until an owner or an admin gives them a role.'
+      )
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Invite' }))
+    await waitFor(() =>
+      expect(inviteMember).toHaveBeenCalledWith({
+        email: 'kari@gmail.com',
+        role: 'member',
+        roleId: undefined,
+      })
     )
   })
 })
