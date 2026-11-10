@@ -114,11 +114,22 @@ export function NotificationPanel() {
     setPendingDeleteId(null)
   }
 
-  const handleMarkAllRead = () => {
+  const handleMarkAllRead = async () => {
+    const unreadIds = new Set(notifications.filter((n) => !n.read).map((n) => n.id))
+    const unreadBefore = unreadCount
     markAllRead()
-    markAllNotificationsRead().catch(() => {
-      // As above: they stay unread on the server until the next page load
-    })
+    const result = await markAllNotificationsRead().catch(() => ({ success: false }))
+    if (result.success) return
+
+    // They are still unread on the server, so show them unread again rather
+    // than claim a change that did not happen. Ones deleted meanwhile no
+    // longer count.
+    const now = useNotificationStore.getState()
+    const gone = [...unreadIds].filter((id) => !now.notifications.some((n) => n.id === id)).length
+    setNotifications(
+      now.notifications.map((n) => (unreadIds.has(n.id) ? { ...n, read: false } : n)),
+      now.unreadCount + unreadBefore - gone
+    )
   }
 
   const handleConfirmClearAll = async () => {

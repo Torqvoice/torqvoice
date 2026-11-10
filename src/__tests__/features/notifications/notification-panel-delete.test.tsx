@@ -4,8 +4,9 @@
  * notification back where it was and says so. It used to stay gone until the
  * next reload brought it back.
  *
- * Marking as read is bookkeeping nobody waits on, so a failure there stays
- * quiet rather than surfacing as a lost connection.
+ * Opening a notification marks it read as bookkeeping nobody waits on, so a
+ * failure there stays quiet rather than surfacing as a lost connection. Mark
+ * all read that fails shows the notifications unread again.
  */
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -187,7 +188,19 @@ describe('NotificationPanel delete', () => {
     expect(toastError).not.toHaveBeenCalled()
   })
 
-  it('stays quiet when mark all read cannot reach the server', async () => {
+  it('marks all read', async () => {
+    seed()
+    render(<NotificationPanel />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark all read' }))
+    await settle()
+
+    expect(markAllNotificationsRead).toHaveBeenCalledTimes(1)
+    expect(useNotificationStore.getState().unreadCount).toBe(0)
+    expect(useNotificationStore.getState().notifications.every((n) => n.read)).toBe(true)
+  })
+
+  it('shows them unread again when mark all read cannot reach the server', async () => {
     seed()
     markAllNotificationsRead.mockRejectedValue(offline())
     render(<NotificationPanel />)
@@ -196,7 +209,24 @@ describe('NotificationPanel delete', () => {
     await settle()
 
     expect(markAllNotificationsRead).toHaveBeenCalledTimes(1)
-    expect(useNotificationStore.getState().unreadCount).toBe(0)
+    expect(useNotificationStore.getState().unreadCount).toBe(1)
+    expect(
+      useNotificationStore
+        .getState()
+        .notifications.filter((n) => !n.read)
+        .map((n) => n.id)
+    ).toEqual(['n1'])
     expect(unhandled).not.toHaveBeenCalled()
+  })
+
+  it('shows them unread again when the server refuses mark all read', async () => {
+    seed()
+    markAllNotificationsRead.mockResolvedValue({ success: false })
+    render(<NotificationPanel />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark all read' }))
+    await settle()
+
+    expect(useNotificationStore.getState().unreadCount).toBe(1)
   })
 })
