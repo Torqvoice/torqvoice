@@ -226,9 +226,11 @@ export function AddPersonDialog({
 
   // Team member
   const [email, setEmail] = useState('')
-  // "No role" until someone is chosen: the old 'member' default matched none
-  // of the choices, so the box showed nothing while it meant exactly this.
-  const [roleValue, setRoleValue] = useState('none')
+  // Nothing chosen until the person inviting chooses. The box used to start
+  // on "No role", and an invitation sent without touching it made an account
+  // that signs in to the No access screen while the workshop believes it has
+  // a new colleague. "No role" is still there, as a choice made on purpose.
+  const [roleValue, setRoleValue] = useState('')
 
   const reset = useCallback(() => {
     setKind(null)
@@ -242,7 +244,7 @@ export function AddPersonDialog({
     setScanned(false)
     setEmail('')
     setColor(BOARD_COLOURS[0])
-    setRoleValue('none')
+    setRoleValue('')
   }, [])
 
   const close = useCallback(() => {
@@ -312,6 +314,10 @@ export function AddPersonDialog({
       if (busy || !email.trim()) return
       if (!isInviteEmail(email)) {
         setError(t('team.invalidInviteEmail'))
+        return
+      }
+      if (!roleValue) {
+        setError(t('team.roleRequired'))
         return
       }
       setBusy(true)
@@ -617,17 +623,32 @@ export function AddPersonDialog({
                   if (error) setError(null)
                 }}
                 aria-invalid={error === t('team.invalidInviteEmail') || undefined}
-                aria-describedby={error ? 'member-invite-error' : undefined}
+                aria-describedby={
+                  error && error !== t('team.roleRequired') ? 'member-invite-error' : undefined
+                }
                 placeholder={t('team.inviteEmailPlaceholder')}
                 autoComplete="off"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label>{t('team.role')}</Label>
-              <Select value={roleValue} onValueChange={setRoleValue}>
-                <SelectTrigger className="w-full">
-                  <SelectValue />
+              <Label htmlFor="member-role">{t('team.role')}</Label>
+              <Select
+                value={roleValue}
+                onValueChange={(value) => {
+                  setRoleValue(value)
+                  if (error) setError(null)
+                }}
+              >
+                <SelectTrigger
+                  id="member-role"
+                  className="w-full"
+                  aria-invalid={error === t('team.roleRequired') || undefined}
+                  aria-describedby={
+                    error === t('team.roleRequired') ? 'member-invite-error' : undefined
+                  }
+                >
+                  <SelectValue placeholder={t('team.chooseRole')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="admin">{t('team.admin')}</SelectItem>
@@ -670,8 +691,12 @@ export function AddPersonDialog({
                 </div>
               )}
               {/* Which of the two they should pick, in one line, without the
-                  word "permissions". */}
-              <p className="text-muted-foreground text-xs">{t('team.roleHint')}</p>
+                  word "permissions". Someone who picks "No role" is told what
+                  the invited person will meet, since that is the one choice
+                  that leaves them waiting. */}
+              <p className="text-muted-foreground text-xs">
+                {roleValue === 'none' ? t('team.noRoleInviteWarning') : t('team.roleHint')}
+              </p>
             </div>
 
             {/* Announced, and tied to the address field, because with the
