@@ -88,6 +88,7 @@
     "auth_login": "Kullanıcı giriş yaptı",
     "auth_sessionRevoked": "Bir cihazın oturumu kapatıldı",
     "auth_sessionsRevoked": "Diğer cihazların oturumu kapatıldı",
+    "auth_passwordSet": "Hesap şifresi belirlendi",
     "auth_loginFailed": "Başarısız giriş denemesi",
     "auth_register": "Kullanıcı kaydoldu",
     "auth_passwordReset": "Şifre sıfırlama talep edildi",

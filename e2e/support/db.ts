@@ -1111,6 +1111,22 @@ export async function sessionCountFor(email: string): Promise<number> {
   })
 }
 
+/**
+ * Makes every open sign-in of a person look `minutes` old, the way a tab left
+ * open ages. What the app asks of a sign-in that is no longer recent cannot
+ * be waited for in a test.
+ */
+export async function ageSessionsOf(email: string, minutes: number): Promise<void> {
+  await withDb(async (db) => {
+    await db.query(
+      `update sessions s set "createdAt" = now() - make_interval(mins => $2::int)
+         from users u
+        where u.id = s."userId" and lower(u.email) = lower($1)`,
+      [email, minutes]
+    )
+  })
+}
+
 /** Device rows a person has whose user agent mentions `needle`. */
 export async function deviceCountFor(email: string, needle: string): Promise<number> {
   return withDb(async (db) => {

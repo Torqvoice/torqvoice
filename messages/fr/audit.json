@@ -88,6 +88,7 @@
     "auth_login": "Utilisateur connecté",
     "auth_sessionRevoked": "Appareil déconnecté",
     "auth_sessionsRevoked": "Autres appareils déconnectés",
+    "auth_passwordSet": "Mot de passe du compte défini",
     "auth_loginFailed": "Tentative de connexion échouée",
     "auth_register": "Utilisateur inscrit",
     "auth_passwordReset": "Réinitialisation du mot de passe demandée",

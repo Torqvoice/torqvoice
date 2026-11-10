@@ -30,6 +30,15 @@ async function passwordHash(userId: string): Promise<string | null> {
   return account?.password || null
 }
 
+/**
+ * Whether the account can sign in with a password. One that signed up with
+ * Google has none, so "change password" has nothing to check the current one
+ * against; the account page offers to set one instead.
+ */
+export async function hasPassword(userId: string): Promise<boolean> {
+  return (await passwordHash(userId)) !== null
+}
+
 /** What this account is asked for; the dialogs read it to show the right field. */
 export async function reauthRequirement(userId: string): Promise<ReauthRequirement> {
   if (await passwordHash(userId)) return 'password'
@@ -126,16 +135,30 @@ export async function verifyReauth(
     return
   }
 
+  await assertRecentSignIn(
+    userId,
+    purpose === 'account'
+      ? REAUTH_ERRORS.signInAgainAccount
+      : purpose === 'restore'
+        ? REAUTH_ERRORS.signInAgainRestore
+        : REAUTH_ERRORS.signInAgainWorkshop,
+    now
+  )
+}
+
+/**
+ * Throws `refusal` unless the caller's session was created in the last
+ * REAUTH_FRESH_SESSION_MINUTES. For an account with nothing to type, signing
+ * in again is the only proof there is that the person at the keyboard is the
+ * account holder and not whoever found the laptop open.
+ */
+export async function assertRecentSignIn(
+  userId: string,
+  refusal: string,
+  now: number = Date.now()
+): Promise<void> {
   const session = await getCachedSession()
   const createdAt = session?.user?.id === userId ? session.session.createdAt : null
   const age = createdAt ? now - new Date(createdAt).getTime() : Number.POSITIVE_INFINITY
-  if (!(age <= REAUTH_FRESH_SESSION_MINUTES * 60_000)) {
-    throw new Error(
-      purpose === 'account'
-        ? REAUTH_ERRORS.signInAgainAccount
-        : purpose === 'restore'
-          ? REAUTH_ERRORS.signInAgainRestore
-          : REAUTH_ERRORS.signInAgainWorkshop
-    )
-  }
+  if (!(age <= REAUTH_FRESH_SESSION_MINUTES * 60_000)) throw new Error(refusal)
 }
