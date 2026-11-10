@@ -17,6 +17,23 @@ interface Metadata {
   imageUrl?: string
 }
 
+/**
+ * Why a lookup gave nothing. The part form picks a translated message by this
+ * code; `error` stays as the English text for anything else calling the route.
+ */
+type LookupFailure =
+  | 'not_allowed'
+  | 'too_many_redirects'
+  | 'bot_protected'
+  | 'http_error'
+  | 'not_html'
+  | 'timeout'
+  | 'fetch_failed'
+
+function lookupFailed(code: LookupFailure, error: string, status = 422) {
+  return NextResponse.json({ code, error }, { status })
+}
+
 export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -74,7 +91,7 @@ export async function POST(request: NextRequest) {
       const safety = await checkWebhookUrl(currentUrl)
       if (!safety.ok) {
         clearTimeout(timeout)
-        return NextResponse.json({ error: 'This URL is not allowed.' }, { status: 400 })
+        return lookupFailed('not_allowed', 'This URL is not allowed.', 400)
       }
 
       response = await fetch(currentUrl, {
@@ -95,7 +112,7 @@ export async function POST(request: NextRequest) {
 
       if (redirects >= MAX_REDIRECTS) {
         clearTimeout(timeout)
-        return NextResponse.json({ error: 'Too many redirects' }, { status: 422 })
+        return lookupFailed('too_many_redirects', 'Too many redirects')
       }
       // Resolve relative redirects against the current URL; drop any fragment.
       currentUrl = new URL(location, currentUrl).toString().split('#')[0]
@@ -111,20 +128,17 @@ export async function POST(request: NextRequest) {
         cfMitigated === 'challenge' ||
         (response.status === 403 && server.includes('cloudflare'))
       ) {
-        return NextResponse.json(
-          { error: 'This site has bot protection. Please fill in the fields manually.' },
-          { status: 422 }
+        return lookupFailed(
+          'bot_protected',
+          'This site has bot protection. Please fill in the fields manually.'
         )
       }
-      return NextResponse.json(
-        { error: `Failed to fetch URL (${response.status})` },
-        { status: 422 }
-      )
+      return lookupFailed('http_error', `Failed to fetch URL (${response.status})`)
     }
 
     const contentType = response.headers.get('content-type') || ''
     if (!contentType.includes('text/html') && !contentType.includes('application/xhtml')) {
-      return NextResponse.json({ error: 'URL does not return HTML content' }, { status: 422 })
+      return lookupFailed('not_html', 'URL does not return HTML content')
     }
 
     const html = await response.text()
@@ -133,9 +147,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(metadata)
   } catch (err) {
     if (err instanceof Error && err.name === 'AbortError') {
-      return NextResponse.json({ error: 'Request timed out' }, { status: 422 })
+      return lookupFailed('timeout', 'Request timed out')
     }
-    return NextResponse.json({ error: 'Failed to fetch metadata' }, { status: 422 })
+    return lookupFailed('fetch_failed', 'Failed to fetch metadata')
   }
 }
 

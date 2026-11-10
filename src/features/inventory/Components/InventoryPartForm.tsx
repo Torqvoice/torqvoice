@@ -27,6 +27,7 @@ import {
   deleteOrphanedUploads,
 } from '../Actions/inventoryActions'
 import { aiAnalyzePartImage } from '../Actions/aiAnalyzePartImage'
+import { isSupplierUrl, normalizeSupplierUrl } from '../Lib/supplierUrl'
 import {
   Camera,
   Check,
@@ -34,6 +35,7 @@ import {
   ExternalLink,
   History,
   ImageIcon,
+  Info,
   Loader2,
   Plus,
   Sparkles,
@@ -111,6 +113,22 @@ interface InventoryPartFormProps {
   }
 }
 
+/**
+ * Why Fetch filled nothing in. It is a convenience: the server reads the
+ * supplier's page to prefill the fields, and a page it cannot read never stops
+ * the part from being saved. So the answer is a note under the link, not an
+ * error dialog over the form.
+ */
+type FetchIssue = 'blocked' | 'timedOut' | 'unreadable'
+
+/** Reads the `code` the lookup route sends with a failure. */
+function fetchIssueFrom(body: unknown): FetchIssue {
+  const code = typeof body === 'object' && body !== null && 'code' in body ? body.code : undefined
+  if (code === 'bot_protected') return 'blocked'
+  if (code === 'timeout') return 'timedOut'
+  return 'unreadable'
+}
+
 export function InventoryPartForm({
   open,
   onOpenChange,
@@ -138,6 +156,9 @@ export function InventoryPartForm({
   const [uploading, setUploading] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [supplierUrl, setSupplierUrl] = useState(part?.supplierUrl ?? '')
+  const [fetchIssue, setFetchIssue] = useState<{ url: string; issue: FetchIssue } | null>(null)
+  // An answer that arrives after the link was edited says nothing about the new one.
+  const shownIssue = fetchIssue?.url === supplierUrl ? fetchIssue.issue : null
   const [category, setCategory] = useState(part?.category ?? '')
   const [unit, setUnit] = useState(part ? (part.unit ?? '') : (defaultUnit ?? ''))
   const [categoryOpen, setCategoryOpen] = useState(false)
@@ -171,6 +192,7 @@ export function InventoryPartForm({
     if (open) {
       uploadedUrlsRef.current = []
       setSupplierUrl(part?.supplierUrl ?? '')
+      setFetchIssue(null)
       setCategory(part?.category ?? '')
       setUnit(part ? (part.unit ?? '') : (defaultUnit ?? ''))
       setCategorySearch('')
@@ -248,16 +270,13 @@ export function InventoryPartForm({
 
   const handleFetchMetadata = useCallback(
     async (url?: string) => {
-      const targetUrl = url ?? supplierUrl
-      if (!targetUrl) return
-
-      try {
-        new URL(targetUrl)
-      } catch {
-        return
-      }
+      // A link typed as `www.supplier.com/...` is looked up, and kept, as https://.
+      const targetUrl = normalizeSupplierUrl(url ?? supplierUrl)
+      if (!targetUrl || !isSupplierUrl(targetUrl)) return
+      if (url === undefined && targetUrl !== supplierUrl) setSupplierUrl(targetUrl)
 
       setFetching(true)
+      setFetchIssue(null)
       try {
         const res = await fetch('/api/protected/fetch-metadata', {
           method: 'POST',
@@ -266,8 +285,8 @@ export function InventoryPartForm({
         })
 
         if (!res.ok) {
-          const data = await res.json().catch(() => ({}))
-          modal.open('error', t('form.fetchFailed'), data.error || t('form.fetchError'))
+          const body: unknown = await res.json().catch(() => null)
+          setFetchIssue({ url: targetUrl, issue: fetchIssueFrom(body) })
           return
         }
 
@@ -302,12 +321,12 @@ export function InventoryPartForm({
           setGallery([{ url: metadata.imageUrl, sortOrder: 0 }])
         }
       } catch {
-        modal.open('error', t('form.fetchFailed'), t('form.fetchError'))
+        setFetchIssue({ url: targetUrl, issue: 'unreadable' })
       } finally {
         setFetching(false)
       }
     },
-    [supplierUrl, gallery, modal]
+    [supplierUrl, gallery]
   )
 
   const handleAiAnalyze = useCallback(async () => {
@@ -394,6 +413,14 @@ export function InventoryPartForm({
       return
     }
 
+    // Stored as the server will check it: `www.supplier.com/...` gets https://.
+    const link = normalizeSupplierUrl(supplierUrl)
+    if (link !== supplierUrl) setSupplierUrl(link)
+    if (link && !isSupplierUrl(link)) {
+      modal.open('error', t('errors.error'), t('form.supplierLinkInvalid'))
+      return
+    }
+
     setLoading(true)
     // An emptied field reaches the update action as '' so it can be cleared.
     const optional = (value: FormDataEntryValue | string | null) =>
@@ -412,7 +439,7 @@ export function InventoryPartForm({
       supplier: optional(formData.get('supplier')),
       supplierPhone: optional(formData.get('supplierPhone')),
       supplierEmail: optional(formData.get('supplierEmail')),
-      supplierUrl: optional(supplierUrl),
+      supplierUrl: optional(link),
       gallery: gallery.map((g, i) => ({
         id: g.id,
         url: g.url,
@@ -485,7 +512,11 @@ export function InventoryPartForm({
                     id="supplierUrl"
                     placeholder={t('form.supplierLinkPlaceholder')}
                     value={supplierUrl}
-                    onChange={(e) => setSupplierUrl(e.target.value)}
+                    aria-describedby={shownIssue ? 'supplierUrl-note' : undefined}
+                    onChange={(e) => {
+                      setSupplierUrl(e.target.value)
+                      setFetchIssue(null)
+                    }}
                   />
                   {supplierUrl &&
                     (() => {
@@ -510,13 +541,31 @@ export function InventoryPartForm({
                   type="button"
                   variant="outline"
                   size="sm"
-                  disabled={fetching || !supplierUrl}
+                  // A site that turns the lookup away answers the same for the
+                  // same link, so Fetch waits for the link to change.
+                  disabled={fetching || !supplierUrl || shownIssue === 'blocked'}
                   onClick={() => handleFetchMetadata()}
                 >
                   {fetching ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}
                   {t('form.fetch')}
                 </Button>
               </div>
+              {shownIssue && (
+                <p
+                  id="supplierUrl-note"
+                  role="status"
+                  className="flex items-start gap-1.5 text-sm text-muted-foreground"
+                >
+                  <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    {shownIssue === 'blocked'
+                      ? t('form.fetchBlocked')
+                      : shownIssue === 'timedOut'
+                        ? t('form.fetchTimedOut')
+                        : t('form.fetchUnreadable')}
+                  </span>
+                </p>
+              )}
             </div>
 
             {/* Image + fields: stacked on mobile, side-by-side on sm+ */}

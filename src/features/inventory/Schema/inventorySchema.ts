@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { imageUrlSchema } from '@/lib/upload-url'
 import { MAX_PART_TAGS, MAX_TAG_LENGTH } from '../Lib/partTags'
+import { supplierUrlSchema } from '../Lib/supplierUrl'
 
 export const createInventoryPartSchema = z.object({
   name: z.string().min(1, 'Part name is required'),
@@ -16,7 +17,7 @@ export const createInventoryPartSchema = z.object({
   supplier: z.string().optional(),
   supplierPhone: z.string().optional(),
   supplierEmail: z.string().optional(),
-  supplierUrl: z.string().url().optional().or(z.literal('')),
+  supplierUrl: supplierUrlSchema.optional().or(z.literal('')),
   gallery: z
     .array(
       z.object({
