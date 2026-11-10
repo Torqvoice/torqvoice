@@ -117,8 +117,16 @@ describe('A half-written support request', () => {
     write('', 'Could you connect to our parts supplier?')
     first.unmount()
 
-    render(<SupportBubble userId="anna" />)
+    const second = render(<SupportBubble userId="anna" />)
     openFromPage({ subject: 'Integration suggestion' })
+
+    expect(subjectField()).toHaveValue('Integration suggestion')
+    expect(messageField()).toHaveValue('Could you connect to our parts supplier?')
+
+    // The page is replaced again before another key is pressed.
+    second.unmount()
+    render(<SupportBubble userId="anna" />)
+    openForm()
 
     expect(subjectField()).toHaveValue('Integration suggestion')
     expect(messageField()).toHaveValue('Could you connect to our parts supplier?')

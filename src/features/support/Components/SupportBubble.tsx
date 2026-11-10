@@ -120,12 +120,22 @@ export function SupportBubble({ userId }: { userId: string }) {
   // tab that lost its session comes back from the sign-in page, and a new
   // build asks for a reload. Read after mount, like the visibility above, so
   // the server and the first client render agree.
+  const [draftRestored, setDraftRestored] = useState(false)
   useEffect(() => {
     const draft = readSupportDraft(userId)
-    if (!draft) return
-    setSubject((current) => current || draft.subject)
-    setMessage((current) => current || draft.message)
+    if (draft) {
+      setSubject((current) => current || draft.subject)
+      setMessage((current) => current || draft.message)
+    }
+    setDraftRestored(true)
   }, [userId])
+
+  // Kept whenever the fields change, whether typed or handed over by a page
+  // that opened the form. Not before the stored draft has been read back, or
+  // the empty first render would wipe it.
+  useEffect(() => {
+    if (draftRestored) writeSupportDraft(userId, { subject, message })
+  }, [draftRestored, userId, subject, message])
 
   const reset = useCallback(() => {
     setSubject('')
@@ -363,10 +373,7 @@ export function SupportBubble({ userId }: { userId: string }) {
                   <Input
                     id="support-subject"
                     value={subject}
-                    onChange={(e) => {
-                      setSubject(e.target.value)
-                      writeSupportDraft(userId, { subject: e.target.value, message })
-                    }}
+                    onChange={(e) => setSubject(e.target.value)}
                     maxLength={MAX_SUBJECT_LENGTH}
                     required
                     placeholder={t('subjectPlaceholder')}
@@ -380,10 +387,7 @@ export function SupportBubble({ userId }: { userId: string }) {
                   <Textarea
                     id="support-message"
                     value={message}
-                    onChange={(e) => {
-                      setMessage(e.target.value)
-                      writeSupportDraft(userId, { subject, message: e.target.value })
-                    }}
+                    onChange={(e) => setMessage(e.target.value)}
                     maxLength={MAX_MESSAGE_LENGTH}
                     required
                     rows={4}
