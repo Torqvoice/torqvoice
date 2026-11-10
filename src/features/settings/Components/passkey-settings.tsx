@@ -16,9 +16,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Fingerprint, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Fingerprint, Loader2, LogIn, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { showNotice } from '@/components/notice-toast'
+import { isPasskeyPromptClosed, passkeyErrorCode } from '@/lib/passkey-prompt'
+import { signInUrlFor } from '@/lib/signed-out'
 import { describeUserAgent } from '@/lib/user-agent-label'
+
+const SIGN_IN_AGAIN_TOAST_ID = 'passkey-sign-in-again'
 
 interface Passkey {
   id: string
@@ -30,6 +35,8 @@ interface Passkey {
 
 export function PasskeySettings() {
   const t = useTranslations('settings')
+  const tDismiss = useTranslations('common.updateBanner')
+  const tCommon = useTranslations('common')
   const [passkeys, setPasskeys] = useState<Passkey[]>([])
   const [loading, setLoading] = useState(true)
   const [registering, setRegistering] = useState(false)
@@ -57,6 +64,25 @@ export function PasskeySettings() {
     fetchPasskeys()
   }, [])
 
+  // The sign-in page sends a signed-in visitor straight back, so this session
+  // ends before the tab goes there, set to come back to this page.
+  const signInAgain = async () => {
+    // A sign-out that did not happen would send them to a sign-in page that
+    // sends a signed-in visitor straight back here, with nothing said.
+    let signedOut = true
+    try {
+      const result = await authClient.signOut()
+      if (result?.error) signedOut = false
+    } catch {
+      signedOut = false
+    }
+    if (!signedOut) {
+      toast.error(tCommon('errors.unexpected'))
+      return
+    }
+    window.location.assign(signInUrlFor(window.location.pathname, window.location.search))
+  }
+
   const handleRegister = async () => {
     setRegistering(true)
     try {
@@ -67,8 +93,23 @@ export function PasskeySettings() {
         label === 'Unknown device' ? undefined : { name: label }
       )
       if (result?.error) {
-        // User dismissed the passkey prompt — not an error state
-        if ('code' in result.error && result.error.code === 'REGISTRATION_CANCELLED') return
+        if (isPasskeyPromptClosed(result.error)) return
+        const code = passkeyErrorCode(result.error)
+        // A passkey is only added to a session that began recently, and a
+        // session lasts days longer than that. Better Auth's own sentence
+        // ("Session is not fresh") says neither why nor what to do.
+        if (code === 'SESSION_NOT_FRESH') {
+          showNotice({
+            id: SIGN_IN_AGAIN_TOAST_ID,
+            icon: LogIn,
+            title: t('account.passkey.signInAgainTitle'),
+            description: t('account.passkey.signInAgainDescription'),
+            actionLabel: t('account.passkey.signInAgain'),
+            onAction: signInAgain,
+            dismissLabel: tDismiss('dismiss'),
+          })
+          return
+        }
         const msg = typeof result.error.message === 'string' ? result.error.message : ''
         toast.error(msg || t('account.passkey.registerFailed'))
       } else {
@@ -77,8 +118,10 @@ export function PasskeySettings() {
       }
     } catch {
       toast.error(t('account.passkey.registerFailed'))
+    } finally {
+      // Also after the early returns above, or the button would spin for good
+      setRegistering(false)
     }
-    setRegistering(false)
   }
 
   const handleDelete = async () => {
