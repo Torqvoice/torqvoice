@@ -17,6 +17,7 @@ import { WeekTimeline } from './WeekTimeline'
 import { WeekCardGrid } from './WeekCardGrid'
 import { type BoardLayout, isBoardLayout } from '../hooks/useBoardPreferences'
 import { type ClockFormat } from '../utils/clock'
+import { boardNow, toBoardJob } from '../utils/board-time'
 import { type LaneGrouping, buildLanes, groupJobsByLane, isLaneGrouping } from '../utils/lanes'
 import { useTranslations, useLocale } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
@@ -85,7 +86,7 @@ function formatDayDate(dateStr: string, locale?: string): string {
  * shoving the header about, so the space is reserved up front: tabular figures
  * and a width sized for the longest the format can be.
  */
-function LiveClock({ format }: { format: ClockFormat }) {
+function LiveClock({ format, timeZone }: { format: ClockFormat; timeZone: string }) {
   const [time, setTime] = useState<string | null>(null)
 
   useEffect(() => {
@@ -96,13 +97,15 @@ function LiveClock({ format }: { format: ClockFormat }) {
           minute: '2-digit',
           second: '2-digit',
           hour12: format === '12h',
+          // The board below runs on the workshop's clock, so this does too.
+          ...(timeZone ? { timeZone } : {}),
         })
       )
     }
     update()
     const timer = setInterval(update, 1000)
     return () => clearInterval(timer)
-  }, [format])
+  }, [format, timeZone])
 
   return (
     <span
@@ -136,7 +139,7 @@ export function WorkBoardPresenter({
   const t = useTranslations('workBoard.presenter')
   const tb = useTranslations('workBoard.board')
   const tt = useTranslations('workBoard.toolbar')
-  const { timeFormat } = useDateSettings()
+  const { timeFormat, timezone } = useDateSettings()
   const locale = useLocale()
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -155,7 +158,7 @@ export function WorkBoardPresenter({
       ? (urlLayout as PresenterLayout)
       : (legacy?.layout ?? 'timeline')
   )
-  const [selectedDate, setSelectedDateState] = useState(urlDate || toLocalDateString(new Date()))
+  const [selectedDate, setSelectedDateState] = useState(urlDate || boardNow(timezone).dayKey)
   // The presenter keeps its settings in the address bar rather than reading the
   // planner's saved preference: a wall display is usually a different machine,
   // and one that should stay on whatever it was pinned to.
@@ -266,32 +269,34 @@ export function WorkBoardPresenter({
     }
   }
   const handleToday = () => {
-    setSelectedDate(toLocalDateString(new Date()))
-    loadWeekData(getWeekStart(new Date(), weekStartDay))
+    const today = boardNow(timezone).dayKey
+    setSelectedDate(today)
+    loadWeekData(getWeekStart(new Date(`${today}T12:00:00`), weekStartDay))
   }
 
+  // A wall display moves on to the next day by itself, at the workshop's
+  // midnight. Checked every minute rather than timed to the browser's own
+  // midnight, which is a different moment when the screen sits in another zone.
   useEffect(() => {
-    function msUntilMidnight() {
-      const now = new Date()
-      const m = new Date(now)
-      m.setHours(24, 0, 0, 0)
-      return m.getTime() - now.getTime()
-    }
-    let timeout: ReturnType<typeof setTimeout>
-    function schedule() {
-      timeout = setTimeout(() => {
-        const now = new Date()
-        setSelectedDate(toLocalDateString(now))
-        loadWeekData(getWeekStart(now, weekStartDay))
-        schedule()
-      }, msUntilMidnight() + 500)
-    }
-    schedule()
-    return () => clearTimeout(timeout)
-  }, [loadWeekData, setSelectedDate, weekStartDay])
+    let current = boardNow(timezone).dayKey
+    const timer = setInterval(() => {
+      const today = boardNow(timezone).dayKey
+      if (today === current) return
+      current = today
+      setSelectedDate(today)
+      loadWeekData(getWeekStart(new Date(`${today}T12:00:00`), weekStartDay))
+    }, 60_000)
+    return () => clearInterval(timer)
+  }, [loadWeekData, setSelectedDate, weekStartDay, timezone])
 
   const dateLabel =
     period === 'week' ? formatWeekRange(weekStart, locale) : formatDayDate(selectedDate, locale)
+
+  // Drawn on the workshop's clock; the store keeps real instants.
+  const boardJobs = useMemo(
+    () => store.jobs.map((job) => toBoardJob(job, timezone)),
+    [store.jobs, timezone]
+  )
 
   const lanes = useMemo(
     () =>
@@ -299,13 +304,13 @@ export function WorkBoardPresenter({
         grouping,
         technicians: store.technicians,
         workBays: store.workBays,
-        jobs: store.jobs,
+        jobs: boardJobs,
         labels: {
           unlaned: grouping === 'bay' ? tb('lanes.noBay') : tb('lanes.noTechnician'),
           all: tb('lanes.everyone'),
         },
       }),
-    [grouping, store.technicians, store.workBays, store.jobs, tb]
+    [grouping, store.technicians, store.workBays, boardJobs, tb]
   )
 
   // Closed days and who is away, the same as on the board itself.
@@ -329,11 +334,11 @@ export function WorkBoardPresenter({
   const jobsByLane = useMemo(
     () =>
       groupJobsByLane(
-        store.jobs,
+        boardJobs,
         grouping,
         new Set(lanes.filter((lane) => !lane.isPlaceholder).map((lane) => lane.id))
       ),
-    [store.jobs, grouping, lanes]
+    [boardJobs, grouping, lanes]
   )
 
   return (
@@ -462,7 +467,7 @@ export function WorkBoardPresenter({
                     : t('connecting')}
               </TooltipContent>
             </Tooltip>
-            <LiveClock format={timeFormat} />
+            <LiveClock format={timeFormat} timeZone={timezone} />
           </div>
         </div>
       </header>
@@ -471,7 +476,7 @@ export function WorkBoardPresenter({
         <PresenterKanbanView
           date={selectedDate}
           technicians={store.technicians}
-          assignments={store.jobs}
+          assignments={boardJobs}
         />
       ) : lanes.length === 0 ? (
         <div className="flex flex-1 items-center justify-center p-10">
@@ -489,7 +494,7 @@ export function WorkBoardPresenter({
                 days={days}
                 lanes={lanes}
                 jobsByLane={jobsByLane}
-                todayStr={toLocalDateString(new Date())}
+                todayStr={boardNow(timezone).dayKey}
                 timeFormat={timeFormat}
                 lookup={owners}
                 readOnly
@@ -501,7 +506,7 @@ export function WorkBoardPresenter({
               <WeekTimeline
                 days={days}
                 lanes={lanes}
-                jobs={store.jobs}
+                jobs={boardJobs}
                 grouping={grouping}
                 zoom={1}
                 snapMinutes={15}

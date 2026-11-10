@@ -30,6 +30,8 @@ export interface Booking {
   start: Date
   end: Date
   technicianId?: string | null
+  /** Everybody else on the job, whose time it holds as much as the technician's. */
+  helperIds?: string[]
   workBayId?: string | null
 }
 
@@ -37,7 +39,26 @@ export interface Slot {
   start: Date
   end: Date
   technicianId?: string | null
+  /** Who else the slot is for, when the job has helpers. */
+  helperIds?: string[]
   workBayId?: string | null
+}
+
+/** Everybody a booking or a slot holds: its technician and whoever helps. */
+export function peopleOf(held: { technicianId?: string | null; helperIds?: string[] }): string[] {
+  const helpers = held.helperIds ?? []
+  return held.technicianId ? [held.technicianId, ...helpers] : helpers
+}
+
+/**
+ * The people a slot and a booking both need, which is who is double-booked
+ * when the two overlap. Empty when they share nobody.
+ */
+export function sharedPeople(slot: Slot, booking: Booking): string[] {
+  const wanted = peopleOf(slot)
+  if (wanted.length === 0) return []
+  const held = new Set(peopleOf(booking))
+  return wanted.filter((id) => held.has(id))
 }
 
 /** The shop's bookable hours, as "HH:mm" on the shop's own clock. */
@@ -75,14 +96,18 @@ export function overlaps(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): bo
  * A booking only counts when it shares a resource. Two jobs at the same hour
  * in different bays with different people are not a clash, and a job with
  * neither set is not holding anything, so it cannot be clashed with.
+ *
+ * A person is taken whichever way they are on the other job: a helper is as
+ * busy as the technician they are helping, so a slot for either clashes with
+ * a booking that holds them as the other.
  */
 export function findConflicts(slot: Slot, bookings: Booking[], excludeId?: string): Booking[] {
   return bookings.filter((booking) => {
     if (booking.id === excludeId) return false
     if (!overlaps(slot.start, slot.end, booking.start, booking.end)) return false
-    const sameTech = !!slot.technicianId && booking.technicianId === slot.technicianId
+    const samePerson = sharedPeople(slot, booking).length > 0
     const sameBay = !!slot.workBayId && booking.workBayId === slot.workBayId
-    return sameTech || sameBay
+    return samePerson || sameBay
   })
 }
 
@@ -125,6 +150,7 @@ export function nextAvailableSlot({
   bookings,
   hours,
   technicianId,
+  helperIds,
   workBayId,
   excludeId,
   searchDays = 30,
@@ -134,6 +160,8 @@ export function nextAvailableSlot({
   bookings: Booking[]
   hours: WorkingHours
   technicianId?: string | null
+  /** Who else has to be free: a slot is only free when the whole team is. */
+  helperIds?: string[]
   workBayId?: string | null
   excludeId?: string
   searchDays?: number
@@ -168,6 +196,7 @@ export function nextAvailableSlot({
           start: new Date(cursor),
           end: new Date(cursor.getTime() + durationMs),
           technicianId,
+          helperIds,
           workBayId,
         }
         const clashes = findConflicts(candidate, bookings, excludeId)
@@ -210,6 +239,10 @@ export function absenceBookings(calendar: WorkshopCalendar | undefined): Booking
  * that runs over midnight is split between the two days rather than counted
  * whole on both. The day's edges are instants, worked out by the caller in
  * the workshop's zone: this function never looks at a clock.
+ *
+ * A job with helpers fills the day of everybody on it. Two people on a
+ * three-hour job are each booked for three hours: the board plans a person's
+ * day, and neither of them can be given something else for those hours.
  */
 export function technicianMinutesInDay(
   bookings: Booking[],
@@ -219,12 +252,14 @@ export function technicianMinutesInDay(
   const minutes: Record<string, number> = {}
   for (const booking of bookings) {
     // Time off is not work: the board shows it as time away, not as load.
-    if (!booking.technicianId || booking.kind === 'absence') continue
+    if (booking.kind === 'absence') continue
+    const people = peopleOf(booking)
+    if (people.length === 0) continue
     const from = Math.max(booking.start.getTime(), dayStart.getTime())
     const to = Math.min(booking.end.getTime(), dayEnd.getTime())
     if (to <= from) continue
-    minutes[booking.technicianId] =
-      (minutes[booking.technicianId] ?? 0) + Math.round((to - from) / 60000)
+    const held = Math.round((to - from) / 60000)
+    for (const id of people) minutes[id] = (minutes[id] ?? 0) + held
   }
   return minutes
 }

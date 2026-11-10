@@ -7,6 +7,7 @@
 
 import type { InspectionSelect, ServiceRecordSelect } from '@/generated/prisma/models'
 import type { WorkBoardJob } from './types'
+import { ACTIVE_HELPERS } from '../../Lib/jobTeam'
 
 export const VEHICLE_SELECT = {
   id: true,
@@ -25,6 +26,7 @@ export function serviceRecordToJob(sr: {
   endDateTime: Date | null
   promisedAt: Date | null
   technicianId: string | null
+  helpers: { technicianId: string }[]
   workBayId: string | null
   sortOrder: number
   vehicle: {
@@ -41,6 +43,7 @@ export function serviceRecordToJob(sr: {
     id: sr.id,
     type: 'serviceRecord',
     technicianId: sr.technicianId,
+    helperIds: sr.helpers.map((h) => h.technicianId),
     workBayId: sr.workBayId,
     sortOrder: sr.sortOrder,
     title: sr.title,
@@ -77,6 +80,7 @@ export function inspectionToJob(insp: {
     id: insp.id,
     type: 'inspection',
     technicianId: insp.technicianId,
+    helperIds: [],
     workBayId: insp.workBayId,
     sortOrder: insp.sortOrder,
     title: insp.template.name,
@@ -103,6 +107,7 @@ export const SERVICE_JOB_SELECT = {
   endDateTime: true,
   promisedAt: true,
   technicianId: true,
+  helpers: ACTIVE_HELPERS,
   workBayId: true,
   sortOrder: true,
   vehicle: { select: VEHICLE_SELECT },

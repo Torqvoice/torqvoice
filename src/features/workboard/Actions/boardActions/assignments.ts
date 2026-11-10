@@ -6,6 +6,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import { notificationBus } from '@/lib/notification-bus'
 import { pushToTechnician } from '@/features/notifications/Lib/pushToTechnician'
+import { settleHelpers } from '../../Lib/jobTeam'
 import {
   assignTechnicianSchema,
   moveJobSchema,
@@ -155,14 +156,24 @@ export async function assignTechnician(input: unknown) {
       if (data.type === 'serviceRecord') {
         const owned = await db.serviceRecord.findFirst({
           where: { id: data.id, organizationId },
-          select: { id: true },
+          select: { id: true, technicianId: true },
         })
         if (!owned) throw new Error('Service record not found')
 
-        const sr = await db.serviceRecord.update({
-          where: { id: data.id },
-          data: { technicianId: data.technicianId, techName: tech.name, ...timeData },
-          select: SERVICE_JOB_SELECT,
+        // One transaction with the helpers: a helper made the technician
+        // must never be read as both, however briefly.
+        const sr = await db.$transaction(async (tx) => {
+          await settleHelpers(tx, {
+            organizationId,
+            serviceRecordId: owned.id,
+            previousId: owned.technicianId,
+            nextId: data.technicianId,
+          })
+          return tx.serviceRecord.update({
+            where: { id: data.id },
+            data: { technicianId: data.technicianId, techName: tech.name, ...timeData },
+            select: SERVICE_JOB_SELECT,
+          })
         })
         job = serviceRecordToJob(sr)
       } else {
@@ -229,18 +240,26 @@ export async function moveJob(input: unknown) {
       if (data.type === 'serviceRecord') {
         const owned = await db.serviceRecord.findFirst({
           where: { id: data.id, organizationId },
-          select: { id: true },
+          select: { id: true, technicianId: true },
         })
         if (!owned) throw new Error('Service record not found')
 
-        const sr = await db.serviceRecord.update({
-          where: { id: data.id },
-          data: {
-            technicianId: data.technicianId,
-            sortOrder: data.sortOrder,
-            techName: tech.name,
-          },
-          select: SERVICE_JOB_SELECT,
+        const sr = await db.$transaction(async (tx) => {
+          await settleHelpers(tx, {
+            organizationId,
+            serviceRecordId: owned.id,
+            previousId: owned.technicianId,
+            nextId: data.technicianId,
+          })
+          return tx.serviceRecord.update({
+            where: { id: data.id },
+            data: {
+              technicianId: data.technicianId,
+              sortOrder: data.sortOrder,
+              techName: tech.name,
+            },
+            select: SERVICE_JOB_SELECT,
+          })
         })
         job = serviceRecordToJob(sr)
       } else {
@@ -286,12 +305,23 @@ export async function unassignJob(input: unknown) {
       if (data.type === 'serviceRecord') {
         const sr = await db.serviceRecord.findFirst({
           where: { id: data.id, organizationId },
+          select: { id: true, technicianId: true },
         })
         if (!sr) throw new Error('Service record not found')
 
-        await db.serviceRecord.update({
-          where: { id: data.id },
-          data: { technicianId: null, techName: null, workBayId: null, sortOrder: 0 },
+        // Off the board means nobody is on it: the helpers go with the
+        // technician rather than staying on a job that has no one's name.
+        await db.$transaction(async (tx) => {
+          await settleHelpers(tx, {
+            organizationId,
+            serviceRecordId: sr.id,
+            previousId: sr.technicianId,
+            nextId: null,
+          })
+          await tx.serviceRecord.update({
+            where: { id: data.id },
+            data: { technicianId: null, techName: null, workBayId: null, sortOrder: 0 },
+          })
         })
       } else {
         const insp = await db.inspection.findFirst({

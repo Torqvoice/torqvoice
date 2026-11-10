@@ -34,6 +34,7 @@ function job(
     id,
     type: 'serviceRecord',
     technicianId: 't1',
+    helperIds: [],
     workBayId: null,
     customerName: null,
     sortOrder: 0,

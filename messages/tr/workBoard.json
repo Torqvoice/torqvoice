@@ -90,7 +90,9 @@
     "endTime": "Bitiş Zamanı",
     "failedDuration": "Süre güncellenemedi",
     "failedTimes": "Zamanlar güncellenemedi",
-    "startTime": "Başlangıç Zamanı"
+    "startTime": "Başlangıç Zamanı",
+    "alsoOnJob": "Bu işte de çalışıyor",
+    "failedHelper": "İşteki kişiler güncellenemedi"
   },
   "presenter": {
     "title": "İş Panosu",
@@ -160,6 +162,9 @@
     "none": "Henüz kimse",
     "promised": "Söz verilen",
     "promiseLate": "Gecikti",
-    "promiseOverdue": "Müşteriye geçmiş bir zaman için söz verildi"
+    "promiseOverdue": "Müşteriye geçmiş bir zaman için söz verildi",
+    "alsoOnJob": "Bu işte de",
+    "with": "{name} ile",
+    "helping": "Yardım ediyor"
   }
 }

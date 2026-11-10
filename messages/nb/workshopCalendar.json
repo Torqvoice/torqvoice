@@ -159,7 +159,8 @@
     "awayPart": "Borte {when}",
     "awayConflict": "Borte ({reason})",
     "awayHeading": "Teknikeren er borte da",
-    "bookedAnyway": "Du kan likevel beholde denne tiden hvis arbeidet er avtalt."
+    "bookedAnyway": "Du kan likevel beholde denne tiden hvis arbeidet er avtalt.",
+    "awayHeadingTeam": "Noen på denne jobben er borte da"
   },
   "calendar": {
     "closure": "Stengt",

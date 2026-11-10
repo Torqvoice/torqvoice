@@ -39,6 +39,7 @@ import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileSt
 import { assertInvoiceEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
 import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
+import { ACTIVE_HELPERS } from '@/features/workboard/Lib/jobTeam'
 
 export async function getServiceRecords(vehicleId: string) {
   return withAuth(
@@ -239,6 +240,8 @@ export async function getServiceRecord(recordId: string) {
           payments: { orderBy: { date: 'desc' } },
           // Who opened the job, for the line under its number.
           createdBy: { select: { name: true } },
+          // Who is on the job besides its technician.
+          helpers: ACTIVE_HELPERS,
           // The inspection it was raised from, for the link beside it: the
           // photos of what is being repaired live there.
           inspection: {

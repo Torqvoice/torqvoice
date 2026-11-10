@@ -63,6 +63,12 @@ export interface WorkOrderJob {
   /** The status in the reader's words: the workshop's own name for it, or the stage. */
   statusLabel: string
   workBay?: string | null
+  /**
+   * Everybody else on the job with its technician, by name. The sheet is the
+   * workshop's own paper, so it says who is working the job; the invoice the
+   * customer gets keeps to the one technician.
+   */
+  helperNames?: string[]
   promisedAt?: Date | string | null
   /** What the customer came in with, in the order they said it. */
   concerns: { description: string; correction?: string | null }[]
@@ -213,7 +219,10 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const vehicleName = data.vehicle
     ? `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
     : ''
-  const tech = data.technician?.name || data.techName || ''
+  // The technician first, then whoever is on the job with them.
+  const tech = [data.technician?.name || data.techName || '', ...(job.helperNames ?? [])]
+    .filter(Boolean)
+    .join(', ')
   const unit = invoiceSettings?.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')
 
   const fields: Record<string, string> = {

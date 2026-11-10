@@ -1226,6 +1226,27 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [],
   },
+  ServiceRecordHelper: {
+    organizationId: true,
+    foreignKeys: {
+      serviceRecordId: {
+        target: 'ServiceRecord',
+        required: true,
+        relation: 'serviceRecord',
+      },
+      technicianId: {
+        target: 'Technician',
+        required: true,
+        relation: 'technician',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
   TechnicianLoginCode: {
     organizationId: true,
     foreignKeys: {

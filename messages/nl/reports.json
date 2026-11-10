@@ -150,7 +150,7 @@
       "tableTitle": "Geklokt tegenover gefactureerd",
       "clocked": "Geklokt",
       "billed": "Gefactureerd",
-      "hint": "Geklokte uren komen van de prikklok. Gefactureerde uren zijn de arbeidsregels op klussen die aan de monteur zijn toegewezen en in de periode zijn gestart. Efficiëntie is gefactureerd gedeeld door geklokt.",
+      "hint": "Geklokte uren komen van de prikklok. Gefactureerde uren zijn de arbeidsregels op klussen die aan de monteur zijn toegewezen en in de periode zijn gestart. Een klus met meer dan één persoon verdeelt de gefactureerde uren naar de tijd die ieder erop heeft geklokt; als iemand er niet op heeft geklokt, blijven de uren bij de monteur. Efficiëntie is gefactureerd gedeeld door geklokt.",
       "noClock": "Geen tijd",
       "jobsClocked": "Geklokte klussen"
     }

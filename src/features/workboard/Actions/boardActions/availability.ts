@@ -2,7 +2,12 @@
 
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { findConflicts, nextAvailableSlot, technicianMinutesInDay } from '../../Lib/availability'
+import {
+  findConflicts,
+  nextAvailableSlot,
+  sharedPeople,
+  technicianMinutesInDay,
+} from '../../Lib/availability'
 import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
 import { loadBookingContext } from '../../Lib/bookings'
 import {
@@ -32,6 +37,8 @@ export async function checkSlotAvailability(input: {
   start: string
   end: string
   technicianId?: string | null
+  /** Who else is on the job: their day has to be free as well. */
+  helperIds?: string[]
   workBayId?: string | null
   /** The job being edited, so it never clashes with itself. */
   excludeId?: string
@@ -56,23 +63,33 @@ export async function checkSlotAvailability(input: {
       // Nothing is held, so nothing can be clashed with.
       if (!input.technicianId && !input.workBayId) return { conflicts: [], closures, closedWeekday }
 
-      const conflicts = findConflicts(
-        { start, end, technicianId: input.technicianId, workBayId: input.workBayId },
-        bookings,
-        input.excludeId
-      )
+      const slot = {
+        start,
+        end,
+        technicianId: input.technicianId,
+        // Helpers only count beside a technician: without one the job has none.
+        helperIds: input.technicianId ? (input.helperIds ?? []) : [],
+        workBayId: input.workBayId,
+      }
+      const conflicts = findConflicts(slot, bookings, input.excludeId)
       return {
-        conflicts: conflicts.map((c) => ({
-          id: c.id,
-          kind: c.kind,
-          label: c.label,
-          start: c.start.toISOString(),
-          end: c.end.toISOString(),
-          // Which resource actually clashed, so the warning can say so rather
-          // than leaving somebody to work it out from two times.
-          onTechnician: !!input.technicianId && c.technicianId === input.technicianId,
-          onBay: !!input.workBayId && c.workBayId === input.workBayId,
-        })),
+        conflicts: conflicts.map((c) => {
+          const people = sharedPeople(slot, c)
+          return {
+            id: c.id,
+            kind: c.kind,
+            label: c.label,
+            start: c.start.toISOString(),
+            end: c.end.toISOString(),
+            // Which resource actually clashed, so the warning can say so rather
+            // than leaving somebody to work it out from two times.
+            onTechnician: people.length > 0,
+            onBay: !!input.workBayId && c.workBayId === input.workBayId,
+            // Who is double-booked, as technician ids: with two people on a
+            // job "the technician is busy" no longer says which of them.
+            people,
+          }
+        }),
         closures,
         closedWeekday,
       }
@@ -89,6 +106,8 @@ export async function checkSlotAvailability(input: {
 export async function findNextSlot(input: {
   durationMinutes: number
   technicianId?: string | null
+  /** Who else is on the job: the slot has to be free for all of them. */
+  helperIds?: string[]
   workBayId?: string | null
   excludeId?: string
   /** Where to search from. Defaults to now. */
@@ -104,6 +123,7 @@ export async function findNextSlot(input: {
         bookings,
         hours,
         technicianId: input.technicianId,
+        helperIds: input.technicianId ? input.helperIds : undefined,
         workBayId: input.workBayId,
         excludeId: input.excludeId,
       })

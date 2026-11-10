@@ -49,6 +49,11 @@ export async function assembleWorkOrderPrint(
         status: true,
         customStatus: { select: { name: true } },
         workBay: { select: { name: true } },
+        // Who else is on the job, in the order they were put on it.
+        helpers: {
+          select: { technician: { select: { name: true } } },
+          orderBy: { createdAt: 'asc' },
+        },
         inspectionId: true,
         createdAt: true,
       },
@@ -108,6 +113,7 @@ export async function assembleWorkOrderPrint(
       status: job?.status ?? record.status,
       customStatusName: job?.customStatus?.name ?? null,
       workBay: job?.workBay?.name ?? null,
+      helperNames: job?.helpers.map((helper) => helper.technician.name) ?? [],
       promisedAt: job?.promisedAt ?? null,
       concerns: concerns.filter((concern) => concern.description.trim()),
       qrDataUri,

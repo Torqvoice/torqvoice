@@ -4,9 +4,10 @@ import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
-import { getOpenEntry, stopEntry } from '@/features/time-tracking/Lib/timeEntries'
+import { stopJobClocks } from '@/features/time-tracking/Lib/timeEntries'
 import { notify } from '@/lib/notify'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * Moves a job along.
@@ -35,7 +36,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: {
           id: true,
@@ -54,16 +55,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       // Finishing a job stops the clock on it. A technician who has moved on
       // is not going to remember, and a clock left running past the end of the
       // work is the exact error the whole feature exists to prevent.
+      //
+      // Every clock on it, not only this person's: with two people on a job,
+      // the one who taps "finished" speaks for both, and the other's clock
+      // would otherwise run on against work that is over.
       let stoppedMinutes: number | null = null
       if (status === 'completed' || status === 'waiting-parts') {
-        const open = await getOpenEntry(ctx.organizationId, ctx.technicianIds)
-        if (open?.serviceRecordId === job.id) {
-          const entry = await stopEntry({
-            organizationId: ctx.organizationId,
-            technicianIds: ctx.technicianIds,
-          })
-          stoppedMinutes = entry.durationMinutes
-        }
+        const stopped = await stopJobClocks({
+          organizationId: ctx.organizationId,
+          serviceRecordId: job.id,
+        })
+        // The app shows the caller how long their own stretch was.
+        stoppedMinutes =
+          stopped.find((e) => ctx.technicianIds.includes(e.technicianId))?.durationMinutes ?? null
       }
 
       const technician = await db.technician.findFirst({

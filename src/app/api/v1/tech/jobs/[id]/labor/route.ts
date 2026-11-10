@@ -11,6 +11,7 @@ import { announceLaborAdded } from '@/features/vehicles/Lib/jobEvents'
 import { refreshShopFeeLines } from '@/features/vehicles/Lib/shopFeeLines'
 import { serviceRecordLineSums } from '@/features/vehicles/Lib/lineSums'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * Adds a line of work to the job.
@@ -47,7 +48,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: {
           id: true,

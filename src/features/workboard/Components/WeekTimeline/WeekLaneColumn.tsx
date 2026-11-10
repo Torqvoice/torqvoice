@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/context-menu'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import { type ClockFormat, formatClock } from '../../utils/clock'
-import type { BoardLane } from '../../utils/lanes'
+import { type BoardLane, isHelperLane } from '../../utils/lanes'
 import { type TimeWindow, layoutLaneDay } from '../../utils/layout'
 import { columnKey, minutesAtPoint, percentForMinutes, percentForSpan } from './geometry'
 import { WeekJobBlock } from './WeekJobBlock'
@@ -259,6 +259,12 @@ function WeekLaneColumnImpl({
               technician={
                 item.job.technicianId ? (lookup?.get(item.job.technicianId) ?? null) : null
               }
+              helperNames={item.job.helperIds
+                .map((id) => lookup?.get(id)?.name)
+                .filter((name): name is string => !!name)}
+              // In this lane because its technician is helping, not because
+              // the job is theirs.
+              shadow={isHelperLane(item.job, lane.id, lane.grouping)}
               bayName={item.job.workBayId ? (lookup?.get(item.job.workBayId)?.name ?? null) : null}
               onOpen={onOpenJob}
               onDragHandle={onDragHandle}

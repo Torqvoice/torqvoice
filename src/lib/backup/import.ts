@@ -403,6 +403,22 @@ async function importServiceRecordTree(
     }
   )
 
+  // Who was on the job besides its technician. Each row needs its technician
+  // as a time entry does, so the same rule holds: a restore without the
+  // technicians drops these rather than failing on the foreign key.
+  const helpers = (sr.helpers as Record<string, unknown>[] | undefined)?.filter((helper) =>
+    opts.technicianIds.has(helper.technicianId as string)
+  )
+  await restoreRows(
+    'job helpers',
+    (rows) => tx.serviceRecordHelper.createMany({ data: rows as never }),
+    helpers,
+    {
+      organizationId: opts.organizationId,
+      serviceRecordId: sr.id as string,
+    }
+  )
+
   // Payments
   const payments = sr.payments as Record<string, unknown>[] | undefined
   if (payments?.length) {

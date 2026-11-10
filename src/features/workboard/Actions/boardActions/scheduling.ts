@@ -17,6 +17,7 @@ import {
   serviceRecordToJob,
 } from './mappers'
 import type { WorkBoardJob } from './types'
+import { settleHelpers } from '../../Lib/jobTeam'
 
 export async function updateServiceTimes(input: unknown) {
   return withAuth(
@@ -189,20 +190,32 @@ export async function scheduleJob(input: unknown) {
       if (data.type === 'serviceRecord') {
         const owned = await db.serviceRecord.findFirst({
           where: { id: data.id, organizationId },
-          select: { id: true },
+          select: { id: true, technicianId: true },
         })
         if (!owned) throw new Error('Service record not found')
 
-        const sr = await db.serviceRecord.update({
-          where: { id: data.id },
-          data: {
-            ...lane,
-            ...times,
-            // techName is the printed-invoice copy of the technician's name and
-            // has to follow the assignment, including when it is cleared.
-            ...(technicianName !== undefined ? { techName: technicianName } : {}),
-          },
-          select: SERVICE_JOB_SELECT,
+        const sr = await db.$transaction(async (tx) => {
+          // Only a drag or a pick that names the technician touches the
+          // helpers; moving a job in time or between bays leaves them be.
+          if (data.technicianId !== undefined) {
+            await settleHelpers(tx, {
+              organizationId,
+              serviceRecordId: owned.id,
+              previousId: owned.technicianId,
+              nextId: data.technicianId,
+            })
+          }
+          return tx.serviceRecord.update({
+            where: { id: data.id },
+            data: {
+              ...lane,
+              ...times,
+              // techName is the printed-invoice copy of the technician's name and
+              // has to follow the assignment, including when it is cleared.
+              ...(technicianName !== undefined ? { techName: technicianName } : {}),
+            },
+            select: SERVICE_JOB_SELECT,
+          })
         })
         job = serviceRecordToJob(sr)
       } else {

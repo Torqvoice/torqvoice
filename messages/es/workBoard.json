@@ -90,7 +90,9 @@
     "endTime": "Hora de fin",
     "failedDuration": "Error al actualizar la duración",
     "failedTimes": "Error al actualizar los horarios",
-    "startTime": "Hora de inicio"
+    "startTime": "Hora de inicio",
+    "alsoOnJob": "También en este trabajo",
+    "failedHelper": "Error al actualizar quién está en el trabajo"
   },
   "presenter": {
     "title": "Tablero de Trabajo",
@@ -160,6 +162,9 @@
     "none": "Nadie todavía",
     "promised": "Prometido",
     "promiseLate": "Retrasado",
-    "promiseOverdue": "Prometido al cliente para un momento ya pasado"
+    "promiseOverdue": "Prometido al cliente para un momento ya pasado",
+    "alsoOnJob": "También en el trabajo",
+    "with": "Con {name}",
+    "helping": "Ayudando"
   }
 }

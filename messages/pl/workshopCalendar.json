@@ -159,7 +159,8 @@
     "awayPart": "Nieobecność {when}",
     "awayConflict": "Nieobecność ({reason})",
     "awayHeading": "Technik jest wtedy nieobecny",
-    "bookedAnyway": "Możesz zachować ten termin, jeśli praca jest uzgodniona."
+    "bookedAnyway": "Możesz zachować ten termin, jeśli praca jest uzgodniona.",
+    "awayHeadingTeam": "Ktoś przy tym zleceniu jest wtedy nieobecny"
   },
   "calendar": {
     "closure": "Zamknięte",

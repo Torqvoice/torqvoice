@@ -19,6 +19,7 @@ const serviceRecordTree: Record<string, LayoutNode> = {
   payments: { model: 'Payment' },
   statusReports: { model: 'StatusReport' },
   timeEntries: { model: 'TimeEntry' },
+  helpers: { model: 'ServiceRecordHelper' },
 }
 
 export const BACKUP_LAYOUT: Record<string, LayoutNode> = {

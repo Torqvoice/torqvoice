@@ -10,6 +10,7 @@ import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { shareBilledHours } from '../Lib/sharedBilledHours'
 
 /** Hours a labour line stands for. A shop fee line is one unit of a charge, not an hour. */
 const laborHours = (line: { hours: number; pricingType: string }) =>
@@ -327,6 +328,9 @@ export async function getTechnicianReport(params: ReportRange) {
  * started in the window, the same figure the overview tab shows. The ratio
  * is the efficiency a workshop actually manages by: hours it could invoice
  * for every hour it paid.
+ *
+ * A job with helpers shares its billed hours between the people on it, by
+ * the time each clocked on that job (Lib/sharedBilledHours.ts).
  */
 export async function getTechnicianTimeReport(params: ReportRange) {
   return withAuth(
@@ -344,7 +348,9 @@ export async function getTechnicianTimeReport(params: ReportRange) {
             technicianId: { not: null },
           },
           select: {
+            id: true,
             technicianId: true,
+            helpers: { select: { technicianId: true } },
             laborItems: { select: { hours: true, pricingType: true } },
           },
         }),
@@ -377,9 +383,44 @@ export async function getTechnicianTimeReport(params: ReportRange) {
         r.clockedMinutes += minutes
         r.jobs.add(e.serviceRecord.id)
       }
+      // What each person clocked on the jobs that more than one person is
+      // on, over the whole life of the job rather than the window: the share
+      // is of the work, and a job started last month was worked last month.
+      const sharedIds = records.filter((rec) => rec.helpers.length > 0).map((rec) => rec.id)
+      const clockedOnJob = new Map<string, Map<string, number>>()
+      if (sharedIds.length > 0) {
+        const worked = await db.timeEntry.findMany({
+          where: { organizationId, serviceRecordId: { in: sharedIds } },
+          select: {
+            serviceRecordId: true,
+            technicianId: true,
+            startedAt: true,
+            endedAt: true,
+            durationMinutes: true,
+          },
+        })
+        for (const e of worked) {
+          const minutes =
+            e.durationMinutes ??
+            Math.max(0, Math.round(((e.endedAt ?? now).getTime() - e.startedAt.getTime()) / 60_000))
+          let byPerson = clockedOnJob.get(e.serviceRecordId)
+          if (!byPerson) {
+            byPerson = new Map()
+            clockedOnJob.set(e.serviceRecordId, byPerson)
+          }
+          byPerson.set(e.technicianId, (byPerson.get(e.technicianId) ?? 0) + minutes)
+        }
+      }
+
       for (const rec of records) {
         if (!rec.technicianId) continue
-        row(rec.technicianId).billedHours += rec.laborItems.reduce((s, l) => s + laborHours(l), 0)
+        const shares = shareBilledHours({
+          hours: rec.laborItems.reduce((s, l) => s + laborHours(l), 0),
+          technicianId: rec.technicianId,
+          helperIds: rec.helpers.map((h) => h.technicianId),
+          clockedMinutes: clockedOnJob.get(rec.id) ?? new Map(),
+        })
+        for (const [technicianId, hours] of shares) row(technicianId).billedHours += hours
       }
 
       const names = new Map(

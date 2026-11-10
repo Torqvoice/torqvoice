@@ -159,7 +159,8 @@
     "awayPart": "Away {when}",
     "awayConflict": "Away ({reason})",
     "awayHeading": "The technician is away then",
-    "bookedAnyway": "You can still keep this time if the work is agreed."
+    "bookedAnyway": "You can still keep this time if the work is agreed.",
+    "awayHeadingTeam": "Someone on this job is away then"
   },
   "calendar": {
     "closure": "Closed",

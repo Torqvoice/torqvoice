@@ -159,7 +159,8 @@
     "awayPart": "Afwezig {when}",
     "awayConflict": "Afwezig ({reason})",
     "awayHeading": "De monteur is dan afwezig",
-    "bookedAnyway": "Je kunt deze tijd toch houden als het werk is afgesproken."
+    "bookedAnyway": "Je kunt deze tijd toch houden als het werk is afgesproken.",
+    "awayHeadingTeam": "Iemand op deze klus is dan afwezig"
   },
   "calendar": {
     "closure": "Gesloten",

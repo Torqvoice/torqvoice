@@ -68,6 +68,9 @@ const CHILD_MODELS: Record<
     also: { parent: 'inspection', fk: 'inspectionId' },
   },
   TimeEntry: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'clock' },
+  // Who else is on the job, so a work order open at the desk shows a helper
+  // the moment somebody adds one from the board.
+  ServiceRecordHelper: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'team' },
   Payment: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'payments' },
   QuotePart: { parent: 'quote', fk: 'quoteId', hint: 'parts' },
   QuoteLabor: { parent: 'quote', fk: 'quoteId', hint: 'labor' },

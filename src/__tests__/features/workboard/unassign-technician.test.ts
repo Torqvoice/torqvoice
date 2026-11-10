@@ -26,7 +26,9 @@ vi.mock('@/lib/db', () => ({
     technician: { findFirst: vi.fn() },
     workBay: { findFirst: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), update: vi.fn() },
+    serviceRecordHelper: { deleteMany: vi.fn(), createMany: vi.fn() },
     inspection: { findFirst: vi.fn(), update: vi.fn() },
+    $transaction: vi.fn(),
   },
 }))
 
@@ -46,8 +48,16 @@ beforeEach(() => {
     customRole: null,
   } as any)
   vi.mocked(db.user.findUnique).mockResolvedValue({ isSuperAdmin: false } as any)
-  vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({ id: 'sr-a' } as any)
+  vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
+    id: 'sr-a',
+    technicianId: 'tech-0',
+  } as any)
   vi.mocked(db.serviceRecord.update).mockResolvedValue({ id: 'sr-a' } as any)
+  vi.mocked(db.serviceRecordHelper.deleteMany).mockResolvedValue({ count: 0 } as any)
+  // The technician and the helpers are written together; the transaction is
+  // handed the same client.
+  vi.mocked(db.$transaction).mockImplementation(((run: (tx: typeof db) => unknown) =>
+    run(db)) as any)
 })
 
 describe('scheduleJob with a null technician', () => {
