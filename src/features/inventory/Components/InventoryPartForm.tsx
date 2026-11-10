@@ -27,6 +27,7 @@ import {
   deleteOrphanedUploads,
 } from '../Actions/inventoryActions'
 import { aiAnalyzePartImage } from '../Actions/aiAnalyzePartImage'
+import { isSupplierUrl, normalizeSupplierUrl } from '../Lib/supplierUrl'
 import {
   Camera,
   Check,
@@ -260,14 +261,10 @@ export function InventoryPartForm({
 
   const handleFetchMetadata = useCallback(
     async (url?: string) => {
-      const targetUrl = url ?? supplierUrl
-      if (!targetUrl) return
-
-      try {
-        new URL(targetUrl)
-      } catch {
-        return
-      }
+      // A link typed as `www.supplier.com/...` is looked up, and kept, as https://.
+      const targetUrl = normalizeSupplierUrl(url ?? supplierUrl)
+      if (!targetUrl || !isSupplierUrl(targetUrl)) return
+      if (url === undefined && targetUrl !== supplierUrl) setSupplierUrl(targetUrl)
 
       setFetching(true)
       setFetchIssue(null)
@@ -407,6 +404,14 @@ export function InventoryPartForm({
       return
     }
 
+    // Stored as the server will check it: `www.supplier.com/...` gets https://.
+    const link = normalizeSupplierUrl(supplierUrl)
+    if (link !== supplierUrl) setSupplierUrl(link)
+    if (link && !isSupplierUrl(link)) {
+      modal.open('error', t('errors.error'), t('form.supplierLinkInvalid'))
+      return
+    }
+
     setLoading(true)
     // An emptied field reaches the update action as '' so it can be cleared.
     const optional = (value: FormDataEntryValue | string | null) =>
@@ -425,7 +430,7 @@ export function InventoryPartForm({
       supplier: optional(formData.get('supplier')),
       supplierPhone: optional(formData.get('supplierPhone')),
       supplierEmail: optional(formData.get('supplierEmail')),
-      supplierUrl: optional(supplierUrl),
+      supplierUrl: optional(link),
       gallery: gallery.map((g, i) => ({
         id: g.id,
         url: g.url,

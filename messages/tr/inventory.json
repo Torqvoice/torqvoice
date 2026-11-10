@@ -77,6 +77,7 @@
     "addNewPart": "Yeni parça ekle",
     "supplierLink": "Tedarikçi linki",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "Tedarikçi linki bir web adresi değil. Düzeltin veya linksiz kaydetmek için alanı temizleyin.",
     "fetch": "Getir",
     "fetchBlocked": "Bu tedarikçinin sitesi otomatik sorgulamayı engelliyor. Alanları kendiniz doldurun. Parça ve link yine de kaydedilebilir.",
     "fetchTimedOut": "Tedarikçinin sitesinin yanıt vermesi çok uzun sürdü. Tekrar deneyin veya alanları kendiniz doldurun. Parça ve link yine de kaydedilebilir.",

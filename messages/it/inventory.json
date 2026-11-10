@@ -77,6 +77,7 @@
     "addNewPart": "Aggiungi nuovo ricambio",
     "supplierLink": "Link fornitore",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "Il link del fornitore non è un indirizzo web. Correggilo, oppure cancellalo per salvare senza link.",
     "fetch": "Recupera",
     "fetchBlocked": "Il sito di questo fornitore blocca la ricerca automatica. Compila i campi a mano. Il ricambio e il link si possono salvare comunque.",
     "fetchTimedOut": "Il sito del fornitore ha impiegato troppo tempo a rispondere. Riprova oppure compila i campi a mano. Il ricambio e il link si possono salvare comunque.",

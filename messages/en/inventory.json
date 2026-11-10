@@ -77,6 +77,7 @@
     "addNewPart": "Add New Part",
     "supplierLink": "Supplier Link",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "The supplier link is not a web address. Correct it, or clear it to save without one.",
     "fetch": "Fetch",
     "fetchBlocked": "This supplier's site blocks automatic lookup. Fill in the fields yourself. The part and the link still save.",
     "fetchTimedOut": "The supplier's site took too long to answer. Try again, or fill in the fields yourself. The part and the link still save.",

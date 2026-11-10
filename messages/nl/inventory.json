@@ -77,6 +77,7 @@
     "addNewPart": "Nieuw onderdeel toevoegen",
     "supplierLink": "Leverancierslink",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "De leverancierslink is geen webadres. Verbeter hem, of maak het veld leeg om zonder link op te slaan.",
     "fetch": "Ophalen",
     "fetchBlocked": "De website van deze leverancier blokkeert het automatisch ophalen van gegevens. Vul de velden zelf in. Het onderdeel en de link kun je gewoon opslaan.",
     "fetchTimedOut": "De website van de leverancier reageerde niet op tijd. Probeer het opnieuw of vul de velden zelf in. Het onderdeel en de link kun je gewoon opslaan.",

@@ -77,6 +77,7 @@
     "addNewPart": "Añadir nueva pieza",
     "supplierLink": "Enlace del proveedor",
     "supplierLinkPlaceholder": "https://proveedor.com/producto/...",
+    "supplierLinkInvalid": "El enlace del proveedor no es una dirección web. Corrígelo o bórralo para guardar sin enlace.",
     "fetch": "Obtener",
     "fetchBlocked": "El sitio web de este proveedor bloquea la consulta automática. Rellena los campos a mano. La pieza y el enlace se pueden guardar igualmente.",
     "fetchTimedOut": "El sitio web del proveedor tardó demasiado en responder. Inténtalo de nuevo o rellena los campos a mano. La pieza y el enlace se pueden guardar igualmente.",

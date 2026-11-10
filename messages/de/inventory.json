@@ -77,6 +77,7 @@
     "addNewPart": "Neues Teil hinzufügen",
     "supplierLink": "Lieferantenlink",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "Der Lieferantenlink ist keine Webadresse. Korrigieren Sie ihn oder leeren Sie das Feld, um ohne Link zu speichern.",
     "fetch": "Abrufen",
     "fetchBlocked": "Die Website dieses Lieferanten blockiert den automatischen Abruf. Felder bitte selbst ausfüllen. Teil und Link lassen sich trotzdem speichern.",
     "fetchTimedOut": "Die Website des Lieferanten hat zu lange für eine Antwort gebraucht. Erneut versuchen oder die Felder selbst ausfüllen. Teil und Link lassen sich trotzdem speichern.",

@@ -187,3 +187,69 @@ describe('Fetch that finds nothing for another reason', () => {
     expect(screen.queryByText(UNREADABLE)).toBeNull()
   })
 })
+
+describe('A supplier link typed without https://', () => {
+  const TYPED = 'www.supplier.example/parts/brake-pad'
+  const NORMALISED = 'https://www.supplier.example/parts/brake-pad'
+
+  /** Answers the way the real action does: the server schema checks the input first. */
+  async function saveLikeTheServer(input: unknown) {
+    const { createInventoryPartSchema } = await import(
+      '@/features/inventory/Schema/inventorySchema'
+    )
+    const parsed = createInventoryPartSchema.safeParse(input)
+    if (parsed.success) return { success: true }
+    const message = parsed.error.issues
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+      .join('. ')
+    return { success: false, error: message }
+  }
+
+  function save(name: string) {
+    fireEvent.change(screen.getByLabelText('Name *'), { target: { value: name } })
+    fireEvent.click(screen.getByRole('button', { name: 'Add Part' }))
+  }
+
+  it('is looked up as an https:// link, and the field shows it', async () => {
+    answer(200, { name: 'Brake pad front' })
+    renderForm()
+
+    fetchFrom(TYPED)
+
+    await waitFor(() => expect(lookup).toHaveBeenCalledTimes(1))
+    const [, init] = lookup.mock.calls[0] as [string, RequestInit]
+    expect(JSON.parse(String(init.body))).toEqual({ url: NORMALISED })
+    expect(screen.getByLabelText('Supplier Link')).toHaveValue(NORMALISED)
+    await waitFor(() => expect(screen.getByLabelText('Name *')).toHaveValue('Brake pad front'))
+  })
+
+  it('saves with https:// in front', async () => {
+    createInventoryPart.mockImplementation(saveLikeTheServer)
+    const { onOpenChange } = renderForm()
+
+    typeLink(TYPED)
+    save('Brake pad front')
+
+    await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
+    expect(createInventoryPart).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'Brake pad front', supplierUrl: NORMALISED })
+    )
+    expect(screen.queryByText(/Invalid URL/)).toBeNull()
+  })
+
+  it('says in plain words when what was typed is not a link', async () => {
+    createInventoryPart.mockImplementation(saveLikeTheServer)
+    const { onOpenChange } = renderForm()
+
+    typeLink('ask at the counter')
+    save('Brake pad front')
+
+    expect(
+      await screen.findByText(
+        'The supplier link is not a web address. Correct it, or clear it to save without one.'
+      )
+    ).toBeInTheDocument()
+    expect(screen.queryByText(/Invalid URL/)).toBeNull()
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+  })
+})

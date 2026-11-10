@@ -77,6 +77,7 @@
     "addNewPart": "Legg til ny del",
     "supplierLink": "Leverandørlenke",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "Leverandørlenken er ikke en nettadresse. Rett den, eller tøm feltet for å lagre uten lenke.",
     "fetch": "Hent",
     "fetchBlocked": "Nettsiden til denne leverandøren blokkerer automatisk oppslag. Fyll inn feltene selv. Delen og lenken kan fortsatt lagres.",
     "fetchTimedOut": "Nettsiden til leverandøren brukte for lang tid på å svare. Prøv igjen, eller fyll inn feltene selv. Delen og lenken kan fortsatt lagres.",
