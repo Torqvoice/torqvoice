@@ -432,7 +432,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 isSuperAdmin={data.isSuperAdmin}
                 tireHotelEnabled={tireHotelEnabled}
               />
-              {supportEnabled && <SupportBubble />}
+              {supportEnabled && <SupportBubble userId={data.userId} />}
             </WhiteLabelCtaProvider>
           </LicenseExpiryProvider>
         </EngineSizeUnitProvider>
