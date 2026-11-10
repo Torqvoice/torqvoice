@@ -268,14 +268,17 @@ export function useServiceActions({
     // longer exists, so cancel it and block further saves before deleting.
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     isSavingRef.current = true
-    const result = await deleteServiceRecord(record.id)
-    if (result.success) {
+    // A request that never reaches the server throws instead of answering.
+    // Uncaught, saving stayed blocked on a job that still exists, and every
+    // later edit on the page was lost without a word.
+    const result = await deleteServiceRecord(record.id).catch(() => null)
+    if (result?.success) {
       setHasUnsavedChanges(false)
       router.push(vehicleId ? `/vehicles/${vehicleId}` : '/work-orders')
       router.refresh()
     } else {
       isSavingRef.current = false
-      modal.open('error', tc('errors.error'), result.error || t('page.failedDelete'))
+      modal.open('error', tc('errors.error'), result?.error || t('page.failedDelete'))
     }
   }
 

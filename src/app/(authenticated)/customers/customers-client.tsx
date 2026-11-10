@@ -201,11 +201,13 @@ export function CustomersClient({
       destructive: true,
     })
     if (!ok) return
-    const result = await deleteCustomer(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteCustomer(id).catch(() => null)
+    if (result?.success) {
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('deleteError'))
+      modal.open('error', tc('errors.error'), result?.error || t('deleteError'))
     }
   }
 
@@ -219,13 +221,13 @@ export function CustomersClient({
     })
     if (!ok) return
     setIsDeleting(true)
-    const result = await deleteCustomers(Array.from(selected))
-    if (result.success) {
+    const result = await deleteCustomers(Array.from(selected)).catch(() => null)
+    if (result?.success) {
       toast.success(t('batchDeleteSuccess', { count: result.data?.deleted ?? selected.size }))
       setSelected(new Set())
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('deleteError'))
+      modal.open('error', tc('errors.error'), result?.error || t('deleteError'))
     }
     setIsDeleting(false)
   }

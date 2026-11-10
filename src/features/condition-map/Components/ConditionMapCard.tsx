@@ -218,10 +218,13 @@ export function ConditionMapCard({
     const before = marks
     setMarks((prev) => prev.filter((m) => m.id !== id))
     startTransition(async () => {
-      const result = await removeConditionMark(id)
-      if (!result.success) {
+      // A request that never reaches the server throws instead of answering.
+      // Uncaught in a transition that is the error page; caught, the mark
+      // comes back like one the server refused to remove.
+      const result = await removeConditionMark(id).catch(() => null)
+      if (!result?.success) {
         setMarks(before)
-        toast.error(result.error || t('saveFailed'))
+        toast.error(result?.error || t('saveFailed'))
       }
     })
   }
@@ -267,10 +270,10 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, imageUrls: before.imageUrls.filter((u) => u !== url) })
     startTransition(async () => {
-      const result = await removeConditionMarkPhoto({ id: editingId, url })
-      if (!result.success) {
+      const result = await removeConditionMarkPhoto({ id: editingId, url }).catch(() => null)
+      if (!result?.success) {
         replace(before)
-        toast.error(result.error || t('saveFailed'))
+        toast.error(result?.error || t('saveFailed'))
       }
     })
   }
@@ -283,10 +286,10 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, resolvedAt: new Date().toISOString() })
     startTransition(async () => {
-      const result = await resolveConditionMark(id, true)
-      if (!result.success) {
+      const result = await resolveConditionMark(id, true).catch(() => null)
+      if (!result?.success) {
         replace(before)
-        toast.error(result.error || t('saveFailed'))
+        toast.error(result?.error || t('saveFailed'))
       }
     })
   }

@@ -5,6 +5,7 @@
     "clearAll": "Limpar tudo",
     "confirmClearAll": "Eliminar todas as notificações?",
     "clearAllFailed": "Não foi possível limpar as notificações",
+    "deleteFailed": "Não foi possível eliminar a notificação",
     "empty": "Ainda não há notificações",
     "confirmDelete": "Tem a certeza?",
     "delete": "Eliminar",

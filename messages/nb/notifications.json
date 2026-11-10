@@ -5,6 +5,7 @@
     "clearAll": "Fjern alle",
     "confirmClearAll": "Fjerne alle varsler?",
     "clearAllFailed": "Kunne ikke fjerne varslene",
+    "deleteFailed": "Kunne ikke slette varselet",
     "empty": "Ingen varsler ennå",
     "confirmDelete": "Er du sikker?",
     "delete": "Slett",

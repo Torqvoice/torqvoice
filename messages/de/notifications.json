@@ -5,6 +5,7 @@
     "clearAll": "Alle entfernen",
     "confirmClearAll": "Alle Benachrichtigungen entfernen?",
     "clearAllFailed": "Benachrichtigungen konnten nicht entfernt werden",
+    "deleteFailed": "Benachrichtigung konnte nicht gelöscht werden",
     "empty": "Noch keine Benachrichtigungen",
     "confirmDelete": "Sind Sie sicher?",
     "delete": "Löschen",

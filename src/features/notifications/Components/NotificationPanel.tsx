@@ -58,6 +58,7 @@ export function NotificationPanel() {
     markRead,
     markAllRead,
     removeNotification,
+    restoreNotification,
     clearAll,
     setNotifications,
   } = useNotificationStore()
@@ -71,7 +72,10 @@ export function NotificationPanel() {
     }
     if (!read) {
       markRead(id)
-      markNotificationRead(id)
+      markNotificationRead(id).catch(() => {
+        // Nobody is waiting on this: it stays unread on the server, and shows
+        // so on the next page load
+      })
     }
     setPanelOpen(false)
     setTimeout(() => {
@@ -90,11 +94,19 @@ export function NotificationPanel() {
     setPendingDeleteId(id)
   }
 
-  const handleConfirmDelete = (e: React.MouseEvent, id: string) => {
+  const handleConfirmDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
+    const removed = notifications.find((n) => n.id === id)
     removeNotification(id)
-    deleteNotification(id)
     setPendingDeleteId(null)
+
+    const result = await deleteNotification(id).catch(() => ({ success: false }))
+    if (result.success) return
+
+    // Still on the server, so it would be back after a reload: put it back
+    // now and say so.
+    if (removed) restoreNotification(removed)
+    toast.error(t('panel.deleteFailed'))
   }
 
   const handleCancelDelete = (e: React.MouseEvent) => {
@@ -102,9 +114,11 @@ export function NotificationPanel() {
     setPendingDeleteId(null)
   }
 
-  const handleMarkAllRead = async () => {
+  const handleMarkAllRead = () => {
     markAllRead()
-    markAllNotificationsRead()
+    markAllNotificationsRead().catch(() => {
+      // As above: they stay unread on the server until the next page load
+    })
   }
 
   const handleConfirmClearAll = async () => {
