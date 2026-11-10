@@ -25,6 +25,11 @@ import {
   MAX_TOTAL_ATTACHMENT_BYTES,
 } from '@/features/support/Lib/supportRequest'
 import {
+  clearSupportDraft,
+  readSupportDraft,
+  writeSupportDraft,
+} from '@/features/support/Lib/supportDraft'
+import {
   SUPPORT_OPEN_EVENT,
   SUPPORT_VISIBILITY_EVENT,
   type SupportOpenDetail,
@@ -60,7 +65,7 @@ function errorKey(code: unknown): string {
     : 'errors.sendFailed'
 }
 
-export function SupportBubble() {
+export function SupportBubble({ userId }: { userId: string }) {
   const t = useTranslations('support')
   const [isOpen, setIsOpen] = useState(false)
   // Assume hidden until localStorage has been read. Rendering the button and
@@ -111,12 +116,34 @@ export function SupportBubble() {
 
   const totalBytes = files.reduce((sum, f) => sum + f.size, 0)
 
+  // What was being written when the page was last replaced under the form: a
+  // tab that lost its session comes back from the sign-in page, and a new
+  // build asks for a reload. Read after mount, like the visibility above, so
+  // the server and the first client render agree.
+  const [draftRestored, setDraftRestored] = useState(false)
+  useEffect(() => {
+    const draft = readSupportDraft(userId)
+    if (draft) {
+      setSubject((current) => current || draft.subject)
+      setMessage((current) => current || draft.message)
+    }
+    setDraftRestored(true)
+  }, [userId])
+
+  // Kept whenever the fields change, whether typed or handed over by a page
+  // that opened the form. Not before the stored draft has been read back, or
+  // the empty first render would wipe it.
+  useEffect(() => {
+    if (draftRestored) writeSupportDraft(userId, { subject, message })
+  }, [draftRestored, userId, subject, message])
+
   const reset = useCallback(() => {
     setSubject('')
     setMessage('')
     setFiles([])
     setError(null)
     setStatus('idle')
+    clearSupportDraft()
   }, [])
 
   // The settings page opens the widget for someone who cannot find it, and
@@ -230,6 +257,8 @@ export function SupportBubble() {
         setSubject('')
         setMessage('')
         setFiles([])
+        // Sent, so it must not come back as a draft on the next page load.
+        clearSupportDraft()
       } catch {
         setError(t('errors.sendFailed'))
         setStatus('idle')
