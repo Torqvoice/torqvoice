@@ -25,6 +25,7 @@ import { manifest as openLaborProject } from './openlaborproject/manifest'
 import { manifest as paypal } from './paypal/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as quickbooks } from './quickbooks/manifest'
+import { manifest as xero } from './xero/manifest'
 import { manifest as rdw } from './rdw/manifest'
 import { manifest as regcheck } from './regcheck/manifest'
 import { manifest as resend } from './resend/manifest'
@@ -81,6 +82,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: vipps, load: () => import('./vipps/server') },
   { manifest: paypal, load: () => import('./paypal/server') },
   { manifest: quickbooks, load: () => import('./quickbooks/server') },
+  { manifest: xero, load: () => import('./xero/server') },
   { manifest: fiken, load: () => import('./fiken/server') },
   { manifest: s3, load: () => import('./s3/server') },
   { manifest: localFolder, load: () => import('./local-folder/server') },
