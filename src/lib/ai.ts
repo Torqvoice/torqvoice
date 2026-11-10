@@ -79,8 +79,12 @@ export function createClient(config: AiConfig): OpenAI {
  */
 const REASONING_HEADROOM = 4000
 
+/**
+ * The o-series and GPT-5 and every later major version (5.6, 6, 6.1, 7, 10 and
+ * on) reason before they answer; GPT-4.x, GPT-4o and GPT-3.5 do not.
+ */
 function isReasoningModel(model: string): boolean {
-  return /^(o\d|gpt-5)/i.test(model)
+  return /^(?:o\d|gpt-(?:[5-9]|[1-9]\d+)(?=[.-]|$))/i.test(model)
 }
 
 /**

@@ -81,6 +81,29 @@ describe('completionTuning', () => {
     expect(tuning.max_completion_tokens).toBeGreaterThan(2000)
   })
 
+  it('treats GPT-6 and later as reasoning models', () => {
+    // OpenAI's GPT-6 guide: remove temperature when reasoning effort is not none.
+    for (const model of ['gpt-6-astra', 'gpt-6.1-sol', 'gpt-6-luna', 'gpt-7', 'gpt-10-mini']) {
+      const tuning = completionTuning(config('openai', model), 2000, 0.7)
+      expect(tuning, model).toEqual({ max_completion_tokens: 2000 + 4000 })
+    }
+  })
+
+  it('keeps GPT-5 a reasoning model and GPT-4.x a classic one', () => {
+    expect(completionTuning(config('openai', 'gpt-5-mini'), 2000, 0.7)).toEqual({
+      max_completion_tokens: 6000,
+    })
+    expect(completionTuning(config('openai', 'gpt-5.6-terra'), 2000, 0.7)).toEqual({
+      max_completion_tokens: 6000,
+    })
+    for (const model of ['gpt-4.1', 'gpt-4.1-mini', 'gpt-4o', 'gpt-4', 'gpt-3.5-turbo']) {
+      expect(completionTuning(config('openai', model), 2000, 0.7), model).toEqual({
+        max_completion_tokens: 2000,
+        temperature: 0.7,
+      })
+    }
+  })
+
   it('omits temperature when the caller does not set one', () => {
     expect(completionTuning(config('openai', 'gpt-4o'), 5)).toEqual({
       max_completion_tokens: 5,
