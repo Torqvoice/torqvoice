@@ -5,6 +5,7 @@
     "clearAll": "Išvalyti visus",
     "confirmClearAll": "Pašalinti visus pranešimus?",
     "clearAllFailed": "Nepavyko išvalyti pranešimų",
+    "deleteFailed": "Nepavyko ištrinti pranešimo",
     "empty": "Pranešimų dar nėra",
     "confirmDelete": "Ar tikrai?",
     "delete": "Ištrinti",

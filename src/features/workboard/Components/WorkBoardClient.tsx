@@ -568,9 +568,11 @@ export function WorkBoardClient({
       const job = realJob(activeData.job as WorkBoardJob)
       if (!job.technicianId && !job.workBayId) return
       store.removeJob(job.id)
-      const res = await unassignJob({ id: job.id, type: job.type })
-      if (!res.success) {
-        toast.error(t('failedRemove'), { description: res.error })
+      // A request that never reaches the server throws instead of answering;
+      // the job is still assigned, so it goes back on the board.
+      const res = await unassignJob({ id: job.id, type: job.type }).catch(() => null)
+      if (!res?.success) {
+        toast.error(t('failedRemove'), { description: res?.error })
         store.addJob(job)
       } else {
         const unRes = await getUnassignedJobs()
@@ -754,9 +756,11 @@ export function WorkBoardClient({
     setPopoverOpen(false)
     setSelectedJob(null)
     store.removeJob(job.id)
-    const res = await unassignJob({ id: job.id, type: job.type })
-    if (!res.success) {
-      toast.error(t('failedRemove'), { description: res.error })
+    // As when a job is dragged off the board: one that could not be
+    // unassigned goes back on it.
+    const res = await unassignJob({ id: job.id, type: job.type }).catch(() => null)
+    if (!res?.success) {
+      toast.error(t('failedRemove'), { description: res?.error })
       store.addJob(job)
     } else {
       const unRes = await getUnassignedJobs()

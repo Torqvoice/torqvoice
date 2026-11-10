@@ -277,11 +277,13 @@ export function InventoryClient({
       destructive: true,
     })
     if (!ok) return
-    const result = await deleteInventoryPart(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteInventoryPart(id).catch(() => null)
+    if (result?.success) {
       router.refresh()
     } else {
-      modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
+      modal.open('error', t('errors.error'), result?.error || t('errors.deleteFailed'))
     }
   }
 
@@ -312,13 +314,13 @@ export function InventoryClient({
     })
     if (!ok) return
     setIsBulkDeleting(true)
-    const result = await deleteInventoryParts(Array.from(selected))
-    if (result.success) {
+    const result = await deleteInventoryParts(Array.from(selected)).catch(() => null)
+    if (result?.success) {
       toast.success(t('bulkDelete.success', { count: result.data?.deleted ?? selected.size }))
       setSelected(new Set())
       router.refresh()
     } else {
-      modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
+      modal.open('error', t('errors.error'), result?.error || t('errors.deleteFailed'))
     }
     setIsBulkDeleting(false)
   }

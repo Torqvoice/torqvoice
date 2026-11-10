@@ -288,13 +288,15 @@ export function MediaGrid({
 
   const remove = async (file: Attachment) => {
     setBusyId(file.id)
-    const result = await store.remove(file.id)
+    // A request that never reaches the server throws instead of answering;
+    // uncaught, the tile stayed busy until the page was reloaded.
+    const result = await store.remove(file.id).catch(() => null)
     setBusyId(null)
-    if (result.success) {
+    if (result?.success) {
       setItems((prev) => prev.filter((f) => f.id !== file.id))
       router.refresh()
     } else {
-      toast.error(result.error || t('attachments.failedDelete'))
+      toast.error(result?.error || t('attachments.failedDelete'))
     }
   }
 
