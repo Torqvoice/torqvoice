@@ -246,6 +246,30 @@ describe('OpenAI model list', () => {
     ])
   })
 
+  it('lists the older GPT-4 models newest first: 4o, then Turbo, then the original', async () => {
+    const listed = [
+      'gpt-4',
+      'gpt-4-0613',
+      'gpt-4-turbo',
+      'gpt-4-turbo-2024-04-09',
+      'gpt-4-0125-preview',
+      'gpt-4o',
+      'gpt-3.5-turbo',
+    ]
+    const ctx = context(listing(listed), { apiKey: 'sk-1' })
+
+    const ids = (await listOpenAiModels(ctx)).map((m) => m.value)
+    expect(ids).toEqual([
+      'gpt-4o',
+      'gpt-4-0125-preview',
+      'gpt-4-turbo',
+      'gpt-4-turbo-2024-04-09',
+      'gpt-4',
+      'gpt-4-0613',
+      'gpt-3.5-turbo',
+    ])
+  })
+
   it('puts a model released after this was written at the top', async () => {
     // Made-up ids in the vendor's naming. The last one starts like "pro", the
     // Responses-only kind, and is a chat model all the same.

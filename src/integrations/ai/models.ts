@@ -105,11 +105,14 @@ function openAiModelRank(id: string): number[] {
   const major = Number.parseInt(gpt?.[1] ?? oSeries?.[1] ?? '0', 10)
   const minor = Number.parseInt(gpt?.[2] ?? '0', 10)
   const line = gpt ? (major >= 5 ? 0 : 2) : oSeries ? 1 : 3
-  // GPT-4o came after GPT-4 and GPT-4 Turbo, and before GPT-4.1.
-  const omni = gpt?.[3] ? 0 : 1
+  // Within GPT-4: GPT-4o, then GPT-4 Turbo (its previews included), then the
+  // original GPT-4. GPT-4.1 came after all three and has its own minor.
+  const words = l.split('-')
+  const turbo = major === 4 && (words.includes('turbo') || words.includes('preview'))
+  const generation = gpt?.[3] ? 0 : turbo ? 1 : 2
   const snapshot = l.match(/-(\d{4})-(\d{2})-(\d{2})$/)
   const age = snapshot ? 1e8 - Number.parseInt(snapshot.slice(1).join(''), 10) : 0
-  return [line, -major, -minor, omni, openAiModelSize(l), age]
+  return [line, -major, -minor, generation, openAiModelSize(l), age]
 }
 
 function compareOpenAiModels(a: string, b: string): number {
