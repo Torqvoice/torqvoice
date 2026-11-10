@@ -19,16 +19,9 @@ import { Separator } from '@/components/ui/separator'
 import { Fingerprint, Loader2, LogIn, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { showNotice } from '@/components/notice-toast'
+import { isPasskeyPromptClosed, passkeyErrorCode } from '@/lib/passkey-prompt'
 import { signInUrlFor } from '@/lib/signed-out'
 import { describeUserAgent } from '@/lib/user-agent-label'
-
-/**
- * What the passkey client reports when the browser's own prompt was closed
- * rather than completed: dismissed or left to time out (a browser does not
- * say which), or replaced by a newer prompt. Nothing went wrong, so nothing
- * is said.
- */
-const PROMPT_CLOSED_CODES = ['ERROR_PASSTHROUGH_SEE_CAUSE_PROPERTY', 'ERROR_CEREMONY_ABORTED']
 
 const SIGN_IN_AGAIN_TOAST_ID = 'passkey-sign-in-again'
 
@@ -87,8 +80,8 @@ export function PasskeySettings() {
         label === 'Unknown device' ? undefined : { name: label }
       )
       if (result?.error) {
-        const code = 'code' in result.error ? result.error.code : undefined
-        if (typeof code === 'string' && PROMPT_CLOSED_CODES.includes(code)) return
+        if (isPasskeyPromptClosed(result.error)) return
+        const code = passkeyErrorCode(result.error)
         // A passkey is only added to a session that began recently, and a
         // session lasts days longer than that. Better Auth's own sentence
         // ("Session is not fresh") says neither why nor what to do.
