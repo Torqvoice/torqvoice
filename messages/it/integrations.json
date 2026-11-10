@@ -1085,5 +1085,17 @@
     "restoredBySupport": "L'assistenza Torqvoice lo ha fatto su tua richiesta. Motivo indicato: {reason}",
     "noReason": "nessuno",
     "restoredUndo": "Prima è stata creata una copia di sicurezza dell'officina com'era subito prima del ripristino, che viene conservata per 90 giorni. Contatta l'assistenza per tornarci."
+  },
+  "aiErrors": {
+    "modelAccess": "Questa chiave API non ha accesso al modello selezionato. Scegline un altro in Impostazioni → Integrazioni.",
+    "spendLimit": "Questo account OpenAI ha raggiunto il limite di spesa. Controlla i limiti su platform.openai.com.",
+    "noCredit": "Questo account OpenAI non ha più credito. Aggiungi un metodo di pagamento su platform.openai.com.",
+    "keyRejected": "Il fornitore di IA ha rifiutato la chiave API. Controllala in Impostazioni → Integrazioni.",
+    "noUsableCredit": "Il fornitore di IA non segnala credito utilizzabile per questa chiave API.",
+    "modelUnavailable": "Il fornitore di IA non offre il modello selezionato. Scegline un altro in Impostazioni → Integrazioni.",
+    "imageTooLarge": "L'immagine era troppo grande per il fornitore di IA.",
+    "rateLimited": "Il fornitore di IA sta limitando le richieste di questa chiave API. Riprova tra un momento.",
+    "providerDown": "Il fornitore di IA non è disponibile al momento. Riprova tra un momento.",
+    "unexpected": "Il fornitore di IA ha restituito una risposta inattesa."
   }
 }

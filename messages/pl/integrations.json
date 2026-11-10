@@ -1085,5 +1085,17 @@
     "restoredBySupport": "Zespół pomocy Torqvoice zrobił to na Twoją prośbę. Podany powód: {reason}",
     "noReason": "nie podano",
     "restoredUndo": "Najpierw utworzono kopię bezpieczeństwa warsztatu w stanie sprzed przywrócenia, która jest przechowywana przez 90 dni. Skontaktuj się z zespołem pomocy, aby do niej wrócić."
+  },
+  "aiErrors": {
+    "modelAccess": "Ten klucz API nie ma dostępu do wybranego modelu. Wybierz inny w Ustawienia → Integracje.",
+    "spendLimit": "To konto OpenAI osiągnęło limit wydatków. Sprawdź limity na platform.openai.com.",
+    "noCredit": "Na tym koncie OpenAI nie ma już środków. Dodaj płatność na platform.openai.com.",
+    "keyRejected": "Dostawca AI odrzucił klucz API. Sprawdź go w Ustawienia → Integracje.",
+    "noUsableCredit": "Dostawca AI zgłasza brak dostępnych środków dla tego klucza API.",
+    "modelUnavailable": "Dostawca AI nie oferuje wybranego modelu. Wybierz inny w Ustawienia → Integracje.",
+    "imageTooLarge": "Obraz był za duży dla dostawcy AI.",
+    "rateLimited": "Dostawca AI ogranicza liczbę zapytań z tego klucza API. Spróbuj ponownie za chwilę.",
+    "providerDown": "Dostawca AI jest teraz niedostępny. Spróbuj ponownie za chwilę.",
+    "unexpected": "Dostawca AI zwrócił nieoczekiwaną odpowiedź."
   }
 }

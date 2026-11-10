@@ -1,11 +1,23 @@
 import type { ConnectorServer } from '@/features/integrations/Lib/types'
-import { ANTHROPIC_BASE, anthropicHeaders, apiKeyOf, listAnthropicModels } from '../ai/models'
+import { probeAiModel } from '@/lib/ai'
+import {
+  ANTHROPIC_BASE,
+  anthropicHeaders,
+  apiKeyOf,
+  chosenModelOf,
+  listAnthropicModels,
+} from '../ai/models'
 import { manifest } from './manifest'
 
 /**
  * Anthropic authenticates with x-api-key rather than a bearer token, and
  * wants its API version on every request. Listing models proves the key
  * without spending tokens.
+ *
+ * As with OpenAI, a key that lists models can still be refused every
+ * completion, for want of credit or of access to the chosen model. Once a
+ * model is chosen the test asks it for a few tokens, the way a real request
+ * would. It only runs when someone connects or presses Test, never on a timer.
  */
 export const connector: ConnectorServer = {
   manifest,
@@ -13,6 +25,13 @@ export const connector: ConnectorServer = {
   async test(ctx) {
     const apiKey = apiKeyOf(ctx)
     if (!apiKey) return { ok: false, message: 'Anthropic: an API key is required' }
+    const model = chosenModelOf(ctx)
+    if (model) {
+      const probe = await probeAiModel({ provider: 'anthropic', apiKey, model })
+      // A provider that was busy or down says nothing about the key, and a
+      // failed test turns the connection off: fall through to the key check.
+      if (!probe.inconclusive) return { ok: probe.ok, message: probe.message }
+    }
     const res = await ctx.http.fetch(`${ANTHROPIC_BASE}/models?limit=1`, {
       headers: anthropicHeaders(apiKey),
     })

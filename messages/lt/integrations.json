@@ -1085,5 +1085,17 @@
     "restoredBySupport": "Torqvoice pagalbos komanda tai atliko jūsų prašymu. Nurodyta priežastis: {reason}",
     "noReason": "nenurodyta",
     "restoredUndo": "Prieš atkuriant buvo sukurta dirbtuvės apsauginė kopija, kokia ji buvo prieš pat atkūrimą; ji saugoma 90 dienų. Norėdami prie jos grįžti, susisiekite su pagalbos komanda."
+  },
+  "aiErrors": {
+    "modelAccess": "Šis API raktas neturi prieigos prie pasirinkto modelio. Pasirinkite kitą skiltyje Nustatymai → Integracijos.",
+    "spendLimit": "Ši OpenAI paskyra pasiekė išlaidų limitą. Patikrinkite limitus platform.openai.com.",
+    "noCredit": "Šioje OpenAI paskyroje nebeliko kredito. Pridėkite mokėjimo būdą platform.openai.com.",
+    "keyRejected": "DI paslaugų teikėjas atmetė API raktą. Patikrinkite jį skiltyje Nustatymai → Integracijos.",
+    "noUsableCredit": "DI paslaugų teikėjas praneša, kad šiam API raktui nėra naudojamo kredito.",
+    "modelUnavailable": "DI paslaugų teikėjas nesiūlo pasirinkto modelio. Pasirinkite kitą skiltyje Nustatymai → Integracijos.",
+    "imageTooLarge": "Vaizdas buvo per didelis DI paslaugų teikėjui.",
+    "rateLimited": "DI paslaugų teikėjas riboja šio API rakto užklausas. Netrukus bandykite dar kartą.",
+    "providerDown": "DI paslaugų teikėjas šiuo metu nepasiekiamas. Netrukus bandykite dar kartą.",
+    "unexpected": "DI paslaugų teikėjas grąžino netikėtą atsakymą."
   }
 }

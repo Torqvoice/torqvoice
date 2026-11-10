@@ -14,7 +14,7 @@ import {
 import { getFeatures } from '@/lib/features'
 import { db } from '@/lib/db'
 import { completionTuning, createClient, getAiConfig } from '@/lib/ai'
-import { describeAiError } from '@/lib/ai-error'
+import { aiErrorDescriber } from '@/lib/ai-error-message'
 import { localeNames, type Locale } from '@/i18n/config'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -166,6 +166,8 @@ export async function POST(request: NextRequest) {
     { role: 'user', content: message },
   ]
 
+  // Fetched now: the stream below can fail after this request has returned.
+  const describeAiError = await aiErrorDescriber()
   const client = createClient(config)
   let stream: AsyncIterable<OpenAI.ChatCompletionChunk>
   try {

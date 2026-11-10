@@ -1085,5 +1085,17 @@
     "restoredBySupport": "Torqvoice-support heeft dit op uw verzoek gedaan. Opgegeven reden: {reason}",
     "noReason": "geen opgegeven",
     "restoredUndo": "Eerst is een veiligheidskopie gemaakt van de werkplaats zoals die vlak voor het terugzetten was; die wordt 90 dagen bewaard. Neem contact op met support om ernaar terug te gaan."
+  },
+  "aiErrors": {
+    "modelAccess": "Deze API-sleutel heeft geen toegang tot het gekozen model. Kies een ander onder Instellingen → Integraties.",
+    "spendLimit": "Dit OpenAI-account heeft zijn bestedingslimiet bereikt. Controleer de limieten op platform.openai.com.",
+    "noCredit": "Dit OpenAI-account heeft geen tegoed meer. Voeg betaalgegevens toe op platform.openai.com.",
+    "keyRejected": "De AI-aanbieder heeft de API-sleutel geweigerd. Controleer die onder Instellingen → Integraties.",
+    "noUsableCredit": "De AI-aanbieder meldt geen bruikbaar tegoed voor deze API-sleutel.",
+    "modelUnavailable": "De AI-aanbieder biedt het gekozen model niet aan. Kies een ander onder Instellingen → Integraties.",
+    "imageTooLarge": "De afbeelding was te groot voor de AI-aanbieder.",
+    "rateLimited": "De AI-aanbieder beperkt de verzoeken van deze API-sleutel. Probeer het zo meteen opnieuw.",
+    "providerDown": "De AI-aanbieder is op dit moment niet beschikbaar. Probeer het zo meteen opnieuw.",
+    "unexpected": "De AI-aanbieder gaf een onverwacht antwoord."
   }
 }

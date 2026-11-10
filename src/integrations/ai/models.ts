@@ -20,6 +20,12 @@ export function apiKeyOf(ctx: ConnectorContext): string {
   return typeof key === 'string' ? key.trim() : ''
 }
 
+/** The model picked on the connection page; empty until the workshop has chosen one. */
+export function chosenModelOf(ctx: ConnectorContext): string {
+  const model = ctx.connection.settings.model
+  return typeof model === 'string' ? model.trim() : ''
+}
+
 /** Bearer auth, or nothing at all: a local server often has no key to check. */
 export function openAiHeaders(apiKey: string): Record<string, string> {
   return apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
