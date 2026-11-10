@@ -2,7 +2,7 @@
 
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -51,7 +51,10 @@ import {
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
 import { compressImage } from '@/lib/compress-image'
-import { priceFromCostAndMultiplier } from '@/features/inventory/Lib/partPricing'
+import {
+  markupPercentFromMultiplier,
+  priceFromCostAndMultiplier,
+} from '@/features/inventory/Lib/partPricing'
 import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 import { clearableInput } from '@/lib/clearable'
 import { TagInput } from '@/components/tag-input'
@@ -123,7 +126,13 @@ export function InventoryPartForm({
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('inventory')
+  const tNav = useTranslations('navigation')
+  const format = useFormatter()
   const isMarine = useServiceType() === 'marine'
+  // A sell price that appears by itself needs to say where it came from. Only
+  // while it still follows the cost: a part that already has a price keeps it.
+  const autoFillMarkupPercent =
+    part?.sellPrice && part.sellPrice > 0 ? 0 : markupPercentFromMultiplier(markupMultiplier)
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -888,6 +897,17 @@ export function InventoryPartForm({
                     />
                   </div>
                 </div>
+                {autoFillMarkupPercent > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('form.sellPriceMarkupHint', {
+                      sellPrice: t('form.sellPrice'),
+                      unitCost: t('form.unitCost'),
+                      applyMarkup: t('applyMarkup'),
+                      inventory: tNav('sidebar.inventory'),
+                      percent: format.number(autoFillMarkupPercent, { maximumFractionDigits: 2 }),
+                    })}
+                  </p>
+                )}
               </div>
             </div>
 

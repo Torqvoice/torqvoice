@@ -19,6 +19,12 @@ import { roundMoney } from '@/lib/money'
  *    cost + 50%.
  *  - `markupMultiplier` multiplies cost in the inventory catalog form. 1.5
  *    means the same thing as a 50 percent markup.
+ *
+ * The multiplier is only how the catalog markup is stored. Nobody types one:
+ * every screen asks for a percentage and converts with
+ * {@link multiplierFromMarkupPercent}. A field that took the multiplier itself
+ * was read as a percentage, and 30 typed for "30%" priced a part at thirty
+ * times its cost.
  */
 
 export interface PricedPart {
@@ -78,6 +84,47 @@ export function priceFromCostAndMarkup(cost: unknown, markupPercent: unknown): n
  */
 export function priceFromCostAndMultiplier(cost: unknown, multiplier: unknown): number {
   return roundMoney(parseNumber(cost) * parseNumber(multiplier))
+}
+
+/**
+ * The catalog multiplier for a markup typed as a percentage: 30 becomes 1.3.
+ *
+ * Null when there is nothing usable to apply. A blank field must not read as
+ * 0%, which would reprice a whole catalog at cost, and -100% or below would
+ * sell parts for nothing or less.
+ */
+export function multiplierFromMarkupPercent(percent: unknown): number | null {
+  if (percent === null || percent === undefined) return null
+  if (typeof percent === 'string' && percent.trim() === '') return null
+  const parsed = Number(percent)
+  if (!Number.isFinite(parsed) || parsed <= -100) return null
+  return Math.round((1 + parsed / 100) * 10000) / 10000
+}
+
+/**
+ * The inverse of {@link multiplierFromMarkupPercent}: the percentage a stored
+ * catalog multiplier stands for. 1.3 reads as 30. Held to two decimals so a
+ * value survives the round trip without picking up float noise.
+ */
+export function markupPercentFromMultiplier(multiplier: unknown): number {
+  const parsed = parseNumber(multiplier)
+  if (parsed <= 0) return 0
+  return Math.round((parsed - 1) * 10000) / 100
+}
+
+/**
+ * The percentage the Apply Markup dialog opens with.
+ *
+ * A workshop that has applied a catalog markup before sees that one again.
+ * One that never has is offered its Default Markup % from the workshop
+ * settings, since that is the number it already told us it works with.
+ */
+export function initialCatalogMarkupPercent(
+  savedMultiplier: unknown,
+  defaultMarkupPercent: unknown
+): number {
+  if (parseNumber(savedMultiplier) > 0) return markupPercentFromMultiplier(savedMultiplier)
+  return Math.max(0, parseNumber(defaultMarkupPercent))
 }
 
 /**
