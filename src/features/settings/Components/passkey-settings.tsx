@@ -36,6 +36,7 @@ interface Passkey {
 export function PasskeySettings() {
   const t = useTranslations('settings')
   const tDismiss = useTranslations('common.updateBanner')
+  const tCommon = useTranslations('common')
   const [passkeys, setPasskeys] = useState<Passkey[]>([])
   const [loading, setLoading] = useState(true)
   const [registering, setRegistering] = useState(false)
@@ -66,7 +67,19 @@ export function PasskeySettings() {
   // The sign-in page sends a signed-in visitor straight back, so this session
   // ends before the tab goes there, set to come back to this page.
   const signInAgain = async () => {
-    await authClient.signOut()
+    // A sign-out that did not happen would send them to a sign-in page that
+    // sends a signed-in visitor straight back here, with nothing said.
+    let signedOut = true
+    try {
+      const result = await authClient.signOut()
+      if (result?.error) signedOut = false
+    } catch {
+      signedOut = false
+    }
+    if (!signedOut) {
+      toast.error(tCommon('errors.unexpected'))
+      return
+    }
     window.location.assign(signInUrlFor(window.location.pathname, window.location.search))
   }
 

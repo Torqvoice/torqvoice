@@ -248,6 +248,38 @@ describe('PasskeySettings', () => {
       })
     })
 
+    it('stays on the page and says so when signing out for a new sign-in fails', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', {
+        ...window.location,
+        pathname: '/settings/account',
+        search: '',
+        assign,
+      })
+      mockListUserPasskeys.mockResolvedValue({ data: [] })
+      mockAddPasskey.mockResolvedValue({
+        data: null,
+        error: { code: 'SESSION_NOT_FRESH', message: 'Session is not fresh', status: 403 },
+      })
+      // Still signed in: the sign-in page would only send them straight back
+      mockSignOut.mockResolvedValue({ data: null, error: { message: 'Server error', status: 500 } })
+
+      render(<PasskeySettings />)
+      await userEvent.click(await screen.findByRole('button', { name: /register passkey/i }))
+      await waitFor(() => {
+        expect(mockToastCustom).toHaveBeenCalledTimes(1)
+      })
+      showToastedNotice()
+      await userEvent.click(screen.getByRole('button', { name: 'Sign in again' }))
+
+      await waitFor(() => {
+        expect(mockToastError).toHaveBeenCalledWith(
+          'An unexpected error occurred. Please try again.'
+        )
+      })
+      expect(assign).not.toHaveBeenCalled()
+    })
+
     it('asks for a new sign-in, and offers it, when the sign-in is too old to add a passkey', async () => {
       const assign = vi.fn()
       vi.stubGlobal('location', {
