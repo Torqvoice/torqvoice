@@ -78,9 +78,9 @@ jobs:
           QUICKBOOKS_INTEGRATION_CLIENT_SECRET: ${{ secrets.STAGING_QUICKBOOKS_INTEGRATION_CLIENT_SECRET }}
           FIKEN_INTEGRATION_CLIENT_ID: ${{ secrets.STAGING_FIKEN_INTEGRATION_CLIENT_ID }}
           FIKEN_INTEGRATION_CLIENT_SECRET: ${{ secrets.STAGING_FIKEN_INTEGRATION_CLIENT_SECRET }}
-          XERO_INTEGRATION_CLIENT_ID: ${{ secrets.STAGING_XERO_INTEGRATION_CLIENT_ID }}
-          XERO_INTEGRATION_CLIENT_SECRET: ${{ secrets.STAGING_XERO_INTEGRATION_CLIENT_SECRET }}
-          XERO_INTEGRATION_WEBHOOK_KEY: ${{ secrets.STAGING_XERO_INTEGRATION_WEBHOOK_KEY }}
+          XERO_INTEGRATION_CLIENT_ID: ${{ secrets.CLOUD_XERO_INTEGRATION_CLIENT_ID }}
+          XERO_INTEGRATION_CLIENT_SECRET: ${{ secrets.CLOUD_XERO_INTEGRATION_CLIENT_SECRET }}
+          XERO_INTEGRATION_WEBHOOK_KEY: ${{ secrets.CLOUD_XERO_INTEGRATION_WEBHOOK_KEY }}
           # Torqvoice Codes, the fault code service, run beside the app. The address
           # is the service's on the server's Docker network (http://torqvoice-codes:8090
           # when it joins the proxy network), and the key is one key with read:codes,
