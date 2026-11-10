@@ -143,7 +143,6 @@ function toCredentials(body: TokenResponse, previous: OAuthCredentials): OAuthCr
       Number.isFinite(expiresIn) && expiresIn > 0 ? Date.now() + expiresIn * 1000 : undefined,
     tokenType: body.token_type ?? previous.tokenType,
     scope: body.scope ?? previous.scope,
-    codeVerifier: undefined,
   }
 }
 
@@ -166,11 +165,14 @@ export async function exchangeCode(input: {
   })
   // A new consent starts its own tokens: a refresh token kept from the one
   // it replaces may belong to another app or account, so it is not carried.
+  // The PKCE verifier is spent here and only here; a refresh while a
+  // reconnect is pending keeps it, or the callback could not finish.
   return toCredentials(body, {
     ...(input.previous ?? {}),
     accessToken: '',
     refreshToken: undefined,
     expiresAt: undefined,
+    codeVerifier: undefined,
   })
 }
 
