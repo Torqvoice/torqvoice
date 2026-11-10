@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { formatDistanceToNow } from 'date-fns'
@@ -65,6 +65,51 @@ export function NotificationPanel() {
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
   const [pendingClearAll, setPendingClearAll] = useState(false)
 
+  // Changes sent to the server and not yet answered. When they overlap, one
+  // failing cannot be undone by hand: an older failure would undo a newer
+  // success (a clear all, a second mark all read), so the list is read back
+  // from the server once all of them have settled.
+  const inFlight = useRef(0)
+  const overlapped = useRef(false)
+  const resyncNeeded = useRef(false)
+
+  const resync = async () => {
+    const fresh = await getNotifications().catch(() => null)
+    // A change started while this was out has its own answer still coming.
+    if (inFlight.current > 0) return
+    if (fresh?.success && fresh.data) {
+      setNotifications(fresh.data.notifications, fresh.data.unreadCount)
+    }
+  }
+
+  /**
+   * Sends one change. On failure, `rollback` undoes it on screen when it ran
+   * alone; when it overlapped another change, the list is read back instead.
+   * Returns whether the server took it.
+   */
+  const runChange = async (
+    request: () => Promise<{ success: boolean }>,
+    rollback: () => void
+  ): Promise<boolean> => {
+    if (inFlight.current > 0) overlapped.current = true
+    inFlight.current += 1
+    const result = await request().catch(() => ({ success: false }))
+    inFlight.current -= 1
+
+    if (!result.success) {
+      if (overlapped.current) resyncNeeded.current = true
+      else rollback()
+    }
+    if (inFlight.current === 0) {
+      overlapped.current = false
+      if (resyncNeeded.current) {
+        resyncNeeded.current = false
+        await resync()
+      }
+    }
+    return result.success
+  }
+
   const handleClickNotification = (id: string, entityUrl: string, read: boolean) => {
     if (pendingDeleteId) {
       setPendingDeleteId(null)
@@ -100,13 +145,15 @@ export function NotificationPanel() {
     removeNotification(id)
     setPendingDeleteId(null)
 
-    const result = await deleteNotification(id).catch(() => ({ success: false }))
-    if (result.success) return
-
     // Still on the server, so it would be back after a reload: put it back
     // now and say so.
-    if (removed) restoreNotification(removed)
-    toast.error(t('panel.deleteFailed'))
+    const ok = await runChange(
+      () => deleteNotification(id),
+      () => {
+        if (removed) restoreNotification(removed)
+      }
+    )
+    if (!ok) toast.error(t('panel.deleteFailed'))
   }
 
   const handleCancelDelete = (e: React.MouseEvent) => {
@@ -118,17 +165,19 @@ export function NotificationPanel() {
     const unreadIds = new Set(notifications.filter((n) => !n.read).map((n) => n.id))
     const unreadBefore = unreadCount
     markAllRead()
-    const result = await markAllNotificationsRead().catch(() => ({ success: false }))
-    if (result.success) return
-
-    // They are still unread on the server, so show them unread again rather
-    // than claim a change that did not happen. Ones deleted meanwhile no
-    // longer count.
-    const now = useNotificationStore.getState()
-    const gone = [...unreadIds].filter((id) => !now.notifications.some((n) => n.id === id)).length
-    setNotifications(
-      now.notifications.map((n) => (unreadIds.has(n.id) ? { ...n, read: false } : n)),
-      now.unreadCount + unreadBefore - gone
+    await runChange(
+      () => markAllNotificationsRead(),
+      () => {
+        // They are still unread on the server, so show them unread again
+        // rather than claim a change that did not happen. Nothing was deleted
+        // meanwhile (that would have overlapped), so every one still counts,
+        // including any pushed off the end of the list by new arrivals.
+        const now = useNotificationStore.getState()
+        setNotifications(
+          now.notifications.map((n) => (unreadIds.has(n.id) ? { ...n, read: false } : n)),
+          now.unreadCount + unreadBefore
+        )
+      }
     )
   }
 
@@ -147,19 +196,19 @@ export function NotificationPanel() {
     setPendingClearAll(false)
     setPendingDeleteId(null)
 
-    const result = await deleteAllNotifications(before).catch(() => ({ success: false }))
-    if (result.success) {
+    const ok = await runChange(
+      () => deleteAllNotifications(before),
+      () => {
+        void resync()
+      }
+    )
+    if (ok) {
       // The dashboard's Recent Notifications card is server-fetched, not read
       // from the store, so it only empties with a refresh.
       router.refresh()
       return
     }
-
     toast.error(t('panel.clearAllFailed'))
-    const fresh = await getNotifications().catch(() => null)
-    if (fresh?.success && fresh.data) {
-      setNotifications(fresh.data.notifications, fresh.data.unreadCount)
-    }
   }
 
   return (

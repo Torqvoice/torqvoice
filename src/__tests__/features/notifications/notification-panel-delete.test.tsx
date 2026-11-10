@@ -16,6 +16,9 @@ import { useNotificationStore } from '@/features/notifications/store/notificatio
 const deleteNotification = vi.fn(async (_id: string) => ({ success: true }))
 const markNotificationRead = vi.fn(async (_id: string) => ({ success: true }))
 const markAllNotificationsRead = vi.fn(async () => ({ success: true }))
+type Fresh = { notifications: ReturnType<typeof makeNotifications>; unreadCount: number } | null
+const getNotifications = vi.fn(async () => ({ success: true, data: null as Fresh }))
+const deleteAllNotifications = vi.fn(async (_before: string) => ({ success: true }))
 const toastError = vi.fn()
 
 vi.mock('next/navigation', () => ({
@@ -30,11 +33,11 @@ vi.mock('sonner', () => ({
 // of its own. Vitest watches the promise a mock returns, which would count as
 // handling a rejection the panel itself let go.
 vi.mock('@/features/notifications/Actions/notificationActions', () => ({
-  getNotifications: vi.fn(async () => ({ success: true, data: null })),
+  getNotifications: async () => getNotifications(),
   markNotificationRead: async (id: string) => markNotificationRead(id),
   markAllNotificationsRead: async () => markAllNotificationsRead(),
   deleteNotification: async (id: string) => deleteNotification(id),
-  deleteAllNotifications: vi.fn(async () => ({ success: true })),
+  deleteAllNotifications: async (before: string) => deleteAllNotifications(before),
 }))
 
 /** What a browser's fetch throws when the request never reached the server. */
@@ -60,6 +63,17 @@ function makeNotifications(count: number) {
 function seed() {
   useNotificationStore.getState().setNotifications(makeNotifications(3), 1)
   useNotificationStore.getState().setPanelOpen(true)
+}
+
+/** A request held open until the test answers it. */
+function deferred<T>() {
+  let resolve: (value: T) => void = () => undefined
+  let reject: (reason: unknown) => void = () => undefined
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+  return { promise, resolve, reject }
 }
 
 const titles = () => screen.getAllByText(/^Quote \d accepted$/).map((el) => el.textContent)
@@ -90,6 +104,10 @@ describe('NotificationPanel delete', () => {
     markNotificationRead.mockResolvedValue({ success: true })
     markAllNotificationsRead.mockReset()
     markAllNotificationsRead.mockResolvedValue({ success: true })
+    getNotifications.mockReset()
+    getNotifications.mockResolvedValue({ success: true, data: null })
+    deleteAllNotifications.mockReset()
+    deleteAllNotifications.mockResolvedValue({ success: true })
     toastError.mockClear()
     unhandled.mockClear()
     process.on('unhandledRejection', unhandled)
@@ -228,5 +246,125 @@ describe('NotificationPanel delete', () => {
     await settle()
 
     expect(useNotificationStore.getState().unreadCount).toBe(1)
+  })
+
+  it('counts every unread one again when mark all read fails after new ones pushed some off the list', async () => {
+    // A full list of 50 unread; one more arriving pushes the oldest off the
+    // end of the list, but it is still unread on the server.
+    const full = makeNotifications(50).map((n) => ({ ...n, read: false }))
+    useNotificationStore.getState().setNotifications(full, 50)
+    useNotificationStore.getState().setPanelOpen(true)
+    const markAll = deferred<{ success: boolean }>()
+    markAllNotificationsRead.mockReturnValue(markAll.promise)
+    render(<NotificationPanel />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark all read' }))
+    act(() => {
+      useNotificationStore.getState().addNotification({
+        ...full[0],
+        id: 'n99',
+        title: 'Quote 99 accepted',
+        createdAt: new Date(Date.UTC(2026, 9, 30, 13, 5)).toISOString(),
+      })
+    })
+    await act(async () => {
+      markAll.reject(offline())
+    })
+    await settle()
+
+    expect(useNotificationStore.getState().unreadCount).toBe(51)
+  })
+
+  it('does not bring back a notification that clear all removed while its delete was out', async () => {
+    seed()
+    const del = deferred<{ success: boolean }>()
+    deleteNotification.mockReturnValue(del.promise)
+    getNotifications.mockResolvedValue({
+      success: true,
+      data: { notifications: [], unreadCount: 0 },
+    })
+    render(<NotificationPanel />)
+
+    await deleteRow('Quote 1 accepted')
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all' }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    })
+    await act(async () => {
+      del.reject(offline())
+    })
+    await settle()
+
+    expect(screen.queryByText(/^Quote \d accepted$/)).not.toBeInTheDocument()
+    expect(useNotificationStore.getState().unreadCount).toBe(0)
+    expect(toastError).toHaveBeenCalledWith('Could not delete the notification')
+  })
+
+  it('does not bring back a notification that clear all removed, when clear all answers last', async () => {
+    seed()
+    const del = deferred<{ success: boolean }>()
+    const clear = deferred<{ success: boolean }>()
+    deleteNotification.mockReturnValue(del.promise)
+    deleteAllNotifications.mockReturnValue(clear.promise)
+    getNotifications.mockResolvedValue({
+      success: true,
+      data: { notifications: [], unreadCount: 0 },
+    })
+    render(<NotificationPanel />)
+
+    await deleteRow('Quote 1 accepted')
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all' }))
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Delete' }))
+    })
+    await act(async () => {
+      del.reject(offline())
+    })
+    // Not put back while clear all is still out.
+    expect(screen.queryByText(/^Quote \d accepted$/)).not.toBeInTheDocument()
+    await act(async () => {
+      clear.resolve({ success: true })
+    })
+    await settle()
+
+    expect(screen.queryByText(/^Quote \d accepted$/)).not.toBeInTheDocument()
+    expect(useNotificationStore.getState().unreadCount).toBe(0)
+    expect(toastError).toHaveBeenCalledWith('Could not delete the notification')
+  })
+
+  it('does not undo a later mark all read that succeeded when an earlier one fails', async () => {
+    seed()
+    const first = deferred<{ success: boolean }>()
+    markAllNotificationsRead.mockReturnValueOnce(first.promise)
+    markAllNotificationsRead.mockResolvedValueOnce({ success: true })
+    const allRead = makeNotifications(3).map((n) => ({ ...n, read: true }))
+    getNotifications.mockResolvedValue({
+      success: true,
+      data: { notifications: allRead, unreadCount: 0 },
+    })
+    render(<NotificationPanel />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark all read' }))
+    // A new one arrives, which brings the button back.
+    act(() => {
+      useNotificationStore.getState().addNotification({
+        ...makeNotifications(1)[0],
+        id: 'n9',
+        title: 'Quote 9 accepted',
+        read: false,
+        createdAt: new Date(Date.UTC(2026, 9, 30, 13, 5)).toISOString(),
+      })
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Mark all read' }))
+    })
+    await act(async () => {
+      first.reject(offline())
+    })
+    await settle()
+
+    expect(useNotificationStore.getState().unreadCount).toBe(0)
+    expect(useNotificationStore.getState().notifications.every((n) => n.read)).toBe(true)
+    expect(screen.queryByRole('button', { name: 'Mark all read' })).not.toBeInTheDocument()
   })
 })
