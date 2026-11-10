@@ -21,6 +21,12 @@ describe('normalizeSupplierUrl', () => {
     expect(normalizeSupplierUrl('bildeler.nø/del')).toBe('https://bildeler.nø/del')
   })
 
+  it('puts https:// in front even when the link carries another link in its query', () => {
+    const typed = 'www.x.com/part/123?return=https://x.com/catalog'
+    expect(normalizeSupplierUrl(typed)).toBe(`https://${typed}`)
+    expect(isSupplierUrl(normalizeSupplierUrl(typed))).toBe(true)
+  })
+
   it('leaves an empty link empty', () => {
     expect(normalizeSupplierUrl('')).toBe('')
     expect(normalizeSupplierUrl('   ')).toBe('')
