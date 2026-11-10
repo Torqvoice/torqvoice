@@ -117,3 +117,148 @@ describe('OpenAI-compatible connector', () => {
     })
   })
 })
+
+/**
+ * The models an OpenAI key lists in November 2026 that answer a chat request,
+ * in the order the dropdown should show them. Ids, aliases and snapshots are
+ * the ones on OpenAI's model pages, where each of these has Chat Completions
+ * marked as supported.
+ */
+const OPENAI_CHAT_NEWEST_FIRST = [
+  'gpt-6.1-sol',
+  'gpt-6.1-terra',
+  'gpt-6-astra',
+  'gpt-6-sol',
+  'gpt-6-luna',
+  'gpt-5.6',
+  'gpt-5.6-sol',
+  'gpt-5.6-terra',
+  'gpt-5.6-luna',
+  'gpt-5.5',
+  'gpt-5.5-2026-04-23',
+  'gpt-5.4',
+  'gpt-5.4-2026-03-05',
+  'gpt-5.4-mini',
+  'gpt-5.4-mini-2026-03-17',
+  'gpt-5.4-nano',
+  'gpt-5.4-nano-2026-03-17',
+  'gpt-5.2',
+  'gpt-5.2-2025-12-11',
+  'gpt-5.1',
+  'gpt-5.1-2025-11-13',
+  'gpt-5',
+  'gpt-5-2025-08-07',
+  'gpt-5-mini',
+  'gpt-5-mini-2025-08-07',
+  'gpt-5-nano',
+  'gpt-5-nano-2025-08-07',
+  'o3',
+  'o3-2025-04-16',
+  'gpt-4.1',
+  'gpt-4.1-2025-04-14',
+  'gpt-4.1-mini',
+  'gpt-4.1-mini-2025-04-14',
+  'gpt-4o',
+  'gpt-4o-2024-11-20',
+  'gpt-4o-2024-08-06',
+  'gpt-4o-mini',
+  'gpt-4o-mini-2024-07-18',
+]
+
+/** What the same key lists that a chat request cannot use, by the reason it cannot. */
+const OPENAI_NOT_FOR_CHAT = [
+  // Images.
+  'gpt-image-2.6-sunburst',
+  'gpt-image-2.6-flare',
+  'gpt-image-2.5-sunburst',
+  'gpt-image-2',
+  'gpt-image-2-2026-04-21',
+  'gpt-image-1.5',
+  'gpt-image-1-mini',
+  'chatgpt-image-latest',
+  // Voice sessions.
+  'gpt-live-1',
+  'gpt-realtime-2.1',
+  'gpt-realtime-2.1-mini',
+  'gpt-realtime-2',
+  'gpt-realtime-1.5',
+  'gpt-realtime-translate',
+  'gpt-realtime-whisper',
+  'gpt-realtime',
+  'gpt-realtime-mini',
+  // Sound in, sound out.
+  'gpt-audio-1.5',
+  'gpt-audio',
+  'gpt-audio-mini',
+  // Text to speech.
+  'tts-1',
+  'tts-1-hd',
+  'gpt-4o-mini-tts',
+  // Speech to text.
+  'whisper-1',
+  'gpt-transcribe',
+  'gpt-live-transcribe',
+  'gpt-4o-transcribe',
+  'gpt-4o-mini-transcribe',
+  'gpt-4o-transcribe-diarize',
+  // Answered by the Responses API only.
+  'gpt-5.5-pro',
+  'gpt-5.5-pro-2026-04-23',
+  'gpt-5.4-pro',
+  'gpt-5.2-pro',
+  'gpt-5-pro',
+  'o3-pro',
+  'o3-pro-2025-06-10',
+  'gpt-5.3-codex',
+  'gpt-5.6-cyber',
+  'gpt-oss-120b',
+  // Embeddings and moderation.
+  'text-embedding-3-large',
+  'text-embedding-3-small',
+  'text-embedding-ada-002',
+  'omni-moderation-latest',
+  // Retired during 2026, and the kind may come back under a new name.
+  'gpt-4o-search-preview',
+  'gpt-4o-mini-search-preview',
+  'o3-deep-research',
+  'o4-mini-deep-research',
+  'gpt-5.1-codex-mini',
+  'gpt-3.5-turbo-instruct',
+]
+
+describe('OpenAI model list', () => {
+  it('offers only the models that can answer a chat, newest first', async () => {
+    // The vendor returns them in no useful order; alphabetical stands in for that.
+    const listed = [...OPENAI_NOT_FOR_CHAT, ...OPENAI_CHAT_NEWEST_FIRST].sort()
+    const ctx = context(listing(listed), { apiKey: 'sk-1' })
+
+    const ids = (await listOpenAiModels(ctx)).map((m) => m.value)
+    expect(ids).toEqual(OPENAI_CHAT_NEWEST_FIRST)
+  })
+
+  it('names the current models the way a workshop would read them', async () => {
+    const ctx = context(listing(OPENAI_CHAT_NEWEST_FIRST), { apiKey: 'sk-1' })
+
+    expect((await listOpenAiModels(ctx)).slice(0, 3)).toEqual([
+      { value: 'gpt-6.1-sol', label: 'GPT 6.1 Sol' },
+      { value: 'gpt-6.1-terra', label: 'GPT 6.1 Terra' },
+      { value: 'gpt-6-astra', label: 'GPT 6 Astra' },
+    ])
+  })
+
+  it('puts a model released after this was written at the top', async () => {
+    // Made-up ids in the vendor's naming. The last one starts like "pro", the
+    // Responses-only kind, and is a chat model all the same.
+    const listed = ['gpt-5.6-sol', 'gpt-6.1-sol', 'gpt-6.2-terra', 'gpt-7-sol', 'gpt-7-proxima']
+    const ctx = context(listing(listed), { apiKey: 'sk-1' })
+
+    const ids = (await listOpenAiModels(ctx)).map((m) => m.value)
+    expect(ids).toEqual([
+      'gpt-7-proxima',
+      'gpt-7-sol',
+      'gpt-6.2-terra',
+      'gpt-6.1-sol',
+      'gpt-5.6-sol',
+    ])
+  })
+})
