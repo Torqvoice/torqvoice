@@ -10,7 +10,7 @@
 
 import { useState } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 const applyMarkupToAll = vi.fn()
@@ -178,5 +178,34 @@ describe('ApplyMarkupDialog', () => {
     expect(openModal).toHaveBeenCalledWith('error', 'Error', 'No permission')
     expect(onApplied).not.toHaveBeenCalled()
     expect(percentField()).toBeInTheDocument()
+    // A markup the catalog was never repriced with is not remembered either.
+    expect(setSetting).not.toHaveBeenCalled()
+  })
+
+  it('cannot be dismissed or applied a second time while the catalog is being repriced', async () => {
+    let finish: (result: unknown) => void = () => undefined
+    applyMarkupToAll.mockReturnValue(
+      new Promise((resolve) => {
+        finish = resolve
+      })
+    )
+    const user = userEvent.setup()
+    render(<Harness initialPercent={30} />)
+
+    await user.click(screen.getByRole('button', { name: 'Apply' }))
+
+    expect(screen.getByRole('button', { name: 'Apply' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled()
+    expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
+
+    // Closing and reopening would hand out a fresh Apply button, and a second
+    // catalog-wide update running over the first.
+    await user.keyboard('{Escape}')
+    expect(percentField()).toBeInTheDocument()
+
+    finish({ success: true, data: { updated: 3 } })
+    await waitFor(() => expect(screen.queryByLabelText('Markup %')).not.toBeInTheDocument())
+    expect(applyMarkupToAll).toHaveBeenCalledTimes(1)
+    expect(setSetting).toHaveBeenCalledWith('inventory.markupMultiplier', '1.3')
   })
 })

@@ -630,6 +630,14 @@ describe('the catalog markup as a percentage', () => {
     expect(multiplierFromMarkupPercent('-250')).toBeNull()
   })
 
+  it('refuses a percentage so close to -100 that it rounds to a multiplier of zero', () => {
+    // The smallest multiplier that can be stored is 0.0001, a markup of -99.99%.
+    expect(multiplierFromMarkupPercent('-99.99')).toBe(0.0001)
+    expect(multiplierFromMarkupPercent('-99.999')).toBeNull()
+    expect(multiplierFromMarkupPercent('-99.99999999')).toBeNull()
+    expect(multiplierFromMarkupPercent('1e400')).toBeNull()
+  })
+
   it('has nothing to apply for a blank or unreadable field', () => {
     // A blank box read as 0% would reprice the whole catalog at cost.
     expect(multiplierFromMarkupPercent('')).toBeNull()

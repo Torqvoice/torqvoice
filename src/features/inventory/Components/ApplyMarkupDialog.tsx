@@ -55,10 +55,20 @@ export function ApplyMarkupDialog({
   onApplied,
 }: ApplyMarkupDialogProps) {
   const t = useTranslations('inventory')
+  // Held here rather than in the form: the form is remounted every time the
+  // dialog opens, and a run that is still going must outlive that. While it is
+  // set the dialog cannot be dismissed, so it cannot be reopened to start a
+  // second catalog-wide update over the first.
+  const [applying, setApplying] = useState(false)
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!applying) onOpenChange(next)
+      }}
+    >
+      <DialogContent className="sm:max-w-md" showCloseButton={!applying}>
         <DialogHeader>
           <DialogTitle>{t('markup.title')}</DialogTitle>
           <DialogDescription>{t('markup.intro')}</DialogDescription>
@@ -67,6 +77,8 @@ export function ApplyMarkupDialog({
             cancelled is gone the next time it opens. */}
         <ApplyMarkupForm
           initialPercent={initialPercent}
+          applying={applying}
+          onApplyingChange={setApplying}
           onCancel={() => onOpenChange(false)}
           onApplied={(multiplier) => {
             onApplied(multiplier)
@@ -80,10 +92,14 @@ export function ApplyMarkupDialog({
 
 function ApplyMarkupForm({
   initialPercent,
+  applying,
+  onApplyingChange,
   onCancel,
   onApplied,
 }: {
   initialPercent: number
+  applying: boolean
+  onApplyingChange: (applying: boolean) => void
   onCancel: () => void
   onApplied: (multiplier: number) => void
 }) {
@@ -95,7 +111,6 @@ function ApplyMarkupForm({
   const modal = useGlassModal()
   const [percent, setPercent] = useState(String(initialPercent))
   const [overrideExisting, setOverrideExisting] = useState(false)
-  const [applying, setApplying] = useState(false)
 
   const multiplier = multiplierFromMarkupPercent(percent)
   const invalid = percent.trim() !== '' && multiplier === null
@@ -103,22 +118,22 @@ function ApplyMarkupForm({
     multiplier === null ? null : priceFromCostAndMultiplier(EXAMPLE_COST, multiplier)
 
   const handleApply = async () => {
-    if (multiplier === null) return
-    setApplying(true)
+    if (multiplier === null || applying) return
+    onApplyingChange(true)
     try {
-      const [result] = await Promise.all([
-        applyMarkupToAll({ multiplier, overrideExisting }),
-        setSetting(SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER, String(multiplier)),
-      ])
-      if (result.success) {
-        onApplied(multiplier)
-      } else {
+      const result = await applyMarkupToAll({ multiplier, overrideExisting })
+      if (!result.success) {
         modal.open('error', t('errors.error'), result.error || t('errors.applyFailed'))
+        return
       }
+      // Saved only once the catalog has been repriced with it. Sent alongside
+      // the update, a markup the update refused was remembered all the same.
+      await setSetting(SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER, String(multiplier))
+      onApplied(multiplier)
     } catch {
       modal.open('error', t('errors.error'), t('errors.applyFailed'))
     } finally {
-      setApplying(false)
+      onApplyingChange(false)
     }
   }
 
@@ -207,7 +222,7 @@ function ApplyMarkupForm({
         </ul>
       </DialogBody>
       <DialogFooter>
-        <Button variant="outline" onClick={onCancel}>
+        <Button variant="outline" onClick={onCancel} disabled={applying}>
           {t('markup.cancel')}
         </Button>
         <Button onClick={handleApply} disabled={applying || multiplier === null}>

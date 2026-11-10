@@ -97,8 +97,11 @@ export function multiplierFromMarkupPercent(percent: unknown): number | null {
   if (percent === null || percent === undefined) return null
   if (typeof percent === 'string' && percent.trim() === '') return null
   const parsed = Number(percent)
-  if (!Number.isFinite(parsed) || parsed <= -100) return null
-  return Math.round((1 + parsed / 100) * 10000) / 10000
+  if (!Number.isFinite(parsed)) return null
+  // Checked after rounding: -99.999% is above -100 and still rounds to a
+  // multiplier of zero, which the catalog update refuses.
+  const multiplier = Math.round((1 + parsed / 100) * 10000) / 10000
+  return Number.isFinite(multiplier) && multiplier > 0 ? multiplier : null
 }
 
 /**
