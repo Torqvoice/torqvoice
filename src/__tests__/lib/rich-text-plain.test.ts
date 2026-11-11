@@ -46,6 +46,28 @@ describe('richTextToPlain', () => {
     ).toBe('- Brakes\n  - Front pads')
   })
 
+  it('carries a numbered list on from the number it starts at', () => {
+    expect(
+      richTextToPlain(
+        '<ol start="4"><li><p>Bleed the brakes</p></li><li><p>Road test</p></li></ol>'
+      )
+    ).toBe('4. Bleed the brakes\n5. Road test')
+  })
+
+  it('keeps an address written in angle brackets', () => {
+    expect(richTextToPlain('Send the receipt to <accounts@example.com> after payment.')).toBe(
+      'Send the receipt to <accounts@example.com> after payment.'
+    )
+    // The editor stores the brackets as entities, so they come back as typed.
+    expect(
+      richTextToPlain('<p>Send the receipt to &lt;accounts@example.com&gt; after payment.</p>')
+    ).toBe('Send the receipt to <accounts@example.com> after payment.')
+    // An address is not markup, so the line breaks of a plain note stay.
+    expect(richTextToPlain('Ask <p@example.com>\nabout the invoice.')).toBe(
+      'Ask <p@example.com>\nabout the invoice.'
+    )
+  })
+
   it('ignores the spacing between tags in markup written by hand', () => {
     expect(richTextToPlain('<p>One</p>\n  <p>Two\n  words</p>\n')).toBe('One\nTwo words')
   })

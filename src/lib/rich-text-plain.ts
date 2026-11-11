@@ -32,8 +32,14 @@ const ENTITIES: Record<string, string> = {
   nbsp: ' ',
 }
 
+/**
+ * What ends a tag's name. A word boundary is not enough: it also sits before
+ * the @ of "<accounts@example.com>", which is an address someone typed.
+ */
+const NAME_END = '(?=[\\s/>])'
+
 /** Something a browser would lay out, where a line break in the source is only a space. */
-const MARKUP = /<(p|div|br|ul|ol|li|h[1-6]|blockquote|pre|table)\b/i
+const MARKUP = new RegExp(`<(p|div|br|ul|ol|li|h[1-6]|blockquote|pre|table)${NAME_END}`, 'i')
 
 function decodeEntities(text: string): string {
   return text.replace(/&(#x[0-9a-f]+|#\d+|[a-z]+);/gi, (whole, name: string) => {
@@ -70,7 +76,7 @@ export function richTextToPlain(value: string | null | undefined): string {
   }
 
   // Only what looks like a tag is taken out: "pads < 3 mm" is text.
-  for (const m of html.matchAll(/<(\/?)([a-z][a-z0-9]*)\b[^>]*>/gi)) {
+  for (const m of html.matchAll(new RegExp(`<(/?)([a-z][a-z0-9]*)${NAME_END}[^>]*>`, 'gi'))) {
     text(html.slice(last, m.index))
     last = m.index + m[0].length
     const closing = m[1] === '/'
@@ -80,7 +86,11 @@ export function richTextToPlain(value: string | null | undefined): string {
       out += '\n'
     } else if (name === 'ul' || name === 'ol') {
       if (closing) lists.pop()
-      else lists.push({ ordered: name === 'ol', count: 0 })
+      else {
+        // A numbered list carries on from where the writer started it.
+        const start = /\sstart\s*=\s*["']?(\d+)/i.exec(m[0])
+        lists.push({ ordered: name === 'ol', count: start ? Number(start[1]) - 1 : 0 })
+      }
     } else if (BLOCKS.has(name)) {
       if (closing) {
         // An empty paragraph is the blank line the writer left.
