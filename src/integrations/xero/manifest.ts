@@ -136,6 +136,18 @@ export const manifest: ConnectorManifest = {
       showWhen: { key: 'pushInvoices', equals: true },
     },
     {
+      key: 'notesPosition',
+      type: 'select',
+      label: 'notesPosition',
+      help: 'notesPositionHelp',
+      default: 'below',
+      options: [
+        { value: 'below', label: 'notesPositionBelow' },
+        { value: 'above', label: 'notesPositionAbove' },
+      ],
+      showWhen: { key: 'includeNotes', equals: true },
+    },
+    {
       key: 'includePartNumbers',
       type: 'boolean',
       label: 'includePartNumbers',

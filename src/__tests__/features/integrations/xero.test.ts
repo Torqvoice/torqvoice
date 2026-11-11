@@ -105,6 +105,7 @@ const options: InvoiceOptions = {
   url: 'https://shop.example.com/vehicles/veh1/service/svc1',
   includeVehicle: true,
   includeNotes: true,
+  notesAbove: false,
   includePartNumbers: true,
   distanceUnit: 'km',
   accounts: { labor: '210', parts: '200', shopFee: '220', fallback: '200' },
@@ -416,6 +417,27 @@ describe('buildInvoice', () => {
     })
     expect(lines[1]).toMatchObject({ ItemCode: 'BP-100', AccountCode: '200' })
     expect(lines[2]).toMatchObject({ ItemCode: 'LAB', AccountCode: '210' })
+  })
+
+  it('puts the customer notes right after the vehicle line when they go above the charges', () => {
+    const notes = { Description: 'Rear pads at 3 mm, replace next visit.' }
+    const below = linesOf(buildInvoice(invoice, options))
+    expect(below[0].Description).toMatch(/^Vehicle: /)
+    expect(below.at(-1)).toEqual(notes)
+    expect(below.filter((l) => l.Description === notes.Description)).toHaveLength(1)
+
+    const above = linesOf(buildInvoice(invoice, { ...options, notesAbove: true }))
+    expect(above[0].Description).toMatch(/^Vehicle: /)
+    expect(above[1]).toEqual(notes)
+    expect(above.filter((l) => l.Description === notes.Description)).toHaveLength(1)
+    // The charges follow, in the same order and to the same amounts.
+    expect(above.slice(2)).toEqual(below.slice(1, -1))
+
+    // Without a vehicle line the notes lead.
+    const alone = linesOf(
+      buildInvoice(invoice, { ...options, notesAbove: true, includeVehicle: false })
+    )
+    expect(alone[0]).toEqual(notes)
   })
 
   it('leaves out the vehicle, notes and part numbers when switched off', () => {

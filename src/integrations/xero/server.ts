@@ -120,6 +120,7 @@ function settingsOf(ctx: ConnectorContext) {
       : 'vehicle') as ReferenceChoice,
     includeVehicle: s.includeVehicle !== false,
     includeNotes: s.includeNotes !== false,
+    notesAbove: s.notesPosition === 'above',
     includePartNumbers: s.includePartNumbers !== false,
     brandingThemeId: str('brandingThemeId'),
     laborAccount: str('laborAccount'),
@@ -745,6 +746,7 @@ async function buildBody(
     url: appInvoiceUrl(ctx.appUrl, inv),
     includeVehicle: settings.includeVehicle,
     includeNotes: settings.includeNotes,
+    notesAbove: settings.notesAbove,
     includePartNumbers: settings.includePartNumbers,
     distanceUnit: await workshopDistanceUnit(ctx.connection.organizationId),
     accounts: {
