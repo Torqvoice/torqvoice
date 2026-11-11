@@ -11,6 +11,7 @@
 import { db } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
+import { richTextToPlain } from '@/lib/rich-text-plain'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SHOP_FEE_PRICING } from '@/features/settings/Lib/shopFee'
 import { serviceUrl } from './calendar-sync'
@@ -69,6 +70,7 @@ export interface AccountingInvoice {
   serviceDate: Date
   dueDate: Date | null
   mileage: number | null
+  /** The notes to the customer as plain text, the editor's markup taken out. */
   notes: string | null
   subtotal: number
   /** The sum of the taxable lines, or null when every line is taxed. */
@@ -225,7 +227,7 @@ export async function loadInvoiceForAccounting(
     serviceDate: r.serviceDate,
     dueDate: r.invoiceDueDate,
     mileage: r.mileage,
-    notes: r.invoiceNotes,
+    notes: richTextToPlain(r.invoiceNotes) || null,
     subtotal: r.subtotal,
     taxableSubtotal: r.taxableSubtotal,
     discountType: r.discountType,

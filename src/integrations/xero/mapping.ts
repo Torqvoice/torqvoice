@@ -273,6 +273,8 @@ export interface InvoiceOptions {
   url: string
   includeVehicle: boolean
   includeNotes: boolean
+  /** The notes go above the charges, after the vehicle line, rather than last. */
+  notesAbove: boolean
   includePartNumbers: boolean
   distanceUnit: string
   accounts: { labor: string | null; parts: string | null; shopFee: string | null; fallback: string }
@@ -414,6 +416,9 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
   const lines: XeroLine[] = []
   const vehicle = o.includeVehicle ? vehicleDescription(inv, o.distanceUnit) : null
   if (vehicle) lines.push({ Description: `Vehicle: ${vehicle}`.slice(0, 4000) })
+  const notes = o.includeNotes ? inv.notes?.trim() : null
+  const notesLine: XeroLine | null = notes ? { Description: notes.slice(0, 4000) } : null
+  if (notesLine && o.notesAbove) lines.push(notesLine)
 
   priced.forEach((line, i) => {
     const cents = Math.round(amounts[i] * 100)
@@ -460,8 +465,7 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
     lines.push(xl)
   })
 
-  const notes = o.includeNotes ? inv.notes?.trim() : null
-  if (notes) lines.push({ Description: notes.slice(0, 4000) })
+  if (notesLine && !o.notesAbove) lines.push(notesLine)
 
   const body: Record<string, unknown> = {
     Type: 'ACCREC',
