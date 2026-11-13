@@ -140,9 +140,12 @@ export function TimeGridView({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {/* Day headers */}
+      {/* Day headers. Every row keeps the space the hour grid's scrollbar
+          takes, so the day columns are as wide above it as in it and their
+          lines meet; without it each column drifted a little further left
+          in the grid than in the header. */}
       <div
-        className="grid shrink-0 border-b border-border/70"
+        className="grid shrink-0 overflow-y-hidden border-b border-border/70 [scrollbar-gutter:stable]"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="border-r border-border/70" />
@@ -186,7 +189,7 @@ export function TimeGridView({
 
       {/* All-day strip */}
       <div
-        className="grid shrink-0 border-b border-border/70"
+        className="grid shrink-0 overflow-y-hidden border-b border-border/70 [scrollbar-gutter:stable]"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="flex items-start justify-end border-r border-border/70 px-1.5 pt-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -244,7 +247,7 @@ export function TimeGridView({
       </div>
 
       {/* Hour grid */}
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]">
         <div
           className="relative grid"
           style={{ gridTemplateColumns: columnsTemplate, height: 24 * HOUR_PX }}
