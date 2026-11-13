@@ -40,13 +40,74 @@ export async function getAiConfig(organizationId: string): Promise<AiConfig> {
 }
 
 /**
+ * How long one request may go unanswered. Somebody is waiting on every AI
+ * request with a spinner, and the SDK's own default is ten minutes. A
+ * reasoning model writing a long summary answers well inside two; a model
+ * running on the workshop's own hardware may be a lot slower, so a
+ * self-hosted server gets longer. For a streamed answer this is the wait for
+ * the first words, not for the whole reply.
+ */
+export const AI_REQUEST_TIMEOUT_MS = 120_000
+export const SELF_HOSTED_TIMEOUT_MS = 300_000
+
+/** One more try when the provider hiccuped: a 500, an overloaded server. */
+const AI_MAX_RETRIES = 1
+
+/**
+ * The longest pause a provider may ask for before that one retry. The SDK
+ * otherwise sleeps for whatever Retry-After says, minutes if a rate-limited
+ * account is told so, with nothing on screen. A provider that wants a longer
+ * pause gets no retry, and the person hears at once that it is busy.
+ */
+export const MAX_RETRY_AFTER_MS = 5_000
+
+function retryAfterMs(headers: Headers): number | undefined {
+  const ms = Number.parseFloat(headers.get('retry-after-ms') ?? '')
+  if (!Number.isNaN(ms)) return ms
+  const value = headers.get('retry-after')
+  if (!value) return undefined
+  const seconds = Number.parseFloat(value)
+  if (!Number.isNaN(seconds)) return seconds * 1000
+  const at = Date.parse(value)
+  return Number.isNaN(at) ? undefined : at - Date.now()
+}
+
+/**
+ * `fetch` for the SDK, marking a refusal that asks for a long pause as not
+ * worth retrying (the SDK obeys `x-should-retry`). Everything else passes
+ * through untouched.
+ */
+async function fetchWithoutLongWaits(
+  input: string | URL | Request,
+  init?: RequestInit
+): Promise<Response> {
+  const response = await fetch(input, init)
+  if (response.ok) return response
+  const wait = retryAfterMs(response.headers)
+  if (wait === undefined || wait <= MAX_RETRY_AFTER_MS) return response
+  const headers = new Headers(response.headers)
+  headers.set('x-should-retry', 'false')
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  })
+}
+
+/**
  * Every provider gets its address spelled out. Left blank, the SDK would
  * read OPENAI_BASE_URL from the environment on its own, and completions
  * would quietly go somewhere the connector's key check never looked.
  */
 export function createClient(config: AiConfig): OpenAI {
+  const limits = {
+    maxRetries: AI_MAX_RETRIES,
+    timeout: AI_REQUEST_TIMEOUT_MS,
+    fetch: fetchWithoutLongWaits,
+  }
   if (config.provider === 'anthropic') {
     return new OpenAI({
+      ...limits,
       apiKey: config.apiKey,
       baseURL: `${ANTHROPIC_BASE}/`,
       defaultHeaders: {
@@ -56,13 +117,15 @@ export function createClient(config: AiConfig): OpenAI {
   }
   if (config.provider === 'openai-compatible') {
     return new OpenAI({
+      ...limits,
+      timeout: SELF_HOSTED_TIMEOUT_MS,
       // The SDK refuses to start without a key; a server that wants none
       // ignores whatever the header says.
       apiKey: config.apiKey || 'none',
       baseURL: normalizeBaseUrl(config.baseUrl ?? ''),
     })
   }
-  return new OpenAI({ apiKey: config.apiKey, baseURL: OPENAI_BASE })
+  return new OpenAI({ ...limits, apiKey: config.apiKey, baseURL: OPENAI_BASE })
 }
 
 /**
@@ -340,9 +403,9 @@ function providerTrouble(error: unknown): boolean {
  * Any reply passes, an empty or cut-off one included: what it says is not
  * the question. No temperature is sent, because several models refuse one.
  *
- * It is asked once and not for long. The SDK would otherwise try a refusal
- * three times and wait as long as the provider told it to, with somebody
- * watching a spinner. And a failed test switches the connection off, so when
+ * It is asked once and not for long, shorter than a real request: somebody
+ * is watching a spinner on the connection page, and a busy provider is not
+ * worth a second try here. And a failed test switches the connection off, so when
  * the provider was merely busy the answer is `inconclusive`: the caller
  * falls back to the check it had before rather than turn off an AI
  * connection that works.
@@ -370,17 +433,4 @@ export async function probeAiModel(
       ...(providerTrouble(error) && { inconclusive: true }),
     }
   }
-}
-
-export async function testAiConnection(organizationId: string): Promise<boolean> {
-  const config = await getAiConfig(organizationId)
-  const client = createClient(config)
-
-  const response = await client.chat.completions.create({
-    model: config.model,
-    messages: [{ role: 'user', content: 'Say OK' }],
-    ...completionTuning(config, 5),
-  })
-
-  return !!response.choices[0]?.message?.content
 }
