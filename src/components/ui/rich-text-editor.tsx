@@ -23,6 +23,8 @@ interface RichTextEditorProps {
   content: string
   onChange: (html: string) => void
   placeholder?: string
+  /** Extra classes for the writing area, such as a taller minimum height. */
+  contentClassName?: string
 }
 
 function ToolbarButton({
@@ -54,6 +56,7 @@ export function RichTextEditor({
   content,
   onChange,
   placeholder = 'Write something...',
+  contentClassName,
 }: RichTextEditorProps) {
   const editor = useEditor({
     immediatelyRender: false,
@@ -73,8 +76,10 @@ export function RichTextEditor({
     editorProps: {
       handleClick: openLinkOnModifierClick,
       attributes: {
-        class:
+        class: cn(
           'tiptap-content min-h-[120px] max-h-[40vh] overflow-y-auto overflow-x-hidden px-3 py-2 text-sm outline-none break-all',
+          contentClassName
+        ),
       },
     },
   })

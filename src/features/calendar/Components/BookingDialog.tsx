@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import {
   AlignLeft,
   Bell,
+  CalendarDays,
   Car,
   Clock,
   ExternalLink,
@@ -14,6 +15,7 @@ import {
   Plus,
   User,
   Video,
+  Wrench,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -39,9 +41,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
 import { useServiceType } from '@/components/service-type-context'
-import { cn } from '@/lib/utils'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 import { createServiceMeeting } from '@/features/integrations/Actions/integrationActions'
@@ -65,6 +65,7 @@ import {
 import { MAX_APPOINTMENT_MINUTES } from '../Schema/appointmentSchema'
 import { minutesToTime, timeToMinutes } from '../Lib/calendar-range'
 import type { BookingEdit } from './EventPeek'
+import { ConcernListEditor } from './ConcernListEditor'
 
 /** The kind a new booking starts as: whatever this person booked last. */
 const KIND_KEY = 'torqvoice.calendar.bookingKind'
@@ -151,7 +152,12 @@ export function BookingDialog({
         if (!saving) onOpenChange(next)
       }}
     >
-      <DialogContent className="max-h-[92vh] sm:max-w-5xl" showCloseButton={!saving}>
+      {/* One height for every kind of booking: switching between an appointment
+          and a work order changes fields inside, never the size of the dialog. */}
+      <DialogContent
+        className="h-[min(44rem,92vh)] max-h-[92vh] sm:max-w-5xl"
+        showCloseButton={!saving}
+      >
         <DialogHeader className="sr-only">
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{t('dialogDescription')}</DialogDescription>
@@ -234,6 +240,8 @@ function BookingForm({
   )
   const [rows, setRows] = useState<NotificationRow[]>(() => (edit ? [] : [newRow()]))
   const [meeting, setMeeting] = useState<string | null>(null)
+  // The end date shows for a booking that runs into another day, or once asked for.
+  const [multiDay, setMultiDay] = useState(false)
 
   // What the workshop offers, and the booking being changed.
   useEffect(() => {
@@ -291,11 +299,14 @@ function BookingForm({
   }, [])
 
   const isWorkOrder = kind === 'workOrder'
+  const showEndDate = multiDay || Boolean(end.date && start.date && end.date !== start.date)
   const lockedWho = Boolean(editing && sourceKind === 'workOrder' && loaded?.locked.who)
   const lockedWork = Boolean(editing && sourceKind === 'workOrder' && loaded?.locked.work)
   const channels = options?.channels ?? ['in_app', 'email']
   const video = options?.video ?? []
   const hasCustomer = Boolean(customerId || vehicleId)
+  // An appointment needs neither; a work order needs one of the two.
+  const optionalLabel = isWorkOrder ? undefined : t('optional')
 
   const duration = minutesBetween(start, end)
   const durationLabel = useMemo(() => {
@@ -398,7 +409,7 @@ function BookingForm({
 
   if (loading) {
     return (
-      <div className="flex h-64 items-center justify-center">
+      <div className="flex min-h-0 flex-1 items-center justify-center">
         <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
       </div>
     )
@@ -413,9 +424,9 @@ function BookingForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-      <DialogBody className="space-y-5">
+      <DialogBody className="space-y-4">
         {/* Title and what it is, the way a calendar app opens. */}
-        <div className="space-y-3 pr-6">
+        <div className="space-y-2.5 pr-6">
           <Input
             aria-label={t('titleLabel')}
             value={titleText}
@@ -423,7 +434,7 @@ function BookingForm({
             placeholder={t('titlePlaceholder')}
             maxLength={200}
             autoFocus
-            className="h-12 rounded-none border-0 border-b-2 border-primary/40 bg-transparent px-1 text-xl shadow-none focus-visible:border-primary focus-visible:ring-0 dark:bg-transparent"
+            className="h-14 rounded-none border-0 border-b-2 border-border bg-transparent px-1 text-2xl font-medium tracking-tight shadow-none placeholder:font-normal placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-0 md:text-2xl dark:bg-transparent"
           />
           <div className="flex flex-wrap items-center gap-3">
             <Tabs value={kind} onValueChange={(v) => chooseKind(v as BookingKind)}>
@@ -431,13 +442,17 @@ function BookingForm({
                 <TabsTrigger
                   value="appointment"
                   disabled={Boolean(converting || (editing && sourceKind === 'workOrder'))}
+                  className="gap-1.5"
                 >
+                  <CalendarDays className="h-3.5 w-3.5" />
                   {t('kind.appointment')}
                 </TabsTrigger>
                 <TabsTrigger
                   value="workOrder"
                   disabled={Boolean(editing && sourceKind === 'appointment')}
+                  className="gap-1.5"
                 >
+                  <Wrench className="h-3.5 w-3.5" />
                   {t('kind.workOrder')}
                 </TabsTrigger>
               </TabsList>
@@ -452,7 +467,8 @@ function BookingForm({
           </div>
         </div>
 
-        {/* When */}
+        {/* When: one day, start to end, as a calendar shows it. A second date
+            only for a booking that runs into another day. */}
         <Row icon={Clock} label={t('when')}>
           <div className="flex flex-wrap items-center gap-2">
             <div className="w-40">
@@ -479,22 +495,35 @@ function BookingForm({
               className="w-28"
               required
             />
-            <div className="w-40">
-              <DateInput
-                id="booking-end-date"
-                value={end.date}
-                onChange={(date) => setEnd({ ...end, date })}
-              />
-            </div>
+            {showEndDate ? (
+              <div className="w-40">
+                <DateInput
+                  id="booking-end-date"
+                  value={end.date}
+                  onChange={(date) => setEnd({ ...end, date })}
+                />
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-8 px-2 text-xs text-primary"
+                onClick={() => setMultiDay(true)}
+              >
+                {t('endsAnotherDay')}
+              </Button>
+            )}
+            {timesValid && durationLabel && (
+              <span className="text-xs text-muted-foreground">{durationLabel}</span>
+            )}
           </div>
-          <p className={cn('text-xs', timesValid ? 'text-muted-foreground' : 'text-destructive')}>
-            {timesValid ? durationLabel : t('endAfterStart')}
-          </p>
+          {!timesValid && <p className="text-xs text-destructive">{t('endAfterStart')}</p>}
         </Row>
 
-        <div className="grid gap-x-8 gap-y-5 md:grid-cols-[minmax(0,4fr)_minmax(0,6fr)]">
-          <div className="space-y-5">
-            <Row icon={User} label={t('customer')}>
+        <div className="grid gap-x-8 gap-y-4 md:grid-cols-[minmax(0,4fr)_minmax(0,6fr)]">
+          <div className="space-y-4">
+            <Row icon={User} label={t('customer')} optional={optionalLabel}>
               <CustomerCombobox
                 value={customerId}
                 initialCustomer={customerInitial}
@@ -515,7 +544,11 @@ function BookingForm({
                 }}
               />
             </Row>
-            <Row icon={Car} label={isMarine ? t('vehicleMarine') : t('vehicle')}>
+            <Row
+              icon={Car}
+              label={isMarine ? t('vehicleMarine') : t('vehicle')}
+              optional={optionalLabel}
+            >
               <VehicleCombobox
                 value={vehicleId}
                 initialVehicle={vehicleInitial}
@@ -534,40 +567,76 @@ function BookingForm({
                   }
                 }}
               />
-              <p className="text-xs text-muted-foreground">
-                {lockedWho
-                  ? isMarine
-                    ? t('whoLockedMarine')
-                    : t('whoLocked')
-                  : isWorkOrder
+              {(lockedWho || isWorkOrder) && (
+                <p className="text-xs text-muted-foreground">
+                  {lockedWho
                     ? isMarine
-                      ? t('whoHintMarine')
-                      : t('whoHint')
+                      ? t('whoLockedMarine')
+                      : t('whoLocked')
                     : isMarine
-                      ? t('appointmentWhoHintMarine')
-                      : t('appointmentWhoHint')}
-              </p>
+                      ? t('whoHintMarine')
+                      : t('whoHint')}
+                </p>
+              )}
+            </Row>
+            <Row icon={AlignLeft} label={t('description')}>
+              <RichTextEditor
+                content={description}
+                onChange={setDescription}
+                placeholder={t('descriptionPlaceholder')}
+                contentClassName="min-h-[8rem] max-h-[30vh]"
+              />
+            </Row>
+          </div>
+
+          <div className="space-y-4">
+            <Row icon={Bell} label={t('notifications')}>
+              <div className="space-y-2">
+                {rows.map((row) => (
+                  <NotificationEditor
+                    key={row.key}
+                    row={row}
+                    channels={channels}
+                    channelLabel={channelLabel}
+                    hasCustomer={hasCustomer}
+                    onChange={(next) =>
+                      setRows((all) => all.map((r) => (r.key === row.key ? next : r)))
+                    }
+                    onRemove={() => setRows((all) => all.filter((r) => r.key !== row.key))}
+                  />
+                ))}
+                {!customerRowsOk && (
+                  <p className="text-xs text-destructive">{t('customerChannelNeedsCustomer')}</p>
+                )}
+                {rows.length < MAX_NOTIFICATIONS && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="-ml-2 h-8 text-primary"
+                    onClick={() => setRows((all) => [...all, newRow()])}
+                  >
+                    <Plus className="mr-1.5 h-3.5 w-3.5" />
+                    {t('addNotification')}
+                  </Button>
+                )}
+              </div>
             </Row>
             {isWorkOrder && (
               <Row icon={ListChecks} label={t('work')}>
-                <Textarea
-                  id="appointment-work"
-                  aria-label={t('work')}
+                <ConcernListEditor
                   value={work}
-                  onChange={(e) => setWork(e.target.value)}
-                  placeholder={isMarine ? t('workPlaceholderMarine') : t('workPlaceholder')}
-                  rows={4}
-                  maxLength={4000}
+                  onChange={setWork}
                   disabled={lockedWork}
+                  placeholder={isMarine ? t('addConcernMarine') : t('addConcern')}
                 />
-                <p className="text-xs text-muted-foreground">
-                  {lockedWork ? t('workLocked') : t('workHintTitle')}
-                </p>
+                {(lockedWork || work.trim() === '') && (
+                  <p className="px-2 text-xs text-muted-foreground">
+                    {lockedWork ? t('workLocked') : t('workEmptyHint')}
+                  </p>
+                )}
               </Row>
             )}
-          </div>
-
-          <div className="space-y-5">
             {isWorkOrder && video.length > 0 && (
               <Row icon={Video} label={t('video')}>
                 {loaded?.meeting ? (
@@ -616,49 +685,8 @@ function BookingForm({
                 )}
               </Row>
             )}
-
-            <Row icon={Bell} label={t('notifications')}>
-              <div className="space-y-2">
-                {rows.map((row) => (
-                  <NotificationEditor
-                    key={row.key}
-                    row={row}
-                    channels={channels}
-                    channelLabel={channelLabel}
-                    hasCustomer={hasCustomer}
-                    onChange={(next) =>
-                      setRows((all) => all.map((r) => (r.key === row.key ? next : r)))
-                    }
-                    onRemove={() => setRows((all) => all.filter((r) => r.key !== row.key))}
-                  />
-                ))}
-                {!customerRowsOk && (
-                  <p className="text-xs text-destructive">{t('customerChannelNeedsCustomer')}</p>
-                )}
-                {rows.length < MAX_NOTIFICATIONS && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="-ml-2 h-8 text-primary"
-                    onClick={() => setRows((all) => [...all, newRow()])}
-                  >
-                    <Plus className="mr-1.5 h-3.5 w-3.5" />
-                    {t('addNotification')}
-                  </Button>
-                )}
-              </div>
-            </Row>
           </div>
         </div>
-
-        <Row icon={AlignLeft} label={t('description')}>
-          <RichTextEditor
-            content={description}
-            onChange={setDescription}
-            placeholder={t('descriptionPlaceholder')}
-          />
-        </Row>
       </DialogBody>
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
@@ -677,17 +705,25 @@ function BookingForm({
 function Row({
   icon: Icon,
   label,
+  optional,
   children,
 }: {
   icon: React.ComponentType<{ className?: string }>
   label: string
+  /** Said beside the label when the field can be left empty. */
+  optional?: string
   children: React.ReactNode
 }) {
   return (
     <div className="flex gap-3">
       <Icon className="mt-2.5 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
       <div className="min-w-0 flex-1 space-y-1.5">
-        <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <p className="text-xs font-medium text-muted-foreground">
+          {label}
+          {optional && (
+            <span className="ml-1.5 font-normal text-muted-foreground/70">{optional}</span>
+          )}
+        </p>
         {children}
       </div>
     </div>

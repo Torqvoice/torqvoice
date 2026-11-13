@@ -138,6 +138,13 @@ async function renderDialog(props: Partial<Parameters<typeof BookingDialog>[0]> 
   return { onSaved, onOpenChange }
 }
 
+/** Types a concern into the list's add row and takes it with Enter. */
+function addConcern(text: string) {
+  const field = screen.getByLabelText('Add a concern and press Enter')
+  fireEvent.change(field, { target: { value: text } })
+  fireEvent.keyDown(field, { key: 'Enter' })
+}
+
 const titleField = () => screen.getByLabelText('Title')
 const saveButton = (name = 'Book appointment') => screen.getByRole('button', { name })
 const kindTab = (name: 'Appointment' | 'Work order') => screen.getByRole('tab', { name })
@@ -265,9 +272,11 @@ describe('a new booking', () => {
 
     chooseKind('Work order')
     fireEvent.change(titleField(), { target: { value: 'Brake job' } })
-    fireEvent.change(screen.getByLabelText('Work needed'), {
-      target: { value: 'Front brakes squeal\nOil service' },
-    })
+    // Each concern is typed on its own row and Enter takes it.
+    addConcern('Front brakes squeal')
+    addConcern('Oil service')
+    expect(screen.getByLabelText('Concern 1')).toHaveValue('Front brakes squeal')
+    expect(screen.getByLabelText('Concern 2')).toHaveValue('Oil service')
     expect(saveButton()).toBeDisabled()
 
     await chooseCustomer()
@@ -309,7 +318,7 @@ describe('a new booking', () => {
     window.localStorage.setItem('torqvoice.calendar.bookingKind', 'appointment')
     await renderDialog()
     expect(kindTab('Appointment')).toHaveAttribute('aria-selected', 'true')
-    expect(screen.queryByLabelText('Work needed')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Add a concern and press Enter')).not.toBeInTheDocument()
   })
 })
 
@@ -459,7 +468,7 @@ describe('changing a booking', () => {
     expect(
       screen.getByText('Change the car or the customer on the work order.')
     ).toBeInTheDocument()
-    expect(screen.getByLabelText('Work needed')).toHaveValue('Front brakes squeal')
+    expect(screen.getByLabelText('Concern 1')).toHaveValue('Front brakes squeal')
     expect(kindTab('Appointment')).toBeDisabled()
 
     fireEvent.click(saveButton('Save'))
@@ -490,7 +499,9 @@ describe('changing a booking', () => {
       edit: { mode: 'edit', event: calendarEvent({ id: 'job-1', type: 'service' }) },
     })
 
-    expect(await screen.findByLabelText('Work needed')).toBeDisabled()
+    expect(await screen.findByLabelText('Concern 1')).toBeDisabled()
+    // Nothing can be added to concerns that already carry work.
+    expect(screen.queryByLabelText('Add a concern and press Enter')).not.toBeInTheDocument()
     expect(
       screen.getByText('Work is recorded on these concerns. Change them on the work order.')
     ).toBeInTheDocument()
@@ -529,7 +540,9 @@ describe('making an appointment a work order', () => {
     expect(await screen.findByDisplayValue('Call Kari')).toBeInTheDocument()
     expect(kindTab('Work order')).toHaveAttribute('aria-selected', 'true')
     expect(kindTab('Appointment')).toBeDisabled()
-    expect(screen.getByLabelText('Work needed')).toHaveValue('')
+    // No concerns yet: the appointment's title becomes the job's concern unless some are added.
+    expect(screen.queryByLabelText('Concern 1')).not.toBeInTheDocument()
+    expect(screen.getByText("Left empty, the title is the job's concern.")).toBeInTheDocument()
 
     fireEvent.click(saveButton('Make work order'))
 
