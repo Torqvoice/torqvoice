@@ -199,6 +199,10 @@
     "title": "Torqvoice'a ulaşılamadı",
     "description": "Son değişikliğiniz kaydedilmemiş olabilir. Bağlantınızı kontrol edip tekrar deneyin."
   },
+  "shareLink": {
+    "generateFailed": "Bağlantı oluşturulamadı. Tekrar deneyin.",
+    "revokeFailed": "Bağlantının iptali doğrulanamadı. Bağlantıya sahip olan herkes onu hâlâ açabilir."
+  },
   "searchableSelect": {
     "choose": "Seçin...",
     "search": "Ara...",

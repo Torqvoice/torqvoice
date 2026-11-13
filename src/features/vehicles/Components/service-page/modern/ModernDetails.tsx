@@ -559,8 +559,9 @@ export function ModernDetails(props: ModernDetailsProps) {
                     viewCount={record.viewCount}
                     lastViewedAt={record.lastViewedAt}
                     onRevoke={async () => {
-                      await revokePublicLink(record.id)
-                      router.refresh()
+                      const result = await revokePublicLink(record.id)
+                      if (result.success) router.refresh()
+                      return result.success
                     }}
                   />
                 )}

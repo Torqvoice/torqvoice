@@ -459,7 +459,19 @@
     "copyLink": "Copiar enlace",
     "copied": "Enlace copiado al portapapeles",
     "generated": "Enlace de compartición creado",
-    "revoked": "Enlace de compartición revocado"
+    "revoked": "Enlace de compartición revocado",
+    "notifyTitle": "Notificar a {name}",
+    "email": "Correo electrónico",
+    "noEmail": "(sin correo registrado)",
+    "sms": "SMS",
+    "noPhone": "(sin teléfono registrado)",
+    "sendNotification": "Enviar notificación",
+    "revokeLink": "Revocar enlace",
+    "generateLink": "Generar enlace público",
+    "emailSent": "Correo enviado",
+    "failedEmail": "Error al enviar el correo",
+    "smsSent": "SMS enviado",
+    "failedSms": "Error al enviar el SMS"
   },
   "phone": {
     "pageTitle": "Fotos de la inspección",

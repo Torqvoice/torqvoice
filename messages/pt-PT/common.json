@@ -199,6 +199,10 @@
     "title": "Não foi possível contactar o Torqvoice",
     "description": "A sua última alteração pode não ter sido guardada. Verifique a sua ligação e tente novamente."
   },
+  "shareLink": {
+    "generateFailed": "Não foi possível criar o link. Tente novamente.",
+    "revokeFailed": "Não foi possível confirmar que o link foi revogado. Pode continuar a funcionar para quem o tiver."
+  },
   "searchableSelect": {
     "choose": "Escolher...",
     "search": "Pesquisar...",

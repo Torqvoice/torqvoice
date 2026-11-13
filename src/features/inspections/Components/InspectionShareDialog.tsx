@@ -55,6 +55,7 @@ export function InspectionShareDialog({
   emailEnabled = false,
 }: InspectionShareDialogProps) {
   const t = useTranslations('inspections.shareDialog')
+  const tc = useTranslations('common')
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [copied, setCopied] = useState(false)
@@ -71,28 +72,31 @@ export function InspectionShareDialog({
     ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/inspection/${organizationId}/${token}`
     : null
 
+  // An action that cannot reach the server throws instead of answering.
+  // Inside a transition that would replace the page with the error page, so
+  // each call is caught and reported the way a refusal is.
   const handleGenerate = () => {
     startTransition(async () => {
-      const result = await generateInspectionPublicLink(inspectionId)
-      if (result.success && result.data) {
+      const result = await generateInspectionPublicLink(inspectionId).catch(() => null)
+      if (result?.success && result.data) {
         setToken(result.data.token)
         toast.success(t('generated'))
         router.refresh()
       } else {
-        toast.error(result.error || 'Failed to generate link')
+        toast.error(tc('shareLink.generateFailed'))
       }
     })
   }
 
   const handleRevoke = () => {
     startTransition(async () => {
-      const result = await revokeInspectionPublicLink(inspectionId)
-      if (result.success) {
+      const result = await revokeInspectionPublicLink(inspectionId).catch(() => null)
+      if (result?.success) {
         setToken(null)
         toast.success(t('revoked'))
         router.refresh()
       } else {
-        toast.error(result.error || 'Failed to revoke link')
+        toast.error(tc('shareLink.revokeFailed'))
       }
     })
   }
@@ -117,20 +121,20 @@ export function InspectionShareDialog({
         inspectionId,
         recipientEmail: customer.email!,
         attachPdf,
-      })
-      if (res.success) {
+      }).catch(() => null)
+      if (res?.success) {
         track('document:email_send', { document: 'inspection' })
-        results.push('Email sent')
+        results.push(t('emailSent'))
         setNotifyEmail(false)
       } else {
         failed = true
-        if (!handleGated(res)) toast.error(res.error || 'Failed to send email')
+        if (!res || !handleGated(res)) toast.error(res?.error || t('failedEmail'))
       }
     }
 
     if (notifySms && hasPhone) {
-      const tplResult = await getSmsTemplates()
-      const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+      const tplResult = await getSmsTemplates().catch(() => null)
+      const tplData = tplResult?.success && tplResult.data ? tplResult.data : null
       const tpl =
         tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY] ||
         SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]
@@ -145,13 +149,13 @@ export function InspectionShareDialog({
         body,
         relatedEntityType: 'inspection',
         relatedEntityId: inspectionId,
-      })
-      if (res.success) {
-        results.push('SMS sent')
+      }).catch(() => null)
+      if (res?.success) {
+        results.push(t('smsSent'))
         setNotifySms(false)
       } else {
         failed = true
-        toast.error(res.error || 'Failed to send SMS')
+        toast.error(res?.error || t('failedSms'))
       }
     }
 
@@ -194,7 +198,7 @@ export function InspectionShareDialog({
               {/* Notify customer */}
               {customer && (emailEnabled || smsEnabled) && (
                 <div className="space-y-3 rounded-lg border p-3">
-                  <p className="text-sm font-medium">Notify {customer.name}</p>
+                  <p className="text-sm font-medium">{t('notifyTitle', { name: customer.name })}</p>
                   <div className="space-y-2">
                     {emailEnabled && (
                       <div className="flex items-center gap-2">
@@ -209,8 +213,8 @@ export function InspectionShareDialog({
                           className={`flex items-center gap-1.5 text-sm ${!hasEmail ? 'text-muted-foreground/50' : ''}`}
                         >
                           <Mail className="h-3.5 w-3.5" />
-                          Email
-                          {!hasEmail && <span className="text-xs">(no email on file)</span>}
+                          {t('email')}
+                          {!hasEmail && <span className="text-xs">{t('noEmail')}</span>}
                         </Label>
                       </div>
                     )}
@@ -237,8 +241,8 @@ export function InspectionShareDialog({
                           className={`flex items-center gap-1.5 text-sm ${!hasPhone ? 'text-muted-foreground/50' : ''}`}
                         >
                           <MessageSquare className="h-3.5 w-3.5" />
-                          SMS
-                          {!hasPhone && <span className="text-xs">(no phone on file)</span>}
+                          {t('sms')}
+                          {!hasPhone && <span className="text-xs">{t('noPhone')}</span>}
                         </Label>
                       </div>
                     )}
@@ -252,7 +256,7 @@ export function InspectionShareDialog({
                     className="w-full"
                   >
                     {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                    Send Notification
+                    {t('sendNotification')}
                   </Button>
                 </div>
               )}
@@ -268,7 +272,7 @@ export function InspectionShareDialog({
                 ) : (
                   <Unlink className="mr-2 h-4 w-4" />
                 )}
-                Revoke Link
+                {t('revokeLink')}
               </Button>
             </>
           ) : (
@@ -278,7 +282,7 @@ export function InspectionShareDialog({
               ) : (
                 <Link2 className="mr-2 h-4 w-4" />
               )}
-              Generate Share Link
+              {t('generateLink')}
             </Button>
           )}
         </div>

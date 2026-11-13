@@ -199,6 +199,10 @@
     "title": "Torqvoice ist nicht erreichbar",
     "description": "Ihre letzte Änderung wurde möglicherweise nicht gespeichert. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
   },
+  "shareLink": {
+    "generateFailed": "Link konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
+    "revokeFailed": "Der Widerruf des Links konnte nicht bestätigt werden. Er funktioniert möglicherweise noch für alle, die ihn haben."
+  },
   "searchableSelect": {
     "choose": "Auswählen...",
     "search": "Suchen...",

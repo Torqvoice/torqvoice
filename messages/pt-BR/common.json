@@ -199,6 +199,10 @@
     "title": "Não foi possível conectar ao Torqvoice",
     "description": "Sua última alteração pode não ter sido salva. Verifique sua conexão e tente novamente."
   },
+  "shareLink": {
+    "generateFailed": "Não foi possível criar o link. Tente novamente.",
+    "revokeFailed": "Não foi possível confirmar que o link foi revogado. Ele pode continuar funcionando para quem o tiver."
+  },
   "searchableSelect": {
     "choose": "Escolher...",
     "search": "Buscar...",

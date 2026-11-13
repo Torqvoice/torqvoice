@@ -4,6 +4,7 @@ import { SectionFrame } from '@/components/section-frame'
 import { useState } from 'react'
 import { Link2, Copy, Check, Trash2, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { useFormatDate } from '@/lib/use-format-date'
 
 interface SharedLinkCardProps {
@@ -13,7 +14,8 @@ interface SharedLinkCardProps {
   sharedAt: Date | null
   viewCount: number
   lastViewedAt: Date | null
-  onRevoke?: () => Promise<void>
+  /** Revokes the link and says whether the server did; false keeps the card. */
+  onRevoke?: () => Promise<boolean>
 }
 
 export function SharedLinkCard({
@@ -26,6 +28,7 @@ export function SharedLinkCard({
   onRevoke,
 }: SharedLinkCardProps) {
   const t = useTranslations(type === 'quote' ? 'quotes' : 'service')
+  const tc = useTranslations('common')
   // The workshop's own zone and formats, so the server's render and the
   // browser's agree instead of each printing its own clock.
   const { formatDate, formatDateTime } = useFormatDate()
@@ -46,14 +49,15 @@ export function SharedLinkCard({
     }
   }
 
+  // A refusal leaves the link working, and a request that got no answer may
+  // or may not have revoked it, so the card says the revoke could not be
+  // confirmed rather than letting the workshop think the link is gone.
   const handleRevoke = async () => {
-    if (!onRevoke) return
+    if (!onRevoke || revoking) return
     setRevoking(true)
-    try {
-      await onRevoke()
-    } finally {
-      setRevoking(false)
-    }
+    const revoked = await onRevoke().catch(() => false)
+    if (!revoked) toast.error(tc('shareLink.revokeFailed'))
+    setRevoking(false)
   }
 
   const hasViews = viewCount > 0

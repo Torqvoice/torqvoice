@@ -459,7 +459,19 @@
     "copyLink": "Kopiuj link",
     "copied": "Link skopiowany do schowka",
     "generated": "Link do udostępniania utworzony",
-    "revoked": "Link do udostępniania wycofany"
+    "revoked": "Link do udostępniania wycofany",
+    "notifyTitle": "Powiadom {name}",
+    "email": "E-mail",
+    "noEmail": "(brak adresu e-mail)",
+    "sms": "SMS",
+    "noPhone": "(brak numeru telefonu)",
+    "sendNotification": "Wyślij powiadomienie",
+    "revokeLink": "Unieważnij link",
+    "generateLink": "Wygeneruj publiczny link",
+    "emailSent": "E-mail wysłany",
+    "failedEmail": "Nie udało się wysłać e-maila",
+    "smsSent": "SMS wysłany",
+    "failedSms": "Nie udało się wysłać SMS-a"
   },
   "phone": {
     "pageTitle": "Zdjęcia do przeglądu",

@@ -256,8 +256,9 @@ export function QuotePageClient({
     [state]
   )
   const handleRevoke = useCallback(async () => {
-    await revokeQuotePublicLink(quote.id)
-    router.refresh()
+    const result = await revokeQuotePublicLink(quote.id)
+    if (result.success) router.refresh()
+    return result.success
   }, [quote.id, router])
 
   // A locked quote offers no editing, rather than letting someone retype a

@@ -48,6 +48,7 @@ export function ShareDialog({
   emailEnabled = false,
 }: ShareDialogProps) {
   const t = useTranslations('service.share')
+  const tc = useTranslations('common')
   const [publicToken, setPublicToken] = useState<string | null>(initialToken)
   const [generatingLink, setGeneratingLink] = useState(false)
   const [revoking, setRevoking] = useState(false)
@@ -65,26 +66,34 @@ export function ShareDialog({
       ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/invoice/${organizationId}/${publicToken}`
       : null
 
+  // An action that cannot reach the server throws instead of answering, so
+  // both of these catch it and say the same thing a refusal does.
   const handleGenerate = async () => {
     setGeneratingLink(true)
-    const result = await generatePublicLink(recordId)
-    if (result.success && result.data) {
+    const result = await generatePublicLink(recordId).catch(() => null)
+    if (result?.success && result.data) {
       setPublicToken(result.data.token)
       // Handing over a link is a way of sending the invoice.
       onSent?.()
+    } else {
+      toast.error(tc('shareLink.generateFailed'))
     }
     setGeneratingLink(false)
   }
 
+  // The link stays on screen until the server has revoked it: clearing it on
+  // a refusal would tell the workshop it is gone while the customer's copy
+  // still opens the invoice.
   const handleRevoke = async () => {
     if (revoking) return
     setRevoking(true)
-    try {
-      await revokePublicLink(recordId)
+    const result = await revokePublicLink(recordId).catch(() => null)
+    if (result?.success) {
       setPublicToken(null)
-    } finally {
-      setRevoking(false)
+    } else {
+      toast.error(tc('shareLink.revokeFailed'))
     }
+    setRevoking(false)
   }
 
   const handleCopy = () => {
