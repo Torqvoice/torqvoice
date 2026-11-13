@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Checked against the registry {date}",
     "notRegistered": "Not registered",
     "soldReported": "Customer reported sold {date}",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Add photo",
+    "ownedBy": "Owned by <link>{name}</link>",
+    "predictedToday": "About {value} {unit} today",
+    "statVisits": "Visits",
+    "lastVisit": "Last on {date}",
+    "noVisits": "None yet",
+    "statSpend": "Lifetime spend",
+    "averageVisit": "Average {amount} a visit",
+    "statFindings": "Open observations",
+    "findingsHigh": "{count, plural, one {# marked high} other {# marked high}}",
+    "findingsNone": "Nothing open",
+    "noOpenFindings": "No open observations",
+    "viewAll": "View all",
+    "specifications": "Specifications"
   },
   "quotes": {
     "newQuote": "New Quote",

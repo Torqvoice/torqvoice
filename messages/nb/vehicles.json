@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Sjekket mot registeret {date}",
     "notRegistered": "Avregistrert",
     "soldReported": "Kunden meldte solgt {date}",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Legg til bilde",
+    "ownedBy": "Eies av <link>{name}</link>",
+    "predictedToday": "Ca. {value} {unit} i dag",
+    "statVisits": "Besøk",
+    "lastVisit": "Sist {date}",
+    "noVisits": "Ingen ennå",
+    "statSpend": "Totalt brukt",
+    "averageVisit": "I snitt {amount} per besøk",
+    "statFindings": "Åpne observasjoner",
+    "findingsHigh": "{count, plural, one {# merket høy} other {# merket høy}}",
+    "findingsNone": "Ingen åpne",
+    "noOpenFindings": "Ingen åpne observasjoner",
+    "viewAll": "Vis alle",
+    "specifications": "Tekniske data"
   },
   "quotes": {
     "newQuote": "Nytt tilbud",

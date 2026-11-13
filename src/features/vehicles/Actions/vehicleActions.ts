@@ -97,7 +97,21 @@ export async function getVehicle(vehicleId: string) {
       // Missing or foreign-org vehicle yields null rather than an error: the
       // page renders its not-found state, and this also runs during the
       // post-delete re-render of the vehicle route.
-      return vehicle
+      if (!vehicle) return vehicle
+
+      // What the vehicle has cost over all its work orders. `serviceRecords`
+      // above holds only the ten most recent, and the page used to add those
+      // up, so a car with a longer history showed less than it had spent.
+      const spend = await db.serviceRecord.findMany({
+        where: { vehicleId: vehicle.id, vehicle: { organizationId } },
+        select: { totalAmount: true, cost: true },
+      })
+      const lifetimeSpend = spend.reduce(
+        (sum, r) => sum + (r.totalAmount > 0 ? r.totalAmount : r.cost),
+        0
+      )
+
+      return { ...vehicle, lifetimeSpend }
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],

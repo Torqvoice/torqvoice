@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Patikrinta registre {date}",
     "notRegistered": "Neregistruota",
     "soldReported": "Klientas pranešė pardavęs {date}",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Pridėti nuotrauką",
+    "ownedBy": "Savininkas: <link>{name}</link>",
+    "predictedToday": "Šiandien apie {value} {unit}",
+    "statVisits": "Apsilankymai",
+    "lastVisit": "Paskutinis {date}",
+    "noVisits": "Dar nėra",
+    "statSpend": "Iš viso išleista",
+    "averageVisit": "Vidutiniškai {amount} per apsilankymą",
+    "statFindings": "Atviri pastebėjimai",
+    "findingsHigh": "{count, plural, one {# aukštos svarbos} few {# aukštos svarbos} many {# aukštos svarbos} other {# aukštos svarbos}}",
+    "findingsNone": "Atvirų nėra",
+    "noOpenFindings": "Atvirų pastebėjimų nėra",
+    "viewAll": "Peržiūrėti visus",
+    "specifications": "Techniniai duomenys"
   },
   "quotes": {
     "newQuote": "Naujas pasiūlymas",

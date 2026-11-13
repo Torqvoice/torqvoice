@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Проверено в реестре {date}",
     "notRegistered": "Не зарегистрирован",
     "soldReported": "Клиент сообщил о продаже {date}",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Добавить фото",
+    "ownedBy": "Владелец: <link>{name}</link>",
+    "predictedToday": "Сегодня около {value} {unit}",
+    "statVisits": "Визиты",
+    "lastVisit": "Последний {date}",
+    "noVisits": "Пока нет",
+    "statSpend": "Всего потрачено",
+    "averageVisit": "В среднем {amount} за визит",
+    "statFindings": "Открытые наблюдения",
+    "findingsHigh": "{count, plural, one {# высокой серьёзности} few {# высокой серьёзности} many {# высокой серьёзности} other {# высокой серьёзности}}",
+    "findingsNone": "Открытых нет",
+    "noOpenFindings": "Нет открытых наблюдений",
+    "viewAll": "Показать все",
+    "specifications": "Характеристики"
   },
   "quotes": {
     "newQuote": "Новое предложение",

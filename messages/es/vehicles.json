@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Comprobado en el registro el {date}",
     "notRegistered": "Sin matricular",
     "soldReported": "El cliente indicó venta el {date}",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Añadir foto",
+    "ownedBy": "Propiedad de <link>{name}</link>",
+    "predictedToday": "Unos {value} {unit} hoy",
+    "statVisits": "Visitas",
+    "lastVisit": "Última el {date}",
+    "noVisits": "Ninguna aún",
+    "statSpend": "Gasto total",
+    "averageVisit": "Promedio de {amount} por visita",
+    "statFindings": "Observaciones abiertas",
+    "findingsHigh": "{count, plural, one {# marcada como alta} other {# marcadas como alta}}",
+    "findingsNone": "Ninguna abierta",
+    "noOpenFindings": "No hay observaciones abiertas",
+    "viewAll": "Ver todo",
+    "specifications": "Especificaciones"
   },
   "quotes": {
     "newQuote": "Nueva cotización",

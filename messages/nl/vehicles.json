@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Gecontroleerd bij het register op {date}",
     "notRegistered": "Niet geregistreerd",
     "soldReported": "Klant meldde verkocht op {date}",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Foto toevoegen",
+    "ownedBy": "Eigendom van <link>{name}</link>",
+    "predictedToday": "Vandaag ongeveer {value} {unit}",
+    "statVisits": "Bezoeken",
+    "lastVisit": "Laatst op {date}",
+    "noVisits": "Nog geen",
+    "statSpend": "Totaal besteed",
+    "averageVisit": "Gemiddeld {amount} per bezoek",
+    "statFindings": "Open observaties",
+    "findingsHigh": "{count, plural, one {# gemarkeerd als hoog} other {# gemarkeerd als hoog}}",
+    "findingsNone": "Niets open",
+    "noOpenFindings": "Geen open observaties",
+    "viewAll": "Alles bekijken",
+    "specifications": "Specificaties"
   },
   "quotes": {
     "newQuote": "Nieuwe offerte",

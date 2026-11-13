@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Sicilde {date} tarihinde kontrol edildi",
     "notRegistered": "Kayıtlı değil",
     "soldReported": "Müşteri {date} tarihinde satıldığını bildirdi",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Fotoğraf ekle",
+    "ownedBy": "Sahibi: <link>{name}</link>",
+    "predictedToday": "Bugün yaklaşık {value} {unit}",
+    "statVisits": "Ziyaretler",
+    "lastVisit": "Son: {date}",
+    "noVisits": "Henüz yok",
+    "statSpend": "Toplam harcama",
+    "averageVisit": "Ziyaret başına ortalama {amount}",
+    "statFindings": "Açık gözlemler",
+    "findingsHigh": "{count, plural, one {# yüksek olarak işaretli} other {# yüksek olarak işaretli}}",
+    "findingsNone": "Açık gözlem yok",
+    "noOpenFindings": "Açık gözlem bulunmuyor",
+    "viewAll": "Tümünü gör",
+    "specifications": "Teknik özellikler"
   },
   "quotes": {
     "newQuote": "Yeni teklif",

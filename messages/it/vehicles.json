@@ -102,7 +102,21 @@
     "inspectionCheckedAt": "Verificato nel registro il {date}",
     "notRegistered": "Non immatricolato",
     "soldReported": "Vendita segnalata dal cliente il {date}",
-    "typeKey": "HSN/TSN"
+    "typeKey": "HSN/TSN",
+    "addPhoto": "Aggiungi foto",
+    "ownedBy": "Di proprietà di <link>{name}</link>",
+    "predictedToday": "Circa {value} {unit} oggi",
+    "statVisits": "Visite",
+    "lastVisit": "Ultima il {date}",
+    "noVisits": "Ancora nessuna",
+    "statSpend": "Spesa totale",
+    "averageVisit": "In media {amount} a visita",
+    "statFindings": "Osservazioni aperte",
+    "findingsHigh": "{count, plural, one {# con gravità alta} other {# con gravità alta}}",
+    "findingsNone": "Nessuna aperta",
+    "noOpenFindings": "Nessuna osservazione aperta",
+    "viewAll": "Vedi tutto",
+    "specifications": "Specifiche tecniche"
   },
   "quotes": {
     "newQuote": "Nuovo preventivo",

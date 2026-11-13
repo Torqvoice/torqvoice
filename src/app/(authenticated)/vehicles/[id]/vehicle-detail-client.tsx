@@ -57,6 +57,9 @@ import { useFormatCurrency } from '@/components/currency-settings-context'
 import {
   AlertTriangle,
   Archive,
+  Camera,
+  ChevronRight,
+  Ship,
   ArchiveRestore,
   ArrowLeft,
   Bell,
@@ -64,19 +67,15 @@ import {
   CheckCircle2,
   ClipboardCheck,
   Clock,
-  DollarSign,
   EyeOff,
   FileText,
   Sparkles,
-  Gauge,
   Loader2,
   MoreVertical,
   Pencil,
   Pin,
   Plus,
-  StickyNote,
   Trash2,
-  TrendingUp,
   Undo2,
   Wrench,
   X,
@@ -106,6 +105,10 @@ import { useServiceType } from '@/components/service-type-context'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { sanitizeHtml } from '@/lib/sanitize-html'
+import { PlateChip } from '@/components/plate-chip'
+import { StatusLamp, type LampTone } from '@/components/status-lamp'
+import { cn } from '@/lib/utils'
+import type { ReactNode } from 'react'
 
 interface PaginatedServices {
   records: {
@@ -207,7 +210,12 @@ interface VehicleDetail {
     id: string
     cost: number
     totalAmount: number
+    serviceDate?: Date
+    startDateTime?: Date | null
+    invoiceDate?: Date | null
   }[]
+  /** Every work order added up; `serviceRecords` holds only the latest ten. */
+  lifetimeSpend?: number
   reminders: {
     id: string
     title: string
@@ -281,6 +289,133 @@ function InspectionProgress({
   )
 }
 
+/** The underline tab of this page: label and count, a line in the brand colour under the open one. */
+const TAB_TRIGGER =
+  'group/tab h-auto flex-none gap-2 rounded-none border-0 px-0 pb-3 pt-1 text-[13.5px] data-[state=active]:bg-transparent data-[state=active]:shadow-none dark:data-[state=active]:bg-transparent group-data-[orientation=horizontal]/tabs:after:bottom-[-1px] after:bg-primary'
+
+function TabCount({ count, alert = false }: { count: number; alert?: boolean }) {
+  if (count <= 0) return null
+  return (
+    <span
+      className={cn(
+        'min-w-5 rounded-full border px-1.5 font-mono text-[10.5px] leading-[18px] tabular-nums',
+        alert
+          ? 'border-destructive/30 bg-destructive/10 text-destructive'
+          : 'border-border bg-muted/60 text-muted-foreground group-data-[state=active]/tab:border-foreground group-data-[state=active]/tab:bg-foreground group-data-[state=active]/tab:text-background'
+      )}
+    >
+      {count}
+    </span>
+  )
+}
+
+/** One of the figures under the vehicle's name: a label, a big number, a line of context. */
+function Figure({
+  label,
+  value,
+  unit,
+  className,
+  children,
+}: {
+  label: string
+  value: string
+  unit?: string
+  className?: string
+  children?: ReactNode
+}) {
+  return (
+    <div className={cn('flex min-w-0 flex-col gap-1.5 px-5 py-4', className)}>
+      <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+        {label}
+      </dt>
+      <dd className="truncate font-display text-2xl font-semibold leading-none tracking-tight tabular-nums">
+        {value}
+        {unit && <span className="ml-1 text-sm font-medium text-muted-foreground">{unit}</span>}
+      </dd>
+      {children && <dd className="text-xs text-muted-foreground">{children}</dd>}
+    </div>
+  )
+}
+
+/** A card in the column beside the tabs: a heading, an optional action, the list, a footer link. */
+function SideCard({
+  title,
+  meta,
+  action,
+  footer,
+  children,
+}: {
+  title: string
+  meta?: string
+  action?: ReactNode
+  footer?: ReactNode
+  children: ReactNode
+}) {
+  return (
+    <section className="overflow-hidden rounded-xl border bg-card">
+      <header className="flex min-h-12 items-center gap-2 border-b px-4 py-2">
+        <h2 className="font-display text-[15px] font-semibold tracking-tight">{title}</h2>
+        {meta && <span className="truncate text-xs text-muted-foreground">{meta}</span>}
+        {action && <div className="ml-auto flex shrink-0 items-center gap-0.5">{action}</div>}
+      </header>
+      {children}
+      {footer && <div className="border-t px-4 py-2.5">{footer}</div>}
+    </section>
+  )
+}
+
+const SEVERITY_TAG: Record<string, string> = {
+  urgent: 'bg-red-500/10 text-red-700 dark:text-red-400',
+  needs_work: 'bg-amber-500/15 text-amber-800 dark:text-amber-300',
+  monitor: 'bg-muted text-muted-foreground',
+}
+
+function findingTone(severity: string): LampTone {
+  if (severity === 'urgent') return 'red'
+  if (severity === 'needs_work') return 'amber'
+  return 'slate'
+}
+
+/** Overdue is red, inside thirty days amber, further out a plain grey. */
+function inspectionTone(dueAt: Date): LampTone {
+  const left = new Date(dueAt).getTime() - Date.now()
+  if (left < 0) return 'red'
+  if (left < 30 * 86_400_000) return 'amber'
+  return 'slate'
+}
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
+}
+
+const FUEL_VALUES = new Set(['gasoline', 'diesel', 'electric', 'hybrid', 'other'])
+const TRANSMISSION_VALUES = new Set(['automatic', 'manual', 'cvt'])
+
+type CommonIssue = {
+  title: string
+  description: string
+  cost: string
+  risk: string
+  severity?: number
+}
+
+/** The stored common-issues answer: the list, the raw text if it is not JSON, or null. */
+function parseCommonIssues(content: string | undefined): CommonIssue[] | string | null {
+  if (!content) return null
+  try {
+    const raw = content.replace(/^```json?\n?|\n?```$/g, '').trim()
+    const parsed = JSON.parse(raw)
+    return Array.isArray(parsed) ? (parsed as CommonIssue[]) : content
+  } catch {
+    return content
+  }
+}
+
 export function VehicleDetailClient({
   vehicle,
   paginatedServices,
@@ -349,6 +484,9 @@ export function VehicleDetailClient({
   const tQuoteStatus = useTranslations('quotes.statusLabels')
   const tf = useTranslations('vehicles.findings')
   const tErr = useTranslations('common.errors')
+  const tServices = useTranslations('vehicles.services')
+  const tPlate = useTranslations('vehicles.plateLookup')
+  const tForm = useTranslations('vehicles.form')
   const validTabs = ['services', 'quotes', 'inspections', 'findings', 'notes', 'reminders'] as const
   const tabParam = searchParams.get('tab')
   const activeTab = validTabs.includes(tabParam as (typeof validTabs)[number])
@@ -398,7 +536,7 @@ export function VehicleDetailClient({
   const [isDismissPending, startDismissTransition] = useTransition()
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false)
   const [commonIssuesLoading, setCommonIssuesLoading] = useState(false)
-  const [activeAiPanel, setActiveAiPanel] = useState<'summary' | 'issues' | null>(null)
+  const [activeAiPanel, setActiveAiPanel] = useState<'summary' | null>(null)
 
   const storedSummary = vehicle.aiMessages.find((m) => m.type === AI_MESSAGE_TYPES.SUMMARY)
   const storedCommonIssues = vehicle.aiMessages.find(
@@ -451,10 +589,61 @@ export function VehicleDetailClient({
     failCount: insp.items.filter((i) => i.condition === 'fail').length,
   }))
 
-  const totalServiceCost = vehicle.serviceRecords.reduce(
-    (sum, s) => sum + (s.totalAmount > 0 ? s.totalAmount : s.cost),
-    0
+  const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+  const VehicleIcon = isMarine ? Ship : Car
+
+  // Without a lifetime total from the server, the latest ten are the best guess.
+  const lifetimeSpend =
+    vehicle.lifetimeSpend ??
+    vehicle.serviceRecords.reduce((sum, s) => sum + (s.totalAmount > 0 ? s.totalAmount : s.cost), 0)
+
+  // The latest visit that has happened: a booking later this week is not "last".
+  // A visit is the booked start, else the day the job was made, as in the timeline.
+  const lastVisit =
+    vehicle.serviceRecords
+      .flatMap((r) => (r.serviceDate ? [new Date(r.startDateTime ?? r.serviceDate)] : []))
+      .filter((d) => d <= now)
+      .sort((a, b) => b.getTime() - a.getTime())[0] ?? null
+
+  const openFindings = paginatedFindings.records.filter((f) => f.status === 'open')
+  const highFindings = openFindings.filter((f) => f.severity === 'urgent').length
+  const activeReminders = vehicle.reminders.filter((r) => !r.isCompleted)
+
+  const optionLabel = (value: string | null, known: Set<string>) => {
+    if (!value) return null
+    const key = value.toLowerCase()
+    return known.has(key) ? tForm(key as Parameters<typeof tForm>[0]) : value
+  }
+  const fuelLabel = optionLabel(vehicle.fuelType, FUEL_VALUES)
+  const transmissionLabel = optionLabel(vehicle.transmission, TRANSMISSION_VALUES)
+  const specLine = [vehicle.engineSize, fuelLabel, transmissionLabel, vehicle.color].filter(
+    (part): part is string => Boolean(part)
   )
+  const specs = (
+    [
+      [tPlate('engine'), vehicle.engineSize, false],
+      [tPlate('engineCode'), vehicle.engineCode, true],
+      [tPlate('fuel'), fuelLabel, false],
+      [tPlate('transmission'), transmissionLabel, false],
+      [tPlate('color'), vehicle.color, false],
+      [
+        t('typeKey'),
+        typeKeyEnabled && (vehicle.hsn || vehicle.tsn)
+          ? formatTypeKey(vehicle.hsn, vehicle.tsn)
+          : null,
+        true,
+      ],
+    ] as [string, string | null, boolean][]
+  ).filter(([, value]) => Boolean(value))
+
+  const commonIssues = parseCommonIssues(storedCommonIssues?.content)
+  const severityLabel = (s: number) => {
+    if (s >= 5) return t('severityVeryCommon')
+    if (s >= 4) return t('severityCommon')
+    if (s >= 3) return t('severityModerate')
+    if (s >= 2) return t('severityUncommon')
+    return t('severityRare')
+  }
 
   const handleDeleteNote = async (id: string) => {
     const result = await deleteNote(id)
@@ -562,7 +751,6 @@ export function VehicleDetailClient({
   }
 
   const handleCommonIssues = async () => {
-    setActiveAiPanel('issues')
     setCommonIssuesLoading(true)
     try {
       const result = await aiGetCommonIssues(vehicle.id)
@@ -582,7 +770,7 @@ export function VehicleDetailClient({
     try {
       const result = await aiClearMessage(vehicle.id, type)
       if (result.success) {
-        setActiveAiPanel(null)
+        if (type === AI_MESSAGE_TYPES.SUMMARY) setActiveAiPanel(null)
         router.refresh()
       }
     } catch {
@@ -619,354 +807,343 @@ export function VehicleDetailClient({
         </div>
       )}
 
-      {/* Header */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <Link
-            href={backHref}
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {rawBack ? tc('back') : t('backToVehicles')}
-          </Link>
-          <div className="flex items-center gap-2">
-            {!vehicle.isArchived && (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setShowEditForm(true)}
-                aria-label={t('editVehicle')}
-                title={t('editVehicle')}
-                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
-              >
-                <Pencil className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-                <span className="hidden md:inline">{t('editVehicle')}</span>
-              </Button>
-            )}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                {vehicle.isArchived ? (
-                  <DropdownMenuItem onClick={handleUnarchive}>
-                    <ArchiveRestore className="mr-2 h-4 w-4" />
-                    {t('unarchive')}
-                  </DropdownMenuItem>
-                ) : (
-                  <DropdownMenuItem onClick={() => setShowArchiveDialog(true)}>
-                    <Archive className="mr-2 h-4 w-4" />
-                    {t('archive')}
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => setShowDeleteDialog(true)}
-                >
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  {t('delete')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
+      {rawBack && (
+        <Link
+          href={backHref}
+          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          {tc('back')}
+        </Link>
+      )}
 
-        <div className="flex items-center gap-3">
-          {vehicle.imageUrl ? (
-            <button
-              onClick={() => setShowImage(true)}
-              className="h-11 w-11 overflow-hidden rounded-xl cursor-zoom-in shrink-0"
-            >
-              <img src={vehicle.imageUrl} alt="" className="h-full w-full object-cover" />
-            </button>
-          ) : (
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
-              <Car className="h-5 w-5 text-primary" />
-            </div>
-          )}
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <h1 className="text-lg font-bold leading-tight">
-                {vehicle.year} {vehicle.make} {vehicle.model}
-              </h1>
-              <div className="flex min-w-0 flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                {vehicle.licensePlate && <span className="font-mono">{vehicle.licensePlate}</span>}
-                {vehicle.vin && (
-                  <>
-                    {vehicle.licensePlate && <span>&middot;</span>}
-                    <span className="font-mono">{vehicle.vin}</span>
-                  </>
-                )}
-                {vehicle.engineCode && (
-                  <>
-                    {(vehicle.licensePlate || vehicle.vin) && <span>&middot;</span>}
-                    <span className="font-mono">{vehicle.engineCode}</span>
-                  </>
-                )}
-                {typeKeyEnabled && (vehicle.hsn || vehicle.tsn) && (
-                  <>
-                    {(vehicle.licensePlate || vehicle.vin || vehicle.engineCode) && (
-                      <span>&middot;</span>
-                    )}
-                    <span>
-                      {t('typeKey')}{' '}
-                      <span className="font-mono">{formatTypeKey(vehicle.hsn, vehicle.tsn)}</span>
-                    </span>
-                  </>
+      {/* Hero: the vehicle at a glance */}
+      <section className="overflow-hidden rounded-xl border bg-card">
+        <div className="grid md:grid-cols-[16rem_minmax(0,1fr)] xl:grid-cols-[18.5rem_minmax(0,1fr)]">
+          <div className="p-3 md:pr-0">
+            {vehicle.imageUrl ? (
+              <button
+                type="button"
+                onClick={() => setShowImage(true)}
+                className="group block h-48 w-full cursor-zoom-in overflow-hidden rounded-lg bg-muted md:h-full md:min-h-52"
+              >
+                <img
+                  src={vehicle.imageUrl}
+                  alt={vehicleName}
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                />
+              </button>
+            ) : (
+              <div className="relative flex h-40 w-full items-center justify-center rounded-lg bg-muted md:h-full md:min-h-52">
+                <VehicleIcon className="h-20 w-20 text-muted-foreground/25" strokeWidth={1.1} />
+                {!vehicle.isArchived && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="absolute bottom-2.5 left-2.5 h-8 bg-card/90 backdrop-blur"
+                    onClick={() => setShowEditForm(true)}
+                  >
+                    <Camera className="mr-1.5 h-3.5 w-3.5" />
+                    {t('addPhoto')}
+                  </Button>
                 )}
               </div>
-            </div>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5">
-              {vehicle.fuelType && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                  {vehicle.fuelType}
-                </Badge>
-              )}
-              {vehicle.transmission && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                  {vehicle.transmission}
-                </Badge>
-              )}
-              {vehicle.engineSize && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                  {vehicle.engineSize}
-                </Badge>
-              )}
-              {vehicle.color && (
-                <Badge variant="secondary" className="text-xs px-1.5 py-0">
-                  {vehicle.color}
-                </Badge>
-              )}
-              {vehicle.inspectionStatus?.dueAt && (
-                <Badge
-                  variant="outline"
-                  className={`text-xs px-1.5 py-0 ${
-                    new Date(vehicle.inspectionStatus.dueAt).getTime() < Date.now()
-                      ? 'border-destructive/40 text-destructive'
-                      : new Date(vehicle.inspectionStatus.dueAt).getTime() - Date.now() <
-                          30 * 86_400_000
-                        ? 'border-amber-500/40 text-amber-700 dark:text-amber-400'
-                        : ''
-                  }`}
-                  title={
-                    vehicle.inspectionStatus.checkedAt
-                      ? t('inspectionCheckedAt', {
-                          date: formatDate(vehicle.inspectionStatus.checkedAt),
-                        })
-                      : undefined
-                  }
-                >
-                  {t('inspectionDue', { date: formatDate(vehicle.inspectionStatus.dueAt) })}
-                </Badge>
-              )}
-              {vehicle.soldReportedAt && (
-                <Badge
-                  variant="outline"
-                  className="text-xs px-1.5 py-0 border-amber-500/40 text-amber-700 dark:text-amber-400"
-                >
-                  {t('soldReported', { date: formatDate(vehicle.soldReportedAt) })}
-                </Badge>
-              )}
-              {vehicle.inspectionStatus?.registered === false && (
-                <Badge
-                  variant="outline"
-                  className="text-xs px-1.5 py-0 border-destructive/40 text-destructive"
-                >
-                  {t('notRegistered')}
-                </Badge>
-              )}
-              {vehicle.customer && (
-                <>
-                  <span className="text-muted-foreground/40">|</span>
-                  <Link
-                    href={`/customers/${vehicle.customer.id}`}
-                    className="text-xs font-medium hover:underline"
-                  >
-                    {vehicle.customer.name}
-                  </Link>
-                  {vehicle.customer.company && (
-                    <span className="text-xs text-muted-foreground">
-                      {vehicle.customer.company}
+            )}
+          </div>
+
+          <div className="flex min-w-0 flex-col">
+            <div className="flex flex-col gap-4 px-5 pb-5 pt-4 md:pt-5 xl:flex-row xl:items-start">
+              <div className="min-w-0 flex-1 space-y-3">
+                {(vehicle.licensePlate ||
+                  vehicle.inspectionStatus?.dueAt ||
+                  vehicle.soldReportedAt ||
+                  vehicle.inspectionStatus?.registered === false) && (
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                    {vehicle.licensePlate && <PlateChip plate={vehicle.licensePlate} size="lg" />}
+                    {vehicle.inspectionStatus?.dueAt && (
+                      <span
+                        title={
+                          vehicle.inspectionStatus.checkedAt
+                            ? t('inspectionCheckedAt', {
+                                date: formatDate(vehicle.inspectionStatus.checkedAt),
+                              })
+                            : undefined
+                        }
+                      >
+                        <StatusLamp tone={inspectionTone(vehicle.inspectionStatus.dueAt)}>
+                          {t('inspectionDue', { date: formatDate(vehicle.inspectionStatus.dueAt) })}
+                        </StatusLamp>
+                      </span>
+                    )}
+                    {vehicle.soldReportedAt && (
+                      <StatusLamp tone="amber">
+                        {t('soldReported', { date: formatDate(vehicle.soldReportedAt) })}
+                      </StatusLamp>
+                    )}
+                    {vehicle.inspectionStatus?.registered === false && (
+                      <StatusLamp tone="red">{t('notRegistered')}</StatusLamp>
+                    )}
+                  </div>
+                )}
+
+                <h1 className="font-display text-[26px] font-semibold leading-[1.1] tracking-tight sm:text-[30px]">
+                  {vehicleName}
+                </h1>
+
+                {(specLine.length > 0 || vehicle.vin) && (
+                  <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+                    {specLine.map((part, i) => (
+                      <span key={part} className="inline-flex items-center gap-2">
+                        {i > 0 && <span aria-hidden className="size-0.5 rounded-full bg-current" />}
+                        {part}
+                      </span>
+                    ))}
+                    {vehicle.vin && (
+                      <span className="inline-flex items-center gap-2">
+                        {specLine.length > 0 && (
+                          <span aria-hidden className="size-0.5 rounded-full bg-current" />
+                        )}
+                        <span className="font-mono text-[13px] tracking-wide">{vehicle.vin}</span>
+                      </span>
+                    )}
+                  </p>
+                )}
+
+                <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm">
+                  {vehicle.customer ? (
+                    <span className="inline-flex min-w-0 items-center gap-2">
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-muted text-[10px] font-semibold text-muted-foreground">
+                        {initials(vehicle.customer.name)}
+                      </span>
+                      <span className="truncate text-muted-foreground">
+                        {t.rich('ownedBy', {
+                          name: vehicle.customer.name,
+                          link: (chunks) => (
+                            <Link
+                              href={`/customers/${vehicle.customer?.id}`}
+                              className="font-medium text-foreground underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
+                            >
+                              {chunks}
+                            </Link>
+                          ),
+                        })}
+                      </span>
+                      {vehicle.customer.company && (
+                        <span className="inline-flex min-w-0 items-center gap-2 text-muted-foreground">
+                          <span aria-hidden className="size-0.5 shrink-0 rounded-full bg-current" />
+                          <span className="truncate">{vehicle.customer.company}</span>
+                        </span>
+                      )}
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">{tPlate('noOwner')}</span>
+                  )}
+                  <VehicleTireSets sets={tireSets} />
+                  {vehicle.purchaseDate && (
+                    <span className="text-muted-foreground">
+                      {t('purchased', { date: formatDate(new Date(vehicle.purchaseDate)) })}
                     </span>
                   )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+                </div>
+              </div>
 
-        {/* Quick stats */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Gauge className="h-3.5 w-3.5" />
-            <span className="font-semibold text-foreground">
-              {vehicle.mileage.toLocaleString()}
-            </span>
-            <span className="text-xs">{distUnit}</span>
-          </div>
-          {predictionData && (
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="flex cursor-help items-center gap-1.5">
-                      <TrendingUp className="h-3.5 w-3.5" />
-                      <span className="text-xs">
-                        {isMarine
-                          ? t('predictedHours')
-                          : unitSystem === 'metric'
-                            ? t('predictedKm')
-                            : t('predictedMileage')}
-                      </span>
-                      <span className="font-semibold text-foreground">
-                        ~{predictionData.predictedMileage.toLocaleString()}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground/70">
-                        ({predictionData.confidencePercent}%)
-                      </span>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p className="max-w-xs text-xs">{t('predictedTooltip')}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              {predictionData.status && predictionData.maintenanceDismissed ? (
-                <>
-                  <Badge variant="outline" className="text-[10px] ml-1 text-muted-foreground">
-                    <EyeOff className="mr-0.5 h-3 w-3" />
-                    {t('dismissed')}
-                  </Badge>
+              <div className="flex flex-wrap items-center gap-2 xl:justify-end">
+                {aiEnabled && (
+                  <AskAiSheet
+                    subject={{ type: 'vehicle', id: vehicle.id }}
+                    title={vehicleName}
+                    className="h-9"
+                  />
+                )}
+                {!vehicle.isArchived && (
                   <Button
-                    variant="ghost"
                     size="sm"
-                    className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
-                    disabled={isDismissPending}
-                    onClick={handleUndismissMaintenance}
+                    variant="outline"
+                    onClick={() => setShowEditForm(true)}
+                    aria-label={t('editVehicle')}
+                    title={t('editVehicle')}
+                    className="h-9 w-9 p-0 md:w-auto md:px-3"
                   >
-                    {isDismissPending ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
+                    <Pencil className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                    <span className="hidden md:inline">{t('editVehicle')}</span>
+                  </Button>
+                )}
+                {!vehicle.isArchived && (
+                  // Ink, not the brand colour: the sidebar already carries the
+                  // amber "new work order", and one amber per screen is the rule.
+                  <Button
+                    asChild
+                    size="sm"
+                    className="h-9 bg-foreground text-background hover:bg-foreground/85 max-sm:order-last max-sm:basis-full"
+                  >
+                    <Link href={`/vehicles/${vehicle.id}/service/new`}>
+                      <Plus className="mr-1 h-4 w-4" />
+                      {t('newWorkOrder')}
+                    </Link>
+                  </Button>
+                )}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-9 w-9"
+                      aria-label={t('openMenu')}
+                    >
+                      <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    {aiEnabled && vehicle._count.serviceRecords > 0 && (
                       <>
-                        <Undo2 className="mr-0.5 h-3 w-3" />
-                        {t('undo')}
+                        <DropdownMenuItem
+                          onClick={() =>
+                            setActiveAiPanel(activeAiPanel === 'summary' ? null : 'summary')
+                          }
+                        >
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          {t('aiSummary')}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                       </>
                     )}
-                  </Button>
-                </>
-              ) : (
-                <>
-                  {predictionData.status === 'overdue' && (
-                    <>
-                      <Badge variant="destructive" className="text-[10px] ml-1">
-                        {t('serviceOverdue')}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
-                        disabled={isDismissPending}
-                        onClick={handleDismissMaintenance}
-                        aria-label={t('dismissMaintenance')}
-                      >
-                        {isDismissPending ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <X className="h-3 w-3" />
-                        )}
-                      </Button>
-                    </>
-                  )}
-                  {predictionData.status === 'approaching' && (
-                    <>
-                      <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] ml-1">
-                        {t('serviceSoon')}
-                      </Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
-                        disabled={isDismissPending}
-                        onClick={handleDismissMaintenance}
-                        aria-label={t('dismissMaintenance')}
-                      >
-                        {isDismissPending ? (
-                          <Loader2 className="h-3 w-3 animate-spin" />
-                        ) : (
-                          <X className="h-3 w-3" />
-                        )}
-                      </Button>
-                    </>
-                  )}
-                </>
-              )}
+                    {vehicle.isArchived ? (
+                      <DropdownMenuItem onClick={handleUnarchive}>
+                        <ArchiveRestore className="mr-2 h-4 w-4" />
+                        {t('unarchive')}
+                      </DropdownMenuItem>
+                    ) : (
+                      <DropdownMenuItem onClick={() => setShowArchiveDialog(true)}>
+                        <Archive className="mr-2 h-4 w-4" />
+                        {t('archive')}
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-destructive"
+                      onClick={() => setShowDeleteDialog(true)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      {t('delete')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-          )}
-          <VehicleTireSets sets={tireSets} />
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <Wrench className="h-3.5 w-3.5" />
-            <span className="font-semibold text-foreground">{vehicle._count.serviceRecords}</span>
-            <span className="text-xs">{t('services')}</span>
-          </div>
-          <div className="flex items-center gap-1.5 text-muted-foreground">
-            <DollarSign className="h-3.5 w-3.5" />
-            <span className="font-semibold text-foreground">
-              {formatCurrency(totalServiceCost, currencyCode)}
-            </span>
-          </div>
-          {vehicle.purchaseDate && (
-            <div className="flex items-center gap-1.5 text-muted-foreground">
-              <span className="text-xs">
-                {t('purchased', { date: formatDate(new Date(vehicle.purchaseDate)) })}
-              </span>
-            </div>
-          )}
-          {aiEnabled && (
-            <AskAiSheet
-              subject={{ type: 'vehicle', id: vehicle.id }}
-              title={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
-              className="h-7 text-xs"
-            />
-          )}
-          {aiEnabled && (
-            <div className="flex items-center rounded-md border">
-              {vehicle._count.serviceRecords > 0 && (
-                <Button
-                  variant={activeAiPanel === 'summary' ? 'secondary' : 'ghost'}
-                  size="sm"
-                  className="h-7 gap-1.5 text-xs rounded-r-none border-r"
-                  onClick={() => setActiveAiPanel(activeAiPanel === 'summary' ? null : 'summary')}
-                  disabled={aiSummaryLoading}
-                >
-                  {aiSummaryLoading ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="h-3.5 w-3.5" />
-                  )}
-                  {t('aiSummary')}
-                </Button>
-              )}
-              <Button
-                variant={activeAiPanel === 'issues' ? 'secondary' : 'ghost'}
-                size="sm"
-                className={`h-7 gap-1.5 text-xs ${vehicle._count.serviceRecords > 0 ? 'rounded-l-none' : ''}`}
-                onClick={() => setActiveAiPanel(activeAiPanel === 'issues' ? null : 'issues')}
-                disabled={commonIssuesLoading}
+
+            {/* The four figures a workshop asks about first. */}
+            <dl className="mt-auto grid grid-cols-2 border-t md:grid-cols-4">
+              <Figure
+                className=""
+                label={isMarine ? tServices('table.mileageMarine') : tServices('table.mileage')}
+                value={vehicle.mileage.toLocaleString()}
+                unit={distUnit}
               >
-                {commonIssuesLoading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <AlertTriangle className="h-3.5 w-3.5" />
+                {predictionData && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="cursor-help underline decoration-dotted decoration-muted-foreground/50 underline-offset-2">
+                          {t('predictedToday', {
+                            value: predictionData.predictedMileage.toLocaleString(),
+                            unit: distUnit,
+                          })}
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="max-w-xs text-xs">
+                          {t('predictedTooltip')} ({predictionData.confidencePercent}%)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
-                {t('commonIssues')}
-              </Button>
-            </div>
-          )}
+                {predictionData?.status && predictionData.maintenanceDismissed ? (
+                  <span className="mt-1.5 flex items-center gap-1.5">
+                    <EyeOff className="h-3 w-3" />
+                    {t('dismissed')}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-5 px-1.5 text-[11px] text-muted-foreground hover:text-foreground"
+                      disabled={isDismissPending}
+                      onClick={handleUndismissMaintenance}
+                    >
+                      {isDismissPending ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <>
+                          <Undo2 className="mr-0.5 h-3 w-3" />
+                          {t('undo')}
+                        </>
+                      )}
+                    </Button>
+                  </span>
+                ) : (
+                  (predictionData?.status === 'overdue' ||
+                    predictionData?.status === 'approaching') && (
+                    <span className="mt-1.5 flex items-center gap-1">
+                      <StatusLamp
+                        tone={predictionData.status === 'overdue' ? 'red' : 'amber'}
+                        className="text-xs"
+                      >
+                        {predictionData.status === 'overdue'
+                          ? t('serviceOverdue')
+                          : t('serviceSoon')}
+                      </StatusLamp>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                        disabled={isDismissPending}
+                        onClick={handleDismissMaintenance}
+                        aria-label={t('dismissMaintenance')}
+                      >
+                        {isDismissPending ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <X className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </span>
+                  )
+                )}
+              </Figure>
+              <Figure
+                className="border-l"
+                label={t('statVisits')}
+                value={String(vehicle._count.serviceRecords)}
+              >
+                {lastVisit ? t('lastVisit', { date: formatDate(lastVisit) }) : t('noVisits')}
+              </Figure>
+              <Figure
+                className="border-t md:border-l md:border-t-0"
+                label={t('statSpend')}
+                value={formatCurrency(lifetimeSpend, currencyCode)}
+              >
+                {vehicle._count.serviceRecords > 0 &&
+                  t('averageVisit', {
+                    amount: formatCurrency(
+                      lifetimeSpend / vehicle._count.serviceRecords,
+                      currencyCode
+                    ),
+                  })}
+              </Figure>
+              <Figure
+                className="border-l border-t md:border-t-0"
+                label={t('statFindings')}
+                value={String(vehicle._count.findings)}
+              >
+                {highFindings > 0
+                  ? t('findingsHigh', { count: highFindings })
+                  : vehicle._count.findings === 0
+                    ? t('findingsNone')
+                    : null}
+              </Figure>
+            </dl>
+          </div>
         </div>
-      </div>
+      </section>
 
       {/* AI Summary Panel */}
       {activeAiPanel === 'summary' && aiEnabled && (
@@ -1125,133 +1302,6 @@ export function VehicleDetailClient({
         </Card>
       )}
 
-      {/* Common Issues Panel */}
-      {activeAiPanel === 'issues' && aiEnabled && (
-        <Card className="py-0 gap-0 overflow-hidden">
-          <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 text-amber-500" />
-              <h3 className="text-sm font-semibold">
-                {t('commonIssuesTitle', { make: vehicle.make, model: vehicle.model })}
-              </h3>
-              {storedCommonIssues && (
-                <span className="text-[11px] text-muted-foreground">
-                  {t('aiSummaryUpdated', {
-                    date: formatDate(new Date(storedCommonIssues.updatedAt)),
-                  })}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-7 gap-1.5 text-xs"
-                onClick={handleCommonIssues}
-                disabled={commonIssuesLoading}
-              >
-                {commonIssuesLoading ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <AlertTriangle className="h-3.5 w-3.5" />
-                )}
-                {storedCommonIssues ? t('aiSummaryRegenerate') : t('aiSummaryGenerate')}
-              </Button>
-              {storedCommonIssues && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
-                  onClick={() => handleClearAiMessage(AI_MESSAGE_TYPES.COMMON_ISSUES)}
-                >
-                  <X className="h-3.5 w-3.5" />
-                </Button>
-              )}
-            </div>
-          </div>
-          <div className="divide-y">
-            {commonIssuesLoading && !storedCommonIssues ? (
-              <div className="flex items-center justify-center py-6">
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-              </div>
-            ) : storedCommonIssues ? (
-              (() => {
-                let issues: {
-                  title: string
-                  description: string
-                  cost: string
-                  risk: string
-                  severity?: number
-                }[] = []
-                try {
-                  const raw = storedCommonIssues.content.replace(/^```json?\n?|\n?```$/g, '').trim()
-                  issues = JSON.parse(raw)
-                } catch {
-                  return (
-                    <div className="px-4 py-3 text-sm text-muted-foreground whitespace-pre-wrap">
-                      {storedCommonIssues.content}
-                    </div>
-                  )
-                }
-                const riskColor: Record<string, string> = {
-                  safety: 'bg-red-500/10 text-red-600 border-red-500/20',
-                  engine: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
-                  transmission: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-                  electrical: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-                  other: 'bg-gray-500/10 text-gray-600 border-gray-500/20',
-                }
-                const severityBarColor = (s: number) =>
-                  s >= 4 ? 'bg-red-500' : s >= 3 ? 'bg-amber-500' : 'bg-yellow-400'
-                const severityLabel = (s: number) => {
-                  if (s >= 5) return t('severityVeryCommon')
-                  if (s >= 4) return t('severityCommon')
-                  if (s >= 3) return t('severityModerate')
-                  if (s >= 2) return t('severityUncommon')
-                  return t('severityRare')
-                }
-                return issues.map((issue, i) => {
-                  const sev = Math.max(1, Math.min(5, issue.severity ?? 3))
-                  return (
-                    <div key={i} className="flex gap-3 px-4 py-3">
-                      <div
-                        className="flex flex-col items-center gap-0.5 pt-1 cursor-help"
-                        title={severityLabel(sev)}
-                      >
-                        {Array.from({ length: 5 }).map((_, j) => (
-                          <div
-                            key={j}
-                            className={`w-1.5 h-1.5 rounded-full ${4 - j < sev ? severityBarColor(sev) : 'bg-muted-foreground/20'}`}
-                          />
-                        ))}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-sm font-semibold">{issue.title}</span>
-                          <Badge
-                            variant="outline"
-                            className={`text-[10px] px-1.5 py-0 ${riskColor[issue.risk] || riskColor.other}`}
-                          >
-                            {issue.risk}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-0.5">{issue.description}</p>
-                        <span className="text-xs font-medium text-foreground/70 mt-1 inline-block">
-                          {issue.cost}
-                        </span>
-                      </div>
-                    </div>
-                  )
-                })
-              })()
-            ) : (
-              <div className="px-4 py-3">
-                <p className="text-sm text-muted-foreground italic">{t('commonIssuesEmpty')}</p>
-              </div>
-            )}
-          </div>
-        </Card>
-      )}
-
       {/* Recalls, owner complaints and crash rating for this model year. */}
       {safetyAvailable && !isMarine && (
         <VehicleSafetyPanel
@@ -1263,502 +1313,719 @@ export function VehicleDetailClient({
         />
       )}
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-6">
-          <TabsTrigger value="services" className="gap-1.5">
-            <Wrench className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t('tabs.services')}</span>
-            {vehicle._count.serviceRecords > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
-                {vehicle._count.serviceRecords}
-              </Badge>
-            )}
+      {/* Tabs, with the vehicle's open items in a column beside them */}
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="gap-5">
+        <TabsList
+          variant="line"
+          className="scrollbar-none h-auto w-full justify-start gap-6 overflow-x-auto rounded-none border-b p-0 group-data-[orientation=horizontal]/tabs:h-auto"
+        >
+          <TabsTrigger value="services" className={TAB_TRIGGER}>
+            {t('tabs.services')}
+            <TabCount count={vehicle._count.serviceRecords} />
           </TabsTrigger>
-          <TabsTrigger value="quotes" className="gap-1.5">
-            <FileText className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t('tabs.quotes')}</span>
-            {quotes.length > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
-                {quotes.length}
-              </Badge>
-            )}
+          <TabsTrigger value="quotes" className={TAB_TRIGGER}>
+            {t('tabs.quotes')}
+            <TabCount count={quotes.length} />
           </TabsTrigger>
-          <TabsTrigger value="inspections" className="gap-1.5">
-            <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t('tabs.inspections')}</span>
-            {inspections && inspections.length > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
-                {inspections.length}
-              </Badge>
-            )}
+          <TabsTrigger value="inspections" className={TAB_TRIGGER}>
+            {t('tabs.inspections')}
+            <TabCount count={inspections?.length ?? 0} />
           </TabsTrigger>
-          <TabsTrigger value="findings" className="gap-1.5">
-            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t('tabs.findings')}</span>
-            {vehicle._count.findings > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
-                {vehicle._count.findings}
-              </Badge>
-            )}
+          <TabsTrigger value="findings" className={TAB_TRIGGER}>
+            {t('tabs.findings')}
+            <TabCount count={vehicle._count.findings} />
           </TabsTrigger>
-          <TabsTrigger value="notes" className="gap-1.5">
-            <StickyNote className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t('tabs.notes')}</span>
-            {vehicle._count.notes > 0 && (
-              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
-                {vehicle._count.notes}
-              </Badge>
-            )}
+          <TabsTrigger value="notes" className={TAB_TRIGGER}>
+            {t('tabs.notes')}
+            <TabCount count={vehicle._count.notes} />
           </TabsTrigger>
-          <TabsTrigger value="reminders" className="gap-1.5">
-            <Bell className="h-3.5 w-3.5 shrink-0" />
-            <span className="hidden sm:inline">{t('tabs.reminders')}</span>
+          <TabsTrigger value="reminders" className={TAB_TRIGGER}>
+            {t('tabs.reminders')}
             {overdueCount > 0 ? (
-              <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
-                {overdueCount}
-              </Badge>
-            ) : vehicle._count.reminders > 0 ? (
-              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
-                {vehicle._count.reminders}
-              </Badge>
-            ) : null}
+              <TabCount count={overdueCount} alert />
+            ) : (
+              <TabCount count={vehicle._count.reminders} />
+            )}
           </TabsTrigger>
         </TabsList>
 
-        {/* Services Tab - React Table with pagination */}
-        <TabsContent value="services" forceMount>
-          <ServiceRecordsTable
-            vehicleId={vehicle.id}
-            records={paginatedServices.records}
-            total={paginatedServices.total}
-            page={paginatedServices.page}
-            pageSize={paginatedServices.pageSize}
-            totalPages={paginatedServices.totalPages}
-            search={serviceSearch}
-            type={serviceRecordType}
-            currencyCode={currencyCode}
-            vehicleMileage={vehicle.mileage}
-          />
-        </TabsContent>
+        <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_21rem]">
+          <div className="min-w-0">
+            {/* Services Tab - React Table with pagination */}
+            <TabsContent value="services" forceMount>
+              <ServiceRecordsTable
+                vehicleId={vehicle.id}
+                records={paginatedServices.records}
+                total={paginatedServices.total}
+                page={paginatedServices.page}
+                pageSize={paginatedServices.pageSize}
+                totalPages={paginatedServices.totalPages}
+                search={serviceSearch}
+                type={serviceRecordType}
+                currencyCode={currencyCode}
+                vehicleMileage={vehicle.mileage}
+                distUnit={distUnit}
+              />
+            </TabsContent>
 
-        {/* Quotes Tab */}
-        <TabsContent value="quotes" className="space-y-4">
-          <div className="flex justify-end">
-            <Button
-              size="sm"
-              onClick={() => setShowNewQuoteDialog(true)}
-              aria-label={tq('newQuote')}
-              title={tq('newQuote')}
-              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
-            >
-              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-              <span className="hidden md:inline">{tq('newQuote')}</span>
-            </Button>
-          </div>
-          <NewQuoteDialog
-            open={showNewQuoteDialog}
-            onOpenChange={setShowNewQuoteDialog}
-            defaultVehicle={{
-              id: vehicle.id,
-              make: vehicle.make,
-              model: vehicle.model,
-              year: vehicle.year,
-              licensePlate: vehicle.licensePlate,
-              customerId: vehicle.customerId,
-              customer: vehicle.customer
-                ? { id: vehicle.customer.id, name: vehicle.customer.name }
-                : null,
-            }}
-            defaultCustomer={
-              vehicle.customer
-                ? {
-                    id: vehicle.customer.id,
-                    name: vehicle.customer.name,
-                    company: vehicle.customer.company,
-                  }
-                : null
-            }
-          />
-
-          {quotes.length === 0 ? (
-            <Card className="border-dashed">
-              <CardContent className="flex flex-col items-center py-12">
-                <FileText className="mb-3 h-10 w-10 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">{tq('empty')}</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {/* Card list (phones + small tablets) */}
-              <div className="space-y-2 md:hidden">
-                {quotes.map((q) => (
-                  <button
-                    key={q.id}
-                    type="button"
-                    onClick={() => router.push(`/quotes/${q.id}`)}
-                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
-                      <span className="shrink-0 font-semibold">
-                        {formatCurrency(q.totalAmount, currencyCode)}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${quoteStatusColors[q.status] || ''}`}
-                      >
-                        {quoteStatusLabel(q.status, tQuoteStatus)}
-                      </Badge>
-                      {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
-                      <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
-                    </div>
-                  </button>
-                ))}
+            {/* Quotes Tab */}
+            <TabsContent value="quotes" className="space-y-4">
+              <div className="flex justify-end">
+                <Button
+                  size="sm"
+                  onClick={() => setShowNewQuoteDialog(true)}
+                  aria-label={tq('newQuote')}
+                  title={tq('newQuote')}
+                  className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+                >
+                  <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                  <span className="hidden md:inline">{tq('newQuote')}</span>
+                </Button>
               </div>
+              <NewQuoteDialog
+                open={showNewQuoteDialog}
+                onOpenChange={setShowNewQuoteDialog}
+                defaultVehicle={{
+                  id: vehicle.id,
+                  make: vehicle.make,
+                  model: vehicle.model,
+                  year: vehicle.year,
+                  licensePlate: vehicle.licensePlate,
+                  customerId: vehicle.customerId,
+                  customer: vehicle.customer
+                    ? { id: vehicle.customer.id, name: vehicle.customer.name }
+                    : null,
+                }}
+                defaultCustomer={
+                  vehicle.customer
+                    ? {
+                        id: vehicle.customer.id,
+                        name: vehicle.customer.name,
+                        company: vehicle.customer.company,
+                      }
+                    : null
+                }
+              />
 
-              {/* Table (md and up) */}
-              <div className="hidden rounded-lg border md:block" {...quotesNav.containerProps}>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-25">{tq('columnNumber')}</TableHead>
-                      <TableHead>{tq('columnTitle')}</TableHead>
-                      <TableHead className="w-27.5">{tq('columnStatus')}</TableHead>
-                      <TableHead className="w-24">{tq('columnDate')}</TableHead>
-                      <TableHead className="w-22.5 text-right">{tq('columnTotal')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+              {quotes.length === 0 ? (
+                <Card className="border-dashed">
+                  <CardContent className="flex flex-col items-center py-12">
+                    <FileText className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                    <p className="text-sm text-muted-foreground">{tq('empty')}</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <>
+                  {/* Card list (phones + small tablets) */}
+                  <div className="space-y-2 md:hidden">
                     {quotes.map((q) => (
-                      <TableRow
+                      <button
                         key={q.id}
-                        className="cursor-pointer"
-                        {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
+                        type="button"
+                        onClick={() => router.push(`/quotes/${q.id}`)}
+                        className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
                       >
-                        <TableCell className="font-mono text-xs text-muted-foreground">
-                          {q.quoteNumber || '-'}
-                        </TableCell>
-                        <TableCell className="font-medium">{q.title}</TableCell>
-                        <TableCell>
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
+                          <span className="shrink-0 font-semibold">
+                            {formatCurrency(q.totalAmount, currencyCode)}
+                          </span>
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
                           <Badge
                             variant="outline"
-                            className={`max-w-full whitespace-normal text-center text-xs leading-tight ${quoteStatusColors[q.status] || ''}`}
+                            className={`text-xs ${quoteStatusColors[q.status] || ''}`}
                           >
                             {quoteStatusLabel(q.status, tQuoteStatus)}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-muted-foreground">
-                          {formatDate(new Date(q.createdAt))}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">
-                          {formatCurrency(q.totalAmount, currencyCode)}
-                        </TableCell>
-                      </TableRow>
+                          {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
+                          <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
+                        </div>
+                      </button>
                     ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </>
-          )}
-        </TabsContent>
+                  </div>
 
-        {/* Inspections Tab */}
-        <TabsContent value="inspections" className="space-y-4">
-          <div className="flex justify-end">
-            <Button
-              size="sm"
-              onClick={() => setShowNewInspection(true)}
-              aria-label={ti('newInspection')}
-              title={ti('newInspection')}
-              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
-            >
-              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-              <span className="hidden md:inline">{ti('newInspection')}</span>
-            </Button>
-          </div>
+                  {/* Table (md and up) */}
+                  <div className="hidden rounded-lg border md:block" {...quotesNav.containerProps}>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-25">{tq('columnNumber')}</TableHead>
+                          <TableHead>{tq('columnTitle')}</TableHead>
+                          <TableHead className="w-27.5">{tq('columnStatus')}</TableHead>
+                          <TableHead className="w-24">{tq('columnDate')}</TableHead>
+                          <TableHead className="w-22.5 text-right">{tq('columnTotal')}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {quotes.map((q) => (
+                          <TableRow
+                            key={q.id}
+                            className="cursor-pointer"
+                            {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
+                          >
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {q.quoteNumber || '-'}
+                            </TableCell>
+                            <TableCell className="font-medium">{q.title}</TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={`max-w-full whitespace-normal text-center text-xs leading-tight ${quoteStatusColors[q.status] || ''}`}
+                              >
+                                {quoteStatusLabel(q.status, tQuoteStatus)}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {formatDate(new Date(q.createdAt))}
+                            </TableCell>
+                            <TableCell className="text-right font-semibold">
+                              {formatCurrency(q.totalAmount, currencyCode)}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </>
+              )}
+            </TabsContent>
 
-          {!inspections || inspections.length === 0 ? (
-            <Card className="border-dashed">
-              <CardContent className="flex flex-col items-center py-12">
-                <ClipboardCheck className="mb-3 h-10 w-10 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">{ti('empty')}</p>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {/* Card list (phones + small tablets) */}
-              <div className="space-y-2 md:hidden">
-                {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
-                  <button
-                    key={insp.id}
-                    type="button"
-                    onClick={() => router.push(`/inspections/${insp.id}`)}
-                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="min-w-0 flex-1 truncate font-medium">
-                        {insp.template.name}
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className={`shrink-0 text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
-                      >
-                        {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
-                      </Badge>
-                    </div>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
-                      <InspectionProgress
-                        total={total}
-                        inspected={inspected}
-                        passCount={passCount}
-                        failCount={failCount}
-                      />
-                      <span className="font-mono text-xs text-muted-foreground">
-                        {formatDate(new Date(insp.createdAt))}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+            {/* Inspections Tab */}
+            <TabsContent value="inspections" className="space-y-4">
+              <div className="flex justify-end">
+                <Button
+                  size="sm"
+                  onClick={() => setShowNewInspection(true)}
+                  aria-label={ti('newInspection')}
+                  title={ti('newInspection')}
+                  className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+                >
+                  <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                  <span className="hidden md:inline">{ti('newInspection')}</span>
+                </Button>
               </div>
 
-              {/* Table (md and up) */}
-              <div className="hidden rounded-lg border md:block" {...inspectionsNav.containerProps}>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>{ti('template')}</TableHead>
-                      <TableHead className="w-32">{ti('progress')}</TableHead>
-                      <TableHead className="w-28">{ti('status')}</TableHead>
-                      <TableHead className="w-24">{ti('date')}</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
+              {!inspections || inspections.length === 0 ? (
+                <Card className="border-dashed">
+                  <CardContent className="flex flex-col items-center py-12">
+                    <ClipboardCheck className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                    <p className="text-sm text-muted-foreground">{ti('empty')}</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <>
+                  {/* Card list (phones + small tablets) */}
+                  <div className="space-y-2 md:hidden">
                     {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
-                      <TableRow
+                      <button
                         key={insp.id}
-                        className="cursor-pointer"
-                        {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
+                        type="button"
+                        onClick={() => router.push(`/inspections/${insp.id}`)}
+                        className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
                       >
-                        <TableCell className="font-medium">{insp.template.name}</TableCell>
-                        <TableCell>
+                        <div className="flex items-start justify-between gap-3">
+                          <span className="min-w-0 flex-1 truncate font-medium">
+                            {insp.template.name}
+                          </span>
+                          <Badge
+                            variant="outline"
+                            className={`shrink-0 text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                          >
+                            {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
+                          </Badge>
+                        </div>
+                        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
                           <InspectionProgress
                             total={total}
                             inspected={inspected}
                             passCount={passCount}
                             failCount={failCount}
                           />
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
-                          >
-                            {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="font-mono text-xs text-muted-foreground">
-                          {formatDate(new Date(insp.createdAt))}
-                        </TableCell>
-                      </TableRow>
+                          <span className="font-mono text-xs text-muted-foreground">
+                            {formatDate(new Date(insp.createdAt))}
+                          </span>
+                        </div>
+                      </button>
                     ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </>
-          )}
-        </TabsContent>
+                  </div>
 
-        {/* Findings Tab */}
-        <TabsContent value="findings" forceMount>
-          <FindingsTable
-            vehicleId={vehicle.id}
-            records={paginatedFindings.records}
-            total={paginatedFindings.total}
-            page={paginatedFindings.page}
-            pageSize={paginatedFindings.pageSize}
-            totalPages={paginatedFindings.totalPages}
-            onAddFinding={() => {
-              setEditingFinding(undefined)
-              setShowFindingForm(true)
-            }}
-            onEditFinding={(f) => {
-              setEditingFinding(f)
-              setShowFindingForm(true)
-            }}
-            onDeleteFinding={handleDeleteFinding}
-            onCreateWorkOrder={handleCreateWorkOrderFromFindings}
-            isCreatingWorkOrder={creatingWorkOrder}
-          />
-        </TabsContent>
+                  {/* Table (md and up) */}
+                  <div
+                    className="hidden rounded-lg border md:block"
+                    {...inspectionsNav.containerProps}
+                  >
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>{ti('template')}</TableHead>
+                          <TableHead className="w-32">{ti('progress')}</TableHead>
+                          <TableHead className="w-28">{ti('status')}</TableHead>
+                          <TableHead className="w-24">{ti('date')}</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
+                          <TableRow
+                            key={insp.id}
+                            className="cursor-pointer"
+                            {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
+                          >
+                            <TableCell className="font-medium">{insp.template.name}</TableCell>
+                            <TableCell>
+                              <InspectionProgress
+                                total={total}
+                                inspected={inspected}
+                                passCount={passCount}
+                                failCount={failCount}
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant="outline"
+                                className={`text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                              >
+                                {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="font-mono text-xs text-muted-foreground">
+                              {formatDate(new Date(insp.createdAt))}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </>
+              )}
+            </TabsContent>
 
-        {/* Notes Tab */}
-        <TabsContent value="notes" forceMount>
-          <NotesTable
-            vehicleId={vehicle.id}
-            records={paginatedNotes.records}
-            total={paginatedNotes.total}
-            page={paginatedNotes.page}
-            pageSize={paginatedNotes.pageSize}
-            totalPages={paginatedNotes.totalPages}
-            onSelectNote={setSelectedNote}
-            onAddNote={() => {
-              setEditingNote(undefined)
-              setShowNoteForm(true)
-            }}
-            onTogglePin={handleTogglePin}
-            onDeleteNote={handleDeleteNote}
-          />
-        </TabsContent>
+            {/* Findings Tab */}
+            <TabsContent value="findings" forceMount>
+              <FindingsTable
+                vehicleId={vehicle.id}
+                records={paginatedFindings.records}
+                total={paginatedFindings.total}
+                page={paginatedFindings.page}
+                pageSize={paginatedFindings.pageSize}
+                totalPages={paginatedFindings.totalPages}
+                onAddFinding={() => {
+                  setEditingFinding(undefined)
+                  setShowFindingForm(true)
+                }}
+                onEditFinding={(f) => {
+                  setEditingFinding(f)
+                  setShowFindingForm(true)
+                }}
+                onDeleteFinding={handleDeleteFinding}
+                onCreateWorkOrder={handleCreateWorkOrderFromFindings}
+                isCreatingWorkOrder={creatingWorkOrder}
+              />
+            </TabsContent>
 
-        {/* Reminders Tab */}
-        <TabsContent value="reminders" className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex gap-1 rounded-lg border p-1">
-              {(['active', 'completed', 'all'] as const).map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setReminderFilter(f)}
-                  className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
-                    reminderFilter === f
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+            {/* Notes Tab */}
+            <TabsContent value="notes" forceMount>
+              <NotesTable
+                vehicleId={vehicle.id}
+                records={paginatedNotes.records}
+                total={paginatedNotes.total}
+                page={paginatedNotes.page}
+                pageSize={paginatedNotes.pageSize}
+                totalPages={paginatedNotes.totalPages}
+                onSelectNote={setSelectedNote}
+                onAddNote={() => {
+                  setEditingNote(undefined)
+                  setShowNoteForm(true)
+                }}
+                onTogglePin={handleTogglePin}
+                onDeleteNote={handleDeleteNote}
+              />
+            </TabsContent>
+
+            {/* Reminders Tab */}
+            <TabsContent value="reminders" className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex gap-1 rounded-lg border p-1">
+                  {(['active', 'completed', 'all'] as const).map((f) => (
+                    <button
+                      key={f}
+                      onClick={() => setReminderFilter(f)}
+                      className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                        reminderFilter === f
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {tr(f)}
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setEditingReminder(undefined)
+                    setShowReminderForm(true)
+                  }}
+                  aria-label={tr('addReminder')}
+                  title={tr('addReminder')}
+                  className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
                 >
-                  {tr(f)}
-                </button>
-              ))}
-            </div>
-            <Button
-              size="sm"
-              onClick={() => {
-                setEditingReminder(undefined)
-                setShowReminderForm(true)
-              }}
-              aria-label={tr('addReminder')}
-              title={tr('addReminder')}
-              className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
-            >
-              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-              <span className="hidden md:inline">{tr('addReminder')}</span>
-            </Button>
+                  <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                  <span className="hidden md:inline">{tr('addReminder')}</span>
+                </Button>
+              </div>
+
+              {filteredReminders.length === 0 ? (
+                <Card className="border-dashed">
+                  <CardContent className="flex flex-col items-center py-12">
+                    <Bell className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                    <p className="text-sm text-muted-foreground">
+                      {reminderFilter === 'active'
+                        ? tr('emptyActive')
+                        : reminderFilter === 'completed'
+                          ? tr('emptyCompleted')
+                          : tr('empty')}
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-3">
+                  {filteredReminders.map((r) => {
+                    const urgency = getUrgency(r)
+                    return (
+                      <Card
+                        key={r.id}
+                        className={`${
+                          urgency === 'overdue'
+                            ? 'ring-1 ring-red-500/30'
+                            : urgency === 'due-soon'
+                              ? 'ring-1 ring-amber-500/30'
+                              : ''
+                        }`}
+                      >
+                        <CardContent className="flex items-start justify-between gap-2 p-4">
+                          <div className="flex min-w-0 flex-1 items-start gap-3">
+                            <button
+                              onClick={() => handleToggleReminder(r.id)}
+                              className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                                r.isCompleted
+                                  ? 'border-primary bg-primary/10'
+                                  : 'border-primary/50 hover:bg-primary/10'
+                              }`}
+                              aria-label={r.title}
+                            >
+                              {r.isCompleted && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                            </button>
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p
+                                  className={`font-medium ${r.isCompleted ? 'line-through text-muted-foreground' : ''}`}
+                                >
+                                  {r.title}
+                                </p>
+                                {urgency === 'overdue' && (
+                                  <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                                    <AlertTriangle className="mr-0.5 h-3 w-3" />
+                                    {tr('overdue')}
+                                  </Badge>
+                                )}
+                                {urgency === 'due-soon' && (
+                                  <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] px-1.5 py-0">
+                                    <Clock className="mr-0.5 h-3 w-3" />
+                                    {tr('dueSoon')}
+                                  </Badge>
+                                )}
+                              </div>
+                              <p className="text-xs text-muted-foreground">
+                                {r.dueDate &&
+                                  tr('due', {
+                                    date: r.hasDueTime
+                                      ? formatDateTime(new Date(r.dueDate))
+                                      : formatDate(new Date(r.dueDate)),
+                                  })}
+                                {r.dueMileage &&
+                                  `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
+                              </p>
+                              {r.description && (
+                                <p className="mt-1 text-xs text-muted-foreground">
+                                  {r.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-9 w-9 shrink-0 md:h-7 md:w-7"
+                                aria-label={t('openMenu')}
+                              >
+                                <MoreVertical className="h-4 w-4 md:h-3.5 md:w-3.5" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setEditingReminder(r)
+                                  setShowReminderForm(true)
+                                }}
+                              >
+                                <Pencil className="mr-2 h-4 w-4" />
+                                {tc('edit')}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-destructive"
+                                onClick={() => handleDeleteReminder(r.id)}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                {tc('delete')}
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </CardContent>
+                      </Card>
+                    )
+                  })}
+                </div>
+              )}
+            </TabsContent>
           </div>
 
-          {filteredReminders.length === 0 ? (
-            <Card className="border-dashed">
-              <CardContent className="flex flex-col items-center py-12">
-                <Bell className="mb-3 h-10 w-10 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">
-                  {reminderFilter === 'active'
-                    ? tr('emptyActive')
-                    : reminderFilter === 'completed'
-                      ? tr('emptyCompleted')
-                      : tr('empty')}
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {filteredReminders.map((r) => {
-                const urgency = getUrgency(r)
-                return (
-                  <Card
-                    key={r.id}
-                    className={`${
-                      urgency === 'overdue'
-                        ? 'ring-1 ring-red-500/30'
-                        : urgency === 'due-soon'
-                          ? 'ring-1 ring-amber-500/30'
-                          : ''
-                    }`}
+          <aside className="flex min-w-0 flex-col gap-5">
+            {/* The tab that lists these in full hides its own card. */}
+            {activeTab !== 'findings' && (
+              <SideCard
+                title={t('statFindings')}
+                action={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground"
+                    aria-label={tf('addFinding')}
+                    title={tf('addFinding')}
+                    onClick={() => {
+                      setEditingFinding(undefined)
+                      setShowFindingForm(true)
+                    }}
                   >
-                    <CardContent className="flex items-start justify-between gap-2 p-4">
-                      <div className="flex min-w-0 flex-1 items-start gap-3">
-                        <button
-                          onClick={() => handleToggleReminder(r.id)}
-                          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
-                            r.isCompleted
-                              ? 'border-primary bg-primary/10'
-                              : 'border-primary/50 hover:bg-primary/10'
-                          }`}
-                          aria-label={r.title}
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                }
+                footer={
+                  openFindings.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => handleTabChange('findings')}
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {t('viewAll')}
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  ) : null
+                }
+              >
+                {openFindings.length === 0 ? (
+                  <p className="px-4 py-5 text-sm text-muted-foreground">{t('noOpenFindings')}</p>
+                ) : (
+                  <ul className="divide-y">
+                    {openFindings.slice(0, 4).map((f) => (
+                      <li key={f.id} className="flex items-start gap-3 px-4 py-3">
+                        <StatusLamp tone={findingTone(f.severity)} className="mt-[7px]" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium leading-snug">{f.description}</p>
+                          <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                            {formatDate(new Date(f.createdAt))}
+                            {f.serviceRecord ? ` · ${f.serviceRecord.title}` : ''}
+                          </p>
+                        </div>
+                        <span
+                          className={cn(
+                            'mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[11px] font-semibold',
+                            SEVERITY_TAG[f.severity] ?? SEVERITY_TAG.monitor
+                          )}
                         >
-                          {r.isCompleted && <CheckCircle2 className="h-5 w-5 text-primary" />}
-                        </button>
-                        <div className="min-w-0">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <p
-                              className={`font-medium ${r.isCompleted ? 'line-through text-muted-foreground' : ''}`}
-                            >
-                              {r.title}
+                          {tf(
+                            `severity.${f.severity}` as
+                              | 'severity.urgent'
+                              | 'severity.needs_work'
+                              | 'severity.monitor'
+                          )}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </SideCard>
+            )}
+
+            {activeTab !== 'reminders' && (
+              <SideCard
+                title={t('tabs.reminders')}
+                action={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground"
+                    aria-label={tr('addReminder')}
+                    title={tr('addReminder')}
+                    onClick={() => {
+                      setEditingReminder(undefined)
+                      setShowReminderForm(true)
+                    }}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                }
+                footer={
+                  activeReminders.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => handleTabChange('reminders')}
+                      className="inline-flex items-center gap-1 text-[13px] font-medium text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      {t('viewAll')}
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  ) : null
+                }
+              >
+                {activeReminders.length === 0 ? (
+                  <p className="px-4 py-5 text-sm text-muted-foreground">{tr('emptyActive')}</p>
+                ) : (
+                  <ul className="divide-y">
+                    {activeReminders.slice(0, 3).map((r) => {
+                      const urgency = getUrgency(r)
+                      return (
+                        <li key={r.id} className="flex items-start gap-3 px-4 py-3">
+                          <StatusLamp
+                            tone={
+                              urgency === 'overdue'
+                                ? 'red'
+                                : urgency === 'due-soon'
+                                  ? 'amber'
+                                  : 'slate'
+                            }
+                            className="mt-[7px]"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium leading-snug">{r.title}</p>
+                            <p className="mt-0.5 text-xs text-muted-foreground">
+                              {r.dueDate &&
+                                tr('due', {
+                                  date: r.hasDueTime
+                                    ? formatDateTime(new Date(r.dueDate))
+                                    : formatDate(new Date(r.dueDate)),
+                                })}
+                              {r.dueMileage &&
+                                `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
                             </p>
-                            {urgency === 'overdue' && (
-                              <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                                <AlertTriangle className="mr-0.5 h-3 w-3" />
-                                {tr('overdue')}
-                              </Badge>
-                            )}
-                            {urgency === 'due-soon' && (
-                              <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] px-1.5 py-0">
-                                <Clock className="mr-0.5 h-3 w-3" />
-                                {tr('dueSoon')}
-                              </Badge>
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </SideCard>
+            )}
+
+            {specs.length > 0 && (
+              <SideCard title={t('specifications')}>
+                <dl className="grid grid-cols-[6.5rem_minmax(0,1fr)] gap-x-3 gap-y-2.5 px-4 py-4 text-sm">
+                  {specs.map(([label, value, mono]) => (
+                    <div key={label} className="contents">
+                      <dt className="text-muted-foreground">{label}</dt>
+                      <dd className={cn('min-w-0 break-words', mono && 'font-mono text-[13px]')}>
+                        {value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </SideCard>
+            )}
+
+            {aiEnabled && (
+              <SideCard
+                title={t('commonIssues')}
+                meta={
+                  storedCommonIssues
+                    ? t('aiSummaryUpdated', {
+                        date: formatDate(new Date(storedCommonIssues.updatedAt)),
+                      })
+                    : undefined
+                }
+                action={
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 gap-1.5 px-2 text-xs text-muted-foreground"
+                      onClick={handleCommonIssues}
+                      disabled={commonIssuesLoading}
+                    >
+                      {commonIssuesLoading ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3.5 w-3.5" />
+                      )}
+                      {storedCommonIssues ? t('aiSummaryRegenerate') : t('aiSummaryGenerate')}
+                    </Button>
+                    {storedCommonIssues && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                        aria-label={tc('delete')}
+                        title={tc('delete')}
+                        onClick={() => handleClearAiMessage(AI_MESSAGE_TYPES.COMMON_ISSUES)}
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                    )}
+                  </>
+                }
+              >
+                {commonIssuesLoading && !storedCommonIssues ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : commonIssues === null ? (
+                  <p className="px-4 py-5 text-sm text-muted-foreground">
+                    {t('commonIssuesEmpty')}
+                  </p>
+                ) : typeof commonIssues === 'string' ? (
+                  <p className="whitespace-pre-wrap px-4 py-4 text-sm text-muted-foreground">
+                    {commonIssues}
+                  </p>
+                ) : (
+                  <ul className="divide-y">
+                    {commonIssues.map((issue, i) => {
+                      const sev = Math.max(1, Math.min(5, issue.severity ?? 3))
+                      return (
+                        <li key={i} className="flex items-start gap-3 px-4 py-3">
+                          <span title={severityLabel(sev)} className="mt-[7px]">
+                            <StatusLamp tone={sev >= 4 ? 'red' : sev >= 3 ? 'amber' : 'slate'} />
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium leading-snug">{issue.title}</p>
+                            <p className="mt-0.5 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+                              {issue.description}
+                            </p>
+                            {(issue.risk || issue.cost) && (
+                              <p className="mt-1 text-[11px] font-medium text-foreground/70">
+                                {[issue.risk, issue.cost].filter(Boolean).join(' · ')}
+                              </p>
                             )}
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {r.dueDate &&
-                              tr('due', {
-                                date: r.hasDueTime
-                                  ? formatDateTime(new Date(r.dueDate))
-                                  : formatDate(new Date(r.dueDate)),
-                              })}
-                            {r.dueMileage &&
-                              `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
-                          </p>
-                          {r.description && (
-                            <p className="mt-1 text-xs text-muted-foreground">{r.description}</p>
-                          )}
-                        </div>
-                      </div>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 shrink-0 md:h-7 md:w-7"
-                            aria-label={t('openMenu')}
-                          >
-                            <MoreVertical className="h-4 w-4 md:h-3.5 md:w-3.5" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setEditingReminder(r)
-                              setShowReminderForm(true)
-                            }}
-                          >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            {tc('edit')}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => handleDeleteReminder(r.id)}
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            {tc('delete')}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </CardContent>
-                  </Card>
-                )
-              })}
-            </div>
-          )}
-        </TabsContent>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+              </SideCard>
+            )}
+          </aside>
+        </div>
       </Tabs>
 
       <VehicleForm open={showEditForm} onOpenChange={setShowEditForm} vehicle={vehicle} />

@@ -2,7 +2,6 @@
 
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
-import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
@@ -20,28 +19,28 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
-import { typeColors, statusColors } from '@/lib/table-utils'
+import { StatusLamp, serviceStatusTone, type LampTone } from '@/components/status-lamp'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
-import { effectiveInvoiceDate } from '@/lib/invoice-utils'
-import { Download, ExternalLink, Gauge, Loader2, Paperclip, Plus, Search, User } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import {
+  Download,
+  ExternalLink,
+  Gauge,
+  History,
+  Loader2,
+  Paperclip,
+  Search,
+  User,
+} from 'lucide-react'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
-import { useServiceType } from '@/components/service-type-context'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
@@ -53,10 +52,21 @@ const warrantyBadgeStyles: Record<WarrantyStatus, string> = {
 
 function WarrantyBadge({ status, t }: { status: WarrantyStatus; t: (key: string) => string }) {
   return (
-    <Badge variant="outline" className={`text-xs ${warrantyBadgeStyles[status]}`}>
+    <Badge variant="outline" className={`h-5 px-1.5 text-[11px] ${warrantyBadgeStyles[status]}`}>
       {t(`warranty.status.${status}`)}
     </Badge>
   )
+}
+
+/** The timeline node of a job still open: filled in its status colour, with a halo. */
+const LIVE_NODE: Record<LampTone, string> = {
+  slate: 'border-slate-500 bg-slate-500 ring-slate-500/15',
+  teal: 'border-teal-600 bg-teal-600 ring-teal-600/15',
+  blue: 'border-blue-600 bg-blue-600 ring-blue-600/15',
+  violet: 'border-violet-600 bg-violet-600 ring-violet-600/15',
+  green: 'border-emerald-600 bg-emerald-600 ring-emerald-600/15',
+  amber: 'border-amber-500 bg-amber-500 ring-amber-500/20',
+  red: 'border-red-600 bg-red-600 ring-red-600/15',
 }
 
 interface ServiceRecordRow {
@@ -93,8 +103,15 @@ interface ServiceRecordsTableProps {
   type: string
   currencyCode?: string
   vehicleMileage?: number
+  /** km, mi or hrs, printed after each visit's reading. */
+  distUnit?: string
 }
 
+/**
+ * The vehicle's work orders as a timeline: when, at what reading, what was
+ * done and what it came to, newest first. A job still open is lit in its
+ * status colour so it stands out from the history below it.
+ */
 export function ServiceRecordsTable({
   vehicleId,
   records,
@@ -106,6 +123,7 @@ export function ServiceRecordsTable({
   type,
   currencyCode = DEFAULT_CURRENCY_CODE,
   vehicleMileage,
+  distUnit,
 }: ServiceRecordsTableProps) {
   const formatCurrency = useFormatCurrency()
   const router = useRouter()
@@ -113,13 +131,12 @@ export function ServiceRecordsTable({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
-  const tableNav = useTableKeyboardNav()
+  const tableNav = useTableKeyboardNav<HTMLOListElement>()
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState(false)
   const t = useTranslations('vehicles.services')
   const serviceLabel = useServiceLabels()
   const tcm = useTranslations('common.contextMenu')
-  const serviceType = useServiceType()
 
   const createUrl = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -182,12 +199,17 @@ export function ServiceRecordsTable({
     }
   }, [vehicleId])
 
+  const open = (id: string) => {
+    setNavigatingId(id)
+    router.push(`/vehicles/${vehicleId}/service/${id}`)
+  }
+
   return (
-    <div className="space-y-4">
-      {/* Toolbar: Search + Filters + Add. Below md the actions collapse to
-          icon-only buttons so the row never wraps or clips on a phone. */}
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <form onSubmit={handleSearch} className="relative w-full sm:max-w-sm">
+    <section className="overflow-hidden rounded-xl border bg-card">
+      {/* Toolbar: search, type and export. Below md the export collapses to an
+          icon so the row never wraps or clips on a phone. */}
+      <div className="flex flex-col gap-2 border-b px-4 py-3 sm:flex-row sm:items-center">
+        <form onSubmit={handleSearch} className="relative w-full sm:max-w-xs">
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('searchPlaceholder')}
@@ -202,8 +224,8 @@ export function ServiceRecordsTable({
             value={type || 'all'}
             onValueChange={(v) => navigate({ type: v === 'all' ? undefined : v })}
           >
-            <SelectTrigger className="h-9 w-[130px] shrink-0 sm:w-[140px]">
-              <SelectValue placeholder="All types" />
+            <SelectTrigger className="h-9 w-[140px] shrink-0">
+              <SelectValue placeholder={t('allTypes')} />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">{t('allTypes')}</SelectItem>
@@ -221,7 +243,7 @@ export function ServiceRecordsTable({
             disabled={isExporting || total === 0}
             aria-label={t('exportServiceHistory')}
             title={t('exportServiceHistory')}
-            className="ml-auto h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            className="ml-auto h-9 w-9 p-0 md:w-auto md:px-3"
           >
             {isExporting ? (
               <Loader2 className="h-4 w-4 animate-spin md:mr-1 md:h-3.5 md:w-3.5" />
@@ -230,248 +252,151 @@ export function ServiceRecordsTable({
             )}
             <span className="hidden md:inline">{t('exportServiceHistory')}</span>
           </Button>
-          <Button asChild size="sm" className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3">
-            <Link
-              href={`/vehicles/${vehicleId}/service/new`}
-              aria-label={t('newWorkOrder')}
-              title={t('newWorkOrder')}
-            >
-              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-              <span className="hidden md:inline">{t('newWorkOrder')}</span>
-            </Link>
-          </Button>
         </div>
       </div>
 
-      {/* Card list (phones + small tablets) */}
-      <div className="space-y-2 md:hidden">
-        {records.length === 0 ? (
-          <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
+      {records.length === 0 ? (
+        <div className="flex flex-col items-center gap-2 px-6 py-14 text-center">
+          <History className="h-8 w-8 text-muted-foreground/40" />
+          <p className="text-sm text-muted-foreground">
             {search || type !== 'all' ? t('emptyFiltered') : t('empty')}
-          </div>
-        ) : (
-          records.map((record) => {
+          </p>
+        </div>
+      ) : (
+        <ol className="relative px-3 py-3 sm:px-4" {...tableNav.containerProps}>
+          {/* The spine the visits hang off, through the middle of the node column. */}
+          <span
+            aria-hidden
+            className="absolute inset-y-0 left-[calc(8.875rem-0.5px)] hidden w-px bg-border md:block"
+          />
+          {records.map((record) => {
             const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
+            const tone = serviceStatusTone(record.status)
+            const live = record.status !== 'completed'
+            // When the car is in: the booked start, else the day the job was made.
+            // The list is sorted by the same date, so the timeline reads in order.
+            const date = formatDate(new Date(record.startDateTime ?? record.serviceDate))
+            const reading = record.mileage
+              ? `${record.mileage.toLocaleString()}${distUnit ? ` ${distUnit}` : ''}`
+              : null
             const warranty = getWarrantyStatus(
               record.warrantyExpiresAt,
               record.warrantyMileage,
               record.mileage,
               vehicleMileage
             )
+            const summary = record.laborItems?.[0]?.description
             return (
-              <button
+              <li
                 key={record.id}
-                type="button"
-                onClick={() => {
-                  setNavigatingId(record.id)
-                  router.push(`/vehicles/${vehicleId}/service/${record.id}`)
-                }}
-                className={`w-full rounded-lg border bg-card p-3 text-left transition-opacity active:bg-muted/50 ${
-                  navigatingId === record.id ? 'opacity-50' : ''
-                }`}
+                className="grid gap-x-3 py-1.5 md:grid-cols-[6.5rem_1.25rem_minmax(0,1fr)]"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-medium">{record.title}</p>
-                    {record.invoiceNumber && (
-                      <p className="font-mono text-xs text-muted-foreground">
-                        {record.invoiceNumber}
-                      </p>
-                    )}
-                  </div>
-                  <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold">
-                    {navigatingId === record.id && (
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-                    )}
-                    {formatCurrency(displayTotal, currencyCode)}
-                  </span>
-                </div>
-
-                {record.laborItems?.[0]?.description && (
-                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                    {record.laborItems[0].description.slice(0, 100)}
-                  </p>
-                )}
-
-                <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                  <Badge variant="outline" className={`text-xs ${typeColors[record.type] || ''}`}>
-                    {serviceLabel.type(record.type)}
-                  </Badge>
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${statusColors[record.status] || ''}`}
-                  >
-                    {serviceLabel.status(record.status)}
-                  </Badge>
-                  {warranty !== 'none' && <WarrantyBadge status={warranty} t={t} />}
-                </div>
-
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  <span className="font-mono">{formatDate(effectiveInvoiceDate(record))}</span>
-                  {record.mileage ? (
-                    <span className="inline-flex items-center gap-1">
-                      <Gauge className="h-3 w-3" />
-                      {record.mileage.toLocaleString()}
-                    </span>
-                  ) : null}
-                  {record.techName && (
-                    <span className="inline-flex min-w-0 items-center gap-1">
-                      <User className="h-3 w-3 shrink-0" />
-                      <span className="truncate">{record.techName}</span>
-                    </span>
-                  )}
-                  {record._count.attachments > 0 && (
-                    <span className="inline-flex items-center gap-1">
-                      <Paperclip className="h-3 w-3" />
-                      {record._count.attachments}
-                    </span>
+                <div className="hidden pt-3 text-right md:block">
+                  <div className="text-[13px] font-semibold leading-tight">{date}</div>
+                  {reading && (
+                    <div className="mt-0.5 text-xs text-muted-foreground tabular-nums">
+                      {reading}
+                    </div>
                   )}
                 </div>
-              </button>
-            )
-          })
-        )}
-      </div>
-
-      {/* Table (md and up) */}
-      <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[100px]">{t('table.date')}</TableHead>
-              <TableHead>{t('table.title')}</TableHead>
-              <TableHead className="w-[100px]">{t('table.type')}</TableHead>
-              <TableHead className="w-[100px]">{t('table.status')}</TableHead>
-              <TableHead className="w-[100px] text-right">
-                {serviceType === 'marine' ? t('table.mileageMarine') : t('table.mileage')}
-              </TableHead>
-              <TableHead className="hidden w-[120px] sm:table-cell">
-                {t('table.technician')}
-              </TableHead>
-              <TableHead className="w-[50px] text-center">{t('table.files')}</TableHead>
-              <TableHead className="w-[100px] text-right">{t('table.total')}</TableHead>
-              <TableHead className="w-[90px] text-right">{t('table.warranty')}</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {records.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={9} className="h-32 text-center text-muted-foreground">
-                  {search || type !== 'all' ? t('emptyFiltered') : t('empty')}
-                </TableCell>
-              </TableRow>
-            ) : (
-              records.map((record) => {
-                const displayTotal = record.totalAmount > 0 ? record.totalAmount : record.cost
-                return (
-                  <ContextMenu key={record.id} modal={false}>
-                    <ContextMenuTrigger asChild>
-                      <TableRow
-                        className={`cursor-pointer transition-opacity ${navigatingId === record.id ? 'opacity-50' : ''}`}
-                        {...interactiveRow(() => {
-                          setNavigatingId(record.id)
-                          router.push(`/vehicles/${vehicleId}/service/${record.id}`)
-                        })}
-                      >
-                        <TableCell className="font-mono text-xs">
-                          {formatDate(effectiveInvoiceDate(record))}
-                        </TableCell>
-                        <TableCell className="max-w-0">
-                          <div className="truncate">
-                            <span className="font-medium">{record.title}</span>
+                <div className="hidden justify-center pt-[17px] md:flex">
+                  <span
+                    aria-hidden
+                    className={cn(
+                      'relative z-10 size-3 rounded-full border-2',
+                      live ? `ring-4 ${LIVE_NODE[tone]}` : 'border-muted-foreground/45 bg-card'
+                    )}
+                  />
+                </div>
+                <ContextMenu modal={false}>
+                  <ContextMenuTrigger asChild>
+                    <Link
+                      href={`/vehicles/${vehicleId}/service/${record.id}`}
+                      onClick={() => setNavigatingId(record.id)}
+                      data-row-interactive
+                      className={cn(
+                        'block min-w-0 rounded-lg border bg-card px-4 py-3 outline-none transition-colors hover:border-foreground/20 hover:bg-muted/40 focus-visible:ring-2 focus-visible:ring-ring',
+                        navigatingId === record.id && 'opacity-60'
+                      )}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex min-w-0 items-baseline gap-2">
                             {record.invoiceNumber && (
-                              <span className="ml-2 font-mono text-xs text-muted-foreground">
+                              <span className="shrink-0 font-mono text-xs text-muted-foreground">
                                 {record.invoiceNumber}
                               </span>
                             )}
+                            <span className="truncate font-medium">{record.title}</span>
                           </div>
-                          {record.laborItems?.[0]?.description && (
-                            <p className="mt-0.5 truncate text-xs text-muted-foreground">
-                              {record.laborItems[0].description.slice(0, 100)}
+                          {summary && summary !== record.title && (
+                            <p className="mt-0.5 truncate text-[13px] text-muted-foreground">
+                              {summary.slice(0, 140)}
                             </p>
                           )}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${typeColors[record.type] || ''}`}
-                          >
-                            {serviceLabel.type(record.type)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${statusColors[record.status] || ''}`}
-                          >
-                            {serviceLabel.status(record.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right font-mono text-xs">
-                          {record.mileage ? record.mileage.toLocaleString() : '-'}
-                        </TableCell>
-                        <TableCell className="hidden text-sm sm:table-cell">
-                          {record.techName || '-'}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {record._count.attachments > 0 && (
-                            <span className="inline-flex items-center gap-0.5 text-xs text-muted-foreground">
-                              <Paperclip className="h-3 w-3" />
-                              {record._count.attachments}
-                            </span>
+                        </div>
+                        <span className="inline-flex shrink-0 items-center gap-1.5 font-semibold tabular-nums">
+                          {navigatingId === record.id && (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
                           )}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">
-                          <span className="inline-flex items-center gap-2">
-                            {navigatingId === record.id && (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-                            )}
-                            {formatCurrency(displayTotal, currencyCode)}
+                          {formatCurrency(displayTotal, currencyCode)}
+                        </span>
+                      </div>
+                      <div className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+                        <StatusLamp tone={tone} className="text-xs">
+                          {serviceLabel.status(record.status)}
+                        </StatusLamp>
+                        <span>{serviceLabel.type(record.type)}</span>
+                        <span className="font-mono md:hidden">{date}</span>
+                        {reading && (
+                          <span className="inline-flex items-center gap-1 tabular-nums md:hidden">
+                            <Gauge className="h-3 w-3" />
+                            {reading}
                           </span>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <WarrantyBadge
-                            status={getWarrantyStatus(
-                              record.warrantyExpiresAt,
-                              record.warrantyMileage,
-                              record.mileage,
-                              vehicleMileage
-                            )}
-                            t={t}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    </ContextMenuTrigger>
-                    <ContextMenuContent className="min-w-52">
-                      <ContextMenuItem
-                        onClick={() => {
-                          setNavigatingId(record.id)
-                          router.push(`/vehicles/${vehicleId}/service/${record.id}`)
-                        }}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        {tcm('open')}
-                      </ContextMenuItem>
-                    </ContextMenuContent>
-                  </ContextMenu>
-                )
-              })
-            )}
-          </TableBody>
-        </Table>
-      </div>
+                        )}
+                        {record.techName && (
+                          <span className="inline-flex min-w-0 items-center gap-1">
+                            <User className="h-3 w-3 shrink-0" />
+                            <span className="truncate">{record.techName}</span>
+                          </span>
+                        )}
+                        {record._count.attachments > 0 && (
+                          <span className="inline-flex items-center gap-1" title={t('table.files')}>
+                            <Paperclip className="h-3 w-3" />
+                            {record._count.attachments}
+                          </span>
+                        )}
+                        {warranty !== 'none' && <WarrantyBadge status={warranty} t={t} />}
+                      </div>
+                    </Link>
+                  </ContextMenuTrigger>
+                  <ContextMenuContent className="min-w-52">
+                    <ContextMenuItem onClick={() => open(record.id)}>
+                      <ExternalLink className="mr-2 h-4 w-4" />
+                      {tcm('open')}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              </li>
+            )
+          })}
+        </ol>
+      )}
 
-      {/* Pagination */}
-      <DataTablePagination
-        total={total}
-        page={page}
-        pageSize={pageSize}
-        totalPages={totalPages}
-        pageParam="page"
-        pageSizeParam="pageSize"
-        pageSizes={['5', '10', '20', '50']}
-        onNavigate={navigate}
-      />
-    </div>
+      {total > 0 && (
+        <div className="border-t px-4 py-3">
+          <DataTablePagination
+            total={total}
+            page={page}
+            pageSize={pageSize}
+            totalPages={totalPages}
+            pageParam="page"
+            pageSizeParam="pageSize"
+            pageSizes={['5', '10', '20', '50']}
+            onNavigate={navigate}
+          />
+        </div>
+      )}
+    </section>
   )
 }
