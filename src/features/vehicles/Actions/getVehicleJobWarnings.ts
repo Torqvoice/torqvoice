@@ -4,13 +4,23 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { loadBookingContext } from '@/features/workboard/Lib/bookings'
+import { loadBookingContext, MAX_WINDOW_DAYS } from '@/features/workboard/Lib/bookings'
 import { ACTIVE_HELPERS } from '@/features/workboard/Lib/jobTeam'
-import { buildVehicleJobWarnings } from '../Lib/vehicleJobWarnings'
+import {
+  buildVehicleJobWarnings,
+  planWindows,
+  type Span,
+  splitSpan,
+} from '../Lib/vehicleJobWarnings'
 
 /** The most jobs one vehicle is checked for: more than any car is booked in for at once. */
 const MAX_JOBS = 25
 const DAY_MS = 86_400_000
+/**
+ * How many days one read of the bookings covers here: under the loader's
+ * limit, which also reads a day either side.
+ */
+const WINDOW_DAYS = MAX_WINDOW_DAYS - 2
 
 /**
  * What is wrong with the bookings of a vehicle's open jobs: the technician or
@@ -54,13 +64,25 @@ export async function getVehicleJobWarnings(vehicleId: string) {
       )
       if (booked.length === 0) return []
 
-      // One read of the workshop's bookings, closures and leave, from the
-      // first job's start to past the last one's end.
-      const from = booked[0].start
-      const last = Math.max(...booked.map((job) => job.end.getTime()))
-      const context = await loadBookingContext(organizationId, from, {
-        days: Math.ceil((last - from.getTime()) / DAY_MS) + 1,
-      })
+      // The workshop's bookings, closures and leave are read once per window
+      // of days that covers the jobs, usually one: a read has a limit, and
+      // jobs further apart than that, or one longer, get windows of their own.
+      const pieces = booked.flatMap((job) => splitSpan(job, WINDOW_DAYS))
+      const windows = await Promise.all(
+        planWindows(pieces, WINDOW_DAYS).map(async (window) => ({
+          window,
+          context: await loadBookingContext(organizationId, window.start, {
+            days: Math.ceil((window.end.getTime() - window.start.getTime()) / DAY_MS) + 1,
+          }),
+        }))
+      )
+      const contextFor = (span: Span) => {
+        const found = windows.find(
+          ({ window }) => span.start >= window.start && span.end <= window.end
+        )
+        if (!found) throw new Error('No bookings read for a job on this vehicle')
+        return found.context
+      }
 
       const technicians = await db.technician.findMany({
         where: { organizationId },
@@ -78,8 +100,9 @@ export async function getVehicleJobWarnings(vehicleId: string) {
           helperIds: job.helpers.map((h) => h.technicianId),
           workBayId: job.workBayId,
         })),
-        context,
-        new Map(technicians.map((t) => [t.id, t.name]))
+        contextFor,
+        new Map(technicians.map((t) => [t.id, t.name])),
+        WINDOW_DAYS
       )
     },
     {

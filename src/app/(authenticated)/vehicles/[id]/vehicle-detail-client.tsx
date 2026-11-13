@@ -330,6 +330,7 @@ export function VehicleDetailClient({
   paginatedFindings,
   tireSets = [],
   jobWarnings = NO_WARNINGS,
+  feedNotes,
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
@@ -342,6 +343,8 @@ export function VehicleDetailClient({
   serviceRecordType?: string
   /** Booking problems on the vehicle's open jobs: a technician away, a clash, a closed day. */
   jobWarnings?: VehicleJobWarning[]
+  /** Every note for the feed, rather than the notes table's current page. */
+  feedNotes?: PaginatedNotes['records']
   currencyCode?: string
   unitSystem?: 'metric' | 'imperial'
   predictionData?: {
@@ -1814,7 +1817,7 @@ export function VehicleDetailClient({
                 workOrders={paginatedServices.records}
                 quotes={quotes}
                 inspections={inspections ?? []}
-                notes={paginatedNotes.records}
+                notes={feedNotes ?? paginatedNotes.records}
                 distUnit={distUnit}
                 currencyCode={currencyCode}
                 vehicleMileage={vehicle.mileage}

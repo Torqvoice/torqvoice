@@ -279,11 +279,10 @@ export function VehicleForm({
     if (fileRef.current) fileRef.current.value = ''
   }
 
-  const uploadImage = async (): Promise<string | undefined> => {
-    if (!imageFile) return preview ?? undefined
-
+  /** Uploads the photo picked in this form and answers its address. */
+  const uploadImage = async (file: File): Promise<string> => {
     const toastId = toast.loading(t('uploadingImage'))
-    const compressed = await compressImage(imageFile)
+    const compressed = await compressImage(file)
     const formData = new FormData()
     formData.append('file', compressed)
 
@@ -454,9 +453,14 @@ export function VehicleForm({
     setLoading(true)
 
     try {
+      // The photo is sent only when it was changed here: a new one picked, or
+      // the saved one removed. Sending back the address the form opened with
+      // would undo a photo taken on a phone meanwhile, which has already
+      // replaced it (and let the old file go) on the server.
       let imageUrl: string | undefined
       try {
-        imageUrl = await uploadImage()
+        if (imageFile) imageUrl = await uploadImage(imageFile)
+        else if (!preview && vehicle?.imageUrl) imageUrl = ''
       } catch (err) {
         modal.open(
           'error',
@@ -520,7 +524,7 @@ export function VehicleForm({
         customerId,
       }
 
-      const payload = imageUrl ? { ...data, imageUrl } : data
+      const payload = imageUrl !== undefined ? { ...data, imageUrl } : data
 
       const result = vehicle
         ? await updateVehicle({ ...payload, id: vehicle.id })
@@ -1067,12 +1071,14 @@ export function VehicleForm({
                   </div>
 
                   <Segmented
+                    id="fuelType"
                     label={t('fuelType')}
                     value={fuelType}
                     onChange={setFuelType}
                     options={fuelOptions.map((value) => ({ value, label: optionLabel(value) }))}
                   />
                   <Segmented
+                    id="transmission"
                     label={isMarine ? t('transmissionMarine') : t('transmission')}
                     value={transmission}
                     onChange={setTransmission}
@@ -1341,11 +1347,14 @@ function FormCard({ title, children }: { title: string; children: React.ReactNod
  * group.
  */
 function Segmented({
+  id,
   label,
   value,
   options,
   onChange,
 }: {
+  /** The field's name, as the dropdown it replaced had, so its label still names it. */
+  id: string
   label: string
   value: string
   options: { value: string; label: string }[]
@@ -1366,9 +1375,12 @@ function Segmented({
   }
   return (
     <div className="space-y-2">
-      <Label id={labelId}>{label}</Label>
+      <Label id={labelId} htmlFor={id}>
+        {label}
+      </Label>
       <div
         ref={groupRef}
+        id={id}
         role="radiogroup"
         aria-labelledby={labelId}
         className="flex w-full rounded-lg border bg-muted/50 p-0.5"

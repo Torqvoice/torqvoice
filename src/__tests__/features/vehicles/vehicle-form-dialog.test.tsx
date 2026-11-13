@@ -5,7 +5,7 @@
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn(), push: vi.fn(), replace: vi.fn() }),
@@ -44,6 +44,7 @@ vi.mock('@/features/inspections/Actions/attachmentActions', () => ({
 
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
+import { updateVehicle } from '@/features/vehicles/Actions/vehicleActions'
 
 const VEHICLE = {
   id: 'veh-1',
@@ -202,5 +203,26 @@ describe('edit vehicle dialog', () => {
       'aria-checked',
       'true'
     )
+  })
+})
+
+describe('saving the photo', () => {
+  const withPhoto = { ...VEHICLE, imageUrl: '/api/protected/files/org-a/vehicles/old.jpg' }
+
+  it('leaves the photo out of a save that did not change it', async () => {
+    // A phone may have replaced it meanwhile; sending the old address back
+    // would undo that.
+    renderForm({ vehicle: withPhoto })
+    fireEvent.click(await screen.findByRole('button', { name: 'Save Changes' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalled())
+    expect(vi.mocked(updateVehicle).mock.calls[0][0]).not.toHaveProperty('imageUrl')
+  })
+
+  it('saves a removed photo as removed', async () => {
+    renderForm({ vehicle: withPhoto })
+    fireEvent.click(await screen.findByRole('button', { name: 'Remove photo' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalled())
+    expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ imageUrl: '' })
   })
 })

@@ -21,6 +21,7 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('@/features/workboard/Lib/bookings', () => ({
   loadBookingContext: vi.fn(),
+  MAX_WINDOW_DAYS: 400,
 }))
 
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
@@ -150,5 +151,37 @@ describe('getVehicleJobWarnings', () => {
     expect(from).toEqual(first)
     const reach = from.getTime() + (opts?.days ?? 0) * 86_400_000
     expect(reach).toBeGreaterThan(lastEnd.getTime())
+  })
+
+  it('reads each window of jobs far apart on its own, within the loader’s limit', async () => {
+    const job = (id: string, s: Date, e: Date) => ({
+      id,
+      title: id,
+      invoiceNumber: null,
+      startDateTime: s,
+      endDateTime: e,
+      technicianId: null,
+      workBayId: null,
+      helpers: [],
+    })
+    const near = zonedDate(2026, 11, 16, 9, 0, OSLO)
+    const far = zonedDate(2028, 3, 1, 9, 0, OSLO)
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
+      job('a', near, zonedDate(2026, 11, 16, 12, 0, OSLO)),
+      job('b', far, zonedDate(2028, 3, 1, 12, 0, OSLO)),
+    ] as never)
+    vi.mocked(loadBookingContext).mockResolvedValue({
+      bookings: [],
+      hours: { start: '08:00', end: '16:00', timeZone: OSLO },
+      closuresEnabled: false,
+    })
+    vi.mocked(db.technician.findMany).mockResolvedValue([])
+
+    const result = await getVehicleJobWarnings('veh-1')
+
+    expect(result.success).toBe(true)
+    const calls = vi.mocked(loadBookingContext).mock.calls
+    expect(calls.map(([, from]) => from)).toEqual([near, far])
+    for (const [, , opts] of calls) expect(opts?.days ?? 0).toBeLessThanOrEqual(400)
   })
 })

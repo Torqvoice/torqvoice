@@ -371,6 +371,8 @@ export async function updateVehicle(input: unknown) {
             await workshopTimeZone(organizationId)
           ),
           customerId: data.customerId !== undefined ? data.customerId || null : undefined,
+          // An emptied photo is no photo, not an empty address.
+          imageUrl: data.imageUrl !== undefined ? data.imageUrl || null : undefined,
         },
       })
       if (updateResult.count === 0) throw new Error('Vehicle not found')

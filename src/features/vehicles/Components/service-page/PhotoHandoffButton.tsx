@@ -130,8 +130,18 @@ export function PhotoHandoffButton({
     receivedRef.current = 0
     baselineRef.current = null
     photoBaselineRef.current = undefined
+    // A vehicle's photo is read before the code is shown, so the first photo
+    // the phone sends is a change from it. Taking the first answer of the
+    // polling as the starting point instead would swallow a photo that
+    // landed before that answer, and the dialog would wait for ever.
     const request = vehicleId
-      ? createVehiclePhotoHandoffLink(vehicleId)
+      ? Promise.all([createVehiclePhotoHandoffLink(vehicleId), getVehiclePhotoUrl(vehicleId)]).then(
+          ([link, photo]) => {
+            if (!photo.success) return { success: false as const, data: undefined }
+            photoBaselineRef.current = photo.data ?? null
+            return link
+          }
+        )
       : inspectionId
         ? createInspectionHandoffLink(inspectionId)
         : createPhotoHandoffLink({ serviceRecordId, concernId, purpose })
@@ -168,10 +178,8 @@ export function PhotoHandoffButton({
       const result = await getVehiclePhotoUrl(vehicleId).catch(() => null)
       if (!result?.success) return
       const now = result.data ?? null
-      if (photoBaselineRef.current === undefined) {
-        photoBaselineRef.current = now
-        return
-      }
+      // Read before the code was shown; see where the code is made.
+      if (photoBaselineRef.current === undefined) return
       if (now !== photoBaselineRef.current) {
         photoBaselineRef.current = now
         receivedRef.current += 1

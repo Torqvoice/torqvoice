@@ -19,7 +19,7 @@ import { ACTIVE_HELPERS } from './jobTeam'
 /** How far ahead to read by default. Long enough to answer "next free slot" honestly. */
 const WINDOW_DAYS = 45
 /** The most a caller can ask for: a year and a bit. */
-const MAX_WINDOW_DAYS = 400
+export const MAX_WINDOW_DAYS = 400
 
 /**
  * `days` is how far past `from` to read. Online booking asks for its whole

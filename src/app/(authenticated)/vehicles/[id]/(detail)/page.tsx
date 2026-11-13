@@ -25,6 +25,9 @@ import { redirect } from 'next/navigation'
 import { PermissionSubject } from '@/lib/permissions'
 import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
 
+/** The most notes the new page's feed holds: the same reach as its work orders. */
+const FEED_NOTES = 250
+
 export default async function VehicleDetailPage({
   params,
   searchParams,
@@ -81,6 +84,7 @@ export default async function VehicleDetailPage({
     predResult,
     authContext,
     jobWarningsResult,
+    feedNotesResult,
   ] = await Promise.all([
     getVehicle(id),
     // The new page shows the vehicle's history as one feed, so it asks for all
@@ -106,6 +110,9 @@ export default async function VehicleDetailPage({
     // What is wrong with the bookings of the vehicle's open jobs, flagged in
     // the new page's feed so nobody has to open each job to find out.
     classic ? null : readIfAllowed(access, S.WORK_ORDERS, () => getVehicleJobWarnings(id)),
+    // The feed searches and shows every note, newest first, so it is not
+    // handed the notes table's current page; the table keeps its paging.
+    classic ? null : getNotesPaginated(id, { page: 1, pageSize: FEED_NOTES }),
   ])
 
   if (!result.success || !result.data) {
@@ -252,6 +259,11 @@ export default async function VehicleDetailPage({
             {...viewProps}
             jobWarnings={
               jobWarningsResult?.success && jobWarningsResult.data ? jobWarningsResult.data : []
+            }
+            feedNotes={
+              feedNotesResult?.success && feedNotesResult.data
+                ? feedNotesResult.data.records
+                : paginatedNotes.records
             }
           />
         )}
