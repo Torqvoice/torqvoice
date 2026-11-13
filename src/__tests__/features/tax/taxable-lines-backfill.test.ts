@@ -19,6 +19,9 @@ vi.mock('@/lib/document-lock.server', () => ({
 
 vi.mock('@/lib/db', () => ({
   db: {
+    // Nothing yet in the workshop's number format (src/lib/job-number.ts). A plain
+    // function, so resetAllMocks cannot blank it.
+    $queryRaw: async () => [],
     user: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn() },
     recurringInvoice: { findMany: vi.fn() },

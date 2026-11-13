@@ -51,6 +51,8 @@ vi.mock('@/lib/db', () => ({
     // The workshop's closed days and time off, read with what is booked.
     workshopClosure: { findMany: vi.fn() },
     technicianAbsence: { findMany: vi.fn() },
+    // The highest number already issued in the workshop's format.
+    $queryRaw: vi.fn(),
     $transaction: vi.fn(),
   },
 }))
@@ -86,6 +88,7 @@ function setupCommonMocks() {
   vi.mocked(db.appSetting.findMany).mockResolvedValue([])
   vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Test Shop' } as any)
   vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null) // no previous records
+  vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: null }] as any)
   vi.mocked(db.vehicle.update).mockResolvedValue(VEHICLE as any)
 }
 
@@ -97,6 +100,8 @@ beforeEach(() => {
   vi.mocked(db.inspection.findMany).mockResolvedValue([])
   vi.mocked(db.workshopClosure.findMany).mockResolvedValue([])
   vi.mocked(db.technicianAbsence.findMany).mockResolvedValue([])
+  // Nothing yet in the workshop's number format.
+  vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: null }] as any)
 })
 
 // ---------------------------------------------------------------------------
@@ -164,13 +169,13 @@ describe('createServiceRecord — invoice number', () => {
     )
   })
 
-  it('increments from last invoice number', async () => {
+  it('continues from the highest number in the format, not from the newest job', async () => {
     setupAuth()
     setupCommonMocks()
     const year = new Date().getFullYear()
-    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
-      invoiceNumber: `${year}-1005`,
-    } as any)
+    vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: '1005' }] as any)
+    // The newest job is numbered in another format; it used to decide the number.
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({ invoiceNumber: 'XT-1018' } as any)
 
     const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-2' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
@@ -250,6 +255,56 @@ describe('createServiceRecord — invoice number', () => {
         }),
       })
     )
+  })
+
+  /** "Next invoice number" set to 5000, and the transaction the job is written in. */
+  function withNextNumber(create: ReturnType<typeof vi.fn>) {
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: 'workshop.invoiceStartNumber', value: '5000' } as any,
+    ])
+    const txUpdateMany = vi.fn()
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
+        appSetting: { updateMany: txUpdateMany },
+      })
+    )
+    return txUpdateMany
+  }
+
+  it('spends "Next invoice number" in the transaction that writes the job', async () => {
+    setupAuth()
+    setupCommonMocks()
+    const year = new Date().getFullYear()
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-5' })
+    const txUpdateMany = withNextNumber(mockCreate)
+
+    await createServiceRecord({ vehicleId: VEHICLE_ID, title: 'Test' })
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ invoiceNumber: `${year}-5000` }) })
+    )
+    expect(txUpdateMany).toHaveBeenCalledWith({
+      where: { organizationId: ORG, key: 'workshop.invoiceStartNumber' },
+      data: { value: '' },
+    })
+    expect(db.appSetting.updateMany).not.toHaveBeenCalled()
+  })
+
+  it('keeps "Next invoice number" when the job cannot be written', async () => {
+    setupAuth()
+    setupCommonMocks()
+    const txUpdateMany = withNextNumber(vi.fn().mockRejectedValue(new Error('insert failed')))
+
+    const result = await createServiceRecord({ vehicleId: VEHICLE_ID, title: 'Test' })
+
+    expect(result.success).toBe(false)
+    expect(txUpdateMany).not.toHaveBeenCalled()
+    expect(db.appSetting.updateMany).not.toHaveBeenCalled()
   })
 })
 

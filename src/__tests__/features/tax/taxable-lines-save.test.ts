@@ -45,6 +45,9 @@ vi.mock('@/lib/files/manager', () => ({ releaseFiles: vi.fn().mockResolvedValue(
 
 vi.mock('@/lib/db', () => ({
   db: {
+    // Nothing yet in the workshop's number format (src/lib/job-number.ts). A plain
+    // function, so resetAllMocks cannot blank it.
+    $queryRaw: async () => [],
     user: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn(), updateMany: vi.fn() },
     organization: { findUnique: vi.fn() },

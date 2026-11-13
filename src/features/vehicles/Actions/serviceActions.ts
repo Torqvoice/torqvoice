@@ -28,7 +28,7 @@ import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { randomUUID } from 'crypto'
 import { releaseFiles } from '@/lib/files/manager'
 import { serviceRecordFileUrls } from '@/lib/files/collect'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { clearNextNumberSetting, JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { zonedDayKey } from '@/lib/timezone'
@@ -391,8 +391,7 @@ export async function createServiceRecord(input: unknown) {
             organizationId,
             key: {
               in: [
-                'workshop.invoicePrefix',
-                'workshop.invoiceStartNumber',
+                ...JOB_NUMBER_SETTING_KEYS,
                 ...WORKSHOP_TAX_SETTING_KEYS,
                 ...WARRANTY_SETTING_KEYS,
               ],
@@ -408,7 +407,6 @@ export async function createServiceRecord(input: unknown) {
       for (const s of settings) settingsMap[s.key] = s.value
 
       const shopName = data.shopName || org?.name || undefined
-      const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
 
       // If the caller didn't pass taxInclusive, inherit the org's current setting.
       // Existing callers (vehicle-detail-client, ServiceForm) don't send the field,
@@ -447,30 +445,12 @@ export async function createServiceRecord(input: unknown) {
         labor: taxedLabor,
       })
 
-      // Generate sequential invoice number
-      const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
-      const lastRecord = await db.serviceRecord.findFirst({
-        where: { organizationId },
-        orderBy: { createdAt: 'desc' },
-        select: { invoiceNumber: true },
+      // The next number in the workshop's format; see src/lib/job-number.ts.
+      const { invoiceNumber, usesNextNumberSetting } = await nextJobNumber({
+        organizationId,
+        settings: settingsMap,
+        timeZone,
       })
-      let nextNum = startNumber || 1001
-      if (lastRecord?.invoiceNumber) {
-        const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-        if (match) {
-          const lastNum = parseInt(match[1], 10) + 1
-          nextNum = Math.max(nextNum, lastNum)
-        }
-      }
-      const invoiceNumber = `${prefix}${nextNum}`
-
-      // Clear start number after first use so it doesn't override future increments
-      if (startNumber && nextNum === startNumber) {
-        await db.appSetting.updateMany({
-          where: { organizationId, key: 'workshop.invoiceStartNumber' },
-          data: { value: '' },
-        })
-      }
 
       const {
         concerns,
@@ -536,6 +516,8 @@ export async function createServiceRecord(input: unknown) {
             warrantyExpiresAt: warrantyExpiryFor(warranty, warrantyStartsOn, timeZone),
           },
         })
+        // Spent only once the job is written, in the same transaction.
+        if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, tx)
 
         if (partItems && partItems.length > 0) {
           // Enrich parts with unitCost from inventory (stock movement is handled

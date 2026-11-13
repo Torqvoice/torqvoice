@@ -12,6 +12,8 @@ on:
       - 'src/lib/backup/**'
       - 'src/app/api/protected/backup/**'
       - 'src/__tests__/db/**'
+      # Job numbering reads the database with a raw pattern query.
+      - 'src/lib/job-number.ts'
       - 'prisma/**'
       - 'vitest.db.config.ts'
       - '.github/workflows/restore-tenancy.yml'
