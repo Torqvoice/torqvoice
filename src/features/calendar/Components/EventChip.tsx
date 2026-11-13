@@ -123,6 +123,9 @@ export function EventChip({
         className={cn(
           'absolute flex flex-col overflow-hidden rounded-md border px-1.5 py-1 text-left text-xs leading-tight shadow-sm transition-[filter,box-shadow] hover:z-20 hover:shadow-md',
           palette.block,
+          // An edge in the page's own colour, the way Google draws it: blocks
+          // of one colour that overlap stay two blocks instead of one shape.
+          'border-background',
           done && 'opacity-70',
           compact && 'justify-center py-0',
           className
@@ -135,7 +138,12 @@ export function EventChip({
         {!compact && (
           <span className="truncate text-[11px] opacity-90">
             {range}
-            {event.vehicleLabel ? ` · ${event.vehicleLabel}` : ''}
+            {/* The title already names the car on a job; who it is for says more. */}
+            {event.customerName
+              ? ` · ${event.customerName}`
+              : event.vehicleLabel
+                ? ` · ${event.vehicleLabel}`
+                : ''}
           </span>
         )}
       </button>
