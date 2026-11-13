@@ -75,7 +75,8 @@
     "dismissedOn": "Dispensada em {date}",
     "restore": "Restaurar",
     "settingsAriaLabel": "Definições de manutenção",
-    "dismissAriaLabel": "Dispensar"
+    "dismissAriaLabel": "Dispensar",
+    "dismissError": "Não foi possível dispensar a viatura. Tente novamente."
   },
   "reminders": {
     "title": "Próximos Lembretes",

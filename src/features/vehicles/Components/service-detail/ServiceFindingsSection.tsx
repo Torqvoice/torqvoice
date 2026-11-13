@@ -63,10 +63,14 @@ export const ServiceFindingsSection = React.memo(function ServiceFindingsSection
 
   const handleDelete = async (id: string) => {
     setLoading(id)
-    const result = await deleteFinding(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteFinding(id).catch(() => null)
+    if (result?.success) {
       toast.success(t('findingDeleted'))
       router.refresh()
+    } else {
+      toast.error(result?.error || t('deleteError'))
     }
     setLoading(null)
   }

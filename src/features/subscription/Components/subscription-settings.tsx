@@ -182,24 +182,26 @@ export function SubscriptionSettings({
 
   const handleCancel = async () => {
     setCancelLoading(true)
-    const result = await cancelSubscription()
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await cancelSubscription().catch(() => null)
+    if (result?.success) {
       toast.success(t('subscription.cancelSuccess'))
       router.refresh()
     } else {
-      toast.error(result.error ?? t('subscription.cancelError'))
+      toast.error(result?.error ?? t('subscription.cancelError'))
     }
     setCancelLoading(false)
   }
 
   const handleResume = async () => {
     setResumeLoading(true)
-    const result = await resumeSubscription()
-    if (result.success) {
+    const result = await resumeSubscription().catch(() => null)
+    if (result?.success) {
       toast.success(t('subscription.resumeSuccess'))
       router.refresh()
     } else {
-      toast.error(result.error ?? t('subscription.resumeError'))
+      toast.error(result?.error ?? t('subscription.resumeError'))
     }
     setResumeLoading(false)
   }

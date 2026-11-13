@@ -106,6 +106,7 @@
     "deleteBody": "{duration} w zleceniu {job} technika {technician} zostanie usunięte z ewidencji. Tej operacji nie można cofnąć.",
     "deleteConfirm": "Usuń",
     "deleted": "Wpis usunięty",
+    "deleteFailed": "Nie udało się usunąć wpisu",
     "stoppedByManager": "Zegar zatrzymany na {minutes}",
     "csv": {
       "technician": "Technik",

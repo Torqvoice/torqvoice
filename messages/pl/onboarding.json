@@ -73,6 +73,7 @@
     "allDoneDescription": "Wszystkie kroki zostały wykonane i Twój warsztat działa.",
     "dismiss": "Ukryj kartę",
     "dismissAriaLabel": "Ukryj tę listę",
+    "dismissFailed": "Nie udało się ukryć listy. Spróbuj ponownie.",
     "importTitle": "Masz już gdzieś klientów i pojazdy?",
     "importDescription": "Zaimportuj ich z arkusza kalkulacyjnego lub ze starego systemu"
   },

@@ -97,8 +97,10 @@ export function TireAttachmentsCard({
     }
 
     if (uploaded.length > 0) {
-      const result = await addTireSetAttachments({ tireSetId, files: uploaded })
-      if (!result.success) toast.error(result.error ?? t('files.failed'))
+      // An action that cannot reach the server throws instead of answering,
+      // here and below, so it is caught and reported the way a refusal is.
+      const result = await addTireSetAttachments({ tireSetId, files: uploaded }).catch(() => null)
+      if (!result?.success) toast.error(result?.error ?? t('files.failed'))
     }
     if (failed > 0) toast.error(t('files.someFailed', { count: failed }))
 
@@ -111,10 +113,10 @@ export function TireAttachmentsCard({
     const description = drafts[id]
     if (description === undefined) return
     setBusyId(id)
-    const result = await updateTireSetAttachment({ id, description })
+    const result = await updateTireSetAttachment({ id, description }).catch(() => null)
     setBusyId(null)
-    if (!result.success) {
-      toast.error(result.error ?? t('files.failed'))
+    if (!result?.success) {
+      toast.error(result?.error ?? t('files.failed'))
       return
     }
     setDrafts((current) => {
@@ -127,9 +129,9 @@ export function TireAttachmentsCard({
 
   const toggleInvoice = async (id: string, includeInInvoice: boolean) => {
     setBusyId(id)
-    const result = await updateTireSetAttachment({ id, includeInInvoice })
+    const result = await updateTireSetAttachment({ id, includeInInvoice }).catch(() => null)
     setBusyId(null)
-    if (!result.success) toast.error(result.error ?? t('files.failed'))
+    if (!result?.success) toast.error(result?.error ?? t('files.failed'))
     router.refresh()
   }
 
@@ -142,10 +144,10 @@ export function TireAttachmentsCard({
     })
     if (!ok) return
     setBusyId(file.id)
-    const result = await deleteTireSetAttachment(file.id)
+    const result = await deleteTireSetAttachment(file.id).catch(() => null)
     setBusyId(null)
-    if (!result.success) {
-      toast.error(result.error ?? t('files.failed'))
+    if (!result?.success) {
+      toast.error(result?.error ?? t('files.failed'))
       return
     }
     router.refresh()

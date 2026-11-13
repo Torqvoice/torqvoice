@@ -470,7 +470,11 @@ export function InventoryPartForm({
     if (!isOpen) {
       // Clean up all images uploaded during this session (they won't be saved)
       if (uploadedUrlsRef.current.length > 0) {
-        deleteOrphanedUploads(uploadedUrlsRef.current)
+        deleteOrphanedUploads(uploadedUrlsRef.current).catch(() => {
+          // Tidying up after the form, which nobody asked for: on a dropped
+          // connection the files stay for the nightly orphan sweep, and the
+          // lost-connection notice is not raised for it.
+        })
       }
       uploadedUrlsRef.current = []
     }

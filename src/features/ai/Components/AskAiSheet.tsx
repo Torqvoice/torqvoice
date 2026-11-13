@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { toast } from 'sonner'
 import {
   History,
   Loader2,
@@ -132,7 +133,14 @@ export function AskAiSheet({
   const removeChat = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    await deleteAskAiChat(id)
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is. The chat stays listed
+    // until the server has really deleted it.
+    const result = await deleteAskAiChat(id).catch(() => null)
+    if (!result?.success) {
+      toast.error(result?.error || t('deleteChatFailed'))
+      return
+    }
     setChats((prev) => prev.filter((c) => c.id !== id))
     if (chatId === id) startNewChat()
   }

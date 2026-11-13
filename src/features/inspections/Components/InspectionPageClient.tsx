@@ -424,50 +424,52 @@ export function InspectionPageClient({
    */
   const handleCreateQuoteFromInspection = async () => {
     setIsCreatingQuote(true)
-    const created = await createQuoteFromInspection(inspection.id)
-    if (created.success && created.data) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const created = await createQuoteFromInspection(inspection.id).catch(() => null)
+    if (created?.success && created.data) {
       router.push(`/quotes/${created.data.id}`)
     } else {
-      toast.error(created.error || t('quoteFailed'))
+      toast.error(created?.error || t('quoteFailed'))
       setIsCreatingQuote(false)
     }
   }
 
   const handleComplete = () => {
     startTransition(async () => {
-      const done = await completeInspection(inspection.id)
-      if (done.success) {
+      const done = await completeInspection(inspection.id).catch(() => null)
+      if (done?.success) {
         toast.success(t('completed'))
         setShowCompleteDialog(false)
         setShowShareDialog(true)
         router.refresh()
       } else {
-        toast.error(done.error || t('completeFailed'))
+        toast.error(done?.error || t('completeFailed'))
       }
     })
   }
 
   const handleReopen = () => {
     startTransition(async () => {
-      const reopened = await reopenInspection(inspection.id)
-      if (reopened.success) {
+      const reopened = await reopenInspection(inspection.id).catch(() => null)
+      if (reopened?.success) {
         toast.success(t('reopened'))
         setShowReopenDialog(false)
         router.refresh()
       } else {
-        toast.error(reopened.error || t('reopenFailed'))
+        toast.error(reopened?.error || t('reopenFailed'))
       }
     })
   }
 
   const handleDelete = () => {
     startTransition(async () => {
-      const removed = await deleteInspection(inspection.id)
-      if (removed.success) {
+      const removed = await deleteInspection(inspection.id).catch(() => null)
+      if (removed?.success) {
         toast.success(t('deleted'))
         router.push('/inspections')
       } else {
-        toast.error(removed.error || t('deleteFailed'))
+        toast.error(removed?.error || t('deleteFailed'))
       }
     })
   }

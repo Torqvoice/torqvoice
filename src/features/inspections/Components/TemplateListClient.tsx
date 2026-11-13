@@ -262,26 +262,28 @@ export function TemplateListClient({
 
   const handleTranslate = () => {
     startTranslating(async () => {
-      const result = await translateChecklists(locale)
-      if (result.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const result = await translateChecklists(locale).catch(() => null)
+      if (result?.success) {
         toast.success(t('translated', { language: languageName(locale, locale) }))
         router.refresh()
       } else {
-        toast.error(result.error || t('translateFailed'))
+        toast.error(result?.error || t('translateFailed'))
       }
     })
   }
 
   const handleRestore = () => {
     startInstalling(async () => {
-      const result = await restoreMissingPresets()
-      if (result.success && result.data) {
+      const result = await restoreMissingPresets().catch(() => null)
+      if (result?.success && result.data) {
         toast.success(
           result.data.added === 0 ? t('allPresent') : t('restored', { count: result.data.added })
         )
         router.refresh()
       } else {
-        toast.error(result.error || t('restoreFailed'))
+        toast.error(result?.error || t('restoreFailed'))
       }
     })
   }
@@ -289,26 +291,26 @@ export function TemplateListClient({
 
   const handleDelete = (id: string) => {
     startDeleteTransition(async () => {
-      const result = await deleteTemplate(id)
-      if (result.success) {
+      const result = await deleteTemplate(id).catch(() => null)
+      if (result?.success) {
         toast.success(t('deleted'))
         setDeleteTarget(null)
         router.refresh()
       } else {
-        toast.error(result.error || t('deleteFailed'))
+        toast.error(result?.error || t('deleteFailed'))
       }
     })
   }
 
   const handleDuplicate = async (id: string) => {
     setDuplicatingId(id)
-    const result = await duplicateTemplate(id)
+    const result = await duplicateTemplate(id).catch(() => null)
     setDuplicatingId(null)
-    if (result.success) {
+    if (result?.success) {
       toast.success(t('duplicated'))
       router.refresh()
     } else {
-      toast.error(result.error || t('duplicateFailed'))
+      toast.error(result?.error || t('duplicateFailed'))
     }
   }
 

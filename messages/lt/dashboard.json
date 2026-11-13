@@ -75,7 +75,8 @@
     "dismissedOn": "Atmesta {date}",
     "restore": "Atkurti",
     "settingsAriaLabel": "Priežiūros nustatymai",
-    "dismissAriaLabel": "Atmesti"
+    "dismissAriaLabel": "Atmesti",
+    "dismissError": "Nepavyko atmesti transporto priemonės. Bandykite dar kartą."
   },
   "reminders": {
     "title": "Artėjantys priminimai",

@@ -106,6 +106,7 @@
     "deleteBody": "{duration} on {job} by {technician} will be removed from the timesheet. This cannot be undone.",
     "deleteConfirm": "Delete",
     "deleted": "Entry deleted",
+    "deleteFailed": "Could not delete the entry",
     "stoppedByManager": "Clock stopped at {minutes}",
     "csv": {
       "technician": "Technician",

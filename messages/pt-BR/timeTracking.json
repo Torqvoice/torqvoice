@@ -106,6 +106,7 @@
     "deleteBody": "{duration} em {job} por {technician} será removido da folha de ponto. Isso não pode ser desfeito.",
     "deleteConfirm": "Excluir",
     "deleted": "Registro excluído",
+    "deleteFailed": "Não foi possível excluir o registro",
     "stoppedByManager": "Relógio parado em {minutes}",
     "csv": {
       "technician": "Técnico",

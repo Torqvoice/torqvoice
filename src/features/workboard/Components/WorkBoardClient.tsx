@@ -67,6 +67,7 @@ import {
   toBoardJob,
 } from '../utils/board-time'
 import { useDateSettings } from '@/components/date-settings-context'
+import { type ReadBack, useOverlappingSaves } from '@/lib/use-overlapping-saves'
 import { awayKey, useBoardCalendar } from '../hooks/useBoardCalendar'
 import { overlapsSpans } from '@/features/workshop-calendar/Lib/boardDays'
 import { TimeOffDialog } from '@/features/workshop-calendar/Components/TimeOffDialog'
@@ -109,6 +110,29 @@ function pointerAt(event: DragEndEvent): { x: number; y: number } | null {
     x: activator.clientX + event.delta.x,
     y: activator.clientY + event.delta.y,
   }
+}
+
+type BoardState = ReturnType<typeof useWorkBoardStore.getState>
+
+/**
+ * Reads the board back from the server after overlapping changes partly
+ * failed (see `useOverlappingSaves`).
+ */
+const readBoardBack: ReadBack = async (idle) => {
+  const weekShown = useWorkBoardStore.getState().weekStart
+  const [jobs, pool] = await Promise.all([
+    getBoardJobs(weekShown).catch(() => null),
+    getUnassignedJobs().catch(() => null),
+  ])
+  if (!idle() || !jobs?.success || !jobs.data || !pool?.success || !pool.data) return false
+  const store = useWorkBoardStore.getState()
+  // Another week opened meanwhile was read by its own load.
+  if (store.weekStart === weekShown) store.setJobs(jobs.data as WorkBoardJob[])
+  store.setUnassigned(
+    pool.data.serviceRecords as Parameters<BoardState['setUnassigned']>[0],
+    pool.data.inspections as Parameters<BoardState['setUnassigned']>[1]
+  )
+  return true
 }
 
 /**
@@ -159,6 +183,7 @@ export function WorkBoardClient({
   boardSettings: WorkBoardSettings
 }) {
   const store = useWorkBoardStore()
+  const save = useOverlappingSaves(readBoardBack)
   const t = useTranslations('workBoard.board')
   const tToolbar = useTranslations('workBoard.toolbar')
   const tCal = useTranslations('workshopCalendar')
@@ -517,23 +542,26 @@ export function WorkBoardClient({
         endDateTime: end.toISOString(),
       })
 
-      const res = await scheduleJob({
-        id: job.id,
-        type: job.type,
-        ...assignment,
-        startDateTime: start,
-        endDateTime: end,
-      })
+      const res = await save(
+        () =>
+          scheduleJob({
+            id: job.id,
+            type: job.type,
+            ...assignment,
+            startDateTime: start,
+            endDateTime: end,
+          }),
+        () => store.optimisticSchedule(job.id, previous)
+      )
 
-      if (!res.success) {
-        store.optimisticSchedule(job.id, previous)
-        toast.error(t('failedMove'), { description: res.error })
+      if (!res?.success) {
+        toast.error(t('failedMove'), { description: res?.error })
       } else {
         if (res.data) store.updateJob(res.data as WorkBoardJob)
         warnAboutCalendar(laneId, start, end)
       }
     },
-    [preferences.grouping, store, t, warnAboutCalendar, realJob, timezone]
+    [preferences.grouping, store, save, t, warnAboutCalendar, realJob, timezone]
   )
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -570,10 +598,12 @@ export function WorkBoardClient({
       store.removeJob(job.id)
       // A request that never reaches the server throws instead of answering;
       // the job is still assigned, so it goes back on the board.
-      const res = await unassignJob({ id: job.id, type: job.type }).catch(() => null)
+      const res = await save(
+        () => unassignJob({ id: job.id, type: job.type }),
+        () => store.addJob(job)
+      )
       if (!res?.success) {
         toast.error(t('failedRemove'), { description: res?.error })
-        store.addJob(job)
       } else {
         const unRes = await getUnassignedJobs()
         if (unRes.success && unRes.data)
@@ -651,16 +681,19 @@ export function WorkBoardClient({
         store.removeFromUnassigned(pooled.id, type)
         const startAt = fromBoardDate(start, timezone)
         const endAt = fromBoardDate(end, timezone)
-        const res = await scheduleJob({
-          id: pooled.id,
-          type,
-          ...assignment,
-          startDateTime: startAt,
-          endDateTime: endAt,
-        })
-        if (!res.success) {
-          toast.error(t('failedAssign'), { description: res.error })
-          store.addToUnassigned(activeData.job, type)
+        const res = await save(
+          () =>
+            scheduleJob({
+              id: pooled.id,
+              type,
+              ...assignment,
+              startDateTime: startAt,
+              endDateTime: endAt,
+            }),
+          () => store.addToUnassigned(activeData.job, type)
+        )
+        if (!res?.success) {
+          toast.error(t('failedAssign'), { description: res?.error })
         } else {
           if (res.data) store.addJob(res.data as WorkBoardJob)
           warnAboutCalendar(laneId, startAt, endAt)
@@ -684,17 +717,15 @@ export function WorkBoardClient({
 
       // Move to different tech if needed
       if (!sameTech) {
-        store.optimisticMove(job.id, overData.technicianId)
-        const res = await moveJob({
-          id: job.id,
-          technicianId: overData.technicianId,
-          sortOrder: 0,
-          type: job.type,
-        })
-        if (!res.success) {
-          toast.error(t('failedMove'), { description: res.error })
+        const technicianId = overData.technicianId
+        store.optimisticMove(job.id, technicianId)
+        const res = await save(
+          () => moveJob({ id: job.id, technicianId, sortOrder: 0, type: job.type }),
           // The whole job back as it was, helpers included.
-          store.updateJob(stored)
+          () => store.updateJob(stored)
+        )
+        if (!res?.success) {
+          toast.error(t('failedMove'), { description: res?.error })
           return
         } else if (res.data) store.updateJob(res.data as WorkBoardJob)
       }
@@ -714,14 +745,18 @@ export function WorkBoardClient({
           : boardSettings.workDayStart
         const newStart = fromBoardDate(new Date(dropDate + 'T' + timeOfDay + ':00'), timezone)
         const newEnd = new Date(newStart.getTime() + duration)
+        const times = realJob(job)
         store.updateServiceTimes(job.id, newStart.toISOString(), newEnd.toISOString())
-        const timeRes = await updateServiceTimes({
-          id: job.id,
-          startDateTime: newStart,
-          endDateTime: newEnd,
-        })
-        if (!timeRes.success) {
-          toast.error(t('failedMove'), { description: timeRes.error })
+        const timeRes = await save(
+          () => updateServiceTimes({ id: job.id, startDateTime: newStart, endDateTime: newEnd }),
+          () =>
+            store.optimisticSchedule(job.id, {
+              startDateTime: times.startDateTime,
+              endDateTime: times.endDateTime,
+            })
+        )
+        if (!timeRes?.success) {
+          toast.error(t('failedMove'), { description: timeRes?.error })
         }
       }
       return
@@ -737,17 +772,15 @@ export function WorkBoardClient({
         timezone
       )
       const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000)
+      const technicianId = overData.technicianId
       store.removeFromUnassigned(job.id, jobType)
-      const res = await assignTechnician({
-        id: job.id,
-        technicianId: overData.technicianId,
-        type: jobType,
-        startDateTime,
-        endDateTime,
-      })
-      if (!res.success) {
-        toast.error(t('failedAssign'), { description: res.error })
-        store.addToUnassigned(job, jobType)
+      const res = await save(
+        () =>
+          assignTechnician({ id: job.id, technicianId, type: jobType, startDateTime, endDateTime }),
+        () => store.addToUnassigned(job, jobType)
+      )
+      if (!res?.success) {
+        toast.error(t('failedAssign'), { description: res?.error })
       } else if (res.data) store.addJob(res.data as WorkBoardJob)
     }
   }
@@ -758,10 +791,12 @@ export function WorkBoardClient({
     store.removeJob(job.id)
     // As when a job is dragged off the board: one that could not be
     // unassigned goes back on it.
-    const res = await unassignJob({ id: job.id, type: job.type }).catch(() => null)
+    const res = await save(
+      () => unassignJob({ id: job.id, type: job.type }),
+      () => store.addJob(job)
+    )
     if (!res?.success) {
       toast.error(t('failedRemove'), { description: res?.error })
-      store.addJob(job)
     } else {
       const unRes = await getUnassignedJobs()
       if (unRes.success && unRes.data)

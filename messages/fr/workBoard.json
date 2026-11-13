@@ -81,7 +81,9 @@
     "linkedManagedOnTeam": "Géré depuis la page Équipe, avec son accès à l'application.",
     "skills": "Compétences",
     "skillsPlaceholder": "Diagnostic, habilité VE",
-    "skillsHint": "Affiché sous le nom là où le travail est attribué. Facultatif."
+    "skillsHint": "Affiché sous le nom là où le travail est attribué. Facultatif.",
+    "saveFailed": "Impossible d'enregistrer le technicien. Veuillez réessayer.",
+    "deleteFailed": "Impossible de supprimer le technicien. Veuillez réessayer."
   },
   "jobDetail": {
     "viewDetails": "Voir les Détails",

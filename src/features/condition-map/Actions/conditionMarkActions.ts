@@ -9,13 +9,8 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { releaseFiles } from '@/lib/files/manager'
 import { BODY_TYPES } from '../Lib/drawingTypes'
-import {
-  type ConditionMarkData,
-  markInputSchema,
-  markPatchSchema,
-  numberedMarks,
-} from '../Lib/marks'
-import { MARK_SELECT } from '../Lib/loadMarks.server'
+import { type ConditionMarkData, markInputSchema, markPatchSchema } from '../Lib/marks'
+import { loadVehicleConditionMarks } from '../Lib/loadMarks.server'
 import {
   addMarkPhotos,
   carryMarks,
@@ -41,17 +36,14 @@ function subjectFor(scope: { inspectionId?: string | null; serviceRecordId?: str
   return scope.inspectionId ? PermissionSubject.INSPECTIONS : PermissionSubject.SERVICES
 }
 
-/** Every mark ever drawn on the vehicle, oldest first; resolved ones included as history. */
+/**
+ * Every mark ever drawn on the vehicle, oldest first; resolved ones included
+ * as history. The same list the page loads, so a card can read itself back.
+ */
 export async function listVehicleConditionMarks(vehicleId: string) {
   return withAuth(
-    async ({ organizationId }): Promise<ConditionMarkData[]> => {
-      const rows = await db.conditionMark.findMany({
-        where: { vehicleId, organizationId },
-        select: MARK_SELECT,
-        orderBy: { recordedAt: 'asc' },
-      })
-      return numberedMarks(rows)
-    },
+    async ({ organizationId }): Promise<ConditionMarkData[]> =>
+      loadVehicleConditionMarks(organizationId, vehicleId),
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
     }

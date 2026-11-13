@@ -73,6 +73,7 @@
     "allDoneDescription": "Todos os passos foram concluídos e a sua oficina já está a funcionar.",
     "dismiss": "Ocultar cartão",
     "dismissAriaLabel": "Ocultar esta lista",
+    "dismissFailed": "Não foi possível ocultar a lista. Tente novamente.",
     "importTitle": "Já tem clientes e viaturas noutro sítio?",
     "importDescription": "Importe-os de uma folha de cálculo ou do seu sistema antigo"
   },

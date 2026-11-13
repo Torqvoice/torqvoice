@@ -64,6 +64,7 @@ export function JobClockSection({
 }) {
   const t = useTranslations('timeTracking.job')
   const tPage = useTranslations('timeTracking.page')
+  const tClock = useTranslations('timeTracking.clock')
   const { formatTime } = useFormatDate()
   const clock = useTimeClock()
   const confirm = useConfirm()
@@ -132,10 +133,12 @@ export function JobClockSection({
   // being allowed to clock: a technician's own record is not theirs to edit.
   const handleStop = async (entry: SheetEntry) => {
     setBusyId(entry.id)
-    const result = await stopTimeEntry(entry.id)
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await stopTimeEntry(entry.id).catch(() => null)
     setBusyId(null)
-    if (!result.success || !result.data) {
-      toast.error(result.error ?? tPage('loadFailed'))
+    if (!result?.success || !result.data) {
+      toast.error(result?.error ?? tClock('stopFailed'))
       return
     }
     toast.success(
@@ -157,10 +160,10 @@ export function JobClockSection({
     })
     if (!ok) return
     setBusyId(entry.id)
-    const result = await deleteTimeEntry(entry.id)
+    const result = await deleteTimeEntry(entry.id).catch(() => null)
     setBusyId(null)
-    if (!result.success) {
-      toast.error(result.error ?? tPage('loadFailed'))
+    if (!result?.success) {
+      toast.error(result?.error ?? tPage('deleteFailed'))
       return
     }
     toast.success(tPage('deleted'))

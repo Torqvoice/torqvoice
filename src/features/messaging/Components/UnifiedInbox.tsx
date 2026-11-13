@@ -152,12 +152,17 @@ export function UnifiedInbox({
   // answer "no results" for a conversation two pages down.
   const runSearch = useCallback(async (term?: string) => {
     setLoadingMore(true)
-    const result = await getInboxThreads({ search: term })
-    if (result.success && result.data) {
-      setThreads(result.data.threads)
-      setCursor(result.data.nextCursor)
+    // A request that never reaches the server throws. The spinner still has
+    // to stop, or loading more stays blocked until the page is reloaded.
+    try {
+      const result = await getInboxThreads({ search: term })
+      if (result.success && result.data) {
+        setThreads(result.data.threads)
+        setCursor(result.data.nextCursor)
+      }
+    } finally {
+      setLoadingMore(false)
     }
-    setLoadingMore(false)
   }, [])
 
   const { value: search, setValue: setSearch } = useDebouncedSearch('', runSearch)
@@ -172,16 +177,19 @@ export function UnifiedInbox({
   const loadMore = useCallback(async () => {
     if (!cursor || loadingMore) return
     setLoadingMore(true)
-    const result = await getInboxThreads({ cursor, search: search.trim() || undefined })
-    if (result.success && result.data) {
-      const page = result.data
-      setThreads((previous) => {
-        const seen = new Set(previous.map((thread) => thread.key))
-        return [...previous, ...page.threads.filter((thread) => !seen.has(thread.key))]
-      })
-      setCursor(page.nextCursor)
+    try {
+      const result = await getInboxThreads({ cursor, search: search.trim() || undefined })
+      if (result.success && result.data) {
+        const page = result.data
+        setThreads((previous) => {
+          const seen = new Set(previous.map((thread) => thread.key))
+          return [...previous, ...page.threads.filter((thread) => !seen.has(thread.key))]
+        })
+        setCursor(page.nextCursor)
+      }
+    } finally {
+      setLoadingMore(false)
     }
-    setLoadingMore(false)
   }, [cursor, loadingMore, search])
 
   // Continuous scroll: the button below stays for keyboards and for the case
@@ -301,16 +309,24 @@ export function UnifiedInbox({
       void markRead(thread)
       if (!thread.customerId) return
 
+      // The spinner stops even when the request never reaches the server;
+      // the rejection still goes on to the lost-connection notice.
       if (thread.channel === 'sms') {
         setLoadingConversation(true)
-        const result = await getConversation(thread.customerId)
-        if (result.success && result.data) setSmsData(result.data)
-        setLoadingConversation(false)
+        try {
+          const result = await getConversation(thread.customerId)
+          if (result.success && result.data) setSmsData(result.data)
+        } finally {
+          setLoadingConversation(false)
+        }
       } else if (thread.channel === 'telegram') {
         setLoadingConversation(true)
-        const result = await getTelegramConversation(thread.customerId)
-        if (result.success && result.data) setTelegramData(result.data)
-        setLoadingConversation(false)
+        try {
+          const result = await getTelegramConversation(thread.customerId)
+          if (result.success && result.data) setTelegramData(result.data)
+        } finally {
+          setLoadingConversation(false)
+        }
       }
     },
     [markRead]
@@ -352,25 +368,35 @@ export function UnifiedInbox({
     // A WhatsApp thread can exist under a bare number, and those are the ones
     // most worth clearing away: test sends and wrong numbers. Email threads
     // are filed by customer or by address, and one action handles both.
-    const result =
-      thread.channel === 'email'
-        ? await deleteEmailConversation({ customerId: thread.customerId, contact: thread.contact })
-        : !thread.customerId
-          ? await deleteWhatsappConversationByPhone(thread.contact)
-          : thread.channel === 'sms'
-            ? await deleteConversation(thread.customerId)
-            : thread.channel === 'telegram'
-              ? await deleteTelegramConversation(thread.customerId)
-              : await deleteWhatsappConversation(thread.customerId)
+    let result: { success: boolean; error?: string } | null
+    try {
+      result =
+        thread.channel === 'email'
+          ? await deleteEmailConversation({
+              customerId: thread.customerId,
+              contact: thread.contact,
+            })
+          : !thread.customerId
+            ? await deleteWhatsappConversationByPhone(thread.contact)
+            : thread.channel === 'sms'
+              ? await deleteConversation(thread.customerId)
+              : thread.channel === 'telegram'
+                ? await deleteTelegramConversation(thread.customerId)
+                : await deleteWhatsappConversation(thread.customerId)
+    } catch {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      result = null
+    }
 
     setIsDeleting(false)
     setDeleteTarget(null)
 
-    if (result.success) {
+    if (result?.success) {
       if (selected?.key === thread.key) setSelected(null)
       onChanged?.()
     } else {
-      toast.error(result.error ?? t('deleteFailed'))
+      toast.error(result?.error ?? t('deleteFailed'))
     }
   }
 

@@ -75,7 +75,8 @@
     "dismissedOn": "Genegeerd op {date}",
     "restore": "Herstellen",
     "settingsAriaLabel": "Onderhoudsinstellingen",
-    "dismissAriaLabel": "Negeren"
+    "dismissAriaLabel": "Negeren",
+    "dismissError": "Kon het voertuig niet negeren. Probeer het opnieuw."
   },
   "reminders": {
     "title": "Aankomende herinneringen",

@@ -81,7 +81,9 @@
     "linkedManagedOnTeam": "Valdoma Komandos puslapyje kartu su prieiga prie programėlės.",
     "skills": "Įgūdžiai",
     "skillsPlaceholder": "Diagnostika, elektromobilių sertifikatas",
-    "skillsHint": "Rodoma po vardu ten, kur skirstomi darbai. Neprivaloma."
+    "skillsHint": "Rodoma po vardu ten, kur skirstomi darbai. Neprivaloma.",
+    "saveFailed": "Nepavyko išsaugoti techniko. Bandykite dar kartą.",
+    "deleteFailed": "Nepavyko ištrinti techniko. Bandykite dar kartą."
   },
   "jobDetail": {
     "viewDetails": "Peržiūrėti informaciją",

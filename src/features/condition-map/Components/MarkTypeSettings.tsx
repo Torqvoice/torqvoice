@@ -87,12 +87,14 @@ export function MarkTypeSettings({ types }: { types: MarkType[] }) {
       color: draft.color,
       hidden: draft.hidden,
     }
+    // An action that cannot reach the server throws instead of answering,
+    // here and below, so it is caught and reported the way a refusal is.
     const result = draft.key
-      ? await updateMarkType({ key: draft.key, ...payload })
-      : await createMarkType(payload)
+      ? await updateMarkType({ key: draft.key, ...payload }).catch(() => null)
+      : await createMarkType(payload).catch(() => null)
     setSaving(false)
-    if (!result.success) {
-      toast.error(result.error || t('failed'))
+    if (!result?.success) {
+      toast.error(result?.error || t('failed'))
       return
     }
     toast.success(t('saved'))
@@ -108,9 +110,9 @@ export function MarkTypeSettings({ types }: { types: MarkType[] }) {
       shape: type.shape,
       color: type.color,
       hidden,
-    })
+    }).catch(() => null)
     setBusyKey(null)
-    if (!result.success) toast.error(result.error || t('failed'))
+    if (!result?.success) toast.error(result?.error || t('failed'))
     router.refresh()
   }
 
@@ -125,10 +127,10 @@ export function MarkTypeSettings({ types }: { types: MarkType[] }) {
     })
     if (!ok) return
     setBusyKey(type.key)
-    const result = await removeMarkType(type.key)
+    const result = await removeMarkType(type.key).catch(() => null)
     setBusyKey(null)
-    if (!result.success) {
-      toast.error(result.error || t('failed'))
+    if (!result?.success) {
+      toast.error(result?.error || t('failed'))
       return
     }
     router.refresh()
@@ -140,9 +142,9 @@ export function MarkTypeSettings({ types }: { types: MarkType[] }) {
     const keys = types.map((type) => type.key)
     ;[keys[index], keys[target]] = [keys[target], keys[index]]
     setBusyKey(keys[target])
-    const result = await reorderMarkTypes({ keys })
+    const result = await reorderMarkTypes({ keys }).catch(() => null)
     setBusyKey(null)
-    if (!result.success) toast.error(result.error || t('failed'))
+    if (!result?.success) toast.error(result?.error || t('failed'))
     router.refresh()
   }
 

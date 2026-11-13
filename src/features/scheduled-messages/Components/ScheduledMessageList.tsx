@@ -100,26 +100,29 @@ export function ScheduledMessageList({
     [messages]
   )
 
+  // An action that cannot reach the server throws instead of answering, so
+  // each one is caught and reported the way a refusal is, and the row's
+  // buttons are free again.
   const handleSendNow = async (message: ScheduledMessageListItem) => {
     setBusyId(message.id)
-    const result = await sendScheduledMessageNow(message.id)
-    if (result.success) {
+    const result = await sendScheduledMessageNow(message.id).catch(() => null)
+    if (result?.success) {
       toast.success(t('sentNow'))
       onChanged()
     } else {
-      toast.error(result.error || t('sendError'))
+      toast.error(result?.error || t('sendError'))
     }
     setBusyId(null)
   }
 
   const handleCancel = async (message: ScheduledMessageListItem) => {
     setBusyId(message.id)
-    const result = await cancelScheduledMessage(message.id)
-    if (result.success) {
+    const result = await cancelScheduledMessage(message.id).catch(() => null)
+    if (result?.success) {
       toast.success(t('cancelled'))
       onChanged()
     } else {
-      toast.error(result.error || t('cancelError'))
+      toast.error(result?.error || t('cancelError'))
     }
     setBusyId(null)
   }
@@ -127,12 +130,12 @@ export function ScheduledMessageList({
   const handleDelete = async () => {
     if (!deleteTarget) return
     setBusyId(deleteTarget.id)
-    const result = await deleteScheduledMessage(deleteTarget.id)
-    if (result.success) {
+    const result = await deleteScheduledMessage(deleteTarget.id).catch(() => null)
+    if (result?.success) {
       toast.success(t('deleted'))
       onChanged()
     } else {
-      toast.error(result.error || t('deleteError'))
+      toast.error(result?.error || t('deleteError'))
     }
     setBusyId(null)
     setDeleteTarget(null)

@@ -75,7 +75,8 @@
     "dismissedOn": "Отклонено {date}",
     "restore": "Восстановить",
     "settingsAriaLabel": "Настройки техобслуживания",
-    "dismissAriaLabel": "Отклонить"
+    "dismissAriaLabel": "Отклонить",
+    "dismissError": "Не удалось отклонить транспортное средство. Попробуйте ещё раз."
   },
   "reminders": {
     "title": "Предстоящие напоминания",

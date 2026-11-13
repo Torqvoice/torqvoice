@@ -56,10 +56,14 @@ export function GettingStartedCard({ data }: { data: OnboardingChecklistData }) 
         ? '/settings/company'
         : data.invoiceHref
 
+  // An action that cannot reach the server throws instead of answering, and a
+  // throw inside a transition replaces the page with the error screen, so it
+  // is caught and reported the way a refusal is.
   const handleDismiss = () => {
     startTransition(async () => {
-      await dismissOnboardingChecklist()
-      router.refresh()
+      const result = await dismissOnboardingChecklist().catch(() => null)
+      if (result?.success) router.refresh()
+      else toast.error(result?.error || t('dismissFailed'))
     })
   }
 
@@ -72,13 +76,13 @@ export function GettingStartedCard({ data }: { data: OnboardingChecklistData }) 
     })
     if (!ok) return
     setRemoving(true)
-    const result = await removeSampleData()
+    const result = await removeSampleData().catch(() => null)
     setRemoving(false)
-    if (result.success) {
+    if (result?.success) {
       toast.success(tSample('removed'))
       router.refresh()
     } else {
-      toast.error(result.error || tSample('removeFailed'))
+      toast.error(result?.error || tSample('removeFailed'))
     }
   }
 

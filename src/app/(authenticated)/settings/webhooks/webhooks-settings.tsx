@@ -266,46 +266,48 @@ function WebhookRow({
 
   const handleToggle = () =>
     startTransition(async () => {
-      const r = await toggleWebhook(webhook.id)
-      if (r.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const r = await toggleWebhook(webhook.id).catch(() => null)
+      if (r?.success) {
         toast.success(r.data?.isActive ? t('resumed') : t('paused'))
         onRefresh()
       } else {
-        toast.error(r.error || t('toggleFailed'))
+        toast.error(r?.error || t('toggleFailed'))
       }
     })
 
   const handleTest = () =>
     startTransition(async () => {
-      const r = await sendTestWebhook(webhook.id)
-      if (r.success) {
+      const r = await sendTestWebhook(webhook.id).catch(() => null)
+      if (r?.success) {
         toast.success(t('testSent'))
         onRefresh()
       } else {
-        toast.error(r.error || t('testFailed'))
+        toast.error(r?.error || t('testFailed'))
       }
     })
 
   const handleDelete = () =>
     startTransition(async () => {
-      const r = await deleteWebhook(webhook.id)
-      if (r.success) {
+      const r = await deleteWebhook(webhook.id).catch(() => null)
+      if (r?.success) {
         toast.success(t('deleted'))
         setConfirmDelete(false)
         onRefresh()
       } else {
-        toast.error(r.error || t('deleteFailed'))
+        toast.error(r?.error || t('deleteFailed'))
       }
     })
 
   const handleRotate = () =>
     startTransition(async () => {
-      const r = await rotateWebhookSecret(webhook.id)
-      if (r.success && r.data) {
+      const r = await rotateWebhookSecret(webhook.id).catch(() => null)
+      if (r?.success && r.data) {
         setRotated(r.data.secret)
         setConfirmRotate(false)
       } else {
-        toast.error(r.error || t('rotateFailed'))
+        toast.error(r?.error || t('rotateFailed'))
       }
     })
 
@@ -591,21 +593,23 @@ function WebhookFormDialog({
         description: description.trim() || null,
         events: finalEvents,
       }
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       if (editing) {
-        const r = await updateWebhook({ ...payload, id: editing.id })
-        if (r.success) {
+        const r = await updateWebhook({ ...payload, id: editing.id }).catch(() => null)
+        if (r?.success) {
           toast.success(t('updated'))
           onUpdated()
         } else {
-          toast.error(r.error || t('saveFailed'))
+          toast.error(r?.error || t('saveFailed'))
         }
       } else {
-        const r = await createWebhook(payload)
-        if (r.success && r.data) {
+        const r = await createWebhook(payload).catch(() => null)
+        if (r?.success && r.data) {
           toast.success(t('created'))
           onCreated({ name: r.data.name, secret: r.data.secret })
         } else {
-          toast.error(r.error || t('saveFailed'))
+          toast.error(r?.error || t('saveFailed'))
         }
       }
     })
@@ -813,12 +817,14 @@ function DeliveriesSheet({ webhook, onClose }: { webhook: Webhook; onClose: () =
 
   const handleRetry = (id: string) =>
     startTransition(async () => {
-      const r = await retryWebhookDelivery(id)
-      if (r.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const r = await retryWebhookDelivery(id).catch(() => null)
+      if (r?.success) {
         toast.success(t('retryQueued'))
         load()
       } else {
-        toast.error(r.error || t('retryFailed'))
+        toast.error(r?.error || t('retryFailed'))
       }
     })
 

@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, UserX } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   createTechnician,
   updateTechnician,
@@ -84,6 +85,9 @@ export function TechnicianDialog({
     if (!name.trim()) return
     setLoading(true)
 
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is, and the dialog stays
+    // open with what was typed.
     if (technician) {
       const res = await updateTechnician({
         id: technician.id,
@@ -91,8 +95,8 @@ export function TechnicianDialog({
         color,
         skills: skills.trim() || null,
         userId: userId && userId !== 'none' ? userId : null,
-      })
-      if (res.success) {
+      }).catch(() => null)
+      if (res?.success) {
         // Update store
         const store = useWorkBoardStore.getState()
         store.setTechnicians(
@@ -109,6 +113,8 @@ export function TechnicianDialog({
           )
         )
         onOpenChange(false)
+      } else {
+        toast.error(res?.error || t('saveFailed'))
       }
     } else {
       const res = await createTechnician({
@@ -116,10 +122,12 @@ export function TechnicianDialog({
         color,
         skills: skills.trim() || undefined,
         userId: userId && userId !== 'none' ? userId : undefined,
-      })
-      if (res.success && res.data) {
+      }).catch(() => null)
+      if (res?.success && res.data) {
         addTechnician(res.data as Technician)
         onOpenChange(false)
+      } else {
+        toast.error(res?.error || t('saveFailed'))
       }
     }
 
@@ -226,10 +234,14 @@ export function TechnicianDialog({
                   })
                   if (!ok) return
                   setDeleting(true)
-                  const res = await deleteTechnician(technician.id)
-                  if (res.success) {
+                  // Caught for the same reason as a save: a dropped
+                  // connection throws instead of answering.
+                  const res = await deleteTechnician(technician.id).catch(() => null)
+                  if (res?.success) {
                     useWorkBoardStore.getState().removeTechnician(technician.id)
                     onOpenChange(false)
+                  } else {
+                    toast.error(res?.error || t('deleteFailed'))
                   }
                   setDeleting(false)
                 }}

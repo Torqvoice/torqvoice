@@ -97,12 +97,15 @@ export function TimeOffDialog({
     if (!technicianId || problem) return
     setSaving(true)
     const payload = { technicianId, reason, note: note.trim() || null, ...stretchPayload(stretch) }
+    // An action that cannot reach the server throws instead of answering,
+    // here and in the delete below, so it is caught and reported the way a
+    // refusal is, and the dialog's buttons work again.
     const res = absence
-      ? await updateAbsence({ id: absence.id, ...payload })
-      : await createAbsence(payload)
+      ? await updateAbsence({ id: absence.id, ...payload }).catch(() => null)
+      : await createAbsence(payload).catch(() => null)
     setSaving(false)
-    if (!res.success) {
-      toast.error(res.error ?? tc('errors.unexpected'))
+    if (!res?.success) {
+      toast.error(res?.error ?? tc('errors.unexpected'))
       return
     }
     toast.success(t('saved'))
@@ -120,10 +123,10 @@ export function TimeOffDialog({
     })
     if (!ok) return
     setSaving(true)
-    const res = await deleteAbsence(absence.id)
+    const res = await deleteAbsence(absence.id).catch(() => null)
     setSaving(false)
-    if (!res.success) {
-      toast.error(res.error ?? tc('errors.unexpected'))
+    if (!res?.success) {
+      toast.error(res?.error ?? tc('errors.unexpected'))
       return
     }
     toast.success(t('deleted'))

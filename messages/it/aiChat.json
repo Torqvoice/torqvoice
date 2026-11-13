@@ -12,6 +12,7 @@
   "noChats": "Nessuna chat precedente su questa scheda",
   "chatsPrivate": "Le tue chat sono private e visibili solo a te.",
   "deleteChat": "Elimina chat",
+  "deleteChatFailed": "Impossibile eliminare la chat. Riprova.",
   "error": "Qualcosa è andato storto. Riprova.",
   "disclaimer": "Le risposte sono generate dai dati mostrati nell'app e possono essere errate. Verificale prima di agire.",
   "vehicleSuggestion1": "Riassumi la cronologia degli interventi",

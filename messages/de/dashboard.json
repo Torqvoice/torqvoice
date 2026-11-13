@@ -75,7 +75,8 @@
     "dismissedOn": "Verworfen am {date}",
     "restore": "Wiederherstellen",
     "settingsAriaLabel": "Wartungseinstellungen",
-    "dismissAriaLabel": "Ausblenden"
+    "dismissAriaLabel": "Ausblenden",
+    "dismissError": "Fahrzeug konnte nicht ausgeblendet werden. Bitte versuchen Sie es erneut."
   },
   "reminders": {
     "title": "Anstehende Erinnerungen",

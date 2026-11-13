@@ -75,7 +75,8 @@
     "dismissedOn": "{date} tarihinde kapatıldı",
     "restore": "Geri Yükle",
     "settingsAriaLabel": "Bakım ayarları",
-    "dismissAriaLabel": "Kapat"
+    "dismissAriaLabel": "Kapat",
+    "dismissError": "Araç kapatılamadı. Tekrar deneyin."
   },
   "reminders": {
     "title": "Yaklaşan Hatırlatmalar",

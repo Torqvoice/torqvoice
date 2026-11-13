@@ -75,7 +75,8 @@
     "dismissedOn": "Descartado el {date}",
     "restore": "Restaurar",
     "settingsAriaLabel": "Ajustes de mantenimiento",
-    "dismissAriaLabel": "Descartar"
+    "dismissAriaLabel": "Descartar",
+    "dismissError": "No se pudo descartar el vehículo. Inténtelo de nuevo."
   },
   "reminders": {
     "title": "Recordatorios pendientes",

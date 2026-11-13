@@ -203,6 +203,8 @@ export default function RecurringInvoicesClient({
     }
 
     startTransition(async () => {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       const result = await createRecurringInvoice({
         title: title.trim(),
         description: description.trim() || undefined,
@@ -230,51 +232,51 @@ export default function RecurringInvoicesClient({
             hours: l.hours,
             rate: l.rate,
           })),
-      })
+      }).catch(() => null)
 
-      if (result.success) {
+      if (result?.success) {
         toast.success(t('recurring.created'))
         setShowCreate(false)
         resetForm()
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedCreate'))
+        toast.error(result?.error || t('recurring.failedCreate'))
       }
     })
   }
 
   const handleToggle = (id: string) => {
     startTransition(async () => {
-      const result = await toggleRecurringInvoice(id)
-      if (result.success) {
+      const result = await toggleRecurringInvoice(id).catch(() => null)
+      if (result?.success) {
         toast.success(t('recurring.statusUpdated'))
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedUpdate'))
+        toast.error(result?.error || t('recurring.failedUpdate'))
       }
     })
   }
 
   const handleDelete = (id: string) => {
     startTransition(async () => {
-      const result = await deleteRecurringInvoice(id)
-      if (result.success) {
+      const result = await deleteRecurringInvoice(id).catch(() => null)
+      if (result?.success) {
         toast.success(t('recurring.deleted'))
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedDelete'))
+        toast.error(result?.error || t('recurring.failedDelete'))
       }
     })
   }
 
   const handleProcessNow = () => {
     startTransition(async () => {
-      const result = await processRecurringInvoices()
-      if (result.success && result.data) {
+      const result = await processRecurringInvoices().catch(() => null)
+      if (result?.success && result.data) {
         toast.success(t('recurring.processed', { count: result.data.processed }))
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedProcess'))
+        toast.error(result?.error || t('recurring.failedProcess'))
       }
     })
   }

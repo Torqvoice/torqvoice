@@ -533,9 +533,12 @@ export function DashboardClient({
 
   const handleDismiss = async (vehicleId: string) => {
     setDismissingId(vehicleId)
-    await dismissMaintenance(vehicleId)
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await dismissMaintenance(vehicleId).catch(() => null)
     setDismissingId(null)
-    router.refresh()
+    if (result?.success) router.refresh()
+    else toast.error(result?.error || t('maintenance.dismissError'))
   }
 
   const handleRestore = async (vehicleId: string) => {

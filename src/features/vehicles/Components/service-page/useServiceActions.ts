@@ -311,20 +311,25 @@ export function useServiceActions({
     })
     if (!ok) return
     setDeletingAttachment(id)
-    const result = await deleteServiceAttachment(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, here
+    // and in the payment handlers below, so it is caught and reported the way
+    // a refusal is, and the button it disabled works again.
+    const result = await deleteServiceAttachment(id).catch(() => null)
+    if (result?.success) {
       toast.success(t('attachments.deleted'))
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('attachments.failedDelete'))
+      modal.open('error', tc('errors.error'), result?.error || t('attachments.failedDelete'))
     }
     setDeletingAttachment(null)
   }
 
   const buildPaymentNotifyMessage = async (amount: string) => {
     const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
-    const tplResult = await getSmsTemplates()
-    const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+    // Templates that cannot be read fall back to the default wording: the
+    // payment is already recorded by the time this runs.
+    const tplResult = await getSmsTemplates().catch(() => null)
+    const tplData = tplResult?.success && tplResult.data ? tplResult.data : null
     const tpl =
       tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] ||
       SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] ||
@@ -348,9 +353,9 @@ export function useServiceActions({
     note?: string
   }) => {
     setPaymentLoading(true)
-    const result = await createPayment({ serviceRecordId: record.id, ...data })
+    const result = await createPayment({ serviceRecordId: record.id, ...data }).catch(() => null)
     setPaymentLoading(false)
-    if (result.success) {
+    if (result?.success) {
       toast.success(t('payments.recorded'))
       router.refresh()
       if (record.customer ?? record.vehicle?.customer) {
@@ -358,15 +363,15 @@ export function useServiceActions({
       }
       return true
     }
-    modal.open('error', tc('errors.error'), result.error || t('payments.failedRecord'))
+    modal.open('error', tc('errors.error'), result?.error || t('payments.failedRecord'))
     return false
   }
 
   const handleTogglePaid = async () => {
     setPaymentLoading(true)
-    const result = await toggleManuallyPaid(record.id)
+    const result = await toggleManuallyPaid(record.id).catch(() => null)
     setPaymentLoading(false)
-    if (result.success) {
+    if (result?.success) {
       formState.setLocalManuallyPaid(!!result.data?.manuallyPaid)
       toast.success(
         result.data?.manuallyPaid ? t('payments.markedPaid') : t('payments.markedUnpaid')
@@ -376,7 +381,7 @@ export function useServiceActions({
         await buildPaymentNotifyMessage('')
       }
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('payments.failedStatus'))
+      modal.open('error', tc('errors.error'), result?.error || t('payments.failedStatus'))
     }
   }
 
@@ -389,12 +394,12 @@ export function useServiceActions({
     })
     if (!ok) return
     setDeletingPayment(id)
-    const result = await deletePayment(id)
-    if (result.success) {
+    const result = await deletePayment(id).catch(() => null)
+    if (result?.success) {
       toast.success(t('payments.deleted'))
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('payments.failedDelete'))
+      modal.open('error', tc('errors.error'), result?.error || t('payments.failedDelete'))
     }
     setDeletingPayment(null)
   }

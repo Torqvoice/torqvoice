@@ -106,6 +106,7 @@
     "deleteBody": "{duration} op {job} door {technician} wordt van de urenstaat verwijderd. Dit kan niet ongedaan worden gemaakt.",
     "deleteConfirm": "Verwijderen",
     "deleted": "Registratie verwijderd",
+    "deleteFailed": "Kon de registratie niet verwijderen",
     "stoppedByManager": "Klok gestopt op {minutes}",
     "csv": {
       "technician": "Monteur",

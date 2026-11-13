@@ -37,16 +37,19 @@ export function ArchiveVehicleDialog({
 
   const handleArchive = async () => {
     setLoading(true)
-    const result = await archiveVehicle(vehicleId, reason.trim() || undefined)
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is. The dialog stays open
+    // with the reason as typed, ready to try again.
+    const result = await archiveVehicle(vehicleId, reason.trim() || undefined).catch(() => null)
     setLoading(false)
 
-    if (result.success) {
+    if (result?.success) {
       toast.success(t('archived', { name: vehicleName }))
       setReason('')
       onOpenChange(false)
       router.refresh()
     } else {
-      toast.error(result.error || t('archiveError'))
+      toast.error(result?.error || t('archiveError'))
     }
   }
 

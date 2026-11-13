@@ -73,6 +73,7 @@
     "allDoneDescription": "Todos los pasos están completados y su taller ya está en marcha.",
     "dismiss": "Ocultar tarjeta",
     "dismissAriaLabel": "Ocultar esta lista",
+    "dismissFailed": "No se pudo ocultar la lista. Inténtelo de nuevo.",
     "importTitle": "¿Ya tiene clientes y vehículos en algún otro sitio?",
     "importDescription": "Impórtelos desde una hoja de cálculo o desde su sistema anterior"
   },

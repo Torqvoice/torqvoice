@@ -106,6 +106,7 @@
     "deleteBody": "{duration} sur {job} par {technician} seront retirées de la feuille de temps. Cette action est irréversible.",
     "deleteConfirm": "Supprimer",
     "deleted": "Entrée supprimée",
+    "deleteFailed": "Impossible de supprimer l'entrée",
     "stoppedByManager": "Pointage arrêté à {minutes}",
     "csv": {
       "technician": "Technicien",

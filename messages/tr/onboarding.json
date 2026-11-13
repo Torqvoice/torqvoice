@@ -73,6 +73,7 @@
     "allDoneDescription": "Tüm adımlar tamamlandı ve atölyeniz çalışıyor.",
     "dismiss": "Kartı gizle",
     "dismissAriaLabel": "Bu listeyi gizle",
+    "dismissFailed": "Liste gizlenemedi. Tekrar deneyin.",
     "importTitle": "Müşterileriniz ve araçlarınız zaten bir yerde kayıtlı mı?",
     "importDescription": "Bunları bir hesap tablosundan veya eski sisteminizden içe aktarın"
   },
