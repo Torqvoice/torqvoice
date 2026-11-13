@@ -26,6 +26,9 @@ vi.mock('@/features/inspection-reminders/Lib/booking', async (importOriginal) =>
 }))
 vi.mock('@/lib/db', () => {
   const db = {
+    // The job number query (src/lib/job-number.ts, once it lands): nothing yet
+    // in the workshop's format, so the number continues from the newest job.
+    $queryRaw: async () => [],
     user: { findUnique: vi.fn() },
     vehicle: { findFirst: vi.fn() },
     customer: { findFirst: vi.fn() },
