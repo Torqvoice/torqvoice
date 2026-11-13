@@ -11,7 +11,12 @@ import {
   type CreateRecurringInvoiceInput,
   type UpdateRecurringInvoiceInput,
 } from '../Schema/recurringInvoiceSchema'
-import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
+import {
+  clearNextNumberSetting,
+  type JobNumber,
+  JOB_NUMBER_SETTING_KEYS,
+  nextJobNumber,
+} from '@/lib/job-number'
 import {
   documentTotals,
   readWorkshopTax,
@@ -277,7 +282,7 @@ export async function toggleRecurringInvoice(id: string) {
 }
 
 /** The next job number in the workshop's format; see src/lib/job-number.ts. */
-async function generateInvoiceNumber(organizationId: string, timeZone: string): Promise<string> {
+async function generateInvoiceNumber(organizationId: string, timeZone: string): Promise<JobNumber> {
   const settings = await db.appSetting.findMany({
     where: { organizationId, key: { in: [...JOB_NUMBER_SETTING_KEYS] } },
   })
@@ -309,7 +314,10 @@ export async function processRecurringInvoices() {
       const taxApplies = await loadTaxApplies(organizationId)
 
       for (const ri of dueInvoices) {
-        const invoiceNumber = await generateInvoiceNumber(organizationId, timeZone)
+        const { invoiceNumber, usesNextNumberSetting } = await generateInvoiceNumber(
+          organizationId,
+          timeZone
+        )
 
         // Calculate totals
         const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
@@ -371,6 +379,9 @@ export async function processRecurringInvoices() {
               },
             },
           })
+
+          // Spent only once the job is written, in the same transaction.
+          if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, tx)
 
           // Update recurring invoice
           const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency, timeZone)

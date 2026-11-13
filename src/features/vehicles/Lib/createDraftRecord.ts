@@ -23,7 +23,7 @@ import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { atZonedTime, startOfZonedDay, zonedParts } from '@/lib/timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
+import { clearNextNumberSetting, JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import {
   resolveWorkOrderTitle,
   workOrderTitleTemplateFrom,
@@ -152,11 +152,10 @@ export async function createDraftRecord(
 
   const now = new Date()
   const today = zonedParts(now, timeZone)
-  const invoiceNumber = await nextJobNumber({
+  const { invoiceNumber, usesNextNumberSetting } = await nextJobNumber({
     organizationId,
     settings: settingsMap,
     timeZone,
-    writer: opts.tx,
     now,
   })
 
@@ -256,7 +255,7 @@ export async function createDraftRecord(
         }
       : null
 
-  return writer.serviceRecord.create({
+  const created = await writer.serviceRecord.create({
     data: {
       organizationId,
       createdById: userId,
@@ -281,6 +280,9 @@ export async function createDraftRecord(
       endDateTime: defaultEnd ?? new Date(defaultStart.getTime() + 3600000),
     },
   })
+  // Spent only once the job is written, and in its transaction when it has one.
+  if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, opts.tx)
+  return created
 }
 
 /** The car and the customer a job is for, as far as the title template cares. */

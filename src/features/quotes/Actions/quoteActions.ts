@@ -48,7 +48,7 @@ import {
 } from '../Lib/conversionConflicts'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
-import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
+import { clearNextNumberSetting, JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -523,7 +523,11 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       const timeZone = await workshopTimeZone(organizationId)
       // The next number in the workshop's format, like any new job; see
       // src/lib/job-number.ts. It ignored "Next invoice number" before.
-      const invoiceNumber = await nextJobNumber({ organizationId, settings: settingsMap, timeZone })
+      const { invoiceNumber, usesNextNumberSetting } = await nextJobNumber({
+        organizationId,
+        settings: settingsMap,
+        timeZone,
+      })
 
       // What the customer was told on the quote is what the job carries, "not
       // included" as much as twelve months: they accepted on those words. A
@@ -568,6 +572,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             startDateTime: serviceDate,
           },
         })
+        // Spent only once the job is written, in the same transaction.
+        if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, tx)
 
         const includedParts = await copyQuotePartsToJob(tx, {
           organizationId,

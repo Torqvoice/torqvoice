@@ -28,7 +28,7 @@ import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { randomUUID } from 'crypto'
 import { releaseFiles } from '@/lib/files/manager'
 import { serviceRecordFileUrls } from '@/lib/files/collect'
-import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
+import { clearNextNumberSetting, JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { zonedDayKey } from '@/lib/timezone'
@@ -446,7 +446,11 @@ export async function createServiceRecord(input: unknown) {
       })
 
       // The next number in the workshop's format; see src/lib/job-number.ts.
-      const invoiceNumber = await nextJobNumber({ organizationId, settings: settingsMap, timeZone })
+      const { invoiceNumber, usesNextNumberSetting } = await nextJobNumber({
+        organizationId,
+        settings: settingsMap,
+        timeZone,
+      })
 
       const {
         concerns,
@@ -512,6 +516,8 @@ export async function createServiceRecord(input: unknown) {
             warrantyExpiresAt: warrantyExpiryFor(warranty, warrantyStartsOn, timeZone),
           },
         })
+        // Spent only once the job is written, in the same transaction.
+        if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, tx)
 
         if (partItems && partItems.length > 0) {
           // Enrich parts with unitCost from inventory (stock movement is handled

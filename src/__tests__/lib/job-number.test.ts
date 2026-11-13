@@ -26,22 +26,25 @@ const OSLO = 'Europe/Oslo'
 /** 13 November 2026 in Oslo. */
 const NOW = new Date('2026-11-13T09:00:00Z')
 
-/** The highest running number already issued in the workshop's format. */
-function highestInFormat(n: number | null) {
-  vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: n === null ? null : BigInt(n) }] as never)
+/** The highest running number already issued in the workshop's format, as PostgreSQL returns it. */
+function highestInFormat(n: number | string | null) {
+  vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: n === null ? null : String(n) }] as never)
 }
 function newestNumbered(invoiceNumber: string | null) {
   vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(
     invoiceNumber === null ? null : ({ invoiceNumber } as never)
   )
 }
-function next(settings: Record<string, string> = {}, now = NOW) {
+function numbered(settings: Record<string, string> = {}, now = NOW) {
   return nextJobNumber({
     organizationId: ORG,
     settings: { 'workshop.invoicePrefix': '{year}-', ...settings },
     timeZone: OSLO,
     now,
   })
+}
+async function next(settings: Record<string, string> = {}, now = NOW) {
+  return (await numbered(settings, now)).invoiceNumber
 }
 
 beforeEach(() => {
@@ -104,14 +107,15 @@ describe('the next job number', () => {
     expect(await next()).toBe('2026-1001')
   })
 
-  it('uses "Next invoice number" once, then clears it', async () => {
+  it('uses "Next invoice number", and leaves clearing it to whoever writes the job', async () => {
     highestInFormat(1071)
 
-    expect(await next({ 'workshop.invoiceStartNumber': '2000' })).toBe('2026-2000')
-    expect(db.appSetting.updateMany).toHaveBeenCalledWith({
-      where: { organizationId: ORG, key: 'workshop.invoiceStartNumber' },
-      data: { value: '' },
+    expect(await numbered({ 'workshop.invoiceStartNumber': '2000' })).toEqual({
+      invoiceNumber: '2026-2000',
+      usesNextNumberSetting: true,
     })
+    // Cleared here, a job that then failed to save would lose it.
+    expect(db.appSetting.updateMany).not.toHaveBeenCalled()
   })
 
   it('keeps counting from a "Next invoice number" below 1001 once it has been used', async () => {
@@ -124,8 +128,24 @@ describe('the next job number', () => {
   it('never goes back to a "Next invoice number" already passed', async () => {
     highestInFormat(1071)
 
-    expect(await next({ 'workshop.invoiceStartNumber': '96' })).toBe('2026-1072')
-    expect(db.appSetting.updateMany).not.toHaveBeenCalled()
+    expect(await numbered({ 'workshop.invoiceStartNumber': '96' })).toEqual({
+      invoiceNumber: '2026-1072',
+      usesNextNumberSetting: false,
+    })
+  })
+
+  it('counts past numbers of any length, so a long one is read back and never issued twice', async () => {
+    highestInFormat('999999999999999')
+    expect(await next()).toBe('2026-1000000000000000')
+
+    highestInFormat('99999999999999999999')
+    expect(await next()).toBe('2026-100000000000000000000')
+  })
+
+  it('reads a long running number off the newest job whole', async () => {
+    newestNumbered('XT-12345678901234567890')
+
+    expect(await next({ 'workshop.invoicePrefix': 'WO-' })).toBe('WO-12345678901234567891')
   })
 
   it('reads "{year}-" as the format when the workshop never set one', async () => {
@@ -138,13 +158,17 @@ describe('the next job number', () => {
       now: NOW,
     })
 
-    expect(number).toBe('2026-1072')
+    expect(number.invoiceNumber).toBe('2026-1072')
   })
 })
 
 describe('which numbers count as the same format', () => {
   const matches = (format: string, number: string) =>
     new RegExp(jobNumberPattern(format)).exec(number)?.[1] ?? null
+
+  it('any length of running number', () => {
+    expect(matches('{year}-', '2026-100000000000000000000')).toBe('100000000000000000000')
+  })
 
   it('any year, the same shape', () => {
     expect(matches('{year}-', '2026-1071')).toBe('1071')

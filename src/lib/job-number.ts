@@ -16,6 +16,10 @@ import { zonedParts } from '@/lib/timezone'
  * booking) or was numbered in another format (an import, a format changed and
  * changed back). When nothing in the current format exists yet, as right after
  * the format changes, it continues from the newest numbered job, as before.
+ *
+ * Running numbers are whole numbers of any length, read and counted as
+ * BigInt: a cap on either side would let a long number be issued that could
+ * not be read back, and then be issued again.
  */
 
 export const JOB_NUMBER_SETTING_KEYS = [
@@ -27,13 +31,7 @@ export const JOB_NUMBER_SETTING_KEYS = [
 export const DEFAULT_JOB_NUMBER_FORMAT = '{year}-'
 
 /** Where the running number starts when there is nothing to continue from. */
-const FIRST_RUNNING_NUMBER = 1001
-
-/**
- * At most this many digits are read as a running number: enough for any real
- * sequence, and short enough that a stray long number cannot overflow.
- */
-const MAX_RUNNING_DIGITS = 15
+const FIRST_RUNNING_NUMBER = BigInt(1001)
 
 /** The format with the year and month of `now` on the workshop's own calendar. */
 export function jobNumberPrefix(format: string, now: Date, timeZone: string): string {
@@ -56,30 +54,40 @@ export function jobNumberPattern(format: string): string {
       return part.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     })
     .join('')
-  return `^${body}([0-9]{1,${MAX_RUNNING_DIGITS}})$`
+  return `^${body}([0-9]+)$`
 }
 
 /** The highest running number among this workshop's numbers in `format`. */
-async function highestInFormat(organizationId: string, format: string): Promise<number | null> {
+async function highestInFormat(organizationId: string, format: string): Promise<bigint | null> {
   const pattern = jobNumberPattern(format)
-  const rows = await db.$queryRaw<{ highest: bigint | null }[]>`
-    SELECT MAX(CAST(substring("invoiceNumber", ${pattern}::text) AS BIGINT)) AS highest
+  // NUMERIC has no length limit, and the answer comes back as text so no
+  // driver turns it into a float on the way.
+  const rows = await db.$queryRaw<{ highest: string | null }[]>`
+    SELECT MAX(CAST(substring("invoiceNumber", ${pattern}::text) AS NUMERIC))::text AS highest
     FROM "public"."service_records"
     WHERE "organizationId" = ${organizationId} AND "invoiceNumber" ~ ${pattern}::text
   `
   const highest = rows[0]?.highest
-  return highest === null || highest === undefined ? null : Number(highest)
+  return highest ? BigInt(highest) : null
 }
 
 /** The running number of the newest job that has a number at all. */
-async function newestRunningNumber(organizationId: string): Promise<number | null> {
+async function newestRunningNumber(organizationId: string): Promise<bigint | null> {
   const newest = await db.serviceRecord.findFirst({
     where: { organizationId, invoiceNumber: { not: null } },
     orderBy: { createdAt: 'desc' },
     select: { invoiceNumber: true },
   })
-  const digits = newest?.invoiceNumber?.match(new RegExp(`(\\d{1,${MAX_RUNNING_DIGITS}})$`))
-  return digits ? Number.parseInt(digits[1], 10) : null
+  const digits = newest?.invoiceNumber?.match(/(\d+)$/)
+  return digits ? BigInt(digits[1]) : null
+}
+
+/** "Next invoice number" as a running number, or null when it is empty or not a number. */
+function nextNumberSetting(value: string | undefined): bigint | null {
+  const digits = value?.match(/^\s*(\d+)/)
+  if (!digits) return null
+  const number = BigInt(digits[1])
+  return number > BigInt(0) ? number : null
 }
 
 interface NumberingInput {
@@ -93,15 +101,18 @@ interface NumberingInput {
 /**
  * Where the workshop's numbering stands: the prefix for today and the next
  * running number. For a caller that numbers many jobs at once, such as an
- * import, which counts up from `first` itself and clears "Next invoice number"
- * with `clearNextNumberSetting` when `usesNextNumberSetting` and it used one.
+ * import, which counts up from `first` itself.
+ *
+ * `usesNextNumberSetting` says the first number is "Next invoice number".
+ * The caller clears it with `clearNextNumberSetting` after writing the job,
+ * in the same transaction: cleared before, a failed write would lose it.
  */
 export async function jobNumberSequence(
   input: NumberingInput
-): Promise<{ prefix: string; first: number; usesNextNumberSetting: boolean }> {
+): Promise<{ prefix: string; first: bigint; usesNextNumberSetting: boolean }> {
   const { organizationId, settings, timeZone } = input
   const format = settings['workshop.invoicePrefix'] ?? DEFAULT_JOB_NUMBER_FORMAT
-  const startNumber = Number.parseInt(settings['workshop.invoiceStartNumber'] || '0', 10) || 0
+  const startNumber = nextNumberSetting(settings['workshop.invoiceStartNumber'])
 
   const highest =
     (await highestInFormat(organizationId, format)) ?? (await newestRunningNumber(organizationId))
@@ -109,13 +120,15 @@ export async function jobNumberSequence(
   // numbers already issued. 1001 is only where a workshop with nothing to
   // continue from starts: as a floor it sent a sequence started at 94 to
   // 1001 on its second job.
-  const first =
-    highest === null ? startNumber || FIRST_RUNNING_NUMBER : Math.max(startNumber, highest + 1)
+  let first: bigint
+  if (highest === null) first = startNumber ?? FIRST_RUNNING_NUMBER
+  else if (startNumber !== null && startNumber > highest) first = startNumber
+  else first = highest + BigInt(1)
 
   return {
     prefix: jobNumberPrefix(format, input.now ?? new Date(), timeZone),
     first,
-    usesNextNumberSetting: startNumber > 0 && first === startNumber,
+    usesNextNumberSetting: startNumber !== null && first === startNumber,
   }
 }
 
@@ -127,17 +140,21 @@ export async function clearNextNumberSetting(organizationId: string, writer?: Tx
   })
 }
 
-/**
- * The next job number. Clears "Next invoice number" through `writer` once it
- * has been used, so a caller writing the job in a transaction clears it in
- * the same one.
- */
-export async function nextJobNumber(
-  input: NumberingInput & { writer?: TxClient }
-): Promise<string> {
+/** One job's number, and whether it used up "Next invoice number". */
+export interface JobNumber {
+  invoiceNumber: string
+  /**
+   * Clear the setting with `clearNextNumberSetting` once the job is written,
+   * in the transaction that writes it, so a failed write keeps it for the retry.
+   */
+  usesNextNumberSetting: boolean
+}
+
+/** The next job number. */
+export async function nextJobNumber(input: NumberingInput): Promise<JobNumber> {
   const sequence = await jobNumberSequence(input)
-  if (sequence.usesNextNumberSetting) {
-    await clearNextNumberSetting(input.organizationId, input.writer)
+  return {
+    invoiceNumber: `${sequence.prefix}${sequence.first}`,
+    usesNextNumberSetting: sequence.usesNextNumberSetting,
   }
-  return `${sequence.prefix}${sequence.first}`
 }

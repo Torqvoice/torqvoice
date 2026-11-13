@@ -31,6 +31,7 @@ const NOW = new Date('2026-11-13T09:00:00Z')
 
 let db: typeof import('@/lib/db')['db']
 let nextJobNumber: typeof import('@/lib/job-number')['nextJobNumber']
+let clearNextNumberSetting: typeof import('@/lib/job-number')['clearNextNumberSetting']
 let organizationId = ''
 let userId = ''
 
@@ -42,6 +43,8 @@ const NUMBERS: (string | null)[] = [
   'INV/2026.11-7',
   // Looks like the INV format, but the dot is not a dot.
   'INV/2026x11-9',
+  // Longer than any integer column or JavaScript number holds exactly.
+  'BIG-99999999999999999999',
   'XT-1018',
   // An online booking: no number at all.
   null,
@@ -49,7 +52,7 @@ const NUMBERS: (string | null)[] = [
 
 beforeAll(async () => {
   ;({ db } = await import('@/lib/db'))
-  ;({ nextJobNumber } = await import('@/lib/job-number'))
+  ;({ nextJobNumber, clearNextNumberSetting } = await import('@/lib/job-number'))
   const user = await db.user.create({
     data: { name: `Numbering ${stamp}`, email: `numbering-${stamp}@example.com` },
   })
@@ -74,8 +77,11 @@ afterAll(async () => {
   if (userId) await db.user.deleteMany({ where: { id: userId } })
 })
 
-function next(settings: Record<string, string>) {
+function numbered(settings: Record<string, string>) {
   return nextJobNumber({ organizationId, settings, timeZone: OSLO, now: NOW })
+}
+async function next(settings: Record<string, string>) {
+  return (await numbered(settings)).invoiceNumber
 }
 
 describe('the next job number on PostgreSQL', () => {
@@ -87,22 +93,34 @@ describe('the next job number on PostgreSQL', () => {
     expect(await next({ 'workshop.invoicePrefix': 'INV/{year}.{month}-' })).toBe('INV/2026.11-8')
   })
 
+  it('reads and counts a running number of any length', async () => {
+    expect(await next({ 'workshop.invoicePrefix': 'BIG-' })).toBe('BIG-100000000000000000000')
+  })
+
   it('continues from the newest numbered job in a format with no numbers yet', async () => {
     expect(await next({ 'workshop.invoicePrefix': 'WO-' })).toBe('WO-1019')
   })
 
-  it('uses "Next invoice number" once and clears it', async () => {
+  it('uses "Next invoice number", which the job write then clears in its transaction', async () => {
     await db.appSetting.create({
       data: { organizationId, userId, key: 'workshop.invoiceStartNumber', value: '5000' },
     })
+    const where = { organizationId_key: { organizationId, key: 'workshop.invoiceStartNumber' } }
 
     expect(
-      await next({ 'workshop.invoicePrefix': '{year}-', 'workshop.invoiceStartNumber': '5000' })
-    ).toBe('2026-5000')
+      await numbered({ 'workshop.invoicePrefix': '{year}-', 'workshop.invoiceStartNumber': '5000' })
+    ).toEqual({ invoiceNumber: '2026-5000', usesNextNumberSetting: true })
+    // Not spent until the job is written.
+    expect((await db.appSetting.findUnique({ where }))?.value).toBe('5000')
 
-    const setting = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId, key: 'workshop.invoiceStartNumber' } },
+    await db.$transaction(async (tx) => {
+      await tx.serviceRecord.create({
+        data: { title: 'The 5000 job', organizationId, invoiceNumber: '2026-5000' },
+      })
+      await clearNextNumberSetting(organizationId, tx)
     })
-    expect(setting?.value).toBe('')
+
+    expect((await db.appSetting.findUnique({ where }))?.value).toBe('')
+    expect(await next({ 'workshop.invoicePrefix': '{year}-' })).toBe('2026-5001')
   })
 })

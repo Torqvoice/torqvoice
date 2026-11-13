@@ -1,6 +1,11 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
-import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
+import {
+  clearNextNumberSetting,
+  type JobNumber,
+  JOB_NUMBER_SETTING_KEYS,
+  nextJobNumber,
+} from '@/lib/job-number'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { laborTaxable, recurringTaxableSubtotal, type TaxApplies } from '@/lib/taxable-lines'
@@ -33,7 +38,7 @@ export function calculateNextRunDate(current: Date, frequency: string, timeZone:
 }
 
 /** The next job number in the workshop's format; see src/lib/job-number.ts. */
-async function generateInvoiceNumber(organizationId: string, timeZone: string): Promise<string> {
+async function generateInvoiceNumber(organizationId: string, timeZone: string): Promise<JobNumber> {
   const settings = await db.appSetting.findMany({
     where: { organizationId, key: { in: [...JOB_NUMBER_SETTING_KEYS] } },
   })
@@ -74,7 +79,10 @@ export function processRecurringInvoices() {
             timeZone = await workshopTimeZone(organizationId)
             zones.set(organizationId, timeZone)
           }
-          const invoiceNumber = await generateInvoiceNumber(organizationId, timeZone)
+          const { invoiceNumber, usesNextNumberSetting } = await generateInvoiceNumber(
+            organizationId,
+            timeZone
+          )
 
           const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
           const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
@@ -139,6 +147,9 @@ export function processRecurringInvoices() {
                 },
               },
             })
+
+            // Spent only once the job is written, in the same transaction.
+            if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, tx)
 
             const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency, timeZone)
             const shouldDeactivate = ri.endDate && nextRunDate > ri.endDate
