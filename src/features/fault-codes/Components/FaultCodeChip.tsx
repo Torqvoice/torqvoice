@@ -93,9 +93,7 @@ export function MeaningText({
 }) {
   const t = useTranslations('faultCodes')
   if (loading && !view) {
-    return (
-      <span className={cn('inline-block h-3 w-40 animate-pulse rounded bg-muted', className)} />
-    )
+    return <span className={cn('skeleton inline-block h-3 w-40 rounded', className)} />
   }
   if (!view || view.state === 'unavailable') {
     return (

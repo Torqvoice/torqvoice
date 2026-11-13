@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Check, ChevronDown, Copy } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
+import { CopyValue, useCopy } from '@/components/copy-value'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useDateSettings } from '@/components/date-settings-context'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -74,47 +75,6 @@ const TRANSMISSION_LABELS: Record<string, string> = {
   cvt: 'cvt',
   outboard: 'outboard',
   inboard: 'inboard',
-}
-
-/**
- * Copies one value, and says so for a moment. The VIN is the reason this
- * exists: it used to take a trip to the vehicle page and back.
- */
-function useCopy(value: string) {
-  const [copied, setCopied] = useState(false)
-  useEffect(() => {
-    if (!copied) return
-    const timer = setTimeout(() => setCopied(false), 1500)
-    return () => clearTimeout(timer)
-  }, [copied])
-  const copy = () => {
-    navigator.clipboard
-      ?.writeText(value)
-      .then(() => setCopied(true))
-      .catch(() => undefined)
-  }
-  return { copied, copy }
-}
-
-function CopyValue({ value, label }: { value: string; label: string }) {
-  const t = useTranslations('service.modern.vehicleInfo')
-  const { copied, copy } = useCopy(value)
-  const name = copied ? t('copied') : t('copy', { label })
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      aria-label={name}
-      title={name}
-      className="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      {copied ? (
-        <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-      ) : (
-        <Copy className="h-3.5 w-3.5" aria-hidden="true" />
-      )}
-    </button>
-  )
 }
 
 /**

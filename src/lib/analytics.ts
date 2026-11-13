@@ -21,6 +21,14 @@ import posthog from 'posthog-js'
 export type AnalyticsEvent =
   /** A work order opened. */
   | 'work_order:page_view'
+  /**
+   * The vehicle page switched between its classic and new layouts: `to_layout`
+   * which one, `source` the invitation or the menu. Switches back to classic
+   * say what the new page still lacks.
+   */
+  | 'vehicle_page:layout_switch'
+  /** The invitation to the new vehicle page closed without trying it. */
+  | 'vehicle_page:layout_invite_dismiss'
   /** An account made with email and password. Google sign-ups show as workshop:create. */
   | 'account:sign_up'
   /** The onboarding form made the person's first workshop, with or without sample data. */

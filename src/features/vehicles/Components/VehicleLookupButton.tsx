@@ -25,6 +25,8 @@ interface VehicleLookupButtonProps {
   onFound: (data: VehicleLookup, asked: string) => void
   /** Set when editing, so the answer is also recorded on the vehicle. */
   vehicleId?: string
+  /** A short word beside the icon ("Look up", "Decode") where the row has room for it. */
+  text?: string
 }
 
 /**
@@ -42,6 +44,7 @@ export function VehicleLookupButton({
   getValue,
   onFound,
   vehicleId,
+  text,
 }: VehicleLookupButtonProps) {
   const t = useTranslations('vehicles.form')
   const [busy, setBusy] = useState(false)
@@ -99,12 +102,14 @@ export function VehicleLookupButton({
           <Button
             type="button"
             variant="outline"
-            size="icon"
+            size={text ? 'default' : 'icon'}
             aria-label={label}
             onClick={handleClick}
             disabled={busy || !available}
+            className={text ? 'gap-1.5 px-3' : undefined}
           >
             {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+            {text && <span aria-hidden>{text}</span>}
           </Button>
         </span>
       </TooltipTrigger>

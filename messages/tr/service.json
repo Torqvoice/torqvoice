@@ -830,6 +830,21 @@
         "odometer": "Kilometre sayacı",
         "other": "Hasar veya diğer"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Aracın fotoğrafını telefonla çekin",
+      "dialogBody": "Herhangi bir telefonla aracın fotoğrafını çekin veya telefonda zaten olan birini seçin. Bu fotoğraf, bu aracın sayfasının en üstünde görünür.",
+      "step2": "Aracın tamamının fotoğrafını çekin veya telefondan bir fotoğraf seçin.",
+      "step3": "Gelir gelmez araç sayfasındaki fotoğrafın yerini alır.",
+      "scope": "Bağlantı yalnızca bu aracın fotoğrafını ayarlayabilir ve 30 dakika sonra çalışmaz.",
+      "waiting": "Fotoğraf bekleniyor…",
+      "received": "Fotoğraf alındı",
+      "pageTitle": "Aracın fotoğrafı",
+      "pageBody": "Aracın tamamının fotoğrafını çekin. Araç sayfasındaki fotoğrafın yerini alır.",
+      "choosePhoto": "Fotoğraf seç",
+      "saved": "Kaydedildi. Fotoğraf artık araç sayfasında. Değiştirmek için yenisini çekin.",
+      "invalid": "Araç sayfasındaki kodu yeniden tarayın.",
+      "notAPhoto": "Burada yalnızca fotoğraf kullanılabilir."
     }
   },
   "payCode": {

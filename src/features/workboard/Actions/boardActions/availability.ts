@@ -2,21 +2,11 @@
 
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import {
-  findConflicts,
-  nextAvailableSlot,
-  sharedPeople,
-  technicianMinutesInDay,
-} from '../../Lib/availability'
+import { nextAvailableSlot, technicianMinutesInDay } from '../../Lib/availability'
 import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
 import { loadBookingContext } from '../../Lib/bookings'
-import {
-  absencesOn,
-  awayAllDay,
-  closuresDuring,
-  dayOf,
-  dayState,
-} from '@/features/workshop-calendar/Lib/calendar'
+import { checkSlot } from '../../Lib/slotCheck'
+import { absencesOn, awayAllDay, dayOf } from '@/features/workshop-calendar/Lib/calendar'
 
 /**
  * Is this slot free, and if not, where is the next one.
@@ -45,53 +35,24 @@ export async function checkSlotAvailability(input: {
 }) {
   return withAuth(
     async ({ organizationId }) => {
-      const start = new Date(input.start)
-      const end = new Date(input.end)
-      if (!(start < end)) return { conflicts: [], closures: [], closedWeekday: false }
-
-      const { bookings, hours, closuresEnabled } = await loadBookingContext(organizationId, start)
-      const calendar = hours.calendar
-      // The workshop's own closures matter whoever the job is for.
-      const closures =
-        closuresEnabled && calendar
-          ? closuresDuring(calendar, start, end).map((c) => ({ name: c.name, source: c.source }))
-          : []
-      const closedWeekday =
-        closuresEnabled && calendar
-          ? dayState(calendar, dayOf(start, calendar.timeZone)).closedWeekday
-          : false
-      // Nothing is held, so nothing can be clashed with.
-      if (!input.technicianId && !input.workBayId) return { conflicts: [], closures, closedWeekday }
-
-      const slot = {
-        start,
-        end,
+      // The check itself lives in Lib/slotCheck, shared with the vehicle page's
+      // warnings; this answers the work order with it, as strings.
+      const result = await checkSlot(organizationId, {
+        start: new Date(input.start),
+        end: new Date(input.end),
         technicianId: input.technicianId,
-        // Helpers only count beside a technician: without one the job has none.
-        helperIds: input.technicianId ? (input.helperIds ?? []) : [],
+        helperIds: input.helperIds,
         workBayId: input.workBayId,
-      }
-      const conflicts = findConflicts(slot, bookings, input.excludeId)
+        excludeId: input.excludeId,
+      })
       return {
-        conflicts: conflicts.map((c) => {
-          const people = sharedPeople(slot, c)
-          return {
-            id: c.id,
-            kind: c.kind,
-            label: c.label,
-            start: c.start.toISOString(),
-            end: c.end.toISOString(),
-            // Which resource actually clashed, so the warning can say so rather
-            // than leaving somebody to work it out from two times.
-            onTechnician: people.length > 0,
-            onBay: !!input.workBayId && c.workBayId === input.workBayId,
-            // Who is double-booked, as technician ids: with two people on a
-            // job "the technician is busy" no longer says which of them.
-            people,
-          }
-        }),
-        closures,
-        closedWeekday,
+        conflicts: result.conflicts.map((c) => ({
+          ...c,
+          start: c.start.toISOString(),
+          end: c.end.toISOString(),
+        })),
+        closures: result.closures,
+        closedWeekday: result.closedWeekday,
       }
     },
     {

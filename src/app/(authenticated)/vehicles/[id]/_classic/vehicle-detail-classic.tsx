@@ -1,0 +1,1887 @@
+'use client'
+
+import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
+import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
+import { interactiveRow } from '@/lib/interactive-row'
+import { useState, useTransition, useCallback } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
+import { useFormatDate } from '@/lib/use-format-date'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { useGlassModal } from '@/components/glass-modal'
+import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
+import { NoteForm } from '@/features/vehicles/Components/NoteForm'
+import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
+import { FindingForm } from '@/features/vehicles/Components/FindingForm'
+import { VehicleSafetyPanel } from '@/features/vehicles/Components/VehicleSafetyPanel'
+import { ServiceRecordsTable } from './service-records-table'
+import { NotesTable } from '../notes-table'
+import { FindingsTable } from '../findings-table'
+import {
+  VehicleTireSets,
+  type VehicleTireSet,
+} from '@/features/tire-hotel/Components/VehicleTireSets'
+import { toast } from 'sonner'
+import { deleteNote, toggleNotePin } from '@/features/vehicles/Actions/noteActions'
+import { toggleReminder, deleteReminder } from '@/features/vehicles/Actions/reminderActions'
+import { deleteFinding } from '@/features/vehicles/Actions/findingActions'
+import { createServiceRecord } from '@/features/vehicles/Actions/serviceActions'
+import { unarchiveVehicle } from '@/features/vehicles/Actions/unarchiveVehicle'
+import { deleteVehicle } from '@/features/vehicles/Actions/deleteVehicle'
+import {
+  dismissMaintenance,
+  undismissMaintenance,
+} from '@/features/vehicles/Actions/dismissMaintenance'
+import { ArchiveVehicleDialog } from '@/features/vehicles/Components/ArchiveVehicleDialog'
+import {
+  aiSummarizeVehicleHistory,
+  aiGetCommonIssues,
+  aiClearMessage,
+} from '@/features/ai/Actions/aiActions'
+import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
+import { AskAiSheet } from '@/features/ai/Components/AskAiSheet'
+import { useFormatCurrency } from '@/components/currency-settings-context'
+import {
+  AlertTriangle,
+  Archive,
+  ArchiveRestore,
+  ArrowLeft,
+  Bell,
+  Car,
+  CheckCircle2,
+  ClipboardCheck,
+  Clock,
+  DollarSign,
+  EyeOff,
+  FileText,
+  Sparkles,
+  Gauge,
+  Loader2,
+  MoreVertical,
+  Pencil,
+  Pin,
+  Plus,
+  StickyNote,
+  Trash2,
+  TrendingUp,
+  Undo2,
+  Wrench,
+  X,
+} from 'lucide-react'
+import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
+import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import { useTranslations } from 'next-intl'
+import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
+import { useServiceType } from '@/components/service-type-context'
+import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
+import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { sanitizeHtml } from '@/lib/sanitize-html'
+import { useSwitchVehiclePageLayout } from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
+
+interface PaginatedServices {
+  records: {
+    id: string
+    title: string
+    description: string | null
+    type: string
+    status: string
+    cost: number
+    mileage: number | null
+    serviceDate: Date
+    startDateTime: Date | null
+    invoiceDate: Date | null
+    shopName: string | null
+    techName: string | null
+    totalAmount: number
+    invoiceNumber: string | null
+    warrantyMonths: number | null
+    warrantyMileage: number | null
+    warrantyExpiresAt: Date | null
+    warrantyNotes: string | null
+    _count: { partItems: number; laborItems: number; attachments: number }
+  }[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+interface PaginatedNotes {
+  records: {
+    id: string
+    title: string
+    content: string
+    isPinned: boolean
+    createdAt: Date
+  }[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+interface PaginatedFindings {
+  records: {
+    id: string
+    description: string
+    severity: string
+    status: string
+    notes: string | null
+    imageUrls: string[]
+    createdAt: Date
+    serviceRecord: { id: string; title: string } | null
+    resolvedServiceRecord: { id: string; title: string } | null
+  }[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
+}
+
+interface VehicleDetail {
+  id: string
+  make: string
+  model: string
+  year: number
+  vin: string | null
+  licensePlate: string | null
+  color: string | null
+  mileage: number
+  fuelType: string | null
+  transmission: string | null
+  engineSize: string | null
+  engineCode: string | null
+  hsn: string | null
+  tsn: string | null
+  purchaseDate: Date | null
+  purchasePrice: number | null
+  imageUrl: string | null
+  isArchived: boolean
+  archiveReason: string | null
+  soldReportedAt?: Date | null
+  customerId: string | null
+  customer: {
+    id: string
+    name: string
+    company: string | null
+    email: string | null
+    phone: string | null
+  } | null
+  inspectionStatus?: {
+    dueAt: Date | null
+    lastAt: Date | null
+    source: string
+    checkedAt: Date | null
+    registered: boolean | null
+  } | null
+  serviceRecords: {
+    id: string
+    cost: number
+    totalAmount: number
+  }[]
+  reminders: {
+    id: string
+    title: string
+    description: string | null
+    dueDate: Date | null
+    hasDueTime?: boolean
+    dueMileage: number | null
+    isCompleted: boolean
+    createdAt: Date
+  }[]
+  aiMessages: { type: string; content: string; updatedAt: Date }[]
+  _count: {
+    serviceRecords: number
+    notes: number
+    reminders: number
+    findings: number
+  }
+}
+
+interface QuoteRecord {
+  id: string
+  quoteNumber: string | null
+  title: string
+  status: string
+  totalAmount: number
+  createdAt: Date
+  validUntil: Date | null
+  customer: { id: string; name: string } | null
+}
+
+const quoteStatusColors: Record<string, string> = {
+  changes_requested: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
+  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
+  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+}
+
+/** Pass/fail/other split of an inspection's items, shared by the card and table views. */
+function InspectionProgress({
+  total,
+  inspected,
+  passCount,
+  failCount,
+}: {
+  total: number
+  inspected: number
+  passCount: number
+  failCount: number
+}) {
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex h-2 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+        {total > 0 && (
+          <>
+            <div className="bg-emerald-500" style={{ width: `${(passCount / total) * 100}%` }} />
+            <div className="bg-red-500" style={{ width: `${(failCount / total) * 100}%` }} />
+            <div
+              className="bg-amber-500"
+              style={{ width: `${((inspected - passCount - failCount) / total) * 100}%` }}
+            />
+          </>
+        )}
+      </div>
+      <span className="text-xs text-muted-foreground">
+        {inspected}/{total}
+      </span>
+    </div>
+  )
+}
+
+export function VehicleDetailClassic({
+  vehicle,
+  paginatedServices,
+  paginatedNotes,
+  serviceSearch,
+  serviceRecordType,
+  currencyCode = DEFAULT_CURRENCY_CODE,
+  unitSystem = 'imperial',
+  predictionData,
+  inspections,
+  inspectionTemplates,
+  quotes = [],
+  aiEnabled = false,
+  safetyAvailable = false,
+  paginatedFindings,
+  tireSets = [],
+}: {
+  vehicle: VehicleDetail
+  paginatedServices: PaginatedServices
+  paginatedNotes: PaginatedNotes
+  paginatedFindings: PaginatedFindings
+  /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
+  tireSets?: VehicleTireSet[]
+  serviceSearch: string
+  serviceRecordType: string
+  currencyCode?: string
+  unitSystem?: 'metric' | 'imperial'
+  predictionData?: {
+    predictedMileage: number
+    avgPerDay: number
+    lastServiceMileage: number
+    serviceInterval: number
+    mileageSinceLastService: number
+    status: 'overdue' | 'approaching' | 'ok' | null
+    maintenanceDismissed: boolean
+    confidencePercent: number
+  } | null
+  inspections?: {
+    id: string
+    status: string
+    createdAt: Date
+    completedAt: Date | null
+    template: { id: string; name: string }
+    items: { id: string; condition: string }[]
+  }[]
+  inspectionTemplates?: { id: string; name: string; isDefault: boolean }[]
+  quotes?: QuoteRecord[]
+  aiEnabled?: boolean
+  /** A safety authority such as NHTSA is connected and this vehicle has a model to ask about. */
+  safetyAvailable?: boolean
+}) {
+  const formatCurrency = useFormatCurrency()
+  const serviceType = useServiceType()
+  const isMarine = serviceType === 'marine'
+  const distUnit = isMarine ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { formatDate, formatDateTime } = useFormatDate()
+  const t = useTranslations('vehicles.detail')
+  const typeKeyEnabled = useTypeKeyEnabled()
+  const ti = useTranslations('vehicles.inspections')
+  const tr = useTranslations('vehicles.reminders')
+  const tc = useTranslations('common.buttons')
+
+  const tq = useTranslations('vehicles.quotes')
+  const tQuoteStatus = useTranslations('quotes.statusLabels')
+  const tf = useTranslations('vehicles.findings')
+  const tErr = useTranslations('common.errors')
+  const tLayout = useTranslations('vehicles.detail.layout')
+  const switchLayout = useSwitchVehiclePageLayout()
+  const validTabs = ['services', 'quotes', 'inspections', 'findings', 'notes', 'reminders'] as const
+  const tabParam = searchParams.get('tab')
+  const activeTab = validTabs.includes(tabParam as (typeof validTabs)[number])
+    ? (tabParam as string)
+    : 'services'
+
+  // Where to return after leaving this page (e.g. arrived from a customer
+  // page). Restricted to internal paths; tab changes preserve the param.
+  const rawBack = searchParams.get('back')
+  const backHref =
+    rawBack && rawBack.startsWith('/') && !rawBack.startsWith('//') ? rawBack : '/vehicles'
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      const params = new URLSearchParams(searchParams.toString())
+      if (value === 'services') {
+        params.delete('tab')
+      } else {
+        params.set('tab', value)
+      }
+      const query = params.toString()
+      router.replace(`/vehicles/${vehicle.id}${query ? `?${query}` : ''}`, { scroll: false })
+    },
+    [searchParams, router, vehicle.id]
+  )
+  const modal = useGlassModal()
+  const quotesNav = useTableKeyboardNav()
+  const inspectionsNav = useTableKeyboardNav()
+  const [showEditForm, setShowEditForm] = useState(false)
+  const [showNoteForm, setShowNoteForm] = useState(false)
+  const [editingNote, setEditingNote] = useState<PaginatedNotes['records'][number] | undefined>()
+  const [showReminderForm, setShowReminderForm] = useState(false)
+  const [editingReminder, setEditingReminder] = useState<
+    VehicleDetail['reminders'][number] | undefined
+  >()
+  const [showFindingForm, setShowFindingForm] = useState(false)
+  const [editingFinding, setEditingFinding] = useState<
+    PaginatedFindings['records'][number] | undefined
+  >()
+  const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
+  const [showImage, setShowImage] = useState(false)
+  const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
+  const [showArchiveDialog, setShowArchiveDialog] = useState(false)
+  const [showNewQuoteDialog, setShowNewQuoteDialog] = useState(false)
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const [showNewInspection, setShowNewInspection] = useState(false)
+  const [isDismissPending, startDismissTransition] = useTransition()
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false)
+  const [commonIssuesLoading, setCommonIssuesLoading] = useState(false)
+  const [activeAiPanel, setActiveAiPanel] = useState<'summary' | 'issues' | null>(null)
+
+  const storedSummary = vehicle.aiMessages.find((m) => m.type === AI_MESSAGE_TYPES.SUMMARY)
+  const storedCommonIssues = vehicle.aiMessages.find(
+    (m) => m.type === AI_MESSAGE_TYPES.COMMON_ISSUES
+  )
+
+  // An action that cannot reach the server throws instead of answering, and a
+  // throw inside a transition replaces the page with the error screen, so it
+  // is caught and reported the way a refusal is.
+  const handleDismissMaintenance = () => {
+    startDismissTransition(async () => {
+      const result = await dismissMaintenance(vehicle.id).catch(() => null)
+      if (!result?.success) toast.error(result?.error || t('maintenanceChangeError'))
+    })
+  }
+
+  const handleUndismissMaintenance = () => {
+    startDismissTransition(async () => {
+      const result = await undismissMaintenance(vehicle.id).catch(() => null)
+      if (!result?.success) toast.error(result?.error || t('maintenanceChangeError'))
+    })
+  }
+
+  const now = new Date()
+  const sevenDaysFromNow = new Date(now)
+  sevenDaysFromNow.setDate(sevenDaysFromNow.getDate() + 7)
+
+  const getUrgency = (r: VehicleDetail['reminders'][number]) => {
+    if (r.isCompleted) return 'completed'
+    if (r.dueDate && new Date(r.dueDate) < now) return 'overdue'
+    if (r.dueDate && new Date(r.dueDate) <= sevenDaysFromNow) return 'due-soon'
+    return 'normal'
+  }
+
+  const overdueCount = vehicle.reminders.filter(
+    (r) => !r.isCompleted && r.dueDate && new Date(r.dueDate) < now
+  ).length
+
+  const filteredReminders = vehicle.reminders.filter((r) => {
+    if (reminderFilter === 'active') return !r.isCompleted
+    if (reminderFilter === 'completed') return r.isCompleted
+    return true
+  })
+
+  const inspectionRows = (inspections ?? []).map((insp) => ({
+    insp,
+    total: insp.items.length,
+    inspected: insp.items.filter((i) => i.condition !== 'not_inspected').length,
+    passCount: insp.items.filter((i) => i.condition === 'pass').length,
+    failCount: insp.items.filter((i) => i.condition === 'fail').length,
+  }))
+
+  const totalServiceCost = vehicle.serviceRecords.reduce(
+    (sum, s) => sum + (s.totalAmount > 0 ? s.totalAmount : s.cost),
+    0
+  )
+
+  const handleDeleteNote = async (id: string) => {
+    const result = await deleteNote(id)
+    if (result.success) {
+      toast.success(t('noteDeleted'))
+      router.refresh()
+    } else {
+      modal.open('error', tErr('error'), result.error || t('noteDeleteError'))
+    }
+  }
+
+  const handleTogglePin = async (id: string) => {
+    const result = await toggleNotePin(id)
+    if (result.success) router.refresh()
+  }
+
+  const handleToggleReminder = async (id: string) => {
+    const result = await toggleReminder(id)
+    if (result.success) router.refresh()
+  }
+
+  const handleDeleteReminder = async (id: string) => {
+    const result = await deleteReminder(id)
+    if (result.success) {
+      toast.success(t('reminderDeleted'))
+      router.refresh()
+    } else {
+      modal.open('error', tErr('error'), result.error || t('reminderDeleteError'))
+    }
+  }
+
+  const handleDeleteFinding = async (id: string) => {
+    const result = await deleteFinding(id)
+    if (result.success) {
+      toast.success(tf('findingDeleted'))
+      router.refresh()
+    } else {
+      modal.open('error', tErr('error'), result.error || tf('deleteError'))
+    }
+  }
+
+  const [creatingWorkOrder, setCreatingWorkOrder] = useState(false)
+  const handleCreateWorkOrderFromFindings = async (findingIds: string[]) => {
+    setCreatingWorkOrder(true)
+    const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
+    const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await createServiceRecord({
+      vehicleId: vehicle.id,
+      title: `${vehicleName} - ${tf('sectionTitle')}`,
+      type: 'repair',
+      status: 'pending',
+      laborItems: selectedFindings.map((f) => ({
+        description: `${f.description}${f.notes ? ` - ${f.notes}` : ''}`,
+        hours: 0,
+        rate: 0,
+        total: 0,
+        pricingType: 'hourly' as const,
+      })),
+      subtotal: 0,
+      taxRate: 0,
+      taxAmount: 0,
+      totalAmount: 0,
+    }).catch(() => null)
+    if (result?.success && result.data) {
+      const newServiceId = result.data.id
+      // Delete the observations that were added to the work order. The work
+      // order is made either way; one the server kept is still open on the
+      // vehicle, and the person is told rather than left to find it twice.
+      const removed = await Promise.all(findingIds.map((id) => deleteFinding(id).catch(() => null)))
+      if (removed.some((r) => !r?.success)) toast.error(tf('observationsNotRemoved'))
+      router.push(`/vehicles/${vehicle.id}/service/${newServiceId}`)
+    } else {
+      modal.open('error', tErr('error'), result?.error || tf('workOrderFailed'))
+      setCreatingWorkOrder(false)
+    }
+  }
+
+  const handleUnarchive = async () => {
+    const result = await unarchiveVehicle(vehicle.id)
+    if (result.success) {
+      toast.success(t('vehicleUnarchived'))
+      router.refresh()
+    } else {
+      modal.open('error', tErr('error'), result.error || t('unarchiveError'))
+    }
+  }
+
+  const handleAiSummary = async () => {
+    setAiSummaryLoading(true)
+    try {
+      const result = await aiSummarizeVehicleHistory(vehicle.id)
+      if (result.success && result.data) {
+        toast.success(t('aiSummaryGenerated'))
+        router.refresh()
+      } else {
+        toast.error(result.error ?? t('aiSummaryError'))
+      }
+    } catch {
+      toast.error(t('aiSummaryError'))
+    } finally {
+      setAiSummaryLoading(false)
+    }
+  }
+
+  const handleCommonIssues = async () => {
+    setActiveAiPanel('issues')
+    setCommonIssuesLoading(true)
+    try {
+      const result = await aiGetCommonIssues(vehicle.id)
+      if (result.success && result.data) {
+        router.refresh()
+      } else {
+        toast.error(result.error ?? t('aiSummaryError'))
+      }
+    } catch {
+      toast.error(t('aiSummaryError'))
+    } finally {
+      setCommonIssuesLoading(false)
+    }
+  }
+
+  const handleClearAiMessage = async (type: string) => {
+    try {
+      const result = await aiClearMessage(vehicle.id, type)
+      if (result.success) {
+        setActiveAiPanel(null)
+        router.refresh()
+      }
+    } catch {
+      toast.error(t('aiSummaryError'))
+    }
+  }
+
+  const handleDelete = async () => {
+    const result = await deleteVehicle(vehicle.id)
+    if (result.success) {
+      toast.success(t('vehicleDeleted'))
+      router.push(backHref)
+    } else {
+      modal.open('error', tErr('error'), result.error || t('vehicleDeleteError'))
+    }
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Archived banner */}
+      {vehicle.isArchived && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3">
+          <div className="flex min-w-0 flex-wrap items-center gap-2 text-sm">
+            <Archive className="h-4 w-4 text-amber-600" />
+            <span className="font-medium text-amber-600">{t('vehicleArchived')}</span>
+            {vehicle.archiveReason && (
+              <span className="text-muted-foreground">&mdash; {vehicle.archiveReason}</span>
+            )}
+          </div>
+          <Button size="sm" variant="outline" onClick={handleUnarchive}>
+            <ArchiveRestore className="mr-1 h-3.5 w-3.5" />
+            {t('unarchive')}
+          </Button>
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <Link
+            href={backHref}
+            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            {rawBack ? tc('back') : t('backToVehicles')}
+          </Link>
+          <div className="flex items-center gap-2">
+            {!vehicle.isArchived && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setShowEditForm(true)}
+                aria-label={t('editVehicle')}
+                title={t('editVehicle')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Pencil className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('editVehicle')}</span>
+              </Button>
+            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={t('openMenu')}>
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => switchLayout('modern', 'menu')}>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  {tLayout('tryNewMenu')}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {vehicle.isArchived ? (
+                  <DropdownMenuItem onClick={handleUnarchive}>
+                    <ArchiveRestore className="mr-2 h-4 w-4" />
+                    {t('unarchive')}
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem onClick={() => setShowArchiveDialog(true)}>
+                    <Archive className="mr-2 h-4 w-4" />
+                    {t('archive')}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  className="text-destructive"
+                  onClick={() => setShowDeleteDialog(true)}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t('delete')}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {vehicle.imageUrl ? (
+            <button
+              onClick={() => setShowImage(true)}
+              className="h-11 w-11 overflow-hidden rounded-xl cursor-zoom-in shrink-0"
+            >
+              <img src={vehicle.imageUrl} alt="" className="h-full w-full object-cover" />
+            </button>
+          ) : (
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+              <Car className="h-5 w-5 text-primary" />
+            </div>
+          )}
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <h1 className="text-lg font-bold leading-tight">
+                {vehicle.year} {vehicle.make} {vehicle.model}
+              </h1>
+              <div className="flex min-w-0 flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                {vehicle.licensePlate && <span className="font-mono">{vehicle.licensePlate}</span>}
+                {vehicle.vin && (
+                  <>
+                    {vehicle.licensePlate && <span>&middot;</span>}
+                    <span className="font-mono">{vehicle.vin}</span>
+                  </>
+                )}
+                {vehicle.engineCode && (
+                  <>
+                    {(vehicle.licensePlate || vehicle.vin) && <span>&middot;</span>}
+                    <span className="font-mono">{vehicle.engineCode}</span>
+                  </>
+                )}
+                {typeKeyEnabled && (vehicle.hsn || vehicle.tsn) && (
+                  <>
+                    {(vehicle.licensePlate || vehicle.vin || vehicle.engineCode) && (
+                      <span>&middot;</span>
+                    )}
+                    <span>
+                      {t('typeKey')}{' '}
+                      <span className="font-mono">{formatTypeKey(vehicle.hsn, vehicle.tsn)}</span>
+                    </span>
+                  </>
+                )}
+              </div>
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5">
+              {vehicle.fuelType && (
+                <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                  {vehicle.fuelType}
+                </Badge>
+              )}
+              {vehicle.transmission && (
+                <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                  {vehicle.transmission}
+                </Badge>
+              )}
+              {vehicle.engineSize && (
+                <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                  {vehicle.engineSize}
+                </Badge>
+              )}
+              {vehicle.color && (
+                <Badge variant="secondary" className="text-xs px-1.5 py-0">
+                  {vehicle.color}
+                </Badge>
+              )}
+              {vehicle.inspectionStatus?.dueAt && (
+                <Badge
+                  variant="outline"
+                  className={`text-xs px-1.5 py-0 ${
+                    new Date(vehicle.inspectionStatus.dueAt).getTime() < Date.now()
+                      ? 'border-destructive/40 text-destructive'
+                      : new Date(vehicle.inspectionStatus.dueAt).getTime() - Date.now() <
+                          30 * 86_400_000
+                        ? 'border-amber-500/40 text-amber-700 dark:text-amber-400'
+                        : ''
+                  }`}
+                  title={
+                    vehicle.inspectionStatus.checkedAt
+                      ? t('inspectionCheckedAt', {
+                          date: formatDate(vehicle.inspectionStatus.checkedAt),
+                        })
+                      : undefined
+                  }
+                >
+                  {t('inspectionDue', { date: formatDate(vehicle.inspectionStatus.dueAt) })}
+                </Badge>
+              )}
+              {vehicle.soldReportedAt && (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-1.5 py-0 border-amber-500/40 text-amber-700 dark:text-amber-400"
+                >
+                  {t('soldReported', { date: formatDate(vehicle.soldReportedAt) })}
+                </Badge>
+              )}
+              {vehicle.inspectionStatus?.registered === false && (
+                <Badge
+                  variant="outline"
+                  className="text-xs px-1.5 py-0 border-destructive/40 text-destructive"
+                >
+                  {t('notRegistered')}
+                </Badge>
+              )}
+              {vehicle.customer && (
+                <>
+                  <span className="text-muted-foreground/40">|</span>
+                  <Link
+                    href={`/customers/${vehicle.customer.id}`}
+                    className="text-xs font-medium hover:underline"
+                  >
+                    {vehicle.customer.name}
+                  </Link>
+                  {vehicle.customer.company && (
+                    <span className="text-xs text-muted-foreground">
+                      {vehicle.customer.company}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick stats */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Gauge className="h-3.5 w-3.5" />
+            <span className="font-semibold text-foreground">
+              {vehicle.mileage.toLocaleString()}
+            </span>
+            <span className="text-xs">{distUnit}</span>
+          </div>
+          {predictionData && (
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="flex cursor-help items-center gap-1.5">
+                      <TrendingUp className="h-3.5 w-3.5" />
+                      <span className="text-xs">
+                        {isMarine
+                          ? t('predictedHours')
+                          : unitSystem === 'metric'
+                            ? t('predictedKm')
+                            : t('predictedMileage')}
+                      </span>
+                      <span className="font-semibold text-foreground">
+                        ~{predictionData.predictedMileage.toLocaleString()}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground/70">
+                        ({predictionData.confidencePercent}%)
+                      </span>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p className="max-w-xs text-xs">{t('predictedTooltip')}</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              {predictionData.status && predictionData.maintenanceDismissed ? (
+                <>
+                  <Badge variant="outline" className="text-[10px] ml-1 text-muted-foreground">
+                    <EyeOff className="mr-0.5 h-3 w-3" />
+                    {t('dismissed')}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-5 px-1.5 text-[10px] text-muted-foreground hover:text-foreground"
+                    disabled={isDismissPending}
+                    onClick={handleUndismissMaintenance}
+                  >
+                    {isDismissPending ? (
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                    ) : (
+                      <>
+                        <Undo2 className="mr-0.5 h-3 w-3" />
+                        {t('undo')}
+                      </>
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {predictionData.status === 'overdue' && (
+                    <>
+                      <Badge variant="destructive" className="text-[10px] ml-1">
+                        {t('serviceOverdue')}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
+                        disabled={isDismissPending}
+                        onClick={handleDismissMaintenance}
+                        aria-label={t('dismissMaintenance')}
+                      >
+                        {isDismissPending ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <X className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </>
+                  )}
+                  {predictionData.status === 'approaching' && (
+                    <>
+                      <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] ml-1">
+                        {t('serviceSoon')}
+                      </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-5 w-5 text-muted-foreground hover:text-foreground ml-0.5"
+                        disabled={isDismissPending}
+                        onClick={handleDismissMaintenance}
+                        aria-label={t('dismissMaintenance')}
+                      >
+                        {isDismissPending ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <X className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+          <VehicleTireSets sets={tireSets} />
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Wrench className="h-3.5 w-3.5" />
+            <span className="font-semibold text-foreground">{vehicle._count.serviceRecords}</span>
+            <span className="text-xs">{t('services')}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <DollarSign className="h-3.5 w-3.5" />
+            <span className="font-semibold text-foreground">
+              {formatCurrency(totalServiceCost, currencyCode)}
+            </span>
+          </div>
+          {vehicle.purchaseDate && (
+            <div className="flex items-center gap-1.5 text-muted-foreground">
+              <span className="text-xs">
+                {t('purchased', { date: formatDate(new Date(vehicle.purchaseDate)) })}
+              </span>
+            </div>
+          )}
+          {aiEnabled && (
+            <AskAiSheet
+              subject={{ type: 'vehicle', id: vehicle.id }}
+              title={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+              className="h-7 text-xs"
+            />
+          )}
+          {aiEnabled && (
+            <div className="flex items-center rounded-md border">
+              {vehicle._count.serviceRecords > 0 && (
+                <Button
+                  variant={activeAiPanel === 'summary' ? 'secondary' : 'ghost'}
+                  size="sm"
+                  className="h-7 gap-1.5 text-xs rounded-r-none border-r"
+                  onClick={() => setActiveAiPanel(activeAiPanel === 'summary' ? null : 'summary')}
+                  disabled={aiSummaryLoading}
+                >
+                  {aiSummaryLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-3.5 w-3.5" />
+                  )}
+                  {t('aiSummary')}
+                </Button>
+              )}
+              <Button
+                variant={activeAiPanel === 'issues' ? 'secondary' : 'ghost'}
+                size="sm"
+                className={`h-7 gap-1.5 text-xs ${vehicle._count.serviceRecords > 0 ? 'rounded-l-none' : ''}`}
+                onClick={() => setActiveAiPanel(activeAiPanel === 'issues' ? null : 'issues')}
+                disabled={commonIssuesLoading}
+              >
+                {commonIssuesLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                )}
+                {t('commonIssues')}
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* AI Summary Panel */}
+      {activeAiPanel === 'summary' && aiEnabled && (
+        <Card className="py-0 gap-0 overflow-hidden">
+          <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-purple-500" />
+              <h3 className="text-sm font-semibold">{t('aiSummaryTitle')}</h3>
+              {storedSummary && (
+                <span className="text-[11px] text-muted-foreground">
+                  {t('aiSummaryUpdated', { date: formatDate(new Date(storedSummary.updatedAt)) })}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1.5 text-xs"
+                onClick={handleAiSummary}
+                disabled={aiSummaryLoading}
+              >
+                {aiSummaryLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="h-3.5 w-3.5" />
+                )}
+                {storedSummary ? t('aiSummaryRegenerate') : t('aiSummaryGenerate')}
+              </Button>
+              {storedSummary && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleClearAiMessage(AI_MESSAGE_TYPES.SUMMARY)}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="px-4 py-3">
+            {aiSummaryLoading && !storedSummary ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : storedSummary ? (
+              (() => {
+                let summary: {
+                  overview: string
+                  majorWork: { title: string; date: string | null; cost: number }[]
+                  recurringIssues: { title: string; description: string }[]
+                  upcomingMaintenance: { item: string; urgency: string; reason: string }[]
+                } | null = null
+                try {
+                  const raw = storedSummary.content.replace(/^```json?\n?|\n?```$/g, '').trim()
+                  summary = JSON.parse(raw)
+                } catch {
+                  return (
+                    <div className="text-sm text-muted-foreground whitespace-pre-wrap">
+                      {storedSummary.content}
+                    </div>
+                  )
+                }
+                if (!summary) return null
+                const urgencyColor: Record<string, string> = {
+                  high: 'bg-red-500/10 text-red-600 border-red-500/20',
+                  medium: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+                  low: 'bg-green-500/10 text-green-600 border-green-500/20',
+                }
+                return (
+                  <div className="space-y-4">
+                    <p className="text-sm">{summary.overview}</p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {summary.majorWork.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <Wrench className="h-3.5 w-3.5" />
+                            {t('summaryMajorWork')}
+                          </h4>
+                          <div className="space-y-1.5">
+                            {summary.majorWork.map((w, i) => (
+                              <div key={i} className="text-sm">
+                                <span className="font-medium">{w.title}</span>
+                                {(w.date || w.cost > 0) && (
+                                  <span className="text-xs text-muted-foreground ml-2">
+                                    {[
+                                      w.date,
+                                      w.cost > 0 &&
+                                        new Intl.NumberFormat('en-US', {
+                                          minimumFractionDigits: 0,
+                                        }).format(w.cost),
+                                    ]
+                                      .filter(Boolean)
+                                      .join(' · ')}
+                                  </span>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {summary.upcomingMaintenance.length > 0 && (
+                        <div>
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <Clock className="h-3.5 w-3.5" />
+                            {t('summaryUpcoming')}
+                          </h4>
+                          <div className="space-y-2">
+                            {summary.upcomingMaintenance.map((m, i) => (
+                              <div key={i}>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm font-medium">{m.item}</span>
+                                  <Badge
+                                    variant="outline"
+                                    className={`text-[10px] px-1.5 py-0 ${urgencyColor[m.urgency] || urgencyColor.medium}`}
+                                  >
+                                    {m.urgency}
+                                  </Badge>
+                                </div>
+                                <p className="text-xs text-muted-foreground mt-0.5">{m.reason}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {summary.recurringIssues.length > 0 && (
+                        <div className="md:col-span-2">
+                          <h4 className="text-xs font-semibold uppercase text-muted-foreground mb-2 flex items-center gap-1.5">
+                            <AlertTriangle className="h-3.5 w-3.5" />
+                            {t('summaryRecurringIssues')}
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                            {summary.recurringIssues.map((issue, i) => (
+                              <div key={i} className="text-sm">
+                                <span className="font-medium">{issue.title}</span>
+                                <p className="text-xs text-muted-foreground mt-0.5">
+                                  {issue.description}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })()
+            ) : (
+              <p className="text-sm text-muted-foreground italic">{t('aiSummaryEmpty')}</p>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Common Issues Panel */}
+      {activeAiPanel === 'issues' && aiEnabled && (
+        <Card className="py-0 gap-0 overflow-hidden">
+          <div className="flex items-center justify-between border-b bg-muted/30 px-4 py-2.5">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4 text-amber-500" />
+              <h3 className="text-sm font-semibold">
+                {t('commonIssuesTitle', { make: vehicle.make, model: vehicle.model })}
+              </h3>
+              {storedCommonIssues && (
+                <span className="text-[11px] text-muted-foreground">
+                  {t('aiSummaryUpdated', {
+                    date: formatDate(new Date(storedCommonIssues.updatedAt)),
+                  })}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-7 gap-1.5 text-xs"
+                onClick={handleCommonIssues}
+                disabled={commonIssuesLoading}
+              >
+                {commonIssuesLoading ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                )}
+                {storedCommonIssues ? t('aiSummaryRegenerate') : t('aiSummaryGenerate')}
+              </Button>
+              {storedCommonIssues && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-muted-foreground hover:text-destructive"
+                  onClick={() => handleClearAiMessage(AI_MESSAGE_TYPES.COMMON_ISSUES)}
+                >
+                  <X className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
+          </div>
+          <div className="divide-y">
+            {commonIssuesLoading && !storedCommonIssues ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              </div>
+            ) : storedCommonIssues ? (
+              (() => {
+                let issues: {
+                  title: string
+                  description: string
+                  cost: string
+                  risk: string
+                  severity?: number
+                }[] = []
+                try {
+                  const raw = storedCommonIssues.content.replace(/^```json?\n?|\n?```$/g, '').trim()
+                  issues = JSON.parse(raw)
+                } catch {
+                  return (
+                    <div className="px-4 py-3 text-sm text-muted-foreground whitespace-pre-wrap">
+                      {storedCommonIssues.content}
+                    </div>
+                  )
+                }
+                const riskColor: Record<string, string> = {
+                  safety: 'bg-red-500/10 text-red-600 border-red-500/20',
+                  engine: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+                  transmission: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+                  electrical: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+                  other: 'bg-gray-500/10 text-gray-600 border-gray-500/20',
+                }
+                const severityBarColor = (s: number) =>
+                  s >= 4 ? 'bg-red-500' : s >= 3 ? 'bg-amber-500' : 'bg-yellow-400'
+                const severityLabel = (s: number) => {
+                  if (s >= 5) return t('severityVeryCommon')
+                  if (s >= 4) return t('severityCommon')
+                  if (s >= 3) return t('severityModerate')
+                  if (s >= 2) return t('severityUncommon')
+                  return t('severityRare')
+                }
+                return issues.map((issue, i) => {
+                  const sev = Math.max(1, Math.min(5, issue.severity ?? 3))
+                  return (
+                    <div key={i} className="flex gap-3 px-4 py-3">
+                      <div
+                        className="flex flex-col items-center gap-0.5 pt-1 cursor-help"
+                        title={severityLabel(sev)}
+                      >
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <div
+                            key={j}
+                            className={`w-1.5 h-1.5 rounded-full ${4 - j < sev ? severityBarColor(sev) : 'bg-muted-foreground/20'}`}
+                          />
+                        ))}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-sm font-semibold">{issue.title}</span>
+                          <Badge
+                            variant="outline"
+                            className={`text-[10px] px-1.5 py-0 ${riskColor[issue.risk] || riskColor.other}`}
+                          >
+                            {issue.risk}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-0.5">{issue.description}</p>
+                        <span className="text-xs font-medium text-foreground/70 mt-1 inline-block">
+                          {issue.cost}
+                        </span>
+                      </div>
+                    </div>
+                  )
+                })
+              })()
+            ) : (
+              <div className="px-4 py-3">
+                <p className="text-sm text-muted-foreground italic">{t('commonIssuesEmpty')}</p>
+              </div>
+            )}
+          </div>
+        </Card>
+      )}
+
+      {/* Recalls, owner complaints and crash rating for this model year. */}
+      {safetyAvailable && !isMarine && (
+        <VehicleSafetyPanel
+          vehicleId={vehicle.id}
+          make={vehicle.make}
+          model={vehicle.model}
+          year={vehicle.year}
+          existingFindings={paginatedFindings.records.map((f) => f.description)}
+        />
+      )}
+
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="services" className="gap-1.5">
+            <Wrench className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.services')}</span>
+            {vehicle._count.serviceRecords > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.serviceRecords}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="quotes" className="gap-1.5">
+            <FileText className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.quotes')}</span>
+            {quotes.length > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {quotes.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="inspections" className="gap-1.5">
+            <ClipboardCheck className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.inspections')}</span>
+            {inspections && inspections.length > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {inspections.length}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="findings" className="gap-1.5">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.findings')}</span>
+            {vehicle._count.findings > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.findings}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="notes" className="gap-1.5">
+            <StickyNote className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.notes')}</span>
+            {vehicle._count.notes > 0 && (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.notes}
+              </Badge>
+            )}
+          </TabsTrigger>
+          <TabsTrigger value="reminders" className="gap-1.5">
+            <Bell className="h-3.5 w-3.5 shrink-0" />
+            <span className="hidden sm:inline">{t('tabs.reminders')}</span>
+            {overdueCount > 0 ? (
+              <Badge variant="destructive" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {overdueCount}
+              </Badge>
+            ) : vehicle._count.reminders > 0 ? (
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 px-1 text-[10px]">
+                {vehicle._count.reminders}
+              </Badge>
+            ) : null}
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Services Tab - React Table with pagination */}
+        <TabsContent value="services" forceMount>
+          <ServiceRecordsTable
+            vehicleId={vehicle.id}
+            records={paginatedServices.records}
+            total={paginatedServices.total}
+            page={paginatedServices.page}
+            pageSize={paginatedServices.pageSize}
+            totalPages={paginatedServices.totalPages}
+            search={serviceSearch}
+            type={serviceRecordType}
+            currencyCode={currencyCode}
+            vehicleMileage={vehicle.mileage}
+          />
+        </TabsContent>
+
+        {/* Quotes Tab */}
+        <TabsContent value="quotes" className="space-y-4">
+          <div className="flex justify-end">
+            <Button
+              size="sm"
+              onClick={() => setShowNewQuoteDialog(true)}
+              aria-label={tq('newQuote')}
+              title={tq('newQuote')}
+              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{tq('newQuote')}</span>
+            </Button>
+          </div>
+          <NewQuoteDialog
+            open={showNewQuoteDialog}
+            onOpenChange={setShowNewQuoteDialog}
+            defaultVehicle={{
+              id: vehicle.id,
+              make: vehicle.make,
+              model: vehicle.model,
+              year: vehicle.year,
+              licensePlate: vehicle.licensePlate,
+              customerId: vehicle.customerId,
+              customer: vehicle.customer
+                ? { id: vehicle.customer.id, name: vehicle.customer.name }
+                : null,
+            }}
+            defaultCustomer={
+              vehicle.customer
+                ? {
+                    id: vehicle.customer.id,
+                    name: vehicle.customer.name,
+                    company: vehicle.customer.company,
+                  }
+                : null
+            }
+          />
+
+          {quotes.length === 0 ? (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <FileText className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">{tq('empty')}</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 md:hidden">
+                {quotes.map((q) => (
+                  <button
+                    key={q.id}
+                    type="button"
+                    onClick={() => router.push(`/quotes/${q.id}`)}
+                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">{q.title}</span>
+                      <span className="shrink-0 font-semibold">
+                        {formatCurrency(q.totalAmount, currencyCode)}
+                      </span>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${quoteStatusColors[q.status] || ''}`}
+                      >
+                        {quoteStatusLabel(q.status, tQuoteStatus)}
+                      </Badge>
+                      {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
+                      <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Table (md and up) */}
+              <div className="hidden rounded-lg border md:block" {...quotesNav.containerProps}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-25">{tq('columnNumber')}</TableHead>
+                      <TableHead>{tq('columnTitle')}</TableHead>
+                      <TableHead className="w-27.5">{tq('columnStatus')}</TableHead>
+                      <TableHead className="w-24">{tq('columnDate')}</TableHead>
+                      <TableHead className="w-22.5 text-right">{tq('columnTotal')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {quotes.map((q) => (
+                      <TableRow
+                        key={q.id}
+                        className="cursor-pointer"
+                        {...interactiveRow(() => router.push(`/quotes/${q.id}`))}
+                      >
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {q.quoteNumber || '-'}
+                        </TableCell>
+                        <TableCell className="font-medium">{q.title}</TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={`max-w-full whitespace-normal text-center text-xs leading-tight ${quoteStatusColors[q.status] || ''}`}
+                          >
+                            {quoteStatusLabel(q.status, tQuoteStatus)}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {formatDate(new Date(q.createdAt))}
+                        </TableCell>
+                        <TableCell className="text-right font-semibold">
+                          {formatCurrency(q.totalAmount, currencyCode)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          )}
+        </TabsContent>
+
+        {/* Inspections Tab */}
+        <TabsContent value="inspections" className="space-y-4">
+          <div className="flex justify-end">
+            <Button
+              size="sm"
+              onClick={() => setShowNewInspection(true)}
+              aria-label={ti('newInspection')}
+              title={ti('newInspection')}
+              className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{ti('newInspection')}</span>
+            </Button>
+          </div>
+
+          {!inspections || inspections.length === 0 ? (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <ClipboardCheck className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">{ti('empty')}</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              {/* Card list (phones + small tablets) */}
+              <div className="space-y-2 md:hidden">
+                {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
+                  <button
+                    key={insp.id}
+                    type="button"
+                    onClick={() => router.push(`/inspections/${insp.id}`)}
+                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">
+                        {insp.template.name}
+                      </span>
+                      <Badge
+                        variant="outline"
+                        className={`shrink-0 text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                      >
+                        {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
+                      </Badge>
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                      <InspectionProgress
+                        total={total}
+                        inspected={inspected}
+                        passCount={passCount}
+                        failCount={failCount}
+                      />
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {formatDate(new Date(insp.createdAt))}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Table (md and up) */}
+              <div className="hidden rounded-lg border md:block" {...inspectionsNav.containerProps}>
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>{ti('template')}</TableHead>
+                      <TableHead className="w-32">{ti('progress')}</TableHead>
+                      <TableHead className="w-28">{ti('status')}</TableHead>
+                      <TableHead className="w-24">{ti('date')}</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {inspectionRows.map(({ insp, total, inspected, passCount, failCount }) => (
+                      <TableRow
+                        key={insp.id}
+                        className="cursor-pointer"
+                        {...interactiveRow(() => router.push(`/inspections/${insp.id}`))}
+                      >
+                        <TableCell className="font-medium">{insp.template.name}</TableCell>
+                        <TableCell>
+                          <InspectionProgress
+                            total={total}
+                            inspected={inspected}
+                            passCount={passCount}
+                            failCount={failCount}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={`text-xs ${insp.status === 'completed' ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' : 'bg-blue-500/10 text-blue-500 border-blue-500/20'}`}
+                          >
+                            {insp.status === 'completed' ? ti('completed') : ti('inProgress')}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="font-mono text-xs text-muted-foreground">
+                          {formatDate(new Date(insp.createdAt))}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
+          )}
+        </TabsContent>
+
+        {/* Findings Tab */}
+        <TabsContent value="findings" forceMount>
+          <FindingsTable
+            vehicleId={vehicle.id}
+            records={paginatedFindings.records}
+            total={paginatedFindings.total}
+            page={paginatedFindings.page}
+            pageSize={paginatedFindings.pageSize}
+            totalPages={paginatedFindings.totalPages}
+            onAddFinding={() => {
+              setEditingFinding(undefined)
+              setShowFindingForm(true)
+            }}
+            onEditFinding={(f) => {
+              setEditingFinding(f)
+              setShowFindingForm(true)
+            }}
+            onDeleteFinding={handleDeleteFinding}
+            onCreateWorkOrder={handleCreateWorkOrderFromFindings}
+            isCreatingWorkOrder={creatingWorkOrder}
+          />
+        </TabsContent>
+
+        {/* Notes Tab */}
+        <TabsContent value="notes" forceMount>
+          <NotesTable
+            vehicleId={vehicle.id}
+            records={paginatedNotes.records}
+            total={paginatedNotes.total}
+            page={paginatedNotes.page}
+            pageSize={paginatedNotes.pageSize}
+            totalPages={paginatedNotes.totalPages}
+            onSelectNote={setSelectedNote}
+            onAddNote={() => {
+              setEditingNote(undefined)
+              setShowNoteForm(true)
+            }}
+            onTogglePin={handleTogglePin}
+            onDeleteNote={handleDeleteNote}
+          />
+        </TabsContent>
+
+        {/* Reminders Tab */}
+        <TabsContent value="reminders" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-1 rounded-lg border p-1">
+              {(['active', 'completed', 'all'] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setReminderFilter(f)}
+                  className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                    reminderFilter === f
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {tr(f)}
+                </button>
+              ))}
+            </div>
+            <Button
+              size="sm"
+              onClick={() => {
+                setEditingReminder(undefined)
+                setShowReminderForm(true)
+              }}
+              aria-label={tr('addReminder')}
+              title={tr('addReminder')}
+              className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
+            >
+              <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+              <span className="hidden md:inline">{tr('addReminder')}</span>
+            </Button>
+          </div>
+
+          {filteredReminders.length === 0 ? (
+            <Card className="border-dashed">
+              <CardContent className="flex flex-col items-center py-12">
+                <Bell className="mb-3 h-10 w-10 text-muted-foreground/40" />
+                <p className="text-sm text-muted-foreground">
+                  {reminderFilter === 'active'
+                    ? tr('emptyActive')
+                    : reminderFilter === 'completed'
+                      ? tr('emptyCompleted')
+                      : tr('empty')}
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-3">
+              {filteredReminders.map((r) => {
+                const urgency = getUrgency(r)
+                return (
+                  <Card
+                    key={r.id}
+                    className={`${
+                      urgency === 'overdue'
+                        ? 'ring-1 ring-red-500/30'
+                        : urgency === 'due-soon'
+                          ? 'ring-1 ring-amber-500/30'
+                          : ''
+                    }`}
+                  >
+                    <CardContent className="flex items-start justify-between gap-2 p-4">
+                      <div className="flex min-w-0 flex-1 items-start gap-3">
+                        <button
+                          onClick={() => handleToggleReminder(r.id)}
+                          className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors ${
+                            r.isCompleted
+                              ? 'border-primary bg-primary/10'
+                              : 'border-primary/50 hover:bg-primary/10'
+                          }`}
+                          aria-label={r.title}
+                        >
+                          {r.isCompleted && <CheckCircle2 className="h-5 w-5 text-primary" />}
+                        </button>
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p
+                              className={`font-medium ${r.isCompleted ? 'line-through text-muted-foreground' : ''}`}
+                            >
+                              {r.title}
+                            </p>
+                            {urgency === 'overdue' && (
+                              <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
+                                <AlertTriangle className="mr-0.5 h-3 w-3" />
+                                {tr('overdue')}
+                              </Badge>
+                            )}
+                            {urgency === 'due-soon' && (
+                              <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/20 text-[10px] px-1.5 py-0">
+                                <Clock className="mr-0.5 h-3 w-3" />
+                                {tr('dueSoon')}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {r.dueDate &&
+                              tr('due', {
+                                date: r.hasDueTime
+                                  ? formatDateTime(new Date(r.dueDate))
+                                  : formatDate(new Date(r.dueDate)),
+                              })}
+                            {r.dueMileage &&
+                              `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
+                          </p>
+                          {r.description && (
+                            <p className="mt-1 text-xs text-muted-foreground">{r.description}</p>
+                          )}
+                        </div>
+                      </div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9 shrink-0 md:h-7 md:w-7"
+                            aria-label={t('openMenu')}
+                          >
+                            <MoreVertical className="h-4 w-4 md:h-3.5 md:w-3.5" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setEditingReminder(r)
+                              setShowReminderForm(true)
+                            }}
+                          >
+                            <Pencil className="mr-2 h-4 w-4" />
+                            {tc('edit')}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => handleDeleteReminder(r.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {tc('delete')}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </CardContent>
+                  </Card>
+                )
+              })}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      <VehicleForm
+        open={showEditForm}
+        onOpenChange={setShowEditForm}
+        vehicle={vehicle}
+        distanceUnit={distUnit}
+        // The page's own confirmation does the deleting.
+        onDelete={() => {
+          setShowEditForm(false)
+          setShowDeleteDialog(true)
+        }}
+      />
+      <NoteForm
+        vehicleId={vehicle.id}
+        open={showNoteForm}
+        onOpenChange={setShowNoteForm}
+        note={editingNote}
+      />
+      <Dialog
+        open={!!selectedNote}
+        onOpenChange={(open) => {
+          if (!open) setSelectedNote(null)
+        }}
+      >
+        <DialogContent className="sm:max-w-3xl" aria-describedby={undefined}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              {selectedNote?.isPinned && <Pin className="h-4 w-4 text-primary" />}
+              {selectedNote?.title}
+            </DialogTitle>
+            <p className="text-xs text-muted-foreground">
+              {selectedNote?.createdAt && formatDate(new Date(selectedNote.createdAt))}
+            </p>
+          </DialogHeader>
+          <div
+            className="notes-content max-h-[60vh] overflow-y-auto text-sm break-all"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(selectedNote?.content ?? '') }}
+          />
+          <div className="flex justify-end pt-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                if (selectedNote) {
+                  setEditingNote(selectedNote)
+                  setSelectedNote(null)
+                  setShowNoteForm(true)
+                }
+              }}
+            >
+              <Pencil className="mr-1 h-3.5 w-3.5" />
+              {t('edit')}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      <ReminderForm
+        vehicleId={vehicle.id}
+        open={showReminderForm}
+        onOpenChange={setShowReminderForm}
+        reminder={editingReminder}
+      />
+      <FindingForm
+        vehicleId={vehicle.id}
+        open={showFindingForm}
+        onOpenChange={setShowFindingForm}
+        finding={editingFinding}
+      />
+      <NewInspectionDialog
+        open={showNewInspection}
+        onOpenChange={setShowNewInspection}
+        templates={inspectionTemplates || []}
+        preselectedVehicle={vehicle}
+      />
+      <ArchiveVehicleDialog
+        open={showArchiveDialog}
+        onOpenChange={setShowArchiveDialog}
+        vehicleId={vehicle.id}
+        vehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+      />
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('deleteDescription', { name: `${vehicle.year} ${vehicle.make} ${vehicle.model}` })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {tc('delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Image lightbox */}
+      {showImage && vehicle.imageUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setShowImage(false)}
+        >
+          <img
+            src={vehicle.imageUrl}
+            alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </div>
+  )
+}

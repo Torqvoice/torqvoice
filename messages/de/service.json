@@ -830,6 +830,21 @@
         "odometer": "Kilometerstand",
         "other": "Schaden oder Sonstiges"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Fahrzeugfoto per Handy aufnehmen",
+      "dialogBody": "Ein Foto des Fahrzeugs mit einem beliebigen Handy aufnehmen oder eines auswählen, das schon darauf ist. Es wird zum Foto oben auf dieser Fahrzeugseite.",
+      "step2": "Nehmen Sie ein Foto des ganzen Fahrzeugs auf oder wählen Sie eines vom Handy aus.",
+      "step3": "Es ersetzt das Foto auf der Fahrzeugseite, sobald es ankommt.",
+      "scope": "Der Link kann nur das Foto dieses Fahrzeugs festlegen und funktioniert nach 30 Minuten nicht mehr.",
+      "waiting": "Warten auf das Foto…",
+      "received": "Foto empfangen",
+      "pageTitle": "Foto des Fahrzeugs",
+      "pageBody": "Nehmen Sie ein Foto des ganzen Fahrzeugs auf. Es ersetzt das Foto auf der Fahrzeugseite.",
+      "choosePhoto": "Foto auswählen",
+      "saved": "Gespeichert. Das Foto ist jetzt auf der Fahrzeugseite. Nehmen Sie ein weiteres auf, um es zu ersetzen.",
+      "invalid": "Scannen Sie den Code auf der Fahrzeugseite erneut.",
+      "notAPhoto": "Hier können nur Fotos verwendet werden."
     }
   },
   "payCode": {

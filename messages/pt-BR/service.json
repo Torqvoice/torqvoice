@@ -830,6 +830,21 @@
         "odometer": "Hodômetro",
         "other": "Dano ou outro"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Tirar a foto do veículo pelo celular",
+      "dialogBody": "Tire uma foto do carro em qualquer celular, ou escolha uma que já esteja nele. Ela vira a foto no topo da página deste veículo.",
+      "step2": "Tire uma foto do carro inteiro, ou escolha uma do celular.",
+      "step3": "Ela substitui a foto na página do veículo assim que chega.",
+      "scope": "O link só pode definir a foto deste veículo e para de funcionar após 30 minutos.",
+      "waiting": "Aguardando a foto…",
+      "received": "Foto recebida",
+      "pageTitle": "Foto do veículo",
+      "pageBody": "Tire uma foto do carro inteiro. Ela substitui a foto na página do veículo.",
+      "choosePhoto": "Escolher uma foto",
+      "saved": "Salva. A foto já está na página do veículo. Tire outra para substituí-la.",
+      "invalid": "Escaneie de novo o código na página do veículo.",
+      "notAPhoto": "Aqui só é possível usar fotos."
     }
   },
   "payCode": {

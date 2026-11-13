@@ -570,6 +570,7 @@ export function CustomerDetailClient({
               onOpenChange={setShowVehicleForm}
               defaultCustomerId={customer.id}
               defaultCustomer={customer}
+              distanceUnit={readingUnit}
             />
             {customer.vehicles.length === 0 ? (
               <Card className="border-dashed">

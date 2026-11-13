@@ -830,6 +830,21 @@
         "odometer": "Conta-quilómetros",
         "other": "Dano ou outro"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Tirar a fotografia da viatura com um telemóvel",
+      "dialogBody": "Tire uma fotografia da viatura em qualquer telemóvel, ou escolha uma que já lá esteja. Passa a ser a fotografia no topo da página desta viatura.",
+      "step2": "Tire uma fotografia da viatura inteira, ou escolha uma do telemóvel.",
+      "step3": "Substitui a fotografia na página da viatura assim que chega.",
+      "scope": "A ligação só pode definir a fotografia desta viatura e deixa de funcionar ao fim de 30 minutos.",
+      "waiting": "À espera da fotografia…",
+      "received": "Fotografia recebida",
+      "pageTitle": "Fotografia da viatura",
+      "pageBody": "Tire uma fotografia da viatura inteira. Substitui a fotografia na página da viatura.",
+      "choosePhoto": "Escolher uma fotografia",
+      "saved": "Guardada. A fotografia já está na página da viatura. Tire outra para a substituir.",
+      "invalid": "Leia novamente o código na página da viatura.",
+      "notAPhoto": "Aqui só é possível usar fotografias."
     }
   },
   "payCode": {

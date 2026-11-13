@@ -123,9 +123,9 @@ function label(dialog: Locator, field: string): Locator {
   return dialog.locator(`label[for="${field}"]`)
 }
 
-/** The select drawn after a label. Its trigger carries no id of its own. */
-function selectAfter(dialog: Locator, field: string): Locator {
-  return dialog.locator(`label[for="${field}"] ~ [role="combobox"]`)
+/** A short list of choices drawn as a row of buttons, found by its label. */
+function choices(dialog: Locator, name: string): Locator {
+  return dialog.getByRole('radiogroup', { name })
 }
 
 test.describe('a workshop that picks Marine', () => {
@@ -167,17 +167,17 @@ test.describe('a workshop that picks Marine', () => {
     // A periodic roadworthiness inspection is a road vehicle's.
     await expect(dialog.locator('#inspectionDueAt')).toHaveCount(0)
 
-    // Two-stroke instead of electric and hybrid.
-    await selectAfter(dialog, 'fuelType').click()
-    await expect(page.getByRole('option')).toHaveText(['Gasoline', 'Diesel', 'Two-Stroke', 'Other'])
-    await page.getByRole('option', { name: 'Two-Stroke' }).click()
+    // Two-stroke instead of electric and hybrid, every choice in sight.
+    const fuel = choices(dialog, 'Fuel Type')
+    await expect(fuel.getByRole('radio')).toHaveText(['Gasoline', 'Diesel', 'Two-Stroke', 'Other'])
+    await fuel.getByRole('radio', { name: 'Two-Stroke' }).click()
+    await expect(fuel.getByRole('radio', { name: 'Two-Stroke' })).toBeChecked()
 
     // Outboard or inboard, outboard unless told otherwise.
-    const engineType = selectAfter(dialog, 'transmission')
-    await expect(engineType).toHaveText('Outboard')
-    await engineType.click()
-    await expect(page.getByRole('option')).toHaveText(['Outboard', 'Inboard'])
-    await page.getByRole('option', { name: 'Inboard' }).click()
+    const engineType = choices(dialog, 'Engine Type')
+    await expect(engineType.getByRole('radio')).toHaveText(['Outboard', 'Inboard'])
+    await expect(engineType.getByRole('radio', { name: 'Outboard' })).toBeChecked()
+    await engineType.getByRole('radio', { name: 'Inboard' }).click()
 
     await dialog.locator('#make').fill(VESSEL.make)
     await dialog.locator('#model').fill(VESSEL.model)
@@ -306,15 +306,13 @@ test.describe('a workshop that picks Marine', () => {
     await expect(label(dialog, 'transmission')).toHaveText('Transmission')
     await expect(dialog.locator('#inspectionDueAt')).toBeVisible()
 
-    await selectAfter(dialog, 'fuelType').click()
-    await expect(page.getByRole('option')).toHaveText([
+    await expect(choices(dialog, 'Fuel Type').getByRole('radio')).toHaveText([
       'Gasoline',
       'Diesel',
       'Electric',
       'Hybrid',
       'Other',
     ])
-    await page.keyboard.press('Escape')
     await dialog.getByRole('button', { name: 'Cancel' }).click()
 
     await expect(sidebar(page).getByRole('link', { name: /^Vehicles/ })).toBeVisible()

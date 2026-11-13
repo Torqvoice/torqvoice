@@ -19,18 +19,24 @@ import { ACTIVE_HELPERS } from './jobTeam'
 /** How far ahead to read by default. Long enough to answer "next free slot" honestly. */
 const WINDOW_DAYS = 45
 /** The most a caller can ask for: a year and a bit. */
-const MAX_WINDOW_DAYS = 400
+export const MAX_WINDOW_DAYS = 400
 
 /**
  * `days` is how far past `from` to read. Online booking asks for its whole
  * horizon: jobs, closed days and leave past the default window would
  * otherwise be invisible, and a closed day there offered to a customer.
  */
+export interface BookingContext {
+  bookings: Booking[]
+  hours: WorkingHours
+  closuresEnabled: boolean
+}
+
 export async function loadBookingContext(
   organizationId: string,
   from: Date,
   opts: { days?: number } = {}
-): Promise<{ bookings: Booking[]; hours: WorkingHours; closuresEnabled: boolean }> {
+): Promise<BookingContext> {
   const days = Math.min(Math.max(Math.ceil(opts.days ?? WINDOW_DAYS), 1), MAX_WINDOW_DAYS)
   const windowStart = new Date(from)
   windowStart.setDate(windowStart.getDate() - 1)

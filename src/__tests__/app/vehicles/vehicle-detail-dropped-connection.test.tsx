@@ -75,8 +75,8 @@ vi.mock('@/features/inspections/Components/NewInspectionDialog', () => ({
   NewInspectionDialog: () => null,
 }))
 vi.mock('@/features/quotes/Components/NewQuoteDialog', () => ({ NewQuoteDialog: () => null }))
-vi.mock('@/app/(authenticated)/vehicles/[id]/service-records-table', () => ({
-  ServiceRecordsTable: () => null,
+vi.mock('@/app/(authenticated)/vehicles/[id]/vehicle-activity-feed', () => ({
+  VehicleActivityFeed: () => null,
 }))
 vi.mock('@/app/(authenticated)/vehicles/[id]/notes-table', () => ({ NotesTable: () => null }))
 vi.mock('@/app/(authenticated)/vehicles/[id]/findings-table', () => ({

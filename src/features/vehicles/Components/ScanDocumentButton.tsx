@@ -12,12 +12,15 @@ import {
   type VehicleDocumentScan,
 } from '../Actions/aiAnalyzeVehicleDocument'
 import { documentToDataUri } from '../Lib/documentImage'
+import { cn } from '@/lib/utils'
 
 interface ScanDocumentButtonProps {
   /** Called with whatever the papers yielded, for the form to apply. */
   onScanned: (data: VehicleDocumentScan) => void
   /** Hidden when the surrounding form has no room for a second line. */
   showHint?: boolean
+  /** The hint under the button rather than beside it, for a narrow column. */
+  stacked?: boolean
 }
 
 /**
@@ -27,7 +30,11 @@ interface ScanDocumentButtonProps {
  * vehicle's details and its keeper, so both forms have something to fill from
  * it and neither should own the scanning.
  */
-export function ScanDocumentButton({ onScanned, showHint = true }: ScanDocumentButtonProps) {
+export function ScanDocumentButton({
+  onScanned,
+  showHint = true,
+  stacked = false,
+}: ScanDocumentButtonProps) {
   const t = useTranslations('vehicles.form')
   const [scanning, setScanning] = useState(false)
   /** null while the availability check is still in flight. */
@@ -73,7 +80,11 @@ export function ScanDocumentButton({ onScanned, showHint = true }: ScanDocumentB
   )
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+    <div
+      className={
+        stacked ? 'flex flex-col gap-2' : 'flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3'
+      }
+    >
       <Tooltip>
         {/* A disabled button swallows pointer events, so the trigger has to be
             the wrapper rather than the button itself. */}
@@ -82,7 +93,7 @@ export function ScanDocumentButton({ onScanned, showHint = true }: ScanDocumentB
             <Button
               type="button"
               variant="outline"
-              className="w-full sm:w-auto"
+              className={stacked ? 'w-full' : 'w-full sm:w-auto'}
               onClick={() => inputRef.current?.click()}
               disabled={scanning || !available}
             >
@@ -98,7 +109,9 @@ export function ScanDocumentButton({ onScanned, showHint = true }: ScanDocumentB
         {available === false && <TooltipContent>{t('scanUnavailable')}</TooltipContent>}
       </Tooltip>
       {showHint && (
-        <p className="text-xs text-muted-foreground sm:flex-1">{t('scanDocumentHint')}</p>
+        <p className={cn('text-xs text-muted-foreground', stacked ? 'leading-snug' : 'sm:flex-1')}>
+          {t('scanDocumentHint')}
+        </p>
       )}
       <input
         ref={inputRef}

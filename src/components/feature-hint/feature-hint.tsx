@@ -38,6 +38,8 @@ export function FeatureHint({
   href,
   cta,
   variant = 'hint',
+  open: openProp,
+  onDismiss,
   children,
 }: {
   /**
@@ -78,13 +80,24 @@ export function FeatureHint({
    */
   variant?: 'hint' | 'announcement'
   /**
+   * For a hint that follows one person's own action rather than something the
+   * workshop switched on: the caller decides when it shows and remembers that
+   * it was seen, and the workshop's list of seen hints is left alone. Give
+   * both, or neither.
+   */
+  open?: boolean
+  onDismiss?: () => void
+  /**
    * What the card points at. Stays fully interactive. Given the open state so
    * it can highlight itself while the card is up.
    */
   children: React.ReactNode | ((open: boolean) => React.ReactNode)
 }) {
   const t = useTranslations('common')
-  const { open, dismiss } = useFeatureHint(id, eligible)
+  const controlled = openProp !== undefined && onDismiss !== undefined
+  const shared = useFeatureHint(id, controlled ? false : eligible)
+  const open = controlled ? openProp && eligible : shared.open
+  const dismiss = controlled ? onDismiss : shared.dismiss
   const loud = variant === 'announcement'
 
   // Escape closes it wherever focus happens to be. Focus is never moved into

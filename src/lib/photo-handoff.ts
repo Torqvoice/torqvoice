@@ -286,3 +286,69 @@ export function verifyFixHandoffToken(token: string, now = Date.now()): FixHando
     },
   }
 }
+
+/**
+ * The same kind of code for a vehicle's own photo, the picture at the top of
+ * its page. The phone takes or chooses one photo and it replaces the one on
+ * the vehicle. It can do nothing else: no job, no history, no customer.
+ */
+const VEHICLE_PREFIX = 'vh1'
+
+export interface VehicleHandoff {
+  organizationId: string
+  vehicleId: string
+  /** Who showed the code. */
+  userId: string
+  /** Unix seconds. */
+  expiresAt: number
+}
+
+export function isVehicleHandoffToken(token: string): boolean {
+  return token.startsWith(`${VEHICLE_PREFIX}.`)
+}
+
+export function createVehicleHandoffToken(
+  handoff: Omit<VehicleHandoff, 'expiresAt'>,
+  now = Date.now()
+): { token: string; expiresAt: Date } {
+  const expiresAt = Math.floor(now / 1000) + PHOTO_HANDOFF_TTL_SECONDS
+  const body = Buffer.from(
+    JSON.stringify({
+      o: handoff.organizationId,
+      v: handoff.vehicleId,
+      u: handoff.userId,
+      e: expiresAt,
+    })
+  ).toString('base64url')
+  return {
+    token: `${VEHICLE_PREFIX}.${body}.${sign(body, VEHICLE_PREFIX)}`,
+    expiresAt: new Date(expiresAt * 1000),
+  }
+}
+
+export type VehicleHandoffCheck =
+  | { ok: true; handoff: VehicleHandoff }
+  | { ok: false; reason: 'invalid' | 'expired' }
+
+export function verifyVehicleHandoffToken(token: string, now = Date.now()): VehicleHandoffCheck {
+  const body = signedBody(token, VEHICLE_PREFIX)
+  if (!body) return { ok: false, reason: 'invalid' }
+
+  let payload: { o?: unknown; v?: unknown; u?: unknown; e?: unknown }
+  try {
+    payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+  } catch {
+    return { ok: false, reason: 'invalid' }
+  }
+  const { o, v, u, e } = payload
+  if (
+    typeof o !== 'string' ||
+    typeof v !== 'string' ||
+    typeof u !== 'string' ||
+    typeof e !== 'number'
+  ) {
+    return { ok: false, reason: 'invalid' }
+  }
+  if (e * 1000 <= now) return { ok: false, reason: 'expired' }
+  return { ok: true, handoff: { organizationId: o, vehicleId: v, userId: u, expiresAt: e } }
+}

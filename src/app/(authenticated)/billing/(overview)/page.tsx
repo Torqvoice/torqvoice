@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import { cookies } from 'next/headers'
 import { COMPLETED_ONLY_COOKIE, parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
-import BillingClient from './billing-client'
+import BillingClient from '../billing-client'
 
 export default async function BillingPage({
   searchParams,

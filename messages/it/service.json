@@ -830,6 +830,21 @@
         "odometer": "Contachilometri",
         "other": "Danno o altro"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Scatta la foto del veicolo con un telefono",
+      "dialogBody": "Scatta una foto dell’auto da qualsiasi telefono, o scegline una già presente. Diventa la foto in cima alla pagina di questo veicolo.",
+      "step2": "Scatta una foto dell’auto intera, o scegline una dal telefono.",
+      "step3": "Sostituisce la foto nella pagina del veicolo appena arriva.",
+      "scope": "Il link può solo impostare la foto di questo veicolo e smette di funzionare dopo 30 minuti.",
+      "waiting": "In attesa della foto…",
+      "received": "Foto ricevuta",
+      "pageTitle": "Foto del veicolo",
+      "pageBody": "Scatta una foto dell’auto intera. Sostituisce la foto nella pagina del veicolo.",
+      "choosePhoto": "Scegli una foto",
+      "saved": "Salvata. Ora la foto è nella pagina del veicolo. Scattane un’altra per sostituirla.",
+      "invalid": "Inquadra di nuovo il codice sulla pagina del veicolo.",
+      "notAPhoto": "Qui si possono usare solo foto."
     }
   },
   "payCode": {
