@@ -10,7 +10,7 @@ import {
 } from '@/features/inventory/Actions/inventoryActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { InventoryClient } from './inventory-client'
+import { InventoryClient } from '../inventory-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 

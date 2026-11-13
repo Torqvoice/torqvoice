@@ -10,12 +10,16 @@ import { getVehicleInspections } from '@/features/inspections/Actions/inspection
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
 import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
+import { getVehicleJobWarnings } from '@/features/vehicles/Actions/getVehicleJobWarnings'
 import { getFeatures } from '@/lib/features'
 import { findSafetyConnection } from '@/features/integrations/Lib/vehicle-safety'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
-import { VehicleDetailClient } from './vehicle-detail-client'
+import { VehicleDetailClient } from '../vehicle-detail-client'
+import { VehicleDetailClassic } from '../_classic/vehicle-detail-classic'
+import { TryNewVehiclePageBanner } from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
+import { resolveVehiclePageLayout } from '@/lib/vehicle-page-layout.server'
 import { PageHeader } from '@/components/page-header'
 import { redirect } from 'next/navigation'
 import { PermissionSubject } from '@/lib/permissions'
@@ -38,9 +42,11 @@ export default async function VehicleDetailPage({
     redirect(`/vehicles/${id}/service/${sp.record}`)
   }
 
+  const search = typeof sp.search === 'string' ? sp.search : ''
+  // The classic page pages and filters its service table; the new one shows
+  // the whole history as a feed. See lib/vehicle-page-layout.ts for which.
   const page = Number(sp.page) || 1
   const pageSize = Number(sp.pageSize) || 10
-  const search = typeof sp.search === 'string' ? sp.search : ''
   const type = typeof sp.type === 'string' ? sp.type : 'all'
 
   const notesPage = Number(sp.notesPage) || 1
@@ -52,7 +58,13 @@ export default async function VehicleDetailPage({
   // A role without them is not shown the panels, and is not asked for their
   // data either: a refused call is a wasted query and a refusal in the audit
   // log on every vehicle somebody opens (lib/viewer-access).
+  // Which layout this browser gets decides how the history is read below;
+  // it is worked out while the viewer's access is, not after.
+  const auth = getAuthContext()
+  const layoutChoice = auth.then((ctx) => resolveVehiclePageLayout(ctx?.organizationId))
   const access = await getViewerAccess()
+  const layout = await layoutChoice
+  const classic = layout === 'classic'
   const S = PermissionSubject
 
   const [
@@ -66,9 +78,16 @@ export default async function VehicleDetailPage({
     quotesResult,
     findingsResult,
     tireSetsResult,
+    predResult,
+    authContext,
+    jobWarningsResult,
   ] = await Promise.all([
     getVehicle(id),
-    getServiceRecordsPaginated(id, { page, pageSize, search, type }),
+    // The new page shows the vehicle's history as one feed, so it asks for all
+    // of it; a car with more work orders than this is shown its latest ones.
+    classic
+      ? getServiceRecordsPaginated(id, { page, pageSize, search, type })
+      : getServiceRecordsPaginated(id, { page: 1, pageSize: 250, search }),
     getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getDisplaySettings([
@@ -81,6 +100,12 @@ export default async function VehicleDetailPage({
     getVehicleQuotes(id),
     getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
     readIfAllowed(access, S.TIRE_HOTEL, () => getTireSetsForVehicle(id)),
+    // Asked alongside the rest rather than after it: neither needs the others.
+    getVehiclePredictedMileage(id),
+    auth,
+    // What is wrong with the bookings of the vehicle's open jobs, flagged in
+    // the new page's feed so nobody has to open each job to find out.
+    classic ? null : readIfAllowed(access, S.WORK_ORDERS, () => getVehicleJobWarnings(id)),
   ])
 
   if (!result.success || !result.data) {
@@ -139,7 +164,6 @@ export default async function VehicleDetailPage({
     confidencePercent: number
   } | null = null
 
-  const predResult = await getVehiclePredictedMileage(id)
   if (predResult.success && predResult.data) {
     const p = predResult.data
     const mileageSinceLastService = p.predictedMileage - p.lastServiceMileage
@@ -171,7 +195,6 @@ export default async function VehicleDetailPage({
   }
 
   // Check AI enabled
-  const authContext = await getAuthContext()
   const orgId = authContext?.organizationId
   let aiEnabled = false
   let safetyAvailable = false
@@ -194,31 +217,44 @@ export default async function VehicleDetailPage({
     aiEnabled = features?.ai === true && aiConfigured
   }
 
+  // Both pages take the same data; the classic one also reads the type
+  // filter, the new one the booking warnings.
+  const viewProps = {
+    vehicle: result.data,
+    paginatedServices,
+    paginatedNotes,
+    serviceSearch: search,
+    currencyCode,
+    unitSystem,
+    predictionData,
+    inspections: inspectionsResult.success && inspectionsResult.data ? inspectionsResult.data : [],
+    inspectionTemplates:
+      templatesResult.success && templatesResult.data ? templatesResult.data : [],
+    quotes: quotesResult.success && quotesResult.data ? quotesResult.data : [],
+    aiEnabled,
+    safetyAvailable,
+    paginatedFindings,
+    tireSets: tireSetsResult.success && tireSetsResult.data ? tireSetsResult.data : [],
+    serviceRecordType: type,
+  }
+
   return (
     <>
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-        <VehicleDetailClient
-          vehicle={result.data}
-          paginatedServices={paginatedServices}
-          paginatedNotes={paginatedNotes}
-          serviceSearch={search}
-          serviceRecordType={type}
-          currencyCode={currencyCode}
-          unitSystem={unitSystem}
-          predictionData={predictionData}
-          inspections={
-            inspectionsResult.success && inspectionsResult.data ? inspectionsResult.data : []
-          }
-          inspectionTemplates={
-            templatesResult.success && templatesResult.data ? templatesResult.data : []
-          }
-          quotes={quotesResult.success && quotesResult.data ? quotesResult.data : []}
-          aiEnabled={aiEnabled}
-          safetyAvailable={safetyAvailable}
-          paginatedFindings={paginatedFindings}
-          tireSets={tireSetsResult.success && tireSetsResult.data ? tireSetsResult.data : []}
-        />
+        {classic ? (
+          <>
+            <TryNewVehiclePageBanner />
+            <VehicleDetailClassic {...viewProps} />
+          </>
+        ) : (
+          <VehicleDetailClient
+            {...viewProps}
+            jobWarnings={
+              jobWarningsResult?.success && jobWarningsResult.data ? jobWarningsResult.data : []
+            }
+          />
+        )}
       </div>
     </>
   )

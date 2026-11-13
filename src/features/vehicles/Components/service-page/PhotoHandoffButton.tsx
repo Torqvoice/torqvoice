@@ -19,6 +19,8 @@ import { cn } from '@/lib/utils'
 import {
   countPhotosSince,
   createPhotoHandoffLink,
+  createVehiclePhotoHandoffLink,
+  getVehiclePhotoUrl,
 } from '@/features/vehicles/Actions/photoHandoffActions'
 import {
   countInspectionMedia,
@@ -45,10 +47,14 @@ const CONCERN_SHOWN = 200
  *
  * Given an `inspectionId` instead, it hands over an inspection: one code for
  * the whole checklist, and the phone picks the check each photo is for.
+ *
+ * Given a `vehicleId`, it hands over the vehicle's own photo: the phone takes
+ * or chooses one, and it replaces the picture on the vehicle's page.
  */
 export function PhotoHandoffButton({
   serviceRecordId = '',
   inspectionId,
+  vehicleId,
   inspectionItemId,
   inspectionItemLabel,
   concernId = null,
@@ -59,10 +65,14 @@ export function PhotoHandoffButton({
   disabledReason,
   className,
   compact = false,
+  iconOnly = false,
+  onVehiclePhoto,
 }: {
   serviceRecordId?: string
   /** Hands over this inspection rather than a work order. */
   inspectionId?: string
+  /** Hands over this vehicle's photo rather than a work order. */
+  vehicleId?: string
   /** The check the phone should open on; the code still covers the whole inspection. */
   inspectionItemId?: string
   /** That check's name, for the dialog's wording. */
@@ -83,6 +93,13 @@ export function PhotoHandoffButton({
   className?: string
   /** Icon only below a laptop width, in a bar that has become icons. */
   compact?: boolean
+  /** Always just the phone icon, with the name as its tooltip, where room is short. */
+  iconOnly?: boolean
+  /**
+   * Told the vehicle's new photo as the phone sends it, for a form showing the
+   * photo that would otherwise save the old one back over it.
+   */
+  onVehiclePhoto?: (url: string | null) => void
 }) {
   const t = useTranslations('service.photoHandoff')
   const ti = useTranslations('inspections.phone')
@@ -97,6 +114,11 @@ export function PhotoHandoffButton({
   // An inspection's count is a total (a check's photos carry no time), so
   // what has arrived is counted from the first answer.
   const baselineRef = useRef<number | null>(null)
+  // A vehicle's photo is one picture, so what has arrived is a change to it.
+  const photoBaselineRef = useRef<string | null | undefined>(undefined)
+  // Read at the moment a photo lands, so a new callback never restarts the polling.
+  const onVehiclePhotoRef = useRef(onVehiclePhoto)
+  onVehiclePhotoRef.current = onVehiclePhoto
 
   // A fresh code every time the dialog opens: the last one may have lapsed.
   useEffect(() => {
@@ -107,9 +129,12 @@ export function PhotoHandoffButton({
     setReceived(0)
     receivedRef.current = 0
     baselineRef.current = null
-    const request = inspectionId
-      ? createInspectionHandoffLink(inspectionId)
-      : createPhotoHandoffLink({ serviceRecordId, concernId, purpose })
+    photoBaselineRef.current = undefined
+    const request = vehicleId
+      ? createVehiclePhotoHandoffLink(vehicleId)
+      : inspectionId
+        ? createInspectionHandoffLink(inspectionId)
+        : createPhotoHandoffLink({ serviceRecordId, concernId, purpose })
     request
       .then((result) => {
         if (cancelled) return
@@ -134,11 +159,34 @@ export function PhotoHandoffButton({
     return () => {
       cancelled = true
     }
-  }, [open, serviceRecordId, inspectionId, inspectionItemId, concernId, purpose])
+  }, [open, serviceRecordId, inspectionId, vehicleId, inspectionItemId, concernId, purpose])
 
   // Photos arriving while the code is up are shown as they land.
   useEffect(() => {
-    if (!open || !link) return
+    if (!open || !link || !vehicleId) return
+    const check = async () => {
+      const result = await getVehiclePhotoUrl(vehicleId).catch(() => null)
+      if (!result?.success) return
+      const now = result.data ?? null
+      if (photoBaselineRef.current === undefined) {
+        photoBaselineRef.current = now
+        return
+      }
+      if (now !== photoBaselineRef.current) {
+        photoBaselineRef.current = now
+        receivedRef.current += 1
+        setReceived(receivedRef.current)
+        onVehiclePhotoRef.current?.(now)
+        router.refresh()
+      }
+    }
+    void check()
+    const timer = setInterval(check, POLL_MS)
+    return () => clearInterval(timer)
+  }, [open, link, vehicleId, router])
+
+  useEffect(() => {
+    if (!open || !link || vehicleId) return
     const count = async () => {
       if (!inspectionId) return countPhotosSince({ serviceRecordId, since: link.since })
       const total = await countInspectionMedia(inspectionId)
@@ -158,7 +206,7 @@ export function PhotoHandoffButton({
       }
     }, POLL_MS)
     return () => clearInterval(timer)
-  }, [open, link, serviceRecordId, inspectionId, router])
+  }, [open, link, serviceRecordId, inspectionId, vehicleId, router])
 
   useEffect(() => {
     if (!copied) return
@@ -188,11 +236,18 @@ export function PhotoHandoffButton({
         onClick={() => setOpen(true)}
         data-testid="photo-handoff-open"
         aria-label={t(purpose === 'dropoff' ? 'dropoff.button' : 'button')}
-        title={compact ? t(purpose === 'dropoff' ? 'dropoff.button' : 'button') : undefined}
-        className={cn('h-7 gap-1.5 text-xs', compact && 'px-2.5 lg:px-3', className)}
+        title={
+          compact || iconOnly ? t(purpose === 'dropoff' ? 'dropoff.button' : 'button') : undefined
+        }
+        className={cn(
+          'h-7 gap-1.5 text-xs',
+          compact && 'px-2.5 lg:px-3',
+          iconOnly && 'w-7 px-0',
+          className
+        )}
       >
         <Smartphone className="h-3.5 w-3.5" aria-hidden="true" />
-        <span className={compact ? 'hidden lg:inline' : undefined}>
+        <span className={iconOnly ? 'sr-only' : compact ? 'hidden lg:inline' : undefined}>
           {t(purpose === 'dropoff' ? 'dropoff.button' : 'button')}
         </span>
       </Button>
@@ -211,11 +266,13 @@ export function PhotoHandoffButton({
 
   const dropoff = purpose === 'dropoff'
   const forCheck = !!inspectionId && !!inspectionItemId
-  const steps = forCheck
-    ? [t('step1'), ti('stepItem2'), ti('step3')]
-    : inspectionId
-      ? [t('step1'), ti('step2'), ti('step3')]
-      : [t('step1'), t(dropoff ? 'dropoff.step2' : 'step2'), t('step3')]
+  const steps = vehicleId
+    ? [t('step1'), t('vehicle.step2'), t('vehicle.step3')]
+    : forCheck
+      ? [t('step1'), ti('stepItem2'), ti('step3')]
+      : inspectionId
+        ? [t('step1'), ti('step2'), ti('step3')]
+        : [t('step1'), t(dropoff ? 'dropoff.step2' : 'step2'), t('step3')]
 
   return (
     <>
@@ -234,18 +291,22 @@ export function PhotoHandoffButton({
                 </span>
                 <div className="space-y-1.5">
                   <DialogTitle className="text-lg">
-                    {forCheck
-                      ? ti('dialogTitleItem', { name: inspectionItemLabel ?? '' })
-                      : inspectionId
-                        ? ti('dialogTitle')
-                        : t(dropoff ? 'dropoff.dialogTitle' : 'dialogTitle')}
+                    {vehicleId
+                      ? t('vehicle.dialogTitle')
+                      : forCheck
+                        ? ti('dialogTitleItem', { name: inspectionItemLabel ?? '' })
+                        : inspectionId
+                          ? ti('dialogTitle')
+                          : t(dropoff ? 'dropoff.dialogTitle' : 'dialogTitle')}
                   </DialogTitle>
                   <DialogDescription>
-                    {forCheck
-                      ? ti('dialogBodyItem')
-                      : inspectionId
-                        ? ti('dialogBody')
-                        : t(dropoff ? 'dropoff.dialogBody' : 'dialogBody')}
+                    {vehicleId
+                      ? t('vehicle.dialogBody')
+                      : forCheck
+                        ? ti('dialogBodyItem')
+                        : inspectionId
+                          ? ti('dialogBody')
+                          : t(dropoff ? 'dropoff.dialogBody' : 'dialogBody')}
                   </DialogDescription>
                 </div>
               </DialogHeader>
@@ -286,7 +347,13 @@ export function PhotoHandoffButton({
                 <div className="space-y-1 text-xs text-muted-foreground">
                   <p className="font-medium text-foreground">{t('noSignIn')}</p>
                   <p>{t('customerToo')}</p>
-                  <p>{inspectionId ? ti('scope') : t(dropoff ? 'dropoff.scope' : 'scope')}</p>
+                  <p>
+                    {vehicleId
+                      ? t('vehicle.scope')
+                      : inspectionId
+                        ? ti('scope')
+                        : t(dropoff ? 'dropoff.scope' : 'scope')}
+                  </p>
                 </div>
               </div>
             </div>
@@ -360,7 +427,13 @@ export function PhotoHandoffButton({
                     ) : (
                       <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
                     )}
-                    {received > 0 ? t('received', { count: received }) : t('waiting')}
+                    {received > 0
+                      ? vehicleId
+                        ? t('vehicle.received')
+                        : t('received', { count: received })
+                      : vehicleId
+                        ? t('vehicle.waiting')
+                        : t('waiting')}
                   </p>
                 </>
               )}

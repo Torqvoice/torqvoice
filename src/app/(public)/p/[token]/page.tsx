@@ -6,12 +6,15 @@ import {
   isInspectionHandoffToken,
   verifyInspectionHandoffToken,
   verifyPhotoHandoffToken,
+  isVehicleHandoffToken,
+  verifyVehicleHandoffToken,
 } from '@/lib/photo-handoff'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { isDefect } from '@/features/inspections/Lib/conditions'
 import { PhotoHandoffClient } from './photo-handoff-client'
 import { InspectionHandoffClient } from './inspection-handoff-client'
 import { FixHandoffClient } from './fix-handoff-client'
+import { VehicleHandoffClient } from './vehicle-handoff-client'
 
 export const metadata: Metadata = { robots: { index: false, follow: false } }
 export const dynamic = 'force-dynamic'
@@ -32,6 +35,7 @@ export default async function PhotoHandoffPage({
 }) {
   const { token } = await params
   if (isFixHandoffToken(token)) return <FixHandoffPage token={token} />
+  if (isVehicleHandoffToken(token)) return <VehicleHandoffPage token={token} />
   if (isInspectionHandoffToken(token)) {
     const { item } = await searchParams
     return (
@@ -201,6 +205,39 @@ async function FixHandoffPage({ token }: { token: string }) {
       brand={brand}
       code={check.handoff.code.replace(/^([A-Z]{2,8})-/, '$1 ')}
       purpose={check.handoff.purpose}
+    />
+  )
+}
+
+/**
+ * The same page for a vehicle's photo: the phone takes or chooses one photo
+ * and it becomes the picture on the vehicle's page. It shows the workshop, the
+ * plate and the make and model, nothing else.
+ */
+async function VehicleHandoffPage({ token }: { token: string }) {
+  const check = verifyVehicleHandoffToken(token)
+  if (!check.ok) {
+    return <VehicleHandoffClient token={token} brand={null} vehicle={null} problem={check.reason} />
+  }
+  const { organizationId, vehicleId } = check.handoff
+  const [brand, vehicle] = await Promise.all([
+    workshopBrand(organizationId),
+    db.vehicle.findFirst({
+      where: { id: vehicleId, organizationId },
+      select: { licensePlate: true, make: true, model: true, year: true },
+    }),
+  ])
+  if (!vehicle) {
+    return <VehicleHandoffClient token={token} brand={brand} vehicle={null} problem="invalid" />
+  }
+  return (
+    <VehicleHandoffClient
+      token={token}
+      brand={brand}
+      vehicle={{
+        plate: vehicle.licensePlate,
+        name: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+      }}
     />
   )
 }

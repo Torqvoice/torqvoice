@@ -4,7 +4,7 @@ import { resolveListStatus } from '@/lib/list-status-preference.server'
 import { getQuotesPaginated } from '@/features/quotes/Actions/quoteActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { QuotesClient } from './quotes-client'
+import { QuotesClient } from '../quotes-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 

@@ -167,3 +167,44 @@ describe('where an announcement is drawn', () => {
     expect(scroll).not.toHaveBeenCalled()
   })
 })
+
+describe("a hint about one person's own switch", () => {
+  async function renderOwn(open: boolean, onDismiss: () => void) {
+    render(
+      // Nothing pending for the workshop: the caller alone decides.
+      <FeatureHintProvider initialSeen={[]} pending={[]}>
+        <FeatureHint
+          id="vehicle-page.back-to-classic.v1"
+          eligible
+          open={open}
+          onDismiss={onDismiss}
+          title="The way back is here"
+          body="Switch to the classic layout from this menu at any time."
+        >
+          <button type="button">More</button>
+        </FeatureHint>
+      </FeatureHintProvider>
+    )
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+  }
+
+  it('shows when the caller says so, and hands "Got it" back to the caller', async () => {
+    const onDismiss = vi.fn()
+    await renderOwn(true, onDismiss)
+
+    expect(screen.getByText('The way back is here')).toBeInTheDocument()
+    act(() => {
+      screen.getByText('Got it').click()
+    })
+    expect(onDismiss).toHaveBeenCalled()
+    // Seen by this person, not marked seen for the whole workshop.
+    expect(dismissFeatureHint).not.toHaveBeenCalled()
+  })
+
+  it('stays away when the caller has nothing to show', async () => {
+    await renderOwn(false, vi.fn())
+    expect(screen.queryByText('The way back is here')).not.toBeInTheDocument()
+  })
+})

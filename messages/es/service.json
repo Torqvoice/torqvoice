@@ -830,6 +830,21 @@
         "odometer": "Cuentakilómetros",
         "other": "Daño u otro"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Hacer la foto del vehículo con un móvil",
+      "dialogBody": "Haz una foto del coche con cualquier móvil, o elige una que ya esté en él. Será la foto de la parte superior de la página de este vehículo.",
+      "step2": "Haz una foto del coche entero, o elige una del móvil.",
+      "step3": "Sustituye la foto de la página del vehículo en cuanto llega.",
+      "scope": "El enlace solo puede establecer la foto de este vehículo y deja de funcionar a los 30 minutos.",
+      "waiting": "Esperando la foto…",
+      "received": "Foto recibida",
+      "pageTitle": "Foto del vehículo",
+      "pageBody": "Haz una foto del coche entero. Sustituye la foto de la página del vehículo.",
+      "choosePhoto": "Elegir una foto",
+      "saved": "Guardada. La foto ya está en la página del vehículo. Haz otra para sustituirla.",
+      "invalid": "Vuelve a escanear el código de la página del vehículo.",
+      "notAPhoto": "Aquí solo se pueden usar fotos."
     }
   },
   "payCode": {

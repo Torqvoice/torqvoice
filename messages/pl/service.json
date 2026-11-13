@@ -830,6 +830,21 @@
         "odometer": "Licznik",
         "other": "Uszkodzenie lub inne"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Zrób zdjęcie pojazdu telefonem",
+      "dialogBody": "Zrób zdjęcie auta na dowolnym telefonie albo wybierz takie, które już na nim jest. Stanie się zdjęciem na górze strony tego pojazdu.",
+      "step2": "Zrób zdjęcie całego auta albo wybierz je z telefonu.",
+      "step3": "Zastępuje zdjęcie na stronie pojazdu, gdy tylko dotrze.",
+      "scope": "Link może tylko ustawić zdjęcie tego pojazdu i przestaje działać po 30 minutach.",
+      "waiting": "Czekam na zdjęcie…",
+      "received": "Odebrano zdjęcie",
+      "pageTitle": "Zdjęcie pojazdu",
+      "pageBody": "Zrób zdjęcie całego auta. Zastąpi ono zdjęcie na stronie pojazdu.",
+      "choosePhoto": "Wybierz zdjęcie",
+      "saved": "Zapisano. Zdjęcie jest już na stronie pojazdu. Zrób kolejne, aby je zastąpić.",
+      "invalid": "Zeskanuj ponownie kod na stronie pojazdu.",
+      "notAPhoto": "Tutaj można używać tylko zdjęć."
     }
   },
   "payCode": {

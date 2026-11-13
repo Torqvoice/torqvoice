@@ -830,6 +830,21 @@
         "odometer": "Odometer",
         "other": "Damage or other"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Take the vehicle's photo with a phone",
+      "dialogBody": "Take a photo of the car on any phone, or choose one already on it. It becomes the photo at the top of this vehicle's page.",
+      "step2": "Take a photo of the whole car, or choose one from the phone.",
+      "step3": "It replaces the photo on the vehicle's page as soon as it arrives.",
+      "scope": "The link can only set this vehicle's photo, and stops working after 30 minutes.",
+      "waiting": "Waiting for the photo…",
+      "received": "Photo received",
+      "pageTitle": "Photo of the vehicle",
+      "pageBody": "Take a photo of the whole car. It replaces the photo on the vehicle's page.",
+      "choosePhoto": "Choose a photo",
+      "saved": "Saved. The photo is on the vehicle's page now. Take another to replace it.",
+      "invalid": "Scan the code on the vehicle's page again.",
+      "notAPhoto": "Only photos can be used here."
     }
   },
   "payCode": {

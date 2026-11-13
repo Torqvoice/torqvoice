@@ -830,6 +830,21 @@
         "odometer": "Odometras",
         "other": "Pažeidimas ar kita"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Nufotografuoti transporto priemonę telefonu",
+      "dialogBody": "Nufotografuokite automobilį bet kuriame telefone arba pasirinkite jame jau esančią nuotrauką. Ji taps nuotrauka šios transporto priemonės puslapio viršuje.",
+      "step2": "Nufotografuokite visą automobilį arba pasirinkite nuotrauką iš telefono.",
+      "step3": "Ji pakeičia nuotrauką transporto priemonės puslapyje vos gavus.",
+      "scope": "Nuoroda gali tik nustatyti šios transporto priemonės nuotrauką ir nustoja veikti po 30 minučių.",
+      "waiting": "Laukiama nuotraukos…",
+      "received": "Nuotrauka gauta",
+      "pageTitle": "Transporto priemonės nuotrauka",
+      "pageBody": "Nufotografuokite visą automobilį. Ji pakeičia nuotrauką transporto priemonės puslapyje.",
+      "choosePhoto": "Pasirinkti nuotrauką",
+      "saved": "Išsaugota. Nuotrauka jau transporto priemonės puslapyje. Nufotografuokite kitą, kad ją pakeistumėte.",
+      "invalid": "Dar kartą nuskaitykite transporto priemonės puslapio kodą.",
+      "notAPhoto": "Čia galima naudoti tik nuotraukas."
     }
   },
   "payCode": {

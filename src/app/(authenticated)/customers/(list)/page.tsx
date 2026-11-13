@@ -1,7 +1,7 @@
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getTranslations } from 'next-intl/server'
 import { getCustomersPaginated } from '@/features/customers/Actions/customerActions'
-import { CustomersClient } from './customers-client'
+import { CustomersClient } from '../customers-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import { countUnnumberedCustomers } from '@/features/customers/Actions/customerActions'

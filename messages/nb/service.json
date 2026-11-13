@@ -830,6 +830,21 @@
         "odometer": "Kilometerstand",
         "other": "Skade eller annet"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Ta bilde av kjøretøyet med en telefon",
+      "dialogBody": "Ta et bilde av bilen på en hvilken som helst telefon, eller velg et som allerede ligger der. Det blir bildet øverst på kjøretøysiden.",
+      "step2": "Ta et bilde av hele bilen, eller velg et fra telefonen.",
+      "step3": "Det erstatter bildet på kjøretøysiden så snart det kommer inn.",
+      "scope": "Lenken kan bare sette bildet av dette kjøretøyet, og slutter å virke etter 30 minutter.",
+      "waiting": "Venter på bildet…",
+      "received": "Bilde mottatt",
+      "pageTitle": "Bilde av kjøretøyet",
+      "pageBody": "Ta et bilde av hele bilen. Det erstatter bildet på kjøretøysiden.",
+      "choosePhoto": "Velg et bilde",
+      "saved": "Lagret. Bildet ligger nå på kjøretøysiden. Ta et nytt for å erstatte det.",
+      "invalid": "Skann koden på kjøretøysiden på nytt.",
+      "notAPhoto": "Her kan du bare bruke bilder."
     }
   },
   "payCode": {

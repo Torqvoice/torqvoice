@@ -380,13 +380,13 @@ export function PlateLookupCommand() {
 
             {phase === 'loading' && (
               <div className="space-y-4 px-5 py-6" aria-busy>
-                <div className="h-7 w-2/3 animate-pulse rounded bg-muted" />
-                <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
+                <div className="h-7 w-2/3 skeleton rounded" />
+                <div className="h-4 w-1/3 skeleton rounded" />
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {Array.from({ length: 6 }, (_, i) => (
                     <div key={i} className="space-y-1.5">
-                      <div className="h-3 w-16 animate-pulse rounded bg-muted" />
-                      <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                      <div className="h-3 w-16 skeleton rounded" />
+                      <div className="h-4 w-24 skeleton rounded" />
                     </div>
                   ))}
                 </div>

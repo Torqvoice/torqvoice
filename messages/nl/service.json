@@ -830,6 +830,21 @@
         "odometer": "Kilometerstand",
         "other": "Schade of anders"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Voertuigfoto maken met een telefoon",
+      "dialogBody": "Maak een foto van de auto op elke telefoon, of kies er een die er al op staat. Die wordt de foto bovenaan de voertuigpagina.",
+      "step2": "Maak een foto van de hele auto, of kies er een van de telefoon.",
+      "step3": "Hij vervangt de foto op de voertuigpagina zodra hij binnenkomt.",
+      "scope": "De link kan alleen de foto van dit voertuig instellen en werkt na 30 minuten niet meer.",
+      "waiting": "Wachten op de foto…",
+      "received": "Foto ontvangen",
+      "pageTitle": "Foto van het voertuig",
+      "pageBody": "Maak een foto van de hele auto. Hij vervangt de foto op de voertuigpagina.",
+      "choosePhoto": "Foto kiezen",
+      "saved": "Opgeslagen. De foto staat nu op de voertuigpagina. Maak een nieuwe om hem te vervangen.",
+      "invalid": "Scan de code op de voertuigpagina opnieuw.",
+      "notAPhoto": "Hier kunnen alleen foto’s worden gebruikt."
     }
   },
   "payCode": {

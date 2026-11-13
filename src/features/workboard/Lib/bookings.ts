@@ -26,11 +26,17 @@ const MAX_WINDOW_DAYS = 400
  * horizon: jobs, closed days and leave past the default window would
  * otherwise be invisible, and a closed day there offered to a customer.
  */
+export interface BookingContext {
+  bookings: Booking[]
+  hours: WorkingHours
+  closuresEnabled: boolean
+}
+
 export async function loadBookingContext(
   organizationId: string,
   from: Date,
   opts: { days?: number } = {}
-): Promise<{ bookings: Booking[]; hours: WorkingHours; closuresEnabled: boolean }> {
+): Promise<BookingContext> {
   const days = Math.min(Math.max(Math.ceil(opts.days ?? WINDOW_DAYS), 1), MAX_WINDOW_DAYS)
   const windowStart = new Date(from)
   windowStart.setDate(windowStart.getDate() - 1)

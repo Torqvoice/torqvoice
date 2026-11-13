@@ -81,3 +81,34 @@ export function countryName(code: string, locale: string): string {
 export function regionLabel(code: string): string {
   return code.includes('-') ? code.slice(code.indexOf('-') + 1) : code
 }
+
+/** Hours and minutes past local midnight of an instant in the given zone. */
+export function clockIn(at: Date, timeZone: string | undefined): number {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+    timeZone,
+  }).formatToParts(at)
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 0)
+  const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? 0)
+  return hour * 60 + minute
+}
+
+/**
+ * The edges of a stretch of time off, for saying when somebody is away. Time
+ * off is days, so a clock is only worth showing where it starts or ends
+ * inside one; and the end of a stretch is the midnight after its last day,
+ * which has to read as that last day.
+ */
+export function awayEdges(
+  startIso: string,
+  endIso: string,
+  timeZone: string | undefined
+): { start: Date; end: Date; startClock: boolean; endClock: boolean } {
+  const start = new Date(startIso)
+  let end = new Date(endIso)
+  const endsAtMidnight = clockIn(end, timeZone) === 0
+  if (endsAtMidnight) end = new Date(end.getTime() - 60_000)
+  return { start, end, startClock: clockIn(start, timeZone) !== 0, endClock: !endsAtMidnight }
+}

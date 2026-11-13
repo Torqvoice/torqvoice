@@ -830,6 +830,21 @@
         "odometer": "Compteur",
         "other": "Dégât ou autre"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Prendre la photo du véhicule avec un téléphone",
+      "dialogBody": "Prenez une photo du véhicule sur n’importe quel téléphone, ou choisissez-en une déjà présente. Elle devient la photo en haut de la page de ce véhicule.",
+      "step2": "Prenez une photo du véhicule en entier, ou choisissez-en une sur le téléphone.",
+      "step3": "Elle remplace la photo sur la page du véhicule dès son arrivée.",
+      "scope": "Le lien peut uniquement définir la photo de ce véhicule et cesse de fonctionner après 30 minutes.",
+      "waiting": "En attente de la photo…",
+      "received": "Photo reçue",
+      "pageTitle": "Photo du véhicule",
+      "pageBody": "Prenez une photo du véhicule en entier. Elle remplace la photo sur la page du véhicule.",
+      "choosePhoto": "Choisir une photo",
+      "saved": "Enregistrée. La photo est maintenant sur la page du véhicule. Prenez-en une autre pour la remplacer.",
+      "invalid": "Scannez de nouveau le code sur la page du véhicule.",
+      "notAPhoto": "Seules les photos peuvent être utilisées ici."
     }
   },
   "payCode": {

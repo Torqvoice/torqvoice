@@ -52,6 +52,7 @@ import {
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { awayEdges } from '@/features/workshop-calendar/Lib/format'
 
 const HOUR_PRESETS = [1, 2, 4, 5, 7]
 
@@ -1150,19 +1151,6 @@ export function ScheduleTimesSection({
   )
 }
 
-/** Hours and minutes past local midnight of an instant in the workshop's zone. */
-function clockIn(at: Date, timeZone: string | undefined): number {
-  const parts = new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-    timeZone,
-  }).formatToParts(at)
-  const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 0)
-  const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? 0)
-  return hour * 60 + minute
-}
-
 /**
  * When a technician is away, as days: "16 Nov – 17 Nov", or with a clock
  * only where the time off starts or ends inside a day. The end of a stretch
@@ -1170,11 +1158,7 @@ function clockIn(at: Date, timeZone: string | undefined): number {
  */
 function awayWhen(startIso: string, endIso: string, timeZone: string | null | undefined): string {
   const zone = timeZone || undefined
-  const start = new Date(startIso)
-  let end = new Date(endIso)
-  const startsAtMidnight = clockIn(start, zone) === 0
-  const endsAtMidnight = clockIn(end, zone) === 0
-  if (endsAtMidnight) end = new Date(end.getTime() - 60_000)
+  const { start, end, startClock, endClock } = awayEdges(startIso, endIso, zone)
   const day = (at: Date) =>
     at.toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: zone })
   const dayAndClock = (at: Date) =>
@@ -1185,7 +1169,7 @@ function awayWhen(startIso: string, endIso: string, timeZone: string | null | un
       minute: '2-digit',
       timeZone: zone,
     })
-  const from = startsAtMidnight ? day(start) : dayAndClock(start)
-  const to = endsAtMidnight ? day(end) : dayAndClock(end)
+  const from = startClock ? dayAndClock(start) : day(start)
+  const to = endClock ? dayAndClock(end) : day(end)
   return from === to ? from : `${from} – ${to}`
 }
