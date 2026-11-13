@@ -6,6 +6,7 @@
 
 export const DASHBOARD_CARD_IDS = [
   'gettingStarted',
+  'calendarEvents',
   'maintenance',
   'reminders',
   'sms',
@@ -44,7 +45,7 @@ export interface CardLayout {
  * stored spot for the cards named in MOVED_AT and only for those, so
  * everything else the user arranged survives the migration.
  */
-export const LAYOUT_VERSION = 2
+export const LAYOUT_VERSION = 3
 
 export interface DashboardLayout {
   version: number
@@ -99,33 +100,37 @@ export const DEFAULT_LAYOUT: DashboardLayout = {
     // First-run checklist leads the grid; rows compact upward once it is
     // gone (dismissed or not offered), so established users see no hole.
     gettingStarted: full(0, 4),
+    // What the week holds: bookings, reminders, closed days, time off. The
+    // first thing a front desk plans around, and full width so a half card
+    // never needs a partner for it.
+    calendarEvents: full(4),
     // Both are short lists by nature, so the row starts a notch under the
     // five-row default. They move together: a half card whose partner is a
     // different height leaves the two columns out of step for every row
     // below it.
-    maintenance: half(0, 4, 4),
-    reminders: half(6, 4, 4),
+    maintenance: half(0, 9, 4),
+    reminders: half(6, 9, 4),
     // One slot, two candidates.
-    sms: half(0, 9),
-    notifications: half(0, 9),
-    inspections: half(6, 9),
+    sms: half(0, 14),
+    notifications: half(0, 14),
+    inspections: half(6, 14),
     // The two things customers ask for, side by side.
-    serviceRequests: half(0, 14),
-    quoteRequests: half(6, 14),
-    quoteResponses: half(0, 19),
-    recentActivity: half(6, 19),
-    recentObservations: half(0, 24),
+    serviceRequests: half(0, 19),
+    quoteRequests: half(6, 19),
+    quoteResponses: half(0, 24),
+    recentActivity: half(6, 24),
+    recentObservations: half(0, 29),
     // Opt-in, and the odd card out when it is on. It pairs with the
     // observations card here and sits above the full-width tables; with the
     // module off, observations is the lone half on the lowest half row,
     // which is the one place a hole is allowed. Hidden entirely when the
     // module is off, so a shop without it never reserves the slot.
-    tireHotel: half(6, 24),
+    tireHotel: half(6, 29),
     // Full width so it never upsets the pairing above, and hidden entirely
     // until a registry has put an inspection date on at least one vehicle.
-    inspectionsDue: full(29, 4),
-    recentCompleted: full(34),
-    activeJobs: full(39),
+    inspectionsDue: full(34, 4),
+    recentCompleted: full(39),
+    activeJobs: full(44),
   },
 }
 
@@ -154,6 +159,43 @@ const MOVED: Partial<
       h: DEFAULT_LAYOUT.cards.tireHotel.h,
     }),
   },
+}
+
+/**
+ * Cards that did not exist when a layout was saved and should not simply
+ * fall in at their default row, with the version that added them and where
+ * they go in a layout the user has already arranged. A default row would
+ * land on top of whatever the user put there.
+ */
+const ADDED: Partial<
+  Record<
+    DashboardCardId,
+    { version: number; place: (cards: Record<string, CardLayout>) => CardLayout }
+  >
+> = {
+  // Directly above the reminders, wherever the user has put those, across
+  // the whole row.
+  calendarEvents: {
+    version: 3,
+    place: (cards) => ({
+      ...DEFAULT_LAYOUT.cards.calendarEvents,
+      y: rowStartingAt(cards, cards.reminders.y),
+    }),
+  },
+}
+
+/**
+ * The highest row at or above `y` that no card runs across, so a full-width
+ * card put there pushes every card below it down whole instead of landing
+ * in the middle of one.
+ */
+function rowStartingAt(cards: Record<string, CardLayout>, y: number): number {
+  let row = y
+  for (;;) {
+    const across = Object.values(cards).find((c) => c.y < row && c.y + c.h > row)
+    if (!across) return row
+    row = across.y
+  }
 }
 
 /**
@@ -196,7 +238,8 @@ export function placeAtBottom(cards: Record<string, CardLayout>): CardLayout {
 /**
  * Merges a stored layout with the defaults: unknown card ids are dropped,
  * missing cards (added after the user saved) fall back to their default
- * position, cards whose default has moved since the layout was saved take
+ * position or, when listed in ADDED, get room made for them among the
+ * user's own cards, cards whose default has moved since the layout was saved take
  * the new one, and malformed values reset. `customIds` are the currently
  * existing custom:<widgetId> card ids; stored entries for deleted widgets
  * are discarded, and new widgets get a spot at the bottom. Never throws.
@@ -220,9 +263,17 @@ export function normalizeLayout(raw: unknown, customIds: string[] = []): Dashboa
   const cards =
     data.cards && typeof data.cards === 'object' ? (data.cards as Record<string, unknown>) : {}
   const migrating: DashboardCardId[] = []
+  const adding: DashboardCardId[] = []
+  // A layout with no cards is no arrangement at all: it takes the defaults
+  // as they are.
+  const arranged = Object.keys(cards).length > 0
   for (const id of DASHBOARD_CARD_IDS) {
     const stored = cards[id]
-    if (!isCardLayout(stored)) continue
+    if (!isCardLayout(stored)) {
+      const added = ADDED[id]
+      if (arranged && added && storedVersion < added.version) adding.push(id)
+      continue
+    }
     const moved = MOVED[id]
     // A layout saved before this card moved gives up the spot it was stored
     // in; one saved since is the user's own choice and is left alone. A
@@ -238,6 +289,14 @@ export function normalizeLayout(raw: unknown, customIds: string[] = []): Dashboa
   for (const id of migrating) {
     const moved = MOVED[id]
     if (moved) insertAt(result.cards, id, moved.place(result.cards))
+  }
+  for (const id of adding) {
+    const added = ADDED[id]
+    if (!added) continue
+    // Out of the way while the spot is worked out, so its default row does
+    // not count as a card already there.
+    delete result.cards[id]
+    insertAt(result.cards, id, added.place(result.cards))
   }
   for (const id of customIds) {
     const stored = cards[id]

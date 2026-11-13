@@ -14,6 +14,8 @@ interface ScheduleViewProps {
   eventsByDate: Map<string, CalendarEvent[]>
   todayStr: string
   onSelectDate: (date: Date) => void
+  /** Classes for the list itself; the calendar centres it, a card fills its width. */
+  listClassName?: string
 }
 
 /**
@@ -21,7 +23,13 @@ interface ScheduleViewProps {
  * Reads top to bottom like a schedule printout, which is what a service
  * desk wants when planning the coming weeks.
  */
-export function ScheduleView({ days, eventsByDate, todayStr, onSelectDate }: ScheduleViewProps) {
+export function ScheduleView({
+  days,
+  eventsByDate,
+  todayStr,
+  onSelectDate,
+  listClassName,
+}: ScheduleViewProps) {
   const t = useTranslations('calendar')
   const format = useDayFormatter()
   const busyDays = days.filter((d) => (eventsByDate.get(toLocalDateStr(d))?.length ?? 0) > 0)
@@ -38,7 +46,7 @@ export function ScheduleView({ days, eventsByDate, todayStr, onSelectDate }: Sch
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto">
-      <div className="mx-auto max-w-4xl divide-y divide-border/70">
+      <div className={cn('mx-auto max-w-4xl divide-y divide-border/70', listClassName)}>
         {busyDays.map((date) => {
           const dateStr = toLocalDateStr(date)
           const events = eventsByDate.get(dateStr) ?? []

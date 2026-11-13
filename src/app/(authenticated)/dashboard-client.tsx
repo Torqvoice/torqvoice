@@ -98,6 +98,9 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { GettingStartedCard } from '@/features/onboarding/Components/GettingStartedCard'
 import type { OnboardingChecklistData } from '@/features/onboarding/Actions/checklistActions'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
+import { CalendarEventsCard } from '@/features/calendar/Components/CalendarEventsCard'
+import { isEventDone } from '@/features/calendar/Components/calendar-utils'
+import type { CalendarEvent } from '@/features/calendar/Actions/calendarActions'
 
 interface ServiceItem {
   id: string
@@ -301,6 +304,7 @@ export function DashboardClient({
   onboardingChecklist = null,
   tireHotelSummary = null,
   inspectionsDue = null,
+  calendarEvents = null,
 }: {
   stats: DashboardStats
   currencyCode?: string
@@ -335,6 +339,8 @@ export function DashboardClient({
   tireHotelSummary?: TireHotelSummary | null
   /** Null until a registry has put an inspection date on a vehicle, which hides the card. */
   inspectionsDue?: InspectionsDueSummary | null
+  /** The days ahead on the calendar. Null when this role may not open the calendar, which hides the card. */
+  calendarEvents?: { events: CalendarEvent[]; todayKey: string; days: number } | null
 }) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('dashboard')
@@ -389,6 +395,7 @@ export function DashboardClient({
     ...(tireHotelSummary ? [] : (['tireHotel'] as const)),
     ...(inspectionsDue ? [] : (['inspectionsDue'] as const)),
     ...(serviceRequests ? [] : (['serviceRequests'] as const)),
+    ...(calendarEvents ? [] : (['calendarEvents'] as const)),
   ])
   const availableIds = DASHBOARD_CARD_IDS.filter((id) => !excludedIds.has(id))
   const hiddenSet = new Set<string>(layout.hidden)
@@ -478,6 +485,7 @@ export function DashboardClient({
     vehiclesDueForService.length === 0 && dismissedMaintenanceVehicles.length === 0
       ? 'maintenance'
       : null,
+    !calendarEvents?.events.some((e) => !isEventDone(e)) ? 'calendarEvents' : null,
     upcomingReminders.length === 0 ? 'reminders' : null,
     smsThreads.length === 0 ? 'sms' : null,
     notifications.length === 0 ? 'notifications' : null,
@@ -877,6 +885,16 @@ export function DashboardClient({
                 )}
               </AppCard>
             ),
+
+            // The days ahead on the calendar (only offered when it may be read; see availableIds)
+            calendarEvents: calendarEvents ? (
+              <CalendarEventsCard
+                events={calendarEvents.events}
+                todayKey={calendarEvents.todayKey}
+                days={calendarEvents.days}
+                currencyCode={currencyCode}
+              />
+            ) : null,
 
             // Upcoming Reminders
             reminders: (

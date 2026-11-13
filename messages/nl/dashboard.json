@@ -45,6 +45,7 @@
   "showCards": "Kaarten tonen",
   "cards": {
     "maintenance": "Verwacht onderhoud",
+    "calendarEvents": "Kalenderitems",
     "reminders": "Aankomende herinneringen",
     "inspections": "Inspecties",
     "serviceRequests": "Serviceaanvragen",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Onderhoudsinstellingen",
     "dismissAriaLabel": "Negeren",
     "dismissError": "Kon het voertuig niet negeren. Probeer het opnieuw."
+  },
+  "calendarEvents": {
+    "title": "Kalenderitems",
+    "description": "Komende {days} dagen",
+    "noData": "De komende {days} dagen staat er niets in de kalender."
   },
   "reminders": {
     "title": "Aankomende herinneringen",

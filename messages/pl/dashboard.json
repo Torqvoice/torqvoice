@@ -45,6 +45,7 @@
   "showCards": "Pokaż karty",
   "cards": {
     "maintenance": "Przewidywana konserwacja",
+    "calendarEvents": "Wydarzenia w kalendarzu",
     "reminders": "Nadchodzące przypomnienia",
     "inspections": "Przeglądy",
     "serviceRequests": "Zgłoszenia serwisowe",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Ustawienia konserwacji",
     "dismissAriaLabel": "Odrzuć",
     "dismissError": "Nie udało się odrzucić pojazdu. Spróbuj ponownie."
+  },
+  "calendarEvents": {
+    "title": "Wydarzenia w kalendarzu",
+    "description": "{days, plural, one {Najbliższy # dzień} few {Najbliższe # dni} many {Najbliższe # dni} other {Najbliższe # dnia}}",
+    "noData": "Brak wydarzeń w kalendarzu na {days, plural, one {najbliższy # dzień} few {najbliższe # dni} many {najbliższe # dni} other {najbliższe # dnia}}."
   },
   "reminders": {
     "title": "Nadchodzące przypomnienia",

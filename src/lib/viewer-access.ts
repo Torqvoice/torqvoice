@@ -1,7 +1,7 @@
 import { getCachedMembership } from './cached-session'
 import { getAuthContext } from './get-auth-context'
 import { hasPermission, PermissionAction, type PermissionSubject } from './permissions'
-import type { ActionResult } from './with-auth'
+import type { ActionResult, AuthContext } from './with-auth'
 
 /**
  * What the person looking at a page may read, asked once, before the page
@@ -30,6 +30,17 @@ export interface ViewerAccess {
 export async function getViewerAccess(): Promise<ViewerAccess> {
   const auth = await getAuthContext()
   if (!auth) return { reads: () => false }
+  return accessFor(auth)
+}
+
+/**
+ * The same answer for the person an action is already running for, from the
+ * context `withAuth` handed it. For an action that returns several kinds of
+ * record and must leave out the kinds this role may not read.
+ */
+export async function accessFor(
+  auth: Pick<AuthContext, 'userId' | 'isAdmin'>
+): Promise<ViewerAccess> {
   if (auth.isAdmin) return { reads: () => true }
 
   const membership = await getCachedMembership(auth.userId)

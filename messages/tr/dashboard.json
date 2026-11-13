@@ -45,6 +45,7 @@
   "showCards": "Kartları göster",
   "cards": {
     "maintenance": "Tahmini Bakım",
+    "calendarEvents": "Takvim Etkinlikleri",
     "reminders": "Yaklaşan Hatırlatmalar",
     "inspections": "Muayeneler",
     "serviceRequests": "Servis talepleri",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Bakım ayarları",
     "dismissAriaLabel": "Kapat",
     "dismissError": "Araç kapatılamadı. Tekrar deneyin."
+  },
+  "calendarEvents": {
+    "title": "Takvim Etkinlikleri",
+    "description": "Önümüzdeki {days} gün",
+    "noData": "Önümüzdeki {days} gün içinde takvimde bir şey yok."
   },
   "reminders": {
     "title": "Yaklaşan Hatırlatmalar",

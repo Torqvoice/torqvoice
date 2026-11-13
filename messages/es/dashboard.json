@@ -45,6 +45,7 @@
   "showCards": "Mostrar tarjetas",
   "cards": {
     "maintenance": "Mantenimiento previsto",
+    "calendarEvents": "Eventos del calendario",
     "reminders": "Recordatorios pendientes",
     "inspections": "Inspecciones",
     "serviceRequests": "Solicitudes de servicio",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Ajustes de mantenimiento",
     "dismissAriaLabel": "Descartar",
     "dismissError": "No se pudo descartar el vehículo. Inténtelo de nuevo."
+  },
+  "calendarEvents": {
+    "title": "Eventos del calendario",
+    "description": "Próximos {days} días",
+    "noData": "No hay nada en el calendario en los próximos {days} días."
   },
   "reminders": {
     "title": "Recordatorios pendientes",

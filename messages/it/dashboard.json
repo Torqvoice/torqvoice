@@ -45,6 +45,7 @@
   "showCards": "Mostra schede",
   "cards": {
     "maintenance": "Manutenzione prevista",
+    "calendarEvents": "Eventi del calendario",
     "reminders": "Promemoria in scadenza",
     "inspections": "Ispezioni",
     "serviceRequests": "Richieste di servizio",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Impostazioni manutenzione",
     "dismissAriaLabel": "Ignora",
     "dismissError": "Impossibile ignorare il veicolo. Riprova."
+  },
+  "calendarEvents": {
+    "title": "Eventi del calendario",
+    "description": "Prossimi {days} giorni",
+    "noData": "Nulla in calendario nei prossimi {days} giorni."
   },
   "reminders": {
     "title": "Promemoria in scadenza",

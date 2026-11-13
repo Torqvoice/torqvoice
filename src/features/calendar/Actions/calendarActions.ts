@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getManifest } from '@/integrations/registry'
+import { accessFor } from '@/lib/viewer-access'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
@@ -62,7 +63,8 @@ function toTimeStr(date: Date, timeZone: string): string {
  */
 export async function getCalendarEvents(params: { start: string; end: string }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async (ctx) => {
+      const { organizationId } = ctx
       const timeZone = await workshopTimeZone(organizationId)
       const startKey = parseDayKey(params.start)
       const endKey = parseDayKey(params.end)
@@ -77,6 +79,18 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
         timeZone
       )
       const inRange = { gte: start, lt: endExclusive }
+
+      // Seeing the calendar is reading jobs. What else it lists is somebody
+      // else's record and follows that record's own read: a role without
+      // quotes sees no quote totals here, one without customers no messages
+      // to them. Closed days, time off and connected calendars are the
+      // workshop's day, which everyone who plans it needs.
+      const access = await accessFor(ctx)
+      const sees = {
+        reminders: access.reads(PermissionSubject.VEHICLES),
+        quotes: access.reads(PermissionSubject.QUOTES),
+        messages: access.reads(PermissionSubject.CUSTOMERS),
+      }
 
       const [services, reminders, quotes, scheduledMessages, external] = await Promise.all([
         db.serviceRecord.findMany({
@@ -112,76 +126,82 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
           },
           orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
         }),
-        db.reminder.findMany({
-          where: {
-            organizationId,
-            dueDate: inRange,
-          },
-          select: {
-            id: true,
-            title: true,
-            dueDate: true,
-            hasDueTime: true,
-            isCompleted: true,
-            vehicleId: true,
-            customer: { select: { name: true } },
-            vehicle: {
+        sees.reminders
+          ? db.reminder.findMany({
+              where: {
+                organizationId,
+                dueDate: inRange,
+              },
               select: {
-                make: true,
-                model: true,
-                year: true,
+                id: true,
+                title: true,
+                dueDate: true,
+                hasDueTime: true,
+                isCompleted: true,
+                vehicleId: true,
+                customer: { select: { name: true } },
+                vehicle: {
+                  select: {
+                    make: true,
+                    model: true,
+                    year: true,
+                    customer: { select: { name: true } },
+                  },
+                },
+              },
+              orderBy: { dueDate: 'asc' },
+            })
+          : [],
+        sees.quotes
+          ? db.quote.findMany({
+              where: {
+                organizationId,
+                validUntil: inRange,
+                status: { notIn: ['converted', 'rejected'] },
+              },
+              select: {
+                id: true,
+                title: true,
+                quoteNumber: true,
+                validUntil: true,
+                status: true,
+                totalAmount: true,
+                vehicleId: true,
+                vehicle: {
+                  select: {
+                    make: true,
+                    model: true,
+                    year: true,
+                    customer: { select: { name: true } },
+                  },
+                },
                 customer: { select: { name: true } },
               },
-            },
-          },
-          orderBy: { dueDate: 'asc' },
-        }),
-        db.quote.findMany({
-          where: {
-            organizationId,
-            validUntil: inRange,
-            status: { notIn: ['converted', 'rejected'] },
-          },
-          select: {
-            id: true,
-            title: true,
-            quoteNumber: true,
-            validUntil: true,
-            status: true,
-            totalAmount: true,
-            vehicleId: true,
-            vehicle: {
-              select: {
-                make: true,
-                model: true,
-                year: true,
-                customer: { select: { name: true } },
+              orderBy: { validUntil: 'asc' },
+            })
+          : [],
+        sees.messages
+          ? db.scheduledMessage.findMany({
+              where: {
+                organizationId,
+                status: { not: 'cancelled' },
+                sendAt: inRange,
               },
-            },
-            customer: { select: { name: true } },
-          },
-          orderBy: { validUntil: 'asc' },
-        }),
-        db.scheduledMessage.findMany({
-          where: {
-            organizationId,
-            status: { not: 'cancelled' },
-            sendAt: inRange,
-          },
-          select: {
-            id: true,
-            channel: true,
-            subject: true,
-            body: true,
-            recipient: true,
-            status: true,
-            sendAt: true,
-            vehicleId: true,
-            customer: { select: { name: true } },
-            vehicle: { select: { make: true, model: true, year: true } },
-          },
-          orderBy: { sendAt: 'asc' },
-        }),
+              select: {
+                id: true,
+                channel: true,
+                subject: true,
+                body: true,
+                recipient: true,
+                status: true,
+                sendAt: true,
+                vehicleId: true,
+                customer: { select: { name: true } },
+                vehicle: { select: { make: true, model: true, year: true } },
+              },
+              orderBy: { sendAt: 'asc' },
+            })
+          : [],
         // Busy time pulled from connected calendars; read-only on this side.
         db.externalCalendarEvent.findMany({
           where: { organizationId, startAt: { lt: endExclusive }, endAt: { gt: start } },
