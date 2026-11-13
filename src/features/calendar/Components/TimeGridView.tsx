@@ -140,9 +140,12 @@ export function TimeGridView({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      {/* Day headers */}
+      {/* Day headers. Every row keeps the space the hour grid's scrollbar
+          takes, so the day columns are as wide above it as in it and their
+          lines meet; without it each column drifted a little further left
+          in the grid than in the header. */}
       <div
-        className="grid shrink-0 border-b border-border/70"
+        className="grid shrink-0 overflow-y-hidden border-b border-border/70 [scrollbar-gutter:stable]"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="border-r border-border/70" />
@@ -186,7 +189,7 @@ export function TimeGridView({
 
       {/* All-day strip */}
       <div
-        className="grid shrink-0 border-b border-border/70"
+        className="grid shrink-0 overflow-y-hidden border-b border-border/70 [scrollbar-gutter:stable]"
         style={{ gridTemplateColumns: columnsTemplate }}
       >
         <div className="flex items-start justify-end border-r border-border/70 px-1.5 pt-1.5 text-[10px] uppercase tracking-wide text-muted-foreground">
@@ -244,7 +247,7 @@ export function TimeGridView({
       </div>
 
       {/* Hour grid */}
-      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto">
+      <div ref={scrollRef} className="min-h-0 flex-1 overflow-y-auto [scrollbar-gutter:stable]">
         <div
           className="relative grid"
           style={{ gridTemplateColumns: columnsTemplate, height: 24 * HOUR_PX }}
@@ -405,6 +408,14 @@ function DayColumn({
       ),
     [events]
   )
+  // Bottom to top: the earliest start first, and of two that start together
+  // the longer one underneath, so the shorter stays whole on top of it.
+  const stackOrder = useMemo(() => {
+    const order = [...positioned].sort(
+      (a, b) => a.startMins - b.startMins || b.endMins - a.endMins || a.column - b.column
+    )
+    return new Map(order.map((p, i) => [eventKey(p.item), i]))
+  }, [positioned])
 
   return (
     <DayContextMenu
@@ -462,7 +473,7 @@ function DayColumn({
           </div>
         ))}
 
-        {positioned.map(({ item, startMins, endMins, column, columns }) => {
+        {positioned.map(({ item, startMins, endMins, column, columns }, index) => {
           const top = (startMins / 60) * HOUR_PX
           const height = ((endMins - startMins) / 60) * HOUR_PX
           // Overlapping events step in from the left and each runs to the
@@ -482,7 +493,10 @@ function DayColumn({
                 height: Math.max(height - 2, 16),
                 left: `calc(${left}% + 2px)`,
                 width: `calc(${100 - left}% - 4px)`,
-                zIndex: 10 + column,
+                // Stacked by when they start, as Google does: a job that
+                // starts later is drawn over one already running, so its
+                // title is never hidden under a block that began earlier.
+                zIndex: 10 + Math.min(stackOrder.get(eventKey(item)) ?? index, 39),
               }}
             />
           )
@@ -492,7 +506,7 @@ function DayColumn({
           // Centred on the minute: the wrapper is as tall as its dot, so
           // without the shift the line itself drew six minutes late.
           <div
-            className="pointer-events-none absolute inset-x-0 z-30 flex -translate-y-1/2 items-center"
+            className="pointer-events-none absolute inset-x-0 z-[60] flex -translate-y-1/2 items-center"
             style={{ top: (nowMins / 60) * HOUR_PX }}
           >
             <span className="-ml-1.5 h-3 w-3 rounded-full bg-red-500 shadow" />

@@ -272,7 +272,7 @@ export function ReminderFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{isEdit ? tv('editTitle') : tv('addTitle')}</DialogTitle>
           <DocsLink href="/docs/features/reminders" variant="hint" className="self-start" />

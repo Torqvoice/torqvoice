@@ -45,6 +45,7 @@
   "showCards": "Karten anzeigen",
   "cards": {
     "maintenance": "Voraussichtliche Wartung",
+    "calendarEvents": "Kalendereinträge",
     "reminders": "Anstehende Erinnerungen",
     "inspections": "Inspektionen",
     "serviceRequests": "Serviceanfragen",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Wartungseinstellungen",
     "dismissAriaLabel": "Ausblenden",
     "dismissError": "Fahrzeug konnte nicht ausgeblendet werden. Bitte versuchen Sie es erneut."
+  },
+  "calendarEvents": {
+    "title": "Kalendereinträge",
+    "description": "Nächste {days} Tage",
+    "noData": "In den nächsten {days} Tagen steht nichts im Kalender."
   },
   "reminders": {
     "title": "Anstehende Erinnerungen",

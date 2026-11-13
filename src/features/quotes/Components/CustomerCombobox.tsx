@@ -35,6 +35,8 @@ interface CustomerComboboxProps {
   emptyLabel?: string
   /** Shown under the list, e.g. a way to add a customer; `close` shuts the list */
   footer?: (close: () => void) => ReactNode
+  /** Shown but not changeable here */
+  disabled?: boolean
 }
 
 export function CustomerCombobox({
@@ -46,6 +48,7 @@ export function CustomerCombobox({
   noneLabel = 'None',
   emptyLabel = 'No customers found.',
   footer,
+  disabled = false,
 }: CustomerComboboxProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -129,7 +132,12 @@ export function CustomerCombobox({
     // the popover its own lock with its own content whitelisted.
     <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
+        <Button
+          variant="outline"
+          role="combobox"
+          disabled={disabled}
+          className="w-full justify-between font-normal"
+        >
           <span className="truncate">
             {selected
               ? `${selected.name}${selected.company ? ` (${selected.company})` : ''}`

@@ -45,6 +45,7 @@
   "showCards": "Show cards",
   "cards": {
     "maintenance": "Predicted Maintenance",
+    "calendarEvents": "Calendar Events",
     "reminders": "Upcoming Reminders",
     "inspections": "Inspections",
     "serviceRequests": "Service Requests",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Maintenance settings",
     "dismissAriaLabel": "Dismiss",
     "dismissError": "Couldn't dismiss the vehicle. Try again."
+  },
+  "calendarEvents": {
+    "title": "Calendar Events",
+    "description": "Next {days} days",
+    "noData": "Nothing on the calendar in the next {days} days."
   },
   "reminders": {
     "title": "Upcoming Reminders",

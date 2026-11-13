@@ -286,7 +286,7 @@ export function CompanySettings({
         </SaveButton>
       </ReadOnlyWrapper>
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('company.addNewCompany')}</DialogTitle>
           </DialogHeader>

@@ -331,7 +331,7 @@ export function StorageClient({
       )}
 
       <Dialog open={showWarehouse} onOpenChange={setShowWarehouse}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('storage.addWarehouse')}</DialogTitle>
           </DialogHeader>

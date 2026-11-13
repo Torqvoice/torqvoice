@@ -4,7 +4,7 @@ import type { ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
-import { Check, ExternalLink, Trash2, Undo2 } from 'lucide-react'
+import { Check, ExternalLink, Pencil, Trash2, Undo2, Wrench } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -17,7 +17,8 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { deleteReminder, toggleReminder } from '@/features/vehicles/Actions/reminderActions'
 import { deleteScheduledMessage } from '@/features/scheduled-messages/Actions/scheduledMessageActions'
 import { getEventLink } from './calendar-utils'
-import { useEventPeek } from './EventPeek'
+import { deleteAppointment } from '../Actions/deleteAppointment'
+import { isEditableBooking, useEventPeek } from './EventPeek'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
 /**
@@ -36,7 +37,7 @@ export function EventContextMenu({
   const t = useTranslations('calendar.eventMenu')
   const router = useRouter()
   const confirm = useConfirm()
-  const { refresh } = useEventPeek()
+  const { refresh, editBooking } = useEventPeek()
 
   const open = () => {
     if (event.type === 'external') {
@@ -75,7 +76,16 @@ export function EventContextMenu({
     if (ok) await run(() => deleteScheduledMessage(event.id), t('deleted'))
   }
 
+  const removeAppointment = async () => {
+    const ok = await confirm({
+      description: t('deleteAppointmentConfirm', { title: event.title }),
+      destructive: true,
+    })
+    if (ok) await run(() => deleteAppointment(event.id), t('deleted'))
+  }
+
   const reminderDone = event.type === 'reminder' && event.status === 'completed'
+  const canEdit = Boolean(editBooking) && isEditableBooking(event)
 
   return (
     <ContextMenu>
@@ -85,10 +95,32 @@ export function EventContextMenu({
           {event.title}
         </ContextMenuLabel>
         <ContextMenuSeparator />
-        <ContextMenuItem onClick={open}>
-          <ExternalLink className="mr-2 h-4 w-4" />
-          {t('open')}
-        </ContextMenuItem>
+        {canEdit && (
+          <ContextMenuItem onClick={() => editBooking?.({ mode: 'edit', event })}>
+            <Pencil className="mr-2 h-4 w-4" />
+            {t('edit')}
+          </ContextMenuItem>
+        )}
+        {event.type === 'appointment' ? (
+          editBooking && (
+            <>
+              <ContextMenuItem onClick={() => editBooking({ mode: 'convert', event })}>
+                <Wrench className="mr-2 h-4 w-4" />
+                {t('makeWorkOrder')}
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem variant="destructive" onClick={removeAppointment}>
+                <Trash2 className="mr-2 h-4 w-4" />
+                {t('deleteAppointment')}
+              </ContextMenuItem>
+            </>
+          )
+        ) : (
+          <ContextMenuItem onClick={open}>
+            <ExternalLink className="mr-2 h-4 w-4" />
+            {t('open')}
+          </ContextMenuItem>
+        )}
         {event.type === 'reminder' && (
           <>
             <ContextMenuItem onClick={() => run(() => toggleReminder(event.id), t('updated'))}>

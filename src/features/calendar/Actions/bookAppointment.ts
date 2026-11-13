@@ -6,12 +6,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDate } from '@/lib/timezone'
 import { createDraftRecord } from '@/features/vehicles/Lib/createDraftRecord'
-import { loadBookingContext } from '@/features/workboard/Lib/bookings'
-import {
-  type Resource,
-  bookingResources,
-  freeResources,
-} from '@/features/inspection-reminders/Lib/booking'
+import { resourceFor } from '../Lib/booking.server'
 import { bookAppointmentSchema, type BookAppointmentInput } from '../Schema/appointmentSchema'
 import { appointmentConcerns, appointmentTitle } from '../Lib/appointment'
 
@@ -115,36 +110,4 @@ export async function bookAppointment(input: BookAppointmentInput) {
       }),
     }
   )
-}
-
-/**
- * What the appointment occupies, by the rule online booking counts with: a
- * bay when the shop has any, else a technician (`bookingResources`). The
- * first one free for the whole appointment, preferring the workshop's
- * default technician among technicians, so the job lands where a new job
- * would. `full` when the shop has something to hold and all of it is taken
- * then; the appointment is booked without a resource and the office is told.
- */
-async function resourceFor(
-  organizationId: string,
-  start: Date,
-  durationMinutes: number
-): Promise<{ resource: Resource | null; full: boolean }> {
-  const resources = await bookingResources(organizationId)
-  if (resources.length === 0) return { resource: null, full: false }
-  // From the day before the start to the day after the end, as loadBookingContext reads.
-  const { bookings } = await loadBookingContext(organizationId, start, {
-    days: Math.ceil(durationMinutes / (24 * 60)) + 1,
-  })
-  const free = freeResources(start, durationMinutes, resources, bookings)
-  if (free.length === 0) return { resource: null, full: true }
-  if (free[0].technicianId) {
-    const preferred = await db.appSetting.findUnique({
-      where: { organizationId_key: { organizationId, key: 'workshop.defaultTechnicianId' } },
-      select: { value: true },
-    })
-    const theirs = free.find((r) => r.technicianId === preferred?.value)
-    if (theirs) return { resource: theirs, full: false }
-  }
-  return { resource: free[0], full: false }
 }

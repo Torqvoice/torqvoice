@@ -45,6 +45,7 @@
   "showCards": "Rodyti korteles",
   "cards": {
     "maintenance": "Numatoma priežiūra",
+    "calendarEvents": "Kalendoriaus įvykiai",
     "reminders": "Artėjantys priminimai",
     "inspections": "Apžiūros",
     "serviceRequests": "Paslaugų užklausos",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Priežiūros nustatymai",
     "dismissAriaLabel": "Atmesti",
     "dismissError": "Nepavyko atmesti transporto priemonės. Bandykite dar kartą."
+  },
+  "calendarEvents": {
+    "title": "Kalendoriaus įvykiai",
+    "description": "{days, plural, one {# artimiausia diena} few {# artimiausios dienos} many {# artimiausios dienos} other {# artimiausių dienų}}",
+    "noData": "Per {days, plural, one {# artimiausią dieną} few {# artimiausias dienas} many {# artimiausios dienos} other {# artimiausių dienų}} kalendoriuje nieko nėra."
   },
   "reminders": {
     "title": "Artėjantys priminimai",

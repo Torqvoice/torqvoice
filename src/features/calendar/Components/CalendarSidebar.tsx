@@ -11,6 +11,7 @@ export type TypeFilters = Record<CalendarEventType, boolean>
 
 const FILTER_ORDER: CalendarEventType[] = [
   'service',
+  'appointment',
   'reminder',
   'quote',
   'message',
@@ -30,6 +31,7 @@ const FILTER_LABEL: Record<CalendarEventType, string> = {
   external: 'external',
   closure: 'closures',
   absence: 'absences',
+  appointment: 'appointments',
 }
 
 interface CalendarSidebarProps {

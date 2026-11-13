@@ -45,6 +45,7 @@
   "showCards": "Mostrar cartões",
   "cards": {
     "maintenance": "Manutenção prevista",
+    "calendarEvents": "Eventos do Calendário",
     "reminders": "Lembretes Próximos",
     "inspections": "Inspeções",
     "serviceRequests": "Solicitações de serviço",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Configurações de manutenção",
     "dismissAriaLabel": "Dispensar",
     "dismissError": "Não foi possível dispensar o veículo. Tente novamente."
+  },
+  "calendarEvents": {
+    "title": "Eventos do Calendário",
+    "description": "Próximos {days} dias",
+    "noData": "Nada no calendário nos próximos {days} dias."
   },
   "reminders": {
     "title": "Lembretes Próximos",

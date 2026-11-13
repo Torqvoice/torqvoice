@@ -158,7 +158,12 @@ describe('moved defaults', () => {
     const layout = normalizeLayout({
       version: 1,
       hidden: [],
-      cards: { reminders: somewhereElse, activeJobs: { x: 0, y: 0, w: 12, h: 6 } },
+      cards: {
+        // Already placed, so the card added since has no room to make.
+        calendarEvents: { x: 0, y: 50, w: 12, h: 5 },
+        reminders: somewhereElse,
+        activeJobs: { x: 0, y: 0, w: 12, h: 6 },
+      },
     })
 
     expect(layout.cards.reminders).toEqual(somewhereElse)
@@ -167,6 +172,114 @@ describe('moved defaults', () => {
 
   it('stamps the current version so the move happens once', () => {
     expect(normalizeLayout({ version: 1, hidden: [], cards: {} }).version).toBe(LAYOUT_VERSION)
+  })
+})
+
+/**
+ * A card added after somebody arranged their dashboard has to find a place
+ * among their cards, not drop onto its default row on top of one of them.
+ */
+describe('added cards', () => {
+  /** A layout saved before the calendar card existed, every card where version 2 put it. */
+  const savedBeforeCalendar = (cards: Record<string, CardLayout> = {}) => {
+    const v2: Record<string, CardLayout> = {}
+    for (const id of DASHBOARD_CARD_IDS) {
+      if (id === 'calendarEvents') continue
+      const { y, ...rest } = DEFAULT_LAYOUT.cards[id]
+      // Version 2 had every card five rows higher, with nothing at row 4.
+      v2[id] = { ...rest, y: y >= 9 ? y - 5 : y }
+    }
+    return { version: 2, hidden: [], cards: { ...v2, ...cards } }
+  }
+
+  it('puts the calendar across the row above the reminders, wherever they are', () => {
+    // Moved under everything else.
+    const layout = normalizeLayout(
+      savedBeforeCalendar({
+        reminders: { x: 0, y: 60, w: 6, h: 4 },
+        maintenance: { x: 6, y: 60, w: 6, h: 4 },
+      })
+    )
+
+    expect(layout.cards.calendarEvents).toEqual({ x: 0, y: 60, w: 12, h: 5 })
+    expect(layout.cards.reminders.y).toBe(65)
+    expect(layout.cards.maintenance.y).toBe(65)
+    expect(layout.cards.activeJobs).toEqual(savedBeforeCalendar().cards.activeJobs)
+  })
+
+  it('leaves the cards above it alone and keeps the rest in order below', () => {
+    const before = savedBeforeCalendar()
+    const layout = normalizeLayout(before)
+    const row = layout.cards.calendarEvents.y
+
+    for (const [id, card] of Object.entries(before.cards)) {
+      const after = layout.cards[id]
+      if (card.y < row) expect(after, `${id} moved`).toEqual(card)
+      else expect(after, `${id} lost its place`).toEqual({ ...card, y: card.y + 5 })
+    }
+  })
+
+  it('never lands in the middle of a card that runs across its row', () => {
+    // A tall card beside the reminders, starting two rows above them.
+    const layout = normalizeLayout(
+      savedBeforeCalendar({
+        reminders: { x: 0, y: 62, w: 6, h: 4 },
+        maintenance: { x: 6, y: 60, w: 6, h: 8 },
+      })
+    )
+
+    const ids = DASHBOARD_CARD_IDS.filter((id) => id !== 'notifications')
+    for (let i = 0; i < ids.length; i++) {
+      for (let j = i + 1; j < ids.length; j++) {
+        expect(
+          overlaps(layout.cards[ids[i]], layout.cards[ids[j]]),
+          `${ids[i]} overlaps ${ids[j]} after adding the calendar`
+        ).toBe(false)
+      }
+    }
+    expect(layout.cards.calendarEvents.y).toBe(60)
+  })
+
+  it("makes room among the user's own cards too", () => {
+    // A custom card beside the reminders, on their row.
+    const widget: CardLayout = { x: 6, y: 60, w: 6, h: 4 }
+    const layout = normalizeLayout(
+      savedBeforeCalendar({
+        reminders: { x: 0, y: 60, w: 6, h: 4 },
+        maintenance: { x: 0, y: 64, w: 6, h: 4 },
+        'custom:w1': widget,
+      }),
+      ['custom:w1', 'custom:w2']
+    )
+
+    expect(layout.cards.calendarEvents.y).toBe(60)
+    expect(layout.cards['custom:w1']).toEqual({ ...widget, y: 65 })
+    expect(overlaps(layout.cards.calendarEvents, layout.cards['custom:w1'])).toBe(false)
+    // A widget made since then goes under everything.
+    const bottom = Math.max(
+      ...Object.entries(layout.cards)
+        .filter(([id]) => id !== 'custom:w2')
+        .map(([, c]) => c.y + c.h)
+    )
+    expect(layout.cards['custom:w2'].y).toBe(bottom)
+  })
+
+  it('keeps the calendar where the user put it once it is saved', () => {
+    const mine: CardLayout = { x: 6, y: 40, w: 6, h: 6 }
+    const layout = normalizeLayout({
+      version: LAYOUT_VERSION,
+      hidden: [],
+      cards: { ...savedBeforeCalendar().cards, calendarEvents: mine },
+    })
+
+    expect(layout.cards.calendarEvents).toEqual(mine)
+  })
+
+  it('gives somebody who never arranged anything the default dashboard', () => {
+    expect(normalizeLayout(null).cards).toEqual(DEFAULT_LAYOUT.cards)
+    expect(normalizeLayout({ version: 2, hidden: [], cards: {} }).cards).toEqual(
+      DEFAULT_LAYOUT.cards
+    )
   })
 })
 

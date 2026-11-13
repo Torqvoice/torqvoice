@@ -1,0 +1,73 @@
+/// An appointment on the workshop calendar with no job behind it: a customer
+/// coming in to talk, a test drive, a supplier's visit. Work on a car is booked
+/// as a scheduled job instead (ServiceRecord with status `scheduled`), which
+/// holds a bay and gets a number. An appointment can become such a job, and is
+/// removed when it does.
+model Appointment {
+  id          String   @id @default(cuid())
+  title       String
+  /// Rich text from the editor, cleaned when it is saved and again when shown.
+  description String?
+  startAt     DateTime
+  endAt       DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Who it is with, when it is with anyone on file.
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  vehicleId  String?
+  vehicle    Vehicle?  @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  createdById String?
+  createdBy   User?   @relation("AppointmentCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  notifications AppointmentNotification[]
+
+  @@index([organizationId, startAt])
+  @@index([customerId])
+  @@index([vehicleId])
+  @@map("appointments")
+}
+
+/// One alert before an appointment or a booked job, the way a calendar sets
+/// them: how it goes out and how long before. It goes out once for each start
+/// time, so moving the appointment, here or on the work board, arms it again.
+model AppointmentNotification {
+  id           String    @id @default(cuid())
+  /// in_app | email | customer_sms | customer_email
+  channel      String
+  /// How long before the start, in `unit`s.
+  amount       Int
+  /// minutes | hours | days | weeks
+  unit         String
+  /// HH:MM on that day for a notice given in days or weeks ("1 day before at
+  /// 16:00"), on the workshop's clock. Null for minutes and hours.
+  atTime       String?
+  /// The start it last went out for. Any other start means it has not gone
+  /// out for this one yet.
+  sentForStart DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// Who set it. An email to the workshop goes to them.
+  userId String?
+  user   User?   @relation("AppointmentNotificationUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  /// What it is for: an appointment, or a booked job. Exactly one is set.
+  appointmentId   String?
+  appointment     Appointment?   @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([appointmentId])
+  @@index([serviceRecordId])
+  @@map("appointment_notifications")
+}

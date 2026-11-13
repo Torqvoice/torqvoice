@@ -269,3 +269,62 @@ describe('TimeGridView', () => {
     expect(actions.onNewWorkOrder).toHaveBeenCalledWith('2026-09-05', '14:00')
   })
 })
+
+/**
+ * Three jobs on one morning, the way they stack on a busy day: one from
+ * 07:00, one from 08:00 drawn in from the left, and one from 09:30 that
+ * starts after the first has ended and so takes its column again.
+ */
+describe('overlapping jobs', () => {
+  const at = (id: string, title: string, time: string, endTime: string): CalendarEvent => ({
+    ...job,
+    id,
+    title,
+    time,
+    endTime,
+    status: 'scheduled',
+    customerName: `${title} owner`,
+  })
+  const first = at('a', 'Gearbox oil', '07:00', '09:00')
+  const second = at('b', 'Coolant leak', '08:00', '10:30')
+  const third = at('c', 'Rear wheel bearing', '09:30', '12:00')
+
+  function renderMorning() {
+    return render(
+      <EventPeekProvider currencyCode="NOK">
+        <TimeGridView
+          days={days}
+          eventsByDate={new Map([['2026-09-03', [first, second, third]]])}
+          todayStr="2026-09-06"
+          selectedDateStr="2026-09-06"
+          showWeekends
+          actions={{
+            onNewWorkOrder: vi.fn(),
+            onBookAppointment: vi.fn(),
+            onNewReminder: vi.fn(),
+            onNewQuote: vi.fn(),
+            onScheduleMessage: vi.fn(),
+          }}
+          onSelectDate={vi.fn()}
+          onOpenDay={vi.fn()}
+        />
+      </EventPeekProvider>
+    )
+  }
+  const block = (title: string) => screen.getByTitle(new RegExp(title))
+  const z = (el: HTMLElement) => Number(el.style.zIndex)
+
+  it('draws a job that starts later over one already running', () => {
+    renderMorning()
+    // The 09:30 job shares the first job's column, yet sits over the 08:00
+    // one drawn in beside it, so its title is never hidden.
+    expect(z(block('Rear wheel bearing'))).toBeGreaterThan(z(block('Coolant leak')))
+    expect(z(block('Coolant leak'))).toBeGreaterThan(z(block('Gearbox oil')))
+  })
+
+  it('names the customer under the time, since the title names the car', () => {
+    renderMorning()
+    expect(block('Coolant leak')).toHaveTextContent('Coolant leak owner')
+    expect(block('Coolant leak')).not.toHaveTextContent('2019 Volvo V90')
+  })
+})

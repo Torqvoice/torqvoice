@@ -245,7 +245,7 @@ export function PasskeySettings() {
 
       {/* Rename Dialog */}
       <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('account.passkey.rename')}</DialogTitle>
           </DialogHeader>

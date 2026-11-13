@@ -155,7 +155,7 @@ model ServiceRecord {
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   technicianId String?
-  technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+  technician   Technician?           @relation(fields: [technicianId], references: [id], onDelete: SetNull)
   /// Everybody else working the job with that technician.
   helpers      ServiceRecordHelper[]
 
@@ -174,10 +174,12 @@ model ServiceRecord {
   stockMovements StockMovement[]
   timeEntries    TimeEntry[]
 
-  concerns           ServiceConcern[]
-  conditionMarks     ConditionMark[]
-  discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
-  resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
+  concerns                 ServiceConcern[]
+  /// Alerts before a booked job, set when it was booked or edited from the calendar.
+  appointmentNotifications AppointmentNotification[]
+  conditionMarks           ConditionMark[]
+  discoveredFindings       VehicleFinding[]          @relation("FindingDiscoveredIn")
+  resolvedFindings         VehicleFinding[]          @relation("FindingResolvedIn")
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
@@ -332,12 +334,12 @@ model ServicePart {
 }
 
 model ServiceLabor {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   description String
-  hours       Float  @default(0)
-  rate        Float  @default(0)
-  total       Float  @default(0)
-  pricingType String @default("hourly")
+  hours       Float   @default(0)
+  rate        Float   @default(0)
+  total       Float   @default(0)
+  pricingType String  @default("hourly")
   /// Whether the document's tax is charged on this line. Starts as the
   /// workshop's answer for labor, or for the shop fee, and is then the line's own.
   taxable     Boolean @default(true)

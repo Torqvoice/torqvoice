@@ -676,7 +676,7 @@ export function MyActiveJobs({
 
       {/* Quantity selection drawer when part is found */}
       <Drawer open={showAddDialog} onOpenChange={setShowAddDialog}>
-        <DrawerContent>
+        <DrawerContent aria-describedby={undefined}>
           <DrawerHeader>
             <DrawerTitle>{t('scanPart')}</DrawerTitle>
           </DrawerHeader>

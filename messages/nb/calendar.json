@@ -70,8 +70,11 @@
       "message": "Åpne meldinger",
       "external": "Åpne",
       "closure": "Åpne åpningstider",
-      "absence": "Åpne arbeidstavlen"
-    }
+      "absence": "Åpne arbeidstavlen",
+      "appointment": "Åpne kalenderen"
+    },
+    "makeWorkOrder": "Lag arbeidsordre",
+    "notifications": "{count, plural, one {# varsel} other {# varsler}}"
   },
   "filters": {
     "services": "Arbeidsordrer",
@@ -80,7 +83,8 @@
     "messages": "Meldinger",
     "external": "Tilkoblede kalendere",
     "closures": "Stengte dager",
-    "absences": "Fravær"
+    "absences": "Fravær",
+    "appointments": "Timeavtaler"
   },
   "selectVehicle": "Velg kjøretøy for arbeidsordre",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Slette den planlagte meldingen «{title}»? Den blir ikke sendt.",
     "deleted": "Slettet",
     "updated": "Oppdatert",
-    "failed": "Det gikk ikke. Prøv igjen."
+    "failed": "Det gikk ikke. Prøv igjen.",
+    "edit": "Rediger",
+    "makeWorkOrder": "Gjør om til arbeidsordre",
+    "deleteAppointment": "Slett timeavtale",
+    "deleteAppointmentConfirm": "Slette timeavtalen «{title}»? Varslene for den blir ikke sendt."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "I kø",
       "busy": "Opptatt",
       "closed": "Stengt",
-      "away": "Borte"
+      "away": "Borte",
+      "booked": "Booket"
     },
     "type": {
       "service": "Arbeidsordre",
@@ -140,7 +149,8 @@
       "message": "Melding",
       "external": "Tilkoblet kalender",
       "closure": "Stengt",
-      "absence": "Fravær"
+      "absence": "Fravær",
+      "appointment": "Timeavtale"
     },
     "noEvents": "Ingen hendelser",
     "selectDay": "Velg en dag med hendelser eller opprett en ny arbeidsordre.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Dette fraværet ble endret eller fjernet i mellomtiden.",
   "appointment": {
     "title": "Book time",
-    "description": "Sett en bil eller en kunde i kalenderen med hva som skal gjøres og hvor lang tid det bør ta. Ingen arbeidsordre å fylle ut nå: jobben åpnes når bilen kommer.",
+    "description": "Beskrivelse",
     "descriptionMarine": "Sett en båt eller en kunde i kalenderen med hva som skal gjøres og hvor lang tid det bør ta. Ingen arbeidsordre å fylle ut nå: jobben åpnes når båten kommer.",
     "customer": "Kunde",
     "selectCustomer": "Velg kunde",
@@ -178,6 +188,7 @@
     "noVehicles": "Ingen kjøretøy funnet.",
     "noVehiclesMarine": "Ingen båter funnet.",
     "none": "Ingen",
+    "optional": "Valgfritt",
     "whoHint": "En kunde, en bil eller begge. En bil som ikke er registrert ennå, kan legges til jobben når den kommer.",
     "whoHintMarine": "En kunde, en båt eller begge. En båt som ikke er registrert ennå, kan legges til jobben når den kommer.",
     "work": "Arbeid som trengs",
@@ -190,6 +201,75 @@
     "submit": "Book time",
     "booked": "Time booket",
     "bookedNobodyFree": "Time booket, men ingen arbeidsplass eller mekaniker er ledig på det tidspunktet. Sjekk arbeidstavlen.",
-    "failed": "Kunne ikke booke timen"
+    "failed": "Kunne ikke booke timen",
+    "editTitle": "Rediger booking",
+    "convertTitle": "Gjør om til arbeidsordre",
+    "dialogDescription": "Sett en timeavtale eller en arbeidsordre i kalenderen, med hvem den gjelder og varslene før den.",
+    "titleLabel": "Tittel",
+    "titlePlaceholder": "Legg til tittel",
+    "kind": {
+      "appointment": "Timeavtale",
+      "workOrder": "Arbeidsordre",
+      "appointmentHint": "Bare i kalenderen. Gjør den om til en arbeidsordre når bilen kommer.",
+      "appointmentHintMarine": "Bare i kalenderen. Gjør den om til en arbeidsordre når båten kommer.",
+      "workOrderHint": "Holder av en arbeidsplass eller en mekaniker, får et jobbnummer og vises på arbeidstavlen."
+    },
+    "when": "Når",
+    "start": "Start",
+    "end": "Slutt",
+    "durationHours": "{count, plural, one {# time} other {# timer}}",
+    "durationMinutes": "{count, plural, one {# minutt} other {# minutter}}",
+    "endAfterStart": "Slutt må være etter start, og høyst en uke senere.",
+    "appointmentWhoHint": "Velg en kunde for å kunne varsle kunden før timeavtalen.",
+    "appointmentWhoHintMarine": "Velg en kunde for å kunne varsle kunden før timeavtalen.",
+    "whoLocked": "Endre bilen eller kunden på arbeidsordren.",
+    "whoLockedMarine": "Endre båten eller kunden på arbeidsordren.",
+    "workHintTitle": "Én ting per linje. Hver linje blir et punkt på jobben. Står feltet tomt, brukes tittelen.",
+    "workLocked": "Det er registrert arbeid på disse punktene. Endre dem på arbeidsordren.",
+    "concernLabel": "Punkt {number}",
+    "removeConcern": "Fjern punkt",
+    "addConcern": "Skriv et punkt og trykk Enter",
+    "addConcernMarine": "Skriv et punkt og trykk Enter",
+    "workEmptyHint": "Står det tomt, blir tittelen jobbens punkt.",
+    "endsAnotherDay": "Slutter en annen dag",
+    "video": "Videosamtale",
+    "addMeeting": "Legg til {name}-møte",
+    "meetingAdded": "Et {name}-møte legges til når du lagrer.",
+    "removeMeeting": "Ikke legg til møtet",
+    "joinMeeting": "Bli med i videosamtalen",
+    "meetingFailed": "Bookingen er lagret, men møtet kunne ikke legges til. {error}",
+    "notifications": "Varsler",
+    "addNotification": "Legg til varsel",
+    "removeNotification": "Fjern varsel",
+    "channelLabel": "Hvordan",
+    "amountLabel": "Hvor mange",
+    "unitLabel": "Minutter, timer, dager eller uker før",
+    "at": "kl.",
+    "atLabel": "Klokkeslett",
+    "channel": {
+      "toWorkshop": "Til verkstedet",
+      "toCustomer": "Til kunden",
+      "inApp": "I appen",
+      "email": "E-post til meg",
+      "customerSms": "SMS til kunden",
+      "customerEmail": "E-post til kunden"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minutt før} other {minutter før}}",
+      "hours": "{count, plural, one {time før} other {timer før}}",
+      "days": "{count, plural, one {dag før} other {dager før}}",
+      "weeks": "{count, plural, one {uke før} other {uker før}}"
+    },
+    "customerChannelNeedsCustomer": "Velg en kunde for å varsle kunden.",
+    "descriptionPlaceholder": "Legg til beskrivelse",
+    "convertSubmit": "Lag arbeidsordre",
+    "saved": "Booking lagret"
+  },
+  "notify": {
+    "inAppTitle": "Snart: {title}",
+    "emailSubject": "Snart: {title}, {when}",
+    "emailFooter": "Du satte opp dette varselet i verkstedkalenderen i Torqvoice.",
+    "customerSubject": "Timen din hos {workshop}",
+    "customerBody": "Hei {name}! Vi minner om timen din hos {workshop} {when}. Vel møtt!"
   }
 }

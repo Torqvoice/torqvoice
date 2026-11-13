@@ -70,8 +70,11 @@
       "message": "Nachrichten öffnen",
       "external": "Öffnen",
       "closure": "Öffnungszeiten öffnen",
-      "absence": "Auftragsboard öffnen"
-    }
+      "absence": "Auftragsboard öffnen",
+      "appointment": "Kalender öffnen"
+    },
+    "makeWorkOrder": "Arbeitsauftrag erstellen",
+    "notifications": "{count, plural, one {# Benachrichtigung} other {# Benachrichtigungen}}"
   },
   "filters": {
     "services": "Arbeitsaufträge",
@@ -80,7 +83,8 @@
     "messages": "Nachrichten",
     "external": "Verbundene Kalender",
     "closures": "Schließtage",
-    "absences": "Abwesenheiten"
+    "absences": "Abwesenheiten",
+    "appointments": "Termine"
   },
   "selectVehicle": "Fahrzeug für Arbeitsauftrag auswählen",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Geplante Nachricht \"{title}\" löschen? Sie wird nicht gesendet.",
     "deleted": "Gelöscht",
     "updated": "Aktualisiert",
-    "failed": "Das hat nicht geklappt. Bitte erneut versuchen."
+    "failed": "Das hat nicht geklappt. Bitte erneut versuchen.",
+    "edit": "Bearbeiten",
+    "makeWorkOrder": "In Arbeitsauftrag umwandeln",
+    "deleteAppointment": "Termin löschen",
+    "deleteAppointmentConfirm": "Termin \"{title}\" löschen? Die zugehörigen Benachrichtigungen werden nicht gesendet."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "In Warteschlange",
       "busy": "Belegt",
       "closed": "Geschlossen",
-      "away": "Abwesend"
+      "away": "Abwesend",
+      "booked": "Gebucht"
     },
     "type": {
       "service": "Arbeitsauftrag",
@@ -140,7 +149,8 @@
       "message": "Nachricht",
       "external": "Verbundener Kalender",
       "closure": "Geschlossen",
-      "absence": "Abwesenheit"
+      "absence": "Abwesenheit",
+      "appointment": "Termin"
     },
     "noEvents": "Keine Ereignisse",
     "selectDay": "Wählen Sie einen Tag mit Ereignissen oder erstellen Sie einen neuen Arbeitsauftrag.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Diese Abwesenheit wurde inzwischen geändert oder entfernt.",
   "appointment": {
     "title": "Termin buchen",
-    "description": "Tragen Sie ein Fahrzeug oder einen Kunden mit den anstehenden Arbeiten und der voraussichtlichen Dauer in den Kalender ein. Jetzt ist noch kein Arbeitsauftrag auszufüllen: Der Auftrag wird geöffnet, wenn das Fahrzeug ankommt.",
+    "description": "Beschreibung",
     "descriptionMarine": "Tragen Sie ein Boot oder einen Kunden mit den anstehenden Arbeiten und der voraussichtlichen Dauer in den Kalender ein. Jetzt ist noch kein Arbeitsauftrag auszufüllen: Der Auftrag wird geöffnet, wenn das Boot ankommt.",
     "customer": "Kunde",
     "selectCustomer": "Kunde auswählen",
@@ -178,6 +188,7 @@
     "noVehicles": "Keine Fahrzeuge gefunden.",
     "noVehiclesMarine": "Keine Boote gefunden.",
     "none": "Keine",
+    "optional": "Optional",
     "whoHint": "Ein Kunde, ein Fahrzeug oder beides. Ein Fahrzeug, das noch nicht erfasst ist, kann bei der Ankunft zum Auftrag hinzugefügt werden.",
     "whoHintMarine": "Ein Kunde, ein Boot oder beides. Ein Boot, das noch nicht erfasst ist, kann bei der Ankunft zum Auftrag hinzugefügt werden.",
     "work": "Erforderliche Arbeiten",
@@ -190,6 +201,75 @@
     "submit": "Termin buchen",
     "booked": "Termin gebucht",
     "bookedNobodyFree": "Termin gebucht, aber zu dieser Zeit ist weder ein Arbeitsplatz noch ein Mechaniker frei. Prüfen Sie das Auftragsboard.",
-    "failed": "Termin konnte nicht gebucht werden"
+    "failed": "Termin konnte nicht gebucht werden",
+    "editTitle": "Termin bearbeiten",
+    "convertTitle": "In Arbeitsauftrag umwandeln",
+    "dialogDescription": "Tragen Sie einen Termin oder einen Arbeitsauftrag in den Kalender ein, mit wem er stattfindet und welche Benachrichtigungen vorher kommen.",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Titel hinzufügen",
+    "kind": {
+      "appointment": "Termin",
+      "workOrder": "Arbeitsauftrag",
+      "appointmentHint": "Nur im Kalender. Machen Sie einen Arbeitsauftrag daraus, wenn das Fahrzeug kommt.",
+      "appointmentHintMarine": "Nur im Kalender. Machen Sie einen Arbeitsauftrag daraus, wenn das Boot kommt.",
+      "workOrderHint": "Belegt einen Arbeitsplatz oder einen Mechaniker, erhält eine Auftragsnummer und erscheint auf dem Auftragsboard."
+    },
+    "when": "Wann",
+    "start": "Beginn",
+    "end": "Ende",
+    "durationHours": "{count, plural, one {# Stunde} other {# Stunden}}",
+    "durationMinutes": "{count, plural, one {# Minute} other {# Minuten}}",
+    "endAfterStart": "Das Ende muss nach dem Beginn liegen, höchstens eine Woche später.",
+    "appointmentWhoHint": "Wählen Sie einen Kunden, um ihn vor dem Termin benachrichtigen zu können.",
+    "appointmentWhoHintMarine": "Wählen Sie einen Kunden, um ihn vor dem Termin benachrichtigen zu können.",
+    "whoLocked": "Ändern Sie Fahrzeug oder Kunde im Arbeitsauftrag.",
+    "whoLockedMarine": "Ändern Sie Boot oder Kunde im Arbeitsauftrag.",
+    "workHintTitle": "Eine Sache pro Zeile. Jede Zeile wird ein Anliegen im Auftrag. Bleibt das Feld leer, wird der Titel verwendet.",
+    "workLocked": "Auf diesen Anliegen ist bereits Arbeit erfasst. Ändern Sie sie im Arbeitsauftrag.",
+    "concernLabel": "Anliegen {number}",
+    "removeConcern": "Anliegen entfernen",
+    "addConcern": "Anliegen eingeben und Enter drücken",
+    "addConcernMarine": "Anliegen eingeben und Enter drücken",
+    "workEmptyHint": "Leer gelassen wird der Titel zum Anliegen des Auftrags.",
+    "endsAnotherDay": "Endet an einem anderen Tag",
+    "video": "Videoanruf",
+    "addMeeting": "{name}-Meeting hinzufügen",
+    "meetingAdded": "Beim Speichern wird ein {name}-Meeting hinzugefügt.",
+    "removeMeeting": "Kein Meeting hinzufügen",
+    "joinMeeting": "Videoanruf beitreten",
+    "meetingFailed": "Der Termin ist gespeichert, aber das Meeting konnte nicht hinzugefügt werden. {error}",
+    "notifications": "Benachrichtigungen",
+    "addNotification": "Benachrichtigung hinzufügen",
+    "removeNotification": "Benachrichtigung entfernen",
+    "channelLabel": "Wie",
+    "amountLabel": "Wie viele",
+    "unitLabel": "Minuten, Stunden, Tage oder Wochen vorher",
+    "at": "um",
+    "atLabel": "Uhrzeit",
+    "channel": {
+      "toWorkshop": "An die Werkstatt",
+      "toCustomer": "An den Kunden",
+      "inApp": "In der App",
+      "email": "E-Mail an mich",
+      "customerSms": "SMS an den Kunden",
+      "customerEmail": "E-Mail an den Kunden"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {Minute vorher} other {Minuten vorher}}",
+      "hours": "{count, plural, one {Stunde vorher} other {Stunden vorher}}",
+      "days": "{count, plural, one {Tag vorher} other {Tage vorher}}",
+      "weeks": "{count, plural, one {Woche vorher} other {Wochen vorher}}"
+    },
+    "customerChannelNeedsCustomer": "Wählen Sie einen Kunden, um ihn zu benachrichtigen.",
+    "descriptionPlaceholder": "Beschreibung hinzufügen",
+    "convertSubmit": "Arbeitsauftrag erstellen",
+    "saved": "Termin gespeichert"
+  },
+  "notify": {
+    "inAppTitle": "Demnächst: {title}",
+    "emailSubject": "Demnächst: {title}, {when}",
+    "emailFooter": "Sie haben diese Benachrichtigung im Werkstattkalender in Torqvoice eingerichtet.",
+    "customerSubject": "Ihr Termin bei {workshop}",
+    "customerBody": "Hallo {name}, wir möchten Sie an Ihren Termin bei {workshop} am {when} erinnern. Wir freuen uns auf Sie!"
   }
 }

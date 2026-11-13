@@ -1774,7 +1774,7 @@ export function VehicleDetailClient({
           if (!open) setSelectedNote(null)
         }}
       >
-        <DialogContent className="sm:max-w-3xl">
+        <DialogContent className="sm:max-w-3xl" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               {selectedNote?.isPinned && <Pin className="h-4 w-4 text-primary" />}

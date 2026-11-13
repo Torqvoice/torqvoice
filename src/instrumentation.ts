@@ -32,6 +32,7 @@ export async function register() {
       checkLowStock,
       checkDueReminders,
       processScheduledMessages,
+      processAppointmentNotifications,
       processIntegrationJobs,
       cleanupIntegrationLogs,
       processBackupRuns,
@@ -53,6 +54,7 @@ export async function register() {
     checkLowStock()
     checkDueReminders()
     processScheduledMessages()
+    processAppointmentNotifications()
     processIntegrationJobs()
     cleanupIntegrationLogs()
     processBackupRuns()

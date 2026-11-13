@@ -10,6 +10,7 @@ export { processWebhookDeliveries, cleanupWebhookDeliveries } from './lib/cron/w
 export { checkLowStock } from './lib/cron/low-stock-alerts'
 export { checkDueReminders } from './lib/cron/reminder-alerts'
 export { processScheduledMessages } from './lib/cron/scheduled-messages'
+export { processAppointmentNotifications } from './lib/cron/appointment-notifications'
 export { processIntegrationJobs, cleanupIntegrationLogs } from './lib/cron/integration-jobs'
 export { processBackupRuns } from './lib/cron/backup-runs'
 export { syncWorkshopHolidays } from './lib/cron/workshop-holidays'

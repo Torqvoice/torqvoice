@@ -17,6 +17,8 @@ export function getEventLink(event: {
   if (event.type === 'external') return '/settings/integrations'
   if (event.type === 'closure') return '/settings/opening-hours'
   if (event.type === 'absence') return '/work-board'
+  // An appointment has no page of its own; the calendar is where it lives.
+  if (event.type === 'appointment') return '/calendar?view=schedule'
   if (event.type === 'quote') return `/quotes/${event.id}`
   if (event.type === 'message') return '/messages?tab=scheduled'
   if (event.type === 'reminder')
@@ -58,7 +60,7 @@ export interface EventPalette {
   rule: string
 }
 
-type Hue = 'blue' | 'amber' | 'violet' | 'teal' | 'slate' | 'emerald' | 'orange' | 'red'
+type Hue = 'blue' | 'amber' | 'violet' | 'teal' | 'slate' | 'emerald' | 'orange' | 'red' | 'pink'
 
 const PALETTES: Record<Hue, EventPalette> = {
   blue: {
@@ -110,6 +112,13 @@ const PALETTES: Record<Hue, EventPalette> = {
     text: 'text-orange-800 dark:text-orange-300',
     rule: 'bg-orange-500',
   },
+  pink: {
+    dot: 'bg-pink-500',
+    chip: 'bg-pink-500/15 text-pink-950 hover:bg-pink-500/25 dark:text-pink-200',
+    block: 'bg-pink-600 text-white border-pink-700/60 hover:bg-pink-700',
+    text: 'text-pink-800 dark:text-pink-300',
+    rule: 'bg-pink-500',
+  },
   red: {
     dot: 'bg-red-500',
     chip: 'bg-red-500/15 text-red-950 hover:bg-red-500/25 dark:text-red-200',
@@ -128,6 +137,7 @@ export const TYPE_HUE: Record<CalendarEvent['type'], Hue> = {
   external: 'slate',
   closure: 'red',
   absence: 'orange',
+  appointment: 'pink',
 }
 
 export function typePalette(type: CalendarEvent['type']): EventPalette {
@@ -162,6 +172,8 @@ export function eventHue(event: Pick<CalendarEvent, 'type' | 'status'>): Hue {
       return 'red'
     case 'absence':
       return 'orange'
+    case 'appointment':
+      return 'pink'
     default:
       return 'slate'
   }

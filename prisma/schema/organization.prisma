@@ -47,6 +47,8 @@ model Organization {
   vehicles                    Vehicle[]
   serviceRecords              ServiceRecord[]
   reminders                   Reminder[]
+  appointments                Appointment[]
+  appointmentNotifications    AppointmentNotification[]
   customers                   Customer[]
   quotes                      Quote[]
   inventoryParts              InventoryPart[]

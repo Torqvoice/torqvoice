@@ -44,6 +44,58 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [['chat']],
   },
+  Appointment: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+      customerId: {
+        target: 'Customer',
+        required: false,
+        relation: 'customer',
+      },
+      vehicleId: {
+        target: 'Vehicle',
+        required: false,
+        relation: 'vehicle',
+      },
+      createdById: {
+        target: 'User',
+        required: false,
+        relation: 'createdBy',
+      },
+    },
+    ownerPaths: [],
+  },
+  AppointmentNotification: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+      userId: {
+        target: 'User',
+        required: false,
+        relation: 'user',
+      },
+      appointmentId: {
+        target: 'Appointment',
+        required: false,
+        relation: 'appointment',
+      },
+      serviceRecordId: {
+        target: 'ServiceRecord',
+        required: false,
+        relation: 'serviceRecord',
+      },
+    },
+    ownerPaths: [],
+  },
   AuditLog: {
     organizationId: true,
     foreignKeys: {

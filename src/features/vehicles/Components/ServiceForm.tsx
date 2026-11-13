@@ -70,86 +70,85 @@ export function ServiceForm({ vehicleId, open, onOpenChange }: ServiceFormProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] sm:max-w-lg" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Add Service Record</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
           <DialogBody className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input id="title" name="title" placeholder="Oil Change" required />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Type</Label>
-              <Select value={type} onValueChange={setType}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="maintenance">Maintenance</SelectItem>
-                  <SelectItem value="repair">Repair</SelectItem>
-                  <SelectItem value="upgrade">Upgrade</SelectItem>
-                  <SelectItem value="inspection">Inspection</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="title">Title *</Label>
+              <Input id="title" name="title" placeholder="Oil Change" required />
             </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Type</Label>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="maintenance">Maintenance</SelectItem>
+                    <SelectItem value="repair">Repair</SelectItem>
+                    <SelectItem value="upgrade">Upgrade</SelectItem>
+                    <SelectItem value="inspection">Inspection</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="serviceDate">Date</Label>
+                <DateInput
+                  id="serviceDate"
+                  name="serviceDate"
+                  value={serviceDate}
+                  onChange={setServiceDate}
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cost">Cost ($)</Label>
+                <Input id="cost" name="cost" type="number" step="0.01" placeholder="0.00" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="mileage">Mileage</Label>
+                <Input id="mileage" name="mileage" type="number" placeholder="50000" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="shopName">Shop Name</Label>
+                <Input id="shopName" name="shopName" placeholder="Joe's Auto Shop" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="techName">Technician</Label>
+                <Input id="techName" name="techName" placeholder="Mike" />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="serviceDate">Date</Label>
-              <DateInput
-                id="serviceDate"
-                name="serviceDate"
-                value={serviceDate}
-                onChange={setServiceDate}
+              <Label htmlFor="parts">Parts Used</Label>
+              <Input id="parts" name="parts" placeholder="Oil filter, 5W-30 synthetic oil" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="laborHours">Labor Hours</Label>
+              <Input id="laborHours" name="laborHours" type="number" step="0.5" placeholder="1.0" />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="description">Notes</Label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="Additional details..."
+                rows={3}
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="cost">Cost ($)</Label>
-              <Input id="cost" name="cost" type="number" step="0.01" placeholder="0.00" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="mileage">Mileage</Label>
-              <Input id="mileage" name="mileage" type="number" placeholder="50000" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="shopName">Shop Name</Label>
-              <Input id="shopName" name="shopName" placeholder="Joe's Auto Shop" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="techName">Technician</Label>
-              <Input id="techName" name="techName" placeholder="Mike" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="parts">Parts Used</Label>
-            <Input id="parts" name="parts" placeholder="Oil filter, 5W-30 synthetic oil" />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="laborHours">Labor Hours</Label>
-            <Input id="laborHours" name="laborHours" type="number" step="0.5" placeholder="1.0" />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="description">Notes</Label>
-            <Textarea
-              id="description"
-              name="description"
-              placeholder="Additional details..."
-              rows={3}
-            />
-          </div>
-
           </DialogBody>
 
           <DialogFooter>

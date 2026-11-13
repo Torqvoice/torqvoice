@@ -95,6 +95,8 @@ describe('organisation scope', () => {
       'vehicles',
       'orgReminders',
       'counterSales',
+      'appointments',
+      'appointmentNotifications',
       'quotes',
       'technicians',
       'workBays',
@@ -129,6 +131,13 @@ describe('JSON shape', () => {
     state.pages.documentAssetSnapshot = [
       [{ id: 'a1', organizationId: 'org-1', data: new Uint8Array([1, 2, 3]) }],
     ]
+    const startAt = new Date('2026-11-20T09:00:00.000Z')
+    state.pages.appointment = [
+      [{ id: 'ap1', title: 'Test drive', startAt, customerId: 'c1', organizationId: 'org-1' }],
+    ]
+    state.pages.appointmentNotification = [
+      [{ id: 'an1', channel: 'email', amount: 1, unit: 'days', appointmentId: 'ap1' }],
+    ]
 
     const { json, raw, result } = await run({
       ...NONE,
@@ -151,9 +160,21 @@ describe('JSON shape', () => {
         vehicles: [],
         orgReminders: [],
         counterSales: [],
+        appointments: [
+          {
+            id: 'ap1',
+            title: 'Test drive',
+            startAt: '2026-11-20T09:00:00.000Z',
+            customerId: 'c1',
+            organizationId: 'org-1',
+          },
+        ],
+        appointmentNotifications: [
+          { id: 'an1', channel: 'email', amount: 1, unit: 'days', appointmentId: 'ap1' },
+        ],
       },
     })
-    expect(result.rows).toBe(2)
+    expect(result.rows).toBe(4)
   })
 
   it('says in the header whether the secrets are in it, before the data', async () => {

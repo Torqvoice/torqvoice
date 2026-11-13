@@ -33,6 +33,12 @@ import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
 import { PageHeader } from '@/components/page-header'
 import { getTireHotelSummary } from '@/features/tire-hotel/Actions/getTireHotelSummary'
 import { getInspectionsDueSummary } from '@/features/vehicles/Actions/inspectionStatusActions'
+import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { addZonedDays, zonedDayKey } from '@/lib/timezone'
+
+/** Days the calendar card looks ahead, today included. */
+const CALENDAR_CARD_DAYS = 7
 
 export default async function DashboardPage() {
   const auth = await getAuthContext()
@@ -54,6 +60,13 @@ export default async function DashboardPage() {
   const access = await getViewerAccess()
   const S = PermissionSubject
 
+  // The week ahead on the workshop's own clock: a server in UTC must not
+  // start "today" at 01:00 Oslo time.
+  const timeZone = auth ? await workshopTimeZone(auth.organizationId) : 'UTC'
+  const now = new Date()
+  const todayKey = zonedDayKey(now, timeZone)
+  const lastDayKey = zonedDayKey(addZonedDays(now, CALENDAR_CARD_DAYS - 1, timeZone), timeZone)
+
   const [
     result,
     settingsResult,
@@ -73,6 +86,7 @@ export default async function DashboardPage() {
     tireHotelResult,
     serviceRequestsResult,
     inspectionsDueResult,
+    calendarEventsResult,
   ] = await Promise.all([
     readIfAllowed(access, S.DASHBOARD, () => getDashboardStats()),
     getDisplaySettings([
@@ -102,6 +116,11 @@ export default async function DashboardPage() {
       ? getPendingServiceRequests()
       : Promise.resolve(null),
     readIfAllowed(access, S.VEHICLES, () => getInspectionsDueSummary()),
+    // The calendar's own read: whoever may open the calendar sees its card,
+    // and the feed leaves out the kinds of record their role cannot read.
+    readIfAllowed(access, S.SERVICES, () =>
+      getCalendarEvents({ start: todayKey, end: lastDayKey })
+    ),
   ])
 
   const [layoutUser, widgetRows] = auth
@@ -234,6 +253,11 @@ export default async function DashboardPage() {
           inspectionsDue={
             inspectionsDueResult.success && inspectionsDueResult.data
               ? inspectionsDueResult.data
+              : null
+          }
+          calendarEvents={
+            calendarEventsResult.success && calendarEventsResult.data
+              ? { events: calendarEventsResult.data, todayKey, days: CALENDAR_CARD_DAYS }
               : null
           }
         />

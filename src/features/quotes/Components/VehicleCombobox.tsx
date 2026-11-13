@@ -41,6 +41,8 @@ interface VehicleComboboxProps {
   emptyLabel?: string
   /** When set, only this customer's vehicles are offered */
   customerId?: string
+  /** Shown but not changeable here */
+  disabled?: boolean
 }
 
 function formatVehicle(v: VehicleOption) {
@@ -57,6 +59,7 @@ export function VehicleCombobox({
   allowNone = true,
   emptyLabel = 'No vehicles found.',
   customerId,
+  disabled = false,
 }: VehicleComboboxProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -175,7 +178,12 @@ export function VehicleCombobox({
     // popover could not be scrolled. As in CustomerCombobox.
     <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
+        <Button
+          variant="outline"
+          role="combobox"
+          disabled={disabled}
+          className="w-full justify-between font-normal"
+        >
           <span className="truncate">{selected ? formatVehicle(selected) : placeholder}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>

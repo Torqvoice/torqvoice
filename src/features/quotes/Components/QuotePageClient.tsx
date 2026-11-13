@@ -628,7 +628,7 @@ export function QuotePageClient({
             />
 
             <Dialog open={state.showConvertDialog} onOpenChange={state.setShowConvertDialog}>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md" aria-describedby={undefined}>
                 <DialogHeader>
                   <DialogTitle>{t('page.convertTitle')}</DialogTitle>
                 </DialogHeader>

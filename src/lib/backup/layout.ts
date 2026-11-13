@@ -60,6 +60,8 @@ export const BACKUP_LAYOUT: Record<string, LayoutNode> = {
   },
   orgReminders: { model: 'Reminder' },
   counterSales: { model: 'ServiceRecord', children: serviceRecordTree },
+  appointments: { model: 'Appointment' },
+  appointmentNotifications: { model: 'AppointmentNotification' },
   quotes: {
     model: 'Quote',
     children: {

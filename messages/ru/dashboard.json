@@ -45,6 +45,7 @@
   "showCards": "Показать карточки",
   "cards": {
     "maintenance": "Плановое ТО",
+    "calendarEvents": "События календаря",
     "reminders": "Предстоящие напоминания",
     "inspections": "Осмотры",
     "serviceRequests": "Заявки на обслуживание",
@@ -77,6 +78,11 @@
     "settingsAriaLabel": "Настройки техобслуживания",
     "dismissAriaLabel": "Отклонить",
     "dismissError": "Не удалось отклонить транспортное средство. Попробуйте ещё раз."
+  },
+  "calendarEvents": {
+    "title": "События календаря",
+    "description": "{days, plural, one {Ближайший # день} few {Ближайшие # дня} many {Ближайшие # дней} other {Ближайшие # дня}}",
+    "noData": "В календаре ничего нет на {days, plural, one {ближайший # день} few {ближайшие # дня} many {ближайшие # дней} other {ближайшие # дня}}."
   },
   "reminders": {
     "title": "Предстоящие напоминания",

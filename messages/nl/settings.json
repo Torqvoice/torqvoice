@@ -1388,7 +1388,7 @@
     "optCustomers": "Klanten",
     "optCustomersDesc": "Klantenrecords en contactgegevens",
     "optVehicles": "Voertuigen en servicerecords",
-    "optVehiclesDesc": "Voertuigen, notities, brandstoflogboeken, herinneringen, servicerecords",
+    "optVehiclesDesc": "Voertuigen, notities, brandstoflogboeken, herinneringen, servicerecords, afspraken",
     "optQuotes": "Offertes",
     "optQuotesDesc": "Offertes met onderdelen en arbeid",
     "optInventory": "Inventaris",

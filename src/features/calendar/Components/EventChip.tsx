@@ -123,6 +123,9 @@ export function EventChip({
         className={cn(
           'absolute flex flex-col overflow-hidden rounded-md border px-1.5 py-1 text-left text-xs leading-tight shadow-sm transition-[filter,box-shadow] hover:z-20 hover:shadow-md',
           palette.block,
+          // An edge in the page's own colour, the way Google draws it: blocks
+          // of one colour that overlap stay two blocks instead of one shape.
+          'border-background',
           done && 'opacity-70',
           compact && 'justify-center py-0',
           className
@@ -135,7 +138,12 @@ export function EventChip({
         {!compact && (
           <span className="truncate text-[11px] opacity-90">
             {range}
-            {event.vehicleLabel ? ` · ${event.vehicleLabel}` : ''}
+            {/* The title already names the car on a job; who it is for says more. */}
+            {event.customerName
+              ? ` · ${event.customerName}`
+              : event.vehicleLabel
+                ? ` · ${event.vehicleLabel}`
+                : ''}
           </span>
         )}
       </button>
@@ -152,11 +160,17 @@ export function EventChip({
           className
         )}
       >
-        <span className="w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground">
+        {/* A phone has no room for a time column: the time goes above the title. */}
+        <span className="hidden w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground sm:block">
           {range}
         </span>
         <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', palette.dot)} />
         <span className="min-w-0 flex-1">
+          {range && (
+            <span className="block text-xs tabular-nums text-muted-foreground sm:hidden">
+              {range}
+            </span>
+          )}
           <span className={cn('block truncate font-medium', done && 'line-through opacity-70')}>
             {event.title}
           </span>

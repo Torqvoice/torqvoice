@@ -222,7 +222,7 @@ export function NotificationPanel() {
         }
       }}
     >
-      <SheetContent className="w-[380px] p-0 sm:max-w-[380px]">
+      <SheetContent className="w-[380px] p-0 sm:max-w-[380px]" aria-describedby={undefined}>
         <SheetHeader className="border-b px-4 py-3">
           {/* pr-8 keeps the actions clear of the sheet's own close control. */}
           <div className="flex items-center justify-between pr-8">

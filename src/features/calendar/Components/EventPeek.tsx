@@ -36,6 +36,7 @@ import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { useDateSettings } from '@/components/date-settings-context'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { formatClock } from '@/features/workboard/utils/clock'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 import { timeToMinutes } from '../Lib/calendar-range'
 import { eventPalette, getEventLink, isEventDone, openEndedSide } from './calendar-utils'
 import { ExternalEventDialog } from './ExternalEventDialog'
@@ -50,6 +51,19 @@ import type { CalendarEvent } from '../Actions/calendarActions'
 interface PeekState {
   event: CalendarEvent
   anchor: HTMLElement
+  /**
+   * Beside a chip, below a row: a row in a list runs the full width, so a
+   * card beside it would land on top of the sidebar.
+   */
+  side: 'right' | 'bottom'
+}
+
+/** What the booking dialog opens on: changing a booking, or an appointment becoming a work order. */
+export type BookingEdit = { mode: 'edit' | 'convert'; event: CalendarEvent }
+
+/** A booking the calendar can change: an appointment, or a job whose car has not arrived. */
+export function isEditableBooking(event: Pick<CalendarEvent, 'type' | 'status'>): boolean {
+  return event.type === 'appointment' || (event.type === 'service' && event.status === 'scheduled')
 }
 
 interface PeekApi {
@@ -57,12 +71,16 @@ interface PeekApi {
   closePeek: () => void
   /** Reloads the events after something was deleted or ticked off in place. */
   refresh: () => void
+  /** Opens the booking dialog on an event. Absent where nothing can be booked. */
+  editBooking?: (edit: BookingEdit) => void
 }
 
 /** What the card can do beyond linking out, handed down by the calendar. */
 interface PeekActions {
   /** Open a technician's leave for editing. Absent when this person may not. */
   onEditAbsence?: (event: CalendarEvent) => void
+  /** Open the booking dialog on an appointment or a booked job. */
+  onEditBooking?: (edit: BookingEdit) => void
 }
 
 const PeekContext = createContext<PeekApi>({
@@ -79,11 +97,13 @@ export function EventPeekProvider({
   currencyCode,
   onRefresh,
   onEditAbsence,
+  onEditBooking,
   children,
 }: {
   currencyCode: string
   onRefresh?: () => void
   onEditAbsence?: PeekActions['onEditAbsence']
+  onEditBooking?: PeekActions['onEditBooking']
   children: ReactNode
 }) {
   const [peek, setPeek] = useState<PeekState | null>(null)
@@ -99,8 +119,11 @@ export function EventPeekProvider({
       setExternal(event)
       return
     }
+    const side = anchor.getBoundingClientRect().width > 320 ? 'bottom' : 'right'
     setPeek((current) =>
-      current && current.event === event && current.anchor === anchor ? null : { event, anchor }
+      current && current.event === event && current.anchor === anchor
+        ? null
+        : { event, anchor, side }
     )
   }, [])
   const closePeek = useCallback(() => setPeek(null), [])
@@ -108,7 +131,20 @@ export function EventPeekProvider({
     setPeek(null)
     onRefresh?.()
   }, [onRefresh])
-  const api = useMemo(() => ({ openPeek, closePeek, refresh }), [openPeek, closePeek, refresh])
+  const editBooking = useMemo(
+    () =>
+      onEditBooking
+        ? (edit: BookingEdit) => {
+            setPeek(null)
+            onEditBooking(edit)
+          }
+        : undefined,
+    [onEditBooking]
+  )
+  const api = useMemo(
+    () => ({ openPeek, closePeek, refresh, editBooking }),
+    [openPeek, closePeek, refresh, editBooking]
+  )
 
   return (
     <PeekContext.Provider value={api}>
@@ -116,7 +152,7 @@ export function EventPeekProvider({
       <Popover open={peek !== null} onOpenChange={(open) => !open && setPeek(null)}>
         <PopoverAnchor virtualRef={anchorRef as React.RefObject<HTMLElement>} />
         <PopoverContent
-          side="right"
+          side={peek?.side ?? 'right'}
           align="start"
           collisionPadding={12}
           className="w-[22rem] max-w-[calc(100vw-1.5rem)] p-0 shadow-xl"
@@ -127,6 +163,7 @@ export function EventPeekProvider({
               event={peek.event}
               currencyCode={currencyCode}
               onClose={closePeek}
+              onEditBooking={editBooking}
               onEditAbsence={
                 onEditAbsence
                   ? (event) => {
@@ -158,6 +195,8 @@ function typeIcon(event: CalendarEvent) {
       return CalendarOff
     case 'absence':
       return UserX
+    case 'appointment':
+      return CalendarClock
     default:
       return CalendarClock
   }
@@ -188,6 +227,7 @@ function statusKey(event: CalendarEvent): string {
   if (event.type === 'external') return 'busy'
   if (event.type === 'closure') return 'closed'
   if (event.type === 'absence') return 'away'
+  if (event.type === 'appointment') return 'booked'
   return event.status === 'completed' ? 'done' : event.status === 'overdue' ? 'overdue' : 'upcoming'
 }
 
@@ -196,11 +236,13 @@ function PeekCard({
   currencyCode,
   onClose,
   onEditAbsence,
+  onEditBooking,
 }: {
   event: CalendarEvent
   currencyCode: string
   onClose: () => void
   onEditAbsence?: PeekActions['onEditAbsence']
+  onEditBooking?: PeekActions['onEditBooking']
 }) {
   const t = useTranslations('calendar')
   const tc = useTranslations('common')
@@ -297,25 +339,71 @@ function PeekCard({
               </dd>
             </div>
           )}
+          {(event.notificationCount ?? 0) > 0 && (
+            <div className="flex items-center gap-2">
+              <Bell className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <dd className="text-muted-foreground">
+                {t('peek.notifications', { count: event.notificationCount ?? 0 })}
+              </dd>
+            </div>
+          )}
         </dl>
 
-        <div className="mt-4 flex items-center justify-end gap-2">
+        {event.description && (
+          <div
+            className="notes-content mt-3 max-h-40 overflow-y-auto border-t pt-3 text-sm"
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
+          />
+        )}
+
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
           {event.type === 'absence' && onEditAbsence && (
             <Button size="sm" variant="outline" onClick={() => onEditAbsence(event)}>
               <Pencil className="mr-1.5 h-3.5 w-3.5" />
               {tc('buttons.edit')}
             </Button>
           )}
-          <Button asChild size="sm">
-            <Link href={getEventLink(event)}>
-              {t(`peek.open.${event.type}`)}
-              {event.type === 'external' ? (
-                <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-              ) : (
-                <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+          {event.type === 'appointment' ? (
+            onEditBooking && (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onEditBooking({ mode: 'convert', event })}
+                >
+                  <Wrench className="mr-1.5 h-3.5 w-3.5" />
+                  {t('peek.makeWorkOrder')}
+                </Button>
+                <Button size="sm" onClick={() => onEditBooking({ mode: 'edit', event })}>
+                  <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                  {tc('buttons.edit')}
+                </Button>
+              </>
+            )
+          ) : (
+            <>
+              {onEditBooking && isEditableBooking(event) && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onEditBooking({ mode: 'edit', event })}
+                >
+                  <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                  {tc('buttons.edit')}
+                </Button>
               )}
-            </Link>
-          </Button>
+              <Button asChild size="sm">
+                <Link href={getEventLink(event)}>
+                  {t(`peek.open.${event.type}`)}
+                  {event.type === 'external' ? (
+                    <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                  ) : (
+                    <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+                  )}
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

@@ -208,6 +208,19 @@ const DATASETS: readonly Dataset[] = [
         },
       }),
   },
+  // The calendar's appointments, and the alerts set on them and on booked
+  // jobs. They ride with the jobs, which a restore clears with their alerts.
+  {
+    key: 'appointments',
+    option: 'vehicles',
+    read: (organizationId, page) => db.appointment.findMany({ ...page, where: { organizationId } }),
+  },
+  {
+    key: 'appointmentNotifications',
+    option: 'vehicles',
+    read: (organizationId, page) =>
+      db.appointmentNotification.findMany({ ...page, where: { organizationId } }),
+  },
   {
     key: 'quotes',
     option: 'quotes',

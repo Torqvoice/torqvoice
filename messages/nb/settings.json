@@ -1388,7 +1388,7 @@
     "optCustomers": "Kunder",
     "optCustomersDesc": "Kundeposter og kontaktinformasjon",
     "optVehicles": "Kjøretøy og servicedata",
-    "optVehiclesDesc": "Kjøretøy, notater, drivstofflogger, påminnelser, servicedata",
+    "optVehiclesDesc": "Kjøretøy, notater, drivstofflogger, påminnelser, servicedata, timeavtaler",
     "optQuotes": "Tilbud",
     "optQuotesDesc": "Tilbud med deler og arbeid",
     "optInventory": "Inventar",
