@@ -49,6 +49,21 @@ function interpolate(tpl: string, values?: Record<string, unknown>): string {
   )
 }
 
+// An audited action fans out to webhooks and connected integrations without
+// waiting (logAudit in src/lib/audit.ts, and issueInvoice). In a test that
+// work can outlive the file: on a busy runner the lazy import lands after the
+// environment is torn down, its error is logged into a worker already
+// closing, and the whole run fails with "EnvironmentTeardownError: Closing
+// rpc while onUserConsoleLog was pending" though every test passed. No unit
+// test is about the fan-out by way of an action; one that is mocks these
+// modules itself, which replaces the stubs here.
+vi.mock('@/features/webhooks/Lib/dispatcher', () => ({
+  dispatchWebhookEvent: vi.fn(async () => undefined),
+}))
+vi.mock('@/features/integrations/Lib/events', () => ({
+  notifyIntegrations: vi.fn(async () => undefined),
+}))
+
 // Mock next-intl globally so components using useTranslations can render in tests.
 vi.mock('next-intl', () => ({
   useTranslations: (namespace: string) => {
