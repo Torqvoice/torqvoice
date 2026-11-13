@@ -37,6 +37,7 @@ model Customer {
 
   serviceRecords ServiceRecord[]
   reminders      Reminder[]
+  appointments   Appointment[]
   tireSets       TireSet[]
   aiChats        AiChat[]
 

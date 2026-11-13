@@ -152,11 +152,17 @@ export function EventChip({
           className
         )}
       >
-        <span className="w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground">
+        {/* A phone has no room for a time column: the time goes above the title. */}
+        <span className="hidden w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground sm:block">
           {range}
         </span>
         <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', palette.dot)} />
         <span className="min-w-0 flex-1">
+          {range && (
+            <span className="block text-xs tabular-nums text-muted-foreground sm:hidden">
+              {range}
+            </span>
+          )}
           <span className={cn('block truncate font-medium', done && 'line-through opacity-70')}>
             {event.title}
           </span>

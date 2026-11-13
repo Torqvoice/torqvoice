@@ -22,7 +22,7 @@ import {
 } from '@/features/workshop-calendar/Components/TimeOffDialog'
 import { listAbsences, type AbsenceView } from '@/features/workshop-calendar/Actions/absenceActions'
 import { getCalendarEvents } from '../Actions/calendarActions'
-import { BookAppointmentDialog } from './BookAppointmentDialog'
+import { BookingDialog } from './BookingDialog'
 import type { CalendarEvent, CalendarEventType } from '../Actions/calendarActions'
 import {
   eachDay,
@@ -42,7 +42,7 @@ import { CalendarEventList } from './CalendarEventList'
 import { CalendarSidebar, type TypeFilters } from './CalendarSidebar'
 import { CalendarToolbar, VIEW_SHORTCUTS, type CreateKind } from './CalendarToolbar'
 import type { DayActions } from './DayContextMenu'
-import { EventPeekProvider } from './EventPeek'
+import { type BookingEdit, EventPeekProvider } from './EventPeek'
 import { MonthView } from './MonthView'
 import { ScheduleView } from './ScheduleView'
 import { TimeGridView } from './TimeGridView'
@@ -69,6 +69,7 @@ interface CalendarClientProps {
 
 const ALL_TYPES: CalendarEventType[] = [
   'service',
+  'appointment',
   'reminder',
   'quote',
   'message',
@@ -132,6 +133,7 @@ export default function CalendarClient({
     external: true,
     closure: true,
     absence: true,
+    appointment: true,
   })
 
   // Dialogs the calendar can open
@@ -139,6 +141,8 @@ export default function CalendarClient({
   const [showDateChoice, setShowDateChoice] = useState(false)
   const [workOrderQuery, setWorkOrderQuery] = useState<Record<string, string> | undefined>()
   const [showAppointmentDialog, setShowAppointmentDialog] = useState(false)
+  // An appointment or booked job opened from its peek or menu; null for a new booking.
+  const [bookingEdit, setBookingEdit] = useState<BookingEdit | null>(null)
   const [showReminderDialog, setShowReminderDialog] = useState(false)
   const [showQuoteDialog, setShowQuoteDialog] = useState(false)
   const [showMessageDialog, setShowMessageDialog] = useState(false)
@@ -202,6 +206,7 @@ export default function CalendarClient({
   const counts = useMemo(() => {
     const c: Record<CalendarEventType, number> = {
       service: 0,
+      appointment: 0,
       reminder: 0,
       quote: 0,
       message: 0,
@@ -524,6 +529,10 @@ export default function CalendarClient({
       currencyCode={currencyCode}
       onRefresh={refresh}
       onEditAbsence={timeOff ? editAbsence : undefined}
+      onEditBooking={(edit) => {
+        setBookingEdit(edit)
+        setShowAppointmentDialog(true)
+      }}
     >
       {/*
         A definite height, not flex-1: nothing above this in the layout has
@@ -628,12 +637,16 @@ export default function CalendarClient({
         </DialogContent>
       </Dialog>
 
-      <BookAppointmentDialog
+      <BookingDialog
         open={showAppointmentDialog}
-        onOpenChange={setShowAppointmentDialog}
+        onOpenChange={(open) => {
+          setShowAppointmentDialog(open)
+          if (!open) setBookingEdit(null)
+        }}
         defaultDate={menuDateStr}
         defaultTime={menuTime}
-        onBooked={refresh}
+        edit={bookingEdit}
+        onSaved={refresh}
       />
 
       <ReminderFormDialog

@@ -70,8 +70,11 @@
       "message": "Atidaryti žinutes",
       "external": "Atidaryti",
       "closure": "Atidaryti darbo laiką",
-      "absence": "Atidaryti darbų lentą"
-    }
+      "absence": "Atidaryti darbų lentą",
+      "appointment": "Atidaryti kalendorių"
+    },
+    "makeWorkOrder": "Sukurti darbo užsakymą",
+    "notifications": "{count, plural, one {# pranešimas} few {# pranešimai} many {# pranešimo} other {# pranešimų}}"
   },
   "filters": {
     "services": "Darbo užsakymai",
@@ -80,7 +83,8 @@
     "messages": "Žinutės",
     "external": "Prijungti kalendoriai",
     "closures": "Nedarbo dienos",
-    "absences": "Nebuvimas darbe"
+    "absences": "Nebuvimas darbe",
+    "appointments": "Vizitai"
   },
   "selectVehicle": "Pasirinkite transporto priemonę darbo užsakymui",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Ištrinti suplanuotą žinutę „{title}“? Ji nebus išsiųsta.",
     "deleted": "Ištrinta",
     "updated": "Atnaujinta",
-    "failed": "Nepavyko. Bandykite dar kartą."
+    "failed": "Nepavyko. Bandykite dar kartą.",
+    "edit": "Redaguoti",
+    "makeWorkOrder": "Paversti darbo užsakymu",
+    "deleteAppointment": "Ištrinti vizitą",
+    "deleteAppointmentConfirm": "Ištrinti vizitą „{title}“? Jo pranešimai nebus išsiųsti."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "Eilėje",
       "busy": "Užimta",
       "closed": "Uždaryta",
-      "away": "Nėra"
+      "away": "Nėra",
+      "booked": "Užregistruota"
     },
     "type": {
       "service": "Darbo užsakymas",
@@ -140,7 +149,8 @@
       "message": "Žinutė",
       "external": "Prijungtas kalendorius",
       "closure": "Uždaryta",
-      "absence": "Nebuvimas darbe"
+      "absence": "Nebuvimas darbe",
+      "appointment": "Vizitas"
     },
     "noEvents": "Įvykių nėra",
     "selectDay": "Pasirinkite dieną su įvykiais arba sukurkite naują darbo užsakymą.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Šis nebuvimas per tą laiką buvo pakeistas arba pašalintas.",
   "appointment": {
     "title": "Užregistruoti vizitą",
-    "description": "Įrašykite automobilį arba klientą į kalendorių su darbais, kuriuos reikia atlikti, ir numatoma trukme. Darbo užsakymo pildyti dabar nereikia: jis atidaromas, kai automobilis atvyksta.",
+    "description": "Aprašymas",
     "descriptionMarine": "Įrašykite valtį arba klientą į kalendorių su darbais, kuriuos reikia atlikti, ir numatoma trukme. Darbo užsakymo pildyti dabar nereikia: jis atidaromas, kai valtis pristatoma.",
     "customer": "Klientas",
     "selectCustomer": "Pasirinkite klientą",
@@ -190,6 +200,69 @@
     "submit": "Užregistruoti vizitą",
     "booked": "Vizitas užregistruotas",
     "bookedNobodyFree": "Vizitas užregistruotas, tačiau tuo metu nėra nei laisvos darbo vietos, nei laisvo meistro. Patikrinkite darbų lentą.",
-    "failed": "Nepavyko užregistruoti vizito"
+    "failed": "Nepavyko užregistruoti vizito",
+    "editTitle": "Redaguoti registraciją",
+    "convertTitle": "Paversti darbo užsakymu",
+    "dialogDescription": "Įrašykite vizitą arba darbo užsakymą į kalendorių, nurodykite, su kuo jis, ir pranešimus prieš jį.",
+    "titleLabel": "Pavadinimas",
+    "titlePlaceholder": "Pridėti pavadinimą",
+    "kind": {
+      "appointment": "Vizitas",
+      "workOrder": "Darbo užsakymas",
+      "appointmentHint": "Tik kalendoriuje. Paverskite jį darbo užsakymu, kai automobilis atvyks.",
+      "appointmentHintMarine": "Tik kalendoriuje. Paverskite jį darbo užsakymu, kai valtis bus pristatyta.",
+      "workOrderHint": "Užima darbo vietą arba meistrą, gauna darbo numerį ir rodomas darbų lentoje."
+    },
+    "when": "Kada",
+    "start": "Pradžia",
+    "end": "Pabaiga",
+    "durationHours": "{count, plural, one {# valanda} few {# valandos} many {# valandos} other {# valandų}}",
+    "durationMinutes": "{count, plural, one {# minutė} few {# minutės} many {# minutės} other {# minučių}}",
+    "endAfterStart": "Pabaiga turi būti po pradžios ir ne vėliau kaip po savaitės.",
+    "appointmentWhoHint": "Neprivaloma. Vizitui nereikia nei automobilio, nei kliento.",
+    "appointmentWhoHintMarine": "Neprivaloma. Vizitui nereikia nei valties, nei kliento.",
+    "whoLocked": "Automobilį ar klientą keiskite darbo užsakyme.",
+    "whoLockedMarine": "Valtį ar klientą keiskite darbo užsakyme.",
+    "workHintTitle": "Po vieną dalyką eilutėje. Kiekviena eilutė tampa darbo punktu. Palikus tuščią, naudojamas pavadinimas.",
+    "workLocked": "Šiems punktams jau užregistruotas darbas. Keiskite juos darbo užsakyme.",
+    "video": "Vaizdo skambutis",
+    "addMeeting": "Pridėti {name} susitikimą",
+    "meetingAdded": "Išsaugojus bus pridėtas {name} susitikimas.",
+    "removeMeeting": "Nepridėti susitikimo",
+    "joinMeeting": "Prisijungti prie vaizdo skambučio",
+    "meetingFailed": "Registracija išsaugota, bet susitikimo pridėti nepavyko. {error}",
+    "notifications": "Pranešimai",
+    "addNotification": "Pridėti pranešimą",
+    "removeNotification": "Pašalinti pranešimą",
+    "channelLabel": "Kaip",
+    "amountLabel": "Kiek",
+    "unitLabel": "Minutės, valandos, dienos ar savaitės prieš",
+    "at": "laikas",
+    "atLabel": "Paros laikas",
+    "channel": {
+      "toWorkshop": "Dirbtuvėms",
+      "toCustomer": "Klientui",
+      "inApp": "Programoje",
+      "email": "El. laiškas man",
+      "customerSms": "SMS klientui",
+      "customerEmail": "El. laiškas klientui"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minutė prieš} few {minutės prieš} many {minutės prieš} other {minučių prieš}}",
+      "hours": "{count, plural, one {valanda prieš} few {valandos prieš} many {valandos prieš} other {valandų prieš}}",
+      "days": "{count, plural, one {diena prieš} few {dienos prieš} many {dienos prieš} other {dienų prieš}}",
+      "weeks": "{count, plural, one {savaitė prieš} few {savaitės prieš} many {savaitės prieš} other {savaičių prieš}}"
+    },
+    "customerChannelNeedsCustomer": "Pasirinkite klientą, kad jam būtų pranešta.",
+    "descriptionPlaceholder": "Pridėti aprašymą",
+    "convertSubmit": "Sukurti darbo užsakymą",
+    "saved": "Registracija išsaugota"
+  },
+  "notify": {
+    "inAppTitle": "Artėja: {title}",
+    "emailSubject": "Artėja: {title}, {when}",
+    "emailFooter": "Šį pranešimą nustatėte dirbtuvių kalendoriuje Torqvoice sistemoje.",
+    "customerSubject": "Jūsų vizitas: {workshop}",
+    "customerBody": "Sveiki, {name}! Primename apie jūsų vizitą: {workshop}, {when}. Lauksime jūsų!"
   }
 }

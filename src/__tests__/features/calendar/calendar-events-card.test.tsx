@@ -21,14 +21,15 @@ vi.mock('@/components/confirm-dialog', () => ({ useConfirm: () => vi.fn() }))
 vi.mock('@/features/scheduled-messages/Actions/scheduledMessageActions', () => ({
   deleteScheduledMessage: vi.fn(),
 }))
+vi.mock('@/features/calendar/Actions/deleteAppointment', () => ({ deleteAppointment: vi.fn() }))
 vi.mock('@/features/vehicles/Actions/reminderActions', () => ({
   toggleReminder: vi.fn(),
   deleteReminder: vi.fn(),
 }))
 // The booking form talks to the server; what matters here is that the card
 // opens it, on the day the card starts.
-vi.mock('@/features/calendar/Components/BookAppointmentDialog', () => ({
-  BookAppointmentDialog: ({ open, defaultDate }: { open: boolean; defaultDate?: string }) =>
+vi.mock('@/features/calendar/Components/BookingDialog', () => ({
+  BookingDialog: ({ open, defaultDate }: { open: boolean; defaultDate?: string }) =>
     open ? <div role="dialog">Booking for {defaultDate}</div> : null,
 }))
 vi.mock('@/features/calendar/Components/useDayFormatter', () => ({
@@ -92,7 +93,8 @@ describe('calendar events card', () => {
     expect(screen.getByText('Calendar Events')).toBeInTheDocument()
     expect(screen.getByText('Next 7 days')).toBeInTheDocument()
     expect(screen.getByText('Brake service')).toBeInTheDocument()
-    expect(screen.getByText('09:30')).toBeInTheDocument()
+    // Beside the title on a wide screen, above it on a phone.
+    expect(screen.getAllByText('09:30').length).toBeGreaterThan(0)
     expect(screen.getByText('Call about tyres')).toBeInTheDocument()
     expect(screen.getByText('Workshop closed')).toBeInTheDocument()
     expect(screen.queryByText('Oil change')).not.toBeInTheDocument()

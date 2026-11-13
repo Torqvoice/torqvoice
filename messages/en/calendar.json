@@ -70,8 +70,11 @@
       "message": "Open messages",
       "external": "Open",
       "closure": "Open opening hours",
-      "absence": "Open the work board"
-    }
+      "absence": "Open the work board",
+      "appointment": "Open calendar"
+    },
+    "makeWorkOrder": "Make work order",
+    "notifications": "{count, plural, one {# notification} other {# notifications}}"
   },
   "filters": {
     "services": "Work orders",
@@ -80,7 +83,8 @@
     "messages": "Messages",
     "external": "Connected calendars",
     "closures": "Closed days",
-    "absences": "Leave"
+    "absences": "Leave",
+    "appointments": "Appointments"
   },
   "selectVehicle": "Select Vehicle for Work Order",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Delete the scheduled message \"{title}\"? It will not be sent.",
     "deleted": "Deleted",
     "updated": "Updated",
-    "failed": "That did not work. Try again."
+    "failed": "That did not work. Try again.",
+    "edit": "Edit",
+    "makeWorkOrder": "Make it a work order",
+    "deleteAppointment": "Delete appointment",
+    "deleteAppointmentConfirm": "Delete the appointment \"{title}\"? Its notifications will not be sent."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "Queued",
       "busy": "Busy",
       "closed": "Closed",
-      "away": "Away"
+      "away": "Away",
+      "booked": "Booked"
     },
     "type": {
       "service": "Work order",
@@ -140,7 +149,8 @@
       "message": "Message",
       "external": "Connected calendar",
       "closure": "Closed",
-      "absence": "Leave"
+      "absence": "Leave",
+      "appointment": "Appointment"
     },
     "noEvents": "No events",
     "selectDay": "Select a day with events or create a new work order.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "That leave was changed or removed in the meantime.",
   "appointment": {
     "title": "Book appointment",
-    "description": "Put a car or a customer on the calendar with what needs doing and how long it should take. No work order to fill in now: the job opens when the car arrives.",
+    "description": "Description",
     "descriptionMarine": "Put a boat or a customer on the calendar with what needs doing and how long it should take. No work order to fill in now: the job opens when the boat arrives.",
     "customer": "Customer",
     "selectCustomer": "Select customer",
@@ -190,6 +200,69 @@
     "submit": "Book appointment",
     "booked": "Appointment booked",
     "bookedNobodyFree": "Appointment booked, but no bay or technician is free at that time. Check the work board.",
-    "failed": "Could not book the appointment"
+    "failed": "Could not book the appointment",
+    "editTitle": "Edit booking",
+    "convertTitle": "Make it a work order",
+    "dialogDescription": "Put an appointment or a work order on the calendar, with who it is with and the notifications before it.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "Add title",
+    "kind": {
+      "appointment": "Appointment",
+      "workOrder": "Work order",
+      "appointmentHint": "Only on the calendar. Make it a work order when the car comes in.",
+      "appointmentHintMarine": "Only on the calendar. Make it a work order when the boat comes in.",
+      "workOrderHint": "Holds a bay or a technician, gets a job number and shows on the work board."
+    },
+    "when": "When",
+    "start": "Start",
+    "end": "End",
+    "durationHours": "{count, plural, one {# hour} other {# hours}}",
+    "durationMinutes": "{count, plural, one {# minute} other {# minutes}}",
+    "endAfterStart": "The end has to be after the start, and at most a week later.",
+    "appointmentWhoHint": "Optional. An appointment does not need a car or a customer.",
+    "appointmentWhoHintMarine": "Optional. An appointment does not need a boat or a customer.",
+    "whoLocked": "Change the car or the customer on the work order.",
+    "whoLockedMarine": "Change the boat or the customer on the work order.",
+    "workHintTitle": "One thing per line. Each line is a concern on the job. Left empty, the title is.",
+    "workLocked": "Work is recorded on these concerns. Change them on the work order.",
+    "video": "Video call",
+    "addMeeting": "Add {name} meeting",
+    "meetingAdded": "A {name} meeting is added when you save.",
+    "removeMeeting": "Don't add the meeting",
+    "joinMeeting": "Join the video call",
+    "meetingFailed": "The booking is saved, but the meeting could not be added. {error}",
+    "notifications": "Notifications",
+    "addNotification": "Add notification",
+    "removeNotification": "Remove notification",
+    "channelLabel": "How",
+    "amountLabel": "How many",
+    "unitLabel": "Minutes, hours, days or weeks before",
+    "at": "at",
+    "atLabel": "Time of day",
+    "channel": {
+      "toWorkshop": "To the workshop",
+      "toCustomer": "To the customer",
+      "inApp": "In the app",
+      "email": "Email to me",
+      "customerSms": "SMS to customer",
+      "customerEmail": "Email to customer"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minute before} other {minutes before}}",
+      "hours": "{count, plural, one {hour before} other {hours before}}",
+      "days": "{count, plural, one {day before} other {days before}}",
+      "weeks": "{count, plural, one {week before} other {weeks before}}"
+    },
+    "customerChannelNeedsCustomer": "Choose a customer to notify them.",
+    "descriptionPlaceholder": "Add description",
+    "convertSubmit": "Make work order",
+    "saved": "Booking saved"
+  },
+  "notify": {
+    "inAppTitle": "Coming up: {title}",
+    "emailSubject": "Coming up: {title}, {when}",
+    "emailFooter": "You set this notification on the workshop calendar in Torqvoice.",
+    "customerSubject": "Your appointment at {workshop}",
+    "customerBody": "Hi {name}, this is a reminder of your appointment at {workshop} on {when}. See you then."
   }
 }

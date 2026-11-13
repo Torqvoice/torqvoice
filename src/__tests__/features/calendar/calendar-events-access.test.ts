@@ -33,6 +33,7 @@ vi.mock('@/lib/db', () => ({
     quote: { findMany: vi.fn() },
     scheduledMessage: { findMany: vi.fn() },
     externalCalendarEvent: { findMany: vi.fn() },
+    appointment: { findMany: vi.fn() },
     technician: { findMany: vi.fn() },
   },
 }))
@@ -92,6 +93,7 @@ beforeEach(() => {
       vehicleId: 'car-1',
       customer: { name: 'Kari' },
       vehicle: { make: 'Volvo', model: 'V70', year: 2012, customer: null },
+      _count: { appointmentNotifications: 0 },
     },
   ] as never)
   vi.mocked(db.reminder.findMany).mockResolvedValue([
@@ -134,6 +136,19 @@ beforeEach(() => {
     },
   ] as never)
   vi.mocked(db.externalCalendarEvent.findMany).mockResolvedValue([])
+  vi.mocked(db.appointment.findMany).mockResolvedValue([
+    {
+      id: 'appt-1',
+      title: 'Tyre quote talk',
+      description: '<p>Wants winter tyres</p><script>x()</script>',
+      startAt: MONDAY,
+      endAt: new Date(MONDAY.getTime() + 30 * 60_000),
+      vehicleId: null,
+      customer: { name: 'Kari' },
+      vehicle: null,
+      _count: { notifications: 1 },
+    },
+  ] as never)
   vi.mocked(db.technician.findMany).mockResolvedValue([])
 })
 
@@ -147,6 +162,7 @@ describe('calendar events by role', () => {
   it('shows an owner everything on the calendar', async () => {
     signInAs('owner', [])
     expect(await titles()).toEqual([
+      'appointment: Tyre quote talk',
       'closure: Workshop closed',
       'message: Your car is booked in',
       'quote: Timing belt',
@@ -157,7 +173,11 @@ describe('calendar events by role', () => {
 
   it('shows a role that reads jobs only the jobs and the workshop days', async () => {
     signInAs('member', [read('services')])
-    expect(await titles()).toEqual(['closure: Workshop closed', 'service: Brake service'])
+    expect(await titles()).toEqual([
+      'appointment: Tyre quote talk',
+      'closure: Workshop closed',
+      'service: Brake service',
+    ])
     // Not fetched and dropped: never asked for.
     expect(db.quote.findMany).not.toHaveBeenCalled()
     expect(db.reminder.findMany).not.toHaveBeenCalled()
@@ -167,6 +187,7 @@ describe('calendar events by role', () => {
   it('adds each kind of record the role may read', async () => {
     signInAs('member', [read('services'), read('quotes'), read('vehicles')])
     expect(await titles()).toEqual([
+      'appointment: Tyre quote talk',
       'closure: Workshop closed',
       'quote: Timing belt',
       'reminder: Call about tyres',
@@ -177,6 +198,22 @@ describe('calendar events by role', () => {
   it('shows scheduled messages to a role that reads customers', async () => {
     signInAs('member', [read('services'), read('customers')])
     expect(await titles()).toContain('message: Your car is booked in')
+  })
+
+  it('lists appointments with their description cleaned', async () => {
+    signInAs('owner', [])
+    const res = await getCalendarEvents({ start: '2026-11-16', end: '2026-11-22' })
+    const appointment = res.data?.find((e) => e.type === 'appointment')
+    expect(appointment).toMatchObject({
+      title: 'Tyre quote talk',
+      date: '2026-11-16',
+      time: '10:00',
+      endTime: '10:30',
+      customerName: 'Kari',
+      notificationCount: 1,
+    })
+    expect(appointment?.description).toContain('Wants winter tyres')
+    expect(appointment?.description).not.toContain('script')
   })
 
   it('refuses the calendar to a role that cannot read jobs', async () => {

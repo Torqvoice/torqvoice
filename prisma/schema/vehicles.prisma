@@ -48,6 +48,7 @@ model Vehicle {
   notes             Note[]
   fuelLogs          FuelLog[]
   reminders         Reminder[]
+  appointments      Appointment[]
   quotes            Quote[]
   recurringInvoices RecurringInvoice[]
   inspections       Inspection[]

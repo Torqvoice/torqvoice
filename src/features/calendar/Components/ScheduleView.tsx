@@ -52,11 +52,11 @@ export function ScheduleView({
           const events = eventsByDate.get(dateStr) ?? []
           const isToday = dateStr === todayStr
           return (
-            <section key={dateStr} className="flex gap-4 px-4 py-3">
+            <section key={dateStr} className="flex gap-2 px-3 py-3 sm:gap-4 sm:px-4">
               <button
                 type="button"
                 onClick={() => onSelectDate(date)}
-                className="flex w-24 shrink-0 items-start gap-2 rounded-md text-left hover:bg-accent"
+                className="flex w-11 shrink-0 flex-col items-center gap-0.5 rounded-md text-left hover:bg-accent sm:w-24 sm:flex-row sm:items-start sm:gap-2"
               >
                 <span
                   className={cn(
@@ -66,11 +66,13 @@ export function ScheduleView({
                 >
                   {date.getDate()}
                 </span>
-                <span className="flex flex-col pt-0.5 text-[11px] uppercase leading-tight tracking-wide text-muted-foreground">
+                <span className="flex flex-col items-center pt-0.5 text-[11px] uppercase leading-tight tracking-wide text-muted-foreground sm:items-start">
                   <span className={cn(isToday && 'text-primary')}>
                     {format.dateTime(date, { weekday: 'short' })}
                   </span>
-                  <span>{format.dateTime(date, { month: 'short' })}</span>
+                  <span className="hidden sm:inline">
+                    {format.dateTime(date, { month: 'short' })}
+                  </span>
                 </span>
               </button>
               <div className="flex min-w-0 flex-1 flex-col gap-0.5">

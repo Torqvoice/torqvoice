@@ -70,8 +70,11 @@
       "message": "Otwórz wiadomości",
       "external": "Otwórz",
       "closure": "Otwórz godziny otwarcia",
-      "absence": "Otwórz tablicę zleceń"
-    }
+      "absence": "Otwórz tablicę zleceń",
+      "appointment": "Otwórz kalendarz"
+    },
+    "makeWorkOrder": "Utwórz zlecenie",
+    "notifications": "{count, plural, one {# powiadomienie} few {# powiadomienia} many {# powiadomień} other {# powiadomienia}}"
   },
   "filters": {
     "services": "Zlecenia",
@@ -80,7 +83,8 @@
     "messages": "Wiadomości",
     "external": "Połączone kalendarze",
     "closures": "Dni zamknięcia",
-    "absences": "Nieobecności"
+    "absences": "Nieobecności",
+    "appointments": "Wizyty"
   },
   "selectVehicle": "Wybierz pojazd do zlecenia",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Usunąć zaplanowaną wiadomość „{title}”? Nie zostanie wysłana.",
     "deleted": "Usunięto",
     "updated": "Zaktualizowano",
-    "failed": "Nie udało się. Spróbuj ponownie."
+    "failed": "Nie udało się. Spróbuj ponownie.",
+    "edit": "Edytuj",
+    "makeWorkOrder": "Zamień w zlecenie",
+    "deleteAppointment": "Usuń wizytę",
+    "deleteAppointmentConfirm": "Usunąć wizytę „{title}”? Jej powiadomienia nie zostaną wysłane."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "W kolejce",
       "busy": "Zajęte",
       "closed": "Zamknięte",
-      "away": "Nieobecność"
+      "away": "Nieobecność",
+      "booked": "Umówione"
     },
     "type": {
       "service": "Zlecenie",
@@ -140,7 +149,8 @@
       "message": "Wiadomość",
       "external": "Połączony kalendarz",
       "closure": "Zamknięte",
-      "absence": "Nieobecność"
+      "absence": "Nieobecność",
+      "appointment": "Wizyta"
     },
     "noEvents": "Brak wydarzeń",
     "selectDay": "Wybierz dzień z wydarzeniami lub utwórz nowe zlecenie.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Ta nieobecność została w międzyczasie zmieniona lub usunięta.",
   "appointment": {
     "title": "Umów wizytę",
-    "description": "Wpisz auto lub klienta do kalendarza razem z tym, co trzeba zrobić, i ile ma to potrwać. Teraz nie trzeba wypełniać zlecenia: zostanie otwarte, gdy auto trafi do warsztatu.",
+    "description": "Opis",
     "descriptionMarine": "Wpisz łódź lub klienta do kalendarza razem z tym, co trzeba zrobić, i ile ma to potrwać. Teraz nie trzeba wypełniać zlecenia: zostanie otwarte, gdy łódź trafi do warsztatu.",
     "customer": "Klient",
     "selectCustomer": "Wybierz klienta",
@@ -190,6 +200,69 @@
     "submit": "Umów wizytę",
     "booked": "Wizyta umówiona",
     "bookedNobodyFree": "Wizyta umówiona, ale o tej godzinie nie ma wolnego stanowiska ani mechanika. Sprawdź tablicę zleceń.",
-    "failed": "Nie udało się umówić wizyty"
+    "failed": "Nie udało się umówić wizyty",
+    "editTitle": "Edytuj rezerwację",
+    "convertTitle": "Zamień w zlecenie",
+    "dialogDescription": "Wpisz wizytę lub zlecenie do kalendarza, z informacją, kogo dotyczy, i powiadomieniami przed terminem.",
+    "titleLabel": "Tytuł",
+    "titlePlaceholder": "Dodaj tytuł",
+    "kind": {
+      "appointment": "Wizyta",
+      "workOrder": "Zlecenie",
+      "appointmentHint": "Tylko w kalendarzu. Zamień ją w zlecenie, gdy auto trafi do warsztatu.",
+      "appointmentHintMarine": "Tylko w kalendarzu. Zamień ją w zlecenie, gdy łódź trafi do warsztatu.",
+      "workOrderHint": "Zajmuje stanowisko lub mechanika, dostaje numer zlecenia i pojawia się na tablicy zleceń."
+    },
+    "when": "Kiedy",
+    "start": "Początek",
+    "end": "Koniec",
+    "durationHours": "{count, plural, one {# godzina} few {# godziny} many {# godzin} other {# godziny}}",
+    "durationMinutes": "{count, plural, one {# minuta} few {# minuty} many {# minut} other {# minuty}}",
+    "endAfterStart": "Koniec musi być po początku i najwyżej tydzień później.",
+    "appointmentWhoHint": "Opcjonalnie. Wizyta nie wymaga auta ani klienta.",
+    "appointmentWhoHintMarine": "Opcjonalnie. Wizyta nie wymaga łodzi ani klienta.",
+    "whoLocked": "Auto lub klienta zmienisz w zleceniu.",
+    "whoLockedMarine": "Łódź lub klienta zmienisz w zleceniu.",
+    "workHintTitle": "Jedna rzecz w wierszu. Każdy wiersz to osobne zgłoszenie w zleceniu. Jeśli zostawisz puste, użyty zostanie tytuł.",
+    "workLocked": "Do tych zgłoszeń zapisano już pracę. Zmień je w zleceniu.",
+    "video": "Rozmowa wideo",
+    "addMeeting": "Dodaj spotkanie {name}",
+    "meetingAdded": "Spotkanie {name} zostanie dodane po zapisaniu.",
+    "removeMeeting": "Nie dodawaj spotkania",
+    "joinMeeting": "Dołącz do rozmowy wideo",
+    "meetingFailed": "Rezerwacja została zapisana, ale nie udało się dodać spotkania. {error}",
+    "notifications": "Powiadomienia",
+    "addNotification": "Dodaj powiadomienie",
+    "removeNotification": "Usuń powiadomienie",
+    "channelLabel": "Jak",
+    "amountLabel": "Ile",
+    "unitLabel": "Minuty, godziny, dni lub tygodnie przed",
+    "at": "o",
+    "atLabel": "Godzina",
+    "channel": {
+      "toWorkshop": "Do warsztatu",
+      "toCustomer": "Do klienta",
+      "inApp": "W aplikacji",
+      "email": "E-mail do mnie",
+      "customerSms": "SMS do klienta",
+      "customerEmail": "E-mail do klienta"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minuta przed} few {minuty przed} many {minut przed} other {minuty przed}}",
+      "hours": "{count, plural, one {godzina przed} few {godziny przed} many {godzin przed} other {godziny przed}}",
+      "days": "{count, plural, one {dzień przed} few {dni przed} many {dni przed} other {dnia przed}}",
+      "weeks": "{count, plural, one {tydzień przed} few {tygodnie przed} many {tygodni przed} other {tygodnia przed}}"
+    },
+    "customerChannelNeedsCustomer": "Wybierz klienta, aby go powiadomić.",
+    "descriptionPlaceholder": "Dodaj opis",
+    "convertSubmit": "Utwórz zlecenie",
+    "saved": "Rezerwacja zapisana"
+  },
+  "notify": {
+    "inAppTitle": "Wkrótce: {title}",
+    "emailSubject": "Wkrótce: {title}, {when}",
+    "emailFooter": "To powiadomienie ustawiono w kalendarzu warsztatu w Torqvoice.",
+    "customerSubject": "Twoja wizyta w warsztacie {workshop}",
+    "customerBody": "Cześć {name}, przypominamy o Twojej wizycie w warsztacie {workshop}: {when}. Do zobaczenia!"
   }
 }

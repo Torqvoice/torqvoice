@@ -70,8 +70,11 @@
       "message": "Abrir mensagens",
       "external": "Abrir",
       "closure": "Abrir horário de funcionamento",
-      "absence": "Abrir o quadro de trabalho"
-    }
+      "absence": "Abrir o quadro de trabalho",
+      "appointment": "Abrir calendário"
+    },
+    "makeWorkOrder": "Criar ordem de serviço",
+    "notifications": "{count, plural, one {# notificação} other {# notificações}}"
   },
   "filters": {
     "services": "Ordens de serviço",
@@ -80,7 +83,8 @@
     "messages": "Mensagens",
     "external": "Calendários ligados",
     "closures": "Dias de encerramento",
-    "absences": "Ausências"
+    "absences": "Ausências",
+    "appointments": "Marcações"
   },
   "selectVehicle": "Selecionar viatura para a ordem de serviço",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Eliminar a mensagem agendada \"{title}\"? A mensagem não será enviada.",
     "deleted": "Eliminado",
     "updated": "Atualizado",
-    "failed": "Não foi possível concluir. Tente novamente."
+    "failed": "Não foi possível concluir. Tente novamente.",
+    "edit": "Editar",
+    "makeWorkOrder": "Converter em ordem de serviço",
+    "deleteAppointment": "Eliminar marcação",
+    "deleteAppointmentConfirm": "Eliminar a marcação \"{title}\"? As respetivas notificações não serão enviadas."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "Em fila",
       "busy": "Ocupado",
       "closed": "Encerrado",
-      "away": "Ausente"
+      "away": "Ausente",
+      "booked": "Marcado"
     },
     "type": {
       "service": "Ordem de serviço",
@@ -140,7 +149,8 @@
       "message": "Mensagem",
       "external": "Calendário ligado",
       "closure": "Encerrado",
-      "absence": "Ausência"
+      "absence": "Ausência",
+      "appointment": "Marcação"
     },
     "noEvents": "Sem eventos",
     "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Essa ausência foi alterada ou removida entretanto.",
   "appointment": {
     "title": "Fazer marcação",
-    "description": "Coloque uma viatura ou um cliente no calendário com o que é preciso fazer e quanto tempo deve demorar. Não há ordem de serviço para preencher agora: é aberta quando a viatura chegar.",
+    "description": "Descrição",
     "descriptionMarine": "Coloque um barco ou um cliente no calendário com o que é preciso fazer e quanto tempo deve demorar. Não há ordem de serviço para preencher agora: é aberta quando o barco chegar.",
     "customer": "Cliente",
     "selectCustomer": "Selecionar cliente",
@@ -190,6 +200,69 @@
     "submit": "Fazer marcação",
     "booked": "Marcação feita",
     "bookedNobodyFree": "Marcação feita, mas não há posto de trabalho nem técnico livre a essa hora. Consulte o quadro de trabalho.",
-    "failed": "Não foi possível fazer a marcação"
+    "failed": "Não foi possível fazer a marcação",
+    "editTitle": "Editar marcação",
+    "convertTitle": "Converter em ordem de serviço",
+    "dialogDescription": "Coloque uma marcação ou uma ordem de serviço no calendário, com quem é e as notificações que a antecedem.",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Adicionar título",
+    "kind": {
+      "appointment": "Marcação",
+      "workOrder": "Ordem de serviço",
+      "appointmentHint": "Apenas no calendário. Converta-a em ordem de serviço quando a viatura chegar.",
+      "appointmentHintMarine": "Apenas no calendário. Converta-a em ordem de serviço quando o barco chegar.",
+      "workOrderHint": "Ocupa um posto de trabalho ou um técnico, recebe um número de ordem e aparece no quadro de trabalho."
+    },
+    "when": "Quando",
+    "start": "Início",
+    "end": "Fim",
+    "durationHours": "{count, plural, one {# hora} other {# horas}}",
+    "durationMinutes": "{count, plural, one {# minuto} other {# minutos}}",
+    "endAfterStart": "O fim tem de ser depois do início e, no máximo, uma semana depois.",
+    "appointmentWhoHint": "Opcional. Uma marcação não precisa de viatura nem de cliente.",
+    "appointmentWhoHintMarine": "Opcional. Uma marcação não precisa de barco nem de cliente.",
+    "whoLocked": "Altere a viatura ou o cliente na ordem de serviço.",
+    "whoLockedMarine": "Altere o barco ou o cliente na ordem de serviço.",
+    "workHintTitle": "Uma coisa por linha. Cada linha passa a ser uma queixa no trabalho. Se ficar vazio, é usado o título.",
+    "workLocked": "Há trabalho registado nestas queixas. Altere-as na ordem de serviço.",
+    "video": "Videochamada",
+    "addMeeting": "Adicionar reunião do {name}",
+    "meetingAdded": "É adicionada uma reunião do {name} ao guardar.",
+    "removeMeeting": "Não adicionar a reunião",
+    "joinMeeting": "Entrar na videochamada",
+    "meetingFailed": "A marcação foi guardada, mas não foi possível adicionar a reunião. {error}",
+    "notifications": "Notificações",
+    "addNotification": "Adicionar notificação",
+    "removeNotification": "Remover notificação",
+    "channelLabel": "Como",
+    "amountLabel": "Quantos",
+    "unitLabel": "Minutos, horas, dias ou semanas antes",
+    "at": "às",
+    "atLabel": "Hora",
+    "channel": {
+      "toWorkshop": "Para a oficina",
+      "toCustomer": "Para o cliente",
+      "inApp": "Na aplicação",
+      "email": "E-mail para mim",
+      "customerSms": "SMS para o cliente",
+      "customerEmail": "E-mail para o cliente"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minuto antes} other {minutos antes}}",
+      "hours": "{count, plural, one {hora antes} other {horas antes}}",
+      "days": "{count, plural, one {dia antes} other {dias antes}}",
+      "weeks": "{count, plural, one {semana antes} other {semanas antes}}"
+    },
+    "customerChannelNeedsCustomer": "Escolha um cliente para o notificar.",
+    "descriptionPlaceholder": "Adicionar descrição",
+    "convertSubmit": "Criar ordem de serviço",
+    "saved": "Marcação guardada"
+  },
+  "notify": {
+    "inAppTitle": "Em breve: {title}",
+    "emailSubject": "Em breve: {title}, {when}",
+    "emailFooter": "Configurou esta notificação no calendário da oficina no Torqvoice.",
+    "customerSubject": "A sua marcação em {workshop}",
+    "customerBody": "Olá, {name}! Lembramos a sua marcação em {workshop}: {when}. Até breve!"
   }
 }

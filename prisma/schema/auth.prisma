@@ -33,35 +33,37 @@ model User {
   /// Null = default layout. Shape validated in dashboardLayoutActions.
   dashboardLayout     Json?
 
-  sessions               Session[]
-  devices                UserDevice[]
-  accounts               Account[]
-  pushDevices            PushDevice[]
-  appSetupCodes          TechnicianSetupCode[]
-  vehicles               Vehicle[]
-  customers              Customer[]
-  settings               AppSetting[]
-  inventoryParts         InventoryPart[]
-  quotes                 Quote[]
-  customFieldDefinitions CustomFieldDefinition[]
-  twoFactor              TwoFactor?
-  passkeys               Passkey[]
-  organizationMembers    OrganizationMember[]
-  dashboardWidgets       DashboardWidget[]
-  auditLogs              AuditLog[]
-  openedServiceRecords   ServiceRecord[]         @relation("ServiceRecordCreatedBy")
-  confirmedConcerns      ServiceConcern[]        @relation("ConcernConfirmedBy")
-  recordedConditionMarks ConditionMark[]         @relation("ConditionMarkRecordedBy")
-  resolvedConditionMarks ConditionMark[]         @relation("ConditionMarkResolvedBy")
-  technicians            Technician[]
-  stockMovements         StockMovement[]
-  tireWarehouses         TireWarehouse[]
-  tireSets               TireSet[]
-  tireSetAttachments     TireSetAttachment[]
-  tireMeasurements       TireMeasurement[]
-  tireMovements          TireMovement[]
-  tireTreatments         TireTreatment[]
-  importBatches          ImportBatch[]
+  sessions                 Session[]
+  devices                  UserDevice[]
+  accounts                 Account[]
+  pushDevices              PushDevice[]
+  appSetupCodes            TechnicianSetupCode[]
+  vehicles                 Vehicle[]
+  customers                Customer[]
+  settings                 AppSetting[]
+  inventoryParts           InventoryPart[]
+  quotes                   Quote[]
+  customFieldDefinitions   CustomFieldDefinition[]
+  twoFactor                TwoFactor?
+  passkeys                 Passkey[]
+  organizationMembers      OrganizationMember[]
+  dashboardWidgets         DashboardWidget[]
+  auditLogs                AuditLog[]
+  openedServiceRecords     ServiceRecord[]           @relation("ServiceRecordCreatedBy")
+  confirmedConcerns        ServiceConcern[]          @relation("ConcernConfirmedBy")
+  appointmentsCreated      Appointment[]             @relation("AppointmentCreatedBy")
+  appointmentNotifications AppointmentNotification[] @relation("AppointmentNotificationUser")
+  recordedConditionMarks   ConditionMark[]           @relation("ConditionMarkRecordedBy")
+  resolvedConditionMarks   ConditionMark[]           @relation("ConditionMarkResolvedBy")
+  technicians              Technician[]
+  stockMovements           StockMovement[]
+  tireWarehouses           TireWarehouse[]
+  tireSets                 TireSet[]
+  tireSetAttachments       TireSetAttachment[]
+  tireMeasurements         TireMeasurement[]
+  tireMovements            TireMovement[]
+  tireTreatments           TireTreatment[]
+  importBatches            ImportBatch[]
 
   @@map("users")
 }

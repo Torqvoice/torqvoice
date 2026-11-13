@@ -601,6 +601,10 @@ export async function restoreBackup(
           Inspection: () => tx.inspection.deleteMany({ where: { organizationId } }),
           InspectionTemplate: () => tx.inspectionTemplate.deleteMany({ where: { organizationId } }),
           Quote: () => tx.quote.deleteMany({ where: { organizationId } }),
+          // Every alert, on an appointment or on a job, before what it points at.
+          AppointmentNotification: () =>
+            tx.appointmentNotification.deleteMany({ where: { organizationId } }),
+          Appointment: () => tx.appointment.deleteMany({ where: { organizationId } }),
           TireSet: () => tx.tireSet.deleteMany({ where: { organizationId } }),
           TireWarehouse: () => tx.tireWarehouse.deleteMany({ where: { organizationId } }),
           // Counter sales hang off a customer rather than a vehicle, so nothing
@@ -1923,6 +1927,132 @@ export async function restoreBackup(
             'reminder sends',
             (rows) => tx.inspectionReminderSend.createMany({ data: rows as never }),
             sends,
+            { organizationId }
+          )
+        }
+
+        // 14c. The calendar's appointments, then the alerts set on them and on
+        // booked jobs. After the customers, vehicles and jobs they point at,
+        // and each link is kept only when its row is really here: one this
+        // restore cleared or left out would fail the whole import on its
+        // foreign key. An appointment with no readable time has nothing to
+        // put on the calendar and is left out; an alert left pointing at
+        // neither an appointment nor a job goes with it. The people who booked
+        // them and set the alerts are kept when they are members of this
+        // workshop today, and are the importing user otherwise, so an alert
+        // that mails the workshop still reaches someone.
+        if (data.appointments?.length || data.appointmentNotifications?.length) {
+          const idsIn = (rows: Record<string, unknown>[], column: string) => [
+            ...new Set(
+              rows
+                .map((row) => row[column])
+                .filter((id): id is string => typeof id === 'string' && id.length > 0)
+            ),
+          ]
+          const appointments = (
+            (data.appointments as Record<string, unknown>[] | undefined) ?? []
+          ).filter(
+            (a) =>
+              typeof a.id === 'string' &&
+              typeof a.title === 'string' &&
+              !!toSafeDate(a.startAt as string) &&
+              !!toSafeDate(a.endAt as string)
+          )
+          const alerts = (
+            (data.appointmentNotifications as Record<string, unknown>[] | undefined) ?? []
+          ).filter(
+            (n) =>
+              typeof n.id === 'string' &&
+              typeof n.channel === 'string' &&
+              typeof n.unit === 'string' &&
+              Number.isInteger(n.amount)
+          )
+
+          const people = [
+            ...new Set([...idsIn(appointments, 'createdById'), ...idsIn(alerts, 'userId')]),
+          ]
+          const customerIds = idsIn(appointments, 'customerId')
+          const vehicleIds = idsIn(appointments, 'vehicleId')
+          const [memberRows, customerRows, vehicleRows] = await Promise.all([
+            people.length
+              ? tx.organizationMember.findMany({
+                  where: { organizationId, userId: { in: people } },
+                  select: { userId: true },
+                })
+              : Promise.resolve([]),
+            customerIds.length
+              ? tx.customer.findMany({
+                  where: { id: { in: customerIds }, organizationId },
+                  select: { id: true },
+                })
+              : Promise.resolve([]),
+            vehicleIds.length
+              ? tx.vehicle.findMany({
+                  where: { id: { in: vehicleIds }, organizationId },
+                  select: { id: true },
+                })
+              : Promise.resolve([]),
+          ])
+          const memberIds = new Set(memberRows.map((m) => m.userId))
+          const restoredCustomers = new Set(customerRows.map((row) => row.id))
+          const restoredVehicles = new Set(vehicleRows.map((row) => row.id))
+
+          await restoreRows(
+            'appointments',
+            (rows) => tx.appointment.createMany({ data: rows as never }),
+            appointments.map((a) => ({
+              id: a.id as string,
+              title: a.title as string,
+              description: typeof a.description === 'string' ? a.description : null,
+              startAt: toSafeDate(a.startAt as string),
+              endAt: toSafeDate(a.endAt as string),
+              createdAt: toSafeDate(a.createdAt as string),
+              updatedAt: toSafeDate(a.updatedAt as string),
+              customerId: keptReference(a.customerId, restoredCustomers),
+              vehicleId: keptReference(a.vehicleId, restoredVehicles),
+              createdById: keptReference(a.createdById, memberIds) ?? ctx.userId,
+            })),
+            { organizationId }
+          )
+
+          const appointmentIds = idsIn(alerts, 'appointmentId')
+          const jobIds = idsIn(alerts, 'serviceRecordId')
+          const [appointmentRows, jobRows] = await Promise.all([
+            appointmentIds.length
+              ? tx.appointment.findMany({
+                  where: { id: { in: appointmentIds }, organizationId },
+                  select: { id: true },
+                })
+              : Promise.resolve([]),
+            jobIds.length
+              ? tx.serviceRecord.findMany({
+                  where: { id: { in: jobIds }, organizationId },
+                  select: { id: true },
+                })
+              : Promise.resolve([]),
+          ])
+          const restoredAppointments = new Set(appointmentRows.map((row) => row.id))
+          const restoredJobs = new Set(jobRows.map((row) => row.id))
+
+          await restoreRows(
+            'appointment alerts',
+            (rows) => tx.appointmentNotification.createMany({ data: rows as never }),
+            alerts
+              .map((n) => ({
+                id: n.id as string,
+                channel: n.channel as string,
+                amount: n.amount as number,
+                unit: n.unit as string,
+                atTime: typeof n.atTime === 'string' ? n.atTime : null,
+                // When it last went out, so a restore does not send it again.
+                sentForStart: toSafeDate(n.sentForStart as string) ?? null,
+                createdAt: toSafeDate(n.createdAt as string),
+                updatedAt: toSafeDate(n.updatedAt as string),
+                userId: keptReference(n.userId, memberIds) ?? ctx.userId,
+                appointmentId: keptReference(n.appointmentId, restoredAppointments),
+                serviceRecordId: keptReference(n.serviceRecordId, restoredJobs),
+              }))
+              .filter((n) => n.appointmentId !== null || n.serviceRecordId !== null),
             { organizationId }
           )
         }

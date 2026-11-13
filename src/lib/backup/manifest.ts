@@ -134,6 +134,25 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
     clearOrder: 52,
   },
+  // The calendar's appointments and the alerts set on them and on booked
+  // jobs ride with the jobs. Clearing service records deletes every alert on
+  // a job and clearing vehicles unlinks every appointment, so on any other
+  // checkbox a restore of the jobs would lose them with no way back. Alerts
+  // clear before the appointments and jobs they point at.
+  {
+    model: 'Appointment',
+    key: 'appointments',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 42,
+  },
+  {
+    model: 'AppointmentNotification',
+    key: 'appointmentNotifications',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 41,
+  },
   { model: 'Quote', key: 'quotes', option: 'quotes', restore: 'replace', clearOrder: 40 },
   {
     model: 'Technician',

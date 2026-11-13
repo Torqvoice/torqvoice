@@ -70,8 +70,11 @@
       "message": "Ouvrir les messages",
       "external": "Ouvrir",
       "closure": "Ouvrir les horaires d'ouverture",
-      "absence": "Ouvrir le tableau de travail"
-    }
+      "absence": "Ouvrir le tableau de travail",
+      "appointment": "Ouvrir le calendrier"
+    },
+    "makeWorkOrder": "Créer l'ordre de travail",
+    "notifications": "{count, plural, one {# notification} other {# notifications}}"
   },
   "filters": {
     "services": "Ordres de travail",
@@ -80,7 +83,8 @@
     "messages": "Messages",
     "external": "Calendriers connectés",
     "closures": "Jours de fermeture",
-    "absences": "Absences"
+    "absences": "Absences",
+    "appointments": "Rendez-vous"
   },
   "selectVehicle": "Sélectionner un véhicule pour l’ordre de travail",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Supprimer le message programmé \"{title}\" ? Il ne sera pas envoyé.",
     "deleted": "Supprimé",
     "updated": "Mis à jour",
-    "failed": "Cela n'a pas fonctionné. Réessayez."
+    "failed": "Cela n'a pas fonctionné. Réessayez.",
+    "edit": "Modifier",
+    "makeWorkOrder": "En faire un ordre de travail",
+    "deleteAppointment": "Supprimer le rendez-vous",
+    "deleteAppointmentConfirm": "Supprimer le rendez-vous \"{title}\" ? Ses notifications ne seront pas envoyées."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "En file",
       "busy": "Occupé",
       "closed": "Fermé",
-      "away": "Absent"
+      "away": "Absent",
+      "booked": "Réservé"
     },
     "type": {
       "service": "Ordre de travail",
@@ -140,7 +149,8 @@
       "message": "Message",
       "external": "Calendrier connecté",
       "closure": "Fermé",
-      "absence": "Absence"
+      "absence": "Absence",
+      "appointment": "Rendez-vous"
     },
     "noEvents": "Aucun événement",
     "selectDay": "Sélectionnez un jour avec des événements ou créez un nouvel ordre de travail.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Cette absence a été modifiée ou supprimée entre-temps.",
   "appointment": {
     "title": "Prendre rendez-vous",
-    "description": "Placez un véhicule ou un client dans le calendrier, avec le travail à faire et sa durée prévue. Aucun ordre de travail à remplir maintenant : il s’ouvre à l’arrivée du véhicule.",
+    "description": "Description",
     "descriptionMarine": "Placez un bateau ou un client dans le calendrier, avec le travail à faire et sa durée prévue. Aucun ordre de travail à remplir maintenant : il s’ouvre à l’arrivée du bateau.",
     "customer": "Client",
     "selectCustomer": "Sélectionner un client",
@@ -190,6 +200,69 @@
     "submit": "Prendre rendez-vous",
     "booked": "Rendez-vous enregistré",
     "bookedNobodyFree": "Rendez-vous enregistré, mais aucun poste ni technicien n’est libre à cette heure. Consultez le tableau de travail.",
-    "failed": "Impossible d’enregistrer le rendez-vous"
+    "failed": "Impossible d’enregistrer le rendez-vous",
+    "editTitle": "Modifier la réservation",
+    "convertTitle": "En faire un ordre de travail",
+    "dialogDescription": "Placez un rendez-vous ou un ordre de travail dans le calendrier, avec la personne concernée et les notifications qui le précèdent.",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "Ajouter un titre",
+    "kind": {
+      "appointment": "Rendez-vous",
+      "workOrder": "Ordre de travail",
+      "appointmentHint": "Uniquement dans le calendrier. Faites-en un ordre de travail à l’arrivée du véhicule.",
+      "appointmentHintMarine": "Uniquement dans le calendrier. Faites-en un ordre de travail à l’arrivée du bateau.",
+      "workOrderHint": "Occupe un poste ou un technicien, reçoit un numéro d’ordre et apparaît sur le tableau de travail."
+    },
+    "when": "Quand",
+    "start": "Début",
+    "end": "Fin",
+    "durationHours": "{count, plural, one {# heure} other {# heures}}",
+    "durationMinutes": "{count, plural, one {# minute} other {# minutes}}",
+    "endAfterStart": "La fin doit être après le début, et au plus une semaine plus tard.",
+    "appointmentWhoHint": "Facultatif. Un rendez-vous n’a besoin ni d’un véhicule ni d’un client.",
+    "appointmentWhoHintMarine": "Facultatif. Un rendez-vous n’a besoin ni d’un bateau ni d’un client.",
+    "whoLocked": "Changez le véhicule ou le client sur l’ordre de travail.",
+    "whoLockedMarine": "Changez le bateau ou le client sur l’ordre de travail.",
+    "workHintTitle": "Une chose par ligne. Chaque ligne devient un point de l’intervention. Si le champ reste vide, le titre est utilisé.",
+    "workLocked": "Du travail est enregistré sur ces points. Modifiez-les sur l’ordre de travail.",
+    "video": "Appel vidéo",
+    "addMeeting": "Ajouter une réunion {name}",
+    "meetingAdded": "Une réunion {name} sera ajoutée à l’enregistrement.",
+    "removeMeeting": "Ne pas ajouter la réunion",
+    "joinMeeting": "Rejoindre l’appel vidéo",
+    "meetingFailed": "La réservation est enregistrée, mais la réunion n’a pas pu être ajoutée. {error}",
+    "notifications": "Notifications",
+    "addNotification": "Ajouter une notification",
+    "removeNotification": "Retirer la notification",
+    "channelLabel": "Comment",
+    "amountLabel": "Combien",
+    "unitLabel": "Minutes, heures, jours ou semaines avant",
+    "at": "à",
+    "atLabel": "Heure",
+    "channel": {
+      "toWorkshop": "À l’atelier",
+      "toCustomer": "Au client",
+      "inApp": "Dans l’app",
+      "email": "E-mail pour moi",
+      "customerSms": "SMS au client",
+      "customerEmail": "E-mail au client"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minute avant} other {minutes avant}}",
+      "hours": "{count, plural, one {heure avant} other {heures avant}}",
+      "days": "{count, plural, one {jour avant} other {jours avant}}",
+      "weeks": "{count, plural, one {semaine avant} other {semaines avant}}"
+    },
+    "customerChannelNeedsCustomer": "Choisissez un client pour le prévenir.",
+    "descriptionPlaceholder": "Ajouter une description",
+    "convertSubmit": "Créer l’ordre de travail",
+    "saved": "Réservation enregistrée"
+  },
+  "notify": {
+    "inAppTitle": "Bientôt : {title}",
+    "emailSubject": "Bientôt : {title}, {when}",
+    "emailFooter": "Vous avez programmé cette notification dans le calendrier de l'atelier sur Torqvoice.",
+    "customerSubject": "Votre rendez-vous chez {workshop}",
+    "customerBody": "Bonjour {name}, nous vous rappelons votre rendez-vous chez {workshop} le {when}. À bientôt !"
   }
 }

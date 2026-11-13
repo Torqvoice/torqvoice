@@ -70,8 +70,11 @@
       "message": "Berichten openen",
       "external": "Openen",
       "closure": "Openingstijden openen",
-      "absence": "Werkbord openen"
-    }
+      "absence": "Werkbord openen",
+      "appointment": "Kalender openen"
+    },
+    "makeWorkOrder": "Werkorder maken",
+    "notifications": "{count, plural, one {# melding} other {# meldingen}}"
   },
   "filters": {
     "services": "Werkorders",
@@ -80,7 +83,8 @@
     "messages": "Berichten",
     "external": "Gekoppelde agenda's",
     "closures": "Sluitingsdagen",
-    "absences": "Verlof"
+    "absences": "Verlof",
+    "appointments": "Afspraken"
   },
   "selectVehicle": "Selecteer voertuig voor werkorder",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "Gepland bericht \"{title}\" verwijderen? Het wordt niet verzonden.",
     "deleted": "Verwijderd",
     "updated": "Bijgewerkt",
-    "failed": "Dat is niet gelukt. Probeer het opnieuw."
+    "failed": "Dat is niet gelukt. Probeer het opnieuw.",
+    "edit": "Bewerken",
+    "makeWorkOrder": "Omzetten naar werkorder",
+    "deleteAppointment": "Afspraak verwijderen",
+    "deleteAppointmentConfirm": "Afspraak \"{title}\" verwijderen? De meldingen ervan worden niet verzonden."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "In wachtrij",
       "busy": "Bezet",
       "closed": "Gesloten",
-      "away": "Afwezig"
+      "away": "Afwezig",
+      "booked": "Geboekt"
     },
     "type": {
       "service": "Werkorder",
@@ -140,7 +149,8 @@
       "message": "Bericht",
       "external": "Gekoppelde agenda",
       "closure": "Gesloten",
-      "absence": "Verlof"
+      "absence": "Verlof",
+      "appointment": "Afspraak"
     },
     "noEvents": "Geen evenementen",
     "selectDay": "Selecteer een dag met evenementen of maak een nieuwe werkorder aan.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Die afwezigheid is intussen gewijzigd of verwijderd.",
   "appointment": {
     "title": "Afspraak inplannen",
-    "description": "Zet een auto of een klant in de kalender, met wat er moet gebeuren en hoe lang het ongeveer duurt. Nu nog geen werkorder invullen: die wordt geopend zodra de auto binnenkomt.",
+    "description": "Beschrijving",
     "descriptionMarine": "Zet een boot of een klant in de kalender, met wat er moet gebeuren en hoe lang het ongeveer duurt. Nu nog geen werkorder invullen: die wordt geopend zodra de boot binnenkomt.",
     "customer": "Klant",
     "selectCustomer": "Klant selecteren",
@@ -190,6 +200,69 @@
     "submit": "Afspraak inplannen",
     "booked": "Afspraak ingepland",
     "bookedNobodyFree": "Afspraak ingepland, maar er is op dat moment geen werkplek of monteur vrij. Kijk op het werkbord.",
-    "failed": "Kon de afspraak niet inplannen"
+    "failed": "Kon de afspraak niet inplannen",
+    "editTitle": "Boeking bewerken",
+    "convertTitle": "Omzetten naar werkorder",
+    "dialogDescription": "Zet een afspraak of een werkorder in de kalender, met wie het is en de meldingen vooraf.",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Titel toevoegen",
+    "kind": {
+      "appointment": "Afspraak",
+      "workOrder": "Werkorder",
+      "appointmentHint": "Alleen in de kalender. Maak er een werkorder van zodra de auto binnenkomt.",
+      "appointmentHintMarine": "Alleen in de kalender. Maak er een werkorder van zodra de boot binnenkomt.",
+      "workOrderHint": "Houdt een werkplek of een monteur bezet, krijgt een ordernummer en staat op het werkbord."
+    },
+    "when": "Wanneer",
+    "start": "Begin",
+    "end": "Einde",
+    "durationHours": "{count, plural, one {# uur} other {# uur}}",
+    "durationMinutes": "{count, plural, one {# minuut} other {# minuten}}",
+    "endAfterStart": "Het einde moet na het begin liggen, en hoogstens een week later.",
+    "appointmentWhoHint": "Optioneel. Een afspraak heeft geen auto of klant nodig.",
+    "appointmentWhoHintMarine": "Optioneel. Een afspraak heeft geen boot of klant nodig.",
+    "whoLocked": "Wijzig de auto of de klant op de werkorder.",
+    "whoLockedMarine": "Wijzig de boot of de klant op de werkorder.",
+    "workHintTitle": "Eén ding per regel. Elke regel wordt een punt op de werkorder. Blijft het leeg, dan wordt de titel gebruikt.",
+    "workLocked": "Op deze punten is al werk geregistreerd. Wijzig ze op de werkorder.",
+    "video": "Videogesprek",
+    "addMeeting": "{name}-vergadering toevoegen",
+    "meetingAdded": "Bij het opslaan wordt een {name}-vergadering toegevoegd.",
+    "removeMeeting": "Vergadering niet toevoegen",
+    "joinMeeting": "Deelnemen aan het videogesprek",
+    "meetingFailed": "De boeking is opgeslagen, maar de vergadering kon niet worden toegevoegd. {error}",
+    "notifications": "Meldingen",
+    "addNotification": "Melding toevoegen",
+    "removeNotification": "Melding verwijderen",
+    "channelLabel": "Hoe",
+    "amountLabel": "Hoeveel",
+    "unitLabel": "Minuten, uren, dagen of weken vooraf",
+    "at": "om",
+    "atLabel": "Tijdstip",
+    "channel": {
+      "toWorkshop": "Naar de werkplaats",
+      "toCustomer": "Naar de klant",
+      "inApp": "In de app",
+      "email": "E-mail naar mij",
+      "customerSms": "Sms naar de klant",
+      "customerEmail": "E-mail naar de klant"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minuut vooraf} other {minuten vooraf}}",
+      "hours": "{count, plural, one {uur vooraf} other {uur vooraf}}",
+      "days": "{count, plural, one {dag vooraf} other {dagen vooraf}}",
+      "weeks": "{count, plural, one {week vooraf} other {weken vooraf}}"
+    },
+    "customerChannelNeedsCustomer": "Kies een klant om die op de hoogte te brengen.",
+    "descriptionPlaceholder": "Beschrijving toevoegen",
+    "convertSubmit": "Werkorder maken",
+    "saved": "Boeking opgeslagen"
+  },
+  "notify": {
+    "inAppTitle": "Binnenkort: {title}",
+    "emailSubject": "Binnenkort: {title}, {when}",
+    "emailFooter": "Je hebt deze melding ingesteld in de werkplaatskalender in Torqvoice.",
+    "customerSubject": "Uw afspraak bij {workshop}",
+    "customerBody": "Hallo {name}, graag herinneren we u aan uw afspraak bij {workshop} op {when}. Tot dan!"
   }
 }

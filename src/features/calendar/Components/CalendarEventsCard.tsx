@@ -8,9 +8,9 @@ import { AppCard } from '@/components/app-card'
 import { CardEmpty } from '@/components/card-empty'
 import { Button } from '@/components/ui/button'
 import { addDays, parseDateKey, toLocalDateStr } from '../Lib/calendar-range'
-import { BookAppointmentDialog } from './BookAppointmentDialog'
+import { BookingDialog } from './BookingDialog'
 import { compareEvents, isEventDone } from './calendar-utils'
-import { EventPeekProvider } from './EventPeek'
+import { type BookingEdit, EventPeekProvider } from './EventPeek'
 import { ScheduleView } from './ScheduleView'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
@@ -40,6 +40,7 @@ export function CalendarEventsCard({
   const tCalendar = useTranslations('calendar')
   const router = useRouter()
   const [booking, setBooking] = useState(false)
+  const [bookingEdit, setBookingEdit] = useState<BookingEdit | null>(null)
   const refresh = useCallback(() => router.refresh(), [router])
 
   const upcoming = useMemo(() => events.filter((event) => !isEventDone(event)), [events])
@@ -62,26 +63,37 @@ export function CalendarEventsCard({
     return first ? Array.from({ length: days }, (_, i) => addDays(first, i)) : []
   }, [todayKey, days])
 
-  const bookButton = (
+  const bookLabel = tCalendar('contextMenu.bookAppointment')
+  const bookButton = (compact: boolean) => (
     <Button
       variant="outline"
       size="sm"
       className="h-7 gap-1.5 text-xs"
       onClick={() => setBooking(true)}
+      aria-label={bookLabel}
+      title={bookLabel}
     >
       <Plus className="h-3.5 w-3.5" />
-      {tCalendar('contextMenu.bookAppointment')}
+      {/* In the header a phone keeps the card's title readable instead. */}
+      <span className={compact ? 'hidden sm:inline' : undefined}>{bookLabel}</span>
     </Button>
   )
 
   return (
-    <EventPeekProvider currencyCode={currencyCode} onRefresh={refresh}>
+    <EventPeekProvider
+      currencyCode={currencyCode}
+      onRefresh={refresh}
+      onEditBooking={(edit) => {
+        setBookingEdit(edit)
+        setBooking(true)
+      }}
+    >
       <AppCard
         icon={CalendarDays}
         title={t('calendarEvents.title')}
         description={t('calendarEvents.description', { days })}
         badge={upcoming.length || undefined}
-        action={upcoming.length === 0 ? undefined : bookButton}
+        action={upcoming.length === 0 ? undefined : bookButton(true)}
         contentClassName="p-0"
         footer={
           upcoming.length === 0 ? undefined : (
@@ -100,7 +112,7 @@ export function CalendarEventsCard({
           <CardEmpty
             icon={CalendarDays}
             title={t('calendarEvents.noData', { days })}
-            action={bookButton}
+            action={bookButton(false)}
           />
         ) : (
           <ScheduleView
@@ -112,11 +124,15 @@ export function CalendarEventsCard({
           />
         )}
       </AppCard>
-      <BookAppointmentDialog
+      <BookingDialog
         open={booking}
-        onOpenChange={setBooking}
+        onOpenChange={(open) => {
+          setBooking(open)
+          if (!open) setBookingEdit(null)
+        }}
         defaultDate={todayKey}
-        onBooked={refresh}
+        edit={bookingEdit}
+        onSaved={refresh}
       />
     </EventPeekProvider>
   )

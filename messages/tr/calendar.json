@@ -70,8 +70,11 @@
       "message": "Mesajları aç",
       "external": "Aç",
       "closure": "Çalışma saatlerini aç",
-      "absence": "İş panosunu aç"
-    }
+      "absence": "İş panosunu aç",
+      "appointment": "Takvimi aç"
+    },
+    "makeWorkOrder": "İş emri oluştur",
+    "notifications": "{count, plural, one {# bildirim} other {# bildirim}}"
   },
   "filters": {
     "services": "İş emirleri",
@@ -80,7 +83,8 @@
     "messages": "Mesajlar",
     "external": "Bağlı takvimler",
     "closures": "Kapalı günler",
-    "absences": "İzinler"
+    "absences": "İzinler",
+    "appointments": "Randevular"
   },
   "selectVehicle": "İş emri için araç seçin",
   "dateChoice": {
@@ -112,7 +116,11 @@
     "deleteMessageConfirm": "\"{title}\" planlanmış mesajı silinsin mi? Gönderilmeyecek.",
     "deleted": "Silindi",
     "updated": "Güncellendi",
-    "failed": "Olmadı. Tekrar deneyin."
+    "failed": "Olmadı. Tekrar deneyin.",
+    "edit": "Düzenle",
+    "makeWorkOrder": "İş emrine dönüştür",
+    "deleteAppointment": "Randevuyu sil",
+    "deleteAppointmentConfirm": "\"{title}\" randevusu silinsin mi? Bildirimleri gönderilmeyecek."
   },
   "events": {
     "status": {
@@ -131,7 +139,8 @@
       "queued": "Sırada",
       "busy": "Meşgul",
       "closed": "Kapalı",
-      "away": "Müsait değil"
+      "away": "Müsait değil",
+      "booked": "Rezerve edildi"
     },
     "type": {
       "service": "İş emri",
@@ -140,7 +149,8 @@
       "message": "Mesaj",
       "external": "Bağlı takvim",
       "closure": "Kapalı",
-      "absence": "İzin"
+      "absence": "İzin",
+      "appointment": "Randevu"
     },
     "noEvents": "Etkinlik yok",
     "selectDay": "Etkinliği olan bir gün seçin veya yeni bir iş emri oluşturun.",
@@ -163,7 +173,7 @@
   "timeOffMissing": "Bu izin bu arada değiştirildi veya kaldırıldı.",
   "appointment": {
     "title": "Randevu oluştur",
-    "description": "Bir aracı veya müşteriyi, yapılacak işle ve ne kadar süreceğiyle birlikte takvime ekleyin. Şimdi doldurulacak bir iş emri yok: iş emri araç geldiğinde açılır.",
+    "description": "Açıklama",
     "descriptionMarine": "Bir tekneyi veya müşteriyi, yapılacak işle ve ne kadar süreceğiyle birlikte takvime ekleyin. Şimdi doldurulacak bir iş emri yok: iş emri tekne geldiğinde açılır.",
     "customer": "Müşteri",
     "selectCustomer": "Müşteri seçin",
@@ -190,6 +200,69 @@
     "submit": "Randevu oluştur",
     "booked": "Randevu oluşturuldu",
     "bookedNobodyFree": "Randevu oluşturuldu, ancak o saatte boş çalışma alanı veya teknisyen yok. İş panosunu kontrol edin.",
-    "failed": "Randevu oluşturulamadı"
+    "failed": "Randevu oluşturulamadı",
+    "editTitle": "Randevuyu düzenle",
+    "convertTitle": "İş emrine dönüştür",
+    "dialogDescription": "Takvime bir randevu veya iş emri ekleyin; kiminle olduğunu ve öncesindeki bildirimleri belirleyin.",
+    "titleLabel": "Başlık",
+    "titlePlaceholder": "Başlık ekleyin",
+    "kind": {
+      "appointment": "Randevu",
+      "workOrder": "İş emri",
+      "appointmentHint": "Yalnızca takvimde. Araç geldiğinde iş emrine dönüştürün.",
+      "appointmentHintMarine": "Yalnızca takvimde. Tekne geldiğinde iş emrine dönüştürün.",
+      "workOrderHint": "Bir çalışma alanını veya teknisyeni ayırır, iş numarası alır ve iş panosunda görünür."
+    },
+    "when": "Ne zaman",
+    "start": "Başlangıç",
+    "end": "Bitiş",
+    "durationHours": "{count, plural, one {# saat} other {# saat}}",
+    "durationMinutes": "{count, plural, one {# dakika} other {# dakika}}",
+    "endAfterStart": "Bitiş, başlangıçtan sonra ve en fazla bir hafta sonra olmalıdır.",
+    "appointmentWhoHint": "İsteğe bağlı. Randevu için araç veya müşteri gerekmez.",
+    "appointmentWhoHintMarine": "İsteğe bağlı. Randevu için tekne veya müşteri gerekmez.",
+    "whoLocked": "Aracı veya müşteriyi iş emrinde değiştirin.",
+    "whoLockedMarine": "Tekneyi veya müşteriyi iş emrinde değiştirin.",
+    "workHintTitle": "Her satıra bir iş. Her satır işte ayrı bir madde olur. Boş bırakılırsa başlık kullanılır.",
+    "workLocked": "Bu maddelere iş kaydedildi. Bunları iş emrinde değiştirin.",
+    "video": "Görüntülü görüşme",
+    "addMeeting": "{name} toplantısı ekle",
+    "meetingAdded": "Kaydettiğinizde bir {name} toplantısı eklenir.",
+    "removeMeeting": "Toplantıyı ekleme",
+    "joinMeeting": "Görüntülü görüşmeye katıl",
+    "meetingFailed": "Randevu kaydedildi, ancak toplantı eklenemedi. {error}",
+    "notifications": "Bildirimler",
+    "addNotification": "Bildirim ekle",
+    "removeNotification": "Bildirimi kaldır",
+    "channelLabel": "Nasıl",
+    "amountLabel": "Kaç",
+    "unitLabel": "Dakika, saat, gün veya hafta önce",
+    "at": "saat",
+    "atLabel": "Saat",
+    "channel": {
+      "toWorkshop": "Atölyeye",
+      "toCustomer": "Müşteriye",
+      "inApp": "Uygulama içi",
+      "email": "Bana e-posta",
+      "customerSms": "Müşteriye SMS",
+      "customerEmail": "Müşteriye e-posta"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {dakika önce} other {dakika önce}}",
+      "hours": "{count, plural, one {saat önce} other {saat önce}}",
+      "days": "{count, plural, one {gün önce} other {gün önce}}",
+      "weeks": "{count, plural, one {hafta önce} other {hafta önce}}"
+    },
+    "customerChannelNeedsCustomer": "Bildirim göndermek için bir müşteri seçin.",
+    "descriptionPlaceholder": "Açıklama ekleyin",
+    "convertSubmit": "İş emri oluştur",
+    "saved": "Randevu kaydedildi"
+  },
+  "notify": {
+    "inAppTitle": "Yaklaşıyor: {title}",
+    "emailSubject": "Yaklaşıyor: {title}, {when}",
+    "emailFooter": "Bu bildirimi Torqvoice atölye takviminde ayarladınız.",
+    "customerSubject": "{workshop} ile randevunuz",
+    "customerBody": "Merhaba {name}, {workshop} ile olan randevunuzu hatırlatmak isteriz: {when}. Görüşmek üzere!"
   }
 }

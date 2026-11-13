@@ -13,6 +13,8 @@ const state = vi.hoisted(() => ({
   foreign: {} as Record<string, string[]>,
   /** Rows this workshop already has, by model. */
   own: {} as Record<string, string[]>,
+  /** People who are members of this workshop. */
+  members: [] as string[],
   calls: [] as { model: string; method: string; args: any }[],
   cloud: false,
   role: 'admin',
@@ -28,6 +30,10 @@ vi.mock('@/lib/db', () => {
           {
             get: (_t, method: string) => async (args: any) => {
               state.calls.push({ model, method, args })
+              if (method === 'findMany' && model === 'organizationMember') {
+                const ids: string[] = args?.where?.userId?.in ?? []
+                return state.members.filter((id) => ids.includes(id)).map((userId) => ({ userId }))
+              }
               if (method === 'findMany' && args?.where?.id?.in) {
                 const ids: string[] = args.where.id.in
                 const table = 'NOT' in args.where ? state.foreign : state.own
@@ -114,6 +120,7 @@ function file() {
 beforeEach(() => {
   state.foreign = {}
   state.own = {}
+  state.members = []
   state.calls = []
   state.cloud = false
   state.role = 'admin'
@@ -168,6 +175,124 @@ describe('a file whose foreign keys point at another workshop', () => {
     await importJson(file())
     const parts = state.calls.find((c) => c.model === 'servicePart' && c.method === 'createMany')
     expect(parts?.args.data[0].inventoryPartId).toBe('inv-of-org-b')
+  })
+})
+
+describe('appointments and their alerts', () => {
+  /** The workshop file, with the calendar: an appointment and three alerts. */
+  function withCalendar() {
+    return {
+      ...file(),
+      appointments: [
+        {
+          id: 'appt-a',
+          title: 'Test drive',
+          startAt: '2026-11-20T09:00:00.000Z',
+          endAt: '2026-11-20T10:00:00.000Z',
+          customerId: 'cust-a',
+          vehicleId: 'veh-of-org-b',
+          createdById: 'user-member',
+        },
+      ],
+      appointmentNotifications: [
+        {
+          id: 'alert-appt',
+          channel: 'email',
+          amount: 1,
+          unit: 'days',
+          atTime: '16:00',
+          sentForStart: '2026-11-20T09:00:00.000Z',
+          appointmentId: 'appt-a',
+          userId: 'user-elsewhere',
+        },
+        {
+          id: 'alert-job',
+          channel: 'in_app',
+          amount: 30,
+          unit: 'minutes',
+          serviceRecordId: 'job-a',
+        },
+        {
+          id: 'alert-theirs',
+          channel: 'in_app',
+          amount: 2,
+          unit: 'hours',
+          serviceRecordId: 'job-of-org-b',
+        },
+      ],
+    }
+  }
+
+  it('clears the alerts first, and never writes a link to another workshop', async () => {
+    // What the restore finds in this workshop once the file's rows are in.
+    state.own = { customer: ['cust-a'], appointment: ['appt-a'], serviceRecord: ['job-a'] }
+    state.members = ['user-member']
+    const response = await importJson(withCalendar())
+    expect(response.status).toBe(200)
+
+    const cleared = writes()
+      .filter((c) => c.method === 'deleteMany')
+      .map((c) => c.model)
+    expect(cleared.indexOf('appointmentNotification')).toBeGreaterThanOrEqual(0)
+    expect(cleared.indexOf('appointmentNotification')).toBeLessThan(cleared.indexOf('appointment'))
+    expect(cleared.indexOf('appointment')).toBeLessThan(cleared.indexOf('vehicle'))
+    expect(cleared.indexOf('appointment')).toBeLessThan(cleared.indexOf('customer'))
+
+    // The vehicle was someone else's, so the appointment comes back without it;
+    // the person who booked it is a member here and stays.
+    const appointments = state.calls.find(
+      (c) => c.model === 'appointment' && c.method === 'createMany'
+    )
+    expect(appointments?.args.data).toEqual([
+      expect.objectContaining({
+        id: 'appt-a',
+        title: 'Test drive',
+        organizationId: 'org-a',
+        customerId: 'cust-a',
+        vehicleId: null,
+        createdById: 'user-member',
+        startAt: new Date('2026-11-20T09:00:00.000Z'),
+      }),
+    ])
+
+    // The alert on someone else's job points at nothing here and is left out;
+    // the one set by a person who is not a member goes to the importing user,
+    // and remembers which start it already went out for.
+    const alerts = state.calls.find(
+      (c) => c.model === 'appointmentNotification' && c.method === 'createMany'
+    )
+    expect(
+      alerts?.args.data.map((n: Record<string, unknown>) => [
+        n.id,
+        n.appointmentId,
+        n.serviceRecordId,
+        n.userId,
+        n.organizationId,
+      ])
+    ).toEqual([
+      ['alert-appt', 'appt-a', null, 'user-1', 'org-a'],
+      ['alert-job', null, 'job-a', 'user-1', 'org-a'],
+    ])
+    expect(alerts?.args.data[0].sentForStart).toEqual(new Date('2026-11-20T09:00:00.000Z'))
+    expect(JSON.stringify(writes())).not.toContain('org-b')
+  })
+
+  it('leaves out an alert whose appointment did not come back', async () => {
+    // An appointment with no readable time is not restored, so after the
+    // write the workshop has the job but not the appointment.
+    state.own = { customer: ['cust-a'], serviceRecord: ['job-a'] }
+    const data = withCalendar()
+    data.appointments[0].startAt = 'not a date'
+    const response = await importJson(data)
+    expect(response.status).toBe(200)
+
+    expect(state.calls.some((c) => c.model === 'appointment' && c.method === 'createMany')).toBe(
+      false
+    )
+    const alerts = state.calls.find(
+      (c) => c.model === 'appointmentNotification' && c.method === 'createMany'
+    )
+    expect(alerts?.args.data.map((n: Record<string, unknown>) => n.id)).toEqual(['alert-job'])
   })
 })
 
