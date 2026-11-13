@@ -143,6 +143,7 @@ function setup() {
   const onRefresh = vi.fn()
   const actions = {
     onNewWorkOrder: vi.fn(),
+    onBookAppointment: vi.fn(),
     onNewReminder: vi.fn(),
     onNewQuote: vi.fn(),
     onScheduleMessage: vi.fn(),
@@ -207,6 +208,14 @@ describe('TimeGridView', () => {
     fireEvent.click(columns[2], { clientX: 10, clientY: 900 })
     fireEvent.click(await screen.findByText('Schedule message'))
     expect(actions.onScheduleMessage).toHaveBeenCalledWith('2026-09-02', '15:00')
+  })
+
+  it('books an appointment at the clicked slot', async () => {
+    const { columns, actions } = setup()
+    fireEvent.click(columns[2], { clientX: 10, clientY: 540 })
+    fireEvent.click(await screen.findByText('Book appointment at 09:00'))
+    expect(actions.onBookAppointment).toHaveBeenCalledWith('2026-09-02', '09:00')
+    expect(actions.onNewWorkOrder).not.toHaveBeenCalled()
   })
 
   it('peeks at a block instead of creating anything', async () => {

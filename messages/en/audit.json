@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Sent a scheduled {channel, select, email {email} sms {text message} telegram {Telegram message} in_app {in-app note} other {{channel}}} ahead of time",
     "scheduled_message_update": "Updated a scheduled {channel, select, email {email} sms {text message} telegram {Telegram message} in_app {in-app note} other {{channel}}}",
     "service_create": "Created service record {ref}",
+    "service_bookAppointment": "Booked appointment {ref}",
     "service_createCounterSale": "Created counter sale {ref}",
     "service_createDraft": "Created draft service record {ref}",
     "service_createFromInspection": "Created work order {ref} from an inspection",

@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "New work order",
     "newWorkOrderAt": "New work order at {time}",
+    "bookAppointment": "Book appointment",
+    "bookAppointmentAt": "Book appointment at {time}",
     "newReminder": "New reminder",
     "newQuote": "New quote",
     "openEvent": "Open ({count})",
@@ -158,5 +160,36 @@
     "from": "From {time}",
     "until": "Until {time}"
   },
-  "timeOffMissing": "That leave was changed or removed in the meantime."
+  "timeOffMissing": "That leave was changed or removed in the meantime.",
+  "appointment": {
+    "title": "Book appointment",
+    "description": "Put a car or a customer on the calendar with what needs doing and how long it should take. No work order to fill in now: the job opens when the car arrives.",
+    "descriptionMarine": "Put a boat or a customer on the calendar with what needs doing and how long it should take. No work order to fill in now: the job opens when the boat arrives.",
+    "customer": "Customer",
+    "selectCustomer": "Select customer",
+    "searchCustomer": "Search customers",
+    "noCustomers": "No customers found.",
+    "vehicle": "Vehicle",
+    "vehicleMarine": "Boat",
+    "selectVehicle": "Select vehicle",
+    "selectVehicleMarine": "Select boat",
+    "searchVehicle": "Search by plate, make or model",
+    "searchVehicleMarine": "Search by registration, make or model",
+    "noVehicles": "No vehicles found.",
+    "noVehiclesMarine": "No boats found.",
+    "none": "None",
+    "whoHint": "A customer, a car or both. A car that is not on file yet can be added to the job when it arrives.",
+    "whoHintMarine": "A customer, a boat or both. A boat that is not on file yet can be added to the job when it arrives.",
+    "work": "Work needed",
+    "workPlaceholder": "Front brakes squeal\nOil service",
+    "workPlaceholderMarine": "Engine overheats at speed\nAnnual service",
+    "workHint": "One thing per line. Each line is listed under work requested on the work order.",
+    "date": "Date",
+    "time": "Start time",
+    "hours": "Estimated hours",
+    "submit": "Book appointment",
+    "booked": "Appointment booked",
+    "bookedNobodyFree": "Appointment booked, but no bay or technician is free at that time. Check the work board.",
+    "failed": "Could not book the appointment"
+  }
 }

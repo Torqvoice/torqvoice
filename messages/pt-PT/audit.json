@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Enviou antecipadamente {channel, select, email {um e-mail agendado} sms {um SMS agendado} telegram {uma mensagem do Telegram agendada} in_app {um aviso na aplicação agendado} other {{channel}}}",
     "scheduled_message_update": "Atualizou {channel, select, email {um e-mail agendado} sms {um SMS agendado} telegram {uma mensagem do Telegram agendada} in_app {um aviso na aplicação agendado} other {{channel}}}",
     "service_create": "Registo de serviço {ref} criado",
+    "service_bookAppointment": "Marcação {ref} criada",
     "service_createCounterSale": "Venda ao balcão {ref} criada",
     "service_createDraft": "Rascunho de registo de serviço {ref} criado",
     "service_createFromInspection": "Ordem de serviço {ref} criada a partir de uma inspeção",

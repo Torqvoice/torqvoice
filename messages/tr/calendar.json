@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Yeni iş emri",
     "newWorkOrderAt": "{time} için yeni iş emri",
+    "bookAppointment": "Randevu oluştur",
+    "bookAppointmentAt": "{time} için randevu oluştur",
     "newReminder": "Yeni hatırlatıcı",
     "newQuote": "Yeni teklif",
     "openEvent": "Aç ({count})",
@@ -158,5 +160,36 @@
     "from": "{time} itibarıyla",
     "until": "{time} saatine kadar"
   },
-  "timeOffMissing": "Bu izin bu arada değiştirildi veya kaldırıldı."
+  "timeOffMissing": "Bu izin bu arada değiştirildi veya kaldırıldı.",
+  "appointment": {
+    "title": "Randevu oluştur",
+    "description": "Bir aracı veya müşteriyi, yapılacak işle ve ne kadar süreceğiyle birlikte takvime ekleyin. Şimdi doldurulacak bir iş emri yok: iş emri araç geldiğinde açılır.",
+    "descriptionMarine": "Bir tekneyi veya müşteriyi, yapılacak işle ve ne kadar süreceğiyle birlikte takvime ekleyin. Şimdi doldurulacak bir iş emri yok: iş emri tekne geldiğinde açılır.",
+    "customer": "Müşteri",
+    "selectCustomer": "Müşteri seçin",
+    "searchCustomer": "Müşteri ara",
+    "noCustomers": "Müşteri bulunamadı.",
+    "vehicle": "Araç",
+    "vehicleMarine": "Tekne",
+    "selectVehicle": "Araç seçin",
+    "selectVehicleMarine": "Tekne seçin",
+    "searchVehicle": "Plaka, marka veya modele göre ara",
+    "searchVehicleMarine": "Tescil numarası, marka veya modele göre ara",
+    "noVehicles": "Araç bulunamadı.",
+    "noVehiclesMarine": "Tekne bulunamadı.",
+    "none": "Yok",
+    "whoHint": "Bir müşteri, bir araç ya da ikisi birden. Henüz kayıtlı olmayan bir araç, geldiğinde iş emrine eklenebilir.",
+    "whoHintMarine": "Bir müşteri, bir tekne ya da ikisi birden. Henüz kayıtlı olmayan bir tekne, geldiğinde iş emrine eklenebilir.",
+    "work": "Yapılacak iş",
+    "workPlaceholder": "Ön frenler gıcırdıyor\nYağ değişimi",
+    "workPlaceholderMarine": "Motor yüksek hızda aşırı ısınıyor\nYıllık bakım",
+    "workHint": "Her satıra bir iş. Her satır iş emrinde \"İstenen iş\" başlığı altında listelenir.",
+    "date": "Tarih",
+    "time": "Başlangıç saati",
+    "hours": "Tahmini saat",
+    "submit": "Randevu oluştur",
+    "booked": "Randevu oluşturuldu",
+    "bookedNobodyFree": "Randevu oluşturuldu, ancak o saatte boş çalışma alanı veya teknisyen yok. İş panosunu kontrol edin.",
+    "failed": "Randevu oluşturulamadı"
+  }
 }

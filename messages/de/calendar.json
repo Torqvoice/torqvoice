@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Neuer Arbeitsauftrag",
     "newWorkOrderAt": "Neuer Arbeitsauftrag um {time}",
+    "bookAppointment": "Termin buchen",
+    "bookAppointmentAt": "Termin um {time} buchen",
     "newReminder": "Neue Erinnerung",
     "newQuote": "Neues Angebot",
     "openEvent": "Öffnen ({count})",
@@ -158,5 +160,36 @@
     "from": "Ab {time}",
     "until": "Bis {time}"
   },
-  "timeOffMissing": "Diese Abwesenheit wurde inzwischen geändert oder entfernt."
+  "timeOffMissing": "Diese Abwesenheit wurde inzwischen geändert oder entfernt.",
+  "appointment": {
+    "title": "Termin buchen",
+    "description": "Tragen Sie ein Fahrzeug oder einen Kunden mit den anstehenden Arbeiten und der voraussichtlichen Dauer in den Kalender ein. Jetzt ist noch kein Arbeitsauftrag auszufüllen: Der Auftrag wird geöffnet, wenn das Fahrzeug ankommt.",
+    "descriptionMarine": "Tragen Sie ein Boot oder einen Kunden mit den anstehenden Arbeiten und der voraussichtlichen Dauer in den Kalender ein. Jetzt ist noch kein Arbeitsauftrag auszufüllen: Der Auftrag wird geöffnet, wenn das Boot ankommt.",
+    "customer": "Kunde",
+    "selectCustomer": "Kunde auswählen",
+    "searchCustomer": "Kunden durchsuchen",
+    "noCustomers": "Keine Kunden gefunden.",
+    "vehicle": "Fahrzeug",
+    "vehicleMarine": "Boot",
+    "selectVehicle": "Fahrzeug auswählen",
+    "selectVehicleMarine": "Boot auswählen",
+    "searchVehicle": "Nach Kennzeichen, Marke oder Modell suchen",
+    "searchVehicleMarine": "Nach Registrierungsnummer, Marke oder Modell suchen",
+    "noVehicles": "Keine Fahrzeuge gefunden.",
+    "noVehiclesMarine": "Keine Boote gefunden.",
+    "none": "Keine",
+    "whoHint": "Ein Kunde, ein Fahrzeug oder beides. Ein Fahrzeug, das noch nicht erfasst ist, kann bei der Ankunft zum Auftrag hinzugefügt werden.",
+    "whoHintMarine": "Ein Kunde, ein Boot oder beides. Ein Boot, das noch nicht erfasst ist, kann bei der Ankunft zum Auftrag hinzugefügt werden.",
+    "work": "Erforderliche Arbeiten",
+    "workPlaceholder": "Bremsen vorne quietschen\nÖlservice",
+    "workPlaceholderMarine": "Motor überhitzt bei hoher Fahrt\nJahresservice",
+    "workHint": "Eine Sache pro Zeile. Jede Zeile steht im Arbeitsauftrag unter „Gewünschte Arbeiten“.",
+    "date": "Datum",
+    "time": "Startzeit",
+    "hours": "Geschätzte Stunden",
+    "submit": "Termin buchen",
+    "booked": "Termin gebucht",
+    "bookedNobodyFree": "Termin gebucht, aber zu dieser Zeit ist weder ein Arbeitsplatz noch ein Mechaniker frei. Prüfen Sie das Auftragsboard.",
+    "failed": "Termin konnte nicht gebucht werden"
+  }
 }

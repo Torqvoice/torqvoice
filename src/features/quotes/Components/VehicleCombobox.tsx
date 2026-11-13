@@ -170,7 +170,10 @@ export function VehicleCombobox({
   }, [hasMore, search, options.length, loadOptions])
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    // modal: the list portals out of any dialog this sits in, and the dialog's
+    // scroll lock swallowed wheel events over it, so a list longer than the
+    // popover could not be scrolled. As in CustomerCombobox.
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
         <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
           <span className="truncate">{selected ? formatVehicle(selected) : placeholder}</span>

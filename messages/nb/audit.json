@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Sendte {channel, select, email {en planlagt e-post} sms {en planlagt SMS} telegram {en planlagt Telegram-melding} in_app {et planlagt varsel i appen} other {{channel}}} før tiden",
     "scheduled_message_update": "Oppdaterte {channel, select, email {en planlagt e-post} sms {en planlagt SMS} telegram {en planlagt Telegram-melding} in_app {et planlagt varsel i appen} other {{channel}}}",
     "service_create": "Opprettet jobb {ref}",
+    "service_bookAppointment": "Booket time {ref}",
     "service_createCounterSale": "Opprettet disksalg {ref}",
     "service_createDraft": "Opprettet utkast til jobb {ref}",
     "service_createFromInspection": "Opprettet arbeidsordre {ref} fra en kontroll",

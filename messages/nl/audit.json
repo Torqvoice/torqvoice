@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Ingeplande {channel, select, email {e-mail} sms {sms} telegram {Telegram-bericht} in_app {melding in de app} other {{channel}}} eerder verstuurd",
     "scheduled_message_update": "Ingeplande {channel, select, email {e-mail} sms {sms} telegram {Telegram-bericht} in_app {melding in de app} other {{channel}}} bijgewerkt",
     "service_create": "Opdracht {ref} aangemaakt",
+    "service_bookAppointment": "Afspraak {ref} ingepland",
     "service_createCounterSale": "Baliekoop {ref} aangemaakt",
     "service_createDraft": "Conceptopdracht {ref} aangemaakt",
     "service_createFromInspection": "Werkorder {ref} aangemaakt vanuit een keuring",

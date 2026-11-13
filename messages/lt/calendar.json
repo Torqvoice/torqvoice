@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Naujas darbo užsakymas",
     "newWorkOrderAt": "Naujas darbo užsakymas {time}",
+    "bookAppointment": "Užregistruoti vizitą",
+    "bookAppointmentAt": "Užregistruoti vizitą {time}",
     "newReminder": "Naujas priminimas",
     "newQuote": "Naujas pasiūlymas",
     "openEvent": "Atidaryti ({count})",
@@ -158,5 +160,36 @@
     "from": "Nuo {time}",
     "until": "Iki {time}"
   },
-  "timeOffMissing": "Šis nebuvimas per tą laiką buvo pakeistas arba pašalintas."
+  "timeOffMissing": "Šis nebuvimas per tą laiką buvo pakeistas arba pašalintas.",
+  "appointment": {
+    "title": "Užregistruoti vizitą",
+    "description": "Įrašykite automobilį arba klientą į kalendorių su darbais, kuriuos reikia atlikti, ir numatoma trukme. Darbo užsakymo pildyti dabar nereikia: jis atidaromas, kai automobilis atvyksta.",
+    "descriptionMarine": "Įrašykite valtį arba klientą į kalendorių su darbais, kuriuos reikia atlikti, ir numatoma trukme. Darbo užsakymo pildyti dabar nereikia: jis atidaromas, kai valtis pristatoma.",
+    "customer": "Klientas",
+    "selectCustomer": "Pasirinkite klientą",
+    "searchCustomer": "Ieškoti klientų",
+    "noCustomers": "Klientų nerasta.",
+    "vehicle": "Transporto priemonė",
+    "vehicleMarine": "Valtis",
+    "selectVehicle": "Pasirinkite transporto priemonę",
+    "selectVehicleMarine": "Pasirinkite valtį",
+    "searchVehicle": "Ieškoti pagal numerį, markę ar modelį",
+    "searchVehicleMarine": "Ieškoti pagal registracijos numerį, markę ar modelį",
+    "noVehicles": "Transporto priemonių nerasta.",
+    "noVehiclesMarine": "Valčių nerasta.",
+    "none": "Nėra",
+    "whoHint": "Klientas, automobilis arba abu. Automobilį, kurio dar nėra sistemoje, galima pridėti prie užsakymo, kai jis atvyks.",
+    "whoHintMarine": "Klientas, valtis arba abu. Valtį, kurios dar nėra sistemoje, galima pridėti prie užsakymo, kai ji bus pristatyta.",
+    "work": "Reikalingi darbai",
+    "workPlaceholder": "Cypia priekiniai stabdžiai\nAlyvos keitimas",
+    "workPlaceholderMarine": "Didesniu greičiu perkaista variklis\nMetinė priežiūra",
+    "workHint": "Po vieną darbą eilutėje. Kiekviena eilutė darbo užsakyme įrašoma skiltyje „Užsakyti darbai“.",
+    "date": "Data",
+    "time": "Pradžios laikas",
+    "hours": "Numatomos valandos",
+    "submit": "Užregistruoti vizitą",
+    "booked": "Vizitas užregistruotas",
+    "bookedNobodyFree": "Vizitas užregistruotas, tačiau tuo metu nėra nei laisvos darbo vietos, nei laisvo meistro. Patikrinkite darbų lentą.",
+    "failed": "Nepavyko užregistruoti vizito"
+  }
 }

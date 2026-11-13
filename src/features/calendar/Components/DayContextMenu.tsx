@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
-import { Bell, ExternalLink, FileText, Send, UserX, Wrench } from 'lucide-react'
+import { Bell, CalendarPlus, ExternalLink, FileText, Send, UserX, Wrench } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -26,6 +26,8 @@ import type { CalendarEvent } from '../Actions/calendarActions'
 export interface DayActions {
   /** `time` is HH:MM when the click landed on a time slot. */
   onNewWorkOrder: (dateStr: string, time?: string) => void
+  /** Book a car or customer in without opening a work order. */
+  onBookAppointment: (dateStr: string, time?: string) => void
   onNewReminder: (dateStr: string, time?: string) => void
   onNewQuote: (dateStr: string, time?: string) => void
   onScheduleMessage: (dateStr: string, time?: string) => void
@@ -84,6 +86,14 @@ export function DayContextMenu({
                 time: formatClock(timeToMinutes(time), timeFormat),
               })
             : t('contextMenu.newWorkOrder')}
+        </ContextMenuItem>
+        <ContextMenuItem onClick={() => actions.onBookAppointment(dateStr, time ?? undefined)}>
+          <CalendarPlus className="mr-2 h-4 w-4" />
+          {time
+            ? t('contextMenu.bookAppointmentAt', {
+                time: formatClock(timeToMinutes(time), timeFormat),
+              })
+            : t('contextMenu.bookAppointment')}
         </ContextMenuItem>
         <ContextMenuItem onClick={() => actions.onNewReminder(dateStr, time ?? undefined)}>
           <Bell className="mr-2 h-4 w-4" />

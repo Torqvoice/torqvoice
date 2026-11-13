@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Nowe zlecenie",
     "newWorkOrderAt": "Nowe zlecenie o {time}",
+    "bookAppointment": "Umów wizytę",
+    "bookAppointmentAt": "Umów wizytę na {time}",
     "newReminder": "Nowe przypomnienie",
     "newQuote": "Nowa wycena",
     "openEvent": "Otwórz ({count})",
@@ -158,5 +160,36 @@
     "from": "Od {time}",
     "until": "Do {time}"
   },
-  "timeOffMissing": "Ta nieobecność została w międzyczasie zmieniona lub usunięta."
+  "timeOffMissing": "Ta nieobecność została w międzyczasie zmieniona lub usunięta.",
+  "appointment": {
+    "title": "Umów wizytę",
+    "description": "Wpisz auto lub klienta do kalendarza razem z tym, co trzeba zrobić, i ile ma to potrwać. Teraz nie trzeba wypełniać zlecenia: zostanie otwarte, gdy auto trafi do warsztatu.",
+    "descriptionMarine": "Wpisz łódź lub klienta do kalendarza razem z tym, co trzeba zrobić, i ile ma to potrwać. Teraz nie trzeba wypełniać zlecenia: zostanie otwarte, gdy łódź trafi do warsztatu.",
+    "customer": "Klient",
+    "selectCustomer": "Wybierz klienta",
+    "searchCustomer": "Szukaj klientów",
+    "noCustomers": "Nie znaleziono klientów.",
+    "vehicle": "Pojazd",
+    "vehicleMarine": "Łódź",
+    "selectVehicle": "Wybierz pojazd",
+    "selectVehicleMarine": "Wybierz łódź",
+    "searchVehicle": "Szukaj po tablicy, marce lub modelu",
+    "searchVehicleMarine": "Szukaj po numerze rejestracyjnym, marce lub modelu",
+    "noVehicles": "Nie znaleziono pojazdów.",
+    "noVehiclesMarine": "Nie znaleziono łodzi.",
+    "none": "Brak",
+    "whoHint": "Klient, auto lub jedno i drugie. Auto, którego jeszcze nie ma w bazie, można dodać do zlecenia, gdy trafi do warsztatu.",
+    "whoHintMarine": "Klient, łódź lub jedno i drugie. Łódź, której jeszcze nie ma w bazie, można dodać do zlecenia, gdy trafi do warsztatu.",
+    "work": "Prace do wykonania",
+    "workPlaceholder": "Piszczą przednie hamulce\nWymiana oleju",
+    "workPlaceholderMarine": "Silnik przegrzewa się przy dużej prędkości\nPrzegląd roczny",
+    "workHint": "Jedna rzecz w wierszu. Każdy wiersz trafia do zlecenia w sekcji „Zlecone prace”.",
+    "date": "Data",
+    "time": "Godzina rozpoczęcia",
+    "hours": "Szacowane godziny",
+    "submit": "Umów wizytę",
+    "booked": "Wizyta umówiona",
+    "bookedNobodyFree": "Wizyta umówiona, ale o tej godzinie nie ma wolnego stanowiska ani mechanika. Sprawdź tablicę zleceń.",
+    "failed": "Nie udało się umówić wizyty"
+  }
 }

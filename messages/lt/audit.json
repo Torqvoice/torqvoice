@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Suplanuotas {channel, select, email {el. laiškas} sms {SMS} telegram {Telegram žinutė} in_app {pranešimas programoje} other {{channel}}} išsiųstas anksčiau laiko",
     "scheduled_message_update": "Atnaujintas suplanuotas {channel, select, email {el. laiškas} sms {SMS} telegram {Telegram žinutė} in_app {pranešimas programoje} other {{channel}}}",
     "service_create": "Sukurtas darbas {ref}",
+    "service_bookAppointment": "Užregistruotas vizitas {ref}",
     "service_createCounterSale": "Sukurtas pardavimas prie prekystalio {ref}",
     "service_createDraft": "Sukurtas darbo juodraštis {ref}",
     "service_createFromInspection": "Iš patikros sukurtas darbo užsakymas {ref}",

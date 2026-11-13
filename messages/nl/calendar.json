@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Nieuwe werkorder",
     "newWorkOrderAt": "Nieuwe werkorder om {time}",
+    "bookAppointment": "Afspraak inplannen",
+    "bookAppointmentAt": "Afspraak inplannen om {time}",
     "newReminder": "Nieuwe herinnering",
     "newQuote": "Nieuwe offerte",
     "openEvent": "Openen ({count})",
@@ -158,5 +160,36 @@
     "from": "Vanaf {time}",
     "until": "Tot {time}"
   },
-  "timeOffMissing": "Die afwezigheid is intussen gewijzigd of verwijderd."
+  "timeOffMissing": "Die afwezigheid is intussen gewijzigd of verwijderd.",
+  "appointment": {
+    "title": "Afspraak inplannen",
+    "description": "Zet een auto of een klant in de kalender, met wat er moet gebeuren en hoe lang het ongeveer duurt. Nu nog geen werkorder invullen: die wordt geopend zodra de auto binnenkomt.",
+    "descriptionMarine": "Zet een boot of een klant in de kalender, met wat er moet gebeuren en hoe lang het ongeveer duurt. Nu nog geen werkorder invullen: die wordt geopend zodra de boot binnenkomt.",
+    "customer": "Klant",
+    "selectCustomer": "Klant selecteren",
+    "searchCustomer": "Klanten zoeken",
+    "noCustomers": "Geen klanten gevonden.",
+    "vehicle": "Voertuig",
+    "vehicleMarine": "Boot",
+    "selectVehicle": "Voertuig selecteren",
+    "selectVehicleMarine": "Boot selecteren",
+    "searchVehicle": "Zoek op kenteken, merk of model",
+    "searchVehicleMarine": "Zoek op registratienummer, merk of model",
+    "noVehicles": "Geen voertuigen gevonden.",
+    "noVehiclesMarine": "Geen boten gevonden.",
+    "none": "Geen",
+    "whoHint": "Een klant, een auto of allebei. Een auto die nog niet in het systeem staat, kan aan de werkorder worden toegevoegd zodra hij binnenkomt.",
+    "whoHintMarine": "Een klant, een boot of allebei. Een boot die nog niet in het systeem staat, kan aan de werkorder worden toegevoegd zodra hij binnenkomt.",
+    "work": "Benodigd werk",
+    "workPlaceholder": "Voorremmen piepen\nOlie verversen",
+    "workPlaceholderMarine": "Motor wordt te heet bij hoge snelheid\nJaarlijkse onderhoudsbeurt",
+    "workHint": "Eén ding per regel. Elke regel staat op de werkorder onder \"Gevraagd werk\".",
+    "date": "Datum",
+    "time": "Starttijd",
+    "hours": "Geschatte uren",
+    "submit": "Afspraak inplannen",
+    "booked": "Afspraak ingepland",
+    "bookedNobodyFree": "Afspraak ingepland, maar er is op dat moment geen werkplek of monteur vrij. Kijk op het werkbord.",
+    "failed": "Kon de afspraak niet inplannen"
+  }
 }

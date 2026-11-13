@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Запланированное {channel, select, email {письмо} sms {SMS} telegram {сообщение в Telegram} in_app {уведомление в приложении} other {{channel}}} отправлено досрочно",
     "scheduled_message_update": "Обновлено запланированное {channel, select, email {письмо} sms {SMS} telegram {сообщение в Telegram} in_app {уведомление в приложении} other {{channel}}}",
     "service_create": "Создан заказ {ref}",
+    "service_bookAppointment": "Создана запись {ref}",
     "service_createCounterSale": "Создана продажа со стойки {ref}",
     "service_createDraft": "Создан черновик заказа {ref}",
     "service_createFromInspection": "Создан наряд-заказ {ref} по итогам проверки",

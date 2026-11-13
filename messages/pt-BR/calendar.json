@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Nova ordem de serviço",
     "newWorkOrderAt": "Nova ordem de serviço às {time}",
+    "bookAppointment": "Agendar horário",
+    "bookAppointmentAt": "Agendar horário às {time}",
     "newReminder": "Novo lembrete",
     "newQuote": "Novo orçamento",
     "openEvent": "Abrir ({count})",
@@ -158,5 +160,36 @@
     "from": "A partir das {time}",
     "until": "Até às {time}"
   },
-  "timeOffMissing": "Essa ausência foi alterada ou removida nesse meio tempo."
+  "timeOffMissing": "Essa ausência foi alterada ou removida nesse meio tempo.",
+  "appointment": {
+    "title": "Agendar horário",
+    "description": "Coloque um carro ou um cliente no calendário com o que precisa ser feito e quanto tempo deve levar. Não é preciso preencher uma ordem de serviço agora: ela é aberta quando o carro chegar.",
+    "descriptionMarine": "Coloque um barco ou um cliente no calendário com o que precisa ser feito e quanto tempo deve levar. Não é preciso preencher uma ordem de serviço agora: ela é aberta quando o barco chegar.",
+    "customer": "Cliente",
+    "selectCustomer": "Selecionar cliente",
+    "searchCustomer": "Buscar clientes",
+    "noCustomers": "Nenhum cliente encontrado.",
+    "vehicle": "Veículo",
+    "vehicleMarine": "Barco",
+    "selectVehicle": "Selecionar veículo",
+    "selectVehicleMarine": "Selecionar barco",
+    "searchVehicle": "Buscar por placa, marca ou modelo",
+    "searchVehicleMarine": "Buscar por número de registro, marca ou modelo",
+    "noVehicles": "Nenhum veículo encontrado.",
+    "noVehiclesMarine": "Nenhum barco encontrado.",
+    "none": "Nenhum",
+    "whoHint": "Um cliente, um carro ou os dois. Um carro que ainda não está cadastrado pode ser adicionado à ordem quando chegar.",
+    "whoHintMarine": "Um cliente, um barco ou os dois. Um barco que ainda não está cadastrado pode ser adicionado à ordem quando chegar.",
+    "work": "Serviço necessário",
+    "workPlaceholder": "Freios dianteiros chiando\nTroca de óleo",
+    "workPlaceholderMarine": "Motor superaquece em alta velocidade\nRevisão anual",
+    "workHint": "Uma coisa por linha. Cada linha aparece na ordem de serviço em \"Serviço solicitado\".",
+    "date": "Data",
+    "time": "Hora de início",
+    "hours": "Horas estimadas",
+    "submit": "Agendar horário",
+    "booked": "Horário agendado",
+    "bookedNobodyFree": "Horário agendado, mas não há baia nem técnico livre a essa hora. Confira o quadro de trabalho.",
+    "failed": "Não foi possível agendar o horário"
+  }
 }
