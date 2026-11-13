@@ -217,11 +217,38 @@ export function contactNumber(c: AccountingCustomer): string {
   return `${CONTACT_NUMBER_PREFIX}${c.customerNumber ?? c.id}`.slice(0, 50)
 }
 
-/** Company-form words that say nothing about who the customer is. */
-const LEGAL_FORMS =
-  /\b(pty|proprietary|ltd|limited|inc|incorporated|llc|llp|plc|corp|corporation|co|company|gmbh|ag|as|asa|ab|oy|bv|nv|sa|sarl|srl|spa|sl|kg)\b/gu
+/** Company forms that may end a business name in one system and not the other. */
+const LEGAL_FORMS = new Set([
+  'pty',
+  'proprietary',
+  'ltd',
+  'limited',
+  'inc',
+  'incorporated',
+  'llc',
+  'llp',
+  'plc',
+  'corp',
+  'corporation',
+  'co',
+  'company',
+  'gmbh',
+  'ag',
+  'as',
+  'asa',
+  'ab',
+  'oy',
+  'bv',
+  'nv',
+  'sa',
+  'sarl',
+  'srl',
+  'spa',
+  'sl',
+  'kg',
+])
 
-/** A name as two systems may both write it: no case, accents, punctuation or company form. */
+/** A name as two systems may both write it: no case, accents, apostrophes or punctuation. */
 export function normalName(value: string | null | undefined): string {
   return (
     (value ?? '')
@@ -234,39 +261,50 @@ export function normalName(value: string | null | undefined): string {
       .replace(/ß/g, 'ss')
       .replace(/[łđ]/g, (ch) => (ch === 'ł' ? 'l' : 'd'))
       .replace(/þ/g, 'th')
+      // O'Brien and OBrien are the same name.
+      .replace(/['\u2018\u2019\u02bc`]/g, '')
       .replace(/&/g, ' and ')
       .replace(/[^\p{L}\p{N}]+/gu, ' ')
-      .replace(LEGAL_FORMS, ' ')
       .replace(/\s+/g, ' ')
       .trim()
   )
 }
 
-function namesAgree(a: string, b: string): boolean {
+/** A business name without the company form at its end: "Smith and Sons Pty Ltd" is "smith and sons". */
+function businessName(value: string | null | undefined): string {
+  const words = normalName(value).split(' ').filter(Boolean)
+  while (words.length > 1 && LEGAL_FORMS.has(words[words.length - 1])) words.pop()
+  return words.join(' ')
+}
+
+/**
+ * Two business names for the same business: equal, or one of two words or
+ * more found whole inside the other ("Campbell Transport" and "Campbell
+ * Transport Services"). A single word alone is not enough.
+ */
+function businessesAgree(a: string, b: string): boolean {
   if (!a || !b) return false
   if (a === b) return true
-  // "Campbell Transport" and "Campbell Transport Services": one name of two
-  // words or more found whole inside the other. A single word alone, such as
-  // a surname two family members share, is not enough.
   const [short, long] = a.length <= b.length ? [a, b] : [b, a]
   return short.split(' ').length >= 2 && ` ${long} `.includes(` ${short} `)
 }
 
 /**
- * Whether a Xero contact is plausibly this customer by name: the company or
- * the person here against the contact's name or its first and last name.
- * An email address alone can be shared (a family, a company's accounts
- * inbox), so it only counts together with this.
+ * Whether a Xero contact is plausibly this customer by name. A person must
+ * have the same name, as the contact's name or its first and last name, so
+ * John Smith and John Smith Jr stay apart; a business may carry a company
+ * form or a few more words on either side. An email address alone can be
+ * shared (a family, a company's accounts inbox), so it only counts with this.
  */
 export function sameName(
   c: Pick<AccountingCustomer, 'name' | 'company'>,
   contact: Pick<XeroContact, 'Name' | 'FirstName' | 'LastName'>
 ): boolean {
-  const ours = [c.company, c.name].map(normalName).filter(Boolean)
-  const theirs = [contact.Name, [contact.FirstName, contact.LastName].filter(Boolean).join(' ')]
-    .map(normalName)
-    .filter(Boolean)
-  return ours.some((a) => theirs.some((b) => namesAgree(a, b)))
+  const person = normalName(c.name)
+  const theirName = normalName(contact.Name)
+  const theirPerson = normalName([contact.FirstName, contact.LastName].filter(Boolean).join(' '))
+  if (person && (person === theirName || person === theirPerson)) return true
+  return businessesAgree(businessName(c.company), businessName(contact.Name))
 }
 
 /**

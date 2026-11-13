@@ -478,20 +478,26 @@ async function createContact(ctx: ConnectorContext, c: AccountingCustomer): Prom
 }
 
 /**
- * A link to a contact that was already in Xero, made before a shared email
- * stopped being enough, is checked once: when the contact is neither one this
- * app made nor one with the customer's name, it was another customer behind
- * the same address, and the link is dropped so the customer gets its own.
+ * A link made before a shared email stopped being enough is checked once.
+ * Links this app made with a contact of its own are fine; any other, or one
+ * whose record of how it was made was lost, is compared with the contact in
+ * Xero. When the contact is neither one this app made nor one with the
+ * customer's name, it is another customer behind the same address: the link
+ * is dropped so the customer gets a contact of its own. That only happens
+ * while the customer is as it was when linked (the stored checksum is
+ * today's); a customer edited here since may simply have been renamed, so
+ * that link is kept and the log asks for a look.
  */
 async function verifiedLink(
   ctx: ConnectorContext,
   c: AccountingCustomer,
-  link: LinkRecord
+  link: LinkRecord,
+  checksum: string
 ): Promise<LinkRecord | null> {
-  if (link.metadata?.reused !== true || link.metadata?.verified === true) return link
+  if (link.metadata?.verified === true || link.metadata?.reused === false) return link
   const settings = settingsOf(ctx)
-  let contact: XeroContact | null = null
   if (!settings.reuseByEmail) {
+    let contact: XeroContact | null = null
     try {
       const res = await api<{ Contacts?: XeroContact[] }>(ctx, `Contacts/${link.remoteId}`)
       contact = res.Contacts?.[0] ?? null
@@ -502,13 +508,20 @@ async function verifiedLink(
       await ctx.links.remove(CUSTOMER_ENTITY, c.id)
       return null
     }
+    const label = contact.Name ?? link.remoteId
     if (contact.ContactNumber !== contactNumber(c) && !sameName(c, contact)) {
-      await ctx.links.remove(CUSTOMER_ENTITY, c.id)
+      if (link.checksum === checksum) {
+        await ctx.links.remove(CUSTOMER_ENTITY, c.id)
+        await ctx.log(
+          'warn',
+          `Customer ${c.name} was linked to the Xero contact "${label}" because they share an email address, but the names differ; the customer now gets a contact of its own, and its unpaid invoices move to it when next sent.`
+        )
+        return null
+      }
       await ctx.log(
         'warn',
-        `Customer ${c.name} was linked to the Xero contact "${contact.Name ?? link.remoteId}" because they share an email address, but the names differ; the customer now gets a contact of its own, and its unpaid invoices move to it when next sent.`
+        `Customer ${c.name} is linked to the Xero contact "${label}", whose name is different. The customer was changed here after it was linked, so this may be a rename and the link was kept. If "${label}" is another customer, give this customer its own contact in Xero.`
       )
-      return null
     }
   }
   const next = { ...link, metadata: { ...(link.metadata ?? {}), verified: true } }
@@ -535,17 +548,24 @@ async function ensureContact(
   const name = contactName(c)
   const checksum = checksumOf(buildContact(c, name))
   const found = await linkFor(ctx, CUSTOMER_ENTITY, c.id)
-  const link = found ? await verifiedLink(ctx, c, found) : null
+  const link = found ? await verifiedLink(ctx, c, found, checksum) : null
   const result = (id: string) => ({ id, email: c.email, taxExempt: c.taxExempt })
   if (link) {
     if (link.checksum === checksum || !settings.updateContacts) return result(link.remoteId)
     try {
       await updateContact(ctx, link.remoteId, c, name)
-      await setLink(ctx, CUSTOMER_ENTITY, c.id, {
-        remoteId: link.remoteId,
-        remoteUrl: contactUrl(org.shortCode, link.remoteId),
-        checksum,
-      })
+      // How the link was made, and that it was checked, stay with it.
+      await setLink(
+        ctx,
+        CUSTOMER_ENTITY,
+        c.id,
+        {
+          remoteId: link.remoteId,
+          remoteUrl: contactUrl(org.shortCode, link.remoteId),
+          checksum,
+        },
+        link.metadata ?? {}
+      )
       return result(link.remoteId)
     } catch (err) {
       if (!isNotFound(err)) throw err

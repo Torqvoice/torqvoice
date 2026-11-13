@@ -746,5 +746,26 @@ describe('telling customers apart by name', () => {
     expect(sameName(anna, { Name: 'Dummy Customer' })).toBe(false)
     expect(sameName(anna, { Name: 'Lars Berg', FirstName: 'Lars', LastName: 'Berg' })).toBe(false)
     expect(sameName({ name: 'Berg', company: null }, { Name: 'Lars Berg' })).toBe(false)
+    expect(sameName({ name: 'John Smith', company: null }, { Name: 'John Smith Jr' })).toBe(false)
+    expect(
+      sameName({ name: 'John Smith', company: null }, { FirstName: 'John', LastName: 'Smith Jr' })
+    ).toBe(false)
+  })
+  it('only takes a company form off the end of a business name', () => {
+    expect(sameName({ name: 'Ricardo Sá Pinto', company: null }, { Name: 'Ricardo Pinto' })).toBe(
+      false
+    )
+    expect(sameName({ name: 'Ann', company: 'The Company Store' }, { Name: 'The Store' })).toBe(
+      false
+    )
+    expect(
+      sameName({ name: 'Ann', company: 'Berg Logistics AS' }, { Name: 'Berg Logistics' })
+    ).toBe(true)
+  })
+  it('reads an apostrophe as no letter at all', () => {
+    expect(sameName({ name: "Anna O'Brien", company: null }, { Name: 'Anna OBrien' })).toBe(true)
+    expect(sameName({ name: 'Anna O\u2019Brien', company: null }, { Name: "Anna O'Brien" })).toBe(
+      true
+    )
   })
 })
