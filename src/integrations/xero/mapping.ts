@@ -45,6 +45,8 @@ export interface XeroOrganisation {
 export interface XeroContact {
   ContactID: string
   Name?: string
+  FirstName?: string
+  LastName?: string
   ContactNumber?: string
   EmailAddress?: string
   ContactStatus?: string
@@ -213,6 +215,58 @@ function xeroName(value: string | null | undefined): string | undefined {
 
 export function contactNumber(c: AccountingCustomer): string {
   return `${CONTACT_NUMBER_PREFIX}${c.customerNumber ?? c.id}`.slice(0, 50)
+}
+
+/** Company-form words that say nothing about who the customer is. */
+const LEGAL_FORMS =
+  /\b(pty|proprietary|ltd|limited|inc|incorporated|llc|llp|plc|corp|corporation|co|company|gmbh|ag|as|asa|ab|oy|bv|nv|sa|sarl|srl|spa|sl|kg)\b/gu
+
+/** A name as two systems may both write it: no case, accents, punctuation or company form. */
+export function normalName(value: string | null | undefined): string {
+  return (
+    (value ?? '')
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      // Letters no decomposition takes apart.
+      .replace(/[øœ]/g, 'o')
+      .replace(/æ/g, 'ae')
+      .replace(/ß/g, 'ss')
+      .replace(/[łđ]/g, (ch) => (ch === 'ł' ? 'l' : 'd'))
+      .replace(/þ/g, 'th')
+      .replace(/&/g, ' and ')
+      .replace(/[^\p{L}\p{N}]+/gu, ' ')
+      .replace(LEGAL_FORMS, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+  )
+}
+
+function namesAgree(a: string, b: string): boolean {
+  if (!a || !b) return false
+  if (a === b) return true
+  // "Campbell Transport" and "Campbell Transport Services": one name of two
+  // words or more found whole inside the other. A single word alone, such as
+  // a surname two family members share, is not enough.
+  const [short, long] = a.length <= b.length ? [a, b] : [b, a]
+  return short.split(' ').length >= 2 && ` ${long} `.includes(` ${short} `)
+}
+
+/**
+ * Whether a Xero contact is plausibly this customer by name: the company or
+ * the person here against the contact's name or its first and last name.
+ * An email address alone can be shared (a family, a company's accounts
+ * inbox), so it only counts together with this.
+ */
+export function sameName(
+  c: Pick<AccountingCustomer, 'name' | 'company'>,
+  contact: Pick<XeroContact, 'Name' | 'FirstName' | 'LastName'>
+): boolean {
+  const ours = [c.company, c.name].map(normalName).filter(Boolean)
+  const theirs = [contact.Name, [contact.FirstName, contact.LastName].filter(Boolean).join(' ')]
+    .map(normalName)
+    .filter(Boolean)
+  return ours.some((a) => theirs.some((b) => namesAgree(a, b)))
 }
 
 /**

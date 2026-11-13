@@ -57,6 +57,7 @@ import {
   parseXeroDate,
   paymentDay,
   referenceFor,
+  sameName,
   xeroDayKey,
   round2,
   whereString,
@@ -137,6 +138,8 @@ function settingsOf(ctx: ConnectorContext) {
     markAsSent: s.markAsSent !== false,
     attachPdf: s.attachPdf !== false,
     updateContacts: s.updateContacts !== false,
+    /** Use a contact found by email even when its name is another. */
+    reuseByEmail: s.sameEmail === 'reuse',
     voidOnDelete: s.voidOnDelete !== false,
     pushPayments: s.pushPayments !== false,
     paymentAccount: str('paymentAccount'),
@@ -404,6 +407,15 @@ async function findContact(ctx: ConnectorContext, where: string): Promise<XeroCo
   return (res.Contacts ?? []).find((c) => c.ContactStatus !== 'ARCHIVED') ?? null
 }
 
+/**
+ * Every live contact a where-clause finds, in full: the summary form leaves
+ * out the first and last name, which matching by name needs.
+ */
+async function findContacts(ctx: ConnectorContext, where: string): Promise<XeroContact[]> {
+  const res = await api<{ Contacts?: XeroContact[] }>(ctx, 'Contacts', { query: { where } })
+  return (res.Contacts ?? []).filter((c) => c.ContactStatus !== 'ARCHIVED')
+}
+
 /** A contact made here before, by the code this app gave it; Xero looks that up by path. */
 async function contactByNumber(ctx: ConnectorContext, number: string): Promise<XeroContact | null> {
   try {
@@ -466,10 +478,52 @@ async function createContact(ctx: ConnectorContext, c: AccountingCustomer): Prom
 }
 
 /**
+ * A link to a contact that was already in Xero, made before a shared email
+ * stopped being enough, is checked once: when the contact is neither one this
+ * app made nor one with the customer's name, it was another customer behind
+ * the same address, and the link is dropped so the customer gets its own.
+ */
+async function verifiedLink(
+  ctx: ConnectorContext,
+  c: AccountingCustomer,
+  link: LinkRecord
+): Promise<LinkRecord | null> {
+  if (link.metadata?.reused !== true || link.metadata?.verified === true) return link
+  const settings = settingsOf(ctx)
+  let contact: XeroContact | null = null
+  if (!settings.reuseByEmail) {
+    try {
+      const res = await api<{ Contacts?: XeroContact[] }>(ctx, `Contacts/${link.remoteId}`)
+      contact = res.Contacts?.[0] ?? null
+    } catch (err) {
+      if (!isNotFound(err)) throw err
+    }
+    if (!contact) {
+      await ctx.links.remove(CUSTOMER_ENTITY, c.id)
+      return null
+    }
+    if (contact.ContactNumber !== contactNumber(c) && !sameName(c, contact)) {
+      await ctx.links.remove(CUSTOMER_ENTITY, c.id)
+      await ctx.log(
+        'warn',
+        `Customer ${c.name} was linked to the Xero contact "${contact.Name ?? link.remoteId}" because they share an email address, but the names differ; the customer now gets a contact of its own, and its unpaid invoices move to it when next sent.`
+      )
+      return null
+    }
+  }
+  const next = { ...link, metadata: { ...(link.metadata ?? {}), verified: true } }
+  await ctx.links.set(CUSTOMER_ENTITY, c.id, next)
+  return next
+}
+
+/**
  * The Xero contact for a customer, made or updated as needed. A contact
  * already in Xero is found by the number this app gives its contacts, then
  * by email, then by name, so a bookkeeper's existing contact is reused
- * rather than doubled.
+ * rather than doubled. An email address can be shared by several customers,
+ * so a contact found by email is used only when its name agrees too, unless
+ * the workshop chose to trust email alone; otherwise the customer gets a new
+ * contact and the log names the one that shares the address.
  */
 async function ensureContact(
   ctx: ConnectorContext,
@@ -480,7 +534,8 @@ async function ensureContact(
   const org = await loadOrg(ctx)
   const name = contactName(c)
   const checksum = checksumOf(buildContact(c, name))
-  const link = await linkFor(ctx, CUSTOMER_ENTITY, c.id)
+  const found = await linkFor(ctx, CUSTOMER_ENTITY, c.id)
+  const link = found ? await verifiedLink(ctx, c, found) : null
   const result = (id: string) => ({ id, email: c.email, taxExempt: c.taxExempt })
   if (link) {
     if (link.checksum === checksum || !settings.updateContacts) return result(link.remoteId)
@@ -498,11 +553,23 @@ async function ensureContact(
     }
   }
   const email = c.email?.trim()
-  const existing =
-    (await contactByNumber(ctx, contactNumber(c))) ??
-    (email ? await findContact(ctx, `EmailAddress==${whereString(email)}`) : null) ??
-    (await findContact(ctx, `Name==${whereString(name)}`))
+  let existing = await contactByNumber(ctx, contactNumber(c))
+  let sharesEmail: XeroContact | null = null
+  if (!existing && email) {
+    const withEmail = await findContacts(ctx, `EmailAddress==${whereString(email)}`)
+    existing =
+      withEmail.find((x) => sameName(c, x)) ??
+      (settings.reuseByEmail ? (withEmail[0] ?? null) : null)
+    if (!existing) sharesEmail = withEmail[0] ?? null
+  }
+  existing ??= await findContact(ctx, `Name==${whereString(name)}`)
   const remote = existing ?? (await createContact(ctx, c))
+  if (!existing && sharesEmail) {
+    await ctx.log(
+      'warn',
+      `Customer ${c.name} got a new Xero contact, "${remote.Name ?? name}": the contact "${sharesEmail.Name ?? sharesEmail.ContactID}" has the same email address but another name. If they are the same customer, merge the two contacts in Xero, or choose to use the existing contact under "Customers with the same email" in the integration settings.`
+    )
+  }
   await setLink(
     ctx,
     CUSTOMER_ENTITY,
@@ -512,7 +579,7 @@ async function ensureContact(
       remoteUrl: contactUrl(org.shortCode, remote.ContactID),
       checksum,
     },
-    { reused: Boolean(existing) }
+    { reused: Boolean(existing), verified: true }
   )
   return result(remote.ContactID)
 }
