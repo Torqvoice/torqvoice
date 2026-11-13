@@ -189,6 +189,7 @@
     "hours": "Numatomos valandos",
     "submit": "Užregistruoti vizitą",
     "booked": "Vizitas užregistruotas",
+    "bookedNobodyFree": "Vizitas užregistruotas, tačiau tuo metu nėra nei laisvos darbo vietos, nei laisvo meistro. Patikrinkite darbų lentą.",
     "failed": "Nepavyko užregistruoti vizito"
   }
 }

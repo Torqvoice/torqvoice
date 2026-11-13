@@ -189,6 +189,7 @@
     "hours": "Szacowane godziny",
     "submit": "Umów wizytę",
     "booked": "Wizyta umówiona",
+    "bookedNobodyFree": "Wizyta umówiona, ale o tej godzinie nie ma wolnego stanowiska ani mechanika. Sprawdź tablicę zleceń.",
     "failed": "Nie udało się umówić wizyty"
   }
 }

@@ -189,6 +189,7 @@
     "hours": "Heures estimées",
     "submit": "Prendre rendez-vous",
     "booked": "Rendez-vous enregistré",
+    "bookedNobodyFree": "Rendez-vous enregistré, mais aucun poste ni technicien n’est libre à cette heure. Consultez le tableau de travail.",
     "failed": "Impossible d’enregistrer le rendez-vous"
   }
 }

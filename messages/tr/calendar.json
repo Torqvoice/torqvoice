@@ -189,6 +189,7 @@
     "hours": "Tahmini saat",
     "submit": "Randevu oluştur",
     "booked": "Randevu oluşturuldu",
+    "bookedNobodyFree": "Randevu oluşturuldu, ancak o saatte boş çalışma alanı veya teknisyen yok. İş panosunu kontrol edin.",
     "failed": "Randevu oluşturulamadı"
   }
 }

@@ -189,6 +189,7 @@
     "hours": "Ore stimate",
     "submit": "Prenota appuntamento",
     "booked": "Appuntamento prenotato",
+    "bookedNobodyFree": "Appuntamento prenotato, ma a quell'ora non ci sono postazioni né tecnici liberi. Controlla la bacheca lavori.",
     "failed": "Impossibile prenotare l'appuntamento"
   }
 }

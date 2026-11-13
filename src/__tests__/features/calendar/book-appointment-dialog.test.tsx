@@ -29,7 +29,7 @@ vi.mock('@/components/date-settings-context', () => ({
     weekStartDay: 1,
   }),
 }))
-vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
+vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn(), warning: vi.fn() } }))
 
 const bookAppointment = vi.hoisted(() => vi.fn())
 vi.mock('@/features/calendar/Actions/bookAppointment', () => ({ bookAppointment }))
@@ -129,6 +129,24 @@ describe('BookAppointmentDialog', () => {
 
     fireEvent.change(screen.getByLabelText('Start time'), { target: { value: '13:00' } })
     expect(bookButton()).toBeEnabled()
+  })
+
+  it('warns when nobody was free at that time, though it still booked', async () => {
+    bookAppointment.mockResolvedValue({
+      success: true,
+      data: { id: 'job-1', vehicleId: 'v-anna', invoiceNumber: '2026-1044', overbooked: true },
+    })
+    const { onBooked, vehicleField } = renderDialog({ defaultTime: '08:00' })
+    fireEvent.click(vehicleField)
+    fireEvent.click(await screen.findByRole('option', { name: /Volvo V70/ }))
+    fireEvent.change(screen.getByLabelText('Work needed'), { target: { value: 'Service' } })
+    fireEvent.click(bookButton())
+
+    await waitFor(() => expect(onBooked).toHaveBeenCalled())
+    expect(toast.warning).toHaveBeenCalledWith(
+      'Appointment booked, but no bay or technician is free at that time. Check the work board.'
+    )
+    expect(toast.success).not.toHaveBeenCalled()
   })
 
   it('keeps the dialog open and says why when the booking is refused', async () => {

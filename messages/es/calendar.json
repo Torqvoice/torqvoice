@@ -189,6 +189,7 @@
     "hours": "Horas estimadas",
     "submit": "Reservar cita",
     "booked": "Cita reservada",
+    "bookedNobodyFree": "Cita reservada, pero a esa hora no hay ningún puesto ni técnico libre. Revisa el tablero de trabajo.",
     "failed": "No se pudo reservar la cita"
   }
 }

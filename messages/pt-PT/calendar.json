@@ -189,6 +189,7 @@
     "hours": "Horas estimadas",
     "submit": "Fazer marcação",
     "booked": "Marcação feita",
+    "bookedNobodyFree": "Marcação feita, mas não há posto de trabalho nem técnico livre a essa hora. Consulte o quadro de trabalho.",
     "failed": "Não foi possível fazer a marcação"
   }
 }

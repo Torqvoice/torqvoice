@@ -189,6 +189,7 @@
     "hours": "Geschatte uren",
     "submit": "Afspraak inplannen",
     "booked": "Afspraak ingepland",
+    "bookedNobodyFree": "Afspraak ingepland, maar er is op dat moment geen werkplek of monteur vrij. Kijk op het werkbord.",
     "failed": "Kon de afspraak niet inplannen"
   }
 }

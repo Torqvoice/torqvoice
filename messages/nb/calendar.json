@@ -189,6 +189,7 @@
     "hours": "Estimerte timer",
     "submit": "Book time",
     "booked": "Time booket",
+    "bookedNobodyFree": "Time booket, men ingen arbeidsplass eller mekaniker er ledig på det tidspunktet. Sjekk arbeidstavlen.",
     "failed": "Kunne ikke booke timen"
   }
 }

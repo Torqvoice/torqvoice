@@ -2,6 +2,8 @@
  * An appointment booked from the calendar is a scheduled job on the
  * workshop's own clock, with what the customer asked for as its concerns,
  * one per line, which is what the printed work order lists as work requested.
+ * It holds a bay, or a technician in a shop without bays, so the online
+ * booking page cannot offer the same hour to a customer.
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -15,14 +17,22 @@ vi.mock('@/lib/workshop-timezone', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/workshop-timezone')>()),
   workshopTimeZone: async () => 'Europe/Oslo',
 }))
+const loadBookingContext = vi.hoisted(() => vi.fn())
+vi.mock('@/features/workboard/Lib/bookings', () => ({ loadBookingContext }))
+const bookingResources = vi.hoisted(() => vi.fn())
+vi.mock('@/features/inspection-reminders/Lib/booking', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/features/inspection-reminders/Lib/booking')>()),
+  bookingResources,
+}))
 vi.mock('@/lib/db', () => {
   const db = {
     user: { findUnique: vi.fn() },
     vehicle: { findFirst: vi.fn() },
     customer: { findFirst: vi.fn() },
-    appSetting: { findMany: vi.fn(), updateMany: vi.fn() },
+    appSetting: { findMany: vi.fn(), findUnique: vi.fn(), updateMany: vi.fn() },
     organization: { findUnique: vi.fn() },
     technician: { findFirst: vi.fn() },
+    workBay: { findFirst: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), create: vi.fn(), update: vi.fn() },
     $transaction: vi.fn(),
   }
@@ -64,7 +74,34 @@ beforeEach(() => {
     id: 'veh-1',
     customer: { taxExempt: false },
   } as never)
+  vi.mocked(db.appSetting.findUnique).mockResolvedValue(null)
+  vi.mocked(db.technician.findFirst).mockResolvedValue({ name: 'Tech' } as never)
+  vi.mocked(db.workBay.findFirst).mockResolvedValue({ id: 'bay' } as never)
+  // A shop with nothing set up to hold, unless a test says otherwise.
+  bookingResources.mockResolvedValue([])
+  loadBookingContext.mockResolvedValue({ bookings: [], hours: {}, closuresEnabled: false })
 })
+
+/** Tuesday 17 November 2026, 09:30 to 12:00 in Oslo: 08:30 to 11:00 UTC. */
+const TUESDAY = {
+  vehicleId: 'veh-1',
+  work: 'Service',
+  date: '2026-11-17',
+  time: '09:30',
+  durationMinutes: 150,
+}
+
+/** Something already holding a bay or a person on Tuesday, 08:00 to 09:00 UTC. */
+function held(resource: { workBayId?: string; technicianId?: string }) {
+  return {
+    id: 'other-job',
+    kind: 'serviceRecord' as const,
+    label: 'Brakes',
+    start: new Date('2026-11-17T08:00:00Z'),
+    end: new Date('2026-11-17T09:00:00Z'),
+    ...resource,
+  }
+}
 
 function created() {
   return vi.mocked(db.serviceRecord.create).mock.calls[0][0].data as Record<string, unknown>
@@ -168,6 +205,68 @@ describe('bookAppointment', () => {
 
     expect(nobody.success).toBe(false)
     expect(nothing.success).toBe(false)
+    expect(db.serviceRecord.create).not.toHaveBeenCalled()
+  })
+})
+
+describe('what an appointment holds', () => {
+  it('takes a bay that is free for the whole appointment', async () => {
+    bookingResources.mockResolvedValue([{ workBayId: 'bay-1' }, { workBayId: 'bay-2' }])
+    loadBookingContext.mockResolvedValue({
+      bookings: [held({ workBayId: 'bay-1' })],
+      hours: {},
+      closuresEnabled: false,
+    })
+
+    const result = await bookAppointment(TUESDAY)
+
+    expect(result.success).toBe(true)
+    expect(created().workBayId).toBe('bay-2')
+    expect(result.data?.overbooked).toBe(false)
+  })
+
+  it("in a shop without bays, takes the default technician when they're free", async () => {
+    bookingResources.mockResolvedValue([{ technicianId: 'tech-a' }, { technicianId: 'tech-b' }])
+    vi.mocked(db.appSetting.findUnique).mockResolvedValue({ value: 'tech-b' } as never)
+
+    await bookAppointment(TUESDAY)
+
+    expect(created().technicianId).toBe('tech-b')
+  })
+
+  it('takes another technician when the default one is busy then', async () => {
+    bookingResources.mockResolvedValue([{ technicianId: 'tech-a' }, { technicianId: 'tech-b' }])
+    vi.mocked(db.appSetting.findUnique).mockResolvedValue({ value: 'tech-b' } as never)
+    loadBookingContext.mockResolvedValue({
+      bookings: [held({ technicianId: 'tech-b' })],
+      hours: {},
+      closuresEnabled: false,
+    })
+
+    await bookAppointment(TUESDAY)
+
+    expect(created().technicianId).toBe('tech-a')
+  })
+
+  it('still books an hour where everything is taken, and says so', async () => {
+    bookingResources.mockResolvedValue([{ workBayId: 'bay-1' }])
+    loadBookingContext.mockResolvedValue({
+      bookings: [held({ workBayId: 'bay-1' })],
+      hours: {},
+      closuresEnabled: false,
+    })
+
+    const result = await bookAppointment(TUESDAY)
+
+    expect(result.success).toBe(true)
+    expect(created().workBayId).toBeUndefined()
+    expect(result.data?.overbooked).toBe(true)
+  })
+
+  it('refuses a day that does not exist rather than booking another one', async () => {
+    const result = await bookAppointment({ ...TUESDAY, date: '2026-02-31' })
+
+    expect(result.success).toBe(false)
     expect(db.serviceRecord.create).not.toHaveBeenCalled()
   })
 })

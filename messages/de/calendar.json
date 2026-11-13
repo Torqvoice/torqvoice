@@ -189,6 +189,7 @@
     "hours": "Geschätzte Stunden",
     "submit": "Termin buchen",
     "booked": "Termin gebucht",
+    "bookedNobodyFree": "Termin gebucht, aber zu dieser Zeit ist weder ein Arbeitsplatz noch ein Mechaniker frei. Prüfen Sie das Auftragsboard.",
     "failed": "Termin konnte nicht gebucht werden"
   }
 }

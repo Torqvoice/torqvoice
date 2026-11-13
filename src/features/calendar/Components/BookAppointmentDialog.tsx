@@ -137,7 +137,9 @@ function BookAppointmentForm({
         durationMinutes: minutes,
       })
       if (result.success) {
-        toast.success(t('booked'))
+        // Booked all the same when every bay or technician was taken then.
+        if (result.data?.overbooked) toast.warning(t('bookedNobodyFree'))
+        else toast.success(t('booked'))
         onBooked()
       } else {
         toast.error(result.error || t('failed'))

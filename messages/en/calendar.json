@@ -189,6 +189,7 @@
     "hours": "Estimated hours",
     "submit": "Book appointment",
     "booked": "Appointment booked",
+    "bookedNobodyFree": "Appointment booked, but no bay or technician is free at that time. Check the work board.",
     "failed": "Could not book the appointment"
   }
 }

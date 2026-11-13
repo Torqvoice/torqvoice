@@ -189,6 +189,7 @@
     "hours": "Horas estimadas",
     "submit": "Agendar horário",
     "booked": "Horário agendado",
+    "bookedNobodyFree": "Horário agendado, mas não há baia nem técnico livre a essa hora. Confira o quadro de trabalho.",
     "failed": "Não foi possível agendar o horário"
   }
 }
