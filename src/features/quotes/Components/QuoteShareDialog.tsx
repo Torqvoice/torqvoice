@@ -52,12 +52,14 @@ export function QuoteShareDialog({
 }: QuoteShareDialogProps) {
   const [publicToken, setPublicToken] = useState<string | null>(initialToken)
   const [generatingLink, setGeneratingLink] = useState(false)
+  const [revoking, setRevoking] = useState(false)
   const [copied, setCopied] = useState(false)
   const [notifyEmail, setNotifyEmail] = useState(false)
   const [attachPdf, setAttachPdf] = useAttachPdf(open)
   const [notifySms, setNotifySms] = useState(false)
   const [sending, setSending] = useState(false)
   const t = useTranslations('quotes')
+  const tc = useTranslations('common')
 
   const hasEmail = !!customer?.email
   const hasPhone = !!customer?.phone
@@ -67,20 +69,34 @@ export function QuoteShareDialog({
       ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/quote/${organizationId}/${publicToken}`
       : null
 
+  // An action that cannot reach the server throws instead of answering, so
+  // both of these catch it and say the same thing a refusal does.
   const handleGenerate = async () => {
     setGeneratingLink(true)
-    const result = await generateQuotePublicLink(quoteId)
-    if (result.success && result.data) {
+    const result = await generateQuotePublicLink(quoteId).catch(() => null)
+    if (result?.success && result.data) {
       setPublicToken(result.data.token)
       // Handing over a link is a way of sending the quote.
       onSent?.()
+    } else {
+      toast.error(tc('shareLink.generateFailed'))
     }
     setGeneratingLink(false)
   }
 
+  // The link stays on screen until the server has revoked it: clearing it on
+  // a refusal would tell the workshop it is gone while the customer's copy
+  // still opens the quote.
   const handleRevoke = async () => {
-    await revokeQuotePublicLink(quoteId)
-    setPublicToken(null)
+    if (revoking) return
+    setRevoking(true)
+    const result = await revokeQuotePublicLink(quoteId).catch(() => null)
+    if (result?.success) {
+      setPublicToken(null)
+    } else {
+      toast.error(tc('shareLink.revokeFailed'))
+    }
+    setRevoking(false)
   }
 
   const handleCopy = () => {
@@ -256,7 +272,9 @@ export function QuoteShareDialog({
                 size="sm"
                 className="text-destructive hover:text-destructive"
                 onClick={handleRevoke}
+                disabled={revoking}
               >
+                {revoking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('shareDialog.revokeLink')}
               </Button>
             </>

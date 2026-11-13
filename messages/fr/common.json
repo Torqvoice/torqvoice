@@ -199,6 +199,10 @@
     "title": "Impossible de joindre Torqvoice",
     "description": "Votre dernière modification n'a peut-être pas été enregistrée. Vérifiez votre connexion et réessayez."
   },
+  "shareLink": {
+    "generateFailed": "Impossible de créer le lien. Veuillez réessayer.",
+    "revokeFailed": "Impossible de révoquer le lien. Il fonctionne toujours pour toute personne qui l'a."
+  },
   "searchableSelect": {
     "choose": "Choisir...",
     "search": "Rechercher...",

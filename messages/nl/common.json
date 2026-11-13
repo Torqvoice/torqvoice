@@ -199,6 +199,10 @@
     "title": "Torqvoice is niet bereikbaar",
     "description": "Je laatste wijziging is mogelijk niet opgeslagen. Controleer je verbinding en probeer het opnieuw."
   },
+  "shareLink": {
+    "generateFailed": "Kon de link niet aanmaken. Probeer het opnieuw.",
+    "revokeFailed": "Kon de link niet intrekken. Hij werkt nog steeds voor iedereen die hem heeft."
+  },
   "searchableSelect": {
     "choose": "Kiezen...",
     "search": "Zoeken...",

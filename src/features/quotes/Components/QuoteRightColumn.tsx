@@ -35,7 +35,7 @@ interface QuoteRightColumnProps {
   distanceUnit: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
-  onRevoke: () => Promise<void>
+  onRevoke: () => Promise<boolean>
   /**
    * Why the quote is locked, or null when it edits. A lock disables the fields
    * that edit the quote; its actions, and any status that keeps it locked, stay

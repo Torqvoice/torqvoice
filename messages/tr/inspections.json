@@ -459,7 +459,19 @@
     "copyLink": "Bağlantıyı kopyala",
     "copied": "Bağlantı panoya kopyalandı",
     "generated": "Paylaşım bağlantısı oluşturuldu",
-    "revoked": "Paylaşım bağlantısı geri alındı"
+    "revoked": "Paylaşım bağlantısı geri alındı",
+    "notifyTitle": "{name} Bilgilendir",
+    "email": "E-posta",
+    "noEmail": "(kayıtlı e-posta yok)",
+    "sms": "SMS",
+    "noPhone": "(kayıtlı telefon yok)",
+    "sendNotification": "Bildirim Gönder",
+    "revokeLink": "Bağlantıyı İptal Et",
+    "generateLink": "Herkese Açık Bağlantı Oluştur",
+    "emailSent": "E-posta gönderildi",
+    "failedEmail": "E-posta gönderilemedi",
+    "smsSent": "SMS gönderildi",
+    "failedSms": "SMS gönderilemedi"
   },
   "phone": {
     "pageTitle": "Muayene fotoğrafları",

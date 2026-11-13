@@ -199,6 +199,10 @@
     "title": "Får ikke kontakt med Torqvoice",
     "description": "Den siste endringen din ble kanskje ikke lagret. Sjekk tilkoblingen og prøv igjen."
   },
+  "shareLink": {
+    "generateFailed": "Kunne ikke opprette lenken. Prøv igjen.",
+    "revokeFailed": "Kunne ikke tilbakekalle lenken. Den virker fortsatt for alle som har den."
+  },
   "searchableSelect": {
     "choose": "Velg...",
     "search": "Søk...",

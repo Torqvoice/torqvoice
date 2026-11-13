@@ -22,11 +22,15 @@ export function useAttachPdf(open: boolean) {
     if (!open) return
     chosen.current = false
     let cancelled = false
-    getAttachPdfDefault().then((result) => {
-      if (!cancelled && !chosen.current && result.success && result.data) {
-        setAttachPdfState(result.data.attachPdf)
-      }
-    })
+    // A background read nobody asked for: when it cannot reach the server the
+    // box keeps its default rather than raising the lost-connection notice.
+    getAttachPdfDefault()
+      .catch(() => null)
+      .then((result) => {
+        if (!cancelled && !chosen.current && result?.success && result.data) {
+          setAttachPdfState(result.data.attachPdf)
+        }
+      })
     return () => {
       cancelled = true
     }

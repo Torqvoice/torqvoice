@@ -199,6 +199,10 @@
     "title": "Impossibile raggiungere Torqvoice",
     "description": "L'ultima modifica potrebbe non essere stata salvata. Controlla la connessione e riprova."
   },
+  "shareLink": {
+    "generateFailed": "Impossibile creare il link. Riprova.",
+    "revokeFailed": "Impossibile revocare il link. Funziona ancora per chiunque lo abbia."
+  },
   "searchableSelect": {
     "choose": "Scegli...",
     "search": "Cerca...",

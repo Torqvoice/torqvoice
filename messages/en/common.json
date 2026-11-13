@@ -199,6 +199,10 @@
     "title": "Couldn't reach Torqvoice",
     "description": "Your last change may not have been saved. Check your connection and try again."
   },
+  "shareLink": {
+    "generateFailed": "Couldn't create the link. Try again.",
+    "revokeFailed": "Couldn't revoke the link. It still works for anyone who has it."
+  },
   "searchableSelect": {
     "choose": "Choose...",
     "search": "Search...",

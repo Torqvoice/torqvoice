@@ -459,7 +459,19 @@
     "copyLink": "Kopier lenke",
     "copied": "Lenken er kopiert",
     "generated": "Delingslenke opprettet",
-    "revoked": "Delingslenke trukket tilbake"
+    "revoked": "Delingslenke trukket tilbake",
+    "notifyTitle": "Varsle {name}",
+    "email": "E-post",
+    "noEmail": "(ingen e-post registrert)",
+    "sms": "SMS",
+    "noPhone": "(ingen telefon registrert)",
+    "sendNotification": "Send varsel",
+    "revokeLink": "Tilbakekall lenke",
+    "generateLink": "Generer offentlig lenke",
+    "emailSent": "E-post sendt",
+    "failedEmail": "Kunne ikke sende e-post",
+    "smsSent": "SMS sendt",
+    "failedSms": "Kunne ikke sende SMS"
   },
   "phone": {
     "pageTitle": "Bilder til kontrollen",

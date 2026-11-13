@@ -459,7 +459,19 @@
     "copyLink": "Link kopieren",
     "copied": "Link in die Zwischenablage kopiert",
     "generated": "Freigabelink erstellt",
-    "revoked": "Freigabelink zurückgezogen"
+    "revoked": "Freigabelink zurückgezogen",
+    "notifyTitle": "{name} benachrichtigen",
+    "email": "E-Mail",
+    "noEmail": "(keine E-Mail hinterlegt)",
+    "sms": "SMS",
+    "noPhone": "(keine Telefonnummer hinterlegt)",
+    "sendNotification": "Benachrichtigung senden",
+    "revokeLink": "Link widerrufen",
+    "generateLink": "Öffentlichen Link erstellen",
+    "emailSent": "E-Mail gesendet",
+    "failedEmail": "E-Mail konnte nicht gesendet werden",
+    "smsSent": "SMS gesendet",
+    "failedSms": "SMS konnte nicht gesendet werden"
   },
   "phone": {
     "pageTitle": "Fotos zur Prüfung",
