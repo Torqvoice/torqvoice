@@ -15,6 +15,7 @@ import {
   modifiedSinceHeader,
   parseXeroDate,
   referenceFor,
+  sameName,
 } from '@/integrations/xero/mapping'
 import { pickTaxedRate, pickZeroRate, salesRates } from '@/integrations/xero/tax'
 
@@ -722,5 +723,49 @@ describe('review fixes', () => {
     expect(line).toMatchObject({ ItemCode: 'BP-100', Quantity: 2.5, UnitAmount: 19.992 })
     // 2.5 x 19.992 is exactly the 49.98 the invoice printed.
     expect((line.Quantity as number) * (line.UnitAmount as number)).toBeCloseTo(49.98, 10)
+  })
+})
+
+describe('telling customers apart by name', () => {
+  const anna = { name: 'Anna Berg', company: null }
+  it('matches the same name written another way', () => {
+    expect(sameName(anna, { Name: 'anna  berg' })).toBe(true)
+    expect(sameName(anna, { Name: 'Berg family', FirstName: 'Anna', LastName: 'Berg' })).toBe(true)
+    expect(
+      sameName(
+        { name: 'Bob', company: 'Campbell Transport' },
+        { Name: 'Campbell Transport Services Pty Ltd' }
+      )
+    ).toBe(true)
+    expect(
+      sameName({ name: 'Bob', company: 'Smith & Sons Ltd.' }, { Name: 'SMITH AND SONS' })
+    ).toBe(true)
+    expect(sameName({ name: 'Zoë Ødegård', company: null }, { Name: 'Zoe Odegard' })).toBe(true)
+  })
+  it('does not take another person who shares the address for the customer', () => {
+    expect(sameName(anna, { Name: 'Dummy Customer' })).toBe(false)
+    expect(sameName(anna, { Name: 'Lars Berg', FirstName: 'Lars', LastName: 'Berg' })).toBe(false)
+    expect(sameName({ name: 'Berg', company: null }, { Name: 'Lars Berg' })).toBe(false)
+    expect(sameName({ name: 'John Smith', company: null }, { Name: 'John Smith Jr' })).toBe(false)
+    expect(
+      sameName({ name: 'John Smith', company: null }, { FirstName: 'John', LastName: 'Smith Jr' })
+    ).toBe(false)
+  })
+  it('only takes a company form off the end of a business name', () => {
+    expect(sameName({ name: 'Ricardo Sá Pinto', company: null }, { Name: 'Ricardo Pinto' })).toBe(
+      false
+    )
+    expect(sameName({ name: 'Ann', company: 'The Company Store' }, { Name: 'The Store' })).toBe(
+      false
+    )
+    expect(
+      sameName({ name: 'Ann', company: 'Berg Logistics AS' }, { Name: 'Berg Logistics' })
+    ).toBe(true)
+  })
+  it('reads an apostrophe as no letter at all', () => {
+    expect(sameName({ name: "Anna O'Brien", company: null }, { Name: 'Anna OBrien' })).toBe(true)
+    expect(sameName({ name: 'Anna O\u2019Brien', company: null }, { Name: "Anna O'Brien" })).toBe(
+      true
+    )
   })
 })

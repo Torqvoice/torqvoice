@@ -296,6 +296,18 @@ export const manifest: ConnectorManifest = {
       showWhen: { key: 'pushInvoices', equals: true },
     },
     {
+      key: 'sameEmail',
+      type: 'select',
+      label: 'sameEmail',
+      help: 'sameEmailHelp',
+      default: 'create',
+      options: [
+        { value: 'create', label: 'sameEmailCreate' },
+        { value: 'reuse', label: 'sameEmailReuse' },
+      ],
+      showWhen: { key: 'pushInvoices', equals: true },
+    },
+    {
       key: 'voidOnDelete',
       type: 'boolean',
       label: 'voidOnDelete',

@@ -11,6 +11,7 @@ import {
   type LinkRecord,
   type LogLevel,
 } from '@/features/integrations/Lib/types'
+import { buildContact, checksumOf, contactName } from '@/integrations/xero/mapping'
 import { salesRates } from '@/integrations/xero/tax'
 
 /**
@@ -351,7 +352,7 @@ describe('pushing an invoice', () => {
       answer: emptyOrganisation({
         'GET /Contacts': (c) =>
           c.query.where?.startsWith('EmailAddress')
-            ? { Contacts: [{ ContactID: 'contact-old' }] }
+            ? { Contacts: [{ ContactID: 'contact-old', Name: 'Anna Berg' }] }
             : { Contacts: [] },
       }),
     })
@@ -719,5 +720,172 @@ describe('an invoice voided in Xero', () => {
         .InvoiceNumber
     ).toBe('INV-1001B')
     expect(links.get('ServiceRecord:svc1')?.metadata).not.toHaveProperty('goneInXero')
+  })
+})
+
+describe('a customer whose email another Xero contact has', () => {
+  /** The checksum of the customer as it is: linked and not edited since. */
+  const unchanged = checksumOf(buildContact(customer, contactName(customer)))
+  const push = async (ctx: ConnectorContext) =>
+    (await connector.jobs['accounting.invoice'](ctx, { entityId: 'svc1' })) as JobOutcome
+  const contactOf = (calls: Call[]) =>
+    (
+      (api(calls, 'PUT', '/Invoices')[0]?.body?.Invoices ??
+        api(calls, 'POST', '/Invoices/inv-new')[0]?.body?.Invoices) as Record<string, unknown>[]
+    )[0].Contact
+  /** Xero's contacts list: the given contacts for an email search, none by name. */
+  const withEmail = (contacts: Record<string, unknown>[]) => ({
+    'GET /Contacts': (call: Call) =>
+      String(call.query.where).startsWith('EmailAddress==')
+        ? { Contacts: contacts }
+        : { Contacts: [] },
+  })
+
+  it('gives the customer a contact of its own when the one with the email has another name', async () => {
+    const { ctx, calls, links, logs } = makeCtx({
+      answer: emptyOrganisation(
+        withEmail([
+          { ContactID: 'dummy', Name: 'Dummy Customer', EmailAddress: 'anna@example.com' },
+        ])
+      ),
+    })
+    await push(ctx)
+    expect(api(calls, 'PUT', '/Contacts')).toHaveLength(1)
+    expect(contactOf(calls)).toEqual({ ContactID: 'contact-new' })
+    expect(links.get('Customer:cus1')?.remoteId).toBe('contact-new')
+    expect(logs.find((l) => l.level === 'warn')?.message).toContain(
+      'the contact "Dummy Customer" has the same email address but another name'
+    )
+  })
+
+  it('uses the contact with the email when its name, or its person, is the customer', async () => {
+    const { ctx, calls, links } = makeCtx({
+      answer: emptyOrganisation(
+        withEmail([
+          { ContactID: 'dummy', Name: 'Dummy Customer' },
+          { ContactID: 'anna-xero', Name: 'Berg Logistics', FirstName: 'Anna', LastName: 'Berg' },
+        ])
+      ),
+    })
+    await push(ctx)
+    expect(api(calls, 'PUT', '/Contacts')).toHaveLength(0)
+    expect(contactOf(calls)).toEqual({ ContactID: 'anna-xero' })
+    expect(links.get('Customer:cus1')?.metadata).toMatchObject({ reused: true, verified: true })
+  })
+
+  it('trusts the email alone when the workshop chose to', async () => {
+    const { ctx, calls } = makeCtx({
+      settings: { sameEmail: 'reuse' },
+      answer: emptyOrganisation(withEmail([{ ContactID: 'dummy', Name: 'Dummy Customer' }])),
+    })
+    await push(ctx)
+    expect(api(calls, 'PUT', '/Contacts')).toHaveLength(0)
+    expect(contactOf(calls)).toEqual({ ContactID: 'dummy' })
+  })
+
+  it('moves a customer an earlier version linked by email to another customer onto a contact of its own', async () => {
+    const { ctx, calls, links, logs } = makeCtx({
+      answer: emptyOrganisation({
+        'GET /Contacts/dummy': () => ({
+          Contacts: [{ ContactID: 'dummy', Name: 'Dummy Customer' }],
+        }),
+      }),
+    })
+    await ctx.links.set('Customer', 'cus1', {
+      remoteId: 'dummy',
+      checksum: unchanged,
+      metadata: { tenantId: 'tenant-1', reused: true },
+    })
+    await push(ctx)
+    expect(links.get('Customer:cus1')?.remoteId).toBe('contact-new')
+    expect(contactOf(calls)).toEqual({ ContactID: 'contact-new' })
+    expect(
+      logs.some((l) => l.message.includes('linked to the Xero contact "Dummy Customer"'))
+    ).toBe(true)
+    // The other customer's contact was never written to.
+    expect(api(calls, 'POST', '/Contacts/dummy')).toHaveLength(0)
+  })
+
+  it('checks a link to a contact that was already in Xero only once', async () => {
+    const { ctx, calls, links } = makeCtx({
+      settings: { updateContacts: false },
+      answer: emptyOrganisation({
+        'GET /Contacts/anna-xero': () => ({
+          Contacts: [{ ContactID: 'anna-xero', Name: 'Anna Berg' }],
+        }),
+      }),
+    })
+    await ctx.links.set('Customer', 'cus1', {
+      remoteId: 'anna-xero',
+      checksum: 'old',
+      metadata: { tenantId: 'tenant-1', reused: true },
+    })
+    await push(ctx)
+    await push(ctx)
+    expect(api(calls, 'GET', '/Contacts/anna-xero')).toHaveLength(1)
+    expect(links.get('Customer:cus1')).toMatchObject({
+      remoteId: 'anna-xero',
+      metadata: { reused: true, verified: true },
+    })
+  })
+
+  it('keeps a link whose customer was changed since, as that may be a rename, and says so', async () => {
+    const { ctx, calls, links, logs } = makeCtx({
+      settings: { updateContacts: false },
+      answer: emptyOrganisation({
+        'GET /Contacts/old-name': () => ({
+          Contacts: [{ ContactID: 'old-name', Name: 'Anna Hansen' }],
+        }),
+      }),
+    })
+    await ctx.links.set('Customer', 'cus1', {
+      remoteId: 'old-name',
+      checksum: 'before-the-rename',
+      metadata: { tenantId: 'tenant-1', reused: true },
+    })
+    await push(ctx)
+    expect(links.get('Customer:cus1')).toMatchObject({
+      remoteId: 'old-name',
+      metadata: { verified: true },
+    })
+    expect(contactOf(calls)).toEqual({ ContactID: 'old-name' })
+    expect(logs.some((l) => l.message.includes('this may be a rename and the link was kept'))).toBe(
+      true
+    )
+  })
+
+  it('checks an old link whose record of how it was made a contact update replaced', async () => {
+    const { ctx, links } = makeCtx({
+      answer: emptyOrganisation({
+        'GET /Contacts/dummy': () => ({
+          Contacts: [{ ContactID: 'dummy', Name: 'Dummy Customer' }],
+        }),
+      }),
+    })
+    await ctx.links.set('Customer', 'cus1', {
+      remoteId: 'dummy',
+      checksum: unchanged,
+      metadata: { tenantId: 'tenant-1' },
+    })
+    await push(ctx)
+    expect(links.get('Customer:cus1')?.remoteId).toBe('contact-new')
+  })
+
+  it('keeps how a link was made when the contact is updated', async () => {
+    const { ctx, calls, links } = makeCtx({
+      answer: emptyOrganisation({
+        'POST /Contacts/anna-xero': () => ({
+          Contacts: [{ ContactID: 'anna-xero', Name: 'Anna Berg' }],
+        }),
+      }),
+    })
+    await ctx.links.set('Customer', 'cus1', {
+      remoteId: 'anna-xero',
+      checksum: 'before-an-edit',
+      metadata: { tenantId: 'tenant-1', reused: true, verified: true },
+    })
+    await push(ctx)
+    expect(api(calls, 'POST', '/Contacts/anna-xero')).toHaveLength(1)
+    expect(links.get('Customer:cus1')?.metadata).toMatchObject({ reused: true, verified: true })
   })
 })
