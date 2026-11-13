@@ -258,6 +258,7 @@
     "dismiss": "Kapat",
     "observationsAdded": "{count} gözlem iş emrine eklendi",
     "observationsAddFailed": "{count, plural, one {# gözlem} other {# gözlem}} iş emrine eklenemedi. Tekrar deneyin.",
+    "observationsMayRemain": "İş emrine eklendi, ancak bağlantı kesildi. {count} gözlem araçta hâlâ açık olabilir.",
     "observationsNotRemoved": "İş emri oluşturuldu, ancak gözlemler araçtan kaldırılamadı.",
     "workOrderFailed": "İş emri oluşturulamadı. Tekrar deneyin.",
     "delete": "Sil",

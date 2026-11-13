@@ -85,14 +85,22 @@ export function TelegramMessagesClient({
         typeof m.createdAt === 'string' ? m.createdAt : new Date(m.createdAt).toISOString(),
     }))
 
+  // The customer whose thread was asked for last; an answer for anyone else
+  // arrived too late and is dropped.
+  const requestedCustomer = useRef<string | null>(null)
   const loadConversation = useCallback(
     async (cid: string) => {
+      requestedCustomer.current = cid
       setLoadingConversation(true)
+      // The previous customer's thread goes first. Left on screen while this
+      // one fails to load, it would sit under the new customer's name with a
+      // composer that replies to them.
+      setConversation(null)
       // The spinner stops even when the request never reaches the server;
       // the rejection still goes on to the lost-connection notice.
       try {
         const result = await getTelegramConversation(cid)
-        if (result.success && result.data) {
+        if (requestedCustomer.current === cid && result.success && result.data) {
           const thread = threads.find((th) => th.customerId === cid)
           setConversation({
             messages: normalizeMessages(result.data.messages),
@@ -102,7 +110,7 @@ export function TelegramMessagesClient({
           })
         }
       } finally {
-        setLoadingConversation(false)
+        if (requestedCustomer.current === cid) setLoadingConversation(false)
       }
     },
     [threads]
@@ -130,6 +138,7 @@ export function TelegramMessagesClient({
   }
 
   const handleBack = () => {
+    requestedCustomer.current = null
     setSelectedCustomerId(null)
     setConversation(null)
     updateUrl('customerId', null)

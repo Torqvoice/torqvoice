@@ -340,31 +340,44 @@ export function ServicePageClient({
     const selected = openObservations.filter((o) => selectedIds.includes(o.id))
     if (selected.length === 0) return
     setAddingObservations(true)
-    // An observation becomes a line once it is gone from the vehicle, so one
-    // the server kept is not on the work order and still open as well. An
-    // action that cannot reach the server throws instead of answering, so it
-    // is caught and counted the way a refusal is.
+    // The lines go on the work order before anything leaves the vehicle, so
+    // the form counts as changed from the start and no observation is lost:
+    // not when the person leaves while the removals are out, and not when a
+    // removal went through but its answer never arrived.
+    const newItems = selected.map((o) => ({
+      description: `${o.description}${o.notes ? ` - ${o.notes}` : ''}`,
+      hours: 0,
+      rate: 0,
+      total: 0,
+      pricingType: 'hourly' as const,
+    }))
+    formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
+    // An action that cannot reach the server throws instead of answering.
     const results = await Promise.all(selected.map((o) => deleteFinding(o.id).catch(() => null)))
-    const moved = selected.filter((_, i) => results[i]?.success)
-    if (moved.length > 0) {
-      const newItems = moved.map((o) => ({
-        description: `${o.description}${o.notes ? ` - ${o.notes}` : ''}`,
-        hours: 0,
-        rate: 0,
-        total: 0,
-        pricingType: 'hourly' as const,
-      }))
-      formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
-      toast.success(tf('observationsAdded', { count: moved.length }))
-      router.refresh()
+    // A refusal is certain: the vehicle kept the observation, so its line
+    // comes off again. A removal that was never answered may have happened,
+    // so its line stays and the person is told to look at the vehicle.
+    const refused = new Set<object>(
+      newItems.filter((_, i) => {
+        const r = results[i]
+        return r !== null && !r.success
+      })
+    )
+    const unanswered = results.filter((r) => r === null).length
+    if (refused.size > 0) {
+      formState.dirtySetLaborItems((prev) => prev.filter((item) => !refused.has(item)))
     }
-    if (moved.length < selected.length) {
+    const added = selected.length - refused.size
+    if (added > 0) toast.success(tf('observationsAdded', { count: added }))
+    if (refused.size > 0) {
       const refusal = results.find((r) => r && !r.success)?.error
       toast.error(
-        tf('observationsAddFailed', { count: selected.length - moved.length }),
+        tf('observationsAddFailed', { count: refused.size }),
         refusal ? { description: refusal } : undefined
       )
     }
+    if (unanswered > 0) toast.error(tf('observationsMayRemain', { count: unanswered }))
+    router.refresh()
     setAddingObservations(false)
   }
 

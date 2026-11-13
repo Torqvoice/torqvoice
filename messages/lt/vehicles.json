@@ -258,6 +258,7 @@
     "dismiss": "Atmesti",
     "observationsAdded": "{count} pastebėjimų pridėta prie darbo užsakymo",
     "observationsAddFailed": "Nepavyko pridėti {count, plural, one {# pastebėjimo} few {# pastebėjimų} many {# pastebėjimo} other {# pastebėjimų}} prie darbo užsakymo. Bandykite dar kartą.",
+    "observationsMayRemain": "Pridėta prie darbo užsakymo, bet nutrūko ryšys. Transporto priemonėje gali likti neuždarytų pastebėjimų: {count}.",
     "observationsNotRemoved": "Darbo užsakymas sukurtas, bet pastebėjimų nepavyko pašalinti iš transporto priemonės.",
     "workOrderFailed": "Nepavyko sukurti darbo užsakymo. Bandykite dar kartą.",
     "delete": "Ištrinti",

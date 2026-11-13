@@ -258,6 +258,7 @@
     "dismiss": "Avvis",
     "observationsAdded": "{count} observasjoner lagt til i arbeidsordre",
     "observationsAddFailed": "Kunne ikke legge til {count, plural, one {# observasjon} other {# observasjoner}} i arbeidsordren. Prøv igjen.",
+    "observationsMayRemain": "Lagt til i arbeidsordren, men tilkoblingen ble brutt. {count, plural, one {# observasjon kan fortsatt være åpen} other {# observasjoner kan fortsatt være åpne}} på kjøretøyet.",
     "observationsNotRemoved": "Arbeidsordren ble opprettet, men observasjonene kunne ikke fjernes fra kjøretøyet.",
     "workOrderFailed": "Kunne ikke opprette arbeidsordren. Prøv igjen.",
     "delete": "Slett",

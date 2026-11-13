@@ -258,6 +258,7 @@
     "dismiss": "Odrzuć",
     "observationsAdded": "{count} obserwacji dodanych do zlecenia",
     "observationsAddFailed": "Nie udało się dodać {count, plural, one {# obserwacji} few {# obserwacji} many {# obserwacji} other {# obserwacji}} do zlecenia. Spróbuj ponownie.",
+    "observationsMayRemain": "Dodano do zlecenia, ale połączenie zostało przerwane. Liczba obserwacji, które mogą nadal być otwarte w pojeździe: {count}.",
     "observationsNotRemoved": "Zlecenie zostało utworzone, ale nie udało się usunąć obserwacji z pojazdu.",
     "workOrderFailed": "Nie udało się utworzyć zlecenia. Spróbuj ponownie.",
     "delete": "Usuń",

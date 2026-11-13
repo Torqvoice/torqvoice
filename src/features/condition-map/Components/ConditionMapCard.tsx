@@ -30,6 +30,7 @@ import {
   addConditionMarkPhotos,
   carryConditionMarks,
   discardConditionMarkUploads,
+  listVehicleConditionMarks,
   removeConditionMark,
   removeConditionMarkPhoto,
   resolveConditionMark,
@@ -107,9 +108,12 @@ export function ConditionMapCard({
   const [viewing, setViewing] = useState<number | null>(null)
   const [pending, startTransition] = useTransition()
   // Overlapping changes that partly went through are read back from the
-  // server; the effect above takes in the marks it sends.
-  const save = useOverlappingSaves(() => {
-    router.refresh()
+  // server. What comes back is put on screen only if nothing was changed
+  // while it was being read; otherwise the hook reads again.
+  const save = useOverlappingSaves(async (idle) => {
+    const result = await listVehicleConditionMarks(vehicle.id).catch(() => null)
+    if (!idle() || !result?.success || !result.data) return false
+    setMarks(result.data)
     return true
   })
 

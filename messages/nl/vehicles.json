@@ -258,6 +258,7 @@
     "dismiss": "Negeren",
     "observationsAdded": "{count} observaties toegevoegd aan werkorder",
     "observationsAddFailed": "Kon {count, plural, one {# observatie} other {# observaties}} niet aan de werkorder toevoegen. Probeer het opnieuw.",
+    "observationsMayRemain": "Toegevoegd aan de werkorder, maar de verbinding viel weg. {count, plural, one {# observatie staat} other {# observaties staan}} mogelijk nog open op het voertuig.",
     "observationsNotRemoved": "De werkorder is aangemaakt, maar de observaties konden niet van het voertuig worden verwijderd.",
     "workOrderFailed": "Kon de werkorder niet aanmaken. Probeer het opnieuw.",
     "delete": "Verwijderen",

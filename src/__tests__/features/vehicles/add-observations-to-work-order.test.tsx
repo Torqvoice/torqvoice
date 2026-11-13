@@ -1,9 +1,10 @@
 /**
  * "Add to Work Order" on a work order: open observations from earlier visits
- * become lines on this job and leave the vehicle's list. The lines used to be
- * added first and the deletes never read, so an observation the server kept,
- * or one whose delete never arrived, was both a line here and still open on
- * the vehicle, under a toast that said all of them were added.
+ * become lines on this job and leave the vehicle's list. The deletes used to
+ * go unread, so an observation the server kept was both a line here and still
+ * open on the vehicle, under a toast that said all of them were added. The
+ * lines still go on first, so an observation whose removal went through
+ * unanswered is never lost; only a definite refusal takes its line back.
  *
  * The page is large; everything around the observations is stood in for, and
  * the job's lines are drawn from the form state the page hands its details.
@@ -255,7 +256,7 @@ describe('adding open observations to a work order', () => {
     expect(toast.error).not.toHaveBeenCalled()
   })
 
-  it('adds only the one the server let go of, and says the other was not added', async () => {
+  it('keeps a line whose removal was never answered, and says it may still be open', async () => {
     deleteFinding.mockImplementation(async (id: string) => {
       if (id === 'o1') return { success: true, data: { findingId: id } }
       throw new TypeError('Failed to fetch')
@@ -264,11 +265,28 @@ describe('adding open observations to a work order', () => {
 
     await addAll()
 
+    expect(lines()).toEqual(['Front pads worn', 'Wiper blades torn'])
+    expect(toast.success).toHaveBeenCalledWith('2 observations added to work order')
+    expect(toast.error).toHaveBeenCalledWith(
+      'Added to the work order, but the connection dropped. 1 observation may still be open on the vehicle.'
+    )
+  })
+
+  it('takes back the line of an observation the server kept', async () => {
+    deleteFinding.mockImplementation(async (id: string) =>
+      id === 'o1'
+        ? { success: true, data: { findingId: id } }
+        : { success: false, error: 'Insufficient permissions' }
+    )
+    renderPage()
+
+    await addAll()
+
     expect(lines()).toEqual(['Front pads worn'])
     expect(toast.success).toHaveBeenCalledWith('1 observations added to work order')
     expect(toast.error).toHaveBeenCalledWith(
       "Couldn't add 1 observation to the work order. Try again.",
-      undefined
+      { description: 'Insufficient permissions' }
     )
   })
 

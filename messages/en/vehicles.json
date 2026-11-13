@@ -258,6 +258,7 @@
     "dismiss": "Dismiss",
     "observationsAdded": "{count} observations added to work order",
     "observationsAddFailed": "Couldn't add {count, plural, one {# observation} other {# observations}} to the work order. Try again.",
+    "observationsMayRemain": "Added to the work order, but the connection dropped. {count, plural, one {# observation} other {# observations}} may still be open on the vehicle.",
     "observationsNotRemoved": "The work order was created, but the observations could not be removed from the vehicle.",
     "workOrderFailed": "Couldn't create the work order. Try again.",
     "delete": "Delete",

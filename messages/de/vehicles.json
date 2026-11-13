@@ -258,6 +258,7 @@
     "dismiss": "Ausblenden",
     "observationsAdded": "{count} Beobachtungen zum Auftrag hinzugefügt",
     "observationsAddFailed": "{count, plural, one {# Beobachtung konnte} other {# Beobachtungen konnten}} nicht zum Auftrag hinzugefügt werden. Bitte versuchen Sie es erneut.",
+    "observationsMayRemain": "Zum Auftrag hinzugefügt, aber die Verbindung wurde unterbrochen. {count, plural, one {# Beobachtung ist} other {# Beobachtungen sind}} möglicherweise noch am Fahrzeug offen.",
     "observationsNotRemoved": "Der Arbeitsauftrag wurde erstellt, aber die Beobachtungen konnten nicht vom Fahrzeug entfernt werden.",
     "workOrderFailed": "Arbeitsauftrag konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",
     "delete": "Löschen",

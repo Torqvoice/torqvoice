@@ -14,6 +14,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const updateConditionMark = vi.fn()
 const carryConditionMarks = vi.fn()
+const listVehicleConditionMarks = vi.fn()
 const refresh = vi.fn()
 const toastError = vi.fn()
 
@@ -26,6 +27,7 @@ vi.mock('@/features/condition-map/Actions/conditionMarkActions', () => ({
   addConditionMarkPhotos: vi.fn(),
   carryConditionMarks: (input: unknown) => carryConditionMarks(input),
   discardConditionMarkUploads: vi.fn(),
+  listVehicleConditionMarks: (vehicleId: string) => listVehicleConditionMarks(vehicleId),
   removeConditionMark: vi.fn(),
   removeConditionMarkPhoto: vi.fn(),
   resolveConditionMark: vi.fn(),
@@ -98,6 +100,7 @@ describe('a change to the condition map that does not go through', () => {
   beforeEach(() => {
     updateConditionMark.mockReset()
     carryConditionMarks.mockReset()
+    listVehicleConditionMarks.mockReset()
     refresh.mockClear()
     toastError.mockClear()
   })
@@ -176,7 +179,7 @@ describe('a change to the condition map that does not go through', () => {
 
     await waitFor(() => expect(severity('Minor')).toHaveAttribute('aria-pressed', 'true'))
     expect(note()).toHaveValue('')
-    expect(refresh).not.toHaveBeenCalled()
+    expect(listVehicleConditionMarks).not.toHaveBeenCalled()
   })
 
   it('reads the marks back rather than undo a change that went through beside one that failed', async () => {
@@ -187,6 +190,11 @@ describe('a change to the condition map that does not go through', () => {
         return { success: false, error: 'Refused' }
       })
       .mockImplementationOnce(async () => ({ success: true }))
+    // What the server holds: the refused severity, the saved note.
+    listVehicleConditionMarks.mockResolvedValue({
+      success: true,
+      data: [{ ...OWN, note: 'Deep, down to the metal' }],
+    })
     renderCard([OWN])
 
     openMark()
@@ -200,7 +208,8 @@ describe('a change to the condition map that does not go through', () => {
 
     await act(async () => first.open())
 
-    await waitFor(() => expect(refresh).toHaveBeenCalled())
+    await waitFor(() => expect(listVehicleConditionMarks).toHaveBeenCalledWith('v1'))
+    await waitFor(() => expect(severity('Minor')).toHaveAttribute('aria-pressed', 'true'))
     expect(note()).toHaveValue('Deep, down to the metal')
     expect(toastError).toHaveBeenCalledWith('Refused')
   })

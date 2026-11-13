@@ -258,6 +258,7 @@
     "dismiss": "Ignorar",
     "observationsAdded": "{count} observações adicionadas à ordem de serviço",
     "observationsAddFailed": "Não foi possível adicionar {count, plural, one {# observação} other {# observações}} à ordem de serviço. Tente novamente.",
+    "observationsMayRemain": "Adicionado à ordem de serviço, mas a ligação falhou. {count, plural, one {# observação pode continuar aberta} other {# observações podem continuar abertas}} na viatura.",
     "observationsNotRemoved": "A ordem de serviço foi criada, mas não foi possível remover as observações da viatura.",
     "workOrderFailed": "Não foi possível criar a ordem de serviço. Tente novamente.",
     "delete": "Eliminar",

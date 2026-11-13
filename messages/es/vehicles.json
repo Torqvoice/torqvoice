@@ -258,6 +258,7 @@
     "dismiss": "Descartar",
     "observationsAdded": "{count} observaciones agregadas a la orden",
     "observationsAddFailed": "{count, plural, one {No se pudo agregar # observación} other {No se pudieron agregar # observaciones}} a la orden de trabajo. Inténtelo de nuevo.",
+    "observationsMayRemain": "Se agregó a la orden de trabajo, pero se perdió la conexión. {count, plural, one {# observación puede seguir abierta} other {# observaciones pueden seguir abiertas}} en el vehículo.",
     "observationsNotRemoved": "La orden de trabajo se creó, pero no se pudieron quitar las observaciones del vehículo.",
     "workOrderFailed": "No se pudo crear la orden de trabajo. Inténtelo de nuevo.",
     "delete": "Eliminar",
