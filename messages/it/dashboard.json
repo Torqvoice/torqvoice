@@ -75,7 +75,8 @@
     "dismissedOn": "Ignorato il {date}",
     "restore": "Ripristina",
     "settingsAriaLabel": "Impostazioni manutenzione",
-    "dismissAriaLabel": "Ignora"
+    "dismissAriaLabel": "Ignora",
+    "dismissError": "Impossibile ignorare il veicolo. Riprova."
   },
   "reminders": {
     "title": "Promemoria in scadenza",

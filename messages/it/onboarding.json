@@ -73,6 +73,7 @@
     "allDoneDescription": "Tutti i passaggi sono completati e la Sua officina è operativa.",
     "dismiss": "Nascondi scheda",
     "dismissAriaLabel": "Nascondi questa lista",
+    "dismissFailed": "Impossibile nascondere la lista. Riprovi.",
     "importTitle": "Ha già clienti e veicoli da qualche parte?",
     "importDescription": "Li importi da un foglio di calcolo o dal Suo vecchio sistema"
   },

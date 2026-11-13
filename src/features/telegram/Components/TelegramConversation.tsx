@@ -131,11 +131,17 @@ export function TelegramConversation({
     const body = newMessage.trim()
     setNewMessage('')
     startSend(async () => {
-      const result = await sendTelegramToCustomer({ customerId, body })
-      if (result.success) {
-        await refreshConversation()
+      // An action that cannot reach the server throws instead of answering.
+      // Thrown inside a transition it would take the page down, so it is
+      // caught and treated as a send that failed: the text goes back in the
+      // box to send again.
+      const result = await sendTelegramToCustomer({ customerId, body }).catch(() => null)
+      if (result?.success) {
+        // The message went; a list that cannot be read back now catches up
+        // on the next refresh.
+        await refreshConversation().catch(() => undefined)
       } else {
-        toast.error(result.error ?? t('sendError'))
+        toast.error(result?.error ?? t('sendError'))
         setNewMessage(body)
       }
     })
@@ -144,8 +150,10 @@ export function TelegramConversation({
   const handleLoadOlder = () => {
     if (!nextCursor) return
     startLoadMore(async () => {
-      const result = await getTelegramConversation(customerId, nextCursor)
-      if (result.success && result.data) {
+      // Caught: thrown inside a transition it would take the page down. The
+      // button is ready to try again.
+      const result = await getTelegramConversation(customerId, nextCursor).catch(() => null)
+      if (result?.success && result.data) {
         const older = result.data.messages.map((m: TelegramMessage) => ({
           ...m,
           createdAt:
@@ -160,12 +168,14 @@ export function TelegramConversation({
   const handleDeleteMessage = async () => {
     if (!deleteTarget) return
     setIsDeleting(true)
-    const result = await deleteTelegramMessage(deleteTarget.id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteTelegramMessage(deleteTarget.id).catch(() => null)
+    if (result?.success) {
       setMessages((prev) => prev.filter((m) => m.id !== deleteTarget.id))
       toast.success(t('messageDeleted'))
     } else {
-      toast.error(result.error || t('deleteError'))
+      toast.error(result?.error || t('deleteError'))
     }
     setIsDeleting(false)
     setDeleteTarget(null)

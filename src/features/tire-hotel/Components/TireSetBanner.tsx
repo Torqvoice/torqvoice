@@ -74,10 +74,12 @@ export function TireSetBanner({
     })
     if (!ok) return
     setUnlinking(true)
-    const result = await unlinkTireSetFromWorkOrder(serviceRecordId)
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await unlinkTireSetFromWorkOrder(serviceRecordId).catch(() => null)
     setUnlinking(false)
-    if (!result.success) {
-      toast.error(result.error ?? t('job.unlinkFailed'))
+    if (!result?.success) {
+      toast.error(result?.error ?? t('job.unlinkFailed'))
       return
     }
     toast.success(t('job.unlinked'))

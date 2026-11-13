@@ -348,6 +348,7 @@ export function VehicleDetailClient({
   const tq = useTranslations('vehicles.quotes')
   const tQuoteStatus = useTranslations('quotes.statusLabels')
   const tf = useTranslations('vehicles.findings')
+  const tErr = useTranslations('common.errors')
   const validTabs = ['services', 'quotes', 'inspections', 'findings', 'notes', 'reminders'] as const
   const tabParam = searchParams.get('tab')
   const activeTab = validTabs.includes(tabParam as (typeof validTabs)[number])
@@ -404,15 +405,20 @@ export function VehicleDetailClient({
     (m) => m.type === AI_MESSAGE_TYPES.COMMON_ISSUES
   )
 
+  // An action that cannot reach the server throws instead of answering, and a
+  // throw inside a transition replaces the page with the error screen, so it
+  // is caught and reported the way a refusal is.
   const handleDismissMaintenance = () => {
     startDismissTransition(async () => {
-      await dismissMaintenance(vehicle.id)
+      const result = await dismissMaintenance(vehicle.id).catch(() => null)
+      if (!result?.success) toast.error(result?.error || t('maintenanceChangeError'))
     })
   }
 
   const handleUndismissMaintenance = () => {
     startDismissTransition(async () => {
-      await undismissMaintenance(vehicle.id)
+      const result = await undismissMaintenance(vehicle.id).catch(() => null)
+      if (!result?.success) toast.error(result?.error || t('maintenanceChangeError'))
     })
   }
 
@@ -456,7 +462,7 @@ export function VehicleDetailClient({
       toast.success(t('noteDeleted'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || t('noteDeleteError'))
+      modal.open('error', tErr('error'), result.error || t('noteDeleteError'))
     }
   }
 
@@ -476,7 +482,7 @@ export function VehicleDetailClient({
       toast.success(t('reminderDeleted'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || t('reminderDeleteError'))
+      modal.open('error', tErr('error'), result.error || t('reminderDeleteError'))
     }
   }
 
@@ -486,7 +492,7 @@ export function VehicleDetailClient({
       toast.success(tf('findingDeleted'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || tf('deleteError'))
+      modal.open('error', tErr('error'), result.error || tf('deleteError'))
     }
   }
 
@@ -495,6 +501,8 @@ export function VehicleDetailClient({
     setCreatingWorkOrder(true)
     const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
     const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
     const result = await createServiceRecord({
       vehicleId: vehicle.id,
       title: `${vehicleName} - ${tf('sectionTitle')}`,
@@ -511,14 +519,17 @@ export function VehicleDetailClient({
       taxRate: 0,
       taxAmount: 0,
       totalAmount: 0,
-    })
-    if (result.success && result.data) {
+    }).catch(() => null)
+    if (result?.success && result.data) {
       const newServiceId = result.data.id
-      // Delete the observations that were added to the work order
-      await Promise.all(findingIds.map((id) => deleteFinding(id)))
+      // Delete the observations that were added to the work order. The work
+      // order is made either way; one the server kept is still open on the
+      // vehicle, and the person is told rather than left to find it twice.
+      const removed = await Promise.all(findingIds.map((id) => deleteFinding(id).catch(() => null)))
+      if (removed.some((r) => !r?.success)) toast.error(tf('observationsNotRemoved'))
       router.push(`/vehicles/${vehicle.id}/service/${newServiceId}`)
     } else {
-      modal.open('error', 'Error', result.error || 'Failed to create work order')
+      modal.open('error', tErr('error'), result?.error || tf('workOrderFailed'))
       setCreatingWorkOrder(false)
     }
   }
@@ -529,7 +540,7 @@ export function VehicleDetailClient({
       toast.success(t('vehicleUnarchived'))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || t('unarchiveError'))
+      modal.open('error', tErr('error'), result.error || t('unarchiveError'))
     }
   }
 
@@ -585,7 +596,7 @@ export function VehicleDetailClient({
       toast.success(t('vehicleDeleted'))
       router.push(backHref)
     } else {
-      modal.open('error', 'Error', result.error || t('vehicleDeleteError'))
+      modal.open('error', tErr('error'), result.error || t('vehicleDeleteError'))
     }
   }
 

@@ -12,6 +12,7 @@
   "noChats": "Bu kayıtla ilgili önceki sohbet yok",
   "chatsPrivate": "Sohbetleriniz gizlidir ve yalnızca siz görebilirsiniz.",
   "deleteChat": "Sohbeti sil",
+  "deleteChatFailed": "Sohbet silinemedi. Tekrar deneyin.",
   "error": "Bir şeyler ters gitti. Lütfen tekrar deneyin.",
   "disclaimer": "Yanıtlar uygulamada gösterilen kayıtlardan üretilir ve hatalı olabilir. Harekete geçmeden önce kontrol edin.",
   "vehicleSuggestion1": "Servis geçmişini özetle",

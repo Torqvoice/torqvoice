@@ -75,7 +75,8 @@
     "dismissedOn": "Ignoré le {date}",
     "restore": "Restaurer",
     "settingsAriaLabel": "Paramètres de maintenance",
-    "dismissAriaLabel": "Ignorer"
+    "dismissAriaLabel": "Ignorer",
+    "dismissError": "Impossible d'ignorer le véhicule. Veuillez réessayer."
   },
   "reminders": {
     "title": "Rappels à venir",

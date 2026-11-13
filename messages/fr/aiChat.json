@@ -12,6 +12,7 @@
   "noChats": "Aucune discussion précédente sur ce dossier",
   "chatsPrivate": "Vos discussions sont privées et visibles par vous seul.",
   "deleteChat": "Supprimer la discussion",
+  "deleteChatFailed": "Impossible de supprimer la discussion. Veuillez réessayer.",
   "error": "Une erreur s'est produite. Veuillez réessayer.",
   "disclaimer": "Les réponses sont générées à partir des dossiers affichés dans l'application et peuvent être fausses. Vérifiez avant d'agir.",
   "vehicleSuggestion1": "Résumer l'historique d'entretien",

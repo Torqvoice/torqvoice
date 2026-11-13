@@ -73,6 +73,7 @@
     "allDoneDescription": "All steps are done and your workshop is up and running.",
     "dismiss": "Hide card",
     "dismissAriaLabel": "Hide this checklist",
+    "dismissFailed": "Couldn't hide the checklist. Try again.",
     "importTitle": "Already have customers and vehicles somewhere?",
     "importDescription": "Import them from a spreadsheet or your old system"
   },

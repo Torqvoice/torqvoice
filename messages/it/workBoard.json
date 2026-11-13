@@ -81,7 +81,9 @@
     "linkedManagedOnTeam": "Gestito dalla pagina Team, insieme all'accesso all'app.",
     "skills": "Competenze",
     "skillsPlaceholder": "Diagnosi, certificato veicoli elettrici",
-    "skillsHint": "Mostrato sotto il nome dove si assegnano i lavori. Facoltativo."
+    "skillsHint": "Mostrato sotto il nome dove si assegnano i lavori. Facoltativo.",
+    "saveFailed": "Impossibile salvare il tecnico. Riprova.",
+    "deleteFailed": "Impossibile eliminare il tecnico. Riprova."
   },
   "jobDetail": {
     "viewDetails": "Visualizza Dettagli",

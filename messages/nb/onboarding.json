@@ -73,6 +73,7 @@
     "allDoneDescription": "Alle stegene er fullført og verkstedet ditt er i gang.",
     "dismiss": "Skjul kortet",
     "dismissAriaLabel": "Skjul denne sjekklisten",
+    "dismissFailed": "Kunne ikke skjule sjekklisten. Prøv igjen.",
     "importTitle": "Har du allerede kunder og kjøretøy et annet sted?",
     "importDescription": "Importer dem fra et regneark eller det gamle systemet ditt"
   },

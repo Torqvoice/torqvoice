@@ -154,16 +154,18 @@ export function AdminUsers({
     if (!confirmed) return
 
     startTransition(async () => {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       const result = await toggleSuperAdmin({
         userId: user.id,
         isSuperAdmin: !user.isSuperAdmin,
-      })
+      }).catch(() => null)
 
-      if (result.success) {
+      if (result?.success) {
         toast.success(action === 'promote' ? t('users.promotedSuccess') : t('users.demotedSuccess'))
         router.refresh()
       } else {
-        toast.error(result.error ?? t('users.failedUpdate'))
+        toast.error(result?.error ?? t('users.failedUpdate'))
       }
     })
   }
@@ -179,12 +181,12 @@ export function AdminUsers({
     if (!confirmed) return
 
     startTransition(async () => {
-      const result = await deleteUser({ userId: user.id })
-      if (result.success) {
+      const result = await deleteUser({ userId: user.id }).catch(() => null)
+      if (result?.success) {
         toast.success(t('users.deletedSuccess'))
         router.refresh()
       } else {
-        toast.error(result.error ?? t('users.failedDelete'))
+        toast.error(result?.error ?? t('users.failedDelete'))
       }
     })
   }

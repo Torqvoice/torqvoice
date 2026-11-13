@@ -12,6 +12,7 @@
   "noChats": "Brak wcześniejszych czatów o tym rekordzie",
   "chatsPrivate": "Twoje czaty są prywatne i widoczne tylko dla Ciebie.",
   "deleteChat": "Usuń czat",
+  "deleteChatFailed": "Nie udało się usunąć czatu. Spróbuj ponownie.",
   "error": "Coś poszło nie tak. Spróbuj ponownie.",
   "disclaimer": "Odpowiedzi są generowane na podstawie danych widocznych w aplikacji i mogą być błędne. Sprawdź je, zanim podejmiesz działania.",
   "vehicleSuggestion1": "Podsumuj historię serwisową",

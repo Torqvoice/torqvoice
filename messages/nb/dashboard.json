@@ -75,7 +75,8 @@
     "dismissedOn": "Avvist {date}",
     "restore": "Gjenopprett",
     "settingsAriaLabel": "Innstillinger for vedlikehold",
-    "dismissAriaLabel": "Avvis"
+    "dismissAriaLabel": "Avvis",
+    "dismissError": "Kunne ikke avvise kjøretøyet. Prøv igjen."
   },
   "reminders": {
     "title": "Kommende påminnelser",

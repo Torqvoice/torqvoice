@@ -12,6 +12,7 @@
   "noChats": "Keine früheren Chats zu diesem Datensatz",
   "chatsPrivate": "Ihre Chats sind privat und nur für Sie sichtbar.",
   "deleteChat": "Chat löschen",
+  "deleteChatFailed": "Chat konnte nicht gelöscht werden. Bitte versuchen Sie es erneut.",
   "error": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
   "disclaimer": "Die Antworten werden aus den in der App gezeigten Daten erzeugt und können falsch sein. Prüfen Sie sie, bevor Sie danach handeln.",
   "vehicleSuggestion1": "Servicehistorie zusammenfassen",

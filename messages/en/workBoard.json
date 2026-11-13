@@ -81,7 +81,9 @@
     "linkedManagedOnTeam": "Managed on the Team page, along with their app access.",
     "skills": "Skills",
     "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skillsHint": "Shown under the name where work is handed out. Optional.",
+    "saveFailed": "Couldn't save the technician. Try again.",
+    "deleteFailed": "Couldn't delete the technician. Try again."
   },
   "jobDetail": {
     "viewDetails": "View Details",

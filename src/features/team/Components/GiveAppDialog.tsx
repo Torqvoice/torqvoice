@@ -62,7 +62,8 @@ export function GiveAppDialog({
   useTechnicianConnected(created && !scanned ? created.userId : null, () => setScanned(true))
 
   const close = useCallback(() => {
-    if (created && !scanned) void revokeAppSetupCode({ userId: created.userId })
+    // Quietly: nobody asked for it, and a code it misses expires on its own.
+    if (created && !scanned) void revokeAppSetupCode({ userId: created.userId }).catch(() => null)
     onClose()
     setTimeout(() => {
       setPhone('')

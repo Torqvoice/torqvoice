@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { useOverlappingSaves } from '@/lib/use-overlapping-saves'
 import {
   addConditionMark,
   addConditionMarkPhotos,
@@ -56,6 +57,7 @@ import { MarkEditor } from './MarkEditor'
 const PHOTOS_PER_SAVE = 10
 /** How a mark shown before its save has answered is told from a saved one. */
 const STAND_IN = 'pending:'
+
 /**
  * The condition map with everything around it: the body type, the view
  * switcher, the drawing, the legend of this sheet's marks, and the marks
@@ -104,6 +106,12 @@ export function ConditionMapCard({
   /** Which of the strip's photos is open full size, if any. */
   const [viewing, setViewing] = useState<number | null>(null)
   const [pending, startTransition] = useTransition()
+  // Overlapping changes that partly went through are read back from the
+  // server; the effect above takes in the marks it sends.
+  const save = useOverlappingSaves(() => {
+    router.refresh()
+    return true
+  })
 
   const { own, previous } = useMemo(() => splitMarks(marks, scope), [marks, scope])
   const numbered = useMemo(() => numberedMarks([...previous, ...own]), [previous, own])
@@ -150,23 +158,27 @@ export function ConditionMapCard({
   const handleTap = (tap: MapTap) => {
     if (readOnly) return
     startTransition(async () => {
-      const result = await addConditionMark({
-        vehicleId: vehicle.id,
-        // The sheet the mark is drawn on; a linked inspection only lends its marks.
-        ...('inspectionItemId' in scope
-          ? { inspectionId: scope.inspectionId, inspectionItemId: scope.inspectionItemId }
-          : { serviceRecordId: scope.serviceRecordId }),
-        bodyType: body,
-        view: tap.view,
-        panel: tap.panel,
-        x: tap.x,
-        y: tap.y,
-        // The first kind the workshop offers; the editor opens to change it.
-        kind: types.find((type) => !type.hidden)?.key ?? 'dent',
-        severity: 'minor',
-      })
-      if (!result.success || !result.data) {
-        toast.error(result.success ? t('saveFailed') : result.error || t('saveFailed'))
+      // Nothing is drawn until the server answers, so there is nothing to
+      // undo; it still counts as a change for any it overlaps.
+      const result = await save(() =>
+        addConditionMark({
+          vehicleId: vehicle.id,
+          // The sheet the mark is drawn on; a linked inspection only lends its marks.
+          ...('inspectionItemId' in scope
+            ? { inspectionId: scope.inspectionId, inspectionItemId: scope.inspectionItemId }
+            : { serviceRecordId: scope.serviceRecordId }),
+          bodyType: body,
+          view: tap.view,
+          panel: tap.panel,
+          x: tap.x,
+          y: tap.y,
+          // The first kind the workshop offers; the editor opens to change it.
+          kind: types.find((type) => !type.hidden)?.key ?? 'dent',
+          severity: 'minor',
+        })
+      )
+      if (!result?.success || !result.data) {
+        toast.error(result?.success ? t('saveFailed') : result?.error || t('saveFailed'))
         return
       }
       const created = result.data
@@ -180,16 +192,11 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, view: to.view, panel: to.panel, x: to.x, y: to.y })
     startTransition(async () => {
-      const result = await updateConditionMark(id, {
-        view: to.view,
-        panel: to.panel,
-        x: to.x,
-        y: to.y,
-      })
-      if (!result.success) {
-        replace(before)
-        toast.error(result.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => updateConditionMark(id, { view: to.view, panel: to.panel, x: to.x, y: to.y }),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -203,11 +210,11 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, ...patch, note: patch.note === undefined ? before.note : patch.note })
     startTransition(async () => {
-      const result = await updateConditionMark(editingId, patch)
-      if (!result.success) {
-        replace(before)
-        toast.error(result.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => updateConditionMark(editingId, patch),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -221,11 +228,11 @@ export function ConditionMapCard({
       // A request that never reaches the server throws instead of answering.
       // Uncaught in a transition that is the error page; caught, the mark
       // comes back like one the server refused to remove.
-      const result = await removeConditionMark(id).catch(() => null)
-      if (!result?.success) {
-        setMarks(before)
-        toast.error(result?.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => removeConditionMark(id),
+        () => setMarks(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -270,11 +277,11 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, imageUrls: before.imageUrls.filter((u) => u !== url) })
     startTransition(async () => {
-      const result = await removeConditionMarkPhoto({ id: editingId, url }).catch(() => null)
-      if (!result?.success) {
-        replace(before)
-        toast.error(result?.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => removeConditionMarkPhoto({ id: editingId, url }),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -286,11 +293,11 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, resolvedAt: new Date().toISOString() })
     startTransition(async () => {
-      const result = await resolveConditionMark(id, true).catch(() => null)
-      if (!result?.success) {
-        replace(before)
-        toast.error(result?.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => resolveConditionMark(id, true),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -326,10 +333,12 @@ export function ConditionMapCard({
       ...standIns,
     ])
     startTransition(async () => {
-      const result = await carryConditionMarks({ vehicleId: vehicle.id, ...sheet })
-      if (!result.success || !result.data) {
-        setMarks(before)
-        toast.error(result.success ? t('saveFailed') : result.error || t('saveFailed'))
+      const result = await save(
+        () => carryConditionMarks({ vehicleId: vehicle.id, ...sheet }),
+        () => setMarks(before)
+      )
+      if (!result?.success || !result.data) {
+        toast.error(result?.success ? t('saveFailed') : result?.error || t('saveFailed'))
         return
       }
       // What was saved is the answer. A mark not carried was taken by
@@ -347,8 +356,10 @@ export function ConditionMapCard({
     setBody(next as BodyType)
     setFocusView(null)
     startTransition(async () => {
-      const result = await setVehicleBodyType(vehicle.id, next)
-      if (!result.success) toast.error(result.error || t('saveFailed'))
+      // Uncaught in a transition, a dropped connection is the error page. The
+      // drawing stays on the body chosen; the vehicle keeps its saved one.
+      const result = await setVehicleBodyType(vehicle.id, next).catch(() => null)
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 

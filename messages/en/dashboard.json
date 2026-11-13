@@ -75,7 +75,8 @@
     "dismissedOn": "Dismissed {date}",
     "restore": "Restore",
     "settingsAriaLabel": "Maintenance settings",
-    "dismissAriaLabel": "Dismiss"
+    "dismissAriaLabel": "Dismiss",
+    "dismissError": "Couldn't dismiss the vehicle. Try again."
   },
   "reminders": {
     "title": "Upcoming Reminders",

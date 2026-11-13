@@ -65,20 +65,23 @@ export function WorkBayDialog({
     if (!name.trim()) return
     setSaving(true)
 
+    // An action that cannot reach the server throws instead of answering,
+    // here and in the delete below, so it is caught and reported the way a
+    // refusal is, and the dialog's buttons work again.
     const res = workBay
       ? await updateWorkBay({
           id: workBay.id,
           name: name.trim(),
           color,
           dailyCapacity: capacity,
-        })
-      : await createWorkBay({ name: name.trim(), color, dailyCapacity: capacity })
+        }).catch(() => null)
+      : await createWorkBay({ name: name.trim(), color, dailyCapacity: capacity }).catch(() => null)
 
-    if (res.success && res.data) {
+    if (res?.success && res.data) {
       store.upsertWorkBay(res.data as WorkBay)
       onOpenChange(false)
     } else {
-      toast.error(res.error ?? t('saveFailed'))
+      toast.error(res?.error ?? t('saveFailed'))
     }
     setSaving(false)
   }
@@ -161,12 +164,12 @@ export function WorkBayDialog({
                   })
                   if (!ok) return
                   setDeleting(true)
-                  const res = await deleteWorkBay({ id: workBay.id })
-                  if (res.success) {
+                  const res = await deleteWorkBay({ id: workBay.id }).catch(() => null)
+                  if (res?.success) {
                     store.removeWorkBay(workBay.id)
                     onOpenChange(false)
                   } else {
-                    toast.error(res.error ?? t('saveFailed'))
+                    toast.error(res?.error ?? t('saveFailed'))
                   }
                   setDeleting(false)
                 }}

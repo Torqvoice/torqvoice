@@ -94,12 +94,14 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
     if (!confirmed) return
 
     startTransition(async () => {
-      const result = await deleteOrganization({ organizationId: org.id })
-      if (result.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const result = await deleteOrganization({ organizationId: org.id }).catch(() => null)
+      if (result?.success) {
         toast.success(t('organizations.deletedSuccess'))
         router.refresh()
       } else {
-        toast.error(result.error ?? t('organizations.failedDelete'))
+        toast.error(result?.error ?? t('organizations.failedDelete'))
       }
     })
   }

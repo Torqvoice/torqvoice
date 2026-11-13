@@ -12,6 +12,7 @@
   "noChats": "No previous chats about this record",
   "chatsPrivate": "Your chats are private and only visible to you.",
   "deleteChat": "Delete chat",
+  "deleteChatFailed": "Couldn't delete the chat. Try again.",
   "error": "Something went wrong. Please try again.",
   "disclaimer": "Answers are generated from the records shown in the app and can be wrong. Check before you act on them.",
   "vehicleSuggestion1": "Summarize the service history",

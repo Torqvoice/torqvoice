@@ -340,19 +340,32 @@ export function ServicePageClient({
     const selected = openObservations.filter((o) => selectedIds.includes(o.id))
     if (selected.length === 0) return
     setAddingObservations(true)
-    const newItems = selected.map((o) => ({
-      description: `${o.description}${o.notes ? ` - ${o.notes}` : ''}`,
-      hours: 0,
-      rate: 0,
-      total: 0,
-      pricingType: 'hourly' as const,
-    }))
-    formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
-    // Delete the observations that were added to the work order
-    await Promise.all(selected.map((o) => deleteFinding(o.id)))
+    // An observation becomes a line once it is gone from the vehicle, so one
+    // the server kept is not on the work order and still open as well. An
+    // action that cannot reach the server throws instead of answering, so it
+    // is caught and counted the way a refusal is.
+    const results = await Promise.all(selected.map((o) => deleteFinding(o.id).catch(() => null)))
+    const moved = selected.filter((_, i) => results[i]?.success)
+    if (moved.length > 0) {
+      const newItems = moved.map((o) => ({
+        description: `${o.description}${o.notes ? ` - ${o.notes}` : ''}`,
+        hours: 0,
+        rate: 0,
+        total: 0,
+        pricingType: 'hourly' as const,
+      }))
+      formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
+      toast.success(tf('observationsAdded', { count: moved.length }))
+      router.refresh()
+    }
+    if (moved.length < selected.length) {
+      const refusal = results.find((r) => r && !r.success)?.error
+      toast.error(
+        tf('observationsAddFailed', { count: selected.length - moved.length }),
+        refusal ? { description: refusal } : undefined
+      )
+    }
     setAddingObservations(false)
-    toast.success(tf('observationsAdded', { count: selected.length }))
-    router.refresh()
   }
 
   const handleSelectPreset = (preset: LaborPresetOption) => {

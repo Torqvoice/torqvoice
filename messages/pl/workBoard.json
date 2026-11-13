@@ -81,7 +81,9 @@
     "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji.",
     "skills": "Umiejętności",
     "skillsPlaceholder": "Diagnostyka, certyfikat EV",
-    "skillsHint": "Wyświetlane pod nazwiskiem tam, gdzie przydziela się pracę. Opcjonalne."
+    "skillsHint": "Wyświetlane pod nazwiskiem tam, gdzie przydziela się pracę. Opcjonalne.",
+    "saveFailed": "Nie udało się zapisać technika. Spróbuj ponownie.",
+    "deleteFailed": "Nie udało się usunąć technika. Spróbuj ponownie."
   },
   "jobDetail": {
     "viewDetails": "Wyświetl Szczegóły",

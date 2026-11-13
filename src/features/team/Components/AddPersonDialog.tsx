@@ -249,8 +249,11 @@ export function AddPersonDialog({
 
   const close = useCallback(() => {
     // A code left on an unattended screen stops working when the desk walks
-    // away from it.
-    if (created && step === 'handoff') void revokeAppSetupCode({ userId: created.userId })
+    // away from it. Quietly: nobody asked for it, and a code it misses
+    // expires on its own.
+    if (created && step === 'handoff') {
+      void revokeAppSetupCode({ userId: created.userId }).catch(() => null)
+    }
     onOpenChange(false)
     // After the animation, so it does not visibly rewind on the way out.
     setTimeout(reset, 200)
@@ -677,12 +680,16 @@ export function AddPersonDialog({
                     disabled={busy}
                     onClick={async () => {
                       setBusy(true)
-                      const result = await createDefaultRoles()
+                      // A dropped connection throws instead of answering, so
+                      // it is caught and reported the way a refusal is.
+                      const result = await createDefaultRoles().catch(() => null)
                       setBusy(false)
-                      if (result.success) {
+                      if (result?.success) {
                         toast.success(t('team.defaultRolesCreated'))
                         onChanged?.()
                         router.refresh()
+                      } else {
+                        toast.error(result?.error || t('team.failedSaveRole'))
                       }
                     }}
                   >

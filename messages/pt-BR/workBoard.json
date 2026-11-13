@@ -81,7 +81,9 @@
     "linkedManagedOnTeam": "Gerenciado na página Equipe, junto com o acesso ao aplicativo.",
     "skills": "Habilidades",
     "skillsPlaceholder": "Diagnóstico, certificado em veículos elétricos",
-    "skillsHint": "Aparece abaixo do nome onde o trabalho é distribuído. Opcional."
+    "skillsHint": "Aparece abaixo do nome onde o trabalho é distribuído. Opcional.",
+    "saveFailed": "Não foi possível salvar o técnico. Tente novamente.",
+    "deleteFailed": "Não foi possível excluir o técnico. Tente novamente."
   },
   "jobDetail": {
     "viewDetails": "Ver Detalhes",

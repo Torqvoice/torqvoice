@@ -81,7 +81,9 @@
     "linkedManagedOnTeam": "Wird auf der Team-Seite verwaltet, zusammen mit dem App-Zugang.",
     "skills": "Fähigkeiten",
     "skillsPlaceholder": "Diagnose, HV-qualifiziert",
-    "skillsHint": "Wird unter dem Namen angezeigt, wo Arbeit verteilt wird. Optional."
+    "skillsHint": "Wird unter dem Namen angezeigt, wo Arbeit verteilt wird. Optional.",
+    "saveFailed": "Techniker konnte nicht gespeichert werden. Bitte versuchen Sie es erneut.",
+    "deleteFailed": "Techniker konnte nicht gelöscht werden. Bitte versuchen Sie es erneut."
   },
   "jobDetail": {
     "viewDetails": "Details anzeigen",

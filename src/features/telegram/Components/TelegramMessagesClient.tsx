@@ -88,17 +88,22 @@ export function TelegramMessagesClient({
   const loadConversation = useCallback(
     async (cid: string) => {
       setLoadingConversation(true)
-      const result = await getTelegramConversation(cid)
-      if (result.success && result.data) {
-        const thread = threads.find((th) => th.customerId === cid)
-        setConversation({
-          messages: normalizeMessages(result.data.messages),
-          nextCursor: result.data.nextCursor,
-          customerName: thread?.customerName || '',
-          telegramChatId: thread?.telegramChatId || null,
-        })
+      // The spinner stops even when the request never reaches the server;
+      // the rejection still goes on to the lost-connection notice.
+      try {
+        const result = await getTelegramConversation(cid)
+        if (result.success && result.data) {
+          const thread = threads.find((th) => th.customerId === cid)
+          setConversation({
+            messages: normalizeMessages(result.data.messages),
+            nextCursor: result.data.nextCursor,
+            customerName: thread?.customerName || '',
+            telegramChatId: thread?.telegramChatId || null,
+          })
+        }
+      } finally {
+        setLoadingConversation(false)
       }
-      setLoadingConversation(false)
     },
     [threads]
   )
@@ -132,8 +137,10 @@ export function TelegramMessagesClient({
 
   const handleLoadMore = () => {
     startLoadMore(async () => {
-      const result = await getRecentTelegramThreads(threads.length, PAGE_SIZE)
-      if (result.success && result.data) {
+      // Caught: thrown inside a transition it would take the page down. The
+      // button is ready to try again.
+      const result = await getRecentTelegramThreads(threads.length, PAGE_SIZE).catch(() => null)
+      if (result?.success && result.data) {
         setThreads((prev) => [...prev, ...result.data!.threads])
         setHasMore(result.data.hasMore)
       }
@@ -151,8 +158,10 @@ export function TelegramMessagesClient({
   const handleDeleteConversation = async () => {
     if (!deleteTarget) return
     setIsDeleting(true)
-    const result = await deleteTelegramConversation(deleteTarget.customerId)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteTelegramConversation(deleteTarget.customerId).catch(() => null)
+    if (result?.success) {
       toast.success(t('deleted'))
       setThreads((prev) => prev.filter((th) => th.customerId !== deleteTarget.customerId))
       if (selectedCustomerId === deleteTarget.customerId) {
@@ -161,7 +170,7 @@ export function TelegramMessagesClient({
         updateUrl('customerId', null)
       }
     } else {
-      toast.error(result.error || t('deleteError'))
+      toast.error(result?.error || t('deleteError'))
     }
     setIsDeleting(false)
     setDeleteTarget(null)

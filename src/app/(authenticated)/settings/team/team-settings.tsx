@@ -376,13 +376,23 @@ export function TeamSettings({
     })
     if (!ok) return
 
-    await removeTechnicianAccess({ userId: member.user.id })
-    const result = await setMemberTechnician({ userId: member.user.id, enabled: false })
-    if (result.success) {
+    // Taking the app back is the step that signs the phone out, so a refusal
+    // there stops here rather than reporting them signed out. An action that
+    // cannot reach the server throws instead of answering, so both are
+    // caught and reported the way a refusal is.
+    const revoked = await removeTechnicianAccess({ userId: member.user.id }).catch(() => null)
+    if (!revoked?.success) {
+      modal.open('error', 'Error', revoked?.error || t('team.technicianFailed'))
+      return
+    }
+    const result = await setMemberTechnician({ userId: member.user.id, enabled: false }).catch(
+      () => null
+    )
+    if (result?.success) {
       toast.success(t('team.revokeTechnicianDone', { name: member.user.name || member.user.email }))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || t('team.technicianFailed'))
+      modal.open('error', 'Error', result?.error || t('team.technicianFailed'))
     }
   }
 

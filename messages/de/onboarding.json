@@ -73,6 +73,7 @@
     "allDoneDescription": "Alle Schritte sind abgeschlossen und Ihre Werkstatt ist startklar.",
     "dismiss": "Karte ausblenden",
     "dismissAriaLabel": "Diese Checkliste ausblenden",
+    "dismissFailed": "Checkliste konnte nicht ausgeblendet werden. Bitte versuchen Sie es erneut.",
     "importTitle": "Haben Sie bereits Kunden und Fahrzeuge in einem anderen System?",
     "importDescription": "Importieren Sie sie aus einer Tabelle oder Ihrem bisherigen System"
   },

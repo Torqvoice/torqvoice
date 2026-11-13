@@ -106,6 +106,7 @@
     "deleteBody": "{technician} {duration} darbe {job} bus pašalinta iš žiniaraščio. Šio veiksmo atšaukti negalima.",
     "deleteConfirm": "Ištrinti",
     "deleted": "Įrašas ištrintas",
+    "deleteFailed": "Nepavyko ištrinti įrašo",
     "stoppedByManager": "Laikmatis sustabdytas ties {minutes}",
     "csv": {
       "technician": "Technikas",

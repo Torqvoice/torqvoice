@@ -121,12 +121,14 @@ export function WorkOrderStatusSettings({ statuses }: { statuses: WorkOrderStatu
       notifyCustomer: draft.notifyCustomer,
       messageTemplate: draft.notifyCustomer ? draft.messageTemplate : '',
     }
+    // An action that cannot reach the server throws instead of answering,
+    // here and below, so it is caught and reported the way a refusal is.
     const result = draft.id
-      ? await updateWorkOrderStatus({ id: draft.id, ...payload })
-      : await createWorkOrderStatus(payload)
+      ? await updateWorkOrderStatus({ id: draft.id, ...payload }).catch(() => null)
+      : await createWorkOrderStatus(payload).catch(() => null)
     setSaving(false)
-    if (!result.success) {
-      toast.error(result.error || t('failed'))
+    if (!result?.success) {
+      toast.error(result?.error || t('failed'))
       return
     }
     toast.success(t('saved'))
@@ -145,10 +147,10 @@ export function WorkOrderStatusSettings({ statuses }: { statuses: WorkOrderStatu
       messageTemplate: suggestion.notify
         ? String(t.raw(`suggestions.${suggestion.key}.message`))
         : '',
-    })
+    }).catch(() => null)
     setBusyId(null)
-    if (!result.success) {
-      toast.error(result.error || t('failed'))
+    if (!result?.success) {
+      toast.error(result?.error || t('failed'))
       return
     }
     toast.success(t('saved'))
@@ -164,10 +166,10 @@ export function WorkOrderStatusSettings({ statuses }: { statuses: WorkOrderStatu
     })
     if (!ok) return
     setBusyId(status.id)
-    const result = await archiveWorkOrderStatus(status.id)
+    const result = await archiveWorkOrderStatus(status.id).catch(() => null)
     setBusyId(null)
-    if (!result.success) {
-      toast.error(result.error || t('failed'))
+    if (!result?.success) {
+      toast.error(result?.error || t('failed'))
       return
     }
     router.refresh()
@@ -180,9 +182,9 @@ export function WorkOrderStatusSettings({ statuses }: { statuses: WorkOrderStatu
     const ids = inStage.map((s) => s.id)
     ;[ids[index], ids[target]] = [ids[target], ids[index]]
     setBusyId(ids[target])
-    const result = await reorderWorkOrderStatuses({ stage, ids })
+    const result = await reorderWorkOrderStatuses({ stage, ids }).catch(() => null)
     setBusyId(null)
-    if (!result.success) toast.error(result.error || t('failed'))
+    if (!result?.success) toast.error(result?.error || t('failed'))
     router.refresh()
   }
 

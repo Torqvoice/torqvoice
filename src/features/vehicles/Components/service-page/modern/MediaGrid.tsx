@@ -166,6 +166,8 @@ export function MediaGrid({
   const [uploading, setUploading] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
+  /** Tiles with a change out to the server, which wait for its answer before the next. */
+  const [saving, setSaving] = useState<ReadonlySet<string>>(() => new Set())
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [playing, setPlaying] = useState<Attachment | null>(null)
 
@@ -274,15 +276,31 @@ export function MediaGrid({
     }
   }
 
+  // A change shows on the tile at once and is put back if it does not go
+  // through. The tile takes one change at a time: with a second one out, the
+  // first failing would put back a value the second had already replaced.
+  const markSaving = (id: string, on: boolean) =>
+    setSaving((prev) => {
+      const next = new Set(prev)
+      if (on) next.add(id)
+      else next.delete(id)
+      return next
+    })
+
   const toggleVisible = async (file: Attachment) => {
+    if (saving.has(file.id)) return
     const next = !file.includeInInvoice
     setItems((prev) => prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: next } : f)))
-    const result = await store.update({ id: file.id, includeInInvoice: next })
-    if (!result.success) {
+    markSaving(file.id, true)
+    // A request that never reaches the server throws instead of answering,
+    // so it is caught and put back the way a refusal is.
+    const result = await store.update({ id: file.id, includeInInvoice: next }).catch(() => null)
+    markSaving(file.id, false)
+    if (!result?.success) {
       setItems((prev) =>
-        prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: !next } : f))
+        prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: file.includeInInvoice } : f))
       )
-      toast.error(result.error || t('images.failedUpdate'))
+      toast.error(result?.error || t('images.failedUpdate'))
     }
   }
 
@@ -300,10 +318,22 @@ export function MediaGrid({
     }
   }
 
-  const saveCaption = async (file: Attachment, caption: string) => {
+  const saveCaption = async (file: Attachment, input: HTMLInputElement) => {
+    const caption = input.value.trim()
     if ((file.description ?? '') === caption || captionOf(file) === caption) return
     setItems((prev) => prev.map((f) => (f.id === file.id ? { ...f, description: caption } : f)))
-    await store.update({ id: file.id, description: caption })
+    markSaving(file.id, true)
+    const result = await store.update({ id: file.id, description: caption }).catch(() => null)
+    markSaving(file.id, false)
+    if (!result?.success) {
+      setItems((prev) =>
+        prev.map((f) => (f.id === file.id ? { ...f, description: file.description } : f))
+      )
+      // The field holds what was typed, not what the tile has, so it is put
+      // back by hand.
+      input.value = captionOf(file)
+      toast.error(result?.error || t('images.failedUpdate'))
+    }
   }
 
   const tileAction =
@@ -381,6 +411,7 @@ export function MediaGrid({
                 <button
                   type="button"
                   onClick={() => void toggleVisible(file)}
+                  disabled={saving.has(file.id)}
                   aria-pressed={file.includeInInvoice}
                   title={
                     file.includeInInvoice
@@ -427,7 +458,8 @@ export function MediaGrid({
                 defaultValue={captionOf(file)}
                 placeholder={file.fileName}
                 aria-label={t('images.description')}
-                onBlur={(e) => void saveCaption(file, e.target.value.trim())}
+                readOnly={saving.has(file.id)}
+                onBlur={(e) => void saveCaption(file, e.currentTarget)}
                 className="w-full truncate rounded-sm bg-transparent text-[13px] font-medium outline-none placeholder:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
               <div className="flex items-center justify-between gap-2">

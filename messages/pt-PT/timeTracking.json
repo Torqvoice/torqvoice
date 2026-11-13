@@ -106,6 +106,7 @@
     "deleteBody": "{duration} em {job} por {technician} será removido da folha de horas. Esta ação não pode ser anulada.",
     "deleteConfirm": "Eliminar",
     "deleted": "Registo eliminado",
+    "deleteFailed": "Não foi possível eliminar o registo",
     "stoppedByManager": "Relógio parado aos {minutes}",
     "csv": {
       "technician": "Técnico",

@@ -187,10 +187,12 @@ export function TireSetClient({
     })
     if (!ok) return
     setDeleting(true)
-    const result = await deleteTireSet(set.id)
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteTireSet(set.id).catch(() => null)
     setDeleting(false)
-    if (!result.success) {
-      toast.error(result.error ?? t('detail.deleteFailed'))
+    if (!result?.success) {
+      toast.error(result?.error ?? t('detail.deleteFailed'))
       return
     }
     toast.success(t('detail.deleted'))
@@ -214,10 +216,10 @@ export function TireSetClient({
     })
     if (!ok) return
     setDisposing(true)
-    const result = await disposeTireSet({ id: set.id })
+    const result = await disposeTireSet({ id: set.id }).catch(() => null)
     setDisposing(false)
-    if (!result.success) {
-      toast.error(result.error ?? t('detail.disposeFailed'))
+    if (!result?.success) {
+      toast.error(result?.error ?? t('detail.disposeFailed'))
       return
     }
     toast.success(t('detail.disposed'))

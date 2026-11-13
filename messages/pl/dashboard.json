@@ -75,7 +75,8 @@
     "dismissedOn": "Odrzucono {date}",
     "restore": "Przywróć",
     "settingsAriaLabel": "Ustawienia konserwacji",
-    "dismissAriaLabel": "Odrzuć"
+    "dismissAriaLabel": "Odrzuć",
+    "dismissError": "Nie udało się odrzucić pojazdu. Spróbuj ponownie."
   },
   "reminders": {
     "title": "Nadchodzące przypomnienia",
