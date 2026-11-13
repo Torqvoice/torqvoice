@@ -5,12 +5,7 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getLocale } from 'next-intl/server'
 import type { Locale } from '@/i18n/config'
-import {
-  generateServiceDescription,
-  summarizeServiceHistory,
-  getCommonIssues,
-  testAiConnection,
-} from '@/lib/ai'
+import { generateServiceDescription, summarizeServiceHistory, getCommonIssues } from '@/lib/ai'
 import { AI_MESSAGE_TYPES } from '@/features/ai/constants'
 
 export async function aiGenerateServiceNotes(serviceRecordId: string) {
@@ -154,17 +149,6 @@ export async function aiClearMessage(vehicleId: string, type: string) {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
       ],
-    }
-  )
-}
-
-export async function aiTestConnection() {
-  return withAuth(
-    async ({ organizationId }) => {
-      return testAiConnection(organizationId)
-    },
-    {
-      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SETTINGS }],
     }
   )
 }

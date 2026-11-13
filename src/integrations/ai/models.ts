@@ -141,16 +141,21 @@ function anthropicModelOrder(id: string): number {
   return versionScore + tierScore
 }
 
-/** A model id as something to read in a dropdown: gpt-4.1-mini becomes GPT 4.1 Mini. */
+/**
+ * A model id as something to read in a dropdown: gpt-4.1-mini becomes
+ * GPT 4.1 Mini, o4-mini becomes o4 Mini. A date on the end, which OpenAI
+ * writes either as -20251001 or as -2026-03-17, is left off.
+ */
 export function formatModelLabel(modelId: string): string {
-  return modelId
-    .replace(/-(\d{8})$/, '') // strip a date suffix such as -20251001
-    .replace(/^gpt-/i, 'GPT-')
-    .replace(/^claude-/i, 'Claude ')
-    .replace(/^o(\d)/i, 'o$1')
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .replace(/Gpt/g, 'GPT')
+  return (
+    modelId
+      .replace(/-(?:\d{8}|\d{4}-\d{2}-\d{2})$/, '')
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+      .replace(/gpt/gi, 'GPT')
+      // OpenAI writes its o-series in lower case
+      .replace(/^O(\d)/, 'o$1')
+  )
 }
 
 async function fetchModelIds(ctx: ConnectorContext, base: string): Promise<string[]> {
