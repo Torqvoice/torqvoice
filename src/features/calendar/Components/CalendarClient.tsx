@@ -575,7 +575,11 @@ export default function CalendarClient({
       </div>
 
       <Sheet open={daySheetOpen} onOpenChange={setDaySheetOpen}>
-        <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+        <SheetContent
+          side="bottom"
+          className="max-h-[80vh] overflow-y-auto"
+          aria-describedby={undefined}
+        >
           <SheetHeader className="sr-only">
             <SheetTitle>{format.dateTime(date, { dateStyle: 'full' })}</SheetTitle>
           </SheetHeader>
@@ -596,7 +600,7 @@ export default function CalendarClient({
       </Sheet>
 
       <Dialog open={showDateChoice} onOpenChange={setShowDateChoice}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('dateChoice.title')}</DialogTitle>
           </DialogHeader>

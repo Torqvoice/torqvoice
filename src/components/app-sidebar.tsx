@@ -752,7 +752,7 @@ export function AppSidebar({
       {isAdminOrOwner && <NotificationPanel />}
 
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('sidebar.addNewCompany')}</DialogTitle>
           </DialogHeader>

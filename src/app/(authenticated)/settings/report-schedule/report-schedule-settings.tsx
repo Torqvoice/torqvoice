@@ -631,7 +631,7 @@ export function ReportScheduleSettings({ schedules, members }: Props) {
 
       {/* Create / Edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{editingSchedule ? t('editSchedule') : t('newSchedule')}</DialogTitle>
           </DialogHeader>

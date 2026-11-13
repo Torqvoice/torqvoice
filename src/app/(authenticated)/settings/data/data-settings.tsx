@@ -748,7 +748,7 @@ export function DataSettings({
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <Image
@@ -1181,7 +1181,7 @@ export function DataSettings({
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               <Image

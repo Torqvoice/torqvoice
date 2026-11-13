@@ -363,7 +363,7 @@ export function CustomFieldsManager({
           if (!open) resetForm()
         }}
       >
-        <DialogContent className="max-h-[85vh] sm:max-w-md">
+        <DialogContent className="max-h-[85vh] sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>
               {editing ? t('customFields.editField') : t('customFields.newField')}

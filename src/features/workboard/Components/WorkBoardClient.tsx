@@ -993,7 +993,7 @@ export function WorkBoardClient({
             {tUnassigned('title', { count: unassignedCount })}
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="max-h-[80svh]">
+        <DrawerContent className="max-h-[80svh]" aria-describedby={undefined}>
           <DrawerHeader>
             <DrawerTitle>{tUnassigned('title', { count: unassignedCount })}</DrawerTitle>
           </DrawerHeader>

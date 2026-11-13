@@ -574,7 +574,7 @@ export default function RecurringInvoicesClient({
 
       {/* Create dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="max-h-[85vh] sm:max-w-2xl">
+        <DialogContent className="max-h-[85vh] sm:max-w-2xl" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('recurring.dialogTitle')}</DialogTitle>
           </DialogHeader>
