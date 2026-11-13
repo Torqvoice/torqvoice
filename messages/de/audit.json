@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Geplante {channel, select, email {E-Mail} sms {SMS} telegram {Telegram-Nachricht} in_app {Hinweis in der App} other {{channel}}} vorzeitig gesendet",
     "scheduled_message_update": "Geplante {channel, select, email {E-Mail} sms {SMS} telegram {Telegram-Nachricht} in_app {Hinweis in der App} other {{channel}}} aktualisiert",
     "service_create": "Auftrag {ref} angelegt",
+    "service_bookAppointment": "Termin {ref} gebucht",
     "service_createCounterSale": "Thekenverkauf {ref} angelegt",
     "service_createDraft": "Auftragsentwurf {ref} angelegt",
     "service_createFromInspection": "Arbeitsauftrag {ref} aus einer Prüfung angelegt",

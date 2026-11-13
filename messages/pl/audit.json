@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Wysłano przed czasem zaplanowany {channel, select, email {e-mail} sms {SMS} telegram {wiadomość Telegram} in_app {powiadomienie w aplikacji} other {{channel}}}",
     "scheduled_message_update": "Zaktualizowano zaplanowany {channel, select, email {e-mail} sms {SMS} telegram {wiadomość Telegram} in_app {powiadomienie w aplikacji} other {{channel}}}",
     "service_create": "Utworzono zlecenie {ref}",
+    "service_bookAppointment": "Umówiono wizytę {ref}",
     "service_createCounterSale": "Utworzono sprzedaż z lady {ref}",
     "service_createDraft": "Utworzono szkic zlecenia {ref}",
     "service_createFromInspection": "Utworzono zlecenie warsztatowe {ref} z przeglądu",

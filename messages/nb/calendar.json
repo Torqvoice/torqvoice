@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Ny arbeidsordre",
     "newWorkOrderAt": "Ny arbeidsordre kl. {time}",
+    "bookAppointment": "Book time",
+    "bookAppointmentAt": "Book time kl. {time}",
     "newReminder": "Ny påminnelse",
     "newQuote": "Nytt tilbud",
     "openEvent": "Åpne ({count})",
@@ -158,5 +160,35 @@
     "from": "Fra {time}",
     "until": "Til {time}"
   },
-  "timeOffMissing": "Dette fraværet ble endret eller fjernet i mellomtiden."
+  "timeOffMissing": "Dette fraværet ble endret eller fjernet i mellomtiden.",
+  "appointment": {
+    "title": "Book time",
+    "description": "Sett en bil eller en kunde i kalenderen med hva som skal gjøres og hvor lang tid det bør ta. Ingen arbeidsordre å fylle ut nå: jobben åpnes når bilen kommer.",
+    "descriptionMarine": "Sett en båt eller en kunde i kalenderen med hva som skal gjøres og hvor lang tid det bør ta. Ingen arbeidsordre å fylle ut nå: jobben åpnes når båten kommer.",
+    "customer": "Kunde",
+    "selectCustomer": "Velg kunde",
+    "searchCustomer": "Søk etter kunder",
+    "noCustomers": "Ingen kunder funnet.",
+    "vehicle": "Kjøretøy",
+    "vehicleMarine": "Båt",
+    "selectVehicle": "Velg kjøretøy",
+    "selectVehicleMarine": "Velg båt",
+    "searchVehicle": "Søk etter skilt, merke eller modell",
+    "searchVehicleMarine": "Søk etter registreringsnummer, merke eller modell",
+    "noVehicles": "Ingen kjøretøy funnet.",
+    "noVehiclesMarine": "Ingen båter funnet.",
+    "none": "Ingen",
+    "whoHint": "En kunde, en bil eller begge. En bil som ikke er registrert ennå, kan legges til jobben når den kommer.",
+    "whoHintMarine": "En kunde, en båt eller begge. En båt som ikke er registrert ennå, kan legges til jobben når den kommer.",
+    "work": "Arbeid som trengs",
+    "workPlaceholder": "Bremsene foran piper\nOljeskift",
+    "workPlaceholderMarine": "Motoren blir for varm i høy fart\nÅrsservice",
+    "workHint": "Én ting per linje. Hver linje står under «Ønsket arbeid» på arbeidsordren.",
+    "date": "Dato",
+    "time": "Starttid",
+    "hours": "Estimerte timer",
+    "submit": "Book time",
+    "booked": "Time booket",
+    "failed": "Kunne ikke booke timen"
+  }
 }

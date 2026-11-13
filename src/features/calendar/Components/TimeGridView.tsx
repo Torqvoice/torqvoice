@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react'
 import { useTranslations } from 'next-intl'
-import { Bell, FileText, Send, Wrench } from 'lucide-react'
+import { Bell, CalendarPlus, FileText, Send, Wrench } from 'lucide-react'
 import { useDayFormatter } from './useDayFormatter'
 import { useDateSettings } from '@/components/date-settings-context'
 import { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -306,6 +306,13 @@ export function TimeGridView({
                   time: formatClock(timeToMinutes(slot.time), timeFormat),
                 })}
                 onClick={() => runSlotAction(actions.onNewWorkOrder)}
+              />
+              <SlotMenuItem
+                icon={CalendarPlus}
+                label={t('contextMenu.bookAppointmentAt', {
+                  time: formatClock(timeToMinutes(slot.time), timeFormat),
+                })}
+                onClick={() => runSlotAction(actions.onBookAppointment)}
               />
               <SlotMenuItem
                 icon={Bell}

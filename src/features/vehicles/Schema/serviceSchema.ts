@@ -87,7 +87,12 @@ export const createServiceSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().optional(),
   type: z.enum(['maintenance', 'repair', 'upgrade', 'inspection']).default('maintenance'),
-  status: z.enum(['pending', 'in-progress', 'waiting-parts', 'completed']).default('pending'),
+  // `scheduled` is a booked job whose car has not arrived: an online booking or
+  // one made from the calendar. The work order page sends the status back as
+  // it found it, so without it here such a job could not be saved at all.
+  status: z
+    .enum(['scheduled', 'pending', 'in-progress', 'waiting-parts', 'completed'])
+    .default('pending'),
   cost: z.coerce.number().min(0).default(0),
   mileage: z.coerce.number().nullable().optional(),
   serviceDate: z.string().default(() => new Date().toISOString()),

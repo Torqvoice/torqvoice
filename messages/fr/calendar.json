@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Nouvel ordre de travail",
     "newWorkOrderAt": "Nouvel ordre de travail à {time}",
+    "bookAppointment": "Prendre rendez-vous",
+    "bookAppointmentAt": "Prendre rendez-vous à {time}",
     "newReminder": "Nouveau rappel",
     "newQuote": "Nouveau devis",
     "openEvent": "Ouvrir ({count})",
@@ -158,5 +160,35 @@
     "from": "À partir de {time}",
     "until": "Jusqu'à {time}"
   },
-  "timeOffMissing": "Cette absence a été modifiée ou supprimée entre-temps."
+  "timeOffMissing": "Cette absence a été modifiée ou supprimée entre-temps.",
+  "appointment": {
+    "title": "Prendre rendez-vous",
+    "description": "Placez un véhicule ou un client dans le calendrier, avec le travail à faire et sa durée prévue. Aucun ordre de travail à remplir maintenant : il s’ouvre à l’arrivée du véhicule.",
+    "descriptionMarine": "Placez un bateau ou un client dans le calendrier, avec le travail à faire et sa durée prévue. Aucun ordre de travail à remplir maintenant : il s’ouvre à l’arrivée du bateau.",
+    "customer": "Client",
+    "selectCustomer": "Sélectionner un client",
+    "searchCustomer": "Rechercher des clients",
+    "noCustomers": "Aucun client trouvé.",
+    "vehicle": "Véhicule",
+    "vehicleMarine": "Bateau",
+    "selectVehicle": "Sélectionner un véhicule",
+    "selectVehicleMarine": "Sélectionner un bateau",
+    "searchVehicle": "Rechercher par plaque, marque ou modèle",
+    "searchVehicleMarine": "Rechercher par immatriculation, marque ou modèle",
+    "noVehicles": "Aucun véhicule trouvé.",
+    "noVehiclesMarine": "Aucun bateau trouvé.",
+    "none": "Aucun",
+    "whoHint": "Un client, un véhicule ou les deux. Un véhicule qui n’est pas encore enregistré peut être ajouté à l’ordre à son arrivée.",
+    "whoHintMarine": "Un client, un bateau ou les deux. Un bateau qui n’est pas encore enregistré peut être ajouté à l’ordre à son arrivée.",
+    "work": "Travaux à faire",
+    "workPlaceholder": "Les freins avant grincent\nVidange",
+    "workPlaceholderMarine": "Le moteur chauffe à haute vitesse\nEntretien annuel",
+    "workHint": "Une chose par ligne. Chaque ligne figure sur l’ordre de travail sous « Travaux demandés ».",
+    "date": "Date",
+    "time": "Heure de début",
+    "hours": "Heures estimées",
+    "submit": "Prendre rendez-vous",
+    "booked": "Rendez-vous enregistré",
+    "failed": "Impossible d’enregistrer le rendez-vous"
+  }
 }

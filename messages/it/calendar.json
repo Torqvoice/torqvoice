@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Nuovo ordine di lavoro",
     "newWorkOrderAt": "Nuovo ordine di lavoro alle {time}",
+    "bookAppointment": "Prenota appuntamento",
+    "bookAppointmentAt": "Prenota appuntamento alle {time}",
     "newReminder": "Nuovo promemoria",
     "newQuote": "Nuovo preventivo",
     "openEvent": "Apri ({count})",
@@ -158,5 +160,35 @@
     "from": "Dalle {time}",
     "until": "Fino alle {time}"
   },
-  "timeOffMissing": "Quell'assenza è stata modificata o rimossa nel frattempo."
+  "timeOffMissing": "Quell'assenza è stata modificata o rimossa nel frattempo.",
+  "appointment": {
+    "title": "Prenota appuntamento",
+    "description": "Metti in calendario un'auto o un cliente con il lavoro da fare e quanto dovrebbe durare. Nessun ordine di lavoro da compilare ora: si apre quando arriva l'auto.",
+    "descriptionMarine": "Metti in calendario un'imbarcazione o un cliente con il lavoro da fare e quanto dovrebbe durare. Nessun ordine di lavoro da compilare ora: si apre quando arriva l'imbarcazione.",
+    "customer": "Cliente",
+    "selectCustomer": "Seleziona cliente",
+    "searchCustomer": "Cerca clienti",
+    "noCustomers": "Nessun cliente trovato.",
+    "vehicle": "Veicolo",
+    "vehicleMarine": "Imbarcazione",
+    "selectVehicle": "Seleziona veicolo",
+    "selectVehicleMarine": "Seleziona imbarcazione",
+    "searchVehicle": "Cerca per targa, marca o modello",
+    "searchVehicleMarine": "Cerca per numero di registrazione, marca o modello",
+    "noVehicles": "Nessun veicolo trovato.",
+    "noVehiclesMarine": "Nessuna imbarcazione trovata.",
+    "none": "Nessuno",
+    "whoHint": "Un cliente, un'auto o entrambi. Un'auto non ancora registrata può essere aggiunta all'ordine quando arriva.",
+    "whoHintMarine": "Un cliente, un'imbarcazione o entrambi. Un'imbarcazione non ancora registrata può essere aggiunta all'ordine quando arriva.",
+    "work": "Lavori da fare",
+    "workPlaceholder": "I freni anteriori fischiano\nCambio olio",
+    "workPlaceholderMarine": "Il motore si surriscalda ad alta velocità\nTagliando annuale",
+    "workHint": "Una cosa per riga. Ogni riga compare nell'ordine di lavoro sotto «Lavoro richiesto».",
+    "date": "Data",
+    "time": "Ora di inizio",
+    "hours": "Ore stimate",
+    "submit": "Prenota appuntamento",
+    "booked": "Appuntamento prenotato",
+    "failed": "Impossibile prenotare l'appuntamento"
+  }
 }

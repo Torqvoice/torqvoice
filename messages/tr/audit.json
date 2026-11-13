@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "Planlanmış {channel, select, email {e-posta} sms {SMS} telegram {Telegram mesajı} in_app {uygulama içi bildirim} other {{channel}}} erkenden gönderildi",
     "scheduled_message_update": "Planlanmış {channel, select, email {e-posta} sms {SMS} telegram {Telegram mesajı} in_app {uygulama içi bildirim} other {{channel}}} güncellendi",
     "service_create": "{ref} iş kaydı oluşturuldu",
+    "service_bookAppointment": "{ref} randevusu oluşturuldu",
     "service_createCounterSale": "{ref} tezgah satışı oluşturuldu",
     "service_createDraft": "{ref} taslak iş kaydı oluşturuldu",
     "service_createFromInspection": "Bir muayeneden {ref} iş emri oluşturuldu",

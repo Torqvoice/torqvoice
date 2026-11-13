@@ -22,6 +22,7 @@ import {
 } from '@/features/workshop-calendar/Components/TimeOffDialog'
 import { listAbsences, type AbsenceView } from '@/features/workshop-calendar/Actions/absenceActions'
 import { getCalendarEvents } from '../Actions/calendarActions'
+import { BookAppointmentDialog } from './BookAppointmentDialog'
 import type { CalendarEvent, CalendarEventType } from '../Actions/calendarActions'
 import {
   eachDay,
@@ -137,6 +138,7 @@ export default function CalendarClient({
   const [showPicker, setShowPicker] = useState(false)
   const [showDateChoice, setShowDateChoice] = useState(false)
   const [workOrderQuery, setWorkOrderQuery] = useState<Record<string, string> | undefined>()
+  const [showAppointmentDialog, setShowAppointmentDialog] = useState(false)
   const [showReminderDialog, setShowReminderDialog] = useState(false)
   const [showQuoteDialog, setShowQuoteDialog] = useState(false)
   const [showMessageDialog, setShowMessageDialog] = useState(false)
@@ -346,6 +348,9 @@ export default function CalendarClient({
           if (dateStr !== todayStr) setShowDateChoice(true)
           else openWorkOrderPicker(undefined)
           break
+        case 'appointment':
+          setShowAppointmentDialog(true)
+          break
         case 'reminder':
           setShowReminderDialog(true)
           break
@@ -384,6 +389,11 @@ export default function CalendarClient({
           boardStart: time,
           boardEnd: minutesToTime(Math.min(startMins + SLOT_WORK_ORDER_MINUTES, 24 * 60 - 1)),
         })
+      },
+      onBookAppointment: (day, time) => {
+        setMenuDateStr(day)
+        setMenuTime(time)
+        setShowAppointmentDialog(true)
       },
       onNewReminder: (day, time) => {
         setMenuDateStr(day)
@@ -613,6 +623,14 @@ export default function CalendarClient({
           </div>
         </DialogContent>
       </Dialog>
+
+      <BookAppointmentDialog
+        open={showAppointmentDialog}
+        onOpenChange={setShowAppointmentDialog}
+        defaultDate={menuDateStr}
+        defaultTime={menuTime}
+        onBooked={refresh}
+      />
 
       <ReminderFormDialog
         open={showReminderDialog}

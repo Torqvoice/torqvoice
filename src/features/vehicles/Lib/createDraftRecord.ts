@@ -62,6 +62,13 @@ export async function createDraftRecord(
      */
     bookFrom?: Date
     /**
+     * Whether this is work on a car, which takes the shop fee and the
+     * workshop's warranty. Follows the vehicle when left out: a job without
+     * one is a sale over the counter. Set for an appointment booked for a
+     * customer whose car is not on file yet; the car is added when it arrives.
+     */
+    shopWork?: boolean
+    /**
      * The transaction the record is written in, when the caller has more to
      * write that must land with it or not at all. Reads stay on the pool.
      */
@@ -202,7 +209,7 @@ export async function createDraftRecord(
   // A parts sale over the counter holds no bay and no technician, so there is
   // no slot to find and nothing to search past. Only work on a vehicle is
   // scheduled around what the shop already has booked.
-  const isShopWork = !!opts.vehicleId
+  const isShopWork = opts.shopWork ?? !!opts.vehicleId
   if (opts.startDateTime || !isShopWork) {
     defaultStart =
       opts.startDateTime ??

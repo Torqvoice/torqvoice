@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Nueva orden de trabajo",
     "newWorkOrderAt": "Nueva orden de trabajo a las {time}",
+    "bookAppointment": "Reservar cita",
+    "bookAppointmentAt": "Reservar cita a las {time}",
     "newReminder": "Nuevo recordatorio",
     "newQuote": "Nuevo presupuesto",
     "openEvent": "Abrir ({count})",
@@ -158,5 +160,35 @@
     "from": "Desde las {time}",
     "until": "Hasta las {time}"
   },
-  "timeOffMissing": "Esa ausencia se ha cambiado o eliminado mientras tanto."
+  "timeOffMissing": "Esa ausencia se ha cambiado o eliminado mientras tanto.",
+  "appointment": {
+    "title": "Reservar cita",
+    "description": "Pon un vehículo o un cliente en el calendario con lo que hay que hacer y cuánto debería llevar. No hace falta rellenar una orden de trabajo ahora: se abre cuando llega el vehículo.",
+    "descriptionMarine": "Pon una embarcación o un cliente en el calendario con lo que hay que hacer y cuánto debería llevar. No hace falta rellenar una orden de trabajo ahora: se abre cuando llega la embarcación.",
+    "customer": "Cliente",
+    "selectCustomer": "Seleccionar cliente",
+    "searchCustomer": "Buscar clientes",
+    "noCustomers": "No se encontraron clientes.",
+    "vehicle": "Vehículo",
+    "vehicleMarine": "Embarcación",
+    "selectVehicle": "Seleccionar vehículo",
+    "selectVehicleMarine": "Seleccionar embarcación",
+    "searchVehicle": "Buscar por placa, marca o modelo",
+    "searchVehicleMarine": "Buscar por matrícula, marca o modelo",
+    "noVehicles": "No se encontraron vehículos.",
+    "noVehiclesMarine": "No se encontraron embarcaciones.",
+    "none": "Ninguno",
+    "whoHint": "Un cliente, un vehículo o ambos. Un vehículo que aún no está registrado se puede añadir a la orden cuando llegue.",
+    "whoHintMarine": "Un cliente, una embarcación o ambos. Una embarcación que aún no está registrada se puede añadir a la orden cuando llegue.",
+    "work": "Trabajo necesario",
+    "workPlaceholder": "Chirrían los frenos delanteros\nCambio de aceite",
+    "workPlaceholderMarine": "El motor se recalienta a alta velocidad\nRevisión anual",
+    "workHint": "Una cosa por línea. Cada línea aparece en la orden de trabajo en «Trabajo solicitado».",
+    "date": "Fecha",
+    "time": "Hora de inicio",
+    "hours": "Horas estimadas",
+    "submit": "Reservar cita",
+    "booked": "Cita reservada",
+    "failed": "No se pudo reservar la cita"
+  }
 }

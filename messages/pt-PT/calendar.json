@@ -94,6 +94,8 @@
   "contextMenu": {
     "newWorkOrder": "Nova ordem de serviço",
     "newWorkOrderAt": "Nova ordem de serviço às {time}",
+    "bookAppointment": "Fazer marcação",
+    "bookAppointmentAt": "Fazer marcação às {time}",
     "newReminder": "Novo lembrete",
     "newQuote": "Novo orçamento",
     "openEvent": "Abrir ({count})",
@@ -158,5 +160,35 @@
     "from": "A partir das {time}",
     "until": "Até às {time}"
   },
-  "timeOffMissing": "Essa ausência foi alterada ou removida entretanto."
+  "timeOffMissing": "Essa ausência foi alterada ou removida entretanto.",
+  "appointment": {
+    "title": "Fazer marcação",
+    "description": "Coloque uma viatura ou um cliente no calendário com o que é preciso fazer e quanto tempo deve demorar. Não há ordem de serviço para preencher agora: é aberta quando a viatura chegar.",
+    "descriptionMarine": "Coloque um barco ou um cliente no calendário com o que é preciso fazer e quanto tempo deve demorar. Não há ordem de serviço para preencher agora: é aberta quando o barco chegar.",
+    "customer": "Cliente",
+    "selectCustomer": "Selecionar cliente",
+    "searchCustomer": "Pesquisar clientes",
+    "noCustomers": "Nenhum cliente encontrado.",
+    "vehicle": "Viatura",
+    "vehicleMarine": "Barco",
+    "selectVehicle": "Selecionar viatura",
+    "selectVehicleMarine": "Selecionar barco",
+    "searchVehicle": "Pesquisar por matrícula, marca ou modelo",
+    "searchVehicleMarine": "Pesquisar por número de registo, marca ou modelo",
+    "noVehicles": "Nenhuma viatura encontrada.",
+    "noVehiclesMarine": "Nenhum barco encontrado.",
+    "none": "Nenhum",
+    "whoHint": "Um cliente, uma viatura ou ambos. Uma viatura que ainda não esteja registada pode ser adicionada à ordem quando chegar.",
+    "whoHintMarine": "Um cliente, um barco ou ambos. Um barco que ainda não esteja registado pode ser adicionado à ordem quando chegar.",
+    "work": "Trabalho necessário",
+    "workPlaceholder": "Travões da frente a chiar\nMudança de óleo",
+    "workPlaceholderMarine": "Motor sobreaquece a alta velocidade\nRevisão anual",
+    "workHint": "Uma coisa por linha. Cada linha aparece na ordem de serviço em \"Trabalho pedido\".",
+    "date": "Data",
+    "time": "Hora de início",
+    "hours": "Horas estimadas",
+    "submit": "Fazer marcação",
+    "booked": "Marcação feita",
+    "failed": "Não foi possível fazer a marcação"
+  }
 }

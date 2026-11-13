@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl'
 import {
   Bell,
+  CalendarPlus,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -30,7 +31,7 @@ import { cn } from '@/lib/utils'
 import type { CalendarView } from '../Lib/calendar-range'
 import type { CalendarPreferences } from './useCalendarPreferences'
 
-export type CreateKind = 'workOrder' | 'reminder' | 'quote' | 'message' | 'timeOff'
+export type CreateKind = 'workOrder' | 'appointment' | 'reminder' | 'quote' | 'message' | 'timeOff'
 
 /** The keys the view switcher shows and the keyboard listens for. */
 export const VIEW_SHORTCUTS: Record<CalendarView, string> = {
@@ -184,6 +185,10 @@ export function CalendarToolbar({
             <DropdownMenuItem onClick={() => onCreate('workOrder')}>
               <Wrench className="mr-2 h-4 w-4" />
               {t('contextMenu.newWorkOrder')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onCreate('appointment')}>
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              {t('contextMenu.bookAppointment')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onCreate('reminder')}>
               <Bell className="mr-2 h-4 w-4" />

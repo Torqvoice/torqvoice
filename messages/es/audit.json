@@ -272,6 +272,7 @@
     "scheduled_message_send_now": "{channel, select, email {Correo} sms {SMS} telegram {Mensaje de Telegram} in_app {Aviso en la app} other {{channel}}} programado enviado antes de tiempo",
     "scheduled_message_update": "{channel, select, email {Correo} sms {SMS} telegram {Mensaje de Telegram} in_app {Aviso en la app} other {{channel}}} programado actualizado",
     "service_create": "Servicio {ref} creado",
+    "service_bookAppointment": "Cita {ref} reservada",
     "service_createCounterSale": "Venta en mostrador {ref} creada",
     "service_createDraft": "Borrador de servicio {ref} creado",
     "service_createFromInspection": "Orden de trabajo {ref} creada a partir de una inspección",
