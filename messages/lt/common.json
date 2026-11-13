@@ -201,7 +201,7 @@
   },
   "shareLink": {
     "generateFailed": "Nepavyko sukurti nuorodos. Bandykite dar kartą.",
-    "revokeFailed": "Nepavyko atšaukti nuorodos. Ji vis dar veikia visiems, kurie ją turi."
+    "revokeFailed": "Nepavyko patvirtinti, kad nuoroda atšaukta. Ji vis dar gali veikti visiems, kurie ją turi."
   },
   "searchableSelect": {
     "choose": "Pasirinkite...",

@@ -201,7 +201,7 @@
   },
   "shareLink": {
     "generateFailed": "Bağlantı oluşturulamadı. Tekrar deneyin.",
-    "revokeFailed": "Bağlantı iptal edilemedi. Bağlantıya sahip olan herkes onu hâlâ kullanabilir."
+    "revokeFailed": "Bağlantının iptali doğrulanamadı. Bağlantıya sahip olan herkes onu hâlâ açabilir."
   },
   "searchableSelect": {
     "choose": "Seçin...",

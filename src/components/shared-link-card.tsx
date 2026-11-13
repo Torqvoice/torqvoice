@@ -49,8 +49,9 @@ export function SharedLinkCard({
     }
   }
 
-  // A refusal or a request that never arrived leaves the link working, so
-  // the card says so rather than letting the workshop think it is gone.
+  // A refusal leaves the link working, and a request that got no answer may
+  // or may not have revoked it, so the card says the revoke could not be
+  // confirmed rather than letting the workshop think the link is gone.
   const handleRevoke = async () => {
     if (!onRevoke || revoking) return
     setRevoking(true)

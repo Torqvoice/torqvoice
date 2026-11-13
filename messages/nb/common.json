@@ -201,7 +201,7 @@
   },
   "shareLink": {
     "generateFailed": "Kunne ikke opprette lenken. Prøv igjen.",
-    "revokeFailed": "Kunne ikke tilbakekalle lenken. Den virker fortsatt for alle som har den."
+    "revokeFailed": "Kunne ikke bekrefte at lenken ble tilbakekalt. Den kan fortsatt virke for alle som har den."
   },
   "searchableSelect": {
     "choose": "Velg...",

@@ -201,7 +201,7 @@
   },
   "shareLink": {
     "generateFailed": "Kon de link niet aanmaken. Probeer het opnieuw.",
-    "revokeFailed": "Kon de link niet intrekken. Hij werkt nog steeds voor iedereen die hem heeft."
+    "revokeFailed": "Kon niet bevestigen dat de link is ingetrokken. Hij werkt mogelijk nog voor iedereen die hem heeft."
   },
   "searchableSelect": {
     "choose": "Kiezen...",

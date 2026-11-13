@@ -201,7 +201,7 @@
   },
   "shareLink": {
     "generateFailed": "Não foi possível criar o link. Tente novamente.",
-    "revokeFailed": "Não foi possível revogar o link. Ele continua funcionando para quem o tiver."
+    "revokeFailed": "Não foi possível confirmar que o link foi revogado. Ele pode continuar funcionando para quem o tiver."
   },
   "searchableSelect": {
     "choose": "Escolher...",

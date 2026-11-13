@@ -53,7 +53,8 @@ import { ShareDialog } from '@/features/vehicles/Components/service-detail/Share
 import { InspectionShareDialog } from '@/features/inspections/Components/InspectionShareDialog'
 import { SharedLinkCard } from '@/components/shared-link-card'
 
-const REVOKE_FAILED = "Couldn't revoke the link. It still works for anyone who has it."
+const REVOKE_FAILED =
+  "Couldn't confirm the link was revoked. It may still work for anyone who has it."
 const GENERATE_FAILED = "Couldn't create the link. Try again."
 const DROPPED = () => {
   throw new TypeError('Failed to fetch')
