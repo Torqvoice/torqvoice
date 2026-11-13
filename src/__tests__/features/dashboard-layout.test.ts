@@ -240,6 +240,30 @@ describe('added cards', () => {
     expect(layout.cards.calendarEvents.y).toBe(60)
   })
 
+  it("makes room among the user's own cards too", () => {
+    // A custom card beside the reminders, on their row.
+    const widget: CardLayout = { x: 6, y: 60, w: 6, h: 4 }
+    const layout = normalizeLayout(
+      savedBeforeCalendar({
+        reminders: { x: 0, y: 60, w: 6, h: 4 },
+        maintenance: { x: 0, y: 64, w: 6, h: 4 },
+        'custom:w1': widget,
+      }),
+      ['custom:w1', 'custom:w2']
+    )
+
+    expect(layout.cards.calendarEvents.y).toBe(60)
+    expect(layout.cards['custom:w1']).toEqual({ ...widget, y: 65 })
+    expect(overlaps(layout.cards.calendarEvents, layout.cards['custom:w1'])).toBe(false)
+    // A widget made since then goes under everything.
+    const bottom = Math.max(
+      ...Object.entries(layout.cards)
+        .filter(([id]) => id !== 'custom:w2')
+        .map(([, c]) => c.y + c.h)
+    )
+    expect(layout.cards['custom:w2'].y).toBe(bottom)
+  })
+
   it('keeps the calendar where the user put it once it is saved', () => {
     const mine: CardLayout = { x: 6, y: 40, w: 6, h: 6 }
     const layout = normalizeLayout({

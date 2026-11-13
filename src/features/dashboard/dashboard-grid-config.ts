@@ -284,6 +284,12 @@ export function normalizeLayout(raw: unknown, customIds: string[] = []): Dashboa
     }
     result.cards[id] = clampCard(stored)
   }
+  // The user's own cards are back too before anything makes room, so a card
+  // moved or added among them pushes them down with the rest.
+  for (const id of customIds) {
+    const stored = cards[id]
+    if (isCardLayout(stored)) result.cards[id] = clampCard(stored)
+  }
   // After every other card is back where the user left it, so a moved card
   // can be placed relative to them.
   for (const id of migrating) {
@@ -298,9 +304,9 @@ export function normalizeLayout(raw: unknown, customIds: string[] = []): Dashboa
     delete result.cards[id]
     insertAt(result.cards, id, added.place(result.cards))
   }
+  // Widgets made since the layout was saved go under everything.
   for (const id of customIds) {
-    const stored = cards[id]
-    result.cards[id] = isCardLayout(stored) ? clampCard(stored) : placeAtBottom(result.cards)
+    if (!result.cards[id]) result.cards[id] = placeAtBottom(result.cards)
   }
 
   return result
