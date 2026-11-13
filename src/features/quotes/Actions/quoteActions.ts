@@ -48,7 +48,7 @@ import {
 } from '../Lib/conversionConflicts'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -509,7 +509,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           where: {
             organizationId,
             key: {
-              in: ['workshop.invoicePrefix', ...WARRANTY_SETTING_KEYS, ...SHOP_FEE_SETTING_KEYS],
+              in: [...JOB_NUMBER_SETTING_KEYS, ...WARRANTY_SETTING_KEYS, ...SHOP_FEE_SETTING_KEYS],
             },
           },
         }),
@@ -520,25 +520,15 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       ])
       const settingsMap: Record<string, string> = {}
       for (const s of settings) settingsMap[s.key] = s.value
-      const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
-
-      const lastRecord = await db.serviceRecord.findFirst({
-        where: { organizationId },
-        orderBy: { createdAt: 'desc' },
-        select: { invoiceNumber: true },
-      })
-      let nextNum = 1001
-      if (lastRecord?.invoiceNumber) {
-        const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-        if (match) nextNum = parseInt(match[1], 10) + 1
-      }
-      const invoiceNumber = `${prefix}${nextNum}`
+      const timeZone = await workshopTimeZone(organizationId)
+      // The next number in the workshop's format, like any new job; see
+      // src/lib/job-number.ts. It ignored "Next invoice number" before.
+      const invoiceNumber = await nextJobNumber({ organizationId, settings: settingsMap, timeZone })
 
       // What the customer was told on the quote is what the job carries, "not
       // included" as much as twelve months: they accepted on those words. A
       // quote that never mentioned warranty leaves the job to start like any
       // other, from the workshop's standing answer.
-      const timeZone = await workshopTimeZone(organizationId)
       const serviceDate = new Date()
       const warranty = quote.warrantyStatus
         ? normalizeWarranty(quote)

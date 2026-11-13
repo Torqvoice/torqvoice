@@ -11,7 +11,7 @@ import {
   type CreateRecurringInvoiceInput,
   type UpdateRecurringInvoiceInput,
 } from '../Schema/recurringInvoiceSchema'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import {
   documentTotals,
   readWorkshopTax,
@@ -276,36 +276,14 @@ export async function toggleRecurringInvoice(id: string) {
   )
 }
 
-async function generateInvoiceNumber(organizationId: string): Promise<string> {
+/** The next job number in the workshop's format; see src/lib/job-number.ts. */
+async function generateInvoiceNumber(organizationId: string, timeZone: string): Promise<string> {
   const settings = await db.appSetting.findMany({
-    where: {
-      organizationId,
-      key: { in: ['workshop.invoicePrefix', 'workshop.invoiceStartNumber'] },
-    },
+    where: { organizationId, key: { in: [...JOB_NUMBER_SETTING_KEYS] } },
   })
-
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
-
-  const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
-  const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
-
-  const lastRecord = await db.serviceRecord.findFirst({
-    where: { organizationId },
-    orderBy: { createdAt: 'desc' },
-    select: { invoiceNumber: true },
-  })
-
-  let nextNum = startNumber || 1001
-  if (lastRecord?.invoiceNumber) {
-    const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-    if (match) {
-      const lastNum = parseInt(match[1], 10) + 1
-      nextNum = Math.max(nextNum, lastNum)
-    }
-  }
-
-  return `${prefix}${nextNum}`
+  return nextJobNumber({ organizationId, settings: settingsMap, timeZone })
 }
 
 export async function processRecurringInvoices() {
@@ -331,7 +309,7 @@ export async function processRecurringInvoices() {
       const taxApplies = await loadTaxApplies(organizationId)
 
       for (const ri of dueInvoices) {
-        const invoiceNumber = await generateInvoiceNumber(organizationId)
+        const invoiceNumber = await generateInvoiceNumber(organizationId, timeZone)
 
         // Calculate totals
         const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)

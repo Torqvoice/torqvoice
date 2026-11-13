@@ -5,7 +5,11 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import {
+  clearNextNumberSetting,
+  JOB_NUMBER_SETTING_KEYS,
+  jobNumberSequence,
+} from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { mkdir, stat, readdir, rm } from 'fs/promises'
@@ -261,23 +265,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get invoice prefix settings
-    const prefixSetting = await db.appSetting.findFirst({
-      where: { organizationId, key: 'workshop.invoicePrefix' },
+    // Imported jobs carry on the workshop's own numbering, in its format and
+    // past every number already issued in it; see src/lib/job-number.ts.
+    const numberingSettings = await db.appSetting.findMany({
+      where: { organizationId, key: { in: [...JOB_NUMBER_SETTING_KEYS] } },
     })
-    const invoicePrefix = resolveInvoicePrefix(prefixSetting?.value ?? '{year}-')
-
-    // Get the current highest invoice number to continue the sequence
-    const lastRecord = await db.serviceRecord.findFirst({
-      where: { organizationId },
-      orderBy: { createdAt: 'desc' },
-      select: { invoiceNumber: true },
+    const sequence = await jobNumberSequence({
+      organizationId,
+      settings: Object.fromEntries(numberingSettings.map((s) => [s.key, s.value])),
+      timeZone,
     })
-    let nextInvoiceNum = 1001
-    if (lastRecord?.invoiceNumber) {
-      const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-      if (match) nextInvoiceNum = Number.parseInt(match[1], 10) + 1
-    }
+    const invoicePrefix = sequence.prefix
+    let nextInvoiceNum = sequence.first
 
     // Map LubeLog vehicle IDs → Torqvoice vehicle IDs
     const vehicleIdMap = new Map<number, string>()
@@ -441,6 +440,10 @@ export async function POST(request: NextRequest) {
               }
             }
           }
+        }
+        // "Next invoice number" was used up by the first imported job.
+        if (sequence.usesNextNumberSetting && nextInvoiceNum > sequence.first) {
+          await clearNextNumberSetting(organizationId, tx)
         }
       },
       { timeout: maxDuration * 1000 }

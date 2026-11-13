@@ -24,6 +24,9 @@ vi.mock('@/features/inventory/Lib/onInventoryChanged', () => ({
 }))
 vi.mock('@/lib/db', () => ({
   db: {
+    // Nothing yet in the workshop's number format (src/lib/job-number.ts). A plain
+    // function, so resetAllMocks cannot blank it.
+    $queryRaw: async () => [],
     user: { findUnique: vi.fn() },
     vehicle: { findFirst: vi.fn(), update: vi.fn() },
     customer: { findFirst: vi.fn() },

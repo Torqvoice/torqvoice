@@ -23,6 +23,7 @@ import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { atZonedTime, startOfZonedDay, zonedParts } from '@/lib/timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import {
   resolveWorkOrderTitle,
   workOrderTitleTemplateFrom,
@@ -75,8 +76,7 @@ export async function createDraftRecord(
         organizationId,
         key: {
           in: [
-            'workshop.invoicePrefix',
-            'workshop.invoiceStartNumber',
+            ...JOB_NUMBER_SETTING_KEYS,
             'workshop.defaultTechnician',
             'workshop.defaultTechnicianId',
             SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE,
@@ -150,35 +150,15 @@ export async function createDraftRecord(
     }
   }
 
-  const rawPrefix = settingsMap['workshop.invoicePrefix'] ?? '{year}-'
   const now = new Date()
   const today = zonedParts(now, timeZone)
-  const prefix = rawPrefix
-    .replace('{year}', String(today.year))
-    .replace('{month}', String(today.month).padStart(2, '0'))
-
-  const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
-  const lastRecord = await db.serviceRecord.findFirst({
-    where: { organizationId },
-    orderBy: { createdAt: 'desc' },
-    select: { invoiceNumber: true },
+  const invoiceNumber = await nextJobNumber({
+    organizationId,
+    settings: settingsMap,
+    timeZone,
+    writer: opts.tx,
+    now,
   })
-  let nextNum = startNumber || 1001
-  if (lastRecord?.invoiceNumber) {
-    const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-    if (match) {
-      const lastNum = parseInt(match[1], 10) + 1
-      nextNum = Math.max(nextNum, lastNum)
-    }
-  }
-  const invoiceNumber = `${prefix}${nextNum}`
-
-  if (startNumber && nextNum === startNumber) {
-    await writer.appSetting.updateMany({
-      where: { organizationId, key: 'workshop.invoiceStartNumber' },
-      data: { value: '' },
-    })
-  }
 
   // The workshop's default tax, components included when it splits its tax.
   // Tax-exempt customers always get a 0% rate regardless of org default.
