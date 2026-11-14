@@ -1,5 +1,6 @@
 'use server'
 
+import { smsRefusalForPerson } from '@/features/sms/Lib/smsRefusalText.server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
@@ -338,7 +339,8 @@ export async function sendScheduledMessageNow(id: string) {
           where: { id },
           data: { lastRunAt: now, errorMessage },
         })
-        throw error
+        // Stored in English for the record; told in the person's language.
+        throw await smsRefusalForPerson(error)
       }
 
       const updated = await db.scheduledMessage.update({

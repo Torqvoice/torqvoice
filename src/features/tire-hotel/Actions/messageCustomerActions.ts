@@ -1,5 +1,6 @@
 'use server'
 
+import { smsRefusalForPerson } from '@/features/sms/Lib/smsRefusalText.server'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { recipientFitsChannel } from '../Lib/recipient'
@@ -187,7 +188,8 @@ export async function messageCustomerAboutTireSet(input: unknown) {
           where: { id: record.id },
           data: { status: 'failed', lastRunAt: now, errorMessage: message },
         })
-        throw error
+        // Stored in English for the record; told in the person's language.
+        throw await smsRefusalForPerson(error)
       }
 
       await db.scheduledMessage.update({

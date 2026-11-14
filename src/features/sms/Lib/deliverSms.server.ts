@@ -1,8 +1,8 @@
 import 'server-only'
 import { db } from '@/lib/db'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
-import { getTranslations } from 'next-intl/server'
 import { getOrgSmsPhoneNumber, SmsCountryRefusedError, sendOrgSms } from '@/lib/sms'
+import { smsRefusalForPerson } from './smsRefusalText.server'
 
 export interface DeliverSmsInput {
   /** Already normalised to the E.164 number the provider will receive. */
@@ -77,10 +77,7 @@ export async function deliverSms(organizationId: string, input: DeliverSmsInput)
     // The country is not open on the account: a plain sentence in the
     // person's language, saying what they can do about it, instead of the
     // provider's wording.
-    if (error instanceof SmsCountryRefusedError) {
-      const t = await getTranslations('messages.errors')
-      throw new Error(t(error.platform ? 'countryNotAvailable' : 'countryNotAllowedOwn'))
-    }
+    if (error instanceof SmsCountryRefusedError) throw await smsRefusalForPerson(error)
 
     throw new Error(`Failed to send SMS: ${errorMessage}`)
   }
