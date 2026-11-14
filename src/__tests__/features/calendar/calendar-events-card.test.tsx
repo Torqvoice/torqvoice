@@ -121,6 +121,22 @@ describe('calendar events card', () => {
     expect(within(screen.getByRole('dialog')).getByText(`Booking for ${TODAY}`)).toBeInTheDocument()
   })
 
+  it('names a quote by the status the quote list gives it, not "Draft"', () => {
+    renderCard([
+      event({
+        id: 'quote-1',
+        title: 'Brake quote',
+        type: 'quote',
+        status: 'accepted',
+        invoiceNumber: 'Q-0042',
+      }),
+    ])
+
+    fireEvent.click(screen.getByText('Brake quote'))
+    expect(screen.getByText('Accepted')).toBeInTheDocument()
+    expect(screen.queryByText('Draft')).not.toBeInTheDocument()
+  })
+
   it('says when nothing is coming and still offers a booking', () => {
     renderCard([event({ id: 'job-2', title: 'Oil change', status: 'completed' })])
 

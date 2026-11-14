@@ -165,7 +165,7 @@ export function eventHue(event: Pick<CalendarEvent, 'type' | 'status'>): Hue {
           return 'amber'
       }
     case 'quote':
-      return event.status === 'approved' ? 'emerald' : 'violet'
+      return event.status === 'accepted' ? 'emerald' : 'violet'
     case 'message':
       return event.status === 'failed' ? 'red' : 'teal'
     case 'closure':
