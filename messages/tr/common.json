@@ -54,6 +54,31 @@
     "whatsNew": "Yenilikleri gör",
     "dismiss": "Kapat"
   },
+  "whatsNew": {
+    "title": "Yenilikler",
+    "openUnread": "Yenilikler: henüz görmediğiniz güncellemeler",
+    "description": "En son eklenenler, en yenisi önce.",
+    "unread": "Son ziyaretinizden bu yana yeni",
+    "kindNew": "Yeni",
+    "kindImproved": "İyileştirildi",
+    "open": "Aç",
+    "guide": "Kılavuzu oku",
+    "version": "Sürüm {version}",
+    "allReleaseNotes": "Tüm sürüm notları",
+    "feedback": {
+      "question": "Bu faydalı oldu mu?",
+      "up": "Evet, faydalı",
+      "down": "Hayır, beklediğim gibi değil",
+      "askUp": "Nesini beğendiniz? (isteğe bağlı)",
+      "askDown": "Ne beklediğiniz gibi çalışmadı?",
+      "privacyIdentified": "Size yanıt verebilmemiz için e-posta adresinizle birlikte Torqvoice ekibine gönderilir.",
+      "privacyAnonymous": "Adınız ve e-posta adresiniz olmadan Torqvoice ekibine gönderilir.",
+      "skip": "Atla",
+      "send": "Gönder",
+      "thanks": "Teşekkürler, yorumunuz gönderildi.",
+      "failed": "Geri bildiriminiz gönderilemedi. Birazdan tekrar deneyin."
+    }
+  },
   "pagination": {
     "showing": "{total} kayıttan {start}–{end} gösteriliyor",
     "perPage": "sayfa başına",

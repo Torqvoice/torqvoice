@@ -54,6 +54,31 @@
     "whatsNew": "See what is new",
     "dismiss": "Dismiss"
   },
+  "whatsNew": {
+    "title": "What's new",
+    "openUnread": "What's new: updates you have not seen",
+    "description": "The latest additions, newest first.",
+    "unread": "New since you last looked",
+    "kindNew": "New",
+    "kindImproved": "Improved",
+    "open": "Open",
+    "guide": "Read the guide",
+    "version": "Version {version}",
+    "allReleaseNotes": "All release notes",
+    "feedback": {
+      "question": "Was this useful?",
+      "up": "Yes, this is useful",
+      "down": "No, not what I expected",
+      "askUp": "What do you like about it? (optional)",
+      "askDown": "What did not work the way you expected?",
+      "privacyIdentified": "Sent to the Torqvoice team with your email address, so we can reply.",
+      "privacyAnonymous": "Sent to the Torqvoice team without your name or email address.",
+      "skip": "Skip",
+      "send": "Send",
+      "thanks": "Thank you, your comment was sent.",
+      "failed": "Your feedback could not be sent. Try again in a moment."
+    }
+  },
   "pagination": {
     "showing": "Showing {start}-{end} of {total}",
     "perPage": "per page",

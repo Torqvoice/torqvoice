@@ -22,6 +22,7 @@ import { useLicenseExpiry } from '@/components/license-expiry-context'
 import { BANNER_PRIORITY, useBannerSlot } from '@/components/banner-slot'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
 import { DocsLink } from '@/components/docs-link'
+import { WhatsNewButton } from '@/features/whats-new/Components/WhatsNewButton'
 import { RunningClockPill } from '@/features/time-tracking/Components/RunningClockPill'
 import { useServiceType } from '@/components/service-type-context'
 import { SETTINGS_PAGES } from '@/features/settings/Lib/settingsPages'
@@ -345,6 +346,7 @@ export function PageHeader() {
           <RunningClockPill />
           <PlateTrigger />
           <SearchTrigger />
+          <WhatsNewButton />
           <QuickCreateMenu />
           {showWhiteLabelCta && (
             <Button asChild variant="outline" size="sm" className="hidden sm:inline-flex">

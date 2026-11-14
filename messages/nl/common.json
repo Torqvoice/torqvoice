@@ -54,6 +54,31 @@
     "whatsNew": "Bekijk wat er nieuw is",
     "dismiss": "Sluiten"
   },
+  "whatsNew": {
+    "title": "Wat is er nieuw",
+    "openUnread": "Wat is er nieuw: updates die u nog niet hebt gezien",
+    "description": "De nieuwste toevoegingen, nieuwste eerst.",
+    "unread": "Nieuw sinds uw laatste bezoek",
+    "kindNew": "Nieuw",
+    "kindImproved": "Verbeterd",
+    "open": "Openen",
+    "guide": "Lees de handleiding",
+    "version": "Versie {version}",
+    "allReleaseNotes": "Alle release notes",
+    "feedback": {
+      "question": "Was dit nuttig?",
+      "up": "Ja, dit is nuttig",
+      "down": "Nee, niet wat ik verwachtte",
+      "askUp": "Wat vindt u er goed aan? (optioneel)",
+      "askDown": "Wat werkte niet zoals u verwachtte?",
+      "privacyIdentified": "Wordt met uw e-mailadres naar het Torqvoice-team gestuurd, zodat we kunnen reageren.",
+      "privacyAnonymous": "Wordt zonder uw naam of e-mailadres naar het Torqvoice-team gestuurd.",
+      "skip": "Overslaan",
+      "send": "Versturen",
+      "thanks": "Bedankt, uw opmerking is verstuurd.",
+      "failed": "Uw feedback kon niet worden verstuurd. Probeer het zo opnieuw."
+    }
+  },
   "pagination": {
     "showing": "{start}–{end} van {total} weergegeven",
     "perPage": "per pagina",
