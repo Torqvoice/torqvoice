@@ -27,6 +27,7 @@ export function useWhatsNew() {
 export function WhatsNewProvider({
   entries,
   unreadIds,
+  timeZone,
   appVersion,
   releaseNotesUrl,
   feedback,
@@ -35,6 +36,7 @@ export function WhatsNewProvider({
   entries: WhatsNewEntry[]
   /** Entries published since this person last opened the panel. */
   unreadIds: string[]
+  timeZone: string
   appVersion: string
   releaseNotesUrl: string
   /**
@@ -63,7 +65,15 @@ export function WhatsNewProvider({
     if (pending.length === 0) return
     setMarked(new Set(pending))
     setAcknowledged((current) => new Set([...current, ...pending]))
-    void markWhatsNewSeen()
+    // Not recorded: let the dot come back, so the next opening tries again
+    // rather than this tab believing something the server never heard.
+    const forget = () =>
+      setAcknowledged((current) => new Set([...current].filter((id) => !pending.includes(id))))
+    markWhatsNewSeen()
+      .then((result) => {
+        if (!result.success) forget()
+      })
+      .catch(forget)
   }, [pending])
 
   const value = useMemo(
@@ -80,6 +90,7 @@ export function WhatsNewProvider({
           onOpenChange={setIsOpen}
           entries={entries}
           markedIds={marked}
+          timeZone={timeZone}
           appVersion={appVersion}
           releaseNotesUrl={releaseNotesUrl}
           feedback={feedback}

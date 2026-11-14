@@ -68,6 +68,7 @@ function show({
     <WhatsNewProvider
       entries={entries}
       unreadIds={unread}
+      timeZone="Europe/Oslo"
       appVersion="v2.14.0"
       releaseNotesUrl="https://example.test/releases"
       feedback={feedback}
@@ -177,5 +178,49 @@ describe("What's new", () => {
     show({ feedback: null })
     await user.click(screen.getByRole('button', { name: /What's new/ }))
     expect(screen.queryByText('Was this useful?')).not.toBeInTheDocument()
+  })
+})
+
+describe("What's new, when things go wrong", () => {
+  it('keeps the dot when opening the panel could not be recorded, and tries again next time', async () => {
+    markWhatsNewSeen.mockResolvedValueOnce({ success: false })
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: /updates you have not seen/ }))
+    await user.keyboard('{Escape}')
+
+    const again = await screen.findByRole('button', { name: /updates you have not seen/ })
+    await user.click(again)
+    expect(markWhatsNewSeen).toHaveBeenCalledTimes(2)
+  })
+
+  it('does not take a second vote while the first is still on its way', async () => {
+    let finish: (value: { success: boolean }) => void = () => undefined
+    sendWhatsNewFeedback.mockImplementationOnce(
+      () => new Promise<{ success: boolean }>((resolve) => (finish = resolve))
+    )
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: /What's new/ }))
+    const first = screen.getByText('Appointments on the calendar').closest('article') as HTMLElement
+    await user.click(within(first).getByRole('button', { name: 'No, not what I expected' }))
+
+    const up = within(first).getByRole('button', { name: 'Yes, this is useful' })
+    expect(up).toBeDisabled()
+    await user.click(up)
+    expect(sendWhatsNewFeedback).toHaveBeenCalledTimes(1)
+
+    finish({ success: true })
+    await waitFor(() => expect(up).toBeEnabled())
+  })
+
+  it('does not follow a button address that would leave the app', async () => {
+    const user = userEvent.setup()
+    show({
+      entries: [{ ...ENTRIES[0], ctaHref: '/\\evil.example' }],
+      unread: [],
+    })
+    await user.click(screen.getByRole('button', { name: "What's new" }))
+    expect(screen.queryByRole('link', { name: /Open the calendar/ })).not.toBeInTheDocument()
   })
 })

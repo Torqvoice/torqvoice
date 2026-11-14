@@ -1,3 +1,5 @@
+import { safeRedirectPath } from '@/lib/safe-redirect'
+
 const ALLOWED_TAGS = new Set([
   'p',
   'br',
@@ -29,7 +31,8 @@ function safeHref(tag: string): string | null {
   const match = /\bhref\s*=\s*(?:"([^"]*)"|'([^']*)')/i.exec(tag)
   const raw = (match?.[1] ?? match?.[2] ?? '').replace(/&amp;/g, '&').trim()
   if (!raw) return null
-  if (raw.startsWith('/') && !raw.startsWith('//')) return raw
+  // A path inside the app. `/\\host` and `//host` leave it, so they are not one.
+  if (raw.startsWith('/')) return safeRedirectPath(raw, '') || null
   try {
     const url = new URL(raw)
     return url.protocol === 'https:' || url.protocol === 'http:' ? url.toString() : null
@@ -45,12 +48,18 @@ function safeHref(tag: string): string | null {
  * crossed the network and is about to be set as HTML inside a signed-in
  * workshop. Every attribute goes except a link's address, and that has to be
  * a web address or an app path.
+ *
+ * Every `<` in the input is either the start of a tag this rebuilds from
+ * scratch, part of a tag it removes, or a stray one that is escaped. So no
+ * `<` reaches the output except in the tags written here, and removing one
+ * tag can never leave the pieces of another behind (`<<x>img onerror=...>`).
  */
 export function sanitizeBody(html: string): string {
   return html
     .replace(/<!--[\s\S]*?-->/g, '')
     .replace(DROPPED_WITH_CONTENT, '')
-    .replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>/g, (match, tag: string) => {
+    .replace(/<\/?([a-zA-Z][a-zA-Z0-9]*)\b[^>]*>|</g, (match, tag: string | undefined) => {
+      if (!tag) return '&lt;'
       const name = tag.toLowerCase()
       if (!ALLOWED_TAGS.has(name)) return ''
       if (name === 'br') return '<br>'

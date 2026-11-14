@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
   Sheet,
@@ -11,15 +11,15 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
-import { useDayFormatter } from '@/features/calendar/Components/useDayFormatter'
 import { MARKETING_URL } from '@/lib/marketing-urls'
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { cn } from '@/lib/utils'
 import type { WhatsNewEntry } from '../Schema/whatsNewSchema'
 import { WhatsNewFeedback } from './WhatsNewFeedback'
 
 /** A path inside this app, and nothing that could leave it. */
 function appPath(href: string | null): string | null {
-  return href?.startsWith('/') && !href.startsWith('//') ? href : null
+  return safeRedirectPath(href, '') || null
 }
 
 function docsUrl(href: string | null): string | null {
@@ -40,16 +40,18 @@ const BODY_STYLES = cn(
 function Entry({
   entry,
   marked,
+  timeZone,
   feedback,
   onNavigate,
 }: {
   entry: WhatsNewEntry
   marked: boolean
+  timeZone: string
   feedback: 'identified' | 'anonymous' | null
   onNavigate: () => void
 }) {
   const t = useTranslations('common.whatsNew')
-  const day = useDayFormatter()
+  const format = useFormatter()
   const cta = appPath(entry.ctaHref)
   const guide = docsUrl(entry.docsHref)
 
@@ -70,10 +72,12 @@ function Entry({
           {entry.kind === 'new' ? t('kindNew') : t('kindImproved')}
         </span>
         <time dateTime={entry.publishedAt} className="text-xs text-muted-foreground">
-          {day.dateTime(new Date(entry.publishedAt), {
+          {/* The workshop's calendar day, like every other date in the app. */}
+          {format.dateTime(new Date(entry.publishedAt), {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
+            timeZone,
           })}
         </time>
       </div>
@@ -127,6 +131,7 @@ export function WhatsNewPanel({
   onOpenChange,
   entries,
   markedIds,
+  timeZone,
   appVersion,
   releaseNotesUrl,
   feedback,
@@ -135,6 +140,8 @@ export function WhatsNewPanel({
   onOpenChange: (open: boolean) => void
   entries: WhatsNewEntry[]
   markedIds: ReadonlySet<string>
+  /** The workshop's time zone, for the day an entry was published. */
+  timeZone: string
   appVersion: string
   releaseNotesUrl: string
   feedback: 'identified' | 'anonymous' | null
@@ -154,6 +161,7 @@ export function WhatsNewPanel({
               key={entry.id}
               entry={entry}
               marked={markedIds.has(entry.id)}
+              timeZone={timeZone}
               feedback={feedback}
               onNavigate={() => onOpenChange(false)}
             />

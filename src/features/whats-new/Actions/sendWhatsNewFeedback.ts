@@ -26,10 +26,10 @@ function voterKey(userId: string): string {
  * people who wrote it.
  *
  * What leaves the building: the vote, the comment, the app version and the
- * language. On Torqvoice Cloud the workshop's name and the sender's email go
- * along, so a "this did not work" can be answered; the customer already has
- * an account with us there. A self-hosted install sends neither, and the
- * panel says which of the two applies before anything is sent.
+ * language. A thumb on its own names nobody. A comment written on Torqvoice
+ * Cloud takes the workshop's name and the sender's email along, so a "this
+ * did not work" can be answered; the line under the comment box says so
+ * before Send is pressed. A self-hosted install never sends either.
  */
 export async function sendWhatsNewFeedback(input: unknown) {
   return withAuth(
@@ -38,12 +38,13 @@ export async function sendWhatsNewFeedback(input: unknown) {
       const data = whatsNewFeedbackSchema.parse(input)
       const cloud = isCloudMode()
 
-      const identity = cloud
-        ? await Promise.all([
-            db.user.findUnique({ where: { id: userId }, select: { email: true } }),
-            db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
-          ])
-        : null
+      const identity =
+        cloud && data.comment
+          ? await Promise.all([
+              db.user.findUnique({ where: { id: userId }, select: { email: true } }),
+              db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
+            ])
+          : null
 
       const response = await fetch(`${torqvoiceComUrl()}/api/app/whats-new/feedback`, {
         method: 'POST',

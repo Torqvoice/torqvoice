@@ -37,6 +37,9 @@ function rememberVote(entryId: string, vote: Vote) {
  * The thumb is the whole answer and is sent the moment it is pressed. The
  * comment box that opens under it is an invitation, not a second step: most
  * people will not type anything, and their vote must not depend on it.
+ *
+ * A bare thumb names nobody, anywhere. Only a comment from the cloud carries
+ * the sender's email, and the line under the box says so before Send.
  */
 export function WhatsNewFeedback({
   entryId,
@@ -51,7 +54,9 @@ export function WhatsNewFeedback({
   const [vote, setVote] = useState<Vote | null>(null)
   const [writing, setWriting] = useState(false)
   const [comment, setComment] = useState('')
-  const [sending, setSending] = useState(false)
+  // One request at a time. A slow first vote that fails must not arrive
+  // after a second one succeeded and take the thumb back.
+  const [busy, setBusy] = useState(false)
   const [commentSent, setCommentSent] = useState(false)
 
   useEffect(() => {
@@ -59,11 +64,14 @@ export function WhatsNewFeedback({
   }, [entryId])
 
   async function cast(next: Vote) {
+    if (busy) return
+    setBusy(true)
     const previous = vote
     setVote(next)
     setWriting(true)
     setCommentSent(false)
     const result = await sendWhatsNewFeedback({ entryId, vote: next })
+    setBusy(false)
     if (result.success) {
       rememberVote(entryId, next)
     } else {
@@ -74,10 +82,10 @@ export function WhatsNewFeedback({
   }
 
   async function sendComment() {
-    if (!vote || !comment.trim()) return
-    setSending(true)
+    if (busy || !vote || !comment.trim()) return
+    setBusy(true)
     const result = await sendWhatsNewFeedback({ entryId, vote, comment })
-    setSending(false)
+    setBusy(false)
     if (!result.success) {
       toast.error(t('failed'))
       return
@@ -102,6 +110,7 @@ export function WhatsNewFeedback({
         <button
           type="button"
           onClick={() => cast('up')}
+          disabled={busy}
           aria-pressed={vote === 'up'}
           aria-label={t('up')}
           title={t('up')}
@@ -112,6 +121,7 @@ export function WhatsNewFeedback({
         <button
           type="button"
           onClick={() => cast('down')}
+          disabled={busy}
           aria-pressed={vote === 'down'}
           aria-label={t('down')}
           title={t('down')}
@@ -153,9 +163,9 @@ export function WhatsNewFeedback({
               type="button"
               size="sm"
               onClick={sendComment}
-              disabled={sending || !comment.trim()}
+              disabled={busy || !comment.trim()}
             >
-              {sending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              {busy && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
               {t('send')}
             </Button>
           </div>

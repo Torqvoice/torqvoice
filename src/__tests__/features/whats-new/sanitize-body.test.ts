@@ -31,6 +31,17 @@ describe('highlight body', () => {
     )
   })
 
+  it('cannot be tricked into rebuilding a tag out of the pieces of a removed one', () => {
+    const out = sanitizeBody('<<x>img src=x onerror=alert(1)><p>Hi</p><scr<script>ipt>alert(2)')
+    expect(out).not.toMatch(/<(?!\/?(p|a|br|strong|b|em|i|u|s|h3|h4|ul|ol|li|blockquote|code)>)/)
+    expect(out).toContain('&lt;img src=x onerror=alert(1)>')
+    expect(out).toContain('<p>Hi</p>')
+  })
+
+  it('does not take a backslash path for a link into the app', () => {
+    expect(sanitizeBody('<a href="/\\evil.example">x</a>')).toBe('<a>x</a>')
+  })
+
   it('removes the address from a link that is neither', () => {
     expect(sanitizeBody('<a href="javascript:alert(1)">x</a>')).toBe('<a>x</a>')
     expect(sanitizeBody('<a href="//evil.example">x</a>')).toBe('<a>x</a>')

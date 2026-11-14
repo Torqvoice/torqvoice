@@ -78,12 +78,20 @@ describe('sending feedback on a highlight', () => {
 
   it('sends the email and workshop from the cloud, so the comment can be answered', async () => {
     cloud = true
-    await sendWhatsNewFeedback({ entryId: 'appointments', vote: 'up' })
+    await sendWhatsNewFeedback({ entryId: 'appointments', vote: 'up', comment: 'Works well' })
     expect(sentBody()).toMatchObject({
       mode: 'cloud',
       email: 'ingrid@fjordside.example',
       workshop: 'Fjordside Auto',
     })
+  })
+
+  it('names nobody for a thumb on its own, even from the cloud', async () => {
+    cloud = true
+    await sendWhatsNewFeedback({ entryId: 'appointments', vote: 'up' })
+    const body = sentBody()
+    expect(body.email).toBeUndefined()
+    expect(body.workshop).toBeUndefined()
   })
 
   it('gives one person the same key every time, so a second vote replaces the first', async () => {

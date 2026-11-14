@@ -334,6 +334,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
               <WhatsNewProvider
                 entries={whatsNewEntries}
                 unreadIds={whatsNewUnread}
+                timeZone={safeTimeZone(data.timezone)}
                 appVersion={appVersion}
                 releaseNotesUrl={releaseNotesUrl}
                 feedback={isDemoMode ? null : isCloudMode() ? 'identified' : 'anonymous'}
