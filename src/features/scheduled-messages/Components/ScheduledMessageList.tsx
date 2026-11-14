@@ -1,5 +1,6 @@
 'use client'
 
+import { handleGated } from '@/components/upgrade-gate'
 import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -109,7 +110,7 @@ export function ScheduledMessageList({
     if (result?.success) {
       toast.success(t('sentNow'))
       onChanged()
-    } else {
+    } else if (!result || !handleGated(result)) {
       toast.error(result?.error || t('sendError'))
     }
     setBusyId(null)

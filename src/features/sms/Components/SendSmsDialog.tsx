@@ -10,6 +10,7 @@ import { Loader2, MessageSquare, Send } from 'lucide-react'
 import { handleGated } from '@/components/upgrade-gate'
 import { useGlassModal } from '@/components/glass-modal'
 import { sendSmsToCustomer } from '../Actions/smsActions'
+import { SharedNumberNotice } from './SharedNumberNotice'
 
 interface SendSmsDialogProps {
   open: boolean
@@ -94,6 +95,7 @@ export function SendSmsDialog({
             <p className="text-xs text-muted-foreground">
               {t('characters', { count: message.length })}
             </p>
+            <SharedNumberNotice enabled={open} />
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>

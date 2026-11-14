@@ -88,7 +88,8 @@ describe('checklist list on a dropped connection', () => {
       expect(toast.error).toHaveBeenCalledWith('Could not translate the checklists')
     )
     expectPageStillThere()
-    expect(screen.getByRole('button', { name: 'Translate' })).toBeEnabled()
+    // The button frees up when the transition ends, a moment after the toast.
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Translate' })).toBeEnabled())
     expect(router.refresh).not.toHaveBeenCalled()
   })
 

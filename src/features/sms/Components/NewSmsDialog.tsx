@@ -13,6 +13,7 @@ import { handleGated } from '@/components/upgrade-gate'
 import { DocsLink } from '@/components/docs-link'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { searchSmsRecipients, sendSmsToCustomer } from '../Actions/smsActions'
+import { SharedNumberNotice } from './SharedNumberNotice'
 import { SmsTemplateMenu } from './SmsTemplateMenu'
 
 interface Recipient {
@@ -205,6 +206,7 @@ export function NewSmsDialog({
               <p className="text-right text-xs text-muted-foreground tabular-nums">
                 {t('segments', { chars, segments })}
               </p>
+              <SharedNumberNotice enabled={open} />
             </div>
 
             <div className="flex flex-wrap justify-end gap-2 pt-1">
