@@ -19,7 +19,10 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
 import { VehicleDetailClient } from '../vehicle-detail-client'
 import { VehicleDetailClassic } from '../_classic/vehicle-detail-classic'
-import { TryNewVehiclePageBanner } from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
+import {
+  TryNewVehiclePageBanner,
+  VehiclePageViewed,
+} from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
 import { resolveVehiclePageLayout } from '@/lib/vehicle-page-layout.server'
 import { PageHeader } from '@/components/page-header'
 import { redirect } from 'next/navigation'
@@ -67,7 +70,7 @@ export default async function VehicleDetailPage({
   const auth = getAuthContext()
   const layoutChoice = auth.then((ctx) => resolveVehiclePageLayout(ctx?.organizationId))
   const access = await getViewerAccess()
-  const layout = await layoutChoice
+  const { layout, chosen: layoutChosen } = await layoutChoice
   const classic = layout === 'classic'
   const S = PermissionSubject
 
@@ -253,6 +256,9 @@ export default async function VehicleDetailPage({
   return (
     <>
       <PageHeader />
+      {/* Which layout each visit got, so the classic page can be retired
+          once nobody is left on it. */}
+      <VehiclePageViewed vehicleId={result.data.id} layout={layout} chosen={layoutChosen} />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         {classic ? (
           <>

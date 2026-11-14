@@ -22,6 +22,12 @@ export type AnalyticsEvent =
   /** A work order opened. */
   | 'work_order:page_view'
   /**
+   * A vehicle page opened: `layout` classic or modern, and `layout_chosen`,
+   * whether this browser picked that layout or got it from the workshop's
+   * age. The classic page can be removed when its views stop.
+   */
+  | 'vehicle_page:page_view'
+  /**
    * The vehicle page switched between its classic and new layouts: `to_layout`
    * which one, `source` the invitation or the menu. Switches back to classic
    * say what the new page still lacks.
