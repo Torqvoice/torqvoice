@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Check, Copy, Link2, Loader2, Mail, MessageSquare } from 'lucide-react'
+import { Check, Copy, Link2, Loader2, Mail, MessageCircle, MessageSquare } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   generateQuotePublicLink,
@@ -18,7 +18,8 @@ import {
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { sendSmsToCustomer, getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { NotifyChannelOption } from '@/features/messaging/Components/NotifyChannelOption'
-import { useShareChannels } from '@/features/messaging/Lib/useShareChannels'
+import { useShareChannels, useWhatsappReach } from '@/features/messaging/Lib/useShareChannels'
+import { sendWhatsappToCustomer } from '@/features/whatsapp/Actions/whatsappActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 import { AttachPdfOption, useAttachPdf } from '@/features/email/Components/AttachPdfOption'
@@ -57,6 +58,7 @@ export function QuoteShareDialog({
   const [notifyEmail, setNotifyEmail] = useState(false)
   const [attachPdf, setAttachPdf] = useAttachPdf(open)
   const [notifySms, setNotifySms] = useState(false)
+  const [notifyWhatsapp, setNotifyWhatsapp] = useState(false)
   const [sending, setSending] = useState(false)
   const t = useTranslations('quotes')
   const tc = useTranslations('common')
@@ -65,6 +67,9 @@ export function QuoteShareDialog({
   const hasPhone = !!customer?.phone
   const channels = useShareChannels(open)
   const smsReady = channels?.sms === 'ready' && hasPhone
+  const whatsappSetUp = channels?.whatsapp === 'ready' && hasPhone
+  const whatsappReach = useWhatsappReach(open && whatsappSetUp, customer?.id)
+  const whatsappReady = whatsappSetUp && whatsappReach === true
 
   const publicUrl =
     publicToken && organizationId
@@ -132,18 +137,26 @@ export function QuoteShareDialog({
       }
     }
 
-    if (smsReady && notifySms) {
+    // The same words on both channels: a text and a WhatsApp message carry
+    // the link, and the workshop wrote the wording once, as its SMS template.
+    const wantsSms = smsReady && notifySms
+    const wantsWhatsapp = whatsappReady && notifyWhatsapp
+    let body = ''
+    if (wantsSms || wantsWhatsapp) {
       const tplResult = await getSmsTemplates()
       const tplData = tplResult.success && tplResult.data ? tplResult.data : null
       const tpl =
         tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY] ||
         SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]
-      const body = interpolateSmsTemplate(tpl || '', {
+      body = interpolateSmsTemplate(tpl || '', {
         share_link: publicUrl,
         customer_name: customer.name,
         company_name: tplData?.companyName || '',
         current_user: tplData?.currentUser || '',
       })
+    }
+
+    if (wantsSms) {
       const res = await sendSmsToCustomer({
         customerId: customer.id,
         body,
@@ -159,6 +172,22 @@ export function QuoteShareDialog({
       }
     }
 
+    if (wantsWhatsapp) {
+      const res = await sendWhatsappToCustomer({
+        customerId: customer.id,
+        body,
+        relatedEntityType: 'quote',
+        relatedEntityId: quoteId,
+      })
+      if (res.success) {
+        results.push(tc('shareLink.whatsappSent'))
+        setNotifyWhatsapp(false)
+      } else {
+        failed = true
+        if (!handleGated(res)) toast.error(res.error || tc('shareLink.failedWhatsapp'))
+      }
+    }
+
     if (results.length > 0) {
       toast.success(results.join(' & '))
       // Either channel re-issues the quote, and the lock may have engaged.
@@ -170,7 +199,10 @@ export function QuoteShareDialog({
     if (results.length > 0 && !failed) onOpenChange(false)
   }
 
-  const canNotify = publicUrl && customer && (notifyEmail || (smsReady && notifySms))
+  const canNotify =
+    publicUrl &&
+    customer &&
+    (notifyEmail || (smsReady && notifySms) || (whatsappReady && notifyWhatsapp))
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -245,6 +277,19 @@ export function QuoteShareDialog({
                       status={channels?.sms}
                       isCloud={channels?.isCloud ?? false}
                       missingContact={hasPhone ? null : t('shareDialog.noPhone')}
+                    />
+                    <NotifyChannelOption
+                      id="notify-whatsapp-quote"
+                      icon={<MessageCircle className="h-3.5 w-3.5" />}
+                      label={tc('shareLink.whatsapp')}
+                      checked={notifyWhatsapp}
+                      onCheckedChange={setNotifyWhatsapp}
+                      status={channels?.whatsapp}
+                      isCloud={channels?.isCloud ?? false}
+                      missingContact={hasPhone ? null : t('shareDialog.noPhone')}
+                      blockedReason={
+                        whatsappReach === false ? tc('shareLink.whatsappWindowClosed') : null
+                      }
                     />
                   </div>
                   {/* Always here, disabled until a channel is ticked: it used to

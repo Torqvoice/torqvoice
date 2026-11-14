@@ -205,7 +205,11 @@
     "revokeFailed": "Kunne ikke bekrefte at lenken ble tilbakekalt. Den kan fortsatt virke for alle som har den.",
     "channelNotConnected": "Koble til {channel} under Integrasjoner for å sende på denne måten.",
     "openIntegrations": "Åpne Integrasjoner",
-    "channelNotInPlan": "{channel} er ikke inkludert i planen din."
+    "channelNotInPlan": "{channel} er ikke inkludert i planen din.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp sendt",
+    "failedWhatsapp": "Kunne ikke sende WhatsApp-melding",
+    "whatsappWindowClosed": "Denne kunden har ikke skrevet til deg på WhatsApp de siste 24 timene, og ingen godkjent mal er satt opp for å nå dem."
   },
   "searchableSelect": {
     "choose": "Velg...",

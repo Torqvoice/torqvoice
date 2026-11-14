@@ -205,7 +205,11 @@
     "revokeFailed": "Nie udało się potwierdzić unieważnienia linku. Może nadal działać dla każdego, kto go ma.",
     "channelNotConnected": "Podłącz {channel} w Integracjach, aby wysyłać w ten sposób.",
     "openIntegrations": "Otwórz Integracje",
-    "channelNotInPlan": "{channel} nie jest objęty Twoim planem."
+    "channelNotInPlan": "{channel} nie jest objęty Twoim planem.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp wysłany",
+    "failedWhatsapp": "Nie udało się wysłać wiadomości WhatsApp",
+    "whatsappWindowClosed": "Ten klient nie napisał do Ciebie na WhatsAppie w ciągu ostatnich 24 godzin, a nie skonfigurowano zatwierdzonego szablonu, aby się z nim skontaktować."
   },
   "searchableSelect": {
     "choose": "Wybierz...",

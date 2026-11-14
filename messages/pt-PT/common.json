@@ -205,7 +205,11 @@
     "revokeFailed": "Não foi possível confirmar que o link foi revogado. Pode continuar a funcionar para quem o tiver.",
     "channelNotConnected": "Ligue {channel} em Integrações para enviar desta forma.",
     "openIntegrations": "Abrir Integrações",
-    "channelNotInPlan": "{channel} não está incluído no seu plano."
+    "channelNotInPlan": "{channel} não está incluído no seu plano.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp enviado",
+    "failedWhatsapp": "Não foi possível enviar a mensagem de WhatsApp",
+    "whatsappWindowClosed": "Este cliente não lhe escreveu no WhatsApp nas últimas 24 horas, e não está configurado nenhum modelo aprovado para o contactar."
   },
   "searchableSelect": {
     "choose": "Escolher...",

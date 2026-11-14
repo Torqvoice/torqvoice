@@ -42,6 +42,10 @@ vi.mock('@/features/sms/Actions/smsActions', () => ({
     data: { templates: {}, companyName: 'Fjord Auto', currentUser: 'Kari' },
   }),
 }))
+vi.mock('@/features/whatsapp/Actions/whatsappActions', () => ({
+  sendWhatsappToCustomer: vi.fn(),
+  getWhatsappWindowState: vi.fn(),
+}))
 vi.mock('@/features/email/Actions/emailPreferenceActions', () => ({
   getAttachPdfDefault: async () => ({ success: true, data: { attachPdf: true } }),
 }))
@@ -53,7 +57,10 @@ import { ShareDialog } from '@/features/vehicles/Components/service-detail/Share
 const customer = { id: 'c1', name: 'Ola Nordmann', email: null, phone: '+4790000000' }
 
 function channels(sms: 'ready' | 'not_connected' | 'not_in_plan', isCloud = false) {
-  getShareChannels.mockResolvedValue({ success: true, data: { sms, isCloud } })
+  getShareChannels.mockResolvedValue({
+    success: true,
+    data: { sms, whatsapp: 'ready', isCloud },
+  })
 }
 
 async function show(dialog: ReactNode) {
@@ -140,7 +147,8 @@ describe('SMS in the invoice share dialog', () => {
     channels('ready')
     await show(invoice({ ...customer, phone: null as unknown as string }))
 
-    expect(await screen.findByText('(no phone on file)')).toBeInTheDocument()
+    // Once for each channel that needs a number: SMS and WhatsApp.
+    expect(await screen.findAllByText('(no phone on file)')).toHaveLength(2)
     expect(screen.getByRole('checkbox', { name: /SMS/ })).toBeDisabled()
   })
 })

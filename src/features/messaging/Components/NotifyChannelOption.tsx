@@ -19,6 +19,8 @@ interface NotifyChannelOptionProps {
   isCloud: boolean
   /** Said after the label when the customer cannot be reached this way. */
   missingContact?: string | null
+  /** Any other reason this customer cannot be reached on a working channel. */
+  blockedReason?: string | null
 }
 
 /**
@@ -37,13 +39,15 @@ export function NotifyChannelOption({
   status,
   isCloud,
   missingContact,
+  blockedReason,
 }: NotifyChannelOptionProps) {
   const t = useTranslations('common.shareLink')
   const ts = useTranslations('settings.featureLocked')
 
-  const usable = status === 'ready' && !missingContact
+  const blocked = status === 'ready' && !missingContact ? blockedReason : null
+  const usable = status === 'ready' && !missingContact && !blocked
   const hintId = `${id}-hint`
-  const hasHint = status === 'not_connected' || status === 'not_in_plan'
+  const hasHint = status === 'not_connected' || status === 'not_in_plan' || !!blocked
 
   return (
     <div className="space-y-1">
@@ -61,9 +65,16 @@ export function NotifyChannelOption({
         >
           {icon}
           {label}
-          {!hasHint && missingContact && <span className="text-xs">{missingContact}</span>}
+          {status === 'ready' && missingContact && (
+            <span className="text-xs">{missingContact}</span>
+          )}
         </Label>
       </div>
+      {blocked && (
+        <p id={hintId} className="pl-6 text-xs text-muted-foreground">
+          {blocked}
+        </p>
+      )}
       {status === 'not_connected' && (
         <p id={hintId} className="pl-6 text-xs text-muted-foreground">
           {t('channelNotConnected', { channel: label })}{' '}

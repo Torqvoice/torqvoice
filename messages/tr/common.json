@@ -205,7 +205,11 @@
     "revokeFailed": "Bağlantının iptali doğrulanamadı. Bağlantıya sahip olan herkes onu hâlâ açabilir.",
     "channelNotConnected": "Bu yolla göndermek için {channel} hizmetini Entegrasyonlar altında bağlayın.",
     "openIntegrations": "Entegrasyonları aç",
-    "channelNotInPlan": "{channel} planınıza dahil değil."
+    "channelNotInPlan": "{channel} planınıza dahil değil.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp gönderildi",
+    "failedWhatsapp": "WhatsApp mesajı gönderilemedi",
+    "whatsappWindowClosed": "Bu müşteri son 24 saat içinde size WhatsApp üzerinden yazmadı ve ona ulaşmak için onaylı bir şablon ayarlanmamış."
   },
   "searchableSelect": {
     "choose": "Seçin...",

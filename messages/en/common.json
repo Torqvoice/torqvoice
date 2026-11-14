@@ -205,7 +205,11 @@
     "revokeFailed": "Couldn't confirm the link was revoked. It may still work for anyone who has it.",
     "channelNotConnected": "Connect {channel} under Integrations to send this way.",
     "openIntegrations": "Open Integrations",
-    "channelNotInPlan": "{channel} is not included in your plan."
+    "channelNotInPlan": "{channel} is not included in your plan.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp sent",
+    "failedWhatsapp": "Failed to send WhatsApp message",
+    "whatsappWindowClosed": "This customer has not written to you on WhatsApp in the last 24 hours, and no approved template is set up to reach them."
   },
   "searchableSelect": {
     "choose": "Choose...",

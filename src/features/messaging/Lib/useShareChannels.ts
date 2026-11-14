@@ -2,12 +2,14 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { z } from 'zod'
+import { getWhatsappWindowState } from '@/features/whatsapp/Actions/whatsappActions'
 import { getShareChannels } from '../Actions/getShareChannels'
 
 const statusSchema = z.enum(['ready', 'not_connected', 'not_in_plan'])
 
 const shareChannelsSchema = z.object({
   sms: statusSchema,
+  whatsapp: statusSchema,
   isCloud: z.boolean(),
 })
 
@@ -31,4 +33,36 @@ export function useShareChannels(open: boolean): ShareChannels | undefined {
     retry: false,
   })
   return data
+}
+
+const windowSchema = z.object({
+  configured: z.boolean(),
+  open: z.boolean(),
+  hasTemplate: z.boolean(),
+})
+
+/**
+ * Whether a WhatsApp message can reach this customer right now.
+ *
+ * WhatsApp lets a business write freely only for 24 hours after the customer
+ * last wrote; after that an approved template is the only way through. The
+ * dialog asks before offering the channel, so the workshop hears about the
+ * rule while choosing how to send, not from a failed send. Undefined until
+ * the answer is in.
+ */
+export function useWhatsappReach(enabled: boolean, customerId: string | undefined) {
+  const { data } = useQuery({
+    queryKey: ['whatsapp-window', customerId],
+    queryFn: async () => {
+      const res = await getWhatsappWindowState(customerId as string)
+      if (!res.success) throw new Error(res.error)
+      return windowSchema.parse(res.data)
+    },
+    enabled: enabled && !!customerId,
+    // Short: the customer writing back is what opens the window.
+    staleTime: 15_000,
+    retry: false,
+  })
+  if (!data) return undefined
+  return data.configured && (data.open || data.hasTemplate)
 }

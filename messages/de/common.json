@@ -205,7 +205,11 @@
     "revokeFailed": "Der Widerruf des Links konnte nicht bestätigt werden. Er funktioniert möglicherweise noch für alle, die ihn haben.",
     "channelNotConnected": "Verbinden Sie {channel} unter Integrationen, um auf diesem Weg zu senden.",
     "openIntegrations": "Integrationen öffnen",
-    "channelNotInPlan": "{channel} ist in Ihrem Tarif nicht enthalten."
+    "channelNotInPlan": "{channel} ist in Ihrem Tarif nicht enthalten.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp gesendet",
+    "failedWhatsapp": "WhatsApp-Nachricht konnte nicht gesendet werden",
+    "whatsappWindowClosed": "Dieser Kunde hat Ihnen in den letzten 24 Stunden nicht über WhatsApp geschrieben, und es ist keine genehmigte Vorlage eingerichtet, um ihn zu erreichen."
   },
   "searchableSelect": {
     "choose": "Auswählen...",

@@ -205,7 +205,11 @@
     "revokeFailed": "Impossibile confermare la revoca del link. Potrebbe funzionare ancora per chiunque lo abbia.",
     "channelNotConnected": "Collega {channel} in Integrazioni per inviare in questo modo.",
     "openIntegrations": "Apri Integrazioni",
-    "channelNotInPlan": "{channel} non è incluso nel tuo piano."
+    "channelNotInPlan": "{channel} non è incluso nel tuo piano.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp inviato",
+    "failedWhatsapp": "Impossibile inviare il messaggio WhatsApp",
+    "whatsappWindowClosed": "Questo cliente non ti ha scritto su WhatsApp nelle ultime 24 ore e non è configurato alcun modello approvato per contattarlo."
   },
   "searchableSelect": {
     "choose": "Scegli...",

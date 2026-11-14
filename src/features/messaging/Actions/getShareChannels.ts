@@ -4,6 +4,7 @@ import { isCloudInstance } from '@/lib/cloud-instance'
 import { getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getOrgSmsProvider } from '@/lib/sms'
+import { isWhatsappConfigured } from '@/lib/whatsapp'
 import { withAuth } from '@/lib/with-auth'
 
 /**
@@ -29,7 +30,13 @@ export async function getShareChannels() {
         sms = provider ? 'ready' : 'not_connected'
       }
 
-      return { sms, isCloud: isCloudInstance() }
+      let whatsapp: ShareChannelStatus = 'not_in_plan'
+      if (features.whatsapp) {
+        const configured = await isWhatsappConfigured(organizationId).catch(() => false)
+        whatsapp = configured ? 'ready' : 'not_connected'
+      }
+
+      return { sms, whatsapp, isCloud: isCloudInstance() }
     },
     {
       requiredPermissions: [

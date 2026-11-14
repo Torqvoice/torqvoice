@@ -205,7 +205,11 @@
     "revokeFailed": "Не удалось подтвердить отзыв ссылки. Она может по-прежнему работать для всех, у кого она есть.",
     "channelNotConnected": "Подключите {channel} в разделе Интеграции, чтобы отправлять этим способом.",
     "openIntegrations": "Открыть Интеграции",
-    "channelNotInPlan": "{channel} не входит в ваш тариф."
+    "channelNotInPlan": "{channel} не входит в ваш тариф.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp отправлено",
+    "failedWhatsapp": "Не удалось отправить сообщение WhatsApp",
+    "whatsappWindowClosed": "Этот клиент не писал вам в WhatsApp за последние 24 часа, а одобренный шаблон для связи с ним не настроен."
   },
   "searchableSelect": {
     "choose": "Выберите...",
