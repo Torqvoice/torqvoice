@@ -47,7 +47,8 @@
     "messageDeleted": "Message deleted",
     "deleteError": "Failed to delete message",
     "sendError": "Failed to send SMS",
-    "sendMessage": "Send message"
+    "sendMessage": "Send message",
+    "sharedNumber": "Sent from a shared Torqvoice number, up to {limit} a day. Replies to it will not reach you. Connect your own SMS provider in Settings for two-way texting."
   },
   "sendDialog": {
     "send": "Send {label}",

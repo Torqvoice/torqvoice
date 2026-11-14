@@ -63,7 +63,9 @@ export function UpgradeGateDialog() {
         ? t('maxUsers', { limit: gate.limit })
         : gate?.feature === 'platformMailDaily' && gate.limit != null
           ? t('maxPlatformMail', { limit: gate.limit })
-          : t('generic')
+          : gate?.feature === 'platformSmsDaily' && gate.limit != null
+            ? t('maxPlatformSms', { limit: gate.limit })
+            : t('generic')
 
   return (
     <Dialog open={isOpen} onOpenChange={close}>

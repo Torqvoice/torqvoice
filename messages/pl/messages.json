@@ -47,7 +47,8 @@
     "messageDeleted": "Wiadomość usunięta",
     "deleteError": "Nie udało się usunąć wiadomości",
     "sendError": "Nie udało się wysłać SMS",
-    "sendMessage": "Wyślij wiadomość"
+    "sendMessage": "Wyślij wiadomość",
+    "sharedNumber": "Wysłano ze wspólnego numeru Torqvoice, do {limit} dziennie. Odpowiedzi na ten numer do Ciebie nie dotrą. Podłącz własnego dostawcę SMS w Ustawieniach, aby wysyłać i odbierać wiadomości."
   },
   "sendDialog": {
     "send": "Wyślij {label}",

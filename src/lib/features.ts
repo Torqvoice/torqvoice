@@ -19,6 +19,11 @@ export type PlanFeatures = {
   payments: boolean
   customFields: boolean
   sms: boolean
+  /**
+   * Texts a day through the platform's own SMS account, for a workshop that
+   * has not connected a provider. Zero means the plan has no platform SMS.
+   */
+  platformSmsPerDay: number
   telegram: boolean
   whatsapp: boolean
   brandingRemoved: boolean
@@ -67,6 +72,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: false,
     customFields: false,
     sms: false,
+    platformSmsPerDay: 0,
     telegram: false,
     whatsapp: false,
     brandingRemoved: false,
@@ -98,6 +104,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: true,
     customFields: true,
     sms: true,
+    platformSmsPerDay: 50,
     telegram: true,
     whatsapp: true,
     brandingRemoved: true,
@@ -125,6 +132,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: true,
     customFields: true,
     sms: true,
+    platformSmsPerDay: 200,
     telegram: true,
     whatsapp: true,
     brandingRemoved: true,
@@ -152,6 +160,7 @@ export const PLAN_FEATURES: Record<Plan, PlanFeatures> = {
     payments: true,
     customFields: true,
     sms: true,
+    platformSmsPerDay: 0,
     telegram: true,
     whatsapp: true,
     brandingRemoved: true,

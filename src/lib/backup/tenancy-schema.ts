@@ -950,6 +950,11 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     foreignKeys: {},
     ownerPaths: [],
   },
+  PlatformSmsUsage: {
+    organizationId: true,
+    foreignKeys: {},
+    ownerPaths: [],
+  },
   Quote: {
     organizationId: true,
     foreignKeys: {

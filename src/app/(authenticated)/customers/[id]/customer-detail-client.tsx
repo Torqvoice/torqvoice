@@ -161,6 +161,7 @@ export function CustomerDetailClient({
   smsEnabled = false,
   smsMessages = [],
   smsNextCursor = null,
+  platformSmsPerDay = null,
   telegramEnabled = false,
   whatsappEnabled = false,
   telegramBotUsername = null,
@@ -178,6 +179,7 @@ export function CustomerDetailClient({
   smsEnabled?: boolean
   smsMessages?: SmsMessage[]
   smsNextCursor?: string | null
+  platformSmsPerDay?: number | null
   telegramEnabled?: boolean
   whatsappEnabled?: boolean
   telegramBotUsername?: string | null
@@ -700,6 +702,7 @@ export function CustomerDetailClient({
                 customerPhone={customer.phone}
                 initialMessages={smsMessages}
                 initialNextCursor={smsNextCursor}
+                platformSmsPerDay={platformSmsPerDay}
               />
             </CardContent>
           </Card>

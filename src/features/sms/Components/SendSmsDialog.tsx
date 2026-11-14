@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2, MessageSquare, Send } from 'lucide-react'
+import { handleGated } from '@/components/upgrade-gate'
 import { useGlassModal } from '@/components/glass-modal'
 import { sendSmsToCustomer } from '../Actions/smsActions'
 
@@ -60,7 +61,7 @@ export function SendSmsDialog({
       )
       onOpenChange(false)
       setMessage('')
-    } else {
+    } else if (!handleGated(result)) {
       modal.open('error', te('error'), result.error || t('sendError'))
     }
     setSending(false)

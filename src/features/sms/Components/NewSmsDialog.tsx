@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { handleGated } from '@/components/upgrade-gate'
 import { DocsLink } from '@/components/docs-link'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { searchSmsRecipients, sendSmsToCustomer } from '../Actions/smsActions'
@@ -90,7 +91,7 @@ export function NewSmsDialog({
       toast.success(t('sent', { name: recipient.name }))
       onOpenChange(false)
       onSent?.(recipient.id)
-    } else {
+    } else if (!handleGated(result)) {
       toast.error(result.error || t('sendError'))
     }
     setSending(false)

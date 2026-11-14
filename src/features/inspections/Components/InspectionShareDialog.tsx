@@ -155,7 +155,7 @@ export function InspectionShareDialog({
         setNotifySms(false)
       } else {
         failed = true
-        toast.error(res?.error || t('failedSms'))
+        if (!res || !handleGated(res)) toast.error(res?.error || t('failedSms'))
       }
     }
 

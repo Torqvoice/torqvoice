@@ -97,7 +97,7 @@ export function NotifyCustomerDialog({
         relatedEntityId,
       })
       if (res.success) results.push(t('smsSent'))
-      else toast.error(res.error || t('failedSms'))
+      else if (!handleGated(res)) toast.error(res.error || t('failedSms'))
     }
 
     if (sendEmail && hasEmail) {

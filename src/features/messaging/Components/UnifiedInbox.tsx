@@ -653,6 +653,7 @@ export function UnifiedInbox({
                 customerPhone={smsData.customerPhone}
                 initialMessages={smsData.messages}
                 initialNextCursor={smsData.nextCursor}
+                platformSmsPerDay={smsData.platformSmsPerDay}
                 className="h-auto min-h-0 flex-1"
               />
             ) : selected.channel === 'telegram' && telegramData && selected.customerId ? (

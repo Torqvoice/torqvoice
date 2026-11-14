@@ -436,6 +436,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
   PlatformMailUsage:
     "Today's count of mail sent through the platform address, for the daily cap; it starts again every day.",
+  PlatformSmsUsage:
+    "Today's count of texts sent through the platform's SMS account, for the daily cap; it starts again every day.",
   PushDevice:
     'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',
   Session:

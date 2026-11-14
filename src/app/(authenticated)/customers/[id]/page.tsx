@@ -54,6 +54,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
     toNumber: string
   }[] = []
   let smsNextCursor: string | null = null
+  let platformSmsPerDay: number | null = null
   let telegramMessages: {
     id: string
     direction: string
@@ -86,6 +87,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       if (convResult.success && convResult.data) {
         smsMessages = convResult.data.messages
         smsNextCursor = convResult.data.nextCursor
+        platformSmsPerDay = convResult.data.platformSmsPerDay
       }
     }
 
@@ -112,6 +114,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           smsEnabled={smsEnabled}
           smsMessages={smsMessages}
           smsNextCursor={smsNextCursor}
+          platformSmsPerDay={platformSmsPerDay}
           telegramEnabled={telegramEnabled}
           whatsappEnabled={whatsappEnabled}
           telegramBotUsername={telegramBotUsername}
