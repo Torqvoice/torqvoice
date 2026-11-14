@@ -202,7 +202,10 @@
   },
   "shareLink": {
     "generateFailed": "Kon de link niet aanmaken. Probeer het opnieuw.",
-    "revokeFailed": "Kon niet bevestigen dat de link is ingetrokken. Hij werkt mogelijk nog voor iedereen die hem heeft."
+    "revokeFailed": "Kon niet bevestigen dat de link is ingetrokken. Hij werkt mogelijk nog voor iedereen die hem heeft.",
+    "channelNotConnected": "Koppel {channel} onder Integraties om op deze manier te verzenden.",
+    "openIntegrations": "Integraties openen",
+    "channelNotInPlan": "{channel} zit niet in je abonnement."
   },
   "searchableSelect": {
     "choose": "Kiezen...",

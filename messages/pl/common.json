@@ -202,7 +202,10 @@
   },
   "shareLink": {
     "generateFailed": "Nie udało się utworzyć linku. Spróbuj ponownie.",
-    "revokeFailed": "Nie udało się potwierdzić unieważnienia linku. Może nadal działać dla każdego, kto go ma."
+    "revokeFailed": "Nie udało się potwierdzić unieważnienia linku. Może nadal działać dla każdego, kto go ma.",
+    "channelNotConnected": "Podłącz {channel} w Integracjach, aby wysyłać w ten sposób.",
+    "openIntegrations": "Otwórz Integracje",
+    "channelNotInPlan": "{channel} nie jest objęty Twoim planem."
   },
   "searchableSelect": {
     "choose": "Wybierz...",

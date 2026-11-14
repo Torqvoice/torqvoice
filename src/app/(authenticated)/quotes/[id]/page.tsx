@@ -96,7 +96,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         distanceUnit={settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'km' : 'mi'}
         laborPresets={laborPresets}
         inventoryParts={inventoryParts}
-        smsEnabled={features?.sms ?? false}
         emailEnabled={emailEnabled}
       />
     </div>

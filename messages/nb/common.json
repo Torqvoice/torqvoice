@@ -202,7 +202,10 @@
   },
   "shareLink": {
     "generateFailed": "Kunne ikke opprette lenken. Prøv igjen.",
-    "revokeFailed": "Kunne ikke bekrefte at lenken ble tilbakekalt. Den kan fortsatt virke for alle som har den."
+    "revokeFailed": "Kunne ikke bekrefte at lenken ble tilbakekalt. Den kan fortsatt virke for alle som har den.",
+    "channelNotConnected": "Koble til {channel} under Integrasjoner for å sende på denne måten.",
+    "openIntegrations": "Åpne Integrasjoner",
+    "channelNotInPlan": "{channel} er ikke inkludert i planen din."
   },
   "searchableSelect": {
     "choose": "Velg...",

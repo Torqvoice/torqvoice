@@ -44,6 +44,9 @@ vi.mock('@/features/sms/Actions/smsActions', () => ({
   sendSmsToCustomer: vi.fn(),
   getSmsTemplates: vi.fn(),
 }))
+vi.mock('@/features/messaging/Lib/useShareChannels', () => ({
+  useShareChannels: () => ({ sms: 'ready', isCloud: false }),
+}))
 vi.mock('@/features/email/Actions/emailPreferenceActions', () => ({
   getAttachPdfDefault: async () => ({ success: true, data: { attachPdf: true } }),
 }))

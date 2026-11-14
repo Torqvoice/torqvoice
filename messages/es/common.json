@@ -202,7 +202,10 @@
   },
   "shareLink": {
     "generateFailed": "No se pudo crear el enlace. Inténtalo de nuevo.",
-    "revokeFailed": "No se pudo confirmar que el enlace se revocó. Puede que siga funcionando para cualquiera que lo tenga."
+    "revokeFailed": "No se pudo confirmar que el enlace se revocó. Puede que siga funcionando para cualquiera que lo tenga.",
+    "channelNotConnected": "Conecta {channel} en Integraciones para enviar por esta vía.",
+    "openIntegrations": "Abrir Integraciones",
+    "channelNotInPlan": "{channel} no está incluido en tu plan."
   },
   "searchableSelect": {
     "choose": "Elegir...",

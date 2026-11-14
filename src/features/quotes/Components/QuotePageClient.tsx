@@ -102,7 +102,6 @@ export function QuotePageClient({
   distanceUnit,
   laborPresets = [],
   inventoryParts = [],
-  smsEnabled = false,
   emailEnabled = false,
   imageAttachments = [],
   documentAttachments = [],
@@ -133,7 +132,6 @@ export function QuotePageClient({
   distanceUnit: string
   laborPresets?: LaborPresetOption[]
   inventoryParts?: InventoryPartOption[]
-  smsEnabled?: boolean
   emailEnabled?: boolean
   imageAttachments?: QuoteAttachment[]
   documentAttachments?: QuoteAttachment[]
@@ -619,7 +617,6 @@ export function QuotePageClient({
               initialToken={quote.publicToken}
               onSent={handleQuoteSent}
               customer={quote.customer}
-              smsEnabled={smsEnabled}
               emailEnabled={emailEnabled}
             />
 

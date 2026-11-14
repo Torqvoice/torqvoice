@@ -202,7 +202,10 @@
   },
   "shareLink": {
     "generateFailed": "Nepavyko sukurti nuorodos. Bandykite dar kartą.",
-    "revokeFailed": "Nepavyko patvirtinti, kad nuoroda atšaukta. Ji vis dar gali veikti visiems, kurie ją turi."
+    "revokeFailed": "Nepavyko patvirtinti, kad nuoroda atšaukta. Ji vis dar gali veikti visiems, kurie ją turi.",
+    "channelNotConnected": "Prijunkite {channel} skiltyje Integracijos, kad galėtumėte siųsti šiuo būdu.",
+    "openIntegrations": "Atidaryti Integracijas",
+    "channelNotInPlan": "{channel} neįtrauktas į jūsų planą."
   },
   "searchableSelect": {
     "choose": "Pasirinkite...",
