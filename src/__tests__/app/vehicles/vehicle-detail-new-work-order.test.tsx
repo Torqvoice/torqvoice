@@ -1,14 +1,19 @@
 /**
  * Starting work from the vehicle page: a work order is one click, and the
  * other things to add (quote, inspection, note, observation, reminder) wait
- * behind the arrow beside it. An archived vehicle offers neither.
+ * behind the arrow beside it. Over the notes, observations or reminders the
+ * same button adds one of those, so there is one place to add from and never
+ * a second button under it. An archived vehicle offers neither.
  */
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+
+/** The page's query string: which list is showing. */
+const url = vi.hoisted(() => ({ query: '' }))
 
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), refresh: vi.fn(), replace: vi.fn() }),
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => new URLSearchParams(url.query),
   usePathname: () => '/vehicles/v1',
 }))
 vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: vi.fn() } }))
@@ -103,6 +108,10 @@ function renderPage(vehicle = VEHICLE) {
   )
 }
 
+afterEach(() => {
+  url.query = ''
+})
+
 describe('starting work from the vehicle page', () => {
   it('opens a new work order for this vehicle in one click', () => {
     renderPage()
@@ -124,6 +133,26 @@ describe('starting work from the vehicle page', () => {
       'Add Observation',
       'Add Reminder',
     ])
+  })
+
+  it.each([
+    ['notes', 'Add Note'],
+    ['findings', 'Add Observation'],
+    ['reminders', 'Add Reminder'],
+  ])('adds to the %s list from the same button, and only from it', async (tab, label) => {
+    url.query = `tab=${tab}`
+    renderPage()
+
+    // One button for it, where the work order button is on the other lists.
+    expect(screen.getAllByRole('button', { name: label })).toHaveLength(1)
+    expect(screen.queryByRole('link', { name: 'New Work Order' })).not.toBeInTheDocument()
+
+    // The work order moves behind the arrow, and what the button already
+    // does is not offered there a second time.
+    fireEvent.keyDown(screen.getByRole('button', { name: 'More to add' }), { key: 'Enter' })
+    const items = (await screen.findAllByRole('menuitem')).map((item) => item.textContent)
+    expect(items).toContain('New Work Order')
+    expect(items).not.toContain(label)
   })
 
   it('offers neither on an archived vehicle', () => {

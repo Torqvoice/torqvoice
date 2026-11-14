@@ -9,7 +9,8 @@ import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
 import { useFormatDate } from '@/lib/use-format-date'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { statusColors } from '@/lib/table-utils'
+import { StatusBadge } from '@/components/status-badge'
+import type { StatusKind } from '@/lib/status-colors'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { Button } from '@/components/ui/button'
 import { AskAiSheet } from '@/features/ai/Components/AskAiSheet'
@@ -665,7 +666,7 @@ export function CustomerDetailClient({
         {activeTab === 'invoices' && canReadInvoices && (
           <DocumentList
             rows={invoiceRows}
-            statusStyles={statusColors}
+            statusKind="workOrder"
             statusLabel={serviceLabel.status}
             numberLabel={t('documentTable.invoiceNumber')}
             emptyLabel={t('noInvoices')}
@@ -679,7 +680,7 @@ export function CustomerDetailClient({
         {activeTab === 'quotes' && canReadQuotes && (
           <DocumentList
             rows={quoteRows}
-            statusStyles={quoteStatusColors}
+            statusKind="quote"
             statusLabel={quoteStatusLabel}
             numberLabel={t('documentTable.quoteNumber')}
             emptyLabel={t('noQuotes')}
@@ -753,17 +754,6 @@ export function CustomerDetailClient({
       <CustomerForm open={showEditForm} onOpenChange={setShowEditForm} customer={customer} />
     </div>
   )
-}
-
-// Quotes use their own status vocabulary, so they cannot share the work-order
-// palette in table-utils.
-const quoteStatusColors: Record<string, string> = {
-  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
-  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
-  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
 }
 
 export interface DocumentRow {
@@ -861,7 +851,7 @@ export function visibleDocuments(
 /// whole org), so search and sort run in memory rather than round-tripping.
 function DocumentList({
   rows,
-  statusStyles,
+  statusKind,
   statusLabel,
   numberLabel,
   emptyLabel,
@@ -871,7 +861,8 @@ function DocumentList({
   onQueryChange,
 }: {
   rows: DocumentRow[]
-  statusStyles: Record<string, string>
+  /** Which statuses the rows carry, so each is drawn in that status's own colour. */
+  statusKind: StatusKind
   /** The status as the reader's language says it: invoices and quotes have their own. */
   statusLabel: (status: string) => string
   numberLabel: string
@@ -1011,9 +1002,9 @@ function DocumentList({
                   <span className="shrink-0 font-semibold">{formatCurrency(row.total)}</span>
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  <Badge variant="outline" className={`text-xs ${statusStyles[row.status] || ''}`}>
+                  <StatusBadge kind={statusKind} status={row.status}>
                     {statusLabel(row.status)}
-                  </Badge>
+                  </StatusBadge>
                   <span className="font-mono">{formatDate(row.date)}</span>
                   <span className="truncate">{displayVehicle(row.vehicle)}</span>
                 </div>
@@ -1063,12 +1054,9 @@ function DocumentList({
                       {displayVehicle(row.vehicle)}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${statusStyles[row.status] || ''}`}
-                      >
+                      <StatusBadge kind={statusKind} status={row.status}>
                         {statusLabel(row.status)}
-                      </Badge>
+                      </StatusBadge>
                     </TableCell>
                     <TableCell className="font-mono text-xs">{formatDate(row.date)}</TableCell>
                     <TableCell className="text-right font-semibold">

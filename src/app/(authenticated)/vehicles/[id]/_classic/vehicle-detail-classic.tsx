@@ -10,6 +10,7 @@ import { useFormatDate } from '@/lib/use-format-date'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import {
@@ -237,16 +238,6 @@ interface QuoteRecord {
   createdAt: Date
   validUntil: Date | null
   customer: { id: string; name: string } | null
-}
-
-const quoteStatusColors: Record<string, string> = {
-  changes_requested: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
-  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
-  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
-  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
 }
 
 /** Pass/fail/other split of an inspection's items, shared by the card and table views. */
@@ -1414,12 +1405,9 @@ export function VehicleDetailClassic({
                       </span>
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${quoteStatusColors[q.status] || ''}`}
-                      >
+                      <StatusBadge kind="quote" status={q.status}>
                         {quoteStatusLabel(q.status, tQuoteStatus)}
-                      </Badge>
+                      </StatusBadge>
                       {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
                       <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
                     </div>
@@ -1451,12 +1439,13 @@ export function VehicleDetailClassic({
                         </TableCell>
                         <TableCell className="font-medium">{q.title}</TableCell>
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`max-w-full whitespace-normal text-center text-xs leading-tight ${quoteStatusColors[q.status] || ''}`}
+                          <StatusBadge
+                            kind="quote"
+                            status={q.status}
+                            className="max-w-full whitespace-normal text-center leading-tight"
                           >
                             {quoteStatusLabel(q.status, tQuoteStatus)}
-                          </Badge>
+                          </StatusBadge>
                         </TableCell>
                         <TableCell className="font-mono text-xs text-muted-foreground">
                           {formatDate(new Date(q.createdAt))}

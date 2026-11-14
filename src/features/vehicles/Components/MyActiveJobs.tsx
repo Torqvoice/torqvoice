@@ -1,5 +1,6 @@
 'use client'
 
+import { statusBadgeClass } from '@/lib/status-colors'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { formatQuantity } from '@/lib/format-quantity'
 import { interactiveRow } from '@/lib/interactive-row'
@@ -63,12 +64,6 @@ const STATUS_ICON: Record<string, typeof Wrench> = {
   'in-progress': Wrench,
   pending: Clock,
   'waiting-parts': Pause,
-}
-
-const STATUS_COLOR: Record<string, string> = {
-  'in-progress': 'bg-blue-500/10 text-blue-600',
-  pending: 'bg-amber-500/10 text-amber-600',
-  'waiting-parts': 'bg-orange-500/10 text-orange-600',
 }
 
 export function MyActiveJobs({
@@ -387,7 +382,8 @@ export function MyActiveJobs({
         <div className="@container divide-y" {...tableNav.containerProps}>
           {jobs.map((job) => {
             const StatusIcon = STATUS_ICON[job.status] || Wrench
-            const statusColor = STATUS_COLOR[job.status] || 'bg-muted text-muted-foreground'
+            const statusColor =
+              statusBadgeClass('workOrder', job.status) || 'bg-muted text-muted-foreground'
             const isUploadingPhoto = uploading?.jobId === job.id && uploading.type === 'photo'
             const isUploadingVideo = uploading?.jobId === job.id && uploading.type === 'video'
             const isUploading = uploading?.jobId === job.id

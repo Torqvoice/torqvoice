@@ -1,7 +1,7 @@
 /**
- * A job whose booking will not work is flagged on the vehicle page itself,
- * on the job's own line, with the way into the job to fix it. The car's
- * current job spells the problem out; a job further down says it in a word.
+ * The vehicle page lists every unfinished job above the finished ones, and a
+ * job whose booking will not work says what is wrong on its own row, in the
+ * work order's words. The row itself is the way into the job to fix it.
  */
 
 import { describe, expect, it } from 'vitest'
@@ -64,7 +64,11 @@ const warning = (over: Partial<VehicleJobWarning>): VehicleJobWarning => ({
   ...over,
 })
 
-function renderFeed(jobWarnings: VehicleJobWarning[], workOrders = [inWorkshop, later, done]) {
+function renderFeed(
+  jobWarnings: VehicleJobWarning[],
+  workOrders = [inWorkshop, later, done],
+  owed: Record<string, 'unpaid' | 'partial'> = {}
+) {
   return render(
     <TooltipProvider>
       <VehicleActivityFeed
@@ -74,19 +78,23 @@ function renderFeed(jobWarnings: VehicleJobWarning[], workOrders = [inWorkshop, 
         workOrders={workOrders}
         quotes={[]}
         inspections={[]}
-        notes={[]}
         distUnit="km"
+        readingLabel="Mileage"
         currencyCode="NOK"
         vehicleMileage={0}
         jobWarnings={jobWarnings}
-        onSelectNote={() => undefined}
+        owed={owed}
       />
     </TooltipProvider>
   )
 }
 
-describe('booking warnings in the vehicle feed', () => {
-  it('spells out the problem on the current job, with a way in to fix it', () => {
+/** The table row a job is on, found by the job's title. */
+const rowOf = (title: string) =>
+  screen.getByRole('link', { name: title }).closest('li') as HTMLElement
+
+describe('the jobs table on the vehicle page', () => {
+  it('says what is wrong on the row of the job in the workshop', () => {
     renderFeed([
       warning({
         serviceRecordId: 'wo-now',
@@ -102,44 +110,19 @@ describe('booking warnings in the vehicle feed', () => {
       }),
     ])
 
-    const callout = screen.getByTestId('job-warning-callout')
-    expect(within(callout).getByText('This booking needs attention')).toBeInTheDocument()
+    const row = rowOf('Brake service')
     expect(
-      within(callout).getByText('Ola Nordmann: Away (On leave) · Nov 16 – Nov 17')
+      within(row).getByText('Ola Nordmann: Away (On leave) · Nov 16 – Nov 17')
     ).toBeInTheDocument()
-    expect(within(callout).getByRole('link', { name: /Open the job to fix it/ })).toHaveAttribute(
+    expect(within(row).getByText(/This booking needs attention/)).toBeInTheDocument()
+    expect(within(row).getByRole('link', { name: 'Brake service' })).toHaveAttribute(
       'href',
       '/vehicles/veh-1/service/wo-now'
     )
+    expect(within(rowOf('Tyre change')).queryByTestId('job-warning')).not.toBeInTheDocument()
   })
 
-  it('spells it out on a job behind the first one in the workshop too', () => {
-    // Older, so it is the first job in the card; the warned one comes second.
-    const first = workOrder({
-      id: 'wo-first',
-      title: 'Oil service',
-      status: 'in-progress',
-      startDateTime: day(1),
-    })
-    renderFeed(
-      [
-        warning({
-          serviceRecordId: 'wo-now',
-          closures: ['Staff day'],
-        }),
-      ],
-      [first, inWorkshop, done]
-    )
-
-    const callout = screen.getByTestId('job-warning-callout')
-    expect(within(callout).getByText('The workshop is closed then: Staff day')).toBeInTheDocument()
-    expect(within(callout).getByRole('link', { name: /Open the job to fix it/ })).toHaveAttribute(
-      'href',
-      '/vehicles/veh-1/service/wo-now'
-    )
-  })
-
-  it('says it in a word on a job further down, linking to that job', () => {
+  it('says every problem on a job that is not in the workshop yet', () => {
     renderFeed([
       warning({
         serviceRecordId: 'wo-later',
@@ -157,17 +140,48 @@ describe('booking warnings in the vehicle feed', () => {
       }),
     ])
 
-    const chip = screen.getByTestId('job-warning')
-    // The first problem, and how many more there are behind it.
-    expect(chip).toHaveTextContent('Double-booked+1')
-    expect(chip.closest('a')).toHaveAttribute('href', '/vehicles/veh-1/service/wo-later')
-    expect(screen.queryByTestId('job-warning-callout')).not.toBeInTheDocument()
+    const said = within(rowOf('Tyre change')).getByTestId('job-warning')
+    expect(said).toHaveTextContent('Volvo XC60 AB12345')
+    expect(said).toHaveTextContent('The workshop is closed then: Staff day')
+    expect(within(rowOf('Brake service')).queryByTestId('job-warning')).not.toBeInTheDocument()
+  })
+
+  it('lists every unfinished job as open, and finished work under its year', () => {
+    renderFeed([])
+
+    const open = screen.getByRole('region', { name: 'Open jobs' })
+    expect(within(open).getByRole('link', { name: 'Brake service' })).toBeInTheDocument()
+    expect(within(open).getByRole('link', { name: 'Tyre change' })).toBeInTheDocument()
+    expect(within(open).queryByRole('link', { name: 'Oil change' })).not.toBeInTheDocument()
+
+    const year = screen.getByRole('region', { name: '2026' })
+    expect(within(year).getByRole('link', { name: 'Oil change' })).toBeInTheDocument()
+  })
+
+  it('says what was done on a job, and that it has not been paid', () => {
+    renderFeed(
+      [],
+      [
+        workOrder({
+          id: 'wo-done',
+          title: 'Service',
+          serviceDate: day(2),
+          totalAmount: 1200,
+          laborItems: [{ description: 'Oil and filter' }],
+          partItems: [{ name: '5W-30 6 l' }],
+        }),
+      ],
+      { 'wo-done': 'unpaid' }
+    )
+
+    const row = rowOf('Service')
+    expect(within(row).getByText(/Oil and filter · 5W-30 6 l/)).toBeInTheDocument()
+    expect(within(row).getByText('Unpaid')).toBeInTheDocument()
   })
 
   it('flags nothing when no job has a problem', () => {
     renderFeed([])
     expect(screen.queryByTestId('job-warning')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('job-warning-callout')).not.toBeInTheDocument()
     expect(screen.getByText('Brake service')).toBeInTheDocument()
   })
 })

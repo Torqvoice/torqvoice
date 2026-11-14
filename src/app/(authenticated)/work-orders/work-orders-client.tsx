@@ -32,7 +32,7 @@ import {
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
-import { statusColors } from '@/lib/table-utils'
+import { CustomStatusChip, StatusBadge } from '@/components/status-badge'
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import { useListColumns } from '@/hooks/use-list-columns'
 import { WORK_ORDER_COLUMNS, type WorkOrderColumn } from '@/lib/list-columns'
@@ -65,24 +65,8 @@ import { useTranslations } from 'next-intl'
 import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
-import { statusColorClasses } from '@/features/work-order-statuses/Lib/stages'
-import { cn } from '@/lib/utils'
 import { ListEmpty } from '@/components/list-empty'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
-
-/** The workshop's own status, in its colour, beside the stage. */
-function CustomStatusChip({ status }: { status: { name: string; color: string } }) {
-  return (
-    <span
-      className={cn(
-        'max-w-40 truncate rounded-full border px-2 py-0.5 text-xs font-medium',
-        statusColorClasses(status.color).chip
-      )}
-    >
-      {status.name}
-    </span>
-  )
-}
 
 interface WorkOrder {
   id: string
@@ -463,9 +447,9 @@ export function WorkOrdersClient({
                     <p className="truncate text-xs text-muted-foreground">{rowCustomer.name}</p>
                   )}
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                    <Badge variant="outline" className={`text-xs ${statusColors[r.status] || ''}`}>
+                    <StatusBadge kind="workOrder" status={r.status}>
                       {serviceLabel.status(r.status)}
-                    </Badge>
+                    </StatusBadge>
                     {r.customStatus && <CustomStatusChip status={r.customStatus} />}
                     <span className="font-mono">
                       {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
@@ -668,12 +652,9 @@ export function WorkOrdersClient({
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap items-center gap-1">
-                            <Badge
-                              variant="outline"
-                              className={`text-xs ${statusColors[r.status] || ''}`}
-                            >
+                            <StatusBadge kind="workOrder" status={r.status}>
                               {serviceLabel.status(r.status)}
-                            </Badge>
+                            </StatusBadge>
                             {r.customStatus && <CustomStatusChip status={r.customStatus} />}
                           </div>
                         </TableCell>

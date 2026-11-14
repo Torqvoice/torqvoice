@@ -1,6 +1,6 @@
 import { PortalShell } from '@/features/portal/Components/PortalShell'
+import { StatusBadge } from '@/components/status-badge'
 import { getPortalInspections } from '@/features/portal/Actions/portalActions'
-import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -71,12 +71,9 @@ export default async function PortalInspectionsPage({
                           </span>
                         )}
                       </span>
-                      <Badge
-                        variant={insp.status === 'completed' ? 'default' : 'secondary'}
-                        className="shrink-0"
-                      >
+                      <StatusBadge kind="inspection" status={insp.status} className="shrink-0">
                         {portalStatusLabel('inspection', insp.status, tStatus)}
-                      </Badge>
+                      </StatusBadge>
                     </div>
                     <p className="truncate text-xs text-muted-foreground">{insp.template.name}</p>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
@@ -141,9 +138,9 @@ export default async function PortalInspectionsPage({
                         </TableCell>
                         <TableCell>{insp.template.name}</TableCell>
                         <TableCell>
-                          <Badge variant={insp.status === 'completed' ? 'default' : 'secondary'}>
+                          <StatusBadge kind="inspection" status={insp.status}>
                             {portalStatusLabel('inspection', insp.status, tStatus)}
-                          </Badge>
+                          </StatusBadge>
                         </TableCell>
                         <TableCell>
                           {new Date(insp.createdAt).toLocaleDateString(undefined, { timeZone })}

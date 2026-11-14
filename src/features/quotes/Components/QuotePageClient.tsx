@@ -19,7 +19,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ButtonGroup } from '@/components/ui/button-group'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -48,7 +47,7 @@ import {
 import { formatCurrency, getCurrencySymbol } from '@/lib/format'
 import { ConvertConflictChoices } from './ConvertConflictChoices'
 import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
-import { statusColors } from './quote-page-types'
+import { StatusBadge } from '@/components/status-badge'
 import { useQuoteFormState, type ConvertTarget } from './useQuoteFormState'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import {
@@ -355,12 +354,9 @@ export function QuotePageClient({
                   <ArrowLeft className="h-4 w-4 shrink-0" />
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <Badge
-                        variant="outline"
-                        className={`shrink-0 text-xs ${statusColors[state.status] || ''}`}
-                      >
+                      <StatusBadge kind="quote" status={state.status} className="shrink-0">
                         {quoteStatusLabel(state.status, tStatus)}
-                      </Badge>
+                      </StatusBadge>
                       <h1 className="truncate text-lg font-semibold leading-tight">
                         {quote.title}
                       </h1>

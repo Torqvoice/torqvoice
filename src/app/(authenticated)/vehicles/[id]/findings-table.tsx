@@ -28,6 +28,7 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
+import { cn } from '@/lib/utils'
 import { Loader2, MoreVertical, Pencil, Plus, Trash2, Wrench, ExternalLink } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -50,7 +51,8 @@ interface FindingsTableProps {
   page: number
   pageSize: number
   totalPages: number
-  onAddFinding: () => void
+  /** Leave out where the page has its own button for adding an observation. */
+  onAddFinding?: () => void
   onEditFinding: (finding: FindingRow) => void
   onDeleteFinding: (id: string) => void
   onCreateWorkOrder: (findingIds: string[]) => void
@@ -132,7 +134,12 @@ export function FindingsTable({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between gap-2">
+      <div
+        className={cn(
+          'flex items-center justify-between gap-2',
+          !onAddFinding && !isPending && selected.size === 0 && 'hidden'
+        )}
+      >
         <div className="flex items-center gap-2">
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
           {selected.size > 0 && (
@@ -151,16 +158,18 @@ export function FindingsTable({
             </Button>
           )}
         </div>
-        <Button
-          size="sm"
-          onClick={onAddFinding}
-          aria-label={t('addFinding')}
-          title={t('addFinding')}
-          className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
-        >
-          <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-          <span className="hidden md:inline">{t('addFinding')}</span>
-        </Button>
+        {onAddFinding && (
+          <Button
+            size="sm"
+            onClick={onAddFinding}
+            aria-label={t('addFinding')}
+            title={t('addFinding')}
+            className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+          >
+            <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+            <span className="hidden md:inline">{t('addFinding')}</span>
+          </Button>
+        )}
       </div>
 
       {/* Card list (phones + small tablets) */}

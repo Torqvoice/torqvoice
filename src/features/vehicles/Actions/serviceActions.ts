@@ -110,7 +110,12 @@ export async function getServiceRecordsPaginated(
           where,
           include: {
             _count: { select: { partItems: true, laborItems: true, attachments: true } },
-            laborItems: { take: 1, select: { description: true } },
+            // The first few lines of each job, so a list can say what was
+            // done without anybody opening the job.
+            laborItems: { take: 4, select: { description: true } },
+            partItems: { take: 4, select: { name: true } },
+            // The workshop's own status, drawn beside the stage in the lists.
+            customStatus: { select: { name: true, color: true } },
           },
           orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
           skip,

@@ -31,7 +31,7 @@ import { TableCellLink } from '@/components/table-cell-link'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { statusColors } from '@/lib/table-utils'
+import { StatusBadge } from '@/components/status-badge'
 import {
   AlertTriangle,
   ArrowRight,
@@ -1824,12 +1824,9 @@ export function DashboardClient({
                           >
                             <div className="flex items-start justify-between gap-3">
                               <span className="min-w-0 flex-1 truncate font-medium">{s.title}</span>
-                              <Badge
-                                variant="outline"
-                                className={`shrink-0 text-xs ${statusColors[s.status] || ''}`}
-                              >
+                              <StatusBadge kind="workOrder" status={s.status} className="shrink-0">
                                 {serviceLabel.status(s.status)}
-                              </Badge>
+                              </StatusBadge>
                             </div>
                             <p className="truncate text-xs text-muted-foreground">
                               {s.vehicle && (
@@ -1910,12 +1907,9 @@ export function DashboardClient({
                                         {navigatingId === s.id && (
                                           <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
                                         )}
-                                        <Badge
-                                          variant="outline"
-                                          className={`text-xs ${statusColors[s.status] || ''}`}
-                                        >
+                                        <StatusBadge kind="workOrder" status={s.status}>
                                           {serviceLabel.status(s.status)}
-                                        </Badge>
+                                        </StatusBadge>
                                       </span>
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-sm text-muted-foreground">

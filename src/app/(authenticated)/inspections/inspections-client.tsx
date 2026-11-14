@@ -10,6 +10,7 @@ import { useState, useCallback, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -89,11 +90,6 @@ const statusTabs = LIST_STATUS_TABS.inspections.map((key) => ({
   key,
   labelKey: statusLabelKeys[key],
 }))
-
-const statusColors: Record<string, string> = {
-  in_progress: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  completed: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-}
 
 /**
  * The rail is a breakdown of the grades given, not a completion meter: a full
@@ -338,12 +334,9 @@ export function InspectionsClient({
                   <span className="min-w-0 flex-1 truncate font-medium">
                     {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
                   </span>
-                  <Badge
-                    variant="outline"
-                    className={`shrink-0 text-xs ${statusColors[insp.status] || ''}`}
-                  >
+                  <StatusBadge kind="inspection" status={insp.status} className="shrink-0">
                     {insp.status === 'in_progress' ? t('statusInProgress') : t('statusCompleted')}
-                  </Badge>
+                  </StatusBadge>
                 </div>
                 <p className="truncate text-xs text-muted-foreground">
                   {insp.vehicle.licensePlate && (
@@ -461,14 +454,11 @@ export function InspectionsClient({
                         />
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={`text-xs ${statusColors[insp.status] || ''}`}
-                        >
+                        <StatusBadge kind="inspection" status={insp.status}>
                           {insp.status === 'in_progress'
                             ? t('statusInProgress')
                             : t('statusCompleted')}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell className="font-mono text-xs">
                         {formatDate(new Date(insp.createdAt))}
