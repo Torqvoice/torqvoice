@@ -103,6 +103,7 @@ function send(over: Record<string, unknown> = {}) {
 beforeEach(() => {
   vi.clearAllMocks()
   settings.bookingMode = 'direct'
+  settings.timeZone = 'Europe/Oslo'
   appSetting.findUnique.mockResolvedValue(null)
   serviceRecord.create.mockResolvedValue({ id: 'rec-1', vehicleId: 'v-1' })
   serviceRequest.create.mockResolvedValue({ id: 'req-1' })
@@ -150,6 +151,32 @@ describe('booking link', () => {
     expect(confirmation.channel).toBe('sms')
     expect(confirmation.recipient).toBe('+47 90000000')
     expect(confirmation.frequency).toBe('once')
+  })
+
+  it('tells the desk and the customer the booked time on the workshop clock, not the server clock', async () => {
+    // A workshop far from wherever the tests (or the server) run: 07:00 UTC is 20:00 in Auckland.
+    settings.timeZone = 'Pacific/Auckland'
+    const slot = new Date('2026-12-02T07:00:00Z')
+    inspectionReminderSend.findUnique.mockResolvedValue(
+      send({ dueAt: new Date('2026-12-20T00:00:00Z'), expiresAt: new Date('2026-12-30T00:00:00Z') })
+    )
+    vi.setSystemTime(new Date('2026-11-20T00:00:00Z'))
+    try {
+      await confirmBooking({ token: TOKEN, start: slot.toISOString() })
+    } finally {
+      vi.useRealTimers()
+    }
+    const format = (timeZone?: string) =>
+      new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone,
+      }).format(slot)
+    const onWorkshopClock = format('Pacific/Auckland')
+    expect(format()).not.toBe(onWorkshopClock) // the guard: the host clock must differ, or the test proves nothing
+    const [notice] = notify.mock.calls as unknown as [{ message: string }][]
+    expect(notice[0].message).toContain(onWorkshopClock)
+    expect(scheduledMessage.create.mock.calls[0][0].data.body).toContain(onWorkshopClock)
   })
 
   it('refuses a slot that was taken in the meantime', async () => {

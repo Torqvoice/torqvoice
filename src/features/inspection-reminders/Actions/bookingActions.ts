@@ -249,9 +249,12 @@ export async function confirmBooking(raw: unknown) {
     },
   })
 
+  // The server runs in UTC: the customer's confirmation and the desk's notice
+  // both read the slot on the workshop's clock, as the cancellation already does.
   const when = new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',
+    timeZone: settings.timeZone,
   }).format(start)
   await notify({
     organizationId: send.organizationId,
