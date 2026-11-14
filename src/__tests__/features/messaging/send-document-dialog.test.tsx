@@ -46,7 +46,7 @@ import {
 } from '@/features/messaging/Components/SendDocumentDialog'
 
 const customer = { id: 'c1', name: 'Ola Nordmann', email: 'ola@nordmann.no', phone: '+4790000000' }
-type Status = 'ready' | 'not_connected' | 'not_in_plan'
+type Status = 'ready' | 'not_connected' | 'not_in_plan' | 'turned_off'
 
 function channels(
   over: Partial<Record<'email' | 'sms' | 'whatsapp', Status>> = {},
@@ -58,10 +58,17 @@ function channels(
   })
 }
 
-function whatsappWindow(open: boolean, hasTemplate: boolean) {
+function whatsappWindow(open: boolean, hasTemplate: boolean, templateCarriesMessage = hasTemplate) {
   getWhatsappWindowState.mockResolvedValue({
     success: true,
-    data: { configured: true, open, hasTemplate, hasMediaTemplate: false, lastInboundAt: null },
+    data: {
+      configured: true,
+      open,
+      hasTemplate,
+      templateCarriesMessage,
+      hasMediaTemplate: false,
+      lastInboundAt: null,
+    },
   })
 }
 
@@ -274,6 +281,34 @@ describe('a channel that cannot send', () => {
 
     await vi.waitFor(() => expect(getWhatsappWindowState).toHaveBeenCalledWith('c1'))
     expect(box(/WhatsApp/)).toBeEnabled()
+  })
+})
+
+describe('what the review of the first version found', () => {
+  it('does not offer WhatsApp through a template with no room for the link', async () => {
+    whatsappWindow(false, true, false)
+    await show()
+
+    await vi.waitFor(() => expect(box(/WhatsApp/)).toBeDisabled())
+  })
+
+  it('shows email disabled, and says so, when the workshop has turned email off', async () => {
+    channels({ email: 'turned_off' })
+    await show({ customer: null }).catch(() => undefined)
+
+    expect(
+      await screen.findByText('Email sending is turned off for this workshop.')
+    ).toBeInTheDocument()
+    expect(box(/Email/)).toBeDisabled()
+  })
+
+  it('checks the address as an address only while email is ticked', async () => {
+    await show()
+    expect(screen.getByLabelText('Email address')).toHaveAttribute('type', 'email')
+
+    // Unticked, a half-typed address must not hold up a text.
+    fireEvent.click(box(/Email/))
+    expect(screen.getByLabelText('Email address')).toHaveAttribute('type', 'text')
   })
 })
 

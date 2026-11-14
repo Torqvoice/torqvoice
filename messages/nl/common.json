@@ -251,6 +251,7 @@
     "channelNotConnected": "Koppel {channel} onder Integraties om op deze manier te verzenden.",
     "openIntegrations": "Integraties openen",
     "channelNotInPlan": "{channel} zit niet in je abonnement.",
+    "channelTurnedOff": "Verzenden via {channel} is uitgeschakeld voor deze werkplaats.",
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp verzonden",
     "failedWhatsapp": "WhatsApp-bericht verzenden mislukt",

@@ -1,6 +1,5 @@
 'use server'
 
-import { randomUUID } from 'crypto'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -12,9 +11,15 @@ import { demoGuard } from '@/lib/demo'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { ensureShareToken } from '@/lib/share-token.server'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { interpolateSmsTemplate, SMS_TEMPLATE_DEFAULTS } from '@/lib/sms-templates'
-import { sendOrgWhatsapp, WhatsappWindowClosedError } from '@/lib/whatsapp'
+import {
+  getWhatsappConfig,
+  isWithinServiceWindow,
+  sendOrgWhatsapp,
+  WhatsappWindowClosedError,
+} from '@/lib/whatsapp'
 import { withAuth } from '@/lib/with-auth'
 
 const inputSchema = z.object({
@@ -53,24 +58,23 @@ async function documentWithLink(
   id: string,
   organizationId: string
 ): Promise<LinkedDocument> {
+  let customer: LinkedDocument['customer']
+  let path: string
+  let notFound: string
+
   if (kind === 'quote') {
     const quote = await db.quote.findFirst({
       where: { id, organizationId },
-      select: { publicToken: true, customer: { select: customerSelect } },
+      select: { customer: { select: customerSelect } },
     })
-    if (!quote) throw new Error('Quote not found')
-    const token = quote.publicToken ?? randomUUID()
-    if (!quote.publicToken) {
-      await db.quote.update({ where: { id }, data: { publicToken: token, sharedAt: new Date() } })
-    }
-    return { token, customer: quote.customer, path: `/quotes/${id}` }
-  }
-
-  if (kind === 'invoice') {
+    notFound = 'Quote not found'
+    if (!quote) throw new Error(notFound)
+    customer = quote.customer
+    path = `/quotes/${id}`
+  } else if (kind === 'invoice') {
     const record = await db.serviceRecord.findFirst({
       where: { id, organizationId },
       select: {
-        publicToken: true,
         vehicleId: true,
         customer: { select: customerSelect },
         // A record on a vehicle carries no customer of its own; the
@@ -78,34 +82,27 @@ async function documentWithLink(
         vehicle: { select: { customer: { select: customerSelect } } },
       },
     })
-    if (!record) throw new Error('Service record not found')
+    notFound = 'Service record not found'
+    if (!record) throw new Error(notFound)
     // Issued before the link exists, so what it shows is the copy that is kept.
     const { issueInvoice } = await import('@/features/invoices/Lib/issueInvoice')
     await issueInvoice(id, organizationId, 'sent')
-    const token = record.publicToken ?? randomUUID()
-    if (!record.publicToken) {
-      await db.serviceRecord.update({
-        where: { id },
-        data: { publicToken: token, sharedAt: new Date() },
-      })
-    }
-    return {
-      token,
-      customer: record.customer ?? record.vehicle?.customer ?? null,
-      path: record.vehicleId ? `/vehicles/${record.vehicleId}/service/${id}` : `/sales/${id}`,
-    }
+    customer = record.customer ?? record.vehicle?.customer ?? null
+    path = record.vehicleId ? `/vehicles/${record.vehicleId}/service/${id}` : `/sales/${id}`
+  } else {
+    const inspection = await db.inspection.findFirst({
+      where: { id, organizationId },
+      select: { vehicle: { select: { customer: { select: customerSelect } } } },
+    })
+    notFound = 'Inspection not found'
+    if (!inspection) throw new Error(notFound)
+    customer = inspection.vehicle?.customer ?? null
+    path = `/inspections/${id}`
   }
 
-  const inspection = await db.inspection.findFirst({
-    where: { id, organizationId },
-    select: { publicToken: true, vehicle: { select: { customer: { select: customerSelect } } } },
-  })
-  if (!inspection) throw new Error('Inspection not found')
-  const token = inspection.publicToken ?? randomUUID()
-  if (!inspection.publicToken) {
-    await db.inspection.update({ where: { id }, data: { publicToken: token } })
-  }
-  return { token, customer: inspection.vehicle?.customer ?? null, path: `/inspections/${id}` }
+  const token = await ensureShareToken(kind, id, organizationId)
+  if (!token) throw new Error(notFound)
+  return { token, customer, path }
 }
 
 /** The workshop's own wording for "your document is ready", with the link in it. */
@@ -122,12 +119,16 @@ async function linkMessage(
     db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
     db.user.findUnique({ where: { id: userId }, select: { name: true } }),
   ])
-  return interpolateSmsTemplate(setting?.value || SMS_TEMPLATE_DEFAULTS[key] || '', {
+  const body = interpolateSmsTemplate(setting?.value || SMS_TEMPLATE_DEFAULTS[key] || '', {
     share_link: link,
     customer_name: customerName,
     company_name: org?.name || '',
     current_user: user?.name || '',
   })
+  // A workshop may have written its template without the link tag. The link
+  // is the document, so it goes out either way: a message that only says
+  // "your quote is ready" would count as sent with nothing in it.
+  return body.includes(link) ? body : `${body} ${link}`.trim()
 }
 
 /**
@@ -177,6 +178,19 @@ async function sendLink(
     })
     messageId = sent.id
   } else {
+    // Outside WhatsApp's 24 hours the message goes out as the workshop's
+    // approved template, and only a template with the message variable has
+    // room for the link. One without it would deliver its fixed wording and
+    // no document, so the send is refused before anything is counted as sent.
+    const [config, open] = await Promise.all([
+      getWhatsappConfig(organizationId),
+      isWithinServiceWindow(organizationId, normalized ?? input.to),
+    ])
+    if (config && !open && config.template && !config.template.tokens.includes('message')) {
+      throw new Error(
+        'This customer has not written to you on WhatsApp in the last 24 hours, and your approved template has no message variable to carry the link. Add the message variable to the template in Settings, or ask the customer to send you a message first.'
+      )
+    }
     try {
       const sent = await sendOrgWhatsapp(organizationId, {
         to: input.to,

@@ -33,6 +33,11 @@ vi.mock('@/lib/with-auth', () => ({
   },
 }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+// The link's own rules (kept when it exists, minted once) have their own test.
+const ensureShareToken = vi.fn()
+vi.mock('@/lib/share-token.server', () => ({
+  ensureShareToken: (...args: unknown[]) => ensureShareToken(...args),
+}))
 vi.mock('@/lib/demo', () => ({ demoGuard: vi.fn() }))
 vi.mock('@/lib/app-url', () => ({ getAppBaseUrl: () => 'https://app.test' }))
 
@@ -52,11 +57,15 @@ vi.mock('@/lib/sms', () => ({
 }))
 
 const sendOrgWhatsapp = vi.fn()
+const getWhatsappConfig = vi.fn()
+const isWithinServiceWindow = vi.fn()
 vi.mock('@/lib/whatsapp', () => {
   class WhatsappWindowClosedError extends Error {}
   return {
     WhatsappWindowClosedError,
     sendOrgWhatsapp: (org: string, input: unknown) => sendOrgWhatsapp(org, input),
+    getWhatsappConfig: () => getWhatsappConfig(),
+    isWithinServiceWindow: () => isWithinServiceWindow(),
   }
 })
 
@@ -83,34 +92,38 @@ beforeEach(() => {
   requireFeature.mockResolvedValue(undefined)
   deliverSms.mockResolvedValue({ id: 'sms1', to: '+4790000000' })
   sendOrgWhatsapp.mockResolvedValue({ messageId: 'wa1', usedTemplate: false })
+  ensureShareToken.mockResolvedValue('held')
+  getWhatsappConfig.mockResolvedValue({ template: null })
+  isWithinServiceWindow.mockResolvedValue(true)
 })
 
 describe('texting a quote', () => {
-  it('gives a quote that was never shared a link, and texts it', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: null, customer: OLA })
+  it('texts the quote’s link to the number, in a shape that can be dialled', async () => {
+    quote.findFirst.mockResolvedValue({ customer: OLA })
 
     const result = await sendQuoteLink({ id: 'q1', channel: 'sms', to: '+47 900 00 000' })
 
     expect(result.success).toBe(true)
-    const minted = quote.update.mock.calls[0][0].data.publicToken
-    expect(minted).toEqual(expect.any(String))
+    expect(ensureShareToken).toHaveBeenCalledWith('quote', 'q1', 'org1')
     const sent = deliverSms.mock.calls[0][1]
     expect(sent.to).toBe('+4790000000')
-    expect(sent.body).toContain(`https://app.test/share/quote/org1/${minted}`)
+    expect(sent.body).toContain('https://app.test/share/quote/org1/held')
     expect(sent).toMatchObject({ relatedEntityType: 'quote', relatedEntityId: 'q1' })
   })
 
-  it('keeps the link the customer already holds', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: OLA })
+  it('adds the link when the workshop’s template left it out', async () => {
+    quote.findFirst.mockResolvedValue({ customer: OLA })
+    appSetting.findFirst.mockResolvedValue({ value: 'Hi {customer_name}, your quote is ready.' })
 
     await sendQuoteLink({ id: 'q1', channel: 'sms', to: '+47 900 00 000' })
 
-    expect(quote.update).not.toHaveBeenCalled()
-    expect(deliverSms.mock.calls[0][1].body).toContain('/share/quote/org1/held')
+    expect(deliverSms.mock.calls[0][1].body).toBe(
+      'Hi Ola Nordmann, your quote is ready. https://app.test/share/quote/org1/held'
+    )
   })
 
   it('writes the text with the workshop’s own template', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: OLA })
+    quote.findFirst.mockResolvedValue({ customer: OLA })
     appSetting.findFirst.mockResolvedValue({
       value: 'Hi {customer_name}, {company_name} here: {share_link} /{current_user}',
     })
@@ -123,7 +136,7 @@ describe('texting a quote', () => {
   })
 
   it('files the text in the customer’s conversation when it went to their number', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: OLA })
+    quote.findFirst.mockResolvedValue({ customer: OLA })
 
     await sendQuoteLink({ id: 'q1', channel: 'sms', to: '+4790000000' })
 
@@ -131,7 +144,7 @@ describe('texting a quote', () => {
   })
 
   it('keeps a text to another number out of the customer’s conversation', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: OLA })
+    quote.findFirst.mockResolvedValue({ customer: OLA })
 
     await sendQuoteLink({ id: 'q1', channel: 'sms', to: '+4791111111' })
 
@@ -139,7 +152,7 @@ describe('texting a quote', () => {
   })
 
   it('texts a typed number for a quote with no customer at all', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: null })
+    quote.findFirst.mockResolvedValue({ customer: null })
 
     const result = await sendQuoteLink({ id: 'q1', channel: 'sms', to: '+4791111111' })
 
@@ -148,7 +161,7 @@ describe('texting a quote', () => {
   })
 
   it('says what to fix when the number cannot be dialled', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: null })
+    quote.findFirst.mockResolvedValue({ customer: null })
 
     const result = await sendQuoteLink({ id: 'q1', channel: 'sms', to: '912 345 678' })
 
@@ -180,7 +193,7 @@ describe('texting a quote', () => {
 
 describe('sending on WhatsApp', () => {
   it('sends the same link and counts the quote as sent', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: OLA })
+    quote.findFirst.mockResolvedValue({ customer: OLA })
 
     const result = await sendQuoteLink({ id: 'q1', channel: 'whatsapp', to: '+47 900 00 000' })
 
@@ -197,7 +210,7 @@ describe('sending on WhatsApp', () => {
   })
 
   it('does not count the quote as sent when WhatsApp refuses it', async () => {
-    quote.findFirst.mockResolvedValue({ publicToken: 'held', customer: OLA })
+    quote.findFirst.mockResolvedValue({ customer: OLA })
     sendOrgWhatsapp.mockRejectedValue(new Error('Number not on WhatsApp'))
 
     const result = await sendQuoteLink({ id: 'q1', channel: 'whatsapp', to: '+4791111111' })
@@ -210,10 +223,35 @@ describe('sending on WhatsApp', () => {
   })
 })
 
+describe('WhatsApp outside the 24 hours', () => {
+  it('goes out through a template that can carry the link', async () => {
+    quote.findFirst.mockResolvedValue({ customer: OLA })
+    isWithinServiceWindow.mockResolvedValue(false)
+    getWhatsappConfig.mockResolvedValue({ template: { tokens: ['customer', 'message'] } })
+
+    const result = await sendQuoteLink({ id: 'q1', channel: 'whatsapp', to: '+47 900 00 000' })
+
+    expect(result.success).toBe(true)
+    expect(sendOrgWhatsapp).toHaveBeenCalled()
+  })
+
+  it('is refused when the template has no room for the link, and nothing counts as sent', async () => {
+    quote.findFirst.mockResolvedValue({ customer: OLA })
+    isWithinServiceWindow.mockResolvedValue(false)
+    getWhatsappConfig.mockResolvedValue({ template: { tokens: ['customer'] } })
+
+    const result = await sendQuoteLink({ id: 'q1', channel: 'whatsapp', to: '+47 900 00 000' })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toContain('no message variable to carry the link')
+    expect(sendOrgWhatsapp).not.toHaveBeenCalled()
+    expect(markQuoteSent).not.toHaveBeenCalled()
+  })
+})
+
 describe('invoices and inspections', () => {
   it('issues the invoice before its link goes out, to the vehicle’s customer', async () => {
     serviceRecord.findFirst.mockResolvedValue({
-      publicToken: null,
       vehicleId: 'v1',
       customer: null,
       vehicle: { customer: OLA },
@@ -223,19 +261,21 @@ describe('invoices and inspections', () => {
 
     expect(result.success).toBe(true)
     expect(issueInvoice).toHaveBeenCalledWith('r1', 'org1', 'sent')
-    const minted = serviceRecord.update.mock.calls[0][0].data.publicToken
-    expect(sendOrgWhatsapp.mock.calls[0][1].body).toContain(`/share/invoice/org1/${minted}`)
+    // Issued first, so the link shows the copy that is kept.
+    expect(issueInvoice.mock.invocationCallOrder[0]).toBeLessThan(
+      ensureShareToken.mock.invocationCallOrder[0]
+    )
+    expect(sendOrgWhatsapp.mock.calls[0][1].body).toContain('/share/invoice/org1/held')
     expect(sendOrgWhatsapp.mock.calls[0][1].customerId).toBe('c1')
     expect(markInvoiceSent).toHaveBeenCalledWith('r1', 'org1', { alreadyIssued: true })
   })
 
   it('texts an inspection’s link', async () => {
-    inspection.findFirst.mockResolvedValue({ publicToken: 'held', vehicle: { customer: OLA } })
+    inspection.findFirst.mockResolvedValue({ vehicle: { customer: OLA } })
 
     const result = await sendInspectionLink({ id: 'i1', channel: 'sms', to: '+47 900 00 000' })
 
     expect(result.success).toBe(true)
     expect(deliverSms.mock.calls[0][1].body).toContain('/share/inspection/org1/held')
-    expect(inspection.update).not.toHaveBeenCalled()
   })
 })

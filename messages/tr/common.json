@@ -251,6 +251,7 @@
     "channelNotConnected": "Bu yolla göndermek için {channel} hizmetini Entegrasyonlar altında bağlayın.",
     "openIntegrations": "Entegrasyonları aç",
     "channelNotInPlan": "{channel} planınıza dahil değil.",
+    "channelTurnedOff": "{channel} ile gönderim bu atölye için kapalıdır.",
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp gönderildi",
     "failedWhatsapp": "WhatsApp mesajı gönderilemedi",

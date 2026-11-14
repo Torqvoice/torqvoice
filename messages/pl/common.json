@@ -251,6 +251,7 @@
     "channelNotConnected": "Podłącz {channel} w Integracjach, aby wysyłać w ten sposób.",
     "openIntegrations": "Otwórz Integracje",
     "channelNotInPlan": "{channel} nie jest objęty Twoim planem.",
+    "channelTurnedOff": "Wysyłanie przez {channel} jest wyłączone w tym warsztacie.",
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp wysłany",
     "failedWhatsapp": "Nie udało się wysłać wiadomości WhatsApp",

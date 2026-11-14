@@ -213,7 +213,9 @@ export function SendDocumentDialog({
                 isCloud={channels?.isCloud ?? false}
                 value={email}
                 onValueChange={setEmail}
-                inputType="email"
+                // Checked as an address only while it is one being sent to: an
+                // unticked row must not hold up the other channels.
+                inputType={emailOn ? 'email' : 'text'}
                 inputLabel={t('emailAddress')}
                 placeholder={t('emailPlaceholder')}
               >
@@ -329,7 +331,7 @@ interface ChannelRowProps {
   isCloud: boolean
   value: string
   onValueChange: (value: string) => void
-  inputType: 'email' | 'tel'
+  inputType: 'email' | 'tel' | 'text'
   inputLabel: string
   placeholder: string
   /** Why this recipient cannot be reached on a channel that otherwise works. */
@@ -366,7 +368,11 @@ function ChannelRow({
   const ready = status === 'ready'
   const usable = ready && !blockedReason
   const hintId = `${id}-hint`
-  const hasHint = status === 'not_connected' || status === 'not_in_plan' || !!blockedReason
+  const hasHint =
+    status === 'not_connected' ||
+    status === 'not_in_plan' ||
+    status === 'turned_off' ||
+    !!blockedReason
 
   return (
     <div className="space-y-1.5">
@@ -413,6 +419,11 @@ function ChannelRow({
           <Link href="/settings/integrations" className="font-medium text-primary hover:underline">
             {t('openIntegrations')}
           </Link>
+        </p>
+      )}
+      {status === 'turned_off' && (
+        <p id={hintId} className="pl-6 text-xs text-muted-foreground">
+          {t('channelTurnedOff', { channel: label })}
         </p>
       )}
       {status === 'not_in_plan' && (

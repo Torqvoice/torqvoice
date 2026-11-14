@@ -251,6 +251,7 @@
     "channelNotConnected": "Prijunkite {channel} skiltyje Integracijos, kad galėtumėte siųsti šiuo būdu.",
     "openIntegrations": "Atidaryti Integracijas",
     "channelNotInPlan": "{channel} neįtrauktas į jūsų planą.",
+    "channelTurnedOff": "Siuntimas per {channel} šiose dirbtuvėse yra išjungtas.",
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp išsiųsta",
     "failedWhatsapp": "Nepavyko išsiųsti WhatsApp žinutės",

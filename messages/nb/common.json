@@ -251,6 +251,7 @@
     "channelNotConnected": "Koble til {channel} under Integrasjoner for å sende på denne måten.",
     "openIntegrations": "Åpne Integrasjoner",
     "channelNotInPlan": "{channel} er ikke inkludert i planen din.",
+    "channelTurnedOff": "Sending med {channel} er slått av for dette verkstedet.",
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp sendt",
     "failedWhatsapp": "Kunne ikke sende WhatsApp-melding",

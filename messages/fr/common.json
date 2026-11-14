@@ -251,6 +251,7 @@
     "channelNotConnected": "Connectez {channel} dans Intégrations pour envoyer par ce moyen.",
     "openIntegrations": "Ouvrir Intégrations",
     "channelNotInPlan": "{channel} n'est pas inclus dans votre forfait.",
+    "channelTurnedOff": "L'envoi par {channel} est désactivé pour cet atelier.",
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp envoyé",
     "failedWhatsapp": "Impossible d'envoyer le message WhatsApp",

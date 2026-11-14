@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { getWhatsappWindowState } from '@/features/whatsapp/Actions/whatsappActions'
 import { getShareChannels } from '../Actions/getShareChannels'
 
-const statusSchema = z.enum(['ready', 'not_connected', 'not_in_plan'])
+const statusSchema = z.enum(['ready', 'not_connected', 'not_in_plan', 'turned_off'])
 
 const shareChannelsSchema = z.object({
   email: statusSchema,
@@ -40,6 +40,7 @@ const windowSchema = z.object({
   configured: z.boolean(),
   open: z.boolean(),
   hasTemplate: z.boolean(),
+  templateCarriesMessage: z.boolean(),
 })
 
 /**
@@ -65,5 +66,6 @@ export function useWhatsappReach(enabled: boolean, customerId: string | undefine
     retry: false,
   })
   if (!data) return undefined
-  return data.configured && (data.open || data.hasTemplate)
+  // A link needs a template with the message variable to ride in.
+  return data.configured && (data.open || (data.hasTemplate && data.templateCarriesMessage))
 }
