@@ -1417,7 +1417,8 @@ function SettingFieldList({
                 }
                 onValueChange={(v) => setValues((s) => ({ ...s, [f.key]: v }))}
               >
-                <SelectTrigger className="h-8">
+                {/* The column is fixed; a long choice is cut short rather than pushing past the card. */}
+                <SelectTrigger className="h-8 w-full min-w-0 *:data-[slot=select-value]:truncate">
                   <SelectValue placeholder={t('connection.choose')} />
                 </SelectTrigger>
                 <SelectContent>

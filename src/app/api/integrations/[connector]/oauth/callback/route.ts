@@ -58,6 +58,19 @@ export async function GET(
   const client = resolveClient(spec, previous as unknown as Record<string, unknown>)
   if (!client) return fail('no-client')
 
+  // What the vendor tells us only here, such as which company was chosen,
+  // goes into the sealed credentials, next to the tokens, so identify and
+  // every job after it can read it and it never sits in the database in the
+  // clear: Intuit's rules put the realm id under the same encryption as the
+  // refresh token. A token refresh spreads the previous credentials, so it
+  // survives those. Zoho names its regional sign-in server here, which the
+  // code exchange itself must go to.
+  const extra: Record<string, string> = {}
+  for (const name of spec.callbackParams ?? []) {
+    const value = params.get(name)
+    if (value) extra[name] = value
+  }
+
   let credentials: OAuthCredentials
   try {
     credentials = await exchangeCode({
@@ -68,6 +81,7 @@ export async function GET(
       codeVerifier: previous.codeVerifier,
       state,
       previous,
+      callbackExtras: extra,
     })
   } catch (err) {
     // The vendor's own words, such as invalid_client for a wrong secret, are
@@ -85,18 +99,6 @@ export async function GET(
     })
     await writeLog(connection.id, 'error', 'The provider refused the sign-in', { error: reason })
     return fail('exchange')
-  }
-
-  // What the vendor tells us only here, such as which company was chosen,
-  // goes into the sealed credentials, next to the tokens, so identify and
-  // every job after it can read it and it never sits in the database in the
-  // clear: Intuit's rules put the realm id under the same encryption as the
-  // refresh token. A token refresh spreads the previous credentials, so it
-  // survives those.
-  const extra: Record<string, string> = {}
-  for (const name of spec.callbackParams ?? []) {
-    const value = params.get(name)
-    if (value) extra[name] = value
   }
 
   await db.integrationConnection.update({

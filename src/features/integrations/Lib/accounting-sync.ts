@@ -9,6 +9,7 @@
  */
 
 import { db } from '@/lib/db'
+import { organizationTranslator } from '@/i18n/organization-translator'
 import type { Prisma } from '@/generated/prisma/client'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { richTextToPlain } from '@/lib/rich-text-plain'
@@ -302,6 +303,20 @@ export async function workshopCurrency(organizationId: string): Promise<string |
   })
   const code = row?.value?.trim().toUpperCase()
   return code && /^[A-Z]{3}$/.test(code) ? code : null
+}
+
+/**
+ * The word in front of the vehicle on a ledger's invoice, in the language
+ * the workshop's documents print in: "Vehicle", or "Vessel" for a workshop
+ * that fixes boats. The same words the invoice PDF uses.
+ */
+export async function workshopVehicleLabel(organizationId: string): Promise<string> {
+  const row = await db.appSetting.findFirst({
+    where: { organizationId, key: SETTING_KEYS.SERVICE_TYPE },
+    select: { value: true },
+  })
+  const t = await organizationTranslator(organizationId, 'pdf')
+  return t(row?.value === 'marine' ? 'invoice.vehicleMarine' : 'invoice.vehicle')
 }
 
 /** How the workshop writes mileage: km when it chose metric, miles otherwise (the default). */

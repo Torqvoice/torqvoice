@@ -87,6 +87,8 @@ export function createConnectorHttp(input: {
   credentials: Record<string, unknown>
   auth: HttpAuth
   log: (level: LogLevel, message: string, details?: Record<string, unknown>) => Promise<void>
+  /** The connector's say on whether a 429 or 5xx is worth retrying; see ConnectorServer.shouldRetry. */
+  shouldRetry?: (status: number, body: string) => boolean
 }): ConnectorHttp {
   let credentials = input.credentials
 
@@ -101,7 +103,10 @@ export function createConnectorHttp(input: {
         const fresh = await refreshUnderLock(input.connectionId, input.auth.oauth)
         credentials = fresh as unknown as Record<string, unknown>
       }
-      return { Authorization: `Bearer ${(credentials as unknown as OAuthCredentials).accessToken}` }
+      const scheme = input.auth.oauth.authScheme ?? 'Bearer'
+      return {
+        Authorization: `${scheme} ${(credentials as unknown as OAuthCredentials).accessToken}`,
+      }
     }
     if (input.auth.headers) return input.auth.headers(credentials)
     const token = typeof credentials.accessToken === 'string' ? credentials.accessToken : ''
@@ -132,9 +137,19 @@ export function createConnectorHttp(input: {
       }
       if ((res.status === 429 || res.status >= 500) && attempt < MAX_RETRIES) {
         last = res
+        // The vendor's own words say which limit it was (per minute, per
+        // day, concurrent calls), which decides whether waiting helps.
+        const said = await res
+          .clone()
+          .text()
+          .catch(() => '')
+        if (input.shouldRetry && !input.shouldRetry(res.status, said)) return res
         await input.log('warn', `Retrying ${res.status} from ${new URL(url).host}`, {
           status: res.status,
           attempt: attempt + 1,
+          method: init?.method ?? 'GET',
+          path: new URL(url).pathname,
+          ...(said && { response: said.slice(0, 300) }),
         })
         await sleep(retryDelayMs(attempt, res))
         continue

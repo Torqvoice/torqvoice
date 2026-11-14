@@ -128,6 +128,7 @@ export async function loadConnection(
     writeLog(connectionId, level, message, details, options.jobId)
 
   const http = createConnectorHttp({
+    shouldRetry: server.shouldRetry?.bind(server),
     connectionId,
     credentials,
     auth: oauthSpec(manifest) ? { oauth: oauthSpec(manifest) ?? undefined } : {},

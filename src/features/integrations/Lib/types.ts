@@ -113,6 +113,8 @@ export type AuthSpec =
       authorizeUrl: string
       tokenUrl: string
       scopes: string[]
+      /** How scopes are joined on the authorize request: a space by the standard, a comma for Zoho. */
+      scopeSeparator?: string
       /** Extra query parameters on the authorize request, such as access_type=offline. */
       authorizeParams?: Record<string, string>
       pkce?: boolean
@@ -134,6 +136,25 @@ export type AuthSpec =
        * the authorize request; Fiken lists it as required on both.
        */
       stateOnExchange?: boolean
+      /**
+       * The word before the access token in the Authorization header. Bearer
+       * unless the vendor wants its own: Zoho reads `Zoho-oauthtoken`.
+       */
+      authScheme?: string
+      /**
+       * A vendor that runs a sign-in server per region (Zoho) names the
+       * workshop's own on the callback. The token exchange and every refresh
+       * go there instead of `tokenUrl`, but only to a host on `allowedHosts`:
+       * the parameter comes back through the browser, and the request
+       * carries the app's client secret.
+       */
+      regionalTokenServer?: {
+        /** The callback parameter that names the server, such as `accounts-server`. Must be listed in callbackParams. */
+        param: string
+        /** Path of the token endpoint on that server, such as `/oauth/v2/token`. */
+        path: string
+        allowedHosts: string[]
+      }
       /** Environment variable names holding the platform-owned app's client id and secret. */
       platformEnv?: { clientId: string; clientSecret: string }
       /** Fields a workshop fills in to use its own app. */
@@ -970,6 +991,13 @@ export interface ConnectorServer {
   /** Cheap round trip that proves the credentials still work. */
   test(ctx: ConnectorContext): Promise<{ ok: boolean; message?: string }>
   /**
+   * Whether a 429 or 5xx is worth retrying, from the vendor's answer. The
+   * client retries them by default; a vendor that says the caller is
+   * blocked for a while or out of calls for the day (Zoho) is only held
+   * longer by retries, so the call fails at once with the vendor's words.
+   */
+  shouldRetry?(status: number, body: string): boolean
+  /**
    * Send a real message to the signed-in user, for vendors where a key check
    * is not proof that mail or texts actually go out. Throws with the vendor's
    * reason when it fails.
@@ -1193,6 +1221,8 @@ export interface OAuthCredentials {
   expiresAt?: number
   tokenType?: string
   scope?: string
+  /** The API host the vendor named for this account, when it has one per region (Zoho). */
+  apiDomain?: string
   /** Present for tenant-owned apps. */
   clientId?: string
   clientSecret?: string
