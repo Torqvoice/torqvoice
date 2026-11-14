@@ -133,23 +133,33 @@ export class PaystackProvider implements PaymentProvider {
 
   async verifyPayment(reference: string): Promise<VerifyResult | null> {
     try {
-      const res = await fetch(
-        `${this.baseUrl}/transaction/verify/${encodeURIComponent(reference)}`,
-        { headers: this.headers() }
-      )
-      if (!res.ok) return null
-
-      const body = (await res.json()) as { status?: boolean; data?: PaystackTransaction }
-      const data = body.data
-      if (!body.status || !data) return null
-
-      return {
-        paid: data.status === 'success',
-        amount: fromPaystackAmount(typeof data.amount === 'number' ? data.amount : 0),
-        ...paystackAttribution(data),
-      }
+      return await this.lookup(reference)
     } catch {
       return null
+    }
+  }
+
+  /**
+   * What Paystack says about a transaction. Null when Paystack does not
+   * know the reference, which is a final answer. Throws when Paystack could
+   * not be asked (network, 429, 5xx), so a webhook can answer with an error
+   * and get the notification again, instead of losing a paid charge.
+   */
+  async lookup(reference: string): Promise<VerifyResult | null> {
+    const res = await fetch(`${this.baseUrl}/transaction/verify/${encodeURIComponent(reference)}`, {
+      headers: this.headers(),
+    })
+    if (res.status === 429 || res.status >= 500) throw await paystackError(res, 'verify')
+    if (!res.ok) return null
+
+    const body = (await res.json()) as { status?: boolean; data?: PaystackTransaction }
+    const data = body.data
+    if (!body.status || !data) return null
+
+    return {
+      paid: data.status === 'success',
+      amount: fromPaystackAmount(typeof data.amount === 'number' ? data.amount : 0),
+      ...paystackAttribution(data),
     }
   }
 }

@@ -202,6 +202,18 @@ describe('checking a Paystack payment', () => {
     expect(result).toMatchObject({ serviceRecordId: null, organizationId: null })
   })
 
+  it('throws when Paystack cannot be asked, so a webhook can ask for a retry', async () => {
+    const provider = new PaystackProvider({ secretKey: 'sk_test_x' })
+    fetchMock.mockResolvedValue(answer(503, { status: false, message: 'Service unavailable' }))
+    await expect(provider.lookup('r')).rejects.toThrow('Paystack verify failed: 503')
+    fetchMock.mockResolvedValue(answer(429, { status: false, message: 'Too many requests' }))
+    await expect(provider.lookup('r')).rejects.toThrow('429')
+    fetchMock.mockRejectedValue(new TypeError('fetch failed'))
+    await expect(provider.lookup('r')).rejects.toThrow('fetch failed')
+    // The invoice page's check stays quiet and lets the customer try again.
+    await expect(provider.verifyPayment('r')).resolves.toBeNull()
+  })
+
   it('answers nothing when Paystack does not know the reference', async () => {
     fetchMock.mockResolvedValue(answer(404, { status: false, message: 'Transaction not found' }))
     await expect(

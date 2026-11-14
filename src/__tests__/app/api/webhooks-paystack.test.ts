@@ -9,10 +9,11 @@
 import { createHmac } from 'node:crypto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { db, payments, recordVendorPayment } = vi.hoisted(() => ({
+const { db, payments, recordVendorPayment, verifyPayment } = vi.hoisted(() => ({
   db: { serviceRecord: { findUnique: vi.fn() } },
   payments: { paymentProviderFor: vi.fn() },
   recordVendorPayment: vi.fn(),
+  verifyPayment: vi.fn(),
 }))
 
 vi.mock('@/lib/backup/freeze', () => ({
@@ -22,12 +23,23 @@ vi.mock('@/lib/backup/freeze', () => ({
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/features/integrations/Lib/payments', () => payments)
 vi.mock('@/lib/payment-providers/record-payment', () => ({ recordVendorPayment }))
+// Paystack itself is the stand-in; the signature check and metadata reading stay real.
+vi.mock('@/lib/payment-providers/paystack', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/payment-providers/paystack')>()
+  return {
+    ...actual,
+    PaystackProvider: class {
+      lookup(reference: string) {
+        return verifyPayment(reference)
+      }
+    },
+  }
+})
 
 import { POST } from '@/app/api/webhooks/paystack/route'
 
 const ORG = 'org_1'
 const KEY = 'sk_test_workshop'
-const verifyPayment = vi.fn()
 
 function chargeSuccess(overrides: Record<string, unknown> = {}) {
   return {
@@ -129,6 +141,13 @@ describe('a Paystack notification', () => {
   it('quietly accepts events that are not a successful charge', async () => {
     const response = await post({ event: 'transfer.success', data: {} })
     expect(response.status).toBe(200)
+    expect(recordVendorPayment).not.toHaveBeenCalled()
+  })
+
+  it('asks Paystack to send it again when Paystack cannot be reached to confirm the charge', async () => {
+    verifyPayment.mockRejectedValue(new Error('Paystack verify failed: 503'))
+    const response = await post(chargeSuccess())
+    expect(response.status).toBe(503)
     expect(recordVendorPayment).not.toHaveBeenCalled()
   })
 

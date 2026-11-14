@@ -4,7 +4,11 @@ import { isRestoring } from '@/lib/backup/freeze'
 import { restoringResponse } from '@/lib/backup/freeze-response'
 import { db } from '@/lib/db'
 import { paymentMatchesRecord } from '@/lib/payment-providers/attribution'
-import { paystackAttribution, paystackSignatureValid } from '@/lib/payment-providers/paystack'
+import {
+  PaystackProvider,
+  paystackAttribution,
+  paystackSignatureValid,
+} from '@/lib/payment-providers/paystack'
 import { recordVendorPayment } from '@/lib/payment-providers/record-payment'
 
 interface PaystackEvent {
@@ -58,7 +62,15 @@ export async function POST(request: Request) {
 
     // Asked of Paystack itself, so the amount and the record are its word
     // and not the notification's.
-    const result = await connected.provider.verifyPayment(reference)
+    // A Paystack that cannot be reached is not an unpaid charge: answering
+    // with an error makes Paystack send the notification again later.
+    let result: Awaited<ReturnType<PaystackProvider['lookup']>>
+    try {
+      result = await new PaystackProvider({ secretKey: secretKey.trim() }).lookup(reference)
+    } catch (error) {
+      console.error(`[Paystack Webhook] Could not verify ${reference}; asking for a retry`, error)
+      return NextResponse.json({ error: 'Verification unavailable' }, { status: 503 })
+    }
     if (!result || !result.paid) {
       return NextResponse.json({ received: true, status: 'not_paid' })
     }
