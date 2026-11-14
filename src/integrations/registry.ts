@@ -23,6 +23,7 @@ import { manifest as openaiCompatible } from './openai-compatible/manifest'
 import { manifest as openapiAutomotive } from './openapi-automotive/manifest'
 import { manifest as openLaborProject } from './openlaborproject/manifest'
 import { manifest as paypal } from './paypal/manifest'
+import { manifest as paystack } from './paystack/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as quickbooks } from './quickbooks/manifest'
 import { manifest as xero } from './xero/manifest'
@@ -81,6 +82,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: stripe, load: () => import('./stripe/server') },
   { manifest: vipps, load: () => import('./vipps/server') },
   { manifest: paypal, load: () => import('./paypal/server') },
+  { manifest: paystack, load: () => import('./paystack/server') },
   { manifest: quickbooks, load: () => import('./quickbooks/server') },
   { manifest: xero, load: () => import('./xero/server') },
   { manifest: fiken, load: () => import('./fiken/server') },

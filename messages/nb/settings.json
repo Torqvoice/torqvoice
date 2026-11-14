@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Netto 14 dager",
     "paymentTermsHint": "Betalingsvilkår vist på fakturaer (f.eks. \"Netto 14 dager\", \"Ved mottak\")",
     "onlinePayments": "Nettbetalinger",
-    "onlinePaymentsDescription": "La kundene betale fakturaer fra lenken du sender dem. Stripe, Vipps og PayPal kobles til under Integrasjoner og kan brukes side om side.",
+    "onlinePaymentsDescription": "La kundene betale fakturaer fra lenken du sender dem. Stripe, Vipps, PayPal og Paystack kobles til under Integrasjoner og kan brukes side om side.",
     "onlinePaymentsHint": "Når en kunde betaler, sier leverandøren fra til Torqvoice og fakturaen merkes betalt av seg selv. Siden til hver leverandør viser varslings-URL-en den trenger.",
     "offered": "På fakturalenker",
     "paused": "Tilkoblet, tilbys ikke",

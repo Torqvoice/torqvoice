@@ -154,6 +154,7 @@
     "inboundHintStripe": "Pridėkite šį URL Stripe valdymo skydelyje: atidarykite Workbench, tada Webhooks, pasirinkite Create an event destination ir prenumeruokite checkout.session.completed. Tada Stripe parodys šio galinio taško parašo paslaptį; įklijuokite ją čia į parašo paslapties lauką, kad kiekvienas pranešimas būtų tikrinamas pagal parašą. Iki tol Torqvoice patvirtina kiekvieną pranešimą užklausdamas Stripe apie patį atsiskaitymą.",
     "inboundHintVipps": "Įveskite šį URL kaip atgalinio iškvietimo URL Vipps MobilePay portale. Vipps taip pat reikalauja paskelbtų pardavimo sąlygų, kurios nustatomos skiltyje Nustatymai, Mokėjimas.",
     "inboundHintPaypal": "Pridėkite šį URL PayPal kūrėjų skydelyje, skiltyje Webhooks, prenumeruodami PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Įklijuokite šį URL kaip Webhook URL Paystack skydelyje, skiltyje Settings, API Keys & Webhooks. Paystack saugo vieną bandomajam režimui ir vieną tikrajam, todėl nustatykite jį tame režime, kuriam priklauso jūsų raktas.",
     "copy": "Kopijuoti",
     "copied": "Nukopijuota",
     "updateKeys": "Atnaujinti raktus",
@@ -702,6 +703,17 @@
         "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami.",
         "sandbox": "Smėlio dėžės režimas",
         "sandboxHelp": "Naudoti PayPal smėlio dėžę su smėlio dėžės programėlės raktais. Palikite įjungtą, kol pavyks visas mokėjimas, tada išjunkite ir įveskite tikros programėlės raktus."
+      }
+    },
+    "paystack": {
+      "description": "Paystack apmokėjimas iš sąskaitos nuorodos į jūsų pačių Paystack paskyrą. Klientas moka kortele, banko pavedimu arba mobiliaisiais pinigais, priklausomai nuo šalies, o sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "secretKey": "Slaptasis raktas",
+        "secretKeyHelp": "Paystack skydelyje, skiltyje Settings, API Keys & Webhooks. Bandomasis raktas (sk_test_) neapdoroja nieko tikro, todėl pirmiausia išbandykite mokėjimą su juo, o tada pakeiskite į tikrąjį raktą."
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami."
       }
     },
     "quickbooks": {

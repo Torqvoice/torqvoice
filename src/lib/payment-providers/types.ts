@@ -7,6 +7,11 @@ export interface CheckoutRequest {
   cancelUrl: string
   serviceRecordId: string
   orgId: string
+  /**
+   * An email for the payer, for vendors that will not start a payment
+   * without one: the customer's, or the workshop's own when they have none.
+   */
+  payerEmail?: string | null
 }
 
 export interface CheckoutResult {

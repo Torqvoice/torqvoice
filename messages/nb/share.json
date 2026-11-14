@@ -12,6 +12,7 @@
     "payWithCard": "Betal {amount} med kort",
     "payWithVipps": "Betal {amount} med Vipps",
     "payWithPaypal": "Betal {amount} med PayPal",
+    "payWithPaystack": "Betal {amount} med Paystack",
     "errorInvalidAmount": "Vennligst angi et gyldig beløp.",
     "errorExceedsBalance": "Beløpet kan ikke overstige {amount}.",
     "errorVerifyFailed": "Betalingen kunne ikke verifiseres. Den kan fortsatt behandles.",

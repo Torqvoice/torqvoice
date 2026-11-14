@@ -2,6 +2,7 @@ import type { PaymentProvider } from './types'
 import { StripeProvider } from './stripe'
 import { VippsProvider, vippsConfigFrom } from './vipps'
 import { PayPalProvider, paypalConfigFrom } from './paypal'
+import { PaystackProvider, paystackConfigFrom } from './paystack'
 
 export type { PaymentProvider, CheckoutRequest, CheckoutResult, VerifyResult } from './types'
 
@@ -29,6 +30,10 @@ export function buildPaymentProvider(
     case 'paypal': {
       const config = paypalConfigFrom(credentials, settings)
       return config ? new PayPalProvider(config) : null
+    }
+    case 'paystack': {
+      const config = paystackConfigFrom(credentials)
+      return config ? new PaystackProvider(config) : null
     }
     default:
       return null

@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Net 14 gün",
     "paymentTermsHint": "Faturalarda gösterilen ödeme koşulları metni (ör. \"Net 14 gün\", \"Teslimde ödeme\")",
     "onlinePayments": "Online Ödemeler",
-    "onlinePaymentsDescription": "Müşterilerin, gönderdiğiniz bağlantıdan fatura ödemesine izin verin. Stripe, Vipps ve PayPal, Entegrasyonlar altında bağlanır ve birlikte çalışabilir.",
+    "onlinePaymentsDescription": "Müşterilerin, gönderdiğiniz bağlantıdan fatura ödemesine izin verin. Stripe, Vipps, PayPal ve Paystack, Entegrasyonlar altında bağlanır ve birlikte çalışabilir.",
     "onlinePaymentsHint": "Bir müşteri ödediğinde sağlayıcı Torqvoice'a bildirir ve fatura kendini ödendi olarak işaretler. Her sağlayıcının sayfası, ihtiyaç duyduğu bildirim URL'sini gösterir.",
     "offered": "Fatura bağlantılarında",
     "paused": "Bağlı, sunulmuyor",

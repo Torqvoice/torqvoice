@@ -154,6 +154,7 @@
     "inboundHintStripe": "Voeg deze URL toe in het Stripe-dashboard: open Workbench, dan Webhooks, kies Create an event destination en abonneer op checkout.session.completed. Stripe toont daarna een ondertekeningsgeheim voor het endpoint; plak het hier in het veld voor het ondertekeningsgeheim, zodat elke melding op zijn handtekening wordt gecontroleerd. Tot die tijd bevestigt Torqvoice elke melding door de checkout bij Stripe op te vragen.",
     "inboundHintVipps": "Vul deze URL in als callback-URL in het Vipps MobilePay-portaal. Vipps vereist ook gepubliceerde verkoopvoorwaarden, die staan onder Instellingen, Betaling.",
     "inboundHintPaypal": "Voeg deze URL toe in het PayPal-ontwikkelaarsdashboard onder Webhooks, geabonneerd op PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Plak deze URL als Webhook URL in het Paystack-dashboard onder Settings, API Keys & Webhooks. Paystack bewaart er één voor de testmodus en één voor de live-modus, dus stel hem in bij de modus waar je sleutel bij hoort.",
     "copy": "Kopiëren",
     "copied": "Gekopieerd",
     "updateKeys": "Sleutels bijwerken",
@@ -702,6 +703,17 @@
         "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd.",
         "sandbox": "Sandboxmodus",
         "sandboxHelp": "Gebruik de sandbox van PayPal met de sleutels van de sandbox-app. Laat dit aan tot een volledige betaling is gelukt, zet het dan uit en vul de sleutels van de live-app in."
+      }
+    },
+    "paystack": {
+      "description": "Paystack-betaling vanaf de factuurlink, naar je eigen Paystack-account. De klant betaalt met kaart, bankoverschrijving of mobiel geld, afhankelijk van het land, en de factuur wordt vanzelf als betaald gemarkeerd.",
+      "fields": {
+        "secretKey": "Geheime sleutel",
+        "secretKeyHelp": "In het Paystack-dashboard onder Settings, API Keys & Webhooks. Een testsleutel (sk_test_) verwerkt niets echts, dus probeer daar eerst een betaling mee en stap daarna over op de live-sleutel."
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd."
       }
     },
     "quickbooks": {

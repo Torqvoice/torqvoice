@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "30 dagen netto",
     "paymentTermsHint": "Betalingsvoorwaarden op facturen (bijv. \"30 dagen netto\", \"Bij ontvangst\")",
     "onlinePayments": "Online betalingen",
-    "onlinePaymentsDescription": "Laat klanten facturen betalen via de link die je ze stuurt. Stripe, Vipps en PayPal koppel je onder Integraties en kunnen naast elkaar draaien.",
+    "onlinePaymentsDescription": "Laat klanten facturen betalen via de link die je ze stuurt. Stripe, Vipps, PayPal en Paystack koppel je onder Integraties en kunnen naast elkaar draaien.",
     "onlinePaymentsHint": "Als een klant betaalt, meldt de aanbieder dat aan Torqvoice en markeert de factuur zichzelf als betaald. De pagina van elke aanbieder toont de meldings-URL die hij nodig heeft.",
     "offered": "Op factuurlinks",
     "paused": "Gekoppeld, niet aangeboden",

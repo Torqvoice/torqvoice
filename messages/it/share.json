@@ -12,6 +12,7 @@
     "payWithCard": "Paga {amount} con Carta",
     "payWithVipps": "Paga {amount} con Vipps",
     "payWithPaypal": "Paga {amount} con PayPal",
+    "payWithPaystack": "Paga {amount} con Paystack",
     "errorInvalidAmount": "Inserisci un importo valido.",
     "errorExceedsBalance": "L'importo non può superare {amount}.",
     "errorVerifyFailed": "Impossibile verificare il pagamento. Potrebbe essere ancora in elaborazione.",

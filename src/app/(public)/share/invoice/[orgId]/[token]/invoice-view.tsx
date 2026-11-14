@@ -445,8 +445,14 @@ export function InvoiceView({
     // PayPal sends the order id back as "token" beside the marker we set.
     const paypalOrderId = params.get('paypal') === 'return' ? params.get('token') : null
 
+    // Paystack comes back with a reference too, so its marker is read first.
+    const paystackReference = params.get('paystack') === 'return' ? reference : null
+
     if (sessionId) {
       verifyPayment('stripe', sessionId)
+      window.history.replaceState({}, '', window.location.pathname)
+    } else if (paystackReference) {
+      verifyPayment('paystack', paystackReference)
       window.history.replaceState({}, '', window.location.pathname)
     } else if (reference) {
       verifyPayment('vipps', reference)
@@ -694,6 +700,22 @@ export function InvoiceView({
                     <span className="text-base font-black leading-none">P</span>
                   )}
                   {t('payWithPaypal', {
+                    amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode),
+                  })}
+                </button>
+              )}
+              {enabledProviders.includes('paystack') && (
+                <button
+                  onClick={() => handlePayment('paystack')}
+                  disabled={paymentLoading !== null}
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#011b33] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#0a2c4d] disabled:opacity-50 sm:flex-none"
+                >
+                  {paymentLoading === 'paystack' ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <CreditCard className="h-4 w-4" />
+                  )}
+                  {t('payWithPaystack', {
                     amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode),
                   })}
                 </button>

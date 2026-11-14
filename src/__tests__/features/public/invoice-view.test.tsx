@@ -302,6 +302,11 @@ describe('InvoiceView', () => {
       expect(screen.getByRole('button', { name: /pay.*paypal/i })).toBeInTheDocument()
     })
 
+    it('shows Paystack pay button when paystack provider is enabled', () => {
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['paystack'] })
+      expect(screen.getByRole('button', { name: /pay.*paystack/i })).toBeInTheDocument()
+    })
+
     it('shows Full amount and Partial payment toggle buttons', () => {
       renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       expect(screen.getByRole('button', { name: /full amount/i })).toBeInTheDocument()
@@ -422,6 +427,31 @@ describe('InvoiceView', () => {
         expect(body.provider).toBe('vipps')
         expect(body.externalId).toBe('vipps-ref-456')
       })
+    })
+
+    it('verifies a Paystack payment when the customer comes back from Paystack', async () => {
+      // Paystack appends trxref and reference to the return address, which
+      // is the name Vipps uses too; the marker says whose it is.
+      const search = '?paystack=return&trxref=inv-sr-1&reference=inv-sr-1'
+      vi.stubGlobal('location', {
+        search,
+        pathname: '/share/invoice/org-1/tok-xyz',
+        href: `http://localhost/share/invoice/org-1/tok-xyz${search}`,
+      })
+      vi.stubGlobal('history', { replaceState: vi.fn() })
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ verified: true, amount: 200 }),
+      })
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['paystack', 'vipps'] })
+
+      await waitFor(() => {
+        expect(screen.getByText(/payment received/i)).toBeInTheDocument()
+      })
+      const call = mockFetch.mock.calls.find(
+        (c: unknown[]) => c[0] === '/api/public/share/invoice/org-1/tok-xyz/verify'
+      )
+      expect(JSON.parse(call![1].body)).toEqual({ provider: 'paystack', externalId: 'inv-sr-1' })
     })
 
     it('shows PAID IN FULL when balance is zero', () => {

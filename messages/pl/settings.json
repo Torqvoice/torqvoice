@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "14 dni netto",
     "paymentTermsHint": "Tekst warunkow platnosci na fakturach (np. \"14 dni netto\", \"Platne przy odbiorze\")",
     "onlinePayments": "Platnosci online",
-    "onlinePaymentsDescription": "Pozwól klientom płacić faktury z linku, który im wysyłasz. Stripe, Vipps i PayPal podłącza się w Integracjach i mogą działać równolegle.",
+    "onlinePaymentsDescription": "Pozwól klientom płacić faktury z linku, który im wysyłasz. Stripe, Vipps, PayPal i Paystack podłącza się w Integracjach i mogą działać równolegle.",
     "onlinePaymentsHint": "Gdy klient płaci, dostawca informuje Torqvoice, a faktura sama oznacza się jako opłacona. Strona każdego dostawcy pokazuje potrzebny mu adres powiadomień.",
     "offered": "W linkach do faktur",
     "paused": "Podłączony, nieoferowany",

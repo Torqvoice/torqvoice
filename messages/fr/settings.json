@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Net 14 jours",
     "paymentTermsHint": "Texte des conditions de paiement sur les factures (ex. \"Net 14 jours\", \"A réception\")",
     "onlinePayments": "Paiements en ligne",
-    "onlinePaymentsDescription": "Laissez les clients payer les factures depuis le lien que vous leur envoyez. Stripe, Vipps et PayPal se connectent sous Intégrations et peuvent fonctionner côte à côte.",
+    "onlinePaymentsDescription": "Laissez les clients payer les factures depuis le lien que vous leur envoyez. Stripe, Vipps, PayPal et Paystack se connectent sous Intégrations et peuvent fonctionner côte à côte.",
     "onlinePaymentsHint": "Quand un client paie, le prestataire prévient Torqvoice et la facture se marque payée toute seule. La page de chaque prestataire affiche l'URL de notification dont il a besoin.",
     "offered": "Sur les liens de facture",
     "paused": "Connecté, non proposé",

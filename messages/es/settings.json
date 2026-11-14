@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Neto 14 días",
     "paymentTermsHint": "Texto de condiciones de pago en las facturas (ej. \"Neto 14 días\", \"Pago al recibir\")",
     "onlinePayments": "Pagos en línea",
-    "onlinePaymentsDescription": "Deja que los clientes paguen facturas desde el enlace que les envías. Stripe, Vipps y PayPal se conectan en Integraciones y pueden funcionar a la vez.",
+    "onlinePaymentsDescription": "Deja que los clientes paguen facturas desde el enlace que les envías. Stripe, Vipps, PayPal y Paystack se conectan en Integraciones y pueden funcionar a la vez.",
     "onlinePaymentsHint": "Cuando un cliente paga, el proveedor avisa a Torqvoice y la factura se marca como pagada sola. La página de cada proveedor muestra la URL de notificación que necesita.",
     "offered": "En enlaces de factura",
     "paused": "Conectado, no ofrecido",

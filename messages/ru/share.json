@@ -12,6 +12,7 @@
     "payWithCard": "Оплатить {amount} картой",
     "payWithVipps": "Оплатить {amount} через Vipps",
     "payWithPaypal": "Оплатить {amount} через PayPal",
+    "payWithPaystack": "Оплатить {amount} через Paystack",
     "errorInvalidAmount": "Введите корректную сумму.",
     "errorExceedsBalance": "Сумма не может превышать {amount}.",
     "errorVerifyFailed": "Не удалось подтвердить оплату. Возможно, она ещё обрабатывается.",

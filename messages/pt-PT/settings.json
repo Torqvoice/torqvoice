@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Pagamento a 14 dias",
     "paymentTermsHint": "Texto das condições de pagamento apresentado nas faturas (ex.: \"Pagamento a 14 dias\", \"Pronto pagamento\")",
     "onlinePayments": "Pagamentos online",
-    "onlinePaymentsDescription": "Permita que os clientes paguem as faturas a partir do link que lhes envia. Stripe, Vipps e PayPal ligam-se em Integrações e podem funcionar em simultâneo.",
+    "onlinePaymentsDescription": "Permita que os clientes paguem as faturas a partir do link que lhes envia. Stripe, Vipps, PayPal e Paystack ligam-se em Integrações e podem funcionar em simultâneo.",
     "onlinePaymentsHint": "Quando um cliente paga, o fornecedor avisa o Torqvoice e a fatura fica marcada como paga automaticamente. A página de cada fornecedor mostra o URL de notificação de que precisa.",
     "offered": "Nos links de fatura",
     "paused": "Ligado, não disponibilizado",

@@ -12,6 +12,7 @@
     "payWithCard": "Mokėti {amount} kortele",
     "payWithVipps": "Mokėti {amount} su Vipps",
     "payWithPaypal": "Mokėti {amount} su PayPal",
+    "payWithPaystack": "Mokėti {amount} su Paystack",
     "errorInvalidAmount": "Įveskite teisingą sumą.",
     "errorExceedsBalance": "Suma negali viršyti {amount}.",
     "errorVerifyFailed": "Mokėjimo nepavyko patikrinti. Jis vis dar gali būti apdorojamas.",
