@@ -10,6 +10,7 @@ import { getChecklistLanguage, getTemplates } from '@/features/inspections/Actio
 import { listMarkTypes } from '@/features/condition-map/Actions/markTypeActions'
 import { db } from '@/lib/db'
 import { getTranslations } from 'next-intl/server'
+import { smsTemplateDefaults } from '@/features/sms/Lib/smsTemplateDefaults.server'
 import {
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
@@ -129,18 +130,9 @@ export default async function TemplatePage() {
       | 'imperial',
   }
 
-  const smsDefaultMap: Record<string, string> = {
-    [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]: t.raw('templates.smsDefaults.invoiceReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]: t.raw('templates.smsDefaults.quoteReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]: t.raw('templates.smsDefaults.inspectionReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS]: t.raw('templates.smsDefaults.statusInProgress'),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS]: t.raw(
-      'templates.smsDefaults.statusWaitingParts'
-    ),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_READY]: t.raw('templates.smsDefaults.statusReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED]: t.raw('templates.smsDefaults.statusCompleted'),
-    [SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED]: t.raw('templates.smsDefaults.paymentReceived'),
-  }
+  // The same defaults a text falls back to when it is sent: the workshop's
+  // language, not whoever is looking at this page.
+  const smsDefaultMap = await smsTemplateDefaults(data.organizationId)
 
   const smsTemplates: Record<string, string> = {}
   for (const key of Object.keys(smsDefaultMap)) {
@@ -176,6 +168,7 @@ export default async function TemplatePage() {
       checklistLanguage={checklistLanguage.success ? (checklistLanguage.data ?? null) : null}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
+      smsDefaults={smsDefaultMap}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
       workshop={workshop}
       savedDesigns={savedDesigns}

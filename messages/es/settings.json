@@ -978,7 +978,7 @@
     "saveSmsTemplates": "Guardar plantillas SMS",
     "smsTemplateSaved": "Configuración de plantillas SMS guardada",
     "smsDefaults": {
-      "invoiceReady": "Su factura está lista. Véala aquí: {share_link}",
+      "invoiceReady": "La factura de {company_name} está lista. Véala aquí: {share_link}\nSaludos {company_name} - {current_user}",
       "quoteReady": "Su presupuesto está listo para revisión. Véalo aquí: {share_link}",
       "inspectionReady": "Su informe de inspección vehicular está listo. Véalo aquí: {share_link}",
       "statusInProgress": "Se ha comenzado a trabajar en su vehículo. Le mantendremos informado.",

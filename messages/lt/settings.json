@@ -983,7 +983,7 @@
     "layoutDocInvoice": "Sąskaita",
     "layoutDocQuote": "Pasiūlymas",
     "smsDefaults": {
-      "invoiceReady": "Jūsų sąskaita paruošta. Peržiūrėkite čia: {share_link}",
+      "invoiceReady": "Sąskaita iš {company_name} paruošta. Peržiūrėkite čia: {share_link}\nPagarbiai {company_name} - {current_user}",
       "quoteReady": "Jūsų pasiūlymas paruoštas peržiūrai. Peržiūrėkite čia: {share_link}",
       "inspectionReady": "Jūsų transporto priemonės apžiūros ataskaita paruošta. Peržiūrėkite čia: {share_link}",
       "statusInProgress": "Darbas su jūsų transporto priemone pradėtas. Informuosime apie eigą.",

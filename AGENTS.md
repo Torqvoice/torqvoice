@@ -129,6 +129,23 @@ a cleanup.
 `Date` on the server. Amounts carry a currency code (`src/lib/money.ts`), countries are
 ISO 3166-1, languages ISO 639-1.
 
+**Whose clock.** Three clocks are in play and each is wrong somewhere: the server's (UTC in
+Docker), the viewer's browser, and the workshop's. Anything a customer or the workshop reads as
+a time or a day (texts, emails, PDFs, share pages, bookings, reminders, "today", "this month",
+due dates) is on the workshop's clock: read its zone with `workshopTimeZone(orgId)` from
+`src/lib/workshop-timezone.ts` and convert
+with `src/lib/timezone.ts`. The traps: `toLocaleString`, `toISOString().slice(0, 10)` and
+`new Date(y, m, d)` on the server are UTC; next-intl's `useFormatter` formats in the server's
+zone, so a calendar day built at local midnight shows as the day before (use `useDayFormatter`
+in `src/features/calendar/Components`); a date typed into a form is the workshop's wall clock,
+parsed with `parseWorkshopDateTime`. A test for anything with a time runs in a zone far from UTC.
+
+**Whose language.** Anything a customer receives (SMS, email, PDF, share page) is written in
+the workshop's language: `resolveDocumentLocale(orgId)` on the server, never `useTranslations`
+in a client component, which is the language of whoever is signed in. Defaults shown in
+settings, and what a Reset button restores, come from the same place, or saving them stores the
+viewer's language as the workshop's text.
+
 **Nothing country-specific by default.** Registries, tax rules, payment providers and parts
 sources ship as connectors or settings a workshop turns on, never as behaviour everyone sees.
 

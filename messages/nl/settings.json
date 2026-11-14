@@ -978,7 +978,7 @@
     "saveSmsTemplates": "SMS-sjablonen opslaan",
     "smsTemplateSaved": "SMS-sjablooninstellingen opgeslagen",
     "smsDefaults": {
-      "invoiceReady": "Uw factuur is gereed. Bekijk deze hier: {share_link}",
+      "invoiceReady": "Factuur van {company_name} is gereed. Bekijk deze hier: {share_link}\nMet vriendelijke groet {company_name} - {current_user}",
       "quoteReady": "Uw offerte is klaar voor beoordeling. Bekijk deze hier: {share_link}",
       "inspectionReady": "Uw voertuiginspectierapport is gereed. Bekijk het hier: {share_link}",
       "statusInProgress": "Er wordt aan uw voertuig gewerkt. We houden u op de hoogte.",

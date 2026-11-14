@@ -1,7 +1,8 @@
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
 export const SMS_TEMPLATE_DEFAULTS: Record<string, string> = {
-  [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]: 'Your invoice is ready. View it here: {share_link}',
+  [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]:
+    'Invoice from {company_name} is ready. View it here: {share_link}\nRegards {company_name} - {current_user}',
   [SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]:
     'Your quote is ready for review. View it here: {share_link}',
   [SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]:
