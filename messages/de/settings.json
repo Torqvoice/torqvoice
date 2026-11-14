@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Netto 14 Tage",
     "paymentTermsHint": "Zahlungsbedingungen auf Rechnungen (z.B. \"Netto 14 Tage\", \"Zahlbar bei Erhalt\")",
     "onlinePayments": "Online-Zahlungen",
-    "onlinePaymentsDescription": "Kunden bezahlen Rechnungen über den Link, den Sie ihnen schicken. Stripe, Vipps und PayPal werden unter Integrationen verbunden und können nebeneinander laufen.",
+    "onlinePaymentsDescription": "Kunden bezahlen Rechnungen über den Link, den Sie ihnen schicken. Stripe, Vipps, PayPal und Paystack werden unter Integrationen verbunden und können nebeneinander laufen.",
     "onlinePaymentsHint": "Bezahlt ein Kunde, meldet der Anbieter es Torqvoice und die Rechnung wird von selbst als bezahlt markiert. Die Seite jedes Anbieters zeigt die Benachrichtigungs-URL, die er braucht.",
     "offered": "Auf Rechnungslinks",
     "paused": "Verbunden, nicht angeboten",

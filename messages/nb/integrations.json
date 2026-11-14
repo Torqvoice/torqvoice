@@ -154,6 +154,7 @@
     "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet: åpne Workbench, deretter Webhooks, velg Create an event destination og abonner på checkout.session.completed. Stripe viser så en signeringshemmelighet for endepunktet; lim den inn i feltet for signeringshemmelighet her, slik at hvert varsel kontrolleres mot signaturen sin. Inntil da bekrefter Torqvoice hvert varsel ved å spørre Stripe om selve betalingen.",
     "inboundHintVipps": "Legg inn denne URL-en som callback-URL i Vipps MobilePay-portalen. Vipps krever også publiserte salgsvilkår, som settes under Innstillinger, Betaling.",
     "inboundHintPaypal": "Legg inn denne URL-en i PayPal-utviklerdashbordet under Webhooks, abonnert på PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Lim inn denne URL-en som Webhook URL i Paystack-dashbordet under Settings, API Keys & Webhooks. Paystack har én for testmodus og én for live-modus, så legg den inn i den modusen nøkkelen din hører til.",
     "copy": "Kopier",
     "copied": "Kopiert",
     "updateKeys": "Oppdater nøklene",
@@ -702,6 +703,17 @@
         "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt.",
         "sandbox": "Sandkassemodus",
         "sandboxHelp": "Bruk PayPal sin sandkasse med sandkasse-appens nøkler. La den stå på til en hel betaling har gått gjennom, slå den så av og legg inn live-appens nøkler."
+      }
+    },
+    "paystack": {
+      "description": "Paystack-betaling fra fakturalenken, til din egen Paystack-konto. Kunden betaler med kort, bankoverføring eller mobilpenger, avhengig av land, og fakturaen merkes som betalt av seg selv.",
+      "fields": {
+        "secretKey": "Hemmelig nøkkel",
+        "secretKeyHelp": "Fra Paystack-dashbordet under Settings, API Keys & Webhooks. En testnøkkel (sk_test_) behandler ingenting ekte, så prøv en betaling med den først og bytt til live-nøkkelen etterpå."
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt."
       }
     },
     "quickbooks": {

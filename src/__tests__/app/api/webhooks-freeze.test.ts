@@ -6,6 +6,7 @@
  * replaces the workshop's rows. They answer 503 with Retry-After, so the
  * vendor delivers the event again once the restore is done.
  */
+import { createHmac } from 'node:crypto'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { db, payments, stripe, recordVendorPayment, messaging, whatsapp, notify } = vi.hoisted(
@@ -47,6 +48,7 @@ vi.mock('@/lib/notify', () => ({ notify }))
 import { POST as stripePost } from '@/app/api/webhooks/stripe/route'
 import { POST as vippsPost } from '@/app/api/webhooks/vipps/route'
 import { POST as paypalPost } from '@/app/api/webhooks/paypal/route'
+import { POST as paystackPost } from '@/app/api/webhooks/paystack/route'
 import { POST as twilioPost } from '@/app/api/webhooks/sms/twilio/route'
 import { POST as vonagePost } from '@/app/api/webhooks/sms/vonage/route'
 import { POST as telnyxPost } from '@/app/api/webhooks/sms/telnyx/route'
@@ -128,6 +130,27 @@ describe('payment webhooks during a restore', () => {
       json('http://app.test/api/webhooks/paypal', {
         event_type: 'PAYMENT.CAPTURE.COMPLETED',
         resource: { id: 'order_1', custom_id: `sr_1:${ORG}` },
+      })
+    )
+    await expectRestoring(response)
+    expect(verifyPayment).not.toHaveBeenCalled()
+    expect(recordVendorPayment).not.toHaveBeenCalled()
+  })
+
+  it('Paystack answers 503 before verifying or booking the charge', async () => {
+    const body = JSON.stringify({
+      event: 'charge.success',
+      data: { reference: 'inv-sr_1-1', metadata: { orgId: ORG, serviceRecordId: 'sr_1' } },
+    })
+    const response = await paystackPost(
+      new Request('http://app.test/api/webhooks/paystack', {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          // Signed with the key the mocked connection holds.
+          'x-paystack-signature': createHmac('sha512', 'sk_test').update(body).digest('hex'),
+        },
+        body,
       })
     )
     await expectRestoring(response)

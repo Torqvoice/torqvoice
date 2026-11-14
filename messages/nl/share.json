@@ -12,6 +12,8 @@
     "payWithCard": "Betaal {amount} met kaart",
     "payWithVipps": "Betaal {amount} met Vipps",
     "payWithPaypal": "Betaal {amount} met PayPal",
+    "payWithPaystack": "Betaal {amount} met Paystack",
+    "payWithVendor": "Betalen met <vendor></vendor>",
     "errorInvalidAmount": "Voer een geldig bedrag in.",
     "errorExceedsBalance": "Bedrag mag niet hoger zijn dan {amount}.",
     "errorVerifyFailed": "Betaling kon niet worden geverifieerd. De verwerking kan nog gaande zijn.",

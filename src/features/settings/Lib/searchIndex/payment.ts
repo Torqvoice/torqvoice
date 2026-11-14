@@ -35,7 +35,15 @@ export const paymentEntries: SettingsEntry[] = [
     title: 'payment.onlinePayments',
     description: 'payment.onlinePaymentsDescription',
     anchor: 'payment-online',
-    keywords: ['online payments', 'card payments', 'stripe', 'vipps', 'paypal', 'pay online'],
+    keywords: [
+      'online payments',
+      'card payments',
+      'stripe',
+      'vipps',
+      'paypal',
+      'paystack',
+      'pay online',
+    ],
   },
   {
     id: 'payment.termsOfSale',

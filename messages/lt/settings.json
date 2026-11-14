@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Per 14 dienų",
     "paymentTermsHint": "Mokėjimo sąlygų tekstas, rodomas sąskaitose (pvz., \"Per 14 dienų\", \"Gavus sąskaitą\")",
     "onlinePayments": "Mokėjimai internetu",
-    "onlinePaymentsDescription": "Leiskite klientams apmokėti sąskaitas iš nuorodos, kurią jiems siunčiate. Stripe, Vipps ir PayPal prijungiami skiltyje Integracijos ir gali veikti kartu.",
+    "onlinePaymentsDescription": "Leiskite klientams apmokėti sąskaitas iš nuorodos, kurią jiems siunčiate. Stripe, Vipps, PayPal ir Paystack prijungiami skiltyje Integracijos ir gali veikti kartu.",
     "onlinePaymentsHint": "Kai klientas sumoka, tiekėjas praneša Torqvoice ir sąskaita pati pažymima kaip apmokėta. Kiekvieno tiekėjo puslapyje rodomas jam reikalingas pranešimų URL.",
     "offered": "Sąskaitų nuorodose",
     "paused": "Prijungta, nesiūloma",

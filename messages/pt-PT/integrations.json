@@ -154,6 +154,7 @@
     "inboundHintStripe": "Adicione este URL no painel do Stripe: abra Workbench, depois Webhooks, escolha Create an event destination e subscreva checkout.session.completed. O Stripe mostra então um segredo de assinatura para o endpoint; cole-o aqui no campo do segredo de assinatura para que cada notificação seja verificada pela assinatura. Até lá, o Torqvoice confirma cada notificação consultando o checkout ao Stripe.",
     "inboundHintVipps": "Indique este URL como URL de callback no portal do Vipps MobilePay. O Vipps também exige termos de venda publicados, definidos em Definições, Pagamento.",
     "inboundHintPaypal": "Adicione este URL no painel de programador do PayPal em Webhooks, subscrito a PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Cole este URL como Webhook URL no painel do Paystack, em Settings, API Keys & Webhooks. O Paystack guarda um para o modo de teste e outro para o modo de produção, por isso defina-o no modo a que a sua chave pertence.",
     "copy": "Copiar",
     "copied": "Copiado",
     "updateKeys": "Atualizar chaves",
@@ -702,6 +703,17 @@
         "enabledHelp": "Desative para retirar temporariamente o botão de pagamento das faturas partilhadas, sem desligar. Os pagamentos já iniciados continuam a ser registados.",
         "sandbox": "Modo sandbox",
         "sandboxHelp": "Utilizar o sandbox do PayPal com as chaves da app de sandbox. Deixe ativado até um pagamento completo funcionar; depois desative e introduza as chaves da app real."
+      }
+    },
+    "paystack": {
+      "description": "Pagamento com Paystack a partir da ligação da fatura, para a sua própria conta Paystack. O cliente paga com cartão, transferência bancária ou dinheiro móvel, consoante o país, e a fatura fica marcada como paga automaticamente.",
+      "fields": {
+        "secretKey": "Chave secreta",
+        "secretKeyHelp": "No painel do Paystack, em Settings, API Keys & Webhooks. Uma chave de teste (sk_test_) não processa nada real, por isso experimente primeiro um pagamento com ela e mude depois para a chave de produção."
+      },
+      "settings": {
+        "enabled": "Oferecer nos links de fatura",
+        "enabledHelp": "Desative para retirar temporariamente o botão de pagamento das faturas partilhadas, sem desligar. Os pagamentos já iniciados continuam a ser registados."
       }
     },
     "quickbooks": {

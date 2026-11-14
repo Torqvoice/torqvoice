@@ -18,9 +18,12 @@
 import type { CredentialField, SettingField } from '@/features/integrations/Lib/types'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
-/** A credential field plus the settings row it used to be stored in. */
+/**
+ * A credential field plus the settings row it used to be stored in. A vendor
+ * added after the move never had such a row.
+ */
 export interface PaymentCredential extends CredentialField {
-  legacy: string
+  legacy?: string
 }
 
 export interface PaymentSetting extends SettingField {
@@ -41,7 +44,11 @@ export interface PaymentVendor {
    */
   webhookPath: string
   /** i18n key under integrations.connection describing what to do with the URL. */
-  webhookNote: 'inboundHintStripe' | 'inboundHintVipps' | 'inboundHintPaypal'
+  webhookNote:
+    | 'inboundHintStripe'
+    | 'inboundHintVipps'
+    | 'inboundHintPaypal'
+    | 'inboundHintPaystack'
 }
 
 /** The value of `payment.providersEnabled` before the move, as a list. */
@@ -179,6 +186,25 @@ export const PAYMENT_VENDORS: readonly PaymentVendor[] = [
     webhookPath: '/api/webhooks/paypal',
     webhookNote: 'inboundHintPaypal',
   },
+  {
+    // Added after the move, so there are no old rows to adopt. The key itself
+    // says test or live (sk_test_ or sk_live_), so there is no mode switch.
+    id: 'paystack',
+    name: 'Paystack',
+    credentials: [
+      {
+        key: 'secretKey',
+        label: 'secretKey',
+        type: 'password',
+        required: true,
+        placeholder: 'sk_live_...',
+        help: 'secretKeyHelp',
+      },
+    ],
+    settings: [OFFERED_SETTING],
+    webhookPath: '/api/webhooks/paystack',
+    webhookNote: 'inboundHintPaystack',
+  },
 ]
 
 export const PAYMENT_CONNECTOR_IDS = PAYMENT_VENDORS.map((v) => v.id)
@@ -195,7 +221,7 @@ export function isPaymentConnector(connectorId: string): boolean {
 export function legacyPaymentKeys(): string[] {
   const keys = new Set<string>([LEGACY_ENABLED_KEY])
   for (const vendor of PAYMENT_VENDORS) {
-    for (const c of vendor.credentials) keys.add(c.legacy)
+    for (const c of vendor.credentials) if (c.legacy) keys.add(c.legacy)
     for (const s of vendor.settings) if (s.legacy) keys.add(s.legacy)
   }
   return [...keys]

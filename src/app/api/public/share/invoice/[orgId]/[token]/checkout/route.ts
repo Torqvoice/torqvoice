@@ -13,6 +13,7 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 import { taxableSubtotalOf } from '@/lib/taxable-lines'
 import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { getFeatures } from '@/lib/features'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
 const checkoutSchema = z.object({
   provider: z.enum(PAYMENT_CONNECTOR_IDS as [string, ...string[]]),
@@ -39,8 +40,9 @@ export async function POST(
         payments: true,
         partItems: true,
         laborItems: true,
+        customer: { select: { email: true } },
         vehicle: {
-          select: { organizationId: true },
+          select: { organizationId: true, customer: { select: { email: true } } },
         },
       },
     })
@@ -114,6 +116,20 @@ export async function POST(
     const { currencyCode } = await workshopCurrencySettings(orgId)
     const invoiceNumber = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
 
+    // Some vendors will not start a payment without an email. A customer who
+    // has none still gets to pay: the workshop's own address stands in, and
+    // the vendor's receipt goes there.
+    const customerEmail = (record.customer ?? record.vehicle?.customer)?.email?.trim()
+    const payerEmail =
+      customerEmail ||
+      (
+        await db.appSetting.findFirst({
+          where: { organizationId: orgId, key: SETTING_KEYS.WORKSHOP_EMAIL },
+          select: { value: true },
+        })
+      )?.value?.trim() ||
+      null
+
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''
     const invoiceUrl = `${appUrl}/share/invoice/${orgId}/${token}`
 
@@ -127,6 +143,7 @@ export async function POST(
         cancelUrl: invoiceUrl,
         serviceRecordId: record.id,
         orgId,
+        payerEmail,
       })
       return NextResponse.json(result)
     } catch (error) {

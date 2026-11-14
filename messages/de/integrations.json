@@ -154,6 +154,7 @@
     "inboundHintStripe": "Fügen Sie diese URL im Stripe-Dashboard hinzu: Öffnen Sie Workbench, dann Webhooks, wählen Sie Create an event destination und abonnieren Sie checkout.session.completed. Stripe zeigt danach ein Signaturgeheimnis für den Endpunkt; tragen Sie es hier in das Feld für das Signaturgeheimnis ein, damit jede Benachrichtigung anhand ihrer Signatur geprüft wird. Bis dahin bestätigt Torqvoice jede Benachrichtigung, indem es den Checkout bei Stripe abfragt.",
     "inboundHintVipps": "Tragen Sie diese URL als Callback-URL im Vipps-MobilePay-Portal ein. Vipps verlangt außerdem veröffentlichte Verkaufsbedingungen, die unter Einstellungen, Zahlung hinterlegt werden.",
     "inboundHintPaypal": "Fügen Sie diese URL im PayPal-Entwicklerdashboard unter Webhooks hinzu, abonniert auf PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Fügen Sie diese URL im Paystack-Dashboard unter Settings, API Keys & Webhooks als Webhook URL ein. Paystack führt eine für den Testmodus und eine für den Live-Modus, tragen Sie sie also in dem Modus ein, zu dem Ihr Schlüssel gehört.",
     "copy": "Kopieren",
     "copied": "Kopiert",
     "updateKeys": "Schlüssel aktualisieren",
@@ -702,6 +703,17 @@
         "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst.",
         "sandbox": "Sandbox-Modus",
         "sandboxHelp": "Die PayPal-Sandbox mit Sandbox-App-Schlüsseln verwenden. Lassen Sie ihn an, bis eine vollständige Zahlung durchgelaufen ist, und tragen Sie dann die Schlüssel der Live-App ein."
+      }
+    },
+    "paystack": {
+      "description": "Paystack-Checkout über den Rechnungslink, auf Ihr eigenes Paystack-Konto. Der Kunde zahlt je nach Land mit Karte, Banküberweisung oder Mobile Money, und die Rechnung wird von selbst als bezahlt markiert.",
+      "fields": {
+        "secretKey": "Geheimer Schlüssel",
+        "secretKeyHelp": "Im Paystack-Dashboard unter Settings, API Keys & Webhooks. Ein Testschlüssel (sk_test_) verarbeitet nichts Echtes. Probieren Sie damit zuerst eine Zahlung aus und wechseln Sie danach zum Live-Schlüssel."
+      },
+      "settings": {
+        "enabled": "Auf Rechnungslinks anbieten",
+        "enabledHelp": "Ausschalten, um den Bezahlknopf eine Weile von geteilten Rechnungen zu nehmen, ohne die Verbindung zu trennen. Bereits begonnene Zahlungen werden weiterhin erfasst."
       }
     },
     "quickbooks": {

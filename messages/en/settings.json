@@ -1021,7 +1021,7 @@
     "paymentTermsPlaceholder": "Net 14 days",
     "paymentTermsHint": "Payment terms text displayed on invoices (e.g. \"Net 14 days\", \"Due on receipt\")",
     "onlinePayments": "Online Payments",
-    "onlinePaymentsDescription": "Let customers pay invoices from the link you send them. Stripe, Vipps and PayPal are connected under Integrations, and can run side by side.",
+    "onlinePaymentsDescription": "Let customers pay invoices from the link you send them. Stripe, Vipps, PayPal and Paystack are connected under Integrations, and can run side by side.",
     "onlinePaymentsHint": "When a customer pays, the vendor notifies Torqvoice and the invoice marks itself paid. Each vendor's page shows the notification URL it needs.",
     "offered": "On invoice links",
     "paused": "Connected, not offered",

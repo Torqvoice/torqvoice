@@ -154,6 +154,7 @@
     "inboundHintStripe": "Dodaj ten adres URL w panelu Stripe: otwórz Workbench, potem Webhooks, wybierz Create an event destination i zasubskrybuj checkout.session.completed. Stripe pokaże wtedy sekret podpisu dla tego punktu końcowego; wklej go tutaj w polu sekretu podpisu, aby każde powiadomienie było sprawdzane po podpisie. Do tego czasu Torqvoice potwierdza każde powiadomienie, pytając Stripe o samą płatność.",
     "inboundHintVipps": "Wpisz ten adres URL jako adres callback w portalu Vipps MobilePay. Vipps wymaga też opublikowanych warunków sprzedaży, które ustawia się w Ustawienia, Płatność.",
     "inboundHintPaypal": "Dodaj ten adres URL w panelu dewelopera PayPal w sekcji Webhooks, z subskrypcją PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Wklej ten adres URL jako Webhook URL w panelu Paystack, w sekcji Settings, API Keys & Webhooks. Paystack przechowuje jeden dla trybu testowego i jeden dla produkcyjnego, więc ustaw go w trybie, do którego należy Twój klucz.",
     "copy": "Kopiuj",
     "copied": "Skopiowano",
     "updateKeys": "Zaktualizuj klucze",
@@ -702,6 +703,17 @@
         "enabledHelp": "Wyłącz, aby na jakiś czas usunąć przycisk płatności z udostępnianych faktur bez rozłączania. Rozpoczęte już płatności nadal są rejestrowane.",
         "sandbox": "Tryb sandbox",
         "sandboxHelp": "Używaj sandboxa PayPal z kluczami aplikacji sandbox. Zostaw włączony, aż pełna płatność przejdzie, potem wyłącz i wpisz klucze aplikacji produkcyjnej."
+      }
+    },
+    "paystack": {
+      "description": "Płatność Paystack z linku do faktury, na Twoje własne konto Paystack. Klient płaci kartą, przelewem bankowym lub pieniądzem mobilnym, zależnie od kraju, a faktura sama oznacza się jako opłacona.",
+      "fields": {
+        "secretKey": "Klucz tajny",
+        "secretKeyHelp": "W panelu Paystack, w sekcji Settings, API Keys & Webhooks. Klucz testowy (sk_test_) nie przetwarza niczego prawdziwego, więc najpierw wypróbuj na nim płatność, a potem zmień na klucz produkcyjny."
+      },
+      "settings": {
+        "enabled": "Oferuj w linkach do faktur",
+        "enabledHelp": "Wyłącz, aby na jakiś czas usunąć przycisk płatności z udostępnianych faktur bez rozłączania. Rozpoczęte już płatności nadal są rejestrowane."
       }
     },
     "quickbooks": {

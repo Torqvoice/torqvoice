@@ -154,6 +154,7 @@
     "inboundHintStripe": "Añade esta URL en el panel de Stripe: abre Workbench, luego Webhooks, elige Create an event destination y suscríbela a checkout.session.completed. Stripe mostrará entonces un secreto de firma para el endpoint; pégalo aquí en el campo del secreto de firma para que cada notificación se compruebe por su firma. Hasta entonces, Torqvoice confirma cada notificación consultando el checkout a Stripe.",
     "inboundHintVipps": "Introduce esta URL como URL de callback en el portal de Vipps MobilePay. Vipps también exige condiciones de venta publicadas, que se configuran en Ajustes, Pago.",
     "inboundHintPaypal": "Añade esta URL en el panel de desarrollador de PayPal en Webhooks, suscrita a PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Pega esta URL como Webhook URL en el panel de Paystack, en Settings, API Keys & Webhooks. Paystack guarda una para el modo de prueba y otra para el modo real, así que configúrala en el modo al que pertenece tu clave.",
     "copy": "Copiar",
     "copied": "Copiado",
     "updateKeys": "Actualizar claves",
@@ -702,6 +703,17 @@
         "enabledHelp": "Desactívalo para quitar el botón de pago de las facturas compartidas durante un tiempo, sin desconectar. Los pagos ya iniciados se siguen registrando.",
         "sandbox": "Modo sandbox",
         "sandboxHelp": "Usar el sandbox de PayPal con las claves de la app de sandbox. Déjalo activado hasta que un pago completo haya funcionado, luego desactívalo e introduce las claves de la app real."
+      }
+    },
+    "paystack": {
+      "description": "Pago con Paystack desde el enlace de la factura, a tu propia cuenta de Paystack. El cliente paga con tarjeta, transferencia bancaria o dinero móvil, según el país, y la factura se marca como pagada por sí sola.",
+      "fields": {
+        "secretKey": "Clave secreta",
+        "secretKeyHelp": "En el panel de Paystack, en Settings, API Keys & Webhooks. Una clave de prueba (sk_test_) no procesa nada real, así que prueba primero un pago con ella y cambia después a la clave real."
+      },
+      "settings": {
+        "enabled": "Ofrecer en los enlaces de factura",
+        "enabledHelp": "Desactívalo para quitar el botón de pago de las facturas compartidas durante un tiempo, sin desconectar. Los pagos ya iniciados se siguen registrando."
       }
     },
     "quickbooks": {

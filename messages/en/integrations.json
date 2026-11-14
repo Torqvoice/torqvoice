@@ -154,6 +154,7 @@
     "inboundHintStripe": "Add this URL in the Stripe dashboard: open Workbench, then Webhooks, choose Create an event destination, and subscribe it to checkout.session.completed. Stripe then shows a signing secret for the endpoint; paste it into the signing secret field here so every notification is checked by its signature. Until it is in, Torqvoice confirms each notification by asking Stripe for the checkout itself.",
     "inboundHintVipps": "Enter this URL as the callback URL in the Vipps MobilePay portal. Vipps also requires published terms of sale, which are set under Settings, Payment.",
     "inboundHintPaypal": "Add this URL in the PayPal developer dashboard under Webhooks, subscribed to PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Paste this URL as the Webhook URL in the Paystack dashboard under Settings, API Keys & Webhooks. Paystack keeps one for test mode and one for live mode, so set it in the mode your key belongs to.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
@@ -702,6 +703,17 @@
         "enabledHelp": "Switch off to take the pay button off shared invoices for a while, without disconnecting. Payments already started are still recorded.",
         "sandbox": "Sandbox mode",
         "sandboxHelp": "Use PayPal's sandbox with sandbox app keys. Leave it on until a full payment has gone through, then turn it off and enter the live app's keys."
+      }
+    },
+    "paystack": {
+      "description": "Paystack checkout from the invoice link, into your own Paystack account. The customer pays by card, bank transfer or mobile money, depending on the country, and the invoice marks itself paid.",
+      "fields": {
+        "secretKey": "Secret key",
+        "secretKeyHelp": "From the Paystack dashboard under Settings, API Keys & Webhooks. A test key (sk_test_) processes nothing real, so try a payment on it first and swap to the live key after."
+      },
+      "settings": {
+        "enabled": "Offer on invoice links",
+        "enabledHelp": "Switch off to take the pay button off shared invoices for a while, without disconnecting. Payments already started are still recorded."
       }
     },
     "quickbooks": {

@@ -154,6 +154,7 @@
     "inboundHintStripe": "Ajoutez cette URL dans le tableau de bord Stripe : ouvrez Workbench, puis Webhooks, choisissez Create an event destination et abonnez-la à checkout.session.completed. Stripe affiche ensuite un secret de signature pour ce point de terminaison ; collez-le ici dans le champ du secret de signature pour que chaque notification soit vérifiée par sa signature. En attendant, Torqvoice confirme chaque notification en demandant le checkout à Stripe.",
     "inboundHintVipps": "Saisissez cette URL comme URL de rappel dans le portail Vipps MobilePay. Vipps exige aussi des conditions de vente publiées, à renseigner sous Paramètres, Paiement.",
     "inboundHintPaypal": "Ajoutez cette URL dans le tableau de bord développeur PayPal sous Webhooks, abonnée à PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Collez cette URL comme Webhook URL dans le tableau de bord Paystack, sous Settings, API Keys & Webhooks. Paystack en garde une pour le mode test et une pour le mode production : renseignez-la dans le mode auquel appartient votre clé.",
     "copy": "Copier",
     "copied": "Copié",
     "updateKeys": "Mettre à jour les clés",
@@ -702,6 +703,17 @@
         "enabledHelp": "Désactivez pour retirer le bouton de paiement des factures partagées pendant un temps, sans déconnecter. Les paiements déjà lancés sont toujours enregistrés.",
         "sandbox": "Mode sandbox",
         "sandboxHelp": "Utiliser le sandbox PayPal avec les clés de l'application sandbox. Laissez-le activé jusqu'à ce qu'un paiement complet ait abouti, puis désactivez-le et saisissez les clés de l'application réelle."
+      }
+    },
+    "paystack": {
+      "description": "Paiement Paystack depuis le lien de la facture, sur votre propre compte Paystack. Le client paie par carte, virement bancaire ou mobile money, selon le pays, et la facture se marque payée d'elle-même.",
+      "fields": {
+        "secretKey": "Clé secrète",
+        "secretKeyHelp": "Dans le tableau de bord Paystack, sous Settings, API Keys & Webhooks. Une clé de test (sk_test_) ne traite rien de réel : essayez d'abord un paiement avec elle, puis passez à la clé de production."
+      },
+      "settings": {
+        "enabled": "Proposer sur les liens de facture",
+        "enabledHelp": "Désactivez pour retirer le bouton de paiement des factures partagées pendant un temps, sans déconnecter. Les paiements déjà lancés sont toujours enregistrés."
       }
     },
     "quickbooks": {

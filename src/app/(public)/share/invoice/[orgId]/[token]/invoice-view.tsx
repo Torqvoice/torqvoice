@@ -25,6 +25,18 @@ import {
   getVisibleFieldsForSection,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { SpecSheet } from '@/features/invoice-designer/Render/SpecSheet'
+import { type PayVendor, VendorPayButton } from '@/features/payments/Components/VendorPayButton'
+
+/** The vendors in the order their buttons stand, with the sentence each one is read out as. */
+const PAY_VENDORS: {
+  id: PayVendor
+  label: 'payWithCard' | 'payWithVipps' | 'payWithPaypal' | 'payWithPaystack'
+}[] = [
+  { id: 'stripe', label: 'payWithCard' },
+  { id: 'vipps', label: 'payWithVipps' },
+  { id: 'paypal', label: 'payWithPaypal' },
+  { id: 'paystack', label: 'payWithPaystack' },
+]
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
 
 interface InvoiceRecord {
@@ -445,8 +457,14 @@ export function InvoiceView({
     // PayPal sends the order id back as "token" beside the marker we set.
     const paypalOrderId = params.get('paypal') === 'return' ? params.get('token') : null
 
+    // Paystack comes back with a reference too, so its marker is read first.
+    const paystackReference = params.get('paystack') === 'return' ? reference : null
+
     if (sessionId) {
       verifyPayment('stripe', sessionId)
+      window.history.replaceState({}, '', window.location.pathname)
+    } else if (paystackReference) {
+      verifyPayment('paystack', paystackReference)
       window.history.replaceState({}, '', window.location.pathname)
     } else if (reference) {
       verifyPayment('vipps', reference)
@@ -648,55 +666,25 @@ export function InvoiceView({
 
             {paymentError && <p className="mb-3 text-sm text-red-600">{paymentError}</p>}
 
-            {/* Provider buttons */}
-            <div className="flex flex-wrap gap-3">
-              {enabledProviders.includes('stripe') && (
-                <button
-                  onClick={() => handlePayment('stripe')}
-                  disabled={paymentLoading !== null}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:opacity-50 sm:flex-none"
-                >
-                  {paymentLoading === 'stripe' ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <CreditCard className="h-4 w-4" />
-                  )}
-                  {t('payWithCard', {
-                    amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode),
-                  })}
-                </button>
-              )}
-              {enabledProviders.includes('vipps') && (
-                <button
-                  onClick={() => handlePayment('vipps')}
-                  disabled={paymentLoading !== null}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#ff5b24] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#e54e1c] disabled:opacity-50 sm:flex-none"
-                >
-                  {paymentLoading === 'vipps' ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <span className="text-base font-black leading-none">V</span>
-                  )}
-                  {t('payWithVipps', {
-                    amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode),
-                  })}
-                </button>
-              )}
-              {enabledProviders.includes('paypal') && (
-                <button
-                  onClick={() => handlePayment('paypal')}
-                  disabled={paymentLoading !== null}
-                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#0070ba] px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#005ea6] disabled:opacity-50 sm:flex-none"
-                >
-                  {paymentLoading === 'paypal' ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <span className="text-base font-black leading-none">P</span>
-                  )}
-                  {t('payWithPaypal', {
-                    amount: formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode),
-                  })}
-                </button>
+            {/* Provider buttons, each drawn like the vendor's own checkout
+                button. Its name is what it shows, "Pay with PayPal 1,000.00". */}
+            <div className="flex flex-wrap gap-x-3 gap-y-4">
+              {PAY_VENDORS.filter((vendor) => enabledProviders.includes(vendor.id)).map(
+                (vendor) => {
+                  const amount = formatCurrency(Number.parseFloat(paymentAmount) || 0, currencyCode)
+                  return (
+                    <VendorPayButton
+                      key={vendor.id}
+                      vendor={vendor.id}
+                      caption={(mark) => t.rich('payWithVendor', { vendor: () => mark })}
+                      amount={amount}
+                      label={t(vendor.label, { amount })}
+                      loading={paymentLoading === vendor.id}
+                      disabled={paymentLoading !== null}
+                      onClick={() => handlePayment(vendor.id)}
+                    />
+                  )
+                }
               )}
             </div>
           </div>

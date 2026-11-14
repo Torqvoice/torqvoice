@@ -3,8 +3,8 @@ import Stripe from 'stripe'
 /**
  * Where the payment vendors' APIs are, for this server.
  *
- * Always the vendors' own hosts in production. `STRIPE_API_BASE_URL` and
- * `PAYPAL_API_BASE_URL` point a server at a stand-in instead: the end-to-end
+ * Always the vendors' own hosts in production. `STRIPE_API_BASE_URL`,
+ * `PAYPAL_API_BASE_URL` and `PAYSTACK_API_BASE_URL` point a server at a stand-in instead: the end-to-end
  * suite's fake vendor (`e2e/payment-sink.ts`), or stripe-mock on a
  * developer's machine. They are read from the environment only. A workshop
  * cannot set them, so no tenant can send its keys, or anyone else's,
@@ -28,4 +28,11 @@ export function paypalApiBase(useSandbox: boolean): string {
   const base = process.env.PAYPAL_API_BASE_URL?.trim()
   if (base) return base.replace(/\/+$/, '')
   return useSandbox ? 'https://api-m.sandbox.paypal.com' : 'https://api-m.paypal.com'
+}
+
+/** Paystack's REST base, the same for test and live keys, unless a stand-in is configured. */
+export function paystackApiBase(): string {
+  const base = process.env.PAYSTACK_API_BASE_URL?.trim()
+  if (base) return base.replace(/\/+$/, '')
+  return 'https://api.paystack.co'
 }
