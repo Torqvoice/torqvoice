@@ -202,6 +202,17 @@ function typeIcon(event: CalendarEvent) {
   }
 }
 
+/** What a quote can be, as the quote list names them (`quotes.statusLabels`). */
+const QUOTE_STATUSES = [
+  'draft',
+  'sent',
+  'accepted',
+  'rejected',
+  'expired',
+  'converted',
+  'changes_requested',
+]
+
 function statusKey(event: CalendarEvent): string {
   if (event.type === 'service') {
     switch (event.status) {
@@ -220,9 +231,6 @@ function statusKey(event: CalendarEvent): string {
   }
   if (event.type === 'message') {
     return event.status === 'sent' ? 'sent' : event.status === 'failed' ? 'failed' : 'queued'
-  }
-  if (event.type === 'quote') {
-    return event.status === 'sent' ? 'sent' : event.status === 'approved' ? 'approved' : 'draft'
   }
   if (event.type === 'external') return 'busy'
   if (event.type === 'closure') return 'closed'
@@ -246,6 +254,7 @@ function PeekCard({
 }) {
   const t = useTranslations('calendar')
   const tc = useTranslations('common')
+  const tq = useTranslations('quotes.statusLabels')
   const format = useDayFormatter()
   const { timeFormat } = useDateSettings()
   const formatCurrency = useFormatCurrency()
@@ -306,7 +315,10 @@ function PeekCard({
           {/* "Closed" and "Leave" already say it all; a second badge repeated them. */}
           {event.type !== 'closure' && event.type !== 'absence' && (
             <Badge variant="outline" className="text-[10px]">
-              {t(`events.status.${statusKey(event)}`)}
+              {/* A quote says what the quote list says: accepted, expired, changes requested. */}
+              {event.type === 'quote'
+                ? tq(QUOTE_STATUSES.includes(event.status) ? event.status : 'draft')
+                : t(`events.status.${statusKey(event)}`)}
             </Badge>
           )}
         </div>
