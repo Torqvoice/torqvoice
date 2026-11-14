@@ -3,7 +3,7 @@
  *
  * A workshop used to need a Twilio, Vonage or Telnyx account before its first
  * text could go out. On the cloud, a paid workshop that has not connected one
- * now sends through the platform's Twilio account: 50 texts a day on Pro, 200
+ * now sends through the platform's Twilio account: 30 texts a day on Pro, 100
  * on Enterprise, none on the free plan. A workshop with its own provider is
  * untouched and has no limit. The count lives in the database and a text that
  * fails to send does not use up the day.
@@ -65,6 +65,8 @@ vi.mock('@/lib/db', () => ({
 const { sendOrgSms, getOrgSmsProvider, getOrgSmsPhoneNumber, getPlatformSmsAllowance } =
   await import('@/lib/sms')
 const { withPlatformSmsAllowance } = await import('@/lib/platform-sms')
+// The real plan table, so the numbers below are the ones a workshop gets.
+const { PLAN_FEATURES } = await import('@/lib/features')
 
 const PLATFORM_NUMBER = '+15550001111'
 const OWN_NUMBER = '+4790000000'
@@ -114,7 +116,7 @@ beforeEach(() => {
   twilioDown = false
   systemSettings = platformAccount
   isCloudMode.mockReset().mockReturnValue(true)
-  getFeatures.mockReset().mockResolvedValue({ sms: true, platformSmsPerDay: 50 })
+  getFeatures.mockReset().mockResolvedValue(PLAN_FEATURES.pro)
   channelSettings.mockReset().mockResolvedValue(new Map())
 })
 
@@ -131,31 +133,31 @@ describe('a paid workshop with no SMS provider of its own', () => {
   it('is offered SMS, sending from the platform number', async () => {
     expect(await getOrgSmsProvider('org')).toBe('twilio')
     expect(await getOrgSmsPhoneNumber('org')).toBe(PLATFORM_NUMBER)
-    expect(await getPlatformSmsAllowance('org')).toBe(50)
+    expect(await getPlatformSmsAllowance('org')).toBe(30)
   })
 
-  it('can send 50 texts a day on Pro and is asked to upgrade on the 51st', async () => {
-    await textTimes(50)
+  it('can send 30 texts a day on Pro and is asked to upgrade on the 31st', async () => {
+    await textTimes(30)
 
     await expect(text()).rejects.toMatchObject({
       name: 'FeatureGatedError',
       feature: 'platformSmsDaily',
-      limit: 50,
+      limit: 30,
     })
-    expect(sent).toHaveLength(50)
+    expect(sent).toHaveLength(30)
   })
 
-  it('can send 200 texts a day on Enterprise', async () => {
-    getFeatures.mockResolvedValue({ sms: true, platformSmsPerDay: 200 })
+  it('can send 100 texts a day on Enterprise', async () => {
+    getFeatures.mockResolvedValue(PLAN_FEATURES.enterprise)
 
-    await textTimes(200)
+    await textTimes(100)
 
-    await expect(text()).rejects.toMatchObject({ feature: 'platformSmsDaily', limit: 200 })
-    expect(sent).toHaveLength(200)
+    await expect(text()).rejects.toMatchObject({ feature: 'platformSmsDaily', limit: 100 })
+    expect(sent).toHaveLength(100)
   })
 
   it('keeps its own count, whatever another workshop has sent', async () => {
-    await textTimes(50, 'busy')
+    await textTimes(30, 'busy')
 
     await expect(text('quiet')).resolves.toMatchObject({ to: CUSTOMER })
   })
@@ -165,25 +167,25 @@ describe('a paid workshop with no SMS provider of its own', () => {
     await expect(text()).rejects.toThrow(/Twilio/)
     twilioDown = false
 
-    await textTimes(50)
+    await textTimes(30)
 
-    expect(sent).toHaveLength(50)
+    expect(sent).toHaveLength(30)
   })
 
   it('starts again the next day', async () => {
     const send = () => Promise.resolve('sent')
     const monday = new Date('2026-11-16T12:00:00Z')
     const tuesday = new Date('2026-11-17T00:00:01Z')
-    for (let i = 0; i < 50; i++) await withPlatformSmsAllowance('org', 50, send, monday)
-    await expect(withPlatformSmsAllowance('org', 50, send, monday)).rejects.toThrow()
+    for (let i = 0; i < 30; i++) await withPlatformSmsAllowance('org', 30, send, monday)
+    await expect(withPlatformSmsAllowance('org', 30, send, monday)).rejects.toThrow()
 
-    await expect(withPlatformSmsAllowance('org', 50, send, tuesday)).resolves.toBe('sent')
+    await expect(withPlatformSmsAllowance('org', 30, send, tuesday)).resolves.toBe('sent')
   })
 })
 
 describe('a workshop on the free plan', () => {
   beforeEach(() => {
-    getFeatures.mockResolvedValue({ sms: false, platformSmsPerDay: 0 })
+    getFeatures.mockResolvedValue(PLAN_FEATURES.free)
   })
 
   it('is not offered SMS', async () => {
