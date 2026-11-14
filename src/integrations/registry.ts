@@ -27,6 +27,7 @@ import { manifest as paystack } from './paystack/manifest'
 import { manifest as postmark } from './postmark/manifest'
 import { manifest as quickbooks } from './quickbooks/manifest'
 import { manifest as xero } from './xero/manifest'
+import { manifest as zohoBooks } from './zoho-books/manifest'
 import { manifest as rdw } from './rdw/manifest'
 import { manifest as regcheck } from './regcheck/manifest'
 import { manifest as resend } from './resend/manifest'
@@ -85,6 +86,7 @@ const ALL_ENTRIES: readonly RegistryEntry[] = [
   { manifest: paystack, load: () => import('./paystack/server') },
   { manifest: quickbooks, load: () => import('./quickbooks/server') },
   { manifest: xero, load: () => import('./xero/server') },
+  { manifest: zohoBooks, load: () => import('./zoho-books/server') },
   { manifest: fiken, load: () => import('./fiken/server') },
   { manifest: s3, load: () => import('./s3/server') },
   { manifest: localFolder, load: () => import('./local-folder/server') },
