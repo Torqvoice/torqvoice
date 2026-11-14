@@ -54,6 +54,31 @@
     "whatsNew": "Žiūrėti naujienas",
     "dismiss": "Uždaryti"
   },
+  "whatsNew": {
+    "title": "Naujienos",
+    "openUnread": "Naujienos: atnaujinimai, kurių dar nematėte",
+    "description": "Naujausi papildymai, nuo naujausių.",
+    "unread": "Nauja nuo paskutinio apsilankymo",
+    "kindNew": "Nauja",
+    "kindImproved": "Patobulinta",
+    "open": "Atidaryti",
+    "guide": "Skaityti vadovą",
+    "version": "Versija {version}",
+    "allReleaseNotes": "Visos versijų pastabos",
+    "feedback": {
+      "question": "Ar tai naudinga?",
+      "up": "Taip, tai naudinga",
+      "down": "Ne, ne to tikėjausi",
+      "askUp": "Kas jums patinka? (neprivaloma)",
+      "askDown": "Kas veikė ne taip, kaip tikėjotės?",
+      "privacyIdentified": "Siunčiama Torqvoice komandai su jūsų el. pašto adresu, kad galėtume atsakyti.",
+      "privacyAnonymous": "Siunčiama Torqvoice komandai be jūsų vardo ir el. pašto adreso.",
+      "skip": "Praleisti",
+      "send": "Siųsti",
+      "thanks": "Ačiū, jūsų komentaras išsiųstas.",
+      "failed": "Nepavyko išsiųsti jūsų atsiliepimo. Po akimirkos bandykite dar kartą."
+    }
+  },
   "pagination": {
     "showing": "Rodoma {start}–{end} iš {total}",
     "perPage": "puslapyje",

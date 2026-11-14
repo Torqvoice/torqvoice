@@ -54,6 +54,31 @@
     "whatsNew": "Zobacz nowości",
     "dismiss": "Zamknij"
   },
+  "whatsNew": {
+    "title": "Nowości",
+    "openUnread": "Nowości: aktualizacje, których jeszcze nie znasz",
+    "description": "Ostatnie zmiany, od najnowszych.",
+    "unread": "Nowe od Twojej ostatniej wizyty",
+    "kindNew": "Nowość",
+    "kindImproved": "Ulepszone",
+    "open": "Otwórz",
+    "guide": "Przeczytaj przewodnik",
+    "version": "Wersja {version}",
+    "allReleaseNotes": "Wszystkie informacje o wydaniach",
+    "feedback": {
+      "question": "Czy to było przydatne?",
+      "up": "Tak, to jest przydatne",
+      "down": "Nie, to nie to, czego oczekiwałem",
+      "askUp": "Co Ci się w tym podoba? (opcjonalnie)",
+      "askDown": "Co nie zadziałało zgodnie z oczekiwaniami?",
+      "privacyIdentified": "Wysyłane do zespołu Torqvoice z Twoim adresem e-mail, abyśmy mogli odpowiedzieć.",
+      "privacyAnonymous": "Wysyłane do zespołu Torqvoice bez Twojego imienia i adresu e-mail.",
+      "skip": "Pomiń",
+      "send": "Wyślij",
+      "thanks": "Dziękujemy, Twój komentarz został wysłany.",
+      "failed": "Nie udało się wysłać opinii. Spróbuj ponownie za chwilę."
+    }
+  },
   "pagination": {
     "showing": "Wyświetlane {start}–{end} z {total}",
     "perPage": "na stronę",

@@ -29,6 +29,9 @@ model User {
   /// second device does not restart them and a closed tab cannot stop them.
   updateBannerVersion String?
   updateBannerShownAt DateTime?
+  /// When this user last opened the "What's new" panel. Entries published
+  /// after it (and after the account was created) carry the unread dot.
+  whatsNewSeenAt      DateTime?
   /// Per-user dashboard grid layout (card positions/sizes/hidden set).
   /// Null = default layout. Shape validated in dashboardLayoutActions.
   dashboardLayout     Json?
