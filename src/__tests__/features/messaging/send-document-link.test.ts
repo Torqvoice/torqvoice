@@ -47,6 +47,11 @@ vi.mock('@/lib/features', () => ({
 }))
 
 const deliverSms = vi.fn()
+// The defaults in the workshop's language; this test's workshop reads English.
+vi.mock('@/features/sms/Lib/smsTemplateDefaults.server', async () => {
+  const { SMS_TEMPLATE_DEFAULTS } = await import('@/lib/sms-templates')
+  return { smsTemplateDefaults: async () => SMS_TEMPLATE_DEFAULTS }
+})
 vi.mock('@/features/sms/Lib/deliverSms.server', () => ({
   deliverSms: (org: string, input: unknown) => deliverSms(org, input),
 }))

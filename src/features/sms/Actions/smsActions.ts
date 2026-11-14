@@ -6,7 +6,7 @@ import { getPlatformSmsAllowance, normalizeOrgPhone } from '@/lib/sms'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { SMS_TEMPLATE_DEFAULTS } from '@/lib/sms-templates'
+import { smsTemplateDefaults } from '../Lib/smsTemplateDefaults.server'
 import { demoGuard } from '@/lib/demo'
 import { deliverSms } from '../Lib/deliverSms.server'
 
@@ -220,7 +220,7 @@ export async function getSmsTemplates() {
         SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
         SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
       ]
-      const [settings, org, user] = await Promise.all([
+      const [settings, org, user, defaults] = await Promise.all([
         db.appSetting.findMany({
           where: { organizationId, key: { in: smsKeys } },
         }),
@@ -232,12 +232,13 @@ export async function getSmsTemplates() {
           where: { id: userId },
           select: { name: true },
         }),
+        smsTemplateDefaults(organizationId),
       ])
 
       const templates: Record<string, string> = {}
       for (const key of smsKeys) {
         const found = settings.find((s) => s.key === key)
-        templates[key] = found?.value || SMS_TEMPLATE_DEFAULTS[key] || ''
+        templates[key] = found?.value || defaults[key] || ''
       }
       return {
         templates,

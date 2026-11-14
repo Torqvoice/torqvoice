@@ -978,7 +978,7 @@
     "saveSmsTemplates": "Guardar modelos de SMS",
     "smsTemplateSaved": "Definições dos modelos de SMS guardadas",
     "smsDefaults": {
-      "invoiceReady": "A sua fatura está pronta. Consulte-a aqui: {share_link}",
+      "invoiceReady": "A fatura de {company_name} está pronta. Consulte-a aqui: {share_link}\nCumprimentos {company_name} - {current_user}",
       "quoteReady": "O seu orçamento está pronto para análise. Consulte-o aqui: {share_link}",
       "inspectionReady": "O relatório de inspeção da sua viatura está pronto. Consulte-o aqui: {share_link}",
       "statusInProgress": "Começámos a trabalhar na sua viatura. Vamos mantê-lo informado.",

@@ -983,7 +983,7 @@
     "layoutDocInvoice": "Invoice",
     "layoutDocQuote": "Quote",
     "smsDefaults": {
-      "invoiceReady": "Your invoice is ready. View it here: {share_link}",
+      "invoiceReady": "Invoice from {company_name} is ready. View it here: {share_link}\nRegards {company_name} - {current_user}",
       "quoteReady": "Your quote is ready for review. View it here: {share_link}",
       "inspectionReady": "Your vehicle inspection report is ready. View it here: {share_link}",
       "statusInProgress": "Work has started on your vehicle. We'll keep you updated.",

@@ -978,7 +978,7 @@
     "saveSmsTemplates": "SMS Şablonlarını Kaydet",
     "smsTemplateSaved": "SMS şablon ayarları kaydedildi",
     "smsDefaults": {
-      "invoiceReady": "Faturanız hazır. Buradan görüntüleyin: {share_link}",
+      "invoiceReady": "{company_name} faturanız hazır. Buradan görüntüleyin: {share_link}\nSaygılarımızla {company_name} - {current_user}",
       "quoteReady": "Teklifiniz incelemeye hazır. Buradan görüntüleyin: {share_link}",
       "inspectionReady": "Araç muayene raporunuz hazır. Buradan görüntüleyin: {share_link}",
       "statusInProgress": "Aracınız üzerinde çalışmaya başlandı. Sizi bilgilendirmeye devam edeceğiz.",

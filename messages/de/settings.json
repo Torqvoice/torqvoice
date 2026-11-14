@@ -978,7 +978,7 @@
     "saveSmsTemplates": "SMS-Vorlagen speichern",
     "smsTemplateSaved": "SMS-Vorlageneinstellungen gespeichert",
     "smsDefaults": {
-      "invoiceReady": "Ihre Rechnung ist fertig. Hier ansehen: {share_link}",
+      "invoiceReady": "Rechnung von {company_name} ist fertig. Hier ansehen: {share_link}\nViele Grüße {company_name} - {current_user}",
       "quoteReady": "Ihr Angebot steht zur Prüfung bereit. Hier ansehen: {share_link}",
       "inspectionReady": "Ihr Fahrzeuginspektionsbericht ist fertig. Hier ansehen: {share_link}",
       "statusInProgress": "Die Arbeit an Ihrem Fahrzeug hat begonnen. Wir halten Sie auf dem Laufenden.",

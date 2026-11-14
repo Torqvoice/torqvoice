@@ -983,7 +983,7 @@
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Tilbud",
     "smsDefaults": {
-      "invoiceReady": "Fakturaen din er klar. Se den her: {share_link}",
+      "invoiceReady": "Faktura fra {company_name} er klar. Se den her: {share_link}\nMvh {company_name} - {current_user}",
       "quoteReady": "Tilbudet ditt er klart for gjennomgang. Se det her: {share_link}",
       "inspectionReady": "Inspeksjonsrapporten for kjøretøyet ditt er klar. Se den her: {share_link}",
       "statusInProgress": "Arbeidet med kjøretøyet ditt har startet. Vi holder deg oppdatert.",

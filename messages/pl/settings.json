@@ -978,7 +978,7 @@
     "saveSmsTemplates": "Zapisz szablony SMS",
     "smsTemplateSaved": "Ustawienia szablonów SMS zapisane",
     "smsDefaults": {
-      "invoiceReady": "Twoja faktura jest gotowa. Zobacz ją tutaj: {share_link}",
+      "invoiceReady": "Faktura od {company_name} jest gotowa. Zobacz ją tutaj: {share_link}\nPozdrawiamy {company_name} - {current_user}",
       "quoteReady": "Twoja wycena jest gotowa do przeglądu. Zobacz ją tutaj: {share_link}",
       "inspectionReady": "Raport z inspekcji pojazdu jest gotowy. Zobacz go tutaj: {share_link}",
       "statusInProgress": "Rozpoczęto prace nad Twoim pojazdem. Będziemy Cię informować.",

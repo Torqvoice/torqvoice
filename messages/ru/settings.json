@@ -983,7 +983,7 @@
     "layoutDocInvoice": "Счёт",
     "layoutDocQuote": "Предложение",
     "smsDefaults": {
-      "invoiceReady": "Ваш счёт готов. Просмотрите его здесь: {share_link}",
+      "invoiceReady": "Счёт от {company_name} готов. Просмотрите его здесь: {share_link}\nС уважением, {company_name} - {current_user}",
       "quoteReady": "Ваше предложение готово для рассмотрения. Просмотрите его здесь: {share_link}",
       "inspectionReady": "Отчёт осмотра вашего транспортного средства готов. Просмотрите его здесь: {share_link}",
       "statusInProgress": "Начаты работы над вашим транспортным средством. Мы будем держать вас в курсе.",

@@ -13,7 +13,8 @@ import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { ensureShareToken } from '@/lib/share-token.server'
 import { normalizeOrgPhone } from '@/lib/sms'
-import { interpolateSmsTemplate, SMS_TEMPLATE_DEFAULTS } from '@/lib/sms-templates'
+import { interpolateSmsTemplate } from '@/lib/sms-templates'
+import { smsTemplateDefaults } from '@/features/sms/Lib/smsTemplateDefaults.server'
 import {
   getWhatsappConfig,
   isWithinServiceWindow,
@@ -114,12 +115,13 @@ async function linkMessage(
   customerName: string
 ) {
   const key = TEMPLATE_KEY[kind]
-  const [setting, org, user] = await Promise.all([
+  const [setting, org, user, defaults] = await Promise.all([
     db.appSetting.findFirst({ where: { organizationId, key }, select: { value: true } }),
     db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
     db.user.findUnique({ where: { id: userId }, select: { name: true } }),
+    smsTemplateDefaults(organizationId),
   ])
-  const body = interpolateSmsTemplate(setting?.value || SMS_TEMPLATE_DEFAULTS[key] || '', {
+  const body = interpolateSmsTemplate(setting?.value || defaults[key] || '', {
     share_link: link,
     customer_name: customerName,
     company_name: org?.name || '',
