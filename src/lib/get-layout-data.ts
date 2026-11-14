@@ -20,6 +20,9 @@ type AuthResult =
       lastSeenVersion: string | null
       updateBannerVersion: string | null
       updateBannerShownAt: Date | null
+      /** When the "What's new" panel was last opened, and when the account began. */
+      whatsNewSeenAt: Date | null
+      userCreatedAt: Date | null
       companyLogo: string | undefined
       dateFormat: string | undefined
       timeFormat: string | undefined
@@ -49,6 +52,8 @@ export async function getLayoutData(): Promise<AuthResult> {
         lastSeenVersion: true,
         updateBannerVersion: true,
         updateBannerShownAt: true,
+        whatsNewSeenAt: true,
+        createdAt: true,
       },
     }),
   ])
@@ -109,6 +114,8 @@ export async function getLayoutData(): Promise<AuthResult> {
     lastSeenVersion: user?.lastSeenVersion ?? null,
     updateBannerVersion: user?.updateBannerVersion ?? null,
     updateBannerShownAt: user?.updateBannerShownAt ?? null,
+    whatsNewSeenAt: user?.whatsNewSeenAt ?? null,
+    userCreatedAt: user?.createdAt ?? null,
     companyLogo: orgMap.get(SETTING_KEYS.COMPANY_LOGO) || undefined,
     dateFormat: orgMap.get(SETTING_KEYS.DATE_FORMAT) || undefined,
     timeFormat: orgMap.get(SETTING_KEYS.TIME_FORMAT) || undefined,

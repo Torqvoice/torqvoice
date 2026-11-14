@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { X } from 'lucide-react'
 import { markUpdateBannerShown, markVersionSeen } from '@/features/users/Actions/versionActions'
 import { decideUpdateBanner } from '@/lib/update-banner-rule'
+import { useWhatsNew } from '@/features/whats-new/Components/WhatsNewProvider'
 import { BANNER_PRIORITY, useBannerSlot } from './banner-slot'
 
 /**
@@ -35,6 +36,7 @@ export function UpdateBanner({
 }) {
   const t = useTranslations('common.updateBanner')
   const [dismissed, setDismissed] = useState(false)
+  const whatsNew = useWhatsNew()
 
   const neverSeeded = lastSeenVersion === null
   const decision = neverSeeded
@@ -80,15 +82,30 @@ export function UpdateBanner({
   return (
     <div className="relative bg-amber-500 px-8 py-1.5 text-center text-xs font-medium text-amber-950">
       {t('updated', { version: currentVersion })}{' '}
-      <a
-        href={releaseNotesUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={acknowledge}
-        className="underline underline-offset-2 hover:text-amber-900"
-      >
-        {t('whatsNew')} →
-      </a>
+      {/* The highlights, written for workshops, when there are any to open.
+          Otherwise the release notes, which is all there used to be. */}
+      {whatsNew.available ? (
+        <button
+          type="button"
+          onClick={() => {
+            acknowledge()
+            whatsNew.open()
+          }}
+          className="cursor-pointer underline underline-offset-2 hover:text-amber-900"
+        >
+          {t('whatsNew')} →
+        </button>
+      ) : (
+        <a
+          href={releaseNotesUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={acknowledge}
+          className="underline underline-offset-2 hover:text-amber-900"
+        >
+          {t('whatsNew')} →
+        </a>
+      )}
       <button
         type="button"
         onClick={acknowledge}

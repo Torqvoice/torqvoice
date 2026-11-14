@@ -54,6 +54,31 @@
     "whatsNew": "Se hva som er nytt",
     "dismiss": "Lukk"
   },
+  "whatsNew": {
+    "title": "Hva er nytt",
+    "openUnread": "Hva er nytt: oppdateringer du ikke har sett",
+    "description": "De siste nyhetene, nyeste først.",
+    "unread": "Nytt siden sist",
+    "kindNew": "Nytt",
+    "kindImproved": "Forbedret",
+    "open": "Åpne",
+    "guide": "Les veiledningen",
+    "version": "Versjon {version}",
+    "allReleaseNotes": "Alle versjonsmerknader",
+    "feedback": {
+      "question": "Var dette nyttig?",
+      "up": "Ja, dette er nyttig",
+      "down": "Nei, ikke det jeg forventet",
+      "askUp": "Hva liker du med det? (valgfritt)",
+      "askDown": "Hva fungerte ikke slik du forventet?",
+      "privacyIdentified": "Sendes til Torqvoice-teamet med e-postadressen din, slik at vi kan svare.",
+      "privacyAnonymous": "Sendes til Torqvoice-teamet uten navnet eller e-postadressen din.",
+      "skip": "Hopp over",
+      "send": "Send",
+      "thanks": "Takk, kommentaren din er sendt.",
+      "failed": "Tilbakemeldingen din kunne ikke sendes. Prøv igjen om litt."
+    }
+  },
   "pagination": {
     "showing": "Viser {start}–{end} av {total}",
     "perPage": "per side",
