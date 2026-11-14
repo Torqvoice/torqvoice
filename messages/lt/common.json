@@ -156,8 +156,6 @@
     "preview": "Peržiūra",
     "failed": "Nepavyko sugeneruoti PDF peržiūros."
   },
-  "attachPdf": "Pridėti PDF",
-  "attachPdfHint": "Išjunkite, kad būtų siunčiama nuoroda, tada matysite, kada klientas ją atidarė.",
   "sentCopy": {
     "note": "Išsiųsta {date}. Čia atlikti pakeitimai pateks į sąskaitą, kai ji bus išsiųsta dar kartą.",
     "confirmTitle": "Ši sąskaita jau išsiųsta",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Nepavyko pasiekti Torqvoice",
     "description": "Paskutinis pakeitimas galėjo būti neišsaugotas. Patikrinkite ryšį ir bandykite dar kartą."
+  },
+  "sendDocument": {
+    "titleQuote": "Siųsti pasiūlymą",
+    "titleInvoice": "Siųsti sąskaitą",
+    "titleInspection": "Siųsti apžiūrą",
+    "description": "Klientas gauna nuorodą, kurią atidaręs gali peržiūrėti ir atsisiųsti dokumentą.",
+    "email": "El. paštas",
+    "emailAddress": "El. pašto adresas",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Taip pat pridėti PDF",
+    "sms": "SMS",
+    "smsNumber": "Telefono numeris SMS žinutei",
+    "whatsappNumber": "Telefono numeris WhatsApp",
+    "phonePlaceholder": "Telefono numeris",
+    "message": "Žinutė (neprivaloma, pridedama prie laiško)",
+    "messagePlaceholder": "Pridėkite asmeninę žinutę...",
+    "copyLink": "Kopijuoti nuorodą",
+    "send": "Siųsti",
+    "emailSent": "Laiškas išsiųstas",
+    "failedEmail": "Nepavyko išsiųsti laiško",
+    "smsSent": "SMS išsiųsta",
+    "failedSms": "Nepavyko išsiųsti SMS"
   },
   "shareLink": {
     "generateFailed": "Nepavyko sukurti nuorodos. Bandykite dar kartą.",

@@ -156,8 +156,6 @@
     "preview": "Aperçu",
     "failed": "Impossible de générer l'aperçu du PDF."
   },
-  "attachPdf": "Joindre le PDF",
-  "attachPdfHint": "Désactivez pour envoyer un lien à la place, afin de voir quand le client l'ouvre.",
   "sentCopy": {
     "note": "Envoyée le {date}. Les modifications faites ici passent sur la facture lorsqu'elle est renvoyée.",
     "confirmTitle": "Cette facture a déjà été envoyée",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Impossible de joindre Torqvoice",
     "description": "Votre dernière modification n'a peut-être pas été enregistrée. Vérifiez votre connexion et réessayez."
+  },
+  "sendDocument": {
+    "titleQuote": "Envoyer le devis",
+    "titleInvoice": "Envoyer la facture",
+    "titleInspection": "Envoyer l'inspection",
+    "description": "Le client reçoit un lien pour le consulter et le télécharger.",
+    "email": "Email",
+    "emailAddress": "Adresse email",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Joindre aussi le PDF",
+    "sms": "SMS",
+    "smsNumber": "Numéro de téléphone pour le SMS",
+    "whatsappNumber": "Numéro de téléphone pour WhatsApp",
+    "phonePlaceholder": "Numéro de téléphone",
+    "message": "Message (facultatif, ajouté à l'email)",
+    "messagePlaceholder": "Ajoutez un message personnel...",
+    "copyLink": "Copier le lien",
+    "send": "Envoyer",
+    "emailSent": "Email envoyé",
+    "failedEmail": "Impossible d'envoyer l'email",
+    "smsSent": "SMS envoyé",
+    "failedSms": "Impossible d'envoyer le SMS"
   },
   "shareLink": {
     "generateFailed": "Impossible de créer le lien. Veuillez réessayer.",

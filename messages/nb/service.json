@@ -35,7 +35,7 @@
     },
     "save": "Lagre",
     "pdf": "PDF",
-    "email": "E-post",
+    "send": "Send",
     "share": "Del",
     "notify": "Varsle",
     "delete": "Slett",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Del faktura",
     "description": "Generer en offentlig lenke som lar hvem som helst se og laste ned denne fakturaen uten å logge inn.",
-    "notifyTitle": "Varsle {name}",
-    "email": "E-post",
-    "noEmail": "(ingen e-post på arkiv)",
-    "sms": "SMS",
-    "noPhone": "(ingen telefon på arkiv)",
-    "sendNotification": "Send varsling",
     "revokeLink": "Tilbakekall lenke",
     "generateLink": "Generer offentlig lenke",
-    "emailSent": "E-post sendt",
-    "failedEmail": "Kunne ikke sende e-post",
-    "smsSent": "SMS sendt",
-    "failedSms": "Kunne ikke sende SMS",
     "copyLink": "Kopier lenke"
   },
   "sidebar": {

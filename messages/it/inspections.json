@@ -53,6 +53,7 @@
     "statusCompleted": "Chiusa",
     "complete": "Chiudi",
     "reopen": "Riapri",
+    "send": "Invia",
     "share": "Condividi",
     "save": "Salva",
     "saving": "Salvataggio…",
@@ -460,18 +461,8 @@
     "copied": "Link copiato negli appunti",
     "generated": "Link di condivisione creato",
     "revoked": "Link di condivisione revocato",
-    "notifyTitle": "Notifica {name}",
-    "email": "E-mail",
-    "noEmail": "(nessuna e-mail registrata)",
-    "sms": "SMS",
-    "noPhone": "(nessun telefono registrato)",
-    "sendNotification": "Invia notifica",
     "revokeLink": "Revoca link",
-    "generateLink": "Genera link pubblico",
-    "emailSent": "E-mail inviata",
-    "failedEmail": "Invio e-mail non riuscito",
-    "smsSent": "SMS inviato",
-    "failedSms": "Invio SMS non riuscito"
+    "generateLink": "Genera link pubblico"
   },
   "phone": {
     "pageTitle": "Foto dell'ispezione",

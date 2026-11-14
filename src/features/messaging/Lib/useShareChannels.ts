@@ -8,6 +8,7 @@ import { getShareChannels } from '../Actions/getShareChannels'
 const statusSchema = z.enum(['ready', 'not_connected', 'not_in_plan'])
 
 const shareChannelsSchema = z.object({
+  email: statusSchema,
   sms: statusSchema,
   whatsapp: statusSchema,
   isCloud: z.boolean(),

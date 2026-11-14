@@ -2,18 +2,13 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import {
-  sendOrgSms,
-  getOrgSmsPhoneNumber,
-  getPlatformSmsAllowance,
-  normalizeOrgPhone,
-} from '@/lib/sms'
+import { getPlatformSmsAllowance, normalizeOrgPhone } from '@/lib/sms'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS } from '@/lib/sms-templates'
 import { demoGuard } from '@/lib/demo'
-import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
+import { deliverSms } from '../Lib/deliverSms.server'
 
 export async function sendSmsToCustomer(input: {
   customerId: string
@@ -34,9 +29,6 @@ export async function sendSmsToCustomer(input: {
       if (!customer) throw new Error('Customer not found')
       if (!customer.phone) throw new Error('Customer has no phone number')
 
-      const fromNumber = await getOrgSmsPhoneNumber(organizationId)
-      if (!fromNumber) throw new Error('SMS phone number is not configured')
-
       // Normalize the destination phone using the workshop's default
       // country code so the audit-log row records the same E.164 number
       // the provider will receive. sendOrgSms re-normalizes internally as
@@ -50,68 +42,19 @@ export async function sendSmsToCustomer(input: {
         )
       }
 
-      // Create the message record first
-      const message = await db.smsMessage.create({
-        data: {
-          direction: 'outbound',
-          fromNumber,
-          toNumber: normalizedTo,
-          body: input.body,
-          status: 'queued',
-          organizationId,
-          customerId: customer.id,
-          relatedEntityType: input.relatedEntityType,
-          relatedEntityId: input.relatedEntityId,
-        },
+      const sent = await deliverSms(organizationId, {
+        to: normalizedTo,
+        body: input.body,
+        customerId: customer.id,
+        relatedEntityType: input.relatedEntityType,
+        relatedEntityId: input.relatedEntityId,
       })
 
-      try {
-        const result = await sendOrgSms(organizationId, {
-          to: normalizedTo,
-          body: input.body,
-        })
-
-        await db.smsMessage.update({
-          where: { id: message.id },
-          data: {
-            status: 'sent',
-            providerMsgId: result.providerMsgId,
-          },
-        })
-
-        // These entity types are set only by the share dialogs, whose SMS
-        // carries the document's link: texting it is a way of sending the
-        // document, so it counts for "lock when sent". Plain conversations
-        // and reminders carry no entity type and stamp nothing.
-        if (input.relatedEntityType === 'invoice' && input.relatedEntityId) {
-          await markInvoiceSent(input.relatedEntityId, organizationId)
-        } else if (input.relatedEntityType === 'quote' && input.relatedEntityId) {
-          await markQuoteSent(input.relatedEntityId, organizationId)
-        }
-
-        return {
-          id: message.id,
-          status: 'sent' as const,
-          customerPhone: result.to,
-          customerName: customer.name,
-        }
-      } catch (error) {
-        // The plan saying no is not a failed send: nothing was attempted, so
-        // no failed message is left in the thread, and the refusal goes up as
-        // it is so the screen can offer the upgrade instead of an error.
-        if (error instanceof Error && error.name === 'FeatureGatedError') {
-          await db.smsMessage.delete({ where: { id: message.id } }).catch(() => null)
-          throw error
-        }
-
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-
-        await db.smsMessage.update({
-          where: { id: message.id },
-          data: { status: 'failed', errorMessage },
-        })
-
-        throw new Error(`Failed to send SMS: ${errorMessage}`)
+      return {
+        id: sent.id,
+        status: 'sent' as const,
+        customerPhone: sent.to,
+        customerName: customer.name,
       }
     },
     {

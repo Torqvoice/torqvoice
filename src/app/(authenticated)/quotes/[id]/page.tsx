@@ -13,7 +13,6 @@ import { getLaborPresetsList } from '@/features/labor-presets/Actions/laborPrese
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { getQuoteLockState } from '@/lib/document-lock.server'
-import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { getFeatures } from '@/lib/features'
 import { PageHeader } from '@/components/page-header'
 import { readLineTaxSettings, TAX_APPLIES_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
@@ -41,7 +40,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
 
   const orgId = authContext?.organizationId
   const features = orgId ? await getFeatures(orgId) : null
-  const emailEnabled = orgId ? await canEmailCustomers(orgId) : false
   const lockState = orgId
     ? await getQuoteLockState(id, orgId)
     : { locked: false, reason: null, unlockedAt: null }
@@ -96,7 +94,6 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
         distanceUnit={settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'km' : 'mi'}
         laborPresets={laborPresets}
         inventoryParts={inventoryParts}
-        emailEnabled={emailEnabled}
       />
     </div>
   )

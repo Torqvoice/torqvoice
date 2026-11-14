@@ -156,8 +156,6 @@
     "preview": "Önizleme",
     "failed": "PDF önizlemesi oluşturulamadı."
   },
-  "attachPdf": "PDF ekle",
-  "attachPdfHint": "Bunun yerine bağlantı göndermek için kapatın; böylece müşterinin ne zaman açtığını görürsünüz.",
   "sentCopy": {
     "note": "{date} tarihinde gönderildi. Buradaki değişiklikler fatura yeniden gönderildiğinde faturaya yansır.",
     "confirmTitle": "Bu fatura zaten gönderildi",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Torqvoice'a ulaşılamadı",
     "description": "Son değişikliğiniz kaydedilmemiş olabilir. Bağlantınızı kontrol edip tekrar deneyin."
+  },
+  "sendDocument": {
+    "titleQuote": "Teklif gönder",
+    "titleInvoice": "Fatura gönder",
+    "titleInspection": "Muayene gönder",
+    "description": "Müşteri, görüntülemek ve indirmek için bir bağlantı alır.",
+    "email": "E-posta",
+    "emailAddress": "E-posta adresi",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "PDF'yi de ekle",
+    "sms": "SMS",
+    "smsNumber": "SMS için telefon numarası",
+    "whatsappNumber": "WhatsApp için telefon numarası",
+    "phonePlaceholder": "Telefon numarası",
+    "message": "Mesaj (isteğe bağlı, e-postaya eklenir)",
+    "messagePlaceholder": "Kişisel bir mesaj ekleyin...",
+    "copyLink": "Bağlantıyı kopyala",
+    "send": "Gönder",
+    "emailSent": "E-posta gönderildi",
+    "failedEmail": "E-posta gönderilemedi",
+    "smsSent": "SMS gönderildi",
+    "failedSms": "SMS gönderilemedi"
   },
   "shareLink": {
     "generateFailed": "Bağlantı oluşturulamadı. Tekrar deneyin.",

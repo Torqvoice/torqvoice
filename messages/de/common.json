@@ -156,8 +156,6 @@
     "preview": "Vorschau",
     "failed": "Die PDF-Vorschau konnte nicht erstellt werden."
   },
-  "attachPdf": "PDF anhängen",
-  "attachPdfHint": "Ausschalten, um stattdessen einen Link zu senden, damit Sie sehen, wann der Kunde ihn öffnet.",
   "sentCopy": {
     "note": "Gesendet am {date}. Änderungen hier kommen auf die Rechnung, wenn sie erneut gesendet wird.",
     "confirmTitle": "Diese Rechnung wurde bereits gesendet",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Torqvoice ist nicht erreichbar",
     "description": "Ihre letzte Änderung wurde möglicherweise nicht gespeichert. Prüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+  },
+  "sendDocument": {
+    "titleQuote": "Angebot senden",
+    "titleInvoice": "Rechnung senden",
+    "titleInspection": "Inspektion senden",
+    "description": "Der Kunde erhält einen Link, um es anzusehen und herunterzuladen.",
+    "email": "E-Mail",
+    "emailAddress": "E-Mail-Adresse",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "PDF zusätzlich anhängen",
+    "sms": "SMS",
+    "smsNumber": "Telefonnummer für SMS",
+    "whatsappNumber": "Telefonnummer für WhatsApp",
+    "phonePlaceholder": "Telefonnummer",
+    "message": "Nachricht (optional, wird der E-Mail hinzugefügt)",
+    "messagePlaceholder": "Persönliche Nachricht hinzufügen...",
+    "copyLink": "Link kopieren",
+    "send": "Senden",
+    "emailSent": "E-Mail gesendet",
+    "failedEmail": "E-Mail konnte nicht gesendet werden",
+    "smsSent": "SMS gesendet",
+    "failedSms": "SMS konnte nicht gesendet werden"
   },
   "shareLink": {
     "generateFailed": "Link konnte nicht erstellt werden. Bitte versuchen Sie es erneut.",

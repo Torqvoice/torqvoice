@@ -160,11 +160,11 @@ test.describe('the same invoice however it is handed over', () => {
     await page.goto(jobUrl)
 
     await expect(async () => {
-      await page.getByRole('button', { name: 'Email', exact: true }).click()
-      await expect(page.locator('#email')).toBeVisible({ timeout: 2_000 })
+      await page.getByRole('button', { name: 'Send', exact: true }).click()
+      await expect(page.locator('#send-email-to')).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    await page.locator('#email').fill(CUSTOMER)
-    await page.getByRole('button', { name: 'Send Email', exact: true }).click()
+    await page.locator('#send-email-to').fill(CUSTOMER)
+    await page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click()
 
     const mail = await waitForMail(CUSTOMER, { timeout: 30_000 })
     const file = attachment(mail, /\.pdf$/)

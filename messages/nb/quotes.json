@@ -22,7 +22,7 @@
     "quote": "Tilbud",
     "save": "Lagre",
     "pdf": "PDF",
-    "email": "E-post",
+    "send": "Send",
     "share": "Del",
     "delete": "Slett",
     "deleteTitle": "Slett tilbud",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Del tilbud",
     "description": "Generer en offentlig lenke som lar hvem som helst se og laste ned dette tilbudet uten å logge inn.",
-    "notifyTitle": "Varsle {name}",
-    "email": "E-post",
-    "noEmail": "(ingen e-post registrert)",
-    "sms": "SMS",
-    "noPhone": "(ingen telefon registrert)",
-    "sendNotification": "Send varsel",
     "revokeLink": "Tilbakekall lenke",
     "generateLink": "Generer offentlig lenke",
-    "emailSent": "E-post sendt",
-    "failedEmail": "Kunne ikke sende e-post",
-    "smsSent": "SMS sendt",
-    "failedSms": "Kunne ikke sende SMS",
     "copyLink": "Kopier lenke"
   },
   "images": {

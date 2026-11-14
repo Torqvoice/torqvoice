@@ -156,8 +156,6 @@
     "preview": "Voorbeeld",
     "failed": "Kon het PDF-voorbeeld niet genereren."
   },
-  "attachPdf": "Pdf toevoegen",
-  "attachPdfHint": "Zet dit uit om in plaats daarvan een link te sturen, zodat je ziet wanneer de klant hem opent.",
   "sentCopy": {
     "note": "Verzonden op {date}. Wijzigingen hier komen op de factuur wanneer die opnieuw wordt verzonden.",
     "confirmTitle": "Deze factuur is al verzonden",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Torqvoice is niet bereikbaar",
     "description": "Je laatste wijziging is mogelijk niet opgeslagen. Controleer je verbinding en probeer het opnieuw."
+  },
+  "sendDocument": {
+    "titleQuote": "Offerte versturen",
+    "titleInvoice": "Factuur versturen",
+    "titleInspection": "Inspectie versturen",
+    "description": "De klant krijgt een link om het te bekijken en te downloaden.",
+    "email": "E-mail",
+    "emailAddress": "E-mailadres",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Ook de pdf bijvoegen",
+    "sms": "SMS",
+    "smsNumber": "Telefoonnummer voor SMS",
+    "whatsappNumber": "Telefoonnummer voor WhatsApp",
+    "phonePlaceholder": "Telefoonnummer",
+    "message": "Bericht (optioneel, wordt aan de e-mail toegevoegd)",
+    "messagePlaceholder": "Voeg een persoonlijk bericht toe...",
+    "copyLink": "Link kopiëren",
+    "send": "Versturen",
+    "emailSent": "E-mail verzonden",
+    "failedEmail": "E-mail verzenden mislukt",
+    "smsSent": "SMS verzonden",
+    "failedSms": "SMS verzenden mislukt"
   },
   "shareLink": {
     "generateFailed": "Kon de link niet aanmaken. Probeer het opnieuw.",

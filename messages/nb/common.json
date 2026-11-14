@@ -156,8 +156,6 @@
     "preview": "Forhåndsvisning",
     "failed": "Kunne ikke generere PDF-forhåndsvisningen."
   },
-  "attachPdf": "Legg ved PDF",
-  "attachPdfHint": "Slå av for å sende en lenke i stedet, så ser du når kunden åpner den.",
   "sentCopy": {
     "note": "Sendt {date}. Endringer her kommer på fakturaen når den sendes på nytt.",
     "confirmTitle": "Denne fakturaen er allerede sendt",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Får ikke kontakt med Torqvoice",
     "description": "Den siste endringen din ble kanskje ikke lagret. Sjekk tilkoblingen og prøv igjen."
+  },
+  "sendDocument": {
+    "titleQuote": "Send tilbud",
+    "titleInvoice": "Send faktura",
+    "titleInspection": "Send inspeksjon",
+    "description": "Kunden får en lenke for å se og laste den ned.",
+    "email": "E-post",
+    "emailAddress": "E-postadresse",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Legg ved PDF-en også",
+    "sms": "SMS",
+    "smsNumber": "Telefonnummer for SMS",
+    "whatsappNumber": "Telefonnummer for WhatsApp",
+    "phonePlaceholder": "Telefonnummer",
+    "message": "Melding (valgfritt, legges til i e-posten)",
+    "messagePlaceholder": "Legg til en personlig melding...",
+    "copyLink": "Kopier lenke",
+    "send": "Send",
+    "emailSent": "E-post sendt",
+    "failedEmail": "Kunne ikke sende e-post",
+    "smsSent": "SMS sendt",
+    "failedSms": "Kunne ikke sende SMS"
   },
   "shareLink": {
     "generateFailed": "Kunne ikke opprette lenken. Prøv igjen.",

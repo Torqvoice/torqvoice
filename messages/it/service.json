@@ -35,7 +35,7 @@
     },
     "save": "Salva",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Invia",
     "share": "Condividi",
     "notify": "Notifica",
     "delete": "Elimina",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Condividi Fattura",
     "description": "Genera un collegamento pubblico che consente a chiunque di visualizzare e scaricare questa fattura senza accedere.",
-    "notifyTitle": "Notifica {name}",
-    "email": "Email",
-    "noEmail": "(nessun email in archivio)",
-    "sms": "SMS",
-    "noPhone": "(nessun telefono in archivio)",
-    "sendNotification": "Invia Notifica",
     "revokeLink": "Revoca Collegamento",
     "generateLink": "Genera Collegamento Pubblico",
-    "emailSent": "Email inviata",
-    "failedEmail": "Impossibile inviare email",
-    "smsSent": "SMS inviato",
-    "failedSms": "Impossibile inviare SMS",
     "copyLink": "Copia link"
   },
   "sidebar": {

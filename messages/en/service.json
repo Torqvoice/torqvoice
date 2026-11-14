@@ -35,7 +35,7 @@
     },
     "save": "Save",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Send",
     "share": "Share",
     "notify": "Notify",
     "delete": "Delete",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Share Invoice",
     "description": "Generate a public link that allows anyone to view and download this invoice without signing in.",
-    "notifyTitle": "Notify {name}",
-    "email": "Email",
-    "noEmail": "(no email on file)",
-    "sms": "SMS",
-    "noPhone": "(no phone on file)",
-    "sendNotification": "Send Notification",
     "revokeLink": "Revoke Link",
     "generateLink": "Generate Public Link",
-    "emailSent": "Email sent",
-    "failedEmail": "Failed to send email",
-    "smsSent": "SMS sent",
-    "failedSms": "Failed to send SMS",
     "copyLink": "Copy link"
   },
   "sidebar": {

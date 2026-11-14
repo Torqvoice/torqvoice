@@ -35,7 +35,7 @@
     },
     "save": "Speichern",
     "pdf": "PDF",
-    "email": "E-Mail",
+    "send": "Senden",
     "share": "Teilen",
     "notify": "Benachrichtigen",
     "delete": "Löschen",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Rechnung teilen",
     "description": "Generieren Sie einen öffentlichen Link, der es jedem ermöglicht, diese Rechnung anzusehen und herunterzuladen, ohne sich anzumelden.",
-    "notifyTitle": "{name} benachrichtigen",
-    "email": "E-Mail",
-    "noEmail": "(keine E-Mail vorhanden)",
-    "sms": "SMS",
-    "noPhone": "(keine Telefonnummer vorhanden)",
-    "sendNotification": "Benachrichtigung senden",
     "revokeLink": "Link widerrufen",
     "generateLink": "Öffentlichen Link generieren",
-    "emailSent": "E-Mail gesendet",
-    "failedEmail": "E-Mail konnte nicht gesendet werden",
-    "smsSent": "SMS gesendet",
-    "failedSms": "SMS konnte nicht gesendet werden",
     "copyLink": "Link kopieren"
   },
   "sidebar": {

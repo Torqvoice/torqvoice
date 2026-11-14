@@ -1,5 +1,6 @@
 'use server'
 
+import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { isCloudInstance } from '@/lib/cloud-instance'
 import { getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -36,7 +37,13 @@ export async function getShareChannels() {
         whatsapp = configured ? 'ready' : 'not_connected'
       }
 
-      return { sms, whatsapp, isCloud: isCloudInstance() }
+      // Every plan may mail its customers. The one refusal is a workshop that
+      // connected its own mail provider on a plan that no longer includes it.
+      const email: ShareChannelStatus = (await canEmailCustomers(organizationId))
+        ? 'ready'
+        : 'not_in_plan'
+
+      return { email, sms, whatsapp, isCloud: isCloudInstance() }
     },
     {
       requiredPermissions: [

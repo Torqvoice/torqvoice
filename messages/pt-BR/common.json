@@ -156,8 +156,6 @@
     "preview": "Pré-visualização",
     "failed": "Não foi possível gerar a pré-visualização do PDF."
   },
-  "attachPdf": "Anexar PDF",
-  "attachPdfHint": "Desligue para enviar um link, assim você vê quando o cliente abre.",
   "sentCopy": {
     "note": "Enviada em {date}. As alterações feitas aqui entram na fatura quando ela for enviada novamente.",
     "confirmTitle": "Esta fatura já foi enviada",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Não foi possível conectar ao Torqvoice",
     "description": "Sua última alteração pode não ter sido salva. Verifique sua conexão e tente novamente."
+  },
+  "sendDocument": {
+    "titleQuote": "Enviar orçamento",
+    "titleInvoice": "Enviar fatura",
+    "titleInspection": "Enviar inspeção",
+    "description": "O cliente recebe um link para visualizar e baixar o documento.",
+    "email": "Email",
+    "emailAddress": "Endereço de email",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Anexar também o PDF",
+    "sms": "SMS",
+    "smsNumber": "Número de telefone para SMS",
+    "whatsappNumber": "Número de telefone para WhatsApp",
+    "phonePlaceholder": "Número de telefone",
+    "message": "Mensagem (opcional, adicionada ao email)",
+    "messagePlaceholder": "Adicione uma mensagem pessoal...",
+    "copyLink": "Copiar link",
+    "send": "Enviar",
+    "emailSent": "Email enviado",
+    "failedEmail": "Falha ao enviar email",
+    "smsSent": "SMS enviado",
+    "failedSms": "Falha ao enviar SMS"
   },
   "shareLink": {
     "generateFailed": "Não foi possível criar o link. Tente novamente.",

@@ -156,8 +156,6 @@
     "preview": "Pré-visualizar",
     "failed": "Não foi possível gerar a pré-visualização do PDF."
   },
-  "attachPdf": "Anexar PDF",
-  "attachPdfHint": "Desative para enviar um link em vez do anexo e assim saber quando o cliente o abre.",
   "sentCopy": {
     "note": "Enviada a {date}. As alterações feitas aqui entram na fatura quando for enviada novamente.",
     "confirmTitle": "Esta fatura já foi enviada",
@@ -224,6 +222,28 @@
   "connectionLost": {
     "title": "Não foi possível contactar o Torqvoice",
     "description": "A sua última alteração pode não ter sido guardada. Verifique a sua ligação e tente novamente."
+  },
+  "sendDocument": {
+    "titleQuote": "Enviar orçamento",
+    "titleInvoice": "Enviar fatura",
+    "titleInspection": "Enviar inspeção",
+    "description": "O cliente recebe uma ligação para ver e transferir o documento.",
+    "email": "E-mail",
+    "emailAddress": "Endereço de e-mail",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Anexar também o PDF",
+    "sms": "SMS",
+    "smsNumber": "Número de telefone para SMS",
+    "whatsappNumber": "Número de telefone para WhatsApp",
+    "phonePlaceholder": "Número de telefone",
+    "message": "Mensagem (opcional, acrescentada ao e-mail)",
+    "messagePlaceholder": "Acrescente uma mensagem pessoal...",
+    "copyLink": "Copiar link",
+    "send": "Enviar",
+    "emailSent": "E-mail enviado",
+    "failedEmail": "Não foi possível enviar o e-mail",
+    "smsSent": "SMS enviado",
+    "failedSms": "Não foi possível enviar o SMS"
   },
   "shareLink": {
     "generateFailed": "Não foi possível criar o link. Tente novamente.",
