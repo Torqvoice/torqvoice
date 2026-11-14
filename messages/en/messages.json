@@ -76,5 +76,9 @@
     "sent": "Sent to {name}",
     "sendError": "Could not send the message",
     "templates": "Templates"
+  },
+  "errors": {
+    "countryNotAvailable": "Texts to this country are not available from the Torqvoice number. Connect your own SMS provider in Settings to text this customer.",
+    "countryNotAllowedOwn": "Your Twilio account does not allow texts to this country. Turn the country on under Geo permissions in Twilio, then send again."
   }
 }

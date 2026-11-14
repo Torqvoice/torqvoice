@@ -2,11 +2,13 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
+import { getTranslations } from 'next-intl/server'
 import {
   sendOrgSms,
   getOrgSmsPhoneNumber,
   getPlatformSmsAllowance,
   normalizeOrgPhone,
+  SmsCountryRefusedError,
 } from '@/lib/sms'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -110,6 +112,14 @@ export async function sendSmsToCustomer(input: {
           where: { id: message.id },
           data: { status: 'failed', errorMessage },
         })
+
+        // The country is not open on the account: a plain sentence in the
+        // person's language, saying what they can do about it, instead of
+        // the provider's wording.
+        if (error instanceof SmsCountryRefusedError) {
+          const t = await getTranslations('messages.errors')
+          throw new Error(t(error.platform ? 'countryNotAvailable' : 'countryNotAllowedOwn'))
+        }
 
         throw new Error(`Failed to send SMS: ${errorMessage}`)
       }

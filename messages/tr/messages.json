@@ -76,5 +76,9 @@
     "sent": "{name} kişisine gönderildi",
     "sendError": "Mesaj gönderilemedi",
     "templates": "Şablonlar"
+  },
+  "errors": {
+    "countryNotAvailable": "Bu ülkeye Torqvoice numarasından SMS gönderilemiyor. Bu müşteriye SMS göndermek için Ayarlar'dan kendi SMS sağlayıcınızı bağlayın.",
+    "countryNotAllowedOwn": "Twilio hesabınız bu ülkeye SMS gönderilmesine izin vermiyor. Twilio'da Geo permissions altından ülkeyi etkinleştirin, ardından tekrar gönderin."
   }
 }

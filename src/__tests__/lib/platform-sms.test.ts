@@ -88,8 +88,20 @@ const ownTwilio = new Map([
 /** Every text Twilio was asked to send: which account, from which number, to whom. */
 let sent: { account: string; from: string; to: string; body: string; service?: string }[] = []
 let twilioDown = false
+/** Set to make Twilio refuse the destination country, as its geo permissions do. */
+let countryRefused = false
 
 const fetchMock = vi.fn(async (url: string, init: { body: string }) => {
+  if (countryRefused) {
+    return {
+      ok: false,
+      statusText: 'Bad Request',
+      json: async () => ({
+        code: 21408,
+        message: 'Permission to send an SMS has not been enabled',
+      }),
+    }
+  }
   if (twilioDown) {
     return { ok: false, statusText: 'Service Unavailable', json: async () => ({}) }
   }
@@ -117,6 +129,7 @@ beforeEach(() => {
   usage.clear()
   sent = []
   twilioDown = false
+  countryRefused = false
   systemSettings = platformAccount
   isCloudMode.mockReset().mockReturnValue(true)
   getFeatures.mockReset().mockResolvedValue(PLAN_FEATURES.pro)
@@ -205,6 +218,26 @@ describe('a paid workshop with no SMS provider of its own', () => {
     twilioDown = true
     await expect(sendOrgSms('org', { to: CUSTOMER, body: 'a'.repeat(400) })).rejects.toThrow()
     twilioDown = false
+
+    await textTimes(30)
+
+    expect(sent).toHaveLength(30)
+  })
+
+  it('says the country is not available from the Torqvoice number when Twilio refuses it', async () => {
+    countryRefused = true
+
+    await expect(text()).rejects.toMatchObject({
+      name: 'SmsCountryRefusedError',
+      platform: true,
+      message: expect.stringContaining('not available from the Torqvoice number'),
+    })
+  })
+
+  it('does not count a text to a refused country against the day', async () => {
+    countryRefused = true
+    await expect(text()).rejects.toThrow()
+    countryRefused = false
 
     await textTimes(30)
 

@@ -58,6 +58,20 @@ vi.mock('@/lib/db', () => ({
 const mockFetch = vi.fn()
 vi.stubGlobal('fetch', mockFetch)
 
+// The action's own sentences, read from the English messages the way
+// next-intl would on the server.
+vi.mock('next-intl/server', async () => {
+  const en = (await import('../../../../messages/en/messages.json')).default as {
+    errors: Record<string, string>
+  }
+  return {
+    getTranslations: async (ns: string) => {
+      expect(ns).toBe('messages.errors')
+      return (key: string) => en.errors[key]
+    },
+  }
+})
+
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { sendSmsToCustomer } from '@/features/sms/Actions/smsActions'
@@ -134,6 +148,19 @@ function mockTwilioFailure() {
     ok: false,
     statusText: 'Bad Request',
     json: async () => ({ message: "Invalid 'To' Phone Number" }),
+  })
+}
+
+/** Twilio's refusal for a country the account's geo permissions leave off. */
+function mockTwilioCountryRefused() {
+  mockFetch.mockResolvedValueOnce({
+    ok: false,
+    statusText: 'Bad Request',
+    json: async () => ({
+      code: 21408,
+      message:
+        "Permission to send an SMS has not been enabled for the region indicated by the 'To' number: +4799999999.",
+    }),
   })
 }
 
@@ -660,6 +687,26 @@ describe('SMS status reflects actual vendor response', () => {
           status: 'failed',
         }),
       })
+    )
+  })
+
+  it("says in plain words when the workshop's own Twilio does not allow the country", async () => {
+    setupAuth()
+    setupSmsProvider('twilio')
+    vi.mocked(db.customer.findFirst).mockResolvedValue(CUSTOMER_A as any)
+    vi.mocked(db.smsMessage.create).mockResolvedValue(SMS_RECORD as any)
+    vi.mocked(db.smsMessage.update).mockResolvedValue({} as any)
+    mockTwilioCountryRefused()
+
+    const result = await sendSmsToCustomer({ customerId: CUSTOMER_A.id, body: 'Hello' })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBe(
+      'Your Twilio account does not allow texts to this country. Turn the country on under Geo permissions in Twilio, then send again.'
+    )
+    expect(result.error).not.toContain('Twilio error')
+    expect(vi.mocked(db.smsMessage.update)).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ status: 'failed' }) })
     )
   })
 
