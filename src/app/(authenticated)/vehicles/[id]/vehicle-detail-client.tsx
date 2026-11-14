@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup, ButtonGroupSeparator } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -19,7 +20,8 @@ import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
 import { VehicleSafetyPanel } from '@/features/vehicles/Components/VehicleSafetyPanel'
 import { VehicleActivityFeed, type FeedFilter } from './vehicle-activity-feed'
-import { useJobWarningText } from './job-warning'
+import type { VehicleGlance } from '@/features/vehicles/Actions/getVehicleGlance'
+import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import type { VehicleJobWarning } from '@/features/vehicles/Lib/vehicleJobWarnings'
 import { NotesTable } from './notes-table'
 import { FindingsTable } from './findings-table'
@@ -51,7 +53,6 @@ import {
   AlertTriangle,
   Archive,
   ChevronDown,
-  ChevronRight,
   LayoutList,
   Download,
   Search,
@@ -108,7 +109,6 @@ import {
   useVehiclePageBackHint,
 } from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
 import { FeatureHint } from '@/components/feature-hint'
-import { PhotoHandoffButton } from '@/features/vehicles/Components/service-page/PhotoHandoffButton'
 import { CopyValue } from '@/components/copy-value'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
 import { cn } from '@/lib/utils'
@@ -134,6 +134,9 @@ interface PaginatedServices {
     warrantyExpiresAt: Date | null
     warrantyNotes: string | null
     _count: { partItems: number; laborItems: number; attachments: number }
+    laborItems?: { description: string }[]
+    partItems?: { name: string }[]
+    customStatus?: { name: string; color: string } | null
   }[]
   total: number
   page: number
@@ -263,6 +266,18 @@ function inspectionTone(dueAt: Date): LampTone {
   return 'slate'
 }
 
+/** A note's text without its markup, for a short preview. */
+function plainText(html: string) {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 function initials(name: string) {
   return name
     .split(/\s+/)
@@ -313,6 +328,30 @@ function parseCommonIssues(content: string | undefined): CommonIssue[] | string 
 }
 
 const NO_WARNINGS: VehicleJobWarning[] = []
+/** Quote statuses that still need an answer from the customer or the workshop. */
+const WAITING_QUOTE = new Set(['draft', 'sent', 'changes_requested'])
+type AdderId = 'workOrder' | 'quote' | 'inspection' | 'note' | 'finding' | 'reminder'
+type VehicleTab = 'all' | 'services' | 'quotes' | 'inspections' | 'notes' | 'reminders' | 'findings'
+/**
+ * What the add button adds on each list. Every tab has an entry: the type
+ * makes leaving one out an error, so the button cannot follow some tabs and
+ * not others.
+ */
+const ADDS_ON_TAB: Record<VehicleTab, AdderId> = {
+  all: 'workOrder',
+  services: 'workOrder',
+  quotes: 'quote',
+  inspections: 'inspection',
+  notes: 'note',
+  findings: 'finding',
+  reminders: 'reminder',
+}
+
+/** A value in the panel that opens what it stands for: underlined like the owner's name. */
+const RAIL_LINK =
+  'underline decoration-muted-foreground/60 underline-offset-4 transition-colors hover:decoration-foreground'
+/** How many notes the panel lists before it points at the full list. */
+const NOTES_IN_RAIL = 8
 
 export function VehicleDetailClient({
   vehicle,
@@ -331,6 +370,7 @@ export function VehicleDetailClient({
   tireSets = [],
   jobWarnings = NO_WARNINGS,
   feedNotes,
+  glance = null,
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
@@ -345,6 +385,8 @@ export function VehicleDetailClient({
   jobWarnings?: VehicleJobWarning[]
   /** Every note for the feed, rather than the notes table's current page. */
   feedNotes?: PaginatedNotes['records']
+  /** Last visit, next booking, what is owed; null for a role that may not read work orders. */
+  glance?: VehicleGlance | null
   currencyCode?: string
   unitSystem?: 'metric' | 'imperial'
   predictionData?: {
@@ -388,6 +430,8 @@ export function VehicleDetailClient({
   const tc = useTranslations('common.buttons')
 
   const tq = useTranslations('vehicles.quotes')
+  const tQuoteStatus = useTranslations('quotes.statusLabels')
+  const tHeader = useTranslations('service.header')
   const tNotes = useTranslations('vehicles.notes')
   const tf = useTranslations('vehicles.findings')
   const tErr = useTranslations('common.errors')
@@ -574,7 +618,6 @@ export function VehicleDetailClient({
     vehicle.serviceRecords.reduce((sum, s) => sum + (s.totalAmount > 0 ? s.totalAmount : s.cost), 0)
 
   const openFindings = paginatedFindings.records.filter((f) => f.status === 'open')
-  const warningText = useJobWarningText()
   const activeReminders = vehicle.reminders.filter((r) => !r.isCompleted)
 
   const optionLabel = (value: string | null, known: Set<string>) => {
@@ -584,9 +627,6 @@ export function VehicleDetailClient({
   }
   const fuelLabel = optionLabel(vehicle.fuelType, FUEL_VALUES)
   const transmissionLabel = optionLabel(vehicle.transmission, TRANSMISSION_VALUES)
-  const specLine = [vehicle.engineSize, fuelLabel, transmissionLabel, vehicle.color].filter(
-    (part): part is string => Boolean(part)
-  )
   const specs = (
     [
       [tPlate('engine'), vehicle.engineSize, false],
@@ -621,7 +661,79 @@ export function VehicleDetailClient({
       : activeTab === 'reminders'
         ? { label: t('tabs.reminders'), count: vehicle._count.reminders }
         : null
-  const [searchOpen, setSearchOpen] = useState(Boolean(serviceSearch))
+  // Notes are about the car, not something that happened to it on a day, so
+  // they sit with the vehicle instead of in its history, the pinned ones first.
+  const railNotes = [...(feedNotes ?? paginatedNotes.records)].sort(
+    (a, b) => Number(b.isPinned) - Number(a.isPinned)
+  )
+  // What is waiting on somebody: a quote the customer has not answered, an
+  // inspection nobody has finished.
+  // The three things besides work that are added here, each from more than
+  // one place: the button over the list, the menu beside it, the panel.
+  const addNote = () => {
+    setEditingNote(undefined)
+    setShowNoteForm(true)
+  }
+  const addFinding = () => {
+    setEditingFinding(undefined)
+    setShowFindingForm(true)
+  }
+  const addReminder = () => {
+    setEditingReminder(undefined)
+    setShowReminderForm(true)
+  }
+  // Everything that can be added to a vehicle, in the order the menu lists
+  // it. Each list names the one it holds, so the button over a list always
+  // adds to that list; a tab added later does not compile until it says
+  // which.
+  const adders: {
+    id: AdderId
+    group: 'documents' | 'records'
+    label: string
+    icon: typeof Wrench
+    href?: string
+    run?: () => void
+  }[] = [
+    {
+      id: 'workOrder',
+      group: 'documents',
+      label: t('newWorkOrder'),
+      icon: Wrench,
+      href: `/vehicles/${vehicle.id}/service/new`,
+    },
+    {
+      id: 'quote',
+      group: 'documents',
+      label: t('addQuote'),
+      icon: FileText,
+      run: () => setShowNewQuoteDialog(true),
+    },
+    {
+      id: 'inspection',
+      group: 'documents',
+      label: t('addInspection'),
+      icon: ClipboardCheck,
+      run: () => setShowNewInspection(true),
+    },
+    { id: 'note', group: 'records', label: tNotes('addNote'), icon: StickyNote, run: addNote },
+    {
+      id: 'finding',
+      group: 'records',
+      label: tf('addFinding'),
+      icon: AlertTriangle,
+      run: addFinding,
+    },
+    { id: 'reminder', group: 'records', label: tr('addReminder'), icon: Bell, run: addReminder },
+  ]
+  const primaryId = ADDS_ON_TAB[activeTab as VehicleTab] ?? 'workOrder'
+  const primaryAdder = adders.find((adder) => adder.id === primaryId) ?? adders[0]
+  const otherAdders = adders.filter((adder) => adder.id !== primaryAdder.id)
+
+  // With one bill outstanding the amount opens it; with several, the table
+  // marks each of them and the amount is the sum.
+  const owedJobIds = Object.keys(glance?.owed ?? {})
+  const waitingQuotes = quotes.filter((q) => WAITING_QUOTE.has(q.status))
+  const openInspections = (inspections ?? []).filter((i) => i.status !== 'completed')
 
   const commonIssues = parseCommonIssues(storedCommonIssues?.content)
   const severityLabel = (s: number) => {
@@ -797,7 +909,7 @@ export function VehicleDetailClient({
       {rawBack && (
         <Link
           href={backHref}
-          className="inline-flex items-center gap-1 text-sm text-muted-foreground transition-colors hover:text-foreground"
+          className="inline-flex items-center gap-1 self-start text-sm text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           {tc('back')}
@@ -806,574 +918,828 @@ export function VehicleDetailClient({
 
       <div className="grid items-start gap-5 xl:min-h-0 xl:flex-1 xl:grid-cols-[21.5rem_minmax(0,1fr)] xl:grid-rows-[minmax(0,1fr)] xl:items-stretch">
         {/* The vehicle: who it is, what it is, what is open on it. */}
+        {/* On a wide screen this is one card beside the jobs. Narrower, where
+            everything is one column, it comes apart into two cards with the
+            jobs between them: the car and its overview first, then the jobs,
+            then the owner, details, follow-up and notes. Nobody on a phone
+            scrolls past the notes to reach the work. */}
         <aside
-          className="min-w-0 rounded-xl border bg-card p-3 xl:max-h-full xl:self-start xl:overflow-y-auto xl:overflow-x-hidden xl:overscroll-contain"
+          className="contents xl:flex xl:max-h-full xl:min-w-0 xl:flex-col xl:self-start xl:overflow-hidden xl:rounded-xl xl:border xl:bg-card"
           aria-label={vehicleName}
         >
-          {/* The photo, and the two ways to give it one: from this computer or from a phone. */}
-          <div className="group/photo relative">
-            {vehicle.imageUrl ? (
-              <button
-                type="button"
-                onClick={() => setShowImage(true)}
-                aria-label={vehicleName}
-                className="block aspect-[3/2] w-full cursor-zoom-in overflow-hidden rounded-lg bg-muted"
-              >
-                <img
-                  src={vehicle.imageUrl}
-                  alt={vehicleName}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover/photo:scale-[1.03]"
-                />
-              </button>
-            ) : (
-              <div className="flex aspect-[3/2] w-full items-center justify-center rounded-lg bg-muted">
-                <VehicleIcon className="h-16 w-16 text-muted-foreground/25" strokeWidth={1.1} />
-              </div>
-            )}
-            {!vehicle.isArchived && (
-              <div
-                className={cn(
-                  'absolute bottom-2 left-2 flex gap-1.5 transition-opacity',
-                  vehicle.imageUrl &&
-                    'opacity-0 focus-within:opacity-100 group-hover/photo:opacity-100 [@media(hover:none)]:opacity-100'
-                )}
-              >
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="h-7 bg-card/90 text-xs backdrop-blur"
-                  onClick={() => setShowEditForm(true)}
-                >
-                  <Camera className="mr-1.5 h-3.5 w-3.5" />
-                  {vehicle.imageUrl ? t('changePhoto') : t('addPhoto')}
-                </Button>
-                <PhotoHandoffButton
-                  vehicleId={vehicle.id}
-                  iconOnly
-                  className="bg-card/90 backdrop-blur"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-2 px-1.5 pt-4">
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-              {vehicle.licensePlate && (
-                <PlateChip
-                  plate={vehicle.licensePlate}
-                  size="md"
-                  copyLabel={tForm('licensePlate')}
-                />
-              )}
-              {vehicle.inspectionStatus?.dueAt && (
-                <span
-                  title={
-                    vehicle.inspectionStatus.checkedAt
-                      ? t('inspectionCheckedAt', {
-                          date: formatDate(vehicle.inspectionStatus.checkedAt),
-                        })
-                      : undefined
-                  }
-                >
-                  <StatusLamp
-                    tone={inspectionTone(vehicle.inspectionStatus.dueAt)}
-                    className="text-xs"
-                  >
-                    {t('inspectionDue', { date: formatDate(vehicle.inspectionStatus.dueAt) })}
-                  </StatusLamp>
-                </span>
-              )}
-              {vehicle.soldReportedAt && (
-                <StatusLamp tone="amber" className="text-xs">
-                  {t('soldReported', { date: formatDate(vehicle.soldReportedAt) })}
-                </StatusLamp>
-              )}
-              {vehicle.inspectionStatus?.registered === false && (
-                <StatusLamp tone="red" className="text-xs">
-                  {t('notRegistered')}
-                </StatusLamp>
-              )}
-            </div>
-            <h1 className="font-display text-xl font-semibold leading-tight tracking-tight">
-              {vehicleName}
-            </h1>
-            {specLine.length > 0 && (
-              <p className="text-[13px] text-muted-foreground">{specLine.join(' · ')}</p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-1.5 px-1.5 pt-3">
-            {!vehicle.isArchived && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="h-8"
-                onClick={() => setShowEditForm(true)}
-                aria-label={t('editVehicle')}
-                title={t('editVehicle')}
-              >
-                <Pencil className="mr-1 h-3.5 w-3.5" />
-                {t('edit')}
-              </Button>
-            )}
-            {aiEnabled && (
-              <AskAiSheet
-                subject={{ type: 'vehicle', id: vehicle.id }}
-                title={vehicleName}
-                className="h-8"
-              />
-            )}
-            {/* Right after somebody tries this page, a one-time pointer at
-                the menu that takes them back to the classic one. */}
-            <FeatureHint
-              id="vehicle-page.back-to-classic.v1"
-              eligible
-              open={backHint.show}
-              onDismiss={backHint.dismiss}
-              side="right"
-              title={tLayout('backHintTitle')}
-              body={tLayout('backHintBody')}
-            >
-              {(hinting) => (
-                <span
-                  className={cn(
-                    'ml-auto rounded-md transition-shadow',
-                    hinting && 'ring-2 ring-primary ring-offset-2 ring-offset-card'
-                  )}
-                >
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        aria-label={t('openMenu')}
-                      >
-                        <MoreVertical className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      {aiEnabled && vehicle._count.serviceRecords > 0 && (
-                        <DropdownMenuItem onClick={() => setActiveAiPanel('summary')}>
-                          <Sparkles className="mr-2 h-4 w-4" />
-                          {t('aiSummary')}
-                        </DropdownMenuItem>
-                      )}
-                      {aiEnabled && (
-                        <DropdownMenuItem onClick={() => setActiveAiPanel('issues')}>
-                          <AlertTriangle className="mr-2 h-4 w-4" />
-                          {t('commonIssues')}
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem
-                        onClick={handleExportPdf}
-                        disabled={isExporting || vehicle._count.serviceRecords === 0}
-                      >
-                        <Download className="mr-2 h-4 w-4" />
-                        {tServices('exportServiceHistory')}
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => switchLayout('classic', 'menu')}>
-                        <LayoutList className="mr-2 h-4 w-4" />
-                        {tLayout('useClassicMenu')}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      {vehicle.isArchived ? (
-                        <DropdownMenuItem onClick={handleUnarchive}>
-                          <ArchiveRestore className="mr-2 h-4 w-4" />
-                          {t('unarchive')}
-                        </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem onClick={() => setShowArchiveDialog(true)}>
-                          <Archive className="mr-2 h-4 w-4" />
-                          {t('archive')}
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => setShowDeleteDialog(true)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        {t('delete')}
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </span>
-              )}
-            </FeatureHint>
-          </div>
-
-          <div className="mx-1.5 my-3 h-px bg-border" />
-
-          <dl className="grid grid-cols-[minmax(5.25rem,auto)_minmax(0,1fr)] gap-x-4 gap-y-2.5 px-1.5 text-[13px]">
-            <dt className="text-muted-foreground">{t('owner')}</dt>
-            <dd className="min-w-0">
-              {vehicle.customer ? (
-                <span className="flex min-w-0 items-center gap-2">
-                  <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[9px] font-semibold text-muted-foreground">
-                    {initials(vehicle.customer.name)}
-                  </span>
-                  <Link
-                    href={`/customers/${vehicle.customer.id}`}
-                    className="truncate font-medium underline decoration-border underline-offset-4 transition-colors hover:decoration-foreground"
-                  >
-                    {vehicle.customer.name}
-                  </Link>
-                </span>
-              ) : (
-                <span className="text-muted-foreground">{tPlate('noOwner')}</span>
-              )}
-              {vehicle.customer?.company && (
-                <span className="mt-0.5 block truncate text-xs text-muted-foreground">
-                  {vehicle.customer.company}
-                </span>
-              )}
-            </dd>
-
-            {vehicle.customer?.phone && (
-              <>
-                <dt className="text-muted-foreground">{t('phone')}</dt>
-                <dd className="flex min-w-0 items-center gap-1">
-                  <a
-                    href={`tel:${vehicle.customer.phone}`}
-                    className="truncate tabular-nums hover:underline"
-                  >
-                    {vehicle.customer.phone}
-                  </a>
-                  <CopyValue value={vehicle.customer.phone} label={t('phone')} className="-my-1" />
-                </dd>
-              </>
-            )}
-
-            {vehicle.customer?.email && (
-              <>
-                <dt className="text-muted-foreground">{t('email')}</dt>
-                <dd className="flex min-w-0 items-center gap-1">
-                  <a
-                    href={`mailto:${vehicle.customer.email}`}
-                    title={vehicle.customer.email}
-                    className="truncate hover:underline"
-                  >
-                    {vehicle.customer.email}
-                  </a>
-                  <CopyValue value={vehicle.customer.email} label={t('email')} className="-my-1" />
-                </dd>
-              </>
-            )}
-
-            <dt className="text-muted-foreground">
-              {isMarine ? tServices('table.mileageMarine') : tServices('table.mileage')}
-            </dt>
-            <dd className="min-w-0">
-              <span className="tabular-nums">
-                {formatNumber(vehicle.mileage)} {distUnit}
-              </span>
-              {predictionData && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="mt-0.5 block w-fit cursor-help text-xs text-muted-foreground underline decoration-dotted decoration-muted-foreground/50 underline-offset-2">
-                        {t('predictedToday', {
-                          value: formatNumber(predictionData.predictedMileage),
-                          unit: distUnit,
-                        })}
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p className="max-w-xs text-xs">
-                        {t('predictedTooltip')} ({predictionData.confidencePercent}%)
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-              {predictionData?.status && predictionData.maintenanceDismissed ? (
-                <span className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <EyeOff className="h-3 w-3" />
-                  {t('dismissed')}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-5 px-1.5 text-[11px] text-muted-foreground hover:text-foreground"
-                    disabled={isDismissPending}
-                    onClick={handleUndismissMaintenance}
-                  >
-                    {isDismissPending ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <>
-                        <Undo2 className="mr-0.5 h-3 w-3" />
-                        {t('undo')}
-                      </>
-                    )}
-                  </Button>
-                </span>
-              ) : (
-                (predictionData?.status === 'overdue' ||
-                  predictionData?.status === 'approaching') && (
-                  <span className="mt-1 flex items-center gap-1">
-                    <StatusLamp
-                      tone={predictionData.status === 'overdue' ? 'red' : 'amber'}
-                      className="text-xs"
-                    >
-                      {predictionData.status === 'overdue' ? t('serviceOverdue') : t('serviceSoon')}
-                    </StatusLamp>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-5 w-5 text-muted-foreground hover:text-foreground"
-                      disabled={isDismissPending}
-                      onClick={handleDismissMaintenance}
-                      aria-label={t('dismissMaintenance')}
-                    >
-                      {isDismissPending ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                      ) : (
-                        <X className="h-3 w-3" />
-                      )}
-                    </Button>
-                  </span>
-                )
-              )}
-            </dd>
-
-            {vehicle.vin && (
-              <>
-                <dt className="text-muted-foreground">{tPlate('vin')}</dt>
-                <dd className="flex min-w-0 items-center gap-1">
-                  <span className="min-w-0 break-all font-mono text-[11.5px] leading-5">
-                    {vehicle.vin}
-                  </span>
-                  <CopyValue value={vehicle.vin} label={tPlate('vin')} className="-my-1" />
-                </dd>
-              </>
-            )}
-
-            {specs.map(([label, value, mono]) => (
-              <Fragment key={label}>
-                <dt className="text-muted-foreground">{label}</dt>
-                <dd className="flex min-w-0 items-center gap-1">
-                  <span
-                    className={cn('min-w-0 break-words', mono && 'font-mono text-xs leading-5')}
-                  >
-                    {value}
-                  </span>
-                  {mono && value && <CopyValue value={value} label={label} className="-my-1" />}
-                </dd>
-              </Fragment>
-            ))}
-
-            {tireSets.some((set) => set.status === 'stored') && (
-              <>
-                <dt className="text-muted-foreground">{t('tyres')}</dt>
-                <dd className="min-w-0 text-[13px]">
-                  <VehicleTireSets sets={tireSets} />
-                </dd>
-              </>
-            )}
-
-            {vehicle.purchaseDate && (
-              <>
-                <dt className="text-muted-foreground">{t('purchasedOn')}</dt>
-                <dd>{formatDate(new Date(vehicle.purchaseDate))}</dd>
-              </>
-            )}
-
-            <dt className="text-muted-foreground">{t('spent')}</dt>
-            <dd className="min-w-0">
-              <span className="tabular-nums">{formatCurrency(lifetimeSpend, currencyCode)}</span>
-              <span className="ml-1.5 text-xs text-muted-foreground">
-                {t('spentOver', { count: vehicle._count.serviceRecords })}
-              </span>
-            </dd>
-          </dl>
-
-          <div className="mx-1.5 my-3 h-px bg-border" />
-
-          {/* What is still to do: observations nobody has dealt with, reminders not yet due. */}
-          <div className="flex items-center justify-between px-1.5 pb-1">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
-              {t('openItems')}
-            </span>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 text-muted-foreground"
-                  aria-label={t('addOpenItem')}
-                  title={t('addOpenItem')}
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    setEditingFinding(undefined)
-                    setShowFindingForm(true)
-                  }}
-                >
-                  <AlertTriangle className="mr-2 h-4 w-4" />
-                  {tf('addFinding')}
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    setEditingReminder(undefined)
-                    setShowReminderForm(true)
-                  }}
-                >
-                  <Bell className="mr-2 h-4 w-4" />
-                  {tr('addReminder')}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          {openFindings.length === 0 && activeReminders.length === 0 && jobWarnings.length === 0 ? (
-            <p className="px-1.5 pb-1 text-[13px] text-muted-foreground">{t('nothingOpen')}</p>
-          ) : (
-            <ul className="space-y-0.5">
-              {/* A booking that will not work comes first: it has a date. */}
-              {jobWarnings.map((w) => (
-                <li key={w.serviceRecordId}>
-                  <Link
-                    href={`/vehicles/${vehicle.id}/service/${w.serviceRecordId}`}
-                    data-testid="open-item-job-warning"
-                    className="group flex w-full items-start gap-2.5 rounded-lg px-1.5 py-2 text-left transition-colors hover:bg-muted/50"
-                  >
-                    <AlertTriangle
-                      aria-hidden
-                      className="mt-[3px] h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-500"
-                    />
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[13px] font-medium leading-snug">
-                        {warningText.labels(w).join(' · ')}
-                      </span>
-                      <span className="block text-xs text-muted-foreground">
-                        {t('jobWarning.onJob', {
-                          job: w.invoiceNumber || w.title,
-                          date: warningText.day(new Date(w.start)),
-                        })}
-                      </span>
-                    </span>
-                    <ChevronRight
-                      aria-hidden
-                      className="mt-[3px] h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
-                    />
-                  </Link>
-                </li>
-              ))}
-              {openFindings.slice(0, 4).map((f) => (
-                <li key={f.id}>
+          {/* The card keeps its corners and the list scrolls inside it: the
+              scrollbar stops short of the rounded corners and sits a little
+              in from the border, and its space is always kept, so nothing in
+              the panel moves sideways when it appears. */}
+          <div className="contents xl:my-2 xl:mr-1 xl:block xl:min-h-0 xl:flex-1 xl:overflow-y-auto xl:overflow-x-hidden xl:overscroll-contain xl:py-1 xl:pl-3 xl:pr-0.5 xl:[scrollbar-gutter:stable]">
+            <div className="order-1 min-w-0 rounded-xl border bg-card p-3 xl:rounded-none xl:border-0 xl:bg-transparent xl:p-0 xl:order-none">
+              {/* A small photo beside the name: enough to know the car, without
+              pushing who owns it and what is open on it down the panel. */}
+              <div className="flex items-start gap-3 px-1.5 pt-1.5">
+                {vehicle.imageUrl ? (
                   <button
                     type="button"
-                    onClick={() => {
-                      setEditingFinding(f)
-                      setShowFindingForm(true)
-                    }}
-                    className="flex w-full items-start gap-2.5 rounded-lg px-1.5 py-2 text-left transition-colors hover:bg-muted/50"
+                    onClick={() => setShowImage(true)}
+                    aria-label={vehicleName}
+                    className="block h-[4.5rem] w-24 shrink-0 cursor-zoom-in overflow-hidden rounded-lg bg-muted"
                   >
-                    <StatusLamp tone={findingTone(f.severity)} className="mt-[5px]" />
-                    <span className="min-w-0">
-                      <span className="block text-[13px] font-medium leading-snug">
-                        {f.description}
-                      </span>
-                      <span className="block text-xs text-muted-foreground">
-                        {t('observationItem', {
-                          severity: tf(
-                            `severity.${f.severity}` as
-                              | 'severity.urgent'
-                              | 'severity.needs_work'
-                              | 'severity.monitor'
-                          ).toLowerCase(),
-                        })}
-                      </span>
-                    </span>
+                    <img
+                      src={vehicle.imageUrl}
+                      alt={vehicleName}
+                      className="h-full w-full object-cover"
+                    />
                   </button>
-                </li>
-              ))}
-              {activeReminders.slice(0, 3).map((r) => {
-                const urgency = getUrgency(r)
-                return (
-                  <li key={r.id}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setEditingReminder(r)
-                        setShowReminderForm(true)
-                      }}
-                      className="flex w-full items-start gap-2.5 rounded-lg px-1.5 py-2 text-left transition-colors hover:bg-muted/50"
+                ) : vehicle.isArchived ? (
+                  <div className="flex h-[4.5rem] w-24 shrink-0 items-center justify-center rounded-lg bg-muted">
+                    <VehicleIcon className="h-8 w-8 text-muted-foreground/50" strokeWidth={1.25} />
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setShowEditForm(true)}
+                    aria-label={t('addPhoto')}
+                    title={t('addPhoto')}
+                    className="flex h-[4.5rem] w-24 shrink-0 flex-col items-center justify-center gap-1 rounded-lg border border-dashed bg-muted/50 text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground"
+                  >
+                    <Camera className="h-4 w-4" />
+                    <span className="text-[11px] font-medium">{t('addPhoto')}</span>
+                  </button>
+                )}
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  {vehicle.licensePlate && (
+                    <PlateChip
+                      plate={vehicle.licensePlate}
+                      size="md"
+                      copyLabel={tForm('licensePlate')}
+                    />
+                  )}
+                  <h1 className="font-display text-lg font-semibold leading-tight tracking-tight">
+                    {vehicleName}
+                  </h1>
+                </div>
+              </div>
+
+              {(vehicle.soldReportedAt || vehicle.inspectionStatus?.registered === false) && (
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-1.5 pt-3">
+                  {vehicle.soldReportedAt && (
+                    <StatusLamp tone="amber" className="text-xs">
+                      {t('soldReported', { date: formatDate(vehicle.soldReportedAt) })}
+                    </StatusLamp>
+                  )}
+                  {vehicle.inspectionStatus?.registered === false && (
+                    <StatusLamp tone="red" className="text-xs">
+                      {t('notRegistered')}
+                    </StatusLamp>
+                  )}
+                </div>
+              )}
+
+              <div className="flex items-center gap-1.5 px-1.5 pt-3">
+                {!vehicle.isArchived && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="h-8"
+                    onClick={() => setShowEditForm(true)}
+                    aria-label={t('editVehicle')}
+                    title={t('editVehicle')}
+                  >
+                    <Pencil className="mr-1 h-3.5 w-3.5" />
+                    {t('edit')}
+                  </Button>
+                )}
+                {aiEnabled && (
+                  <AskAiSheet
+                    subject={{ type: 'vehicle', id: vehicle.id }}
+                    title={vehicleName}
+                    className="h-8"
+                  />
+                )}
+                {/* Right after somebody tries this page, a one-time pointer at
+                the menu that takes them back to the classic one. */}
+                <FeatureHint
+                  id="vehicle-page.back-to-classic.v1"
+                  eligible
+                  open={backHint.show}
+                  onDismiss={backHint.dismiss}
+                  side="right"
+                  title={tLayout('backHintTitle')}
+                  body={tLayout('backHintBody')}
+                >
+                  {(hinting) => (
+                    <span
+                      className={cn(
+                        'ml-auto rounded-md transition-shadow',
+                        hinting && 'ring-2 ring-primary ring-offset-2 ring-offset-card'
+                      )}
+                    >
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            aria-label={t('openMenu')}
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          {aiEnabled && vehicle._count.serviceRecords > 0 && (
+                            <DropdownMenuItem onClick={() => setActiveAiPanel('summary')}>
+                              <Sparkles className="mr-2 h-4 w-4" />
+                              {t('aiSummary')}
+                            </DropdownMenuItem>
+                          )}
+                          {aiEnabled && (
+                            <DropdownMenuItem onClick={() => setActiveAiPanel('issues')}>
+                              <AlertTriangle className="mr-2 h-4 w-4" />
+                              {t('commonIssues')}
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuItem
+                            onClick={handleExportPdf}
+                            disabled={isExporting || vehicle._count.serviceRecords === 0}
+                          >
+                            <Download className="mr-2 h-4 w-4" />
+                            {tServices('exportServiceHistory')}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => switchLayout('classic', 'menu')}>
+                            <LayoutList className="mr-2 h-4 w-4" />
+                            {tLayout('useClassicMenu')}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          {vehicle.isArchived ? (
+                            <DropdownMenuItem onClick={handleUnarchive}>
+                              <ArchiveRestore className="mr-2 h-4 w-4" />
+                              {t('unarchive')}
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem onClick={() => setShowArchiveDialog(true)}>
+                              <Archive className="mr-2 h-4 w-4" />
+                              {t('archive')}
+                            </DropdownMenuItem>
+                          )}
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            className="text-destructive"
+                            onClick={() => setShowDeleteDialog(true)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            {t('delete')}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </span>
+                  )}
+                </FeatureHint>
+              </div>
+
+              <div className="mx-1.5 my-3 h-px bg-border" />
+
+              {/* What a caller asks first, in one place and always in the same order. */}
+              <h2 className="px-1.5 pb-1.5 text-[13px] font-semibold">{t('glance')}</h2>
+              <dl className="grid grid-cols-[7.75rem_minmax(0,1fr)] gap-x-4 gap-y-2 px-1.5 text-[13px]">
+                <dt className="text-muted-foreground">
+                  {isMarine ? tServices('table.mileageMarine') : tServices('table.mileage')}
+                </dt>
+                <dd className="min-w-0">
+                  <span className="tabular-nums">
+                    {formatNumber(vehicle.mileage)} {distUnit}
+                  </span>
+                  {predictionData && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="mt-0.5 block w-fit cursor-help text-xs text-muted-foreground underline decoration-dotted decoration-muted-foreground/50 underline-offset-2">
+                            {t('predictedToday', {
+                              value: formatNumber(predictionData.predictedMileage),
+                              unit: distUnit,
+                            })}
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="max-w-xs text-xs">
+                            {t('predictedTooltip')} ({predictionData.confidencePercent}%)
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                  {predictionData?.status && predictionData.maintenanceDismissed ? (
+                    <span className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <EyeOff className="h-3 w-3" />
+                      {t('dismissed')}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-5 px-1.5 text-[11px] text-muted-foreground hover:text-foreground"
+                        disabled={isDismissPending}
+                        onClick={handleUndismissMaintenance}
+                      >
+                        {isDismissPending ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Undo2 className="mr-0.5 h-3 w-3" />
+                            {t('undo')}
+                          </>
+                        )}
+                      </Button>
+                    </span>
+                  ) : (
+                    (predictionData?.status === 'overdue' ||
+                      predictionData?.status === 'approaching') && (
+                      <span className="mt-1 flex items-center gap-1">
+                        <StatusLamp
+                          tone={predictionData.status === 'overdue' ? 'red' : 'amber'}
+                          className="text-xs"
+                        >
+                          {predictionData.status === 'overdue'
+                            ? t('serviceOverdue')
+                            : t('serviceSoon')}
+                        </StatusLamp>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-5 w-5 text-muted-foreground hover:text-foreground"
+                          disabled={isDismissPending}
+                          onClick={handleDismissMaintenance}
+                          aria-label={t('dismissMaintenance')}
+                        >
+                          {isDismissPending ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <X className="h-3 w-3" />
+                          )}
+                        </Button>
+                      </span>
+                    )
+                  )}
+                </dd>
+
+                {glance && (
+                  <>
+                    <dt className="text-muted-foreground">{t('lastVisit')}</dt>
+                    <dd className="min-w-0">
+                      {glance.lastVisit ? (
+                        <>
+                          {glance.lastVisitJobId ? (
+                            <Link
+                              href={`/vehicles/${vehicle.id}/service/${glance.lastVisitJobId}`}
+                              className={cn('tabular-nums', RAIL_LINK)}
+                            >
+                              {formatDate(new Date(glance.lastVisit))}
+                            </Link>
+                          ) : (
+                            <span className="tabular-nums">
+                              {formatDate(new Date(glance.lastVisit))}
+                            </span>
+                          )}
+                          <span className="mt-0.5 block text-xs text-muted-foreground">
+                            {numberFormat.relativeTime(
+                              new Date(glance.lastVisit),
+                              new Date(glance.now)
+                            )}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-muted-foreground">–</span>
+                      )}
+                    </dd>
+
+                    <dt className="text-muted-foreground">{t('nextBooking')}</dt>
+                    <dd className="min-w-0 tabular-nums">
+                      {glance.nextBooking && glance.nextBookingJobId ? (
+                        <Link
+                          href={`/vehicles/${vehicle.id}/service/${glance.nextBookingJobId}`}
+                          className={RAIL_LINK}
+                        >
+                          {formatDateTime(new Date(glance.nextBooking))}
+                        </Link>
+                      ) : (
+                        <span className="text-muted-foreground">–</span>
+                      )}
+                    </dd>
+                  </>
+                )}
+
+                {vehicle.inspectionStatus?.dueAt && (
+                  <>
+                    <dt className="text-muted-foreground">{t('inspectionDueLabel')}</dt>
+                    <dd
+                      className="min-w-0"
+                      title={
+                        vehicle.inspectionStatus.checkedAt
+                          ? t('inspectionCheckedAt', {
+                              date: formatDate(vehicle.inspectionStatus.checkedAt),
+                            })
+                          : undefined
+                      }
                     >
                       <StatusLamp
-                        tone={
-                          urgency === 'overdue' ? 'red' : urgency === 'due-soon' ? 'amber' : 'slate'
-                        }
-                        className="mt-[5px]"
-                      />
-                      <span className="min-w-0">
-                        <span className="block text-[13px] font-medium leading-snug">
-                          {r.title}
+                        tone={inspectionTone(vehicle.inspectionStatus.dueAt)}
+                        className="text-[13px] font-normal text-foreground"
+                      >
+                        <span className="tabular-nums">
+                          {formatDate(vehicle.inspectionStatus.dueAt)}
                         </span>
-                        <span className="block text-xs text-muted-foreground">
-                          {t('reminderItem', {
-                            due: r.dueDate
-                              ? tr('due', {
-                                  date: r.hasDueTime
-                                    ? formatDateTime(new Date(r.dueDate))
-                                    : formatDate(new Date(r.dueDate)),
-                                })
-                              : r.dueMileage
-                                ? tr('dueAt', {
-                                    mileage: formatNumber(r.dueMileage),
-                                    unit: distUnit,
-                                  })
-                                : '',
-                          })}
-                        </span>
-                      </span>
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
-          )}
-          <div className="mt-1 flex items-center gap-4 border-t px-1.5 pt-2.5">
-            <button
-              type="button"
-              onClick={() => handleTabChange('findings')}
-              className={cn(
-                'inline-flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-foreground',
-                activeTab === 'findings' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              {tf('sectionTitle')}
-              <span className="tabular-nums opacity-70">{vehicle._count.findings}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleTabChange('reminders')}
-              className={cn(
-                'inline-flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-foreground',
-                activeTab === 'reminders' ? 'text-foreground' : 'text-muted-foreground'
-              )}
-            >
-              {t('tabs.reminders')}
-              <span
-                className={cn(
-                  'tabular-nums',
-                  overdueCount > 0 ? 'font-semibold text-destructive' : 'opacity-70'
+                      </StatusLamp>
+                    </dd>
+                  </>
                 )}
-              >
-                {overdueCount || vehicle._count.reminders}
-              </span>
-            </button>
+
+                {glance && (
+                  <>
+                    <dt className="text-muted-foreground">{tHeader('unpaid')}</dt>
+                    <dd
+                      className={cn(
+                        'min-w-0 tabular-nums',
+                        glance.unpaid > 0
+                          ? 'font-semibold text-destructive'
+                          : 'text-muted-foreground'
+                      )}
+                    >
+                      {owedJobIds.length === 1 ? (
+                        <Link
+                          href={`/vehicles/${vehicle.id}/service/${owedJobIds[0]}`}
+                          className={cn(
+                            RAIL_LINK,
+                            'decoration-destructive/40 hover:decoration-destructive'
+                          )}
+                        >
+                          {formatCurrency(glance.unpaid, currencyCode)}
+                        </Link>
+                      ) : (
+                        formatCurrency(glance.unpaid, currencyCode)
+                      )}
+                    </dd>
+                  </>
+                )}
+
+                <dt className="text-muted-foreground">{t('spent')}</dt>
+                <dd className="min-w-0">
+                  <span className="tabular-nums">
+                    {formatCurrency(lifetimeSpend, currencyCode)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleTabChange('services')}
+                    className={cn(
+                      'ml-1.5 text-xs text-muted-foreground hover:text-foreground',
+                      RAIL_LINK
+                    )}
+                  >
+                    {t('spentOver', { count: vehicle._count.serviceRecords })}
+                  </button>
+                </dd>
+              </dl>
+            </div>
+
+            <div className="order-3 min-w-0 rounded-xl border bg-card p-3 xl:rounded-none xl:border-0 xl:bg-transparent xl:p-0 xl:order-none">
+              <div className="mx-1.5 my-3 hidden h-px bg-border xl:block" />
+
+              <h2 className="px-1.5 pb-1.5 text-[13px] font-semibold">{t('owner')}</h2>
+              <dl className="grid grid-cols-[7.75rem_minmax(0,1fr)] gap-x-4 gap-y-2 px-1.5 text-[13px]">
+                <dd className="col-span-2 min-w-0">
+                  {vehicle.customer ? (
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[9px] font-semibold text-muted-foreground">
+                        {initials(vehicle.customer.name)}
+                      </span>
+                      <Link
+                        href={`/customers/${vehicle.customer.id}`}
+                        className={cn('truncate font-medium', RAIL_LINK)}
+                      >
+                        {vehicle.customer.name}
+                      </Link>
+                    </span>
+                  ) : (
+                    <span className="text-muted-foreground">{tPlate('noOwner')}</span>
+                  )}
+                  {vehicle.customer?.company && (
+                    <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                      {vehicle.customer.company}
+                    </span>
+                  )}
+                </dd>
+
+                {vehicle.customer?.phone && (
+                  <>
+                    <dt className="text-muted-foreground">{t('phone')}</dt>
+                    <dd className="flex min-w-0 items-center gap-1">
+                      <a
+                        href={`tel:${vehicle.customer.phone}`}
+                        className="truncate tabular-nums hover:underline"
+                      >
+                        {vehicle.customer.phone}
+                      </a>
+                      <CopyValue
+                        value={vehicle.customer.phone}
+                        label={t('phone')}
+                        className="-my-1"
+                      />
+                    </dd>
+                  </>
+                )}
+
+                {vehicle.customer?.email && (
+                  <>
+                    <dt className="text-muted-foreground">{t('email')}</dt>
+                    <dd className="flex min-w-0 items-center gap-1">
+                      <a
+                        href={`mailto:${vehicle.customer.email}`}
+                        title={vehicle.customer.email}
+                        className="truncate hover:underline"
+                      >
+                        {vehicle.customer.email}
+                      </a>
+                      <CopyValue
+                        value={vehicle.customer.email}
+                        label={t('email')}
+                        className="-my-1"
+                      />
+                    </dd>
+                  </>
+                )}
+
+                {glance && glance.otherVehicles > 0 && vehicle.customer && (
+                  <dd className="col-span-2">
+                    <Link
+                      href={`/customers/${vehicle.customer.id}`}
+                      className={cn(
+                        'text-xs text-muted-foreground hover:text-foreground',
+                        RAIL_LINK
+                      )}
+                    >
+                      {t(isMarine ? 'otherVehiclesMarine' : 'otherVehicles', {
+                        count: glance.otherVehicles,
+                      })}
+                    </Link>
+                  </dd>
+                )}
+              </dl>
+
+              {(vehicle.vin || specs.length > 0 || vehicle.purchaseDate || tireSets.length > 0) && (
+                <>
+                  <div className="mx-1.5 my-3 h-px bg-border" />
+                  <h2 className="px-1.5 pb-1.5 text-[13px] font-semibold">{t('vehicleFacts')}</h2>
+                  <dl className="grid grid-cols-[7.75rem_minmax(0,1fr)] gap-x-4 gap-y-2 px-1.5 text-[13px]">
+                    {vehicle.vin && (
+                      <>
+                        <dt className="text-muted-foreground">{tPlate('vin')}</dt>
+                        <dd className="flex min-w-0 items-center gap-1">
+                          <span className="min-w-0 break-all font-mono text-[11.5px] leading-5">
+                            {vehicle.vin}
+                          </span>
+                          <CopyValue value={vehicle.vin} label={tPlate('vin')} className="-my-1" />
+                        </dd>
+                      </>
+                    )}
+
+                    {specs.map(([label, value, mono]) => (
+                      <Fragment key={label}>
+                        <dt className="text-muted-foreground">{label}</dt>
+                        <dd className="flex min-w-0 items-center gap-1">
+                          <span
+                            className={cn(
+                              'min-w-0 break-words',
+                              mono && 'font-mono text-xs leading-5'
+                            )}
+                          >
+                            {value}
+                          </span>
+                          {mono && value && (
+                            <CopyValue value={value} label={label} className="-my-1" />
+                          )}
+                        </dd>
+                      </Fragment>
+                    ))}
+
+                    {tireSets.some((set) => set.status === 'stored') && (
+                      <>
+                        <dt className="text-muted-foreground">{t('tyres')}</dt>
+                        <dd className="min-w-0 text-[13px]">
+                          <VehicleTireSets sets={tireSets} />
+                        </dd>
+                      </>
+                    )}
+
+                    {vehicle.purchaseDate && (
+                      <>
+                        <dt className="text-muted-foreground">{t('purchasedOn')}</dt>
+                        <dd>{formatDate(new Date(vehicle.purchaseDate))}</dd>
+                      </>
+                    )}
+                  </dl>
+                </>
+              )}
+
+              <div className="mx-1.5 my-3 h-px bg-border" />
+
+              {/* What is still to do: observations nobody has dealt with, reminders not yet due. */}
+              <div className="flex items-center justify-between px-1.5 pb-1">
+                <h2 className="text-[13px] font-semibold">{t('openItems')}</h2>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="-mr-1.5 h-7 gap-1 px-2 text-xs text-muted-foreground"
+                    >
+                      <Plus className="h-3.5 w-3.5" />
+                      {t('addOpenItem')}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditingFinding(undefined)
+                        setShowFindingForm(true)
+                      }}
+                    >
+                      <AlertTriangle className="mr-2 h-4 w-4" />
+                      {tf('addFinding')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditingReminder(undefined)
+                        setShowReminderForm(true)
+                      }}
+                    >
+                      <Bell className="mr-2 h-4 w-4" />
+                      {tr('addReminder')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              {openFindings.length === 0 &&
+              activeReminders.length === 0 &&
+              waitingQuotes.length === 0 &&
+              openInspections.length === 0 ? (
+                <p className="px-1.5 pb-1 text-[13px] text-muted-foreground">{t('nothingOpen')}</p>
+              ) : (
+                <ul className="space-y-0.5">
+                  {/* What is waiting on somebody: a quote not answered, a check not finished. */}
+                  {waitingQuotes.map((q) => (
+                    <li key={q.id}>
+                      <Link
+                        href={`/quotes/${q.id}`}
+                        className="flex w-full items-start gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors hover:bg-muted/50"
+                      >
+                        <FileText
+                          aria-hidden
+                          className="mt-[3px] h-3.5 w-3.5 shrink-0 text-amber-700 dark:text-amber-400"
+                        />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[13px] font-medium leading-snug">
+                            {q.title}
+                          </span>
+                          <span className="block text-xs text-muted-foreground">
+                            {[
+                              t('feed.quote'),
+                              q.quoteNumber,
+                              quoteStatusLabel(q.status, tQuoteStatus),
+                            ]
+                              .filter(Boolean)
+                              .join(' · ')}
+                          </span>
+                        </span>
+                        {q.totalAmount > 0 && (
+                          <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
+                            {formatCurrency(q.totalAmount, currencyCode)}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                  {openInspections.map((insp) => (
+                    <li key={insp.id}>
+                      <Link
+                        href={`/inspections/${insp.id}`}
+                        className="flex w-full items-start gap-2.5 rounded-lg px-1.5 py-1.5 text-left transition-colors hover:bg-muted/50"
+                      >
+                        <ClipboardCheck
+                          aria-hidden
+                          className="mt-[3px] h-3.5 w-3.5 shrink-0 text-teal-700 dark:text-teal-400"
+                        />
+                        <span className="min-w-0">
+                          <span className="block truncate text-[13px] font-medium leading-snug">
+                            {insp.template.name}
+                          </span>
+                          <span className="block text-xs text-muted-foreground">
+                            {t('tabs.inspections')} · {t('feed.inspectionOpen')}
+                          </span>
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                  {openFindings.slice(0, 4).map((f) => (
+                    <li key={f.id}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditingFinding(f)
+                          setShowFindingForm(true)
+                        }}
+                        className="flex w-full items-start gap-2.5 rounded-lg px-1.5 py-2 text-left transition-colors hover:bg-muted/50"
+                      >
+                        <StatusLamp tone={findingTone(f.severity)} className="mt-[5px]" />
+                        <span className="min-w-0">
+                          <span className="block text-[13px] font-medium leading-snug">
+                            {f.description}
+                          </span>
+                          <span className="block text-xs text-muted-foreground">
+                            {t('observationItem', {
+                              severity: tf(
+                                `severity.${f.severity}` as
+                                  | 'severity.urgent'
+                                  | 'severity.needs_work'
+                                  | 'severity.monitor'
+                              ).toLowerCase(),
+                            })}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
+                  ))}
+                  {activeReminders.slice(0, 3).map((r) => {
+                    const urgency = getUrgency(r)
+                    return (
+                      <li key={r.id}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingReminder(r)
+                            setShowReminderForm(true)
+                          }}
+                          className="flex w-full items-start gap-2.5 rounded-lg px-1.5 py-2 text-left transition-colors hover:bg-muted/50"
+                        >
+                          <StatusLamp
+                            tone={
+                              urgency === 'overdue'
+                                ? 'red'
+                                : urgency === 'due-soon'
+                                  ? 'amber'
+                                  : 'slate'
+                            }
+                            className="mt-[5px]"
+                          />
+                          <span className="min-w-0">
+                            <span className="block text-[13px] font-medium leading-snug">
+                              {r.title}
+                            </span>
+                            <span className="block text-xs text-muted-foreground">
+                              {t('reminderItem', {
+                                due: r.dueDate
+                                  ? tr('due', {
+                                      date: r.hasDueTime
+                                        ? formatDateTime(new Date(r.dueDate))
+                                        : formatDate(new Date(r.dueDate)),
+                                    })
+                                  : r.dueMileage
+                                    ? tr('dueAt', {
+                                        mileage: formatNumber(r.dueMileage),
+                                        unit: distUnit,
+                                      })
+                                    : '',
+                              })}
+                            </span>
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+              <div className="mt-1 flex items-center gap-4 border-t px-1.5 pt-2.5">
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('findings')}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-foreground',
+                    activeTab === 'findings' ? 'text-foreground' : 'text-muted-foreground'
+                  )}
+                >
+                  {tf('sectionTitle')}
+                  <span className="tabular-nums opacity-70">{vehicle._count.findings}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('reminders')}
+                  className={cn(
+                    'inline-flex items-center gap-1.5 text-xs font-medium transition-colors hover:text-foreground',
+                    activeTab === 'reminders' ? 'text-foreground' : 'text-muted-foreground'
+                  )}
+                >
+                  {t('tabs.reminders')}
+                  <span
+                    className={cn(
+                      'tabular-nums',
+                      overdueCount > 0 ? 'font-semibold text-destructive' : 'opacity-70'
+                    )}
+                  >
+                    {overdueCount || vehicle._count.reminders}
+                  </span>
+                </button>
+              </div>
+
+              <div className="mx-1.5 my-3 h-px bg-border" />
+
+              {/* Every note about the car, the pinned ones first. A short one is
+              a fact and reads as one; a longer one shows how it starts. */}
+              <div className="flex items-center justify-between px-1.5 pb-1">
+                <h2 className="text-[13px] font-semibold">
+                  {t('tabs.notes')}
+                  {railNotes.length > 0 && (
+                    <span className="ml-1.5 text-xs font-normal tabular-nums text-muted-foreground">
+                      {vehicle._count.notes}
+                    </span>
+                  )}
+                </h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="-mr-1.5 h-7 gap-1 px-2 text-xs text-muted-foreground"
+                  onClick={() => {
+                    setEditingNote(undefined)
+                    setShowNoteForm(true)
+                  }}
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  {t('addOpenItem')}
+                </Button>
+              </div>
+              {railNotes.length === 0 ? (
+                <p className="px-1.5 pb-1 text-[13px] text-muted-foreground">{tNotes('empty')}</p>
+              ) : (
+                <ul className="space-y-0.5">
+                  {railNotes.slice(0, NOTES_IN_RAIL).map((note) => {
+                    const text = plainText(note.content)
+                    const fact = text.length > 0 && text.length <= 28 && !note.isPinned
+                    return (
+                      <li key={note.id}>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedNote(note)}
+                          className={cn(
+                            'w-full rounded-lg px-1.5 py-1.5 text-left text-[13px] transition-colors hover:bg-muted/50',
+                            !fact && 'flex gap-2.5',
+                            fact
+                              ? 'grid grid-cols-[7.75rem_minmax(0,1fr)] items-baseline gap-x-4'
+                              : 'items-start'
+                          )}
+                        >
+                          {fact ? (
+                            <>
+                              <span className="min-w-0 truncate text-muted-foreground">
+                                {note.title}
+                              </span>
+                              <span className="min-w-0 break-words">{text}</span>
+                            </>
+                          ) : (
+                            <>
+                              {note.isPinned && (
+                                <Pin
+                                  aria-hidden
+                                  className="mt-[3px] h-3.5 w-3.5 shrink-0 text-primary"
+                                />
+                              )}
+                              <span className="min-w-0">
+                                <span className="block font-medium leading-snug">{note.title}</span>
+                                {text && (
+                                  <span className="line-clamp-2 text-xs leading-snug text-muted-foreground">
+                                    {text}
+                                  </span>
+                                )}
+                              </span>
+                            </>
+                          )}
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              )}
+              {railNotes.length > NOTES_IN_RAIL && (
+                <button
+                  type="button"
+                  onClick={() => handleTabChange('notes')}
+                  className="mt-1 px-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t('viewAll')}
+                </button>
+              )}
+            </div>
           </div>
         </aside>
 
         {/* The vehicle's history, and the lists that hang off it. */}
-        <section className="flex min-w-0 flex-col gap-4 xl:min-h-0">
+        <section className="order-2 flex min-w-0 flex-col gap-4 xl:order-none xl:min-h-0">
+          {/* Narrower than the two-column layout the chips get a line of
+              their own, so the search field cannot squeeze them down to one. */}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="scrollbar-none -mx-1 flex min-w-0 flex-1 items-center gap-1.5 overflow-x-auto px-1 py-0.5">
+            <div className="scrollbar-none -mx-1 flex w-[calc(100%+0.5rem)] min-w-0 shrink-0 items-center gap-1.5 overflow-x-auto px-1 py-0.5 xl:w-auto xl:flex-1 xl:shrink">
               {views.map((view) => (
                 <button
                   key={view.id}
@@ -1419,33 +1785,17 @@ export function VehicleDetailClient({
                 </button>
               )}
             </div>
-            {isFeedView && !searchOpen && (
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                aria-label={t('feed.search')}
-                title={t('feed.search')}
-                onClick={() => setSearchOpen(true)}
+            {isFeedView && (
+              <form
+                onSubmit={commitSearch}
+                className="relative min-w-40 flex-1 xl:w-56 xl:flex-none"
               >
-                <Search className="h-3.5 w-3.5" />
-              </Button>
-            )}
-            {isFeedView && searchOpen && (
-              <form onSubmit={commitSearch} className="relative w-full sm:w-56">
                 <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input
-                  autoFocus={!serviceSearch}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  onBlur={() => {
-                    if (!searchInput) setSearchOpen(false)
-                  }}
                   onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      setSearchInput('')
-                      setSearchOpen(false)
-                    }
+                    if (e.key === 'Escape') setSearchInput('')
                   }}
                   placeholder={t('feed.search')}
                   aria-label={t('feed.search')}
@@ -1457,10 +1807,7 @@ export function VehicleDetailClient({
                   searchInput && (
                     <button
                       type="button"
-                      onClick={() => {
-                        setSearchInput('')
-                        setSearchOpen(false)
-                      }}
+                      onClick={() => setSearchInput('')}
                       className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-0.5 text-muted-foreground hover:text-foreground"
                       aria-label={tc('cancel')}
                     >
@@ -1470,60 +1817,66 @@ export function VehicleDetailClient({
                 )}
               </form>
             )}
+            {/* One place to add from, and it always adds what the list in
+                front of you holds: a work order over the history, a quote
+                over the quotes, a note over the notes. Everything else that
+                can be added waits behind the arrow, in the same order on
+                every tab. */}
             {!vehicle.isArchived && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" className="h-8">
-                    <Plus className="mr-1 h-4 w-4" />
-                    {t('newMenu')}
-                    <ChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-48">
-                  <DropdownMenuItem asChild>
-                    <Link href={`/vehicles/${vehicle.id}/service/new`}>
-                      <Wrench className="mr-2 h-4 w-4" />
-                      {t('newWorkOrder')}
+              <ButtonGroup className="shrink-0">
+                {primaryAdder.href ? (
+                  <Button size="sm" className="h-8" asChild>
+                    <Link href={primaryAdder.href}>
+                      <Plus className="mr-1 h-4 w-4" />
+                      {primaryAdder.label}
                     </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowNewQuoteDialog(true)}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    {tq('newQuote')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowNewInspection(true)}>
-                    <ClipboardCheck className="mr-2 h-4 w-4" />
-                    {ti('newInspection')}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditingNote(undefined)
-                      setShowNoteForm(true)
-                    }}
-                  >
-                    <StickyNote className="mr-2 h-4 w-4" />
-                    {tNotes('addNote')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditingFinding(undefined)
-                      setShowFindingForm(true)
-                    }}
-                  >
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    {tf('addFinding')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditingReminder(undefined)
-                      setShowReminderForm(true)
-                    }}
-                  >
-                    <Bell className="mr-2 h-4 w-4" />
-                    {tr('addReminder')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  </Button>
+                ) : (
+                  <Button size="sm" className="h-8" onClick={primaryAdder.run}>
+                    <Plus className="mr-1 h-4 w-4" />
+                    {primaryAdder.label}
+                  </Button>
+                )}
+                <ButtonGroupSeparator className="bg-primary-foreground/25" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="h-8 w-8 px-0"
+                      aria-label={t('moreToAdd')}
+                      title={t('moreToAdd')}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="min-w-48">
+                    {otherAdders.map((adder, i) => {
+                      const Icon = adder.icon
+                      return (
+                        <Fragment key={adder.id}>
+                          {/* Documents first, then the things kept about the car. */}
+                          {i > 0 && adder.group !== otherAdders[i - 1].group && (
+                            <DropdownMenuSeparator />
+                          )}
+                          {adder.href ? (
+                            <DropdownMenuItem asChild>
+                              <Link href={adder.href}>
+                                <Icon className="mr-2 h-4 w-4" />
+                                {adder.label}
+                              </Link>
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem onClick={adder.run}>
+                              <Icon className="mr-2 h-4 w-4" />
+                              {adder.label}
+                            </DropdownMenuItem>
+                          )}
+                        </Fragment>
+                      )
+                    })}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </ButtonGroup>
             )}
           </div>
 
@@ -1817,12 +2170,14 @@ export function VehicleDetailClient({
                 workOrders={paginatedServices.records}
                 quotes={quotes}
                 inspections={inspections ?? []}
-                notes={feedNotes ?? paginatedNotes.records}
                 distUnit={distUnit}
+                readingLabel={
+                  isMarine ? tServices('table.mileageMarine') : tServices('table.mileage')
+                }
+                owed={glance?.owed}
                 currencyCode={currencyCode}
                 vehicleMileage={vehicle.mileage}
                 jobWarnings={jobWarnings}
-                onSelectNote={setSelectedNote}
               />
             )}
 
@@ -1834,10 +2189,6 @@ export function VehicleDetailClient({
                 page={paginatedFindings.page}
                 pageSize={paginatedFindings.pageSize}
                 totalPages={paginatedFindings.totalPages}
-                onAddFinding={() => {
-                  setEditingFinding(undefined)
-                  setShowFindingForm(true)
-                }}
                 onEditFinding={(f) => {
                   setEditingFinding(f)
                   setShowFindingForm(true)
@@ -1857,10 +2208,6 @@ export function VehicleDetailClient({
                 pageSize={paginatedNotes.pageSize}
                 totalPages={paginatedNotes.totalPages}
                 onSelectNote={setSelectedNote}
-                onAddNote={() => {
-                  setEditingNote(undefined)
-                  setShowNoteForm(true)
-                }}
                 onTogglePin={handleTogglePin}
                 onDeleteNote={handleDeleteNote}
               />
@@ -1884,19 +2231,6 @@ export function VehicleDetailClient({
                       </button>
                     ))}
                   </div>
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setEditingReminder(undefined)
-                      setShowReminderForm(true)
-                    }}
-                    aria-label={tr('addReminder')}
-                    title={tr('addReminder')}
-                    className="h-9 w-9 shrink-0 p-0 md:h-8 md:w-auto md:px-3"
-                  >
-                    <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-                    <span className="hidden md:inline">{tr('addReminder')}</span>
-                  </Button>
                 </div>
 
                 {filteredReminders.length === 0 ? (

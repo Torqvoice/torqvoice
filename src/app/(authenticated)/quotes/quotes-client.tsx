@@ -19,6 +19,7 @@ import {
 } from '@/features/quotes/Lib/quoteStatus'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -92,16 +93,6 @@ const statusTitleKeys: Record<ListStatus<'quotes'>, string> = {
 }
 
 const statusTabs = LIST_STATUS_TABS.quotes.map((key) => ({ key, titleKey: statusTitleKeys[key] }))
-
-const statusColors: Record<string, string> = {
-  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
-  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
-  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-  changes_requested: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
-}
 
 export function QuotesClient({
   data,
@@ -308,9 +299,9 @@ export function QuotesClient({
                   </div>
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                  <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
+                  <StatusBadge kind="quote" status={q.status}>
                     {quoteStatusLabel(q.status, tStatus)}
-                  </Badge>
+                  </StatusBadge>
                   {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
                   <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
                 </div>
@@ -440,14 +431,15 @@ export function QuotesClient({
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant="outline"
+                        <StatusBadge
                           // Wraps rather than spilling into the date column
                           // when a language's word is wider than the cell.
-                          className={`max-w-full whitespace-normal text-center text-xs leading-tight ${statusColors[q.status] || ''}`}
+                          kind="quote"
+                          status={q.status}
+                          className="max-w-full whitespace-normal text-center leading-tight"
                         >
                           {quoteStatusLabel(q.status, tStatus)}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell className="font-mono text-xs">
                         {formatDate(new Date(q.createdAt))}

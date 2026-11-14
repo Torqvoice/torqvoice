@@ -11,6 +11,7 @@ import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
 import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
 import { getVehicleJobWarnings } from '@/features/vehicles/Actions/getVehicleJobWarnings'
+import { getVehicleGlance } from '@/features/vehicles/Actions/getVehicleGlance'
 import { getFeatures } from '@/lib/features'
 import { findSafetyConnection } from '@/features/integrations/Lib/vehicle-safety'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
@@ -18,7 +19,10 @@ import { getAuthContext } from '@/lib/get-auth-context'
 import { getTireSetsForVehicle } from '@/features/tire-hotel/Actions/tireJobActions'
 import { VehicleDetailClient } from '../vehicle-detail-client'
 import { VehicleDetailClassic } from '../_classic/vehicle-detail-classic'
-import { TryNewVehiclePageBanner } from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
+import {
+  TryNewVehiclePageBanner,
+  VehiclePageViewed,
+} from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
 import { resolveVehiclePageLayout } from '@/lib/vehicle-page-layout.server'
 import { PageHeader } from '@/components/page-header'
 import { redirect } from 'next/navigation'
@@ -66,7 +70,7 @@ export default async function VehicleDetailPage({
   const auth = getAuthContext()
   const layoutChoice = auth.then((ctx) => resolveVehiclePageLayout(ctx?.organizationId))
   const access = await getViewerAccess()
-  const layout = await layoutChoice
+  const { layout, chosen: layoutChosen } = await layoutChoice
   const classic = layout === 'classic'
   const S = PermissionSubject
 
@@ -85,6 +89,7 @@ export default async function VehicleDetailPage({
     authContext,
     jobWarningsResult,
     feedNotesResult,
+    glanceResult,
   ] = await Promise.all([
     getVehicle(id),
     // The new page shows the vehicle's history as one feed, so it asks for all
@@ -113,6 +118,9 @@ export default async function VehicleDetailPage({
     // The feed searches and shows every note, newest first, so it is not
     // handed the notes table's current page; the table keeps its paging.
     classic ? null : getNotesPaginated(id, { page: 1, pageSize: FEED_NOTES }),
+    // Last visit, next booking and what is owed, over every work order and
+    // not only the ones a search has left in the list.
+    classic ? null : readIfAllowed(access, S.SERVICES, () => getVehicleGlance(id)),
   ])
 
   if (!result.success || !result.data) {
@@ -248,6 +256,9 @@ export default async function VehicleDetailPage({
   return (
     <>
       <PageHeader />
+      {/* Which layout each visit got, so the classic page can be retired
+          once nobody is left on it. */}
+      <VehiclePageViewed vehicleId={result.data.id} layout={layout} chosen={layoutChosen} />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         {classic ? (
           <>
@@ -260,6 +271,7 @@ export default async function VehicleDetailPage({
             jobWarnings={
               jobWarningsResult?.success && jobWarningsResult.data ? jobWarningsResult.data : []
             }
+            glance={glanceResult?.success && glanceResult.data ? glanceResult.data : null}
             feedNotes={
               feedNotesResult?.success && feedNotesResult.data
                 ? feedNotesResult.data.records

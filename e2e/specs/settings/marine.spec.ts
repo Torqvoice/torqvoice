@@ -192,8 +192,8 @@ test.describe('a workshop that picks Marine', () => {
   test('counts a vessel in engine hours, from its page to its invoice', async ({ page }) => {
     vesselUrl = await seededVehicleUrl(page, VESSEL.model)
     await settle(page)
-    await expect(page.getByText('1,234', { exact: true }).first()).toBeVisible()
-    await expect(page.getByText('hrs', { exact: true }).first()).toBeVisible()
+    // The reading and its unit, as the vehicle's overview says them.
+    await expect(page.getByText('1,234 hrs', { exact: true }).first()).toBeVisible()
 
     const jobUrl = await newWorkOrder(page, vesselUrl, `E2E Vessel service ${stamp}`)
     const hours = page.locator('#mileage')

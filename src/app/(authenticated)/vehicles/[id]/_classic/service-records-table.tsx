@@ -34,7 +34,8 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
-import { typeColors, statusColors } from '@/lib/table-utils'
+import { typeColors } from '@/lib/table-utils'
+import { StatusBadge } from '@/components/status-badge'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
@@ -297,12 +298,9 @@ export function ServiceRecordsTable({
                   <Badge variant="outline" className={`text-xs ${typeColors[record.type] || ''}`}>
                     {serviceLabel.type(record.type)}
                   </Badge>
-                  <Badge
-                    variant="outline"
-                    className={`text-xs ${statusColors[record.status] || ''}`}
-                  >
+                  <StatusBadge kind="workOrder" status={record.status}>
                     {serviceLabel.status(record.status)}
-                  </Badge>
+                  </StatusBadge>
                   {warranty !== 'none' && <WarrantyBadge status={warranty} t={t} />}
                 </div>
 
@@ -400,12 +398,9 @@ export function ServiceRecordsTable({
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`text-xs ${statusColors[record.status] || ''}`}
-                          >
+                          <StatusBadge kind="workOrder" status={record.status}>
                             {serviceLabel.status(record.status)}
-                          </Badge>
+                          </StatusBadge>
                         </TableCell>
                         <TableCell className="text-right font-mono text-xs">
                           {record.mileage ? record.mileage.toLocaleString() : '-'}

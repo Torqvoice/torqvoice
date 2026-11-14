@@ -1,5 +1,6 @@
 'use client'
 
+import { statusBadgeClass } from '@/lib/status-colors'
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -257,7 +258,9 @@ export function ModernHero({
                 </h1>
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span
-                    className={cn(pill, 'border-primary bg-primary text-primary-foreground')}
+                    // The status's own colour, the one it has in every list.
+                    className={cn(pill, statusBadgeClass('workOrder', status))}
+                    data-status={status}
                     data-testid="service-status"
                   >
                     {statusMessageKeys[status]

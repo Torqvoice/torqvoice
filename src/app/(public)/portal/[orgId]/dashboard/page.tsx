@@ -1,4 +1,5 @@
 import { PortalShell } from '@/features/portal/Components/PortalShell'
+import { StatusBadge } from '@/components/status-badge'
 import { getPortalDashboard, getPortalOpeningHours } from '@/features/portal/Actions/portalActions'
 import { PortalOpeningHours } from '@/features/portal/Components/PortalOpeningHours'
 import { AppCard } from '@/components/app-card'
@@ -205,9 +206,9 @@ export default async function PortalDashboardPage({
                       </p>
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      <Badge variant="outline" className="text-xs">
+                      <StatusBadge kind="quote" status={q.status}>
                         {quoteStatusLabel(q.status, tQuoteStatus)}
-                      </Badge>
+                      </StatusBadge>
                       {q.publicToken && (
                         <Link
                           href={`/share/quote/${orgId}/${q.publicToken}`}

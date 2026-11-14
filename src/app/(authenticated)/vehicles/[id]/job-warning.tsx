@@ -2,13 +2,11 @@
 
 import Link from 'next/link'
 import { useMemo } from 'react'
-import { AlertTriangle, ChevronRight } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 import { useFormatter, useTranslations } from 'next-intl'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { useDateSettings } from '@/components/date-settings-context'
 import { awayEdges } from '@/features/workshop-calendar/Lib/format'
 import type { VehicleJobWarning } from '@/features/vehicles/Lib/vehicleJobWarnings'
-import { cn } from '@/lib/utils'
 
 /**
  * The words for a job's booking problems. The details are the work order's
@@ -38,22 +36,6 @@ export function useJobWarningText() {
       format.dateTime(at, { hour: '2-digit', minute: '2-digit', timeZone })
     const reason = (stored: string) =>
       tCal.has(`reasons.${stored}`) ? tCal(`reasons.${stored}`) : stored
-
-    /** Each kind of problem as a few words, the most pressing first. */
-    const labels = (w: VehicleJobWarning): string[] => {
-      const out: string[] = []
-      if (w.away.length > 0) {
-        const people = [...new Set(w.away.flatMap((a) => a.people))]
-        out.push(
-          people.length > 0
-            ? t('away', { count: people.length, names: people.join(', ') })
-            : tCal('schedule.awayHeading')
-        )
-      }
-      if (w.clashes.length > 0) out.push(t('clash'))
-      if (w.closures.length > 0 || w.closedWeekday) out.push(t('closed'))
-      return out
-    }
 
     /** One sentence per problem, as the work order words it. */
     const lines = (w: VehicleJobWarning): string[] => {
@@ -85,101 +67,33 @@ export function useJobWarningText() {
       return out
     }
 
-    return { labels, lines, day, heading: t('heading'), fix: t('fix') }
+    return { lines, heading: t('heading') }
   }, [t, tCal, tSchedule, format, timezone])
 }
 
 /**
- * A job's booking problem, in the line that names the job: the first problem
- * in a few amber words, and every detail on hover. Given an `href` it is a
- * link to the job, for rows where the rest of the line is one already; inside
- * a link it is plain text, the surrounding link doing the opening.
+ * A job's booking problems on the job's own row, in the work order's own
+ * words: every problem on one amber line, cut short where the row runs out
+ * and whole on hover. Like the row around it, it opens the job to fix it.
  */
-export function JobWarningChip({
-  warning,
-  href,
-  className,
-}: {
-  warning: VehicleJobWarning
-  href?: string
-  className?: string
-}) {
+export function JobWarningLine({ warning, href }: { warning: VehicleJobWarning; href: string }) {
   const text = useJobWarningText()
-  const labels = text.labels(warning)
-  const chip = cn(
-    'inline-flex min-w-0 max-w-full items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-1.5 py-px text-[11.5px] font-semibold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300',
-    href && 'relative z-10 transition-colors hover:bg-amber-100 dark:hover:bg-amber-950/70',
-    className
-  )
-  const body = (
-    <>
-      <AlertTriangle aria-hidden className="h-3 w-3 shrink-0" />
-      <span className="truncate">{labels[0]}</span>
-      {labels.length > 1 && <span className="shrink-0 opacity-75">+{labels.length - 1}</span>}
-    </>
-  )
+  const said = text.lines(warning).join(' · ')
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        {href ? (
-          <Link href={href} className={chip} data-testid="job-warning">
-            {body}
-          </Link>
-        ) : (
-          <span className={chip} data-testid="job-warning">
-            {body}
-          </span>
-        )}
-      </TooltipTrigger>
-      <TooltipContent side="top" align="start" className="max-w-xs space-y-1 py-2">
-        <p className="font-semibold">{text.heading}</p>
-        <ul className="space-y-0.5">
-          {text.lines(warning).map((line) => (
-            <li key={line} className="leading-snug opacity-90">
-              {line}
-            </li>
-          ))}
-        </ul>
-      </TooltipContent>
-    </Tooltip>
-  )
-}
-
-/**
- * The same problems spelled out, for the job the car is in for now: what is
- * wrong, in the work order's own words, and the way into the job to fix it.
- */
-export function JobWarningCallout({ warning, href }: { warning: VehicleJobWarning; href: string }) {
-  const text = useJobWarningText()
-  return (
-    <div
-      role="alert"
-      data-testid="job-warning-callout"
-      className="flex flex-wrap items-start gap-x-2.5 gap-y-2 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2.5 dark:border-amber-900/60 dark:bg-amber-950/40"
+    // A link of its own, above the row's stretched link: the pointer reaches
+    // it, so the whole warning shows on hover where the line is cut short,
+    // and a click still opens the job.
+    <Link
+      href={href}
+      data-testid="job-warning"
+      title={`${text.heading}: ${said}`}
+      className="relative z-10 flex min-w-0 items-start gap-1.5 font-medium text-amber-700 @2xl:items-center dark:text-amber-400"
     >
-      <AlertTriangle
-        aria-hidden
-        className="mt-px h-4 w-4 shrink-0 text-amber-600 dark:text-amber-500"
-      />
-      <div className="min-w-0 flex-1 basis-48 space-y-1">
-        <p className="text-[13px] font-semibold text-amber-900 dark:text-amber-200">
-          {text.heading}
-        </p>
-        <ul className="space-y-0.5">
-          {text.lines(warning).map((line) => (
-            <li key={line} className="text-xs leading-snug text-amber-800 dark:text-amber-300">
-              {line}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <Link
-        href={href}
-        className="ml-auto inline-flex shrink-0 items-center self-center rounded-md px-1.5 py-1 text-xs font-semibold text-amber-900 underline-offset-2 hover:underline dark:text-amber-200"
-      >
-        {text.fix}
-        <ChevronRight aria-hidden className="ml-0.5 h-3.5 w-3.5" />
-      </Link>
-    </div>
+      <AlertTriangle aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 @2xl:mt-0" />
+      <span className="sr-only">{text.heading}: </span>
+      {/* In full where the row is stacked and has the room; one line, cut
+          short, where it shares the row with the table's other columns. */}
+      <span className="min-w-0 whitespace-normal @2xl:truncate">{said}</span>
+    </Link>
   )
 }

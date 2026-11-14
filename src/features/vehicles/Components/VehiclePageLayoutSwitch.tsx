@@ -33,6 +33,34 @@ export function useSwitchVehiclePageLayout() {
 }
 
 /**
+ * Counts a vehicle page opened, in the layout it was drawn in. Draws nothing.
+ *
+ * This is what says when the classic page can go: once the views with
+ * `layout: classic` have dried up, nobody is left on it. `layout_chosen`
+ * tells a workshop that went back to classic on purpose from one that is
+ * there only because it predates the new page and never tried it.
+ *
+ * One event per vehicle and layout: moving between the page's lists renders
+ * the page again without counting another visit, and switching layout counts
+ * the view of the page it switched to.
+ */
+export function VehiclePageViewed({
+  vehicleId,
+  layout,
+  chosen,
+}: {
+  vehicleId: string
+  layout: VehiclePageLayout
+  chosen: boolean
+}) {
+  // The vehicle is why the effect runs again, not something to send.
+  useEffect(() => {
+    track('vehicle_page:page_view', { layout, layout_chosen: chosen })
+  }, [vehicleId, layout, chosen])
+  return null
+}
+
+/**
  * The invitation on the classic vehicle page. Hiding it is remembered in this
  * browser; the way in stays in the page's menu for whoever changes their mind.
  *

@@ -1,6 +1,6 @@
 import { PortalShell } from '@/features/portal/Components/PortalShell'
+import { StatusBadge } from '@/components/status-badge'
 import { getPortalQuotes } from '@/features/portal/Actions/portalActions'
-import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -63,17 +63,9 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                     <span className="shrink-0 font-semibold">{money(q.totalAmount)}</span>
                   </div>
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                    <Badge
-                      variant={
-                        q.status === 'accepted'
-                          ? 'default'
-                          : q.status === 'sent'
-                            ? 'secondary'
-                            : 'outline'
-                      }
-                    >
+                    <StatusBadge kind="quote" status={q.status}>
                       {quoteStatusLabel(q.status, tQuoteStatus)}
-                    </Badge>
+                    </StatusBadge>
                     {q.vehicle && (
                       <span className="truncate">
                         {q.vehicle.make} {q.vehicle.model}
@@ -121,17 +113,9 @@ export default async function PortalQuotesPage({ params }: { params: Promise<{ o
                         {q.vehicle?.make} {q.vehicle?.model}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant={
-                            q.status === 'accepted'
-                              ? 'default'
-                              : q.status === 'sent'
-                                ? 'secondary'
-                                : 'outline'
-                          }
-                        >
+                        <StatusBadge kind="quote" status={q.status}>
                           {quoteStatusLabel(q.status, tQuoteStatus)}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell>{money(q.totalAmount)}</TableCell>
                       <TableCell>
