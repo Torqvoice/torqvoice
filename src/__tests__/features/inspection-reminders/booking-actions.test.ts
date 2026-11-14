@@ -154,9 +154,20 @@ describe('booking link', () => {
   })
 
   it('tells the desk and the customer the booked time on the workshop clock, not the server clock', async () => {
-    // A workshop far from wherever the tests (or the server) run: 07:00 UTC is 20:00 in Auckland.
-    settings.timeZone = 'Pacific/Auckland'
     const slot = new Date('2026-12-02T07:00:00Z')
+    const format = (timeZone?: string) =>
+      new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone,
+      }).format(slot)
+    // A workshop whose clock reads differently from the machine running the
+    // tests, wherever that is: no two of these agree at this hour, so at
+    // least one is not the host's, and the test never passes by coincidence.
+    const workshopZone = ['Pacific/Auckland', 'America/Los_Angeles', 'Asia/Kolkata'].find(
+      (zone) => format(zone) !== format()
+    ) as string
+    settings.timeZone = workshopZone
     inspectionReminderSend.findUnique.mockResolvedValue(
       send({ dueAt: new Date('2026-12-20T00:00:00Z'), expiresAt: new Date('2026-12-30T00:00:00Z') })
     )
@@ -166,14 +177,8 @@ describe('booking link', () => {
     } finally {
       vi.useRealTimers()
     }
-    const format = (timeZone?: string) =>
-      new Intl.DateTimeFormat(undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone,
-      }).format(slot)
-    const onWorkshopClock = format('Pacific/Auckland')
-    expect(format()).not.toBe(onWorkshopClock) // the guard: the host clock must differ, or the test proves nothing
+    const onWorkshopClock = format(workshopZone)
+    expect(format()).not.toBe(onWorkshopClock)
     const [notice] = notify.mock.calls as unknown as [{ message: string }][]
     expect(notice[0].message).toContain(onWorkshopClock)
     expect(scheduledMessage.create.mock.calls[0][0].data.body).toContain(onWorkshopClock)
