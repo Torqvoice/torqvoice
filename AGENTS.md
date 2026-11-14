@@ -34,9 +34,6 @@ never `prisma migrate deploy` or `prisma db push`.
 
 ## Gotchas
 
-- `npm test` can end with every test passing and exit code 1: `EnvironmentTeardownError:
-  Closing rpc while "onUserConsoleLog" was pending`. That is a Vitest worker race, not your
-  change; rerun it.
 - A git worktree of this repo needs `node_modules` and `src/generated` symlinked from the main
   checkout before Vitest or `tsc` will run there.
 - `.env.example` sets `DATABASE_URL` to host `db`, which resolves inside the Dev Container.
