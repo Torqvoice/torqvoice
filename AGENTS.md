@@ -129,6 +129,12 @@ a cleanup.
 `Date` on the server. Amounts carry a currency code (`src/lib/money.ts`), countries are
 ISO 3166-1, languages ISO 639-1.
 
+**Whose language.** Anything a customer receives (SMS, email, PDF, share page) is written in
+the workshop's language: `resolveDocumentLocale(orgId)` on the server, never `useTranslations`
+in a client component, which is the language of whoever is signed in. Defaults shown in
+settings, and what a Reset button restores, come from the same place, or saving them stores the
+viewer's language as the workshop's text.
+
 **Nothing country-specific by default.** Registries, tax rules, payment providers and parts
 sources ship as connectors or settings a workshop turns on, never as behaviour everyone sees.
 
