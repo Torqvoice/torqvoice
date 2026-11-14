@@ -13,6 +13,7 @@
     "payWithVipps": "{amount} Vipps ile Öde",
     "payWithPaypal": "{amount} PayPal ile Öde",
     "payWithPaystack": "{amount} Paystack ile Öde",
+    "payWithVendor": "<vendor></vendor> ile öde",
     "errorInvalidAmount": "Lütfen geçerli bir tutar girin.",
     "errorExceedsBalance": "Tutar {amount} miktarını aşamaz.",
     "errorVerifyFailed": "Ödeme doğrulanamadı. İşlem hâlâ devam ediyor olabilir.",

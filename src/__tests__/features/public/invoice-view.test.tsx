@@ -307,6 +307,15 @@ describe('InvoiceView', () => {
       expect(screen.getByRole('button', { name: /pay.*paystack/i })).toBeInTheDocument()
     })
 
+    it('shows the cards each vendor takes under its button, and none for Vipps', () => {
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe', 'vipps'] })
+      expect(screen.getByTitle('Visa')).toBeInTheDocument()
+      expect(screen.getByTitle('Mastercard')).toBeInTheDocument()
+      expect(screen.getByTitle('American Express')).toBeInTheDocument()
+      // The button still reads as the whole sentence, mark and all.
+      expect(screen.getByRole('button', { name: /pay.*with vipps/i })).toBeInTheDocument()
+    })
+
     it('shows Full amount and Partial payment toggle buttons', () => {
       renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
       expect(screen.getByRole('button', { name: /full amount/i })).toBeInTheDocument()

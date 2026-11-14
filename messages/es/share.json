@@ -13,6 +13,7 @@
     "payWithVipps": "Pagar {amount} con Vipps",
     "payWithPaypal": "Pagar {amount} con PayPal",
     "payWithPaystack": "Pagar {amount} con Paystack",
+    "payWithVendor": "Pagar con <vendor></vendor>",
     "errorInvalidAmount": "Por favor ingrese un monto válido.",
     "errorExceedsBalance": "El monto no puede superar {amount}.",
     "errorVerifyFailed": "No se pudo verificar el pago. Es posible que aún esté procesándose.",
