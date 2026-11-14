@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Другие лодки: {count}",
     "vehicleFacts": "Сведения",
     "addOpenItem": "Добавить",
+    "addQuote": "Добавить предложение",
+    "addInspection": "Добавить осмотр",
     "nothingOpen": "Открытых нет",
     "observationItem": "Наблюдение · {severity}",
     "reminderItem": "Напоминание · {due}",
@@ -141,6 +143,7 @@
       "empty": "Истории пока нет",
       "noMatches": "Ничего не найдено по запросу",
       "quote": "Предложение",
+      "inspection": "Осмотр",
       "inspectionOpen": "В процессе",
       "inspectionResult": "Пройдено: {passed}",
       "inspectionFailed": "{count, plural, one {# требует внимания} few {# требуют внимания} many {# требуют внимания} other {# требуют внимания}}"

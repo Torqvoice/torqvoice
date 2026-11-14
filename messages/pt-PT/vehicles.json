@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Outras embarcações: {count}",
     "vehicleFacts": "Detalhes",
     "addOpenItem": "Adicionar",
+    "addQuote": "Adicionar orçamento",
+    "addInspection": "Adicionar inspeção",
     "nothingOpen": "Nada pendente",
     "observationItem": "Observação · {severity}",
     "reminderItem": "Lembrete · {due}",
@@ -141,6 +143,7 @@
       "empty": "Ainda não há histórico",
       "noMatches": "Nada corresponde à sua pesquisa",
       "quote": "Orçamento",
+      "inspection": "Inspeção",
       "inspectionOpen": "Em curso",
       "inspectionResult": "{passed, plural, one {# aprovado} other {# aprovados}}",
       "inspectionFailed": "{count, plural, one {# precisa de atenção} other {# precisam de atenção}}"

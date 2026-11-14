@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Inne łodzie: {count}",
     "vehicleFacts": "Szczegóły",
     "addOpenItem": "Dodaj",
+    "addQuote": "Dodaj wycenę",
+    "addInspection": "Dodaj przegląd",
     "nothingOpen": "Brak otwartych",
     "observationItem": "Obserwacja · {severity}",
     "reminderItem": "Przypomnienie · {due}",
@@ -141,6 +143,7 @@
       "empty": "Brak historii",
       "noMatches": "Brak wyników wyszukiwania",
       "quote": "Wycena",
+      "inspection": "Przegląd",
       "inspectionOpen": "W trakcie",
       "inspectionResult": "Zaliczone: {passed}",
       "inspectionFailed": "{count, plural, one {# wymaga uwagi} few {# wymagają uwagi} many {# wymaga uwagi} other {# wymaga uwagi}}"

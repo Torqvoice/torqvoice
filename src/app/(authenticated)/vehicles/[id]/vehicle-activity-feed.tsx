@@ -379,6 +379,7 @@ export function VehicleActivityFeed({
                     icon={
                       <ClipboardCheck className="h-3.5 w-3.5 text-teal-700 dark:text-teal-400" />
                     }
+                    kind={t('inspection')}
                     href={`/inspections/${insp.id}`}
                     title={insp.template.name}
                     detail={
@@ -455,7 +456,7 @@ function Row({
 }: {
   date: string
   icon?: React.ReactNode
-  /** What the row is when it is not a work order, said to a screen reader. */
+  /** What the row is when it is not a work order: "Quote", "Inspection". */
   kind?: string
   href: string
   title: string
@@ -485,10 +486,12 @@ function Row({
         <span className="pt-px text-[12.5px] tabular-nums text-muted-foreground">{date}</span>
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-2">
+            {/* A row that is not a work order says what it is, in a word
+                beside its icon: an icon alone does not say "quote". */}
             {icon && (
-              <span className="shrink-0" title={kind}>
+              <span className="inline-flex shrink-0 items-center gap-1 rounded border border-border/80 px-1.5 py-px text-[11px] font-medium text-muted-foreground">
                 {icon}
-                {kind && <span className="sr-only">{kind}</span>}
+                {kind}
               </span>
             )}
             <Link

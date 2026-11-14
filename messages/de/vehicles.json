@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Weitere Boote: {count}",
     "vehicleFacts": "Details",
     "addOpenItem": "Hinzufügen",
+    "addQuote": "Angebot hinzufügen",
+    "addInspection": "Inspektion hinzufügen",
     "nothingOpen": "Nichts offen",
     "observationItem": "Beobachtung · {severity}",
     "reminderItem": "Erinnerung · {due}",
@@ -141,6 +143,7 @@
       "empty": "Noch kein Verlauf",
       "noMatches": "Nichts entspricht Ihrer Suche",
       "quote": "Angebot",
+      "inspection": "Inspektion",
       "inspectionOpen": "In Bearbeitung",
       "inspectionResult": "{passed} bestanden",
       "inspectionFailed": "{count} mit Handlungsbedarf"

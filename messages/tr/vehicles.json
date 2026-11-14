@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Diğer tekneler: {count}",
     "vehicleFacts": "Ayrıntılar",
     "addOpenItem": "Ekle",
+    "addQuote": "Teklif ekle",
+    "addInspection": "Muayene ekle",
     "nothingOpen": "Açık kayıt yok",
     "observationItem": "Gözlem · {severity}",
     "reminderItem": "Hatırlatıcı · {due}",
@@ -141,6 +143,7 @@
       "empty": "Henüz geçmiş yok",
       "noMatches": "Aramanızla eşleşen sonuç bulunamadı",
       "quote": "Teklif",
+      "inspection": "Muayene",
       "inspectionOpen": "Devam ediyor",
       "inspectionResult": "{passed} geçti",
       "inspectionFailed": "{count} ilgi gerektiriyor"

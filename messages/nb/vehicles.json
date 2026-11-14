@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Andre båter: {count}",
     "vehicleFacts": "Detaljer",
     "addOpenItem": "Legg til",
+    "addQuote": "Legg til tilbud",
+    "addInspection": "Legg til inspeksjon",
     "nothingOpen": "Ingenting åpent",
     "observationItem": "Observasjon · {severity}",
     "reminderItem": "Påminnelse · {due}",
@@ -141,6 +143,7 @@
       "empty": "Ingen historikk ennå",
       "noMatches": "Ingenting samsvarer med søket ditt",
       "quote": "Tilbud",
+      "inspection": "Inspeksjon",
       "inspectionOpen": "Under arbeid",
       "inspectionResult": "{passed} godkjent",
       "inspectionFailed": "{count} trenger oppfølging"

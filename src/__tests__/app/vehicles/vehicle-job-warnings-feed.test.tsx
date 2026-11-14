@@ -201,6 +201,48 @@ describe('the jobs table on the vehicle page', () => {
     expect(said).toHaveAttribute('title', expect.stringContaining('Staff day'))
   })
 
+  it('says in words which rows are a quote or an inspection', () => {
+    render(
+      <TooltipProvider>
+        <VehicleActivityFeed
+          vehicleId="veh-1"
+          filter="all"
+          search=""
+          workOrders={[done]}
+          quotes={[
+            {
+              id: 'q1',
+              quoteNumber: 'QT-1002',
+              title: 'Rear brakes',
+              status: 'converted',
+              totalAmount: 2237,
+              createdAt: day(3),
+            },
+          ]}
+          inspections={[
+            {
+              id: 'i1',
+              status: 'in_progress',
+              createdAt: day(4),
+              completedAt: null,
+              template: { name: 'Vehicle check-in' },
+              items: [],
+            },
+          ]}
+          distUnit="km"
+          readingLabel="Mileage"
+          currencyCode="NOK"
+          vehicleMileage={0}
+        />
+      </TooltipProvider>
+    )
+
+    expect(within(rowOf('Rear brakes')).getByText('Quote')).toBeInTheDocument()
+    expect(within(rowOf('Vehicle check-in')).getByText('Inspection')).toBeInTheDocument()
+    // A work order is the table's default and carries no label.
+    expect(within(rowOf('Oil change')).queryByText('Quote')).not.toBeInTheDocument()
+  })
+
   it('flags nothing when no job has a problem', () => {
     renderFeed([])
     expect(screen.queryByTestId('job-warning')).not.toBeInTheDocument()

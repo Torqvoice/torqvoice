@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Other boats: {count}",
     "vehicleFacts": "Details",
     "addOpenItem": "Add",
+    "addQuote": "Add Quote",
+    "addInspection": "Add Inspection",
     "nothingOpen": "Nothing open",
     "observationItem": "Observation · {severity}",
     "reminderItem": "Reminder · {due}",
@@ -141,6 +143,7 @@
       "empty": "No history yet",
       "noMatches": "Nothing matches your search",
       "quote": "Quote",
+      "inspection": "Inspection",
       "inspectionOpen": "In progress",
       "inspectionResult": "{passed} passed",
       "inspectionFailed": "{count} need work"

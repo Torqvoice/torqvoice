@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Altre imbarcazioni: {count}",
     "vehicleFacts": "Dettagli",
     "addOpenItem": "Aggiungi",
+    "addQuote": "Aggiungi preventivo",
+    "addInspection": "Aggiungi ispezione",
     "nothingOpen": "Niente in sospeso",
     "observationItem": "Osservazione · {severity}",
     "reminderItem": "Promemoria · {due}",
@@ -141,6 +143,7 @@
       "empty": "Nessuna cronologia ancora",
       "noMatches": "Nessun risultato per questa ricerca",
       "quote": "Preventivo",
+      "inspection": "Ispezione",
       "inspectionOpen": "In corso",
       "inspectionResult": "{passed, plural, one {# superato} other {# superati}}",
       "inspectionFailed": "{count} da sistemare"

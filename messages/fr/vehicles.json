@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Autres bateaux : {count}",
     "vehicleFacts": "Détails",
     "addOpenItem": "Ajouter",
+    "addQuote": "Ajouter un devis",
+    "addInspection": "Ajouter une inspection",
     "nothingOpen": "Rien à traiter",
     "observationItem": "Observation · {severity}",
     "reminderItem": "Rappel · {due}",
@@ -141,6 +143,7 @@
       "empty": "Aucun historique pour le moment",
       "noMatches": "Rien ne correspond à votre recherche",
       "quote": "Devis",
+      "inspection": "Inspection",
       "inspectionOpen": "En cours",
       "inspectionResult": "{passed, plural, one {# conforme} other {# conformes}}",
       "inspectionFailed": "{count} à traiter"

@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Andere boten: {count}",
     "vehicleFacts": "Details",
     "addOpenItem": "Toevoegen",
+    "addQuote": "Offerte toevoegen",
+    "addInspection": "Keuring toevoegen",
     "nothingOpen": "Niets open",
     "observationItem": "Observatie · {severity}",
     "reminderItem": "Herinnering · {due}",
@@ -141,6 +143,7 @@
       "empty": "Nog geen geschiedenis",
       "noMatches": "Niets gevonden voor uw zoekopdracht",
       "quote": "Offerte",
+      "inspection": "Keuring",
       "inspectionOpen": "Bezig",
       "inspectionResult": "{passed} goedgekeurd",
       "inspectionFailed": "{count, plural, one {# heeft aandacht nodig} other {# hebben aandacht nodig}}"

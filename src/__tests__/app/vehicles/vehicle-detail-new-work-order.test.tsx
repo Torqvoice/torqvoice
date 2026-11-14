@@ -127,8 +127,8 @@ describe('starting work from the vehicle page', () => {
 
     const items = await screen.findAllByRole('menuitem')
     expect(items.map((item) => item.textContent)).toEqual([
-      'New Quote',
-      'New Inspection',
+      'Add Quote',
+      'Add Inspection',
       'Add Note',
       'Add Observation',
       'Add Reminder',
@@ -136,6 +136,24 @@ describe('starting work from the vehicle page', () => {
   })
 
   it.each([
+    ['all', 'New Work Order'],
+    ['services', 'New Work Order'],
+    ['quotes', 'Add Quote'],
+    ['inspections', 'Add Inspection'],
+    ['notes', 'Add Note'],
+    ['findings', 'Add Observation'],
+    ['reminders', 'Add Reminder'],
+  ])('offers to add what the %s list holds: %s', (tab, label) => {
+    url.query = tab === 'all' ? '' : `tab=${tab}`
+    renderPage()
+    // The button beside the arrow, whether it is a link or opens a dialog.
+    const group = screen.getByRole('button', { name: 'More to add' }).parentElement as HTMLElement
+    expect(group.firstElementChild).toHaveTextContent(label)
+  })
+
+  it.each([
+    ['quotes', 'Add Quote'],
+    ['inspections', 'Add Inspection'],
     ['notes', 'Add Note'],
     ['findings', 'Add Observation'],
     ['reminders', 'Add Reminder'],

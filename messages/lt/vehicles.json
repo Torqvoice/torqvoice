@@ -123,6 +123,8 @@
     "otherVehiclesMarine": "Kiti laivai: {count}",
     "vehicleFacts": "Išsami informacija",
     "addOpenItem": "Pridėti",
+    "addQuote": "Pridėti pasiūlymą",
+    "addInspection": "Pridėti apžiūrą",
     "nothingOpen": "Atvirų nėra",
     "observationItem": "Pastebėjimas · {severity}",
     "reminderItem": "Priminimas · {due}",
@@ -141,6 +143,7 @@
       "empty": "Istorijos dar nėra",
       "noMatches": "Pagal paiešką nieko nerasta",
       "quote": "Pasiūlymas",
+      "inspection": "Apžiūra",
       "inspectionOpen": "Vykdoma",
       "inspectionResult": "Tinkama: {passed}",
       "inspectionFailed": "Reikia dėmesio: {count}"

@@ -330,6 +330,23 @@ function parseCommonIssues(content: string | undefined): CommonIssue[] | string 
 const NO_WARNINGS: VehicleJobWarning[] = []
 /** Quote statuses that still need an answer from the customer or the workshop. */
 const WAITING_QUOTE = new Set(['draft', 'sent', 'changes_requested'])
+type AdderId = 'workOrder' | 'quote' | 'inspection' | 'note' | 'finding' | 'reminder'
+type VehicleTab = 'all' | 'services' | 'quotes' | 'inspections' | 'notes' | 'reminders' | 'findings'
+/**
+ * What the add button adds on each list. Every tab has an entry: the type
+ * makes leaving one out an error, so the button cannot follow some tabs and
+ * not others.
+ */
+const ADDS_ON_TAB: Record<VehicleTab, AdderId> = {
+  all: 'workOrder',
+  services: 'workOrder',
+  quotes: 'quote',
+  inspections: 'inspection',
+  notes: 'note',
+  findings: 'finding',
+  reminders: 'reminder',
+}
+
 /** A value in the panel that opens what it stands for: underlined like the owner's name. */
 const RAIL_LINK =
   'underline decoration-muted-foreground/60 underline-offset-4 transition-colors hover:decoration-foreground'
@@ -665,6 +682,53 @@ export function VehicleDetailClient({
     setEditingReminder(undefined)
     setShowReminderForm(true)
   }
+  // Everything that can be added to a vehicle, in the order the menu lists
+  // it. Each list names the one it holds, so the button over a list always
+  // adds to that list; a tab added later does not compile until it says
+  // which.
+  const adders: {
+    id: AdderId
+    group: 'documents' | 'records'
+    label: string
+    icon: typeof Wrench
+    href?: string
+    run?: () => void
+  }[] = [
+    {
+      id: 'workOrder',
+      group: 'documents',
+      label: t('newWorkOrder'),
+      icon: Wrench,
+      href: `/vehicles/${vehicle.id}/service/new`,
+    },
+    {
+      id: 'quote',
+      group: 'documents',
+      label: t('addQuote'),
+      icon: FileText,
+      run: () => setShowNewQuoteDialog(true),
+    },
+    {
+      id: 'inspection',
+      group: 'documents',
+      label: t('addInspection'),
+      icon: ClipboardCheck,
+      run: () => setShowNewInspection(true),
+    },
+    { id: 'note', group: 'records', label: tNotes('addNote'), icon: StickyNote, run: addNote },
+    {
+      id: 'finding',
+      group: 'records',
+      label: tf('addFinding'),
+      icon: AlertTriangle,
+      run: addFinding,
+    },
+    { id: 'reminder', group: 'records', label: tr('addReminder'), icon: Bell, run: addReminder },
+  ]
+  const primaryId = ADDS_ON_TAB[activeTab as VehicleTab] ?? 'workOrder'
+  const primaryAdder = adders.find((adder) => adder.id === primaryId) ?? adders[0]
+  const otherAdders = adders.filter((adder) => adder.id !== primaryAdder.id)
+
   // With one bill outstanding the amount opens it; with several, the table
   // marks each of them and the amount is the sum.
   const owedJobIds = Object.keys(glance?.owed ?? {})
@@ -1753,34 +1817,24 @@ export function VehicleDetailClient({
                 )}
               </form>
             )}
-            {/* One place to add from, whatever is showing. A work order is
-                what this page starts most, so over the history it is one
-                click; over the notes, observations or reminders the same
-                button adds one of those instead. Everything else that can be
-                added waits behind the arrow. */}
+            {/* One place to add from, and it always adds what the list in
+                front of you holds: a work order over the history, a quote
+                over the quotes, a note over the notes. Everything else that
+                can be added waits behind the arrow, in the same order on
+                every tab. */}
             {!vehicle.isArchived && (
               <ButtonGroup className="shrink-0">
-                {activeTab === 'notes' ? (
-                  <Button size="sm" className="h-8" onClick={addNote}>
-                    <Plus className="mr-1 h-4 w-4" />
-                    {tNotes('addNote')}
-                  </Button>
-                ) : activeTab === 'findings' ? (
-                  <Button size="sm" className="h-8" onClick={addFinding}>
-                    <Plus className="mr-1 h-4 w-4" />
-                    {tf('addFinding')}
-                  </Button>
-                ) : activeTab === 'reminders' ? (
-                  <Button size="sm" className="h-8" onClick={addReminder}>
-                    <Plus className="mr-1 h-4 w-4" />
-                    {tr('addReminder')}
+                {primaryAdder.href ? (
+                  <Button size="sm" className="h-8" asChild>
+                    <Link href={primaryAdder.href}>
+                      <Plus className="mr-1 h-4 w-4" />
+                      {primaryAdder.label}
+                    </Link>
                   </Button>
                 ) : (
-                  <Button size="sm" className="h-8" asChild>
-                    <Link href={`/vehicles/${vehicle.id}/service/new`}>
-                      <Plus className="mr-1 h-4 w-4" />
-                      {t('newWorkOrder')}
-                    </Link>
+                  <Button size="sm" className="h-8" onClick={primaryAdder.run}>
+                    <Plus className="mr-1 h-4 w-4" />
+                    {primaryAdder.label}
                   </Button>
                 )}
                 <ButtonGroupSeparator className="bg-primary-foreground/25" />
@@ -1796,41 +1850,30 @@ export function VehicleDetailClient({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="min-w-48">
-                    {!isFeedView && (
-                      <DropdownMenuItem asChild>
-                        <Link href={`/vehicles/${vehicle.id}/service/new`}>
-                          <Wrench className="mr-2 h-4 w-4" />
-                          {t('newWorkOrder')}
-                        </Link>
-                      </DropdownMenuItem>
-                    )}
-                    <DropdownMenuItem onClick={() => setShowNewQuoteDialog(true)}>
-                      <FileText className="mr-2 h-4 w-4" />
-                      {tq('newQuote')}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setShowNewInspection(true)}>
-                      <ClipboardCheck className="mr-2 h-4 w-4" />
-                      {ti('newInspection')}
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    {activeTab !== 'notes' && (
-                      <DropdownMenuItem onClick={addNote}>
-                        <StickyNote className="mr-2 h-4 w-4" />
-                        {tNotes('addNote')}
-                      </DropdownMenuItem>
-                    )}
-                    {activeTab !== 'findings' && (
-                      <DropdownMenuItem onClick={addFinding}>
-                        <AlertTriangle className="mr-2 h-4 w-4" />
-                        {tf('addFinding')}
-                      </DropdownMenuItem>
-                    )}
-                    {activeTab !== 'reminders' && (
-                      <DropdownMenuItem onClick={addReminder}>
-                        <Bell className="mr-2 h-4 w-4" />
-                        {tr('addReminder')}
-                      </DropdownMenuItem>
-                    )}
+                    {otherAdders.map((adder, i) => {
+                      const Icon = adder.icon
+                      return (
+                        <Fragment key={adder.id}>
+                          {/* Documents first, then the things kept about the car. */}
+                          {i > 0 && adder.group !== otherAdders[i - 1].group && (
+                            <DropdownMenuSeparator />
+                          )}
+                          {adder.href ? (
+                            <DropdownMenuItem asChild>
+                              <Link href={adder.href}>
+                                <Icon className="mr-2 h-4 w-4" />
+                                {adder.label}
+                              </Link>
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem onClick={adder.run}>
+                              <Icon className="mr-2 h-4 w-4" />
+                              {adder.label}
+                            </DropdownMenuItem>
+                          )}
+                        </Fragment>
+                      )
+                    })}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </ButtonGroup>
