@@ -48,7 +48,7 @@
     "deleteError": "Kunne ikke slette meldingen",
     "sendError": "Kunne ikke sende SMS",
     "sendMessage": "Send melding",
-    "sharedNumber": "Sendt fra et delt Torqvoice-nummer, opptil {limit} om dagen. Svar til dette nummeret når ikke frem til deg. Koble til din egen SMS-leverandør under Innstillinger for å både sende og motta meldinger."
+    "sharedNumber": "Sendt fra et delt Torqvoice-nummer, opptil {limit} SMS om dagen. En lang SMS teller som flere. Svar til dette nummeret når ikke frem til deg. Koble til din egen SMS-leverandør under Innstillinger for å både sende og motta meldinger."
   },
   "sendDialog": {
     "send": "Send {label}",

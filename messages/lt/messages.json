@@ -48,7 +48,7 @@
     "deleteError": "Nepavyko ištrinti žinutės",
     "sendError": "Nepavyko išsiųsti SMS",
     "sendMessage": "Siųsti žinutę",
-    "sharedNumber": "Išsiųsta iš bendro Torqvoice numerio, iki {limit} per dieną. Atsakymai į jį jūsų nepasieks. Prijunkite savo SMS tiekėją skiltyje Nustatymai, kad galėtumėte ir siųsti, ir gauti žinutes."
+    "sharedNumber": "Išsiųsta iš bendro Torqvoice numerio, iki {limit} SMS per dieną. Ilga SMS žinutė skaičiuojama kaip kelios. Atsakymai į jį jūsų nepasieks. Prijunkite savo SMS tiekėją skiltyje Nustatymai, kad galėtumėte ir siųsti, ir gauti žinutes."
   },
   "sendDialog": {
     "send": "Siųsti {label}",

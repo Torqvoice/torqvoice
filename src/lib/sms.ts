@@ -303,7 +303,7 @@ export async function sendOrgSms(
   // scheduled reminders and the messages typed by hand all draw on the same
   // allowance. A workshop's own provider is its own bill and has no limit.
   if (route.source === 'platform') {
-    return withPlatformSmsAllowance(organizationId, route.dailyLimit, send)
+    return withPlatformSmsAllowance(organizationId, route.dailyLimit, options.body, send)
   }
   return send()
 }

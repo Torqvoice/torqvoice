@@ -21,6 +21,7 @@
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { db } from './db'
 import { FeatureGatedError, isCloudMode } from './features'
+import { smsSegmentCount } from './sms-segments'
 
 /** Keep in step with the torqvoice.com admin, which writes these rows. */
 export const PLATFORM_SMS_KEYS = {
@@ -63,42 +64,51 @@ function today(now: Date): string {
 }
 
 /**
- * Takes one slot of today's allowance. Atomic, the same way the mail
- * allowance is: the increment only happens while the count is under the
- * limit, so two sends racing for the last slot cannot both get it.
+ * Takes a text's share of today's allowance. Atomic, the same way the mail
+ * allowance is: the increment only happens while the whole text still fits
+ * under the limit, so two sends racing for the last of it cannot both get it.
  */
-async function takeSlot(organizationId: string, day: string, limit: number): Promise<boolean> {
+async function takeSlots(
+  organizationId: string,
+  day: string,
+  limit: number,
+  segments: number
+): Promise<boolean> {
   await db.platformSmsUsage.createMany({
     data: [{ organizationId, day, count: 0 }],
     skipDuplicates: true,
   })
   const taken = await db.platformSmsUsage.updateMany({
-    where: { organizationId, day, count: { lt: limit } },
-    data: { count: { increment: 1 } },
+    where: { organizationId, day, count: { lte: limit - segments } },
+    data: { count: { increment: segments } },
   })
   return taken.count === 1
 }
 
-async function giveBack(organizationId: string, day: string) {
+async function giveBack(organizationId: string, day: string, segments: number) {
   await db.platformSmsUsage.updateMany({
-    where: { organizationId, day, count: { gt: 0 } },
-    data: { count: { decrement: 1 } },
+    where: { organizationId, day, count: { gte: segments } },
+    data: { count: { decrement: segments } },
   })
 }
 
 /**
  * Runs one send through the platform account under the plan's daily
- * allowance. A send that throws gives its slot back, so a wrong number or a
- * provider outage does not use up the day.
+ * allowance. The allowance is counted in segments, the unit the provider
+ * bills in: a long text is sent as several SMS and uses as many of the day's.
+ * A send that throws gives them back, so a wrong number or a provider outage
+ * does not use up the day.
  */
 export async function withPlatformSmsAllowance<T>(
   organizationId: string,
   limit: number,
+  body: string,
   send: () => Promise<T>,
   now = new Date()
 ): Promise<T> {
   const day = today(now)
-  if (!(await takeSlot(organizationId, day, limit))) {
+  const segments = Math.max(1, smsSegmentCount(body))
+  if (!(await takeSlots(organizationId, day, limit, segments))) {
     throw new FeatureGatedError(
       'platformSmsDaily',
       `Daily limit of ${limit} text messages reached. Connect your own SMS provider to send more.`,
@@ -108,7 +118,7 @@ export async function withPlatformSmsAllowance<T>(
   try {
     return await send()
   } catch (error) {
-    await giveBack(organizationId, day)
+    await giveBack(organizationId, day, segments)
     throw error
   }
 }

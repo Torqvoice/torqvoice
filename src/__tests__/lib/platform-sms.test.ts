@@ -41,13 +41,13 @@ const platformSmsUsage = {
       where,
       data,
     }: {
-      where: { organizationId: string; day: string; count: { lt?: number; gt?: number } }
+      where: { organizationId: string; day: string; count: { lte?: number; gte?: number } }
       data: { count: { increment?: number; decrement?: number } }
     }) => {
       const current = usage.get(keyOf(where))
       if (current === undefined) return { count: 0 }
-      if (where.count.lt !== undefined && !(current < where.count.lt)) return { count: 0 }
-      if (where.count.gt !== undefined && !(current > where.count.gt)) return { count: 0 }
+      if (where.count.lte !== undefined && !(current <= where.count.lte)) return { count: 0 }
+      if (where.count.gte !== undefined && !(current >= where.count.gte)) return { count: 0 }
       usage.set(keyOf(where), current + (data.count.increment ?? 0) - (data.count.decrement ?? 0))
       return { count: 1 }
     }
@@ -172,14 +172,50 @@ describe('a paid workshop with no SMS provider of its own', () => {
     expect(sent).toHaveLength(30)
   })
 
+  it('counts a long text as the several SMS it is sent as', async () => {
+    // 400 plain characters travel as three SMS, so ten of them are the day.
+    const long = 'a'.repeat(400)
+    for (let i = 0; i < 10; i++) await sendOrgSms('org', { to: CUSTOMER, body: long })
+
+    await expect(text()).rejects.toMatchObject({ feature: 'platformSmsDaily', limit: 30 })
+    expect(sent).toHaveLength(10)
+  })
+
+  it('counts a text with an emoji by the shorter segments it is sent in', async () => {
+    // 71 characters fit one plain SMS, but an emoji makes it two.
+    const body = `${'a'.repeat(69)}🚗`
+    for (let i = 0; i < 15; i++) await sendOrgSms('org', { to: CUSTOMER, body })
+
+    await expect(text()).rejects.toMatchObject({ feature: 'platformSmsDaily' })
+  })
+
+  it('refuses a long text that no longer fits, and still sends a short one', async () => {
+    await textTimes(29)
+
+    await expect(sendOrgSms('org', { to: CUSTOMER, body: 'a'.repeat(400) })).rejects.toMatchObject({
+      feature: 'platformSmsDaily',
+    })
+    await expect(text()).resolves.toMatchObject({ to: CUSTOMER })
+  })
+
+  it('gives every part of a long text back when it fails to send', async () => {
+    twilioDown = true
+    await expect(sendOrgSms('org', { to: CUSTOMER, body: 'a'.repeat(400) })).rejects.toThrow()
+    twilioDown = false
+
+    await textTimes(30)
+
+    expect(sent).toHaveLength(30)
+  })
+
   it('starts again the next day', async () => {
     const send = () => Promise.resolve('sent')
     const monday = new Date('2026-11-16T12:00:00Z')
     const tuesday = new Date('2026-11-17T00:00:01Z')
-    for (let i = 0; i < 30; i++) await withPlatformSmsAllowance('org', 30, send, monday)
-    await expect(withPlatformSmsAllowance('org', 30, send, monday)).rejects.toThrow()
+    for (let i = 0; i < 30; i++) await withPlatformSmsAllowance('org', 30, 'Hi', send, monday)
+    await expect(withPlatformSmsAllowance('org', 30, 'Hi', send, monday)).rejects.toThrow()
 
-    await expect(withPlatformSmsAllowance('org', 30, send, tuesday)).resolves.toBe('sent')
+    await expect(withPlatformSmsAllowance('org', 30, 'Hi', send, tuesday)).resolves.toBe('sent')
   })
 })
 
