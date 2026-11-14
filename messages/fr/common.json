@@ -227,7 +227,10 @@
   },
   "shareLink": {
     "generateFailed": "Impossible de créer le lien. Veuillez réessayer.",
-    "revokeFailed": "Impossible de confirmer la révocation du lien. Il fonctionne peut-être encore pour toute personne qui l'a."
+    "revokeFailed": "Impossible de confirmer la révocation du lien. Il fonctionne peut-être encore pour toute personne qui l'a.",
+    "channelNotConnected": "Connectez {channel} dans Intégrations pour envoyer par ce moyen.",
+    "openIntegrations": "Ouvrir Intégrations",
+    "channelNotInPlan": "{channel} n'est pas inclus dans votre forfait."
   },
   "searchableSelect": {
     "choose": "Choisir...",

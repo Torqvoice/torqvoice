@@ -227,7 +227,10 @@
   },
   "shareLink": {
     "generateFailed": "Bağlantı oluşturulamadı. Tekrar deneyin.",
-    "revokeFailed": "Bağlantının iptali doğrulanamadı. Bağlantıya sahip olan herkes onu hâlâ açabilir."
+    "revokeFailed": "Bağlantının iptali doğrulanamadı. Bağlantıya sahip olan herkes onu hâlâ açabilir.",
+    "channelNotConnected": "Bu yolla göndermek için {channel} hizmetini Entegrasyonlar altında bağlayın.",
+    "openIntegrations": "Entegrasyonları aç",
+    "channelNotInPlan": "{channel} planınıza dahil değil."
   },
   "searchableSelect": {
     "choose": "Seçin...",

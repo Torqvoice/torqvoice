@@ -17,6 +17,8 @@ import {
 } from '@/features/quotes/Actions/quoteShareActions'
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
 import { sendSmsToCustomer, getSmsTemplates } from '@/features/sms/Actions/smsActions'
+import { NotifyChannelOption } from '@/features/messaging/Components/NotifyChannelOption'
+import { useShareChannels } from '@/features/messaging/Lib/useShareChannels'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 import { AttachPdfOption, useAttachPdf } from '@/features/email/Components/AttachPdfOption'
@@ -35,7 +37,6 @@ interface QuoteShareDialogProps {
     email: string | null
     phone: string | null
   } | null
-  smsEnabled?: boolean
   emailEnabled?: boolean
 }
 
@@ -47,7 +48,6 @@ export function QuoteShareDialog({
   initialToken,
   onSent,
   customer,
-  smsEnabled = false,
   emailEnabled = false,
 }: QuoteShareDialogProps) {
   const [publicToken, setPublicToken] = useState<string | null>(initialToken)
@@ -63,6 +63,8 @@ export function QuoteShareDialog({
 
   const hasEmail = !!customer?.email
   const hasPhone = !!customer?.phone
+  const channels = useShareChannels(open)
+  const smsReady = channels?.sms === 'ready' && hasPhone
 
   const publicUrl =
     publicToken && organizationId
@@ -130,7 +132,7 @@ export function QuoteShareDialog({
       }
     }
 
-    if (notifySms && hasPhone) {
+    if (smsReady && notifySms) {
       const tplResult = await getSmsTemplates()
       const tplData = tplResult.success && tplResult.data ? tplResult.data : null
       const tpl =
@@ -168,7 +170,7 @@ export function QuoteShareDialog({
     if (results.length > 0 && !failed) onOpenChange(false)
   }
 
-  const canNotify = publicUrl && customer && (notifyEmail || notifySms)
+  const canNotify = publicUrl && customer && (notifyEmail || (smsReady && notifySms))
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -200,7 +202,7 @@ export function QuoteShareDialog({
               </div>
 
               {/* Notify customer */}
-              {customer && (emailEnabled || smsEnabled) && (
+              {customer && (
                 <div className="space-y-3 rounded-lg border p-3">
                   <p className="text-sm font-medium">
                     {t('shareDialog.notifyTitle', { name: customer.name })}
@@ -234,24 +236,16 @@ export function QuoteShareDialog({
                         />
                       </div>
                     )}
-                    {smsEnabled && (
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id="notify-sms-quote"
-                          checked={notifySms}
-                          onCheckedChange={(v) => setNotifySms(v === true)}
-                          disabled={!hasPhone}
-                        />
-                        <Label
-                          htmlFor="notify-sms-quote"
-                          className={`flex items-center gap-1.5 text-sm ${!hasPhone ? 'text-muted-foreground/50' : ''}`}
-                        >
-                          <MessageSquare className="h-3.5 w-3.5" />
-                          {t('shareDialog.sms')}
-                          {!hasPhone && <span className="text-xs">{t('shareDialog.noPhone')}</span>}
-                        </Label>
-                      </div>
-                    )}
+                    <NotifyChannelOption
+                      id="notify-sms-quote"
+                      icon={<MessageSquare className="h-3.5 w-3.5" />}
+                      label={t('shareDialog.sms')}
+                      checked={notifySms}
+                      onCheckedChange={setNotifySms}
+                      status={channels?.sms}
+                      isCloud={channels?.isCloud ?? false}
+                      missingContact={hasPhone ? null : t('shareDialog.noPhone')}
+                    />
                   </div>
                   {/* Always here, disabled until a channel is ticked: it used to
                       appear on the first tick and shove the dialog around. */}

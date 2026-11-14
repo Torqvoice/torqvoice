@@ -821,7 +821,6 @@ export function ServicePageClient({
               initialToken={record.publicToken}
               onSent={handleInvoiceSent}
               customer={customer}
-              smsEnabled={smsEnabled}
               emailEnabled={emailEnabled}
             />
 

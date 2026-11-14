@@ -1166,7 +1166,6 @@ export function InspectionPageClient({
         organizationId={inspection.organizationId}
         publicToken={inspection.publicToken}
         customer={inspection.vehicle.customer}
-        smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}
       />
 
