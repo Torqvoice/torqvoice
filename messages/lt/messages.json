@@ -76,5 +76,9 @@
     "sent": "Išsiųsta {name}",
     "sendError": "Nepavyko išsiųsti žinutės",
     "templates": "Šablonai"
+  },
+  "errors": {
+    "countryNotAvailable": "SMS žinutės į šią šalį iš Torqvoice numerio negalimos. Prijunkite savo SMS paslaugų teikėją skiltyje Nustatymai, kad galėtumėte siųsti žinutes šiam klientui.",
+    "countryNotAllowedOwn": "Jūsų Twilio paskyra neleidžia siųsti SMS žinučių į šią šalį. Įjunkite šią šalį Twilio skiltyje Geo permissions ir siųskite dar kartą."
   }
 }

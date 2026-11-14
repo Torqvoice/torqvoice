@@ -69,6 +69,32 @@ export async function getPlatformSmsAllowance(organizationId: string): Promise<n
   return route?.source === 'platform' ? route.dailyLimit : null
 }
 
+// ─── Refusals worth explaining ──────────────────────────────────────────────
+
+/**
+ * Twilio's code for a destination country the account is not allowed to text
+ * (its geo permissions). The account owner decides which countries are on, so
+ * the text never went out and nothing was charged.
+ */
+const TWILIO_REGION_NOT_ALLOWED = 21408
+
+/**
+ * The provider refused the text because of the country it was going to.
+ * `platform` says whose account refused: the platform's shared one, where the
+ * workshop can only connect its own provider, or the workshop's own, where it
+ * can turn the country on itself. Callers that talk to a person turn this into
+ * a translated sentence; the message is the plain English one for logs and
+ * stored records.
+ */
+export class SmsCountryRefusedError extends Error {
+  platform = false
+
+  constructor() {
+    super('Texts to this country are not allowed by the SMS account.')
+    this.name = 'SmsCountryRefusedError'
+  }
+}
+
 // ─── Twilio ──────────────────────────────────────────────────────────────────
 
 interface TwilioResult {
@@ -111,8 +137,9 @@ async function sendViaTwilio(
   })
 
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(`Twilio error: ${(err as { message?: string }).message || res.statusText}`)
+    const err = (await res.json().catch(() => ({}))) as { message?: string; code?: number }
+    if (err.code === TWILIO_REGION_NOT_ALLOWED) throw new SmsCountryRefusedError()
+    throw new Error(`Twilio error: ${err.message || res.statusText}`)
   }
 
   const data = (await res.json()) as TwilioResult
@@ -314,7 +341,24 @@ export async function sendOrgSms(
   // scheduled reminders and the messages typed by hand all draw on the same
   // allowance. A workshop's own provider is its own bill and has no limit.
   if (route.source === 'platform') {
-    return withPlatformSmsAllowance(organizationId, route.dailyLimit, options.body, send)
+    return withPlatformSmsAllowance(organizationId, route.dailyLimit, options.body, send).catch(
+      (error: unknown) => {
+        if (error instanceof SmsCountryRefusedError) {
+          error.platform = true
+          error.message =
+            'Texts to this country are not available from the Torqvoice number. ' +
+            'Connect your own SMS provider to text this customer.'
+        }
+        throw error
+      }
+    )
   }
-  return send()
+  return send().catch((error: unknown) => {
+    if (error instanceof SmsCountryRefusedError) {
+      error.message =
+        'Your Twilio account does not allow texts to this country. ' +
+        'Turn the country on under Geo permissions in Twilio.'
+    }
+    throw error
+  })
 }

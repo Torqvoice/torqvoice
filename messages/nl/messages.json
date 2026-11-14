@@ -76,5 +76,9 @@
     "sent": "Verzonden naar {name}",
     "sendError": "Kan het bericht niet versturen",
     "templates": "Sjablonen"
+  },
+  "errors": {
+    "countryNotAvailable": "Sms'en naar dit land zijn niet beschikbaar via het Torqvoice-nummer. Koppel uw eigen sms-provider in Instellingen om deze klant een sms te sturen.",
+    "countryNotAllowedOwn": "Uw Twilio-account staat geen sms'en naar dit land toe. Schakel het land in onder Geo permissions in Twilio en verstuur het bericht opnieuw."
   }
 }
