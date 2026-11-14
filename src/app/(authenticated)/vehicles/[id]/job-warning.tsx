@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useMemo } from 'react'
 import { AlertTriangle } from 'lucide-react'
 import { useFormatter, useTranslations } from 'next-intl'
@@ -73,22 +74,26 @@ export function useJobWarningText() {
 /**
  * A job's booking problems on the job's own row, in the work order's own
  * words: every problem on one amber line, cut short where the row runs out
- * and whole on hover. The row around it is the way into the job to fix it.
+ * and whole on hover. Like the row around it, it opens the job to fix it.
  */
-export function JobWarningLine({ warning }: { warning: VehicleJobWarning }) {
+export function JobWarningLine({ warning, href }: { warning: VehicleJobWarning; href: string }) {
   const text = useJobWarningText()
   const said = text.lines(warning).join(' · ')
   return (
-    <span
+    // A link of its own, above the row's stretched link: the pointer reaches
+    // it, so the whole warning shows on hover where the line is cut short,
+    // and a click still opens the job.
+    <Link
+      href={href}
       data-testid="job-warning"
       title={`${text.heading}: ${said}`}
-      className="flex min-w-0 items-start gap-1.5 font-medium text-amber-700 @2xl:items-center dark:text-amber-400"
+      className="relative z-10 flex min-w-0 items-start gap-1.5 font-medium text-amber-700 @2xl:items-center dark:text-amber-400"
     >
       <AlertTriangle aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 @2xl:mt-0" />
       <span className="sr-only">{text.heading}: </span>
       {/* In full where the row is stacked and has the room; one line, cut
           short, where it shares the row with the table's other columns. */}
       <span className="min-w-0 whitespace-normal @2xl:truncate">{said}</span>
-    </span>
+    </Link>
   )
 }

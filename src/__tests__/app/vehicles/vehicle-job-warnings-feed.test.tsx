@@ -179,6 +179,28 @@ describe('the jobs table on the vehicle page', () => {
     expect(within(row).getByText('Unpaid')).toBeInTheDocument()
   })
 
+  it('still says a job is unpaid when its booking has a problem too', () => {
+    const billed = workOrder({
+      id: 'wo-billed',
+      title: 'Clutch',
+      status: 'in-progress',
+      startDateTime: day(16),
+      totalAmount: 900,
+      laborItems: [{ description: 'Clutch kit' }],
+    })
+    renderFeed([warning({ serviceRecordId: 'wo-billed', closures: ['Staff day'] })], [billed], {
+      'wo-billed': 'unpaid',
+    })
+
+    const row = rowOf('Clutch')
+    expect(within(row).getByText('Unpaid')).toBeInTheDocument()
+    // The warning opens the job itself, so it can be hovered and clicked.
+    const said = within(row).getByTestId('job-warning')
+    expect(said).toHaveTextContent('The workshop is closed then: Staff day')
+    expect(said).toHaveAttribute('href', '/vehicles/veh-1/service/wo-billed')
+    expect(said).toHaveAttribute('title', expect.stringContaining('Staff day'))
+  })
+
   it('flags nothing when no job has a problem', () => {
     renderFeed([])
     expect(screen.queryByTestId('job-warning')).not.toBeInTheDocument()

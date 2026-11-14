@@ -253,18 +253,21 @@ export function VehicleActivityFeed({
         number={wo.invoiceNumber}
         attachments={wo._count.attachments}
         detail={
-          warning ? (
-            <JobWarningLine warning={warning} />
-          ) : (
-            <>
-              {debt && (
-                <span className="font-medium text-destructive">
-                  {debt === 'partial' ? t('partlyPaid') : tHeader('unpaid')}
-                </span>
-              )}
-              {workDone(wo) || (summary && summary !== wo.title ? summary : null)}
-            </>
-          )
+          <>
+            {debt && (
+              <span className="font-medium text-destructive">
+                {debt === 'partial' ? t('partlyPaid') : tHeader('unpaid')}
+              </span>
+            )}
+            {/* What is owed is said whatever else is: with several bills out,
+                the row is the only place that says which. A booking problem
+                takes the place of what was done, not of the debt. */}
+            {warning ? (
+              <JobWarningLine warning={warning} href={href} />
+            ) : (
+              workDone(wo) || (summary && summary !== wo.title ? summary : null)
+            )}
+          </>
         }
         hasDetail={Boolean(warning || debt || workDone(wo))}
         extra={
@@ -512,6 +515,14 @@ function Row({
           {hasDetail && (
             <div className="mt-0.5 flex min-w-0 items-center gap-2 truncate text-[12.5px] text-muted-foreground">
               {detail}
+            </div>
+          )}
+          {/* Between the stacked row and the full table there is a status
+              column but not yet one for the technician, so the name stays
+              under the title until its column appears. */}
+          {tech && (
+            <div className="mt-0.5 hidden truncate text-[12.5px] text-muted-foreground @2xl:block @4xl:hidden">
+              {tech}
             </div>
           )}
           {hasMeta && (
