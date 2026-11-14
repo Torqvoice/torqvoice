@@ -119,7 +119,7 @@
     "nothingOpen": "Ingenting åpent",
     "observationItem": "Observasjon · {severity}",
     "reminderItem": "Påminnelse · {due}",
-    "newMenu": "Ny",
+    "moreToAdd": "Legg til mer",
     "closePanel": "Lukk",
     "feed": {
       "all": "Alt",

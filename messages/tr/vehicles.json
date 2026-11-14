@@ -119,7 +119,7 @@
     "nothingOpen": "Açık kayıt yok",
     "observationItem": "Gözlem · {severity}",
     "reminderItem": "Hatırlatıcı · {due}",
-    "newMenu": "Yeni",
+    "moreToAdd": "Daha fazla ekle",
     "closePanel": "Kapat",
     "feed": {
       "all": "Tümü",

@@ -119,7 +119,7 @@
     "nothingOpen": "Niets open",
     "observationItem": "Observatie · {severity}",
     "reminderItem": "Herinnering · {due}",
-    "newMenu": "Nieuw",
+    "moreToAdd": "Meer toevoegen",
     "closePanel": "Sluiten",
     "feed": {
       "all": "Alles",

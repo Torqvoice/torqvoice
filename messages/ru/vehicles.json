@@ -119,7 +119,7 @@
     "nothingOpen": "Открытых нет",
     "observationItem": "Наблюдение · {severity}",
     "reminderItem": "Напоминание · {due}",
-    "newMenu": "Создать",
+    "moreToAdd": "Добавить ещё",
     "closePanel": "Закрыть",
     "feed": {
       "all": "Всё",

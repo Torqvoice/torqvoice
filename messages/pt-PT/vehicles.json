@@ -119,7 +119,7 @@
     "nothingOpen": "Nada pendente",
     "observationItem": "Observação · {severity}",
     "reminderItem": "Lembrete · {due}",
-    "newMenu": "Novo",
+    "moreToAdd": "Adicionar mais",
     "closePanel": "Fechar",
     "feed": {
       "all": "Tudo",

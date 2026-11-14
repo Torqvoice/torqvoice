@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { ButtonGroup, ButtonGroupSeparator } from '@/components/ui/button-group'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
@@ -1470,60 +1471,68 @@ export function VehicleDetailClient({
                 )}
               </form>
             )}
+            {/* A work order is what this page starts most, so it is one click;
+                everything else that can be added waits behind the arrow. */}
             {!vehicle.isArchived && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button size="sm" className="h-8">
+              <ButtonGroup className="shrink-0">
+                <Button size="sm" className="h-8" asChild>
+                  <Link href={`/vehicles/${vehicle.id}/service/new`}>
                     <Plus className="mr-1 h-4 w-4" />
-                    {t('newMenu')}
-                    <ChevronDown className="ml-1 h-3.5 w-3.5 opacity-70" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="min-w-48">
-                  <DropdownMenuItem asChild>
-                    <Link href={`/vehicles/${vehicle.id}/service/new`}>
-                      <Wrench className="mr-2 h-4 w-4" />
-                      {t('newWorkOrder')}
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowNewQuoteDialog(true)}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    {tq('newQuote')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setShowNewInspection(true)}>
-                    <ClipboardCheck className="mr-2 h-4 w-4" />
-                    {ti('newInspection')}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditingNote(undefined)
-                      setShowNoteForm(true)
-                    }}
-                  >
-                    <StickyNote className="mr-2 h-4 w-4" />
-                    {tNotes('addNote')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditingFinding(undefined)
-                      setShowFindingForm(true)
-                    }}
-                  >
-                    <AlertTriangle className="mr-2 h-4 w-4" />
-                    {tf('addFinding')}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => {
-                      setEditingReminder(undefined)
-                      setShowReminderForm(true)
-                    }}
-                  >
-                    <Bell className="mr-2 h-4 w-4" />
-                    {tr('addReminder')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                    {t('newWorkOrder')}
+                  </Link>
+                </Button>
+                <ButtonGroupSeparator className="bg-primary-foreground/25" />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="h-8 w-8 px-0"
+                      aria-label={t('moreToAdd')}
+                      title={t('moreToAdd')}
+                    >
+                      <ChevronDown className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="min-w-48">
+                    <DropdownMenuItem onClick={() => setShowNewQuoteDialog(true)}>
+                      <FileText className="mr-2 h-4 w-4" />
+                      {tq('newQuote')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowNewInspection(true)}>
+                      <ClipboardCheck className="mr-2 h-4 w-4" />
+                      {ti('newInspection')}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditingNote(undefined)
+                        setShowNoteForm(true)
+                      }}
+                    >
+                      <StickyNote className="mr-2 h-4 w-4" />
+                      {tNotes('addNote')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditingFinding(undefined)
+                        setShowFindingForm(true)
+                      }}
+                    >
+                      <AlertTriangle className="mr-2 h-4 w-4" />
+                      {tf('addFinding')}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setEditingReminder(undefined)
+                        setShowReminderForm(true)
+                      }}
+                    >
+                      <Bell className="mr-2 h-4 w-4" />
+                      {tr('addReminder')}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </ButtonGroup>
             )}
           </div>
 

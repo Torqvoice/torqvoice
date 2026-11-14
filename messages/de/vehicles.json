@@ -119,7 +119,7 @@
     "nothingOpen": "Nichts offen",
     "observationItem": "Beobachtung · {severity}",
     "reminderItem": "Erinnerung · {due}",
-    "newMenu": "Neu",
+    "moreToAdd": "Weiteres hinzufügen",
     "closePanel": "Schließen",
     "feed": {
       "all": "Alles",

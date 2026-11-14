@@ -119,7 +119,7 @@
     "nothingOpen": "Atvirų nėra",
     "observationItem": "Pastebėjimas · {severity}",
     "reminderItem": "Priminimas · {due}",
-    "newMenu": "Naujas",
+    "moreToAdd": "Pridėti daugiau",
     "closePanel": "Uždaryti",
     "feed": {
       "all": "Viskas",
