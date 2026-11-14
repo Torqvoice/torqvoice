@@ -28,7 +28,20 @@ export const PLATFORM_SMS_KEYS = {
   TWILIO_ACCOUNT_SID: 'platformSms.twilio.accountSid',
   TWILIO_AUTH_TOKEN: 'platformSms.twilio.authToken',
   PHONE_NUMBER: 'platformSms.phoneNumber',
+  TWILIO_MESSAGING_SERVICE_SID: 'platformSms.twilio.messagingServiceSid',
 } as const
+
+/**
+ * Where the send path finds a Twilio Messaging Service to send through instead
+ * of a single number. Only the platform account sets it: no country has one
+ * number that reaches the whole world, so the platform sends through a service
+ * that picks the sender per country, the name "Torqvoice" where that is
+ * allowed and a local number where it is not.
+ */
+export const TWILIO_MESSAGING_SERVICE_KEY = 'sms.twilio.messagingServiceSid'
+
+/** What a text sent through the service is recorded as coming from. */
+export const PLATFORM_SENDER_LABEL = 'Torqvoice'
 
 /**
  * The platform account under the keys the send path already reads, or null
@@ -47,16 +60,25 @@ export async function platformSmsAccount(): Promise<Map<string, string> | null> 
   const accountSid = stored.get(PLATFORM_SMS_KEYS.TWILIO_ACCOUNT_SID)
   const authToken = stored.get(PLATFORM_SMS_KEYS.TWILIO_AUTH_TOKEN)
   const phoneNumber = stored.get(PLATFORM_SMS_KEYS.PHONE_NUMBER)
-  // All three or nothing. Half an account cannot send, and offering SMS on
-  // the strength of it would only queue messages that fail.
-  if (!accountSid || !authToken || !phoneNumber) return null
+  const messagingServiceSid = stored.get(PLATFORM_SMS_KEYS.TWILIO_MESSAGING_SERVICE_SID)
+  // The account and something to send from, or nothing. Half an account
+  // cannot send, and offering SMS on the strength of it would only queue
+  // messages that fail.
+  if (!accountSid || !authToken || !(messagingServiceSid || phoneNumber)) return null
 
-  return new Map([
+  const settings = new Map<string, string>([
     [ORG_SMS_KEYS.SMS_PROVIDER, 'twilio'],
-    [ORG_SMS_KEYS.SMS_PHONE_NUMBER, phoneNumber],
     [ORG_SMS_KEYS.SMS_TWILIO_ACCOUNT_SID, accountSid],
     [ORG_SMS_KEYS.SMS_TWILIO_AUTH_TOKEN, authToken],
   ])
+  // A service wins over a number: the service picks the sender per country.
+  if (messagingServiceSid) {
+    settings.set(TWILIO_MESSAGING_SERVICE_KEY, messagingServiceSid)
+    settings.set(ORG_SMS_KEYS.SMS_PHONE_NUMBER, PLATFORM_SENDER_LABEL)
+  } else if (phoneNumber) {
+    settings.set(ORG_SMS_KEYS.SMS_PHONE_NUMBER, phoneNumber)
+  }
+  return settings
 }
 
 function today(now: Date): string {
