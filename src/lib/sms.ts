@@ -3,7 +3,11 @@ import { channelSettings } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getFeatures } from './features'
-import { platformSmsAccount, withPlatformSmsAllowance } from './platform-sms'
+import {
+  platformSmsAccount,
+  TWILIO_MESSAGING_SERVICE_KEY,
+  withPlatformSmsAllowance,
+} from './platform-sms'
 import { normalizePortalPhone } from './portal-phone'
 
 export type SmsProvider = 'twilio' | 'vonage' | 'telnyx'
@@ -88,7 +92,14 @@ async function sendViaTwilio(
   const url = `https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`
   const credentials = Buffer.from(`${accountSid}:${authToken}`).toString('base64')
 
-  const params = new URLSearchParams({ From: from, To: to, Body: body })
+  // The platform account sends through a Messaging Service, which chooses the
+  // sender per country; everyone else sends from their own number.
+  const messagingServiceSid = settings.get(TWILIO_MESSAGING_SERVICE_KEY)
+  const params = new URLSearchParams(
+    messagingServiceSid
+      ? { MessagingServiceSid: messagingServiceSid, To: to, Body: body }
+      : { From: from, To: to, Body: body }
+  )
 
   const res = await fetch(url, {
     method: 'POST',

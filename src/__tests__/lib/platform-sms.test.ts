@@ -86,7 +86,7 @@ const ownTwilio = new Map([
 ])
 
 /** Every text Twilio was asked to send: which account, from which number, to whom. */
-let sent: { account: string; from: string; to: string; body: string }[] = []
+let sent: { account: string; from: string; to: string; body: string; service?: string }[] = []
 let twilioDown = false
 
 const fetchMock = vi.fn(async (url: string, init: { body: string }) => {
@@ -99,6 +99,9 @@ const fetchMock = vi.fn(async (url: string, init: { body: string }) => {
     from: params.get('From') ?? '',
     to: params.get('To') ?? '',
     body: params.get('Body') ?? '',
+    ...(params.get('MessagingServiceSid')
+      ? { service: params.get('MessagingServiceSid') ?? '' }
+      : {}),
   })
   return { ok: true, json: async () => ({ sid: `SM${sent.length}`, status: 'queued' }) }
 })
@@ -216,6 +219,50 @@ describe('a paid workshop with no SMS provider of its own', () => {
     await expect(withPlatformSmsAllowance('org', 30, 'Hi', send, monday)).rejects.toThrow()
 
     await expect(withPlatformSmsAllowance('org', 30, 'Hi', send, tuesday)).resolves.toBe('sent')
+  })
+})
+
+describe('a platform account with a Messaging Service', () => {
+  const SERVICE = 'MG00000000000000000000000000000000'
+
+  beforeEach(() => {
+    systemSettings = [
+      ...platformAccount.filter((row) => !row.key.endsWith('phoneNumber')),
+      { key: 'platformSms.twilio.messagingServiceSid', value: SERVICE },
+    ]
+  })
+
+  it('sends through the service, which picks the sender for the country', async () => {
+    await text()
+
+    expect(sent).toEqual([
+      {
+        account: 'ACplatform',
+        from: '',
+        to: CUSTOMER,
+        body: 'Your car is ready',
+        service: SERVICE,
+      },
+    ])
+  })
+
+  it('needs no phone number, and records the text as from Torqvoice', async () => {
+    expect(await getOrgSmsProvider('org')).toBe('twilio')
+    expect(await getOrgSmsPhoneNumber('org')).toBe('Torqvoice')
+  })
+
+  it('uses the service when a number is saved as well', async () => {
+    systemSettings = [...systemSettings, platformAccount[2]]
+
+    await text()
+
+    expect(sent[0]).toMatchObject({ from: '', service: SERVICE })
+  })
+
+  it('still counts against the daily allowance', async () => {
+    await textTimes(30)
+
+    await expect(text()).rejects.toMatchObject({ feature: 'platformSmsDaily', limit: 30 })
   })
 })
 
