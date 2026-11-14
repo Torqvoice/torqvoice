@@ -1691,7 +1691,11 @@
     "version": "Wersja",
     "website": "Strona",
     "documentation": "Dokumentacja",
-    "changelog": "Dziennik zmian"
+    "changelog": "Dziennik zmian",
+    "whatsNew": "Nowości",
+    "whatsNewOpen": "Zobacz nowości",
+    "whatsNewTab": "Pokazuj kartę Nowości z boku ekranu",
+    "whatsNewTabHint": "Tylko na większych ekranach."
   },
   "portal": {
     "title": "Portal klienta",

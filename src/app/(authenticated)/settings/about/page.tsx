@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { Separator } from '@/components/ui/separator'
 import { ExternalLink, Info } from 'lucide-react'
+import { WhatsNewAboutRows } from '@/features/whats-new/Components/WhatsNewAboutRows'
 
 export default async function AboutSettingsPage() {
   const t = await getTranslations('settings')
@@ -45,6 +46,7 @@ export default async function AboutSettingsPage() {
               </Link>
             </div>
           ))}
+          <WhatsNewAboutRows />
         </div>
       </AppCard>
     </div>

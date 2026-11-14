@@ -1691,7 +1691,11 @@
     "version": "Versie",
     "website": "Website",
     "documentation": "Documentatie",
-    "changelog": "Wijzigingslog"
+    "changelog": "Wijzigingslog",
+    "whatsNew": "Wat is er nieuw",
+    "whatsNewOpen": "Bekijk wat er nieuw is",
+    "whatsNewTab": "Het tabblad Wat is er nieuw aan de zijkant van het scherm tonen",
+    "whatsNewTabHint": "Alleen op grotere schermen."
   },
   "portal": {
     "title": "Klantenportaal",

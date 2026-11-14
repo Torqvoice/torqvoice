@@ -99,14 +99,23 @@ export function WhatsNewFeedback({
     cn(
       'flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
       vote === which
-        ? 'bg-primary/15 text-foreground'
+        ? 'bg-primary text-primary-foreground'
         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
     )
 
   return (
-    <div className="flex flex-col gap-2 pt-1">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
-        <span className="mr-1 text-xs text-muted-foreground">{t('question')}</span>
+        <span className="mr-auto flex items-center gap-2 text-xs text-muted-foreground">
+          {commentSent ? (
+            <span className="flex items-center gap-1" role="status">
+              <Check className="h-3.5 w-3.5 text-primary" />
+              {t('thanks')}
+            </span>
+          ) : (
+            t('question')
+          )}
+        </span>
         <button
           type="button"
           onClick={() => cast('up')}
@@ -129,18 +138,9 @@ export function WhatsNewFeedback({
         >
           <ThumbsDown className="h-3.5 w-3.5" />
         </button>
-        {commentSent && (
-          <span
-            className="ml-1 flex items-center gap-1 text-xs text-muted-foreground"
-            role="status"
-          >
-            <Check className="h-3.5 w-3.5" />
-            {t('thanks')}
-          </span>
-        )}
       </div>
       {writing && vote && (
-        <div className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-3">
+        <div className="flex flex-col gap-2 pb-1.5 pt-1">
           <label htmlFor={commentId} className="text-xs font-medium">
             {vote === 'down' ? t('askDown') : t('askUp')}
           </label>

@@ -1691,7 +1691,11 @@
     "version": "Versija",
     "website": "Svetainė",
     "documentation": "Dokumentacija",
-    "changelog": "Pakeitimų žurnalas"
+    "changelog": "Pakeitimų žurnalas",
+    "whatsNew": "Naujienos",
+    "whatsNewOpen": "Žiūrėti naujienas",
+    "whatsNewTab": "Rodyti skirtuką Naujienos ekrano šone",
+    "whatsNewTabHint": "Tik didesniuose ekranuose."
   },
   "portal": {
     "title": "Kliento portalas",

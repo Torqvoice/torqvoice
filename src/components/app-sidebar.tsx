@@ -87,6 +87,7 @@ import {
   NotificationPanel,
 } from '@/features/notifications/Components/NotificationPanel'
 import { InstallMenuItem } from '@/components/pwa-install-prompt'
+import { WhatsNewMenuItem } from '@/features/whats-new/Components/WhatsNewMenuItem'
 import { FullscreenLauncher, FullscreenMenuItem } from '@/components/fullscreen-toggle'
 import { FeatureHint } from '@/components/feature-hint'
 import { ANNOUNCEMENTS } from '@/features/settings/Lib/featureHints'
@@ -736,6 +737,7 @@ export function AppSidebar({
                 {/* Device conveniences, out of the navigation where they
                     used to pass for pages. Each renders nothing where it
                     does not apply. */}
+                <WhatsNewMenuItem />
                 <InstallMenuItem />
                 <FullscreenMenuItem />
                 <DropdownMenuSeparator />

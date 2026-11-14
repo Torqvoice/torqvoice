@@ -22,11 +22,24 @@ vi.mock('@/features/whats-new/Actions/sendWhatsNewFeedback', () => ({
   sendWhatsNewFeedback: (input: unknown) => sendWhatsNewFeedback(input),
 }))
 
+const loadMoreWhatsNew = vi.fn(async (_offset: unknown) => ({
+  success: true,
+  data: { entries: [] as WhatsNewEntry[], hasMore: false },
+}))
+vi.mock('@/features/whats-new/Actions/loadMoreWhatsNew', () => ({
+  loadMoreWhatsNew: (offset: unknown) => loadMoreWhatsNew(offset),
+}))
+
 const toastError = vi.fn()
-vi.mock('sonner', () => ({ toast: { error: (message: string) => toastError(message) } }))
+const toastPlain = vi.fn()
+vi.mock('sonner', () => ({
+  toast: Object.assign((message: string) => toastPlain(message), {
+    error: (message: string) => toastError(message),
+  }),
+}))
 
 const { WhatsNewProvider } = await import('@/features/whats-new/Components/WhatsNewProvider')
-const { WhatsNewButton } = await import('@/features/whats-new/Components/WhatsNewButton')
+const { WhatsNewAboutRows } = await import('@/features/whats-new/Components/WhatsNewAboutRows')
 
 const ENTRIES: WhatsNewEntry[] = [
   {
@@ -63,17 +76,21 @@ function show({
   entries = ENTRIES,
   unread = ['appointments'],
   feedback = 'anonymous' as 'identified' | 'anonymous' | null,
+  tabHidden = false,
+  hasMore = false,
 } = {}) {
   return render(
     <WhatsNewProvider
       entries={entries}
+      hasMore={hasMore}
       unreadIds={unread}
+      initialTabHidden={tabHidden}
       timeZone="Europe/Oslo"
       appVersion="v2.14.0"
       releaseNotesUrl="https://example.test/releases"
       feedback={feedback}
     >
-      <WhatsNewButton />
+      <WhatsNewAboutRows />
     </WhatsNewProvider>
   )
 }
@@ -84,9 +101,10 @@ beforeEach(() => {
 })
 
 describe("What's new", () => {
-  it('offers no button when there is nothing to read', () => {
+  it('offers nothing to press when there is nothing to read', () => {
     show({ entries: [], unread: [] })
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
+    expect(screen.queryByRole('switch')).not.toBeInTheDocument()
   })
 
   it('says there is something unseen, then stops saying so once the panel was opened', async () => {
@@ -222,5 +240,69 @@ describe("What's new, when things go wrong", () => {
     })
     await user.click(screen.getByRole('button', { name: "What's new" }))
     expect(screen.queryByRole('link', { name: /Open the calendar/ })).not.toBeInTheDocument()
+  })
+})
+
+describe("the What's new tab on the edge of the screen", () => {
+  it('can be sent away, says where to get it back, and stays away', async () => {
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: 'Hide this tab' }))
+
+    expect(screen.queryByRole('button', { name: /^What's new/ })).not.toBeInTheDocument()
+    expect(toastPlain).toHaveBeenCalledWith(
+      'Tab hidden. You can turn it back on in Settings, About.'
+    )
+    expect(document.cookie).toContain('whatsNewTab=hidden')
+  })
+
+  it('is not drawn for somebody who hid it, but the news can still be opened from About', async () => {
+    const user = userEvent.setup()
+    show({ tabHidden: true })
+    expect(screen.queryByRole('button', { name: /^What's new/ })).not.toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'See what is new' }))
+    expect(await screen.findByRole('dialog', { name: "What's new" })).toBeInTheDocument()
+  })
+
+  it('comes back when it is switched on again in About', async () => {
+    const user = userEvent.setup()
+    show({ tabHidden: true })
+    const toggle = screen.getByRole('switch', {
+      name: /Show the What's new tab at the side of the screen/,
+    })
+    expect(toggle).not.toBeChecked()
+    await user.click(toggle)
+
+    expect(screen.getByRole('button', { name: /^What's new/ })).toBeInTheDocument()
+    expect(document.cookie).toContain('whatsNewTab=shown')
+  })
+})
+
+describe("older highlights in the What's new panel", () => {
+  it('offers nothing more when the first page is all there is', async () => {
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    expect(screen.queryByRole('button', { name: 'Show older updates' })).not.toBeInTheDocument()
+  })
+
+  it('adds the next page under the ones already shown, and stops offering at the end', async () => {
+    loadMoreWhatsNew.mockResolvedValueOnce({
+      success: true,
+      data: {
+        entries: [{ ...ENTRIES[1], id: 'closures', title: 'Closed days and staff leave' }],
+        hasMore: false,
+      },
+    })
+    const user = userEvent.setup()
+    show({ hasMore: true })
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    await user.click(screen.getByRole('button', { name: 'Show older updates' }))
+
+    expect(loadMoreWhatsNew).toHaveBeenCalledWith(ENTRIES.length)
+    expect(await screen.findByText('Closed days and staff leave')).toBeInTheDocument()
+    expect(screen.getByText('Appointments on the calendar')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Show older updates' })).not.toBeInTheDocument()
   })
 })

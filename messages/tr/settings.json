@@ -1691,7 +1691,11 @@
     "version": "Sürüm",
     "website": "Web Sitesi",
     "documentation": "Belgeler",
-    "changelog": "Değişiklik Günlüğü"
+    "changelog": "Değişiklik Günlüğü",
+    "whatsNew": "Yenilikler",
+    "whatsNewOpen": "Yenilikleri gör",
+    "whatsNewTab": "Yenilikler sekmesini ekranın kenarında göster",
+    "whatsNewTabHint": "Yalnızca büyük ekranlarda."
   },
   "portal": {
     "title": "Müşteri Portalı",
