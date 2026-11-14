@@ -14,6 +14,7 @@ import {
   removePulledPayment,
   workshopCurrency,
   workshopDistanceUnit,
+  workshopVehicleLabel,
 } from '@/features/integrations/Lib/accounting-sync'
 import { oauthSpec, resolveClient, tokenUrlFor } from '@/features/integrations/Lib/oauth'
 import {
@@ -719,6 +720,9 @@ async function buildBody(
     dueDate: zonedDayKey(inv.dueDate ?? inv.invoiceDate, ctx.timezone),
     timezone: ctx.timezone,
     includeVehicle: settings.includeVehicle,
+    vehicleLabel: settings.includeVehicle
+      ? await workshopVehicleLabel(ctx.connection.organizationId)
+      : 'Vehicle',
     includeNotes: settings.includeNotes,
     notesPosition: settings.notesPosition,
     includePartNumbers: settings.includePartNumbers,

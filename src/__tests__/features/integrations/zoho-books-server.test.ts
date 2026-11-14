@@ -39,6 +39,7 @@ vi.mock('@/features/integrations/Lib/accounting-sync', () => ({
   removePulledPayment: (...args: unknown[]) => removePulledPayment(...args),
   workshopCurrency: async () => 'NOK',
   workshopDistanceUnit: async () => 'km',
+  workshopVehicleLabel: async () => 'Vehicle',
 }))
 
 const { connector } = await import('@/integrations/zoho-books/server')

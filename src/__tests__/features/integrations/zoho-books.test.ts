@@ -124,6 +124,7 @@ function options(overrides: Partial<InvoiceOptions> = {}): InvoiceOptions {
     dueDate: '2026-11-18',
     timezone: 'Europe/Oslo',
     includeVehicle: true,
+    vehicleLabel: 'Vehicle',
     includeNotes: true,
     notesPosition: 'customerNotes',
     includePartNumbers: true,
@@ -282,6 +283,49 @@ describe('invoices', () => {
       buildInvoice(odd, options({ includeVehicle: false, includeNotes: false }))
     )
     expect(line).toMatchObject({ quantity: 1, rate: 50, description: 'Diagnosis (1.5 × 33.3333)' })
+  })
+
+  it('keeps the quantity of a line sold as a Zoho item, so the right count leaves the shelf', () => {
+    // 2.5 of a SKU priced 19.99 is 49.975: no exact two-place rate gives it.
+    const stock: AccountingInvoice = {
+      ...invoice,
+      discountAmount: 0,
+      subtotal: 49.98,
+      taxAmount: 12.5,
+      totalAmount: 62.48,
+      lines: [
+        {
+          kind: 'part',
+          description: 'Wiper blade',
+          partNumber: 'WB-19',
+          quantity: 2.5,
+          unitPrice: 19.99,
+          total: 49.975,
+          taxable: true,
+        },
+      ],
+    }
+    const [line] = linesOf(
+      buildInvoice(
+        stock,
+        options({
+          includeVehicle: false,
+          includeNotes: false,
+          partItems: new Map([['WB-19', 'item-wb']]),
+        })
+      )
+    )
+    expect(line).toMatchObject({
+      item_id: 'item-wb',
+      quantity: 2.5,
+      rate: 19.99,
+      description: 'WB-19 Wiper blade',
+    })
+  })
+
+  it('writes the vehicle label in the workshop’s own language', () => {
+    const body = buildInvoice(invoice, options({ vehicleLabel: 'Kjøretøy' }))
+    expect(String(body.notes)).toMatch(/^Kjøretøy: 2019 BMW 5-Serie/)
   })
 
   it('keeps line ids by position so an edit changes lines instead of replacing them', () => {

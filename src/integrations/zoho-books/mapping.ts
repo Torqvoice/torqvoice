@@ -244,6 +244,8 @@ export interface InvoiceOptions {
   dueDate: string
   timezone: string
   includeVehicle: boolean
+  /** "Vehicle" or "Vessel" in the workshop's document language, in front of the vehicle line. */
+  vehicleLabel: string
   includeNotes: boolean
   /** Where the vehicle and the notes go: Zoho's customer notes, or a line above or below the charges. */
   notesPosition: 'customerNotes' | 'above' | 'below'
@@ -362,7 +364,9 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
 
   const vehicle = o.includeVehicle ? vehicleDescription(inv, o.distanceUnit) : null
   const notes = o.includeNotes ? inv.notes?.trim() || null : null
-  const extra = [vehicle ? `Vehicle: ${vehicle}` : null, notes].filter(Boolean).join('\n\n')
+  const extra = [vehicle ? `${o.vehicleLabel}: ${vehicle}` : null, notes]
+    .filter(Boolean)
+    .join('\n\n')
 
   const lines: ZohoLine[] = []
   const textLine = (text: string): ZohoLine => ({
@@ -377,12 +381,19 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
   priced.forEach((line, i) => {
     const cents = Math.round(amounts[i] * 100)
     const description = lineDescription(line, o.includePartNumbers)
+    const item = itemFor(line, o)
     let quantity: number
     let rate: number
     let text = description
     if (exactCents(line.quantity, line.unitPrice) === cents) {
       quantity = line.quantity
       rate = line.unitPrice
+    } else if (item && line.quantity > 0) {
+      // A line sold as a Zoho item keeps its quantity, or Zoho takes the
+      // wrong count off the shelf. The rate moves to the two places Zoho
+      // keeps; a cent the line is then off goes into the rounding adjustment.
+      quantity = line.quantity
+      rate = round2(amounts[i] / line.quantity)
     } else {
       // One unit at the line's amount, so Zoho has nothing left to round.
       quantity = 1
@@ -399,7 +410,6 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
       discount: discounts[i],
       tax_id: taxed && line.taxable ? (o.taxId ?? '') : o.zeroTaxId,
     }
-    const item = itemFor(line, o)
     if (item) zl.item_id = item
     const account = accountFor(line, o)
     if (account) zl.account_id = account

@@ -167,7 +167,8 @@ export const manifest: ConnectorManifest = {
         { value: 'below', label: 'notesPositionBelow' },
         { value: 'above', label: 'notesPositionAbove' },
       ],
-      showWhen: { key: 'includeNotes', equals: true },
+      // It places the vehicle too, so it stays visible with the notes off.
+      showWhen: { key: 'pushInvoices', equals: true },
     },
     {
       key: 'includePartNumbers',
