@@ -1,5 +1,6 @@
 import 'server-only'
-import { torqvoiceComUrl } from '@/lib/torqvoice-com'
+import { isCloudMode } from '@/lib/features'
+import { appOrigin, torqvoiceComUrl } from '@/lib/torqvoice-com'
 import { type WhatsNewEntry, whatsNewFeedSchema } from '../Schema/whatsNewSchema'
 import { sanitizeBody } from './sanitizeBody'
 
@@ -15,8 +16,22 @@ type Cached = { entries: WhatsNewEntry[]; expiresAt: number; refreshing?: Promis
 const globalForFeed = globalThis as unknown as { __whatsNewFeed?: Map<string, Cached> }
 const cache = (globalForFeed.__whatsNewFeed ??= new Map())
 
+/**
+ * Where the feed is asked for. A Torqvoice Cloud deployment names its own
+ * address, which is how the staging app is handed the entries being tried
+ * out there before they go live. A self-hosted install says nothing about
+ * itself: its address is the workshop's business, and it gets the same
+ * production entries either way.
+ */
+export function whatsNewFeedUrl(locale: string): string {
+  const url = new URL(`${torqvoiceComUrl()}/api/app/whats-new`)
+  url.searchParams.set('locale', locale)
+  if (isCloudMode()) url.searchParams.set('app', appOrigin())
+  return url.toString()
+}
+
 async function load(locale: string): Promise<WhatsNewEntry[]> {
-  const url = `${torqvoiceComUrl()}/api/app/whats-new?locale=${encodeURIComponent(locale)}`
+  const url = whatsNewFeedUrl(locale)
   const response = await fetch(url, {
     signal: AbortSignal.timeout(TIMEOUT_MS),
     headers: { accept: 'application/json' },
@@ -44,7 +59,8 @@ function refresh(locale: string, previous: WhatsNewEntry[]): Promise<void> {
  * The highlights torqvoice.com has published, in the reader's language.
  *
  * Asked for by this server, never by the browser, and with nothing about the
- * workshop in the request: only the language. Kept in memory for ten minutes
+ * workshop in the request: only the language (and, on Torqvoice Cloud, the
+ * deployment's own address). Kept in memory for ten minutes
  * per language; once that has passed the old list is still returned at once
  * and the new one is fetched behind it, so only the very first request after
  * a start ever waits. A failure is an empty list, and the button that opens
