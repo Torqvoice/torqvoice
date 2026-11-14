@@ -3,6 +3,7 @@ import { vi } from 'vitest'
 import fs from 'fs'
 import path from 'path'
 import { IntlMessageFormat } from 'intl-messageformat'
+import { Fragment, type ReactNode, createElement } from 'react'
 
 // ---------------------------------------------------------------------------
 // Load all English translation files so the next-intl mock resolves keys to
@@ -89,7 +90,21 @@ vi.mock('next-intl', () => ({
     t.raw = (key: string) => resolve(messages, key) ?? key
     t.rich = (key: string, values?: Record<string, unknown>) => {
       const tpl = resolve(messages, key)
-      return tpl ? interpolate(tpl, values) : key
+      if (!tpl) return key
+      const text = interpolate(tpl, values)
+      // Tags whose value is a function render through it, as in next-intl:
+      // "Pay with <vendor></vendor>" puts the vendor's mark where the tag is.
+      const parts: unknown[] = []
+      let last = 0
+      for (const m of text.matchAll(/<(\w+)>(.*?)<\/\1>/g)) {
+        const render = values?.[m[1]]
+        if (typeof render !== 'function') continue
+        parts.push(text.slice(last, m.index), render(m[2]))
+        last = (m.index ?? 0) + m[0].length
+      }
+      if (parts.length === 0) return text
+      parts.push(text.slice(last))
+      return createElement(Fragment, null, ...(parts as ReactNode[]))
     }
     t.markup = (key: string) => resolve(messages, key) ?? key
     t.has = (key: string) => resolve(messages, key) !== undefined

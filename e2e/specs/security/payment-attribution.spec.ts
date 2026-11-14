@@ -94,7 +94,7 @@ test.describe('a PayPal order', () => {
       await expect(page.locator('#payAmount')).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
     await page.locator('#payAmount').fill('100')
-    await page.getByRole('button', { name: /with PayPal$/ }).click()
+    await page.getByRole('button', { name: /^Pay with PayPal / }).click()
     await expect(page.getByRole('heading', { name: /checkout/ })).toBeVisible({ timeout: 30_000 })
     await page.getByRole('button', { name: 'Pay', exact: true }).click()
     await expect(page.getByText('Payment received!')).toBeVisible({ timeout: 30_000 })

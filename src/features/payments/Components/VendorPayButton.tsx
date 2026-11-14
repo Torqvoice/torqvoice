@@ -26,7 +26,12 @@ interface Props {
   caption: (mark: ReactNode) => ReactNode
   /** The amount as the invoice shows it. */
   amount: string
-  /** The whole sentence for screen readers and tests: "Pay 1,000.00 with PayPal". */
+  /**
+   * What the button is called while the spinner hides the caption:
+   * "Pay 1,000.00 with PayPal". Otherwise the name is what the button shows,
+   * "Pay with PayPal 1,000.00", so someone using voice control can say what
+   * they see.
+   */
   label: string
   loading: boolean
   disabled: boolean
@@ -204,7 +209,7 @@ export function VendorPayButton({
         type="button"
         onClick={onClick}
         disabled={disabled}
-        aria-label={label}
+        aria-label={loading ? label : undefined}
         className={`flex h-12 w-full items-stretch overflow-hidden rounded-lg text-sm font-medium transition-colors disabled:opacity-60 ${v.classes}`}
       >
         <span className="flex flex-1 items-center justify-center gap-1.5 px-3">

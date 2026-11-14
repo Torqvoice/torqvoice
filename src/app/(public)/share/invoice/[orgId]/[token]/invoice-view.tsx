@@ -667,9 +667,7 @@ export function InvoiceView({
             {paymentError && <p className="mb-3 text-sm text-red-600">{paymentError}</p>}
 
             {/* Provider buttons, each drawn like the vendor's own checkout
-                button. The accessible name stays the full sentence the
-                page has always used, so screen readers and tests read
-                "Pay 1,000.00 with PayPal". */}
+                button. Its name is what it shows, "Pay with PayPal 1,000.00". */}
             <div className="flex flex-wrap gap-x-3 gap-y-4">
               {PAY_VENDORS.filter((vendor) => enabledProviders.includes(vendor.id)).map(
                 (vendor) => {

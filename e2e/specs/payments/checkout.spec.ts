@@ -66,14 +66,18 @@ async function expectWorkOrderPaymentState(
 }
 
 /** Starts a payment of `amount` with a vendor, and lands on its checkout page. */
-async function startPayment(page: Page, vendor: 'Card' | 'PayPal', amount: string): Promise<void> {
+async function startPayment(
+  page: Page,
+  vendor: 'Stripe' | 'PayPal',
+  amount: string
+): Promise<void> {
   await openInvoice(page)
   await expect(async () => {
     await page.getByRole('button', { name: 'Partial payment', exact: true }).click()
     await expect(page.locator('#payAmount')).toBeVisible({ timeout: 2_000 })
   }).toPass({ timeout: 30_000 })
   await page.locator('#payAmount').fill(amount)
-  await page.getByRole('button', { name: new RegExp(`with ${vendor}$`) }).click()
+  await page.getByRole('button', { name: new RegExp(`^Pay with ${vendor} `) }).click()
   await expect(page.getByRole('heading', { name: /checkout/ })).toBeVisible({ timeout: 30_000 })
 }
 
@@ -159,8 +163,8 @@ test.describe('the invoice a customer is sent', () => {
     await openInvoice(page)
     await expect(page.getByText('Balance Due').first()).toBeVisible()
     await expect(page.getByText(/\$1,?000\.00/).first(), 'the total the job came to').toBeVisible()
-    await expect(page.getByRole('button', { name: /Pay \$1,?000\.00 with Card/ })).toBeVisible()
-    await expect(page.getByRole('button', { name: /Pay \$1,?000\.00 with PayPal/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Pay with Stripe \$1,?000\.00$/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Pay with PayPal \$1,?000\.00$/ })).toBeVisible()
   })
 
   test('refuses to charge more than is owed', async ({ request }) => {
@@ -178,7 +182,7 @@ test.describe('the invoice a customer is sent', () => {
 
 test.describe('paying part of it by card', () => {
   test('charges what the customer chose, for this invoice', async ({ page }) => {
-    await startPayment(page, 'Card', '400')
+    await startPayment(page, 'Stripe', '400')
 
     // The vendor was asked for exactly that, in cents, and told whose invoice
     // it is: the metadata is what the notification is matched on later.
@@ -193,7 +197,7 @@ test.describe('paying part of it by card', () => {
   test('is recorded when the customer comes back, and the invoice says what is left', async ({
     page,
   }) => {
-    await startPayment(page, 'Card', '400')
+    await startPayment(page, 'Stripe', '400')
     await page.getByRole('button', { name: 'Pay', exact: true }).click()
 
     // Back on the invoice, which checks with Stripe before believing it.
@@ -207,7 +211,7 @@ test.describe('paying part of it by card', () => {
 
     // The customer's copy owes the rest, and offers it.
     await openInvoice(page)
-    await expect(page.getByRole('button', { name: /Pay \$600\.00 with Card/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Pay with Stripe \$600\.00$/ })).toBeVisible()
   })
 
   test('is not counted twice when the same payment is reported again', async ({
@@ -267,7 +271,7 @@ test.describe('a customer who changes their mind at the vendor', () => {
     // Back on the invoice with the same balance, and no payment on the books.
     await expect(page).toHaveURL(new RegExp(new URL(invoiceUrl).pathname))
     await settle(page)
-    await expect(page.getByRole('button', { name: /Pay \$600\.00 with PayPal/ })).toBeVisible()
+    await expect(page.getByRole('button', { name: /^Pay with PayPal \$600\.00$/ })).toBeVisible()
     expect((await paymentsFor(jobId)).length).toBe(1)
   })
 })
@@ -293,7 +297,7 @@ test.describe('paying the rest through PayPal', () => {
 
     // Nothing is owed, so the customer is offered nothing to pay.
     await openInvoice(page)
-    await expect(page.getByRole('button', { name: /with Card|with PayPal/ })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: /^Pay with (Stripe|PayPal) / })).toHaveCount(0)
   })
 
   test('is not counted twice when PayPal reports it too', async ({ request }) => {
