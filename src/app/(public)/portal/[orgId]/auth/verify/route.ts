@@ -86,6 +86,15 @@ export async function POST(request: Request, { params }: RouteParams) {
   const link = await checkSignInLink(orgId, token)
   if (!link.ok) return fail(SIGN_IN_LINK_ERRORS[link.problem])
 
+  // The page names who is about to sign in, and the cookie is shared by every
+  // tab. If a second link was opened since that page was drawn, the cookie now
+  // holds a different link than the one the button was shown for: show the
+  // page again, with the right name on it, rather than sign in as someone else.
+  const form = await request.formData().catch(() => null)
+  if (form?.get('link') !== link.id) {
+    return NextResponse.redirect(`${baseUrl}/portal/${orgParam}/auth/confirm`, 303)
+  }
+
   if (!(await redeemSignInLink(link.id))) return fail(SIGN_IN_LINK_ERRORS.used)
 
   const customer = await db.customer.findFirst({

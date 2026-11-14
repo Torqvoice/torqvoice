@@ -41,8 +41,15 @@ const link = (overrides: Record<string, unknown> = {}) => ({
 
 const open = (token = TOKEN) => GET(new Request(`${BASE}/verify?token=${token}`), params)
 
-const press = (cookie: string | null = `customer-signin=${TOKEN}`) =>
-  POST(new Request(`${BASE}/verify`, { method: 'POST', headers: cookie ? { cookie } : {} }), params)
+const press = (cookie: string | null = `customer-signin=${TOKEN}`, shownLink = 'link-1') =>
+  POST(
+    new Request(`${BASE}/verify`, {
+      method: 'POST',
+      headers: cookie ? { cookie } : {},
+      body: new URLSearchParams({ link: shownLink }),
+    }),
+    params
+  )
 
 const cookiesOf = (res: Response) => res.headers.getSetCookie().join('\n')
 
@@ -120,6 +127,20 @@ describe('pressing Continue to sign in', () => {
     const res = await press()
 
     expect(decodeURIComponent(res.headers.get('location') ?? '')).toContain('already been used')
+    expect(db.customerSession.create).not.toHaveBeenCalled()
+  })
+
+  it('shows the page again instead of signing in as whoever opened a link in another tab', async () => {
+    // The page was drawn for one customer; a second link opened since then
+    // replaced the cookie, so the button no longer means what the page says.
+    vi.mocked(db.customerMagicLink.findUnique).mockResolvedValue(
+      link({ id: 'link-2', email: 'ola@example.com' }) as never
+    )
+
+    const res = await press(undefined, 'link-1')
+
+    expect(res.headers.get('location')).toBe(`${BASE}/confirm`)
+    expect(db.customerMagicLink.updateMany).not.toHaveBeenCalled()
     expect(db.customerSession.create).not.toHaveBeenCalled()
   })
 

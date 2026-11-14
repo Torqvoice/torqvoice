@@ -48,6 +48,8 @@ export default async function PortalConfirmSignInPage({
         </CardHeader>
         <CardContent>
           <form method="post" action={`/portal/${orgParam}/auth/verify`}>
+            {/* Which link this page was drawn for; see the verify route. */}
+            <input type="hidden" name="link" value={link.id} />
             <Button type="submit" size="lg" className="w-full">
               {t('confirmButton')}
             </Button>
