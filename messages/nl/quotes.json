@@ -22,7 +22,7 @@
     "quote": "Offerte",
     "save": "Opslaan",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Versturen",
     "share": "Delen",
     "delete": "Verwijderen",
     "deleteTitle": "Offerte verwijderen",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Offerte delen",
     "description": "Genereer een openbare link waarmee iedereen deze offerte kan bekijken en downloaden zonder in te loggen.",
-    "notifyTitle": "{name} op de hoogte stellen",
-    "email": "E-mail",
-    "noEmail": "(geen e-mail geregistreerd)",
-    "sms": "SMS",
-    "noPhone": "(geen telefoonnummer geregistreerd)",
-    "sendNotification": "Melding verzenden",
     "revokeLink": "Link intrekken",
     "generateLink": "Openbare link genereren",
-    "emailSent": "E-mail verzonden",
-    "failedEmail": "E-mail verzenden mislukt",
-    "smsSent": "SMS verzonden",
-    "failedSms": "SMS verzenden mislukt",
     "copyLink": "Link kopiëren"
   },
   "images": {

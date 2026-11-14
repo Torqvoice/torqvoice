@@ -156,8 +156,6 @@
     "preview": "Предпросмотр",
     "failed": "Не удалось создать предпросмотр PDF."
   },
-  "attachPdf": "Прикрепить PDF",
-  "attachPdfHint": "Отключите, чтобы отправить ссылку вместо файла и видеть, когда клиент её открыл.",
   "sentCopy": {
     "note": "Отправлен {date}. Изменения здесь попадут в счёт, когда он будет отправлен повторно.",
     "confirmTitle": "Этот счёт уже отправлен",
@@ -225,12 +223,39 @@
     "title": "Не удалось связаться с Torqvoice",
     "description": "Последнее изменение могло не сохраниться. Проверьте подключение и повторите попытку."
   },
+  "sendDocument": {
+    "titleQuote": "Отправить предложение",
+    "titleInvoice": "Отправить счёт",
+    "titleInspection": "Отправить осмотр",
+    "description": "Клиент получит ссылку для просмотра и скачивания.",
+    "email": "Эл. почта",
+    "emailAddress": "Адрес эл. почты",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Также приложить PDF",
+    "sms": "SMS",
+    "smsNumber": "Номер телефона для SMS",
+    "whatsappNumber": "Номер телефона для WhatsApp",
+    "phonePlaceholder": "Номер телефона",
+    "message": "Сообщение (необязательно, добавляется в письмо)",
+    "messagePlaceholder": "Добавьте личное сообщение...",
+    "copyLink": "Копировать ссылку",
+    "send": "Отправить",
+    "emailSent": "Письмо отправлено",
+    "failedEmail": "Не удалось отправить письмо",
+    "smsSent": "SMS отправлено",
+    "failedSms": "Не удалось отправить SMS"
+  },
   "shareLink": {
     "generateFailed": "Не удалось создать ссылку. Попробуйте ещё раз.",
     "revokeFailed": "Не удалось подтвердить отзыв ссылки. Она может по-прежнему работать для всех, у кого она есть.",
     "channelNotConnected": "Подключите {channel} в разделе Интеграции, чтобы отправлять этим способом.",
     "openIntegrations": "Открыть Интеграции",
-    "channelNotInPlan": "{channel} не входит в ваш тариф."
+    "channelNotInPlan": "{channel} не входит в ваш тариф.",
+    "channelTurnedOff": "Отправка через {channel} отключена для этой мастерской.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp отправлено",
+    "failedWhatsapp": "Не удалось отправить сообщение WhatsApp",
+    "whatsappWindowClosed": "Этот клиент не писал вам в WhatsApp за последние 24 часа, а одобренный шаблон для связи с ним не настроен."
   },
   "searchableSelect": {
     "choose": "Выберите...",

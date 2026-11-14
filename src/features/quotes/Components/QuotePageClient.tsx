@@ -1,6 +1,5 @@
 'use client'
 
-import { track } from '@/lib/analytics'
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
 import { ShopFeeProvider } from '@/features/settings/Components/ShopFeeContext'
@@ -25,7 +24,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable'
 import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
-import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
+import { SendDocumentDialog } from '@/features/messaging/Components/SendDocumentDialog'
 import { revokeQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
 import { QuoteShareDialog } from '@/features/quotes/Components/QuoteShareDialog'
 import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
@@ -39,7 +38,7 @@ import {
   FileText,
   Globe,
   Loader2,
-  Mail,
+  Send,
   Paperclip,
   Save,
   Trash2,
@@ -102,7 +101,6 @@ export function QuotePageClient({
   distanceUnit,
   laborPresets = [],
   inventoryParts = [],
-  emailEnabled = false,
   imageAttachments = [],
   documentAttachments = [],
   maxImages,
@@ -132,7 +130,6 @@ export function QuotePageClient({
   distanceUnit: string
   laborPresets?: LaborPresetOption[]
   inventoryParts?: InventoryPartOption[]
-  emailEnabled?: boolean
   imageAttachments?: QuoteAttachment[]
   documentAttachments?: QuoteAttachment[]
   maxImages?: number
@@ -431,9 +428,9 @@ export function QuotePageClient({
                       {state.saving ? (
                         <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
                       ) : (
-                        <Mail className="mr-1 h-3.5 w-3.5" />
+                        <Send className="mr-1 h-3.5 w-3.5" />
                       )}
-                      {t('page.email')}
+                      {t('page.send')}
                     </Button>
                     <Button
                       variant="outline"
@@ -589,24 +586,21 @@ export function QuotePageClient({
               url={`/api/protected/quotes/${quote.id}/pdf`}
             />
 
-            <SendEmailDialog
+            <SendDocumentDialog
               open={state.showEmailDialog}
               onOpenChange={state.setShowEmailDialog}
-              defaultEmail={quote.customer?.email || ''}
-              entityLabel={t('page.entityLabel')}
-              onSend={async (email, message, attachPdf) => {
-                const result = await sendQuoteEmail({
-                  quoteId: quote.id,
-                  recipientEmail: email,
-                  message,
-                  attachPdf,
-                })
-                if (result.success) {
-                  track('document:email_send', { document: 'quote' })
-                  handleQuoteSent()
-                }
-                return result
-              }}
+              kind="quote"
+              documentId={quote.id}
+              shareUrl={
+                quote.publicToken
+                  ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/quote/${organizationId}/${quote.publicToken}`
+                  : null
+              }
+              customer={quote.customer}
+              sendEmail={(email, message, attachPdf) =>
+                sendQuoteEmail({ quoteId: quote.id, recipientEmail: email, message, attachPdf })
+              }
+              onSent={handleQuoteSent}
             />
 
             <QuoteShareDialog
@@ -616,8 +610,6 @@ export function QuotePageClient({
               organizationId={organizationId}
               initialToken={quote.publicToken}
               onSent={handleQuoteSent}
-              customer={quote.customer}
-              emailEnabled={emailEnabled}
             />
 
             <Dialog open={state.showConvertDialog} onOpenChange={state.setShowConvertDialog}>

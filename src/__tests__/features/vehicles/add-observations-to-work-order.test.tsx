@@ -60,7 +60,9 @@ vi.mock('@/features/vehicles/Components/service-page/InvoiceDesignMenu', () => (
 vi.mock('@/features/vehicles/Components/service-page/PayCodeButton', () => ({
   PayCodeButton: () => null,
 }))
-vi.mock('@/features/email/Components/SendEmailDialog', () => ({ SendEmailDialog: () => null }))
+vi.mock('@/features/messaging/Components/SendDocumentDialog', () => ({
+  SendDocumentDialog: () => null,
+}))
 vi.mock('@/features/vehicles/Components/service-detail/ImageCarousel', () => ({
   ImageCarousel: () => null,
 }))

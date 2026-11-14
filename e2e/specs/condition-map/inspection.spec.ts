@@ -79,8 +79,8 @@ async function complete(page: Page) {
   const confirm = page.getByRole('alertdialog', { name: 'Complete this inspection?' })
   await confirm.getByRole('button', { name: 'Complete', exact: true }).click()
   await expect(page.getByText('Inspection completed').first()).toBeVisible()
-  // Completing offers to share the certificate straight away; not today.
-  const share = page.getByRole('dialog').filter({ hasText: 'Share a read-only view' })
+  // Completing offers to send the certificate straight away; not today.
+  const share = page.getByRole('dialog', { name: 'Send inspection' })
   const offered = await share
     .waitFor({ state: 'visible', timeout: 5_000 })
     .then(() => true)

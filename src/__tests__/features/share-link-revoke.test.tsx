@@ -45,7 +45,11 @@ vi.mock('@/features/sms/Actions/smsActions', () => ({
   getSmsTemplates: vi.fn(),
 }))
 vi.mock('@/features/messaging/Lib/useShareChannels', () => ({
-  useShareChannels: () => ({ sms: 'ready', isCloud: false }),
+  useShareChannels: () => ({ sms: 'ready', whatsapp: 'not_connected', isCloud: false }),
+  useWhatsappReach: () => undefined,
+}))
+vi.mock('@/features/whatsapp/Actions/whatsappActions', () => ({
+  sendWhatsappToCustomer: vi.fn(),
 }))
 vi.mock('@/features/email/Actions/emailPreferenceActions', () => ({
   getAttachPdfDefault: async () => ({ success: true, data: { attachPdf: true } }),

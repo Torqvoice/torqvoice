@@ -36,6 +36,7 @@ import {
   Save,
   Settings2,
   Wrench,
+  Send,
   Share2,
   Trash2,
   Eye,
@@ -49,6 +50,8 @@ import {
   createQuoteFromInspection,
 } from '../Actions/inspectionActions'
 import { InspectionShareDialog } from './InspectionShareDialog'
+import { SendDocumentDialog } from '@/features/messaging/Components/SendDocumentDialog'
+import { sendInspectionEmail } from '@/features/email/Actions/emailActions'
 import { InspectionNotesCard } from './InspectionNotesCard'
 import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
 import { WorkOrderFromInspectionDialog } from './WorkOrderFromInspectionDialog'
@@ -270,6 +273,7 @@ export function InspectionPageClient({
   const [showReopenDialog, setShowReopenDialog] = useState(false)
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showShareDialog, setShowShareDialog] = useState(false)
+  const [showSendDialog, setShowSendDialog] = useState(false)
   const [isCreatingQuote, setIsCreatingQuote] = useState(false)
   const [isCreatingWorkOrder, setIsCreatingWorkOrder] = useState(false)
   const [showWorkOrderDialog, setShowWorkOrderDialog] = useState(false)
@@ -441,7 +445,8 @@ export function InspectionPageClient({
       if (done?.success) {
         toast.success(t('completed'))
         setShowCompleteDialog(false)
-        setShowShareDialog(true)
+        // A finished inspection is usually what the customer is waiting for.
+        setShowSendDialog(true)
         router.refresh()
       } else {
         toast.error(done?.error || t('completeFailed'))
@@ -556,6 +561,12 @@ export function InspectionPageClient({
               label={t('preview')}
               onClick={() => setShowPreview(true)}
               data-testid="inspection-preview"
+            />
+            <BarButton
+              variant="outline"
+              icon={Send}
+              label={t('send')}
+              onClick={() => setShowSendDialog(true)}
             />
             <BarButton
               variant="outline"
@@ -1165,8 +1176,28 @@ export function InspectionPageClient({
         inspectionId={inspection.id}
         organizationId={inspection.organizationId}
         publicToken={inspection.publicToken}
+      />
+
+      <SendDocumentDialog
+        open={showSendDialog}
+        onOpenChange={setShowSendDialog}
+        kind="inspection"
+        documentId={inspection.id}
+        shareUrl={
+          inspection.publicToken
+            ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/inspection/${inspection.organizationId}/${inspection.publicToken}`
+            : null
+        }
         customer={inspection.vehicle.customer}
-        emailEnabled={emailEnabled}
+        sendEmail={(email, message, attachPdf) =>
+          sendInspectionEmail({
+            inspectionId: inspection.id,
+            recipientEmail: email,
+            message,
+            attachPdf,
+          })
+        }
+        onSent={() => router.refresh()}
       />
 
       <MediaLightbox

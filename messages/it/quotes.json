@@ -22,7 +22,7 @@
     "quote": "Preventivo",
     "save": "Salva",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Invia",
     "share": "Condividi",
     "delete": "Elimina",
     "deleteTitle": "Elimina preventivo",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Condividi preventivo",
     "description": "Genera un link pubblico che consente a chiunque di visualizzare e scaricare questo preventivo senza effettuare l'accesso.",
-    "notifyTitle": "Notifica {name}",
-    "email": "E-mail",
-    "noEmail": "(nessuna e-mail registrata)",
-    "sms": "SMS",
-    "noPhone": "(nessun telefono registrato)",
-    "sendNotification": "Invia notifica",
     "revokeLink": "Revoca link",
     "generateLink": "Genera link pubblico",
-    "emailSent": "E-mail inviata",
-    "failedEmail": "Invio e-mail non riuscito",
-    "smsSent": "SMS inviato",
-    "failedSms": "Invio SMS non riuscito",
     "copyLink": "Copia link"
   },
   "images": {

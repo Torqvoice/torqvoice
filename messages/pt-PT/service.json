@@ -35,7 +35,7 @@
     },
     "save": "Guardar",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Enviar",
     "share": "Partilhar",
     "notify": "Notificar",
     "delete": "Eliminar",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Partilhar fatura",
     "description": "Gere um link público que permite a qualquer pessoa ver e transferir esta fatura sem iniciar sessão.",
-    "notifyTitle": "Notificar {name}",
-    "email": "E-mail",
-    "noEmail": "(sem e-mail registado)",
-    "sms": "SMS",
-    "noPhone": "(sem telefone registado)",
-    "sendNotification": "Enviar notificação",
     "revokeLink": "Revogar link",
     "generateLink": "Gerar link público",
-    "emailSent": "E-mail enviado",
-    "failedEmail": "Não foi possível enviar o e-mail",
-    "smsSent": "SMS enviado",
-    "failedSms": "Não foi possível enviar o SMS",
     "copyLink": "Copiar link"
   },
   "sidebar": {

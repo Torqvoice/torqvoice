@@ -22,7 +22,7 @@
     "quote": "Angebot",
     "save": "Speichern",
     "pdf": "PDF",
-    "email": "E-Mail",
+    "send": "Senden",
     "share": "Teilen",
     "delete": "Löschen",
     "deleteTitle": "Angebot löschen",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Angebot teilen",
     "description": "Erstellen Sie einen öffentlichen Link, über den jeder dieses Angebot ansehen und herunterladen kann, ohne sich anzumelden.",
-    "notifyTitle": "{name} benachrichtigen",
-    "email": "E-Mail",
-    "noEmail": "(keine E-Mail hinterlegt)",
-    "sms": "SMS",
-    "noPhone": "(keine Telefonnummer hinterlegt)",
-    "sendNotification": "Benachrichtigung senden",
     "revokeLink": "Link widerrufen",
     "generateLink": "Öffentlichen Link erstellen",
-    "emailSent": "E-Mail gesendet",
-    "failedEmail": "E-Mail konnte nicht gesendet werden",
-    "smsSent": "SMS gesendet",
-    "failedSms": "SMS konnte nicht gesendet werden",
     "copyLink": "Link kopieren"
   },
   "images": {

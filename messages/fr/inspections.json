@@ -53,6 +53,7 @@
     "statusCompleted": "Terminée",
     "complete": "Clôturer",
     "reopen": "Rouvrir",
+    "send": "Envoyer",
     "share": "Partager",
     "save": "Enregistrer",
     "saving": "Enregistrement…",
@@ -460,18 +461,8 @@
     "copied": "Lien copié dans le presse-papiers",
     "generated": "Lien de partage créé",
     "revoked": "Lien de partage révoqué",
-    "notifyTitle": "Notifier {name}",
-    "email": "E-mail",
-    "noEmail": "(aucun e-mail enregistré)",
-    "sms": "SMS",
-    "noPhone": "(aucun téléphone enregistré)",
-    "sendNotification": "Envoyer la notification",
     "revokeLink": "Révoquer le lien",
-    "generateLink": "Générer un lien public",
-    "emailSent": "E-mail envoyé",
-    "failedEmail": "Échec de l'envoi de l'e-mail",
-    "smsSent": "SMS envoyé",
-    "failedSms": "Échec de l'envoi du SMS"
+    "generateLink": "Générer un lien public"
   },
   "phone": {
     "pageTitle": "Photos de l'inspection",

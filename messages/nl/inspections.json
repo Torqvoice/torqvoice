@@ -53,6 +53,7 @@
     "statusCompleted": "Afgerond",
     "complete": "Afronden",
     "reopen": "Heropenen",
+    "send": "Versturen",
     "share": "Delen",
     "save": "Opslaan",
     "saving": "Opslaan…",
@@ -460,18 +461,8 @@
     "copied": "Link gekopieerd naar klembord",
     "generated": "Deellink aangemaakt",
     "revoked": "Deellink ingetrokken",
-    "notifyTitle": "{name} op de hoogte stellen",
-    "email": "E-mail",
-    "noEmail": "(geen e-mail geregistreerd)",
-    "sms": "SMS",
-    "noPhone": "(geen telefoonnummer geregistreerd)",
-    "sendNotification": "Melding verzenden",
     "revokeLink": "Link intrekken",
-    "generateLink": "Openbare link genereren",
-    "emailSent": "E-mail verzonden",
-    "failedEmail": "E-mail verzenden mislukt",
-    "smsSent": "SMS verzonden",
-    "failedSms": "SMS verzenden mislukt"
+    "generateLink": "Openbare link genereren"
   },
   "phone": {
     "pageTitle": "Foto's bij de keuring",

@@ -17,7 +17,7 @@ import {
 } from '@/features/inspections/Pdf/customerCertificatePdf'
 import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
-import { randomUUID } from 'crypto'
+import { ensureShareToken } from '@/lib/share-token.server'
 import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
 import type { VehicleContext } from '@/features/email/Lib/emailContext'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
@@ -92,7 +92,7 @@ export async function sendQuoteEmail(input: {
   quoteId: string
   recipientEmail: string
   message?: string
-  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  /** Attach the PDF as well as the link. Unset follows the setting. */
   attachPdf?: boolean
 }) {
   return withAuth(
@@ -147,15 +147,10 @@ export async function sendQuoteEmail(input: {
         : null
       const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
 
-      // The quote mail carried no link at all before, which left a link-only
-      // send with nothing in it. One is minted for a quote never shared.
-      const token = quote.publicToken ?? (attachPdf ? null : randomUUID())
-      if (token && token !== quote.publicToken) {
-        await db.quote.update({
-          where: { id: quoteId },
-          data: { publicToken: token, sharedAt: new Date() },
-        })
-      }
+      // The link always goes with the mail, with or without the PDF: it is
+      // where the customer accepts the quote and where the workshop sees it
+      // was opened. One is minted for a quote never shared.
+      const token = await ensureShareToken('quote', quoteId, organizationId)
       const publicLink = token ? `${getAppBaseUrl()}/share/quote/${organizationId}/${token}` : null
 
       await withPlatformMailAllowance(organizationId, sendingMode, async () =>
@@ -273,7 +268,7 @@ export async function sendInvoiceEmail(input: {
   serviceRecordId: string
   recipientEmail: string
   message?: string
-  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  /** Attach the PDF as well as the link. Unset follows the setting. */
   attachPdf?: boolean
 }) {
   return withAuth(
@@ -326,16 +321,12 @@ export async function sendInvoiceEmail(input: {
         : null
       const invoiceNum = invoiceNumberOf(record)
 
-      // Without the PDF the link is the whole mail, so one is minted here for
-      // a document that has never been shared. sharedAt goes with it, the way
-      // the share dialog sets it; sentAt is markInvoiceSent's job below.
-      const token = owned.publicToken ?? (attachPdf ? null : randomUUID())
-      if (token && token !== owned.publicToken) {
-        await db.serviceRecord.update({
-          where: { id: serviceRecordId },
-          data: { publicToken: token, sharedAt: new Date() },
-        })
-      }
+      // The link always goes with the mail, with or without the PDF: it is
+      // where the customer pays and where the workshop sees it was opened.
+      // One is minted here for a document that has never been shared.
+      // sharedAt goes with it, the way the share dialog sets it; sentAt is
+      // markInvoiceSent's job below.
+      const token = await ensureShareToken('invoice', serviceRecordId, organizationId)
       const publicLink = token
         ? `${getAppBaseUrl()}/share/invoice/${organizationId}/${token}`
         : null
@@ -403,7 +394,7 @@ export async function sendInspectionEmail(input: {
   inspectionId: string
   recipientEmail: string
   message?: string
-  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  /** Attach the PDF as well as the link. Unset follows the setting. */
   attachPdf?: boolean
 }) {
   return withAuth(
@@ -462,15 +453,9 @@ export async function sendInspectionEmail(input: {
         pdfBuffer = Buffer.from(certificate.body)
       }
 
-      // Without the PDF the link is the whole mail, so one is minted for an
-      // inspection that has never been shared.
-      const token = inspection.publicToken ?? (attachPdf ? null : randomUUID())
-      if (token && token !== inspection.publicToken) {
-        await db.inspection.update({
-          where: { id: inspectionId },
-          data: { publicToken: token },
-        })
-      }
+      // The link always goes with the mail, with or without the PDF. One is
+      // minted for an inspection that has never been shared.
+      const token = await ensureShareToken('inspection', inspectionId, organizationId)
       const publicLink = token
         ? `${getAppBaseUrl()}/share/inspection/${organizationId}/${token}`
         : null

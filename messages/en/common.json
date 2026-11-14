@@ -156,8 +156,6 @@
     "preview": "Preview",
     "failed": "Could not generate the PDF preview."
   },
-  "attachPdf": "Attach PDF",
-  "attachPdfHint": "Turn this off to send a link instead, so you can see when the customer opens it.",
   "sentCopy": {
     "note": "Sent {date}. Changes here go on the invoice when it is sent again.",
     "confirmTitle": "This invoice has already been sent",
@@ -225,12 +223,39 @@
     "title": "Couldn't reach Torqvoice",
     "description": "Your last change may not have been saved. Check your connection and try again."
   },
+  "sendDocument": {
+    "titleQuote": "Send quote",
+    "titleInvoice": "Send invoice",
+    "titleInspection": "Send inspection",
+    "description": "The customer gets a link to view and download it.",
+    "email": "Email",
+    "emailAddress": "Email address",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Attach the PDF as well",
+    "sms": "SMS",
+    "smsNumber": "Phone number for SMS",
+    "whatsappNumber": "Phone number for WhatsApp",
+    "phonePlaceholder": "Phone number",
+    "message": "Message (optional, added to the email)",
+    "messagePlaceholder": "Add a personal message...",
+    "copyLink": "Copy link",
+    "send": "Send",
+    "emailSent": "Email sent",
+    "failedEmail": "Failed to send email",
+    "smsSent": "SMS sent",
+    "failedSms": "Failed to send SMS"
+  },
   "shareLink": {
     "generateFailed": "Couldn't create the link. Try again.",
     "revokeFailed": "Couldn't confirm the link was revoked. It may still work for anyone who has it.",
     "channelNotConnected": "Connect {channel} under Integrations to send this way.",
     "openIntegrations": "Open Integrations",
-    "channelNotInPlan": "{channel} is not included in your plan."
+    "channelNotInPlan": "{channel} is not included in your plan.",
+    "channelTurnedOff": "{channel} sending is turned off for this workshop.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp sent",
+    "failedWhatsapp": "Failed to send WhatsApp message",
+    "whatsappWindowClosed": "This customer has not written to you on WhatsApp in the last 24 hours, and no approved template is set up to reach them."
   },
   "searchableSelect": {
     "choose": "Choose...",

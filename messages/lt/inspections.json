@@ -53,6 +53,7 @@
     "statusCompleted": "Baigta",
     "complete": "Užbaigti",
     "reopen": "Atverti iš naujo",
+    "send": "Siųsti",
     "share": "Bendrinti",
     "save": "Įrašyti",
     "saving": "Įrašoma…",
@@ -460,18 +461,8 @@
     "copied": "Nuoroda nukopijuota į iškarpinę",
     "generated": "Bendrinimo nuoroda sukurta",
     "revoked": "Bendrinimo nuoroda atšaukta",
-    "notifyTitle": "Pranešti {name}",
-    "email": "El. paštas",
-    "noEmail": "(nėra el. pašto)",
-    "sms": "SMS",
-    "noPhone": "(nėra telefono)",
-    "sendNotification": "Siųsti pranešimą",
     "revokeLink": "Atšaukti nuorodą",
-    "generateLink": "Generuoti viešą nuorodą",
-    "emailSent": "Laiškas išsiųstas",
-    "failedEmail": "Nepavyko išsiųsti laiško",
-    "smsSent": "SMS išsiųsta",
-    "failedSms": "Nepavyko išsiųsti SMS"
+    "generateLink": "Generuoti viešą nuorodą"
   },
   "phone": {
     "pageTitle": "Apžiūros nuotraukos",
