@@ -440,14 +440,18 @@ const smsTemplateFields = [
 function SmsTemplateTab({
   values,
   setValues,
+  defaults,
 }: {
   values: Record<string, string>
   setValues: (v: Record<string, string>) => void
+  /** The defaults in the workshop's language, the ones a text falls back to when sent. */
+  defaults: Record<string, string>
 }) {
   const t = useTranslations('settings')
   const handleReset = (key: string) => {
     const field = smsTemplateFields.find((f) => f.key === key)
-    const defaultVal = field ? t.raw(`templates.smsDefaults.${field.defaultKey}`) : ''
+    const defaultVal =
+      defaults[key] ?? (field ? t.raw(`templates.smsDefaults.${field.defaultKey}`) : '')
     setValues({ ...values, [key]: defaultVal })
   }
 
@@ -554,6 +558,7 @@ export function TemplateSettings({
   checklistLanguage = null,
   smsEnabled = false,
   initialSmsTemplates = {},
+  smsDefaults = {},
   logoUrl,
   workshop,
   invoiceLayoutConfig,
@@ -569,6 +574,8 @@ export function TemplateSettings({
   checklistLanguage?: string | null
   smsEnabled?: boolean
   initialSmsTemplates?: Record<string, string>
+  /** Reset restores these, in the workshop's language rather than the viewer's. */
+  smsDefaults?: Record<string, string>
   logoUrl?: string
   workshop?: WorkshopPreviewInfo
   invoiceLayoutConfig?: InvoiceLayoutConfig
@@ -785,7 +792,7 @@ export function TemplateSettings({
       ) : tab === 'sms' ? (
         <>
           <ReadOnlyWrapper>
-            <SmsTemplateTab values={smsValues} setValues={setSmsValues} />
+            <SmsTemplateTab values={smsValues} setValues={setSmsValues} defaults={smsDefaults} />
           </ReadOnlyWrapper>
           <SaveButton>
             <div className="flex justify-end">

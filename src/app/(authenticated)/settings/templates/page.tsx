@@ -168,6 +168,7 @@ export default async function TemplatePage() {
       checklistLanguage={checklistLanguage.success ? (checklistLanguage.data ?? null) : null}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
+      smsDefaults={smsDefaultMap}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
       workshop={workshop}
       savedDesigns={savedDesigns}
