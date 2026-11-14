@@ -9,9 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { handleGated } from '@/components/upgrade-gate'
 import { DocsLink } from '@/components/docs-link'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
+import { smsSegmentCount } from '@/lib/sms-segments'
 import { searchSmsRecipients, sendSmsToCustomer } from '../Actions/smsActions'
+import { SharedNumberNotice } from './SharedNumberNotice'
 import { SmsTemplateMenu } from './SmsTemplateMenu'
 
 interface Recipient {
@@ -19,16 +22,6 @@ interface Recipient {
   name: string
   company: string | null
   phone: string | null
-}
-
-/** GSM-7 segment sizes; a single message, then concatenated ones. */
-const SINGLE_SEGMENT = 160
-const MULTI_SEGMENT = 153
-
-function segmentCount(length: number): number {
-  if (length === 0) return 0
-  if (length <= SINGLE_SEGMENT) return 1
-  return Math.ceil(length / MULTI_SEGMENT)
 }
 
 interface NewSmsDialogProps {
@@ -90,14 +83,14 @@ export function NewSmsDialog({
       toast.success(t('sent', { name: recipient.name }))
       onOpenChange(false)
       onSent?.(recipient.id)
-    } else {
+    } else if (!handleGated(result)) {
       toast.error(result.error || t('sendError'))
     }
     setSending(false)
   }
 
   const chars = body.length
-  const segments = segmentCount(chars)
+  const segments = smsSegmentCount(body)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -204,6 +197,7 @@ export function NewSmsDialog({
               <p className="text-right text-xs text-muted-foreground tabular-nums">
                 {t('segments', { chars, segments })}
               </p>
+              <SharedNumberNotice enabled={open} />
             </div>
 
             <div className="flex flex-wrap justify-end gap-2 pt-1">

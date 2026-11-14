@@ -47,7 +47,8 @@
     "messageDeleted": "Mesaj silindi",
     "deleteError": "Mesaj silinemedi",
     "sendError": "SMS gönderilemedi",
-    "sendMessage": "Mesaj gönder"
+    "sendMessage": "Mesaj gönder",
+    "sharedNumber": "Paylaşılan bir Torqvoice numarasından gönderildi, günde en fazla {limit} SMS. Uzun bir SMS birden fazla sayılır. Bu numaraya gelen yanıtlar size ulaşmaz. Çift yönlü mesajlaşma için Ayarlar'dan kendi SMS sağlayıcınızı bağlayın."
   },
   "sendDialog": {
     "send": "{label} gönder",

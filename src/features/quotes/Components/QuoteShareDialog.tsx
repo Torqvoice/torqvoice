@@ -153,7 +153,7 @@ export function QuoteShareDialog({
         setNotifySms(false)
       } else {
         failed = true
-        toast.error(res.error || t('shareDialog.failedSms'))
+        if (!handleGated(res)) toast.error(res.error || t('shareDialog.failedSms'))
       }
     }
 

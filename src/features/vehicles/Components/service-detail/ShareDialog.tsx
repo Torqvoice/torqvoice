@@ -150,7 +150,7 @@ export function ShareDialog({
         setNotifySms(false)
       } else {
         failed = true
-        toast.error(res.error || t('failedSms'))
+        if (!handleGated(res)) toast.error(res.error || t('failedSms'))
       }
     }
 

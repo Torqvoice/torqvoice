@@ -4,6 +4,7 @@ import { useState, useTransition, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { handleGated } from '@/components/upgrade-gate'
 import { SmsTemplateMenu } from './SmsTemplateMenu'
 import {
   AlertDialog,
@@ -39,6 +40,11 @@ interface SmsConversationProps {
   customerPhone: string | null
   initialMessages: Message[]
   initialNextCursor: string | null
+  /**
+   * Texts a day from the platform's shared number, when the workshop has no
+   * provider of its own. Replies to that number do not arrive.
+   */
+  platformSmsPerDay?: number | null
   className?: string
 }
 
@@ -48,6 +54,7 @@ export function SmsConversation({
   customerPhone,
   initialMessages,
   initialNextCursor,
+  platformSmsPerDay = null,
   className,
 }: SmsConversationProps) {
   const t = useTranslations('messages.conversation')
@@ -154,7 +161,7 @@ export function SmsConversation({
           setNextCursor(conv.data.nextCursor)
         }
       } else {
-        toast.error(result?.error ?? t('sendError'))
+        if (!handleGated(result)) toast.error(result?.error ?? t('sendError'))
         setNewMessage(body)
       }
     })
@@ -325,6 +332,11 @@ export function SmsConversation({
             )}
           </Button>
         </div>
+        {platformSmsPerDay != null && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t('sharedNumber', { limit: platformSmsPerDay })}
+          </p>
+        )}
       </div>
 
       {/* Delete confirmation dialog */}

@@ -7,8 +7,10 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Loader2, MessageSquare, Send } from 'lucide-react'
+import { handleGated } from '@/components/upgrade-gate'
 import { useGlassModal } from '@/components/glass-modal'
 import { sendSmsToCustomer } from '../Actions/smsActions'
+import { SharedNumberNotice } from './SharedNumberNotice'
 
 interface SendSmsDialogProps {
   open: boolean
@@ -60,7 +62,7 @@ export function SendSmsDialog({
       )
       onOpenChange(false)
       setMessage('')
-    } else {
+    } else if (!handleGated(result)) {
       modal.open('error', te('error'), result.error || t('sendError'))
     }
     setSending(false)
@@ -93,6 +95,7 @@ export function SendSmsDialog({
             <p className="text-xs text-muted-foreground">
               {t('characters', { count: message.length })}
             </p>
+            <SharedNumberNotice enabled={open} />
           </div>
           <div className="flex justify-end gap-2">
             <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>

@@ -20,6 +20,9 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 vi.mock('@/lib/features', () => ({
   requireFeature: vi.fn(),
+  getFeatures: vi.fn(),
+  // Self-hosted, so there is no platform SMS account to fall back on.
+  isCloudMode: () => false,
 }))
 
 vi.mock('@/lib/db', () => ({

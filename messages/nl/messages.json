@@ -47,7 +47,8 @@
     "messageDeleted": "Bericht verwijderd",
     "deleteError": "Bericht kon niet worden verwijderd",
     "sendError": "SMS kon niet worden verzonden",
-    "sendMessage": "Bericht versturen"
+    "sendMessage": "Bericht versturen",
+    "sharedNumber": "Verstuurd vanaf een gedeeld Torqvoice-nummer, tot {limit} sms-berichten per dag. Een lang bericht telt als meer dan één. Antwoorden hierop komen niet bij u aan. Koppel uw eigen sms-provider in Instellingen om berichten te versturen en te ontvangen."
   },
   "sendDialog": {
     "send": "{label} verzenden",

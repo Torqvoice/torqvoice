@@ -106,6 +106,7 @@
     "maxCustomers": "Seu plano inclui até {limit} clientes, e você chegou a esse número. Faça upgrade para adicionar quantos precisar.",
     "maxUsers": "Seu plano inclui {limit, plural, one {um membro na equipe} other {# membros na equipe}}. Faça upgrade para convidar mais pessoas.",
     "maxPlatformMail": "Seu plano envia até {limit} e-mails por dia pelo endereço da Torqvoice, e os de hoje já foram usados. Faça upgrade para enviar quantos precisar ou envie o restante amanhã.",
+    "maxPlatformSms": "Seu plano envia até {limit} SMS por dia pelo número da Torqvoice, e os de hoje já foram usados. Faça upgrade para ter um limite maior, conecte seu próprio provedor de SMS para enviar sem limite ou envie o restante amanhã.",
     "generic": "Este recurso não está incluído no seu plano atual.",
     "featureNotIncluded": "{feature} não está incluído no seu plano atual.",
     "notNow": "Agora não"

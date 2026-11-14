@@ -92,6 +92,12 @@ export async function dispatchScheduledMessage(message: DispatchableMessage): Pr
           data: { status: 'sent', providerMsgId: result?.providerMsgId ?? null },
         })
       } catch (error) {
+        // The plan saying no: nothing was attempted, so no failed text is
+        // left in the customer's thread. The reminder itself keeps the reason.
+        if (error instanceof Error && error.name === 'FeatureGatedError') {
+          await db.smsMessage.delete({ where: { id: logged.id } }).catch(() => null)
+          throw error
+        }
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         await db.smsMessage.update({
           where: { id: logged.id },

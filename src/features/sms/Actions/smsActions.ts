@@ -2,7 +2,12 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { sendOrgSms, getOrgSmsPhoneNumber, normalizeOrgPhone } from '@/lib/sms'
+import {
+  sendOrgSms,
+  getOrgSmsPhoneNumber,
+  getPlatformSmsAllowance,
+  normalizeOrgPhone,
+} from '@/lib/sms'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -91,6 +96,14 @@ export async function sendSmsToCustomer(input: {
           customerName: customer.name,
         }
       } catch (error) {
+        // The plan saying no is not a failed send: nothing was attempted, so
+        // no failed message is left in the thread, and the refusal goes up as
+        // it is so the screen can offer the upgrade instead of an error.
+        if (error instanceof Error && error.name === 'FeatureGatedError') {
+          await db.smsMessage.delete({ where: { id: message.id } }).catch(() => null)
+          throw error
+        }
+
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
 
         await db.smsMessage.update({
@@ -161,10 +174,13 @@ export async function getConversation(customerId: string, cursor?: string, limit
       // The view needs the person as well as the thread: their name for the
       // header and their number to send to. Returning only messages left the
       // caller to invent both.
-      const customer = await db.customer.findFirst({
-        where: { id: customerId, organizationId },
-        select: { name: true, phone: true },
-      })
+      const [customer, platformAllowance] = await Promise.all([
+        db.customer.findFirst({
+          where: { id: customerId, organizationId },
+          select: { name: true, phone: true },
+        }),
+        getPlatformSmsAllowance(organizationId).catch(() => null),
+      ])
 
       const messages = await db.smsMessage.findMany({
         where: {
@@ -193,6 +209,9 @@ export async function getConversation(customerId: string, cursor?: string, limit
         nextCursor: hasMore ? items[items.length - 1]?.id : null,
         customerName: customer?.name ?? '',
         customerPhone: customer?.phone ?? null,
+        // Set when the workshop texts from the platform's shared number: the
+        // composer says replies will not arrive and how many a day go out.
+        platformSmsPerDay: platformAllowance,
       }
     },
     {

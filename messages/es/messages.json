@@ -47,7 +47,8 @@
     "messageDeleted": "Mensaje eliminado",
     "deleteError": "No se pudo eliminar el mensaje",
     "sendError": "No se pudo enviar el SMS",
-    "sendMessage": "Enviar mensaje"
+    "sendMessage": "Enviar mensaje",
+    "sharedNumber": "Enviado desde un número compartido de Torqvoice, hasta {limit} SMS al día. Un SMS largo cuenta como más de uno. Las respuestas a este número no le llegarán. Conecte su propio proveedor de SMS en Configuración para enviar y recibir mensajes."
   },
   "sendDialog": {
     "send": "Enviar {label}",

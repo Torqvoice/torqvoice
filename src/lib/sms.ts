@@ -1,7 +1,9 @@
 import { db } from './db'
-import { channelProvider, channelSettings } from '@/features/integrations/Lib/messaging'
+import { channelSettings } from '@/features/integrations/Lib/messaging'
 import { ORG_SMS_KEYS } from '@/features/sms/Schema/smsSettingsSchema'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getFeatures } from './features'
+import { platformSmsAccount, withPlatformSmsAllowance } from './platform-sms'
 import { normalizePortalPhone } from './portal-phone'
 
 export type SmsProvider = 'twilio' | 'vonage' | 'telnyx'
@@ -14,25 +16,53 @@ export interface SendSmsOptions {
 type SettingsMap = Map<string, string>
 
 /**
- * The workshop's SMS vendor and its keys, from the integration it connected.
- * A setup made before SMS moved into the catalog is adopted on the way past,
- * so this keeps answering for workshops that never touched the new screen.
+ * What a workshop's texts go out through.
+ *
+ * Its own provider when it has connected one. A setup made before SMS moved
+ * into the catalog is adopted on the way past, so this keeps answering for
+ * workshops that never touched the new screen. Otherwise the platform's
+ * account, when there is one and the plan includes texts from it, with the
+ * number of texts a day the plan allows. Null when neither applies, which is
+ * how every screen learns that SMS is not available here.
  */
-async function smsSettings(organizationId: string): Promise<SettingsMap> {
-  return channelSettings(organizationId, 'sms')
+type SmsRoute =
+  | { source: 'own'; settings: SettingsMap }
+  | { source: 'platform'; settings: SettingsMap; dailyLimit: number }
+
+async function smsRoute(organizationId: string): Promise<SmsRoute | null> {
+  const own = await channelSettings(organizationId, 'sms')
+  if (own.get(ORG_SMS_KEYS.SMS_PROVIDER)) return { source: 'own', settings: own }
+
+  const platform = await platformSmsAccount()
+  if (!platform) return null
+
+  const { platformSmsPerDay } = await getFeatures(organizationId)
+  if (!(platformSmsPerDay > 0)) return null
+  return { source: 'platform', settings: platform, dailyLimit: platformSmsPerDay }
+}
+
+function providerOf(settings: SettingsMap): SmsProvider | null {
+  const value = settings.get(ORG_SMS_KEYS.SMS_PROVIDER)
+  return value === 'twilio' || value === 'vonage' || value === 'telnyx' ? value : null
 }
 
 export async function getOrgSmsProvider(organizationId: string): Promise<SmsProvider | null> {
-  const value = await channelProvider(organizationId, 'sms')
-  if (value === 'twilio' || value === 'vonage' || value === 'telnyx') {
-    return value
-  }
-  return null
+  const route = await smsRoute(organizationId)
+  return route ? providerOf(route.settings) : null
 }
 
 export async function getOrgSmsPhoneNumber(organizationId: string): Promise<string | null> {
-  const settings = await smsSettings(organizationId)
-  return settings.get(ORG_SMS_KEYS.SMS_PHONE_NUMBER) || null
+  const route = await smsRoute(organizationId)
+  return route?.settings.get(ORG_SMS_KEYS.SMS_PHONE_NUMBER) || null
+}
+
+/**
+ * Whether this workshop texts from the platform's shared number, and how many
+ * a day. The screens use it to say that replies will not arrive.
+ */
+export async function getPlatformSmsAllowance(organizationId: string): Promise<number | null> {
+  const route = await smsRoute(organizationId)
+  return route?.source === 'platform' ? route.dailyLimit : null
 }
 
 // ─── Twilio ──────────────────────────────────────────────────────────────────
@@ -216,10 +246,10 @@ export async function sendOrgSms(
   organizationId: string,
   options: SendSmsOptions
 ): Promise<SendSmsResult> {
-  // One read of the connection covers the vendor, its keys and the number,
-  // and the country code is a workshop setting rather than the vendor's.
-  const [settings, countryRow] = await Promise.all([
-    smsSettings(organizationId),
+  // One read of the route covers the vendor, its keys and the number, and
+  // the country code is a workshop setting rather than the vendor's.
+  const [route, countryRow] = await Promise.all([
+    smsRoute(organizationId),
     db.appSetting.findUnique({
       where: {
         organizationId_key: {
@@ -231,8 +261,9 @@ export async function sendOrgSms(
     }),
   ])
 
-  const provider = settings.get(ORG_SMS_KEYS.SMS_PROVIDER)
-  if (provider !== 'twilio' && provider !== 'vonage' && provider !== 'telnyx') {
+  const settings = route?.settings ?? new Map<string, string>()
+  const provider = providerOf(settings)
+  if (!route || !provider) {
     throw new Error('SMS is not configured. Set up an SMS provider in Settings.')
   }
 
@@ -251,18 +282,28 @@ export async function sendOrgSms(
     )
   }
 
-  switch (provider) {
-    case 'twilio': {
-      const result = await sendViaTwilio(settings, from, normalizedTo, options.body)
-      return { providerMsgId: result.sid, to: normalizedTo }
-    }
-    case 'vonage': {
-      const result = await sendViaVonage(settings, from, normalizedTo, options.body)
-      return { providerMsgId: result.messageId, to: normalizedTo }
-    }
-    case 'telnyx': {
-      const result = await sendViaTelnyx(settings, from, normalizedTo, options.body)
-      return { providerMsgId: result.id, to: normalizedTo }
+  const send = async (): Promise<SendSmsResult> => {
+    switch (provider) {
+      case 'twilio': {
+        const result = await sendViaTwilio(settings, from, normalizedTo, options.body)
+        return { providerMsgId: result.sid, to: normalizedTo }
+      }
+      case 'vonage': {
+        const result = await sendViaVonage(settings, from, normalizedTo, options.body)
+        return { providerMsgId: result.messageId, to: normalizedTo }
+      }
+      case 'telnyx': {
+        const result = await sendViaTelnyx(settings, from, normalizedTo, options.body)
+        return { providerMsgId: result.id, to: normalizedTo }
+      }
     }
   }
+
+  // Counted here rather than in each caller, so the sign-in codes, the
+  // scheduled reminders and the messages typed by hand all draw on the same
+  // allowance. A workshop's own provider is its own bill and has no limit.
+  if (route.source === 'platform') {
+    return withPlatformSmsAllowance(organizationId, route.dailyLimit, options.body, send)
+  }
+  return send()
 }

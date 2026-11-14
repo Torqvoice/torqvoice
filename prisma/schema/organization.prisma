@@ -215,3 +215,16 @@ model PlatformMailUsage {
   @@id([organizationId, day])
   @@map("platform_mail_usage")
 }
+
+/// How many texts a workshop has sent through the platform's SMS account on
+/// one day. Same shape and the same reason as the mail table above: the count
+/// has to survive a restart, and a slot is given back when a send fails.
+model PlatformSmsUsage {
+  organizationId String
+  /// The UTC day, YYYY-MM-DD
+  day            String
+  count          Int    @default(0)
+
+  @@id([organizationId, day])
+  @@map("platform_sms_usage")
+}
