@@ -22,7 +22,7 @@
     "quote": "Wycena",
     "save": "Zapisz",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Wyślij",
     "share": "Udostępnij",
     "delete": "Usuń",
     "deleteTitle": "Usuń wycenę",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Udostępnij wycenę",
     "description": "Wygeneruj publiczny link, który pozwoli każdemu przeglądać i pobierać tę wycenę bez logowania.",
-    "notifyTitle": "Powiadom {name}",
-    "email": "E-mail",
-    "noEmail": "(brak adresu e-mail)",
-    "sms": "SMS",
-    "noPhone": "(brak numeru telefonu)",
-    "sendNotification": "Wyślij powiadomienie",
     "revokeLink": "Unieważnij link",
     "generateLink": "Wygeneruj publiczny link",
-    "emailSent": "E-mail wysłany",
-    "failedEmail": "Nie udało się wysłać e-maila",
-    "smsSent": "SMS wysłany",
-    "failedSms": "Nie udało się wysłać SMS-a",
     "copyLink": "Kopiuj link"
   },
   "images": {

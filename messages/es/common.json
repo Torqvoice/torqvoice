@@ -156,8 +156,6 @@
     "preview": "Vista previa",
     "failed": "No se pudo generar la vista previa del PDF."
   },
-  "attachPdf": "Adjuntar PDF",
-  "attachPdfHint": "Desactívalo para enviar un enlace en su lugar y ver cuándo lo abre el cliente.",
   "sentCopy": {
     "note": "Enviada el {date}. Los cambios hechos aquí pasan a la factura cuando se vuelva a enviar.",
     "confirmTitle": "Esta factura ya se ha enviado",
@@ -225,12 +223,39 @@
     "title": "No se pudo conectar con Torqvoice",
     "description": "Puede que tu último cambio no se haya guardado. Revisa tu conexión e inténtalo de nuevo."
   },
+  "sendDocument": {
+    "titleQuote": "Enviar presupuesto",
+    "titleInvoice": "Enviar factura",
+    "titleInspection": "Enviar inspección",
+    "description": "El cliente recibe un enlace para verlo y descargarlo.",
+    "email": "Correo Electrónico",
+    "emailAddress": "Dirección de correo electrónico",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Adjuntar también el PDF",
+    "sms": "SMS",
+    "smsNumber": "Número de teléfono para SMS",
+    "whatsappNumber": "Número de teléfono para WhatsApp",
+    "phonePlaceholder": "Número de teléfono",
+    "message": "Mensaje (opcional, se añade al correo electrónico)",
+    "messagePlaceholder": "Añade un mensaje personal...",
+    "copyLink": "Copiar enlace",
+    "send": "Enviar",
+    "emailSent": "Correo electrónico enviado",
+    "failedEmail": "Error al enviar correo electrónico",
+    "smsSent": "SMS enviado",
+    "failedSms": "Error al enviar SMS"
+  },
   "shareLink": {
     "generateFailed": "No se pudo crear el enlace. Inténtalo de nuevo.",
     "revokeFailed": "No se pudo confirmar que el enlace se revocó. Puede que siga funcionando para cualquiera que lo tenga.",
     "channelNotConnected": "Conecta {channel} en Integraciones para enviar por esta vía.",
     "openIntegrations": "Abrir Integraciones",
-    "channelNotInPlan": "{channel} no está incluido en tu plan."
+    "channelNotInPlan": "{channel} no está incluido en tu plan.",
+    "channelTurnedOff": "El envío por {channel} está desactivado para este taller.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp enviado",
+    "failedWhatsapp": "Error al enviar el mensaje de WhatsApp",
+    "whatsappWindowClosed": "Este cliente no te ha escrito por WhatsApp en las últimas 24 horas y no hay ninguna plantilla aprobada configurada para contactarlo."
   },
   "searchableSelect": {
     "choose": "Elegir...",

@@ -35,7 +35,7 @@
     },
     "save": "Enregistrer",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Envoyer",
     "share": "Partager",
     "notify": "Notifier",
     "delete": "Supprimer",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Partager la Facture",
     "description": "Générer un lien public qui permet à n'importe qui de consulter et télécharger cette facture sans se connecter.",
-    "notifyTitle": "Notifier {name}",
-    "email": "Email",
-    "noEmail": "(pas d'email en dossier)",
-    "sms": "SMS",
-    "noPhone": "(pas de numéro en dossier)",
-    "sendNotification": "Envoyer une Notification",
     "revokeLink": "Révoquer le Lien",
     "generateLink": "Générer un Lien Public",
-    "emailSent": "Email envoyé",
-    "failedEmail": "Impossible d'envoyer l'email",
-    "smsSent": "SMS envoyé",
-    "failedSms": "Impossible d'envoyer le SMS",
     "copyLink": "Copier le lien"
   },
   "sidebar": {

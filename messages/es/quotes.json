@@ -22,7 +22,7 @@
     "quote": "Presupuesto",
     "save": "Guardar",
     "pdf": "PDF",
-    "email": "Correo electrónico",
+    "send": "Enviar",
     "share": "Compartir",
     "delete": "Eliminar",
     "deleteTitle": "Eliminar presupuesto",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Compartir presupuesto",
     "description": "Genere un enlace público que permita a cualquier persona ver y descargar este presupuesto sin iniciar sesión.",
-    "notifyTitle": "Notificar a {name}",
-    "email": "Correo electrónico",
-    "noEmail": "(sin correo registrado)",
-    "sms": "SMS",
-    "noPhone": "(sin teléfono registrado)",
-    "sendNotification": "Enviar notificación",
     "revokeLink": "Revocar enlace",
     "generateLink": "Generar enlace público",
-    "emailSent": "Correo enviado",
-    "failedEmail": "Error al enviar el correo",
-    "smsSent": "SMS enviado",
-    "failedSms": "Error al enviar el SMS",
     "copyLink": "Copiar enlace"
   },
   "images": {

@@ -20,7 +20,7 @@ import {
   updateServiceStatus,
 } from '@/features/vehicles/Actions/serviceActions'
 import { useConfirm } from '@/components/confirm-dialog'
-import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
+import { SendDocumentDialog } from '@/features/messaging/Components/SendDocumentDialog'
 import { useTranslations } from 'next-intl'
 
 import { ImageCarousel } from '../service-detail/ImageCarousel'
@@ -790,27 +790,29 @@ export function ServicePageClient({
               url={`/api/protected/services/${record.id}/work-order-pdf`}
             />
 
-            <SendEmailDialog
+            <SendDocumentDialog
               open={actions.showEmailDialog}
               onOpenChange={actions.setShowEmailDialog}
-              defaultEmail={customer?.email || ''}
-              entityLabel={t('invoice.entityLabel')}
-              onSend={async (email, message, attachPdf) => {
-                const result = await sendInvoiceEmail({
+              kind="invoice"
+              documentId={record.id}
+              shareUrl={
+                record.publicToken
+                  ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/invoice/${organizationId}/${record.publicToken}`
+                  : null
+              }
+              customer={customer}
+              sendEmail={(email, message, attachPdf) =>
+                sendInvoiceEmail({
                   serviceRecordId: record.id,
                   recipientEmail: email,
                   message,
                   attachPdf,
                 })
-                // Deliberately not awaited: the email dialog should show "sent" the
-                // moment it is, not sit spinning behind the "mark completed"
-                // confirmation that handleInvoiceSent may raise.
-                if (result.success) {
-                  track('document:email_send', { document: 'invoice' })
-                  void handleInvoiceSent()
-                }
-                return result
-              }}
+              }
+              // Deliberately not awaited: the dialog should say "sent" the
+              // moment it is, not sit behind the "mark completed" confirmation
+              // that handleInvoiceSent may raise.
+              onSent={() => void handleInvoiceSent()}
             />
 
             <ShareDialog
@@ -820,8 +822,6 @@ export function ServicePageClient({
               organizationId={organizationId}
               initialToken={record.publicToken}
               onSent={handleInvoiceSent}
-              customer={customer}
-              emailEnabled={emailEnabled}
             />
 
             {customer && (

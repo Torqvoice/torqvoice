@@ -35,7 +35,7 @@
     },
     "save": "Zapisz",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Wyślij",
     "share": "Udostępnij",
     "notify": "Powiadom",
     "delete": "Usuń",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Udostępnij Fakturę",
     "description": "Wygeneruj publiczny link, który pozwala każdemu wyświetlać i pobierać tę fakturę bez logowania.",
-    "notifyTitle": "Powiadom {name}",
-    "email": "Email",
-    "noEmail": "(brak adresu email)",
-    "sms": "SMS",
-    "noPhone": "(brak numeru telefonu)",
-    "sendNotification": "Wyślij Powiadomienie",
     "revokeLink": "Odwołaj Link",
     "generateLink": "Wygeneruj Publiczny Link",
-    "emailSent": "Email wysłany",
-    "failedEmail": "Nie udało się wysłać email",
-    "smsSent": "SMS wysłany",
-    "failedSms": "Nie udało się wysłać SMS",
     "copyLink": "Kopiuj link"
   },
   "sidebar": {

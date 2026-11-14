@@ -22,7 +22,7 @@
     "quote": "Teklif",
     "save": "Kaydet",
     "pdf": "PDF",
-    "email": "E-posta",
+    "send": "Gönder",
     "share": "Paylaş",
     "delete": "Sil",
     "deleteTitle": "Teklifi Sil",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Teklifi Paylaş",
     "description": "Herkesin giriş yapmadan bu teklifi görüntüleyip indirebileceği bir herkese açık bağlantı oluşturun.",
-    "notifyTitle": "{name} Bilgilendir",
-    "email": "E-posta",
-    "noEmail": "(kayıtlı e-posta yok)",
-    "sms": "SMS",
-    "noPhone": "(kayıtlı telefon yok)",
-    "sendNotification": "Bildirim Gönder",
     "revokeLink": "Bağlantıyı İptal Et",
     "generateLink": "Herkese Açık Bağlantı Oluştur",
-    "emailSent": "E-posta gönderildi",
-    "failedEmail": "E-posta gönderilemedi",
-    "smsSent": "SMS gönderildi",
-    "failedSms": "SMS gönderilemedi",
     "copyLink": "Bağlantıyı kopyala"
   },
   "images": {

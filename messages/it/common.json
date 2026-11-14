@@ -156,8 +156,6 @@
     "preview": "Anteprima",
     "failed": "Impossibile generare l'anteprima del PDF."
   },
-  "attachPdf": "Allega PDF",
-  "attachPdfHint": "Disattiva per inviare invece un link, così vedi quando il cliente lo apre.",
   "sentCopy": {
     "note": "Inviata il {date}. Le modifiche fatte qui entrano nella fattura quando viene inviata di nuovo.",
     "confirmTitle": "Questa fattura è già stata inviata",
@@ -225,12 +223,39 @@
     "title": "Impossibile raggiungere Torqvoice",
     "description": "L'ultima modifica potrebbe non essere stata salvata. Controlla la connessione e riprova."
   },
+  "sendDocument": {
+    "titleQuote": "Invia preventivo",
+    "titleInvoice": "Invia fattura",
+    "titleInspection": "Invia ispezione",
+    "description": "Il cliente riceve un link per visualizzarlo e scaricarlo.",
+    "email": "Email",
+    "emailAddress": "Indirizzo email",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Allega anche il PDF",
+    "sms": "SMS",
+    "smsNumber": "Numero di telefono per SMS",
+    "whatsappNumber": "Numero di telefono per WhatsApp",
+    "phonePlaceholder": "Numero di telefono",
+    "message": "Messaggio (facoltativo, aggiunto all'email)",
+    "messagePlaceholder": "Aggiungi un messaggio personale...",
+    "copyLink": "Copia link",
+    "send": "Invia",
+    "emailSent": "Email inviata",
+    "failedEmail": "Impossibile inviare email",
+    "smsSent": "SMS inviato",
+    "failedSms": "Impossibile inviare SMS"
+  },
   "shareLink": {
     "generateFailed": "Impossibile creare il link. Riprova.",
     "revokeFailed": "Impossibile confermare la revoca del link. Potrebbe funzionare ancora per chiunque lo abbia.",
     "channelNotConnected": "Collega {channel} in Integrazioni per inviare in questo modo.",
     "openIntegrations": "Apri Integrazioni",
-    "channelNotInPlan": "{channel} non è incluso nel tuo piano."
+    "channelNotInPlan": "{channel} non è incluso nel tuo piano.",
+    "channelTurnedOff": "L'invio tramite {channel} è disattivato per questa officina.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp inviato",
+    "failedWhatsapp": "Impossibile inviare il messaggio WhatsApp",
+    "whatsappWindowClosed": "Questo cliente non ti ha scritto su WhatsApp nelle ultime 24 ore e non è configurato alcun modello approvato per contattarlo."
   },
   "searchableSelect": {
     "choose": "Scegli...",

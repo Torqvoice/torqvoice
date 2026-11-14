@@ -22,7 +22,7 @@
     "quote": "Devis",
     "save": "Enregistrer",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Envoyer",
     "share": "Partager",
     "delete": "Supprimer",
     "deleteTitle": "Supprimer le devis",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Partager le devis",
     "description": "Générez un lien public permettant à quiconque de consulter et télécharger ce devis sans se connecter.",
-    "notifyTitle": "Notifier {name}",
-    "email": "E-mail",
-    "noEmail": "(aucun e-mail enregistré)",
-    "sms": "SMS",
-    "noPhone": "(aucun téléphone enregistré)",
-    "sendNotification": "Envoyer la notification",
     "revokeLink": "Révoquer le lien",
     "generateLink": "Générer un lien public",
-    "emailSent": "E-mail envoyé",
-    "failedEmail": "Échec de l'envoi de l'e-mail",
-    "smsSent": "SMS envoyé",
-    "failedSms": "Échec de l'envoi du SMS",
     "copyLink": "Copier le lien"
   },
   "images": {

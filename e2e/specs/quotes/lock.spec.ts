@@ -85,11 +85,11 @@ test.describe('a locked quote can still become a work order', () => {
     // Sent the way the workshop in the report sent theirs.
     await clearMailbox()
     await expect(async () => {
-      await page.getByRole('button', { name: 'Email', exact: true }).click()
-      await expect(page.locator('#email')).toBeVisible({ timeout: 2_000 })
+      await page.getByRole('button', { name: 'Send', exact: true }).click()
+      await expect(page.locator('#send-email-to')).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    await page.locator('#email').fill(CUSTOMER)
-    await page.getByRole('button', { name: 'Send Email', exact: true }).click()
+    await page.locator('#send-email-to').fill(CUSTOMER)
+    await page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click()
     await waitForMail(CUSTOMER, { timeout: 30_000 })
 
     await page.goto(quoteUrl)
@@ -131,17 +131,18 @@ test.describe('a locked quote can still become a work order', () => {
     await saveQuote(page)
     const shareUrl = await quoteShareLink(page)
 
-    // Telling the customer from the Share dialog closes it once the mail has
-    // gone, instead of leaving a finished dialog on screen.
+    // Sending from the Send dialog closes it once the mail has gone, instead
+    // of leaving a finished dialog on screen. The address is the customer's
+    // own, already filled in and ticked.
     await clearMailbox()
-    const shareDialog = page.getByRole('dialog', { name: 'Share Quote' })
+    const sendDialog = page.getByRole('dialog', { name: 'Send quote' })
     await expect(async () => {
-      await page.getByRole('button', { name: 'Share', exact: true }).click()
-      await expect(shareDialog).toBeVisible({ timeout: 2_000 })
+      await page.getByRole('button', { name: 'Send', exact: true }).click()
+      await expect(sendDialog).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    await shareDialog.locator('#notify-email-quote').click()
-    await shareDialog.getByRole('button', { name: 'Send Notification', exact: true }).click()
-    await expect(shareDialog).toBeHidden({ timeout: 30_000 })
+    await expect(sendDialog.locator('#send-email')).toHaveAttribute('data-state', 'checked')
+    await sendDialog.getByRole('button', { name: 'Send', exact: true }).click()
+    await expect(sendDialog).toBeHidden({ timeout: 30_000 })
     await waitForMail(SEEDED_CUSTOMER_EMAIL, { timeout: 30_000 })
 
     // Sharing sends it, and under this trigger a sent quote is still open.

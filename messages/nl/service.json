@@ -35,7 +35,7 @@
     },
     "save": "Opslaan",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Versturen",
     "share": "Delen",
     "notify": "Melden",
     "delete": "Verwijderen",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Factuur delen",
     "description": "Genereer een openbare koppeling waarmee iedereen deze factuur kan bekijken en downloaden zonder in te loggen.",
-    "notifyTitle": "Stuur bericht naar {name}",
-    "email": "E-mail",
-    "noEmail": "(geen e-mailadres op bestand)",
-    "sms": "SMS",
-    "noPhone": "(geen telefoonnummer op bestand)",
-    "sendNotification": "Melding verzenden",
     "revokeLink": "Koppeling intrekken",
     "generateLink": "Openbare koppeling genereren",
-    "emailSent": "E-mail verzonden",
-    "failedEmail": "E-mail verzenden mislukt",
-    "smsSent": "SMS verzonden",
-    "failedSms": "SMS verzenden mislukt",
     "copyLink": "Link kopiëren"
   },
   "sidebar": {

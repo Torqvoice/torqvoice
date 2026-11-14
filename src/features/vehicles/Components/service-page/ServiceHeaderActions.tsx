@@ -17,7 +17,7 @@ import {
   Download,
   Eye,
   Globe,
-  Mail,
+  Send,
   MessageSquare,
   MoreVertical,
   Save,
@@ -126,7 +126,7 @@ export function ServiceHeaderActions({
           loading={downloading}
           onClick={onDownloadPDF}
         />
-        <IconActionButton label={t('email')} icon={Mail} onClick={onShowEmail} />
+        <IconActionButton label={t('send')} icon={Send} onClick={onShowEmail} />
         <IconActionButton label={t('share')} icon={Globe} onClick={onShowShare} />
         {meetingUrl && (
           <IconActionButton

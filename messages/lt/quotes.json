@@ -22,7 +22,7 @@
     "quote": "Pasiūlymas",
     "save": "Išsaugoti",
     "pdf": "PDF",
-    "email": "El. paštas",
+    "send": "Siųsti",
     "share": "Dalintis",
     "delete": "Ištrinti",
     "deleteTitle": "Ištrinti pasiūlymą",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Dalintis pasiūlymu",
     "description": "Sugeneruokite viešą nuorodą, leidžiančią bet kam peržiūrėti ir atsisiųsti šį pasiūlymą be prisijungimo.",
-    "notifyTitle": "Pranešti {name}",
-    "email": "El. paštas",
-    "noEmail": "(nėra el. pašto)",
-    "sms": "SMS",
-    "noPhone": "(nėra telefono)",
-    "sendNotification": "Siųsti pranešimą",
     "revokeLink": "Atšaukti nuorodą",
     "generateLink": "Generuoti viešą nuorodą",
-    "emailSent": "Laiškas išsiųstas",
-    "failedEmail": "Nepavyko išsiųsti laiško",
-    "smsSent": "SMS išsiųsta",
-    "failedSms": "Nepavyko išsiųsti SMS",
     "copyLink": "Kopijuoti nuorodą"
   },
   "images": {

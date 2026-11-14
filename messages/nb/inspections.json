@@ -53,6 +53,7 @@
     "statusCompleted": "Fullført",
     "complete": "Fullfør",
     "reopen": "Gjenåpne",
+    "send": "Send",
     "share": "Del",
     "save": "Lagre",
     "saving": "Lagrer…",
@@ -460,18 +461,8 @@
     "copied": "Lenken er kopiert",
     "generated": "Delingslenke opprettet",
     "revoked": "Delingslenke trukket tilbake",
-    "notifyTitle": "Varsle {name}",
-    "email": "E-post",
-    "noEmail": "(ingen e-post registrert)",
-    "sms": "SMS",
-    "noPhone": "(ingen telefon registrert)",
-    "sendNotification": "Send varsel",
     "revokeLink": "Tilbakekall lenke",
-    "generateLink": "Generer offentlig lenke",
-    "emailSent": "E-post sendt",
-    "failedEmail": "Kunne ikke sende e-post",
-    "smsSent": "SMS sendt",
-    "failedSms": "Kunne ikke sende SMS"
+    "generateLink": "Generer offentlig lenke"
   },
   "phone": {
     "pageTitle": "Bilder til kontrollen",

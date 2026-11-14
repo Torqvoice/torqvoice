@@ -35,7 +35,7 @@
     },
     "save": "Išsaugoti",
     "pdf": "PDF",
-    "email": "El. paštas",
+    "send": "Siųsti",
     "share": "Dalintis",
     "notify": "Pranešti",
     "delete": "Ištrinti",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Dalintis sąskaita",
     "description": "Sugeneruokite viešą nuorodą, leidžiančią bet kam peržiūrėti ir atsisiųsti šią sąskaitą be prisijungimo.",
-    "notifyTitle": "Pranešti {name}",
-    "email": "El. paštas",
-    "noEmail": "(nėra el. pašto)",
-    "sms": "SMS",
-    "noPhone": "(nėra telefono)",
-    "sendNotification": "Siųsti pranešimą",
     "revokeLink": "Atšaukti nuorodą",
     "generateLink": "Generuoti viešą nuorodą",
-    "emailSent": "Laiškas išsiųstas",
-    "failedEmail": "Nepavyko išsiųsti laiško",
-    "smsSent": "SMS išsiųsta",
-    "failedSms": "Nepavyko išsiųsti SMS",
     "copyLink": "Kopijuoti nuorodą"
   },
   "sidebar": {

@@ -22,7 +22,7 @@
     "quote": "Orçamento",
     "save": "Salvar",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Enviar",
     "share": "Compartilhar",
     "delete": "Excluir",
     "deleteTitle": "Excluir orçamento",
@@ -199,18 +199,8 @@
   "shareDialog": {
     "title": "Compartilhar orçamento",
     "description": "Gere um link público que permite a qualquer pessoa visualizar e baixar este orçamento sem fazer login.",
-    "notifyTitle": "Notificar {name}",
-    "email": "E-mail",
-    "noEmail": "(sem e-mail cadastrado)",
-    "sms": "SMS",
-    "noPhone": "(sem telefone cadastrado)",
-    "sendNotification": "Enviar notificação",
     "revokeLink": "Revogar link",
     "generateLink": "Gerar link público",
-    "emailSent": "E-mail enviado",
-    "failedEmail": "Falha ao enviar o e-mail",
-    "smsSent": "SMS enviado",
-    "failedSms": "Falha ao enviar o SMS",
     "copyLink": "Copiar link"
   },
   "images": {

@@ -35,7 +35,7 @@
     },
     "save": "Kaydet",
     "pdf": "PDF",
-    "email": "E-posta",
+    "send": "Gönder",
     "share": "Paylaş",
     "notify": "Bildir",
     "delete": "Sil",
@@ -385,18 +385,8 @@
   "share": {
     "title": "Faturayı Paylaş",
     "description": "Herkesin oturum açmadan bu faturayı görüntülemesine ve indirmesine izin veren herkese açık bir bağlantı oluştur.",
-    "notifyTitle": "{name} Bilgilendir",
-    "email": "E-posta",
-    "noEmail": "(dosyada e-posta yok)",
-    "sms": "SMS",
-    "noPhone": "(dosyada telefon yok)",
-    "sendNotification": "Bildirim Gönder",
     "revokeLink": "Bağlantıyı İptal Et",
     "generateLink": "Herkese Açık Bağlantı Oluştur",
-    "emailSent": "E-posta gönderildi",
-    "failedEmail": "E-posta gönderilemedi",
-    "smsSent": "SMS gönderildi",
-    "failedSms": "SMS gönderilemedi",
     "copyLink": "Bağlantıyı kopyala"
   },
   "sidebar": {

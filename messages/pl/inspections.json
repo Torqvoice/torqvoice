@@ -53,6 +53,7 @@
     "statusCompleted": "Zakończona",
     "complete": "Zakończ",
     "reopen": "Otwórz ponownie",
+    "send": "Wyślij",
     "share": "Udostępnij",
     "save": "Zapisz",
     "saving": "Zapisywanie…",
@@ -460,18 +461,8 @@
     "copied": "Link skopiowany do schowka",
     "generated": "Link do udostępniania utworzony",
     "revoked": "Link do udostępniania wycofany",
-    "notifyTitle": "Powiadom {name}",
-    "email": "E-mail",
-    "noEmail": "(brak adresu e-mail)",
-    "sms": "SMS",
-    "noPhone": "(brak numeru telefonu)",
-    "sendNotification": "Wyślij powiadomienie",
     "revokeLink": "Unieważnij link",
-    "generateLink": "Wygeneruj publiczny link",
-    "emailSent": "E-mail wysłany",
-    "failedEmail": "Nie udało się wysłać e-maila",
-    "smsSent": "SMS wysłany",
-    "failedSms": "Nie udało się wysłać SMS-a"
+    "generateLink": "Wygeneruj publiczny link"
   },
   "phone": {
     "pageTitle": "Zdjęcia do przeglądu",

@@ -156,8 +156,6 @@
     "preview": "Podgląd",
     "failed": "Nie udało się wygenerować podglądu PDF."
   },
-  "attachPdf": "Dołącz PDF",
-  "attachPdfHint": "Wyłącz, aby wysłać zamiast tego link i widzieć, kiedy klient go otworzy.",
   "sentCopy": {
     "note": "Wysłano {date}. Zmiany wprowadzone tutaj trafią na fakturę, gdy zostanie wysłana ponownie.",
     "confirmTitle": "Ta faktura została już wysłana",
@@ -225,12 +223,39 @@
     "title": "Nie można połączyć się z Torqvoice",
     "description": "Ostatnia zmiana mogła nie zostać zapisana. Sprawdź połączenie i spróbuj ponownie."
   },
+  "sendDocument": {
+    "titleQuote": "Wyślij wycenę",
+    "titleInvoice": "Wyślij fakturę",
+    "titleInspection": "Wyślij inspekcję",
+    "description": "Klient otrzyma link, aby go wyświetlić i pobrać.",
+    "email": "Email",
+    "emailAddress": "Adres email",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Dołącz również plik PDF",
+    "sms": "SMS",
+    "smsNumber": "Numer telefonu do SMS",
+    "whatsappNumber": "Numer telefonu do WhatsApp",
+    "phonePlaceholder": "Numer telefonu",
+    "message": "Wiadomość (opcjonalnie, dodawana do emaila)",
+    "messagePlaceholder": "Dodaj osobistą wiadomość...",
+    "copyLink": "Kopiuj link",
+    "send": "Wyślij",
+    "emailSent": "Email wysłany",
+    "failedEmail": "Nie udało się wysłać email",
+    "smsSent": "SMS wysłany",
+    "failedSms": "Nie udało się wysłać SMS"
+  },
   "shareLink": {
     "generateFailed": "Nie udało się utworzyć linku. Spróbuj ponownie.",
     "revokeFailed": "Nie udało się potwierdzić unieważnienia linku. Może nadal działać dla każdego, kto go ma.",
     "channelNotConnected": "Podłącz {channel} w Integracjach, aby wysyłać w ten sposób.",
     "openIntegrations": "Otwórz Integracje",
-    "channelNotInPlan": "{channel} nie jest objęty Twoim planem."
+    "channelNotInPlan": "{channel} nie jest objęty Twoim planem.",
+    "channelTurnedOff": "Wysyłanie przez {channel} jest wyłączone w tym warsztacie.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp wysłany",
+    "failedWhatsapp": "Nie udało się wysłać wiadomości WhatsApp",
+    "whatsappWindowClosed": "Ten klient nie napisał do Ciebie na WhatsAppie w ciągu ostatnich 24 godzin, a nie skonfigurowano zatwierdzonego szablonu, aby się z nim skontaktować."
   },
   "searchableSelect": {
     "choose": "Wybierz...",

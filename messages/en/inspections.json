@@ -53,6 +53,7 @@
     "statusCompleted": "Completed",
     "complete": "Complete",
     "reopen": "Reopen",
+    "send": "Send",
     "share": "Share",
     "save": "Save",
     "saving": "Saving…",
@@ -460,18 +461,8 @@
     "copied": "Link copied to clipboard",
     "generated": "Share link generated",
     "revoked": "Share link revoked",
-    "notifyTitle": "Notify {name}",
-    "email": "Email",
-    "noEmail": "(no email on file)",
-    "sms": "SMS",
-    "noPhone": "(no phone on file)",
-    "sendNotification": "Send Notification",
     "revokeLink": "Revoke Link",
-    "generateLink": "Generate Public Link",
-    "emailSent": "Email sent",
-    "failedEmail": "Failed to send email",
-    "smsSent": "SMS sent",
-    "failedSms": "Failed to send SMS"
+    "generateLink": "Generate Public Link"
   },
   "phone": {
     "pageTitle": "Inspection photos",

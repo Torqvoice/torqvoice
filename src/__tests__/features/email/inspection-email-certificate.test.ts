@@ -54,6 +54,9 @@ vi.mock('@/features/email/Lib/sendTemplatedMail', () => ({
   sendTemplatedMail: (org: string, options: unknown) => sendTemplatedMail(org, options),
 }))
 
+// The link's own rules (kept when it exists, minted once) have their own test.
+vi.mock('@/lib/share-token.server', () => ({ ensureShareToken: async () => 'minted' }))
+
 const { sendInspectionEmail } = await import('@/features/email/Actions/emailActions')
 
 beforeEach(() => {
@@ -98,6 +101,8 @@ describe('the inspection email', () => {
     // The file keeps the name the mail has always given it.
     expect(options.attachments[0].filename).toBe('Inspection-2011 BMW 5-Serie F11.pdf')
     expect(options.attachments[0].content.toString()).toBe('%PDF designed')
+    // The link goes with the mail as well: the PDF is an extra, not instead.
+    expect(options.context.shareLink).toBe('https://app.example/share/inspection/org/minted')
   })
 
   it('builds nothing for a link-only mail, and mints the link', async () => {
