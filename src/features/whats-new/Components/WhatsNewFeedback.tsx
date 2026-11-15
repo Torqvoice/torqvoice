@@ -34,9 +34,10 @@ function rememberVote(entryId: string, vote: Vote) {
 /**
  * "Was this useful?" under a highlight.
  *
- * The thumb is the whole answer and is sent the moment it is pressed. The
- * comment box that opens under it is an invitation, not a second step: most
- * people will not type anything, and their vote must not depend on it.
+ * The thumb is the whole answer and is sent the moment it is pressed. A thumb
+ * down opens a comment box under it, as an invitation, not a second step:
+ * most people will not type anything, and their vote must not depend on it.
+ * A thumb up opens nothing.
  *
  * A bare thumb names nobody, anywhere. Only a comment from the cloud carries
  * the sender's email, and the line under the box says so before Send.
@@ -68,7 +69,8 @@ export function WhatsNewFeedback({
     setBusy(true)
     const previous = vote
     setVote(next)
-    setWriting(true)
+    // A thumb up is the whole answer. Only a thumb down asks what went wrong.
+    setWriting(next === 'down')
     setCommentSent(false)
     const result = await sendWhatsNewFeedback({ entryId, vote: next })
     setBusy(false)
@@ -99,14 +101,23 @@ export function WhatsNewFeedback({
     cn(
       'flex h-7 w-7 cursor-pointer items-center justify-center rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
       vote === which
-        ? 'bg-primary/15 text-foreground'
+        ? 'bg-primary text-primary-foreground'
         : 'text-muted-foreground hover:bg-muted hover:text-foreground'
     )
 
   return (
-    <div className="flex flex-col gap-2 pt-1">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center gap-1">
-        <span className="mr-1 text-xs text-muted-foreground">{t('question')}</span>
+        <span className="mr-auto flex items-center gap-2 text-xs text-muted-foreground">
+          {commentSent ? (
+            <span className="flex items-center gap-1" role="status">
+              <Check className="h-3.5 w-3.5 text-primary" />
+              {t('thanks')}
+            </span>
+          ) : (
+            t('question')
+          )}
+        </span>
         <button
           type="button"
           onClick={() => cast('up')}
@@ -129,20 +140,11 @@ export function WhatsNewFeedback({
         >
           <ThumbsDown className="h-3.5 w-3.5" />
         </button>
-        {commentSent && (
-          <span
-            className="ml-1 flex items-center gap-1 text-xs text-muted-foreground"
-            role="status"
-          >
-            <Check className="h-3.5 w-3.5" />
-            {t('thanks')}
-          </span>
-        )}
       </div>
-      {writing && vote && (
-        <div className="flex flex-col gap-2 rounded-lg border bg-muted/30 p-3">
+      {writing && vote === 'down' && (
+        <div className="flex flex-col gap-2 pb-1.5 pt-1">
           <label htmlFor={commentId} className="text-xs font-medium">
-            {vote === 'down' ? t('askDown') : t('askUp')}
+            {t('askDown')}
           </label>
           <Textarea
             id={commentId}

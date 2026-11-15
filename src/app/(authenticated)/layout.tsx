@@ -60,7 +60,9 @@ import { SaveShortcutListener } from '@/components/save-shortcut-listener'
 import { AnalyticsIdentity } from '@/components/analytics-identity'
 import { WhatsNewProvider } from '@/features/whats-new/Components/WhatsNewProvider'
 import { getWhatsNewFeed } from '@/features/whats-new/Lib/feed.server'
+import { WHATS_NEW_PAGE_SIZE } from '@/features/whats-new/Lib/paging'
 import { selectEntries, unreadIds } from '@/features/whats-new/Lib/select'
+import { isWhatsNewTabHidden, WHATS_NEW_TAB_COOKIE } from '@/features/whats-new/Lib/tabPreference'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -177,12 +179,12 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   // The highlights written on torqvoice.com, narrowed to what this person can
-  // actually open on this install. A licensed self-hosted install runs under
-  // the workshop's own name, and news signed by Torqvoice has no place there.
+  // actually open. Torqvoice Cloud only: a self-hosted install is the
+  // workshop's own, and news from us has no place appearing inside it.
   const appVersion = process.env.APP_VERSION || 'development'
   const releaseNotesUrl =
     process.env.RELEASE_NOTES_URL || 'https://github.com/Torqvoice/torqvoice/releases'
-  const whatsNewHidden = !isCloudMode() && features.brandingRemoved
+  const whatsNewHidden = !isCloudMode()
   const whatsNewEntries = whatsNewHidden
     ? []
     : selectEntries(await getWhatsNewFeed(await getLocale()), {
@@ -190,6 +192,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         cloud: isCloudMode(),
         visibleSubjects,
       })
+  const whatsNewTabHidden = isWhatsNewTabHidden((await cookies()).get(WHATS_NEW_TAB_COOKIE)?.value)
   const whatsNewUnread = unreadIds(whatsNewEntries, {
     seenAt: data.whatsNewSeenAt,
     accountCreatedAt: data.userCreatedAt,
@@ -332,8 +335,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
           >
             <WhiteLabelCtaProvider show={showWhiteLabelCta}>
               <WhatsNewProvider
-                entries={whatsNewEntries}
+                // The first page only; the panel asks for older ones as it is scrolled.
+                entries={whatsNewEntries.slice(0, WHATS_NEW_PAGE_SIZE)}
+                hasMore={whatsNewEntries.length > WHATS_NEW_PAGE_SIZE}
                 unreadIds={whatsNewUnread}
+                initialTabHidden={whatsNewTabHidden}
                 timeZone={safeTimeZone(data.timezone)}
                 appVersion={appVersion}
                 releaseNotesUrl={releaseNotesUrl}

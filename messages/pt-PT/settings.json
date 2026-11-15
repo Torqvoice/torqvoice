@@ -1691,7 +1691,11 @@
     "version": "Versão",
     "website": "Site",
     "documentation": "Documentação",
-    "changelog": "Registo de alterações"
+    "changelog": "Registo de alterações",
+    "whatsNew": "Novidades",
+    "whatsNewOpen": "Ver as novidades",
+    "whatsNewTab": "Mostrar o separador Novidades na lateral do ecrã",
+    "whatsNewTabHint": "Apenas em ecrãs maiores."
   },
   "portal": {
     "title": "Portal do cliente",

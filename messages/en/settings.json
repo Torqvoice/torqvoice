@@ -1691,7 +1691,11 @@
     "version": "Version",
     "website": "Website",
     "documentation": "Documentation",
-    "changelog": "Changelog"
+    "changelog": "Changelog",
+    "whatsNew": "What's new",
+    "whatsNewOpen": "See what is new",
+    "whatsNewTab": "Show the What's new tab at the side of the screen",
+    "whatsNewTabHint": "On larger screens only."
   },
   "portal": {
     "title": "Customer Portal",

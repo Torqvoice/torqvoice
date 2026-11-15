@@ -45,7 +45,13 @@ async function load(locale: string): Promise<WhatsNewEntry[]> {
 function refresh(locale: string, previous: WhatsNewEntry[]): Promise<void> {
   return load(locale)
     .then((entries) => {
-      cache.set(locale, { entries, expiresAt: Date.now() + FRESH_MS })
+      // An empty list is checked again soon: the first entry ever published,
+      // or the first one tried on staging, should not take ten minutes to
+      // turn up.
+      cache.set(locale, {
+        entries,
+        expiresAt: Date.now() + (entries.length > 0 ? FRESH_MS : RETRY_MS),
+      })
     })
     .catch(() => {
       // torqvoice.com is unreachable, or an install has no way out to the
@@ -82,6 +88,12 @@ export async function getWhatsNewFeed(locale: string): Promise<WhatsNewEntry[]> 
   }
   if (Date.now() >= cached.expiresAt && !cached.refreshing) {
     cached.refreshing = refresh(locale, cached.entries)
+    // Nothing worth showing meanwhile, so wait for the answer rather than
+    // hand back the empty list one more time.
+    if (cached.entries.length === 0) {
+      await cached.refreshing
+      return cache.get(locale)?.entries ?? []
+    }
   }
   return cached.entries
 }

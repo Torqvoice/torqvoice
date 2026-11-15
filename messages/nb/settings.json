@@ -1691,7 +1691,11 @@
     "version": "Versjon",
     "website": "Nettsted",
     "documentation": "Dokumentasjon",
-    "changelog": "Endringslogg"
+    "changelog": "Endringslogg",
+    "whatsNew": "Hva er nytt",
+    "whatsNewOpen": "Se hva som er nytt",
+    "whatsNewTab": "Vis Hva er nytt-fanen på siden av skjermen",
+    "whatsNewTabHint": "Bare på større skjermer."
   },
   "portal": {
     "title": "Kundeportal",

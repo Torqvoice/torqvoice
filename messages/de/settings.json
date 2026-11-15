@@ -1691,7 +1691,11 @@
     "version": "Version",
     "website": "Webseite",
     "documentation": "Dokumentation",
-    "changelog": "Anderungsprotokoll"
+    "changelog": "Anderungsprotokoll",
+    "whatsNew": "Neuigkeiten",
+    "whatsNewOpen": "Neuigkeiten ansehen",
+    "whatsNewTab": "Den Reiter Neuigkeiten am Bildschirmrand anzeigen",
+    "whatsNewTabHint": "Nur auf größeren Bildschirmen."
   },
   "portal": {
     "title": "Kundenportal",
