@@ -21,7 +21,7 @@ export function WhatsNewAboutRows() {
     <>
       <div id="about-whats-new" className="flex items-center justify-between gap-4">
         <span className="text-sm text-muted-foreground">{t('whatsNew')}</span>
-        <Button type="button" variant="outline" size="sm" onClick={open}>
+        <Button type="button" variant="outline" size="sm" onClick={() => open('settings')}>
           {t('whatsNewOpen')}
         </Button>
       </div>

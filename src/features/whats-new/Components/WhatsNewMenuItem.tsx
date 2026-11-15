@@ -17,7 +17,7 @@ export function WhatsNewMenuItem() {
   if (!available) return null
   return (
     <>
-      <DropdownMenuItem onClick={open}>
+      <DropdownMenuItem onClick={() => open('menu')}>
         <Megaphone className="mr-2 size-4" />
         {t('title')}
         {hasUnread && (

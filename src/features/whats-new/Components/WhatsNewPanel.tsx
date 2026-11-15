@@ -12,9 +12,11 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { track } from '@/lib/analytics'
 import { MARKETING_URL } from '@/lib/marketing-urls'
 import { safeRedirectPath } from '@/lib/safe-redirect'
 import { cn } from '@/lib/utils'
+import { isFreshEntry } from '../Lib/paging'
 import type { WhatsNewEntry } from '../Schema/whatsNewSchema'
 import { WhatsNewFeedback } from './WhatsNewFeedback'
 
@@ -113,16 +115,19 @@ function Entry({
             timeZone,
           })}
         </time>
-        <span
-          className={cn(
-            'rounded-full px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider',
-            entry.kind === 'new'
-              ? 'bg-primary text-primary-foreground'
-              : 'border border-primary/40 text-foreground'
-          )}
-        >
-          {entry.kind === 'new' ? t('kindNew') : t('kindImproved')}
-        </span>
+        {/* Only while it is news: three weeks on, the date says the rest. */}
+        {isFreshEntry(entry.publishedAt) && (
+          <span
+            className={cn(
+              'rounded-full px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider',
+              entry.kind === 'new'
+                ? 'bg-primary text-primary-foreground'
+                : 'border border-primary/40 text-foreground'
+            )}
+          >
+            {entry.kind === 'new' ? t('kindNew') : t('kindImproved')}
+          </span>
+        )}
       </div>
       <article className="mt-2.5 overflow-hidden rounded-xl border bg-card shadow-xs">
         {/* The card hairline the rest of the app uses: primary, gone by the far edge. */}
@@ -151,7 +156,13 @@ function Entry({
                   size="sm"
                   className="border-primary/35 bg-primary/10 hover:bg-primary/15"
                 >
-                  <Link href={cta} onClick={onNavigate}>
+                  <Link
+                    href={cta}
+                    onClick={() => {
+                      track('whats_new:entry_link_click', { link: 'button', entry_id: entry.id })
+                      onNavigate()
+                    }}
+                  >
                     {entry.ctaLabel || t('open')}
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
@@ -160,6 +171,9 @@ function Entry({
               {video && (
                 <a
                   href={video}
+                  onClick={() =>
+                    track('whats_new:entry_link_click', { link: 'video', entry_id: entry.id })
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 rounded text-sm font-medium text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -171,6 +185,9 @@ function Entry({
               {guide && (
                 <a
                   href={guide}
+                  onClick={() =>
+                    track('whats_new:entry_link_click', { link: 'guide', entry_id: entry.id })
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded text-sm font-medium text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

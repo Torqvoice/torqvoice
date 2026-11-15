@@ -107,6 +107,17 @@ export type AnalyticsEvent =
   | 'fault_code:import_check'
   /** An import sent for review: its `make` and how many `codes`. */
   | 'fault_code:import_send'
+  /**
+   * The What's new panel opened: `source` tab (the edge of the screen), menu
+   * (the account menu), settings (Settings, About) or update_banner, with how
+   * many entries it held and how many were `unread`. Whether anybody reads
+   * the news at all, and from where.
+   */
+  | 'whats_new:panel_open'
+  /** A link on an entry followed: `link` button, guide or video, and the `entry_id`. */
+  | 'whats_new:entry_link_click'
+  /** The tab on the edge of the screen hidden, or brought back: `hidden` true or false. */
+  | 'whats_new:tab_toggle'
 
 type Properties = Record<string, string | number | boolean | null>
 

@@ -89,7 +89,7 @@ export function UpdateBanner({
           type="button"
           onClick={() => {
             acknowledge()
-            whatsNew.open()
+            whatsNew.open('update_banner')
           }}
           className="cursor-pointer underline underline-offset-2 hover:text-amber-900"
         >
