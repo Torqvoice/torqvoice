@@ -648,9 +648,28 @@ export async function restoreBackup(
         // The portal chat goes with its customers by cascade. A file that
         // replaces the customers without carrying the chat would delete every
         // conversation, so those are read first and put back further down.
-        const currentPortalMessages = keepsCurrentPortalMessages(data)
-          ? await tx.portalMessage.findMany({ where: { organizationId } })
-          : []
+        //
+        // The chat stays open while a restore runs, so the rows are locked
+        // before they are read. A message being sent takes a share of its
+        // customer's row, and a read receipt takes its message's row: locking
+        // both waits for the writes already under way, which the read below
+        // then sees, and holds new ones until the restore commits. One that
+        // waited finds its customer or message replaced and fails or changes
+        // nothing; it is never taken in and then silently dropped.
+        let currentPortalMessages: Record<string, unknown>[] = []
+        if (keepsCurrentPortalMessages(data)) {
+          await raw.$queryRaw(Prisma.sql`
+            SELECT count(*) FROM (
+              SELECT 1 FROM customers WHERE "organizationId" = ${organizationId} FOR UPDATE
+            ) locked
+          `)
+          await raw.$queryRaw(Prisma.sql`
+            SELECT count(*) FROM (
+              SELECT 1 FROM portal_messages WHERE "organizationId" = ${organizationId} FOR UPDATE
+            ) locked
+          `)
+          currentPortalMessages = await tx.portalMessage.findMany({ where: { organizationId } })
+        }
 
         for (const model of clearPlanFor(Object.keys(data))) {
           const clear = clearable[model]
