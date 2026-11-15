@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Portal do cliente",
-    "description": "Permita que seus clientes facam login e visualizem seus veículos, faturas, orçamentos e inspeções. Os clientes também podem enviar solicitações de serviço.",
-    "enablePortal": "Ativar portal do cliente",
-    "enablePortalHint": "Clientes com endereço de e-mail podem fazer login via link mágico",
-    "enabled": "Portal do cliente ativado",
-    "disabled": "Portal do cliente desativado",
-    "failedUpdate": "Falha ao atualizar configuração",
-    "customSlug": "Slug personalizado do portal",
-    "save": "Salvar",
-    "slugSaved": "Slug do portal salvo",
-    "slugRemoved": "Slug do portal removido",
-    "failedUpdateSlug": "Falha ao atualizar slug",
-    "slugHint": "Letras minúsculas, números, hífens e underscores. 3-48 caracteres. Deixe em branco para usar a URL padrão.",
-    "portalUrl": "URL do portal",
-    "urlCopied": "URL do portal copiada",
-    "shareHint": "Compartilhe este link com seus clientes para que possam fazer login no portal.",
+    "description": "Seus clientes entram para acompanhar o serviço, responder orçamentos, pagar faturas, agendar uma visita e escrever para você.",
+    "enablePortal": "Ativar o portal do cliente",
+    "enablePortalHint": "Os clientes entram com um link enviado para o e-mail ou celular deles. Não há senha para lembrar.",
+    "failedUpdate": "Não foi possível salvar as configurações",
+    "customSlug": "Endereço do portal",
+    "slugHint": "Letras minúsculas, números, hífens e underscores, de 3 a 48 caracteres. Deixe em branco para usar o endereço padrão.",
+    "portalUrl": "Link do seu portal",
+    "urlCopied": "Link copiado",
+    "shareHint": "Compartilhe este link com seus clientes para que eles possam entrar.",
     "serviceRequestAlertsHint": "As solicitações de serviço do portal sempre aparecem no seu sino de notificações. Você também pode recebê-las por e-mail.",
-    "serviceRequestAlertsLink": "Configurações de alerta →",
+    "serviceRequestAlertsLink": "Configurações de alerta",
     "descriptionLabel": "Sobre sua oficina",
     "descriptionPlaceholder": "Conte aos clientes sobre sua oficina, os serviços que você oferece e o que torna seu trabalho único.",
-    "descriptionHint": "Mostrado aos visitantes no topo da página inicial do seu portal.",
-    "hoursLabel": "Horário de funcionamento",
-    "hoursPlaceholder": "Seg-Sex: 8:00-17:00\nSáb: 9:00-13:00\nDom: Fechado",
-    "hoursHint": "Texto livre. Use quebras de linha para listar cada dia separadamente.",
-    "contentSaved": "Conteúdo do portal salvo",
-    "background": {
-      "title": "Plano de fundo do portal",
-      "description": "Escolha como a página inicial do portal do cliente fica.",
-      "typeNone": "Nenhum",
-      "typeTemplate": "Modelo",
-      "typeImage": "Imagem personalizada",
-      "chooseTemplate": "Escolha um modelo",
-      "uploadLabel": "Imagem de fundo",
-      "upload": "Enviar imagem",
-      "replace": "Substituir imagem",
-      "remove": "Remover",
-      "uploadHint": "JPG, PNG ou WebP. Máx. 8 MB. Recomendado pelo menos 1600×900.",
-      "uploading": "Enviando plano de fundo…",
-      "uploaded": "Plano de fundo atualizado",
-      "uploadFailed": "Falha ao enviar o plano de fundo",
-      "templateNames": {
-        "default": "Sutil",
-        "sunrise": "Amanhecer",
-        "ocean": "Oceano",
-        "forest": "Floresta",
-        "slate": "Ardósia",
-        "sand": "Areia"
+    "descriptionHint": "Mostrado na página de login do seu portal.",
+    "copyUrl": "Copiar o link"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "minha-oficina",
+    "slugUnsaved": "Este endereço funciona depois que você salvar.",
+    "slugInvalid": "Use de 3 a 48 letras minúsculas, números, hífens ou underscores, começando e terminando com letra ou número.",
+    "slugReserved": "Essa palavra é reservada. Escolha outro endereço.",
+    "slugTaken": "Outra oficina já usa esse endereço. Escolha outro.",
+    "hours": {
+      "title": "Horário de funcionamento",
+      "fromCalendar": "O portal mostra o horário de funcionamento e os dias fechados do calendário da sua oficina.",
+      "link": "Configurações de horário de funcionamento",
+      "typedNote": "Sua página de login ainda mostra o horário digitado aqui antes, porque ainda não há horário de funcionamento no calendário. Defina lá e o portal passa a mostrar esse.",
+      "typedLabel": "Mostrado na página de login hoje"
+    },
+    "look": {
+      "title": "Visual do seu portal do cliente",
+      "description": "Uma única escolha define a página de login e todas as páginas que seus clientes veem depois. Os clientes não podem mudar."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Claro e tranquilo"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Painel de box escuro"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Editorial e discreto"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Sua cor, em destaque"
       }
     },
-    "copyUrl": "Copiar URL do portal"
+    "colour": {
+      "title": "Sua cor",
+      "description": "Usada em botões e destaques em todos os temas.",
+      "swatches": "Cores sugeridas",
+      "orange": "Laranja",
+      "blue": "Azul",
+      "green": "Verde",
+      "red": "Vermelho",
+      "black": "Preto",
+      "hexLabel": "Cor em código hexadecimal",
+      "invalid": "Isso não é uma cor. Escreva como código hexadecimal, por exemplo #1D4ED8.",
+      "usingTheme": "Usando a cor que vem com {theme}, {hex}.",
+      "themeColour": "A cor que vem com {theme} é {hex}.",
+      "useTheme": "Usar a cor do tema",
+      "sample": "Agendar uma visita",
+      "inkLight": "O texto sobre esta cor fica em branco, para continuar legível.",
+      "inkDark": "O texto sobre esta cor fica em preto, para continuar legível.",
+      "faint": "Esta cor fica fraca contra o fundo de {theme}. Links e destaques podem ficar difíceis de ver."
+    },
+    "cover": {
+      "title": "Foto de capa e logotipo",
+      "description": "Mostrados na página de login. Seu logotipo vem das configurações da empresa.",
+      "companyLink": "Configurações da empresa",
+      "hint": "PNG, JPEG ou WebP, até 8 MB.",
+      "none": "Nenhuma foto de capa",
+      "alt": "A foto de capa na página de login",
+      "upload": "Enviar uma foto",
+      "replace": "Substituir a foto",
+      "remove": "Remover a foto",
+      "uploading": "Enviando",
+      "uploadFailed": "Não foi possível enviar a foto"
+    },
+    "features": {
+      "title": "O que os clientes recebem",
+      "description": "As partes do portal que você pode desativar.",
+      "messages": "Mensagens no portal",
+      "messagesHint": "Os clientes escrevem para você pelo portal. As mensagens chegam na sua caixa de Mensagens.",
+      "tires": "Mostrar pneus guardados",
+      "tiresHint": "Os clientes veem os pneus que você guarda para eles, com a profundidade do sulco."
+    },
+    "bar": {
+      "label": "Salvar as configurações do portal do cliente",
+      "unsaved": "Você tem alterações não salvas",
+      "saved": "Tudo salvo",
+      "discard": "Descartar alterações",
+      "save": "Salvar alterações",
+      "open": "Abrir o portal como cliente",
+      "openOff": "Ative o portal e salve para abri-lo."
+    },
+    "savedToast": "Configurações do portal do cliente salvas"
   },
   "email": {
     "title": "Provedor de e-mail",

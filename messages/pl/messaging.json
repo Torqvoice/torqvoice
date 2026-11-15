@@ -51,5 +51,28 @@
       "noMatches": "Żaden klient nie pasuje do wyszukiwania.",
       "noRecipients": "Brak klientów z adresem e-mail."
     }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} nie napisał jeszcze nic w portalu.",
+    "placeholder": "Napisz do {name} w portalu",
+    "send": "Wyślij wiadomość",
+    "sendFailed": "Nie udało się wysłać wiadomości",
+    "sendHint": "Enter wysyła, Shift+Enter zaczyna nową linię. {name} zobaczy ją przy następnym otwarciu portalu.",
+    "loadOlder": "Wczytaj starsze wiadomości",
+    "loadFailed": "Nie udało się wczytać rozmowy.",
+    "tryAgain": "Spróbuj ponownie",
+    "addPhoto": "Dodaj zdjęcie",
+    "removePhoto": "Usuń {name}",
+    "uploadFailed": "Nie udało się dodać zdjęcia. Zdjęcia mogą mieć do {size} MB.",
+    "tooManyPhotos": "Wiadomość mieści do {count} zdjęć.",
+    "photoFrom": "Zdjęcie od {name}",
+    "videoFrom": "Wideo od {name}",
+    "openFile": "Otwórz plik",
+    "you": "Ty",
+    "seen": "Przeczytano",
+    "off": "Wiadomości w portalu klienta są wyłączone, więc tę rozmowę można czytać, ale nie można na nią odpowiadać.",
+    "offSettings": "Ustawienia portalu klienta",
+    "deleteDescription": "Usuwa całą rozmowę z {name}, także u klienta: znika ona z jego portalu."
   }
 }

@@ -30,3 +30,23 @@ export function portalConditionCounts(items: { condition: string }[]): PortalCon
   }
   return counts
 }
+
+/**
+ * The counts worth showing, in reading order, each with how loudly to say it.
+ * The portal theme's variables only: good is quiet, fair is plain text, poor
+ * is the theme's warning colour, so the summary reads right in every portal
+ * theme, the dark one included. Zero counts are left out.
+ */
+export function portalConditionSummary(
+  items: { condition: string }[]
+): { key: keyof PortalConditionCounts; count: number; className: string }[] {
+  const counts = portalConditionCounts(items)
+  const tone: Record<keyof PortalConditionCounts, string> = {
+    good: 'p-muted',
+    fair: 'p-ink font-medium',
+    poor: 'font-semibold text-[color:var(--p-danger)]',
+  }
+  return (['poor', 'fair', 'good'] as const)
+    .filter((key) => counts[key] > 0)
+    .map((key) => ({ key, count: counts[key], className: tone[key] }))
+}

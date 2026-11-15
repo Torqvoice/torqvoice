@@ -64,6 +64,7 @@ model Organization {
   smsMessages                 SmsMessage[]
   telegramMessages            TelegramMessage[]
   whatsappMessages            WhatsappMessage[]
+  portalMessages              PortalMessage[]
   emailMessages               EmailMessage[]
   technicians                 Technician[]
   workBays                    WorkBay[]

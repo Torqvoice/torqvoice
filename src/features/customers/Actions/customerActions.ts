@@ -415,6 +415,7 @@ export async function getPendingServiceRequests(limit = 5) {
           id: true,
           description: true,
           preferredDate: true,
+          attachments: true,
           createdAt: true,
           customer: { select: { id: true, name: true } },
           vehicle: {

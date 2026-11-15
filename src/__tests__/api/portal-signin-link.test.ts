@@ -23,6 +23,10 @@ vi.mock('@/lib/portal-slug', () => ({ resolvePortalOrg: vi.fn() }))
 import { db } from '@/lib/db'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { GET, POST } from '@/app/(public)/portal/[orgId]/auth/verify/route'
+import { SIGN_IN_ERROR_CODES, signInErrorMessageKey } from '@/features/portal/Lib/signInLink'
+import portalMessages from '../../../messages/en/portal.json'
+
+const loginMessages = portalMessages.login
 
 const ORG = 'org-a'
 const TOKEN = 'a'.repeat(64)
@@ -90,17 +94,21 @@ describe('opening the sign-in link', () => {
   })
 
   it.each([
-    ['a link that was already used', { usedAt: new Date() }, 'already been used'],
-    ['a link past its fifteen minutes', { expiresAt: new Date(Date.now() - 1000) }, 'has expired'],
-    ["another workshop's link", { organizationId: 'org-b' }, 'Invalid or expired link'],
-  ])('sends %s back to the login page with the reason', async (_name, overrides, reason) => {
+    ['a link that was already used', { usedAt: new Date() }, 'used'],
+    ['a link past its fifteen minutes', { expiresAt: new Date(Date.now() - 1000) }, 'expired'],
+    ["another workshop's link", { organizationId: 'org-b' }, 'invalid'],
+  ])('sends %s back to the login page with the reason as a code', async (_name, overrides, code) => {
     vi.mocked(db.customerMagicLink.findUnique).mockResolvedValue(link(overrides) as never)
 
     const res = await open()
 
-    const location = decodeURIComponent(res.headers.get('location') ?? '')
-    expect(location).toContain(`${BASE}/login?error=`)
-    expect(location).toContain(reason)
+    // A short code, which the login page words in the customer's language.
+    expect(res.headers.get('location')).toBe(`${BASE}/login?error=${code}`)
+  })
+
+  it('sends an address without a token back with a code, not English text', async () => {
+    const res = await GET(new Request(`${BASE}/verify`), params)
+    expect(res.headers.get('location')).toBe(`${BASE}/login?error=invalid`)
   })
 })
 
@@ -126,7 +134,7 @@ describe('pressing Continue to sign in', () => {
 
     const res = await press()
 
-    expect(decodeURIComponent(res.headers.get('location') ?? '')).toContain('already been used')
+    expect(res.headers.get('location')).toBe(`${BASE}/login?error=used`)
     expect(db.customerSession.create).not.toHaveBeenCalled()
   })
 
@@ -158,7 +166,36 @@ describe('pressing Continue to sign in', () => {
 
     const res = await press()
 
-    expect(decodeURIComponent(res.headers.get('location') ?? '')).toContain('has expired')
+    expect(res.headers.get('location')).toBe(`${BASE}/login?error=expired`)
     expect(db.customerSession.create).not.toHaveBeenCalled()
+  })
+
+  it('says the account is missing when the link outlived its customer', async () => {
+    vi.mocked(db.customer.findFirst).mockResolvedValue(null)
+
+    const res = await press()
+
+    expect(res.headers.get('location')).toBe(`${BASE}/login?error=no-account`)
+    expect(db.customerSession.create).not.toHaveBeenCalled()
+  })
+})
+
+describe('the message the login page shows', () => {
+  it('words every code the sign-in routes send', () => {
+    for (const code of SIGN_IN_ERROR_CODES) {
+      const key = signInErrorMessageKey(code)
+      expect(key, code).not.toBeNull()
+      expect(loginMessages.errors[key as keyof typeof loginMessages.errors], code).toEqual(
+        expect.any(String)
+      )
+    }
+    expect(loginMessages.errors.used).toContain('already been used')
+  })
+
+  it('shows nothing for text someone typed into the address', () => {
+    expect(signInErrorMessageKey('Your account is locked, call +1 555 0100')).toBeNull()
+    expect(signInErrorMessageKey('toString')).toBeNull()
+    expect(signInErrorMessageKey(['used'])).toBeNull()
+    expect(signInErrorMessageKey(undefined)).toBeNull()
   })
 })

@@ -114,6 +114,7 @@ export const BACKUP_LAYOUT: Record<string, LayoutNode> = {
   smsMessages: { model: 'SmsMessage' },
   whatsappMessages: { model: 'WhatsappMessage' },
   telegramMessages: { model: 'TelegramMessage' },
+  portalMessages: { model: 'PortalMessage' },
   emailMessages: { model: 'EmailMessage', children: { attachments: { model: 'EmailAttachment' } } },
   scheduledMessages: { model: 'ScheduledMessage' },
   inspectionReminderCampaigns: { model: 'InspectionReminderCampaign' },

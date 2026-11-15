@@ -51,5 +51,28 @@
       "noMatches": "Geen klant komt overeen met je zoekopdracht.",
       "noRecipients": "Nog geen klanten met een e-mailadres."
     }
+  },
+  "portal": {
+    "badge": "Portaal",
+    "empty": "{name} heeft nog niet geschreven in het portaal.",
+    "placeholder": "Schrijf {name} in het portaal",
+    "send": "Bericht versturen",
+    "sendFailed": "Het bericht kon niet worden verstuurd",
+    "sendHint": "Enter verstuurt, Shift+Enter begint een nieuwe regel. {name} ziet het bij het volgende bezoek aan het portaal.",
+    "loadOlder": "Oudere berichten laden",
+    "loadFailed": "Het gesprek kon niet worden geladen.",
+    "tryAgain": "Opnieuw proberen",
+    "addPhoto": "Foto toevoegen",
+    "removePhoto": "{name} verwijderen",
+    "uploadFailed": "De foto kon niet worden toegevoegd. Foto's mogen tot {size} MB zijn.",
+    "tooManyPhotos": "Een bericht kan maximaal {count} foto's bevatten.",
+    "photoFrom": "Foto van {name}",
+    "videoFrom": "Video van {name}",
+    "openFile": "Bestand openen",
+    "you": "Jij",
+    "seen": "Gelezen",
+    "off": "Berichten in het klantenportaal staan uit, dus dit gesprek kan worden gelezen maar niet beantwoord.",
+    "offSettings": "Instellingen klantenportaal",
+    "deleteDescription": "Verwijdert het hele gesprek met {name}, ook voor de klant: het verdwijnt uit diens portaal."
   }
 }

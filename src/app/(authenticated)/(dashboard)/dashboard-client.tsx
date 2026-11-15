@@ -101,6 +101,7 @@ import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 import { CalendarEventsCard } from '@/features/calendar/Components/CalendarEventsCard'
 import { isEventDone } from '@/features/calendar/Components/calendar-utils'
 import type { CalendarEvent } from '@/features/calendar/Actions/calendarActions'
+import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
 
 interface ServiceItem {
   id: string
@@ -192,6 +193,8 @@ interface DashboardServiceRequest {
   id: string
   description: string
   preferredDate: Date | null
+  /** Photos and video the customer sent from the portal, as stored file urls. */
+  attachments?: string[]
   createdAt: Date
   customer: { id: string; name: string } | null
   vehicle: {
@@ -1297,6 +1300,7 @@ export function DashboardClient({
                               })}
                             </span>
                           )}
+                          <ServiceRequestFiles urls={req.attachments} compact />
                         </div>
                         <div className="mt-2 flex items-center gap-2">
                           <Button

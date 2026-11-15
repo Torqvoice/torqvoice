@@ -51,5 +51,28 @@
       "noMatches": "Nenhum cliente corresponde à sua busca.",
       "noRecipients": "Ainda não há clientes com endereço de e-mail."
     }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} ainda não escreveu no portal.",
+    "placeholder": "Escreva para {name} no portal",
+    "send": "Enviar mensagem",
+    "sendFailed": "Não foi possível enviar a mensagem",
+    "sendHint": "Enter envia, Shift+Enter começa uma nova linha. {name} vê a mensagem na próxima vez que abrir o portal.",
+    "loadOlder": "Carregar mensagens anteriores",
+    "loadFailed": "Não foi possível carregar a conversa.",
+    "tryAgain": "Tentar de novo",
+    "addPhoto": "Adicionar uma foto",
+    "removePhoto": "Remover {name}",
+    "uploadFailed": "Não foi possível adicionar a foto. Fotos de até {size} MB funcionam.",
+    "tooManyPhotos": "Uma mensagem aceita até {count} fotos.",
+    "photoFrom": "Foto de {name}",
+    "videoFrom": "Vídeo de {name}",
+    "openFile": "Abrir arquivo",
+    "you": "Você",
+    "seen": "Visto",
+    "off": "As mensagens no portal do cliente estão desativadas, então esta conversa pode ser lida, mas não respondida.",
+    "offSettings": "Configurações do portal do cliente",
+    "deleteDescription": "Remove toda a conversa com {name}, também para o cliente: ela some do portal dele."
   }
 }

@@ -1,13 +1,11 @@
 'use client'
 
-import { Clock } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
-import { AppCard } from '@/components/app-card'
-import { cn } from '@/lib/utils'
 import { formatClock } from '@/features/workboard/utils/clock'
-import { formatDay, weekdayName } from '@/features/workshop-calendar/Lib/format'
 import { weekdayOf } from '@/features/workshop-calendar/Lib/calendar'
+import { formatDay, weekdayName } from '@/features/workshop-calendar/Lib/format'
 import type { PortalOpeningHours as Hours } from '../Actions/portalActions'
+import { PortalPanel, PortalSectionLabel } from './Ui'
 
 /** Monday first: how most of the world reads a week of opening hours. */
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0]
@@ -19,10 +17,10 @@ const minutesOf = (hhmm: string) => {
 
 /**
  * When the workshop is open, for its customers: each weekday's hours with
- * today marked, then the days soon it is shut or closes early. `wide` lays
- * the week out in a row on wider screens, for a card that spans the page.
+ * today marked, then the days soon it is shut or closes early. Drawn in the
+ * portal theme's panel, beside the form a customer picks a day in.
  */
-export function PortalOpeningHours({ hours, wide = false }: { hours: Hours; wide?: boolean }) {
+export function PortalOpeningHours({ hours }: { hours: Hours }) {
   const t = useTranslations('portal.openingHours')
   const locale = useLocale()
   const todayWeekday = weekdayOf(hours.today)
@@ -30,33 +28,26 @@ export function PortalOpeningHours({ hours, wide = false }: { hours: Hours; wide
     `${formatClock(minutesOf(start), hours.timeFormat)} – ${formatClock(minutesOf(end), hours.timeFormat)}`
 
   return (
-    <AppCard icon={Clock} title={t('title')}>
-      <ul
-        className={cn(
-          'space-y-1 text-sm',
-          // A list on a phone; a row of days once there is room for one.
-          wide && 'sm:grid sm:grid-cols-4 sm:gap-2 sm:space-y-0 lg:grid-cols-7'
-        )}
-        data-testid="portal-opening-hours"
-      >
+    <PortalPanel aria-labelledby="portal-hours-title">
+      <PortalSectionLabel id="portal-hours-title">{t('title')}</PortalSectionLabel>
+      <ul className="mt-3 flex flex-col text-[15px]" data-testid="portal-opening-hours">
         {WEEK_ORDER.map((weekday) => {
           const day = hours.week[weekday]
           const isToday = weekday === todayWeekday
           return (
             <li
               key={weekday}
-              className={cn(
-                'flex justify-between gap-3 rounded-md px-2 py-1',
-                wide && 'sm:flex-col sm:justify-start sm:gap-0.5 sm:border',
-                isToday && 'bg-muted font-medium'
-              )}
+              className={[
+                '-mx-2 flex justify-between gap-3 rounded-[8px] px-2 py-1.5',
+                isToday ? 'bg-[var(--p-soft)] font-semibold' : '',
+              ].join(' ')}
               aria-current={isToday ? 'date' : undefined}
             >
               <span>
                 {weekdayName(weekday, locale)}
                 {isToday && <span className="sr-only"> ({t('today')})</span>}
               </span>
-              <span className={cn('tabular-nums', !day?.open && 'text-muted-foreground')}>
+              <span className={day?.open ? undefined : 'p-muted'}>
                 {day?.open ? span(day.start, day.end) : t('closed')}
               </span>
             </li>
@@ -65,18 +56,16 @@ export function PortalOpeningHours({ hours, wide = false }: { hours: Hours; wide
       </ul>
 
       {hours.closedSoon.length > 0 && (
-        <div className="mt-4 space-y-1.5">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-            {t('closedSoon')}
-          </p>
-          <ul className="space-y-1 text-sm" data-testid="portal-closed-soon">
+        <div className="mt-4 border-t pt-4">
+          <p className="p-muted text-sm font-semibold">{t('closedSoon')}</p>
+          <ul className="mt-2 flex flex-col gap-1.5 text-sm" data-testid="portal-closed-soon">
             {hours.closedSoon.map((day) => (
               <li key={day.date} className="flex flex-wrap justify-between gap-x-3">
                 <span>
                   {formatDay(day.date, locale, { year: false, weekday: true })}
-                  <span className="text-muted-foreground"> · {day.name}</span>
+                  <span className="p-muted"> · {day.name}</span>
                 </span>
-                <span className="tabular-nums text-muted-foreground">
+                <span className="p-muted">
                   {day.open.length === 0
                     ? t('closed')
                     : t('openOnly', {
@@ -88,6 +77,6 @@ export function PortalOpeningHours({ hours, wide = false }: { hours: Hours; wide
           </ul>
         </div>
       )}
-    </AppCard>
+    </PortalPanel>
   )
 }

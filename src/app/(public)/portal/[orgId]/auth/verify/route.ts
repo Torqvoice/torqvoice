@@ -13,7 +13,7 @@ import {
   checkSignInLink,
   redeemSignInLink,
   SIGN_IN_LINK_COOKIE,
-  SIGN_IN_LINK_ERRORS,
+  type SignInErrorCode,
 } from '@/features/portal/Lib/signInLink'
 
 type RouteParams = { params: Promise<{ orgId: string }> }
@@ -27,9 +27,12 @@ function readCookie(request: Request, name: string): string | null {
   return null
 }
 
-/** Back to the login page with a reason, and without a token left behind. */
-function backToLogin(loginUrl: string, error: string, status = 307) {
-  const response = NextResponse.redirect(`${loginUrl}?error=${encodeURIComponent(error)}`, status)
+/**
+ * Back to the login page with the reason as a short code, and without a token
+ * left behind. The login page words the code in the customer's language.
+ */
+function backToLogin(loginUrl: string, error: SignInErrorCode, status = 307) {
+  const response = NextResponse.redirect(`${loginUrl}?error=${error}`, status)
   response.cookies.delete({ name: SIGN_IN_LINK_COOKIE, path: '/portal' })
   return response
 }
@@ -46,13 +49,13 @@ export async function GET(request: Request, { params }: RouteParams) {
   const baseUrl = getAppBaseUrl(new URL(request.url).origin)
   const loginUrl = `${baseUrl}/portal/${orgParam}/auth/login`
 
-  if (!token) return backToLogin(loginUrl, 'Missing verification token.')
+  if (!token) return backToLogin(loginUrl, 'invalid')
 
   const org = await resolvePortalOrg(orgParam)
-  if (!org) return backToLogin(loginUrl, SIGN_IN_LINK_ERRORS.invalid)
+  if (!org) return backToLogin(loginUrl, 'invalid')
 
   const link = await checkSignInLink(org.id, token)
-  if (!link.ok) return backToLogin(loginUrl, SIGN_IN_LINK_ERRORS[link.problem])
+  if (!link.ok) return backToLogin(loginUrl, link.problem)
 
   const response = NextResponse.redirect(`${baseUrl}/portal/${orgParam}/auth/confirm`)
   response.cookies.set(SIGN_IN_LINK_COOKIE, token, {
@@ -74,17 +77,17 @@ export async function POST(request: Request, { params }: RouteParams) {
   const baseUrl = getAppBaseUrl(new URL(request.url).origin)
   const loginUrl = `${baseUrl}/portal/${orgParam}/auth/login`
   // 303 throughout: the browser must follow a form post with a GET.
-  const fail = (error: string) => backToLogin(loginUrl, error, 303)
+  const fail = (error: SignInErrorCode) => backToLogin(loginUrl, error, 303)
 
   const token = readCookie(request, SIGN_IN_LINK_COOKIE)
-  if (!token) return fail(SIGN_IN_LINK_ERRORS.invalid)
+  if (!token) return fail('invalid')
 
   const org = await resolvePortalOrg(orgParam)
-  if (!org) return fail(SIGN_IN_LINK_ERRORS.invalid)
+  if (!org) return fail('invalid')
   const orgId = org.id
 
   const link = await checkSignInLink(orgId, token)
-  if (!link.ok) return fail(SIGN_IN_LINK_ERRORS[link.problem])
+  if (!link.ok) return fail(link.problem)
 
   // The page names who is about to sign in, and the cookie is shared by every
   // tab. If a second link was opened since that page was drawn, the cookie now
@@ -95,13 +98,13 @@ export async function POST(request: Request, { params }: RouteParams) {
     return NextResponse.redirect(`${baseUrl}/portal/${orgParam}/auth/confirm`, 303)
   }
 
-  if (!(await redeemSignInLink(link.id))) return fail(SIGN_IN_LINK_ERRORS.used)
+  if (!(await redeemSignInLink(link.id))) return fail('used')
 
   const customer = await db.customer.findFirst({
     where: { email: link.email, organizationId: orgId },
     select: { id: true },
   })
-  if (!customer) return fail('Customer account not found.')
+  if (!customer) return fail('no-account')
 
   const sessionToken = randomBytes(32).toString('hex')
   await db.customerSession.create({

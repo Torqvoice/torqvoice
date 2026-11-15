@@ -4,8 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { notify } from '@/lib/notify'
-import { assertNotRestoring } from '@/lib/backup/freeze'
+import { recordQuoteResponse } from '@/features/quotes/Lib/recordQuoteResponse'
 import { z } from 'zod'
 
 const respondToQuoteSchema = z.object({
@@ -35,32 +34,9 @@ export async function respondToQuote(input: unknown) {
   if (!['draft', 'sent'].includes(quote.status)) {
     return { success: false, error: 'This quote can no longer be updated' }
   }
-  // No withAuth on a public action, so the restore freeze is checked here.
-  if (quote.organizationId) assertNotRestoring(quote.organizationId)
 
-  await db.quote.update({
-    where: { id: data.quoteId },
-    data: {
-      status: data.action,
-      customerMessage: data.message || null,
-      // A new answer is news again, even on a quote whose last one was dismissed.
-      responseDismissedAt: null,
-    },
-  })
-
-  if (quote.organizationId) {
-    const customerName = quote.customer?.name || 'A customer'
-    const actionLabel = data.action === 'accepted' ? 'accepted' : 'requested changes on'
-    notify({
-      organizationId: quote.organizationId,
-      type: 'quote_response',
-      title: `Quote ${data.action === 'accepted' ? 'Accepted' : 'Changes Requested'}`,
-      message: `${customerName} ${actionLabel} quote ${quote.quoteNumber || quote.title}`,
-      entityType: 'quote',
-      entityId: quote.id,
-      entityUrl: `/quotes/${quote.id}`,
-    })
-  }
+  // Shared with the customer portal, which finds the quote by who is signed in.
+  await recordQuoteResponse(quote, data.action, data.message)
 
   return { success: true }
 }

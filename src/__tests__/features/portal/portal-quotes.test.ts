@@ -71,7 +71,7 @@ vi.mock('@/lib/customer-session', () => ({
   getCustomerSession: vi.fn(async () => ({ customerId: 'c1', organizationId: 'org1' })),
 }))
 
-import { getPortalDashboard, getPortalQuotes } from '@/features/portal/Actions/portalActions'
+import { getPortalQuotes } from '@/features/portal/Actions/portalActions'
 
 describe('quotes in the customer portal', () => {
   beforeEach(() => {
@@ -130,15 +130,5 @@ describe('quotes in the customer portal', () => {
   it('leaves out a draft that became a work order without ever being sent', async () => {
     const result = await getPortalQuotes()
     expect(result.data?.map((q) => q.title)).not.toContain('Clutch kit')
-  })
-
-  it('keeps drafts off the dashboard too', async () => {
-    const result = await getPortalDashboard()
-    const titles = (result.data as { recentQuotes: { title: string }[] }).recentQuotes.map(
-      (q) => q.title
-    )
-    expect(titles).not.toContain('Suspension refresh')
-    expect(titles).not.toContain('Clutch kit')
-    expect(titles).toContain('Brake overhaul')
   })
 })

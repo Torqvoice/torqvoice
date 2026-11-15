@@ -67,9 +67,11 @@ import {
   type MessagingChannel,
 } from '../Actions/inboxActions'
 import { deleteEmailConversation } from '../Actions/emailThreadActions'
+import { deletePortalConversation } from '../Actions/portalThreadActions'
 import { ChannelBadge, channelLabel } from './ChannelBadge'
 import { EmailConversation } from './EmailConversation'
 import { NewEmailDialog } from './NewEmailDialog'
+import { PortalConversation } from './PortalConversation'
 import { avatarTint, initials } from '../Lib/threadDisplay'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
@@ -133,6 +135,7 @@ export function UnifiedInbox({
 }) {
   const t = useTranslations('messaging.inbox')
   const te = useTranslations('messaging.email')
+  const tp = useTranslations('messaging.portal')
   const router = useRouter()
   const [threads, setThreads] = useState(initialThreads)
   const [cursor, setCursor] = useState<string | null>(initialCursor)
@@ -378,11 +381,13 @@ export function UnifiedInbox({
             })
           : !thread.customerId
             ? await deleteWhatsappConversationByPhone(thread.contact)
-            : thread.channel === 'sms'
-              ? await deleteConversation(thread.customerId)
-              : thread.channel === 'telegram'
-                ? await deleteTelegramConversation(thread.customerId)
-                : await deleteWhatsappConversation(thread.customerId)
+            : thread.channel === 'portal'
+              ? await deletePortalConversation(thread.customerId)
+              : thread.channel === 'sms'
+                ? await deleteConversation(thread.customerId)
+                : thread.channel === 'telegram'
+                  ? await deleteTelegramConversation(thread.customerId)
+                  : await deleteWhatsappConversation(thread.customerId)
     } catch {
       // An action that cannot reach the server throws instead of answering, so
       // it is caught and reported the way a refusal is.
@@ -645,6 +650,15 @@ export function UnifiedInbox({
                 refreshKey={current?.lastAt ?? selected.lastAt}
                 className="h-auto min-h-0 flex-1"
               />
+            ) : selected.channel === 'portal' && selected.customerId ? (
+              <PortalConversation
+                key={selected.key}
+                customerId={selected.customerId}
+                customerName={selected.name}
+                onSent={onChanged}
+                refreshKey={current?.lastAt ?? selected.lastAt}
+                className="h-auto min-h-0 flex-1"
+              />
             ) : selected.channel === 'sms' && smsData && selected.customerId ? (
               <SmsConversation
                 key={selected.key}
@@ -739,7 +753,10 @@ export function UnifiedInbox({
           <AlertDialogHeader>
             <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('deleteDescription', { name: deleteTarget?.name ?? '' })}
+              {/* A portal thread has no copy on the customer's phone: it goes for them too. */}
+              {deleteTarget?.channel === 'portal'
+                ? tp('deleteDescription', { name: deleteTarget.name })
+                : t('deleteDescription', { name: deleteTarget?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

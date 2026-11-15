@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Kliento portalas",
-    "description": "Leiskite klientams prisijungti ir peržiūrėti savo transporto priemones, sąskaitas, pasiūlymus ir apžiūras. Klientai taip pat gali pateikti paslaugų užklausas.",
+    "description": "Jūsų klientai prisijungia, kad sektų savo užsakymą, atsakytų į pasiūlymus, apmokėtų sąskaitas, užsiregistruotų vizitui ir rašytų jums.",
     "enablePortal": "Įjungti kliento portalą",
-    "enablePortalHint": "Klientai su el. pašto adresu gali prisijungti per stebuklingo laiško nuorodą",
-    "enabled": "Kliento portalas įjungtas",
-    "disabled": "Kliento portalas išjungtas",
-    "failedUpdate": "Nepavyko atnaujinti nustatymo",
-    "customSlug": "Pasirinktinis portalo URL",
-    "save": "Išsaugoti",
-    "slugSaved": "Portalo URL išsaugotas",
-    "slugRemoved": "Portalo URL pašalintas",
-    "failedUpdateSlug": "Nepavyko atnaujinti URL",
-    "slugHint": "Mažosios raidės, skaičiai, brūkšneliai ir pabraukimai. 3–48 simboliai. Palikite tuščią, kad naudotumėte numatytąjį URL.",
-    "portalUrl": "Portalo URL",
-    "urlCopied": "Portalo URL nukopijuotas",
-    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo.",
+    "enablePortalHint": "Klientai prisijungia per nuorodą, atsiųstą el. paštu ar į telefoną. Slaptažodžio prisiminti nereikia.",
+    "failedUpdate": "Nepavyko išsaugoti nustatymų",
+    "customSlug": "Portalo adresas",
+    "slugHint": "Mažosios raidės, skaičiai, brūkšneliai ir pabraukimai, nuo 3 iki 48 simbolių. Palikite tuščią, kad būtų naudojamas numatytasis adresas.",
+    "portalUrl": "Nuoroda į jūsų portalą",
+    "urlCopied": "Nuoroda nukopijuota",
+    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti.",
     "serviceRequestAlertsHint": "Serviso užklausos iš portalo visada rodomos pranešimų varpelyje. Jas taip pat galite gauti el. paštu.",
-    "serviceRequestAlertsLink": "Pranešimų nustatymai →",
+    "serviceRequestAlertsLink": "Pranešimų nustatymai",
     "descriptionLabel": "Apie jūsų dirbtuves",
     "descriptionPlaceholder": "Papasakokite klientams apie savo dirbtuves, siūlomas paslaugas ir kuo esate unikalūs.",
-    "descriptionHint": "Rodoma lankytojams jūsų portalo pradžios puslapio viršuje.",
-    "hoursLabel": "Darbo laikas",
-    "hoursPlaceholder": "Pir-Pen: 8:00-17:00\nŠeš: 9:00-13:00\nSek: Uždaryta",
-    "hoursHint": "Laisvas tekstas. Naudokite naujas eilutes, kad nurodytumėte kiekvieną dieną atskirai.",
-    "contentSaved": "Portalo turinys išsaugotas",
-    "background": {
-      "title": "Portalo fonas",
-      "description": "Pasirinkite, kaip atrodo klientų portalo pradžios puslapis.",
-      "typeNone": "Joks",
-      "typeTemplate": "Šablonas",
-      "typeImage": "Pasirinktinė nuotrauka",
-      "chooseTemplate": "Pasirinkite šabloną",
-      "uploadLabel": "Fono nuotrauka",
-      "upload": "Įkelti nuotrauką",
-      "replace": "Pakeisti nuotrauką",
-      "remove": "Pašalinti",
-      "uploadHint": "JPG, PNG arba WebP. Iki 8 MB. Rekomenduojama bent 1600×900.",
-      "uploading": "Įkeliamas fonas…",
-      "uploaded": "Fonas atnaujintas",
-      "uploadFailed": "Nepavyko įkelti fono",
-      "templateNames": {
-        "default": "Subtilus",
-        "sunrise": "Saulėtekis",
-        "ocean": "Vandenynas",
-        "forest": "Miškas",
-        "slate": "Skalūnas",
-        "sand": "Smėlis"
+    "descriptionHint": "Rodoma jūsų portalo prisijungimo puslapyje.",
+    "copyUrl": "Kopijuoti nuorodą"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "mano-dirbtuves",
+    "slugUnsaved": "Šis adresas veiks, kai išsaugosite.",
+    "slugInvalid": "Naudokite nuo 3 iki 48 mažųjų raidžių, skaičių, brūkšnelių ar pabraukimų; pradžioje ir pabaigoje turi būti raidė arba skaičius.",
+    "slugReserved": "Šis žodis rezervuotas. Pasirinkite kitą adresą.",
+    "slugTaken": "Šį adresą jau naudoja kitos dirbtuvės. Pasirinkite kitą.",
+    "hours": {
+      "title": "Darbo laikas",
+      "fromCalendar": "Portale rodomas darbo laikas ir nedarbo dienos iš jūsų dirbtuvių kalendoriaus.",
+      "link": "Darbo laiko nustatymai",
+      "typedNote": "Prisijungimo puslapyje vis dar rodomas anksčiau čia įvestas darbo laikas, nes kalendoriuje darbo laikas dar nenustatytas. Nustatykite jį ten, ir portalas rodys jį.",
+      "typedLabel": "Šiuo metu rodoma prisijungimo puslapyje"
+    },
+    "look": {
+      "title": "Kliento portalo išvaizda",
+      "description": "Vienas pasirinkimas nustato prisijungimo puslapį ir visus puslapius, kuriuos klientai mato po jo. Klientai jo pakeisti negali."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Šviesi ir rami"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Tamsi boksų lenta"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Kaip laikraštis, santūri"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Jūsų spalva, ryškiai"
       }
     },
-    "copyUrl": "Kopijuoti portalo URL"
+    "colour": {
+      "title": "Jūsų spalva",
+      "description": "Naudojama mygtukams ir paryškinimams kiekvienoje temoje.",
+      "swatches": "Siūlomos spalvos",
+      "orange": "Oranžinė",
+      "blue": "Mėlyna",
+      "green": "Žalia",
+      "red": "Raudona",
+      "black": "Juoda",
+      "hexLabel": "Spalva hex kodu",
+      "invalid": "Tai ne spalva. Įrašykite ją hex kodu, pvz., #1D4ED8.",
+      "usingTheme": "Naudojama temos {theme} spalva, {hex}.",
+      "themeColour": "Temos {theme} spalva yra {hex}.",
+      "useTheme": "Naudoti temos spalvą",
+      "sample": "Užsiregistruoti vizitui",
+      "inkLight": "Tekstas ant šios spalvos rodomas baltas, kad būtų įskaitomas.",
+      "inkDark": "Tekstas ant šios spalvos rodomas juodas, kad būtų įskaitomas.",
+      "faint": "Ši spalva blankiai išsiskiria temos {theme} fone. Nuorodos ir paryškinimai gali būti sunkiai matomi."
+    },
+    "cover": {
+      "title": "Viršelio nuotrauka ir logotipas",
+      "description": "Rodoma prisijungimo puslapyje. Logotipas imamas iš įmonės nustatymų.",
+      "companyLink": "Įmonės nustatymai",
+      "hint": "PNG, JPEG arba WebP, iki 8 MB.",
+      "none": "Viršelio nuotraukos nėra",
+      "alt": "Viršelio nuotrauka prisijungimo puslapyje",
+      "upload": "Įkelti nuotrauką",
+      "replace": "Pakeisti nuotrauką",
+      "remove": "Pašalinti nuotrauką",
+      "uploading": "Įkeliama",
+      "uploadFailed": "Nepavyko įkelti nuotraukos"
+    },
+    "features": {
+      "title": "Ką gauna klientai",
+      "description": "Portalo dalys, kurias galite išjungti.",
+      "messages": "Žinutės portale",
+      "messagesHint": "Klientai jums rašo iš portalo. Jų žinutės patenka į jūsų Žinučių dėžutę.",
+      "tires": "Rodyti saugomas padangas",
+      "tiresHint": "Klientai mato padangas, kurias jiems saugote, su protektoriaus gyliu."
+    },
+    "bar": {
+      "label": "Išsaugoti kliento portalo nustatymus",
+      "unsaved": "Turite neišsaugotų pakeitimų",
+      "saved": "Viskas išsaugota",
+      "discard": "Atmesti pakeitimus",
+      "save": "Išsaugoti pakeitimus",
+      "open": "Atidaryti portalą kaip klientas",
+      "openOff": "Įjunkite portalą ir išsaugokite, kad galėtumėte jį atidaryti."
+    },
+    "savedToast": "Kliento portalo nustatymai išsaugoti"
   },
   "email": {
     "title": "El. pašto tiekėjas",
@@ -2847,9 +2900,9 @@
       "uploading": "Įkeliama…",
       "width": "Logotipo plotis",
       "hint": "Atskiras nuo įmonės logotipo. Įkeliant jis apkarpomas ir paruošiamas el. laiškui. PNG, JPEG arba WebP iki 4 MB.",
-      "position": "Padėtis",
       "tooLarge": "Paveikslėlis turi būti mažesnis nei 4 MB",
-      "uploadFailed": "Nepavyko įkelti logotipo"
+      "uploadFailed": "Nepavyko įkelti logotipo",
+      "position": "Padėtis"
     },
     "image": {
       "empty": "Paveikslėlis neįkeltas. Blokas nieko nespausdina, kol jo nėra.",

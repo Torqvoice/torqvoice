@@ -51,5 +51,28 @@
       "noMatches": "Kein Kunde passt zur Suche.",
       "noRecipients": "Noch keine Kunden mit E-Mail-Adresse."
     }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} hat im Portal noch nicht geschrieben.",
+    "placeholder": "{name} im Portal schreiben",
+    "send": "Nachricht senden",
+    "sendFailed": "Die Nachricht konnte nicht gesendet werden",
+    "sendHint": "Enter sendet, Umschalt+Enter beginnt eine neue Zeile. {name} sieht die Nachricht beim nächsten Öffnen des Portals.",
+    "loadOlder": "Ältere Nachrichten laden",
+    "loadFailed": "Die Unterhaltung konnte nicht geladen werden.",
+    "tryAgain": "Erneut versuchen",
+    "addPhoto": "Foto hinzufügen",
+    "removePhoto": "{name} entfernen",
+    "uploadFailed": "Das Foto konnte nicht hinzugefügt werden. Fotos bis {size} MB sind möglich.",
+    "tooManyPhotos": "Eine Nachricht fasst bis zu {count} Fotos.",
+    "photoFrom": "Foto von {name}",
+    "videoFrom": "Video von {name}",
+    "openFile": "Datei öffnen",
+    "you": "Sie",
+    "seen": "Gelesen",
+    "off": "Nachrichten im Kundenportal sind ausgeschaltet. Diese Unterhaltung kann gelesen, aber nicht beantwortet werden.",
+    "offSettings": "Einstellungen des Kundenportals",
+    "deleteDescription": "Entfernt die gesamte Unterhaltung mit {name}, auch für die Person selbst: Sie verschwindet aus ihrem Portal."
   }
 }

@@ -360,6 +360,12 @@ const DATASETS: readonly Dataset[] = [
       db.telegramMessage.findMany({ ...page, where: { organizationId } }),
   },
   {
+    key: 'portalMessages',
+    option: 'smsMessages',
+    read: (organizationId, page) =>
+      db.portalMessage.findMany({ ...page, where: { organizationId } }),
+  },
+  {
     // Attachments ride inside their message, which is what they belong to.
     key: 'emailMessages',
     option: 'smsMessages',

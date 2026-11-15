@@ -85,6 +85,14 @@ export const FILE_REFERENCES: FileReference[] = [
   { model: 'StatusReport', field: 'videoUrl', sql: text('status_reports', 'videoUrl') },
   { model: 'WhatsappMessage', field: 'mediaUrl', sql: text('whatsapp_messages', 'mediaUrl') },
   { model: 'EmailAttachment', field: 'url', sql: text('email_attachments', 'url') },
+  // Photos and video sent in the customer portal's chat.
+  { model: 'PortalMessage', field: 'attachments', sql: array('portal_messages', 'attachments') },
+  // Photos and video a customer sent with a request for a visit.
+  {
+    model: 'ServiceRequest',
+    field: 'attachments',
+    sql: array('service_requests', 'attachments'),
+  },
   // Workshop logo, invoice and quote logos, the portal background. Every
   // setting is searched, so a new file-valued setting is covered too.
   { model: 'AppSetting', field: 'value', sql: anywhere('app_settings', 'value') },

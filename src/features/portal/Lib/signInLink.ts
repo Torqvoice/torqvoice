@@ -20,11 +20,29 @@ export const SIGN_IN_LINK_COOKIE = 'customer-signin'
 
 export type SignInLinkProblem = 'invalid' | 'used' | 'expired'
 
-/** What the login page says for each way a link can be no good. */
-export const SIGN_IN_LINK_ERRORS: Record<SignInLinkProblem, string> = {
-  invalid: 'Invalid or expired link.',
-  used: 'This link has already been used. Please request a new one.',
-  expired: 'This link has expired. Please request a new one.',
+/**
+ * Why a sign-in went back to the login page, as the short code the redirect
+ * carries in `?error=`. The login page turns a known code into a translated
+ * message and ignores anything else, so a crafted address cannot put words of
+ * its own in the page's red box.
+ */
+export const SIGN_IN_ERROR_CODES = ['invalid', 'used', 'expired', 'no-account'] as const
+
+export type SignInErrorCode = (typeof SIGN_IN_ERROR_CODES)[number]
+
+/** The message key under `portal.login.errors` for each code. */
+const MESSAGE_KEYS: Record<SignInErrorCode, string> = {
+  invalid: 'invalid',
+  used: 'used',
+  expired: 'expired',
+  'no-account': 'noAccount',
+}
+
+/** The message key for what `?error=` holds, or null when it is not one of ours. */
+export function signInErrorMessageKey(value: unknown): string | null {
+  return typeof value === 'string' && Object.hasOwn(MESSAGE_KEYS, value)
+    ? MESSAGE_KEYS[value as SignInErrorCode]
+    : null
 }
 
 export type SignInLinkState =

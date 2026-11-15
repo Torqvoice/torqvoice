@@ -318,3 +318,52 @@ describe('whose change it was', () => {
     expect(authors).toEqual([{ userId: null, name: null, source: 'system' }])
   })
 })
+
+describe("a message in the customer portal's chat", () => {
+  // Each of these is what makes the chat live on both sides: the workshop's
+  // open conversation and the customer's own socket follow the customer.
+  const thread = { kind: 'customer', id: 'kari', organizationId: 'org-1', hint: 'portal' }
+
+  it('announces the customer when either side writes', async () => {
+    await write(
+      'PortalMessage',
+      'create',
+      { data: { customerId: 'kari', organizationId: 'org-1', direction: 'outbound', body: 'Hi' } },
+      { id: 'pm1' }
+    )
+    expect(published).toEqual([expect.objectContaining(thread)])
+  })
+
+  it('announces the customer when a thread is read', async () => {
+    await write(
+      'PortalMessage',
+      'updateMany',
+      {
+        where: { organizationId: 'org-1', customerId: 'kari', direction: 'inbound', readAt: null },
+        data: { readAt: new Date() },
+      },
+      { count: 2 }
+    )
+    expect(published).toEqual([expect.objectContaining(thread)])
+  })
+
+  it('announces the customer when a thread is deleted', async () => {
+    await write(
+      'PortalMessage',
+      'deleteMany',
+      { where: { organizationId: 'org-1', customerId: 'kari' } },
+      { count: 5 }
+    )
+    expect(published).toEqual([expect.objectContaining(thread)])
+  })
+
+  it('announces the customer when one message is put back as unread', async () => {
+    await write(
+      'PortalMessage',
+      'update',
+      { where: { id: 'pm1' }, data: { readAt: null } },
+      { id: 'pm1', customerId: 'kari', organizationId: 'org-1' }
+    )
+    expect(published).toEqual([expect.objectContaining(thread)])
+  })
+})

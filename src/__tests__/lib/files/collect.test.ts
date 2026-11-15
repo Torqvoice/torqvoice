@@ -108,6 +108,7 @@ describe('files that go with a delete', () => {
         inspections: [{ id: 'in-1' }],
         findings: [{ imageUrls: ['services/f.jpg'] }],
         conditionMarks: [{ imageUrls: ['services/dent.jpg'] }],
+        serviceRequests: [{ attachments: ['portal-uploads/noise.mp4'] }],
       },
     ] as never)
 
@@ -117,6 +118,7 @@ describe('files that go with a delete', () => {
       'vehicles/car.jpg',
       'services/f.jpg',
       'services/dent.jpg',
+      'portal-uploads/noise.mp4',
       'services/a.jpg',
       'tire-hotel/shared.jpg',
       'services/v.mp4',

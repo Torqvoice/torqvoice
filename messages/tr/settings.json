@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Müşteri Portalı",
-    "description": "Müşterilerinizin giriş yaparak araçlarını, faturalarını, tekliflerini ve muayenelerini görüntülemesine izin verin. Müşteriler ayrıca servis talepleri gönderebilir.",
-    "enablePortal": "Müşteri portalını etkinleştir",
-    "enablePortalHint": "E-posta adresi olan müşteriler sihirli bağlantı ile giriş yapabilir",
-    "enabled": "Müşteri portalı etkinleştirildi",
-    "disabled": "Müşteri portalı devre dışı bırakıldı",
-    "failedUpdate": "Ayar güncellenemedi",
-    "customSlug": "Özel portal slug'ı",
-    "save": "Kaydet",
-    "slugSaved": "Portal slug'ı kaydedildi",
-    "slugRemoved": "Portal slug'ı kaldırıldı",
-    "failedUpdateSlug": "Slug güncellenemedi",
-    "slugHint": "Küçük harfler, sayılar, tireler ve alt çizgiler. 3-48 karakter. Varsayılan URL'yi kullanmak için boş bırakın.",
-    "portalUrl": "Portal URL'si",
-    "urlCopied": "Portal URL'si kopyalandı",
-    "shareHint": "Bu bağlantıyı müşterilerinizle paylaşarak portallarına giriş yapmalarını sağlayın.",
+    "description": "Müşterileriniz giriş yaparak işlerini takip eder, teklifleri yanıtlar, faturaları öder, randevu alır ve size yazar.",
+    "enablePortal": "Müşteri portalını aç",
+    "enablePortalHint": "Müşteriler e-postalarına veya telefonlarına gönderilen bir bağlantıyla giriş yapar. Hatırlanacak bir şifre yoktur.",
+    "failedUpdate": "Ayarlar kaydedilemedi",
+    "customSlug": "Portal adresi",
+    "slugHint": "Küçük harfler, rakamlar, tireler ve alt çizgiler, 3 ile 48 karakter arası. Varsayılan adresi kullanmak için boş bırakın.",
+    "portalUrl": "Portalınızın bağlantısı",
+    "urlCopied": "Bağlantı kopyalandı",
+    "shareHint": "Giriş yapabilmeleri için bu bağlantıyı müşterilerinizle paylaşın.",
     "serviceRequestAlertsHint": "Portaldan gelen servis talepleri her zaman bildirim zilinizde görünür. Bunları e-posta ile de alabilirsiniz.",
-    "serviceRequestAlertsLink": "Bildirim ayarları →",
+    "serviceRequestAlertsLink": "Bildirim ayarları",
     "descriptionLabel": "Servisiniz hakkında",
     "descriptionPlaceholder": "Müşterilerinize servisinizi, sunduğunuz hizmetleri ve sizi özel kılan şeyi anlatın.",
-    "descriptionHint": "Ziyaretçilere portal ana sayfanızın üst kısmında gösterilir.",
-    "hoursLabel": "Çalışma saatleri",
-    "hoursPlaceholder": "Pzt-Cum: 8:00-17:00\nCmt: 9:00-13:00\nPaz: Kapalı",
-    "hoursHint": "Serbest metin. Her günü ayrı listelemek için satır sonu kullanın.",
-    "contentSaved": "Portal içeriği kaydedildi",
-    "background": {
-      "title": "Portal arka planı",
-      "description": "Müşteri portalı ana sayfasının nasıl görüneceğini seçin.",
-      "typeNone": "Yok",
-      "typeTemplate": "Şablon",
-      "typeImage": "Özel görsel",
-      "chooseTemplate": "Bir şablon seçin",
-      "uploadLabel": "Arka plan görseli",
-      "upload": "Görsel yükle",
-      "replace": "Görseli değiştir",
-      "remove": "Kaldır",
-      "uploadHint": "JPG, PNG veya WebP. Maks 8 MB. En az 1600×900 önerilir.",
-      "uploading": "Arka plan yükleniyor…",
-      "uploaded": "Arka plan güncellendi",
-      "uploadFailed": "Arka plan yüklenemedi",
-      "templateNames": {
-        "default": "Sade",
-        "sunrise": "Gün doğumu",
-        "ocean": "Okyanus",
-        "forest": "Orman",
-        "slate": "Arduvaz",
-        "sand": "Kum"
+    "descriptionHint": "Portalınızın giriş sayfasında gösterilir.",
+    "copyUrl": "Bağlantıyı kopyala"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "servisim",
+    "slugUnsaved": "Bu adres kaydettikten sonra çalışır.",
+    "slugInvalid": "Harf veya rakamla başlayıp biten, 3 ile 48 arasında küçük harf, rakam, tire veya alt çizgi kullanın.",
+    "slugReserved": "Bu kelime ayrılmış. Başka bir adres seçin.",
+    "slugTaken": "Bu adresi başka bir servis kullanıyor. Başka bir adres seçin.",
+    "hours": {
+      "title": "Çalışma saatleri",
+      "fromCalendar": "Portal, çalışma saatlerini ve kapalı günleri servis takviminizden gösterir.",
+      "link": "Çalışma saatleri ayarları",
+      "typedNote": "Takvimde henüz çalışma saati ayarlanmadığı için giriş sayfanız hâlâ daha önce buraya yazılan saatleri gösteriyor. Saatleri orada ayarlayın, portal onları göstersin.",
+      "typedLabel": "Şu anda giriş sayfasında gösterilen"
+    },
+    "look": {
+      "title": "Müşteri portalınızın görünümü",
+      "description": "Tek bir seçim, giriş sayfasını ve müşterilerinizin sonrasında gördüğü tüm sayfaları belirler. Müşteriler bunu değiştiremez."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Açık ve sakin"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Koyu pit panosu"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Dergi tarzı ve sade"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Renginiz, büyük"
       }
     },
-    "copyUrl": "Portal URL'sini kopyala"
+    "colour": {
+      "title": "Renginiz",
+      "description": "Tüm temalarda düğmeler ve vurgular için kullanılır.",
+      "swatches": "Önerilen renkler",
+      "orange": "Turuncu",
+      "blue": "Mavi",
+      "green": "Yeşil",
+      "red": "Kırmızı",
+      "black": "Siyah",
+      "hexLabel": "Hex kodu olarak renk",
+      "invalid": "Bu bir renk değil. #1D4ED8 gibi bir hex kodu olarak yazın.",
+      "usingTheme": "{theme} temasıyla gelen renk kullanılıyor: {hex}.",
+      "themeColour": "{theme} temasıyla gelen renk: {hex}.",
+      "useTheme": "Temanın rengini kullan",
+      "sample": "Randevu alın",
+      "inkLight": "Bu rengin üzerindeki yazı okunaklı kalsın diye beyaz gösterilir.",
+      "inkDark": "Bu rengin üzerindeki yazı okunaklı kalsın diye siyah gösterilir.",
+      "faint": "Bu renk {theme} temasının arka planında soluk kalıyor. Bağlantılar ve vurgular zor görülebilir."
+    },
+    "cover": {
+      "title": "Kapak fotoğrafı ve logo",
+      "description": "Giriş sayfasında gösterilir. Logonuz Şirket ayarlarından gelir.",
+      "companyLink": "Şirket ayarları",
+      "hint": "PNG, JPEG veya WebP, en fazla 8 MB.",
+      "none": "Kapak fotoğrafı yok",
+      "alt": "Giriş sayfasındaki kapak fotoğrafı",
+      "upload": "Fotoğraf yükle",
+      "replace": "Fotoğrafı değiştir",
+      "remove": "Fotoğrafı kaldır",
+      "uploading": "Yükleniyor",
+      "uploadFailed": "Fotoğraf yüklenemedi"
+    },
+    "features": {
+      "title": "Müşterilerin gördükleri",
+      "description": "Portalın kapatabileceğiniz bölümleri.",
+      "messages": "Portalda mesajlar",
+      "messagesHint": "Müşteriler size portaldan yazar. Mesajları Mesajlar gelen kutunuza düşer.",
+      "tires": "Saklanan lastikleri göster",
+      "tiresHint": "Müşteriler sizde saklanan lastiklerini diş derinliğiyle birlikte görür."
+    },
+    "bar": {
+      "label": "Müşteri portalı ayarlarını kaydet",
+      "unsaved": "Kaydedilmemiş değişiklikleriniz var",
+      "saved": "Her şey kaydedildi",
+      "discard": "Değişiklikleri at",
+      "save": "Değişiklikleri kaydet",
+      "open": "Portalı müşteri olarak aç",
+      "openOff": "Açmak için portalı etkinleştirip kaydedin."
+    },
+    "savedToast": "Müşteri portalı ayarları kaydedildi"
   },
   "email": {
     "title": "E-posta Sağlayıcısı",

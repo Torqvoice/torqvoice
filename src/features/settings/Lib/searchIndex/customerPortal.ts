@@ -1,8 +1,9 @@
 import type { SettingsEntry } from './types'
 
 /**
- * Customer portal. Everything below the enable switch, and the whole
- * background card, renders only once the portal is on.
+ * Customer portal: the switch, the address and the text about the workshop,
+ * then how the portal looks and which of its optional parts customers get.
+ * One Save at the bottom of the page stores all of it.
  */
 export const customerPortalEntries: SettingsEntry[] = [
   {
@@ -11,7 +12,13 @@ export const customerPortalEntries: SettingsEntry[] = [
     title: 'portal.enablePortal',
     description: 'portal.enablePortalHint',
     anchor: 'portal-enabled',
-    keywords: ['enable portal', 'customer portal', 'self-service', 'customer login', 'magic link'],
+    keywords: [
+      'enable portal',
+      'customer portal',
+      'self-service',
+      'customer login',
+      'sign-in link',
+    ],
   },
   {
     id: 'customerPortal.slug',
@@ -22,28 +29,28 @@ export const customerPortalEntries: SettingsEntry[] = [
     keywords: ['portal slug', 'portal address', 'custom url', 'portal name'],
   },
   {
-    id: 'customerPortal.description',
-    page: 'customerPortal',
-    title: 'portal.descriptionLabel',
-    description: 'portal.descriptionHint',
-    anchor: 'portal-description',
-    keywords: ['about us', 'workshop description', 'landing page text', 'portal text'],
-  },
-  {
-    id: 'customerPortal.hours',
-    page: 'customerPortal',
-    title: 'portal.hoursLabel',
-    description: 'portal.hoursHint',
-    anchor: 'portal-hours',
-    keywords: ['opening hours', 'business hours', 'open times', 'åpningstider'],
-  },
-  {
     id: 'customerPortal.url',
     page: 'customerPortal',
     title: 'portal.portalUrl',
     description: 'portal.shareHint',
     anchor: 'customer-portal-url',
     keywords: ['portal link', 'portal url', 'share portal', 'copy link'],
+  },
+  {
+    id: 'customerPortal.description',
+    page: 'customerPortal',
+    title: 'portal.descriptionLabel',
+    description: 'portal.descriptionHint',
+    anchor: 'portal-description',
+    keywords: ['about us', 'workshop description', 'sign-in page text', 'portal text'],
+  },
+  {
+    id: 'customerPortal.hours',
+    page: 'customerPortal',
+    title: 'customerPortal.hours.title',
+    description: 'customerPortal.hours.fromCalendar',
+    anchor: 'customer-portal-hours',
+    keywords: ['opening hours', 'business hours', 'open times', 'åpningstider'],
   },
   {
     id: 'customerPortal.requestAlerts',
@@ -54,26 +61,58 @@ export const customerPortalEntries: SettingsEntry[] = [
     keywords: ['service requests', 'booking requests', 'request alerts', 'notifications'],
   },
   {
-    id: 'customerPortal.background',
+    id: 'customerPortal.theme',
     page: 'customerPortal',
-    title: 'portal.background.title',
-    description: 'portal.background.description',
-    anchor: 'customer-portal-background',
-    keywords: ['portal background', 'portal look', 'landing page', 'portal theme'],
+    title: 'customerPortal.theme.legend',
+    description: 'customerPortal.look.description',
+    anchor: 'customer-portal-theme',
+    keywords: [
+      'portal theme',
+      'portal look',
+      'portal design',
+      'daylight',
+      'garage',
+      'print',
+      'colour',
+      'dark portal',
+    ],
   },
   {
-    id: 'customerPortal.backgroundTemplate',
+    id: 'customerPortal.colour',
     page: 'customerPortal',
-    title: 'portal.background.chooseTemplate',
-    anchor: 'customer-portal-background-template',
-    keywords: ['background template', 'gradient', 'portal colours'],
+    title: 'customerPortal.colour.title',
+    description: 'customerPortal.colour.description',
+    anchor: 'customer-portal-colour',
+    keywords: ['portal colour', 'portal color', 'accent', 'brand colour', 'brand color', 'hex'],
   },
   {
-    id: 'customerPortal.backgroundImage',
+    id: 'customerPortal.cover',
     page: 'customerPortal',
-    title: 'portal.background.uploadLabel',
-    description: 'portal.background.uploadHint',
-    anchor: 'customer-portal-background-image',
-    keywords: ['background image', 'upload background', 'portal photo', 'cover image'],
+    title: 'customerPortal.cover.title',
+    description: 'customerPortal.cover.description',
+    anchor: 'customer-portal-cover',
+    keywords: [
+      'cover photo',
+      'portal background',
+      'sign-in picture',
+      'portal image',
+      'portal logo',
+    ],
+  },
+  {
+    id: 'customerPortal.messages',
+    page: 'customerPortal',
+    title: 'customerPortal.features.messages',
+    description: 'customerPortal.features.messagesHint',
+    anchor: 'portal-messages',
+    keywords: ['portal chat', 'customer messages', 'chat with customers', 'turn off chat'],
+  },
+  {
+    id: 'customerPortal.tires',
+    page: 'customerPortal',
+    title: 'customerPortal.features.tires',
+    description: 'customerPortal.features.tiresHint',
+    anchor: 'portal-show-tires',
+    keywords: ['stored tyres', 'stored tires', 'tyre hotel', 'tire hotel', 'tread depth'],
   },
 ]

@@ -75,11 +75,16 @@ import { TelegramQrCode } from '@/features/telegram/Components/TelegramQrCode'
 import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
+import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
 
 interface ServiceRequestItem {
   id: string
   description: string
   preferredDate: Date | null
+  /** "morning" or "afternoon", when the customer said which suits. */
+  preferredTime?: string | null
+  /** Photos and video the customer sent from the portal, as stored file urls. */
+  attachments?: string[]
   status: string
   adminNotes: string | null
   createdAt: Date
@@ -1181,10 +1186,18 @@ function ServiceRequestCard({
                 </span>
                 {request.preferredDate && (
                   <span>
-                    {t('preferred', { date: new Date(request.preferredDate).toLocaleDateString() })}
+                    {t(
+                      request.preferredTime === 'morning'
+                        ? 'preferredMorning'
+                        : request.preferredTime === 'afternoon'
+                          ? 'preferredAfternoon'
+                          : 'preferred',
+                      { date: new Date(request.preferredDate).toLocaleDateString() }
+                    )}
                   </span>
                 )}
               </div>
+              <ServiceRequestFiles urls={request.attachments} />
               {request.adminNotes && !showNotes && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   <span className="font-medium">{t('staffNotes')}</span> {request.adminNotes}

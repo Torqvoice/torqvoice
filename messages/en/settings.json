@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Customer Portal",
-    "description": "Allow your customers to log in and view their vehicles, invoices, quotes, and inspections. Customers can also submit service requests.",
-    "enablePortal": "Enable customer portal",
-    "enablePortalHint": "Customers with an email address can log in via magic link",
-    "enabled": "Customer portal enabled",
-    "disabled": "Customer portal disabled",
-    "failedUpdate": "Failed to update setting",
-    "customSlug": "Custom portal slug",
-    "save": "Save",
-    "slugSaved": "Portal slug saved",
-    "slugRemoved": "Portal slug removed",
-    "failedUpdateSlug": "Failed to update slug",
-    "slugHint": "Lowercase letters, numbers, hyphens, and underscores. 3-48 characters. Leave blank to use the default URL.",
-    "portalUrl": "Portal URL",
-    "urlCopied": "Portal URL copied",
-    "shareHint": "Share this link with your customers so they can log in to their portal.",
+    "description": "Your customers sign in to follow their job, answer quotes, pay invoices, book a visit and write to you.",
+    "enablePortal": "Turn on the customer portal",
+    "enablePortalHint": "Customers sign in with a link sent to their email or phone. There is no password to remember.",
+    "failedUpdate": "Could not save the settings",
+    "customSlug": "Portal address",
+    "slugHint": "Lowercase letters, numbers, hyphens and underscores, 3 to 48 characters. Leave it empty to use the default address.",
+    "portalUrl": "Link to your portal",
+    "urlCopied": "Link copied",
+    "shareHint": "Share this link with your customers so they can sign in.",
     "serviceRequestAlertsHint": "Service requests from the portal always appear in your notification bell. You can also get them by email.",
-    "serviceRequestAlertsLink": "Alert settings →",
+    "serviceRequestAlertsLink": "Alert settings",
     "descriptionLabel": "About your workshop",
     "descriptionPlaceholder": "Tell customers a bit about your workshop, the services you offer, and what makes you unique.",
-    "descriptionHint": "Shown to visitors at the top of your portal landing page.",
-    "hoursLabel": "Opening hours",
-    "hoursPlaceholder": "Mon-Fri: 8:00-17:00\nSat: 9:00-13:00\nSun: Closed",
-    "hoursHint": "Free-form text. Use line breaks to list each day separately.",
-    "contentSaved": "Portal content saved",
-    "background": {
-      "title": "Portal background",
-      "description": "Choose how the customer portal landing page looks.",
-      "typeNone": "None",
-      "typeTemplate": "Template",
-      "typeImage": "Custom image",
-      "chooseTemplate": "Choose a template",
-      "uploadLabel": "Background image",
-      "upload": "Upload image",
-      "replace": "Replace image",
-      "remove": "Remove",
-      "uploadHint": "JPG, PNG or WebP. Max 8 MB. Recommended at least 1600×900.",
-      "uploading": "Uploading background…",
-      "uploaded": "Background updated",
-      "uploadFailed": "Failed to upload background",
-      "templateNames": {
-        "default": "Subtle",
-        "sunrise": "Sunrise",
-        "ocean": "Ocean",
-        "forest": "Forest",
-        "slate": "Slate",
-        "sand": "Sand"
+    "descriptionHint": "Shown on the sign-in page of your portal.",
+    "copyUrl": "Copy the link"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "my-workshop",
+    "slugUnsaved": "This address works once you save.",
+    "slugInvalid": "Use 3 to 48 lowercase letters, numbers, hyphens or underscores, starting and ending with a letter or number.",
+    "slugReserved": "That word is reserved. Choose another address.",
+    "slugTaken": "Another workshop already uses that address. Choose another.",
+    "hours": {
+      "title": "Opening hours",
+      "fromCalendar": "The portal shows the opening hours and closed days from your workshop calendar.",
+      "link": "Opening hours settings",
+      "typedNote": "Your sign-in page still shows the hours typed here earlier, because no opening hours are set in the calendar yet. Set them there and the portal shows those instead.",
+      "typedLabel": "Shown on the sign-in page today"
+    },
+    "look": {
+      "title": "Look of your customer portal",
+      "description": "One choice sets the sign-in page and every page your customers see after it. Customers cannot change it."
+    },
+    "theme": {
+      "legend": "Theme",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Light and calm"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Dark pit board"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Editorial and quiet"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Your colour, big"
       }
     },
-    "copyUrl": "Copy portal URL"
+    "colour": {
+      "title": "Your colour",
+      "description": "Used for buttons and highlights in every theme.",
+      "swatches": "Suggested colours",
+      "orange": "Orange",
+      "blue": "Blue",
+      "green": "Green",
+      "red": "Red",
+      "black": "Black",
+      "hexLabel": "Colour as a hex code",
+      "invalid": "That is not a colour. Write it as a hex code, like #1D4ED8.",
+      "usingTheme": "Using the colour that comes with {theme}, {hex}.",
+      "themeColour": "The colour that comes with {theme} is {hex}.",
+      "useTheme": "Use the theme's colour",
+      "sample": "Book a visit",
+      "inkLight": "Text on this colour is drawn in white, so it stays readable.",
+      "inkDark": "Text on this colour is drawn in black, so it stays readable.",
+      "faint": "This colour is faint against the background of {theme}. Links and highlights may be hard to see."
+    },
+    "cover": {
+      "title": "Cover photo and logo",
+      "description": "Shown on the sign-in page. Your logo comes from Company settings.",
+      "companyLink": "Company settings",
+      "hint": "PNG, JPEG or WebP, up to 8 MB.",
+      "none": "No cover photo",
+      "alt": "The cover photo on the sign-in page",
+      "upload": "Upload a photo",
+      "replace": "Replace the photo",
+      "remove": "Remove the photo",
+      "uploading": "Uploading",
+      "uploadFailed": "Could not upload the photo"
+    },
+    "features": {
+      "title": "What customers get",
+      "description": "The parts of the portal you can turn off.",
+      "messages": "Messages in the portal",
+      "messagesHint": "Customers write to you from the portal. Their messages land in your Messages inbox.",
+      "tires": "Show stored tyres",
+      "tiresHint": "Customers see the tyres you keep for them, with tread depth."
+    },
+    "bar": {
+      "label": "Save the customer portal settings",
+      "unsaved": "You have changes that are not saved",
+      "saved": "Everything is saved",
+      "discard": "Discard changes",
+      "save": "Save changes",
+      "open": "Open the portal as a customer",
+      "openOff": "Turn the portal on and save to open it."
+    },
+    "savedToast": "Customer portal settings saved"
   },
   "email": {
     "title": "Email Provider",

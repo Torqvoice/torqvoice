@@ -977,6 +977,11 @@
     "paymentReceivedDescription": "Wird gesendet, wenn eine Zahlung für eine Rechnung verbucht wird.",
     "saveSmsTemplates": "SMS-Vorlagen speichern",
     "smsTemplateSaved": "SMS-Vorlageneinstellungen gespeichert",
+    "layoutTitle": "Rechnungslayout",
+    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
+    "layoutSaved": "Layout erfolgreich gespeichert",
+    "layoutDocInvoice": "Rechnung",
+    "layoutDocQuote": "Angebot",
     "smsDefaults": {
       "invoiceReady": "Rechnung von {company_name} ist fertig. Hier ansehen: {share_link}\nViele Grüße {company_name} - {current_user}",
       "quoteReady": "Ihr Angebot steht zur Prüfung bereit. Hier ansehen: {share_link}",
@@ -997,11 +1002,6 @@
       "rose": "Rosé",
       "indigo": "Indigo"
     },
-    "layoutTitle": "Rechnungslayout",
-    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
-    "layoutSaved": "Layout erfolgreich gespeichert",
-    "layoutDocInvoice": "Rechnung",
-    "layoutDocQuote": "Angebot",
     "goToLayout": "Layout und Abschnitte",
     "openDesigner": "Vorlagen-Designer öffnen",
     "designerIntro": "Wählen Sie einen Ausgangspunkt und öffnen Sie den Designer, um alles zu ändern.",
@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Kundenportal",
-    "description": "Ermoglichen Sie Ihren Kunden, sich anzumelden und ihre Fahrzeuge, Rechnungen, Angebote und Inspektionen einzusehen. Kunden konnen auch Serviceanfragen stellen.",
-    "enablePortal": "Kundenportal aktivieren",
-    "enablePortalHint": "Kunden mit einer E-Mail-Adresse konnen sich per Magic Link anmelden",
-    "enabled": "Kundenportal aktiviert",
-    "disabled": "Kundenportal deaktiviert",
-    "failedUpdate": "Einstellung konnte nicht aktualisiert werden",
-    "customSlug": "Benutzerdefinierter Portal-Slug",
-    "save": "Speichern",
-    "slugSaved": "Portal-Slug gespeichert",
-    "slugRemoved": "Portal-Slug entfernt",
-    "failedUpdateSlug": "Slug konnte nicht aktualisiert werden",
-    "slugHint": "Kleinbuchstaben, Zahlen, Bindestriche und Unterstriche. 3-48 Zeichen. Leer lassen, um die Standard-URL zu verwenden.",
-    "portalUrl": "Portal-URL",
-    "urlCopied": "Portal-URL kopiert",
-    "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich in ihr Portal einloggen konnen.",
+    "description": "Ihre Kunden melden sich an, um ihren Auftrag zu verfolgen, Angebote zu beantworten, Rechnungen zu bezahlen, einen Termin anzufragen und Ihnen zu schreiben.",
+    "enablePortal": "Kundenportal einschalten",
+    "enablePortalHint": "Kunden melden sich mit einem Link an, der an ihre E-Mail-Adresse oder ihr Handy geschickt wird. Kein Passwort zum Merken.",
+    "failedUpdate": "Die Einstellungen konnten nicht gespeichert werden",
+    "customSlug": "Portaladresse",
+    "slugHint": "Kleinbuchstaben, Ziffern, Bindestriche und Unterstriche, 3 bis 48 Zeichen. Leer lassen, um die Standardadresse zu verwenden.",
+    "portalUrl": "Link zu Ihrem Portal",
+    "urlCopied": "Link kopiert",
+    "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich anmelden können.",
     "serviceRequestAlertsHint": "Serviceanfragen aus dem Portal erscheinen immer in Ihrer Benachrichtigungsglocke. Sie können sie zusätzlich per E-Mail erhalten.",
-    "serviceRequestAlertsLink": "Benachrichtigungseinstellungen →",
+    "serviceRequestAlertsLink": "Benachrichtigungseinstellungen",
     "descriptionLabel": "Über Ihre Werkstatt",
     "descriptionPlaceholder": "Erzählen Sie Ihren Kunden etwas über Ihre Werkstatt, die angebotenen Leistungen und was Sie auszeichnet.",
-    "descriptionHint": "Wird Besuchern oben auf Ihrer Portal-Startseite angezeigt.",
-    "hoursLabel": "Öffnungszeiten",
-    "hoursPlaceholder": "Mo-Fr: 8:00-17:00\nSa: 9:00-13:00\nSo: Geschlossen",
-    "hoursHint": "Freitext. Verwenden Sie Zeilenumbrüche, um jeden Tag separat aufzulisten.",
-    "contentSaved": "Portalinhalt gespeichert",
-    "background": {
-      "title": "Portal-Hintergrund",
-      "description": "Wählen Sie das Aussehen der Startseite des Kundenportals.",
-      "typeNone": "Keiner",
-      "typeTemplate": "Vorlage",
-      "typeImage": "Eigenes Bild",
-      "chooseTemplate": "Vorlage auswählen",
-      "uploadLabel": "Hintergrundbild",
-      "upload": "Bild hochladen",
-      "replace": "Bild ersetzen",
-      "remove": "Entfernen",
-      "uploadHint": "JPG, PNG oder WebP. Max. 8 MB. Empfohlen mindestens 1600×900.",
-      "uploading": "Hintergrund wird hochgeladen…",
-      "uploaded": "Hintergrund aktualisiert",
-      "uploadFailed": "Hintergrund konnte nicht hochgeladen werden",
-      "templateNames": {
-        "default": "Dezent",
-        "sunrise": "Sonnenaufgang",
-        "ocean": "Ozean",
-        "forest": "Wald",
-        "slate": "Schiefer",
-        "sand": "Sand"
+    "descriptionHint": "Wird auf der Anmeldeseite Ihres Portals angezeigt.",
+    "copyUrl": "Link kopieren"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "meine-werkstatt",
+    "slugUnsaved": "Diese Adresse funktioniert, sobald Sie speichern.",
+    "slugInvalid": "Verwenden Sie 3 bis 48 Kleinbuchstaben, Ziffern, Bindestriche oder Unterstriche, mit einem Buchstaben oder einer Ziffer am Anfang und Ende.",
+    "slugReserved": "Dieses Wort ist reserviert. Wählen Sie eine andere Adresse.",
+    "slugTaken": "Eine andere Werkstatt verwendet diese Adresse bereits. Wählen Sie eine andere.",
+    "hours": {
+      "title": "Öffnungszeiten",
+      "fromCalendar": "Das Portal zeigt die Öffnungszeiten und Schließtage aus Ihrem Werkstattkalender.",
+      "link": "Einstellungen für Öffnungszeiten",
+      "typedNote": "Ihre Anmeldeseite zeigt noch die Zeiten, die hier früher eingetragen wurden, weil im Kalender noch keine Öffnungszeiten festgelegt sind. Legen Sie sie dort fest, dann zeigt das Portal diese an.",
+      "typedLabel": "Wird derzeit auf der Anmeldeseite angezeigt"
+    },
+    "look": {
+      "title": "Aussehen Ihres Kundenportals",
+      "description": "Eine Auswahl bestimmt die Anmeldeseite und alle Seiten, die Ihre Kunden danach sehen. Kunden können sie nicht ändern."
+    },
+    "theme": {
+      "legend": "Design",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Hell und ruhig"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Dunkle Boxentafel"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Redaktionell und schlicht"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Ihre Farbe, groß"
       }
     },
-    "copyUrl": "Portal-URL kopieren"
+    "colour": {
+      "title": "Ihre Farbe",
+      "description": "Wird in jedem Design für Schaltflächen und Hervorhebungen verwendet.",
+      "swatches": "Vorgeschlagene Farben",
+      "orange": "Orange",
+      "blue": "Blau",
+      "green": "Grün",
+      "red": "Rot",
+      "black": "Schwarz",
+      "hexLabel": "Farbe als Hex-Code",
+      "invalid": "Das ist keine Farbe. Geben Sie sie als Hex-Code ein, etwa #1D4ED8.",
+      "usingTheme": "Die Farbe von {theme} wird verwendet, {hex}.",
+      "themeColour": "Die Farbe von {theme} ist {hex}.",
+      "useTheme": "Farbe des Designs verwenden",
+      "sample": "Termin anfragen",
+      "inkLight": "Text auf dieser Farbe wird weiß dargestellt, damit er lesbar bleibt.",
+      "inkDark": "Text auf dieser Farbe wird schwarz dargestellt, damit er lesbar bleibt.",
+      "faint": "Diese Farbe ist auf dem Hintergrund von {theme} schwach. Links und Hervorhebungen sind eventuell schwer zu erkennen."
+    },
+    "cover": {
+      "title": "Titelbild und Logo",
+      "description": "Wird auf der Anmeldeseite angezeigt. Ihr Logo kommt aus den Firmeneinstellungen.",
+      "companyLink": "Firmeneinstellungen",
+      "hint": "PNG, JPEG oder WebP, bis 8 MB.",
+      "none": "Kein Titelbild",
+      "alt": "Das Titelbild auf der Anmeldeseite",
+      "upload": "Foto hochladen",
+      "replace": "Foto ersetzen",
+      "remove": "Foto entfernen",
+      "uploading": "Wird hochgeladen",
+      "uploadFailed": "Das Foto konnte nicht hochgeladen werden"
+    },
+    "features": {
+      "title": "Was Kunden bekommen",
+      "description": "Die Teile des Portals, die Sie ausschalten können.",
+      "messages": "Nachrichten im Portal",
+      "messagesHint": "Kunden schreiben Ihnen aus dem Portal. Ihre Nachrichten landen in Ihrem Posteingang unter Nachrichten.",
+      "tires": "Eingelagerte Reifen anzeigen",
+      "tiresHint": "Kunden sehen die Reifen, die Sie für sie einlagern, mit Profiltiefe."
+    },
+    "bar": {
+      "label": "Einstellungen des Kundenportals speichern",
+      "unsaved": "Sie haben ungespeicherte Änderungen",
+      "saved": "Alles gespeichert",
+      "discard": "Änderungen verwerfen",
+      "save": "Änderungen speichern",
+      "open": "Portal als Kunde öffnen",
+      "openOff": "Schalten Sie das Portal ein und speichern Sie, um es zu öffnen."
+    },
+    "savedToast": "Einstellungen des Kundenportals gespeichert"
   },
   "email": {
     "title": "E-Mail-Anbieter",
@@ -1989,13 +2042,13 @@
     "noMembers": "Keine Teammitglieder gefunden",
     "addRecipient": "Empfänger hinzufügen...",
     "searchMembers": "Mitglieder suchen...",
-    "sendNow": "Jetzt senden",
-    "sentNow": "Bericht erfolgreich gesendet",
     "newSchedule": "Neuer Zeitplan",
     "editSchedule": "Zeitplan bearbeiten",
     "edit": "Bearbeiten",
     "cancel": "Abbrechen",
     "sent": "gesendet",
+    "sendNow": "Jetzt senden",
+    "sentNow": "Bericht erfolgreich gesendet",
     "emptyTitle": "Keine geplanten Berichte",
     "emptyDescription": "Erstellen Sie einen Zeitplan, um Berichte automatisch an Ihr Team zu senden.",
     "sectionLabels": {
@@ -2847,9 +2900,9 @@
       "uploading": "Wird hochgeladen…",
       "width": "Logobreite",
       "hint": "Unabhängig vom Firmenlogo. Es wird beim Hochladen zugeschnitten und für E-Mails aufbereitet. PNG, JPEG oder WebP bis 4 MB.",
-      "position": "Position",
       "tooLarge": "Das Bild muss kleiner als 4 MB sein",
-      "uploadFailed": "Logo konnte nicht hochgeladen werden"
+      "uploadFailed": "Logo konnte nicht hochgeladen werden",
+      "position": "Position"
     },
     "image": {
       "empty": "Kein Bild hochgeladen. Der Block druckt nichts, solange keines vorhanden ist.",

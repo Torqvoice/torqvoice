@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { portalStatusLabel } from '@/features/portal/Lib/statusLabels'
+import { portalRequestBadge, portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 
 /**
  * The portal names a job's, a request's and an inspection's status in the
@@ -44,5 +44,20 @@ describe('statuses in the customer portal', () => {
         expect(label).not.toMatch(/[-_]/)
       }
     }
+  })
+})
+
+describe('request badges', () => {
+  it('give each of the four request statuses a look of its own', () => {
+    const looks = ['pending', 'converted', 'dismissed', 'cancelled'].map((status) => {
+      const badge = portalRequestBadge(status)
+      return `${badge.tone} ${badge.className}`
+    })
+    expect(new Set(looks).size).toBe(4)
+  })
+
+  it('names an inspection in progress however the status is spelt', () => {
+    const t = tFor('en')
+    expect(portalStatusLabel('inspection', 'in-progress', t)).toBe('In progress')
   })
 })

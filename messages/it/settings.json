@@ -977,6 +977,11 @@
     "paymentReceivedDescription": "Inviato quando viene registrato un pagamento per una fattura.",
     "saveSmsTemplates": "Salva modelli SMS",
     "smsTemplateSaved": "Impostazioni modelli SMS salvate",
+    "layoutTitle": "Layout fattura",
+    "layoutDescription": "Personalizza l'ordine e la visibilita delle sezioni nelle fatture e nei preventivi.",
+    "layoutSaved": "Layout salvato con successo",
+    "layoutDocInvoice": "Fattura",
+    "layoutDocQuote": "Preventivo",
     "smsDefaults": {
       "invoiceReady": "La fattura di {company_name} è pronta. Visualizzala qui: {share_link}\nCordiali saluti {company_name} - {current_user}",
       "quoteReady": "Il tuo preventivo è pronto per la revisione. Visualizzalo qui: {share_link}",
@@ -997,11 +1002,6 @@
       "rose": "Rosa",
       "indigo": "Indaco"
     },
-    "layoutTitle": "Layout fattura",
-    "layoutDescription": "Personalizza l'ordine e la visibilita delle sezioni nelle fatture e nei preventivi.",
-    "layoutSaved": "Layout salvato con successo",
-    "layoutDocInvoice": "Fattura",
-    "layoutDocQuote": "Preventivo",
     "goToLayout": "Disposizione e sezioni",
     "openDesigner": "Apri il designer",
     "designerIntro": "Scegli un punto di partenza, poi apri il designer per cambiare tutto.",
@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Portale clienti",
-    "description": "Consenti ai tuoi clienti di accedere e visualizzare i loro veicoli, fatture, preventivi e ispezioni. I clienti possono anche inviare richieste di servizio.",
-    "enablePortal": "Abilita portale clienti",
-    "enablePortalHint": "I clienti con un indirizzo email possono accedere tramite link magico",
-    "enabled": "Portale clienti abilitato",
-    "disabled": "Portale clienti disabilitato",
-    "failedUpdate": "Aggiornamento impostazione non riuscito",
-    "customSlug": "Slug portale personalizzato",
-    "save": "Salva",
-    "slugSaved": "Slug portale salvato",
-    "slugRemoved": "Slug portale rimosso",
-    "failedUpdateSlug": "Aggiornamento slug non riuscito",
-    "slugHint": "Lettere minuscole, numeri, trattini e underscore. 3-48 caratteri. Lascia vuoto per usare l'URL predefinito.",
-    "portalUrl": "URL del portale",
-    "urlCopied": "URL del portale copiato",
-    "shareHint": "Condividi questo link con i tuoi clienti per permettere loro di accedere al portale.",
+    "description": "I tuoi clienti accedono per seguire i lavori, rispondere ai preventivi, pagare le fatture, prenotare un appuntamento e scriverti.",
+    "enablePortal": "Attiva il portale clienti",
+    "enablePortalHint": "I clienti accedono con un link inviato alla loro email o al loro telefono. Nessuna password da ricordare.",
+    "failedUpdate": "Impossibile salvare le impostazioni",
+    "customSlug": "Indirizzo del portale",
+    "slugHint": "Lettere minuscole, numeri, trattini e underscore, da 3 a 48 caratteri. Lascia vuoto per usare l'indirizzo predefinito.",
+    "portalUrl": "Link al tuo portale",
+    "urlCopied": "Link copiato",
+    "shareHint": "Condividi questo link con i tuoi clienti perché possano accedere.",
     "serviceRequestAlertsHint": "Le richieste di servizio dal portale compaiono sempre nella campanella delle notifiche. Puoi riceverle anche via e-mail.",
-    "serviceRequestAlertsLink": "Impostazioni avvisi →",
+    "serviceRequestAlertsLink": "Impostazioni avvisi",
     "descriptionLabel": "La tua officina",
     "descriptionPlaceholder": "Racconta ai clienti qualcosa sulla tua officina, i servizi che offri e ciò che ti rende unico.",
-    "descriptionHint": "Mostrato ai visitatori in cima alla pagina del portale.",
-    "hoursLabel": "Orari di apertura",
-    "hoursPlaceholder": "Lun-Ven: 8:00-17:00\nSab: 9:00-13:00\nDom: Chiuso",
-    "hoursHint": "Testo libero. Usa interruzioni di riga per elencare ogni giorno separatamente.",
-    "contentSaved": "Contenuto del portale salvato",
-    "background": {
-      "title": "Sfondo del portale",
-      "description": "Scegli l'aspetto della pagina di benvenuto del portale clienti.",
-      "typeNone": "Nessuno",
-      "typeTemplate": "Modello",
-      "typeImage": "Immagine personalizzata",
-      "chooseTemplate": "Scegli un modello",
-      "uploadLabel": "Immagine di sfondo",
-      "upload": "Carica immagine",
-      "replace": "Sostituisci immagine",
-      "remove": "Rimuovi",
-      "uploadHint": "JPG, PNG o WebP. Max 8 MB. Consigliato almeno 1600×900.",
-      "uploading": "Caricamento sfondo…",
-      "uploaded": "Sfondo aggiornato",
-      "uploadFailed": "Caricamento sfondo non riuscito",
-      "templateNames": {
-        "default": "Sobrio",
-        "sunrise": "Alba",
-        "ocean": "Oceano",
-        "forest": "Foresta",
-        "slate": "Ardesia",
-        "sand": "Sabbia"
+    "descriptionHint": "Mostrato nella pagina di accesso del tuo portale.",
+    "copyUrl": "Copia il link"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "la-mia-officina",
+    "slugUnsaved": "Questo indirizzo funziona dopo il salvataggio.",
+    "slugInvalid": "Usa da 3 a 48 lettere minuscole, numeri, trattini o underscore, iniziando e finendo con una lettera o un numero.",
+    "slugReserved": "Questa parola è riservata. Scegli un altro indirizzo.",
+    "slugTaken": "Un'altra officina usa già questo indirizzo. Scegline un altro.",
+    "hours": {
+      "title": "Orari di apertura",
+      "fromCalendar": "Il portale mostra gli orari di apertura e i giorni di chiusura del calendario della tua officina.",
+      "link": "Impostazioni orari di apertura",
+      "typedNote": "La pagina di accesso mostra ancora gli orari scritti qui in precedenza, perché nel calendario non sono ancora impostati orari di apertura. Impostali lì e il portale mostrerà quelli.",
+      "typedLabel": "Mostrato oggi nella pagina di accesso"
+    },
+    "look": {
+      "title": "Aspetto del portale clienti",
+      "description": "Una sola scelta definisce la pagina di accesso e tutte le pagine che i clienti vedono dopo. I clienti non possono cambiarla."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Chiaro e calmo"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Scuro come la lavagna dei box"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Sobrio, da rivista"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Il tuo colore, in grande"
       }
     },
-    "copyUrl": "Copia URL del portale"
+    "colour": {
+      "title": "Il tuo colore",
+      "description": "Usato per pulsanti ed evidenziazioni in ogni tema.",
+      "swatches": "Colori suggeriti",
+      "orange": "Arancione",
+      "blue": "Blu",
+      "green": "Verde",
+      "red": "Rosso",
+      "black": "Nero",
+      "hexLabel": "Colore come codice esadecimale",
+      "invalid": "Questo non è un colore. Scrivilo come codice esadecimale, per esempio #1D4ED8.",
+      "usingTheme": "Usa il colore di {theme}, {hex}.",
+      "themeColour": "Il colore di {theme} è {hex}.",
+      "useTheme": "Usa il colore del tema",
+      "sample": "Prenota un appuntamento",
+      "inkLight": "Il testo su questo colore è in bianco, così resta leggibile.",
+      "inkDark": "Il testo su questo colore è in nero, così resta leggibile.",
+      "faint": "Questo colore risalta poco sullo sfondo di {theme}. Link ed evidenziazioni potrebbero vedersi male."
+    },
+    "cover": {
+      "title": "Foto di copertina e logo",
+      "description": "Mostrati nella pagina di accesso. Il logo viene dalle impostazioni Azienda.",
+      "companyLink": "Impostazioni Azienda",
+      "hint": "PNG, JPEG o WebP, fino a 8 MB.",
+      "none": "Nessuna foto di copertina",
+      "alt": "La foto di copertina nella pagina di accesso",
+      "upload": "Carica una foto",
+      "replace": "Sostituisci la foto",
+      "remove": "Rimuovi la foto",
+      "uploading": "Caricamento in corso",
+      "uploadFailed": "Impossibile caricare la foto"
+    },
+    "features": {
+      "title": "Cosa ricevono i clienti",
+      "description": "Le parti del portale che puoi disattivare.",
+      "messages": "Messaggi nel portale",
+      "messagesHint": "I clienti ti scrivono dal portale. I loro messaggi arrivano nella tua casella Messaggi.",
+      "tires": "Mostra i pneumatici in deposito",
+      "tiresHint": "I clienti vedono i pneumatici che custodisci per loro, con la profondità del battistrada."
+    },
+    "bar": {
+      "label": "Salva le impostazioni del portale clienti",
+      "unsaved": "Hai modifiche non salvate",
+      "saved": "Tutto salvato",
+      "discard": "Annulla le modifiche",
+      "save": "Salva le modifiche",
+      "open": "Apri il portale come cliente",
+      "openOff": "Attiva il portale e salva per aprirlo."
+    },
+    "savedToast": "Impostazioni del portale clienti salvate"
   },
   "email": {
     "title": "Provider e-mail",
@@ -1989,13 +2042,13 @@
     "noMembers": "Nessun membro trovato",
     "addRecipient": "Aggiungi destinatario...",
     "searchMembers": "Cerca membri...",
-    "sendNow": "Invia ora",
-    "sentNow": "Report inviato con successo",
     "newSchedule": "Nuova pianificazione",
     "editSchedule": "Modifica pianificazione",
     "edit": "Modifica",
     "cancel": "Annulla",
     "sent": "inviati",
+    "sendNow": "Invia ora",
+    "sentNow": "Report inviato con successo",
     "emptyTitle": "Nessun report programmato",
     "emptyDescription": "Crea una pianificazione per generare e inviare automaticamente report al tuo team.",
     "sectionLabels": {
@@ -2847,9 +2900,9 @@
       "uploading": "Caricamento…",
       "width": "Larghezza del logo",
       "hint": "Separato dal logo aziendale. Al caricamento viene ritagliato e preparato per l'email. PNG, JPEG o WebP fino a 4 MB.",
-      "position": "Posizione",
       "tooLarge": "L'immagine deve essere inferiore a 4 MB",
-      "uploadFailed": "Impossibile caricare il logo"
+      "uploadFailed": "Impossibile caricare il logo",
+      "position": "Posizione"
     },
     "image": {
       "empty": "Nessuna immagine caricata. Il blocco non stampa nulla finché non ce n'è una.",

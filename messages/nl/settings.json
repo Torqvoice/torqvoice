@@ -977,6 +977,11 @@
     "paymentReceivedDescription": "Verzonden wanneer een betaling wordt geregistreerd.",
     "saveSmsTemplates": "SMS-sjablonen opslaan",
     "smsTemplateSaved": "SMS-sjablooninstellingen opgeslagen",
+    "layoutTitle": "Factuurindeling",
+    "layoutDescription": "Pas de volgorde en zichtbaarheid van secties in uw facturen en offertes aan.",
+    "layoutSaved": "Indeling succesvol opgeslagen",
+    "layoutDocInvoice": "Factuur",
+    "layoutDocQuote": "Offerte",
     "smsDefaults": {
       "invoiceReady": "Factuur van {company_name} is gereed. Bekijk deze hier: {share_link}\nMet vriendelijke groet {company_name} - {current_user}",
       "quoteReady": "Uw offerte is klaar voor beoordeling. Bekijk deze hier: {share_link}",
@@ -997,11 +1002,6 @@
       "rose": "Roze",
       "indigo": "Indigo"
     },
-    "layoutTitle": "Factuurindeling",
-    "layoutDescription": "Pas de volgorde en zichtbaarheid van secties in uw facturen en offertes aan.",
-    "layoutSaved": "Indeling succesvol opgeslagen",
-    "layoutDocInvoice": "Factuur",
-    "layoutDocQuote": "Offerte",
     "goToLayout": "Indeling en secties",
     "openDesigner": "Ontwerper openen",
     "designerIntro": "Kies een startpunt en open de ontwerper om alles aan te passen.",
@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Klantenportaal",
-    "description": "Laat uw klanten inloggen en hun voertuigen, facturen, offertes en inspecties bekijken. Klanten kunnen ook serviceverzoeken indienen.",
-    "enablePortal": "Klantenportaal inschakelen",
-    "enablePortalHint": "Klanten met een e-mailadres kunnen inloggen via een magische link",
-    "enabled": "Klantenportaal ingeschakeld",
-    "disabled": "Klantenportaal uitgeschakeld",
-    "failedUpdate": "Instelling bijwerken mislukt",
-    "customSlug": "Aangepaste portaalslug",
-    "save": "Opslaan",
-    "slugSaved": "Portaalslug opgeslagen",
-    "slugRemoved": "Portaalslug verwijderd",
-    "failedUpdateSlug": "Slug bijwerken mislukt",
-    "slugHint": "Kleine letters, cijfers, koppeltekens en underscores. 3-48 tekens. Laat leeg om de standaard-URL te gebruiken.",
-    "portalUrl": "Portaal-URL",
-    "urlCopied": "Portaal-URL gekopieerd",
-    "shareHint": "Deel deze link met uw klanten zodat ze kunnen inloggen op hun portaal.",
+    "description": "Uw klanten loggen in om hun opdracht te volgen, offertes te beantwoorden, facturen te betalen, een afspraak te maken en u te schrijven.",
+    "enablePortal": "Klantenportaal aanzetten",
+    "enablePortalHint": "Klanten loggen in met een link die naar hun e-mail of telefoon wordt gestuurd. Er is geen wachtwoord om te onthouden.",
+    "failedUpdate": "De instellingen konden niet worden opgeslagen",
+    "customSlug": "Portaaladres",
+    "slugHint": "Kleine letters, cijfers, koppeltekens en underscores, 3 tot 48 tekens. Laat leeg om het standaardadres te gebruiken.",
+    "portalUrl": "Link naar uw portaal",
+    "urlCopied": "Link gekopieerd",
+    "shareHint": "Deel deze link met uw klanten zodat ze kunnen inloggen.",
     "serviceRequestAlertsHint": "Serviceaanvragen uit het portaal verschijnen altijd in je meldingsbel. Je kunt ze ook per e-mail ontvangen.",
-    "serviceRequestAlertsLink": "Meldingsinstellingen →",
+    "serviceRequestAlertsLink": "Meldingsinstellingen",
     "descriptionLabel": "Over uw werkplaats",
     "descriptionPlaceholder": "Vertel klanten iets over uw werkplaats, de diensten die u aanbiedt en wat u uniek maakt.",
-    "descriptionHint": "Wordt aan bezoekers getoond bovenaan uw portaalpagina.",
-    "hoursLabel": "Openingstijden",
-    "hoursPlaceholder": "Ma-Vr: 8:00-17:00\nZa: 9:00-13:00\nZo: Gesloten",
-    "hoursHint": "Vrije tekst. Gebruik regeleinden om elke dag apart te vermelden.",
-    "contentSaved": "Portaalinhoud opgeslagen",
-    "background": {
-      "title": "Portaalachtergrond",
-      "description": "Kies hoe de landingspagina van het klantenportaal eruitziet.",
-      "typeNone": "Geen",
-      "typeTemplate": "Sjabloon",
-      "typeImage": "Eigen afbeelding",
-      "chooseTemplate": "Kies een sjabloon",
-      "uploadLabel": "Achtergrondafbeelding",
-      "upload": "Afbeelding uploaden",
-      "replace": "Afbeelding vervangen",
-      "remove": "Verwijderen",
-      "uploadHint": "JPG, PNG of WebP. Max 8 MB. Aanbevolen minstens 1600×900.",
-      "uploading": "Achtergrond uploaden…",
-      "uploaded": "Achtergrond bijgewerkt",
-      "uploadFailed": "Achtergrond uploaden mislukt",
-      "templateNames": {
-        "default": "Subtiel",
-        "sunrise": "Zonsopgang",
-        "ocean": "Oceaan",
-        "forest": "Bos",
-        "slate": "Leisteen",
-        "sand": "Zand"
+    "descriptionHint": "Getoond op de inlogpagina van uw portaal.",
+    "copyUrl": "Link kopiëren"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "mijn-werkplaats",
+    "slugUnsaved": "Dit adres werkt zodra u opslaat.",
+    "slugInvalid": "Gebruik 3 tot 48 kleine letters, cijfers, koppeltekens of underscores, en begin en eindig met een letter of cijfer.",
+    "slugReserved": "Dat woord is gereserveerd. Kies een ander adres.",
+    "slugTaken": "Een andere werkplaats gebruikt dat adres al. Kies een ander.",
+    "hours": {
+      "title": "Openingstijden",
+      "fromCalendar": "Het portaal toont de openingstijden en sluitingsdagen uit uw werkplaatsagenda.",
+      "link": "Instellingen voor openingstijden",
+      "typedNote": "Uw inlogpagina toont nog de tijden die hier eerder zijn ingetypt, omdat er nog geen openingstijden in de agenda staan. Stel ze daar in, dan toont het portaal die.",
+      "typedLabel": "Nu getoond op de inlogpagina"
+    },
+    "look": {
+      "title": "Uiterlijk van uw klantenportaal",
+      "description": "Eén keuze bepaalt de inlogpagina en elke pagina die uw klanten daarna zien. Klanten kunnen dit niet wijzigen."
+    },
+    "theme": {
+      "legend": "Thema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Licht en rustig"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Donker als een pitbord"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Als een krant, rustig"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Uw kleur, groot"
       }
     },
-    "copyUrl": "Portaal-URL kopiëren"
+    "colour": {
+      "title": "Uw kleur",
+      "description": "Gebruikt voor knoppen en accenten in elk thema.",
+      "swatches": "Voorgestelde kleuren",
+      "orange": "Oranje",
+      "blue": "Blauw",
+      "green": "Groen",
+      "red": "Rood",
+      "black": "Zwart",
+      "hexLabel": "Kleur als hexcode",
+      "invalid": "Dat is geen kleur. Schrijf hem als hexcode, zoals #1D4ED8.",
+      "usingTheme": "De kleur van {theme} wordt gebruikt, {hex}.",
+      "themeColour": "De kleur van {theme} is {hex}.",
+      "useTheme": "Kleur van het thema gebruiken",
+      "sample": "Afspraak maken",
+      "inkLight": "Tekst op deze kleur wordt wit weergegeven, zodat hij leesbaar blijft.",
+      "inkDark": "Tekst op deze kleur wordt zwart weergegeven, zodat hij leesbaar blijft.",
+      "faint": "Deze kleur valt weinig op tegen de achtergrond van {theme}. Links en accenten kunnen slecht zichtbaar zijn."
+    },
+    "cover": {
+      "title": "Omslagfoto en logo",
+      "description": "Getoond op de inlogpagina. Uw logo komt uit de bedrijfsinstellingen.",
+      "companyLink": "Bedrijfsinstellingen",
+      "hint": "PNG, JPEG of WebP, tot 8 MB.",
+      "none": "Geen omslagfoto",
+      "alt": "De omslagfoto op de inlogpagina",
+      "upload": "Foto uploaden",
+      "replace": "Foto vervangen",
+      "remove": "Foto verwijderen",
+      "uploading": "Bezig met uploaden",
+      "uploadFailed": "De foto kon niet worden geüpload"
+    },
+    "features": {
+      "title": "Wat klanten krijgen",
+      "description": "De onderdelen van het portaal die u kunt uitzetten.",
+      "messages": "Berichten in het portaal",
+      "messagesHint": "Klanten schrijven u vanuit het portaal. Hun berichten komen in uw inbox onder Berichten.",
+      "tires": "Opgeslagen banden tonen",
+      "tiresHint": "Klanten zien de banden die u voor hen bewaart, met profieldiepte."
+    },
+    "bar": {
+      "label": "Instellingen van het klantenportaal opslaan",
+      "unsaved": "U heeft wijzigingen die niet zijn opgeslagen",
+      "saved": "Alles is opgeslagen",
+      "discard": "Wijzigingen negeren",
+      "save": "Wijzigingen opslaan",
+      "open": "Portaal openen als klant",
+      "openOff": "Zet het portaal aan en sla op om het te openen."
+    },
+    "savedToast": "Instellingen van het klantenportaal opgeslagen"
   },
   "email": {
     "title": "E-mailprovider",
@@ -1989,13 +2042,13 @@
     "noMembers": "Geen teamleden gevonden",
     "addRecipient": "Ontvanger toevoegen...",
     "searchMembers": "Leden zoeken...",
-    "sendNow": "Nu verzenden",
-    "sentNow": "Rapport succesvol verzonden",
     "newSchedule": "Nieuwe planning",
     "editSchedule": "Planning bewerken",
     "edit": "Bewerken",
     "cancel": "Annuleren",
     "sent": "verzonden",
+    "sendNow": "Nu verzenden",
+    "sentNow": "Rapport succesvol verzonden",
     "emptyTitle": "Geen geplande rapporten",
     "emptyDescription": "Maak een planning aan om automatisch rapporten te genereren en naar uw team te sturen.",
     "sectionLabels": {
@@ -2847,9 +2900,9 @@
       "uploading": "Uploaden…",
       "width": "Logobreedte",
       "hint": "Los van het bedrijfslogo. Het wordt bij het uploaden bijgesneden en voor e-mail voorbereid. PNG, JPEG of WebP tot 4 MB.",
-      "position": "Positie",
       "tooLarge": "De afbeelding moet kleiner zijn dan 4 MB",
-      "uploadFailed": "Kon het logo niet uploaden"
+      "uploadFailed": "Kon het logo niet uploaden",
+      "position": "Positie"
     },
     "image": {
       "empty": "Geen afbeelding geüpload. Het blok drukt niets af totdat er een is.",

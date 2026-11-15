@@ -25,7 +25,7 @@ const KEYS: Record<PortalStatusKind, Record<string, string>> = {
     // A customer who cancels an online inspection booking cancels its request.
     cancelled: 'cancelled',
   },
-  inspection: { in_progress: 'inProgress', completed: 'completed' },
+  inspection: { in_progress: 'inProgress', 'in-progress': 'inProgress', completed: 'completed' },
 }
 
 export function portalStatusLabel(
@@ -37,4 +37,27 @@ export function portalStatusLabel(
   if (key) return t(`${kind}.${key}`)
   const words = status.replace(/[-_]+/g, ' ').trim()
   return words.charAt(0).toUpperCase() + words.slice(1)
+}
+
+/**
+ * How a request's status is drawn. Requests are not work orders, quotes or
+ * inspections, so they have no colour in src/lib/status-colors.ts; each state
+ * gets its own look from the portal theme instead, so the four never read
+ * alike: waiting is outlined, booked is filled with the workshop's colour,
+ * closed is a quiet fill and cancelled is a quiet dashed outline.
+ */
+export function portalRequestBadge(status: string): {
+  tone: 'neutral' | 'accent' | 'outline'
+  className: string
+} {
+  switch (status) {
+    case 'converted':
+      return { tone: 'accent', className: '' }
+    case 'dismissed':
+      return { tone: 'neutral', className: 'p-muted' }
+    case 'cancelled':
+      return { tone: 'outline', className: 'border-dashed p-muted' }
+    default:
+      return { tone: 'outline', className: '' }
+  }
 }

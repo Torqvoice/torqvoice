@@ -51,5 +51,28 @@
       "noMatches": "Aramanızla eşleşen müşteri yok.",
       "noRecipients": "Henüz e-posta adresi olan müşteri yok."
     }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} henüz portala yazmadı.",
+    "placeholder": "Portalda {name} ile yazışın",
+    "send": "Mesaj gönder",
+    "sendFailed": "Mesaj gönderilemedi",
+    "sendHint": "Enter gönderir, Shift+Enter yeni satır başlatır. {name} portalı bir sonraki açışında görür.",
+    "loadOlder": "Eski mesajları yükle",
+    "loadFailed": "Görüşme yüklenemedi.",
+    "tryAgain": "Tekrar dene",
+    "addPhoto": "Fotoğraf ekle",
+    "removePhoto": "{name} dosyasını kaldır",
+    "uploadFailed": "Fotoğraf eklenemedi. En fazla {size} MB fotoğraf gönderilebilir.",
+    "tooManyPhotos": "Bir mesaja en fazla {count} fotoğraf eklenebilir.",
+    "photoFrom": "Fotoğraf: {name}",
+    "videoFrom": "Video: {name}",
+    "openFile": "Dosyayı aç",
+    "you": "Siz",
+    "seen": "Görüldü",
+    "off": "Müşteri portalında mesajlar kapalı, bu yüzden bu görüşme okunabilir ama yanıtlanamaz.",
+    "offSettings": "Müşteri portalı ayarları",
+    "deleteDescription": "{name} ile olan tüm görüşmeyi onun için de kaldırır: görüşme portalından kaybolur."
   }
 }

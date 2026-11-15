@@ -1,17 +1,16 @@
-import { db } from '@/lib/db'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { PortalLanding } from '@/features/portal/Components/PortalLanding'
-import { getCustomerSession } from '@/lib/customer-session'
 import { redirect } from 'next/navigation'
-import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getTranslations } from 'next-intl/server'
-import { getOrgSmsProvider } from '@/lib/sms'
-import { normalizeCountryCode } from '@/lib/portal-phone'
-import {
-  isValidPortalBackgroundType,
-  type PortalBackgroundType,
-} from '@/features/portal/portal-backgrounds'
+import { PortalLanding } from '@/features/portal/Components/PortalLanding'
+import { PortalLoginForm } from '@/features/portal/Components/PortalLoginForm'
+import { PortalPlainScreen } from '@/features/portal/Components/PortalPlainScreen'
 import { isPortalLive } from '@/features/portal/Lib/portalLive'
+import { signInErrorMessageKey } from '@/features/portal/Lib/signInLink'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getCustomerSession } from '@/lib/customer-session'
+import { db } from '@/lib/db'
+import { normalizeCountryCode } from '@/lib/portal-phone'
+import { resolvePortalOrg } from '@/lib/portal-slug'
+import { getOrgSmsProvider } from '@/lib/sms'
 
 export default async function PortalLoginPage({
   params,
@@ -21,69 +20,20 @@ export default async function PortalLoginPage({
   searchParams: Promise<{ error?: string }>
 }) {
   const { orgId: orgParam } = await params
-  const { error: authError } = await searchParams
+  const { error: errorCode } = await searchParams
   const t = await getTranslations('portal.login')
+  // Only a code the sign-in routes send is shown, in the customer's language;
+  // any other text in the address is ignored.
+  const errorKey = signInErrorMessageKey(errorCode)
+  const authError = errorKey ? t(`errors.${errorKey}`) : undefined
 
   // Resolve slug or id to real org
   const org = await resolvePortalOrg(orgParam)
-
-  if (!org) {
-    return (
-      <div className="flex min-h-svh items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">{t('notFound')}</h1>
-          <p className="mt-2 text-muted-foreground">{t('portalNotExist')}</p>
-        </div>
-      </div>
-    )
-  }
+  if (!org) return <PortalPlainScreen title={t('notFound')} body={t('portalNotExist')} />
 
   const orgId = org.id
-
-  // Whether this workshop has an SMS provider configured. Controls visibility
-  // of the SMS sign-in tab on the landing page.
-  const smsEnabled = (await getOrgSmsProvider(orgId)) !== null
-
-  // Fetch all the portal-relevant settings in one query.
-  const settings = await db.appSetting.findMany({
-    where: {
-      organizationId: orgId,
-      key: {
-        in: [
-          SETTING_KEYS.PORTAL_ENABLED,
-          SETTING_KEYS.PORTAL_DESCRIPTION,
-          SETTING_KEYS.PORTAL_HOURS,
-          SETTING_KEYS.COMPANY_LOGO,
-          SETTING_KEYS.WORKSHOP_ADDRESS,
-          SETTING_KEYS.WORKSHOP_PHONE,
-          SETTING_KEYS.WORKSHOP_EMAIL,
-          SETTING_KEYS.PORTAL_BACKGROUND_TYPE,
-          SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE,
-          SETTING_KEYS.PORTAL_BACKGROUND_IMAGE,
-          SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE,
-        ],
-      },
-    },
-    select: { key: true, value: true },
-  })
-  const get = (key: string) => settings.find((s) => s.key === key)?.value ?? null
-
-  const countryCode = normalizeCountryCode(get(SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE))
-
-  const rawBgType = get(SETTING_KEYS.PORTAL_BACKGROUND_TYPE)
-  const backgroundType: PortalBackgroundType = isValidPortalBackgroundType(rawBgType)
-    ? rawBgType
-    : 'none'
-
-  if (get(SETTING_KEYS.PORTAL_ENABLED) !== 'true' || !(await isPortalLive(orgId))) {
-    return (
-      <div className="flex min-h-svh items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold">{t('portalNotAvailable')}</h1>
-          <p className="mt-2 text-muted-foreground">{t('portalNotEnabled')}</p>
-        </div>
-      </div>
-    )
+  if (!(await isPortalLive(orgId))) {
+    return <PortalPlainScreen title={t('portalNotAvailable')} body={t('portalNotEnabled')} />
   }
 
   // If already logged in, redirect to dashboard
@@ -92,26 +42,39 @@ export default async function PortalLoginPage({
     redirect(`/portal/${orgParam}/dashboard`)
   }
 
+  const [settings, smsProvider] = await Promise.all([
+    db.appSetting.findMany({
+      where: {
+        organizationId: orgId,
+        key: {
+          in: [
+            SETTING_KEYS.PORTAL_DESCRIPTION,
+            SETTING_KEYS.PORTAL_HOURS,
+            SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE,
+          ],
+        },
+      },
+      select: { key: true, value: true },
+    }),
+    // Whether this workshop can send texts decides if SMS sign-in is offered.
+    getOrgSmsProvider(orgId),
+  ])
+  const get = (key: string) => settings.find((s) => s.key === key)?.value ?? null
+
   return (
     <PortalLanding
-      orgId={orgParam}
+      orgParam={orgParam}
+      organizationId={orgId}
       orgName={org.name}
-      // Use the public logo endpoint so unauthenticated visitors can load it.
-      orgLogo={get(SETTING_KEYS.COMPANY_LOGO) ? `/api/public/logo/${orgParam}` : null}
       description={get(SETTING_KEYS.PORTAL_DESCRIPTION)}
-      hours={get(SETTING_KEYS.PORTAL_HOURS)}
-      address={get(SETTING_KEYS.WORKSHOP_ADDRESS)}
-      phone={get(SETTING_KEYS.WORKSHOP_PHONE)}
-      email={get(SETTING_KEYS.WORKSHOP_EMAIL)}
-      authError={authError}
-      backgroundType={backgroundType}
-      backgroundTemplateId={get(SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE)}
-      // Same public-endpoint pattern as the logo.
-      backgroundImageUrl={
-        get(SETTING_KEYS.PORTAL_BACKGROUND_IMAGE) ? `/api/public/portal-bg/${orgParam}` : null
-      }
-      smsEnabled={smsEnabled}
-      defaultCountryCode={countryCode}
-    />
+      hoursText={get(SETTING_KEYS.PORTAL_HOURS)}
+    >
+      <PortalLoginForm
+        orgId={orgParam}
+        error={authError}
+        smsEnabled={smsProvider !== null}
+        defaultCountryCode={normalizeCountryCode(get(SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE))}
+      />
+    </PortalLanding>
   )
 }

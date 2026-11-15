@@ -232,6 +232,14 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     nestedUnder: 'EmailMessage',
     restore: 'replace',
   },
+  // The chat in the customer portal: one more channel of the same history.
+  {
+    model: 'PortalMessage',
+    key: 'portalMessages',
+    option: 'smsMessages',
+    restore: 'replace',
+    clearOrder: 15,
+  },
   {
     model: 'ScheduledMessage',
     key: 'scheduledMessages',
@@ -468,6 +476,8 @@ export const UPLOAD_CATEGORIES: readonly string[] = [
   'portal',
   'email',
   'fix-drafts',
+  // What customers send from the portal: chat photos, booking photos and video.
+  'portal-uploads',
 ]
 
 /** Entities written at the top level of the backup, with their key. */
