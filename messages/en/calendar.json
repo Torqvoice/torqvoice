@@ -220,6 +220,14 @@
     "durationHours": "{count, plural, one {# hour} other {# hours}}",
     "durationMinutes": "{count, plural, one {# minute} other {# minutes}}",
     "endAfterStart": "The end has to be after the start, and at most a week later.",
+    "missing": {
+      "title": "Add a title first.",
+      "times": "Set an end at least 5 minutes after the start, and at most a week later.",
+      "who": "Choose a customer or a car first.",
+      "whoMarine": "Choose a customer or a boat first.",
+      "notifications": "Check the notification times first.",
+      "customerNotice": "Choose a customer, or remove the notification to the customer."
+    },
     "appointmentWhoHint": "Choose a customer to be able to notify them before the appointment.",
     "appointmentWhoHintMarine": "Choose a customer to be able to notify them before the appointment.",
     "whoLocked": "Change the car or the customer on the work order.",

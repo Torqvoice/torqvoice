@@ -245,16 +245,61 @@ describe('a new booking', () => {
   it('will not save without a title or with the end before the start', async () => {
     await renderDialog()
     chooseKind('Appointment')
-    expect(saveButton()).toBeDisabled()
+    fireEvent.click(saveButton())
+    expect(createBooking).not.toHaveBeenCalled()
 
     fireEvent.change(titleField(), { target: { value: 'Call Kari' } })
-    expect(saveButton()).toBeEnabled()
-
     fireEvent.change(screen.getByLabelText('End'), { target: { value: '09:00' } })
-    expect(saveButton()).toBeDisabled()
+    fireEvent.click(saveButton())
+    expect(createBooking).not.toHaveBeenCalled()
     expect(
       screen.getByText('The end has to be after the start, and at most a week later.')
     ).toBeInTheDocument()
+  })
+
+  it('never greys the button out: a press says what is missing and marks it', async () => {
+    await renderDialog()
+    chooseKind('Appointment')
+    // Nothing is said before the person has tried.
+    expect(saveButton()).toBeEnabled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    fireEvent.click(saveButton())
+    expect(screen.getByRole('alert')).toHaveTextContent('Add a title first.')
+    expect(saveButton()).toHaveAccessibleDescription('Add a title first.')
+    expect(titleField()).toBeInvalid()
+    expect(titleField()).toHaveFocus()
+
+    // The mark and the words go as soon as it is put right.
+    fireEvent.change(titleField(), { target: { value: 'Call Kari' } })
+    expect(titleField()).toBeValid()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('End'), { target: { value: '09:00' } })
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Set an end at least 5 minutes after the start, and at most a week later.'
+    )
+    // Too short is said the same way as the wrong way round.
+    fireEvent.change(screen.getByLabelText('End'), { target: { value: '09:01' } })
+    expect(screen.getByRole('alert')).toHaveTextContent('at least 5 minutes after the start')
+
+    fireEvent.change(screen.getByLabelText('End'), { target: { value: '10:00' } })
+    chooseKind('Work order')
+    expect(screen.getByRole('alert')).toHaveTextContent('Choose a customer or a car first.')
+    expect(createBooking).not.toHaveBeenCalled()
+  })
+
+  it('says what is missing on the press even when the browser stops the submit', async () => {
+    await renderDialog()
+    chooseKind('Appointment')
+    fireEvent.change(titleField(), { target: { value: 'Call Kari' } })
+    // An emptied time is refused by the browser before the form submits.
+    fireEvent.change(screen.getByLabelText('End'), { target: { value: '' } })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    fireEvent.click(saveButton())
+    expect(screen.getByRole('alert')).toHaveTextContent('at least 5 minutes after the start')
+    expect(createBooking).not.toHaveBeenCalled()
   })
 
   it('will not book a work order until it knows the customer or the car', async () => {
@@ -277,11 +322,13 @@ describe('a new booking', () => {
     addConcern('Oil service')
     expect(screen.getByLabelText('Concern 1')).toHaveValue('Front brakes squeal')
     expect(screen.getByLabelText('Concern 2')).toHaveValue('Oil service')
-    expect(saveButton()).toBeDisabled()
+    fireEvent.click(saveButton())
+    expect(createBooking).not.toHaveBeenCalled()
+    expect(screen.getByRole('alert')).toHaveTextContent('Choose a customer or a car first.')
 
     await chooseCustomer()
     expect(customerField()).toHaveTextContent('Kari Nordmann')
-    expect(saveButton()).toBeEnabled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     fireEvent.click(saveButton())
 
     await waitFor(() => expect(onSaved).toHaveBeenCalled())

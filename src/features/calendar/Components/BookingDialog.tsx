@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { cn } from '@/lib/utils'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
@@ -242,6 +243,9 @@ function BookingForm({
   const [meeting, setMeeting] = useState<string | null>(null)
   // The end date shows for a booking that runs into another day, or once asked for.
   const [multiDay, setMultiDay] = useState(false)
+  // Set by a press of the button that could not save.
+  const [tried, setTried] = useState(false)
+  const titleRef = useRef<HTMLInputElement>(null)
 
   // What the workshop offers, and the booking being changed.
   useEffect(() => {
@@ -342,6 +346,21 @@ function BookingForm({
     customerRowsOk &&
     (!isWorkOrder || Boolean(vehicleId || customerId))
 
+  // What still stands between the form and a booking. The button is never
+  // greyed out for it: a press that cannot save marks what is missing and
+  // says so beside the button, where a dead button leaves the person guessing.
+  const missing = !titleText.trim()
+    ? t('missing.title')
+    : !timesValid
+      ? t('missing.times')
+      : isWorkOrder && !(vehicleId || customerId)
+        ? t(isMarine ? 'missing.whoMarine' : 'missing.who')
+        : !rowsValid
+          ? t('missing.notifications')
+          : !customerRowsOk
+            ? t('missing.customerNotice')
+            : null
+
   const chooseKind = (next: BookingKind) => {
     setKind(next)
     if (!edit) {
@@ -362,7 +381,12 @@ function BookingForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!ready || saving) return
+    if (saving) return
+    if (!ready) {
+      setTried(true)
+      if (!titleText.trim()) titleRef.current?.focus()
+      return
+    }
     onSavingChange(true)
     try {
       const payload = {
@@ -428,13 +452,15 @@ function BookingForm({
         {/* Title and what it is, the way a calendar app opens. */}
         <div className="space-y-2.5 pr-6">
           <Input
+            ref={titleRef}
             aria-label={t('titleLabel')}
+            aria-invalid={tried && !titleText.trim() ? true : undefined}
             value={titleText}
             onChange={(e) => setTitleText(e.target.value)}
             placeholder={t('titlePlaceholder')}
             maxLength={200}
             autoFocus
-            className="h-14 rounded-none border-0 border-b-2 border-border bg-transparent px-1 text-2xl font-medium tracking-tight shadow-none placeholder:font-normal placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-0 md:text-2xl dark:bg-transparent"
+            className="h-14 rounded-none border-0 border-b-2 border-border bg-transparent px-1 text-2xl font-medium tracking-tight shadow-none placeholder:font-normal placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-0 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive md:text-2xl dark:bg-transparent"
           />
           <div className="flex flex-wrap items-center gap-3">
             <Tabs value={kind} onValueChange={(v) => chooseKind(v as BookingKind)}>
@@ -568,7 +594,14 @@ function BookingForm({
                 }}
               />
               {(lockedWho || isWorkOrder) && (
-                <p className="text-xs text-muted-foreground">
+                <p
+                  className={cn(
+                    'text-xs',
+                    tried && isWorkOrder && !hasCustomer
+                      ? 'text-destructive'
+                      : 'text-muted-foreground'
+                  )}
+                >
                   {lockedWho
                     ? isMarine
                       ? t('whoLockedMarine')
@@ -692,10 +725,32 @@ function BookingForm({
         <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
           {tc('cancel')}
         </Button>
-        <Button data-save-shortcut type="submit" disabled={!ready || saving}>
+        <Button
+          data-save-shortcut
+          type="submit"
+          disabled={saving}
+          // On the press, not only on submit: a field the browser itself
+          // refuses (an emptied time, a fractional amount) never reaches the
+          // form's submit, and the press must still say what is missing.
+          onClick={() => {
+            if (!ready) setTried(true)
+          }}
+          aria-describedby={tried && missing ? 'booking-missing' : undefined}
+        >
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           {editing ? tc('save') : converting ? t('convertSubmit') : t('submit')}
         </Button>
+        {/* Last in the markup so it sits above the buttons on a phone, where
+            the footer stacks upwards; first on a wider screen. */}
+        {tried && missing && (
+          <p
+            id="booking-missing"
+            role="alert"
+            className="text-sm text-destructive sm:order-first sm:mr-auto sm:self-center"
+          >
+            {missing}
+          </p>
+        )}
       </DialogFooter>
     </form>
   )

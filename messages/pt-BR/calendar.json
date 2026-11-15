@@ -220,6 +220,14 @@
     "durationHours": "{count, plural, one {# hora} other {# horas}}",
     "durationMinutes": "{count, plural, one {# minuto} other {# minutos}}",
     "endAfterStart": "O fim precisa ser depois do início e, no máximo, uma semana depois.",
+    "missing": {
+      "title": "Adicione um título primeiro.",
+      "times": "Defina um fim pelo menos 5 minutos depois do início e, no máximo, uma semana depois.",
+      "who": "Escolha primeiro um cliente ou um veículo.",
+      "whoMarine": "Escolha primeiro um cliente ou um barco.",
+      "notifications": "Confira primeiro os tempos das notificações.",
+      "customerNotice": "Escolha um cliente ou remova a notificação ao cliente."
+    },
     "appointmentWhoHint": "Escolha um cliente para poder avisá-lo antes do agendamento.",
     "appointmentWhoHintMarine": "Escolha um cliente para poder avisá-lo antes do agendamento.",
     "whoLocked": "Altere o carro ou o cliente na ordem de serviço.",

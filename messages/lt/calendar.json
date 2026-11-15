@@ -220,6 +220,14 @@
     "durationHours": "{count, plural, one {# valanda} few {# valandos} many {# valandos} other {# valandų}}",
     "durationMinutes": "{count, plural, one {# minutė} few {# minutės} many {# minutės} other {# minučių}}",
     "endAfterStart": "Pabaiga turi būti po pradžios ir ne vėliau kaip po savaitės.",
+    "missing": {
+      "title": "Pirmiausia įrašykite pavadinimą.",
+      "times": "Nustatykite pabaigą bent 5 minutės po pradžios ir ne vėliau kaip po savaitės.",
+      "who": "Pirmiausia pasirinkite klientą arba automobilį.",
+      "whoMarine": "Pirmiausia pasirinkite klientą arba laivą.",
+      "notifications": "Pirmiausia patikrinkite pranešimų laikus.",
+      "customerNotice": "Pasirinkite klientą arba pašalinkite pranešimą klientui."
+    },
     "appointmentWhoHint": "Pasirinkite klientą, kad galėtumėte jam priminti prieš vizitą.",
     "appointmentWhoHintMarine": "Pasirinkite klientą, kad galėtumėte jam priminti prieš vizitą.",
     "whoLocked": "Automobilį ar klientą keiskite darbo užsakyme.",
