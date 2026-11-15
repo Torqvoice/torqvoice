@@ -222,7 +222,7 @@
     "endAfterStart": "Koniec musi być po początku i najwyżej tydzień później.",
     "missing": {
       "title": "Najpierw dodaj tytuł.",
-      "times": "Najpierw ustaw koniec późniejszy niż początek.",
+      "times": "Ustaw koniec co najmniej 5 minut po początku i najwyżej tydzień później.",
       "who": "Najpierw wybierz klienta lub pojazd.",
       "whoMarine": "Najpierw wybierz klienta lub łódź.",
       "notifications": "Najpierw sprawdź czasy powiadomień.",

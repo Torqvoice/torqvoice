@@ -276,11 +276,29 @@ describe('a new booking', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
 
     fireEvent.change(screen.getByLabelText('End'), { target: { value: '09:00' } })
-    expect(screen.getByRole('alert')).toHaveTextContent('Set an end that is after the start first.')
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Set an end at least 5 minutes after the start, and at most a week later.'
+    )
+    // Too short is said the same way as the wrong way round.
+    fireEvent.change(screen.getByLabelText('End'), { target: { value: '09:01' } })
+    expect(screen.getByRole('alert')).toHaveTextContent('at least 5 minutes after the start')
 
     fireEvent.change(screen.getByLabelText('End'), { target: { value: '10:00' } })
     chooseKind('Work order')
     expect(screen.getByRole('alert')).toHaveTextContent('Choose a customer or a car first.')
+    expect(createBooking).not.toHaveBeenCalled()
+  })
+
+  it('says what is missing on the press even when the browser stops the submit', async () => {
+    await renderDialog()
+    chooseKind('Appointment')
+    fireEvent.change(titleField(), { target: { value: 'Call Kari' } })
+    // An emptied time is refused by the browser before the form submits.
+    fireEvent.change(screen.getByLabelText('End'), { target: { value: '' } })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+
+    fireEvent.click(saveButton())
+    expect(screen.getByRole('alert')).toHaveTextContent('at least 5 minutes after the start')
     expect(createBooking).not.toHaveBeenCalled()
   })
 

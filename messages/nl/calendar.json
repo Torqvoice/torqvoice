@@ -222,7 +222,7 @@
     "endAfterStart": "Het einde moet na het begin liggen, en hoogstens een week later.",
     "missing": {
       "title": "Voeg eerst een titel toe.",
-      "times": "Stel eerst een einde in dat na het begin ligt.",
+      "times": "Stel een einde in dat minstens 5 minuten na het begin ligt, en hoogstens een week later.",
       "who": "Kies eerst een klant of een voertuig.",
       "whoMarine": "Kies eerst een klant of een boot.",
       "notifications": "Controleer eerst de tijden van de meldingen.",

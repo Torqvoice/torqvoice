@@ -222,7 +222,7 @@
     "endAfterStart": "Slutt må være etter start, og høyst en uke senere.",
     "missing": {
       "title": "Legg til en tittel først.",
-      "times": "Sett en slutt som er etter start først.",
+      "times": "Sett en slutt minst 5 minutter etter start, og høyst en uke senere.",
       "who": "Velg en kunde eller en bil først.",
       "whoMarine": "Velg en kunde eller en båt først.",
       "notifications": "Sjekk tidene for varslene først.",

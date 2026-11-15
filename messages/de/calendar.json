@@ -222,7 +222,7 @@
     "endAfterStart": "Das Ende muss nach dem Beginn liegen, höchstens eine Woche später.",
     "missing": {
       "title": "Zuerst einen Titel eingeben.",
-      "times": "Zuerst ein Ende nach dem Beginn festlegen.",
+      "times": "Ein Ende mindestens 5 Minuten nach dem Beginn festlegen, höchstens eine Woche später.",
       "who": "Zuerst einen Kunden oder ein Fahrzeug wählen.",
       "whoMarine": "Zuerst einen Kunden oder ein Boot wählen.",
       "notifications": "Zuerst die Zeiten der Benachrichtigungen prüfen.",

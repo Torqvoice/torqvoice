@@ -222,7 +222,7 @@
     "endAfterStart": "The end has to be after the start, and at most a week later.",
     "missing": {
       "title": "Add a title first.",
-      "times": "Set an end that is after the start first.",
+      "times": "Set an end at least 5 minutes after the start, and at most a week later.",
       "who": "Choose a customer or a car first.",
       "whoMarine": "Choose a customer or a boat first.",
       "notifications": "Check the notification times first.",

@@ -729,6 +729,12 @@ function BookingForm({
           data-save-shortcut
           type="submit"
           disabled={saving}
+          // On the press, not only on submit: a field the browser itself
+          // refuses (an emptied time, a fractional amount) never reaches the
+          // form's submit, and the press must still say what is missing.
+          onClick={() => {
+            if (!ready) setTried(true)
+          }}
           aria-describedby={tried && missing ? 'booking-missing' : undefined}
         >
           {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

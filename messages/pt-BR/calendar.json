@@ -222,7 +222,7 @@
     "endAfterStart": "O fim precisa ser depois do início e, no máximo, uma semana depois.",
     "missing": {
       "title": "Adicione um título primeiro.",
-      "times": "Defina primeiro um fim depois do início.",
+      "times": "Defina um fim pelo menos 5 minutos depois do início e, no máximo, uma semana depois.",
       "who": "Escolha primeiro um cliente ou um veículo.",
       "whoMarine": "Escolha primeiro um cliente ou um barco.",
       "notifications": "Confira primeiro os tempos das notificações.",
