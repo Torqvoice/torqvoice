@@ -220,6 +220,14 @@
     "durationHours": "{count, plural, one {# uur} other {# uur}}",
     "durationMinutes": "{count, plural, one {# minuut} other {# minuten}}",
     "endAfterStart": "Het einde moet na het begin liggen, en hoogstens een week later.",
+    "missing": {
+      "title": "Voeg eerst een titel toe.",
+      "times": "Stel eerst een einde in dat na het begin ligt.",
+      "who": "Kies eerst een klant of een voertuig.",
+      "whoMarine": "Kies eerst een klant of een boot.",
+      "notifications": "Controleer eerst de tijden van de meldingen.",
+      "customerNotice": "Kies een klant, of verwijder de melding aan de klant."
+    },
     "appointmentWhoHint": "Kies een klant om die vóór de afspraak te kunnen herinneren.",
     "appointmentWhoHintMarine": "Kies een klant om die vóór de afspraak te kunnen herinneren.",
     "whoLocked": "Wijzig de auto of de klant op de werkorder.",

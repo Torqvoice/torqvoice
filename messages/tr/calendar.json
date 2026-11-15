@@ -220,6 +220,14 @@
     "durationHours": "{count, plural, one {# saat} other {# saat}}",
     "durationMinutes": "{count, plural, one {# dakika} other {# dakika}}",
     "endAfterStart": "Bitiş, başlangıçtan sonra ve en fazla bir hafta sonra olmalıdır.",
+    "missing": {
+      "title": "Önce bir başlık ekleyin.",
+      "times": "Önce başlangıçtan sonraki bir bitiş belirleyin.",
+      "who": "Önce bir müşteri veya araç seçin.",
+      "whoMarine": "Önce bir müşteri veya tekne seçin.",
+      "notifications": "Önce bildirim sürelerini kontrol edin.",
+      "customerNotice": "Bir müşteri seçin veya müşteriye giden bildirimi kaldırın."
+    },
     "appointmentWhoHint": "Randevudan önce haber verebilmek için bir müşteri seçin.",
     "appointmentWhoHintMarine": "Randevudan önce haber verebilmek için bir müşteri seçin.",
     "whoLocked": "Aracı veya müşteriyi iş emrinde değiştirin.",

@@ -220,6 +220,14 @@
     "durationHours": "{count, plural, one {# time} other {# timer}}",
     "durationMinutes": "{count, plural, one {# minutt} other {# minutter}}",
     "endAfterStart": "Slutt må være etter start, og høyst en uke senere.",
+    "missing": {
+      "title": "Legg til en tittel først.",
+      "times": "Sett en slutt som er etter start først.",
+      "who": "Velg en kunde eller en bil først.",
+      "whoMarine": "Velg en kunde eller en båt først.",
+      "notifications": "Sjekk tidene for varslene først.",
+      "customerNotice": "Velg en kunde, eller fjern varselet til kunden."
+    },
     "appointmentWhoHint": "Velg en kunde for å kunne varsle kunden før timeavtalen.",
     "appointmentWhoHintMarine": "Velg en kunde for å kunne varsle kunden før timeavtalen.",
     "whoLocked": "Endre bilen eller kunden på arbeidsordren.",
