@@ -14,6 +14,7 @@ import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { channelEnabled } from '@/features/integrations/Lib/messaging'
 import { CustomerDetailClient } from './customer-detail-client'
+import { splitRequestText } from '@/features/portal/Lib/requestText'
 import { PageHeader } from '@/components/page-header'
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -106,7 +107,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <CustomerDetailClient
-          customer={result.data}
+          customer={{
+            ...result.data,
+            // Taken apart here: the client card cannot know every language's quick choices.
+            serviceRequests: result.data.serviceRequests?.map((request) => ({
+              ...request,
+              words: splitRequestText(request.description),
+            })),
+          }}
           unitSystem={
             ((settingsResult.success && settingsResult.data?.[SETTING_KEYS.UNIT_SYSTEM]) ||
               'imperial') as 'metric' | 'imperial'

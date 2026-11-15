@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { db } from '@/lib/db'
+import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { zonedDayKey } from '@/lib/timezone'
 import { parseUploadUrl } from '@/lib/upload-url'
 import { workshopMoneyFormatter } from '@/lib/workshop-currency'
@@ -278,13 +279,7 @@ export async function getPortalThreadEvents(
           status: 'completed',
           AND: [
             { OR: [{ issuedAt: { not: null } }, { sentAt: { not: null } }] },
-            {
-              OR: [
-                { sentAt: { gte: since } },
-                { invoiceDate: { gte: since } },
-                { issuedAt: { gte: since } },
-              ],
-            },
+            invoiceEventWindow(since),
           ],
         },
         select: {
@@ -295,6 +290,8 @@ export async function getPortalThreadEvents(
           issuedAt: true,
           sentAt: true,
           invoiceDate: true,
+          startDateTime: true,
+          serviceDate: true,
           invoiceDueDate: true,
           manuallyPaid: true,
           payments: { select: { amount: true } },
@@ -359,7 +356,7 @@ export async function getPortalThreadEvents(
     const today = zonedDayKey(now, timeZone)
     for (const invoice of invoices) {
       const { at, dayOnly } = invoiceEventTime(invoice)
-      if (!at || at < since) continue
+      if (at < since) continue
       // Overdue is owed money past its due day, and that day is the workshop's.
       const owed = portalPayment(invoice).balance > 0
       const overdue =
@@ -390,20 +387,42 @@ export async function getPortalThreadEvents(
  *
  * That is when it was sent to them, a real moment with a time of day. An
  * invoice that was never sent (shared by link only, or paid at the counter)
- * stands on its own date, the one printed on it: a calendar day, so the chat
- * shows the day and no clock time. `issuedAt` alone is not it: it is when
- * the sheet was frozen, which can be a payment weeks after the work, and its
- * time of day means nothing to a customer. It is only the last resort, for
- * an invoice with no date of its own.
+ * stands on its own date, the one printed on it and shown on its page in the
+ * portal (`effectiveInvoiceDate`: the invoice date, else the scheduled start,
+ * else the day of the work): a calendar day, so the chat shows the day and
+ * no clock time. `issuedAt` is never it: that is when the sheet was frozen,
+ * which can be a payment weeks after the work, and its time of day means
+ * nothing to a customer.
+ *
+ * `invoiceEventWindow` is the same precedence as a query: change both together.
  */
 export function invoiceEventTime(invoice: {
   sentAt: Date | null
   invoiceDate?: Date | null
-  issuedAt: Date | null
-}): { at: Date | null; dayOnly: boolean } {
+  startDateTime?: Date | null
+  serviceDate: Date
+}): { at: Date; dayOnly: boolean } {
   if (invoice.sentAt) return { at: invoice.sentAt, dayOnly: false }
-  if (invoice.invoiceDate) return { at: invoice.invoiceDate, dayOnly: true }
-  return { at: invoice.issuedAt, dayOnly: false }
+  return { at: effectiveInvoiceDate(invoice), dayOnly: true }
+}
+
+/**
+ * The invoices whose place in the thread (`invoiceEventTime`) is on or after
+ * `since`, as a Prisma filter. Each fallback only counts for a row that has
+ * no date of higher rank, so the rows the query returns are the rows that
+ * are drawn: a filter on any of the dates let old invoices in by a date that
+ * is not the one they stand on, and they used up the row limit before being
+ * dropped, hiding a recent invoice.
+ */
+export function invoiceEventWindow(since: Date) {
+  return {
+    OR: [
+      { sentAt: { gte: since } },
+      { sentAt: null, invoiceDate: { gte: since } },
+      { sentAt: null, invoiceDate: null, startDateTime: { gte: since } },
+      { sentAt: null, invoiceDate: null, startDateTime: null, serviceDate: { gte: since } },
+    ],
+  }
 }
 
 /**

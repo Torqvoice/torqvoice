@@ -26,6 +26,7 @@ import { getRecentObservations } from '@/features/vehicles/Actions/findingAction
 import { getMyActiveJobs } from '@/features/vehicles/Actions/getMyActiveJobs'
 import { getOnboardingChecklist } from '@/features/onboarding/Actions/checklistActions'
 import { DashboardClient } from './dashboard-client'
+import { splitRequestText } from '@/features/portal/Lib/requestText'
 import { db } from '@/lib/db'
 import { sanitizeConfig, type CustomWidget } from '@/features/dashboard/custom-cards/registry'
 import { MyActiveJobs } from '@/features/vehicles/Components/MyActiveJobs'
@@ -194,7 +195,11 @@ export default async function DashboardPage() {
   // empty list would mean a portal nobody has used yet.
   const serviceRequests =
     portalAllowed && settings[SETTING_KEYS.PORTAL_ENABLED] === 'true'
-      ? (serviceRequestsResult?.success && serviceRequestsResult.data) || []
+      ? ((serviceRequestsResult?.success && serviceRequestsResult.data) || []).map((request) => ({
+          ...request,
+          // Taken apart here: the client card cannot know every language's quick choices.
+          words: splitRequestText(request.description),
+        }))
       : null
 
   const myJobs = myJobsResult.success && myJobsResult.data ? myJobsResult.data : []

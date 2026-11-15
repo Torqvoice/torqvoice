@@ -76,11 +76,17 @@ import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
-import { splitRequestText } from '@/features/portal/Lib/requestText'
+import type { RequestTextParts } from '@/features/portal/Lib/requestText'
 
 interface ServiceRequestItem {
   id: string
   description: string
+  /**
+   * The description taken apart by the page: the quick choice the customer
+   * picked in the portal, and their own words. Without it the description is
+   * shown whole.
+   */
+  words?: RequestTextParts
   preferredDate: Date | null
   /** "morning" or "afternoon", when the customer said which suits. */
   preferredTime?: string | null
@@ -1169,8 +1175,8 @@ export function ServiceRequestCard({
 
   const canSms = smsEnabled && !!customerPhone
   const vehicleDisplay = `${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}`
-  // A request from the portal starts with the quick choice the customer picked.
-  const words = splitRequestText(request.description)
+  // A request from the portal can start with the quick choice the customer picked.
+  const words = request.words ?? { topic: null, body: request.description }
 
   return (
     <>

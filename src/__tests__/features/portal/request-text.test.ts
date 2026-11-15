@@ -3,7 +3,11 @@
  * customer picked, then a blank line, then their own words. Shown as one
  * paragraph the two ran together; every screen sets the choice apart.
  */
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
+import { REQUEST_TOPIC_LABELS } from '@/features/portal/Lib/requestTopics'
+import { locales } from '@/i18n/config'
 import { requestTitle, splitRequestText } from '@/features/portal/Lib/requestText'
 
 describe('what a customer asked for, taken apart', () => {
@@ -38,9 +42,29 @@ describe('what a customer asked for, taken apart', () => {
     expect(splitRequestText(null)).toEqual({ topic: null, body: '' })
   })
 
-  it('does not take a long first paragraph for a choice', () => {
-    const long = `${'The car pulls to the left when braking hard on the motorway '.repeat(2)}\n\nSince last week.`
-    expect(splitRequestText(long)).toEqual({ topic: null, body: long.trim() })
+  it('does not take a first paragraph the customer wrote themselves for a choice', () => {
+    // The form allows several paragraphs with nothing picked.
+    const own = 'Brakes squeal.\n\nOnly when cold.'
+    expect(splitRequestText(own)).toEqual({ topic: null, body: own })
+    expect(requestTitle(own)).toBe('Brakes squeal. Only when cold.')
+    const nearly = 'something is wrong\n\nA knocking noise.'
+    expect(splitRequestText(nearly)).toEqual({ topic: null, body: nearly })
+  })
+
+  it('knows the quick choices in every language the portal speaks', () => {
+    expect(splitRequestText('Noe er galt\n\nDet banker foran.')).toEqual({
+      topic: 'Noe er galt',
+      body: 'Det banker foran.',
+    })
+    // Straight from the message files, for every locale and every choice.
+    for (const locale of locales) {
+      const file = join(process.cwd(), 'messages', locale, 'portal.json')
+      const topics: Record<string, string> = JSON.parse(readFileSync(file, 'utf8')).book.topics
+      expect(Object.keys(topics).length).toBeGreaterThan(0)
+      for (const label of Object.values(topics)) {
+        expect(REQUEST_TOPIC_LABELS.has(label.trim()), `${locale}: ${label}`).toBe(true)
+      }
+    }
   })
 })
 

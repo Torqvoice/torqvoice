@@ -42,7 +42,8 @@ beforeEach(() => {
             invoiceNumber: 'INV-2041',
             totalAmount: 6480,
             issuedAt: new Date('2026-11-20T15:00:00Z'),
-            sentAt: null,
+            sentAt: new Date('2026-11-20T15:00:00Z'),
+            serviceDate: new Date('2026-11-19T07:00:00Z'),
             invoiceDueDate: null,
             manuallyPaid: false,
             payments: [],
@@ -189,7 +190,8 @@ describe('the events of a thread', () => {
     invoiceNumber: 'INV-2041',
     totalAmount: 6480,
     issuedAt: new Date('2026-11-10T15:00:00Z'),
-    sentAt: null,
+    sentAt: new Date('2026-11-10T15:00:00Z'),
+    serviceDate: new Date('2026-11-09T07:00:00Z'),
     invoiceDueDate: null,
     manuallyPaid: false,
     payments: [],
@@ -242,21 +244,49 @@ describe('the events of a thread', () => {
         issuedAt: new Date('2026-11-12T03:47:00Z'),
       })
     ).toMatchObject({ at: '2026-11-10T11:00:00.000Z', dayOnly: true })
-    // No date of its own: when it was issued is all there is.
-    expect(await invoiceEvent({ sentAt: null, invoiceDate: null })).toMatchObject({
-      at: '2026-11-10T15:00:00.000Z',
-      dayOnly: false,
+    // No invoice date: the day its page in the portal shows, the scheduled
+    // start and then the day of the work. Still a day, never the freeze time.
+    expect(
+      await invoiceEvent({
+        sentAt: null,
+        invoiceDate: null,
+        startDateTime: new Date('2026-11-08T07:00:00Z'),
+        issuedAt: new Date('2026-11-12T03:47:00Z'),
+      })
+    ).toMatchObject({ at: '2026-11-08T07:00:00.000Z', dayOnly: true })
+    expect(
+      await invoiceEvent({ sentAt: null, invoiceDate: null, startDateTime: null })
+    ).toMatchObject({ at: '2026-11-09T07:00:00.000Z', dayOnly: true })
+  })
+
+  it('asks only for invoices whose own place in the thread is inside the window', async () => {
+    await events()
+    const where = serviceRecord.findMany.mock.calls
+      .map(([args]) => args.where)
+      .find((one) => one.status === 'completed')
+    const since = new Date(now.getTime() - 30 * 86_400_000)
+    // A fallback date counts only for a row with no date of higher rank, and
+    // the freeze time is not asked about at all: twelve old invoices frozen
+    // this week can no longer fill the page and hide a recent one.
+    expect(where.AND[1]).toEqual({
+      OR: [
+        { sentAt: { gte: since } },
+        { sentAt: null, invoiceDate: { gte: since } },
+        { sentAt: null, invoiceDate: null, startDateTime: { gte: since } },
+        { sentAt: null, invoiceDate: null, startDateTime: null, serviceDate: { gte: since } },
+      ],
     })
+    expect(JSON.stringify(where.AND[1])).not.toContain('issuedAt')
   })
 
   it('goes back a month unless asked for more, and never past half a year', async () => {
-    expect(await invoiceEvent({ issuedAt: new Date('2026-10-01T10:00:00Z') })).toBeUndefined()
+    expect(await invoiceEvent({ sentAt: new Date('2026-10-01T10:00:00Z') })).toBeUndefined()
     const asked = (since: string) =>
       getPortalThreadEvents('org1', 'kari', 'fjordside', { now, since: new Date(since) })
     const kinds = async (since: string) => (await asked(since)).map((event) => event.kind)
     expect(await kinds('2026-09-01T00:00:00Z')).toContain('invoice')
     serviceRecord.findMany.mockImplementation(async ({ where }: { where: { status?: string } }) =>
-      where.status === 'completed' ? [invoice({ issuedAt: new Date('2026-01-05T10:00:00Z') })] : []
+      where.status === 'completed' ? [invoice({ sentAt: new Date('2026-01-05T10:00:00Z') })] : []
     )
     expect(await kinds('2025-01-01T00:00:00Z')).not.toContain('invoice')
   })

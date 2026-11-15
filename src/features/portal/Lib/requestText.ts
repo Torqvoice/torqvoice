@@ -1,3 +1,5 @@
+import { REQUEST_TOPIC_LABELS } from './requestTopics'
+
 /**
  * What a customer sent from the booking page, taken apart for showing.
  *
@@ -7,11 +9,16 @@
  * run together ("Something is wrong A knocking noise…"), so every place that
  * shows a request shows the choice as a line of its own and the words after.
  *
- * Pure, so the portal and the workshop's own screens share it.
+ * A customer can also write several paragraphs without picking anything, so
+ * a short first paragraph proves nothing: the first line is a choice only
+ * when it is exactly one of the form's own labels, in any of the portal's
+ * languages (`requestTopics.ts`). Everything else is shown as it was written.
+ * A request has no column for the choice; with one, the form could send it
+ * apart from the words and none of this would be read back out of the text.
+ *
+ * Server only (it knows every language's labels): a client component is
+ * handed the parts by the page that renders it.
  */
-
-/** Longer than any quick choice in any language; a first paragraph above this is the customer's own. */
-const MAX_TOPIC_LENGTH = 80
 
 export interface RequestTextParts {
   /** The quick choice, when the request starts with one and words follow it. */
@@ -26,7 +33,7 @@ export function splitRequestText(text: string | null | undefined): RequestTextPa
   if (!match) return { topic: null, body: whole }
   const topic = match[1].trim()
   const body = match[2].trim()
-  if (!topic || !body || topic.length > MAX_TOPIC_LENGTH) return { topic: null, body: whole }
+  if (!body || !REQUEST_TOPIC_LABELS.has(topic)) return { topic: null, body: whole }
   return { topic, body }
 }
 

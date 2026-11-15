@@ -102,7 +102,7 @@ import { CalendarEventsCard } from '@/features/calendar/Components/CalendarEvent
 import { isEventDone } from '@/features/calendar/Components/calendar-utils'
 import type { CalendarEvent } from '@/features/calendar/Actions/calendarActions'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
-import { splitRequestText } from '@/features/portal/Lib/requestText'
+import type { RequestTextParts } from '@/features/portal/Lib/requestText'
 
 interface ServiceItem {
   id: string
@@ -193,6 +193,8 @@ interface DashboardInspection {
 interface DashboardServiceRequest {
   id: string
   description: string
+  /** The description taken apart by the page: the quick choice, and the customer's words. */
+  words?: RequestTextParts
   preferredDate: Date | null
   /** Photos and video the customer sent from the portal, as stored file urls. */
   attachments?: string[]
@@ -291,8 +293,8 @@ const observationSeverityColors: Record<string, string> = {
  * picked ("Something is wrong") is stored as the first line: it gets a line
  * of its own, so it does not run into their words.
  */
-function RequestWords({ text }: { text: string }) {
-  const { topic, body } = splitRequestText(text)
+function RequestWords({ text, words }: { text: string; words?: RequestTextParts }) {
+  const { topic, body } = words ?? { topic: null, body: text }
   return (
     <div className="mt-1.5 text-xs">
       {topic && (
@@ -1304,7 +1306,7 @@ export function DashboardClient({
                             {tCustomerRequests('statusNew')}
                           </Badge>
                         </div>
-                        <RequestWords text={req.description} />
+                        <RequestWords text={req.description} words={req.words} />
                         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
                           <span>
                             {tCustomerRequests('submitted', {
