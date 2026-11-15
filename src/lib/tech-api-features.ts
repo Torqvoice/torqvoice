@@ -16,5 +16,7 @@
  * - `checkin`: a job's check-in under `/jobs/:id/checkin`: mileage, drop-off
  *   photos by position and the condition map with its marks. A booking is
  *   on the job list from its day on.
+ * - `job-documents`: a PDF of up to 25 MB can be attached to a job, and is
+ *   filed with the job's documents.
  */
-export const TECH_API_FEATURES = ['job-video', 'checkin'] as const
+export const TECH_API_FEATURES = ['job-video', 'checkin', 'job-documents'] as const
