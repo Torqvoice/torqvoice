@@ -7,11 +7,12 @@ import {
   resolveCustomerLocale,
 } from './locale-from-request'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { requestPathname } from '@/lib/request-path'
 
 export default getRequestConfig(async () => {
   const headerStore = await headers()
   const acceptLanguage = headerStore.get('accept-language')
-  const pathname = headerStore.get('x-pathname')
+  const pathname = requestPathname(headerStore)
 
   let locale: Locale
 
