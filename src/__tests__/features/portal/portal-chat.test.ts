@@ -47,6 +47,9 @@ vi.mock('@/lib/db', () => {
         return (actual as Date) >= (value as { gte: Date }).gte
       }
       if (key === 'NOT') return true
+      if (value && typeof value === 'object' && 'in' in value) {
+        return (value as { in: unknown[] }).in.includes(actual)
+      }
       return actual === value
     })
   const shaped = (row: Row) => ({
@@ -201,19 +204,33 @@ import {
 import {
   deletePortalConversation,
   getPortalConversation,
+  markPortalMessagesSeen,
   sendPortalReply,
 } from '@/features/messaging/Actions/portalThreadActions'
 import { countUnreadMessages } from '@/features/messaging/Lib/unreadCount'
 import { getPortalThread } from '@/features/portal/Actions/getPortalThread'
 import { getPortalUnread } from '@/features/portal/Actions/getPortalUnread'
-import { markPortalThreadRead } from '@/features/portal/Actions/markPortalThreadRead'
+import { markPortalMessagesRead } from '@/features/portal/Actions/markPortalMessagesRead'
 import { sendPortalMessage } from '@/features/portal/Actions/sendPortalMessage'
+import { portalUploadFileName } from '@/features/portal/Lib/portalUploadOwner.server'
+import { freezeOrganization, unfreezeOrganization } from '@/lib/backup/freeze'
 
 const as = (customerId: string | null, organizationId = 'org1') => {
   state.session = customerId ? { customerId, organizationId } : null
 }
-const photo = (org = 'org1') =>
-  `/api/protected/files/${org}/portal-uploads/11111111-1111-4111-8111-111111111111.jpg`
+process.env.BETTER_AUTH_SECRET = 'a-secret-for-the-portal-chat'
+/** A photo this customer uploaded: its name says whose it is. */
+const photoNames = new Map<string, string>()
+const photoName = (customerId = 'kari', org = 'org1') => {
+  const key = `${org}:${customerId}`
+  if (!photoNames.has(key)) photoNames.set(key, portalUploadFileName(org, customerId, 'jpg'))
+  return photoNames.get(key) as string
+}
+const photo = (org = 'org1', customerId = 'kari') =>
+  `/api/protected/files/${org}/portal-uploads/${photoName(customerId, org)}`
+/** A file in the folder with an ordinary random name: staff uploaded it, or it is old. */
+const STAFF_PHOTO =
+  '/api/protected/files/org1/portal-uploads/11111111-1111-4111-8111-111111111111.jpg'
 
 beforeEach(() => {
   state.rows = []
@@ -256,7 +273,7 @@ describe('a customer writes to the workshop', () => {
     const result = await sendPortalMessage({ attachments: [photo()] })
     expect(state.rows[0].attachments).toEqual([photo()])
     expect(result.data?.attachments).toEqual([
-      { url: '/portal/org1/files/11111111-1111-4111-8111-111111111111.jpg', kind: 'image' },
+      { url: `/portal/org1/files/${photoName()}`, kind: 'image' },
     ])
   })
 
@@ -283,6 +300,37 @@ describe('a customer writes to the workshop', () => {
       })
     }
     expect(state.rows).toHaveLength(0)
+  })
+
+  it("refuses another customer's upload, so it cannot be read by attaching it", async () => {
+    // Ola uploaded a photo and has not sent it, or has: Kari learnt its address.
+    const olas = photo('org1', 'ola')
+    expect(await sendPortalMessage({ body: 'look', attachments: [olas] })).toEqual({
+      success: false,
+      error: 'not_yours',
+    })
+    // Nor a photo the workshop's staff put in the folder for someone else.
+    expect((await sendPortalMessage({ attachments: [STAFF_PHOTO] })).error).toBe('not_yours')
+    // No message of Kari's mentions the file, which is what would open it to her.
+    expect(state.rows).toHaveLength(0)
+
+    as('ola')
+    expect((await sendPortalMessage({ attachments: [olas] })).success).toBe(true)
+  })
+
+  it('refuses while the workshop is being restored, and takes the message afterwards', async () => {
+    freezeOrganization('org1')
+    try {
+      expect(await sendPortalMessage({ body: 'Hello?' })).toEqual({
+        success: false,
+        error: 'restoring',
+      })
+      expect(state.rows).toHaveLength(0)
+      expect(notify).not.toHaveBeenCalled()
+    } finally {
+      unfreezeOrganization('org1')
+    }
+    expect((await sendPortalMessage({ body: 'Hello?' })).success).toBe(true)
   })
 
   it('refuses when the workshop has turned the chat off', async () => {
@@ -338,7 +386,12 @@ describe("a customer's thread is theirs alone", () => {
   })
 
   it('does not mark another customer read', async () => {
-    expect(await markPortalThreadRead()).toEqual({ success: true, data: { marked: 0 } })
+    // Kari names Ola's unread answer by its id.
+    const olas = state.rows.find((row) => row.customerId === 'ola' && row.direction === 'outbound')
+    expect(await markPortalMessagesRead({ ids: [olas?.id] })).toEqual({
+      success: true,
+      data: { marked: 0, unread: 0 },
+    })
     as('ola')
     expect((await getPortalUnread()).data).toEqual({ unread: 1 })
   })
@@ -393,7 +446,11 @@ describe('the workshop answers in its inbox', () => {
     await sendPortalMessage({ body: 'Two' })
     const thread = { channel: 'portal' as const, customerId: 'kari', contact: 'kari@example.com' }
 
-    expect((await markThreadRead(thread)).data).toEqual({ marked: 2 })
+    // The conversation on screen says which messages it shows.
+    const shown = (await getPortalConversation('kari')).data?.messages.map((m) => m.id) ?? []
+    expect((await markPortalMessagesSeen({ customerId: 'kari', ids: shown })).data).toEqual({
+      marked: 2,
+    })
     expect(await countUnreadMessages('org1')).toBe(0)
     // The customer sees their last message was read.
     expect((await getPortalThread('fjordside')).data?.messages.at(-1)?.readAt).not.toBeNull()
@@ -421,7 +478,8 @@ describe('the workshop answers in its inbox', () => {
     expect(thread.data?.messages[1].authorName).toBe('Jonas')
     expect((await getPortalUnread()).data).toEqual({ unread: 1 })
 
-    expect((await markPortalThreadRead()).data).toEqual({ marked: 1 })
+    const shown = thread.data?.messages.map((message) => message.id) ?? []
+    expect((await markPortalMessagesRead({ ids: shown })).data).toEqual({ marked: 1, unread: 0 })
     expect((await getPortalUnread()).data).toEqual({ unread: 0 })
     // And the workshop sees that it was seen.
     const conversation = await getPortalConversation('kari')
@@ -430,6 +488,71 @@ describe('the workshop answers in its inbox', () => {
       authorName: 'Jonas Berg',
     })
     expect(conversation.data?.messages.at(-1)?.readAt).not.toBeNull()
+  })
+
+  it('leaves unread what the customer has not been shown', async () => {
+    await sendPortalReply({ customerId: 'kari', body: 'The car is on the lift.' })
+    const onScreen = (await getPortalThread('fjordside')).data?.messages.map((m) => m.id) ?? []
+    // A second answer arrives after the customer's page read the thread.
+    await sendPortalReply({ customerId: 'kari', body: 'Ready at 15:00.' })
+
+    expect((await markPortalMessagesRead({ ids: onScreen })).data).toEqual({ marked: 1, unread: 1 })
+    expect((await getPortalUnread()).data).toEqual({ unread: 1 })
+    const after = (await getPortalConversation('kari')).data?.messages ?? []
+    expect(after.map((message) => [message.body, message.readAt !== null])).toEqual([
+      ['The car is on the lift.', true],
+      // Not seen, so the workshop is not told it was.
+      ['Ready at 15:00.', false],
+    ])
+  })
+
+  it('marks nothing for a customer who names no message, or their own', async () => {
+    await sendPortalMessage({ body: 'Mine' })
+    expect((await markPortalMessagesRead({ ids: [] })).success).toBe(false)
+    expect((await markPortalMessagesRead({})).success).toBe(false)
+    expect((await markPortalMessagesRead({ ids: [state.rows[0].id] })).data).toMatchObject({
+      marked: 0,
+    })
+    expect(state.rows[0].readAt).toBeNull()
+  })
+
+  it('does not mark the thread read while the workshop is being restored', async () => {
+    await sendPortalReply({ customerId: 'kari', body: 'Ready at 15:00.' })
+    freezeOrganization('org1')
+    try {
+      expect((await markPortalMessagesRead({ ids: [state.rows[0].id] })).success).toBe(false)
+      expect(state.rows[0].readAt).toBeNull()
+    } finally {
+      unfreezeOrganization('org1')
+    }
+  })
+
+  it('leaves unread what the workshop has not been shown', async () => {
+    await sendPortalMessage({ body: 'One' })
+    const onScreen = (await getPortalConversation('kari')).data?.messages.map((m) => m.id) ?? []
+    // The customer writes again after the conversation was read from the server.
+    await sendPortalMessage({ body: 'Two' })
+
+    expect((await markPortalMessagesSeen({ customerId: 'kari', ids: onScreen })).data).toEqual({
+      marked: 1,
+    })
+    expect(await countUnreadMessages('org1')).toBe(1)
+    // The customer is told "seen" for the first message only.
+    const theirs = (await getPortalThread('fjordside')).data?.messages ?? []
+    expect(theirs.map((message) => message.readAt !== null)).toEqual([true, false])
+    // Opening a thread in the list no longer stamps everything in it.
+    const row = { channel: 'portal' as const, customerId: 'kari', contact: 'kari@example.com' }
+    expect((await markThreadRead(row)).data).toEqual({ marked: 0 })
+    expect(await countUnreadMessages('org1')).toBe(1)
+  })
+
+  it("does not mark another workshop's or another customer's messages seen", async () => {
+    await sendPortalMessage({ body: "Kari's" })
+    const id = state.rows[0].id
+    expect((await markPortalMessagesSeen({ customerId: 'ola', ids: [id] })).data).toEqual({
+      marked: 0,
+    })
+    expect(state.rows[0].readAt).toBeNull()
   })
 
   it('refuses an empty answer', async () => {

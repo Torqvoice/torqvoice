@@ -19,6 +19,9 @@ export const SENT_TO_CUSTOMER = {
   ],
 } satisfies Prisma.QuoteWhereInput
 
+/** The one status a quote in the portal can be answered from. */
+export const PORTAL_ANSWERABLE_FROM: readonly string[] = ['sent']
+
 /**
  * Whether a quote in the portal still waits for the customer's answer: it was
  * sent, nobody has answered it, and its last valid day has not passed. That
@@ -30,7 +33,7 @@ export function quoteAwaitsAnswer(
   timeZone: string,
   now: Date = new Date()
 ): boolean {
-  if (quote.status !== 'sent') return false
+  if (!PORTAL_ANSWERABLE_FROM.includes(quote.status)) return false
   if (!quote.validUntil) return true
   return zonedDayKey(quote.validUntil, timeZone) >= zonedDayKey(now, timeZone)
 }

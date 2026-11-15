@@ -23,7 +23,7 @@ import { SENT_TO_CUSTOMER, quoteAwaitsAnswer } from './quoteVisibility'
  * The server side of the portal chat. The home and the shell call
  * `getPortalThreadPreview` and `countPortalUnread`, whose names and return
  * types are fixed (see chatTypes.ts); the chat's own actions (`Actions/
- * sendPortalMessage`, `getPortalThread`, `markPortalThreadRead`) and the
+ * sendPortalMessage`, `getPortalThread`, `markPortalMessagesRead`) and the
  * workshop's inbox (`features/messaging`) use the rest.
  *
  * Not server actions: these take the organization and customer as arguments,
@@ -52,9 +52,11 @@ export function portalFileUrl(organizationId: string, storedUrl: string): string
 /**
  * The stored url of a file in the portal's upload folder of this workshop,
  * or null for anything else: another workshop's file, another folder, a url
- * that is not one of ours. What a message may carry.
+ * that is not one of ours. What a message from the workshop may carry: its
+ * staff may send any file of the folder. What a customer may attach is
+ * narrower, their own uploads only: see portalUploadOwner.server.ts.
  */
-export function ownPortalUpload(organizationId: string, url: string): string | null {
+export function workshopPortalUpload(organizationId: string, url: string): string | null {
   const parts = parseUploadUrl(url)
   if (!parts || parts.organizationId !== organizationId) return null
   if (parts.category !== PORTAL_UPLOAD_FOLDER) return null

@@ -14,6 +14,9 @@ const respondToQuoteSchema = z.object({
   message: z.string().optional(),
 })
 
+/** The statuses a shared quote can be answered from. */
+const ANSWERABLE_FROM: readonly string[] = ['draft', 'sent']
+
 /**
  * Public action — no auth required.
  * Customer accepts or requests changes on a shared quote page.
@@ -31,12 +34,18 @@ export async function respondToQuote(input: unknown) {
   }
 
   // Only allow response on quotes that are draft or sent
-  if (!['draft', 'sent'].includes(quote.status)) {
+  if (!ANSWERABLE_FROM.includes(quote.status)) {
     return { success: false, error: 'This quote can no longer be updated' }
   }
 
   // Shared with the customer portal, which finds the quote by who is signed in.
-  await recordQuoteResponse(quote, data.action, data.message)
+  // The write checks the status again, in the same statement: a quote the
+  // workshop converted since the read above, or answered in another tab, is
+  // left as it is.
+  const recorded = await recordQuoteResponse(quote, data.action, data.message, {
+    from: ANSWERABLE_FROM,
+  })
+  if (!recorded) return { success: false, error: 'This quote can no longer be updated' }
 
   return { success: true }
 }

@@ -117,7 +117,9 @@ export function ChatOutgoing({
       ? t('errors.chatOff')
       : outgoing.problem === 'too_fast'
         ? t('errors.tooFast')
-        : t('errors.notSent')
+        : outgoing.problem === 'restoring'
+          ? t('errors.restoring')
+          : t('errors.notSent')
   return (
     <div className="contents">
       <div

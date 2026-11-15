@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Neišsiųsta. Patikrinkite ryšį.",
       "chatOff": "Neišsiųsta. Dirbtuvės išjungė žinutes.",
-      "tooFast": "Neišsiųsta. Per daug žinučių iš karto, palaukite akimirką."
+      "tooFast": "Neišsiųsta. Per daug žinučių iš karto, palaukite akimirką.",
+      "restoring": "Neišsiųsta. Dirbtuvės trumpam nepasiekiamos. Pabandykite dar kartą po kelių minučių."
     },
     "upload": {
       "adding": "Pridedama: {name}",

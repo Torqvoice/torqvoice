@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Niet verstuurd. Controleer uw verbinding.",
       "chatOff": "Niet verstuurd. De werkplaats heeft berichten uitgezet.",
-      "tooFast": "Niet verstuurd. Dat waren veel berichten tegelijk, wacht even."
+      "tooFast": "Niet verstuurd. Dat waren veel berichten tegelijk, wacht even.",
+      "restoring": "Niet verstuurd. De werkplaats is even niet bereikbaar. Probeer het over een paar minuten opnieuw."
     },
     "upload": {
       "adding": "{name} wordt toegevoegd",

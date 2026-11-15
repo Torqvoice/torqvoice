@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils'
 import {
   type PortalInboxMessage,
   getPortalConversation,
+  markPortalMessagesSeen,
   sendPortalReply,
 } from '../Actions/portalThreadActions'
 import { setActiveConversation } from '../activeConversation'
@@ -61,6 +62,8 @@ export function PortalConversation({
   customerId,
   customerName,
   onSent,
+  onRead,
+  readSignal,
   refreshKey,
   className,
 }: {
@@ -68,6 +71,14 @@ export function PortalConversation({
   customerName: string
   /** Asks the inbox to reload its list: the thread moved to the top. */
   onSent?: () => void
+  /** Messages of the customer were marked read: the unread counts have changed. */
+  onRead?: () => void
+  /**
+   * Changes each time the inbox reads the thread: when it is opened, selected
+   * again, or something new arrived in it. What is on screen is then marked
+   * read again, also a message that was put back as unread meanwhile.
+   */
+  readSignal?: number
   /** Changes when the inbox learns of a newer message in this thread. */
   refreshKey?: string
   className?: string
@@ -142,6 +153,54 @@ export function PortalConversation({
       }
     })
   }, [customerId, load])
+
+  // What the customer wrote is read once it is on screen here: the unread
+  // messages this conversation shows, by id. One that arrives after this
+  // read of the thread is marked when it shows, not before, and older ones
+  // above the loaded page when they are loaded.
+  //
+  // A message is marked once per reading. "Mark as unread" in the inbox puts
+  // the newest one back while the conversation stays open, and it must stay
+  // unread until the thread is read again (`readSignal`), not be stamped
+  // straight away by the re-read its own change causes.
+  const shownUnreadKey = messages
+    .filter((message) => message.direction === 'inbound' && !message.readAt)
+    .map((message) => message.id)
+    .join(',')
+  const reading = useRef<{ signal: number | undefined; done: Set<string>; asked: string | null }>({
+    signal: readSignal,
+    done: new Set(),
+    asked: null,
+  })
+  const onReadRef = useRef(onRead)
+  onReadRef.current = onRead
+  useEffect(() => {
+    if (reading.current.signal !== readSignal) {
+      reading.current = { signal: readSignal, done: new Set(), asked: null }
+    }
+    const now = reading.current
+    const ids = shownUnreadKey.split(',').filter((id) => id && !now.done.has(id))
+    const key = ids.join(',')
+    if (state !== 'ready' || ids.length === 0 || now.asked === key) return
+    now.asked = key
+    const forget = () => {
+      // Not told: the next change of the thread tries again.
+      if (now.asked === key) now.asked = null
+    }
+    markPortalMessagesSeen({ customerId, ids })
+      .then((result) => {
+        if (!result.success) return forget()
+        for (const id of ids) now.done.add(id)
+        const at = new Date().toISOString()
+        setMessages((current) =>
+          current.map((message) =>
+            ids.includes(message.id) && !message.readAt ? { ...message, readAt: at } : message
+          )
+        )
+        if ((result.data?.marked ?? 0) > 0) onReadRef.current?.()
+      })
+      .catch(forget)
+  }, [state, shownUnreadKey, customerId, readSignal])
 
   // The newest message is what a conversation is opened for.
   const settled = useRef(false)

@@ -30,7 +30,7 @@ const limitSchema = z.number().int().min(1).max(PORTAL_THREAD_MAX).optional()
  *
  * Whose thread is read comes from the session alone. `orgParam` is only what
  * the links inside it are written with, and it must name the session's own
- * workshop. Reading marks nothing read: `markPortalThreadRead` does that,
+ * workshop. Reading marks nothing read: `markPortalMessagesRead` does that,
  * once the customer has the thread in front of them.
  */
 export async function getPortalThread(

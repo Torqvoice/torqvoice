@@ -16,6 +16,7 @@ import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import { warrantyFromUntyped } from '@/lib/warranty'
 import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
+import { upgradeLegacySettings } from '@/lib/backup/legacy-settings'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { generateWebhookSecret } from '@/features/webhooks/Lib/sign'
 import {
@@ -543,7 +544,11 @@ export async function restoreBackup(
         // kind the file is; a file from before it did counts as "Data only"
         // when it has a marker.
         if (Array.isArray(data.settings)) {
-          const settingRows = data.settings as { key: string; value: unknown }[]
+          // Keys an older version wrote are renamed first, as the migrations
+          // that renamed them did for the live rows: those do not run again.
+          const settingRows = upgradeLegacySettings(
+            data.settings as { key: string; value: unknown }[]
+          )
           const marked = settingRows.some((s) => isRedacted(s.value))
           const dataOnly = backup.contents === 'data' || (backup.contents === undefined && marked)
           const current =

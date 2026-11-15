@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Non inviato. Controlla la connessione.",
       "chatOff": "Non inviato. L'officina ha disattivato i messaggi.",
-      "tooFast": "Non inviato. Troppi messaggi tutti insieme, aspetta un momento."
+      "tooFast": "Non inviato. Troppi messaggi tutti insieme, aspetta un momento.",
+      "restoring": "Non inviato. L'officina non è disponibile per qualche istante. Riprova tra qualche minuto."
     },
     "upload": {
       "adding": "Aggiunta di {name}",

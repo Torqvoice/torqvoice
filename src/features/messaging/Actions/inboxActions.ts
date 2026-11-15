@@ -365,7 +365,8 @@ export async function getInboxThreads(query: InboxQuery = {}) {
 }
 
 /**
- * Marks everything inbound in one thread as read.
+ * Marks everything inbound in one thread as read. Not the portal's chat,
+ * which marks the messages on screen by id.
  *
  * Called when the thread is opened. Reading a conversation is what the
  * customers permission already grants, so no extra permission is asked for.
@@ -405,13 +406,12 @@ export async function markThreadRead(thread: {
 
       if (!thread.customerId) return { marked: 0 }
 
-      if (thread.channel === 'portal') {
-        const result = await db.portalMessage.updateMany({
-          where: { ...unread, customerId: thread.customerId },
-          data: { readAt: now },
-        })
-        return { marked: result.count }
-      }
+      // The portal's chat is not marked from here. Its messages are read by
+      // id, the ones the open conversation actually shows
+      // (portalThreadActions.markPortalMessagesSeen), because the customer
+      // reads "Seen" under what they wrote: a message that arrived after the
+      // thread was listed must not be stamped before anyone saw it.
+      if (thread.channel === 'portal') return { marked: 0 }
 
       const result =
         thread.channel === 'sms'

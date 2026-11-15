@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const actions = vi.hoisted(() => ({
   getPortalConversation: vi.fn(),
+  markPortalMessagesSeen: vi.fn(),
   sendPortalReply: vi.fn(),
 }))
 vi.mock('@/features/messaging/Actions/portalThreadActions', () => actions)
@@ -61,6 +62,10 @@ const open = () =>
 beforeEach(() => {
   vi.clearAllMocks()
   actions.getPortalConversation.mockResolvedValue(thread())
+  actions.markPortalMessagesSeen.mockImplementation(async ({ ids }: { ids: string[] }) => ({
+    success: true,
+    data: { marked: ids.length },
+  }))
 })
 
 describe('a portal thread in the inbox', () => {
@@ -138,6 +143,63 @@ describe('a portal thread in the inbox', () => {
     // what brings the message: the customer's thread changed.
     act(() => realtime.handler?.({ hint: 'portal' }))
     expect(await screen.findByText('It is flashing now.')).toBeInTheDocument()
+  })
+
+  it('marks as read the messages it shows, by id, and tells the inbox its counts changed', async () => {
+    const onRead = vi.fn()
+    actions.getPortalConversation.mockResolvedValue(
+      thread({
+        messages: [
+          { ...inbound, id: 'read-before', readAt: '2026-11-14T08:06:00Z' },
+          { ...inbound, id: 'ours', direction: 'outbound', authorName: 'Jonas Berg' },
+          inbound,
+        ],
+      })
+    )
+    render(<PortalConversation customerId="kari" customerName="Kari Nordmann" onRead={onRead} />)
+    await waitFor(() => expect(actions.markPortalMessagesSeen).toHaveBeenCalledTimes(1))
+    // Never "the whole thread": one that arrives after this read is not named.
+    expect(actions.markPortalMessagesSeen).toHaveBeenCalledWith({
+      customerId: 'kari',
+      ids: ['pm1'],
+    })
+    await waitFor(() => expect(onRead).toHaveBeenCalledTimes(1))
+
+    // A new message shows, and is then the one marked.
+    actions.getPortalConversation.mockResolvedValue(
+      thread({
+        messages: [
+          { ...inbound, readAt: '2026-11-14T08:07:00Z' },
+          { ...inbound, id: 'pm3', body: 'It is flashing now.', attachments: [] },
+        ],
+      })
+    )
+    act(() => realtime.handler?.({ hint: 'portal' }))
+    await waitFor(() =>
+      expect(actions.markPortalMessagesSeen).toHaveBeenLastCalledWith({
+        customerId: 'kari',
+        ids: ['pm3'],
+      })
+    )
+  })
+
+  it('leaves a message unread that the desk put back as unread, until the thread is read again', async () => {
+    const { rerender } = render(
+      <PortalConversation customerId="kari" customerName="Kari Nordmann" readSignal={1} />
+    )
+    await waitFor(() => expect(actions.markPortalMessagesSeen).toHaveBeenCalledTimes(1))
+
+    // "Mark as unread": the same message comes back unread on the re-read.
+    act(() => realtime.handler?.({ hint: 'portal' }))
+    await waitFor(() => expect(actions.getPortalConversation).toHaveBeenCalledTimes(2))
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 10))
+    })
+    expect(actions.markPortalMessagesSeen).toHaveBeenCalledTimes(1)
+
+    // Selecting the thread again reads it again.
+    rerender(<PortalConversation customerId="kari" customerName="Kari Nordmann" readSignal={2} />)
+    await waitFor(() => expect(actions.markPortalMessagesSeen).toHaveBeenCalledTimes(2))
   })
 
   it('shows that the customer has seen the answer when they open it', async () => {

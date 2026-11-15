@@ -8,18 +8,19 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/db', () => ({
-  db: { quote: { findFirst: vi.fn(), update: vi.fn() } },
+  db: { quote: { findFirst: vi.fn(), update: vi.fn(), updateMany: vi.fn() } },
 }))
 vi.mock('@/lib/customer-session', () => ({ getCustomerSession: vi.fn() }))
 vi.mock('@/lib/workshop-timezone', () => ({
   workshopTimeZone: vi.fn(async () => 'Pacific/Auckland'),
 }))
 vi.mock('@/features/quotes/Lib/recordQuoteResponse', () => ({
-  recordQuoteResponse: vi.fn(async () => undefined),
+  recordQuoteResponse: vi.fn(async () => true),
 }))
 
 import { respondToPortalQuote } from '@/features/portal/Actions/respondToPortalQuote'
 import { recordQuoteResponse } from '@/features/quotes/Lib/recordQuoteResponse'
+import { freezeOrganization, unfreezeOrganization } from '@/lib/backup/freeze'
 import { getCustomerSession } from '@/lib/customer-session'
 import { db } from '@/lib/db'
 
@@ -42,15 +43,27 @@ describe('answering a quote in the portal', () => {
     vi.spyOn(console, 'error').mockImplementation(() => undefined)
     vi.mocked(getCustomerSession).mockResolvedValue({ customerId: 'c1', organizationId: 'org1' })
     vi.mocked(db.quote.findFirst).mockResolvedValue(sent as never)
+    vi.mocked(recordQuoteResponse).mockResolvedValue(true)
   })
 
   it('accepts through the same path as the shared quote page', async () => {
     const result = await respondToPortalQuote({ quoteId: 'q1', answer: 'accepted' })
 
     expect(result).toEqual({ success: true, data: { status: 'accepted' } })
-    expect(recordQuoteResponse).toHaveBeenCalledWith(sent, 'accepted', undefined)
+    // Only from "sent": the write itself refuses any other status.
+    expect(recordQuoteResponse).toHaveBeenCalledWith(sent, 'accepted', undefined, {
+      from: ['sent'],
+    })
     // The portal writes nothing itself: the shared path owns the status change.
     expect(db.quote.update).not.toHaveBeenCalled()
+    expect(db.quote.updateMany).not.toHaveBeenCalled()
+  })
+
+  it('refuses an answer that lost to the workshop converting the quote meanwhile', async () => {
+    // Read as "sent", but no longer so when the answer was written.
+    vi.mocked(recordQuoteResponse).mockResolvedValue(false)
+    const result = await respondToPortalQuote({ quoteId: 'q1', answer: 'accepted' })
+    expect(result).toEqual({ success: false, error: 'This quote can no longer be answered' })
   })
 
   it('passes on what the customer wants changed', async () => {
@@ -62,7 +75,8 @@ describe('answering a quote in the portal', () => {
     expect(recordQuoteResponse).toHaveBeenCalledWith(
       sent,
       'changes_requested',
-      'Leave out the wipers'
+      'Leave out the wipers',
+      { from: ['sent'] }
     )
   })
 
@@ -128,6 +142,17 @@ describe('answering a quote in the portal', () => {
     const result = await respondToPortalQuote({ quoteId: 'q1', answer: 'accepted' })
     expect(result.success).toBe(true)
     expect(recordQuoteResponse).toHaveBeenCalled()
+  })
+
+  it('takes no answer while the workshop is being restored from a backup', async () => {
+    freezeOrganization('org1')
+    try {
+      const result = await respondToPortalQuote({ quoteId: 'q1', answer: 'accepted' })
+      expect(result.success).toBe(false)
+      expect(recordQuoteResponse).not.toHaveBeenCalled()
+    } finally {
+      unfreezeOrganization('org1')
+    }
   })
 
   it('refuses someone who is not signed in', async () => {

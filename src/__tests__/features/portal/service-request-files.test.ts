@@ -32,6 +32,8 @@ vi.mock('@/features/portal/Lib/sendServiceRequestAlert', () => ({
 vi.mock('next-intl/server', () => ({ getTranslations: async () => (key: string) => key }))
 
 import { createServiceRequest } from '@/features/portal/Actions/portalActions'
+import { portalUploadFileName } from '@/features/portal/Lib/portalUploadOwner.server'
+import { freezeOrganization, unfreezeOrganization } from '@/lib/backup/freeze'
 import { sendServiceRequestAlert } from '@/features/portal/Lib/sendServiceRequestAlert'
 import { defaultWeek } from '@/features/workshop-calendar/Lib/calendar'
 import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
@@ -40,8 +42,10 @@ import { notify } from '@/lib/notify'
 
 const stored = (name: string, org = 'org1', folder = 'portal-uploads') =>
   `/api/protected/files/${org}/${folder}/${name}`
-const PHOTO = stored('11111111-1111-4111-8111-111111111111.jpg')
-const VIDEO = stored('22222222-2222-4222-8222-222222222222.mp4')
+process.env.BETTER_AUTH_SECRET = 'a-secret-for-service-request-files'
+// Uploads of the signed-in customer: the name says whose a file is.
+const PHOTO = stored(portalUploadFileName('org1', 'c1', 'jpg'))
+const VIDEO = stored(portalUploadFileName('org1', 'c1', 'mp4'))
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -101,7 +105,18 @@ describe('a request for a visit with photos', () => {
   })
 
   it.each([
-    ['a file of another workshop', stored('a.jpg', 'org-other')],
+    [
+      "another customer's upload in the same workshop",
+      stored(portalUploadFileName('org1', 'someone-else', 'jpg')),
+    ],
+    [
+      'a file the staff put in the portal folder',
+      stored('11111111-1111-4111-8111-111111111111.jpg'),
+    ],
+    [
+      'a file of another workshop',
+      stored(portalUploadFileName('org-other', 'c1', 'jpg'), 'org-other'),
+    ],
     ["one of the workshop's own files", stored('job.jpg', 'org1', 'services')],
     ['an address on another site', 'https://example.com/a.jpg'],
     ['a path that climbs out of the folder', stored('../services/job.jpg')],
@@ -113,9 +128,21 @@ describe('a request for a visit with photos', () => {
   })
 
   it('refuses more files than the form allows', async () => {
-    const many = Array.from({ length: 7 }, (_, i) => stored(`${i}.jpg`))
+    const many = Array.from({ length: 7 }, () => stored(portalUploadFileName('org1', 'c1', 'jpg')))
     expect((await ask({ attachments: many })).success).toBe(false)
     expect(db.serviceRequest.create).not.toHaveBeenCalled()
+  })
+
+  it('creates nothing while the workshop is being restored from a backup', async () => {
+    freezeOrganization('org1')
+    try {
+      const res = await ask({ attachments: [PHOTO] })
+      expect(res.success).toBe(false)
+      expect(db.serviceRequest.create).not.toHaveBeenCalled()
+      expect(notify).not.toHaveBeenCalled()
+    } finally {
+      unfreezeOrganization('org1')
+    }
   })
 
   it('counts a file named twice once', async () => {

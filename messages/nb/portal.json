@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Ikke sendt. Sjekk tilkoblingen din.",
       "chatOff": "Ikke sendt. Verkstedet har slått av meldinger.",
-      "tooFast": "Ikke sendt. Det ble mange meldinger på en gang, vent litt."
+      "tooFast": "Ikke sendt. Det ble mange meldinger på en gang, vent litt.",
+      "restoring": "Ikke sendt. Verkstedet er utilgjengelig en kort stund. Prøv igjen om noen minutter."
     },
     "upload": {
       "adding": "Legger til {name}",

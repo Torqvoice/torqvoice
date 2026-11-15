@@ -1081,7 +1081,8 @@ function DocumentList({
   )
 }
 
-function ServiceRequestCard({
+/** Exported for its test: the days it prints are the workshop's, not the viewer's. */
+export function ServiceRequestCard({
   request,
   smsEnabled,
   customerPhone,
@@ -1095,6 +1096,10 @@ function ServiceRequestCard({
   customerId: string
 }) {
   const t = useTranslations('customers.serviceRequests')
+  // The wished day is stored as midnight on the workshop's clock, so it is
+  // read back on that clock: in the browser's zone it is the day before for
+  // anyone looking from further west.
+  const { formatDate } = useFormatDate()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [notes, setNotes] = useState(request.adminNotes ?? '')
@@ -1181,9 +1186,7 @@ function ServiceRequestCard({
                 {request.description}
               </p>
               <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
-                <span>
-                  {t('submitted', { date: new Date(request.createdAt).toLocaleDateString() })}
-                </span>
+                <span>{t('submitted', { date: formatDate(new Date(request.createdAt)) })}</span>
                 {request.preferredDate && (
                   <span>
                     {t(
@@ -1192,7 +1195,7 @@ function ServiceRequestCard({
                         : request.preferredTime === 'afternoon'
                           ? 'preferredAfternoon'
                           : 'preferred',
-                      { date: new Date(request.preferredDate).toLocaleDateString() }
+                      { date: formatDate(new Date(request.preferredDate)) }
                     )}
                   </span>
                 )}

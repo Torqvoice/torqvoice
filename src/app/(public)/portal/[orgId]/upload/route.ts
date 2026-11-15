@@ -1,10 +1,12 @@
-import crypto from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { NextResponse } from 'next/server'
 import { isPortalLive } from '@/features/portal/Lib/portalLive'
 import {
-  isPortalUploadUrl,
+  isOwnPortalUpload,
+  portalUploadFileName,
+} from '@/features/portal/Lib/portalUploadOwner.server'
+import {
   PORTAL_PHOTO_MAX_BYTES,
   PORTAL_UPLOAD_FOLDER,
   PORTAL_VIDEO_MAX_BYTES,
@@ -31,6 +33,7 @@ import { sniffDeclaredVideo } from '@/lib/video-sniff'
  * POST    multipart, field `file`. Answers `{ url, name, type, size }` where
  *         `url` is the stored url (`/api/protected/files/<org>/portal-uploads/
  *         <uuid>.<ext>`): the value a message or a request is then saved with.
+ *         The name is uuid-shaped and says which customer uploaded it.
  * DELETE  JSON `{ url }` or `{ urls: [...] }`: files the customer took out
  *         again before sending, or left behind by closing the page.
  *
@@ -164,7 +167,10 @@ export async function POST(request: Request, { params }: { params: Promise<{ org
   }
 
   // The name on disk is generated; the customer's own name is only a label.
-  const filename = `${crypto.randomUUID()}.${stored.ext}`
+  // It carries who uploaded it (portalUploadOwner.server.ts), so only this
+  // customer can later attach the file to a message or a request, or take it
+  // out again.
+  const filename = portalUploadFileName(organizationId, customerId, stored.ext)
   const dir = path.join(uploadsRoot(), organizationId, PORTAL_UPLOAD_FOLDER)
   try {
     await mkdir(dir, { recursive: true })
@@ -194,12 +200,12 @@ const MAX_RELEASED = 20
 /**
  * Files the customer took out again, or left in a form they closed.
  *
- * Only this workshop's `portal-uploads`, and through the file manager's
- * ordinary release: a file a message or a request already mentions is kept
- * whatever this is asked, and one that goes is moved to the trash for thirty
- * days, never deleted outright. The names are random, so a customer can only
- * name files they uploaded or were sent, and the ones they were sent are in a
- * row and therefore stay.
+ * Only files this customer uploaded themselves (the name says whose it is,
+ * see portalUploadOwner.server.ts): another customer's upload that has not
+ * been sent yet is not theirs to take away, whoever learnt its address. And
+ * through the file manager's ordinary release: a file a message or a request
+ * already mentions is kept whatever this is asked, and one that goes is moved
+ * to the trash for thirty days, never deleted outright.
  */
 export async function DELETE(request: Request, { params }: { params: Promise<{ orgId: string }> }) {
   const limited = rateLimit(request, {
@@ -212,7 +218,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ o
   const { orgId: orgParam } = await params
   const who = await customerOf(orgParam)
   if (who.refusal) return who.refusal
-  const { organizationId } = who
+  const { organizationId, customerId } = who
 
   const body = (await request.json().catch(() => null)) as {
     url?: unknown
@@ -220,7 +226,7 @@ export async function DELETE(request: Request, { params }: { params: Promise<{ o
   } | null
   const listed = Array.isArray(body?.urls) ? (body?.urls as unknown[]) : []
   const named = [body?.url, ...listed]
-    .filter((url): url is string => isPortalUploadUrl(url, organizationId))
+    .filter((url): url is string => isOwnPortalUpload(url, organizationId, customerId))
     .slice(0, MAX_RELEASED)
   if (named.length === 0) return refuse(400, 'noFile', 'No file named')
 

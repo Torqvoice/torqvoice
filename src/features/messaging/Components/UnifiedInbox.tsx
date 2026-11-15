@@ -212,6 +212,9 @@ export function UnifiedInbox({
 
   const visibleThreads = threads
 
+  /** Tells the open portal conversation the thread was read again. */
+  const [portalReadSignal, setPortalReadSignal] = useState(0)
+
   /**
    * Opening a thread is reading it. The row loses its marker at once, the
    * server is told, and the layout is refreshed so the sidebar pill follows.
@@ -222,6 +225,13 @@ export function UnifiedInbox({
       setThreads((previous) =>
         previous.map((row) => (row.key === thread.key ? { ...row, unread: 0 } : row))
       )
+      // The portal's chat marks its own: the conversation, once loaded, says
+      // which of the customer's messages it is showing, and only those are
+      // read. The row's marker still goes at once, as for the others.
+      if (thread.channel === 'portal') {
+        setPortalReadSignal((signal) => signal + 1)
+        return
+      }
       const result = await markThreadRead({
         channel: thread.channel,
         customerId: thread.customerId,
@@ -656,6 +666,8 @@ export function UnifiedInbox({
                 customerId={selected.customerId}
                 customerName={selected.name}
                 onSent={onChanged}
+                onRead={() => router.refresh()}
+                readSignal={portalReadSignal}
                 refreshKey={current?.lastAt ?? selected.lastAt}
                 className="h-auto min-h-0 flex-1"
               />

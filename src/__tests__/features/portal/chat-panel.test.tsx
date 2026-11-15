@@ -23,6 +23,7 @@ const server = vi.hoisted(() => ({
   pollFails: false,
   sent: [] as unknown[],
   marked: 0,
+  markedIds: [] as string[],
 }))
 
 vi.mock('@/features/portal/Actions/getPortalThread', () => ({
@@ -60,10 +61,11 @@ vi.mock('@/features/portal/Actions/sendPortalMessage', () => ({
     return { success: true, data: message }
   }),
 }))
-vi.mock('@/features/portal/Actions/markPortalThreadRead', () => ({
-  markPortalThreadRead: vi.fn(async () => {
+vi.mock('@/features/portal/Actions/markPortalMessagesRead', () => ({
+  markPortalMessagesRead: vi.fn(async ({ ids }: { ids: string[] }) => {
     server.marked += 1
-    return { success: true, data: { marked: 1 } }
+    server.markedIds.push(...ids)
+    return { success: true, data: { marked: ids.length, unread: 0 } }
   }),
 }))
 vi.mock('@/features/portal/Actions/getPortalUnread', () => ({
@@ -128,6 +130,7 @@ beforeEach(() => {
   server.pollFails = false
   server.sent = []
   server.marked = 0
+  server.markedIds = []
   // Half past one in the afternoon of 14 November in Oslo.
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date('2026-11-14T12:30:00Z'))
@@ -337,6 +340,17 @@ describe('reading the thread', () => {
   it('tells the workshop its messages were seen once they are on screen', async () => {
     panel([message({ readAt: null })])
     await waitFor(() => expect(server.marked).toBe(1))
+    expect(server.markedIds).toEqual(['m1'])
+  })
+
+  it('names only the unread messages on screen, never ones the customer wrote', async () => {
+    panel([
+      message({ id: 'old', readAt: '2026-11-14T08:06:00Z' }),
+      message({ id: 'mine', direction: 'inbound', authorName: null, readAt: null }),
+      message({ id: 'new', body: 'Ready at 15:00.', readAt: null }),
+    ])
+    await waitFor(() => expect(server.marked).toBe(1))
+    expect(server.markedIds).toEqual(['new'])
   })
 
   it('keeps the thread when asking for news fails', async () => {
@@ -422,6 +436,18 @@ describe('writing', () => {
     await user.click(within(alert).getByRole('button', { name: 'Try again' }))
     await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
     expect(server.sent).toHaveLength(2)
+    expect(thread().getByText('Is it ready?')).toBeInTheDocument()
+  })
+
+  it('says calmly that the workshop is briefly unavailable while it is being restored', async () => {
+    const user = userEvent.setup()
+    panel()
+    server.refuse = 'restoring'
+    await user.type(field(), 'Is it ready?{Enter}')
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Not sent. The workshop is briefly unavailable. Try again in a few minutes.'
+    )
+    // What was written is kept, to send again.
     expect(thread().getByText('Is it ready?')).toBeInTheDocument()
   })
 

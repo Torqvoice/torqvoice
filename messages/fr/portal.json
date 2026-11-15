@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Non envoyé. Vérifiez votre connexion.",
       "chatOff": "Non envoyé. Le garage a désactivé les messages.",
-      "tooFast": "Non envoyé. Cela fait beaucoup de messages d'un coup, patientez un instant."
+      "tooFast": "Non envoyé. Cela fait beaucoup de messages d'un coup, patientez un instant.",
+      "restoring": "Non envoyé. Le garage est momentanément indisponible. Réessayez dans quelques minutes."
     },
     "upload": {
       "adding": "Ajout de {name}",

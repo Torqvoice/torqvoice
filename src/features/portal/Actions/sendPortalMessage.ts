@@ -4,7 +4,6 @@ import { z } from 'zod'
 import {
   PORTAL_MESSAGE_SELECT,
   isPortalChatOpen,
-  ownPortalUpload,
   portalSendAllowed,
   toPortalChatMessage,
 } from '@/features/portal/Lib/chat.server'
@@ -15,6 +14,8 @@ import {
   type PortalChatMessage,
 } from '@/features/portal/Lib/chatTypes'
 import { type PortalResult, withPortalAuth } from '@/features/portal/Lib/portalAuth'
+import { ownPortalUploadUrl } from '@/features/portal/Lib/portalUploadOwner.server'
+import { isRestoring } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 
@@ -32,18 +33,27 @@ const refuse = (code: PortalChatError) => new Error(code)
  *
  * Who writes and to which workshop come from the session, never from the
  * input. The message is refused when the workshop has turned the chat off (or
- * the portal itself), when it is empty, when a file in it is not an upload in
- * this workshop's portal folder, and when the customer is sending faster
- * than a person types. The workshop is told the way it is told about a text
+ * the portal itself), when it is empty, when a file in it is not one this
+ * customer uploaded themselves, while the workshop is being restored from a
+ * backup, and when the customer is sending faster than a person types. The workshop is told the way it is told about a text
  * message: a notification that opens the thread in its inbox.
  */
 export async function sendPortalMessage(input: unknown): Promise<PortalResult<PortalChatMessage>> {
   return withPortalAuth(async ({ customerId, organizationId }) => {
+    // While a restore replaces this workshop's rows, nothing is written: the
+    // message would be lost under it. Said with a code of the chat's own, so
+    // the customer reads why in their language and can send it again.
+    if (isRestoring(organizationId)) throw refuse('restoring')
+
     const data = schema.parse(input)
     if (!data.body && data.attachments.length === 0) throw refuse('empty')
 
+    // Only files this customer uploaded themselves. A file of the workshop's
+    // portal folder is not enough: the file route serves a file to whoever
+    // has a message that mentions it, so attaching someone else's upload
+    // would be a way to read it.
     const attachments = data.attachments.map((url) => {
-      const stored = ownPortalUpload(organizationId, url)
+      const stored = ownPortalUploadUrl(url, organizationId, customerId)
       if (!stored) throw refuse('not_yours')
       return stored
     })

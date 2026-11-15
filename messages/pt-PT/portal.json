@@ -573,7 +573,8 @@
     "errors": {
       "notSent": "Não enviada. Verifique a sua ligação.",
       "chatOff": "Não enviada. A oficina desativou as mensagens.",
-      "tooFast": "Não enviada. Foram muitas mensagens de seguida, aguarde um momento."
+      "tooFast": "Não enviada. Foram muitas mensagens de seguida, aguarde um momento.",
+      "restoring": "Não enviada. A oficina está indisponível por momentos. Tente novamente dentro de alguns minutos."
     },
     "upload": {
       "adding": "A adicionar {name}",

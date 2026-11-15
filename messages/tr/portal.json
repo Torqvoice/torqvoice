@@ -573,7 +573,8 @@
     "errors": {
       "notSent": "Gönderilmedi. Bağlantınızı kontrol edin.",
       "chatOff": "Gönderilmedi. Servis mesajları kapattı.",
-      "tooFast": "Gönderilmedi. Aynı anda çok fazla mesaj gönderildi, biraz bekleyin."
+      "tooFast": "Gönderilmedi. Aynı anda çok fazla mesaj gönderildi, biraz bekleyin.",
+      "restoring": "Gönderilmedi. Servise kısa bir süre ulaşılamıyor. Birkaç dakika sonra tekrar deneyin."
     },
     "upload": {
       "adding": "{name} ekleniyor",

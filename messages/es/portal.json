@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "No enviado. Revisa tu conexión.",
       "chatOff": "No enviado. El taller ha desactivado los mensajes.",
-      "tooFast": "No enviado. Son muchos mensajes seguidos, espera un momento."
+      "tooFast": "No enviado. Son muchos mensajes seguidos, espera un momento.",
+      "restoring": "No enviado. El taller no está disponible por un momento. Inténtalo de nuevo en unos minutos."
     },
     "upload": {
       "adding": "Añadiendo {name}",

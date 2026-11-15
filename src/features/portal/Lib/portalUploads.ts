@@ -1,5 +1,3 @@
-import { parseUploadUrl } from '@/lib/upload-url'
-
 /**
  * What a customer may send the workshop from the portal: photos and a short
  * video, with a message in the chat or with a request for a visit.
@@ -61,17 +59,3 @@ export function portalUploadProblem(file: {
 
 /** Megabytes as a whole number, for "up to 15 MB". */
 export const megabytes = (bytes: number) => Math.round(bytes / (1024 * 1024))
-
-/**
- * Whether a url is a customer upload of this workshop: the exact shape the
- * upload route answers with, in this workshop's `portal-uploads` folder. A
- * request or a message that names anything else is refused, so a customer can
- * never point a row at another workshop's file or at the workshop's own.
- */
-export function isPortalUploadUrl(url: unknown, organizationId: string): url is string {
-  if (typeof url !== 'string') return false
-  const parts = parseUploadUrl(url)
-  return (
-    !!parts && parts.organizationId === organizationId && parts.category === PORTAL_UPLOAD_FOLDER
-  )
-}

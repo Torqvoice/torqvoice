@@ -19,6 +19,7 @@ const server = vi.hoisted(() => ({
   unread: 0,
   threadReads: 0,
   marked: 0,
+  markedIds: [] as string[],
 }))
 
 vi.mock('@/features/portal/Actions/getPortalThread', () => ({
@@ -37,11 +38,13 @@ vi.mock('@/features/portal/Actions/getPortalThread', () => ({
   }),
 }))
 vi.mock('@/features/portal/Actions/sendPortalMessage', () => ({ sendPortalMessage: vi.fn() }))
-vi.mock('@/features/portal/Actions/markPortalThreadRead', () => ({
-  markPortalThreadRead: vi.fn(async () => {
+vi.mock('@/features/portal/Actions/markPortalMessagesRead', () => ({
+  markPortalMessagesRead: vi.fn(async ({ ids }: { ids: string[] }) => {
     server.marked += 1
-    server.unread = 0
-    return { success: true, data: { marked: 1 } }
+    server.markedIds.push(...ids)
+    // Only what was named is read: the rest stays counted.
+    server.unread = Math.max(0, server.unread - ids.length)
+    return { success: true, data: { marked: ids.length, unread: server.unread } }
   }),
 }))
 vi.mock('@/features/portal/Actions/getPortalUnread', () => ({
@@ -140,6 +143,7 @@ beforeEach(() => {
   server.unread = 0
   server.threadReads = 0
   server.marked = 0
+  server.markedIds = []
   resetPortalLines()
   setPortalSocketFactory((url) => {
     const socket = new FakeSocket(url)
@@ -293,6 +297,22 @@ describe('the unread badge, live', () => {
 
     server.unread = 2
     act(() => latest().say({ t: 'thread' }))
+    await waitFor(() => expect(result.current).toBe(2))
+  })
+
+  it('keeps counting what the customer has not been shown when the thread is read', async () => {
+    // Three from the workshop are unread; the thread on screen holds one of
+    // them. The other two are older than what is loaded.
+    server.unread = 3
+    const client = chat([
+      message({ id: 'seen-before' }),
+      message({ id: 'on-screen', body: 'Ready at 15:00.', readAt: null }),
+    ])
+    const { result } = renderHook(() => usePortalUnread('fjordside', 3), { wrapper: wrap(client) })
+
+    await waitFor(() => expect(server.marked).toBe(1))
+    // Told by id, and only about the one that is in front of the customer.
+    expect(server.markedIds).toEqual(['on-screen'])
     await waitFor(() => expect(result.current).toBe(2))
   })
 

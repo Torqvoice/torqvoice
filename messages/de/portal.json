@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Nicht gesendet. Prüfen Sie Ihre Verbindung.",
       "chatOff": "Nicht gesendet. Die Werkstatt hat Nachrichten ausgeschaltet.",
-      "tooFast": "Nicht gesendet. Das waren viele Nachrichten auf einmal, warten Sie einen Moment."
+      "tooFast": "Nicht gesendet. Das waren viele Nachrichten auf einmal, warten Sie einen Moment.",
+      "restoring": "Nicht gesendet. Die Werkstatt ist kurz nicht erreichbar. Versuchen Sie es in ein paar Minuten erneut."
     },
     "upload": {
       "adding": "{name} wird hinzugefügt",

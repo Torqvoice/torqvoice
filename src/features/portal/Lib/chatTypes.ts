@@ -113,7 +113,14 @@ export const PORTAL_MESSAGE_MAX_PHOTOS = 6
  * What a send or a read of the chat can refuse with. The action answers the
  * code and the chat says it in the portal's language.
  */
-export const PORTAL_CHAT_ERRORS = ['chat_off', 'too_fast', 'empty', 'not_yours'] as const
+export const PORTAL_CHAT_ERRORS = [
+  'chat_off',
+  'too_fast',
+  'empty',
+  'not_yours',
+  // The workshop is being restored from a backup; a few minutes later it works.
+  'restoring',
+] as const
 export type PortalChatError = (typeof PORTAL_CHAT_ERRORS)[number]
 
 const attachmentSchema = z.object({

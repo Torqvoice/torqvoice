@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { getPortalThread } from '../../Actions/getPortalThread'
-import { markPortalThreadRead } from '../../Actions/markPortalThreadRead'
+import { markPortalMessagesRead } from '../../Actions/markPortalMessagesRead'
 import { sendPortalMessage } from '../../Actions/sendPortalMessage'
 import {
   PORTAL_CHAT_ERRORS,
@@ -209,43 +209,53 @@ export function usePortalThread({
     }
   }, [loadingEarlier, refetch])
 
-  // The workshop's messages are read once they are in front of the customer.
-  const newestUnread = useMemo(() => {
-    for (let i = thread.messages.length - 1; i >= 0; i--) {
-      const message = thread.messages[i]
-      if (message.direction === 'outbound' && !message.readAt) return message.id
-    }
-    return null
-  }, [thread.messages])
+  // The workshop's messages are read once they are in front of the customer:
+  // the ones in the thread as it is drawn, by id. One that arrives after
+  // this read of the thread, or an older one not loaded yet, is not on
+  // screen and stays unread until it is.
+  // As one string, so the effect below runs when the set changes and not on
+  // every poll that brings the same messages in a new array.
+  const shownUnreadKey = useMemo(
+    () =>
+      thread.messages
+        .filter((message) => message.direction === 'outbound' && !message.readAt)
+        .map((message) => message.id)
+        .join(','),
+    [thread.messages]
+  )
   const marked = useRef<string | null>(null)
   useEffect(() => {
-    if (!visible || !newestUnread || marked.current === newestUnread) return
-    marked.current = newestUnread
+    if (!visible || !shownUnreadKey || marked.current === shownUnreadKey) return
+    marked.current = shownUnreadKey
+    const ids = shownUnreadKey.split(',')
     const forget = () => {
       // Not told: the next change of the thread tries again.
-      if (marked.current === newestUnread) marked.current = null
+      if (marked.current === shownUnreadKey) marked.current = null
     }
-    markPortalThreadRead()
+    markPortalMessagesRead({ ids })
       .then((result) => {
-        if (!result.success) return forget()
+        if (!result.success || !result.data) return forget()
         const now = new Date().toISOString()
+        // What is still unread is the server's count: messages that came in
+        // meanwhile, and older ones above what is loaded.
+        const unread = result.data.unread
         client.setQueryData<PortalThread>(queryKey, (old) =>
           old
             ? {
                 ...old,
-                unread: 0,
+                unread,
                 messages: old.messages.map((message) =>
-                  message.direction === 'outbound' && !message.readAt
+                  ids.includes(message.id) && !message.readAt
                     ? { ...message, readAt: now }
                     : message
                 ),
               }
             : old
         )
-        client.setQueryData(portalUnreadKey(orgParam), 0)
+        client.setQueryData(portalUnreadKey(orgParam), unread)
       })
       .catch(forget)
-  }, [visible, newestUnread, client, queryKey, orgParam])
+  }, [visible, shownUnreadKey, client, queryKey, orgParam])
 
   return {
     thread,

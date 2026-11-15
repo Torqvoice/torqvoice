@@ -31,6 +31,10 @@ vi.mock('node:fs/promises', () => {
 
 import { writeFile } from 'node:fs/promises'
 import { isPortalLive } from '@/features/portal/Lib/portalLive'
+import {
+  isOwnPortalUpload,
+  portalUploadFileName,
+} from '@/features/portal/Lib/portalUploadOwner.server'
 import { PORTAL_PHOTO_MAX_BYTES, PORTAL_VIDEO_MAX_BYTES } from '@/features/portal/Lib/portalUploads'
 import { isRestoring } from '@/lib/backup/freeze'
 import { getCustomerSession } from '@/lib/customer-session'
@@ -41,6 +45,10 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 const ADDRESS = 'http://app.test/portal/fjordside/upload'
 const STORED = /^\/api\/protected\/files\/org-1\/portal-uploads\/[0-9a-f-]{36}\.(jpg|mp4|webm)$/
 const stored = (name: string, org = 'org-1') => `/api/protected/files/${org}/portal-uploads/${name}`
+process.env.BETTER_AUTH_SECRET = 'a-secret-for-the-portal-upload-route'
+/** A file the signed-in customer (cust-1) uploaded: its name says whose it is. */
+const mine = (ext = 'jpg', customerId = 'cust-1', org = 'org-1') =>
+  stored(portalUploadFileName(org, customerId, ext), org)
 
 /** The route keeps a count per customer in memory, so each test gets a fresh module. */
 async function route() {
@@ -138,6 +146,9 @@ describe('what may be uploaded', () => {
     const answer = await response.json()
     expect(answer.url).toMatch(STORED)
     expect(answer).toMatchObject({ name: 'IMG_0001.jpg', type: 'image/jpeg', size: 14 })
+    // The name says who uploaded it: theirs to send, nobody else's.
+    expect(isOwnPortalUpload(answer.url, 'org-1', 'cust-1')).toBe(true)
+    expect(isOwnPortalUpload(answer.url, 'org-1', 'cust-2')).toBe(false)
 
     const [target, data] = vi.mocked(writeFile).mock.calls[0]
     expect(String(target)).toMatch(/^\/tmp\/uploads\/org-1\/portal-uploads\/[0-9a-f-]{36}\.jpg$/)
@@ -261,33 +272,32 @@ describe('how often', () => {
 
 describe('a file that is never sent', () => {
   it('is released through the file manager when the customer takes it out', async () => {
-    const response = await remove({ url: stored('a.jpg') })
+    const file = mine()
+    const response = await remove({ url: file })
     expect(response.status).toBe(200)
     expect(await response.json()).toEqual({ removed: 1, kept: 0 })
     expect(releaseFiles).toHaveBeenCalledWith(
-      [stored('a.jpg')],
+      [file],
       expect.objectContaining({ organizationId: 'org-1' })
     )
   })
 
   it('releases everything left in a form the customer walked away from', async () => {
-    await remove({ urls: [stored('a.jpg'), stored('b.mp4')] })
-    expect(vi.mocked(releaseFiles).mock.calls[0][0]).toEqual([stored('a.jpg'), stored('b.mp4')])
+    const files = [mine('jpg'), mine('mp4')]
+    await remove({ urls: files })
+    expect(vi.mocked(releaseFiles).mock.calls[0][0]).toEqual(files)
   })
 
   it('says so when the file is already part of a request or a message, and keeps it', async () => {
-    vi.mocked(releaseFiles).mockResolvedValue({
-      removed: [],
-      kept: [stored('a.jpg')],
-      skipped: [],
-    })
-    expect(await (await remove({ url: stored('a.jpg') })).json()).toEqual({ removed: 0, kept: 1 })
+    const file = mine()
+    vi.mocked(releaseFiles).mockResolvedValue({ removed: [], kept: [file], skipped: [] })
+    expect(await (await remove({ url: file })).json()).toEqual({ removed: 0, kept: 1 })
   })
 
   it("never touches another workshop's file, or anything outside portal-uploads", async () => {
     const response = await remove({
       urls: [
-        stored('a.jpg', 'org-other'),
+        mine('jpg', 'cust-1', 'org-other'),
         '/api/protected/files/org-1/services/job-photo.jpg',
         '/api/protected/files/org-1/logos/logo.png',
         '/api/protected/files/org-1/portal-uploads/../services/x.jpg',
@@ -299,9 +309,23 @@ describe('a file that is never sent', () => {
     expect(releaseFiles).not.toHaveBeenCalled()
   })
 
+  it("never takes away another customer's upload, or one the staff made", async () => {
+    // Not sent yet, so no row protects it: only its name says it is not theirs.
+    const response = await remove({
+      urls: [mine('jpg', 'cust-2'), stored('11111111-1111-4111-8111-111111111111.jpg')],
+    })
+    expect(response.status).toBe(400)
+    expect(releaseFiles).not.toHaveBeenCalled()
+
+    // Named beside one of their own, only their own goes.
+    const own = mine()
+    await remove({ urls: [mine('jpg', 'cust-2'), own] })
+    expect(vi.mocked(releaseFiles).mock.calls[0][0]).toEqual([own])
+  })
+
   it('refuses a visitor who is not signed in', async () => {
     vi.mocked(getCustomerSession).mockResolvedValue(null)
-    expect((await remove({ url: stored('a.jpg') })).status).toBe(401)
+    expect((await remove({ url: mine() })).status).toBe(401)
     expect(releaseFiles).not.toHaveBeenCalled()
   })
 })

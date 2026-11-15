@@ -2,7 +2,11 @@
 
 import { z } from 'zod'
 import { type PortalResult, withPortalAuth } from '@/features/portal/Lib/portalAuth'
-import { SENT_TO_CUSTOMER, quoteAwaitsAnswer } from '@/features/portal/Lib/quoteVisibility'
+import {
+  PORTAL_ANSWERABLE_FROM,
+  SENT_TO_CUSTOMER,
+  quoteAwaitsAnswer,
+} from '@/features/portal/Lib/quoteVisibility'
 import { type QuoteAnswer, recordQuoteResponse } from '@/features/quotes/Lib/recordQuoteResponse'
 import { db } from '@/lib/db'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -29,30 +33,39 @@ const schema = z.object({
 export async function respondToPortalQuote(
   input: unknown
 ): Promise<PortalResult<{ status: QuoteAnswer }>> {
-  return withPortalAuth(async ({ customerId, organizationId }) => {
-    const data = schema.parse(input)
-    if (data.answer === 'changes_requested' && !data.message) {
-      throw new Error('Say what you would like changed')
-    }
+  return withPortalAuth(
+    async ({ customerId, organizationId }) => {
+      const data = schema.parse(input)
+      if (data.answer === 'changes_requested' && !data.message) {
+        throw new Error('Say what you would like changed')
+      }
 
-    const quote = await db.quote.findFirst({
-      where: { id: data.quoteId, customerId, organizationId, ...SENT_TO_CUSTOMER },
-      select: {
-        id: true,
-        organizationId: true,
-        quoteNumber: true,
-        title: true,
-        status: true,
-        validUntil: true,
-        customer: { select: { name: true } },
-      },
-    })
-    if (!quote) throw new Error('Quote not found')
-    if (!quoteAwaitsAnswer(quote, await workshopTimeZone(organizationId))) {
-      throw new Error('This quote can no longer be answered')
-    }
+      const quote = await db.quote.findFirst({
+        where: { id: data.quoteId, customerId, organizationId, ...SENT_TO_CUSTOMER },
+        select: {
+          id: true,
+          organizationId: true,
+          quoteNumber: true,
+          title: true,
+          status: true,
+          validUntil: true,
+          customer: { select: { name: true } },
+        },
+      })
+      if (!quote) throw new Error('Quote not found')
+      if (!quoteAwaitsAnswer(quote, await workshopTimeZone(organizationId))) {
+        throw new Error('This quote can no longer be answered')
+      }
 
-    await recordQuoteResponse(quote, data.answer, data.message)
-    return { status: data.answer }
-  })
+      // The check above read the quote; the write checks again in the same
+      // statement, so an answer never lands on a quote the workshop has
+      // converted meanwhile, and of two answers sent at once only one counts.
+      const recorded = await recordQuoteResponse(quote, data.answer, data.message, {
+        from: PORTAL_ANSWERABLE_FROM,
+      })
+      if (!recorded) throw new Error('This quote can no longer be answered')
+      return { status: data.answer }
+    },
+    { writes: true }
+  )
 }

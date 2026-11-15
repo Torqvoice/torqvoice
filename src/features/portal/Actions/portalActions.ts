@@ -25,7 +25,8 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 import { loadPortalLook } from '@/features/portal/Lib/portalLook.server'
-import { isPortalUploadUrl, PORTAL_REQUEST_MAX_FILES } from '@/features/portal/Lib/portalUploads'
+import { PORTAL_REQUEST_MAX_FILES } from '@/features/portal/Lib/portalUploads'
+import { ownPortalUploadUrl } from '@/features/portal/Lib/portalUploadOwner.server'
 
 // ─── Vehicles ─────────────────────────────────────────────────────────────
 
@@ -325,162 +326,170 @@ export async function createServiceRequest(input: {
    */
   attachments?: string[]
 }) {
-  return withPortalAuth(async ({ customerId, organizationId }) => {
-    const description = typeof input.description === 'string' ? input.description.trim() : ''
-    if (!description) throw new Error('A description is required')
-    if (description.length > MAX_REQUEST_DESCRIPTION) throw new Error('The description is too long')
+  return withPortalAuth(
+    async ({ customerId, organizationId }) => {
+      const description = typeof input.description === 'string' ? input.description.trim() : ''
+      if (!description) throw new Error('A description is required')
+      if (description.length > MAX_REQUEST_DESCRIPTION)
+        throw new Error('The description is too long')
 
-    // Only this workshop's customer uploads, each once, and no more than the
-    // form allows: a request can never point at another workshop's file or at
-    // one of the workshop's own.
-    const attachments = [...new Set(Array.isArray(input.attachments) ? input.attachments : [])]
-    if (attachments.length > PORTAL_REQUEST_MAX_FILES) throw new Error('Too many files')
-    if (!attachments.every((url) => isPortalUploadUrl(url, organizationId))) {
-      throw new Error('A file in this request is not an upload of this workshop')
-    }
-
-    // A preferred day the workshop is closed on (a holiday, a closure, a day
-    // it never opens) is refused before anything is created. The day checked
-    // is the one stored, whatever form the date came in ("2027-01-26" or
-    // "2027-01-26T12:00").
-    const timeZone = await workshopTimeZone(organizationId)
-    const preferredDate = toSafeWorkshopDate(input.preferredDate, timeZone) ?? null
-    const preferredTime =
-      preferredDate && (input.preferredTime === 'morning' || input.preferredTime === 'afternoon')
-        ? input.preferredTime
-        : null
-    if (preferredDate) {
-      const day = zonedDayKey(preferredDate, timeZone)
-      const { calendar } = await loadWorkshopCalendar(organizationId, { from: day, to: day })
-      const state = dayState(calendar, day)
-      if (!state.open) {
-        const tc = await getTranslations('workshopCalendar.portal')
-        throw new Error(
-          state.closures.length > 0
-            ? tc('closedDay', { name: state.closures.map((c) => c.name).join(', ') })
-            : tc('closedWeekday')
-        )
+      // Only files this customer uploaded themselves, each once, and no more
+      // than the form allows: a request can never point at another workshop's
+      // file, at one of the workshop's own, or at another customer's upload
+      // (the file route serves a file to whoever has a request that names it).
+      const named = Array.isArray(input.attachments) ? input.attachments : []
+      if (named.length > PORTAL_REQUEST_MAX_FILES * 2) throw new Error('Too many files')
+      const stored = named.map((url) => ownPortalUploadUrl(url, organizationId, customerId))
+      if (stored.some((url) => url === null)) {
+        throw new Error('A file in this request is not one you uploaded')
       }
-    }
+      const attachments = [...new Set(stored as string[])]
+      if (attachments.length > PORTAL_REQUEST_MAX_FILES) throw new Error('Too many files')
 
-    let vehicle: { id: string; make: string; model: string; licensePlate: string | null } | null =
-      null
-
-    if (input.vehicleId) {
-      // Validate vehicle belongs to customer
-      vehicle = await db.vehicle.findFirst({
-        where: { id: input.vehicleId, customerId, organizationId },
-        select: { id: true, make: true, model: true, licensePlate: true },
-      })
-    } else if (input.newVehicle) {
-      const make = input.newVehicle.make?.trim().slice(0, 60)
-      const model = input.newVehicle.model?.trim().slice(0, 60)
-      const licensePlate = input.newVehicle.licensePlate?.trim().slice(0, 20) || null
-      const currentYear = new Date().getFullYear()
-      const year =
-        Number.isInteger(input.newVehicle.year) &&
-        (input.newVehicle.year as number) >= 1900 &&
-        (input.newVehicle.year as number) <= currentYear + 1
-          ? (input.newVehicle.year as number)
-          : currentYear
-      if (!make || !model) {
-        throw new Error('Vehicle make and model are required')
+      // A preferred day the workshop is closed on (a holiday, a closure, a day
+      // it never opens) is refused before anything is created. The day checked
+      // is the one stored, whatever form the date came in ("2027-01-26" or
+      // "2027-01-26T12:00").
+      const timeZone = await workshopTimeZone(organizationId)
+      const preferredDate = toSafeWorkshopDate(input.preferredDate, timeZone) ?? null
+      const preferredTime =
+        preferredDate && (input.preferredTime === 'morning' || input.preferredTime === 'afternoon')
+          ? input.preferredTime
+          : null
+      if (preferredDate) {
+        const day = zonedDayKey(preferredDate, timeZone)
+        const { calendar } = await loadWorkshopCalendar(organizationId, { from: day, to: day })
+        const state = dayState(calendar, day)
+        if (!state.open) {
+          const tc = await getTranslations('workshopCalendar.portal')
+          throw new Error(
+            state.closures.length > 0
+              ? tc('closedDay', { name: state.closures.map((c) => c.name).join(', ') })
+              : tc('closedWeekday')
+          )
+        }
       }
-      // Vehicles carry an owning app user; portal customers are not users, so
-      // the record is filed under the organization's owner.
-      const ownerMember = await db.organizationMember.findFirst({
-        where: { organizationId, role: 'owner' },
-        select: { userId: true },
-      })
-      const anyMember =
-        ownerMember ??
-        (await db.organizationMember.findFirst({
-          where: { organizationId },
+
+      let vehicle: { id: string; make: string; model: string; licensePlate: string | null } | null =
+        null
+
+      if (input.vehicleId) {
+        // Validate vehicle belongs to customer
+        vehicle = await db.vehicle.findFirst({
+          where: { id: input.vehicleId, customerId, organizationId },
+          select: { id: true, make: true, model: true, licensePlate: true },
+        })
+      } else if (input.newVehicle) {
+        const make = input.newVehicle.make?.trim().slice(0, 60)
+        const model = input.newVehicle.model?.trim().slice(0, 60)
+        const licensePlate = input.newVehicle.licensePlate?.trim().slice(0, 20) || null
+        const currentYear = new Date().getFullYear()
+        const year =
+          Number.isInteger(input.newVehicle.year) &&
+          (input.newVehicle.year as number) >= 1900 &&
+          (input.newVehicle.year as number) <= currentYear + 1
+            ? (input.newVehicle.year as number)
+            : currentYear
+        if (!make || !model) {
+          throw new Error('Vehicle make and model are required')
+        }
+        // Vehicles carry an owning app user; portal customers are not users, so
+        // the record is filed under the organization's owner.
+        const ownerMember = await db.organizationMember.findFirst({
+          where: { organizationId, role: 'owner' },
           select: { userId: true },
-        }))
-      if (!anyMember) {
-        throw new Error('Organization has no members')
+        })
+        const anyMember =
+          ownerMember ??
+          (await db.organizationMember.findFirst({
+            where: { organizationId },
+            select: { userId: true },
+          }))
+        if (!anyMember) {
+          throw new Error('Organization has no members')
+        }
+        vehicle = await db.vehicle.create({
+          data: {
+            make,
+            model,
+            year,
+            licensePlate,
+            userId: anyMember.userId,
+            organizationId,
+            customerId,
+          },
+          select: { id: true, make: true, model: true, licensePlate: true },
+        })
       }
-      vehicle = await db.vehicle.create({
+
+      if (!vehicle) {
+        throw new Error('Vehicle not found')
+      }
+
+      const customer = await db.customer.findUnique({
+        where: { id: customerId },
+        select: { name: true, email: true, phone: true },
+      })
+
+      const serviceRequest = await db.serviceRequest.create({
         data: {
-          make,
-          model,
-          year,
-          licensePlate,
-          userId: anyMember.userId,
+          description,
+          preferredDate,
+          preferredTime,
+          attachments,
+          customerId,
+          vehicleId: vehicle.id,
+          organizationId,
+        },
+      })
+
+      // Notify staff
+      const vehicleName = `${vehicle.make} ${vehicle.model}`
+      const customerName = customer?.name ?? 'A customer'
+      // The plate is what the workshop actually looks a car up by, so it goes in
+      // the email even though the in-app message stays short.
+      const vehicleLabel = vehicle.licensePlate
+        ? `${vehicleName} (${vehicle.licensePlate})`
+        : vehicleName
+
+      await notify({
+        organizationId,
+        type: 'service_request',
+        title: 'New Service Request',
+        message: `${customerName} requested service for ${vehicleName}: ${description.slice(0, 100)}${
+          attachments.length > 0 ? ` (${attachments.length} photos or videos attached)` : ''
+        }`,
+        entityType: 'service_request',
+        entityId: serviceRequest.id,
+        entityUrl: `/customers/${customerId}?tab=requests`,
+      })
+
+      // Email the workshop, if it asked to be emailed. Isolated on purpose: the
+      // request is committed and the bell has already rung, so a misconfigured
+      // mail provider must not surface to the customer as a failed submission.
+      // sendServiceRequestAlert swallows its own errors; this is the backstop for
+      // anything it cannot anticipate.
+      try {
+        await sendServiceRequestAlert({
           organizationId,
           customerId,
-        },
-        select: { id: true, make: true, model: true, licensePlate: true },
-      })
-    }
+          customerName,
+          customerEmail: customer?.email ?? null,
+          customerPhone: customer?.phone ?? null,
+          vehicleLabel,
+          description,
+          preferredDate: serviceRequest.preferredDate,
+          preferredTime,
+          attachmentCount: attachments.length,
+        })
+      } catch (error) {
+        console.error('[createServiceRequest] alert email failed:', error)
+      }
 
-    if (!vehicle) {
-      throw new Error('Vehicle not found')
-    }
-
-    const customer = await db.customer.findUnique({
-      where: { id: customerId },
-      select: { name: true, email: true, phone: true },
-    })
-
-    const serviceRequest = await db.serviceRequest.create({
-      data: {
-        description,
-        preferredDate,
-        preferredTime,
-        attachments,
-        customerId,
-        vehicleId: vehicle.id,
-        organizationId,
-      },
-    })
-
-    // Notify staff
-    const vehicleName = `${vehicle.make} ${vehicle.model}`
-    const customerName = customer?.name ?? 'A customer'
-    // The plate is what the workshop actually looks a car up by, so it goes in
-    // the email even though the in-app message stays short.
-    const vehicleLabel = vehicle.licensePlate
-      ? `${vehicleName} (${vehicle.licensePlate})`
-      : vehicleName
-
-    await notify({
-      organizationId,
-      type: 'service_request',
-      title: 'New Service Request',
-      message: `${customerName} requested service for ${vehicleName}: ${description.slice(0, 100)}${
-        attachments.length > 0 ? ` (${attachments.length} photos or videos attached)` : ''
-      }`,
-      entityType: 'service_request',
-      entityId: serviceRequest.id,
-      entityUrl: `/customers/${customerId}?tab=requests`,
-    })
-
-    // Email the workshop, if it asked to be emailed. Isolated on purpose: the
-    // request is committed and the bell has already rung, so a misconfigured
-    // mail provider must not surface to the customer as a failed submission.
-    // sendServiceRequestAlert swallows its own errors; this is the backstop for
-    // anything it cannot anticipate.
-    try {
-      await sendServiceRequestAlert({
-        organizationId,
-        customerId,
-        customerName,
-        customerEmail: customer?.email ?? null,
-        customerPhone: customer?.phone ?? null,
-        vehicleLabel,
-        description,
-        preferredDate: serviceRequest.preferredDate,
-        preferredTime,
-        attachmentCount: attachments.length,
-      })
-    } catch (error) {
-      console.error('[createServiceRequest] alert email failed:', error)
-    }
-
-    return serviceRequest
-  })
+      return serviceRequest
+    },
+    { writes: true }
+  )
 }
 
 export async function getPortalServiceRequests() {
@@ -512,38 +521,41 @@ export async function getPortalServiceRequests() {
  * gets a notification so a person decides what to do with the record.
  */
 export async function reportVehicleSold(vehicleId: string) {
-  return withPortalAuth(async ({ customerId, organizationId }) => {
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: vehicleId, customerId, organizationId, isArchived: false },
-      select: {
-        id: true,
-        year: true,
-        make: true,
-        model: true,
-        licensePlate: true,
-        soldReportedAt: true,
-      },
-    })
-    if (!vehicle) throw new Error('Vehicle not found')
-    if (vehicle.soldReportedAt) return { reportedAt: vehicle.soldReportedAt.toISOString() }
-    const now = new Date()
-    await db.vehicle.update({ where: { id: vehicle.id }, data: { soldReportedAt: now } })
-    const customer = await db.customer.findUnique({
-      where: { id: customerId },
-      select: { name: true },
-    })
-    const label = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
-    await notify({
-      organizationId,
-      type: 'vehicle_sold',
-      title: 'Vehicle reported sold',
-      message: `${customer?.name ?? 'A customer'} says ${label} is no longer theirs.`,
-      entityType: 'vehicle',
-      entityId: vehicle.id,
-      entityUrl: `/vehicles/${vehicle.id}`,
-    })
-    return { reportedAt: now.toISOString() }
-  })
+  return withPortalAuth(
+    async ({ customerId, organizationId }) => {
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, customerId, organizationId, isArchived: false },
+        select: {
+          id: true,
+          year: true,
+          make: true,
+          model: true,
+          licensePlate: true,
+          soldReportedAt: true,
+        },
+      })
+      if (!vehicle) throw new Error('Vehicle not found')
+      if (vehicle.soldReportedAt) return { reportedAt: vehicle.soldReportedAt.toISOString() }
+      const now = new Date()
+      await db.vehicle.update({ where: { id: vehicle.id }, data: { soldReportedAt: now } })
+      const customer = await db.customer.findUnique({
+        where: { id: customerId },
+        select: { name: true },
+      })
+      const label = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
+      await notify({
+        organizationId,
+        type: 'vehicle_sold',
+        title: 'Vehicle reported sold',
+        message: `${customer?.name ?? 'A customer'} says ${label} is no longer theirs.`,
+        entityType: 'vehicle',
+        entityId: vehicle.id,
+        entityUrl: `/vehicles/${vehicle.id}`,
+      })
+      return { reportedAt: now.toISOString() }
+    },
+    { writes: true }
+  )
 }
 
 /** The workshop's week and what changes in it soon, for the customer to plan around. */

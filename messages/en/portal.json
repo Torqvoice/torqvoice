@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Not sent. Check your connection.",
       "chatOff": "Not sent. The workshop has turned messages off.",
-      "tooFast": "Not sent. That was many messages at once, wait a moment."
+      "tooFast": "Not sent. That was many messages at once, wait a moment.",
+      "restoring": "Not sent. The workshop is briefly unavailable. Try again in a few minutes."
     },
     "upload": {
       "adding": "Adding {name}",

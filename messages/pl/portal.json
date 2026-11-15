@@ -287,7 +287,8 @@
     "errors": {
       "notSent": "Nie wysłano. Sprawdź połączenie.",
       "chatOff": "Nie wysłano. Warsztat wyłączył wiadomości.",
-      "tooFast": "Nie wysłano. To dużo wiadomości naraz, odczekaj chwilę."
+      "tooFast": "Nie wysłano. To dużo wiadomości naraz, odczekaj chwilę.",
+      "restoring": "Nie wysłano. Warsztat jest chwilowo niedostępny. Spróbuj ponownie za kilka minut."
     },
     "upload": {
       "adding": "Dodawanie: {name}",

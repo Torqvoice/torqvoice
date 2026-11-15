@@ -4,7 +4,7 @@ import { z } from 'zod'
 import {
   PORTAL_MESSAGE_SELECT,
   isPortalChatOpen,
-  ownPortalUpload,
+  workshopPortalUpload,
 } from '@/features/portal/Lib/chat.server'
 import {
   PORTAL_MESSAGE_MAX_LENGTH,
@@ -18,8 +18,9 @@ import { withAuth } from '@/lib/with-auth'
 
 /**
  * The workshop's side of the customer portal's chat: reading one customer's
- * thread, answering it, and removing it. The list of threads, and marking
- * one read or unread, are in inboxActions with every other channel.
+ * thread, answering it, marking what was read, and removing it. The list of
+ * threads, and marking one unread, are in inboxActions with every other
+ * channel.
  *
  * Permissions follow the other channels: reading a conversation is what
  * reading customers grants, answering needs to update them, deleting to
@@ -39,6 +40,9 @@ export interface PortalInboxMessage {
   /** When the other side first saw it. */
   readAt: string | null
 }
+
+/** The most messages one "seen" names: more than a conversation loads in many pages. */
+const SEEN_AT_ONCE = 500
 
 const IMAGE = /\.(jpe?g|png|webp|avif|gif|heic)$/i
 const VIDEO = /\.(mp4|mov|webm|m4v)$/i
@@ -130,7 +134,7 @@ export async function sendPortalReply(input: unknown) {
       if (!data.body && data.attachments.length === 0) throw new Error('Write a message first')
 
       const attachments = data.attachments.map((url) => {
-        const stored = ownPortalUpload(organizationId, url)
+        const stored = workshopPortalUpload(organizationId, url)
         if (!stored) throw new Error('A file in this message is not an upload of this workshop')
         return stored
       })
@@ -174,6 +178,49 @@ export async function sendPortalReply(input: unknown) {
         details: { key: 'portal_send', params: { name: result.customerName } },
         metadata: { messageId: result.message.id },
       }),
+    }
+  )
+}
+
+const seenSchema = z.object({
+  customerId: z.string().min(1),
+  /** The customer's messages on screen that were not read yet. */
+  ids: z.array(z.string().min(1).max(64)).min(1).max(SEEN_AT_ONCE),
+})
+
+/**
+ * The workshop has these messages of a customer's thread on screen: each is
+ * stamped read. The conversation calls it with the unread messages it is
+ * showing, once it has loaded them.
+ *
+ * Only the messages named are marked, never the whole thread: one the
+ * customer wrote after the conversation was last read from the server, or an
+ * older one above the page that is loaded, has not been seen, stays counted
+ * in the inbox and on the sidebar, and the customer is not told "Seen".
+ *
+ * Reading a conversation is what the customers permission already grants,
+ * as for every other channel (inboxActions.markThreadRead).
+ */
+export async function markPortalMessagesSeen(input: unknown) {
+  return withAuth(
+    async ({ organizationId }): Promise<{ marked: number }> => {
+      const { customerId, ids } = seenSchema.parse(input)
+      const result = await db.portalMessage.updateMany({
+        where: {
+          id: { in: [...new Set(ids)] },
+          organizationId,
+          customerId,
+          direction: 'inbound',
+          readAt: null,
+        },
+        data: { readAt: new Date() },
+      })
+      return { marked: result.count }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.CUSTOMERS },
+      ],
     }
   )
 }
