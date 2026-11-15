@@ -61,7 +61,7 @@ const jobUrl = (job: { vehicleId: string; serviceRecordId: string }) =>
   `/vehicles/${job.vehicleId}/service/${job.serviceRecordId}`
 
 /** Every mark drawn on the map itself (the legend's icons carry no role). */
-const glyphs = (map: Locator) => map.locator('svg[role="img"] g[role="button"]')
+const glyphs = (map: Locator) => map.locator('svg[role="group"] g[role="button"]')
 /** The ones drawn grey: an earlier visit's. */
 const greyGlyphs = (map: Locator) =>
   glyphs(map).filter({ has: map.page().locator(`[stroke="${GREY}"]`) })
