@@ -148,7 +148,8 @@ export function WhatsNewProvider({
       setIsOpen(true)
       track('whats_new:panel_open', {
         source,
-        entries: entries.length,
+        // What the panel holds as it opens, older pages loaded earlier included.
+        entries: entries.length + older.length,
         unread: pending.length,
       })
       if (pending.length === 0) return
@@ -164,7 +165,7 @@ export function WhatsNewProvider({
         })
         .catch(forget)
     },
-    [pending, entries.length]
+    [pending, entries.length, older.length]
   )
 
   const value = useMemo(

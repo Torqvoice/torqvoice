@@ -16,6 +16,7 @@ import { track } from '@/lib/analytics'
 import { MARKETING_URL } from '@/lib/marketing-urls'
 import { safeRedirectPath } from '@/lib/safe-redirect'
 import { cn } from '@/lib/utils'
+import { isFreshEntry } from '../Lib/paging'
 import type { WhatsNewEntry } from '../Schema/whatsNewSchema'
 import { WhatsNewFeedback } from './WhatsNewFeedback'
 
@@ -114,16 +115,19 @@ function Entry({
             timeZone,
           })}
         </time>
-        <span
-          className={cn(
-            'rounded-full px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider',
-            entry.kind === 'new'
-              ? 'bg-primary text-primary-foreground'
-              : 'border border-primary/40 text-foreground'
-          )}
-        >
-          {entry.kind === 'new' ? t('kindNew') : t('kindImproved')}
-        </span>
+        {/* Only while it is news: three weeks on, the date says the rest. */}
+        {isFreshEntry(entry.publishedAt) && (
+          <span
+            className={cn(
+              'rounded-full px-2 py-0.5 text-[10.5px] font-semibold uppercase tracking-wider',
+              entry.kind === 'new'
+                ? 'bg-primary text-primary-foreground'
+                : 'border border-primary/40 text-foreground'
+            )}
+          >
+            {entry.kind === 'new' ? t('kindNew') : t('kindImproved')}
+          </span>
+        )}
       </div>
       <article className="mt-2.5 overflow-hidden rounded-xl border bg-card shadow-xs">
         {/* The card hairline the rest of the app uses: primary, gone by the far edge. */}

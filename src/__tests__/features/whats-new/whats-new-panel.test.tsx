@@ -7,7 +7,7 @@
  * moment it is pressed, with a box to say what went wrong.
  */
 
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { WhatsNewEntry } from '@/features/whats-new/Schema/whatsNewSchema'
@@ -102,7 +102,14 @@ function show({
   )
 }
 
+afterEach(() => {
+  vi.useRealTimers()
+})
+
+// The fixtures are dated November 2026; the New and Improved labels depend on today.
 beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date('2026-11-15T12:00:00.000Z'))
   vi.clearAllMocks()
   window.localStorage.clear()
 })
@@ -381,6 +388,29 @@ describe("What's new, counted", () => {
     })
   })
 
+  it('counts the older updates still in the panel when it is opened again', async () => {
+    loadMoreWhatsNew.mockResolvedValueOnce({
+      success: true,
+      data: {
+        entries: [{ ...ENTRIES[1], id: 'closures', title: 'Closed days and staff leave' }],
+        hasMore: false,
+      },
+    })
+    const user = userEvent.setup()
+    show({ hasMore: true })
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    await user.click(screen.getByRole('button', { name: 'Show older updates' }))
+    await screen.findByText('Closed days and staff leave')
+    await user.keyboard('{Escape}')
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+
+    expect(track).toHaveBeenLastCalledWith('whats_new:panel_open', {
+      source: 'tab',
+      entries: ENTRIES.length + 1,
+      unread: expect.any(Number),
+    })
+  })
+
   it('says which link on an entry was followed', async () => {
     const user = userEvent.setup()
     show()
@@ -392,5 +422,30 @@ describe("What's new, counted", () => {
       link: 'video',
       entry_id: ENTRIES[0].id,
     })
+  })
+})
+
+describe("the New and Improved labels in What's new", () => {
+  it('labels an entry for three weeks after it is published, and not after', async () => {
+    const user = userEvent.setup()
+    show({
+      entries: [
+        { ...ENTRIES[0], id: 'fresh', title: 'Published last week', kind: 'new' },
+        {
+          ...ENTRIES[0],
+          id: 'old',
+          title: 'Published two months ago',
+          kind: 'new',
+          publishedAt: '2026-09-15T09:00:00.000Z',
+        },
+      ],
+      unread: [],
+    })
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+
+    const fresh = screen.getByText('Published last week').closest('li') as HTMLElement
+    const old = screen.getByText('Published two months ago').closest('li') as HTMLElement
+    expect(within(fresh).getByText('New')).toBeInTheDocument()
+    expect(within(old).queryByText('New')).not.toBeInTheDocument()
   })
 })
