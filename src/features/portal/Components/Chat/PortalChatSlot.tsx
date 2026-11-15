@@ -1,3 +1,4 @@
+import { getLocale } from 'next-intl/server'
 import { getCustomerSession } from '@/lib/customer-session'
 import { getPortalThreadEvents, portalEventsSince } from '../../Lib/chat.server'
 import {
@@ -6,6 +7,7 @@ import {
   type PortalChatMessage,
 } from '../../Lib/chatTypes'
 import { portalClock } from '../../Lib/workshop.server'
+import { portalChatStamps } from './chatThread'
 import { PortalChatPanel } from './PortalChatPanel'
 
 /**
@@ -36,10 +38,18 @@ export async function PortalChatSlot({
   messages: PortalChatMessage[]
   variant?: 'panel' | 'page'
 }) {
-  const [clock, events] = await Promise.all([
+  const [clock, events, locale] = await Promise.all([
     portalClock(organizationId),
     threadEvents(organizationId, orgParam, messages),
+    getLocale(),
   ])
+  // Printed here, once, and shown as they are in the browser: the two do not
+  // print a time alike in every language (see `PortalChatStamps`).
+  const stamps = portalChatStamps(
+    [...messages.map((message) => message.createdAt), ...(events ?? []).map((event) => event.at)],
+    locale,
+    clock
+  )
   return (
     <PortalChatPanel
       orgParam={orgParam}
@@ -49,6 +59,7 @@ export async function PortalChatSlot({
       initialMessages={messages}
       initialEvents={events}
       clock={clock}
+      stamps={stamps}
       variant={variant}
     />
   )

@@ -66,7 +66,7 @@ export async function SignIn({
   return (
     <div className="grid flex-1 min-[1100px]:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] min-[1100px]:grid-rows-[1fr_auto]">
       <header className="flex min-w-0 flex-col min-[1100px]:col-start-1 min-[1100px]:row-start-1">
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-4 sm:px-8 min-[1100px]:min-h-24 min-[1100px]:px-12">
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 px-5 py-4 sm:max-[1100px]:px-8 min-[1100px]:min-h-24 min-[1100px]:px-12">
           <div className="flex min-w-0 items-center gap-3.5">
             <PortalWorkshopMark name={workshop.name} logoUrl={workshop.logoUrl} size={44} />
             <h1 className="p-display min-w-0 text-[26px] leading-[1.05] tracking-[0.04em] sm:text-[32px]">
@@ -80,7 +80,7 @@ export async function SignIn({
         </div>
 
         <div
-          className={`@container relative mx-5 mb-5 flex flex-col overflow-hidden border border-[color:var(--p-line-strong)] bg-[var(--p-photo)] sm:mx-8 sm:mb-8 sm:min-h-[320px] sm:justify-end min-[1100px]:mx-12 min-[1100px]:flex-1 ${
+          className={`@container relative mx-5 mb-5 flex flex-col overflow-hidden border border-[color:var(--p-line-strong)] bg-[var(--p-photo)] sm:max-[1100px]:mx-8 sm:mb-8 sm:min-h-[320px] sm:justify-end min-[1100px]:mx-12 min-[1100px]:flex-1 ${
             coverUrl ? '' : 'min-h-[150px] justify-end'
           }`}
         >
@@ -124,7 +124,7 @@ export async function SignIn({
         </div>
       </header>
 
-      <main className="flex items-center border-t bg-[var(--p-surface)] px-5 py-10 sm:px-8 sm:py-14 min-[1100px]:col-start-2 min-[1100px]:row-span-2 min-[1100px]:row-start-1 min-[1100px]:border-l min-[1100px]:border-t-0 min-[1100px]:px-[clamp(40px,5vw,72px)]">
+      <main className="flex items-center border-t bg-[var(--p-surface)] px-5 py-10 sm:max-[1100px]:px-8 sm:py-14 min-[1100px]:col-start-2 min-[1100px]:row-span-2 min-[1100px]:row-start-1 min-[1100px]:border-l min-[1100px]:border-t-0 min-[1100px]:px-[clamp(40px,5vw,72px)]">
         {/* On this panel a field is cut into the ground behind it, as on the board. */}
         <div className="mx-auto flex w-full max-w-[520px] flex-col [--p-surface:var(--p-bg)]">
           <p className={`${TAG} self-start bg-[var(--p-accent)] text-[color:var(--p-on-accent)]`}>

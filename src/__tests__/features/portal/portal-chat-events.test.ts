@@ -91,6 +91,7 @@ describe('the events of a thread', () => {
         id: 'work_started:j1',
         kind: 'work_started',
         at: '2026-11-19T07:40:00.000Z',
+        dayOnly: false,
         vehicle: 'Volvo V60',
         title: 'Brake overhaul',
         amount: null,
@@ -102,6 +103,7 @@ describe('the events of a thread', () => {
         id: 'quote:q1',
         kind: 'quote',
         at: '2026-11-19T08:30:00.000Z',
+        dayOnly: false,
         vehicle: 'Volvo V60',
         title: 'Front brake pads and discs',
         amount: 'kr 6480.00',
@@ -113,6 +115,7 @@ describe('the events of a thread', () => {
         id: 'update:u1',
         kind: 'update',
         at: '2026-11-19T10:00:00.000Z',
+        dayOnly: false,
         vehicle: 'Volvo V60',
         title: 'Pads were down to 2 mm. See the photos.',
         amount: null,
@@ -124,6 +127,7 @@ describe('the events of a thread', () => {
         id: 'invoice:i1',
         kind: 'invoice',
         at: '2026-11-20T15:00:00.000Z',
+        dayOnly: false,
         vehicle: 'Volvo V60',
         title: 'INV-2041',
         amount: 'kr 6480.00',
@@ -218,6 +222,31 @@ describe('the events of a thread', () => {
     expect(await invoiceEvent({ invoiceDueDate: due, payments: [{ amount: 6480 }] })).toMatchObject(
       { overdue: false }
     )
+  })
+
+  it('stands where the customer would look for it: when it was sent, else on its own date', async () => {
+    // Sent on the 18th: that moment, whatever day the sheet was frozen.
+    expect(
+      await invoiceEvent({
+        sentAt: new Date('2026-11-18T13:05:00Z'),
+        invoiceDate: new Date('2026-11-10T11:00:00Z'),
+        issuedAt: new Date('2026-11-12T03:47:00Z'),
+      })
+    ).toMatchObject({ at: '2026-11-18T13:05:00.000Z', dayOnly: false })
+    // Never sent: its own date, which is a day and not a time of day. When
+    // the sheet was frozen (a payment at 4:47 in the morning) is not shown.
+    expect(
+      await invoiceEvent({
+        sentAt: null,
+        invoiceDate: new Date('2026-11-10T11:00:00Z'),
+        issuedAt: new Date('2026-11-12T03:47:00Z'),
+      })
+    ).toMatchObject({ at: '2026-11-10T11:00:00.000Z', dayOnly: true })
+    // No date of its own: when it was issued is all there is.
+    expect(await invoiceEvent({ sentAt: null, invoiceDate: null })).toMatchObject({
+      at: '2026-11-10T15:00:00.000Z',
+      dayOnly: false,
+    })
   })
 
   it('goes back a month unless asked for more, and never past half a year', async () => {

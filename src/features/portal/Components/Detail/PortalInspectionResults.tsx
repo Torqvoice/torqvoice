@@ -166,8 +166,12 @@ export async function PortalInspectionResults({
             {defects.map((item) => (
               <li
                 key={item.id}
+                // The card is the grade's own tint with its own ink, light in
+                // every theme. Quiet words inside it take that ink, a little
+                // lighter: the theme's own quiet colour is made for the
+                // theme's ground and vanished on the tint in the dark theme.
                 className={cn(
-                  'rounded-[var(--p-radius-field)] border p-3.5',
+                  'rounded-[var(--p-radius-field)] border p-3.5 [&_.p-muted]:text-current [&_.p-muted]:opacity-80',
                   CONDITION_TOKENS[item.condition as Condition]?.soft
                 )}
               >

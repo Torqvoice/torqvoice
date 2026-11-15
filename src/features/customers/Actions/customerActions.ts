@@ -14,6 +14,7 @@ import { serviceDateOrderBy } from '@/lib/date-sort'
 import { clearedToNull } from '@/lib/clearable'
 import { Prisma } from '@/generated/prisma/client'
 import { NAME_FOLD, foldName, normalizeName } from '@/lib/name-similarity'
+import { requestTitle } from '@/features/portal/Lib/requestText'
 
 /**
  * A design a customer is being pointed at has to be this workshop's and an
@@ -484,10 +485,7 @@ export async function createWorkOrderFromRequest(requestId: string) {
       }
       const record = result.data
 
-      const truncatedTitle =
-        request.description.length > 60
-          ? request.description.slice(0, 57) + '...'
-          : request.description
+      const truncatedTitle = requestTitle(request.description)
 
       await db.serviceRecord.update({
         where: { id: record.id },

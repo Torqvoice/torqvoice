@@ -276,7 +276,16 @@ export async function getPortalThreadEvents(
         where: {
           ...mine,
           status: 'completed',
-          AND: [{ OR: [{ issuedAt: { gte: since } }, { sentAt: { gte: since } }] }],
+          AND: [
+            { OR: [{ issuedAt: { not: null } }, { sentAt: { not: null } }] },
+            {
+              OR: [
+                { sentAt: { gte: since } },
+                { invoiceDate: { gte: since } },
+                { issuedAt: { gte: since } },
+              ],
+            },
+          ],
         },
         select: {
           id: true,
@@ -285,6 +294,7 @@ export async function getPortalThreadEvents(
           totalAmount: true,
           issuedAt: true,
           sentAt: true,
+          invoiceDate: true,
           invoiceDueDate: true,
           manuallyPaid: true,
           payments: { select: { amount: true } },
@@ -306,6 +316,7 @@ export async function getPortalThreadEvents(
         id: `work_started:${job.id}`,
         kind: 'work_started',
         at: at.toISOString(),
+        dayOnly: false,
         vehicle: carName(job.vehicle),
         title: job.title || null,
         amount: null,
@@ -320,6 +331,7 @@ export async function getPortalThreadEvents(
         id: `update:${report.id}`,
         kind: 'update',
         at: report.sentAt.toISOString(),
+        dayOnly: false,
         vehicle: carName(report.serviceRecord?.vehicle),
         title: shorten(report.message) ?? shorten(report.title),
         amount: null,
@@ -335,6 +347,7 @@ export async function getPortalThreadEvents(
         id: `quote:${quote.id}`,
         kind: 'quote',
         at: at.toISOString(),
+        dayOnly: false,
         vehicle: carName(quote.vehicle),
         title: quote.title || quote.quoteNumber || null,
         amount: money(quote.totalAmount),
@@ -345,7 +358,7 @@ export async function getPortalThreadEvents(
     }
     const today = zonedDayKey(now, timeZone)
     for (const invoice of invoices) {
-      const at = invoice.issuedAt ?? invoice.sentAt
+      const { at, dayOnly } = invoiceEventTime(invoice)
       if (!at || at < since) continue
       // Overdue is owed money past its due day, and that day is the workshop's.
       const owed = portalPayment(invoice).balance > 0
@@ -355,6 +368,7 @@ export async function getPortalThreadEvents(
         id: `invoice:${invoice.id}`,
         kind: 'invoice',
         at: at.toISOString(),
+        dayOnly,
         vehicle: carName(invoice.vehicle),
         title: invoice.invoiceNumber || invoice.title || null,
         amount: money(invoice.totalAmount),
@@ -368,6 +382,28 @@ export async function getPortalThreadEvents(
     console.error('[portal chat] events:', error)
     return []
   }
+}
+
+/**
+ * When an invoice stands in the thread: the moment the customer would
+ * recognise.
+ *
+ * That is when it was sent to them, a real moment with a time of day. An
+ * invoice that was never sent (shared by link only, or paid at the counter)
+ * stands on its own date, the one printed on it: a calendar day, so the chat
+ * shows the day and no clock time. `issuedAt` alone is not it: it is when
+ * the sheet was frozen, which can be a payment weeks after the work, and its
+ * time of day means nothing to a customer. It is only the last resort, for
+ * an invoice with no date of its own.
+ */
+export function invoiceEventTime(invoice: {
+  sentAt: Date | null
+  invoiceDate?: Date | null
+  issuedAt: Date | null
+}): { at: Date | null; dayOnly: boolean } {
+  if (invoice.sentAt) return { at: invoice.sentAt, dayOnly: false }
+  if (invoice.invoiceDate) return { at: invoice.invoiceDate, dayOnly: true }
+  return { at: invoice.issuedAt, dayOnly: false }
 }
 
 /**

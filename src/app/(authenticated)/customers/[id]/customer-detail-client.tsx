@@ -76,6 +76,7 @@ import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
+import { splitRequestText } from '@/features/portal/Lib/requestText'
 
 interface ServiceRequestItem {
   id: string
@@ -1168,6 +1169,8 @@ export function ServiceRequestCard({
 
   const canSms = smsEnabled && !!customerPhone
   const vehicleDisplay = `${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}`
+  // A request from the portal starts with the quick choice the customer picked.
+  const words = splitRequestText(request.description)
 
   return (
     <>
@@ -1182,8 +1185,15 @@ export function ServiceRequestCard({
                   {config.label}
                 </Badge>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                {request.description}
+              {words.topic && (
+                <p data-request-topic className="mt-1 text-sm font-medium">
+                  {words.topic}
+                </p>
+              )}
+              <p
+                className={`text-sm text-muted-foreground whitespace-pre-wrap ${words.topic ? 'mt-0.5' : 'mt-1'}`}
+              >
+                {words.body}
               </p>
               <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
                 <span>{t('submitted', { date: formatDate(new Date(request.createdAt)) })}</span>

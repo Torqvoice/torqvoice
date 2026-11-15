@@ -293,7 +293,9 @@ export function PortalFacts({
           key={fact.label}
           className="flex items-baseline justify-between gap-4 border-b py-2.5 last:border-b-0"
         >
-          <dt className="p-muted text-sm">{fact.label}</dt>
+          {/* The label keeps its words whole and never gives way; the value
+              takes what is left and wraps there. */}
+          <dt className="p-muted max-w-[55%] shrink-0 text-sm">{fact.label}</dt>
           <dd
             className={join(
               'min-w-0 break-words text-right text-[15px]',

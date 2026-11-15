@@ -73,6 +73,7 @@ vi.mock('@/features/portal/Actions/getPortalUnread', () => ({
 }))
 
 import { PortalChatPanel } from '@/features/portal/Components/Chat/PortalChatPanel'
+import type { PortalChatStamps } from '@/features/portal/Components/Chat/chatThread'
 
 const message = (over: Partial<PortalChatMessage>): PortalChatMessage => ({
   id: 'm1',
@@ -90,6 +91,7 @@ const event = (over: Partial<PortalChatEvent>): PortalChatEvent => ({
   id: 'quote:q1',
   kind: 'quote',
   at: '2026-11-14T08:30:00Z',
+  dayOnly: false,
   vehicle: 'Volvo V60',
   title: 'Front brake pads and discs',
   amount: 'kr 6,480.00',
@@ -101,7 +103,12 @@ const event = (over: Partial<PortalChatEvent>): PortalChatEvent => ({
 
 function panel(
   messages: PortalChatMessage[] = [],
-  options: { callHref?: string | null; enabled?: boolean; events?: PortalChatEvent[] } = {}
+  options: {
+    callHref?: string | null
+    enabled?: boolean
+    events?: PortalChatEvent[]
+    stamps?: PortalChatStamps
+  } = {}
 ) {
   server.messages = messages
   server.events = options.events ?? []
@@ -117,6 +124,7 @@ function panel(
         initialMessages={messages}
         initialEvents={options.events}
         clock={{ timeZone: 'Europe/Oslo', timeFormat: '24h' }}
+        stamps={options.stamps}
       />
     </QueryClientProvider>
   )
@@ -520,5 +528,46 @@ describe('writing', () => {
         'This workshop has turned messages off. You can still read what was written.'
       )
     ).toBeInTheDocument()
+  })
+})
+
+describe('when things happened', () => {
+  it('prints the day and no clock time for an invoice that only has a date', () => {
+    panel([message({})], {
+      events: [
+        event({
+          id: 'invoice:i1',
+          kind: 'invoice',
+          // The invoice's own date: midnight on 11 November in Oslo, not a moment anyone saw.
+          at: '2026-11-10T23:00:00Z',
+          dayOnly: true,
+          title: 'INV-2041',
+          amount: 'kr 2,732.63',
+          href: '/portal/fjordside/invoices/i1',
+          answerable: false,
+        }),
+      ],
+    })
+    const line = thread().getByRole('link', { name: /Invoice INV-2041/ })
+    expect(within(line).getByText('Nov 11')).toBeInTheDocument()
+    expect(line).not.toHaveTextContent('00:00')
+  })
+
+  it('shows the times the server printed as they are, so the page reads the same in the browser', () => {
+    // The server's copy of a language can print a time differently from the
+    // browser's ("9:05 a. m." with another kind of space). What arrived with
+    // the page is not printed again.
+    panel([message({})], {
+      stamps: {
+        '2026-11-14T08:05:00Z': {
+          time: 'as the server printed it',
+          day: 'server day',
+          shortDay: 'server short day',
+          dayWithYear: 'server day and year',
+        },
+      },
+    })
+    expect(thread().getByText('Jonas · as the server printed it')).toBeInTheDocument()
+    expect(thread().queryByText(/09:05/)).not.toBeInTheDocument()
   })
 })

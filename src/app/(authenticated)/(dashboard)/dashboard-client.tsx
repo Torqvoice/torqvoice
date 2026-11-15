@@ -102,6 +102,7 @@ import { CalendarEventsCard } from '@/features/calendar/Components/CalendarEvent
 import { isEventDone } from '@/features/calendar/Components/calendar-utils'
 import type { CalendarEvent } from '@/features/calendar/Actions/calendarActions'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
+import { splitRequestText } from '@/features/portal/Lib/requestText'
 
 interface ServiceItem {
   id: string
@@ -283,6 +284,25 @@ const observationSeverityColors: Record<string, string> = {
   urgent: 'bg-red-500/10 text-red-500 border-red-500/20',
   needs_work: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
   monitor: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+}
+
+/**
+ * What a customer wrote in a request from the portal. The quick choice they
+ * picked ("Something is wrong") is stored as the first line: it gets a line
+ * of its own, so it does not run into their words.
+ */
+function RequestWords({ text }: { text: string }) {
+  const { topic, body } = splitRequestText(text)
+  return (
+    <div className="mt-1.5 text-xs">
+      {topic && (
+        <p data-request-topic className="truncate font-medium">
+          {topic}
+        </p>
+      )}
+      <p className="line-clamp-2 text-muted-foreground">{body}</p>
+    </div>
+  )
 }
 
 export function DashboardClient({
@@ -1284,9 +1304,7 @@ export function DashboardClient({
                             {tCustomerRequests('statusNew')}
                           </Badge>
                         </div>
-                        <p className="mt-1.5 line-clamp-2 text-xs text-muted-foreground">
-                          {req.description}
-                        </p>
+                        <RequestWords text={req.description} />
                         <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
                           <span>
                             {tCustomerRequests('submitted', {

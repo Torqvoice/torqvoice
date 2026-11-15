@@ -399,7 +399,11 @@
     line-height: 1.5;
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
-    overflow-wrap: anywhere;
+    /* A word too long for its line (an address, a part number) breaks rather
+       than run out of its box. `break-word`, not `anywhere`: with `anywhere`
+       a box may be sized as if every letter could stand alone, so a heading
+       or a label beside something wide was squeezed to one letter a line. */
+    overflow-wrap: break-word;
   }
   /* The same colours and type for content a library draws outside the root. */
   .portal-scope {
