@@ -1,7 +1,7 @@
 'use client'
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { loadMoreWhatsNew } from '../Actions/loadMoreWhatsNew'
 import { markWhatsNewSeen } from '../Actions/markWhatsNewSeen'
@@ -83,28 +83,55 @@ export function WhatsNewProvider({
   const [marked, setMarked] = useState<ReadonlySet<string>>(new Set())
 
   // Older entries the reader has scrolled to. Thrown away when the first
-  // page changes, because offsets into the old list no longer mean anything.
-  const firstPageKey = entries.map((entry) => entry.id).join(',')
+  // page changes, because offsets into the old list no longer mean anything,
+  // and when the language does, because they were written in the old one.
+  const locale = useLocale()
+  const firstPageKey = `${locale}:${entries.map((entry) => entry.id).join(',')}`
   const [older, setOlder] = useState<WhatsNewEntry[]>([])
   const [hasMore, setHasMore] = useState(initialHasMore)
   const [loadingMore, setLoadingMore] = useState(false)
+  // A page that could not be fetched. Scrolling stops asking until the
+  // button is pressed, so a server that is down is not asked in a loop.
+  const [loadFailed, setLoadFailed] = useState(false)
+  // Which first page a request belongs to. An answer that comes back after
+  // the list was replaced is for a list that is no longer on screen.
+  const generation = useRef(0)
+  const inFlight = useRef(false)
   useEffect(() => {
+    generation.current += 1
+    inFlight.current = false
     setOlder([])
     setHasMore(initialHasMore)
+    setLoadingMore(false)
+    setLoadFailed(false)
   }, [firstPageKey, initialHasMore])
 
   const loadMore = useCallback(async () => {
-    if (loadingMore || !hasMore) return
+    if (inFlight.current || !hasMore) return
+    const asked = generation.current
+    inFlight.current = true
     setLoadingMore(true)
-    const result = await loadMoreWhatsNew(entries.length + older.length)
+    let page: { entries: WhatsNewEntry[]; hasMore: boolean } | null = null
+    try {
+      const result = await loadMoreWhatsNew(entries.length + older.length)
+      if (result.success && result.data) page = result.data
+    } catch {
+      // The network, or a deploy in between. Handled as a failed page below.
+    }
+    if (asked !== generation.current) return
+    inFlight.current = false
     setLoadingMore(false)
-    if (!result.success || !result.data) return
+    if (!page) {
+      setLoadFailed(true)
+      return
+    }
+    setLoadFailed(false)
     const known = new Set([...entries, ...older].map((entry) => entry.id))
-    const fresh = result.data.entries.filter((entry) => !known.has(entry.id))
+    const fresh = page.entries.filter((entry) => !known.has(entry.id))
     setOlder((current) => [...current, ...fresh])
     // Nothing new came back: stop asking rather than ask forever.
-    setHasMore(result.data.hasMore && fresh.length > 0)
-  }, [loadingMore, hasMore, entries, older])
+    setHasMore(page.hasMore && fresh.length > 0)
+  }, [hasMore, entries, older])
 
   const pending = useMemo(
     () => unreadIds.filter((id) => !acknowledged.has(id)),
@@ -159,6 +186,7 @@ export function WhatsNewProvider({
           entries={older.length > 0 ? [...entries, ...older] : entries}
           hasMore={hasMore}
           loadingMore={loadingMore}
+          autoLoad={!loadFailed}
           onLoadMore={loadMore}
           markedIds={marked}
           timeZone={timeZone}

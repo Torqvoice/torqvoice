@@ -19,6 +19,8 @@ export const whatsNewEntrySchema = z.object({
   ctaHref: z.string().max(300).nullable().catch(null),
   /** A docs path on torqvoice.com, without a locale. */
   docsHref: z.string().max(300).nullable().catch(null),
+  /** A YouTube address. Absent from a site that does not send it yet. */
+  videoUrl: z.string().max(300).nullable().catch(null),
   /** The first release that has the feature. Older installs never see the entry. */
   minVersion: z.string().max(32).nullable().catch(null),
   audience: z.enum(['all', 'cloud', 'self-hosted']).catch('all'),

@@ -51,6 +51,7 @@ const ENTRIES: WhatsNewEntry[] = [
     ctaLabel: 'Open the calendar',
     ctaHref: '/calendar',
     docsHref: '/docs/features/calendar',
+    videoUrl: 'https://youtu.be/abc123',
     minVersion: null,
     audience: 'all',
     subject: null,
@@ -65,6 +66,7 @@ const ENTRIES: WhatsNewEntry[] = [
     ctaLabel: null,
     ctaHref: null,
     docsHref: null,
+    videoUrl: null,
     minVersion: null,
     audience: 'all',
     subject: null,
@@ -169,12 +171,25 @@ describe("What's new", () => {
     show({ feedback: 'identified' })
     await user.click(screen.getByRole('button', { name: /What's new/ }))
     const first = screen.getByText('Appointments on the calendar').closest('article') as HTMLElement
-    await user.click(within(first).getByRole('button', { name: 'Yes, this is useful' }))
+    await user.click(within(first).getByRole('button', { name: 'No, not what I expected' }))
     expect(
       await within(first).findByText(
         'Sent to the Torqvoice team with your email address, so we can reply.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('sends a thumb up and asks for nothing more', async () => {
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: /What's new/ }))
+    const first = screen.getByText('Appointments on the calendar').closest('article') as HTMLElement
+    const up = within(first).getByRole('button', { name: 'Yes, this is useful' })
+    await user.click(up)
+
+    await waitFor(() => expect(up).toHaveAttribute('aria-pressed', 'true'))
+    expect(sendWhatsNewFeedback).toHaveBeenCalledWith({ entryId: 'appointments', vote: 'up' })
+    expect(within(first).queryByRole('textbox')).not.toBeInTheDocument()
   })
 
   it('takes the thumb back and says so when the vote could not be sent', async () => {
@@ -304,5 +319,47 @@ describe("older highlights in the What's new panel", () => {
     expect(await screen.findByText('Closed days and staff leave')).toBeInTheDocument()
     expect(screen.getByText('Appointments on the calendar')).toBeInTheDocument()
     expect(screen.queryByRole('button', { name: 'Show older updates' })).not.toBeInTheDocument()
+  })
+
+  it('keeps the button after a page fails, and a second press brings the page', async () => {
+    loadMoreWhatsNew.mockRejectedValueOnce(new Error('offline'))
+    loadMoreWhatsNew.mockResolvedValueOnce({
+      success: true,
+      data: {
+        entries: [{ ...ENTRIES[1], id: 'closures', title: 'Closed days and staff leave' }],
+        hasMore: false,
+      },
+    })
+    const user = userEvent.setup()
+    show({ hasMore: true })
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    await user.click(screen.getByRole('button', { name: 'Show older updates' }))
+
+    const again = await screen.findByRole('button', { name: 'Show older updates' })
+    await waitFor(() => expect(again).toBeEnabled())
+    await user.click(again)
+    expect(await screen.findByText('Closed days and staff leave')).toBeInTheDocument()
+  })
+})
+
+describe("a video on a What's new entry", () => {
+  it('links to YouTube from the entry that has one, and only that one', async () => {
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    const links = screen.getAllByRole('link', { name: 'Watch the video' })
+    expect(links).toHaveLength(1)
+    expect(links[0]).toHaveAttribute('href', 'https://youtu.be/abc123')
+    expect(links[0]).toHaveAttribute('target', '_blank')
+  })
+
+  it('shows no video link for an address that is not YouTube', async () => {
+    const user = userEvent.setup()
+    show({
+      entries: [{ ...ENTRIES[0], videoUrl: 'https://youtube.com.evil.example/watch' }],
+      unread: [],
+    })
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    expect(screen.queryByRole('link', { name: 'Watch the video' })).not.toBeInTheDocument()
   })
 })

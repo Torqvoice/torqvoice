@@ -34,9 +34,10 @@ function rememberVote(entryId: string, vote: Vote) {
 /**
  * "Was this useful?" under a highlight.
  *
- * The thumb is the whole answer and is sent the moment it is pressed. The
- * comment box that opens under it is an invitation, not a second step: most
- * people will not type anything, and their vote must not depend on it.
+ * The thumb is the whole answer and is sent the moment it is pressed. A thumb
+ * down opens a comment box under it, as an invitation, not a second step:
+ * most people will not type anything, and their vote must not depend on it.
+ * A thumb up opens nothing.
  *
  * A bare thumb names nobody, anywhere. Only a comment from the cloud carries
  * the sender's email, and the line under the box says so before Send.
@@ -68,7 +69,8 @@ export function WhatsNewFeedback({
     setBusy(true)
     const previous = vote
     setVote(next)
-    setWriting(true)
+    // A thumb up is the whole answer. Only a thumb down asks what went wrong.
+    setWriting(next === 'down')
     setCommentSent(false)
     const result = await sendWhatsNewFeedback({ entryId, vote: next })
     setBusy(false)
@@ -139,10 +141,10 @@ export function WhatsNewFeedback({
           <ThumbsDown className="h-3.5 w-3.5" />
         </button>
       </div>
-      {writing && vote && (
+      {writing && vote === 'down' && (
         <div className="flex flex-col gap-2 pb-1.5 pt-1">
           <label htmlFor={commentId} className="text-xs font-medium">
-            {vote === 'down' ? t('askDown') : t('askUp')}
+            {t('askDown')}
           </label>
           <Textarea
             id={commentId}

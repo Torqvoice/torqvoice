@@ -27,6 +27,32 @@ function docsUrl(href: string | null): string | null {
   return href?.startsWith('/docs/') ? `${MARKETING_URL}${href}` : null
 }
 
+const YOUTUBE_HOSTS = ['youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be']
+
+/** An https address on YouTube, checked here too: the feed is another server's word. */
+function youtubeUrl(href: string | null): string | null {
+  if (!href) return null
+  try {
+    const url = new URL(href)
+    return url.protocol === 'https:' && YOUTUBE_HOSTS.includes(url.hostname) ? url.href : null
+  } catch {
+    return null
+  }
+}
+
+/** YouTube's own mark, drawn from its path: the icon set has dropped brand icons. */
+function YouTubeMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={className}>
+      <path d="M6 7h12v10H6z" fill="#fff" />
+      <path
+        fill="#f00"
+        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+      />
+    </svg>
+  )
+}
+
 const BODY_STYLES = cn(
   'text-sm leading-relaxed text-foreground/80',
   '[&_p+p]:mt-2 [&_p]:m-0',
@@ -55,6 +81,7 @@ function Entry({
   const format = useFormatter()
   const cta = appPath(entry.ctaHref)
   const guide = docsUrl(entry.docsHref)
+  const video = youtubeUrl(entry.videoUrl)
 
   return (
     <li className="group relative pb-7 pl-7 last:pb-0">
@@ -115,7 +142,7 @@ function Entry({
           )}
           {/* Sanitized on the server by Lib/sanitizeBody before it reaches here. */}
           <div className={BODY_STYLES} dangerouslySetInnerHTML={{ __html: entry.body }} />
-          {(cta || guide) && (
+          {(cta || guide || video) && (
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
               {cta && (
                 <Button
@@ -129,6 +156,17 @@ function Entry({
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </Button>
+              )}
+              {video && (
+                <a
+                  href={video}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 rounded text-sm font-medium text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  <YouTubeMark className="h-4 w-4 shrink-0" />
+                  {t('video')}
+                </a>
               )}
               {guide && (
                 <a
@@ -166,6 +204,7 @@ export function WhatsNewPanel({
   entries,
   hasMore,
   loadingMore,
+  autoLoad = true,
   onLoadMore,
   markedIds,
   timeZone,
@@ -179,6 +218,8 @@ export function WhatsNewPanel({
   /** Whether older entries exist beyond the ones given. */
   hasMore: boolean
   loadingMore: boolean
+  /** False after a page failed: only the button asks again, not scrolling. */
+  autoLoad?: boolean
   onLoadMore: () => void
   markedIds: ReadonlySet<string>
   /** The workshop's time zone, for the day an entry was published. */
@@ -196,7 +237,8 @@ export function WhatsNewPanel({
   const sentinel = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const target = sentinel.current
-    if (!open || !hasMore || !target || typeof IntersectionObserver === 'undefined') return
+    if (!open || !hasMore || !autoLoad || !target || typeof IntersectionObserver === 'undefined')
+      return
     const observer = new IntersectionObserver(
       (hits) => {
         if (hits.some((hit) => hit.isIntersecting)) onLoadMore()
@@ -205,7 +247,7 @@ export function WhatsNewPanel({
     )
     observer.observe(target)
     return () => observer.disconnect()
-  }, [open, hasMore, onLoadMore])
+  }, [open, hasMore, autoLoad, onLoadMore])
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>

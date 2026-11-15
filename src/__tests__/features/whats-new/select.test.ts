@@ -21,6 +21,7 @@ function entry(overrides: Partial<WhatsNewEntry> = {}): WhatsNewEntry {
     ctaLabel: null,
     ctaHref: null,
     docsHref: null,
+    videoUrl: null,
     minVersion: null,
     audience: 'all',
     subject: null,
