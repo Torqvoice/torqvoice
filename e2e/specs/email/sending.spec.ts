@@ -177,7 +177,7 @@ test.describe('a message to a customer', () => {
 })
 
 test.describe('a customer asking for a sign-in link', () => {
-  /** The portal switch saves as it is turned, so there is no Save to press. */
+  /** The portal page is one form: the switch is stored when Save is pressed. */
   async function setPortal(page: Page, open: boolean): Promise<void> {
     await page.goto('/settings/customer-portal')
     await settle(page)
@@ -188,6 +188,8 @@ test.describe('a customer asking for a sign-in link', () => {
       await toggle.click()
       await expect(toggle).toHaveAttribute('aria-checked', String(open), { timeout: 3_000 })
     }).toPass({ timeout: 30_000 })
+    await page.getByRole('button', { name: 'Save changes' }).click()
+    await expect(page.getByText('Everything is saved')).toBeVisible({ timeout: 30_000 })
   }
 
   let wasOpen = false

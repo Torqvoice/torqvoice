@@ -18,11 +18,15 @@ export async function countUnreadMessages(organizationId: string): Promise<numbe
   // and the pill would say 2 forever. WhatsApp and email threads are listed
   // under the bare number or address, so every one of those messages counts.
   const listed = { customerId: { not: null } }
-  const [sms, telegram, whatsapp, email] = await Promise.all([
+  const [sms, telegram, whatsapp, email, portal] = await Promise.all([
     db.smsMessage.count({ where: { organizationId, ...unread, ...listed } }),
     db.telegramMessage.count({ where: { organizationId, ...unread, ...listed } }),
     db.whatsappMessage.count({ where: { organizationId, ...unread } }),
     db.emailMessage.count({ where: { organizationId, ...unread } }),
+    // What customers wrote in the portal. Always a customer's, so always a
+    // thread that can be opened; counted after the chat is turned off too,
+    // since what was written then still waits in the inbox.
+    db.portalMessage.count({ where: { organizationId, ...unread } }),
   ])
-  return sms + telegram + whatsapp + email
+  return sms + telegram + whatsapp + email + portal
 }

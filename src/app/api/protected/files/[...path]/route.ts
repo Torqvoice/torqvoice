@@ -57,6 +57,8 @@ export async function GET(
     'tire-hotel',
     'email',
     'fix-drafts',
+    // What customers send from the portal; staff read it here.
+    'portal-uploads',
   ]
   if (!allowedCategories.includes(category)) {
     return NextResponse.json({ error: 'Invalid category' }, { status: 400 })

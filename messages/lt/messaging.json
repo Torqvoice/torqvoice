@@ -51,5 +51,28 @@
       "noMatches": "Pagal paiešką klientų nerasta.",
       "noRecipients": "Dar nėra klientų su el. pašto adresu."
     }
+  },
+  "portal": {
+    "badge": "Portalas",
+    "empty": "{name} portale dar nieko neparašė.",
+    "placeholder": "Rašyti {name} portale",
+    "send": "Siųsti žinutę",
+    "sendFailed": "Nepavyko išsiųsti žinutės",
+    "sendHint": "Enter išsiunčia, Shift+Enter pradeda naują eilutę. {name} ją pamatys kitą kartą atidaręs portalą.",
+    "loadOlder": "Įkelti senesnes žinutes",
+    "loadFailed": "Nepavyko įkelti pokalbio.",
+    "tryAgain": "Bandyti dar kartą",
+    "addPhoto": "Pridėti nuotrauką",
+    "removePhoto": "Pašalinti {name}",
+    "uploadFailed": "Nepavyko pridėti nuotraukos. Nuotraukos gali būti iki {size} MB.",
+    "tooManyPhotos": "Žinutėje telpa iki {count} nuotraukų.",
+    "photoFrom": "Nuotrauka nuo {name}",
+    "videoFrom": "Vaizdo įrašas nuo {name}",
+    "openFile": "Atidaryti failą",
+    "you": "Jūs",
+    "seen": "Perskaityta",
+    "off": "Žinutės kliento portale išjungtos, todėl šį pokalbį galima skaityti, bet ne atsakyti.",
+    "offSettings": "Kliento portalo nustatymai",
+    "deleteDescription": "Pašalina visą pokalbį su {name}, ir kliento pusėje: jis dings iš jo portalo."
   }
 }

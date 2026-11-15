@@ -14,7 +14,7 @@ import type { InboxFocus } from '@/features/messaging/Components/UnifiedInbox'
 import { PageHeader } from '@/components/page-header'
 import { listInspectionReminderCampaigns } from '@/features/inspection-reminders/Actions/inspectionReminderActions'
 
-const CHANNELS: MessagingChannel[] = ['sms', 'whatsapp', 'telegram', 'email']
+const CHANNELS: MessagingChannel[] = ['sms', 'whatsapp', 'telegram', 'email', 'portal']
 
 type SearchParams = Record<string, string | string[] | undefined>
 
@@ -42,7 +42,13 @@ async function resolveFocus(sp: SearchParams, organizationId: string): Promise<I
       select: { id: true, name: true, phone: true, email: true },
     })
     if (!customer) return null
-    const contact = channel === 'email' ? customer.email : customer.phone
+    // A portal thread is listed under the customer's email, or their number.
+    const contact =
+      channel === 'email'
+        ? customer.email
+        : channel === 'portal'
+          ? customer.email || customer.phone
+          : customer.phone
     return { channel, customerId: customer.id, name: customer.name, contact: contact ?? '' }
   }
   // A WhatsApp number or an email address that matched no customer: the

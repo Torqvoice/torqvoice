@@ -16,6 +16,7 @@ import { taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import { warrantyFromUntyped } from '@/lib/warranty'
 import { atZonedTime } from '@/lib/timezone'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
+import { upgradeLegacySettings } from '@/lib/backup/legacy-settings'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { generateWebhookSecret } from '@/features/webhooks/Lib/sign'
 import {
@@ -543,7 +544,11 @@ export async function restoreBackup(
         // kind the file is; a file from before it did counts as "Data only"
         // when it has a marker.
         if (Array.isArray(data.settings)) {
-          const settingRows = data.settings as { key: string; value: unknown }[]
+          // Keys an older version wrote are renamed first, as the migrations
+          // that renamed them did for the live rows: those do not run again.
+          const settingRows = upgradeLegacySettings(
+            data.settings as { key: string; value: unknown }[]
+          )
           const marked = settingRows.some((s) => isRedacted(s.value))
           const dataOnly = backup.contents === 'data' || (backup.contents === undefined && marked)
           const current =
@@ -590,6 +595,7 @@ export async function restoreBackup(
           SmsMessage: () => tx.smsMessage.deleteMany({ where: { organizationId } }),
           WhatsappMessage: () => tx.whatsappMessage.deleteMany({ where: { organizationId } }),
           TelegramMessage: () => tx.telegramMessage.deleteMany({ where: { organizationId } }),
+          PortalMessage: () => tx.portalMessage.deleteMany({ where: { organizationId } }),
           // Attachment rows go with their message by cascade.
           EmailMessage: () => tx.emailMessage.deleteMany({ where: { organizationId } }),
           ScheduledMessage: () => tx.scheduledMessage.deleteMany({ where: { organizationId } }),
@@ -1096,7 +1102,9 @@ export async function restoreBackup(
               'service requests',
               (rows) => tx.serviceRequest.createMany({ data: rows as never }),
               v.serviceRequests,
-              { organizationId }
+              { organizationId },
+              // The customer's photos and video point at this workshop.
+              { fields: ['attachments'], organizationId }
             )
             // One row, not a list: the vehicle's inspection deadline and where it came from.
             await restoreRows(
@@ -1748,6 +1756,42 @@ export async function restoreBackup(
             ),
             {},
             { fields: ['url'], organizationId }
+          )
+        }
+
+        // The chat in the customer portal. A message belongs to a customer, so
+        // one whose customer is not in this workshop after the restore has no
+        // thread to sit in and is left out. Its author is kept only when that
+        // person exists on this install; its photos point at this workshop.
+        const portalMessages = data.portalMessages as Record<string, unknown>[] | undefined
+        if (portalMessages?.length) {
+          const customerIds = new Set(
+            (await tx.customer.findMany({ where: { organizationId }, select: { id: true } })).map(
+              (c) => c.id
+            )
+          )
+          const authorIds = [
+            ...new Set(
+              portalMessages
+                .map((m) => m.authorUserId)
+                .filter((id): id is string => typeof id === 'string' && id.length > 0)
+            ),
+          ]
+          const authors = new Set(
+            authorIds.length
+              ? (
+                  await tx.user.findMany({ where: { id: { in: authorIds } }, select: { id: true } })
+                ).map((u) => u.id)
+              : []
+          )
+          await restoreRows(
+            'portal messages',
+            (rows) => tx.portalMessage.createMany({ data: rows as never }),
+            portalMessages
+              .filter((m) => typeof m.customerId === 'string' && customerIds.has(m.customerId))
+              .map((m) => ({ ...m, authorUserId: keptReference(m.authorUserId, authors) })),
+            { organizationId },
+            { fields: ['attachments'], organizationId }
           )
         }
 

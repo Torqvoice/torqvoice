@@ -26,7 +26,7 @@ vi.mock('@/lib/db', () => ({
     inspectionAttachment: { count: vi.fn(), create: vi.fn() },
     inspectionQuoteRequest: { findFirst: vi.fn(), create: vi.fn(), delete: vi.fn() },
     serviceRecord: { findFirst: vi.fn(), update: vi.fn() },
-    quote: { findFirst: vi.fn(), update: vi.fn() },
+    quote: { findFirst: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
     auditLog: { count: vi.fn() },
   },
 }))
@@ -197,6 +197,7 @@ describe('customer forms during a restore', () => {
     expect(res.status).toBe(409)
     expect(await res.json()).toEqual({ success: false, error: RESTORE_IN_PROGRESS_MESSAGE })
     expect(db.quote.update).not.toHaveBeenCalled()
+    expect(db.quote.updateMany).not.toHaveBeenCalled()
   })
 
   it('a view stamp is skipped for a frozen workshop and written for another', async () => {

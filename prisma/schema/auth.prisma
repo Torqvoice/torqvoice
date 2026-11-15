@@ -37,6 +37,7 @@ model User {
   dashboardLayout     Json?
 
   sessions                 Session[]
+  portalMessages           PortalMessage[]
   devices                  UserDevice[]
   accounts                 Account[]
   pushDevices              PushDevice[]

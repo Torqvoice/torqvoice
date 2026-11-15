@@ -977,6 +977,11 @@
     "paymentReceivedDescription": "Envoyé lorsqu'un paiement est enregistré pour une facture.",
     "saveSmsTemplates": "Enregistrer les modèles SMS",
     "smsTemplateSaved": "Paramètres des modèles SMS enregistrés",
+    "layoutTitle": "Mise en page de la facture",
+    "layoutDescription": "Personnalisez l'ordre et la visibilité des sections dans vos factures et devis.",
+    "layoutSaved": "Mise en page enregistrée",
+    "layoutDocInvoice": "Facture",
+    "layoutDocQuote": "Devis",
     "smsDefaults": {
       "invoiceReady": "La facture de {company_name} est prête. Consultez-la ici : {share_link}\nCordialement {company_name} - {current_user}",
       "quoteReady": "Votre devis est prêt pour examen. Consultez-le ici : {share_link}",
@@ -997,11 +1002,6 @@
       "rose": "Rose",
       "indigo": "Indigo"
     },
-    "layoutTitle": "Mise en page de la facture",
-    "layoutDescription": "Personnalisez l'ordre et la visibilité des sections dans vos factures et devis.",
-    "layoutSaved": "Mise en page enregistrée",
-    "layoutDocInvoice": "Facture",
-    "layoutDocQuote": "Devis",
     "goToLayout": "Disposition et sections",
     "openDesigner": "Ouvrir le concepteur",
     "designerIntro": "Choisissez un point de départ, puis ouvrez le concepteur pour tout modifier.",
@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Portail client",
-    "description": "Permettez a vos clients de se connecter et de consulter leurs véhicules, factures, devis et inspections. Les clients peuvent également soumettre des demandes de service.",
+    "description": "Vos clients se connectent pour suivre leur intervention, répondre aux devis, payer les factures, prendre rendez-vous et vous écrire.",
     "enablePortal": "Activer le portail client",
-    "enablePortalHint": "Les clients avec une adresse e-mail peuvent se connecter via un lien magique",
-    "enabled": "Portail client active",
-    "disabled": "Portail client desactive",
-    "failedUpdate": "Échec de la mise a jour du paramètre",
-    "customSlug": "Slug personnalise du portail",
-    "save": "Enregistrer",
-    "slugSaved": "Slug du portail enregistre",
-    "slugRemoved": "Slug du portail supprime",
-    "failedUpdateSlug": "Échec de la mise a jour du slug",
-    "slugHint": "Lettres minuscules, chiffres, tirets et underscores. 3-48 caractères. Laissez vide pour utiliser l'URL par défaut.",
-    "portalUrl": "URL du portail",
-    "urlCopied": "URL du portail copiee",
-    "shareHint": "Partagez ce lien avec vos clients pour qu'ils puissent se connecter a leur portail.",
+    "enablePortalHint": "Les clients se connectent avec un lien envoyé par e-mail ou sur leur téléphone. Aucun mot de passe à retenir.",
+    "failedUpdate": "Impossible d'enregistrer les paramètres",
+    "customSlug": "Adresse du portail",
+    "slugHint": "Lettres minuscules, chiffres, tirets et tirets bas, de 3 à 48 caractères. Laissez vide pour utiliser l'adresse par défaut.",
+    "portalUrl": "Lien vers votre portail",
+    "urlCopied": "Lien copié",
+    "shareHint": "Partagez ce lien avec vos clients pour qu'ils puissent se connecter.",
     "serviceRequestAlertsHint": "Les demandes de service du portail apparaissent toujours dans votre cloche de notifications. Vous pouvez aussi les recevoir par e-mail.",
-    "serviceRequestAlertsLink": "Paramètres d'alerte →",
+    "serviceRequestAlertsLink": "Paramètres des alertes",
     "descriptionLabel": "À propos de votre garage",
     "descriptionPlaceholder": "Présentez votre garage à vos clients : vos services, votre équipe, ce qui vous rend unique.",
-    "descriptionHint": "Affiché aux visiteurs en haut de la page d'accueil de votre portail.",
-    "hoursLabel": "Horaires d'ouverture",
-    "hoursPlaceholder": "Lun-Ven : 8h00-17h00\nSam : 9h00-13h00\nDim : Fermé",
-    "hoursHint": "Texte libre. Utilisez des sauts de ligne pour lister chaque jour séparément.",
-    "contentSaved": "Contenu du portail enregistré",
-    "background": {
-      "title": "Arrière-plan du portail",
-      "description": "Choisissez l'apparence de la page d'accueil du portail client.",
-      "typeNone": "Aucun",
-      "typeTemplate": "Modèle",
-      "typeImage": "Image personnalisée",
-      "chooseTemplate": "Choisissez un modèle",
-      "uploadLabel": "Image d'arrière-plan",
-      "upload": "Téléverser une image",
-      "replace": "Remplacer l'image",
-      "remove": "Supprimer",
-      "uploadHint": "JPG, PNG ou WebP. Max 8 Mo. Recommandé au moins 1600×900.",
-      "uploading": "Téléversement de l'arrière-plan…",
-      "uploaded": "Arrière-plan mis à jour",
-      "uploadFailed": "Échec du téléversement de l'arrière-plan",
-      "templateNames": {
-        "default": "Subtil",
-        "sunrise": "Lever de soleil",
-        "ocean": "Océan",
-        "forest": "Forêt",
-        "slate": "Ardoise",
-        "sand": "Sable"
+    "descriptionHint": "Affiché sur la page de connexion de votre portail.",
+    "copyUrl": "Copier le lien"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "mon-garage",
+    "slugUnsaved": "Cette adresse fonctionnera une fois enregistrée.",
+    "slugInvalid": "Utilisez de 3 à 48 lettres minuscules, chiffres, tirets ou tirets bas, en commençant et en finissant par une lettre ou un chiffre.",
+    "slugReserved": "Ce mot est réservé. Choisissez une autre adresse.",
+    "slugTaken": "Un autre garage utilise déjà cette adresse. Choisissez-en une autre.",
+    "hours": {
+      "title": "Horaires d'ouverture",
+      "fromCalendar": "Le portail affiche les horaires d'ouverture et les jours de fermeture du calendrier de votre garage.",
+      "link": "Paramètres des horaires",
+      "typedNote": "Votre page de connexion affiche encore les horaires saisis ici auparavant, car aucun horaire d'ouverture n'est défini dans le calendrier. Définissez-les là-bas et le portail les affichera à la place.",
+      "typedLabel": "Affiché aujourd'hui sur la page de connexion"
+    },
+    "look": {
+      "title": "Apparence de votre portail client",
+      "description": "Un seul choix définit la page de connexion et toutes les pages que vos clients voient ensuite. Les clients ne peuvent pas le modifier."
+    },
+    "theme": {
+      "legend": "Thème",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Clair et apaisé"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Tableau des stands, sombre"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Éditorial et sobre"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Votre couleur, en grand"
       }
     },
-    "copyUrl": "Copier l'URL du portail"
+    "colour": {
+      "title": "Votre couleur",
+      "description": "Utilisée pour les boutons et les accents dans tous les thèmes.",
+      "swatches": "Couleurs suggérées",
+      "orange": "Orange",
+      "blue": "Bleu",
+      "green": "Vert",
+      "red": "Rouge",
+      "black": "Noir",
+      "hexLabel": "Couleur en code hexadécimal",
+      "invalid": "Ce n'est pas une couleur. Saisissez-la en code hexadécimal, par exemple #1D4ED8.",
+      "usingTheme": "Couleur fournie avec {theme} utilisée, {hex}.",
+      "themeColour": "La couleur fournie avec {theme} est {hex}.",
+      "useTheme": "Utiliser la couleur du thème",
+      "sample": "Prendre rendez-vous",
+      "inkLight": "Le texte sur cette couleur s'affiche en blanc pour rester lisible.",
+      "inkDark": "Le texte sur cette couleur s'affiche en noir pour rester lisible.",
+      "faint": "Cette couleur ressort peu sur le fond de {theme}. Les liens et les accents risquent d'être difficiles à voir."
+    },
+    "cover": {
+      "title": "Photo de couverture et logo",
+      "description": "Affichés sur la page de connexion. Votre logo provient des paramètres de l'entreprise.",
+      "companyLink": "Paramètres de l'entreprise",
+      "hint": "PNG, JPEG ou WebP, jusqu'à 8 Mo.",
+      "none": "Aucune photo de couverture",
+      "alt": "La photo de couverture de la page de connexion",
+      "upload": "Téléverser une photo",
+      "replace": "Remplacer la photo",
+      "remove": "Retirer la photo",
+      "uploading": "Téléversement en cours",
+      "uploadFailed": "Impossible de téléverser la photo"
+    },
+    "features": {
+      "title": "Ce que voient les clients",
+      "description": "Les parties du portail que vous pouvez désactiver.",
+      "messages": "Messages dans le portail",
+      "messagesHint": "Les clients vous écrivent depuis le portail. Leurs messages arrivent dans votre boîte Messages.",
+      "tires": "Afficher les pneus stockés",
+      "tiresHint": "Les clients voient les pneus que vous stockez pour eux, avec la profondeur de gomme."
+    },
+    "bar": {
+      "label": "Enregistrer les paramètres du portail client",
+      "unsaved": "Vous avez des modifications non enregistrées",
+      "saved": "Tout est enregistré",
+      "discard": "Annuler les modifications",
+      "save": "Enregistrer les modifications",
+      "open": "Ouvrir le portail comme un client",
+      "openOff": "Activez le portail et enregistrez pour l'ouvrir."
+    },
+    "savedToast": "Paramètres du portail client enregistrés"
   },
   "email": {
     "title": "Fournisseur de messagerie",
@@ -1989,13 +2042,13 @@
     "noMembers": "Aucun membre trouvé",
     "addRecipient": "Ajouter un destinataire...",
     "searchMembers": "Rechercher des membres...",
-    "sendNow": "Envoyer maintenant",
-    "sentNow": "Rapport envoyé avec succès",
     "newSchedule": "Nouveau planning",
     "editSchedule": "Modifier le planning",
     "edit": "Modifier",
     "cancel": "Annuler",
     "sent": "envoyés",
+    "sendNow": "Envoyer maintenant",
+    "sentNow": "Rapport envoyé avec succès",
     "emptyTitle": "Aucun rapport planifié",
     "emptyDescription": "Créez un planning pour générer et envoyer automatiquement des rapports à votre équipe.",
     "sectionLabels": {
@@ -2847,9 +2900,9 @@
       "uploading": "Import en cours…",
       "width": "Largeur du logo",
       "hint": "Indépendant du logo de l'entreprise. Il est rogné et préparé pour l'e-mail lors de l'import. PNG, JPEG ou WebP jusqu'à 4 Mo.",
-      "position": "Position",
       "tooLarge": "L'image doit faire moins de 4 Mo",
-      "uploadFailed": "Impossible d'importer le logo"
+      "uploadFailed": "Impossible d'importer le logo",
+      "position": "Position"
     },
     "image": {
       "empty": "Aucune image importée. Le bloc n'imprime rien tant qu'il n'y en a pas.",

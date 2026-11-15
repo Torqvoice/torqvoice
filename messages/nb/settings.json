@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Kundeportal",
-    "description": "La kundene dine logge inn og se kjøretøyene, fakturaene, tilbudene og inspeksjonene sine. Kunder kan også sende inn serviceforespørsler.",
-    "enablePortal": "Aktiver kundeportal",
-    "enablePortalHint": "Kunder med en e-postadresse kan logge inn via magisk lenke",
-    "enabled": "Kundeportal aktivert",
-    "disabled": "Kundeportal deaktivert",
-    "failedUpdate": "Kunne ikke oppdatere innstilling",
-    "customSlug": "Egendefinert portal-slug",
-    "save": "Lagre",
-    "slugSaved": "Portal-slug lagret",
-    "slugRemoved": "Portal-slug fjernet",
-    "failedUpdateSlug": "Kunne ikke oppdatere slug",
-    "slugHint": "Små bokstaver, tall, bindestreker og understreker. 3-48 tegn. La stå tom for å bruke standard-URL.",
-    "portalUrl": "Portal-URL",
-    "urlCopied": "Portal-URL kopiert",
-    "shareHint": "Del denne lenken med kundene dine slik at de kan logge inn på portalen sin.",
+    "description": "Kundene logger inn for å følge jobben sin, svare på tilbud, betale fakturaer, bestille time og skrive til deg.",
+    "enablePortal": "Slå på kundeportalen",
+    "enablePortalHint": "Kundene logger inn med en lenke sendt til e-posten eller telefonen sin. Det er ikke noe passord å huske.",
+    "failedUpdate": "Kunne ikke lagre innstillingene",
+    "customSlug": "Portaladresse",
+    "slugHint": "Små bokstaver, tall, bindestreker og understreker, 3 til 48 tegn. La feltet stå tomt for å bruke standardadressen.",
+    "portalUrl": "Lenke til portalen din",
+    "urlCopied": "Lenken er kopiert",
+    "shareHint": "Del denne lenken med kundene dine så de kan logge inn.",
     "serviceRequestAlertsHint": "Serviceforespørsler fra portalen dukker alltid opp i varselbjella. Du kan også få dem på e-post.",
-    "serviceRequestAlertsLink": "Varselinnstillinger →",
+    "serviceRequestAlertsLink": "Varselinnstillinger",
     "descriptionLabel": "Om verkstedet",
     "descriptionPlaceholder": "Fortell kundene litt om verkstedet, tjenestene dere tilbyr og hva som gjør dere unike.",
-    "descriptionHint": "Vises til besøkende øverst på portalsiden.",
-    "hoursLabel": "Åpningstider",
-    "hoursPlaceholder": "Man-fre: 08:00-17:00\nLør: 09:00-13:00\nSøn: Stengt",
-    "hoursHint": "Fritekst. Bruk linjeskift for å liste opp dagene hver for seg.",
-    "contentSaved": "Portalinnhold lagret",
-    "background": {
-      "title": "Portalbakgrunn",
-      "description": "Velg hvordan landingssiden for kundeportalen ser ut.",
-      "typeNone": "Ingen",
-      "typeTemplate": "Mal",
-      "typeImage": "Eget bilde",
-      "chooseTemplate": "Velg en mal",
-      "uploadLabel": "Bakgrunnsbilde",
-      "upload": "Last opp bilde",
-      "replace": "Bytt bilde",
-      "remove": "Fjern",
-      "uploadHint": "JPG, PNG eller WebP. Maks 8 MB. Anbefalt minst 1600x900.",
-      "uploading": "Laster opp bakgrunn...",
-      "uploaded": "Bakgrunn oppdatert",
-      "uploadFailed": "Kunne ikke laste opp bakgrunn",
-      "templateNames": {
-        "default": "Diskret",
-        "sunrise": "Soloppgang",
-        "ocean": "Hav",
-        "forest": "Skog",
-        "slate": "Skifer",
-        "sand": "Sand"
+    "descriptionHint": "Vises på innloggingssiden til portalen din.",
+    "copyUrl": "Kopier lenken"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "mitt-verksted",
+    "slugUnsaved": "Adressen virker når du har lagret.",
+    "slugInvalid": "Bruk 3 til 48 små bokstaver, tall, bindestreker eller understreker. Adressen må begynne og slutte med en bokstav eller et tall.",
+    "slugReserved": "Det ordet er reservert. Velg en annen adresse.",
+    "slugTaken": "Et annet verksted bruker allerede den adressen. Velg en annen.",
+    "hours": {
+      "title": "Åpningstider",
+      "fromCalendar": "Portalen viser åpningstidene og de stengte dagene fra verkstedkalenderen din.",
+      "link": "Innstillinger for åpningstider",
+      "typedNote": "Innloggingssiden viser fortsatt åpningstidene som ble skrevet inn her tidligere, fordi det ikke er satt åpningstider i kalenderen ennå. Sett dem der, så viser portalen dem i stedet.",
+      "typedLabel": "Vises på innloggingssiden i dag"
+    },
+    "look": {
+      "title": "Utseendet på kundeportalen",
+      "description": "Ett valg bestemmer innloggingssiden og alle sidene kundene ser etterpå. Kundene kan ikke endre det."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Lyst og rolig"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Mørk tavle som i depotet"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Avisaktig og stille"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Din farge, stort"
       }
     },
-    "copyUrl": "Kopier portal-URL"
+    "colour": {
+      "title": "Din farge",
+      "description": "Brukes på knapper og fremhevinger i alle temaer.",
+      "swatches": "Foreslåtte farger",
+      "orange": "Oransje",
+      "blue": "Blå",
+      "green": "Grønn",
+      "red": "Rød",
+      "black": "Svart",
+      "hexLabel": "Farge som hex-kode",
+      "invalid": "Det er ikke en farge. Skriv den som en hex-kode, for eksempel #1D4ED8.",
+      "usingTheme": "Bruker fargen som følger med {theme}, {hex}.",
+      "themeColour": "Fargen som følger med {theme}, er {hex}.",
+      "useTheme": "Bruk temaets farge",
+      "sample": "Bestill time",
+      "inkLight": "Tekst på denne fargen vises i hvitt, så den er lett å lese.",
+      "inkDark": "Tekst på denne fargen vises i svart, så den er lett å lese.",
+      "faint": "Denne fargen er svak mot bakgrunnen i {theme}. Lenker og fremhevinger kan bli vanskelige å se."
+    },
+    "cover": {
+      "title": "Forsidebilde og logo",
+      "description": "Vises på innloggingssiden. Logoen hentes fra Firmainnstillinger.",
+      "companyLink": "Firmainnstillinger",
+      "hint": "PNG, JPEG eller WebP, opptil 8 MB.",
+      "none": "Ingen forsidebilde",
+      "alt": "Forsidebildet på innloggingssiden",
+      "upload": "Last opp et bilde",
+      "replace": "Bytt bilde",
+      "remove": "Fjern bildet",
+      "uploading": "Laster opp",
+      "uploadFailed": "Kunne ikke laste opp bildet"
+    },
+    "features": {
+      "title": "Hva kundene får",
+      "description": "Delene av portalen du kan slå av.",
+      "messages": "Meldinger i portalen",
+      "messagesHint": "Kundene skriver til deg fra portalen. Meldingene havner i innboksen under Meldinger.",
+      "tires": "Vis lagrede dekk",
+      "tiresHint": "Kundene ser dekkene du oppbevarer for dem, med mønsterdybde."
+    },
+    "bar": {
+      "label": "Lagre innstillingene for kundeportalen",
+      "unsaved": "Du har endringer som ikke er lagret",
+      "saved": "Alt er lagret",
+      "discard": "Forkast endringer",
+      "save": "Lagre endringer",
+      "open": "Åpne portalen som kunde",
+      "openOff": "Slå på portalen og lagre for å åpne den."
+    },
+    "savedToast": "Innstillingene for kundeportalen er lagret"
   },
   "email": {
     "title": "E-postleverandør",
@@ -1989,13 +2042,13 @@
     "noMembers": "Ingen teammedlemmer funnet",
     "addRecipient": "Legg til mottaker...",
     "searchMembers": "Søk etter medlemmer...",
-    "sendNow": "Send nå",
-    "sentNow": "Rapport sendt",
     "newSchedule": "Ny tidsplan",
     "editSchedule": "Rediger tidsplan",
     "edit": "Rediger",
     "cancel": "Avbryt",
     "sent": "sendt",
+    "sendNow": "Send nå",
+    "sentNow": "Rapport sendt",
     "emptyTitle": "Ingen planlagte rapporter",
     "emptyDescription": "Opprett en tidsplan for å automatisk generere og sende rapporter til teamet ditt.",
     "sectionLabels": {
@@ -2847,9 +2900,9 @@
       "uploading": "Laster opp…",
       "width": "Logobredde",
       "hint": "Uavhengig av firmalogoen. Den beskjæres og klargjøres for e-post når den lastes opp. PNG, JPEG eller WebP på inntil 4 MB.",
-      "position": "Plassering",
       "tooLarge": "Bildet må være under 4 MB",
-      "uploadFailed": "Kunne ikke laste opp logoen"
+      "uploadFailed": "Kunne ikke laste opp logoen",
+      "position": "Plassering"
     },
     "image": {
       "empty": "Ingen bilde lastet opp. Blokken skriver ikke ut noe før det finnes ett.",

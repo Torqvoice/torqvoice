@@ -7,6 +7,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getOrgSmsProvider } from '@/lib/sms'
 import { getOrgTelegramBotToken } from '@/lib/telegram'
 import { isWhatsappConfigured } from '@/lib/whatsapp'
+import { isPortalChatOpen } from '@/features/portal/Lib/chat.server'
 import { type EmailChannelState, emailChannelState } from '../Lib/emailChannel.server'
 import { mergeChannelPages } from '../Lib/mergeChannelPages'
 
@@ -21,9 +22,14 @@ import { mergeChannelPages } from '../Lib/mergeChannelPages'
  * Threads stay per channel rather than per customer: the same person written
  * to on SMS and on WhatsApp has two histories, on two transports, and pretending
  * otherwise would put replies on the wrong one.
+ *
+ * The customer portal's chat is the fifth channel, "portal": one thread per
+ * customer, written by them in the portal and answered here. It needs no
+ * provider, so it is a channel whenever the portal is on and the workshop
+ * has not turned its messages off; what was written stays listed after that.
  */
 
-export type MessagingChannel = 'sms' | 'whatsapp' | 'telegram' | 'email'
+export type MessagingChannel = 'sms' | 'whatsapp' | 'telegram' | 'email' | 'portal'
 export type { EmailChannelState }
 
 export interface InboxThread {
@@ -130,18 +136,22 @@ export async function getInboxThreads(query: InboxQuery = {}) {
       const pattern = term ? `%${term}%` : null
 
       const features = await getFeatures(organizationId)
-      const [smsProvider, whatsappReady, telegramToken, emailState] = await Promise.all([
-        features.sms ? getOrgSmsProvider(organizationId).catch(() => null) : null,
-        features.whatsapp ? isWhatsappConfigured(organizationId).catch(() => false) : false,
-        features.telegram ? getOrgTelegramBotToken(organizationId).catch(() => null) : null,
-        emailChannelState(organizationId).catch((): EmailChannelState => 'off'),
-      ])
+      const [smsProvider, whatsappReady, telegramToken, emailState, portalOpen] = await Promise.all(
+        [
+          features.sms ? getOrgSmsProvider(organizationId).catch(() => null) : null,
+          features.whatsapp ? isWhatsappConfigured(organizationId).catch(() => false) : false,
+          features.telegram ? getOrgTelegramBotToken(organizationId).catch(() => null) : null,
+          emailChannelState(organizationId).catch((): EmailChannelState => 'off'),
+          isPortalChatOpen(organizationId).catch(() => false),
+        ]
+      )
 
       const channels: MessagingChannel[] = []
       if (smsProvider) channels.push('sms')
       if (whatsappReady) channels.push('whatsapp')
       if (telegramToken) channels.push('telegram')
       if (emailState === 'active') channels.push('email')
+      if (portalOpen) channels.push('portal')
 
       // DISTINCT ON gives the newest message per thread in one pass, which the
       // (organizationId, customerId, createdAt DESC) indexes already order for.
@@ -156,10 +166,12 @@ export async function getInboxThreads(query: InboxQuery = {}) {
         telegramRows,
         whatsappRows,
         emailRows,
+        portalRows,
         smsUnread,
         telegramUnread,
         whatsappUnread,
         emailUnread,
+        portalUnread,
       ] = await Promise.all([
         db.$queryRaw<ThreadRow[]>`
           SELECT * FROM (
@@ -268,6 +280,32 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           ORDER BY t."createdAt" DESC
           LIMIT ${limit}
         `,
+        // The portal's chat: always a customer's, one thread each. A message
+        // that is only photos has no text, so it is listed as what it is.
+        db.$queryRaw<ThreadRow[]>`
+          SELECT * FROM (
+            SELECT DISTINCT ON (m."customerId")
+              m."customerId" AS identity,
+              m."customerId" AS "customerId",
+              c."name" AS name,
+              COALESCE(NULLIF(c."email", ''), c."phone") AS contact,
+              m."body" AS body,
+              CASE WHEN cardinality(m."attachments") > 0 THEN 'photo' END AS "mediaType",
+              m."direction" AS direction,
+              m."createdAt" AS "createdAt"
+            FROM "public"."portal_messages" m
+            JOIN "public"."customers" c ON c."id" = m."customerId"
+            WHERE m."organizationId" = ${organizationId}
+            ORDER BY m."customerId", m."createdAt" DESC
+          ) t
+          WHERE (${cursor}::timestamptz IS NULL OR t."createdAt" < ${cursor}::timestamptz)
+            AND (
+              ${pattern}::text IS NULL
+              OR t.name ILIKE ${pattern} OR t.contact ILIKE ${pattern} OR t.body ILIKE ${pattern}
+            )
+          ORDER BY t."createdAt" DESC
+          LIMIT ${limit}
+        `,
         db.$queryRaw<UnreadRow[]>`
           SELECT "customerId" AS identity, COUNT(*)::int AS unread
           FROM "public"."sms_messages"
@@ -296,6 +334,13 @@ export async function getInboxThreads(query: InboxQuery = {}) {
             AND "direction" = 'inbound' AND "readAt" IS NULL
           GROUP BY COALESCE("customerId", "address")
         `,
+        db.$queryRaw<UnreadRow[]>`
+          SELECT "customerId" AS identity, COUNT(*)::int AS unread
+          FROM "public"."portal_messages"
+          WHERE "organizationId" = ${organizationId}
+            AND "direction" = 'inbound' AND "readAt" IS NULL
+          GROUP BY "customerId"
+        `,
       ])
 
       const { threads, nextCursor } = mergeChannelPages(
@@ -304,6 +349,7 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           telegramRows.map((row) => toThread('telegram', row, byIdentity(telegramUnread))),
           whatsappRows.map((row) => toThread('whatsapp', row, byIdentity(whatsappUnread))),
           emailRows.map((row) => toThread('email', row, byIdentity(emailUnread))),
+          portalRows.map((row) => toThread('portal', row, byIdentity(portalUnread))),
         ],
         limit
       )
@@ -319,7 +365,8 @@ export async function getInboxThreads(query: InboxQuery = {}) {
 }
 
 /**
- * Marks everything inbound in one thread as read.
+ * Marks everything inbound in one thread as read. Not the portal's chat,
+ * which marks the messages on screen by id.
  *
  * Called when the thread is opened. Reading a conversation is what the
  * customers permission already grants, so no extra permission is asked for.
@@ -358,6 +405,13 @@ export async function markThreadRead(thread: {
       }
 
       if (!thread.customerId) return { marked: 0 }
+
+      // The portal's chat is not marked from here. Its messages are read by
+      // id, the ones the open conversation actually shows
+      // (portalThreadActions.markPortalMessagesSeen), because the customer
+      // reads "Seen" under what they wrote: a message that arrived after the
+      // thread was listed must not be stamped before anyone saw it.
+      if (thread.channel === 'portal') return { marked: 0 }
 
       const result =
         thread.channel === 'sms'
@@ -422,6 +476,16 @@ export async function markThreadUnread(thread: {
       }
 
       if (!thread.customerId) return { marked: 0 }
+
+      if (thread.channel === 'portal') {
+        const latest = await db.portalMessage.findFirst({
+          where: { ...inbound, customerId: thread.customerId },
+          ...newest,
+        })
+        if (!latest) return { marked: 0 }
+        await db.portalMessage.update({ where: { id: latest.id }, data: { readAt: null } })
+        return { marked: 1 }
+      }
 
       if (thread.channel === 'sms') {
         const latest = await db.smsMessage.findFirst({

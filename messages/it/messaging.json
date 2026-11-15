@@ -51,5 +51,28 @@
       "noMatches": "Nessun cliente corrisponde alla ricerca.",
       "noRecipients": "Ancora nessun cliente con indirizzo email."
     }
+  },
+  "portal": {
+    "badge": "Portale",
+    "empty": "{name} non ha ancora scritto nel portale.",
+    "placeholder": "Scrivi a {name} nel portale",
+    "send": "Invia messaggio",
+    "sendFailed": "Impossibile inviare il messaggio",
+    "sendHint": "Invio manda, Maiusc+Invio va a capo. {name} lo vedrà la prossima volta che apre il portale.",
+    "loadOlder": "Carica messaggi precedenti",
+    "loadFailed": "Impossibile caricare la conversazione.",
+    "tryAgain": "Riprova",
+    "addPhoto": "Aggiungi una foto",
+    "removePhoto": "Rimuovi {name}",
+    "uploadFailed": "Impossibile aggiungere la foto. Vanno bene foto fino a {size} MB.",
+    "tooManyPhotos": "Un messaggio può contenere fino a {count} foto.",
+    "photoFrom": "Foto di {name}",
+    "videoFrom": "Video di {name}",
+    "openFile": "Apri file",
+    "you": "Tu",
+    "seen": "Visto",
+    "off": "I messaggi nel portale clienti sono disattivati: questa conversazione si può leggere, ma non è possibile rispondere.",
+    "offSettings": "Impostazioni portale clienti",
+    "deleteDescription": "Elimina l'intera conversazione con {name}, anche per il cliente: sparisce dal suo portale."
   }
 }

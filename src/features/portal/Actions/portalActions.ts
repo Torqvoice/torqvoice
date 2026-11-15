@@ -2,20 +2,17 @@
 
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { getTranslations } from 'next-intl/server'
-import { zonedDayKey, zonedParts } from '@/lib/timezone'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { zonedDayKey } from '@/lib/timezone'
 import type { DayHours } from '@/features/workshop-calendar/Lib/calendar'
 import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
 import { addDays, dayState } from '@/features/workshop-calendar/Lib/calendar'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
-import type { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
-import { getCustomerSession, type CustomerSessionData } from '@/lib/customer-session'
+import { readPortalOpeningHours } from '@/features/portal/Lib/openingHours.server'
+import { withPortalAuth } from '@/features/portal/Lib/portalAuth'
+import { SENT_TO_CUSTOMER } from '@/features/portal/Lib/quoteVisibility'
 import { notify } from '@/lib/notify'
 import { sendServiceRequestAlert } from '@/features/portal/Lib/sendServiceRequestAlert'
-import { withAuth, type ActionResult } from '@/lib/with-auth'
-import { revalidatePath } from 'next/cache'
-import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { headers } from 'next/headers'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
@@ -27,170 +24,9 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
-
-type PortalResult<T = unknown> = {
-  success: boolean
-  data?: T
-  error?: string
-}
-
-async function withPortalAuth<T>(
-  action: (session: CustomerSessionData) => Promise<T>
-): Promise<PortalResult<T>> {
-  try {
-    const session = await getCustomerSession()
-
-    if (!session) {
-      return { success: false, error: 'Not authenticated' }
-    }
-
-    const data = await action(session)
-    return { success: true, data }
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'An unexpected error occurred'
-    console.error('[portalAction]', message)
-    return { success: false, error: message }
-  }
-}
-
-// ─── Dashboard ────────────────────────────────────────────────────────────
-
-/**
- * A quote the customer may see: one that reached them, whatever became of it
- * since. A draft is the workshop's own working copy, with prices it may still
- * change, so it never shows. Status alone is not enough either: a draft can be
- * turned straight into a work order and become "converted" without ever being
- * sent. So a quote shows when a send or a share link was recorded, or when its
- * status is one only a sent quote reaches, which also covers quotes sent before
- * sends were recorded.
- */
-const SENT_TO_CUSTOMER = {
-  status: { not: 'draft' },
-  OR: [
-    { sentAt: { not: null } },
-    { sharedAt: { not: null } },
-    { status: { in: ['sent', 'accepted', 'rejected', 'changes_requested'] } },
-  ],
-} satisfies Prisma.QuoteWhereInput
-
-export async function getPortalDashboard() {
-  return withPortalAuth(async ({ customerId, organizationId }) => {
-    const [customer, vehicles, recentInvoices, activeJobs, recentQuotes, pendingRequests] =
-      await Promise.all([
-        db.customer.findUnique({
-          where: { id: customerId },
-          select: { name: true, email: true },
-        }),
-        db.vehicle.findMany({
-          where: { customerId, organizationId },
-          select: { id: true },
-        }),
-        // Recent INVOICES: only completed records — anything before that
-        // is still a work-order in progress and not really an invoice yet.
-        db.serviceRecord.findMany({
-          where: {
-            organizationId,
-            OR: [{ vehicle: { customerId } }, { customerId }],
-            status: 'completed',
-          },
-          select: {
-            id: true,
-            title: true,
-            invoiceNumber: true,
-            status: true,
-            totalAmount: true,
-            serviceDate: true,
-            startDateTime: true,
-            publicToken: true,
-            vehicle: { select: { make: true, model: true } },
-          },
-          orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
-          take: 5,
-        }),
-        // Active jobs: work currently being done on the customer's vehicles.
-        db.serviceRecord.findMany({
-          where: {
-            organizationId,
-            OR: [{ vehicle: { customerId } }, { customerId }],
-            status: { in: ['pending', 'in-progress', 'waiting-parts'] },
-          },
-          select: {
-            id: true,
-            title: true,
-            status: true,
-            startDateTime: true,
-            serviceDate: true,
-            vehicle: { select: { make: true, model: true } },
-          },
-          orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
-          take: 5,
-        }),
-        db.quote.findMany({
-          where: { customerId, organizationId, ...SENT_TO_CUSTOMER },
-          select: {
-            id: true,
-            title: true,
-            quoteNumber: true,
-            status: true,
-            totalAmount: true,
-            validUntil: true,
-            publicToken: true,
-            vehicle: { select: { make: true, model: true } },
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 5,
-        }),
-        db.serviceRequest.findMany({
-          where: { customerId, organizationId, status: 'pending' },
-          select: {
-            id: true,
-            description: true,
-            preferredDate: true,
-            status: true,
-            createdAt: true,
-            vehicle: { select: { make: true, model: true } },
-          },
-          orderBy: { createdAt: 'desc' },
-        }),
-      ])
-
-    // Open invoices: completed records that the customer still owes money on.
-    // Pre-completion records are not counted — they're not yet invoices.
-    const completedInvoices = await db.serviceRecord.findMany({
-      where: {
-        organizationId,
-        OR: [{ vehicle: { customerId } }, { customerId }],
-        status: 'completed',
-      },
-      select: {
-        totalAmount: true,
-        manuallyPaid: true,
-        payments: { select: { amount: true } },
-      },
-    })
-
-    const openInvoiceCount = completedInvoices.filter((inv) => {
-      if (inv.manuallyPaid) return false
-      const paid = inv.payments.reduce((sum, p) => sum + p.amount, 0)
-      return paid < inv.totalAmount
-    }).length
-
-    const pendingQuoteCount = await db.quote.count({
-      where: { customerId, organizationId, status: 'sent' },
-    })
-
-    return {
-      customer,
-      vehicleCount: vehicles.length,
-      openInvoiceCount,
-      pendingQuoteCount,
-      recentInvoices,
-      activeJobs,
-      recentQuotes,
-      pendingRequests,
-    }
-  })
-}
+import { loadPortalLook } from '@/features/portal/Lib/portalLook.server'
+import { PORTAL_REQUEST_MAX_FILES } from '@/features/portal/Lib/portalUploads'
+import { ownPortalUploadUrl } from '@/features/portal/Lib/portalUploadOwner.server'
 
 // ─── Vehicles ─────────────────────────────────────────────────────────────
 
@@ -222,12 +58,15 @@ export async function getPortalVehicles() {
 export async function getPortalVehicleDetail(vehicleId: string) {
   return withPortalAuth(async ({ customerId, organizationId }) => {
     const vehicle = await db.vehicle.findFirst({
-      where: { id: vehicleId, customerId, organizationId },
+      // An archived vehicle is gone from the list, so it is gone from here too.
+      where: { id: vehicleId, customerId, organizationId, isArchived: false },
       select: {
         id: true,
         make: true,
         model: true,
         year: true,
+        // When the customer said the vehicle is no longer theirs.
+        soldReportedAt: true,
         vin: true,
         licensePlate: true,
         hsn: true,
@@ -277,6 +116,38 @@ export async function getPortalVehicleDetail(vehicleId: string) {
   })
 }
 
+/**
+ * The tyres the workshop stores for one of the customer's vehicles, for that
+ * vehicle's page. Nothing when the workshop has no tyre hotel or keeps it out
+ * of the portal: the same switch the home reads (`PortalLook.showTires`).
+ */
+export async function getPortalVehicleTires(vehicleId: string) {
+  return withPortalAuth(async ({ customerId, organizationId }) => {
+    const look = await loadPortalLook(organizationId)
+    if (!look.showTires) return []
+    const sets = await db.tireSet.findMany({
+      where: { organizationId, status: 'stored', vehicleId, vehicle: { customerId } },
+      select: {
+        id: true,
+        season: true,
+        studded: true,
+        brand: true,
+        model: true,
+        size: true,
+        quantity: true,
+        withRims: true,
+        checkedInAt: true,
+        createdAt: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+    return sets.map(({ checkedInAt, createdAt, ...set }) => ({
+      ...set,
+      storedSince: (checkedInAt ?? createdAt).toISOString(),
+    }))
+  })
+}
+
 // ─── Invoices ─────────────────────────────────────────────────────────────
 
 export async function getPortalInvoices() {
@@ -299,6 +170,9 @@ export async function getPortalInvoices() {
         totalAmount: true,
         serviceDate: true,
         startDateTime: true,
+        // The date printed on the invoice and the day it is due.
+        invoiceDate: true,
+        invoiceDueDate: true,
         publicToken: true,
         manuallyPaid: true,
         vehicle: { select: { make: true, model: true } },
@@ -426,6 +300,9 @@ export async function getPortalInspections() {
 
 // ─── Service Requests ─────────────────────────────────────────────────────
 
+/** The longest description a request carries; the form's field stops there too. */
+const MAX_REQUEST_DESCRIPTION = 4000
+
 export async function createServiceRequest(input: {
   vehicleId?: string
   /**
@@ -441,140 +318,178 @@ export async function createServiceRequest(input: {
   }
   description: string
   preferredDate?: string
+  /** The part of that day that suits: only kept with a day. */
+  preferredTime?: 'morning' | 'afternoon'
+  /**
+   * Photos and video the customer added, as the stored urls the portal's
+   * upload route answered with. Anything else is refused.
+   */
+  attachments?: string[]
 }) {
-  return withPortalAuth(async ({ customerId, organizationId }) => {
-    // A preferred day the workshop is closed on (a holiday, a closure, a day
-    // it never opens) is refused before anything is created. The day checked
-    // is the one stored, whatever form the date came in ("2027-01-26" or
-    // "2027-01-26T12:00").
-    const timeZone = await workshopTimeZone(organizationId)
-    const preferredDate = toSafeWorkshopDate(input.preferredDate, timeZone) ?? null
-    if (preferredDate) {
-      const day = zonedDayKey(preferredDate, timeZone)
-      const { calendar } = await loadWorkshopCalendar(organizationId, { from: day, to: day })
-      const state = dayState(calendar, day)
-      if (!state.open) {
-        const tc = await getTranslations('workshopCalendar.portal')
-        throw new Error(
-          state.closures.length > 0
-            ? tc('closedDay', { name: state.closures.map((c) => c.name).join(', ') })
-            : tc('closedWeekday')
-        )
-      }
-    }
+  return withPortalAuth(
+    async ({ customerId, organizationId }) => {
+      const description = typeof input.description === 'string' ? input.description.trim() : ''
+      if (!description) throw new Error('A description is required')
+      if (description.length > MAX_REQUEST_DESCRIPTION)
+        throw new Error('The description is too long')
 
-    let vehicle: { id: string; make: string; model: string; licensePlate: string | null } | null =
-      null
-
-    if (input.vehicleId) {
-      // Validate vehicle belongs to customer
-      vehicle = await db.vehicle.findFirst({
-        where: { id: input.vehicleId, customerId, organizationId },
-        select: { id: true, make: true, model: true, licensePlate: true },
-      })
-    } else if (input.newVehicle) {
-      const make = input.newVehicle.make?.trim().slice(0, 60)
-      const model = input.newVehicle.model?.trim().slice(0, 60)
-      const licensePlate = input.newVehicle.licensePlate?.trim().slice(0, 20) || null
-      const currentYear = new Date().getFullYear()
-      const year =
-        Number.isInteger(input.newVehicle.year) &&
-        (input.newVehicle.year as number) >= 1900 &&
-        (input.newVehicle.year as number) <= currentYear + 1
-          ? (input.newVehicle.year as number)
-          : currentYear
-      if (!make || !model) {
-        throw new Error('Vehicle make and model are required')
+      // Only files this customer uploaded themselves, each once, and no more
+      // than the form allows: a request can never point at another workshop's
+      // file, at one of the workshop's own, or at another customer's upload
+      // (the file route serves a file to whoever has a request that names it).
+      const named = Array.isArray(input.attachments) ? input.attachments : []
+      if (named.length > PORTAL_REQUEST_MAX_FILES * 2) throw new Error('Too many files')
+      const stored = named.map((url) => ownPortalUploadUrl(url, organizationId, customerId))
+      if (stored.some((url) => url === null)) {
+        throw new Error('A file in this request is not one you uploaded')
       }
-      // Vehicles carry an owning app user; portal customers are not users, so
-      // the record is filed under the organization's owner.
-      const ownerMember = await db.organizationMember.findFirst({
-        where: { organizationId, role: 'owner' },
-        select: { userId: true },
-      })
-      const anyMember =
-        ownerMember ??
-        (await db.organizationMember.findFirst({
-          where: { organizationId },
+      const attachments = [...new Set(stored as string[])]
+      if (attachments.length > PORTAL_REQUEST_MAX_FILES) throw new Error('Too many files')
+
+      // A preferred day the workshop is closed on (a holiday, a closure, a day
+      // it never opens) is refused before anything is created. The day checked
+      // is the one stored, whatever form the date came in ("2027-01-26" or
+      // "2027-01-26T12:00").
+      const timeZone = await workshopTimeZone(organizationId)
+      const preferredDate = toSafeWorkshopDate(input.preferredDate, timeZone) ?? null
+      const preferredTime =
+        preferredDate && (input.preferredTime === 'morning' || input.preferredTime === 'afternoon')
+          ? input.preferredTime
+          : null
+      if (preferredDate) {
+        const day = zonedDayKey(preferredDate, timeZone)
+        const { calendar } = await loadWorkshopCalendar(organizationId, { from: day, to: day })
+        const state = dayState(calendar, day)
+        if (!state.open) {
+          const tc = await getTranslations('workshopCalendar.portal')
+          throw new Error(
+            state.closures.length > 0
+              ? tc('closedDay', { name: state.closures.map((c) => c.name).join(', ') })
+              : tc('closedWeekday')
+          )
+        }
+      }
+
+      let vehicle: { id: string; make: string; model: string; licensePlate: string | null } | null =
+        null
+
+      if (input.vehicleId) {
+        // Validate vehicle belongs to customer
+        vehicle = await db.vehicle.findFirst({
+          where: { id: input.vehicleId, customerId, organizationId },
+          select: { id: true, make: true, model: true, licensePlate: true },
+        })
+      } else if (input.newVehicle) {
+        const make = input.newVehicle.make?.trim().slice(0, 60)
+        const model = input.newVehicle.model?.trim().slice(0, 60)
+        const licensePlate = input.newVehicle.licensePlate?.trim().slice(0, 20) || null
+        const currentYear = new Date().getFullYear()
+        const year =
+          Number.isInteger(input.newVehicle.year) &&
+          (input.newVehicle.year as number) >= 1900 &&
+          (input.newVehicle.year as number) <= currentYear + 1
+            ? (input.newVehicle.year as number)
+            : currentYear
+        if (!make || !model) {
+          throw new Error('Vehicle make and model are required')
+        }
+        // Vehicles carry an owning app user; portal customers are not users, so
+        // the record is filed under the organization's owner.
+        const ownerMember = await db.organizationMember.findFirst({
+          where: { organizationId, role: 'owner' },
           select: { userId: true },
-        }))
-      if (!anyMember) {
-        throw new Error('Organization has no members')
+        })
+        const anyMember =
+          ownerMember ??
+          (await db.organizationMember.findFirst({
+            where: { organizationId },
+            select: { userId: true },
+          }))
+        if (!anyMember) {
+          throw new Error('Organization has no members')
+        }
+        vehicle = await db.vehicle.create({
+          data: {
+            make,
+            model,
+            year,
+            licensePlate,
+            userId: anyMember.userId,
+            organizationId,
+            customerId,
+          },
+          select: { id: true, make: true, model: true, licensePlate: true },
+        })
       }
-      vehicle = await db.vehicle.create({
+
+      if (!vehicle) {
+        throw new Error('Vehicle not found')
+      }
+
+      const customer = await db.customer.findUnique({
+        where: { id: customerId },
+        select: { name: true, email: true, phone: true },
+      })
+
+      const serviceRequest = await db.serviceRequest.create({
         data: {
-          make,
-          model,
-          year,
-          licensePlate,
-          userId: anyMember.userId,
+          description,
+          preferredDate,
+          preferredTime,
+          attachments,
+          customerId,
+          vehicleId: vehicle.id,
+          organizationId,
+        },
+      })
+
+      // Notify staff
+      const vehicleName = `${vehicle.make} ${vehicle.model}`
+      const customerName = customer?.name ?? 'A customer'
+      // The plate is what the workshop actually looks a car up by, so it goes in
+      // the email even though the in-app message stays short.
+      const vehicleLabel = vehicle.licensePlate
+        ? `${vehicleName} (${vehicle.licensePlate})`
+        : vehicleName
+
+      await notify({
+        organizationId,
+        type: 'service_request',
+        title: 'New Service Request',
+        message: `${customerName} requested service for ${vehicleName}: ${description.slice(0, 100)}${
+          attachments.length > 0 ? ` (${attachments.length} photos or videos attached)` : ''
+        }`,
+        entityType: 'service_request',
+        entityId: serviceRequest.id,
+        entityUrl: `/customers/${customerId}?tab=requests`,
+      })
+
+      // Email the workshop, if it asked to be emailed. Isolated on purpose: the
+      // request is committed and the bell has already rung, so a misconfigured
+      // mail provider must not surface to the customer as a failed submission.
+      // sendServiceRequestAlert swallows its own errors; this is the backstop for
+      // anything it cannot anticipate.
+      try {
+        await sendServiceRequestAlert({
           organizationId,
           customerId,
-        },
-        select: { id: true, make: true, model: true, licensePlate: true },
-      })
-    }
+          customerName,
+          customerEmail: customer?.email ?? null,
+          customerPhone: customer?.phone ?? null,
+          vehicleLabel,
+          description,
+          preferredDate: serviceRequest.preferredDate,
+          preferredTime,
+          attachmentCount: attachments.length,
+        })
+      } catch (error) {
+        console.error('[createServiceRequest] alert email failed:', error)
+      }
 
-    if (!vehicle) {
-      throw new Error('Vehicle not found')
-    }
-
-    const customer = await db.customer.findUnique({
-      where: { id: customerId },
-      select: { name: true, email: true, phone: true },
-    })
-
-    const serviceRequest = await db.serviceRequest.create({
-      data: {
-        description: input.description,
-        preferredDate,
-        customerId,
-        vehicleId: vehicle.id,
-        organizationId,
-      },
-    })
-
-    // Notify staff
-    const vehicleName = `${vehicle.make} ${vehicle.model}`
-    const customerName = customer?.name ?? 'A customer'
-    // The plate is what the workshop actually looks a car up by, so it goes in
-    // the email even though the in-app message stays short.
-    const vehicleLabel = vehicle.licensePlate
-      ? `${vehicleName} (${vehicle.licensePlate})`
-      : vehicleName
-
-    await notify({
-      organizationId,
-      type: 'service_request',
-      title: 'New Service Request',
-      message: `${customerName} requested service for ${vehicleName}: ${input.description.slice(0, 100)}`,
-      entityType: 'service_request',
-      entityId: serviceRequest.id,
-      entityUrl: `/customers/${customerId}?tab=requests`,
-    })
-
-    // Email the workshop, if it asked to be emailed. Isolated on purpose: the
-    // request is committed and the bell has already rung, so a misconfigured
-    // mail provider must not surface to the customer as a failed submission.
-    // sendServiceRequestAlert swallows its own errors; this is the backstop for
-    // anything it cannot anticipate.
-    try {
-      await sendServiceRequestAlert({
-        organizationId,
-        customerId,
-        customerName,
-        customerEmail: customer?.email ?? null,
-        customerPhone: customer?.phone ?? null,
-        vehicleLabel,
-        description: input.description,
-        preferredDate: serviceRequest.preferredDate,
-      })
-    } catch (error) {
-      console.error('[createServiceRequest] alert email failed:', error)
-    }
-
-    return serviceRequest
-  })
+      return serviceRequest
+    },
+    { writes: true }
+  )
 }
 
 export async function getPortalServiceRequests() {
@@ -585,6 +500,8 @@ export async function getPortalServiceRequests() {
         id: true,
         description: true,
         preferredDate: true,
+        preferredTime: true,
+        attachments: true,
         status: true,
         adminNotes: true,
         createdAt: true,
@@ -596,80 +513,6 @@ export async function getPortalServiceRequests() {
   })
 }
 
-// ─── Admin: Portal Slug ──────────────────────────────────────────────────
-
-const SLUG_REGEX = /^[a-z0-9][a-z0-9_-]{1,46}[a-z0-9]$/
-const RESERVED_SLUGS = [
-  'auth',
-  'api',
-  'admin',
-  'login',
-  'verify',
-  'dashboard',
-  'settings',
-  'portal',
-]
-
-export async function updatePortalSlug(slug: string | null): Promise<ActionResult> {
-  return withAuth(
-    async ({ organizationId }) => {
-      // Allow clearing the slug
-      if (!slug || slug.trim() === '') {
-        await db.organization.update({
-          where: { id: organizationId },
-          data: { portalSlug: null },
-        })
-        revalidatePath('/settings/customer-portal')
-        return { slug: null }
-      }
-
-      const normalized = slug.trim().toLowerCase()
-
-      if (!SLUG_REGEX.test(normalized)) {
-        throw new Error(
-          'Slug must be 3–48 characters, lowercase alphanumeric, hyphens, or underscores.'
-        )
-      }
-
-      if (RESERVED_SLUGS.includes(normalized)) {
-        throw new Error('This slug is reserved. Please choose another.')
-      }
-
-      // Check uniqueness
-      const existing = await db.organization.findUnique({
-        where: { portalSlug: normalized },
-        select: { id: true },
-      })
-
-      if (existing && existing.id !== organizationId) {
-        throw new Error('This slug is already taken. Please choose another.')
-      }
-
-      await db.organization.update({
-        where: { id: organizationId },
-        data: { portalSlug: normalized },
-      })
-
-      revalidatePath('/settings/customer-portal')
-      return { slug: normalized || null }
-    },
-    {
-      requiredPermissions: [
-        { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
-      ],
-      audit: ({ result }) =>
-        result
-          ? {
-              action: 'settings.updatePortalSlug',
-              entity: 'Organization',
-              message: result.slug ? `Set portal slug to "${result.slug}"` : 'Cleared portal slug',
-              metadata: { slug: result.slug },
-            }
-          : null,
-    }
-  )
-}
-
 // ─── Ownership ────────────────────────────────────────────────────────────
 
 /**
@@ -678,44 +521,43 @@ export async function updatePortalSlug(slug: string | null): Promise<ActionResul
  * gets a notification so a person decides what to do with the record.
  */
 export async function reportVehicleSold(vehicleId: string) {
-  return withPortalAuth(async ({ customerId, organizationId }) => {
-    const vehicle = await db.vehicle.findFirst({
-      where: { id: vehicleId, customerId, organizationId, isArchived: false },
-      select: {
-        id: true,
-        year: true,
-        make: true,
-        model: true,
-        licensePlate: true,
-        soldReportedAt: true,
-      },
-    })
-    if (!vehicle) throw new Error('Vehicle not found')
-    if (vehicle.soldReportedAt) return { reportedAt: vehicle.soldReportedAt.toISOString() }
-    const now = new Date()
-    await db.vehicle.update({ where: { id: vehicle.id }, data: { soldReportedAt: now } })
-    const customer = await db.customer.findUnique({
-      where: { id: customerId },
-      select: { name: true },
-    })
-    const label = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
-    await notify({
-      organizationId,
-      type: 'vehicle_sold',
-      title: 'Vehicle reported sold',
-      message: `${customer?.name ?? 'A customer'} says ${label} is no longer theirs.`,
-      entityType: 'vehicle',
-      entityId: vehicle.id,
-      entityUrl: `/vehicles/${vehicle.id}`,
-    })
-    return { reportedAt: now.toISOString() }
-  })
+  return withPortalAuth(
+    async ({ customerId, organizationId }) => {
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, customerId, organizationId, isArchived: false },
+        select: {
+          id: true,
+          year: true,
+          make: true,
+          model: true,
+          licensePlate: true,
+          soldReportedAt: true,
+        },
+      })
+      if (!vehicle) throw new Error('Vehicle not found')
+      if (vehicle.soldReportedAt) return { reportedAt: vehicle.soldReportedAt.toISOString() }
+      const now = new Date()
+      await db.vehicle.update({ where: { id: vehicle.id }, data: { soldReportedAt: now } })
+      const customer = await db.customer.findUnique({
+        where: { id: customerId },
+        select: { name: true },
+      })
+      const label = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
+      await notify({
+        organizationId,
+        type: 'vehicle_sold',
+        title: 'Vehicle reported sold',
+        message: `${customer?.name ?? 'A customer'} says ${label} is no longer theirs.`,
+        entityType: 'vehicle',
+        entityId: vehicle.id,
+        entityUrl: `/vehicles/${vehicle.id}`,
+      })
+      return { reportedAt: now.toISOString() }
+    },
+    { writes: true }
+  )
 }
 
-/**
- * The days in the coming weeks the workshop is closed for a holiday or
- * closure, so the request form can say so before a customer picks one.
- */
 /** The workshop's week and what changes in it soon, for the customer to plan around. */
 export interface PortalOpeningHours {
   /** Sunday first, as Date#getDay. */
@@ -730,55 +572,18 @@ export interface PortalOpeningHours {
   closedSoon: { date: string; name: string; open: { start: string; end: string }[] }[]
 }
 
-/** How far ahead, and how many, of the closed days the portal names. */
-const CLOSED_SOON_DAYS = 60
-const CLOSED_SOON_MAX = 5
-
 /**
- * Opening hours for the customer portal. The week always shows; closed days
- * only while the workshop tracks them, and only on days it would otherwise
- * open, since a holiday on a Sunday changes nothing for a closed-on-Sunday shop.
+ * Opening hours for the signed-in customer: the week, and the days soon the
+ * workshop shuts or closes early. The front page reads the same thing.
  */
 export async function getPortalOpeningHours() {
-  return withPortalAuth(async ({ organizationId }): Promise<PortalOpeningHours> => {
-    const timeZone = await workshopTimeZone(organizationId)
-    const today = zonedDayKey(new Date(), timeZone)
-    const last = addDays(today, CLOSED_SOON_DAYS)
-    const [{ calendar }, format] = await Promise.all([
-      loadWorkshopCalendar(organizationId, { from: today, to: last }),
-      db.appSetting.findFirst({
-        where: { organizationId, key: SETTING_KEYS.TIME_FORMAT },
-        select: { value: true },
-      }),
-    ])
-    const clock = (at: Date) => {
-      const p = zonedParts(at, timeZone)
-      return `${String(p.hour).padStart(2, '0')}:${String(p.minute).padStart(2, '0')}`
-    }
-    const closedSoon: PortalOpeningHours['closedSoon'] = []
-    for (
-      let day = today;
-      day <= last && closedSoon.length < CLOSED_SOON_MAX;
-      day = addDays(day, 1)
-    ) {
-      const state = dayState(calendar, day)
-      if (state.closures.length === 0 || state.closedWeekday) continue
-      if (state.open && !state.shortened) continue
-      closedSoon.push({
-        date: day,
-        name: state.closures.map((c) => c.name).join(', '),
-        open: state.intervals.map((i) => ({ start: clock(i.start), end: clock(i.end) })),
-      })
-    }
-    return {
-      week: calendar.week,
-      today,
-      timeFormat: format?.value === '24h' ? '24h' : '12h',
-      closedSoon,
-    }
-  })
+  return withPortalAuth(({ organizationId }) => readPortalOpeningHours(organizationId))
 }
 
+/**
+ * The days in the coming weeks the workshop is closed for a holiday or
+ * closure, so the request form can say so before a customer picks one.
+ */
 export async function getPortalClosedDays() {
   return withPortalAuth(async ({ organizationId }) => {
     const timeZone = await workshopTimeZone(organizationId)

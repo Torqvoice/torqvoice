@@ -67,9 +67,11 @@ import {
   type MessagingChannel,
 } from '../Actions/inboxActions'
 import { deleteEmailConversation } from '../Actions/emailThreadActions'
+import { deletePortalConversation } from '../Actions/portalThreadActions'
 import { ChannelBadge, channelLabel } from './ChannelBadge'
 import { EmailConversation } from './EmailConversation'
 import { NewEmailDialog } from './NewEmailDialog'
+import { PortalConversation } from './PortalConversation'
 import { avatarTint, initials } from '../Lib/threadDisplay'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
@@ -133,6 +135,7 @@ export function UnifiedInbox({
 }) {
   const t = useTranslations('messaging.inbox')
   const te = useTranslations('messaging.email')
+  const tp = useTranslations('messaging.portal')
   const router = useRouter()
   const [threads, setThreads] = useState(initialThreads)
   const [cursor, setCursor] = useState<string | null>(initialCursor)
@@ -209,6 +212,9 @@ export function UnifiedInbox({
 
   const visibleThreads = threads
 
+  /** Tells the open portal conversation the thread was read again. */
+  const [portalReadSignal, setPortalReadSignal] = useState(0)
+
   /**
    * Opening a thread is reading it. The row loses its marker at once, the
    * server is told, and the layout is refreshed so the sidebar pill follows.
@@ -219,6 +225,13 @@ export function UnifiedInbox({
       setThreads((previous) =>
         previous.map((row) => (row.key === thread.key ? { ...row, unread: 0 } : row))
       )
+      // The portal's chat marks its own: the conversation, once loaded, says
+      // which of the customer's messages it is showing, and only those are
+      // read. The row's marker still goes at once, as for the others.
+      if (thread.channel === 'portal') {
+        setPortalReadSignal((signal) => signal + 1)
+        return
+      }
       const result = await markThreadRead({
         channel: thread.channel,
         customerId: thread.customerId,
@@ -378,11 +391,13 @@ export function UnifiedInbox({
             })
           : !thread.customerId
             ? await deleteWhatsappConversationByPhone(thread.contact)
-            : thread.channel === 'sms'
-              ? await deleteConversation(thread.customerId)
-              : thread.channel === 'telegram'
-                ? await deleteTelegramConversation(thread.customerId)
-                : await deleteWhatsappConversation(thread.customerId)
+            : thread.channel === 'portal'
+              ? await deletePortalConversation(thread.customerId)
+              : thread.channel === 'sms'
+                ? await deleteConversation(thread.customerId)
+                : thread.channel === 'telegram'
+                  ? await deleteTelegramConversation(thread.customerId)
+                  : await deleteWhatsappConversation(thread.customerId)
     } catch {
       // An action that cannot reach the server throws instead of answering, so
       // it is caught and reported the way a refusal is.
@@ -645,6 +660,17 @@ export function UnifiedInbox({
                 refreshKey={current?.lastAt ?? selected.lastAt}
                 className="h-auto min-h-0 flex-1"
               />
+            ) : selected.channel === 'portal' && selected.customerId ? (
+              <PortalConversation
+                key={selected.key}
+                customerId={selected.customerId}
+                customerName={selected.name}
+                onSent={onChanged}
+                onRead={() => router.refresh()}
+                readSignal={portalReadSignal}
+                refreshKey={current?.lastAt ?? selected.lastAt}
+                className="h-auto min-h-0 flex-1"
+              />
             ) : selected.channel === 'sms' && smsData && selected.customerId ? (
               <SmsConversation
                 key={selected.key}
@@ -739,7 +765,10 @@ export function UnifiedInbox({
           <AlertDialogHeader>
             <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t('deleteDescription', { name: deleteTarget?.name ?? '' })}
+              {/* A portal thread has no copy on the customer's phone: it goes for them too. */}
+              {deleteTarget?.channel === 'portal'
+                ? tp('deleteDescription', { name: deleteTarget.name })
+                : t('deleteDescription', { name: deleteTarget?.name ?? '' })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

@@ -838,6 +838,27 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [['message']],
   },
+  PortalMessage: {
+    organizationId: true,
+    foreignKeys: {
+      authorUserId: {
+        target: 'User',
+        required: false,
+        relation: 'author',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+      customerId: {
+        target: 'Customer',
+        required: true,
+        relation: 'customer',
+      },
+    },
+    ownerPaths: [],
+  },
   AppSetting: {
     organizationId: true,
     foreignKeys: {

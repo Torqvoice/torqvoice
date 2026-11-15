@@ -34,8 +34,6 @@ const OTHER_THINGS: Record<string, string> = {
     'one send of a reminder campaign: sent, failed, scheduled',
   'app/(authenticated)/vehicles/[id]/_classic/service-records-table.tsx':
     'a warranty: active, expiring, expired',
-  'app/(public)/portal/[orgId]/vehicles/[vehicleId]/page.tsx':
-    'a warranty: active, expiring, expired',
 }
 
 const STATUS_WORDS = [

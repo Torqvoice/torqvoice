@@ -29,6 +29,7 @@ model Customer {
   smsMessages         SmsMessage[]
   telegramMessages    TelegramMessage[]
   whatsappMessages    WhatsappMessage[]
+  portalMessages      PortalMessage[]
   emailMessages       EmailMessage[]
   customerSessions    CustomerSession[]
   scheduledMessages   ScheduledMessage[]
@@ -117,6 +118,16 @@ model ServiceRequest {
   id            String    @id @default(cuid())
   description   String
   preferredDate DateTime?
+  /// The part of the day the customer would rather come: "morning" or
+  /// "afternoon". Null when any time suits, and on every request without a day.
+  preferredTime String?
+  /// Photos and video the customer sent with the request from the portal, in
+  /// order, as stored file urls
+  /// (`/api/protected/files/<org>/portal-uploads/<uuid>.jpg`). A text array,
+  /// like `PortalMessage.attachments`, so the file manager
+  /// (lib/files/references.ts) keeps each file for as long as the request
+  /// mentions it. What kind of file each is follows from its extension.
+  attachments   String[]  @default([])
   status        String    @default("pending")
   adminNotes    String?
   createdAt     DateTime  @default(now())

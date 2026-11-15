@@ -218,6 +218,19 @@ export const SETTING_KEYS = {
   PORTAL_ENABLED: 'portal.enabled',
   PORTAL_DESCRIPTION: 'portal.description',
   PORTAL_HOURS: 'portal.hours',
+  /// How the portal looks: daylight (the default), garage, print or colour.
+  /// The workshop picks it; a customer never does. See
+  /// src/features/portal/Lib/theme.ts.
+  PORTAL_THEME: 'portal.theme',
+  /// The workshop's own colour as "#RRGGBB". Unset uses the theme's default.
+  PORTAL_ACCENT: 'portal.accent',
+  /// The stored file url of the cover photo on the portal's sign-in page.
+  PORTAL_COVER: 'portal.cover',
+  /// 'false' turns the chat with the workshop off; anything else leaves it on.
+  PORTAL_MESSAGES: 'portal.messages',
+  /// 'false' hides stored tyres from customers; anything else shows them when
+  /// the workshop runs a tyre hotel.
+  PORTAL_SHOW_TIRES: 'portal.showTires',
   /// Off by default. Every service request already raises an in-app
   /// notification; this adds email on top, and stays opt-in because a workshop
   /// with no mail provider configured would otherwise generate failed sends.
@@ -225,9 +238,6 @@ export const SETTING_KEYS = {
   /// Optional free-text list of addresses. Empty means the alert goes to every
   /// owner and admin in the organization.
   SERVICE_REQUEST_ALERTS_RECIPIENTS: 'portal.serviceRequestAlerts.recipients',
-  PORTAL_BACKGROUND_TYPE: 'portal.background.type',
-  PORTAL_BACKGROUND_TEMPLATE: 'portal.background.template',
-  PORTAL_BACKGROUND_IMAGE: 'portal.background.image',
   WORKBOARD_WEEK_START_DAY: 'workboard.weekStartDay',
   WORKBOARD_WORK_DAY_START: 'workboard.workDayStart',
   WORKBOARD_WORK_DAY_END: 'workboard.workDayEnd',

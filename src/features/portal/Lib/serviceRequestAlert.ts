@@ -7,6 +7,7 @@
  */
 
 import { escapeHtml } from '@/features/support/Lib/supportRequest'
+import { zonedDayKey } from '@/lib/timezone'
 
 /**
  * Deliberately loose. This is a last line of defence against a typo reaching
@@ -70,12 +71,19 @@ export function parseInvalidRecipients(raw: string | null | undefined): string[]
     .filter((candidate) => candidate.length > 0 && !EMAIL_PATTERN.test(candidate))
 }
 
-/** A date with no time attached; the customer picks a day, not an hour. */
-export function formatPreferredDate(date: Date | null | undefined): string | null {
+/**
+ * A date with no time attached; the customer picks a day, not an hour. The
+ * day is stored as midnight on the workshop's clock, so it is read back on
+ * that clock: in UTC it is the day before for every workshop east of London.
+ */
+export function formatPreferredDate(
+  date: Date | null | undefined,
+  timeZone = 'UTC'
+): string | null {
   if (!date || Number.isNaN(date.getTime())) return null
   // ISO day rather than a locale format: the recipient's locale is unknown
   // here, and 03/08 reads as two different days on either side of the Atlantic.
-  return date.toISOString().slice(0, 10)
+  return zonedDayKey(date, timeZone)
 }
 
 export interface ServiceRequestEmailInput {
@@ -86,9 +94,16 @@ export interface ServiceRequestEmailInput {
   vehicleLabel: string
   description: string
   preferredDate: string | null
+  /** "morning" or "afternoon", when the customer said which part of the day suits. */
+  preferredTime?: string | null
+  /** How many photos and videos the customer sent with the request. */
+  attachmentCount?: number
   /** Absolute link into the app, or null when no base URL is configured. */
   requestUrl: string | null
 }
+
+/** The part of the day, in the alert's own (English) words. */
+const PREFERRED_TIME: Record<string, string> = { morning: 'morning', afternoon: 'afternoon' }
 
 export function buildServiceRequestSubject(input: {
   customerName: string
@@ -111,7 +126,19 @@ export function buildServiceRequestEmailHtml(input: ServiceRequestEmailInput): s
   const rows: [string, string | null][] = [
     ['Customer', input.customerName],
     ['Vehicle', input.vehicleLabel],
-    ['Preferred date', input.preferredDate],
+    [
+      'Preferred date',
+      input.preferredDate && PREFERRED_TIME[input.preferredTime ?? '']
+        ? `${input.preferredDate}, ${PREFERRED_TIME[input.preferredTime ?? '']}`
+        : input.preferredDate,
+    ],
+    // The files stay in the app, behind a sign-in: the email only says they are there.
+    [
+      'Attached',
+      input.attachmentCount
+        ? `${input.attachmentCount} ${input.attachmentCount === 1 ? 'photo or video' : 'photos or videos'}, open the request to see ${input.attachmentCount === 1 ? 'it' : 'them'}`
+        : null,
+    ],
     ['Email', input.customerEmail],
     ['Phone', input.customerPhone],
   ]

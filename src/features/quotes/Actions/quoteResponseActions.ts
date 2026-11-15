@@ -4,8 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { notify } from '@/lib/notify'
-import { assertNotRestoring } from '@/lib/backup/freeze'
+import { recordQuoteResponse } from '@/features/quotes/Lib/recordQuoteResponse'
 import { z } from 'zod'
 
 const respondToQuoteSchema = z.object({
@@ -14,6 +13,9 @@ const respondToQuoteSchema = z.object({
   action: z.enum(['accepted', 'changes_requested']),
   message: z.string().optional(),
 })
+
+/** The statuses a shared quote can be answered from. */
+const ANSWERABLE_FROM: readonly string[] = ['draft', 'sent']
 
 /**
  * Public action — no auth required.
@@ -32,35 +34,18 @@ export async function respondToQuote(input: unknown) {
   }
 
   // Only allow response on quotes that are draft or sent
-  if (!['draft', 'sent'].includes(quote.status)) {
+  if (!ANSWERABLE_FROM.includes(quote.status)) {
     return { success: false, error: 'This quote can no longer be updated' }
   }
-  // No withAuth on a public action, so the restore freeze is checked here.
-  if (quote.organizationId) assertNotRestoring(quote.organizationId)
 
-  await db.quote.update({
-    where: { id: data.quoteId },
-    data: {
-      status: data.action,
-      customerMessage: data.message || null,
-      // A new answer is news again, even on a quote whose last one was dismissed.
-      responseDismissedAt: null,
-    },
+  // Shared with the customer portal, which finds the quote by who is signed in.
+  // The write checks the status again, in the same statement: a quote the
+  // workshop converted since the read above, or answered in another tab, is
+  // left as it is.
+  const recorded = await recordQuoteResponse(quote, data.action, data.message, {
+    from: ANSWERABLE_FROM,
   })
-
-  if (quote.organizationId) {
-    const customerName = quote.customer?.name || 'A customer'
-    const actionLabel = data.action === 'accepted' ? 'accepted' : 'requested changes on'
-    notify({
-      organizationId: quote.organizationId,
-      type: 'quote_response',
-      title: `Quote ${data.action === 'accepted' ? 'Accepted' : 'Changes Requested'}`,
-      message: `${customerName} ${actionLabel} quote ${quote.quoteNumber || quote.title}`,
-      entityType: 'quote',
-      entityId: quote.id,
-      entityUrl: `/quotes/${quote.id}`,
-    })
-  }
+  if (!recorded) return { success: false, error: 'This quote can no longer be updated' }
 
   return { success: true }
 }

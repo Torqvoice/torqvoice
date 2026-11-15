@@ -977,6 +977,11 @@
     "paymentReceivedDescription": "Se envía cuando se registra un pago para una factura.",
     "saveSmsTemplates": "Guardar plantillas SMS",
     "smsTemplateSaved": "Configuración de plantillas SMS guardada",
+    "layoutTitle": "Disposición de factura",
+    "layoutDescription": "Personaliza el orden y la visibilidad de las secciones en tus facturas y presupuestos.",
+    "layoutSaved": "Disposición guardada correctamente",
+    "layoutDocInvoice": "Factura",
+    "layoutDocQuote": "Presupuesto",
     "smsDefaults": {
       "invoiceReady": "La factura de {company_name} está lista. Véala aquí: {share_link}\nSaludos {company_name} - {current_user}",
       "quoteReady": "Su presupuesto está listo para revisión. Véalo aquí: {share_link}",
@@ -997,11 +1002,6 @@
       "rose": "Rosa",
       "indigo": "Índigo"
     },
-    "layoutTitle": "Disposición de factura",
-    "layoutDescription": "Personaliza el orden y la visibilidad de las secciones en tus facturas y presupuestos.",
-    "layoutSaved": "Disposición guardada correctamente",
-    "layoutDocInvoice": "Factura",
-    "layoutDocQuote": "Presupuesto",
     "goToLayout": "Diseño y secciones",
     "openDesigner": "Abrir el diseñador",
     "designerIntro": "Elige un punto de partida y abre el diseñador para cambiar lo que quieras.",
@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Portal del cliente",
-    "description": "Permita a sus clientes iniciar sesión y ver sus vehículos, facturas, cotizaciones e inspecciones. Los clientes también pueden enviar solicitudes de servicio.",
-    "enablePortal": "Habilitar portal del cliente",
-    "enablePortalHint": "Los clientes con dirección de correo electrónico pueden iniciar sesión con enlace magico",
-    "enabled": "Portal del cliente habilitado",
-    "disabled": "Portal del cliente deshabilitado",
-    "failedUpdate": "Error al actualizar la configuración",
-    "customSlug": "Slug personalizado del portal",
-    "save": "Guardar",
-    "slugSaved": "Slug del portal guardado",
-    "slugRemoved": "Slug del portal eliminado",
-    "failedUpdateSlug": "Error al actualizar el slug",
-    "slugHint": "Letras minúsculas, números, guiones y guiones bajos. 3-48 caracteres. Dejar vacío para usar la URL predeterminada.",
-    "portalUrl": "URL del portal",
-    "urlCopied": "URL del portal copiada",
-    "shareHint": "Comparta este enlace con sus clientes para que puedan iniciar sesión en su portal.",
+    "description": "Tus clientes inician sesión para seguir su trabajo, responder presupuestos, pagar facturas, pedir cita y escribirte.",
+    "enablePortal": "Activar el portal del cliente",
+    "enablePortalHint": "Los clientes inician sesión con un enlace que reciben en su correo o su teléfono. No hay contraseña que recordar.",
+    "failedUpdate": "No se han podido guardar los ajustes",
+    "customSlug": "Dirección del portal",
+    "slugHint": "Minúsculas, números, guiones y guiones bajos, de 3 a 48 caracteres. Déjalo vacío para usar la dirección predeterminada.",
+    "portalUrl": "Enlace a tu portal",
+    "urlCopied": "Enlace copiado",
+    "shareHint": "Comparte este enlace con tus clientes para que puedan iniciar sesión.",
     "serviceRequestAlertsHint": "Las solicitudes de servicio del portal siempre aparecen en tu campana de notificaciones. También puedes recibirlas por correo.",
-    "serviceRequestAlertsLink": "Ajustes de avisos →",
+    "serviceRequestAlertsLink": "Ajustes de avisos",
     "descriptionLabel": "Sobre tu taller",
     "descriptionPlaceholder": "Cuenta a tus clientes algo sobre tu taller, los servicios que ofreces y lo que te hace único.",
-    "descriptionHint": "Se muestra a los visitantes en la parte superior de la página de tu portal.",
-    "hoursLabel": "Horario de apertura",
-    "hoursPlaceholder": "Lun-Vie: 8:00-17:00\nSab: 9:00-13:00\nDom: Cerrado",
-    "hoursHint": "Texto libre. Usa saltos de línea para listar cada día por separado.",
-    "contentSaved": "Contenido del portal guardado",
-    "background": {
-      "title": "Fondo del portal",
-      "description": "Elige cómo se ve la página de inicio del portal de clientes.",
-      "typeNone": "Ninguno",
-      "typeTemplate": "Plantilla",
-      "typeImage": "Imagen personalizada",
-      "chooseTemplate": "Elige una plantilla",
-      "uploadLabel": "Imagen de fondo",
-      "upload": "Subir imagen",
-      "replace": "Reemplazar imagen",
-      "remove": "Eliminar",
-      "uploadHint": "JPG, PNG o WebP. Máx. 8 MB. Recomendado al menos 1600×900.",
-      "uploading": "Subiendo fondo…",
-      "uploaded": "Fondo actualizado",
-      "uploadFailed": "Error al subir el fondo",
-      "templateNames": {
-        "default": "Sutil",
-        "sunrise": "Amanecer",
-        "ocean": "Océano",
-        "forest": "Bosque",
-        "slate": "Pizarra",
-        "sand": "Arena"
+    "descriptionHint": "Se muestra en la página de inicio de sesión de tu portal.",
+    "copyUrl": "Copiar el enlace"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "mi-taller",
+    "slugUnsaved": "Esta dirección funcionará cuando guardes.",
+    "slugInvalid": "Usa de 3 a 48 minúsculas, números, guiones o guiones bajos, empezando y terminando con una letra o un número.",
+    "slugReserved": "Esa palabra está reservada. Elige otra dirección.",
+    "slugTaken": "Otro taller ya usa esa dirección. Elige otra.",
+    "hours": {
+      "title": "Horario",
+      "fromCalendar": "El portal muestra el horario y los días de cierre del calendario de tu taller.",
+      "link": "Ajustes del horario",
+      "typedNote": "Tu página de inicio de sesión aún muestra el horario que se escribió aquí antes, porque todavía no hay horario en el calendario. Configúralo allí y el portal mostrará ese.",
+      "typedLabel": "Se muestra hoy en la página de inicio de sesión"
+    },
+    "look": {
+      "title": "Aspecto de tu portal del cliente",
+      "description": "Una sola elección define la página de inicio de sesión y todas las páginas que tus clientes ven después. Los clientes no pueden cambiarla."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Claro y tranquilo"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Pizarra de boxes, oscura"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Editorial y sobrio"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Tu color, en grande"
       }
     },
-    "copyUrl": "Copiar URL del portal"
+    "colour": {
+      "title": "Tu color",
+      "description": "Se usa en botones y resaltados en todos los temas.",
+      "swatches": "Colores sugeridos",
+      "orange": "Naranja",
+      "blue": "Azul",
+      "green": "Verde",
+      "red": "Rojo",
+      "black": "Negro",
+      "hexLabel": "Color en código hexadecimal",
+      "invalid": "Eso no es un color. Escríbelo en código hexadecimal, como #1D4ED8.",
+      "usingTheme": "Se usa el color que trae {theme}, {hex}.",
+      "themeColour": "El color que trae {theme} es {hex}.",
+      "useTheme": "Usar el color del tema",
+      "sample": "Pedir cita",
+      "inkLight": "El texto sobre este color se muestra en blanco para que se lea bien.",
+      "inkDark": "El texto sobre este color se muestra en negro para que se lea bien.",
+      "faint": "Este color se ve poco sobre el fondo de {theme}. Los enlaces y resaltados pueden costar de ver."
+    },
+    "cover": {
+      "title": "Foto de portada y logo",
+      "description": "Se muestran en la página de inicio de sesión. Tu logo viene de los ajustes de la empresa.",
+      "companyLink": "Ajustes de la empresa",
+      "hint": "PNG, JPEG o WebP, hasta 8 MB.",
+      "none": "Sin foto de portada",
+      "alt": "La foto de portada de la página de inicio de sesión",
+      "upload": "Subir una foto",
+      "replace": "Cambiar la foto",
+      "remove": "Quitar la foto",
+      "uploading": "Subiendo",
+      "uploadFailed": "No se ha podido subir la foto"
+    },
+    "features": {
+      "title": "Qué ven los clientes",
+      "description": "Las partes del portal que puedes desactivar.",
+      "messages": "Mensajes en el portal",
+      "messagesHint": "Los clientes te escriben desde el portal. Sus mensajes llegan a tu bandeja de Mensajes.",
+      "tires": "Mostrar neumáticos guardados",
+      "tiresHint": "Los clientes ven los neumáticos que les guardas, con la profundidad del dibujo."
+    },
+    "bar": {
+      "label": "Guardar los ajustes del portal del cliente",
+      "unsaved": "Tienes cambios sin guardar",
+      "saved": "Todo guardado",
+      "discard": "Descartar cambios",
+      "save": "Guardar cambios",
+      "open": "Abrir el portal como cliente",
+      "openOff": "Activa el portal y guarda para abrirlo."
+    },
+    "savedToast": "Ajustes del portal del cliente guardados"
   },
   "email": {
     "title": "Proveedor de correo",
@@ -1989,13 +2042,13 @@
     "noMembers": "No se encontraron miembros del equipo",
     "addRecipient": "Agregar destinatario...",
     "searchMembers": "Buscar miembros...",
-    "sendNow": "Enviar ahora",
-    "sentNow": "Informe enviado correctamente",
     "newSchedule": "Nuevo programa",
     "editSchedule": "Editar programa",
     "edit": "Editar",
     "cancel": "Cancelar",
     "sent": "enviados",
+    "sendNow": "Enviar ahora",
+    "sentNow": "Informe enviado correctamente",
     "emptyTitle": "Sin informes programados",
     "emptyDescription": "Cree un programa para generar y enviar informes automáticamente a su equipo.",
     "sectionLabels": {
@@ -2847,9 +2900,9 @@
       "uploading": "Subiendo…",
       "width": "Ancho del logotipo",
       "hint": "Independiente del logotipo de la empresa. Al subirlo se recorta y se prepara para el correo. PNG, JPEG o WebP de hasta 4 MB.",
-      "position": "Posición",
       "tooLarge": "La imagen debe pesar menos de 4 MB",
-      "uploadFailed": "No se pudo subir el logotipo"
+      "uploadFailed": "No se pudo subir el logotipo",
+      "position": "Posición"
     },
     "image": {
       "empty": "No hay ninguna imagen subida. El bloque no imprime nada hasta que haya una.",

@@ -977,6 +977,11 @@
     "paymentReceivedDescription": "Wysyłana gdy platnosc zostanie zarejestrowana dla faktury.",
     "saveSmsTemplates": "Zapisz szablony SMS",
     "smsTemplateSaved": "Ustawienia szablonów SMS zapisane",
+    "layoutTitle": "Układ faktury",
+    "layoutDescription": "Dostosuj kolejność i widoczność sekcji w fakturach i wycenach.",
+    "layoutSaved": "Układ zapisany pomyślnie",
+    "layoutDocInvoice": "Faktura",
+    "layoutDocQuote": "Wycena",
     "smsDefaults": {
       "invoiceReady": "Faktura od {company_name} jest gotowa. Zobacz ją tutaj: {share_link}\nPozdrawiamy {company_name} - {current_user}",
       "quoteReady": "Twoja wycena jest gotowa do przeglądu. Zobacz ją tutaj: {share_link}",
@@ -997,11 +1002,6 @@
       "rose": "Różowy",
       "indigo": "Indygo"
     },
-    "layoutTitle": "Układ faktury",
-    "layoutDescription": "Dostosuj kolejność i widoczność sekcji w fakturach i wycenach.",
-    "layoutSaved": "Układ zapisany pomyślnie",
-    "layoutDocInvoice": "Faktura",
-    "layoutDocQuote": "Wycena",
     "goToLayout": "Układ i sekcje",
     "openDesigner": "Otwórz kreator",
     "designerIntro": "Wybierz punkt wyjścia, a potem otwórz kreator, aby zmienić wszystko.",
@@ -1699,55 +1699,108 @@
   },
   "portal": {
     "title": "Portal klienta",
-    "description": "Pozwól swoim klientom logować się i przeglądać swoje pojazdy, faktury, wyceny i inspekcje. Klienci mogą również wysyłać zapytania serwisowe.",
+    "description": "Twoi klienci logują się, aby śledzić swoje zlecenie, odpowiadać na wyceny, płacić faktury, umawiać wizyty i pisać do Ciebie.",
     "enablePortal": "Włącz portal klienta",
-    "enablePortalHint": "Klienci z adresem e-mail mogą logować się za pomocą magicznego linku",
-    "enabled": "Portal klienta wlaczony",
-    "disabled": "Portal klienta wylaczony",
-    "failedUpdate": "Nie udało się zaktualizować ustawienia",
-    "customSlug": "Niestandardowy slug portalu",
-    "save": "Zapisz",
-    "slugSaved": "Slug portalu zapisany",
-    "slugRemoved": "Slug portalu usunięty",
-    "failedUpdateSlug": "Nie udało się zaktualizować sluga",
-    "slugHint": "Małe litery, cyfry, myślniki i podkreślenia. 3-48 znaków. Pozostaw puste, aby użyć domyślnego URL.",
-    "portalUrl": "URL portalu",
-    "urlCopied": "URL portalu skopiowany",
-    "shareHint": "Udostępnij ten link swoim klientom, aby mogli zalogować się do swojego portalu.",
+    "enablePortalHint": "Klienci logują się linkiem wysłanym na e-mail lub telefon. Nie muszą pamiętać hasła.",
+    "failedUpdate": "Nie udało się zapisać ustawień",
+    "customSlug": "Adres portalu",
+    "slugHint": "Małe litery, cyfry, myślniki i podkreślenia, od 3 do 48 znaków. Zostaw puste, aby użyć domyślnego adresu.",
+    "portalUrl": "Link do Twojego portalu",
+    "urlCopied": "Link skopiowany",
+    "shareHint": "Udostępnij ten link klientom, aby mogli się zalogować.",
     "serviceRequestAlertsHint": "Zgłoszenia serwisowe z portalu zawsze pojawiają się w dzwonku powiadomień. Możesz je otrzymywać także e-mailem.",
-    "serviceRequestAlertsLink": "Ustawienia powiadomień →",
+    "serviceRequestAlertsLink": "Ustawienia powiadomień",
     "descriptionLabel": "O Twoim warsztacie",
     "descriptionPlaceholder": "Opowiedz klientom o swoim warsztacie, oferowanych usługach i tym, co Cię wyróżnia.",
-    "descriptionHint": "Wyświetlane odwiedzającym na górze strony portalu.",
-    "hoursLabel": "Godziny otwarcia",
-    "hoursPlaceholder": "Pn-Pt: 8:00-17:00\nSob: 9:00-13:00\nNd: Zamknięte",
-    "hoursHint": "Tekst dowolny. Użyj nowej linii, aby wymienić każdy dzień osobno.",
-    "contentSaved": "Treść portalu zapisana",
-    "background": {
-      "title": "Tło portalu",
-      "description": "Wybierz wygląd strony głównej portalu klienta.",
-      "typeNone": "Brak",
-      "typeTemplate": "Szablon",
-      "typeImage": "Własne zdjęcie",
-      "chooseTemplate": "Wybierz szablon",
-      "uploadLabel": "Zdjęcie tła",
-      "upload": "Prześlij zdjęcie",
-      "replace": "Zamień zdjęcie",
-      "remove": "Usuń",
-      "uploadHint": "JPG, PNG lub WebP. Maks. 8 MB. Zalecane co najmniej 1600×900.",
-      "uploading": "Przesyłanie tła…",
-      "uploaded": "Tło zaktualizowane",
-      "uploadFailed": "Nie udało się przesłać tła",
-      "templateNames": {
-        "default": "Subtelny",
-        "sunrise": "Wschód słońca",
-        "ocean": "Ocean",
-        "forest": "Las",
-        "slate": "Łupek",
-        "sand": "Piasek"
+    "descriptionHint": "Wyświetlane na stronie logowania Twojego portalu.",
+    "copyUrl": "Skopiuj link"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "moj-warsztat",
+    "slugUnsaved": "Ten adres zacznie działać po zapisaniu.",
+    "slugInvalid": "Użyj od 3 do 48 małych liter, cyfr, myślników lub podkreśleń, zaczynając i kończąc literą lub cyfrą.",
+    "slugReserved": "To słowo jest zarezerwowane. Wybierz inny adres.",
+    "slugTaken": "Inny warsztat używa już tego adresu. Wybierz inny.",
+    "hours": {
+      "title": "Godziny otwarcia",
+      "fromCalendar": "Portal pokazuje godziny otwarcia i dni zamknięcia z kalendarza warsztatu.",
+      "link": "Ustawienia godzin otwarcia",
+      "typedNote": "Strona logowania nadal pokazuje godziny wpisane tutaj wcześniej, bo w kalendarzu nie ustawiono jeszcze godzin otwarcia. Ustaw je tam, a portal pokaże je zamiast tych.",
+      "typedLabel": "Obecnie widoczne na stronie logowania"
+    },
+    "look": {
+      "title": "Wygląd portalu klienta",
+      "description": "Jeden wybór ustawia stronę logowania i wszystkie strony, które klienci widzą potem. Klienci nie mogą go zmienić."
+    },
+    "theme": {
+      "legend": "Motyw",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Jasny i spokojny"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Ciemna tablica z boksu"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Jak gazeta, stonowany"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Twój kolor, w dużym wydaniu"
       }
     },
-    "copyUrl": "Kopiuj adres URL portalu"
+    "colour": {
+      "title": "Twój kolor",
+      "description": "Używany na przyciskach i wyróżnieniach w każdym motywie.",
+      "swatches": "Proponowane kolory",
+      "orange": "Pomarańczowy",
+      "blue": "Niebieski",
+      "green": "Zielony",
+      "red": "Czerwony",
+      "black": "Czarny",
+      "hexLabel": "Kolor jako kod hex",
+      "invalid": "To nie jest kolor. Wpisz go jako kod hex, np. #1D4ED8.",
+      "usingTheme": "Używany jest kolor motywu {theme}, {hex}.",
+      "themeColour": "Kolor motywu {theme} to {hex}.",
+      "useTheme": "Użyj koloru motywu",
+      "sample": "Umów wizytę",
+      "inkLight": "Tekst na tym kolorze jest biały, więc pozostaje czytelny.",
+      "inkDark": "Tekst na tym kolorze jest czarny, więc pozostaje czytelny.",
+      "faint": "Ten kolor słabo odcina się od tła motywu {theme}. Linki i wyróżnienia mogą być słabo widoczne."
+    },
+    "cover": {
+      "title": "Zdjęcie w tle i logo",
+      "description": "Wyświetlane na stronie logowania. Logo pochodzi z ustawień firmy.",
+      "companyLink": "Ustawienia firmy",
+      "hint": "PNG, JPEG lub WebP, do 8 MB.",
+      "none": "Brak zdjęcia w tle",
+      "alt": "Zdjęcie w tle na stronie logowania",
+      "upload": "Prześlij zdjęcie",
+      "replace": "Zmień zdjęcie",
+      "remove": "Usuń zdjęcie",
+      "uploading": "Przesyłanie",
+      "uploadFailed": "Nie udało się przesłać zdjęcia"
+    },
+    "features": {
+      "title": "Co dostają klienci",
+      "description": "Części portalu, które możesz wyłączyć.",
+      "messages": "Wiadomości w portalu",
+      "messagesHint": "Klienci piszą do Ciebie z portalu. Ich wiadomości trafiają do Twojej skrzynki Wiadomości.",
+      "tires": "Pokazuj przechowywane opony",
+      "tiresHint": "Klienci widzą opony, które dla nich przechowujesz, wraz z głębokością bieżnika."
+    },
+    "bar": {
+      "label": "Zapisz ustawienia portalu klienta",
+      "unsaved": "Masz niezapisane zmiany",
+      "saved": "Wszystko zapisane",
+      "discard": "Odrzuć zmiany",
+      "save": "Zapisz zmiany",
+      "open": "Otwórz portal jako klient",
+      "openOff": "Włącz portal i zapisz, aby go otworzyć."
+    },
+    "savedToast": "Ustawienia portalu klienta zapisane"
   },
   "email": {
     "title": "Dostawca poczty e-mail",
@@ -1989,13 +2042,13 @@
     "noMembers": "Nie znaleziono członków zespołu",
     "addRecipient": "Dodaj odbiorcę...",
     "searchMembers": "Szukaj członków...",
-    "sendNow": "Wyślij teraz",
-    "sentNow": "Raport wysłany pomyślnie",
     "newSchedule": "Nowy harmonogram",
     "editSchedule": "Edytuj harmonogram",
     "edit": "Edytuj",
     "cancel": "Anuluj",
     "sent": "wysłano",
+    "sendNow": "Wyślij teraz",
+    "sentNow": "Raport wysłany pomyślnie",
     "emptyTitle": "Brak zaplanowanych raportów",
     "emptyDescription": "Utwórz harmonogram, aby automatycznie generować i wysyłać raporty do zespołu.",
     "sectionLabels": {
@@ -2847,9 +2900,9 @@
       "uploading": "Przesyłanie…",
       "width": "Szerokość logo",
       "hint": "Niezależne od logo firmy. Przy przesyłaniu jest przycinane i przygotowywane do wiadomości e-mail. PNG, JPEG lub WebP do 4 MB.",
-      "position": "Położenie",
       "tooLarge": "Obraz musi mieć mniej niż 4 MB",
-      "uploadFailed": "Nie udało się przesłać logo"
+      "uploadFailed": "Nie udało się przesłać logo",
+      "position": "Położenie"
     },
     "image": {
       "empty": "Nie przesłano obrazu. Blok nic nie drukuje, dopóki go nie ma.",

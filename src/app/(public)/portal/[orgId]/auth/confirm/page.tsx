@@ -1,13 +1,15 @@
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { PortalLanding } from '@/features/portal/Components/PortalLanding'
+import { PortalButton } from '@/features/portal/Components/Ui'
 import {
   checkSignInLink,
   SIGN_IN_LINK_COOKIE,
-  SIGN_IN_LINK_ERRORS,
+  type SignInErrorCode,
 } from '@/features/portal/Lib/signInLink'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { db } from '@/lib/db'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 
 export const dynamic = 'force-dynamic'
@@ -24,8 +26,7 @@ export default async function PortalConfirmSignInPage({
 }) {
   const { orgId: orgParam } = await params
   const loginUrl = `/portal/${orgParam}/auth/login`
-  const toLogin = (error: string): never =>
-    redirect(`${loginUrl}?error=${encodeURIComponent(error)}`)
+  const toLogin = (error: SignInErrorCode): never => redirect(`${loginUrl}?error=${error}`)
 
   const org = await resolvePortalOrg(orgParam)
   if (!org) redirect(loginUrl)
@@ -35,27 +36,41 @@ export default async function PortalConfirmSignInPage({
   if (!token) redirect(loginUrl)
 
   const link = await checkSignInLink(org.id, token)
-  if (!link.ok) return toLogin(SIGN_IN_LINK_ERRORS[link.problem])
+  if (!link.ok) return toLogin(link.problem)
 
-  const t = await getTranslations('portal.login')
+  const [t, tFrame, settings] = await Promise.all([
+    getTranslations('portal.login'),
+    getTranslations('portal.signIn'),
+    db.appSetting.findMany({
+      where: {
+        organizationId: org.id,
+        key: { in: [SETTING_KEYS.PORTAL_DESCRIPTION, SETTING_KEYS.PORTAL_HOURS] },
+      },
+      select: { key: true, value: true },
+    }),
+  ])
+  const get = (key: string) => settings.find((s) => s.key === key)?.value ?? null
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-muted/30 px-4 py-10">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>{t('confirmTitle', { workshop: org.name })}</CardTitle>
-          <CardDescription>{t('confirmDescription', { email: link.email })}</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form method="post" action={`/portal/${orgParam}/auth/verify`}>
-            {/* Which link this page was drawn for; see the verify route. */}
-            <input type="hidden" name="link" value={link.id} />
-            <Button type="submit" size="lg" className="w-full">
-              {t('confirmButton')}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <PortalLanding
+      orgParam={orgParam}
+      organizationId={org.id}
+      orgName={org.name}
+      description={get(SETTING_KEYS.PORTAL_DESCRIPTION)}
+      hoursText={get(SETTING_KEYS.PORTAL_HOURS)}
+      eyebrow={tFrame('confirmEyebrow')}
+      heading={t('confirmTitle', { workshop: org.name })}
+    >
+      <p className="p-muted text-base leading-normal">
+        {t('confirmDescription', { email: link.email })}
+      </p>
+      <form method="post" action={`/portal/${orgParam}/auth/verify`}>
+        {/* Which link this page was drawn for; see the verify route. */}
+        <input type="hidden" name="link" value={link.id} />
+        <PortalButton type="submit" variant="accent" size="lg" block>
+          {t('confirmButton')}
+        </PortalButton>
+      </form>
+    </PortalLanding>
   )
 }

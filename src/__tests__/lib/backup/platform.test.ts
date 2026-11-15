@@ -103,15 +103,18 @@ describe('platformBackupConfig', () => {
     expect(String(error.mock.calls[0][0])).toMatch(/ENDPOINT/)
   })
 
-  it.each([['ab'], ['Has_Underscore'], ['-leading-dash'], ['double--dash'], ['a'.repeat(64)]])(
-    'refuses the bucket %s',
-    async (bucket) => {
-      Object.assign(process.env, FULL, { PLATFORM_BACKUP_S3_BUCKET: bucket })
-      const { platformBackupConfig } = await load()
-      expect(platformBackupConfig()).toBeNull()
-      expect(String(error.mock.calls[0][0])).toMatch(/BUCKET/)
-    }
-  )
+  it.each([
+    ['ab'],
+    ['Has_Underscore'],
+    ['-leading-dash'],
+    ['double--dash'],
+    ['a'.repeat(64)],
+  ])('refuses the bucket %s', async (bucket) => {
+    Object.assign(process.env, FULL, { PLATFORM_BACKUP_S3_BUCKET: bucket })
+    const { platformBackupConfig } = await load()
+    expect(platformBackupConfig()).toBeNull()
+    expect(String(error.mock.calls[0][0])).toMatch(/BUCKET/)
+  })
 
   it('refuses a master key shorter than 32 characters', async () => {
     Object.assign(process.env, FULL, { PLATFORM_BACKUP_MASTER_KEY: 'x'.repeat(31) })
@@ -138,28 +141,30 @@ describe('platformRepositoryPassword', () => {
     expect(platformRepositoryPassword(`${key}x`, 'org1')).not.toBe(a)
   })
 
-  it.each([['org-1'], ['../org1'], ['org1/x'], ['']])(
-    'refuses the organisation id %j',
-    async (organizationId) => {
-      const { platformRepositoryPassword, platformRepository } = await load()
-      expect(() => platformRepositoryPassword(FULL.PLATFORM_BACKUP_MASTER_KEY, organizationId)).toThrow(
-        /Unexpected organisation id/
+  it.each([
+    ['org-1'],
+    ['../org1'],
+    ['org1/x'],
+    [''],
+  ])('refuses the organisation id %j', async (organizationId) => {
+    const { platformRepositoryPassword, platformRepository } = await load()
+    expect(() =>
+      platformRepositoryPassword(FULL.PLATFORM_BACKUP_MASTER_KEY, organizationId)
+    ).toThrow(/Unexpected organisation id/)
+    expect(() =>
+      platformRepository(
+        {
+          endpoint: FULL.PLATFORM_BACKUP_S3_ENDPOINT,
+          bucket: FULL.PLATFORM_BACKUP_S3_BUCKET,
+          region: 'auto',
+          accessKeyId: 'a',
+          secretAccessKey: 'b',
+          masterKey: FULL.PLATFORM_BACKUP_MASTER_KEY,
+        },
+        organizationId
       )
-      expect(() =>
-        platformRepository(
-          {
-            endpoint: FULL.PLATFORM_BACKUP_S3_ENDPOINT,
-            bucket: FULL.PLATFORM_BACKUP_S3_BUCKET,
-            region: 'auto',
-            accessKeyId: 'a',
-            secretAccessKey: 'b',
-            masterKey: FULL.PLATFORM_BACKUP_MASTER_KEY,
-          },
-          organizationId
-        )
-      ).toThrow(/Unexpected organisation id/)
-    }
-  )
+    ).toThrow(/Unexpected organisation id/)
+  })
 })
 
 describe('platformBackupAllowed', () => {

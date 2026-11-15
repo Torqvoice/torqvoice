@@ -210,6 +210,8 @@ describe('the import route rewrites every restored file column', () => {
     'StatusReport.videoUrl': /statusReport[\s\S]{0,400}?fields: \['videoUrl'\]/,
     'WhatsappMessage.mediaUrl': /whatsappMessage[\s\S]{0,400}?fields: \['mediaUrl'\]/,
     'EmailAttachment.url': /emailAttachment[\s\S]{0,400}?fields: \['url'\]/,
+    'PortalMessage.attachments': /portalMessage[\s\S]{0,400}?fields: \['attachments'\]/,
+    'ServiceRequest.attachments': /serviceRequest[\s\S]{0,400}?fields: \['attachments'\]/,
     'AppSetting.value': /const value = \(rewriteFileUrl\(s\.value/,
     'DocumentDesign.template': /template: rewriteFileUrlsWithin\(/,
     'EmailTemplate.theme': /theme: rewriteAssets\(/,

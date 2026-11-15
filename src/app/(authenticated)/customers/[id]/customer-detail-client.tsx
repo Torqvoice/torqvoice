@@ -75,11 +75,16 @@ import { TelegramQrCode } from '@/features/telegram/Components/TelegramQrCode'
 import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
+import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
 
 interface ServiceRequestItem {
   id: string
   description: string
   preferredDate: Date | null
+  /** "morning" or "afternoon", when the customer said which suits. */
+  preferredTime?: string | null
+  /** Photos and video the customer sent from the portal, as stored file urls. */
+  attachments?: string[]
   status: string
   adminNotes: string | null
   createdAt: Date
@@ -1076,7 +1081,8 @@ function DocumentList({
   )
 }
 
-function ServiceRequestCard({
+/** Exported for its test: the days it prints are the workshop's, not the viewer's. */
+export function ServiceRequestCard({
   request,
   smsEnabled,
   customerPhone,
@@ -1090,6 +1096,10 @@ function ServiceRequestCard({
   customerId: string
 }) {
   const t = useTranslations('customers.serviceRequests')
+  // The wished day is stored as midnight on the workshop's clock, so it is
+  // read back on that clock: in the browser's zone it is the day before for
+  // anyone looking from further west.
+  const { formatDate } = useFormatDate()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [notes, setNotes] = useState(request.adminNotes ?? '')
@@ -1176,15 +1186,21 @@ function ServiceRequestCard({
                 {request.description}
               </p>
               <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
-                <span>
-                  {t('submitted', { date: new Date(request.createdAt).toLocaleDateString() })}
-                </span>
+                <span>{t('submitted', { date: formatDate(new Date(request.createdAt)) })}</span>
                 {request.preferredDate && (
                   <span>
-                    {t('preferred', { date: new Date(request.preferredDate).toLocaleDateString() })}
+                    {t(
+                      request.preferredTime === 'morning'
+                        ? 'preferredMorning'
+                        : request.preferredTime === 'afternoon'
+                          ? 'preferredAfternoon'
+                          : 'preferred',
+                      { date: formatDate(new Date(request.preferredDate)) }
+                    )}
                   </span>
                 )}
               </div>
+              <ServiceRequestFiles urls={request.attachments} />
               {request.adminNotes && !showNotes && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   <span className="font-medium">{t('staffNotes')}</span> {request.adminNotes}
