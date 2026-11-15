@@ -224,12 +224,17 @@ async function alertIfOverdue(
   await reportOverdue(connectionId, organizationId, lastGood)
 }
 
-/** How often the platform cycle runs: a system setting, hourly unless changed. */
-export async function platformBackupFrequency(): Promise<BackupFrequency> {
+/**
+ * How often the platform cycle runs: a system setting, hourly unless changed.
+ * 'off' stops the schedule altogether; the torqvoice.com admin offers it for
+ * staging only, where the workshops are test data.
+ */
+export async function platformBackupFrequency(): Promise<BackupFrequency | 'off'> {
   const row = await db.systemSetting.findUnique({
     where: { key: SYSTEM_SETTING_KEYS.PLATFORM_BACKUP_FREQUENCY },
     select: { value: true },
   })
+  if (row?.value === 'off') return 'off'
   const value = row?.value as BackupFrequency | undefined
   return value && PLATFORM_FREQUENCIES.includes(value) ? value : 'hourly'
 }
@@ -243,6 +248,10 @@ export async function platformBackupFrequency(): Promise<BackupFrequency> {
 export async function processDuePlatformBackups(now = new Date()): Promise<number> {
   if (!platformBackupConfig()) return 0
   const frequency = await platformBackupFrequency()
+  // Off: nothing is queued, paused, purged or reported overdue. The
+  // repositories stay as they are, and a backup or restore asked for by
+  // hand still runs.
+  if (frequency === 'off') return 0
   const settings = { ...BACKUP_SETTING_DEFAULTS, frequency, time: '02:00' }
   const organizations = await db.organization.findMany({
     select: { id: true, platformBackup: true },

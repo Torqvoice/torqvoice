@@ -77,8 +77,8 @@ export async function platformBackupOverview(
     })
   }
   let nextRunAt: string | null = null
-  if (active) {
-    const frequency = await platformBackupFrequency()
+  const frequency = active ? await platformBackupFrequency() : 'off'
+  if (frequency !== 'off') {
     const settings = { ...BACKUP_SETTING_DEFAULTS, frequency, time: '02:00' }
     const timeZone = await workshopTimeZone(organizationId)
     nextRunAt = nextRunAfter(

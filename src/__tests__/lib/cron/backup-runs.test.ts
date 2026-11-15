@@ -567,6 +567,8 @@ describe('platformBackupFrequency', () => {
     expect(await platformBackupFrequency()).toBe('daily')
     h.systemSettings['platformBackup.frequency'] = 'weekly'
     expect(await platformBackupFrequency()).toBe('hourly')
+    h.systemSettings['platformBackup.frequency'] = 'off'
+    expect(await platformBackupFrequency()).toBe('off')
   })
 })
 
@@ -603,6 +605,17 @@ describe('processDuePlatformBackups', () => {
     expect(await processDuePlatformBackups(now)).toBe(0)
     expect(queueBackupRun).not.toHaveBeenCalled()
     expect(h.platform.size).toBe(0)
+  })
+
+  it('queues nothing and reports nothing overdue while the cycle is off', async () => {
+    h.systemSettings['platformBackup.frequency'] = 'off'
+    addOrg('orga', true)
+    addOrg('orgb', true, { lastScheduledAt: new Date(now.getTime() - 72 * HOUR) })
+
+    expect(await processDuePlatformBackups(now)).toBe(0)
+    expect(queueBackupRun).not.toHaveBeenCalled()
+    expect(reportOverdue).not.toHaveBeenCalled()
+    expect(h.platform.has('orga')).toBe(false)
   })
 
   it('queues a workshop whose plan includes them, and makes its row with lastScheduledAt', async () => {
