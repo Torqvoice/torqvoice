@@ -1,3 +1,4 @@
+import { requestPathname } from '@/lib/request-path'
 import type { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getLocale, getMessages } from 'next-intl/server'
@@ -129,7 +130,7 @@ export default async function RootLayout({
   // workshop's branding, not ours. A white-label licence exists precisely so
   // Torqvoice does not appear on that paperwork, and a platform notice there
   // would be both off-brand and none of the customer's business.
-  const pathname = (await headers()).get('x-pathname')
+  const pathname = requestPathname(await headers())
   const broadcast = isCustomerFacingPath(pathname) ? null : await getBroadcast()
   // A custom icon is declared through generateMetadata, apple icon included.
   const branding = await getAppBranding()
