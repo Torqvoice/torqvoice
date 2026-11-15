@@ -13,7 +13,9 @@ import { isDeclaredVideo, sniffDeclaredVideo, type VideoContainer } from '@/lib/
 import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
- * Attaches a photo or video shot in the bay to a job.
+ * Attaches a photo or video shot in the bay to a job, or a PDF the
+ * technician has on the phone: a supplier's delivery note, an alignment
+ * printout, a calibration report.
  *
  * One request, not the web's two. The browser uploads a file, gets a URL back
  * and then posts that URL as an attachment, which is fine on a desk and wrong
@@ -23,10 +25,11 @@ import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
  */
 
 /**
- * Deliberately narrower than the web's list. This endpoint exists for a camera,
- * so it accepts what a camera produces. PDFs, spreadsheets and text files have
- * no business arriving from a phone in a bay, and every format accepted is a
- * parser somewhere that has to be right.
+ * Deliberately narrower than the web's list. This endpoint exists for a phone
+ * in a bay, so it accepts what a camera produces and the one document format
+ * a technician is actually handed: a PDF. Spreadsheets and text files stay
+ * out, because every format accepted is a parser somewhere that has to be
+ * right.
  */
 const ALLOWED = new Map<string, string>([
   ['image/jpeg', 'jpg'],
@@ -35,7 +38,20 @@ const ALLOWED = new Map<string, string>([
   ['image/heic', 'heic'],
   ['video/mp4', 'mp4'],
   ['video/quicktime', 'mov'],
+  ['application/pdf', 'pdf'],
 ])
+
+const PDF_TYPE = 'application/pdf'
+
+/**
+ * A PDF opens with its signature. The specification lets a little junk come
+ * first and readers accept it within the first kilobyte, so that is where it
+ * is looked for. A file that only claims the type is not kept as one.
+ */
+function isPdf(bytes: Uint8Array): boolean {
+  const head = Buffer.from(bytes.subarray(0, 1024)).toString('latin1')
+  return head.includes('%PDF-')
+}
 
 /**
  * Smaller than the web's 500MB. A phone on shop wifi uploading half a gigabyte
@@ -51,6 +67,9 @@ const MAX_PHOTO_BYTES = 60 * 1024 * 1024
  * and a short 4K take is already past it. Those are scaled down once saved.
  */
 const MAX_VIDEO_BYTES = 250 * 1024 * 1024
+
+/** A scanned report of many pages fits well inside this; nothing larger is a report. */
+const MAX_DOCUMENT_BYTES = 25 * 1024 * 1024
 
 // The multipart framing around the file adds a little to the body. The
 // margin keeps a file just under the cap from being refused for it.
@@ -98,7 +117,11 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       if (file.size === 0) {
         return apiError(400, 'invalid_request', 'That file is empty.')
       }
-      const maxBytes = isDeclaredVideo(file.type) ? MAX_VIDEO_BYTES : MAX_PHOTO_BYTES
+      const maxBytes = isDeclaredVideo(file.type)
+        ? MAX_VIDEO_BYTES
+        : file.type === PDF_TYPE
+          ? MAX_DOCUMENT_BYTES
+          : MAX_PHOTO_BYTES
       if (file.size > maxBytes) {
         return apiError(
           400,
@@ -119,7 +142,12 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         }
       }
 
-      const category = container ? 'video' : 'image'
+      const document = file.type === PDF_TYPE
+      if (document && !isPdf(bytes)) {
+        return apiError(400, 'invalid_request', 'That file is not a PDF we can read.')
+      }
+
+      const category = container ? 'video' : document ? 'document' : 'image'
       const description = (form.get('description') as string | null)?.slice(0, 500) || undefined
 
       const limitKey = CATEGORY_LIMIT[category]
@@ -133,7 +161,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
           return apiError(
             409,
             'conflict',
-            `This job already has the maximum of ${max} ${category === 'video' ? 'videos' : 'photos'}.`
+            `This job already has the maximum of ${max} ${
+              category === 'video' ? 'videos' : category === 'document' ? 'documents' : 'photos'
+            }.`
           )
         }
       }
