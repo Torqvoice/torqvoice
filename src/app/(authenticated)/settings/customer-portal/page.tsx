@@ -8,6 +8,11 @@ import { db } from '@/lib/db'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { getLayoutData } from '@/lib/get-layout-data'
 import { FeatureLocked } from '../feature-locked-message'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('customerPortal')
+}
 
 export default async function CustomerPortalSettingsPage() {
   const data = await getLayoutData()

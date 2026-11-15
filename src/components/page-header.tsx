@@ -25,6 +25,7 @@ import { DocsLink } from '@/components/docs-link'
 import { RunningClockPill } from '@/features/time-tracking/Components/RunningClockPill'
 import { useServiceType } from '@/components/service-type-context'
 import { SETTINGS_PAGES } from '@/features/settings/Lib/settingsPages'
+import { cn } from '@/lib/utils'
 
 function SearchTrigger() {
   const t = useTranslations('navigation')
@@ -196,6 +197,24 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/tire-hotel': [{ key: 'settings', href: '/settings' }, { key: 'tireHotel' }],
 }
 
+/**
+ * Pages that print a heading of their own (the vehicle's name, the settings
+ * title). Everywhere else the last crumb is the only name the page has on
+ * screen, so it is the page's h1: a screen reader's "jump to the heading"
+ * then lands on it, and the page has one.
+ */
+const OWN_HEADING: RegExp[] = [
+  /^\/(settings|admin)(\/|$)/,
+  /^\/vehicles\/(?!inspection-reminders)[^/]+/,
+  /^\/customers\/[^/]+/,
+  /^\/inventory\/[^/]+/,
+  /^\/tire-hotel\/(?!storage$)[^/]+/,
+  /^\/fault-codes$/,
+  /^\/quotes\/[^/]+/,
+  /^\/inspections\/[^/]+/,
+  /^\/sales\/[^/]+/,
+]
+
 /** A marine workshop services vessels, so its vehicle crumbs say so. */
 const marineBreadcrumbKeys: Record<string, string> = {
   vehicles: 'vessels',
@@ -203,7 +222,16 @@ const marineBreadcrumbKeys: Record<string, string> = {
   vehicleDetails: 'vesselDetails',
 }
 
-export function PageHeader() {
+export function PageHeader({
+  ownHeading,
+}: {
+  /**
+   * Says whether the page prints its own h1, for a route that does on one
+   * render and not on another (a fault code that was found, and one that was
+   * not). Left out, the route decides (OWN_HEADING).
+   */
+  ownHeading?: boolean
+} = {}) {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
   const { daysUntilExpiry, unverifiedDaysLeft, dismissed, dismiss } = useLicenseExpiry()
@@ -219,9 +247,11 @@ export function PageHeader() {
   )
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
+  const ta = useTranslations('common.a11y')
   const isMarine = useServiceType() === 'marine'
   const crumb = (key: string) => t(isMarine ? (marineBreadcrumbKeys[key] ?? key) : key)
   const tSettings = useTranslations('settings')
+  const tBilling = useTranslations('billing')
   const label = (segment: BreadcrumbSegment) => segment.label ?? crumb(segment.key)
 
   // A set's own page is still the tire hotel, and somebody reading a set is
@@ -258,6 +288,21 @@ export function PageHeader() {
     // /quotes/[id]
     else if (/^\/quotes\/[^/]+$/.test(pathname)) {
       segments = [{ key: 'quotes', href: '/quotes' }, { key: 'quoteDetails' }]
+    }
+    // /billing/recurring, named as the page names itself
+    else if (pathname === '/billing/recurring') {
+      segments = [
+        { key: 'billing', href: '/billing' },
+        { key: 'recurring', label: tBilling('recurring.title') },
+      ]
+    }
+    // /vehicles/inspection-reminders/[id], one campaign of the reminders
+    else if (/^\/vehicles\/inspection-reminders\/[^/]+$/.test(pathname)) {
+      segments = [
+        { key: 'vehicles', href: '/vehicles' },
+        { key: 'inspectionReminders', href: '/vehicles/inspection-reminders' },
+        { key: 'inspectionReminders' },
+      ]
     }
     // /vehicles/[id]/service/new
     else if (/^\/vehicles\/[^/]+\/service\/new$/.test(pathname)) {
@@ -303,12 +348,14 @@ export function PageHeader() {
     }
   }
 
+  const ownsHeading = ownHeading ?? OWN_HEADING.some((pattern) => pattern.test(pathname))
+
   return (
     <>
       <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 bg-background px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-        <Breadcrumb>
+        <Breadcrumb aria-label={ta('breadcrumb')}>
           <BreadcrumbList>
             {segments.map((segment, i) => {
               const isLast = i === segments.length - 1
@@ -317,11 +364,24 @@ export function PageHeader() {
                   <BreadcrumbItem key={i}>
                     {/* A trail of one is not a trail. Pages that sit at the
                         top level get their crumb styled as the page title. */}
-                    <BreadcrumbPage
-                      className={segments.length === 1 ? 'text-base font-semibold' : undefined}
-                    >
-                      {label(segment)}
-                    </BreadcrumbPage>
+                    {ownsHeading ? (
+                      <BreadcrumbPage
+                        className={segments.length === 1 ? 'text-base font-semibold' : undefined}
+                      >
+                        {label(segment)}
+                      </BreadcrumbPage>
+                    ) : (
+                      <h1
+                        data-slot="breadcrumb-page"
+                        aria-current="page"
+                        className={cn(
+                          'text-foreground font-normal',
+                          segments.length === 1 && 'text-base font-semibold'
+                        )}
+                      >
+                        {label(segment)}
+                      </h1>
+                    )}
                   </BreadcrumbItem>
                 )
               }
@@ -399,7 +459,12 @@ export function PageHeader() {
             <Link href="/settings/license" className="font-medium underline hover:no-underline">
               {tn('licenseRenew')}
             </Link>
-            <button type="button" onClick={dismiss} className="p-0.5 rounded hover:bg-black/10">
+            <button
+              type="button"
+              onClick={dismiss}
+              aria-label={ta('dismiss')}
+              className="p-0.5 rounded hover:bg-black/10"
+            >
               <X className="h-3.5 w-3.5" />
             </button>
           </div>

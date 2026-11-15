@@ -1,4 +1,9 @@
 import { ServiceRecordPage } from '@/features/vehicles/Components/service-page/ServiceRecordPage'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('serviceDetails')
+}
 
 // Counter sales (service records without a vehicle) live here; the shared
 // ServiceRecordPage renders vehicle-linked records identically under

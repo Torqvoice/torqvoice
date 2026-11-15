@@ -384,6 +384,7 @@ export function VehiclesClient({
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('searchPlaceholder')}
+              aria-label={t('searchPlaceholder')}
               defaultValue={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="h-9 pl-9"

@@ -20,6 +20,11 @@ import { getLocale } from 'next-intl/server'
 import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { getFeatures } from '@/lib/features'
 import { redirect } from 'next/navigation'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('inspectionDetails')
+}
 
 export default async function InspectionDetailPage({
   params,

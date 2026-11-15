@@ -103,6 +103,7 @@ export function MobileBottomNav({
   const router = useRouter()
   const t = useTranslations('navigation.sidebar')
   const tScan = useTranslations('inventory.barcodeScan')
+  const ta = useTranslations('common.a11y')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [scannerOpen, setScannerOpen] = useState(false)
   const [scannedPart, setScannedPart] = useState<{
@@ -139,7 +140,10 @@ export function MobileBottomNav({
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav
+        aria-label={ta('mainNavigation')}
+        className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+      >
         <div className="grid grid-cols-5">
           {visiblePrimaryItems.map(({ href, icon: Icon, labelKey }) => {
             const isActive = pathname === href || pathname.startsWith(`${href}/`)
@@ -147,9 +151,12 @@ export function MobileBottomNav({
               <Link
                 key={href}
                 href={href}
+                aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'flex flex-col items-center gap-0.5 py-2 text-[10px]',
-                  isActive ? 'text-primary' : 'text-muted-foreground'
+                  // Weight as well as colour, so the current tab does not
+                  // depend on telling amber from grey.
+                  isActive ? 'font-semibold text-primary' : 'text-muted-foreground'
                 )}
               >
                 <Icon className="h-5 w-5" />

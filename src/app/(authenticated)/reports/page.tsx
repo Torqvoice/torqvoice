@@ -12,6 +12,11 @@ import { getTranslations } from 'next-intl/server'
 import { cookies } from 'next/headers'
 import { COMPLETED_ONLY_COOKIE, parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
 import ReportsClient from './reports-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('reports')
+}
 
 export default async function ReportsPage() {
   const t = await getTranslations('reports')

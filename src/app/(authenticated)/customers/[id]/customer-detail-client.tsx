@@ -945,6 +945,7 @@ function DocumentList({
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('documentTable.searchPlaceholder')}
+            aria-label={t('documentTable.searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-9"

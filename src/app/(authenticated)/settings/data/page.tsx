@@ -12,6 +12,11 @@ import {
   hasAnySampleIds,
   parseSampleDataIds,
 } from '@/features/onboarding/Lib/onboardingKeys'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('data')
+}
 
 export default async function DataSettingsPage() {
   const heartbeat = await getBackupHeartbeat()

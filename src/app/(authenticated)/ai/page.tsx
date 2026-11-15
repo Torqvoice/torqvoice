@@ -8,6 +8,11 @@ import { AiChatPage } from '@/features/ai/Components/AiChatPage'
 import { getTranslations } from 'next-intl/server'
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('aiAssistant')
+}
 
 /**
  * The workshop-wide assistant: a chat that answers by querying this

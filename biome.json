@@ -21,6 +21,23 @@
     "enabled": true,
     "rules": {
       "recommended": false,
+      "a11y": {
+        "recommended": true,
+        "noAutofocus": "off",
+        "noLabelWithoutControl": "off",
+        "noNoninteractiveElementInteractions": "off",
+        "noNoninteractiveTabindex": "off",
+        "noRedundantAlt": "off",
+        "noStaticElementInteractions": "off",
+        "noSvgWithoutTitle": "off",
+        "useAriaPropsSupportedByRole": "off",
+        "useButtonType": "off",
+        "useFocusableInteractive": "off",
+        "useKeyWithClickEvents": "off",
+        "useMediaCaption": "off",
+        "useSemanticElements": "off",
+        "useValidAnchor": "off"
+      },
       "complexity": {
         "noExtraBooleanCast": "error",
         "noUselessCatch": "error"

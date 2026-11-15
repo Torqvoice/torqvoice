@@ -212,7 +212,16 @@
     }
   },
   "richText": {
-    "openLinkHint": "Houd {key} ingedrukt en klik om te openen"
+    "openLinkHint": "Houd {key} ingedrukt en klik om te openen",
+    "placeholder": "Schrijf iets...",
+    "toolbar": "Opmaak",
+    "editor": "Tekst",
+    "bold": "Vet",
+    "italic": "Cursief",
+    "underline": "Onderstrepen",
+    "strikethrough": "Doorhalen",
+    "bulletList": "Lijst met opsommingstekens",
+    "numberedList": "Genummerde lijst"
   },
   "appUpdated": {
     "title": "Er is een nieuwe versie beschikbaar",
@@ -266,5 +275,19 @@
     "choose": "Kiezen...",
     "search": "Zoeken...",
     "noMatch": "Niets gevonden"
+  },
+  "a11y": {
+    "skipToContent": "Naar inhoud springen",
+    "mainNavigation": "Hoofdnavigatie",
+    "close": "Sluiten",
+    "breadcrumb": "Kruimelpad",
+    "more": "Meer",
+    "toggleSidebar": "Zijbalk tonen of verbergen",
+    "sidebar": "Zijbalk",
+    "sidebarDescription": "Het hoofdmenu.",
+    "openCalendar": "Kalender openen",
+    "dismiss": "Sluiten",
+    "selectAll": "Alles selecteren",
+    "selectRow": "{name} selecteren"
   }
 }

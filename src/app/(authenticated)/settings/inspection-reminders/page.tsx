@@ -3,6 +3,11 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { loadInspectionReminderSettings } from '@/features/inspection-reminders/Lib/settings'
 import { InspectionReminderSettings } from './inspection-reminder-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('inspectionReminders')
+}
 
 export default async function InspectionReminderSettingsPage() {
   const result = await getSettings([

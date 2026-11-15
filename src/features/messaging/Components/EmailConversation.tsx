@@ -244,7 +244,7 @@ export function EmailConversation({
             // One card shaped like the mail it becomes: the subject line on
             // top, the body under it, and the send control in a footer, so
             // the subject is not mistaken for a search box above a chat.
-            <div className="overflow-hidden rounded-xl border bg-card shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+            <div className="overflow-hidden rounded-xl border bg-card shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring-soft">
               <label className="flex items-center gap-3 border-b px-3">
                 <span className="shrink-0 text-xs font-medium text-muted-foreground">
                   {t('subjectPlaceholder')}

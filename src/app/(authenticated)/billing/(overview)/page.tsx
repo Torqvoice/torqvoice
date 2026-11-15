@@ -9,6 +9,11 @@ import { ListPage } from '@/components/list-page'
 import { cookies } from 'next/headers'
 import { COMPLETED_ONLY_COOKIE, parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
 import BillingClient from '../billing-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('billing')
+}
 
 export default async function BillingPage({
   searchParams,

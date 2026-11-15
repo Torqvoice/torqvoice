@@ -153,5 +153,13 @@
   },
   "manageKinds": "Gestisci i tipi",
   "photosHeading": "Foto",
-  "previousShort": "precedente"
+  "previousShort": "precedente",
+  "addMark": "Aggiungi segno",
+  "addMarkTitle": "Aggiungi un segno",
+  "addMarkBody": "Scegli il pannello su cui si trova il danno. Il segno viene messo al centro, e puoi spostarlo dopo.",
+  "panel": "Pannello",
+  "choosePanel": "Scegli un pannello",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Sposta il segno al centro del pannello scelto.",
+  "markKeysHint": "Invio apre il segno. I tasti freccia lo spostano, di più con Maiusc."
 }

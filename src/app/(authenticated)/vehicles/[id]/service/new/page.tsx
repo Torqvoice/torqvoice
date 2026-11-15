@@ -5,6 +5,11 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('newServiceRecord')
+}
 
 export default async function NewServicePage({
   params,

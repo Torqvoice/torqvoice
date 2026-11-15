@@ -1,5 +1,10 @@
 import { getUsers } from '@/features/admin/Actions/getUsers'
 import { AdminUsers } from '@/features/admin/Components/admin-users'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('users')
+}
 
 export default async function AdminUsersPage({
   searchParams,

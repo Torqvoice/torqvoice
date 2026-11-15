@@ -212,7 +212,16 @@
     }
   },
   "richText": {
-    "openLinkHint": "Açmak için {key} tuşunu basılı tutup tıklayın"
+    "openLinkHint": "Açmak için {key} tuşunu basılı tutup tıklayın",
+    "placeholder": "Bir şeyler yazın...",
+    "toolbar": "Biçimlendirme",
+    "editor": "Metin",
+    "bold": "Kalın",
+    "italic": "İtalik",
+    "underline": "Altı çizili",
+    "strikethrough": "Üstü çizili",
+    "bulletList": "Madde işaretli liste",
+    "numberedList": "Numaralı liste"
   },
   "appUpdated": {
     "title": "Yeni bir sürüm mevcut",
@@ -266,5 +275,19 @@
     "choose": "Seçin...",
     "search": "Ara...",
     "noMatch": "Eşleşme yok"
+  },
+  "a11y": {
+    "skipToContent": "İçeriğe atla",
+    "mainNavigation": "Ana gezinme",
+    "close": "Kapat",
+    "breadcrumb": "Gezinti yolu",
+    "more": "Daha fazla",
+    "toggleSidebar": "Kenar çubuğunu göster veya gizle",
+    "sidebar": "Kenar çubuğu",
+    "sidebarDescription": "Ana menü.",
+    "openCalendar": "Takvimi aç",
+    "dismiss": "Kapat",
+    "selectAll": "Tümünü seç",
+    "selectRow": "{name} seç"
   }
 }

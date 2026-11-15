@@ -6,6 +6,11 @@ import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { ForecastClient } from './forecast-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('tireForecast')
+}
 
 export default async function TireForecastPage() {
   const session = await getCachedSession()

@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
 import { withOrgNumberLabel } from '../Lib/labelOverrides'
+import { RAIL_FOCUS, railArrow } from './railKeys'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -886,6 +887,11 @@ export function InvoiceDesigner({
   }
 
   const rail = [...layout.sections].sort((a, b) => a.order - b.order)
+  /** The keyboard's reorder: one step up or down the rail from where the section is. */
+  const stepSection = (index: number, direction: -1 | 1) => {
+    const over = rail[index + direction]
+    if (over) moveSection(rail[index].id, over.id)
+  }
   /** Sections that actually drew something with the sample data. */
   const renderedIds = new Set(spec.blocks.map((b) => b.id))
 
@@ -1052,7 +1058,8 @@ export function InvoiceDesigner({
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="flex w-full items-center gap-2 rounded-[7px] py-2 pl-2 pr-2 text-left hover:bg-[#f4f5f7]"
+              aria-current={selected === null ? 'true' : undefined}
+              className={`flex w-full items-center gap-2 rounded-[7px] py-2 pl-2 pr-2 text-left hover:bg-[#f4f5f7] ${RAIL_FOCUS}`}
               style={{ background: selected === null ? '#eef2ff' : undefined }}
             >
               <span className="text-[13px]">🎨</span>
@@ -1063,7 +1070,10 @@ export function InvoiceDesigner({
             {t('sections')}
           </div>
           <div className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-2 pb-3.5">
-            {rail.map((section) => (
+            {rail.map((section, index) => (
+              // The row is not itself a control: the name selects, the grip
+              // moves, the eye shows or hides, each a button of its own. A
+              // click anywhere else on the row still selects, for a mouse.
               <div
                 key={section.id}
                 data-testid={`rail-${section.id}`}
@@ -1076,14 +1086,43 @@ export function InvoiceDesigner({
                   if (dragged && dragged !== section.id) moveSection(dragged, section.id)
                 }}
                 onClick={() => setSelected(section.id)}
-                className="flex cursor-pointer items-center gap-2 rounded-[7px] py-2 pl-1.5 pr-2 hover:bg-[#f4f5f7]"
+                onKeyDown={(e) => {
+                  // Alt with an arrow moves the section from anywhere in its row.
+                  const direction = railArrow(e, true)
+                  if (!direction) return
+                  e.preventDefault()
+                  stepSection(index, direction)
+                }}
+                className="flex cursor-pointer items-center gap-2 rounded-[7px] py-0.5 pl-1 pr-2 hover:bg-[#f4f5f7]"
                 style={{
                   background: selected === section.id ? '#eef2ff' : undefined,
                   opacity: section.visible ? 1 : 0.45,
                 }}
               >
-                <span className="cursor-grab text-[13px] tracking-tighter text-[#b3b7bd]">⠿</span>
-                <span className="flex-1 truncate text-[13.5px]">{sectionName(section.id)}</span>
+                <button
+                  type="button"
+                  aria-label={t('sectionDragHandleKeyboard', { section: sectionName(section.id) })}
+                  title={t('sectionDragHandle')}
+                  onKeyDown={(e) => {
+                    // The grip needs no Alt: arrows are all it answers to.
+                    const direction = railArrow(e, false)
+                    if (!direction) return
+                    e.preventDefault()
+                    e.stopPropagation()
+                    stepSection(index, direction)
+                  }}
+                  className={`cursor-grab rounded px-0.5 py-1 text-[13px] tracking-tighter text-[#b3b7bd] ${RAIL_FOCUS}`}
+                >
+                  ⠿
+                </button>
+                <button
+                  type="button"
+                  aria-current={selected === section.id ? 'true' : undefined}
+                  onClick={() => setSelected(section.id)}
+                  className={`min-w-0 flex-1 truncate rounded py-1.5 text-left text-[13.5px] ${RAIL_FOCUS}`}
+                >
+                  {sectionName(section.id)}
+                </button>
                 {section.column && (
                   <span
                     data-testid={`rail-column-${section.id}`}
@@ -1111,7 +1150,7 @@ export function InvoiceDesigner({
                     e.stopPropagation()
                     patchSection(section.id, { visible: !section.visible })
                   }}
-                  className="px-0.5"
+                  className={`rounded px-0.5 ${RAIL_FOCUS}`}
                   style={{ color: section.visible ? '#5b6068' : '#c9ccd1' }}
                   title={section.visible ? t('sectionShownHint') : t('sectionHiddenHint')}
                 >

@@ -5,6 +5,11 @@ import { getTechnicianUserIds } from '@/features/team/Actions/setMemberTechnicia
 import { getWorkshopDialCode } from '@/features/team/Actions/createTechnicianAccount'
 import { getStandaloneTechnicians } from '@/features/team/Actions/giveTechnicianTheApp'
 import { TeamSettings } from './team-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('team')
+}
 
 export default async function TeamPage({
   searchParams,

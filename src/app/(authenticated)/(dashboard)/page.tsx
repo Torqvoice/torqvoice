@@ -36,6 +36,11 @@ import { getInspectionsDueSummary } from '@/features/vehicles/Actions/inspection
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDayKey } from '@/lib/timezone'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('dashboard')
+}
 
 /** Days the calendar card looks ahead, today included. */
 const CALENDAR_CARD_DAYS = 7

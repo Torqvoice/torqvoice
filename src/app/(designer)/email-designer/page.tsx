@@ -21,6 +21,11 @@ import { loadEmailMessages } from '@/features/email/Lib/emailMessages.server'
 import { presetTemplate } from '@/features/email/Lib/emailPresets'
 import { DismissOnArrival } from '@/components/feature-hint'
 import { EMAIL_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('emailTemplates')
+}
 
 const SETTINGS_PAGE = '/settings/email-templates'
 

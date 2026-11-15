@@ -5,6 +5,11 @@ import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSetting
 import { getStorageOverview } from '@/features/tire-hotel/Actions/storageActions'
 import { PageHeader } from '@/components/page-header'
 import { StorageClient } from './storage-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('tireStorage')
+}
 
 export default async function TireStoragePage() {
   const session = await getCachedSession()

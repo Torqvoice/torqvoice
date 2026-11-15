@@ -11,6 +11,11 @@ import { db } from '@/lib/db'
 import { normalizeCountryCode } from '@/lib/portal-phone'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getOrgSmsProvider } from '@/lib/sms'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.login', 'verifyCode')
+}
 
 export default async function PortalLoginPage({
   params,

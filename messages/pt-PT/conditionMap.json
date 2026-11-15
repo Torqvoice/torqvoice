@@ -153,5 +153,13 @@
   },
   "manageKinds": "Gerir tipos",
   "photosHeading": "Fotografias",
-  "previousShort": "anterior"
+  "previousShort": "anterior",
+  "addMark": "Adicionar marca",
+  "addMarkTitle": "Adicionar uma marca",
+  "addMarkBody": "Escolha a peça onde está o dano. A marca é colocada no centro dela e pode movê-la depois.",
+  "panel": "Peça",
+  "choosePanel": "Escolha uma peça",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Move a marca para o centro da peça escolhida.",
+  "markKeysHint": "Enter abre a marca. As teclas de seta movem-na, mais longe com Shift."
 }

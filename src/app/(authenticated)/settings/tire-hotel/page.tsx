@@ -5,6 +5,11 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { FeatureLocked } from '../feature-locked-message'
 import { TireHotelSettings } from './tire-hotel-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('tireHotel')
+}
 
 export default async function TireHotelSettingsPage() {
   const data = await getLayoutData()

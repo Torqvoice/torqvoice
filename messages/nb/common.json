@@ -212,7 +212,16 @@
     }
   },
   "richText": {
-    "openLinkHint": "Hold {key} og klikk for å åpne"
+    "openLinkHint": "Hold {key} og klikk for å åpne",
+    "placeholder": "Skriv noe...",
+    "toolbar": "Formatering",
+    "editor": "Tekst",
+    "bold": "Fet",
+    "italic": "Kursiv",
+    "underline": "Understreket",
+    "strikethrough": "Gjennomstreket",
+    "bulletList": "Punktliste",
+    "numberedList": "Nummerert liste"
   },
   "appUpdated": {
     "title": "En ny versjon er tilgjengelig",
@@ -266,5 +275,19 @@
     "choose": "Velg...",
     "search": "Søk...",
     "noMatch": "Ingen treff"
+  },
+  "a11y": {
+    "skipToContent": "Hopp til innhold",
+    "mainNavigation": "Hovednavigasjon",
+    "close": "Lukk",
+    "breadcrumb": "Brødsmulesti",
+    "more": "Mer",
+    "toggleSidebar": "Vis eller skjul sidepanel",
+    "sidebar": "Sidepanel",
+    "sidebarDescription": "Hovedmenyen.",
+    "openCalendar": "Åpne kalender",
+    "dismiss": "Lukk",
+    "selectAll": "Velg alle",
+    "selectRow": "Velg {name}"
   }
 }

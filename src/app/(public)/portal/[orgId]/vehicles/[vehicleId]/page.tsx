@@ -28,7 +28,18 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { db } from '@/lib/db'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { loadPortalWorkshop } from '@/features/portal/Lib/workshop.server'
+import { titleFrom } from '@/lib/page-title'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
+
+// "Your cars" or "Your boats": the workshop read here is the one PortalShell
+// loads for the page anyway (request-cached), and a failure reads as cars.
+export async function generateMetadata({ params }: { params: Promise<{ orgId: string }> }) {
+  const { orgId } = await params
+  const org = await resolvePortalOrg(orgId).catch(() => null)
+  const workshop = org ? await loadPortalWorkshop(org.id, org.name).catch(() => null) : null
+  return titleFrom('portal.vehicles', workshop?.marine ? 'titleMarine' : 'title')
+}
 
 /**
  * A warranty's state, in the portal theme's own badge: running is outlined,

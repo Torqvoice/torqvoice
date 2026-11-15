@@ -7,6 +7,11 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { QuotesClient } from '../quotes-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('quotes')
+}
 
 export default async function QuotesPage({
   searchParams,

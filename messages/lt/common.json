@@ -212,7 +212,16 @@
     }
   },
   "richText": {
-    "openLinkHint": "Laikykite {key} ir spustelėkite, kad atidarytumėte"
+    "openLinkHint": "Laikykite {key} ir spustelėkite, kad atidarytumėte",
+    "placeholder": "Parašykite ką nors...",
+    "toolbar": "Formatavimas",
+    "editor": "Tekstas",
+    "bold": "Pusjuodis",
+    "italic": "Kursyvas",
+    "underline": "Pabrauktas",
+    "strikethrough": "Perbrauktas",
+    "bulletList": "Sąrašas su ženkleliais",
+    "numberedList": "Numeruotas sąrašas"
   },
   "appUpdated": {
     "title": "Yra nauja versija",
@@ -266,5 +275,19 @@
     "choose": "Pasirinkite...",
     "search": "Ieškoti...",
     "noMatch": "Nieko nerasta"
+  },
+  "a11y": {
+    "skipToContent": "Pereiti prie turinio",
+    "mainNavigation": "Pagrindinė navigacija",
+    "close": "Uždaryti",
+    "breadcrumb": "Naršymo kelias",
+    "more": "Daugiau",
+    "toggleSidebar": "Rodyti arba slėpti šoninę juostą",
+    "sidebar": "Šoninė juosta",
+    "sidebarDescription": "Pagrindinis meniu.",
+    "openCalendar": "Atidaryti kalendorių",
+    "dismiss": "Uždaryti",
+    "selectAll": "Pasirinkti visus",
+    "selectRow": "Pasirinkti: {name}"
   }
 }

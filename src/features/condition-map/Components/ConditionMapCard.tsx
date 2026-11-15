@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { CheckCheck, Eraser, Loader2 } from 'lucide-react'
+import { CheckCheck, Eraser, Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import {
@@ -16,6 +16,14 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -37,12 +45,14 @@ import {
   setVehicleBodyType,
   updateConditionMark,
 } from '../Actions/conditionMarkActions'
+import { getBodyDrawing } from '../Drawings'
 import { BODY_TYPES, type BodyType, type View, VIEWS } from '../Lib/drawingTypes'
 import {
   type ConditionMarkData,
   type MarkScope,
   type MarkSeverity,
   bodyTypeFor,
+  isBodyType,
   isDrawnOnSheet,
   isOwnMark,
   numberedMarks,
@@ -53,6 +63,8 @@ import { ImageCarousel } from '@/features/vehicles/Components/service-detail/Ima
 import type { Attachment } from '@/features/vehicles/Components/service-detail/types'
 import { type MarkType, markTypeOf } from '../Lib/markTypes'
 import { MarkEditor } from './MarkEditor'
+import { type PanelSpot, panelSpots, spotKey } from '../Lib/panelSpots'
+import { PanelSelect } from './PanelSelect'
 
 /** Photos saved on a mark per call, the action's own limit. */
 const PHOTOS_PER_SAVE = 10
@@ -104,6 +116,9 @@ export function ConditionMapCard({
   const [focusView, setFocusView] = useState<View | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [clearingId, setClearingId] = useState<string | null>(null)
+  /** The Add mark dialog: open, and the panel chosen in it so far. */
+  const [adding, setAdding] = useState(false)
+  const [addSpot, setAddSpot] = useState<PanelSpot | null>(null)
   /** Which of the strip's photos is open full size, if any. */
   const [viewing, setViewing] = useState<number | null>(null)
   const [pending, startTransition] = useTransition()
@@ -137,6 +152,7 @@ export function ConditionMapCard({
       y: m.y,
       kind: m.kind,
       severity: m.severity,
+      panel: m.panel,
       number: numberOf.get(m.id) ?? 0,
       previous: !ownIds.has(m.id),
       // A mark still being saved has nothing to move yet.
@@ -202,6 +218,34 @@ export function ConditionMapCard({
       )
       if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
+  }
+
+  // The panels a mark can be put on without a pointer, with the spot each
+  // one's mark lands on. Adding offers the views on screen; the editor offers
+  // every view of the mark's own drawing.
+  const spots = useMemo(() => panelSpots(getBodyDrawing(body)), [body])
+  const addSpots = useMemo(
+    () => (focusView ? spots.filter((spot) => spot.view === focusView) : spots),
+    [spots, focusView]
+  )
+
+  const openAdd = () => {
+    setAddSpot(null)
+    setAdding(true)
+  }
+
+  const confirmAdd = () => {
+    if (!addSpot) return
+    setAdding(false)
+    handleTap(addSpot)
+  }
+
+  /** The editor's Panel field: the mark goes to the middle of the panel chosen. */
+  const handleMovePanel = (spot: PanelSpot) => {
+    if (!editingId) return
+    // One view on screen and the mark moved to another: follow it there.
+    if (focusView && focusView !== spot.view) setFocusView(spot.view)
+    handleMove(editingId, spot)
   }
 
   const handleChange = (patch: {
@@ -409,6 +453,20 @@ export function ConditionMapCard({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {!readOnly && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs"
+              disabled={pending}
+              onClick={openAdd}
+              data-testid="condition-map-add"
+            >
+              <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+              {t('addMark')}
+            </Button>
+          )}
           <Select value={body} onValueChange={handleBody} disabled={readOnly}>
             <SelectTrigger className="h-8 w-40 text-xs" aria-label={t('bodyType')}>
               <SelectValue />
@@ -425,7 +483,7 @@ export function ConditionMapCard({
       </div>
 
       {/* One view at a time for a finger; the whole sheet for a desk. */}
-      <div className="flex flex-wrap gap-1" role="tablist" aria-label={t('allViews')}>
+      <div className="flex flex-wrap gap-1" role="group" aria-label={t('allViews')}>
         <ViewTab active={focusView === null} onClick={() => setFocusView(null)}>
           {t('allViews')}
         </ViewTab>
@@ -577,6 +635,7 @@ export function ConditionMapCard({
             ? {
                 id: editing.id,
                 number: numberOf.get(editing.id) ?? 0,
+                view: editing.view,
                 panel: editing.panel,
                 kind: editing.kind,
                 severity: editing.severity,
@@ -606,12 +665,59 @@ export function ConditionMapCard({
                   : t('readOnlyEarlier')
         }
         busy={pending}
+        spots={
+          editing
+            ? isBodyType(editing.bodyType) && editing.bodyType !== body
+              ? panelSpots(getBodyDrawing(editing.bodyType))
+              : spots
+            : []
+        }
+        onMovePanel={handleMovePanel}
         onChange={handleChange}
         onRemove={handleRemove}
         onAddPhotos={handleAddPhotos}
         onRemovePhoto={handleRemovePhoto}
         onClose={() => setEditingId(null)}
       />
+
+      <Dialog open={adding} onOpenChange={setAdding}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('addMarkTitle')}</DialogTitle>
+            <DialogDescription>{t('addMarkBody')}</DialogDescription>
+          </DialogHeader>
+          <form
+            className="space-y-4"
+            onSubmit={(event) => {
+              event.preventDefault()
+              confirmAdd()
+            }}
+          >
+            <div className="space-y-1.5">
+              <label
+                htmlFor="condition-map-add-panel"
+                className="text-xs font-medium text-muted-foreground"
+              >
+                {t('panel')}
+              </label>
+              <PanelSelect
+                id="condition-map-add-panel"
+                spots={addSpots}
+                value={addSpot ? spotKey(addSpot) : ''}
+                onChange={setAddSpot}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setAdding(false)}>
+                {t('cancel')}
+              </Button>
+              <Button type="submit" disabled={!addSpot || pending}>
+                {t('addMark')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <AlertDialog open={clearing !== null} onOpenChange={(open) => !open && setClearingId(null)}>
         <AlertDialogContent>
@@ -647,11 +753,10 @@ function ViewTab({
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={active}
+      aria-pressed={active}
       onClick={onClick}
       className={cn(
-        'h-8 rounded-md border px-2.5 text-xs font-medium transition-colors',
+        'h-8 rounded-md border px-2.5 text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring',
         active
           ? 'border-primary bg-primary/10 text-foreground'
           : 'border-input bg-background text-muted-foreground hover:bg-muted'

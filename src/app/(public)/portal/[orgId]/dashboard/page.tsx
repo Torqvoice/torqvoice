@@ -8,6 +8,11 @@ import { PortalLinkButton } from '@/features/portal/Components/Ui'
 import { portalFormat } from '@/features/portal/Lib/portalFormat'
 import { loadPortalLook } from '@/features/portal/Lib/portalLook.server'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.nav', 'home')
+}
 
 /**
  * The signed-in home. One load of what it shows, drawn by the Home of the

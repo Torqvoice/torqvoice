@@ -28,6 +28,11 @@ import { PageHeader } from '@/components/page-header'
 import { redirect } from 'next/navigation'
 import { PermissionSubject } from '@/lib/permissions'
 import { getViewerAccess, readIfAllowed } from '@/lib/viewer-access'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('vehicleDetails')
+}
 
 /** The most notes the new page's feed holds: the same reach as its work orders. */
 const FEED_NOTES = 250

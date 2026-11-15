@@ -5,6 +5,11 @@ import { FaultCodeOemView } from '@/features/fault-codes/Components/FaultCodeOem
 import { normalizeMakeCode } from '@/features/fault-codes/Lib/codes'
 import { isMakeKey } from '@/features/fault-codes/Lib/makes'
 import { isSupportEnabled } from '@/lib/support'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('faultCode')
+}
 
 /**
  * A make's own code's page (/fault-codes/oem/bmw/2A82, /fault-codes/oem/ford/P1000), laid out as every
@@ -36,7 +41,8 @@ export default async function OemFaultCodePage({
   ])
   return (
     <>
-      <PageHeader />
+      {/* The code's own heading is the page's h1 once it is found. */}
+      <PageHeader ownHeading={Boolean(result.success && result.data)} />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="mx-auto w-full max-w-[100rem]">
           {result.success && result.data ? (

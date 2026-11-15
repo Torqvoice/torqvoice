@@ -19,6 +19,11 @@ import {
   visibleRange,
   type CalendarView,
 } from '@/features/calendar/Lib/calendar-range'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('calendar')
+}
 
 export default async function CalendarPage({
   searchParams,

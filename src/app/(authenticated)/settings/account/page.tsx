@@ -5,6 +5,11 @@ import { AccountSettings } from './account-settings'
 import { listMyDevices } from '@/features/settings/Actions/sessionActions'
 import { getMySignature } from '@/features/signatures/Actions/signatureActions'
 import { hasPassword } from '@/lib/reauth.server'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('account')
+}
 
 export default async function AccountSettingsPage() {
   const session = await getCachedSession()

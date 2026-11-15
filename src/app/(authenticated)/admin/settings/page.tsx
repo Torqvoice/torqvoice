@@ -3,6 +3,11 @@ import { AdminSettings } from '@/features/admin/Components/admin-settings'
 import { SYSTEM_SETTING_KEYS } from '@/features/admin/Schema/systemSettingsSchema'
 import { appIconUrl } from '@/lib/branding'
 import { installHasLicense, isCloudMode } from '@/lib/features'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('admin.adminSettings', 'platformTitle')
+}
 
 export default async function AdminSettingsPage() {
   const result = await getSystemSettings()

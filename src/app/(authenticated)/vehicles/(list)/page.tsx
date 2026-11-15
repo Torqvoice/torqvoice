@@ -5,6 +5,11 @@ import { getVehiclesPaginated } from '@/features/vehicles/Actions/vehicleActions
 import { VehiclesClient } from '../vehicles-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('vehicles')
+}
 
 export default async function VehiclesPage({
   searchParams,

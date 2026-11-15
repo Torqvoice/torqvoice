@@ -153,5 +153,13 @@
   },
   "manageKinds": "Zarządzaj rodzajami",
   "photosHeading": "Zdjęcia",
-  "previousShort": "wcześniej"
+  "previousShort": "wcześniej",
+  "addMark": "Dodaj oznaczenie",
+  "addMarkTitle": "Nowe oznaczenie",
+  "addMarkBody": "Wybierz element, na którym jest uszkodzenie. Oznaczenie trafi na jego środek, a potem możesz je przesunąć.",
+  "panel": "Element",
+  "choosePanel": "Wybierz element",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Przesuwa oznaczenie na środek wybranego elementu.",
+  "markKeysHint": "Enter otwiera oznaczenie. Klawisze strzałek je przesuwają, dalej z Shift."
 }

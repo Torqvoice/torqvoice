@@ -153,5 +153,13 @@
   "clearBody": "Mark {n} on the {area} will be recorded as repaired. It stays in the history and stops printing.",
   "manageKinds": "Manage kinds",
   "photosHeading": "Photos",
-  "previousShort": "earlier"
+  "previousShort": "earlier",
+  "addMark": "Add mark",
+  "addMarkTitle": "Add a mark",
+  "addMarkBody": "Choose the panel the damage is on. The mark goes in the middle of it, and you can move it afterwards.",
+  "panel": "Panel",
+  "choosePanel": "Choose a panel",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Moves the mark to the middle of the panel chosen.",
+  "markKeysHint": "Enter opens the mark. The arrow keys move it, further with Shift."
 }

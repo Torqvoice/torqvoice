@@ -434,6 +434,7 @@ export default function BillingClient({
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('history.searchPlaceholder')}
+              aria-label={t('history.searchPlaceholder')}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
               className="h-9 w-full pl-9 sm:w-[250px]"

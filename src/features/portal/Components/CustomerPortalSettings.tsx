@@ -394,7 +394,7 @@ export function CustomerPortalSettings({
                       key={id}
                       className={cn(
                         'flex cursor-pointer flex-col gap-2.5 rounded-xl border-2 bg-card p-2.5 transition-colors',
-                        'has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring/50',
+                        'has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-ring-soft',
                         selected ? 'border-primary' : 'border-border hover:border-primary/40'
                       )}
                     >
@@ -455,7 +455,7 @@ export function CustomerPortalSettings({
                           onClick={() => set('accent', swatch.hex)}
                           className={cn(
                             'size-9 rounded-full border-2 border-background outline-none transition-shadow',
-                            'focus-visible:ring-[3px] focus-visible:ring-ring/50',
+                            'focus-visible:ring-[3px] focus-visible:ring-ring-soft',
                             pressed ? 'ring-2 ring-foreground' : 'ring-1 ring-border'
                           )}
                           style={{ background: swatch.hex }}

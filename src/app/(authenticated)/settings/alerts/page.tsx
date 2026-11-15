@@ -1,6 +1,11 @@
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { AlertsSettings } from './alerts-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('alerts')
+}
 
 export default async function AlertsSettingsPage() {
   const result = await getSettings([

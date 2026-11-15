@@ -6,6 +6,11 @@ import { SignInForm } from './sign-in-form'
 import { isDemoMode } from '@/lib/demo'
 import { isCloudMode } from '@/lib/features'
 import { isGoogleSignInEnabled } from '@/lib/auth-providers'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('common.buttons', 'signIn')
+}
 
 export const dynamic = 'force-dynamic'
 

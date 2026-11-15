@@ -7,6 +7,11 @@ import { isDemoMode } from '@/lib/demo'
 import { isCloudMode } from '@/lib/features'
 import { isGoogleSignInEnabled } from '@/lib/auth-providers'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('auth.signUp', 'title')
+}
 
 export const dynamic = 'force-dynamic'
 

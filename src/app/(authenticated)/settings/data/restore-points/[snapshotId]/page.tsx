@@ -2,6 +2,13 @@ import { notFound, redirect } from 'next/navigation'
 import { RestorePointExplorer } from '@/features/integrations/Components/RestorePointExplorer'
 import type { ExploreSource } from '@/features/integrations/Lib/explore-source'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { titleFrom } from '@/lib/page-title'
+
+// Named as the explorer heads itself before the snapshot's date is known.
+export async function generateMetadata({ params }: { params: Promise<{ snapshotId: string }> }) {
+  const { snapshotId } = await params
+  return titleFrom('settings.data.restoreExplorer', 'titleShort', { id: snapshotId.slice(0, 8) })
+}
 
 /**
  * A restore point opened read-only: what the workshop held when the backup

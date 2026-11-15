@@ -14,6 +14,11 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { formatDateTime } from '@/lib/format'
 import { PartDetailClient } from './part-detail-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('inventory')
+}
 
 const PAGE_SIZE = 50
 

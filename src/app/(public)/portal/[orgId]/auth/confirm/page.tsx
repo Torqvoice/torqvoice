@@ -11,6 +11,11 @@ import {
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { db } from '@/lib/db'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.login', 'verifyCode')
+}
 
 export const dynamic = 'force-dynamic'
 

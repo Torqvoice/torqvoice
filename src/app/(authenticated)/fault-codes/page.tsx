@@ -4,6 +4,11 @@ import { getFaultCodeOverview } from '@/features/fault-codes/Actions/getFaultCod
 import { FaultCodeLookup } from '@/features/fault-codes/Components/FaultCodeLookup'
 import { normalizeFaultCode } from '@/features/fault-codes/Lib/codes'
 import { isSupportEnabled } from '@/lib/support'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('faultCodes')
+}
 
 /**
  * Fault codes: a lookup box for a code or for words, the meanings that match
