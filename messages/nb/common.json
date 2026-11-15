@@ -288,8 +288,6 @@
     "openCalendar": "Åpne kalender",
     "dismiss": "Lukk",
     "selectAll": "Velg alle",
-    "selectRow": "Velg {name}",
-    "previousMonth": "Forrige måned",
-    "nextMonth": "Neste måned"
+    "selectRow": "Velg {name}"
   }
 }

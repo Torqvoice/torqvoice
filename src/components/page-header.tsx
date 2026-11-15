@@ -222,7 +222,16 @@ const marineBreadcrumbKeys: Record<string, string> = {
   vehicleDetails: 'vesselDetails',
 }
 
-export function PageHeader() {
+export function PageHeader({
+  ownHeading,
+}: {
+  /**
+   * Says whether the page prints its own h1, for a route that does on one
+   * render and not on another (a fault code that was found, and one that was
+   * not). Left out, the route decides (OWN_HEADING).
+   */
+  ownHeading?: boolean
+} = {}) {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
   const { daysUntilExpiry, unverifiedDaysLeft, dismissed, dismiss } = useLicenseExpiry()
@@ -242,6 +251,7 @@ export function PageHeader() {
   const isMarine = useServiceType() === 'marine'
   const crumb = (key: string) => t(isMarine ? (marineBreadcrumbKeys[key] ?? key) : key)
   const tSettings = useTranslations('settings')
+  const tBilling = useTranslations('billing')
   const label = (segment: BreadcrumbSegment) => segment.label ?? crumb(segment.key)
 
   // A set's own page is still the tire hotel, and somebody reading a set is
@@ -278,6 +288,21 @@ export function PageHeader() {
     // /quotes/[id]
     else if (/^\/quotes\/[^/]+$/.test(pathname)) {
       segments = [{ key: 'quotes', href: '/quotes' }, { key: 'quoteDetails' }]
+    }
+    // /billing/recurring, named as the page names itself
+    else if (pathname === '/billing/recurring') {
+      segments = [
+        { key: 'billing', href: '/billing' },
+        { key: 'recurring', label: tBilling('recurring.title') },
+      ]
+    }
+    // /vehicles/inspection-reminders/[id], one campaign of the reminders
+    else if (/^\/vehicles\/inspection-reminders\/[^/]+$/.test(pathname)) {
+      segments = [
+        { key: 'vehicles', href: '/vehicles' },
+        { key: 'inspectionReminders', href: '/vehicles/inspection-reminders' },
+        { key: 'inspectionReminders' },
+      ]
     }
     // /vehicles/[id]/service/new
     else if (/^\/vehicles\/[^/]+\/service\/new$/.test(pathname)) {
@@ -323,7 +348,7 @@ export function PageHeader() {
     }
   }
 
-  const ownsHeading = OWN_HEADING.some((pattern) => pattern.test(pathname))
+  const ownsHeading = ownHeading ?? OWN_HEADING.some((pattern) => pattern.test(pathname))
 
   return (
     <>

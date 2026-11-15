@@ -40,6 +40,10 @@
   /* The faint fill a field or an off switch takes. It used to be --input, which
      is now the field's outline and dark enough to be seen as one (3:1). */
   --color-input-fill: var(--border);
+  /* The halo a focused control wears (ring-ring-soft). On a dark theme it is
+     the ring at half strength, as it always was. On a light theme half
+     strength is under 2:1 against the page, so there it is the full colour. */
+  --color-ring-soft: var(--ring-soft);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -318,9 +322,16 @@
   --card-edge: color-mix(in oklab, var(--foreground) 20%, transparent);
 }
 
+:root {
+  --ring-soft: var(--ring);
+}
+.dark {
+  --ring-soft: color-mix(in oklab, var(--ring) 50%, transparent);
+}
+
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring-soft;
   }
   html {
     /* Reserve scrollbar space so its appearance never shifts layout width

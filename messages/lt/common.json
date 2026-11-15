@@ -288,8 +288,6 @@
     "openCalendar": "Atidaryti kalendorių",
     "dismiss": "Uždaryti",
     "selectAll": "Pasirinkti visus",
-    "selectRow": "Pasirinkti: {name}",
-    "previousMonth": "Ankstesnis mėnuo",
-    "nextMonth": "Kitas mėnuo"
+    "selectRow": "Pasirinkti: {name}"
   }
 }

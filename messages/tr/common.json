@@ -288,8 +288,6 @@
     "openCalendar": "Takvimi aç",
     "dismiss": "Kapat",
     "selectAll": "Tümünü seç",
-    "selectRow": "{name} seç",
-    "previousMonth": "Önceki ay",
-    "nextMonth": "Sonraki ay"
+    "selectRow": "{name} seç"
   }
 }

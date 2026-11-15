@@ -265,7 +265,7 @@ export function EmailRichEditor({
   return (
     <div>
       <div className="mb-1 block text-[13px] font-medium text-foreground">{label}</div>
-      <div className="rounded-md border border-input bg-background shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+      <div className="rounded-md border border-input bg-background shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring-soft">
         {editor && <Toolbar editor={editor} theme={theme} />}
         <EditorContent editor={editor} />
       </div>

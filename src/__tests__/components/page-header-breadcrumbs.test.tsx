@@ -141,6 +141,31 @@ describe('the page heading', () => {
     }
   })
 
+  it('names the recurring invoices page, which used to read Home', () => {
+    pathname = '/billing/recurring'
+    render(<PageHeader />)
+    expect(screen.getByRole('heading', { level: 1, name: 'Recurring' })).toBeInTheDocument()
+    expect(screen.queryByText('Home')).toBeNull()
+  })
+
+  it('names a reminder campaign as reminders, not as a vehicle', () => {
+    pathname = '/vehicles/inspection-reminders/abc'
+    render(<PageHeader />)
+    expect(
+      screen.getByRole('heading', { level: 1, name: 'Inspection reminders' })
+    ).toBeInTheDocument()
+  })
+
+  it('steps aside for a fault code that was found and stays for one that was not', () => {
+    pathname = '/fault-codes/P0420'
+    render(<PageHeader ownHeading />)
+    expect(screen.queryByRole('heading', { level: 1 })).toBeNull()
+    cleanup()
+
+    render(<PageHeader />)
+    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+  })
+
   it('names the breadcrumb trail in words a screen reader can say', () => {
     pathname = '/work-orders'
     render(<PageHeader />)

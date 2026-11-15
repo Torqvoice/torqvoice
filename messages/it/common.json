@@ -288,8 +288,6 @@
     "openCalendar": "Apri calendario",
     "dismiss": "Chiudi",
     "selectAll": "Seleziona tutto",
-    "selectRow": "Seleziona {name}",
-    "previousMonth": "Mese precedente",
-    "nextMonth": "Mese successivo"
+    "selectRow": "Seleziona {name}"
   }
 }

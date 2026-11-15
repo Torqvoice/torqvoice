@@ -110,7 +110,7 @@ export function RichTextEditor({
   if (!editor) return null
 
   return (
-    <div className="rounded-md border border-input shadow-xs focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
+    <div className="rounded-md border border-input shadow-xs focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring-soft">
       {/* Toolbar */}
       <div
         role="toolbar"

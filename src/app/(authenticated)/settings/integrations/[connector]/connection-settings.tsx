@@ -1573,7 +1573,7 @@ function ActivityCard({
           role="region"
           aria-label={t('title')}
           tabIndex={0}
-          className="mb-4 max-h-80 overflow-y-auto overscroll-contain rounded-lg border outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="mb-4 max-h-80 overflow-y-auto overscroll-contain rounded-lg border outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring-soft"
         >
           <div className="divide-y">
             {items.map((item) =>

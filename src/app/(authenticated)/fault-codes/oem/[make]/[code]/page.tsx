@@ -41,7 +41,8 @@ export default async function OemFaultCodePage({
   ])
   return (
     <>
-      <PageHeader />
+      {/* The code's own heading is the page's h1 once it is found. */}
+      <PageHeader ownHeading={Boolean(result.success && result.data)} />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div className="mx-auto w-full max-w-[100rem]">
           {result.success && result.data ? (

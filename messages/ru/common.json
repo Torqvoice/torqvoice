@@ -288,8 +288,6 @@
     "openCalendar": "Открыть календарь",
     "dismiss": "Закрыть",
     "selectAll": "Выбрать все",
-    "selectRow": "Выбрать: {name}",
-    "previousMonth": "Предыдущий месяц",
-    "nextMonth": "Следующий месяц"
+    "selectRow": "Выбрать: {name}"
   }
 }
