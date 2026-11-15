@@ -660,12 +660,12 @@ export async function restoreBackup(
         if (keepsCurrentPortalMessages(data)) {
           await raw.$queryRaw(Prisma.sql`
             SELECT count(*) FROM (
-              SELECT 1 FROM customers WHERE "organizationId" = ${organizationId} FOR UPDATE
+              SELECT 1 FROM "public"."customers" WHERE "organizationId" = ${organizationId} FOR UPDATE
             ) locked
           `)
           await raw.$queryRaw(Prisma.sql`
             SELECT count(*) FROM (
-              SELECT 1 FROM portal_messages WHERE "organizationId" = ${organizationId} FOR UPDATE
+              SELECT 1 FROM "public"."portal_messages" WHERE "organizationId" = ${organizationId} FOR UPDATE
             ) locked
           `)
           currentPortalMessages = await tx.portalMessage.findMany({ where: { organizationId } })
