@@ -12,6 +12,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet'
+import { track } from '@/lib/analytics'
 import { MARKETING_URL } from '@/lib/marketing-urls'
 import { safeRedirectPath } from '@/lib/safe-redirect'
 import { cn } from '@/lib/utils'
@@ -151,7 +152,13 @@ function Entry({
                   size="sm"
                   className="border-primary/35 bg-primary/10 hover:bg-primary/15"
                 >
-                  <Link href={cta} onClick={onNavigate}>
+                  <Link
+                    href={cta}
+                    onClick={() => {
+                      track('whats_new:entry_link_click', { link: 'button', entry_id: entry.id })
+                      onNavigate()
+                    }}
+                  >
                     {entry.ctaLabel || t('open')}
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
@@ -160,6 +167,9 @@ function Entry({
               {video && (
                 <a
                   href={video}
+                  onClick={() =>
+                    track('whats_new:entry_link_click', { link: 'video', entry_id: entry.id })
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 rounded text-sm font-medium text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -171,6 +181,9 @@ function Entry({
               {guide && (
                 <a
                   href={guide}
+                  onClick={() =>
+                    track('whats_new:entry_link_click', { link: 'guide', entry_id: entry.id })
+                  }
                   target="_blank"
                   rel="noopener noreferrer"
                   className="rounded text-sm font-medium text-muted-foreground underline-offset-2 transition-colors hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

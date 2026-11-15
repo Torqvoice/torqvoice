@@ -3,6 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { track } from '@/lib/analytics'
 import { loadMoreWhatsNew } from '../Actions/loadMoreWhatsNew'
 import { markWhatsNewSeen } from '../Actions/markWhatsNewSeen'
 import { rememberWhatsNewTabHidden } from '../Lib/tabPreference'
@@ -10,11 +11,14 @@ import type { WhatsNewEntry } from '../Schema/whatsNewSchema'
 import { WhatsNewPanel } from './WhatsNewPanel'
 import { WhatsNewTab } from './WhatsNewTab'
 
+/** Where the panel was opened from, for the analytics event. */
+export type WhatsNewSource = 'tab' | 'menu' | 'settings' | 'update_banner'
+
 const Context = createContext<{
   /** False when there is nothing to show: the feed is empty, hidden or unreachable. */
   available: boolean
   hasUnread: boolean
-  open: () => void
+  open: (source: WhatsNewSource) => void
   /** Whether this browser has sent the tab on the edge of the screen away. */
   tabHidden: boolean
   setTabHidden: (hidden: boolean) => void
@@ -73,6 +77,7 @@ export function WhatsNewProvider({
   const [tabHidden, setTabHiddenState] = useState(initialTabHidden)
   const setTabHidden = useCallback((hidden: boolean) => {
     setTabHiddenState(hidden)
+    track('whats_new:tab_toggle', { hidden })
     rememberWhatsNewTabHidden(hidden)
   }, [])
   // What has been acknowledged in this tab. The server's list catches up on
@@ -138,21 +143,29 @@ export function WhatsNewProvider({
     [unreadIds, acknowledged]
   )
 
-  const open = useCallback(() => {
-    setIsOpen(true)
-    if (pending.length === 0) return
-    setMarked(new Set(pending))
-    setAcknowledged((current) => new Set([...current, ...pending]))
-    // Not recorded: let the dot come back, so the next opening tries again
-    // rather than this tab believing something the server never heard.
-    const forget = () =>
-      setAcknowledged((current) => new Set([...current].filter((id) => !pending.includes(id))))
-    markWhatsNewSeen()
-      .then((result) => {
-        if (!result.success) forget()
+  const open = useCallback(
+    (source: WhatsNewSource) => {
+      setIsOpen(true)
+      track('whats_new:panel_open', {
+        source,
+        entries: entries.length,
+        unread: pending.length,
       })
-      .catch(forget)
-  }, [pending])
+      if (pending.length === 0) return
+      setMarked(new Set(pending))
+      setAcknowledged((current) => new Set([...current, ...pending]))
+      // Not recorded: let the dot come back, so the next opening tries again
+      // rather than this tab believing something the server never heard.
+      const forget = () =>
+        setAcknowledged((current) => new Set([...current].filter((id) => !pending.includes(id))))
+      markWhatsNewSeen()
+        .then((result) => {
+          if (!result.success) forget()
+        })
+        .catch(forget)
+    },
+    [pending, entries.length]
+  )
 
   const value = useMemo(
     () => ({
@@ -171,7 +184,7 @@ export function WhatsNewProvider({
       {entries.length > 0 && !tabHidden && (
         <WhatsNewTab
           hasUnread={pending.length > 0}
-          onOpen={open}
+          onOpen={() => open('tab')}
           onHide={() => {
             setTabHidden(true)
             // Said once, at the moment it goes, so the way back is known.

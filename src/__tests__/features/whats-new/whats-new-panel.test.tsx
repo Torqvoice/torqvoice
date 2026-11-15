@@ -32,6 +32,11 @@ vi.mock('@/features/whats-new/Actions/loadMoreWhatsNew', () => ({
 
 const toastError = vi.fn()
 const toastPlain = vi.fn()
+const track = vi.fn()
+vi.mock('@/lib/analytics', () => ({
+  track: (...args: unknown[]) => track(...args),
+}))
+
 vi.mock('sonner', () => ({
   toast: Object.assign((message: string) => toastPlain(message), {
     error: (message: string) => toastError(message),
@@ -361,5 +366,31 @@ describe("a video on a What's new entry", () => {
     })
     await user.click(screen.getByRole('button', { name: /^What's new/ }))
     expect(screen.queryByRole('link', { name: 'Watch the video' })).not.toBeInTheDocument()
+  })
+})
+
+describe("What's new, counted", () => {
+  it('says the panel was opened from the tab, and how much was in it', async () => {
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    expect(track).toHaveBeenCalledWith('whats_new:panel_open', {
+      source: 'tab',
+      entries: ENTRIES.length,
+      unread: expect.any(Number),
+    })
+  })
+
+  it('says which link on an entry was followed', async () => {
+    const user = userEvent.setup()
+    show()
+    await user.click(screen.getByRole('button', { name: /^What's new/ }))
+    const video = screen.getByRole('link', { name: 'Watch the video' })
+    video.addEventListener('click', (event) => event.preventDefault())
+    await user.click(video)
+    expect(track).toHaveBeenCalledWith('whats_new:entry_link_click', {
+      link: 'video',
+      entry_id: ENTRIES[0].id,
+    })
   })
 })
