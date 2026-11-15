@@ -277,6 +277,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // offers, trimmed to a name and a logo.
   const cloudLinked = await isCloudLinked()
   const ti = await getTranslations('integrations')
+  const ta = await getTranslations('common.a11y')
   const searchConnectors = listManifests().map((m) => ({
     id: m.id,
     name: connectorName(ti, m),
@@ -352,6 +353,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
                   aria-hidden
                   className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
                 />
+                {/* For somebody on a keyboard: the first Tab offers a way past
+                    the sidebar's twenty links. Invisible until it has focus. */}
+                <a
+                  href="#main-content"
+                  className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-md focus:outline-2 focus:outline-offset-2 focus:outline-foreground"
+                >
+                  {ta('skipToContent')}
+                </a>
                 {/* Watches for a notice posted while this page is already open. Here
               rather than beside the banner because the socket authenticates on
               the session cookie, which the sign-in page does not have. */}
@@ -422,7 +431,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                   counts={sidebarCounts}
                                   isTechnician={technicianIds.length > 0}
                                 />
-                                <SidebarInset>
+                                <SidebarInset
+                                  id="main-content"
+                                  tabIndex={-1}
+                                  className="outline-none"
+                                >
                                   {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the

@@ -5,6 +5,11 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { PaymentSettings } from './payment-settings'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('payment')
+}
 
 export default async function PaymentSettingsPage() {
   const data = await getLayoutData()

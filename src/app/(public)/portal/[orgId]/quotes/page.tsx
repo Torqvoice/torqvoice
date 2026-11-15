@@ -25,6 +25,11 @@ import {
 import { portalFormat } from '@/features/portal/Lib/portalFormat'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.quotes', 'title')
+}
 
 export default async function PortalQuotesPage({ params }: { params: Promise<{ orgId: string }> }) {
   const { orgId } = await params

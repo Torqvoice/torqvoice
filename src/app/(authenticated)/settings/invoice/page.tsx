@@ -12,6 +12,11 @@ import { redirect } from 'next/navigation'
 import { InvoiceSettings } from './invoice-settings'
 import { countUnfrozenInvoices } from '@/features/invoices/Actions/legacyInvoiceActions'
 import { countIssuedInvoices } from '@/features/invoices/Actions/invoiceDesignActions'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('invoice')
+}
 
 export default async function InvoiceSettingsPage() {
   const data = await getLayoutData()

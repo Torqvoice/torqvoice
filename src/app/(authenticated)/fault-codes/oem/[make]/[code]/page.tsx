@@ -5,6 +5,11 @@ import { FaultCodeOemView } from '@/features/fault-codes/Components/FaultCodeOem
 import { normalizeMakeCode } from '@/features/fault-codes/Lib/codes'
 import { isMakeKey } from '@/features/fault-codes/Lib/makes'
 import { isSupportEnabled } from '@/lib/support'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('faultCode')
+}
 
 /**
  * A make's own code's page (/fault-codes/oem/bmw/2A82, /fault-codes/oem/ford/P1000), laid out as every

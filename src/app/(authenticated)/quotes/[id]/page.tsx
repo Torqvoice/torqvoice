@@ -17,6 +17,11 @@ import { getFeatures } from '@/lib/features'
 import { PageHeader } from '@/components/page-header'
 import { readLineTaxSettings, TAX_APPLIES_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('quoteDetails')
+}
 
 export default async function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

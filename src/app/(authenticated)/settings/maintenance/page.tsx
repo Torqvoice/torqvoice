@@ -1,6 +1,11 @@
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { MaintenanceSettings } from './maintenance-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('maintenance')
+}
 
 export default async function MaintenanceSettingsPage() {
   const result = await getSettings([

@@ -114,3 +114,36 @@ describe('pages outside settings', () => {
     cleanup()
   })
 })
+
+/**
+ * A list page prints no heading of its own; its name sits in the header. A
+ * screen reader's "next heading" found none there, so the header's name is
+ * the page's h1, except where the page brings one (a vehicle, the settings).
+ */
+describe('the page heading', () => {
+  it('is the header name on a list page', () => {
+    pathname = '/work-orders'
+    render(<PageHeader />)
+    expect(screen.getByRole('heading', { level: 1, name: 'All Work Orders' })).toBeInTheDocument()
+    cleanup()
+
+    pathname = '/calendar'
+    render(<PageHeader />)
+    expect(screen.getByRole('heading', { level: 1, name: 'Calendar' })).toBeInTheDocument()
+  })
+
+  it('is left to the page where the page has its own', () => {
+    for (const path of ['/vehicles/abc', '/settings/company', '/customers/abc', '/quotes/abc']) {
+      pathname = path
+      render(<PageHeader />)
+      expect(screen.queryByRole('heading', { level: 1 })).toBeNull()
+      cleanup()
+    }
+  })
+
+  it('names the breadcrumb trail in words a screen reader can say', () => {
+    pathname = '/work-orders'
+    render(<PageHeader />)
+    expect(screen.getByRole('navigation', { name: 'Breadcrumb' })).toBeInTheDocument()
+  })
+})

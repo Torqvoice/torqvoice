@@ -4,6 +4,11 @@ import { getTranslations } from 'next-intl/server'
 import { Headset } from 'lucide-react'
 import { isSupportEnabled } from '@/lib/support'
 import { SupportSettingsControls } from '@/features/support/Components/SupportSettingsControls'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('support')
+}
 
 /**
  * Somewhere to find the support button again after dismissing it.

@@ -5,6 +5,11 @@ import { CustomersClient } from '../customers-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import { countUnnumberedCustomers } from '@/features/customers/Actions/customerActions'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('customers')
+}
 
 export default async function CustomersPage({
   searchParams,

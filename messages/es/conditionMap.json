@@ -153,5 +153,13 @@
   },
   "manageKinds": "Gestionar tipos",
   "photosHeading": "Fotos",
-  "previousShort": "anterior"
+  "previousShort": "anterior",
+  "addMark": "Añadir marca",
+  "addMarkTitle": "Añadir una marca",
+  "addMarkBody": "Elija el panel donde está el daño. La marca se coloca en su centro y puede moverla después.",
+  "panel": "Panel",
+  "choosePanel": "Elija un panel",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Mueve la marca al centro del panel elegido.",
+  "markKeysHint": "Intro abre la marca. Las teclas de flecha la mueven, más lejos con Mayús."
 }

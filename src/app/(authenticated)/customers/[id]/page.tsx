@@ -15,6 +15,11 @@ import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { channelEnabled } from '@/features/integrations/Lib/messaging'
 import { CustomerDetailClient } from './customer-detail-client'
 import { PageHeader } from '@/components/page-header'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('customerDetails')
+}
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

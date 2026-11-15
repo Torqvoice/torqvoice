@@ -7,6 +7,11 @@ import {
   type PortalDirectoryEntry,
 } from '@/features/portal/Components/PortalDirectory'
 import { PortalDirectLink } from '@/features/portal/Components/PortalDirectLink'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.directory', 'title')
+}
 
 export const dynamic = 'force-dynamic'
 

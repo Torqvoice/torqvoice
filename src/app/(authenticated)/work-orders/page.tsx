@@ -13,6 +13,11 @@ import { getFeatures } from '@/lib/features'
 import { WorkOrdersClient } from './work-orders-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('workOrders')
+}
 
 export default async function WorkOrdersPage({
   searchParams,

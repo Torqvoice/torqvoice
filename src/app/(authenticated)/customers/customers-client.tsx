@@ -99,6 +99,7 @@ export function CustomersClient({
   unnumbered?: number
 }) {
   const t = useTranslations('customers.list')
+  const ta = useTranslations('common.a11y')
   const tc = useTranslations('common')
   const tcm = useTranslations('common.contextMenu')
   const router = useRouter()
@@ -306,6 +307,7 @@ export function CustomersClient({
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder={t('searchPlaceholder')}
+                  aria-label={t('searchPlaceholder')}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="h-9 pl-9"
@@ -377,6 +379,7 @@ export function CustomersClient({
                   className="mt-1 shrink-0"
                   checked={selected.has(c.id)}
                   onCheckedChange={() => toggleSelect(c.id)}
+                  aria-label={ta('selectRow', { name: c.name })}
                 />
                 <button
                   type="button"
@@ -452,6 +455,7 @@ export function CustomersClient({
                         : false
                   }
                   onCheckedChange={toggleSelectAll}
+                  aria-label={ta('selectAll')}
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
@@ -537,6 +541,7 @@ export function CustomersClient({
                         <Checkbox
                           checked={selected.has(c.id)}
                           onCheckedChange={() => toggleSelect(c.id)}
+                          aria-label={ta('selectRow', { name: c.name })}
                           onClick={(e) => e.stopPropagation()}
                         />
                       </TableCell>

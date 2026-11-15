@@ -18,12 +18,16 @@ import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
 import { type MarkSeverity, SEVERITIES } from '../Lib/marks'
 import { type MarkType, markTypeOf } from '../Lib/markTypes'
+import { type PanelSpot, spotKey } from '../Lib/panelSpots'
 import { MarkIcon } from './ConditionMap'
+import { PanelSelect } from './PanelSelect'
 import { useNativeCamera } from '@/hooks/use-native-camera'
 
 export interface EditableMark {
   id: string
   number: number
+  /** The view it is drawn on; with the panel, where it is. */
+  view?: string
   panel: string
   kind: string
   severity: string
@@ -43,6 +47,8 @@ export function MarkEditor({
   readOnly = false,
   readOnlyReason,
   busy = false,
+  spots = [],
+  onMovePanel,
   onChange,
   onRemove,
   onAddPhotos,
@@ -57,6 +63,10 @@ export function MarkEditor({
   /** Why a read-only mark cannot be changed here; the sheet's own reason when absent. */
   readOnlyReason?: string
   busy?: boolean
+  /** The panels the mark can be moved to, each with the spot it lands on. */
+  spots?: readonly PanelSpot[]
+  /** Move the mark to another panel, without dragging it on the drawing. */
+  onMovePanel?: (spot: PanelSpot) => void
   onChange: (patch: { kind?: string; severity?: MarkSeverity; note?: string | null }) => void
   onRemove: () => void
   onAddPhotos: (files: File[]) => Promise<void>
@@ -161,6 +171,29 @@ export function MarkEditor({
                 {t('manageKinds')}
               </Link>
             </fieldset>
+
+            {onMovePanel && spots.length > 0 && mark.view && (
+              <div className="space-y-1.5">
+                <label
+                  htmlFor={`mark-panel-${mark.id}`}
+                  className="text-xs font-medium text-muted-foreground"
+                >
+                  {t('panel')}
+                </label>
+                <PanelSelect
+                  id={`mark-panel-${mark.id}`}
+                  spots={spots}
+                  value={spotKey({ view: mark.view, panel: mark.panel })}
+                  disabled={readOnly || busy}
+                  onChange={(spot) => {
+                    if (spotKey(spot) !== spotKey({ view: mark.view ?? '', panel: mark.panel })) {
+                      onMovePanel(spot)
+                    }
+                  }}
+                />
+                {!readOnly && <p className="text-xs text-muted-foreground">{t('panelHint')}</p>}
+              </div>
+            )}
 
             <fieldset disabled={readOnly || busy}>
               <legend className="mb-1.5 text-xs font-medium text-muted-foreground">

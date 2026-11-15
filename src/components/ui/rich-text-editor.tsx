@@ -11,6 +11,7 @@ import {
   List,
   ListOrdered,
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { useEffect } from 'react'
 import {
@@ -30,16 +31,22 @@ interface RichTextEditorProps {
 function ToolbarButton({
   onClick,
   isActive,
+  label,
   children,
 }: {
   onClick: () => void
   isActive: boolean
+  /** What the icon means, for a screen reader and as the hover hint. */
+  label: string
   children: React.ReactNode
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      aria-label={label}
+      aria-pressed={isActive}
+      title={label}
       className={cn(
         'inline-flex h-7 w-7 items-center justify-center rounded-md text-sm transition-colors',
         isActive
@@ -55,9 +62,10 @@ function ToolbarButton({
 export function RichTextEditor({
   content,
   onChange,
-  placeholder = 'Write something...',
+  placeholder,
   contentClassName,
 }: RichTextEditorProps) {
+  const t = useTranslations('common.richText')
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -67,7 +75,7 @@ export function RichTextEditor({
         // The same link behaviour as every other editor; see rich-text-links.
         link: EDITOR_LINK_OPTIONS,
       }),
-      Placeholder.configure({ placeholder }),
+      Placeholder.configure({ placeholder: placeholder ?? t('placeholder') }),
     ],
     content,
     onUpdate: ({ editor }) => {
@@ -76,6 +84,11 @@ export function RichTextEditor({
     editorProps: {
       handleClick: openLinkOnModifierClick,
       attributes: {
+        // The writing area is a bare contenteditable; without these a screen
+        // reader announces it as nothing in particular.
+        role: 'textbox',
+        'aria-multiline': 'true',
+        'aria-label': placeholder ?? t('editor'),
         class: cn(
           'tiptap-content min-h-[120px] max-h-[40vh] overflow-y-auto overflow-x-hidden px-3 py-2 text-sm outline-none break-all',
           contentClassName
@@ -99,28 +112,36 @@ export function RichTextEditor({
   return (
     <div className="rounded-md border border-input shadow-xs focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50">
       {/* Toolbar */}
-      <div className="flex items-center gap-0.5 border-b px-2 py-1">
+      <div
+        role="toolbar"
+        aria-label={t('toolbar')}
+        className="flex items-center gap-0.5 border-b px-2 py-1"
+      >
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive('bold')}
+          label={t('bold')}
         >
           <Bold className="h-3.5 w-3.5" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleItalic().run()}
           isActive={editor.isActive('italic')}
+          label={t('italic')}
         >
           <Italic className="h-3.5 w-3.5" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleUnderline().run()}
           isActive={editor.isActive('underline')}
+          label={t('underline')}
         >
           <UnderlineIcon className="h-3.5 w-3.5" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleStrike().run()}
           isActive={editor.isActive('strike')}
+          label={t('strikethrough')}
         >
           <Strikethrough className="h-3.5 w-3.5" />
         </ToolbarButton>
@@ -130,12 +151,14 @@ export function RichTextEditor({
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBulletList().run()}
           isActive={editor.isActive('bulletList')}
+          label={t('bulletList')}
         >
           <List className="h-3.5 w-3.5" />
         </ToolbarButton>
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleOrderedList().run()}
           isActive={editor.isActive('orderedList')}
+          label={t('numberedList')}
         >
           <ListOrdered className="h-3.5 w-3.5" />
         </ToolbarButton>

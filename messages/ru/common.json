@@ -212,7 +212,16 @@
     }
   },
   "richText": {
-    "openLinkHint": "Удерживайте {key} и нажмите, чтобы открыть"
+    "openLinkHint": "Удерживайте {key} и нажмите, чтобы открыть",
+    "placeholder": "Напишите что-нибудь...",
+    "toolbar": "Форматирование",
+    "editor": "Текст",
+    "bold": "Жирный",
+    "italic": "Курсив",
+    "underline": "Подчёркнутый",
+    "strikethrough": "Зачёркнутый",
+    "bulletList": "Маркированный список",
+    "numberedList": "Нумерованный список"
   },
   "appUpdated": {
     "title": "Доступна новая версия",
@@ -266,5 +275,21 @@
     "choose": "Выберите...",
     "search": "Поиск...",
     "noMatch": "Ничего не найдено"
+  },
+  "a11y": {
+    "skipToContent": "Перейти к содержимому",
+    "mainNavigation": "Основная навигация",
+    "close": "Закрыть",
+    "breadcrumb": "Навигационная цепочка",
+    "more": "Ещё",
+    "toggleSidebar": "Показать или скрыть боковую панель",
+    "sidebar": "Боковая панель",
+    "sidebarDescription": "Главное меню.",
+    "openCalendar": "Открыть календарь",
+    "dismiss": "Закрыть",
+    "selectAll": "Выбрать все",
+    "selectRow": "Выбрать: {name}",
+    "previousMonth": "Предыдущий месяц",
+    "nextMonth": "Следующий месяц"
   }
 }

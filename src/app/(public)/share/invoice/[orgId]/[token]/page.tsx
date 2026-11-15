@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -27,8 +28,9 @@ function toPublicFileUrl(fileUrl: string, token: string): string {
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('share.invoice')
+  return { title: t('title'), robots: { index: false, follow: false } }
 }
 
 export default async function PublicInvoicePage({

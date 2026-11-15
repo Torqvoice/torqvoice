@@ -2,6 +2,11 @@ import { getObservationsPaginated } from '@/features/vehicles/Actions/findingAct
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import { ObservationsClient } from './observations-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('observations')
+}
 
 export default async function ObservationsPage({
   searchParams,

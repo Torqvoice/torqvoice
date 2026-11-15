@@ -37,6 +37,9 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* The faint fill a field or an off switch takes. It used to be --input, which
+     is now the field's outline and dark enough to be seen as one (3:1). */
+  --color-input-fill: var(--border);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -60,14 +63,14 @@
   --secondary: oklch(0.94 0.02 85);
   --secondary-foreground: oklch(0.30 0.03 75);
   --muted: oklch(0.95 0.01 85);
-  --muted-foreground: oklch(0.52 0.03 75);
+  --muted-foreground: oklch(0.51 0.03 75);
   --accent: oklch(0.93 0.04 80);
   --accent-foreground: oklch(0.25 0.03 75);
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.91 0.02 85);
-  --input: oklch(0.91 0.02 85);
-  --ring: oklch(0.72 0.17 75);
+  --input: oklch(0.62 0.02 85);
+  --ring: oklch(0.62 0.17 75);
   --chart-1: oklch(0.72 0.17 75);
   --chart-2: oklch(0.65 0.15 160);
   --chart-3: oklch(0.60 0.18 30);
@@ -80,7 +83,7 @@
   --sidebar-accent: oklch(0.93 0.04 80);
   --sidebar-accent-foreground: oklch(0.25 0.03 75);
   --sidebar-border: oklch(0.91 0.02 85);
-  --sidebar-ring: oklch(0.72 0.17 75);
+  --sidebar-ring: oklch(0.62 0.17 75);
 }
 
 /* ── Dark: deep charcoal + vibrant amber/gold ── */
@@ -96,13 +99,13 @@
   --secondary: oklch(0.22 0.015 70);
   --secondary-foreground: oklch(0.90 0.01 85);
   --muted: oklch(0.20 0.01 70);
-  --muted-foreground: oklch(0.58 0.02 80);
+  --muted-foreground: oklch(0.63 0.02 80);
   --accent: oklch(0.24 0.03 75);
   --accent-foreground: oklch(0.90 0.01 85);
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.25 0.015 70);
-  --input: oklch(0.25 0.015 70);
+  --input: oklch(0.51 0.015 70);
   --ring: oklch(0.78 0.16 80);
   --chart-1: oklch(0.78 0.16 80);
   --chart-2: oklch(0.65 0.15 160);
@@ -144,7 +147,7 @@
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.91 0.006 250);
-  --input: oklch(0.91 0.006 250);
+  --input: oklch(0.63 0.006 250);
   --ring: oklch(0.52 0.13 250);
   --chart-1: oklch(0.52 0.13 250);
   --chart-2: oklch(0.62 0.12 190);
@@ -180,7 +183,7 @@
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.90 0.025 215);
-  --input: oklch(0.90 0.025 215);
+  --input: oklch(0.62 0.025 215);
   --ring: oklch(0.52 0.12 215);
   --chart-1: oklch(0.52 0.12 215);
   --chart-2: oklch(0.65 0.13 175);
@@ -216,7 +219,7 @@
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.99 0 0);
   --border: oklch(0.90 0.02 145);
-  --input: oklch(0.90 0.02 145);
+  --input: oklch(0.62 0.02 145);
   --ring: oklch(0.50 0.12 150);
   --chart-1: oklch(0.50 0.12 150);
   --chart-2: oklch(0.62 0.13 100);
@@ -246,13 +249,13 @@
   --secondary: oklch(0.26 0.035 260);
   --secondary-foreground: oklch(0.90 0.015 250);
   --muted: oklch(0.24 0.03 260);
-  --muted-foreground: oklch(0.65 0.03 250);
+  --muted-foreground: oklch(0.67 0.03 250);
   --accent: oklch(0.30 0.05 255);
   --accent-foreground: oklch(0.92 0.02 250);
   --destructive: oklch(0.55 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.30 0.04 260);
-  --input: oklch(0.30 0.04 260);
+  --input: oklch(0.53 0.04 260);
   --ring: oklch(0.70 0.14 245);
   --chart-1: oklch(0.70 0.14 245);
   --chart-2: oklch(0.72 0.13 190);
@@ -288,7 +291,7 @@
   --destructive: oklch(0.58 0.22 27);
   --destructive-foreground: oklch(0.98 0 0);
   --border: oklch(0.27 0 0);
-  --input: oklch(0.27 0 0);
+  --input: oklch(0.52 0 0);
   --ring: oklch(0.72 0.15 165);
   --chart-1: oklch(0.72 0.15 165);
   --chart-2: oklch(0.70 0.13 220);

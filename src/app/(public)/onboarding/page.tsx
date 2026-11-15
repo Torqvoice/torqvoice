@@ -5,6 +5,11 @@ import { db } from '@/lib/db'
 import { SetupWizard } from '@/features/onboarding/Components/setup/SetupWizard'
 import { SingleWorkshopNotice } from '@/features/onboarding/Components/SingleWorkshopNotice'
 import { organizationAllowance } from '@/lib/features'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('onboarding.form', 'title')
+}
 
 export default async function OnboardingPage({
   searchParams,

@@ -198,6 +198,7 @@ export function AdminUsers({
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('users.searchPlaceholder')}
+            aria-label={t('users.searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-9"

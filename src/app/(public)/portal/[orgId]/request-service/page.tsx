@@ -28,6 +28,11 @@ import { db } from '@/lib/db'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { zonedDayKey } from '@/lib/timezone'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.book', 'title')
+}
 
 /** A job in one of these is a car standing in the workshop. */
 const IN_WORKSHOP = ['in-progress', 'waiting-parts']

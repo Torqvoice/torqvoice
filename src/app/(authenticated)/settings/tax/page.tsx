@@ -2,6 +2,11 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { getTaxBackfillCounts } from '@/features/settings/Actions/applyTaxRateToExisting'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { TaxSettings } from './tax-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('tax')
+}
 
 export default async function TaxSettingsPage() {
   const [result, backfillResult] = await Promise.all([

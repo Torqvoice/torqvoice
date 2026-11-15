@@ -22,6 +22,11 @@ import { presetTemplate } from '@/features/email/Lib/emailPresets'
 import type { EmailTemplate } from '@/features/email/Lib/emailTemplate'
 import { FeatureLocked } from '../feature-locked-message'
 import { EmailTemplateGallery } from './email-template-gallery'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('emailTemplates')
+}
 
 /**
  * Every kind of mail with the templates saved for it, resolved on the server

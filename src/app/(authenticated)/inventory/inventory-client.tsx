@@ -168,6 +168,7 @@ export function InventoryClient({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const t = useTranslations('inventory')
+  const ta = useTranslations('common.a11y')
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
   useRememberedSort('inventory')
@@ -400,6 +401,7 @@ export function InventoryClient({
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={t('searchPlaceholder')}
+                aria-label={t('searchPlaceholder')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="h-9 pl-9"
@@ -526,6 +528,7 @@ export function InventoryClient({
                   className="mt-1 shrink-0"
                   checked={selected.has(part.id)}
                   onCheckedChange={() => toggleSelect(part.id)}
+                  aria-label={ta('selectRow', { name: part.name })}
                 />
                 <button
                   type="button"
@@ -638,6 +641,7 @@ export function InventoryClient({
                         : false
                   }
                   onCheckedChange={toggleSelectAll}
+                  aria-label={ta('selectAll')}
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
@@ -756,6 +760,7 @@ export function InventoryClient({
                           <Checkbox
                             checked={selected.has(part.id)}
                             onCheckedChange={() => toggleSelect(part.id)}
+                            aria-label={ta('selectRow', { name: part.name })}
                           />
                         </TableCell>
                         <TableCell>

@@ -4,6 +4,11 @@ import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { RemindersPageClient } from '@/features/vehicles/Components/RemindersPageClient'
 import { PageHeader } from '@/components/page-header'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('reminders')
+}
 
 export default async function RemindersPage() {
   const [remindersResult, settingsResult] = await Promise.all([

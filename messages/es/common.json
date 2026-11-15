@@ -212,7 +212,16 @@
     }
   },
   "richText": {
-    "openLinkHint": "Mantén pulsado {key} y haz clic para abrir"
+    "openLinkHint": "Mantén pulsado {key} y haz clic para abrir",
+    "placeholder": "Escribe algo...",
+    "toolbar": "Formato",
+    "editor": "Texto",
+    "bold": "Negrita",
+    "italic": "Cursiva",
+    "underline": "Subrayado",
+    "strikethrough": "Tachado",
+    "bulletList": "Lista con viñetas",
+    "numberedList": "Lista numerada"
   },
   "appUpdated": {
     "title": "Hay una nueva versión disponible",
@@ -266,5 +275,21 @@
     "choose": "Elegir...",
     "search": "Buscar...",
     "noMatch": "Nada coincide"
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido",
+    "mainNavigation": "Navegación principal",
+    "close": "Cerrar",
+    "breadcrumb": "Ruta de navegación",
+    "more": "Más",
+    "toggleSidebar": "Mostrar u ocultar la barra lateral",
+    "sidebar": "Barra lateral",
+    "sidebarDescription": "El menú principal.",
+    "openCalendar": "Abrir calendario",
+    "dismiss": "Cerrar",
+    "selectAll": "Seleccionar todo",
+    "selectRow": "Seleccionar {name}",
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente"
   }
 }

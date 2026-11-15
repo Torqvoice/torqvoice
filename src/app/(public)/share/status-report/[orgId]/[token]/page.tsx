@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { StatusReportView } from './status-report-view'
@@ -13,8 +14,12 @@ function toPublicFileUrl(fileUrl: string, token: string): string {
 
 export const revalidate = 0
 export const dynamic = 'force-dynamic'
-export const metadata: Metadata = {
-  robots: { index: false, follow: false, nocache: true, noarchive: true, nosnippet: true },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('statusReport.create')
+  return {
+    title: t('title'),
+    robots: { index: false, follow: false, nocache: true, noarchive: true, nosnippet: true },
+  }
 }
 
 export default async function PublicStatusReportPage({

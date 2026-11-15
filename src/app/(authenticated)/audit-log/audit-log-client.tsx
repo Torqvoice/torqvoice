@@ -157,6 +157,7 @@ export function AuditLogClient({
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('searchPlaceholder')}
+            aria-label={t('searchPlaceholder')}
             defaultValue={search}
             onChange={(e) => {
               const value = e.target.value

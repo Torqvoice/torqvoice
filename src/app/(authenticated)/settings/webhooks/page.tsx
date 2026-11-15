@@ -4,6 +4,11 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { FeatureLocked } from '../feature-locked-message'
 import { getWebhooks } from '@/features/webhooks/Actions/webhookActions'
 import { WebhooksSettings } from './webhooks-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('webhooks')
+}
 
 export default async function WebhooksPage() {
   const data = await getLayoutData()

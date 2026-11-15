@@ -212,7 +212,16 @@
     }
   },
   "richText": {
-    "openLinkHint": "Hold {key} and click to open"
+    "openLinkHint": "Hold {key} and click to open",
+    "placeholder": "Write something...",
+    "toolbar": "Formatting",
+    "editor": "Text",
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strikethrough": "Strikethrough",
+    "bulletList": "Bullet list",
+    "numberedList": "Numbered list"
   },
   "appUpdated": {
     "title": "A new version is available",
@@ -266,5 +275,21 @@
     "choose": "Choose...",
     "search": "Search...",
     "noMatch": "Nothing matches"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "mainNavigation": "Main navigation",
+    "close": "Close",
+    "breadcrumb": "Breadcrumb",
+    "more": "More",
+    "toggleSidebar": "Toggle sidebar",
+    "sidebar": "Sidebar",
+    "sidebarDescription": "The main menu.",
+    "openCalendar": "Open calendar",
+    "dismiss": "Dismiss",
+    "selectAll": "Select all",
+    "selectRow": "Select {name}",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month"
   }
 }

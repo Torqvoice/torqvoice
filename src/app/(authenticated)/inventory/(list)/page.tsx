@@ -13,6 +13,11 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { InventoryClient } from '../inventory-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('inventory')
+}
 
 export default async function InventoryPage({
   searchParams,

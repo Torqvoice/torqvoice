@@ -1,3 +1,4 @@
+import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import {
@@ -16,7 +17,10 @@ import { InspectionHandoffClient } from './inspection-handoff-client'
 import { FixHandoffClient } from './fix-handoff-client'
 import { VehicleHandoffClient } from './vehicle-handoff-client'
 
-export const metadata: Metadata = { robots: { index: false, follow: false } }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('service.photoHandoff')
+  return { title: t('pageTitle'), robots: { index: false, follow: false } }
+}
 export const dynamic = 'force-dynamic'
 
 /**

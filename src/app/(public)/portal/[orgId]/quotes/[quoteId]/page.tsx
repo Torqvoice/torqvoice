@@ -17,6 +17,11 @@ import { PortalPanel, PortalSectionLabel } from '@/features/portal/Components/Ui
 import { portalFormat } from '@/features/portal/Lib/portalFormat'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.quoteDetail', 'title')
+}
 
 /**
  * A quote read in the portal, the way an invoice can be: the sheet the shared

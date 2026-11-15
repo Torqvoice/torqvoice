@@ -6,6 +6,11 @@ import { LicenseSettings } from '@/features/settings/Components/license-settings
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { isDemoMode } from '@/lib/demo'
 import { verifyLicenseToken } from '@/lib/license/token'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('license')
+}
 
 export default async function LicensePage() {
   if (isCloudMode()) {

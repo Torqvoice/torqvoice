@@ -8,6 +8,10 @@
  * `StatusBadge` (src/components/status-badge.tsx), which reads these tables,
  * and a test fails when a file outside this one maps a status to a colour.
  *
+ * The text is the 700 shade on a light theme and the 400 on a dark one: the
+ * 500s and 600s this used to carry were 2.7 to 3.6:1 on a light card, under
+ * the 4.5:1 small text needs.
+ *
  * `hue` is the colour's name in the palette; `badge` is the tinted pill the
  * lists use; the work board fills whole blocks with the same hue
  * (features/workboard/utils/job-colors.ts).
@@ -21,27 +25,39 @@ interface StatusColor {
 
 const yellow: StatusColor = {
   hue: 'yellow',
-  badge: 'bg-yellow-500/10 text-yellow-600 border-yellow-500/20',
+  badge: 'bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border-yellow-500/20',
 }
-const sky: StatusColor = { hue: 'sky', badge: 'bg-sky-500/10 text-sky-600 border-sky-500/20' }
-const blue: StatusColor = { hue: 'blue', badge: 'bg-blue-500/10 text-blue-500 border-blue-500/20' }
+const sky: StatusColor = {
+  hue: 'sky',
+  badge: 'bg-sky-500/10 text-sky-700 dark:text-sky-400 border-sky-500/20',
+}
+const blue: StatusColor = {
+  hue: 'blue',
+  badge: 'bg-blue-500/10 text-blue-700 dark:text-blue-400 border-blue-500/20',
+}
 const orange: StatusColor = {
   hue: 'orange',
-  badge: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+  badge: 'bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20',
 }
 const emerald: StatusColor = {
   hue: 'emerald',
-  badge: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+  badge: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20',
 }
-const gray: StatusColor = { hue: 'gray', badge: 'bg-gray-500/10 text-gray-500 border-gray-500/20' }
-const red: StatusColor = { hue: 'red', badge: 'bg-red-500/10 text-red-500 border-red-500/20' }
+const gray: StatusColor = {
+  hue: 'gray',
+  badge: 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border-gray-500/20',
+}
+const red: StatusColor = {
+  hue: 'red',
+  badge: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
+}
 const amber: StatusColor = {
   hue: 'amber',
-  badge: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+  badge: 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20',
 }
 const purple: StatusColor = {
   hue: 'purple',
-  badge: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
+  badge: 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20',
 }
 
 /**

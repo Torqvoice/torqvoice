@@ -7,6 +7,11 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { LaborPresetsClient } from './labor-presets-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('laborPresets')
+}
 
 export default async function LaborPresetsPage({
   searchParams,

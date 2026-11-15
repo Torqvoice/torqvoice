@@ -153,5 +153,13 @@
   },
   "manageKinds": "Türleri yönet",
   "photosHeading": "Fotoğraflar",
-  "previousShort": "önceki"
+  "previousShort": "önceki",
+  "addMark": "İşaret ekle",
+  "addMarkTitle": "Bir işaret ekleyin",
+  "addMarkBody": "Hasarın bulunduğu parçayı seçin. İşaret parçanın ortasına konur ve sonra taşıyabilirsiniz.",
+  "panel": "Parça",
+  "choosePanel": "Bir parça seçin",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "İşareti seçilen parçanın ortasına taşır.",
+  "markKeysHint": "Enter işareti açar. Ok tuşları onu taşır, Shift ile daha uzağa."
 }

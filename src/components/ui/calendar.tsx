@@ -2,11 +2,13 @@
 
 import * as React from 'react'
 import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 import { DayPicker, getDefaultClassNames, type DayButton } from 'react-day-picker'
 
 import { cn } from '@/lib/utils'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { useDateSettings } from '@/components/date-settings-context'
+import { dateFnsLocale } from '@/lib/date-fns-locale'
 
 function Calendar({
   className,
@@ -22,9 +24,15 @@ function Calendar({
 }) {
   const defaultClassNames = getDefaultClassNames()
   const { weekStartDay } = useDateSettings()
+  // Month and weekday names, and the labels a screen reader hears on the
+  // arrows and the days, in the language of whoever is signed in.
+  const localeCode = useLocale()
+  const t = useTranslations('common.a11y')
 
   return (
     <DayPicker
+      locale={dateFnsLocale(localeCode)}
+      labels={{ labelPrevious: () => t('previousMonth'), labelNext: () => t('nextMonth') }}
       showOutsideDays={showOutsideDays}
       className={cn(
         'bg-background group/calendar p-3 [--cell-size:--spacing(8)] [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent',
@@ -34,7 +42,7 @@ function Calendar({
       )}
       captionLayout={captionLayout}
       formatters={{
-        formatMonthDropdown: (date) => date.toLocaleString('default', { month: 'short' }),
+        formatMonthDropdown: (date) => date.toLocaleString(localeCode, { month: 'short' }),
         ...formatters,
       }}
       classNames={{

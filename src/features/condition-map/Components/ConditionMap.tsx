@@ -2,9 +2,11 @@
 
 import {
   useCallback,
+  useId,
   useMemo,
   useRef,
   useState,
+  type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
 } from 'react'
 import { useTranslations } from 'next-intl'
@@ -32,6 +34,8 @@ export interface MapMark {
   kind: string
   severity: string
   number: number
+  /** The panel it is on, for its name read out to a screen reader. */
+  panel?: string
   previous: boolean
   /** Drawn on another sheet, so it stays where it is: a job's linked inspection. */
   fixed?: boolean
@@ -46,11 +50,21 @@ export interface MapTap {
 
 /** The glyph's radius on screen, in sheet units; larger than print, for a finger. */
 const GLYPH = 34
+/** How far one arrow key moves a mark, in sheet units; Shift moves it further. */
+const NUDGE = 8
+const NUDGE_FAR = 40
+const ARROWS: Record<string, [number, number]> = {
+  ArrowLeft: [-1, 0],
+  ArrowRight: [1, 0],
+  ArrowUp: [0, -1],
+  ArrowDown: [0, 1],
+}
 
 /**
  * The vehicle's five views on one sheet, with the marks on them.
  *
- * Tap a panel to add a mark; drag a mark to move it. Every panel is a path
+ * Tap a panel to add a mark; drag a mark to move it, or focus it and use the
+ * arrow keys. Every panel is a path
  * with its name on it, so a tap records "left front door" as well as where
  * on the picture, and the legend can say so. One view can be brought up on
  * its own for a finger on a phone.
@@ -89,6 +103,14 @@ export function ConditionMap({
   const [hover, setHover] = useState<string | null>(null)
   const [drag, setDrag] = useState<{ id: string; x: number; y: number } | null>(null)
   const dragMoved = useRef(false)
+  /**
+   * A mark being moved with the arrow keys: drawn where the keys have taken
+   * it, and saved once the key is let go or the mark loses focus, so holding
+   * an arrow down is one save rather than one per repeat.
+   */
+  const [nudge, setNudge] = useState<{ id: string; x: number; y: number } | null>(null)
+  const nudgeRef = useRef<{ id: string; x: number; y: number; view: string } | null>(null)
+  const keysHintId = useId()
 
   const viewBox = useMemo(() => {
     if (focusView) {
@@ -167,8 +189,77 @@ export function ConditionMap({
     onMove(id, { view: target.view, panel: target.panel, x: located.x, y: located.y })
   }
 
+  const movable = (mark: MapMark) => !readOnly && !mark.previous && !mark.fixed && Boolean(onMove)
+
+  /** The panel of a view drawn at a sheet point: the topmost one, as a tap would find it. */
+  const panelAtSheet = (view: string, x: number, y: number): Panel | null => {
+    const svg = svgRef.current
+    if (!svg) return null
+    const paths = Array.from(
+      svg.querySelectorAll<SVGPathElement>(`path[data-view="${CSS.escape(view)}"]`)
+    ).reverse()
+    for (const path of paths) {
+      // Not every browser engine (nor a test's) can hit-test a path.
+      if (typeof path.isPointInFill !== 'function') return null
+      let inside = false
+      try {
+        inside = path.isPointInFill(new DOMPoint(x, y))
+      } catch {
+        return null
+      }
+      const panel = path.getAttribute('data-panel')
+      if (inside && isPanel(panel)) return panel
+    }
+    return null
+  }
+
+  const handleMarkKey = (event: ReactKeyboardEvent<SVGGElement>, mark: MapMark) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      onSelect?.(mark.id)
+      return
+    }
+    const arrow = ARROWS[event.key]
+    if (!arrow || !movable(mark)) return
+    event.preventDefault()
+    const placed = composition.views.find((v) => v.view === mark.view)
+    const from =
+      nudgeRef.current?.id === mark.id
+        ? [nudgeRef.current.x, nudgeRef.current.y]
+        : markPosition(composition, mark)
+    if (!placed || !from) return
+    const step = event.shiftKey ? NUDGE_FAR : NUDGE
+    // Kept inside the mark's own view: the keys move a mark across its
+    // panels, and the Panel field in its editor takes it to another view.
+    const { box } = placed
+    const x = Math.min(box.x + box.width, Math.max(box.x, from[0] + arrow[0] * step))
+    const y = Math.min(box.y + box.height, Math.max(box.y, from[1] + arrow[1] * step))
+    nudgeRef.current = { id: mark.id, x, y, view: mark.view }
+    setNudge({ id: mark.id, x, y })
+  }
+
+  const commitNudge = (mark: MapMark) => {
+    const current = nudgeRef.current
+    if (!current || current.id !== mark.id) return
+    nudgeRef.current = null
+    setNudge(null)
+    const located = locateOnSheet(composition, current.x, current.y)
+    if (!located || !onMove) return
+    // Off every panel (in the air around the vehicle) it keeps the panel it had.
+    const panel = panelAtSheet(located.view, current.x, current.y) ?? mark.panel
+    if (!isPanel(panel)) return
+    onMove(mark.id, { view: located.view, panel, x: located.x, y: located.y })
+  }
+
+  /** Where a mark is drawn now, in sheet units: under the pointer or the keys while it moves. */
+  const markAt = (mark: MapMark): [number, number] | null => {
+    if (drag?.id === mark.id) return [drag.x, drag.y]
+    if (nudge?.id === mark.id) return [nudge.x, nudge.y]
+    return markPosition(composition, mark)
+  }
+
   const glyphShapes = (mark: MapMark): DrawingShape[] => {
-    const at = drag?.id === mark.id ? [drag.x, drag.y] : markPosition(composition, mark)
+    const at = markAt(mark)
     if (!at) return []
     return markGlyph({
       x: at[0],
@@ -185,7 +276,9 @@ export function ConditionMap({
     <svg
       ref={svgRef}
       viewBox={viewBox}
-      role="img"
+      // A group, not an image: the marks inside are buttons a keyboard and a
+      // screen reader must be able to reach.
+      role="group"
       aria-label={t('title')}
       className={cn('block h-auto w-full select-none touch-none', className)}
       onPointerMove={moveDrag}
@@ -245,6 +338,7 @@ export function ConditionMap({
         const shapes = glyphShapes(mark)
         if (shapes.length === 0) return null
         const selected = selectedId === mark.id
+        const at = markAt(mark)
         return (
           <g
             key={mark.id}
@@ -253,21 +347,32 @@ export function ConditionMap({
             aria-label={t('markLabel', {
               n: mark.number,
               kind: markTypeOf(types, mark.kind).name,
-              area: '',
+              area: isPanel(mark.panel) ? t(`panels.${mark.panel}`) : '',
             })}
+            aria-describedby={movable(mark) ? keysHintId : undefined}
             className={cn(
-              'outline-none',
+              'group outline-none',
               readOnly || mark.previous || mark.fixed ? 'cursor-pointer' : 'cursor-grab',
               drag?.id === mark.id && 'pointer-events-none cursor-grabbing'
             )}
             onPointerDown={(event) => startDrag(event, mark)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault()
-                onSelect?.(mark.id)
-              }
+            onKeyDown={(event) => handleMarkKey(event, mark)}
+            onKeyUp={(event) => {
+              if (ARROWS[event.key]) commitNudge(mark)
             }}
+            onBlur={() => commitNudge(mark)}
           >
+            {/* The keyboard's focus, drawn as a ring in the theme's focus colour. */}
+            {at && (
+              <circle
+                cx={at[0]}
+                cy={at[1]}
+                r={GLYPH * 1.9}
+                className="pointer-events-none fill-none stroke-ring opacity-0 group-focus-visible:opacity-100"
+                strokeWidth={6}
+                data-focus-ring
+              />
+            )}
             {selected && (
               <circle
                 cx={shapes[0].type === 'circle' ? shapes[0].cx : 0}
@@ -285,6 +390,7 @@ export function ConditionMap({
           </g>
         )
       })}
+      <desc id={keysHintId}>{t('markKeysHint')}</desc>
     </svg>
   )
 }

@@ -153,5 +153,13 @@
   },
   "manageKinds": "Gérer les types",
   "photosHeading": "Photos",
-  "previousShort": "antérieur"
+  "previousShort": "antérieur",
+  "addMark": "Ajouter une marque",
+  "addMarkTitle": "Nouvelle marque",
+  "addMarkBody": "Choisissez l'élément où se trouve le dommage. La marque est placée en son centre, et vous pourrez la déplacer ensuite.",
+  "panel": "Élément",
+  "choosePanel": "Choisir un élément",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Déplace la marque au centre de l'élément choisi.",
+  "markKeysHint": "Entrée ouvre la marque. Les touches fléchées la déplacent, plus loin avec Maj."
 }

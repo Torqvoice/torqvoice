@@ -7,6 +7,11 @@ import {
   getOrgMembers,
 } from '@/features/report-schedule/Actions/reportScheduleActions'
 import { ReportScheduleSettings } from './report-schedule-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('reportSchedule')
+}
 
 export default async function ReportSchedulePage() {
   const data = await getLayoutData()

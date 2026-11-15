@@ -2,6 +2,11 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { WARRANTY_SETTING_KEYS } from '@/features/settings/Lib/warrantyDefaults'
 import { WarrantySettings } from './warranty-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('warranty')
+}
 
 export default async function WarrantySettingsPage() {
   const result = await getSettings([...WARRANTY_SETTING_KEYS, SETTING_KEYS.UNIT_SYSTEM])

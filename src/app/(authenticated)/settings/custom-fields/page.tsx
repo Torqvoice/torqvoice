@@ -8,6 +8,11 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { CustomFieldsManager } from '@/features/custom-fields/Components/CustomFieldsManager'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('customFields')
+}
 
 export default async function CustomFieldsPage() {
   const data = await getLayoutData()

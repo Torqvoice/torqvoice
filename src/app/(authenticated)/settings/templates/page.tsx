@@ -17,6 +17,11 @@ import {
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 import { listDocumentDesigns } from '@/features/invoice-designer/Actions/documentDesignActions'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('templates')
+}
 export default async function TemplatePage() {
   const data = await getLayoutData()
 

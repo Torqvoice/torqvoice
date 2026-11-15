@@ -7,6 +7,11 @@ import { listClosures } from '@/features/workshop-calendar/Actions/closureAction
 import { listAbsences } from '@/features/workshop-calendar/Actions/absenceActions'
 import { canEditTimeOff } from '@/features/workshop-calendar/Lib/access.server'
 import { OpeningHoursSettings } from './opening-hours-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('openingHours')
+}
 
 export default async function OpeningHoursSettingsPage() {
   const auth = await getAuthContext()

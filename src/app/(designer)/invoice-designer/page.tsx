@@ -27,6 +27,11 @@ import {
 import { telegramBotLink as botLinkOf } from '@/features/invoices/Lib/telegramQr'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('settings.designer', 'eyebrow')
+}
 
 export default async function InvoiceDesignerPage({
   searchParams,

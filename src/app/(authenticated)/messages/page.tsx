@@ -13,6 +13,11 @@ import { MessagesPageClient } from '@/features/messaging/Components/MessagesPage
 import type { InboxFocus } from '@/features/messaging/Components/UnifiedInbox'
 import { PageHeader } from '@/components/page-header'
 import { listInspectionReminderCampaigns } from '@/features/inspection-reminders/Actions/inspectionReminderActions'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('messages')
+}
 
 const CHANNELS: MessagingChannel[] = ['sms', 'whatsapp', 'telegram', 'email', 'portal']
 

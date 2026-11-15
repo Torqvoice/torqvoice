@@ -153,5 +153,13 @@
   },
   "manageKinds": "Tvarkyti tipus",
   "photosHeading": "Nuotraukos",
-  "previousShort": "ankstesnė"
+  "previousShort": "ankstesnė",
+  "addMark": "Pridėti žymą",
+  "addMarkTitle": "Nauja žyma",
+  "addMarkBody": "Pasirinkite dalį, kurioje yra pažeidimas. Žyma padedama jos viduryje, o vėliau galėsite ją perkelti.",
+  "panel": "Dalis",
+  "choosePanel": "Pasirinkite dalį",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Perkelia žymą į pasirinktos dalies vidurį.",
+  "markKeysHint": "Enter atidaro žymą. Rodyklių klavišai ją perkelia, su Shift toliau."
 }

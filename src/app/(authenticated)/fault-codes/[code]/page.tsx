@@ -5,6 +5,11 @@ import { getFaultCodeDetail } from '@/features/fault-codes/Actions/getFaultCodeD
 import { FaultCodeDetail } from '@/features/fault-codes/Components/FaultCodeDetail'
 import { normalizeFaultCode } from '@/features/fault-codes/Lib/codes'
 import { isSupportEnabled } from '@/lib/support'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('faultCode')
+}
 
 /**
  * One fault code's own page, so search results and links have an address.

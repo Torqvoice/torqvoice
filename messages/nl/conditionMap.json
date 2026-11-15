@@ -153,5 +153,13 @@
   },
   "manageKinds": "Typen beheren",
   "photosHeading": "Foto's",
-  "previousShort": "eerder"
+  "previousShort": "eerder",
+  "addMark": "Markering toevoegen",
+  "addMarkTitle": "Een markering toevoegen",
+  "addMarkBody": "Kies het deel waar de schade zit. De markering komt in het midden ervan, en je kunt hem daarna verplaatsen.",
+  "panel": "Deel",
+  "choosePanel": "Kies een deel",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Verplaatst de markering naar het midden van het gekozen deel.",
+  "markKeysHint": "Enter opent de markering. De pijltjestoetsen verplaatsen hem, verder met Shift."
 }

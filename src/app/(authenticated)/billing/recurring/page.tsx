@@ -9,6 +9,11 @@ import RecurringInvoicesClient from '@/features/billing/Components/RecurringInvo
 import { db } from '@/lib/db'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { redirect } from 'next/navigation'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('billing.recurring', 'title')
+}
 
 export default async function RecurringInvoicesPage() {
   const session = await getCachedSession()

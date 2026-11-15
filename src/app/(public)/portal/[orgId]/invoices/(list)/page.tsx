@@ -27,6 +27,11 @@ import {
 import { portalPayment } from '@/features/portal/Lib/paymentState'
 import { portalFormat } from '@/features/portal/Lib/portalFormat'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.invoices', 'title')
+}
 
 export default async function PortalInvoicesPage({
   params,

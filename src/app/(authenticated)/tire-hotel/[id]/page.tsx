@@ -12,6 +12,11 @@ import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
 import { TireSetClient } from './tire-set-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('tireSetDetails')
+}
 
 export default async function TireSetPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getCachedSession()

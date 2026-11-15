@@ -20,6 +20,11 @@ import { portalConditionSummary } from '@/features/portal/Lib/inspectionSummary'
 import { portalFormat } from '@/features/portal/Lib/portalFormat'
 import { portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.inspections', 'title')
+}
 
 export default async function PortalInspectionsPage({
   params,

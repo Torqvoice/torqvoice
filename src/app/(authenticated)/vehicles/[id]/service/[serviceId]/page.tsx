@@ -1,4 +1,9 @@
 import { ServiceRecordPage } from '@/features/vehicles/Components/service-page/ServiceRecordPage'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('serviceDetails')
+}
 
 export default async function ServiceDetailPage({
   params,

@@ -13,6 +13,15 @@ import { platformBackupsEnabled } from '@/lib/backup/platform'
 import { reauthRequirement } from '@/lib/reauth.server'
 import { FeatureLocked } from '../../feature-locked-message'
 import { ConnectionSettings } from './connection-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+// The connector's own name, from its manifest: nothing is read from the database.
+export async function generateMetadata({ params }: { params: Promise<{ connector: string }> }) {
+  const { connector } = await params
+  const manifest = getManifest(connector)
+  if (!manifest) return settingsPageTitle('integrations')
+  return { title: connectorName(await getTranslations('integrations'), manifest) }
+}
 
 export default async function IntegrationConnectionPage({
   params,
