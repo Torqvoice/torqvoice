@@ -22,6 +22,7 @@ import {
 import { readAttachments } from '@/features/portal/Lib/chat.server'
 import { portalFormat } from '@/features/portal/Lib/portalFormat'
 import { loadPortalLook } from '@/features/portal/Lib/portalLook.server'
+import { splitRequestText } from '@/features/portal/Lib/requestText'
 import { portalRequestBadge, portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 import { loadPortalWorkshop } from '@/features/portal/Lib/workshop.server'
 import { db } from '@/lib/db'
@@ -160,6 +161,7 @@ export default async function PortalRequestServicePage({
                 {requests.map((req) => {
                   const badge = portalRequestBadge(req.status)
                   const files = readAttachments(org.id, req.attachments)
+                  const words = splitRequestText(req.description)
                   return (
                     <li
                       key={req.id}
@@ -169,8 +171,15 @@ export default async function PortalRequestServicePage({
                         <p className="text-base font-semibold">
                           {req.vehicle.make} {req.vehicle.model}
                         </p>
-                        <p className="mt-1 whitespace-pre-line break-words text-[15px]">
-                          {req.description}
+                        {words.topic && (
+                          <p data-request-topic className="mt-1 text-[15px] font-semibold">
+                            {words.topic}
+                          </p>
+                        )}
+                        <p
+                          className={`whitespace-pre-line break-words text-[15px] ${words.topic ? 'mt-0.5' : 'mt-1'}`}
+                        >
+                          {words.body}
                         </p>
                         {files.length > 0 && (
                           <ul
@@ -245,14 +254,17 @@ export default async function PortalRequestServicePage({
           {(workshop.phoneHref || look.messagesEnabled) && (
             <PortalPanel aria-labelledby="book-talk">
               <PortalSectionLabel id="book-talk">{t('talkTitle')}</PortalSectionLabel>
-              <div className="mt-3 flex flex-col gap-2.5 sm:flex-row lg:flex-col xl:flex-row">
+              {/* Side by side only where each fits on one line: a button whose
+                  words do not fit takes a row of its own instead of breaking
+                  the phone number in two. */}
+              <div className="mt-3 flex flex-wrap gap-2.5">
                 {workshop.phoneHref && workshop.phone && (
-                  <PortalLinkButton href={workshop.phoneHref} className="flex-1">
+                  <PortalLinkButton href={workshop.phoneHref} className="flex-[1_1_auto]">
                     {t('talkCall', { phone: workshop.phone })}
                   </PortalLinkButton>
                 )}
                 {look.messagesEnabled && (
-                  <PortalLinkButton href={`/portal/${orgId}/messages`} className="flex-1">
+                  <PortalLinkButton href={`/portal/${orgId}/messages`} className="flex-[1_1_auto]">
                     {tNav('messages')}
                   </PortalLinkButton>
                 )}

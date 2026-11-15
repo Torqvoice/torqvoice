@@ -104,23 +104,30 @@ export function PanelHead({
 }) {
   return (
     <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
-      {plain ? (
-        <Icon className="h-5 w-5 shrink-0" aria-hidden />
-      ) : (
-        <span
-          aria-hidden
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] bg-[var(--p-accent)] text-[color:var(--p-on-accent)]"
-        >
-          <Icon className="h-4 w-4" strokeWidth={2.4} />
-        </span>
-      )}
-      <PortalSectionLabel
-        id={id}
-        className="min-w-0 flex-1 text-sm font-extrabold text-[color:var(--p-ink)]"
-      >
-        {label}
-      </PortalSectionLabel>
-      {aside}
+      {/* The icon and the name never give way: `flex-[1_0_auto]` keeps them at
+          the width of their words (a name longer than the panel wraps between
+          words). What stands beside them goes to a line of its own when the
+          two do not fit, and is cut short there if it is still too long. */}
+      <div data-panel-head-label className="flex max-w-full flex-[1_0_auto] items-center gap-2.5">
+        {plain ? (
+          <Icon className="h-5 w-5 shrink-0" aria-hidden />
+        ) : (
+          <span
+            aria-hidden
+            className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[10px] bg-[var(--p-accent)] text-[color:var(--p-on-accent)]"
+          >
+            <Icon className="h-4 w-4" strokeWidth={2.4} />
+          </span>
+        )}
+        <PortalSectionLabel id={id} className="text-sm font-extrabold text-[color:var(--p-ink)]">
+          {label}
+        </PortalSectionLabel>
+      </div>
+      {aside ? (
+        <div data-panel-head-aside className="flex min-w-0 max-w-full items-center [&>*]:min-w-0">
+          {aside}
+        </div>
+      ) : null}
     </div>
   )
 }

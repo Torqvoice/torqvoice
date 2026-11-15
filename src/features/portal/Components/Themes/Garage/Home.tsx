@@ -11,6 +11,7 @@ import type {
 } from '../../../Lib/homeTypes'
 import { portalHeroLine, portalJobLine, portalJobSteps, tireSeasonKey } from '../../Home/homeCopy'
 import { PortalAcceptQuoteButton } from '../../Home/PortalAcceptQuoteButton'
+import { PortalRequestText } from '../../Home/PortalRequestText'
 import { PortalBadge, PortalEmptyState, PortalLinkButton, PortalListRow } from '../../Ui'
 import type { PortalHomeProps } from '../types'
 import { ACTION, ACTION_RULE, CELL, LABEL, Plate, SquareDot, TAG } from './parts'
@@ -57,10 +58,15 @@ export async function Home({ orgParam, data, format, chat }: PortalHomeProps) {
     <div className="p-shell flex flex-1 flex-col min-[1100px]:flex-row">
       {/* The board runs out through the container's gutters, so its rules reach
           the edge; each cell pads by the same gutter, so what it holds lines
-          up with the header. Beside the chat it stops at the chat's rule. */}
+          up with the header. Beside the chat it stops at the chat's rule: the
+          right bleed exists only below 1100 px there. Each width range gets
+          its own margin, none overrides another: Tailwind emits a px
+          breakpoint (`min-[1100px]`) before the rem ones (`lg`), so a later
+          "mr-0" lost and the board ran 40 px under the chat. */}
       <div
-        className={`@container -mx-4 flex min-w-0 flex-1 flex-col sm:-mx-6 lg:-mx-10 ${
-          chat ? 'min-[1100px]:mr-0' : ''
+        data-board
+        className={`@container -ml-4 flex min-w-0 flex-1 flex-col sm:-ml-6 lg:-ml-10 ${
+          chat ? 'max-sm:-mr-4 sm:max-lg:-mr-6 lg:max-[1100px]:-mr-10' : '-mr-4 sm:-mr-6 lg:-mr-10'
         }`}
       >
         {data.messages.enabled && (
@@ -222,7 +228,7 @@ export async function Home({ orgParam, data, format, chat }: PortalHomeProps) {
                   <PortalListRow
                     key={request.id}
                     as="li"
-                    title={<span className="line-clamp-3">{request.description}</span>}
+                    title={<PortalRequestText text={request.description} />}
                     meta={joined([
                       t('requestSent', { day: format.day(request.createdAt) }),
                       request.vehicle?.label,

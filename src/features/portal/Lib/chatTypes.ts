@@ -57,6 +57,12 @@ export interface PortalChatEvent {
   kind: PortalChatEventKind
   /** When it happened. */
   at: string
+  /**
+   * `at` is a calendar day and not a moment: an invoice that was never sent
+   * stands on its own date, which has no time of day. The chat prints the day
+   * for it and never a clock time.
+   */
+  dayOnly: boolean
   /** "Volvo V60", when the record is about a car. */
   vehicle: string | null
   /** The job's, quote's or invoice's own title, or what the workshop wrote with an update. */
@@ -142,6 +148,8 @@ export const portalChatEventSchema = z.object({
   id: z.string(),
   kind: z.enum(['work_started', 'update', 'quote', 'invoice']),
   at: z.string(),
+  // Left out by a server from before the field existed: a moment, as before.
+  dayOnly: z.boolean().default(false),
   vehicle: z.string().nullable(),
   title: z.string().nullable(),
   amount: z.string().nullable(),

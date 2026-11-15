@@ -28,6 +28,7 @@ import type {
   PortalWorkshop,
 } from '../../../Lib/homeTypes'
 import { PortalAcceptQuoteButton } from '../../Home/PortalAcceptQuoteButton'
+import { PortalRequestText } from '../../Home/PortalRequestText'
 import { portalHeroLine, portalJobLine, portalJobSteps, tireSeasonKey } from '../../Home/homeCopy'
 import { PortalBadge, PortalEmptyState, PortalLinkButton, PortalPanel } from '../../Ui'
 import type { PortalHomeProps } from '../types'
@@ -208,7 +209,7 @@ export async function Home({ orgParam, data, format, chat }: PortalHomeProps) {
                     {data.requests.map((request) => (
                       <TileRow
                         key={request.id}
-                        title={<span className="line-clamp-3">{request.description}</span>}
+                        title={<PortalRequestText text={request.description} />}
                         meta={joined([
                           t('requestSent', { day: format.day(request.createdAt) }),
                           request.vehicle?.label,
@@ -764,7 +765,7 @@ function TiresPanel({
         label={t('tires')}
         aside={
           first.vehicle && (
-            <span className="p-muted text-sm font-semibold">{first.vehicle.label}</span>
+            <span className="p-muted truncate text-sm font-semibold">{first.vehicle.label}</span>
           )
         }
       />

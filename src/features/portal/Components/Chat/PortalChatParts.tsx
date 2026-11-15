@@ -278,8 +278,8 @@ export function ChatEventGroup({
 }: {
   kind: PortalChatEvent['kind']
   events: PortalChatEvent[]
-  /** Prints an event's time on the workshop's clock. */
-  time: (iso: string) => string
+  /** Prints when an event happened on the workshop's clock: a time, or the day for one without a time. */
+  time: (event: PortalChatEvent) => string
   t: Translate
 }) {
   const Icon = LINE_ICON[kind]
@@ -300,7 +300,7 @@ export function ChatEventGroup({
       </summary>
       <div className="p-chat__groupbody">
         {events.map((event) => (
-          <ChatEventLine key={event.id} event={event} time={time(event.at)} t={t} />
+          <ChatEventLine key={event.id} event={event} time={time(event)} t={t} />
         ))}
       </div>
     </details>

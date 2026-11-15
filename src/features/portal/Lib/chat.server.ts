@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { db } from '@/lib/db'
+import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { zonedDayKey } from '@/lib/timezone'
 import { parseUploadUrl } from '@/lib/upload-url'
 import { workshopMoneyFormatter } from '@/lib/workshop-currency'
@@ -276,7 +277,10 @@ export async function getPortalThreadEvents(
         where: {
           ...mine,
           status: 'completed',
-          AND: [{ OR: [{ issuedAt: { gte: since } }, { sentAt: { gte: since } }] }],
+          AND: [
+            { OR: [{ issuedAt: { not: null } }, { sentAt: { not: null } }] },
+            invoiceEventWindow(since),
+          ],
         },
         select: {
           id: true,
@@ -285,6 +289,9 @@ export async function getPortalThreadEvents(
           totalAmount: true,
           issuedAt: true,
           sentAt: true,
+          invoiceDate: true,
+          startDateTime: true,
+          serviceDate: true,
           invoiceDueDate: true,
           manuallyPaid: true,
           payments: { select: { amount: true } },
@@ -306,6 +313,7 @@ export async function getPortalThreadEvents(
         id: `work_started:${job.id}`,
         kind: 'work_started',
         at: at.toISOString(),
+        dayOnly: false,
         vehicle: carName(job.vehicle),
         title: job.title || null,
         amount: null,
@@ -320,6 +328,7 @@ export async function getPortalThreadEvents(
         id: `update:${report.id}`,
         kind: 'update',
         at: report.sentAt.toISOString(),
+        dayOnly: false,
         vehicle: carName(report.serviceRecord?.vehicle),
         title: shorten(report.message) ?? shorten(report.title),
         amount: null,
@@ -335,6 +344,7 @@ export async function getPortalThreadEvents(
         id: `quote:${quote.id}`,
         kind: 'quote',
         at: at.toISOString(),
+        dayOnly: false,
         vehicle: carName(quote.vehicle),
         title: quote.title || quote.quoteNumber || null,
         amount: money(quote.totalAmount),
@@ -345,8 +355,8 @@ export async function getPortalThreadEvents(
     }
     const today = zonedDayKey(now, timeZone)
     for (const invoice of invoices) {
-      const at = invoice.issuedAt ?? invoice.sentAt
-      if (!at || at < since) continue
+      const { at, dayOnly } = invoiceEventTime(invoice)
+      if (at < since) continue
       // Overdue is owed money past its due day, and that day is the workshop's.
       const owed = portalPayment(invoice).balance > 0
       const overdue =
@@ -355,6 +365,7 @@ export async function getPortalThreadEvents(
         id: `invoice:${invoice.id}`,
         kind: 'invoice',
         at: at.toISOString(),
+        dayOnly,
         vehicle: carName(invoice.vehicle),
         title: invoice.invoiceNumber || invoice.title || null,
         amount: money(invoice.totalAmount),
@@ -367,6 +378,50 @@ export async function getPortalThreadEvents(
   } catch (error) {
     console.error('[portal chat] events:', error)
     return []
+  }
+}
+
+/**
+ * When an invoice stands in the thread: the moment the customer would
+ * recognise.
+ *
+ * That is when it was sent to them, a real moment with a time of day. An
+ * invoice that was never sent (shared by link only, or paid at the counter)
+ * stands on its own date, the one printed on it and shown on its page in the
+ * portal (`effectiveInvoiceDate`: the invoice date, else the scheduled start,
+ * else the day of the work): a calendar day, so the chat shows the day and
+ * no clock time. `issuedAt` is never it: that is when the sheet was frozen,
+ * which can be a payment weeks after the work, and its time of day means
+ * nothing to a customer.
+ *
+ * `invoiceEventWindow` is the same precedence as a query: change both together.
+ */
+export function invoiceEventTime(invoice: {
+  sentAt: Date | null
+  invoiceDate?: Date | null
+  startDateTime?: Date | null
+  serviceDate: Date
+}): { at: Date; dayOnly: boolean } {
+  if (invoice.sentAt) return { at: invoice.sentAt, dayOnly: false }
+  return { at: effectiveInvoiceDate(invoice), dayOnly: true }
+}
+
+/**
+ * The invoices whose place in the thread (`invoiceEventTime`) is on or after
+ * `since`, as a Prisma filter. Each fallback only counts for a row that has
+ * no date of higher rank, so the rows the query returns are the rows that
+ * are drawn: a filter on any of the dates let old invoices in by a date that
+ * is not the one they stand on, and they used up the row limit before being
+ * dropped, hiding a recent invoice.
+ */
+export function invoiceEventWindow(since: Date) {
+  return {
+    OR: [
+      { sentAt: { gte: since } },
+      { sentAt: null, invoiceDate: { gte: since } },
+      { sentAt: null, invoiceDate: null, startDateTime: { gte: since } },
+      { sentAt: null, invoiceDate: null, startDateTime: null, serviceDate: { gte: since } },
+    ],
   }
 }
 

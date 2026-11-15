@@ -10,6 +10,7 @@ import type {
   PortalHomeTireSet,
 } from '../../../Lib/homeTypes'
 import { PortalAcceptQuoteButton } from '../../Home/PortalAcceptQuoteButton'
+import { PortalRequestText } from '../../Home/PortalRequestText'
 import { portalHeroLine, portalJobLine, portalJobSteps, tireSeasonKey } from '../../Home/homeCopy'
 import { PortalEmptyState, PortalLinkButton, PortalListRow } from '../../Ui'
 import type { PortalHomeProps } from '../types'
@@ -196,6 +197,11 @@ export async function Home({ orgParam, data, format, chat }: PortalHomeProps) {
                         key={car.id}
                         as="li"
                         href={car.url}
+                        // In a narrow column the mark ("In the workshop") goes
+                        // under the name instead of squeezing it to a word a
+                        // line: the name keeps 8.5rem, or the row less the
+                        // chevron where the column is narrower than that.
+                        className="flex-wrap gap-y-1 [&>span:first-child]:min-w-[min(8.5rem,calc(100%-2rem))] [&>svg]:ml-auto"
                         title={<span className={ROW_TITLE}>{car.label}</span>}
                         meta={joined([
                           car.licensePlate,
@@ -289,9 +295,7 @@ export async function Home({ orgParam, data, format, chat }: PortalHomeProps) {
                     <PortalListRow
                       key={request.id}
                       as="li"
-                      title={
-                        <span className={`${ROW_TITLE} line-clamp-3`}>{request.description}</span>
-                      }
+                      title={<PortalRequestText text={request.description} className={ROW_TITLE} />}
                       meta={joined([
                         t('requestSent', { day: format.day(request.createdAt) }),
                         request.vehicle?.label,

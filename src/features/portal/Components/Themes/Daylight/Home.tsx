@@ -8,6 +8,7 @@ import type {
   PortalHomeTireSet,
 } from '../../../Lib/homeTypes'
 import { PortalAcceptQuoteButton } from '../../Home/PortalAcceptQuoteButton'
+import { PortalRequestText } from '../../Home/PortalRequestText'
 import { portalHeroLine, portalJobLine, portalJobSteps, tireSeasonKey } from '../../Home/homeCopy'
 import {
   PortalBadge,
@@ -188,7 +189,7 @@ export async function Home({ orgParam, data, format, chat }: PortalHomeProps) {
                   <PortalListRow
                     key={request.id}
                     as="li"
-                    title={<span className="line-clamp-3">{request.description}</span>}
+                    title={<PortalRequestText text={request.description} />}
                     meta={joined([
                       t('requestSent', { day: format.day(request.createdAt) }),
                       request.vehicle?.label,

@@ -76,10 +76,17 @@ import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
+import type { RequestTextParts } from '@/features/portal/Lib/requestText'
 
 interface ServiceRequestItem {
   id: string
   description: string
+  /**
+   * The description taken apart by the page: the quick choice the customer
+   * picked in the portal, and their own words. Without it the description is
+   * shown whole.
+   */
+  words?: RequestTextParts
   preferredDate: Date | null
   /** "morning" or "afternoon", when the customer said which suits. */
   preferredTime?: string | null
@@ -1169,6 +1176,8 @@ export function ServiceRequestCard({
 
   const canSms = smsEnabled && !!customerPhone
   const vehicleDisplay = `${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}`
+  // A request from the portal can start with the quick choice the customer picked.
+  const words = request.words ?? { topic: null, body: request.description }
 
   return (
     <>
@@ -1183,8 +1192,15 @@ export function ServiceRequestCard({
                   {config.label}
                 </Badge>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                {request.description}
+              {words.topic && (
+                <p data-request-topic className="mt-1 text-sm font-medium">
+                  {words.topic}
+                </p>
+              )}
+              <p
+                className={`text-sm text-muted-foreground whitespace-pre-wrap ${words.topic ? 'mt-0.5' : 'mt-1'}`}
+              >
+                {words.body}
               </p>
               <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
                 <span>{t('submitted', { date: formatDate(new Date(request.createdAt)) })}</span>

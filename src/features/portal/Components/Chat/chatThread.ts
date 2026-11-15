@@ -148,3 +148,81 @@ function foldEvents(events: PortalChatEvent[], timeZone: string): Entry[] {
   }
   return entries
 }
+
+/** How the workshop prints its times: its zone and its 12 or 24 hour clock. */
+export interface PortalChatClock {
+  timeZone: string
+  timeFormat: '12h' | '24h'
+}
+
+/** The four ways the thread prints a moment, in the portal's language on the workshop's clock. */
+export type PortalChatStampKind = 'time' | 'day' | 'shortDay' | 'dayWithYear'
+
+/**
+ * The formatters behind every time and day in the thread. One function, so
+ * the server (which prints the first thread) and the browser (which prints
+ * what arrives later) ask for exactly the same thing.
+ */
+export function portalChatFormats(
+  locale: string,
+  clock: PortalChatClock
+): Record<PortalChatStampKind, Intl.DateTimeFormat> {
+  const zone = { timeZone: clock.timeZone }
+  return {
+    time: new Intl.DateTimeFormat(locale, {
+      ...zone,
+      ...(clock.timeFormat === '24h'
+        ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
+        : { hour: 'numeric', minute: '2-digit', hour12: true }),
+    }),
+    day: new Intl.DateTimeFormat(locale, {
+      ...zone,
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    }),
+    // The day alone, for an event that has no time of day.
+    shortDay: new Intl.DateTimeFormat(locale, { ...zone, day: 'numeric', month: 'short' }),
+    dayWithYear: new Intl.DateTimeFormat(locale, {
+      ...zone,
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    }),
+  }
+}
+
+/**
+ * The times and days of a thread, already printed, by the moment they print.
+ *
+ * The server and the browser do not print a time alike: each has its own
+ * copy of the language data, and they disagree in small ways ("9:20 a. m."
+ * with one kind of space or another, "sept" or "sep"). A chat that printed
+ * its times on both sides was therefore one text on the server and another
+ * in the browser, which React refuses (error 418) in any language where the
+ * two copies differ. So the server prints the first thread's stamps once and
+ * hands them over, and the browser shows those as they are; it prints only
+ * what arrives after the page has loaded.
+ */
+export type PortalChatStamps = Record<string, Record<PortalChatStampKind, string>>
+
+export function portalChatStamps(
+  moments: string[],
+  locale: string,
+  clock: PortalChatClock
+): PortalChatStamps {
+  const formats = portalChatFormats(locale, clock)
+  const stamps: PortalChatStamps = {}
+  for (const iso of moments) {
+    if (stamps[iso]) continue
+    const date = new Date(iso)
+    if (Number.isNaN(date.getTime())) continue
+    stamps[iso] = {
+      time: formats.time.format(date),
+      day: formats.day.format(date),
+      shortDay: formats.shortDay.format(date),
+      dayWithYear: formats.dayWithYear.format(date),
+    }
+  }
+  return stamps
+}

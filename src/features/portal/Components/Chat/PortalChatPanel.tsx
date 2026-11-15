@@ -25,7 +25,13 @@ import {
   ChatViewer,
   type ChatViewerFile,
 } from './PortalChatParts'
-import { buildPortalThread, workshopDayKey } from './chatThread'
+import {
+  buildPortalThread,
+  type PortalChatStampKind,
+  type PortalChatStamps,
+  portalChatFormats,
+  workshopDayKey,
+} from './chatThread'
 import { useChatUploads } from './useChatUploads'
 import { useChatVisible } from './useChatVisible'
 import { usePortalThread } from './usePortalThread'
@@ -66,6 +72,12 @@ export interface PortalChatPanelProps {
   /** How times are printed: the workshop's zone and its 12 or 24 hour clock. */
   clock: { timeZone: string; timeFormat: '12h' | '24h' }
   /**
+   * The times and days of that first thread as the server printed them, so
+   * the page reads the same before and after the browser takes over. Optional:
+   * without it the browser prints them itself.
+   */
+  stamps?: PortalChatStamps
+  /**
    * 'panel' sits in a box among other things and has its own header; 'page'
    * is the Messages page, where the page already says what this is, so the
    * header is only the call button's row.
@@ -86,6 +98,7 @@ export function PortalChatPanel({
   initialMessages,
   initialEvents,
   clock,
+  stamps,
   variant = 'panel',
 }: PortalChatPanelProps) {
   const t = useTranslations('portal.chat')
@@ -118,34 +131,28 @@ export function PortalChatPanel({
   // The workshop can turn the chat off while a customer has it open.
   const canWrite = enabled && thread.enabled
 
-  const formats = useMemo(() => {
-    const zone = { timeZone: clock.timeZone }
-    return {
-      time: new Intl.DateTimeFormat(locale, {
-        ...zone,
-        ...(clock.timeFormat === '24h'
-          ? { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }
-          : { hour: 'numeric', minute: '2-digit', hour12: true }),
-      }),
-      day: new Intl.DateTimeFormat(locale, {
-        ...zone,
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-      }),
-      dayWithYear: new Intl.DateTimeFormat(locale, {
-        ...zone,
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }),
-    }
-  }, [locale, clock.timeZone, clock.timeFormat])
+  const formats = useMemo(
+    () => portalChatFormats(locale, { timeZone: clock.timeZone, timeFormat: clock.timeFormat }),
+    [locale, clock.timeZone, clock.timeFormat]
+  )
+  /**
+   * A moment as the thread prints it. What the server already printed is
+   * shown as it is (see `PortalChatStamps`): printing it again here could
+   * give another text than the page arrived with.
+   */
+  const stamp = (iso: string, kind: PortalChatStampKind) =>
+    stamps?.[iso]?.[kind] ?? formats[kind].format(new Date(iso))
 
   const items = useMemo(
     () => buildPortalThread(thread.messages, thread.events, outgoing, clock.timeZone),
     [thread.messages, thread.events, outgoing, clock.timeZone]
   )
+
+  /**
+   * When an event happened, on the workshop's clock. One that is only a
+   * calendar day (an invoice on its own date) prints the day, never a time.
+   */
+  const eventWhen = (event: PortalChatEvent) => stamp(event.at, event.dayOnly ? 'shortDay' : 'time')
 
   /** "Today", "Yesterday", or the day in words, on the workshop's calendar. */
   const dayLabel = (iso: string) => {
@@ -157,7 +164,7 @@ export function PortalChatPanel({
     }
     const sameYear =
       key.slice(0, 4) === workshopDayKey(new Date(now).toISOString(), clock.timeZone).slice(0, 4)
-    return (sameYear ? formats.day : formats.dayWithYear).format(new Date(iso))
+    return stamp(iso, sameYear ? 'day' : 'dayWithYear')
   }
 
   // ── Keeping the newest message in view ──────────────────────────────────
@@ -344,7 +351,7 @@ export function PortalChatPanel({
                       key={item.key}
                       event={item.event}
                       workshopName={workshopName}
-                      time={formats.time.format(new Date(item.event.at))}
+                      time={eventWhen(item.event)}
                       t={t}
                     />
                   )
@@ -355,7 +362,7 @@ export function PortalChatPanel({
                       key={item.key}
                       kind={item.kind}
                       events={item.events}
-                      time={(iso) => formats.time.format(new Date(iso))}
+                      time={eventWhen}
                       t={t}
                     />
                   )
@@ -388,7 +395,7 @@ export function PortalChatPanel({
                     </div>
                     {item.closesRun && (
                       <p className={mine ? 'p-chat__meta p-chat__meta--me' : 'p-chat__meta'}>
-                        {who} · {formats.time.format(new Date(message.createdAt))}
+                        {who} · {stamp(message.createdAt, 'time')}
                         {message.id === seenId && ` · ${t('seen')}`}
                       </p>
                     )}
