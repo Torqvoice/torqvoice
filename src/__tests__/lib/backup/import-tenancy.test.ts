@@ -15,6 +15,8 @@ const state = vi.hoisted(() => ({
   own: {} as Record<string, string[]>,
   /** People who are members of this workshop. */
   members: [] as string[],
+  /** The portal chat this workshop holds before the restore. */
+  portalMessages: [] as Record<string, unknown>[],
   calls: [] as { model: string; method: string; args: any }[],
   cloud: false,
   role: 'admin',
@@ -24,8 +26,15 @@ vi.mock('@/lib/db', () => {
   const tx = new Proxy(
     {},
     {
-      get: (_target, model: string) =>
-        new Proxy(
+      get: (_target, model: string) => {
+        // The row locks a restore takes before it reads the portal chat.
+        if (model === '$queryRaw') {
+          return async () => {
+            state.calls.push({ model: '$queryRaw', method: 'lock', args: undefined })
+            return [{ count: 0 }]
+          }
+        }
+        return new Proxy(
           {},
           {
             get: (_t, method: string) => async (args: any) => {
@@ -39,12 +48,18 @@ vi.mock('@/lib/db', () => {
                 const table = 'NOT' in args.where ? state.foreign : state.own
                 return (table[model] ?? []).filter((id) => ids.includes(id)).map((id) => ({ id }))
               }
+              if (method === 'findMany' && model === 'portalMessage') return state.portalMessages
+              // Asked without ids: the customers in the workshop once the file's are in.
+              if (method === 'findMany' && model === 'customer') {
+                return (state.own.customer ?? []).map((id) => ({ id }))
+              }
               if (method === 'findMany') return []
               if (method === 'findFirst' || method === 'findUnique') return null
               return { count: 0 }
             },
           }
-        ),
+        )
+      },
     }
   )
   return {
@@ -121,6 +136,7 @@ beforeEach(() => {
   state.foreign = {}
   state.own = {}
   state.members = []
+  state.portalMessages = []
   state.calls = []
   state.cloud = false
   state.role = 'admin'
@@ -324,5 +340,73 @@ describe('on the cloud', () => {
     state.role = 'owner'
     const allowed = await importJson(file())
     expect(allowed.status).toBe(200)
+  })
+})
+
+describe('the portal chat when the file replaces customers without carrying it', () => {
+  const message = (id: string, extra: Record<string, unknown> = {}) => ({
+    id,
+    direction: 'outbound',
+    body: 'Your car is ready',
+    attachments: [],
+    readAt: null,
+    createdAt: new Date('2026-11-14T10:00:00Z'),
+    organizationId: 'org-a',
+    customerId: 'cust-a',
+    authorUserId: null,
+    ...extra,
+  })
+
+  it('puts the conversations back under the recreated customers', async () => {
+    state.own = { customer: ['cust-a'] }
+    state.members = ['staff-1']
+    state.portalMessages = [
+      message('msg-1', { authorUserId: 'staff-1' }),
+      message('msg-2', { authorUserId: 'someone-from-another-workshop' }),
+      message('msg-3', { customerId: 'cust-not-in-the-file' }),
+    ]
+
+    const response = await importJson({ customers: [{ id: 'cust-a', name: 'Kari', userId: 'u' }] })
+    expect(response.status).toBe(200)
+
+    const restored = state.calls.find(
+      (c) => c.model === 'portalMessage' && c.method === 'createMany'
+    )
+    expect(restored?.args.data).toEqual([
+      expect.objectContaining({ id: 'msg-1', customerId: 'cust-a', authorUserId: 'staff-1' }),
+      expect.objectContaining({ id: 'msg-2', customerId: 'cust-a', authorUserId: null }),
+    ])
+  })
+
+  it('locks the rows before reading them, and reads them before the customers go', async () => {
+    state.own = { customer: ['cust-a'] }
+    state.portalMessages = [message('msg-1')]
+
+    await importJson({ customers: [{ id: 'cust-a', name: 'Kari', userId: 'u' }] })
+
+    const at = (model: string, method: string) =>
+      state.calls.findIndex((c) => c.model === model && c.method === method)
+    const read = state.calls.findIndex(
+      (c) => c.model === 'portalMessage' && c.method === 'findMany' && !c.args?.where?.id
+    )
+    expect(at('$queryRaw', 'lock')).toBeGreaterThanOrEqual(0)
+    expect(at('$queryRaw', 'lock')).toBeLessThan(read)
+    expect(read).toBeLessThan(at('customer', 'deleteMany'))
+  })
+
+  it('takes no locks and keeps nothing aside when the file carries the chat itself', async () => {
+    state.own = { customer: ['cust-a'] }
+    state.portalMessages = [message('msg-old')]
+
+    await importJson({
+      customers: [{ id: 'cust-a', name: 'Kari', userId: 'u' }],
+      portalMessages: [message('msg-from-file', { createdAt: '2026-11-10T10:00:00.000Z' })],
+    })
+
+    expect(state.calls.some((c) => c.model === '$queryRaw')).toBe(false)
+    const restored = state.calls.find(
+      (c) => c.model === 'portalMessage' && c.method === 'createMany'
+    )
+    expect(restored?.args.data.map((r: { id: string }) => r.id)).toEqual(['msg-from-file'])
   })
 })

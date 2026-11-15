@@ -22,8 +22,10 @@ vi.mock('@/lib/db', () => {
   const tx = new Proxy(
     {},
     {
-      get: (_target, model: string) =>
-        new Proxy(
+      get: (_target, model: string) => {
+        // The row locks a restore takes before it reads the portal chat.
+        if (model === '$queryRaw') return async () => [{ count: 0 }]
+        return new Proxy(
           {},
           {
             get: (_t, method: string) => async (args: any) => {
@@ -33,7 +35,8 @@ vi.mock('@/lib/db', () => {
               return { count: 0 }
             },
           }
-        ),
+        )
+      },
     }
   )
   return { db: { $transaction: async (fn: (t: unknown) => unknown) => fn(tx) } }

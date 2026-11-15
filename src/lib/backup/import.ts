@@ -3,6 +3,11 @@ import { copyFile, mkdir, readdir, rename } from 'node:fs/promises'
 import path from 'node:path'
 import { db } from '@/lib/db'
 import type { TxClient } from '@/lib/db'
+import {
+  keepsCurrentPortalMessages,
+  portalMessageAuthorIds,
+  portalMessageRowsToRestore,
+} from '@/lib/backup/portal-messages'
 import { clearPlanFor, UPLOAD_CATEGORIES } from '@/lib/backup/manifest'
 import {
   rewriteFileUrl,
@@ -638,6 +643,32 @@ export async function restoreBackup(
             tx.documentDesignSnapshot.deleteMany({ where: { organizationId } }),
           DocumentAssetSnapshot: () =>
             tx.documentAssetSnapshot.deleteMany({ where: { organizationId } }),
+        }
+
+        // The portal chat goes with its customers by cascade. A file that
+        // replaces the customers without carrying the chat would delete every
+        // conversation, so those are read first and put back further down.
+        //
+        // The chat stays open while a restore runs, so the rows are locked
+        // before they are read. A message being sent takes a share of its
+        // customer's row, and a read receipt takes its message's row: locking
+        // both waits for the writes already under way, which the read below
+        // then sees, and holds new ones until the restore commits. One that
+        // waited finds its customer or message replaced and fails or changes
+        // nothing; it is never taken in and then silently dropped.
+        let currentPortalMessages: Record<string, unknown>[] = []
+        if (keepsCurrentPortalMessages(data)) {
+          await raw.$queryRaw(Prisma.sql`
+            SELECT count(*) FROM (
+              SELECT 1 FROM "public"."customers" WHERE "organizationId" = ${organizationId} FOR UPDATE
+            ) locked
+          `)
+          await raw.$queryRaw(Prisma.sql`
+            SELECT count(*) FROM (
+              SELECT 1 FROM "public"."portal_messages" WHERE "organizationId" = ${organizationId} FOR UPDATE
+            ) locked
+          `)
+          currentPortalMessages = await tx.portalMessage.findMany({ where: { organizationId } })
         }
 
         for (const model of clearPlanFor(Object.keys(data))) {
@@ -1762,34 +1793,33 @@ export async function restoreBackup(
         // The chat in the customer portal. A message belongs to a customer, so
         // one whose customer is not in this workshop after the restore has no
         // thread to sit in and is left out. Its author is kept only when that
-        // person exists on this install; its photos point at this workshop.
-        const portalMessages = data.portalMessages as Record<string, unknown>[] | undefined
-        if (portalMessages?.length) {
+        // person is a member of this workshop; its photos point at this
+        // workshop. Without the chat in the file, the workshop's own messages
+        // (read before the customers were replaced) go back as they were.
+        const filePortalMessages = data.portalMessages as Record<string, unknown>[] | undefined
+        const portalMessages: Record<string, unknown>[] =
+          filePortalMessages ?? currentPortalMessages
+        if (portalMessages.length) {
           const customerIds = new Set(
             (await tx.customer.findMany({ where: { organizationId }, select: { id: true } })).map(
               (c) => c.id
             )
           )
-          const authorIds = [
-            ...new Set(
-              portalMessages
-                .map((m) => m.authorUserId)
-                .filter((id): id is string => typeof id === 'string' && id.length > 0)
-            ),
-          ]
-          const authors = new Set(
+          const authorIds = portalMessageAuthorIds(portalMessages)
+          const members = new Set(
             authorIds.length
               ? (
-                  await tx.user.findMany({ where: { id: { in: authorIds } }, select: { id: true } })
-                ).map((u) => u.id)
+                  await tx.organizationMember.findMany({
+                    where: { organizationId, userId: { in: authorIds } },
+                    select: { userId: true },
+                  })
+                ).map((m) => m.userId)
               : []
           )
           await restoreRows(
             'portal messages',
-            (rows) => tx.portalMessage.createMany({ data: rows as never }),
-            portalMessages
-              .filter((m) => typeof m.customerId === 'string' && customerIds.has(m.customerId))
-              .map((m) => ({ ...m, authorUserId: keptReference(m.authorUserId, authors) })),
+            (batch) => tx.portalMessage.createMany({ data: batch as never }),
+            portalMessageRowsToRestore(portalMessages, customerIds, members),
             { organizationId },
             { fields: ['attachments'], organizationId }
           )
