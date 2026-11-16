@@ -26,6 +26,8 @@ import {
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
+import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
 
 interface TemplateOption {
   id: string
@@ -65,6 +67,11 @@ export function QuickCreateMenu() {
     }
   }
 
+  // The same two dialogs on their shortcuts. The rest of the menu opens a
+  // page, which the shortcut registry does on its own.
+  useShortcut('create.workOrder', handleNewWorkOrder)
+  useShortcut('create.inspection', () => void handleNewInspection())
+
   return (
     <>
       <DropdownMenu>
@@ -78,32 +85,38 @@ export function QuickCreateMenu() {
             {t('quickCreate.title')}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>{t('quickCreate.title')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleNewWorkOrder}>
             <Wrench className="h-4 w-4" />
             {t('quickCreate.workOrder')}
+            <ShortcutKeys id="create.workOrder" className="ml-auto" />
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => router.push('/customers?create=true')}>
             <Users className="h-4 w-4" />
             {t('quickCreate.customer')}
+            <ShortcutKeys id="create.customer" className="ml-auto" />
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => router.push('/vehicles?create=true')}>
             <Car className="h-4 w-4" />
             {t('quickCreate.vehicle')}
+            <ShortcutKeys id="create.vehicle" className="ml-auto" />
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => router.push('/quotes?create=true')}>
             <FileText className="h-4 w-4" />
             {t('quickCreate.quote')}
+            <ShortcutKeys id="create.quote" className="ml-auto" />
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => router.push('/inventory?create=true')}>
             <Package className="h-4 w-4" />
             {t('quickCreate.part')}
+            <ShortcutKeys id="create.part" className="ml-auto" />
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleNewInspection}>
             <ClipboardCheck className="h-4 w-4" />
             {t('quickCreate.inspection')}
+            <ShortcutKeys id="create.inspection" className="ml-auto" />
           </DropdownMenuItem>
 
           {/* Everything above creates a record. This creates a person, which

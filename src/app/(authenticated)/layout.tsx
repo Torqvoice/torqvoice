@@ -57,6 +57,8 @@ import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
 import { TimeClockProvider } from '@/features/time-tracking/Components/TimeClockProvider'
 import { RealtimeProvider } from '@/features/realtime/RealtimeProvider'
 import { SaveShortcutListener } from '@/components/save-shortcut-listener'
+import { ShortcutsProvider } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { SidebarShortcut } from '@/features/shortcuts/Components/SidebarShortcut'
 import { AnalyticsIdentity } from '@/components/analytics-identity'
 import { WhatsNewProvider } from '@/features/whats-new/Components/WhatsNewProvider'
 import { getWhatsNewFeed } from '@/features/whats-new/Lib/feed.server'
@@ -346,139 +348,156 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 releaseNotesUrl={releaseNotesUrl}
                 feedback={isDemoMode ? null : isCloudMode() ? 'identified' : 'anonymous'}
               >
-                {/* Accent line along the very top of the viewport — the card hairline at
+                {/* One listener for every keyboard shortcut, with this person's
+                    own keys. Told what the search palette is told, so a page
+                    their role cannot open has no shortcut either. */}
+                <ShortcutsProvider
+                  initialPrefs={data.keyboardShortcuts}
+                  plateLookupAvailable={plateLookupAvailable}
+                  commands={{
+                    visibleSubjects,
+                    features,
+                    tireHotelEnabled,
+                    aiEnabled,
+                    isAdminOrOwner: isOwnerOrAdmin,
+                    faultCodesEnabled,
+                  }}
+                >
+                  {/* Accent line along the very top of the viewport — the card hairline at
         page scale: primary on the left, gone by the far edge. Marks where the
         app begins against the browser chrome. */}
-                <div
-                  aria-hidden
-                  className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
-                />
-                {/* For somebody on a keyboard: the first Tab offers a way past
+                  <div
+                    aria-hidden
+                    className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
+                  />
+                  {/* For somebody on a keyboard: the first Tab offers a way past
                     the sidebar's twenty links. Invisible until it has focus. */}
-                <a
-                  href="#main-content"
-                  className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-md focus:outline-2 focus:outline-offset-2 focus:outline-foreground"
-                >
-                  {ta('skipToContent')}
-                </a>
-                {/* Watches for a notice posted while this page is already open. Here
+                  <a
+                    href="#main-content"
+                    className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-md focus:outline-2 focus:outline-offset-2 focus:outline-foreground"
+                  >
+                    {ta('skipToContent')}
+                  </a>
+                  {/* Watches for a notice posted while this page is already open. Here
               rather than beside the banner because the socket authenticates on
               the session cookie, which the sign-in page does not have. */}
-                <BroadcastLive />
-                {/* The demo banner already occupies the header, and demo image tags
+                  <BroadcastLive />
+                  {/* The demo banner already occupies the header, and demo image tags
         (demo-abc1234) are not versions a visitor should be notified about. */}
-                {!isDemoMode && (
-                  <UpdateBanner
-                    currentVersion={appVersion}
-                    lastSeenVersion={data.lastSeenVersion}
-                    shownVersion={data.updateBannerVersion}
-                    shownAt={data.updateBannerShownAt?.toISOString() ?? null}
-                    releaseNotesUrl={releaseNotesUrl}
-                  />
-                )}
-                <SidebarProvider
-                  defaultOpen={sidebarOpen}
-                  style={
-                    {
-                      '--sidebar-width': '19rem',
-                    } as React.CSSProperties
-                  }
-                >
-                  <DateSettingsProvider
-                    dateFormat={data.dateFormat}
-                    timeFormat={data.timeFormat}
-                    timezone={data.timezone}
-                    weekStartDay={data.weekStartDay}
+                  {!isDemoMode && (
+                    <UpdateBanner
+                      currentVersion={appVersion}
+                      lastSeenVersion={data.lastSeenVersion}
+                      shownVersion={data.updateBannerVersion}
+                      shownAt={data.updateBannerShownAt?.toISOString() ?? null}
+                      releaseNotesUrl={releaseNotesUrl}
+                    />
+                  )}
+                  <SidebarProvider
+                    defaultOpen={sidebarOpen}
+                    style={
+                      {
+                        '--sidebar-width': '19rem',
+                      } as React.CSSProperties
+                    }
                   >
-                    <CurrencySettingsProvider
-                      currencyCode={data.currencyCode}
-                      currencyFormat={data.currencyFormat}
+                    <DateSettingsProvider
+                      dateFormat={data.dateFormat}
+                      timeFormat={data.timeFormat}
+                      timezone={data.timezone}
+                      weekStartDay={data.weekStartDay}
                     >
-                      <ConfirmProvider>
-                        <PlateLookupProvider
-                          value={{
-                            available: plateLookupAvailable,
-                            canCreate: canCreateVehicles,
-                            registryName: plateLookupRegistry,
-                          }}
-                        >
-                          <FeatureHintProvider
-                            initialSeen={seenHints}
-                            pending={[...pendingHints, ...announcements]}
+                      <CurrencySettingsProvider
+                        currencyCode={data.currencyCode}
+                        currencyFormat={data.currencyFormat}
+                      >
+                        <ConfirmProvider>
+                          <PlateLookupProvider
+                            value={{
+                              available: plateLookupAvailable,
+                              canCreate: canCreateVehicles,
+                              registryName: plateLookupRegistry,
+                            }}
                           >
-                            {/* One socket for the whole app: record changes, who
+                            <FeatureHintProvider
+                              initialSeen={seenHints}
+                              pending={[...pendingHints, ...announcements]}
+                            >
+                              {/* One socket for the whole app: record changes, who
                           else is on a record, and the older workshop-wide
                           channels the remaining pages still read. */}
-                            <RealtimeProvider>
-                              <TimeClockProvider technicianIds={technicianIds}>
-                                <SaveShortcutListener />
-                                <AnalyticsIdentity
-                                  userId={data.userId}
-                                  organizationId={data.organizationId}
-                                />
-                                <AppSidebar
-                                  companyLogo={data.companyLogo}
-                                  organizations={data.organizations}
-                                  activeOrgId={data.organizationId}
-                                  isSuperAdmin={data.isSuperAdmin}
-                                  features={features}
-                                  tireHotelEnabled={tireHotelEnabled}
-                                  aiEnabled={aiEnabled}
-                                  faultCodesEnabled={faultCodesEnabled}
-                                  visibleSubjects={visibleSubjects}
-                                  announcement={announcements[0] ?? null}
-                                  isAdminOrOwner={isOwnerOrAdmin}
-                                  counts={sidebarCounts}
-                                  isTechnician={technicianIds.length > 0}
-                                />
-                                <SidebarInset
-                                  id="main-content"
-                                  tabIndex={-1}
-                                  className="outline-none"
-                                >
-                                  {/* A flex column with a real height, so the `flex-1` every
+                              <RealtimeProvider>
+                                <TimeClockProvider technicianIds={technicianIds}>
+                                  <SaveShortcutListener />
+                                  <SidebarShortcut />
+                                  <AnalyticsIdentity
+                                    userId={data.userId}
+                                    organizationId={data.organizationId}
+                                  />
+                                  <AppSidebar
+                                    companyLogo={data.companyLogo}
+                                    organizations={data.organizations}
+                                    activeOrgId={data.organizationId}
+                                    isSuperAdmin={data.isSuperAdmin}
+                                    features={features}
+                                    tireHotelEnabled={tireHotelEnabled}
+                                    aiEnabled={aiEnabled}
+                                    faultCodesEnabled={faultCodesEnabled}
+                                    visibleSubjects={visibleSubjects}
+                                    announcement={announcements[0] ?? null}
+                                    isAdminOrOwner={isOwnerOrAdmin}
+                                    counts={sidebarCounts}
+                                    isTechnician={technicianIds.length > 0}
+                                  />
+                                  <SidebarInset
+                                    id="main-content"
+                                    tabIndex={-1}
+                                    className="outline-none"
+                                  >
+                                    {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the
                           work board's week timeline) stopped at its content and
                           left the rest of the screen blank. */}
-                                  <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
-                                    {children}
-                                  </div>
-                                </SidebarInset>
-                                <SearchCommand
-                                  visibleSubjects={visibleSubjects}
-                                  features={features}
-                                  tireHotelEnabled={tireHotelEnabled}
-                                  aiEnabled={aiEnabled}
-                                  isAdminOrOwner={isOwnerOrAdmin}
-                                  isCloud={cloudLinked}
-                                  supportEnabled={supportEnabled}
-                                  isMarine={data.serviceType === 'marine'}
-                                  connectors={searchConnectors}
-                                  faultCodesEnabled={faultCodesEnabled}
-                                />
-                                <PlateLookupCommand />
-                                {isOwnerOrAdmin && <NotificationInitializer />}
-                                <OnlineTracker />
-                                <ConnectionWatcher />
-                                <UpdateWatcher version={buildVersion()} />
-                                <InstallBanner
-                                  appName={appBranding.name}
-                                  iconUrl={appBranding.iconUrl}
-                                />
-                              </TimeClockProvider>
-                            </RealtimeProvider>
-                          </FeatureHintProvider>
-                        </PlateLookupProvider>
-                      </ConfirmProvider>
-                    </CurrencySettingsProvider>
-                  </DateSettingsProvider>
-                </SidebarProvider>
-                <MobileBottomNav
-                  isSuperAdmin={data.isSuperAdmin}
-                  tireHotelEnabled={tireHotelEnabled}
-                />
-                {supportEnabled && <SupportBubble userId={data.userId} />}
+                                    <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
+                                      {children}
+                                    </div>
+                                  </SidebarInset>
+                                  <SearchCommand
+                                    visibleSubjects={visibleSubjects}
+                                    features={features}
+                                    tireHotelEnabled={tireHotelEnabled}
+                                    aiEnabled={aiEnabled}
+                                    isAdminOrOwner={isOwnerOrAdmin}
+                                    isCloud={cloudLinked}
+                                    supportEnabled={supportEnabled}
+                                    isMarine={data.serviceType === 'marine'}
+                                    connectors={searchConnectors}
+                                    faultCodesEnabled={faultCodesEnabled}
+                                  />
+                                  <PlateLookupCommand />
+                                  {isOwnerOrAdmin && <NotificationInitializer />}
+                                  <OnlineTracker />
+                                  <ConnectionWatcher />
+                                  <UpdateWatcher version={buildVersion()} />
+                                  <InstallBanner
+                                    appName={appBranding.name}
+                                    iconUrl={appBranding.iconUrl}
+                                  />
+                                </TimeClockProvider>
+                              </RealtimeProvider>
+                            </FeatureHintProvider>
+                          </PlateLookupProvider>
+                        </ConfirmProvider>
+                      </CurrencySettingsProvider>
+                    </DateSettingsProvider>
+                  </SidebarProvider>
+                  <MobileBottomNav
+                    isSuperAdmin={data.isSuperAdmin}
+                    tireHotelEnabled={tireHotelEnabled}
+                  />
+                  {supportEnabled && <SupportBubble userId={data.userId} />}
+                </ShortcutsProvider>
               </WhatsNewProvider>
             </WhiteLabelCtaProvider>
           </LicenseExpiryProvider>

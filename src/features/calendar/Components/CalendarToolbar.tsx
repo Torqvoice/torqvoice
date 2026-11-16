@@ -1,5 +1,6 @@
 'use client'
 
+import { useShortcutKey } from '@/features/shortcuts/Components/ShortcutsProvider'
 import { useTranslations } from 'next-intl'
 import {
   Bell,
@@ -33,14 +34,11 @@ import type { CalendarPreferences } from './useCalendarPreferences'
 
 export type CreateKind = 'workOrder' | 'appointment' | 'reminder' | 'quote' | 'message' | 'timeOff'
 
-/** The keys the view switcher shows and the keyboard listens for. */
-export const VIEW_SHORTCUTS: Record<CalendarView, string> = {
-  day: 'D',
-  week: 'W',
-  month: 'M',
-  year: 'Y',
-  schedule: 'A',
-  fourDays: 'X',
+/** The key that switches to a view, from the shortcut registry, so a changed key reads changed. */
+function ViewShortcut({ view }: { view: CalendarView }) {
+  const shortcut = useShortcutKey(`calendar.${view}`)
+  if (!shortcut) return null
+  return <DropdownMenuShortcut>{shortcut.text}</DropdownMenuShortcut>
 }
 
 const VIEW_ORDER: CalendarView[] = ['day', 'week', 'month', 'year', 'schedule', 'fourDays']
@@ -148,7 +146,7 @@ export function CalendarToolbar({
               {VIEW_ORDER.map((v) => (
                 <DropdownMenuRadioItem key={v} value={v}>
                   {t(`views.${v}`)}
-                  <DropdownMenuShortcut>{VIEW_SHORTCUTS[v]}</DropdownMenuShortcut>
+                  <ViewShortcut view={v} />
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>

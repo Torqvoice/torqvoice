@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Plaka sorgula",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Plaka sorgula",
     "description": "Atölyenizin ve araç sicilinin bir plaka hakkında bildiklerini görmek için plakayı yazın",
     "placeholder": "Bir plaka yazın",

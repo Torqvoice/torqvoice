@@ -111,6 +111,10 @@
         "title": "Utseende",
         "description": "Tema og visning"
       },
+      "shortcuts": {
+        "title": "Hurtigtaster",
+        "description": "Dine egne taster"
+      },
       "data": {
         "title": "Data",
         "description": "Eksporter og importer sikkerhetskopi"
@@ -1373,6 +1377,92 @@
         "name": "Lettlest",
         "description": "Atkinson Hyperlegible. 0 og O, 1 og l ligner aldri på hverandre; lett å lese fra andre siden av verkstedet."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Hurtigtaster",
+    "description": "Dine egne taster. De følger deg til alle enheter du logger inn på.",
+    "enableLabel": "Bruk hurtigtaster",
+    "enableHint": "Slår alle hurtigtastene på denne siden av eller på.",
+    "singleKeysLabel": "Taster med én bokstav",
+    "singleKeysHint": "Hurtigtaster som bare er én bokstav. Bare kalenderen har dem, for eksempel W for ukevisning. Slå av hvis du bruker stemmestyring eller trykker på dem ved et uhell.",
+    "goToSequencesLabel": "{prefix}, så sidens bokstav, åpner den siden",
+    "goToSequencesHint": "Begge trykkene bruker samme modifikatortast, så ingenting du skriver kan utløse dem: {example} åpner {workOrders}. Bokstavene står under Gå til.",
+    "allTitle": "Alle hurtigtaster",
+    "allHint": "Velg Endre, og trykk deretter tastene du vil bruke. Esc avbryter.",
+    "resetAll": "Tilbakestill alle til standard",
+    "resetAllTitle": "Tilbakestille alle hurtigtaster?",
+    "resetAllDescription": "Hver tast går tilbake til den opprinnelige, og hurtigtaster du har slått av, slås på igjen.",
+    "change": "Endre",
+    "cancel": "Avbryt",
+    "reset": "Tilbakestill",
+    "resetTo": "Tilbake til {keys}",
+    "resetToNone": "Tilbake til ingen tast",
+    "changed": "Endret",
+    "off": "Av",
+    "noKey": "Ingen tast",
+    "or": "eller",
+    "then": "så",
+    "pressKeys": "Trykk de nye tastene…",
+    "recordingFor": "Tar opp ny hurtigtast for {action}. Trykk tastene, eller Esc for å avbryte.",
+    "changeFor": "Endre hurtigtasten for {action}",
+    "resetFor": "Tilbakestill hurtigtasten for {action}",
+    "switchFor": "Hurtigtast for {action}",
+    "clash": "{keys} er allerede brukt av {action}. Bruker du den her, står {action} uten.",
+    "useHere": "Bruk den her",
+    "pickAnother": "Velg en annen",
+    "problems": {
+      "reserved": "{keys} tilhører nettleseren eller systemet og kan ikke brukes.",
+      "needsModifier": "Denne hurtigtasten virker på alle sider, så den trenger {mod} eller {alt} sammen med tasten.",
+      "invalid": "Den tasten kan ikke brukes."
+    },
+    "alsoUsedBy": "Også tasten for {action}. Bare én av dem vil virke.",
+    "goToNote": "Søk ({keys}) åpner alle sider, og {prefix} etterfulgt av en bokstav åpner de viktigste. Her kan du gi hvilken som helst side sin egen tast.",
+    "announceSet": "{action} er nå {keys}",
+    "announceReset": "{action} er tilbake til standard",
+    "announceResetAll": "Alle hurtigtaster er tilbake til standard",
+    "phoneNote": "Hurtigtaster krever tastatur. Endringer du gjør her, gjelder også på datamaskinen din.",
+    "saveFailed": "Kunne ikke lagre hurtigtastene dine",
+    "groups": {
+      "general": "Generelt",
+      "create": "Opprett",
+      "goTo": "Gå til",
+      "calendar": "Kalender",
+      "fixed": "Lister og bilder"
+    },
+    "scopes": {
+      "global": "Overalt i appen",
+      "calendar": "Bare i kalenderen"
+    },
+    "actions": {
+      "search": "Søk",
+      "plateLookup": "Skiltoppslag",
+      "save": "Lagre",
+      "sidebar": "Vis eller skjul sidemenyen",
+      "help": "Vis hurtigtaster",
+      "newInspection": "Ny inspeksjon",
+      "calendar_day": "Dagsvisning",
+      "calendar_week": "Ukevisning",
+      "calendar_month": "Månedsvisning",
+      "calendar_year": "Årsvisning",
+      "calendar_schedule": "Tidsplanvisning",
+      "calendar_fourDays": "4-dagersvisning",
+      "calendar_today": "Gå til i dag",
+      "calendar_next": "Neste periode",
+      "calendar_previous": "Forrige periode"
+    },
+    "help": {
+      "title": "Hurtigtaster",
+      "description": "Tastene du har nå. Søk åpner alle sider. Endre eller slå av taster i Innstillinger.",
+      "disabledNote": "Hurtigtaster er slått av. Slå dem på i Innstillinger.",
+      "find": "Finn en hurtigtast",
+      "noMatch": "Ingen hurtigtast passer",
+      "customize": "Endre hurtigtaster",
+      "fixedHint": "alltid den samme",
+      "listMove": "Flytt deg i en liste",
+      "listOpen": "Åpne raden",
+      "photos": "Neste eller forrige bilde",
+      "close": "Lukk en dialog eller meny"
     }
   },
   "data": {

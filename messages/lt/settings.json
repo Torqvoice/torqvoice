@@ -111,6 +111,10 @@
         "title": "Išvaizda",
         "description": "Tema ir atvaizdavimas"
       },
+      "shortcuts": {
+        "title": "Spartieji klavišai",
+        "description": "Jūsų pačių klavišai"
+      },
       "data": {
         "title": "Duomenys",
         "description": "Eksportas ir importas atsarginei kopijai"
@@ -1373,6 +1377,92 @@
         "name": "Įskaitomas",
         "description": "Atkinson Hyperlegible. 0 ir O, 1 ir l niekada neatrodo panašiai; lengva skaityti iš kito dirbtuvių galo."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Spartieji klavišai",
+    "description": "Jūsų pačių klavišai. Jie veikia kiekviename įrenginyje, kuriame prisijungiate.",
+    "enableLabel": "Naudoti sparčiuosius klavišus",
+    "enableHint": "Įjungia arba išjungia visus šiame puslapyje esančius sparčiuosius klavišus.",
+    "singleKeysLabel": "Vienos raidės klavišai",
+    "singleKeysHint": "Spartieji klavišai iš vienos raidės. Jie yra tik kalendoriuje, pvz., W savaitės rodiniui. Išjunkite, jei naudojate valdymą balsu arba paspaudžiate juos netyčia.",
+    "goToSequencesLabel": "{prefix}, tada puslapio raidė, atidaro tą puslapį",
+    "goToSequencesHint": "Abu paspaudimai naudoja tą patį modifikavimo klavišą, todėl joks jūsų rašomas tekstas jų nesuaktyvins: {example} atidaro „{workOrders}“. Raidės išvardytos skiltyje „Eiti į“.",
+    "allTitle": "Visi spartieji klavišai",
+    "allHint": "Pasirinkite Keisti, tada paspauskite norimus klavišus. Esc atšaukia.",
+    "resetAll": "Atstatyti visus į numatytuosius",
+    "resetAllTitle": "Atstatyti visus sparčiuosius klavišus?",
+    "resetAllDescription": "Kiekvienas klavišas grąžinamas į pradinį, o išjungti spartieji klavišai vėl įjungiami.",
+    "change": "Keisti",
+    "cancel": "Atšaukti",
+    "reset": "Atstatyti",
+    "resetTo": "Grąžinti {keys}",
+    "resetToNone": "Grąžinti be klavišo",
+    "changed": "Pakeista",
+    "off": "Išjungta",
+    "noKey": "Be klavišo",
+    "or": "arba",
+    "then": "tada",
+    "pressKeys": "Paspauskite naujus klavišus…",
+    "recordingFor": "Įrašomas naujas spartusis klavišas veiksmui {action}. Paspauskite klavišus arba Escape, kad atšauktumėte.",
+    "changeFor": "Keisti veiksmo {action} spartųjį klavišą",
+    "resetFor": "Atstatyti veiksmo {action} spartųjį klavišą",
+    "switchFor": "Veiksmo {action} spartusis klavišas",
+    "clash": "{keys} jau priskirtas veiksmui {action}. Jei naudosite jį čia, tas veiksmas liks be jo.",
+    "useHere": "Naudoti čia",
+    "pickAnother": "Pasirinkti kitą",
+    "problems": {
+      "reserved": "{keys} naudoja naršyklė arba sistema, todėl jo priskirti negalima.",
+      "needsModifier": "Šis spartusis klavišas veikia visuose puslapiuose, todėl kartu su klavišu reikia {mod} arba {alt}.",
+      "invalid": "Šio klavišo naudoti negalima."
+    },
+    "alsoUsedBy": "Tai taip pat veiksmo {action} klavišas. Veiks tik vienas iš jų.",
+    "goToNote": "Ieškoti ({keys}) atidaro bet kurį puslapį, o {prefix} ir raidė atidaro pagrindinius. Čia bet kuriam puslapiui galite priskirti savo klavišą.",
+    "announceSet": "{action}: dabar {keys}",
+    "announceReset": "{action}: grąžintas numatytasis",
+    "announceResetAll": "Visi spartieji klavišai grąžinti į numatytuosius",
+    "phoneNote": "Sparčiesiems klavišams reikia klaviatūros. Čia atlikti pakeitimai galioja ir jūsų kompiuteryje.",
+    "saveFailed": "Nepavyko išsaugoti sparčiųjų klavišų",
+    "groups": {
+      "general": "Bendra",
+      "create": "Kurti",
+      "goTo": "Eiti į",
+      "calendar": "Kalendorius",
+      "fixed": "Sąrašai ir nuotraukos"
+    },
+    "scopes": {
+      "global": "Bet kur programoje",
+      "calendar": "Tik kalendoriuje"
+    },
+    "actions": {
+      "search": "Ieškoti",
+      "plateLookup": "Numerio paieška",
+      "save": "Išsaugoti",
+      "sidebar": "Rodyti arba slėpti šoninę juostą",
+      "help": "Rodyti sparčiuosius klavišus",
+      "newInspection": "Nauja apžiūra",
+      "calendar_day": "Dienos rodinys",
+      "calendar_week": "Savaitės rodinys",
+      "calendar_month": "Mėnesio rodinys",
+      "calendar_year": "Metų rodinys",
+      "calendar_schedule": "Tvarkaraščio rodinys",
+      "calendar_fourDays": "4 dienų rodinys",
+      "calendar_today": "Eiti į šiandieną",
+      "calendar_next": "Kitas laikotarpis",
+      "calendar_previous": "Ankstesnis laikotarpis"
+    },
+    "help": {
+      "title": "Spartieji klavišai",
+      "description": "Dabartiniai jūsų klavišai. Ieškoti atidaro bet kurį puslapį. Pakeisti ar išjungti klavišus galite Nustatymuose.",
+      "disabledNote": "Spartieji klavišai išjungti. Įjunkite juos Nustatymuose.",
+      "find": "Ieškoti sparčiojo klavišo",
+      "noMatch": "Atitinkančių sparčiųjų klavišų nėra",
+      "customize": "Keisti sparčiuosius klavišus",
+      "fixedHint": "visada toks pat",
+      "listMove": "Judėti sąraše",
+      "listOpen": "Atidaryti eilutę",
+      "photos": "Kita arba ankstesnė nuotrauka",
+      "close": "Uždaryti langą arba meniu"
     }
   },
   "data": {

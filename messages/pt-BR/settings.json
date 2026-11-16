@@ -111,6 +111,10 @@
         "title": "Aparência",
         "description": "Tema e exibição"
       },
+      "shortcuts": {
+        "title": "Atalhos de teclado",
+        "description": "Suas próprias teclas"
+      },
       "data": {
         "title": "Dados",
         "description": "Exportar e importar backup"
@@ -1373,6 +1377,92 @@
         "name": "Legível",
         "description": "Atkinson Hyperlegible. 0 e O, 1 e l nunca se confundem; fácil de ler do outro lado da oficina."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Atalhos de teclado",
+    "description": "Suas próprias teclas. Elas acompanham você em todos os dispositivos em que você entrar.",
+    "enableLabel": "Usar atalhos de teclado",
+    "enableHint": "Ativa ou desativa todos os atalhos desta página.",
+    "singleKeysLabel": "Teclas de uma letra só",
+    "singleKeysHint": "Atalhos formados por uma única letra. Só a agenda tem, como W para a visualização da semana. Desative se você usa controle por voz ou aperta essas teclas sem querer.",
+    "goToSequencesLabel": "{prefix} e depois a letra de uma página abre essa página",
+    "goToSequencesHint": "Os dois toques usam a mesma tecla modificadora, então nada do que você digita pode acioná-los: {example} abre {workOrders}. As letras estão listadas em Ir para.",
+    "allTitle": "Todos os atalhos",
+    "allHint": "Selecione Alterar e pressione as teclas desejadas. Esc cancela.",
+    "resetAll": "Redefinir tudo para o padrão",
+    "resetAllTitle": "Redefinir todos os atalhos?",
+    "resetAllDescription": "Cada tecla volta à original, e os atalhos que você desativou são ativados novamente.",
+    "change": "Alterar",
+    "cancel": "Cancelar",
+    "reset": "Redefinir",
+    "resetTo": "Voltar para {keys}",
+    "resetToNone": "Voltar para nenhuma tecla",
+    "changed": "Alterado",
+    "off": "Desativado",
+    "noKey": "Nenhuma tecla",
+    "or": "ou",
+    "then": "depois",
+    "pressKeys": "Pressione as novas teclas…",
+    "recordingFor": "Gravando um novo atalho para {action}. Pressione as teclas, ou Esc para cancelar.",
+    "changeFor": "Alterar o atalho de {action}",
+    "resetFor": "Redefinir o atalho de {action}",
+    "switchFor": "Atalho de {action}",
+    "clash": "{keys} já pertence a {action}. Se você usar aqui, {action} fica sem atalho.",
+    "useHere": "Usar aqui",
+    "pickAnother": "Escolher outro",
+    "problems": {
+      "reserved": "{keys} é do navegador ou do sistema e não pode ser usado.",
+      "needsModifier": "Este atalho funciona em todas as páginas, então precisa de {mod} ou {alt} junto com a tecla.",
+      "invalid": "Essa tecla não pode ser usada."
+    },
+    "alsoUsedBy": "Também é a tecla de {action}. Só um deles vai funcionar.",
+    "goToNote": "Buscar ({keys}) abre qualquer página, e {prefix} seguido de uma letra abre as principais. Dê aqui uma tecla própria a qualquer página.",
+    "announceSet": "{action} agora é {keys}",
+    "announceReset": "{action} voltou ao padrão",
+    "announceResetAll": "Todos os atalhos voltaram ao padrão",
+    "phoneNote": "Atalhos precisam de um teclado. As alterações feitas aqui valem também no seu computador.",
+    "saveFailed": "Não foi possível salvar seus atalhos",
+    "groups": {
+      "general": "Geral",
+      "create": "Criar",
+      "goTo": "Ir para",
+      "calendar": "Agenda",
+      "fixed": "Listas e fotos"
+    },
+    "scopes": {
+      "global": "Em qualquer lugar do app",
+      "calendar": "Somente na agenda"
+    },
+    "actions": {
+      "search": "Buscar",
+      "plateLookup": "Consultar placa",
+      "save": "Salvar",
+      "sidebar": "Mostrar ou ocultar a barra lateral",
+      "help": "Mostrar atalhos de teclado",
+      "newInspection": "Nova inspeção",
+      "calendar_day": "Visualização do dia",
+      "calendar_week": "Visualização da semana",
+      "calendar_month": "Visualização do mês",
+      "calendar_year": "Visualização do ano",
+      "calendar_schedule": "Visualização de agenda",
+      "calendar_fourDays": "Visualização de 4 dias",
+      "calendar_today": "Ir para hoje",
+      "calendar_next": "Próximo período",
+      "calendar_previous": "Período anterior"
+    },
+    "help": {
+      "title": "Atalhos de teclado",
+      "description": "Suas teclas atuais. Buscar abre qualquer página. Altere ou desative teclas em Configurações.",
+      "disabledNote": "Os atalhos de teclado estão desativados. Ative em Configurações.",
+      "find": "Encontrar um atalho",
+      "noMatch": "Nenhum atalho encontrado",
+      "customize": "Alterar atalhos",
+      "fixedHint": "sempre igual",
+      "listMove": "Navegar por uma lista",
+      "listOpen": "Abrir a linha",
+      "photos": "Foto seguinte ou anterior",
+      "close": "Fechar uma caixa de diálogo ou menu"
     }
   },
   "data": {

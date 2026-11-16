@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Sprawdź tablicę",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Sprawdź tablicę",
     "description": "Wpisz numer rejestracyjny, aby zobaczyć, co wie o nim Twój warsztat i rejestr pojazdów",
     "placeholder": "Wpisz tablicę",

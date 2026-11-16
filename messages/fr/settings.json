@@ -111,6 +111,10 @@
         "title": "Apparence",
         "description": "Theme et affichage"
       },
+      "shortcuts": {
+        "title": "Raccourcis clavier",
+        "description": "Vos propres touches"
+      },
       "data": {
         "title": "Données",
         "description": "Exporter et importer une sauvegarde"
@@ -1373,6 +1377,92 @@
         "name": "Lisible",
         "description": "Atkinson Hyperlegible. 0 et O, 1 et l ne se ressemblent jamais ; facile à lire depuis l'autre bout de l'atelier."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Raccourcis clavier",
+    "description": "Vos propres touches. Elles vous suivent sur chaque appareil où vous vous connectez.",
+    "enableLabel": "Utiliser les raccourcis clavier",
+    "enableHint": "Active ou désactive tous les raccourcis de cette page.",
+    "singleKeysLabel": "Touches à une seule lettre",
+    "singleKeysHint": "Raccourcis composés d'une seule lettre. Seul le calendrier en a, comme W pour la vue semaine. Désactivez-les si vous utilisez la commande vocale ou si vous les tapez par erreur.",
+    "goToSequencesLabel": "{prefix}, puis la lettre d'une page, ouvre cette page",
+    "goToSequencesHint": "Les deux appuis utilisent la même touche de modification, donc rien de ce que vous tapez ne peut les déclencher : {example} ouvre {workOrders}. Les lettres sont listées sous Aller à.",
+    "allTitle": "Tous les raccourcis",
+    "allHint": "Choisissez Modifier, puis appuyez sur les touches voulues. Échap annule.",
+    "resetAll": "Tout réinitialiser",
+    "resetAllTitle": "Réinitialiser tous les raccourcis ?",
+    "resetAllDescription": "Chaque touche revient à sa valeur d'origine, et les raccourcis désactivés sont réactivés.",
+    "change": "Modifier",
+    "cancel": "Annuler",
+    "reset": "Réinitialiser",
+    "resetTo": "Revenir à {keys}",
+    "resetToNone": "Revenir à aucune touche",
+    "changed": "Modifié",
+    "off": "Désactivé",
+    "noKey": "Aucune touche",
+    "or": "ou",
+    "then": "puis",
+    "pressKeys": "Appuyez sur les nouvelles touches…",
+    "recordingFor": "Enregistrement d'un nouveau raccourci pour {action}. Appuyez sur les touches, ou sur Échap pour annuler.",
+    "changeFor": "Modifier le raccourci de {action}",
+    "resetFor": "Réinitialiser le raccourci de {action}",
+    "switchFor": "Raccourci de {action}",
+    "clash": "{keys} est déjà attribué à {action}. Si vous l'utilisez ici, {action} n'aura plus de raccourci.",
+    "useHere": "L'utiliser ici",
+    "pickAnother": "En choisir un autre",
+    "problems": {
+      "reserved": "{keys} est réservé au navigateur ou au système et ne peut pas être utilisé.",
+      "needsModifier": "Ce raccourci fonctionne sur toutes les pages, il doit donc combiner {mod} ou {alt} avec la touche.",
+      "invalid": "Cette touche ne peut pas être utilisée."
+    },
+    "alsoUsedBy": "C'est aussi la touche de {action}. Un seul des deux fonctionnera.",
+    "goToNote": "Rechercher ({keys}) ouvre n'importe quelle page, et {prefix} suivi d'une lettre ouvre les principales. Attribuez ici une touche propre à n'importe quelle page.",
+    "announceSet": "{action} est maintenant {keys}",
+    "announceReset": "{action} est revenu à sa valeur par défaut",
+    "announceResetAll": "Tous les raccourcis sont revenus à leur valeur par défaut",
+    "phoneNote": "Les raccourcis nécessitent un clavier. Les modifications faites ici s'appliquent aussi sur votre ordinateur.",
+    "saveFailed": "Impossible d'enregistrer vos raccourcis",
+    "groups": {
+      "general": "Général",
+      "create": "Créer",
+      "goTo": "Aller à",
+      "calendar": "Calendrier",
+      "fixed": "Listes et photos"
+    },
+    "scopes": {
+      "global": "Partout dans l'application",
+      "calendar": "Uniquement dans le calendrier"
+    },
+    "actions": {
+      "search": "Rechercher",
+      "plateLookup": "Recherche de plaque",
+      "save": "Enregistrer",
+      "sidebar": "Afficher ou masquer la barre latérale",
+      "help": "Afficher les raccourcis clavier",
+      "newInspection": "Nouvelle inspection",
+      "calendar_day": "Vue jour",
+      "calendar_week": "Vue semaine",
+      "calendar_month": "Vue mois",
+      "calendar_year": "Vue année",
+      "calendar_schedule": "Vue planning",
+      "calendar_fourDays": "Vue 4 jours",
+      "calendar_today": "Aller à aujourd'hui",
+      "calendar_next": "Période suivante",
+      "calendar_previous": "Période précédente"
+    },
+    "help": {
+      "title": "Raccourcis clavier",
+      "description": "Vos touches actuelles. Rechercher ouvre n'importe quelle page. Modifiez ou désactivez des touches dans les Paramètres.",
+      "disabledNote": "Les raccourcis clavier sont désactivés. Activez-les dans les Paramètres.",
+      "find": "Trouver un raccourci",
+      "noMatch": "Aucun raccourci ne correspond",
+      "customize": "Modifier les raccourcis",
+      "fixedHint": "toujours identique",
+      "listMove": "Se déplacer dans une liste",
+      "listOpen": "Ouvrir la ligne",
+      "photos": "Photo suivante ou précédente",
+      "close": "Fermer une boîte de dialogue ou un menu"
     }
   },
   "data": {

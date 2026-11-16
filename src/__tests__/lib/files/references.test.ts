@@ -64,6 +64,7 @@ const NOT_FILES: Record<string, string> = {
   'EmailAttachment.fileName': 'a label',
   'User.image': 'an avatar URL from a sign-in provider; never an upload',
   'User.dashboardLayout': 'dashboard layout',
+  'User.keyboardShortcuts': 'keyboard shortcut choices',
   'VehicleInspectionStatus.extras': 'what a vehicle registry returned',
   'VehicleSafetyReport.data': 'what a vehicle registry returned',
   'Webhook.url': 'an outbound endpoint',

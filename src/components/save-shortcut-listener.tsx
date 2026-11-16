@@ -1,13 +1,10 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useShortcutMatcher } from '@/features/shortcuts/Components/ShortcutsProvider'
 
 const SAVE_BUTTON = '[data-save-shortcut]'
 const OPEN_DIALOG = '[role="dialog"][data-state="open"], [role="alertdialog"][data-state="open"]'
-
-function isSaveShortcut(e: KeyboardEvent) {
-  return (e.ctrlKey || e.metaKey) && !e.altKey && (e.key === 's' || e.key === 'S')
-}
 
 function usable(button: HTMLElement) {
   return !(button as HTMLButtonElement).disabled && button.getClientRects().length > 0
@@ -47,12 +44,15 @@ function press(button: HTMLElement) {
 }
 
 /**
- * Ctrl+S / Cmd+S for everything that saves through a button marked
+ * The save shortcut (Ctrl+S / Cmd+S unless changed) for everything that saves through a button marked
  * `data-save-shortcut`: settings pages and dialogs. The document editors
  * register their own save with `useSaveShortcut`; an open dialog with a save
  * button goes first, then the editor, then a save button on the page.
  */
 export function SaveShortcutListener() {
+  // The key is the person's own, from the shortcut registry. The listeners
+  // stay here because the order they run in is what picks the right save.
+  const isSaveShortcut = useShortcutMatcher('general.save')
   useEffect(() => {
     const topDialog = () => Array.from(document.querySelectorAll(OPEN_DIALOG)).at(-1) ?? null
 
@@ -84,7 +84,7 @@ export function SaveShortcutListener() {
       window.removeEventListener('keydown', dialogFirst, true)
       window.removeEventListener('keydown', pageLast)
     }
-  }, [])
+  }, [isSaveShortcut])
 
   return null
 }

@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Plate lookup",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Plate lookup",
     "description": "Type a registration number to see what your workshop and the vehicle registry know about it",
     "placeholder": "Type a plate",

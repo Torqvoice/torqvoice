@@ -23,6 +23,8 @@ type AuthResult =
       /** When the "What's new" panel was last opened, and when the account began. */
       whatsNewSeenAt: Date | null
       userCreatedAt: Date | null
+      /** The person's own keyboard shortcuts, as stored; null is every default. */
+      keyboardShortcuts: unknown
       companyLogo: string | undefined
       dateFormat: string | undefined
       timeFormat: string | undefined
@@ -54,6 +56,7 @@ export async function getLayoutData(): Promise<AuthResult> {
         updateBannerShownAt: true,
         whatsNewSeenAt: true,
         createdAt: true,
+        keyboardShortcuts: true,
       },
     }),
   ])
@@ -116,6 +119,7 @@ export async function getLayoutData(): Promise<AuthResult> {
     updateBannerShownAt: user?.updateBannerShownAt ?? null,
     whatsNewSeenAt: user?.whatsNewSeenAt ?? null,
     userCreatedAt: user?.createdAt ?? null,
+    keyboardShortcuts: user?.keyboardShortcuts ?? null,
     companyLogo: orgMap.get(SETTING_KEYS.COMPANY_LOGO) || undefined,
     dateFormat: orgMap.get(SETTING_KEYS.DATE_FORMAT) || undefined,
     timeFormat: orgMap.get(SETTING_KEYS.TIME_FORMAT) || undefined,

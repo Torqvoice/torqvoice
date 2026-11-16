@@ -42,6 +42,7 @@
     "warranty": "Garanti",
     "workshop": "Verksted",
     "appearance": "Utseende",
+    "shortcuts": "Hurtigtaster",
     "email": "E-post",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Inspeksjonsdetaljer"
   },
   "search": "Søk...",
-  "shortcut": "Ctrl+K",
   "readMore": "Les mer",
   "newWorkOrder": "Ny arbeidsordre",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Avbryt",
     "createCompany": "Opprett firma",
     "theme": "Tema",
+    "keyboardShortcuts": "Hurtigtaster",
     "signOut": "Logg ut",
     "more": "Mer",
     "auditLog": "Aktivitetslogg",

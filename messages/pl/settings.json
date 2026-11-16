@@ -111,6 +111,10 @@
         "title": "Wygląd",
         "description": "Motyw i wyświetlanie"
       },
+      "shortcuts": {
+        "title": "Skróty klawiszowe",
+        "description": "Twoje własne klawisze"
+      },
       "data": {
         "title": "Dane",
         "description": "Eksport i import kopii zapasowej"
@@ -1373,6 +1377,92 @@
         "name": "Czytelna",
         "description": "Atkinson Hyperlegible. 0 i O, 1 i l nigdy nie wyglądają podobnie; łatwo czytać z drugiego końca warsztatu."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Skróty klawiszowe",
+    "description": "Twoje własne klawisze. Działają na każdym urządzeniu, na którym się zalogujesz.",
+    "enableLabel": "Używaj skrótów klawiszowych",
+    "enableHint": "Włącza lub wyłącza wszystkie skróty z tej strony.",
+    "singleKeysLabel": "Skróty jednoliterowe",
+    "singleKeysHint": "Skróty składające się z samej litery. Ma je tylko kalendarz, np. W dla widoku tygodnia. Wyłącz je, jeśli korzystasz ze sterowania głosowego lub naciskasz je przypadkiem.",
+    "goToSequencesLabel": "{prefix}, potem litera strony, otwiera tę stronę",
+    "goToSequencesHint": "Oba naciśnięcia używają tego samego klawisza modyfikującego, więc nic, co piszesz, ich nie wywoła: {example} otwiera „{workOrders}”. Litery są wymienione w sekcji Przejdź do.",
+    "allTitle": "Wszystkie skróty",
+    "allHint": "Wybierz Zmień, a następnie naciśnij wybrane klawisze. Esc anuluje.",
+    "resetAll": "Przywróć wszystkie domyślne",
+    "resetAllTitle": "Zresetować wszystkie skróty?",
+    "resetAllDescription": "Każdy klawisz wraca do pierwotnego, a wyłączone skróty zostaną ponownie włączone.",
+    "change": "Zmień",
+    "cancel": "Anuluj",
+    "reset": "Resetuj",
+    "resetTo": "Przywróć {keys}",
+    "resetToNone": "Przywróć brak klawisza",
+    "changed": "Zmieniony",
+    "off": "Wyłączony",
+    "noKey": "Brak klawisza",
+    "or": "lub",
+    "then": "potem",
+    "pressKeys": "Naciśnij nowe klawisze…",
+    "recordingFor": "Nagrywanie nowego skrótu dla: {action}. Naciśnij klawisze lub Esc, aby anulować.",
+    "changeFor": "Zmień skrót dla: {action}",
+    "resetFor": "Resetuj skrót dla: {action}",
+    "switchFor": "Skrót dla: {action}",
+    "clash": "{keys} jest już przypisany do: {action}. Jeśli użyjesz go tutaj, tamta akcja zostanie bez skrótu.",
+    "useHere": "Użyj tutaj",
+    "pickAnother": "Wybierz inny",
+    "problems": {
+      "reserved": "{keys} należy do przeglądarki lub systemu i nie może zostać użyty.",
+      "needsModifier": "Ten skrót działa na każdej stronie, więc wymaga {mod} lub {alt} razem z klawiszem.",
+      "invalid": "Tego klawisza nie można użyć."
+    },
+    "alsoUsedBy": "To także klawisz dla: {action}. Zadziała tylko jeden z nich.",
+    "goToNote": "Szukaj ({keys}) otwiera każdą stronę, a {prefix} z literą otwiera najważniejsze. Tutaj możesz przypisać dowolnej stronie własny klawisz.",
+    "announceSet": "{action}: teraz {keys}",
+    "announceReset": "{action}: przywrócono domyślny",
+    "announceResetAll": "Przywrócono domyślne wszystkie skróty",
+    "phoneNote": "Skróty wymagają klawiatury. Zmiany wprowadzone tutaj obowiązują też na Twoim komputerze.",
+    "saveFailed": "Nie udało się zapisać skrótów",
+    "groups": {
+      "general": "Ogólne",
+      "create": "Utwórz",
+      "goTo": "Przejdź do",
+      "calendar": "Kalendarz",
+      "fixed": "Listy i zdjęcia"
+    },
+    "scopes": {
+      "global": "W całej aplikacji",
+      "calendar": "Tylko w kalendarzu"
+    },
+    "actions": {
+      "search": "Szukaj",
+      "plateLookup": "Sprawdź tablicę",
+      "save": "Zapisz",
+      "sidebar": "Pokaż lub ukryj pasek boczny",
+      "help": "Pokaż skróty klawiszowe",
+      "newInspection": "Nowa inspekcja",
+      "calendar_day": "Widok dnia",
+      "calendar_week": "Widok tygodnia",
+      "calendar_month": "Widok miesiąca",
+      "calendar_year": "Widok roku",
+      "calendar_schedule": "Widok harmonogramu",
+      "calendar_fourDays": "Widok 4 dni",
+      "calendar_today": "Przejdź do dzisiaj",
+      "calendar_next": "Następny okres",
+      "calendar_previous": "Poprzedni okres"
+    },
+    "help": {
+      "title": "Skróty klawiszowe",
+      "description": "Twoje obecne klawisze. Szukaj otwiera każdą stronę. Zmień lub wyłącz klawisze w Ustawieniach.",
+      "disabledNote": "Skróty klawiszowe są wyłączone. Włącz je w Ustawieniach.",
+      "find": "Znajdź skrót",
+      "noMatch": "Brak pasujących skrótów",
+      "customize": "Zmień skróty",
+      "fixedHint": "zawsze takie same",
+      "listMove": "Poruszanie się po liście",
+      "listOpen": "Otwórz wiersz",
+      "photos": "Następne lub poprzednie zdjęcie",
+      "close": "Zamknij okno lub menu"
     }
   },
   "data": {

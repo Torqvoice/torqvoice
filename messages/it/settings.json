@@ -111,6 +111,10 @@
         "title": "Aspetto",
         "description": "Tema e visualizzazione"
       },
+      "shortcuts": {
+        "title": "Scorciatoie da tastiera",
+        "description": "I tuoi tasti"
+      },
       "data": {
         "title": "Dati",
         "description": "Esportazione e importazione backup"
@@ -1373,6 +1377,92 @@
         "name": "Leggibile",
         "description": "Atkinson Hyperlegible. 0 e O, 1 e l non si confondono mai; facile da leggere dall'altra parte dell'officina."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Scorciatoie da tastiera",
+    "description": "I tuoi tasti. Ti seguono su ogni dispositivo da cui accedi.",
+    "enableLabel": "Usa le scorciatoie da tastiera",
+    "enableHint": "Attiva o disattiva tutte le scorciatoie di questa pagina.",
+    "singleKeysLabel": "Tasti a lettera singola",
+    "singleKeysHint": "Scorciatoie formate da una sola lettera. Solo il calendario le ha, come W per la vista settimana. Disattivale se usi il controllo vocale o le premi per sbaglio.",
+    "goToSequencesLabel": "{prefix}, poi la lettera di una pagina, apre quella pagina",
+    "goToSequencesHint": "Entrambe le pressioni usano lo stesso tasto modificatore, quindi niente di ciò che digiti può attivarle: {example} apre {workOrders}. Le lettere sono elencate sotto Vai a.",
+    "allTitle": "Tutte le scorciatoie",
+    "allHint": "Seleziona Modifica, poi premi i tasti che vuoi. Esc annulla.",
+    "resetAll": "Ripristina tutte",
+    "resetAllTitle": "Ripristinare tutte le scorciatoie?",
+    "resetAllDescription": "Ogni tasto torna a quello originale, e le scorciatoie che hai disattivato vengono riattivate.",
+    "change": "Modifica",
+    "cancel": "Annulla",
+    "reset": "Ripristina",
+    "resetTo": "Torna a {keys}",
+    "resetToNone": "Torna a nessun tasto",
+    "changed": "Modificata",
+    "off": "Disattivata",
+    "noKey": "Nessun tasto",
+    "or": "o",
+    "then": "poi",
+    "pressKeys": "Premi i nuovi tasti…",
+    "recordingFor": "Registrazione di una nuova scorciatoia per {action}. Premi i tasti, o Esc per annullare.",
+    "changeFor": "Modifica la scorciatoia per {action}",
+    "resetFor": "Ripristina la scorciatoia per {action}",
+    "switchFor": "Scorciatoia per {action}",
+    "clash": "{keys} è già assegnato a {action}. Se lo usi qui, {action} rimane senza.",
+    "useHere": "Usalo qui",
+    "pickAnother": "Scegline un altro",
+    "problems": {
+      "reserved": "{keys} è riservato al browser o al sistema e non può essere usato.",
+      "needsModifier": "Questa scorciatoia funziona in ogni pagina, quindi richiede {mod} o {alt} insieme al tasto.",
+      "invalid": "Questo tasto non può essere usato."
+    },
+    "alsoUsedBy": "È anche il tasto per {action}. Funzionerà solo uno dei due.",
+    "goToNote": "Cerca ({keys}) apre qualsiasi pagina, e {prefix} seguito da una lettera apre quelle principali. Assegna qui un tasto proprio a qualsiasi pagina.",
+    "announceSet": "{action} ora è {keys}",
+    "announceReset": "{action} è tornata a quella predefinita",
+    "announceResetAll": "Tutte le scorciatoie sono tornate a quelle predefinite",
+    "phoneNote": "Le scorciatoie richiedono una tastiera. Le modifiche fatte qui valgono anche sul tuo computer.",
+    "saveFailed": "Impossibile salvare le scorciatoie",
+    "groups": {
+      "general": "Generali",
+      "create": "Crea",
+      "goTo": "Vai a",
+      "calendar": "Calendario",
+      "fixed": "Elenchi e foto"
+    },
+    "scopes": {
+      "global": "Ovunque nell'app",
+      "calendar": "Solo nel calendario"
+    },
+    "actions": {
+      "search": "Cerca",
+      "plateLookup": "Ricerca targa",
+      "save": "Salva",
+      "sidebar": "Mostra o nascondi la barra laterale",
+      "help": "Mostra le scorciatoie da tastiera",
+      "newInspection": "Nuova ispezione",
+      "calendar_day": "Vista giorno",
+      "calendar_week": "Vista settimana",
+      "calendar_month": "Vista mese",
+      "calendar_year": "Vista anno",
+      "calendar_schedule": "Vista agenda",
+      "calendar_fourDays": "Vista 4 giorni",
+      "calendar_today": "Vai a oggi",
+      "calendar_next": "Periodo successivo",
+      "calendar_previous": "Periodo precedente"
+    },
+    "help": {
+      "title": "Scorciatoie da tastiera",
+      "description": "I tasti che usi ora. Cerca apre qualsiasi pagina. Modifica o disattiva i tasti nelle Impostazioni.",
+      "disabledNote": "Le scorciatoie da tastiera sono disattivate. Attivale nelle Impostazioni.",
+      "find": "Trova una scorciatoia",
+      "noMatch": "Nessuna scorciatoia corrisponde",
+      "customize": "Modifica le scorciatoie",
+      "fixedHint": "sempre uguale",
+      "listMove": "Spostarsi in un elenco",
+      "listOpen": "Apri la riga",
+      "photos": "Foto successiva o precedente",
+      "close": "Chiudi una finestra o un menu"
     }
   },
   "data": {

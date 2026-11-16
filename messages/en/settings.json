@@ -111,6 +111,10 @@
         "title": "Appearance",
         "description": "Theme & display"
       },
+      "shortcuts": {
+        "title": "Keyboard shortcuts",
+        "description": "Your own keys"
+      },
       "data": {
         "title": "Data",
         "description": "Export & import backup"
@@ -1373,6 +1377,92 @@
         "name": "Legible",
         "description": "Atkinson Hyperlegible. 0 and O, 1 and l never look alike; easy to read from across the workshop."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Keyboard shortcuts",
+    "description": "Your own keys. They follow you to every device you sign in on.",
+    "enableLabel": "Use keyboard shortcuts",
+    "enableHint": "Turns every shortcut on this page on or off.",
+    "singleKeysLabel": "Single-letter keys",
+    "singleKeysHint": "Shortcuts that are one letter on its own. Only the calendar has them, such as W for the week view. Switch off if you use voice control or press them by accident.",
+    "goToSequencesLabel": "{prefix}, then a page's letter, opens that page",
+    "goToSequencesHint": "Both presses use the same modifier key, so nothing you type can set it off: {example} opens {workOrders}. The letters are listed under Go to.",
+    "allTitle": "All shortcuts",
+    "allHint": "Select Change, then press the keys you want. Esc cancels.",
+    "resetAll": "Reset all to default",
+    "resetAllTitle": "Reset every shortcut?",
+    "resetAllDescription": "Every key goes back to the one it shipped with, and shortcuts you switched off are switched on again.",
+    "change": "Change",
+    "cancel": "Cancel",
+    "reset": "Reset",
+    "resetTo": "Back to {keys}",
+    "resetToNone": "Back to no key",
+    "changed": "Changed",
+    "off": "Off",
+    "noKey": "No key",
+    "or": "or",
+    "then": "then",
+    "pressKeys": "Press the new keys…",
+    "recordingFor": "Recording a new shortcut for {action}. Press the keys, or Escape to cancel.",
+    "changeFor": "Change the shortcut for {action}",
+    "resetFor": "Reset the shortcut for {action}",
+    "switchFor": "Shortcut for {action}",
+    "clash": "{keys} already belongs to {action}. Use it here and that one is left without it.",
+    "useHere": "Use it here",
+    "pickAnother": "Pick another",
+    "problems": {
+      "reserved": "{keys} belongs to the browser or the system and cannot be used.",
+      "needsModifier": "This shortcut works on every page, so it needs {mod} or {alt} together with the key.",
+      "invalid": "That key cannot be used."
+    },
+    "alsoUsedBy": "Also the key for {action}. Only one of them will work.",
+    "goToNote": "Search ({keys}) opens every page, and {prefix} followed by a letter opens the main ones. Give any page a key of its own here.",
+    "announceSet": "{action} is now {keys}",
+    "announceReset": "{action} is back to its default",
+    "announceResetAll": "Every shortcut is back to its default",
+    "phoneNote": "Shortcuts need a keyboard. Changes you make here apply on your computer too.",
+    "saveFailed": "Could not save your shortcuts",
+    "groups": {
+      "general": "General",
+      "create": "Create",
+      "goTo": "Go to",
+      "calendar": "Calendar",
+      "fixed": "Lists and photos"
+    },
+    "scopes": {
+      "global": "Anywhere in the app",
+      "calendar": "Only on the calendar"
+    },
+    "actions": {
+      "search": "Search",
+      "plateLookup": "Plate lookup",
+      "save": "Save",
+      "sidebar": "Show or hide the sidebar",
+      "help": "Show keyboard shortcuts",
+      "newInspection": "New inspection",
+      "calendar_day": "Day view",
+      "calendar_week": "Week view",
+      "calendar_month": "Month view",
+      "calendar_year": "Year view",
+      "calendar_schedule": "Schedule view",
+      "calendar_fourDays": "4 days view",
+      "calendar_today": "Go to today",
+      "calendar_next": "Next period",
+      "calendar_previous": "Previous period"
+    },
+    "help": {
+      "title": "Keyboard shortcuts",
+      "description": "The keys you have now. Search opens every page. Change or switch off keys in Settings.",
+      "disabledNote": "Keyboard shortcuts are switched off. Switch them on in Settings.",
+      "find": "Find a shortcut",
+      "noMatch": "No shortcut matches",
+      "customize": "Change shortcuts",
+      "fixedHint": "always the same",
+      "listMove": "Move through a list",
+      "listOpen": "Open the row",
+      "photos": "Next or previous photo",
+      "close": "Close a dialog or menu"
     }
   },
   "data": {

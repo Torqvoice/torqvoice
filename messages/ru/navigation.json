@@ -42,6 +42,7 @@
     "warranty": "Гарантия",
     "workshop": "Мастерская",
     "appearance": "Внешний вид",
+    "shortcuts": "Горячие клавиши",
     "email": "Эл. почта",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Детали осмотра"
   },
   "search": "Поиск...",
-  "shortcut": "Ctrl+K",
   "readMore": "Подробнее",
   "newWorkOrder": "Новый заказ-наряд",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Отмена",
     "createCompany": "Создать компанию",
     "theme": "Тема",
+    "keyboardShortcuts": "Горячие клавиши",
     "signOut": "Выйти",
     "more": "Ещё",
     "auditLog": "Журнал аудита",

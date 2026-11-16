@@ -21,6 +21,9 @@ import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { useLicenseExpiry } from '@/components/license-expiry-context'
 import { BANNER_PRIORITY, useBannerSlot } from '@/components/banner-slot'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
+import { openSearch } from '@/features/search/Lib/open'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
+import { useShortcutKey } from '@/features/shortcuts/Components/ShortcutsProvider'
 import { DocsLink } from '@/components/docs-link'
 import { RunningClockPill } from '@/features/time-tracking/Components/RunningClockPill'
 import { useServiceType } from '@/components/service-type-context'
@@ -33,15 +36,11 @@ function SearchTrigger() {
     <button
       type="button"
       className="hidden h-8 w-56 cursor-pointer items-center gap-2 rounded-md border bg-muted/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted sm:flex"
-      onClick={() => {
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
-      }}
+      onClick={openSearch}
     >
       <Search className="h-3.5 w-3.5" />
       <span className="flex-1 text-left">{t('search')}</span>
-      <kbd className="rounded border bg-background px-1.5 py-0.5 text-[10px] font-medium">
-        {t('shortcut')}
-      </kbd>
+      <ShortcutKeys id="general.search" />
     </button>
   )
 }
@@ -54,6 +53,7 @@ function SearchTrigger() {
 function PlateTrigger() {
   const t = useTranslations('vehicles.plateLookup')
   const { available } = usePlateLookupAccess()
+  const shortcut = useShortcutKey('general.plateLookup')
   if (!available) return null
   return (
     <button
@@ -61,7 +61,7 @@ function PlateTrigger() {
       className="group flex h-8 cursor-pointer items-center gap-2 rounded-md border bg-muted/50 px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       onClick={() => openPlateLookup()}
       aria-label={t('open')}
-      title={`${t('open')} (${t('shortcut')})`}
+      title={shortcut ? `${t('open')} (${shortcut.text})` : t('open')}
     >
       <span
         aria-hidden
@@ -171,6 +171,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/warranty': [{ key: 'settings', href: '/settings' }, { key: 'warranty' }],
   '/settings/workshop': [{ key: 'settings', href: '/settings' }, { key: 'workshop' }],
   '/settings/appearance': [{ key: 'settings', href: '/settings' }, { key: 'appearance' }],
+  '/settings/shortcuts': [{ key: 'settings', href: '/settings' }, { key: 'shortcuts' }],
   '/settings/email': [{ key: 'settings', href: '/settings' }, { key: 'email' }],
   '/settings/sms': [{ key: 'settings', href: '/settings' }, { key: 'sms' }],
   '/settings/about': [{ key: 'settings', href: '/settings' }, { key: 'about' }],

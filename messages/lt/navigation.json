@@ -42,6 +42,7 @@
     "warranty": "Garantija",
     "workshop": "Dirbtuvės",
     "appearance": "Išvaizda",
+    "shortcuts": "Spartieji klavišai",
     "email": "El. paštas",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Apžiūros informacija"
   },
   "search": "Ieškoti...",
-  "shortcut": "Ctrl+K",
   "readMore": "Skaityti daugiau",
   "newWorkOrder": "Naujas darbo užsakymas",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Atšaukti",
     "createCompany": "Sukurti įmonę",
     "theme": "Tema",
+    "keyboardShortcuts": "Spartieji klavišai",
     "signOut": "Atsijungti",
     "more": "Daugiau",
     "auditLog": "Audito žurnalas",

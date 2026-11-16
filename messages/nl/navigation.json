@@ -42,6 +42,7 @@
     "warranty": "Garantie",
     "workshop": "Werkplaats",
     "appearance": "Weergave",
+    "shortcuts": "Sneltoetsen",
     "email": "E-mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Inspectiegegevens"
   },
   "search": "Zoeken...",
-  "shortcut": "Ctrl+K",
   "readMore": "Meer lezen",
   "newWorkOrder": "Nieuwe werkorder",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Annuleren",
     "createCompany": "Bedrijf aanmaken",
     "theme": "Thema",
+    "keyboardShortcuts": "Sneltoetsen",
     "signOut": "Uitloggen",
     "more": "Meer",
     "auditLog": "Activiteitenlog",

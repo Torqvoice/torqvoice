@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Recherche de plaque",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Recherche de plaque",
     "description": "Saisissez une immatriculation pour voir ce que votre atelier et le registre des véhicules en savent",
     "placeholder": "Saisissez une plaque",
