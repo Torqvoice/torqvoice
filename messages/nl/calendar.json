@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Geen boten gevonden.",
     "none": "Geen",
     "optional": "Optioneel",
-    "whoHint": "Een klant, een auto of allebei. Een auto die nog niet in het systeem staat, kan aan de werkorder worden toegevoegd zodra hij binnenkomt.",
-    "whoHintMarine": "Een klant, een boot of allebei. Een boot die nog niet in het systeem staat, kan aan de werkorder worden toegevoegd zodra hij binnenkomt.",
+    "whoHint": "Een klant, een auto of allebei. Nog niet in het systeem? Voeg toe met Nieuw.",
+    "whoHintMarine": "Een klant, een boot of allebei. Nog niet in het systeem? Voeg toe met Nieuw.",
     "work": "Benodigd werk",
     "workPlaceholder": "Voorremmen piepen\nOlie verversen",
     "workPlaceholderMarine": "Motor wordt te heet bij hoge snelheid\nJaarlijkse onderhoudsbeurt",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Kies een klant om die op de hoogte te brengen.",
     "descriptionPlaceholder": "Beschrijving toevoegen",
     "convertSubmit": "Werkorder maken",
-    "saved": "Boeking opgeslagen"
+    "saved": "Boeking opgeslagen",
+    "new": "Nieuw",
+    "newCustomer": "Nieuwe klant",
+    "newCustomerNamed": "Nieuwe klant ‘{name}’",
+    "newVehicle": "Nieuw voertuig",
+    "newVehicleMarine": "Nieuwe boot",
+    "newVehicleNamed": "Nieuw voertuig met kenteken {plate}",
+    "newVehicleNamedMarine": "Nieuwe boot met registratienummer {plate}",
+    "openCalendar": "Kalender openen"
   },
   "notify": {
     "inAppTitle": "Binnenkort: {title}",

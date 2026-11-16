@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Dirbtuvės numatytasis",
     "invoiceDesignHint": "Šio kliento sąskaitos spausdinamos šiuo dizainu vietoj dirbtuvės numatytojo. Sąskaita vis tiek gali pasirinkti savo.",
     "reminderOptOut": "Be priminimų",
-    "reminderOptOutHint": "Neįtraukti šio kliento į apžiūros priminimus ar kitas kampanijas."
+    "reminderOptOutHint": "Neįtraukti šio kliento į apžiūros priminimus ar kitas kampanijas.",
+    "bookAppointment": "Užregistruoti vizitą"
   },
   "serviceRequests": {
     "statusNew": "Nauja",

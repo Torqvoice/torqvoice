@@ -104,29 +104,34 @@ test.describe('the free plan', () => {
   })
 
   test('offers the same upgrade when a new work order creates the customer', async ({ page }) => {
-    // The flow the getting-started checklist sends a new workshop to: vehicle,
-    // customer and job from one dialog. Still at the limit, the customer is
-    // refused, and with it the vehicle that would have belonged to them.
+    // The flow the getting-started checklist sends a new workshop to: the
+    // work order picker opens the full vehicle form, whose owner picker adds
+    // the customer. Still at the limit, the customer is refused, and with it
+    // the vehicle that would have belonged to them.
     const customers = await customerRows(organizationId)
     const vehicles = await vehicleRows(organizationId)
 
     await page.goto('/work-orders?new=1')
     await settle(page)
+    const vehicleForm = page.getByRole('dialog', { name: 'Add New Vehicle' })
     await expect(async () => {
       await page
         .getByRole('dialog', { name: 'Select Vehicle' })
         .getByRole('button', { name: 'Add New Vehicle' })
         .first()
         .click()
-      await expect(page.locator('#new-make')).toBeVisible({ timeout: 2_000 })
+      await expect(vehicleForm.locator('#make')).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
 
-    await page.locator('#new-make').fill('Volvo')
-    await page.locator('#new-model').fill('V70')
-    await page.locator('#new-year').fill('2015')
-    await page.getByRole('button', { name: 'Create new customer' }).click()
-    await page.locator('#new-customer-name').fill(`E2E Work order customer ${stamp}`)
-    await page.getByRole('button', { name: 'Create & Continue' }).click()
+    await vehicleForm.locator('#make').fill('Volvo')
+    await vehicleForm.locator('#model').fill('V70')
+    await vehicleForm.locator('#year').fill('2015')
+    await vehicleForm.getByRole('combobox').click()
+    await page.getByRole('button', { name: 'Add Customer', exact: true }).click()
+    const customerForm = page.getByRole('dialog', { name: 'Add New Customer' })
+    await expect(customerForm).toBeVisible()
+    await customerForm.locator('#name').fill(`E2E Work order customer ${stamp}`)
+    await customerForm.locator('button[type="submit"]').click()
 
     await expectUpgradeOffered(page, new RegExp(`up to ${FREE_CUSTOMERS} customers`))
     expect(await customerRows(organizationId), 'no customer written').toBe(customers)

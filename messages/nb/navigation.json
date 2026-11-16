@@ -86,7 +86,8 @@
     "part": "Del",
     "inspection": "Inspeksjon",
     "shopActions": "Verkstedet",
-    "person": "Legg til en person"
+    "person": "Legg til en person",
+    "appointment": "Timeavtale"
   },
   "purchaseWhiteLabel": "Kjøp White-Label",
   "licenseExpired": "Lisensen din har utløpt. Funksjoner kan være begrenset.",

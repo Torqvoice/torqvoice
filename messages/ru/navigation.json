@@ -86,7 +86,8 @@
     "part": "Запчасть",
     "inspection": "Осмотр",
     "shopActions": "Мастерская",
-    "person": "Добавить человека"
+    "person": "Добавить человека",
+    "appointment": "Запись"
   },
   "purchaseWhiteLabel": "Купить White-Label",
   "licenseExpired": "Ваша лицензия истекла. Функции могут быть ограничены.",

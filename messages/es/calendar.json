@@ -189,8 +189,8 @@
     "noVehiclesMarine": "No se encontraron embarcaciones.",
     "none": "Ninguno",
     "optional": "Opcional",
-    "whoHint": "Un cliente, un vehículo o ambos. Un vehículo que aún no está registrado se puede añadir a la orden cuando llegue.",
-    "whoHintMarine": "Un cliente, una embarcación o ambos. Una embarcación que aún no está registrada se puede añadir a la orden cuando llegue.",
+    "whoHint": "Un cliente, un vehículo o ambos. ¿Aún no está registrado? Añádelo con Nuevo.",
+    "whoHintMarine": "Un cliente, una embarcación o ambos. ¿Aún no está registrado? Añádelo con Nuevo.",
     "work": "Trabajo necesario",
     "workPlaceholder": "Chirrían los frenos delanteros\nCambio de aceite",
     "workPlaceholderMarine": "El motor se recalienta a alta velocidad\nRevisión anual",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Elige un cliente para avisarle.",
     "descriptionPlaceholder": "Añadir descripción",
     "convertSubmit": "Crear orden de trabajo",
-    "saved": "Reserva guardada"
+    "saved": "Reserva guardada",
+    "new": "Nuevo",
+    "newCustomer": "Nuevo cliente",
+    "newCustomerNamed": "Nuevo cliente «{name}»",
+    "newVehicle": "Nuevo vehículo",
+    "newVehicleMarine": "Nueva embarcación",
+    "newVehicleNamed": "Nuevo vehículo con matrícula {plate}",
+    "newVehicleNamedMarine": "Nueva embarcación con matrícula {plate}",
+    "openCalendar": "Abrir calendario"
   },
   "notify": {
     "inAppTitle": "Próximamente: {title}",

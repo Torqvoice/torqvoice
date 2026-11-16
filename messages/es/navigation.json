@@ -86,7 +86,8 @@
     "part": "Pieza",
     "inspection": "Inspección",
     "shopActions": "Taller",
-    "person": "Añadir a una persona"
+    "person": "Añadir a una persona",
+    "appointment": "Cita"
   },
   "purchaseWhiteLabel": "Adquirir marca blanca",
   "licenseExpired": "Su licencia ha expirado. Las funciones pueden estar limitadas.",

@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Nessuna imbarcazione trovata.",
     "none": "Nessuno",
     "optional": "Facoltativo",
-    "whoHint": "Un cliente, un'auto o entrambi. Un'auto non ancora registrata può essere aggiunta all'ordine quando arriva.",
-    "whoHintMarine": "Un cliente, un'imbarcazione o entrambi. Un'imbarcazione non ancora registrata può essere aggiunta all'ordine quando arriva.",
+    "whoHint": "Un cliente, un'auto o entrambi. Non ancora registrato? Aggiungilo con Nuovo.",
+    "whoHintMarine": "Un cliente, un'imbarcazione o entrambi. Non ancora registrato? Aggiungilo con Nuovo.",
     "work": "Lavori da fare",
     "workPlaceholder": "I freni anteriori fischiano\nCambio olio",
     "workPlaceholderMarine": "Il motore si surriscalda ad alta velocità\nTagliando annuale",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Scegli un cliente per avvisarlo.",
     "descriptionPlaceholder": "Aggiungi descrizione",
     "convertSubmit": "Crea ordine di lavoro",
-    "saved": "Prenotazione salvata"
+    "saved": "Prenotazione salvata",
+    "new": "Nuovo",
+    "newCustomer": "Nuovo cliente",
+    "newCustomerNamed": "Nuovo cliente «{name}»",
+    "newVehicle": "Nuovo veicolo",
+    "newVehicleMarine": "Nuova imbarcazione",
+    "newVehicleNamed": "Nuovo veicolo con targa {plate}",
+    "newVehicleNamedMarine": "Nuova imbarcazione con matricola {plate}",
+    "openCalendar": "Apri calendario"
   },
   "notify": {
     "inAppTitle": "In arrivo: {title}",

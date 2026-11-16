@@ -86,7 +86,8 @@
     "part": "Ersatzteil",
     "inspection": "Inspektion",
     "shopActions": "Werkstatt",
-    "person": "Person hinzufügen"
+    "person": "Person hinzufügen",
+    "appointment": "Termin"
   },
   "purchaseWhiteLabel": "White-Label erwerben",
   "licenseExpired": "Ihre Lizenz ist abgelaufen. Funktionen können eingeschränkt sein.",

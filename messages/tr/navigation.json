@@ -86,7 +86,8 @@
     "part": "Parça",
     "inspection": "Muayene",
     "shopActions": "Servis",
-    "person": "Kişi ekle"
+    "person": "Kişi ekle",
+    "appointment": "Randevu"
   },
   "purchaseWhiteLabel": "Beyaz Etiket Satın Al",
   "licenseExpired": "Lisansınız sona erdi. Özellikler sınırlı olabilir.",

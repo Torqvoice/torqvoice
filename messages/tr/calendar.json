@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Tekne bulunamadı.",
     "none": "Yok",
     "optional": "İsteğe bağlı",
-    "whoHint": "Bir müşteri, bir araç ya da ikisi birden. Henüz kayıtlı olmayan bir araç, geldiğinde iş emrine eklenebilir.",
-    "whoHintMarine": "Bir müşteri, bir tekne ya da ikisi birden. Henüz kayıtlı olmayan bir tekne, geldiğinde iş emrine eklenebilir.",
+    "whoHint": "Bir müşteri, bir araç ya da ikisi birden. Henüz kayıtlı değil mi? Yeni ile ekleyin.",
+    "whoHintMarine": "Bir müşteri, bir tekne ya da ikisi birden. Henüz kayıtlı değil mi? Yeni ile ekleyin.",
     "work": "Yapılacak iş",
     "workPlaceholder": "Ön frenler gıcırdıyor\nYağ değişimi",
     "workPlaceholderMarine": "Motor yüksek hızda aşırı ısınıyor\nYıllık bakım",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Bildirim göndermek için bir müşteri seçin.",
     "descriptionPlaceholder": "Açıklama ekleyin",
     "convertSubmit": "İş emri oluştur",
-    "saved": "Randevu kaydedildi"
+    "saved": "Randevu kaydedildi",
+    "new": "Yeni",
+    "newCustomer": "Yeni müşteri",
+    "newCustomerNamed": "Yeni müşteri “{name}”",
+    "newVehicle": "Yeni araç",
+    "newVehicleMarine": "Yeni tekne",
+    "newVehicleNamed": "{plate} plakalı yeni araç",
+    "newVehicleNamedMarine": "{plate} tescil numaralı yeni tekne",
+    "openCalendar": "Takvimi aç"
   },
   "notify": {
     "inAppTitle": "Yaklaşıyor: {title}",

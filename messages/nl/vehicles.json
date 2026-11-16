@@ -457,7 +457,9 @@
     "deleteVehicle": "Voertuig verwijderen",
     "deleteVehicleMarine": "Boot verwijderen",
     "editMileage": "Kilometerstand wijzigen",
-    "editMileageMarine": "Motoruren wijzigen"
+    "editMileageMarine": "Motoruren wijzigen",
+    "bookAppointment": "Afspraak inplannen",
+    "addTitleMarine": "Nieuw vaartuig toevoegen"
   },
   "archiveDialog": {
     "title": "Voertuig archiveren",
@@ -615,7 +617,9 @@
     "dueSoon": "Binnenkort",
     "emptyTitle": "Zoek elk kenteken op",
     "emptyBody": "Zie het voertuig, van wie het hier is en wat {source} erover heeft. Nog niet van jou? Voeg het in één stap toe.",
-    "registryWord": "het register"
+    "registryWord": "het register",
+    "bookAppointment": "Afspraak inplannen",
+    "newWorkOrder": "Nieuwe werkorder"
   },
   "safety": {
     "title": "Veiligheid en bekende problemen",

@@ -457,7 +457,9 @@
     "deleteVehicle": "Ištrinti transporto priemonę",
     "deleteVehicleMarine": "Ištrinti valtį",
     "editMileage": "Pakeisti ridą",
-    "editMileageMarine": "Pakeisti variklio valandas"
+    "editMileageMarine": "Pakeisti variklio valandas",
+    "bookAppointment": "Užregistruoti vizitą",
+    "addTitleMarine": "Pridėti naują laivą"
   },
   "archiveDialog": {
     "title": "Archyvuoti transporto priemonę",
@@ -615,7 +617,9 @@
     "dueSoon": "Netrukus",
     "emptyTitle": "Ieškokite bet kurio numerio",
     "emptyBody": "Pamatykite transporto priemonę, kam ji čia priklauso ir ką apie ją turi {source}. Dar ne jūsų? Pridėkite vienu žingsniu.",
-    "registryWord": "registras"
+    "registryWord": "registras",
+    "bookAppointment": "Užregistruoti vizitą",
+    "newWorkOrder": "Naujas darbo užsakymas"
   },
   "safety": {
     "title": "Sauga ir žinomos problemos",

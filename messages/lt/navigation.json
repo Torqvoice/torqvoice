@@ -86,7 +86,8 @@
     "part": "Dalis",
     "inspection": "Apžiūra",
     "shopActions": "Servisas",
-    "person": "Pridėti žmogų"
+    "person": "Pridėti žmogų",
+    "appointment": "Vizitas"
   },
   "purchaseWhiteLabel": "Įsigyti \"White-Label\"",
   "licenseExpired": "Jūsų licencija pasibaigė. Funkcijos gali būti ribotos.",

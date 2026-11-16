@@ -43,6 +43,12 @@ import {
 } from '@/components/ui/select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useServiceType } from '@/components/service-type-context'
+import type { BookingStart } from '@/components/booking-launcher'
+import { usePlateLookupAccess } from '@/components/plate-lookup-context'
+import { useGuardedPush } from '@/hooks/use-guarded-push'
+import { CustomerForm } from '@/features/customers/Components/CustomerForm'
+import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
+import { plateFromSearch } from '@/features/vehicles/Lib/plate'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 import { createServiceMeeting } from '@/features/integrations/Actions/integrationActions'
@@ -130,6 +136,8 @@ export function BookingDialog({
   defaultDate,
   defaultTime,
   edit,
+  start,
+  calendarLink,
   onSaved,
 }: {
   open: boolean
@@ -140,6 +148,10 @@ export function BookingDialog({
   defaultTime?: string
   /** An appointment or a booked job to change, or an appointment to make a work order. */
   edit?: BookingEdit | null
+  /** The vehicle and customer a booking opened from elsewhere already has. */
+  start?: BookingStart | null
+  /** Away from the calendar: the confirmation offers the way to the booked day. */
+  calendarLink?: boolean
   onSaved?: () => void
 }) {
   const t = useTranslations('calendar.appointment')
@@ -171,6 +183,8 @@ export function BookingDialog({
             defaultDate={defaultDate}
             defaultTime={defaultTime}
             edit={edit ?? null}
+            start={edit ? null : (start ?? null)}
+            calendarLink={calendarLink}
             saving={saving}
             onSavingChange={setSaving}
             onCancel={() => onOpenChange(false)}
@@ -189,6 +203,8 @@ function BookingForm({
   defaultDate,
   defaultTime,
   edit,
+  start: startWith,
+  calendarLink,
   saving,
   onSavingChange,
   onCancel,
@@ -197,6 +213,8 @@ function BookingForm({
   defaultDate?: string
   defaultTime?: string
   edit: BookingEdit | null
+  start: BookingStart | null
+  calendarLink?: boolean
   saving: boolean
   onSavingChange: (saving: boolean) => void
   onCancel: () => void
@@ -205,6 +223,8 @@ function BookingForm({
   const t = useTranslations('calendar.appointment')
   const tc = useTranslations('common.buttons')
   const isMarine = useServiceType() === 'marine'
+  const go = useGuardedPush()
+  const { canCreate: canAddVehicle } = usePlateLookupAccess()
 
   // What is being changed: nothing (a new booking), an appointment, a job.
   const editing = edit?.mode === 'edit' ? edit.event : null
@@ -224,15 +244,27 @@ function BookingForm({
   )
   const [titleText, setTitleText] = useState('')
   const [description, setDescription] = useState('')
-  const [customerId, setCustomerId] = useState('')
+  // A booking opened with a vehicle already has its owner too.
+  const startCustomer =
+    startWith?.customer ??
+    (startWith?.vehicle?.customer ? { ...startWith.vehicle.customer, company: null } : null)
+  const [customerId, setCustomerId] = useState(startCustomer?.id ?? '')
   const [customerInitial, setCustomerInitial] = useState<{
     id: string
     name: string
     company: string | null
-  } | null>(null)
-  const [vehicleId, setVehicleId] = useState('')
-  const [vehicleInitial, setVehicleInitial] = useState<BookingForEdit['vehicle']>(null)
-  const [vehicleCustomerId, setVehicleCustomerId] = useState<string | null>(null)
+  } | null>(startCustomer)
+  const [vehicleId, setVehicleId] = useState(startWith?.vehicle?.id ?? '')
+  const [vehicleInitial, setVehicleInitial] = useState<BookingForEdit['vehicle']>(
+    startWith?.vehicle ?? null
+  )
+  const [vehicleCustomerId, setVehicleCustomerId] = useState<string | null>(
+    startWith?.vehicle?.customerId ?? null
+  )
+  // The full forms, opened over the booking for someone not on file yet.
+  // `null` is closed; the string is what was typed in the search that missed.
+  const [newCustomer, setNewCustomer] = useState<string | null>(null)
+  const [newVehicle, setNewVehicle] = useState<string | null>(null)
   const [work, setWork] = useState('')
   const startDefault = defaultTime ?? '09:00'
   const [start, setStart] = useState({ date: defaultDate ?? '', time: startDefault })
@@ -416,8 +448,18 @@ function BookingForm({
         toast.error(result.error || t('failed'))
         return
       }
-      if (result.data.overbooked) toast.warning(t('bookedNobodyFree'))
-      else toast.success(editing ? t('saved') : t('booked'))
+      // Booked from another screen, the way to the day it landed on.
+      const day = start.date
+      const seeIt = calendarLink
+        ? {
+            action: {
+              label: t('openCalendar'),
+              onClick: () => go(`/calendar?view=day&date=${day}`),
+            },
+          }
+        : undefined
+      if (result.data.overbooked) toast.warning(t('bookedNobodyFree'), seeIt)
+      else toast.success(editing ? t('saved') : t('booked'), seeIt)
       // The meeting is made once the job exists; a failure leaves the booking standing.
       if (meeting && result.data.kind === 'workOrder') {
         const made = await createServiceMeeting(result.data.id, meeting).catch(() => null)
@@ -446,313 +488,446 @@ function BookingForm({
     customer_email: t('channel.customerEmail'),
   }
 
-  return (
-    <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
-      <DialogBody className="space-y-4">
-        {/* Title and what it is, the way a calendar app opens. */}
-        <div className="space-y-2.5 pr-6">
-          <Input
-            ref={titleRef}
-            aria-label={t('titleLabel')}
-            aria-invalid={tried && !titleText.trim() ? true : undefined}
-            value={titleText}
-            onChange={(e) => setTitleText(e.target.value)}
-            placeholder={t('titlePlaceholder')}
-            maxLength={200}
-            autoFocus
-            className="h-14 rounded-none border-0 border-b-2 border-border bg-transparent px-1 text-2xl font-medium tracking-tight shadow-none placeholder:font-normal placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-0 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive md:text-2xl dark:bg-transparent"
-          />
-          <div className="flex flex-wrap items-center gap-3">
-            <Tabs value={kind} onValueChange={(v) => chooseKind(v as BookingKind)}>
-              <TabsList>
-                <TabsTrigger
-                  value="appointment"
-                  disabled={Boolean(converting || (editing && sourceKind === 'workOrder'))}
-                  className="gap-1.5"
-                >
-                  <CalendarDays className="h-3.5 w-3.5" />
-                  {t('kind.appointment')}
-                </TabsTrigger>
-                <TabsTrigger
-                  value="workOrder"
-                  disabled={Boolean(editing && sourceKind === 'appointment')}
-                  className="gap-1.5"
-                >
-                  <Wrench className="h-3.5 w-3.5" />
-                  {t('kind.workOrder')}
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-            <p className="text-xs text-muted-foreground">
-              {isWorkOrder
-                ? t('kind.workOrderHint')
-                : isMarine
-                  ? t('kind.appointmentHintMarine')
-                  : t('kind.appointmentHint')}
-            </p>
-          </div>
-        </div>
+  // Who is not on file yet is added here, in the same forms as everywhere
+  // else, and comes back chosen. A customer on a booked job is fixed, and so
+  // is a car that has arrived, so neither is offered then.
+  const canPickCustomer = !(editing && sourceKind === 'workOrder')
+  const offerNewVehicle = canAddVehicle && !lockedWho
+  const vehicleWord = isMarine ? t('newVehicleMarine') : t('newVehicle')
 
-        {/* When: one day, start to end, as a calendar shows it. A second date
-            only for a booking that runs into another day. */}
-        <Row icon={Clock} label={t('when')}>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="w-40">
-              <DateInput
-                id="booking-start-date"
-                value={start.date}
-                onChange={(date) => moveStart({ ...start, date })}
-              />
+  return (
+    <>
+      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+        <DialogBody className="space-y-4">
+          {/* Title and what it is, the way a calendar app opens. */}
+          <div className="space-y-2.5 pr-6">
+            <Input
+              ref={titleRef}
+              aria-label={t('titleLabel')}
+              aria-invalid={tried && !titleText.trim() ? true : undefined}
+              value={titleText}
+              onChange={(e) => setTitleText(e.target.value)}
+              placeholder={t('titlePlaceholder')}
+              maxLength={200}
+              autoFocus
+              className="h-14 rounded-none border-0 border-b-2 border-border bg-transparent px-1 text-2xl font-medium tracking-tight shadow-none placeholder:font-normal placeholder:text-muted-foreground/70 focus-visible:border-primary focus-visible:ring-0 aria-invalid:border-destructive aria-invalid:focus-visible:border-destructive md:text-2xl dark:bg-transparent"
+            />
+            <div className="flex flex-wrap items-center gap-3">
+              <Tabs value={kind} onValueChange={(v) => chooseKind(v as BookingKind)}>
+                <TabsList>
+                  <TabsTrigger
+                    value="appointment"
+                    disabled={Boolean(converting || (editing && sourceKind === 'workOrder'))}
+                    className="gap-1.5"
+                  >
+                    <CalendarDays className="h-3.5 w-3.5" />
+                    {t('kind.appointment')}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="workOrder"
+                    disabled={Boolean(editing && sourceKind === 'appointment')}
+                    className="gap-1.5"
+                  >
+                    <Wrench className="h-3.5 w-3.5" />
+                    {t('kind.workOrder')}
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <p className="text-xs text-muted-foreground">
+                {isWorkOrder
+                  ? t('kind.workOrderHint')
+                  : isMarine
+                    ? t('kind.appointmentHintMarine')
+                    : t('kind.appointmentHint')}
+              </p>
             </div>
-            <Input
-              aria-label={t('start')}
-              type="time"
-              value={start.time}
-              onChange={(e) => moveStart({ ...start, time: e.target.value })}
-              className="w-28"
-              required
-            />
-            <span className="text-muted-foreground">–</span>
-            <Input
-              aria-label={t('end')}
-              type="time"
-              value={end.time}
-              onChange={(e) => setEnd({ ...end, time: e.target.value })}
-              className="w-28"
-              required
-            />
-            {showEndDate ? (
+          </div>
+
+          {/* When: one day, start to end, as a calendar shows it. A second date
+            only for a booking that runs into another day. */}
+          <Row icon={Clock} label={t('when')}>
+            <div className="flex flex-wrap items-center gap-2">
               <div className="w-40">
                 <DateInput
-                  id="booking-end-date"
-                  value={end.date}
-                  onChange={(date) => setEnd({ ...end, date })}
+                  id="booking-start-date"
+                  value={start.date}
+                  onChange={(date) => moveStart({ ...start, date })}
                 />
               </div>
-            ) : (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                className="h-8 px-2 text-xs text-primary"
-                onClick={() => setMultiDay(true)}
-              >
-                {t('endsAnotherDay')}
-              </Button>
-            )}
-            {timesValid && durationLabel && (
-              <span className="text-xs text-muted-foreground">{durationLabel}</span>
-            )}
-          </div>
-          {!timesValid && <p className="text-xs text-destructive">{t('endAfterStart')}</p>}
-        </Row>
-
-        <div className="grid gap-x-8 gap-y-4 md:grid-cols-[minmax(0,4fr)_minmax(0,6fr)]">
-          <div className="space-y-4">
-            <Row icon={User} label={t('customer')} optional={optionalLabel}>
-              <CustomerCombobox
-                value={customerId}
-                initialCustomer={customerInitial}
-                placeholder={t('selectCustomer')}
-                searchPlaceholder={t('searchCustomer')}
-                noneLabel={t('none')}
-                emptyLabel={t('noCustomers')}
-                // On a booked job only a missing car can be added here; the
-                // customer, and so the prices, change on the work order.
-                disabled={Boolean(editing && sourceKind === 'workOrder')}
-                onChange={(id) => {
-                  setCustomerId(id)
-                  // A car belonging to someone else no longer fits.
-                  if (id && vehicleId && vehicleCustomerId !== id) {
-                    setVehicleId('')
-                    setVehicleCustomerId(null)
-                  }
-                }}
+              <Input
+                aria-label={t('start')}
+                type="time"
+                value={start.time}
+                onChange={(e) => moveStart({ ...start, time: e.target.value })}
+                className="w-28"
+                required
               />
-            </Row>
-            <Row
-              icon={Car}
-              label={isMarine ? t('vehicleMarine') : t('vehicle')}
-              optional={optionalLabel}
-            >
-              <VehicleCombobox
-                value={vehicleId}
-                initialVehicle={vehicleInitial}
-                customerId={customerId || undefined}
-                placeholder={isMarine ? t('selectVehicleMarine') : t('selectVehicle')}
-                searchPlaceholder={isMarine ? t('searchVehicleMarine') : t('searchVehicle')}
-                noneLabel={t('none')}
-                emptyLabel={isMarine ? t('noVehiclesMarine') : t('noVehicles')}
-                disabled={lockedWho}
-                onChange={(id, vehicle) => {
-                  setVehicleId(id)
-                  setVehicleCustomerId(vehicle?.customerId ?? null)
-                  if (vehicle?.customer) {
-                    setCustomerId(vehicle.customer.id)
-                    setCustomerInitial({ ...vehicle.customer, company: null })
-                  }
-                }}
+              <span className="text-muted-foreground">–</span>
+              <Input
+                aria-label={t('end')}
+                type="time"
+                value={end.time}
+                onChange={(e) => setEnd({ ...end, time: e.target.value })}
+                className="w-28"
+                required
               />
-              {(lockedWho || isWorkOrder) && (
-                <p
-                  className={cn(
-                    'text-xs',
-                    tried && isWorkOrder && !hasCustomer
-                      ? 'text-destructive'
-                      : 'text-muted-foreground'
-                  )}
-                >
-                  {lockedWho
-                    ? isMarine
-                      ? t('whoLockedMarine')
-                      : t('whoLocked')
-                    : isMarine
-                      ? t('whoHintMarine')
-                      : t('whoHint')}
-                </p>
-              )}
-            </Row>
-            <Row icon={AlignLeft} label={t('description')}>
-              <RichTextEditor
-                content={description}
-                onChange={setDescription}
-                placeholder={t('descriptionPlaceholder')}
-                contentClassName="min-h-[8rem] max-h-[30vh]"
-              />
-            </Row>
-          </div>
-
-          <div className="space-y-4">
-            <Row icon={Bell} label={t('notifications')}>
-              <div className="space-y-2">
-                {rows.map((row) => (
-                  <NotificationEditor
-                    key={row.key}
-                    row={row}
-                    channels={channels}
-                    channelLabel={channelLabel}
-                    hasCustomer={hasCustomer}
-                    onChange={(next) =>
-                      setRows((all) => all.map((r) => (r.key === row.key ? next : r)))
-                    }
-                    onRemove={() => setRows((all) => all.filter((r) => r.key !== row.key))}
+              {showEndDate ? (
+                <div className="w-40">
+                  <DateInput
+                    id="booking-end-date"
+                    value={end.date}
+                    onChange={(date) => setEnd({ ...end, date })}
                   />
-                ))}
-                {!customerRowsOk && (
-                  <p className="text-xs text-destructive">{t('customerChannelNeedsCustomer')}</p>
-                )}
-                {rows.length < MAX_NOTIFICATIONS && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="-ml-2 h-8 text-primary"
-                    onClick={() => setRows((all) => [...all, newRow()])}
+                </div>
+              ) : (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2 text-xs text-primary"
+                  onClick={() => setMultiDay(true)}
+                >
+                  {t('endsAnotherDay')}
+                </Button>
+              )}
+              {timesValid && durationLabel && (
+                <span className="text-xs text-muted-foreground">{durationLabel}</span>
+              )}
+            </div>
+            {!timesValid && <p className="text-xs text-destructive">{t('endAfterStart')}</p>}
+          </Row>
+
+          <div className="grid gap-x-8 gap-y-4 md:grid-cols-[minmax(0,4fr)_minmax(0,6fr)]">
+            <div className="min-w-0 space-y-4">
+              <Row icon={User} label={t('customer')} optional={optionalLabel}>
+                <div className="flex gap-2">
+                  <div className="min-w-0 flex-1">
+                    <CustomerCombobox
+                      value={customerId}
+                      initialCustomer={customerInitial}
+                      placeholder={t('selectCustomer')}
+                      searchPlaceholder={t('searchCustomer')}
+                      noneLabel={t('none')}
+                      emptyLabel={t('noCustomers')}
+                      // On a booked job only a missing car can be added here; the
+                      // customer, and so the prices, change on the work order.
+                      disabled={!canPickCustomer}
+                      onChange={(id, customer) => {
+                        setCustomerId(id)
+                        setCustomerInitial(customer)
+                        // A car belonging to someone else no longer fits.
+                        if (id && vehicleId && vehicleCustomerId !== id) {
+                          setVehicleId('')
+                          setVehicleCustomerId(null)
+                        }
+                      }}
+                      footer={
+                        canPickCustomer
+                          ? (close, search) => (
+                              <AddFromSearch
+                                label={
+                                  search.trim()
+                                    ? t('newCustomerNamed', { name: search.trim() })
+                                    : t('newCustomer')
+                                }
+                                onClick={() => {
+                                  close()
+                                  setNewCustomer(search.trim())
+                                }}
+                              />
+                            )
+                          : undefined
+                      }
+                    />
+                  </div>
+                  {canPickCustomer && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="shrink-0 gap-1.5 px-3"
+                      aria-label={t('newCustomer')}
+                      onClick={() => setNewCustomer('')}
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span aria-hidden>{t('new')}</span>
+                    </Button>
+                  )}
+                </div>
+              </Row>
+              <Row
+                icon={Car}
+                label={isMarine ? t('vehicleMarine') : t('vehicle')}
+                optional={optionalLabel}
+              >
+                <div className="flex gap-2">
+                  <div className="min-w-0 flex-1">
+                    <VehicleCombobox
+                      value={vehicleId}
+                      initialVehicle={vehicleInitial}
+                      customerId={customerId || undefined}
+                      placeholder={isMarine ? t('selectVehicleMarine') : t('selectVehicle')}
+                      searchPlaceholder={isMarine ? t('searchVehicleMarine') : t('searchVehicle')}
+                      noneLabel={t('none')}
+                      emptyLabel={isMarine ? t('noVehiclesMarine') : t('noVehicles')}
+                      disabled={lockedWho}
+                      onChange={(id, vehicle) => {
+                        setVehicleId(id)
+                        setVehicleCustomerId(vehicle?.customerId ?? null)
+                        if (vehicle?.customer) {
+                          setCustomerId(vehicle.customer.id)
+                          setCustomerInitial({ ...vehicle.customer, company: null })
+                        }
+                      }}
+                      footer={
+                        offerNewVehicle
+                          ? (close, search) => (
+                              <AddFromSearch
+                                label={
+                                  plateFromSearch(search)
+                                    ? t(isMarine ? 'newVehicleNamedMarine' : 'newVehicleNamed', {
+                                        plate: plateFromSearch(search),
+                                      })
+                                    : vehicleWord
+                                }
+                                onClick={() => {
+                                  close()
+                                  setNewVehicle(plateFromSearch(search))
+                                }}
+                              />
+                            )
+                          : undefined
+                      }
+                    />
+                  </div>
+                  {offerNewVehicle && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="shrink-0 gap-1.5 px-3"
+                      aria-label={vehicleWord}
+                      onClick={() => setNewVehicle('')}
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span aria-hidden>{t('new')}</span>
+                    </Button>
+                  )}
+                </div>
+                {(lockedWho || isWorkOrder) && (
+                  <p
+                    className={cn(
+                      'text-xs',
+                      tried && isWorkOrder && !hasCustomer
+                        ? 'text-destructive'
+                        : 'text-muted-foreground'
+                    )}
                   >
-                    <Plus className="mr-1.5 h-3.5 w-3.5" />
-                    {t('addNotification')}
-                  </Button>
-                )}
-              </div>
-            </Row>
-            {isWorkOrder && (
-              <Row icon={ListChecks} label={t('work')}>
-                <ConcernListEditor
-                  value={work}
-                  onChange={setWork}
-                  disabled={lockedWork}
-                  placeholder={isMarine ? t('addConcernMarine') : t('addConcern')}
-                />
-                {(lockedWork || work.trim() === '') && (
-                  <p className="px-2 text-xs text-muted-foreground">
-                    {lockedWork ? t('workLocked') : t('workEmptyHint')}
+                    {lockedWho
+                      ? isMarine
+                        ? t('whoLockedMarine')
+                        : t('whoLocked')
+                      : isMarine
+                        ? t('whoHintMarine')
+                        : t('whoHint')}
                   </p>
                 )}
               </Row>
-            )}
-            {isWorkOrder && video.length > 0 && (
-              <Row icon={Video} label={t('video')}>
-                {loaded?.meeting ? (
-                  <a
-                    href={loaded.meeting.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-                  >
-                    {t('joinMeeting')}
-                    <ExternalLink className="h-3.5 w-3.5" />
-                  </a>
-                ) : meeting ? (
-                  <div className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-                    <span>
-                      {t('meetingAdded', {
-                        name: video.find((v) => v.connectorId === meeting)?.name ?? '',
-                      })}
-                    </span>
+              <Row icon={AlignLeft} label={t('description')}>
+                <RichTextEditor
+                  content={description}
+                  onChange={setDescription}
+                  placeholder={t('descriptionPlaceholder')}
+                  contentClassName="min-h-[8rem] max-h-[30vh]"
+                />
+              </Row>
+            </div>
+
+            <div className="min-w-0 space-y-4">
+              <Row icon={Bell} label={t('notifications')}>
+                <div className="space-y-2">
+                  {rows.map((row) => (
+                    <NotificationEditor
+                      key={row.key}
+                      row={row}
+                      channels={channels}
+                      channelLabel={channelLabel}
+                      hasCustomer={hasCustomer}
+                      onChange={(next) =>
+                        setRows((all) => all.map((r) => (r.key === row.key ? next : r)))
+                      }
+                      onRemove={() => setRows((all) => all.filter((r) => r.key !== row.key))}
+                    />
+                  ))}
+                  {!customerRowsOk && (
+                    <p className="text-xs text-destructive">{t('customerChannelNeedsCustomer')}</p>
+                  )}
+                  {rows.length < MAX_NOTIFICATIONS && (
                     <Button
                       type="button"
                       variant="ghost"
-                      size="icon"
-                      className="h-7 w-7"
-                      aria-label={t('removeMeeting')}
-                      onClick={() => setMeeting(null)}
+                      size="sm"
+                      className="-ml-2 h-8 text-primary"
+                      onClick={() => setRows((all) => [...all, newRow()])}
                     >
-                      <X className="h-4 w-4" />
+                      <Plus className="mr-1.5 h-3.5 w-3.5" />
+                      {t('addNotification')}
                     </Button>
-                  </div>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    {video.map((v) => (
-                      <Button
-                        key={v.connectorId}
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setMeeting(v.connectorId)}
-                      >
-                        <Video className="mr-1.5 h-3.5 w-3.5" />
-                        {t('addMeeting', { name: v.name })}
-                      </Button>
-                    ))}
-                  </div>
-                )}
+                  )}
+                </div>
               </Row>
-            )}
+              {isWorkOrder && (
+                <Row icon={ListChecks} label={t('work')}>
+                  <ConcernListEditor
+                    value={work}
+                    onChange={setWork}
+                    disabled={lockedWork}
+                    placeholder={isMarine ? t('addConcernMarine') : t('addConcern')}
+                  />
+                  {(lockedWork || work.trim() === '') && (
+                    <p className="px-2 text-xs text-muted-foreground">
+                      {lockedWork ? t('workLocked') : t('workEmptyHint')}
+                    </p>
+                  )}
+                </Row>
+              )}
+              {isWorkOrder && video.length > 0 && (
+                <Row icon={Video} label={t('video')}>
+                  {loaded?.meeting ? (
+                    <a
+                      href={loaded.meeting.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                    >
+                      {t('joinMeeting')}
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  ) : meeting ? (
+                    <div className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
+                      <span>
+                        {t('meetingAdded', {
+                          name: video.find((v) => v.connectorId === meeting)?.name ?? '',
+                        })}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        aria-label={t('removeMeeting')}
+                        onClick={() => setMeeting(null)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {video.map((v) => (
+                        <Button
+                          key={v.connectorId}
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setMeeting(v.connectorId)}
+                        >
+                          <Video className="mr-1.5 h-3.5 w-3.5" />
+                          {t('addMeeting', { name: v.name })}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                </Row>
+              )}
+            </div>
           </div>
-        </div>
-      </DialogBody>
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
-          {tc('cancel')}
-        </Button>
-        <Button
-          data-save-shortcut
-          type="submit"
-          disabled={saving}
-          // On the press, not only on submit: a field the browser itself
-          // refuses (an emptied time, a fractional amount) never reaches the
-          // form's submit, and the press must still say what is missing.
-          onClick={() => {
-            if (!ready) setTried(true)
-          }}
-          aria-describedby={tried && missing ? 'booking-missing' : undefined}
-        >
-          {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {editing ? tc('save') : converting ? t('convertSubmit') : t('submit')}
-        </Button>
-        {/* Last in the markup so it sits above the buttons on a phone, where
-            the footer stacks upwards; first on a wider screen. */}
-        {tried && missing && (
-          <p
-            id="booking-missing"
-            role="alert"
-            className="text-sm text-destructive sm:order-first sm:mr-auto sm:self-center"
+        </DialogBody>
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
+            {tc('cancel')}
+          </Button>
+          <Button
+            data-save-shortcut
+            type="submit"
+            disabled={saving}
+            // On the press, not only on submit: a field the browser itself
+            // refuses (an emptied time, a fractional amount) never reaches the
+            // form's submit, and the press must still say what is missing.
+            onClick={() => {
+              if (!ready) setTried(true)
+            }}
+            aria-describedby={tried && missing ? 'booking-missing' : undefined}
           >
-            {missing}
-          </p>
-        )}
-      </DialogFooter>
-    </form>
+            {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {editing ? tc('save') : converting ? t('convertSubmit') : t('submit')}
+          </Button>
+          {/* Last in the markup so it sits above the buttons on a phone, where
+            the footer stacks upwards; first on a wider screen. */}
+          {tried && missing && (
+            <p
+              id="booking-missing"
+              role="alert"
+              className="text-sm text-destructive sm:order-first sm:mr-auto sm:self-center"
+            >
+              {missing}
+            </p>
+          )}
+        </DialogFooter>
+      </form>
+
+      {/* Outside the booking's own form: a submit inside these would otherwise
+        rise through React to it and try to save the booking. */}
+      <CustomerForm
+        open={newCustomer !== null}
+        onOpenChange={(next) => {
+          if (!next) setNewCustomer(null)
+        }}
+        defaults={newCustomer ? { name: newCustomer } : undefined}
+        onCreated={(created) => {
+          setCustomerId(created.id)
+          setCustomerInitial(created)
+          // A car belonging to someone else no longer fits.
+          if (vehicleId && vehicleCustomerId !== created.id) {
+            setVehicleId('')
+            setVehicleInitial(null)
+            setVehicleCustomerId(null)
+          }
+        }}
+      />
+      <VehicleForm
+        open={newVehicle !== null}
+        onOpenChange={(next) => {
+          if (!next) setNewVehicle(null)
+        }}
+        defaultCustomerId={customerId || undefined}
+        defaultCustomer={customerInitial}
+        initialPlate={newVehicle ?? ''}
+        onCreated={(created) => {
+          setVehicleId(created.id)
+          setVehicleInitial(created)
+          setVehicleCustomerId(created.customerId)
+          // The owner chosen or added inside the vehicle form is the booking's too.
+          if (created.customer) {
+            setCustomerId(created.customer.id)
+            setCustomerInitial({ ...created.customer, company: null })
+          }
+        }}
+      />
+    </>
+  )
+}
+
+/** The last line of a picker's list: add who the search did not find. */
+function AddFromSearch({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <div className="border-t p-1">
+      <button
+        type="button"
+        className="flex w-full cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-left text-sm hover:bg-accent"
+        onClick={onClick}
+      >
+        <Plus className="h-4 w-4 shrink-0" />
+        <span className="truncate">{label}</span>
+      </button>
+    </div>
   )
 }
 

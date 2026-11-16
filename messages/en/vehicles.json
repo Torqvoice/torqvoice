@@ -457,7 +457,9 @@
     "deleteVehicle": "Delete vehicle",
     "deleteVehicleMarine": "Delete boat",
     "editMileage": "Change mileage",
-    "editMileageMarine": "Change engine hours"
+    "editMileageMarine": "Change engine hours",
+    "bookAppointment": "Book appointment",
+    "addTitleMarine": "Add New Vessel"
   },
   "archiveDialog": {
     "title": "Archive Vehicle",
@@ -615,7 +617,9 @@
     "dueSoon": "Due soon",
     "emptyTitle": "Look up any plate",
     "emptyBody": "See the vehicle, who owns it here, and what {source} has on file. Not yours yet? Add it in one step.",
-    "registryWord": "the registry"
+    "registryWord": "the registry",
+    "bookAppointment": "Book appointment",
+    "newWorkOrder": "New work order"
   },
   "safety": {
     "title": "Safety and known issues",

@@ -457,7 +457,9 @@
     "deleteVehicle": "Fahrzeug löschen",
     "deleteVehicleMarine": "Boot löschen",
     "editMileage": "Kilometerstand ändern",
-    "editMileageMarine": "Betriebsstunden ändern"
+    "editMileageMarine": "Betriebsstunden ändern",
+    "bookAppointment": "Termin buchen",
+    "addTitleMarine": "Neues Wasserfahrzeug hinzufügen"
   },
   "archiveDialog": {
     "title": "Fahrzeug archivieren",
@@ -615,7 +617,9 @@
     "dueSoon": "Bald fällig",
     "emptyTitle": "Beliebiges Kennzeichen abfragen",
     "emptyBody": "Sehen Sie das Fahrzeug, wem es hier gehört und was {source} dazu führt. Noch nicht Ihres? In einem Schritt hinzufügen.",
-    "registryWord": "das Register"
+    "registryWord": "das Register",
+    "bookAppointment": "Termin buchen",
+    "newWorkOrder": "Neuer Arbeitsauftrag"
   },
   "safety": {
     "title": "Sicherheit und bekannte Probleme",
