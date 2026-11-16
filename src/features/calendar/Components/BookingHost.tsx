@@ -2,19 +2,31 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { BOOKING_EVENT, type BookingStart, useBookingAccess } from '@/components/booking-launcher'
+import {
+  BOOKING_EVENT,
+  BOOKING_SAVED_EVENT,
+  type BookingStart,
+  useBookingAccess,
+} from '@/components/booking-launcher'
 import { useDateSettings } from '@/components/date-settings-context'
 import { zonedDayKey } from '@/lib/timezone'
 import { BookingDialog } from './BookingDialog'
 
-/** The next full hour on the workshop's clock: a booking made now is for later. */
-function nextHour(timeZone: string): string {
+/**
+ * The next full hour on the workshop's clock, and the day it falls on: a
+ * booking made now is for later, and one made after 23:00 is for tomorrow.
+ */
+function nextHour(timeZone: string): { date: string; time: string } {
+  const inAnHour = new Date(Date.now() + 60 * 60 * 1000)
   const hour = Number(
     new Intl.DateTimeFormat('en-GB', { hour: '2-digit', hourCycle: 'h23', timeZone }).format(
-      new Date()
+      inAnHour
     )
   )
-  return `${String(Math.min(hour + 1, 23)).padStart(2, '0')}:00`
+  return {
+    date: zonedDayKey(inAnHour, timeZone),
+    time: `${String(hour).padStart(2, '0')}:00`,
+  }
 }
 
 /**
@@ -40,8 +52,9 @@ export function BookingHost() {
     const onEvent = (e: Event) => {
       setStart((e as CustomEvent<BookingStart>).detail ?? null)
       // The workshop's day, not the browser's or the server's.
-      setToday(zonedDayKey(new Date(), timezone || 'UTC'))
-      setTime(nextHour(timezone || 'UTC'))
+      const next = nextHour(timezone || 'UTC')
+      setToday(next.date)
+      setTime(next.time)
       setOpening((n) => n + 1)
       setOpen(true)
     }
@@ -60,7 +73,11 @@ export function BookingHost() {
       defaultTime={time}
       start={start}
       calendarLink
-      onSaved={() => router.refresh()}
+      onSaved={() => {
+        router.refresh()
+        // The calendar keeps its own events and would not show this one.
+        document.dispatchEvent(new CustomEvent(BOOKING_SAVED_EVENT))
+      }}
     />
   )
 }

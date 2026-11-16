@@ -105,6 +105,7 @@ export function VehicleLookupButton({
             size={text ? 'default' : 'icon'}
             aria-label={label}
             data-lookup={by}
+            data-busy={busy || undefined}
             onClick={handleClick}
             disabled={busy || !available}
             className={text ? 'gap-1.5 px-3' : undefined}

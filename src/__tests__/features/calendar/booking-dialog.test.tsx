@@ -115,6 +115,7 @@ vi.mock('next/navigation', () => ({
 import { toast } from 'sonner'
 import { BookingDialog } from '@/features/calendar/Components/BookingDialog'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
+import { BookingAccessProvider } from '@/components/booking-launcher'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 const kari = { id: 'cust-1', name: 'Kari Nordmann', company: null }
@@ -167,25 +168,29 @@ function loadedBooking(partial: Partial<BookingForEdit> = {}): BookingForEdit {
 
 async function renderDialog(
   props: Partial<Parameters<typeof BookingDialog>[0]> = {},
-  access: { canCreate?: boolean } = {}
+  access: { canCreate?: boolean; canBook?: boolean; canAddCustomer?: boolean } = {}
 ) {
   const onSaved = vi.fn()
   const onOpenChange = vi.fn()
   render(
-    <PlateLookupProvider
-      value={{ available: false, canCreate: access.canCreate ?? true, registryName: null }}
+    <BookingAccessProvider
+      value={{ canBook: access.canBook ?? true, canAddCustomer: access.canAddCustomer ?? true }}
     >
-      <TooltipProvider>
-        <BookingDialog
-          open
-          onOpenChange={onOpenChange}
-          defaultDate="2026-11-16"
-          defaultTime="09:30"
-          onSaved={onSaved}
-          {...props}
-        />
-      </TooltipProvider>
-    </PlateLookupProvider>
+      <PlateLookupProvider
+        value={{ available: false, canCreate: access.canCreate ?? true, registryName: null }}
+      >
+        <TooltipProvider>
+          <BookingDialog
+            open
+            onOpenChange={onOpenChange}
+            defaultDate="2026-11-16"
+            defaultTime="09:30"
+            onSaved={onSaved}
+            {...props}
+          />
+        </TooltipProvider>
+      </PlateLookupProvider>
+    </BookingAccessProvider>
   )
   // What the workshop offers arrives after the dialog opens.
   await waitFor(() => expect(getBookingOptions).toHaveBeenCalled())
@@ -825,6 +830,84 @@ describe('someone not on file yet', () => {
     fireEvent.click(vehicleField())
     await screen.findByPlaceholderText('Search by plate, make or model')
     expect(screen.queryByRole('button', { name: /^New vehicle/ })).not.toBeInTheDocument()
+  })
+
+  it('offers no new customer to someone who may not add customers', async () => {
+    const { onSaved } = await renderDialog({}, { canAddCustomer: false })
+    chooseKind('Appointment')
+    fireEvent.change(titleField(), { target: { value: 'Call Kari' } })
+    expect(screen.queryByRole('button', { name: 'New customer' })).not.toBeInTheDocument()
+    // A new car is still theirs to add.
+    expect(screen.getByRole('button', { name: 'New vehicle' })).toBeInTheDocument()
+
+    fireEvent.click(customerField())
+    fireEvent.change(await screen.findByPlaceholderText('Search customers'), {
+      target: { value: 'Ola' },
+    })
+    await waitFor(() => expect(searchCustomers).toHaveBeenCalled())
+    await act(async () => undefined)
+    expect(screen.queryByRole('button', { name: /^New customer/ })).not.toBeInTheDocument()
+
+    // Someone already on file can still be booked.
+    fireEvent.change(screen.getByPlaceholderText('Search customers'), {
+      target: { value: '' },
+    })
+    fireEvent.click(await screen.findByRole('option', { name: 'Kari Nordmann' }))
+    expect(customerField()).toHaveTextContent('Kari Nordmann')
+    fireEvent.click(saveButton())
+    await waitFor(() => expect(onSaved).toHaveBeenCalled())
+    expect(createBooking).toHaveBeenCalledWith(expect.objectContaining({ customerId: 'cust-1' }))
+  })
+
+  it("adds a car to a booked job without a car only for the job's customer", async () => {
+    getBooking.mockResolvedValue({
+      success: true,
+      data: loadedBooking({
+        kind: 'workOrder',
+        id: 'job-1',
+        title: 'Brake job',
+        customer: kari,
+        vehicle: null,
+        locked: { who: false, work: false },
+      }),
+    })
+    await renderDialog({
+      edit: { mode: 'edit', event: calendarEvent({ id: 'job-1', type: 'service' }) },
+    })
+    expect(await screen.findByDisplayValue('Brake job')).toBeInTheDocument()
+    expect(customerField()).toBeDisabled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'New vehicle' }))
+    const form = await screen.findByRole('dialog', { name: 'Add New Vehicle' })
+    const owner = within(form).getByRole('combobox')
+    expect(owner).toBeDisabled()
+    expect(owner).toHaveTextContent('Kari Nordmann')
+  })
+
+  it('drops the customer when the car added for them is saved with no owner', async () => {
+    createVehicle.mockResolvedValue({
+      success: true,
+      data: { ...teslaOfKari, customerId: null },
+    })
+    const { onSaved } = await renderDialog()
+    chooseKind('Appointment')
+    fireEvent.change(titleField(), { target: { value: 'Tyre change' } })
+    await chooseCustomer()
+    expect(customerField()).toHaveTextContent('Kari Nordmann')
+
+    fireEvent.click(screen.getByRole('button', { name: 'New vehicle' }))
+    const form = await screen.findByRole('dialog', { name: 'Add New Vehicle' })
+    saveVehicleForm(form)
+
+    await waitFor(() => expect(vehicleField()).toHaveTextContent('2022 Tesla Model 3 (EL12345)'))
+    expect(customerField()).toHaveTextContent('Select customer')
+    expect(customerField()).not.toHaveTextContent('Kari Nordmann')
+
+    fireEvent.click(saveButton())
+    await waitFor(() => expect(onSaved).toHaveBeenCalled())
+    const sent = createBooking.mock.calls[0][0]
+    expect(sent.vehicleId).toBe('veh-9')
+    expect(sent.customerId).toBeUndefined()
   })
 
   it('offers neither on a booked job whose car has arrived', async () => {

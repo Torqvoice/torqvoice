@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/select'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useServiceType } from '@/components/service-type-context'
-import type { BookingStart } from '@/components/booking-launcher'
+import { type BookingStart, useBookingAccess } from '@/components/booking-launcher'
 import { usePlateLookupAccess } from '@/components/plate-lookup-context'
 import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { CustomerForm } from '@/features/customers/Components/CustomerForm'
@@ -225,6 +225,7 @@ function BookingForm({
   const isMarine = useServiceType() === 'marine'
   const go = useGuardedPush()
   const { canCreate: canAddVehicle } = usePlateLookupAccess()
+  const { canAddCustomer } = useBookingAccess()
 
   // What is being changed: nothing (a new booking), an appointment, a job.
   const editing = edit?.mode === 'edit' ? edit.event : null
@@ -492,6 +493,7 @@ function BookingForm({
   // else, and comes back chosen. A customer on a booked job is fixed, and so
   // is a car that has arrived, so neither is offered then.
   const canPickCustomer = !(editing && sourceKind === 'workOrder')
+  const offerNewCustomer = canPickCustomer && canAddCustomer
   const offerNewVehicle = canAddVehicle && !lockedWho
   const vehicleWord = isMarine ? t('newVehicleMarine') : t('newVehicle')
 
@@ -622,7 +624,7 @@ function BookingForm({
                         }
                       }}
                       footer={
-                        canPickCustomer
+                        offerNewCustomer
                           ? (close, search) => (
                               <AddFromSearch
                                 label={
@@ -640,7 +642,7 @@ function BookingForm({
                       }
                     />
                   </div>
-                  {canPickCustomer && (
+                  {offerNewCustomer && (
                     <Button
                       type="button"
                       variant="outline"
@@ -900,6 +902,8 @@ function BookingForm({
         defaultCustomerId={customerId || undefined}
         defaultCustomer={customerInitial}
         initialPlate={newVehicle ?? ''}
+        // A booked job's customer is fixed, and its car must be theirs.
+        ownerLocked={!canPickCustomer && Boolean(customerId)}
         onCreated={(created) => {
           setVehicleId(created.id)
           setVehicleInitial(created)
@@ -908,6 +912,12 @@ function BookingForm({
           if (created.customer) {
             setCustomerId(created.customer.id)
             setCustomerInitial({ ...created.customer, company: null })
+          } else if (canPickCustomer) {
+            // Having no owner is the booking's too: a booking with a car is
+            // saved under the car's owner, so a customer left showing here
+            // would be lost without a word.
+            setCustomerId('')
+            setCustomerInitial(null)
           }
         }}
       />

@@ -121,7 +121,7 @@ function renderPalette(access: { canBook?: boolean } = {}) {
     <PlateLookupProvider
       value={{ available: true, canCreate: true, registryName: 'Statens vegvesen' }}
     >
-      <BookingAccessProvider value={{ canBook: access.canBook ?? true }}>
+      <BookingAccessProvider value={{ canBook: access.canBook ?? true, canAddCustomer: true }}>
         <TooltipProvider>
           <PlateLookupCommand />
         </TooltipProvider>

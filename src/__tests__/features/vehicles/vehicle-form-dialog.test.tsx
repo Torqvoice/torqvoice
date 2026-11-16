@@ -254,7 +254,7 @@ describe('adding a vehicle', () => {
   ) {
     const onOpenChange = vi.fn()
     render(
-      <BookingAccessProvider value={{ canBook }}>
+      <BookingAccessProvider value={{ canBook, canAddCustomer: true }}>
         <TooltipProvider>
           <VehicleForm open onOpenChange={onOpenChange} {...props} />
         </TooltipProvider>
@@ -342,13 +342,39 @@ describe('adding a vehicle', () => {
     expect(createVehicle).not.toHaveBeenCalled()
   })
 
+  it('does not save the form on a second Enter while the registry is still answering', async () => {
+    isVehicleLookupAvailable.mockResolvedValue({ success: true, data: { plate: true } })
+    // The registry never answers in this test.
+    lookupVehicle.mockReturnValue(new Promise(() => undefined))
+    renderNew()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Look up plate' })).toBeEnabled())
+    // Everything a save needs is filled in.
+    fireEvent.change(screen.getByLabelText('Make *'), { target: { value: 'Volvo' } })
+    fireEvent.change(screen.getByLabelText('Model *'), { target: { value: 'V70' } })
+    fireEvent.change(screen.getByLabelText('Year *'), { target: { value: '2015' } })
+    const plate = screen.getByLabelText('License Plate')
+    fireEvent.change(plate, { target: { value: 'AB12345' } })
+
+    expect(fireEvent.keyDown(plate, { key: 'Enter' })).toBe(false)
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Look up plate' })).toBeDisabled()
+    )
+    // The second Enter is taken by the lookup still running, not the form.
+    expect(fireEvent.keyDown(plate, { key: 'Enter' })).toBe(false)
+    await act(async () => undefined)
+
+    expect(lookupVehicle).toHaveBeenCalledTimes(1)
+    expect(createVehicle).not.toHaveBeenCalled()
+  })
+
   it('asks nothing on Enter without a registry', async () => {
     renderNew()
     await waitFor(() => expect(isVehicleLookupAvailable).toHaveBeenCalled())
     const plate = screen.getByLabelText('License Plate')
     expect(screen.getByRole('button', { name: 'Look up plate' })).toBeDisabled()
     fireEvent.change(plate, { target: { value: 'AB12345' } })
-    fireEvent.keyDown(plate, { key: 'Enter' })
+    // Enter is left to the form, as in any other field.
+    expect(fireEvent.keyDown(plate, { key: 'Enter' })).toBe(true)
     await act(async () => undefined)
     expect(lookupVehicle).not.toHaveBeenCalled()
     expect(createVehicle).not.toHaveBeenCalled()

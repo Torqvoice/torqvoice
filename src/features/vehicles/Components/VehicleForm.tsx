@@ -122,6 +122,11 @@ interface VehicleFormProps {
    * Without one, the form itself offers to book the new vehicle in.
    */
   onCreated?: (vehicle: BookingVehicle) => void
+  /**
+   * The owner is the one given and cannot be changed here: a vehicle added
+   * to a job that already has its customer has to belong to that customer.
+   */
+  ownerLocked?: boolean
 }
 
 export function VehicleForm({
@@ -135,6 +140,7 @@ export function VehicleForm({
   onDelete,
   distanceUnit,
   onCreated,
+  ownerLocked = false,
 }: VehicleFormProps) {
   const { canBook } = useBookingAccess()
   const serviceType = useServiceType()
@@ -776,6 +782,7 @@ export function VehicleForm({
                     </Label>
                     <CustomerCombobox
                       showAvatar
+                      disabled={ownerLocked}
                       value={selectedCustomerId === 'none' ? '' : selectedCustomerId}
                       initialCustomer={selectedCustomer}
                       // A customer given by id alone is named once the lookup below answers
@@ -973,9 +980,13 @@ export function VehicleForm({
                         onKeyDown={(e) => {
                           if (e.key !== 'Enter') return
                           const lookup = formRef.current?.querySelector<HTMLButtonElement>(
-                            'button[data-lookup="plate"]:not(:disabled)'
+                            'button[data-lookup="plate"]'
                           )
-                          if (!lookup) return
+                          // No registry: Enter is the form's own.
+                          if (!lookup || (lookup.disabled && !lookup.dataset.busy)) return
+                          // A second Enter while the registry is still
+                          // answering must not save the form under it; a
+                          // click on the busy button does nothing.
                           e.preventDefault()
                           lookup.click()
                         }}

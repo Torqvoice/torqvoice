@@ -140,6 +140,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   let canCreateVehicles = true
   /** Whether a vehicle found or added anywhere may be booked in from there. */
   let canBook = true
+  /** Whether a booking may offer to add the customer it is for. */
+  let canAddCustomer = true
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
@@ -161,6 +163,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       visibleSubjects = []
       canCreateVehicles = false
       canBook = false
+      canAddCustomer = false
       hasAnyAccess = false
     } else {
       const userPermissions = membership?.customRole?.permissions ?? []
@@ -177,6 +180,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
       canBook = hasPermission(userPermissions, {
         action: PermissionAction.CREATE,
         subject: PermissionSubject.SERVICES,
+      })
+      canAddCustomer = hasPermission(userPermissions, {
+        action: PermissionAction.CREATE,
+        subject: PermissionSubject.CUSTOMERS,
       })
       // A role that grants nothing readable. Every page behind the nav would
       // answer "Your role does not allow this", so say it once instead.
@@ -421,7 +428,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         currencyFormat={data.currencyFormat}
                       >
                         <ConfirmProvider>
-                          <BookingAccessProvider value={{ canBook }}>
+                          <BookingAccessProvider value={{ canBook, canAddCustomer }}>
                             <PlateLookupProvider
                               value={{
                                 available: plateLookupAvailable,

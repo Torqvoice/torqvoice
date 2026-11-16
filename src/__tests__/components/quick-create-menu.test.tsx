@@ -52,7 +52,7 @@ import { QuickCreateMenu } from '@/components/quick-create-menu'
 
 function openMenu(canBook: boolean) {
   render(
-    <BookingAccessProvider value={{ canBook }}>
+    <BookingAccessProvider value={{ canBook, canAddCustomer: true }}>
       <QuickCreateMenu />
     </BookingAccessProvider>
   )

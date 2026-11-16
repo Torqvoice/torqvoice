@@ -37,9 +37,11 @@ export interface BookingStart {
 export interface BookingAccess {
   /** The signed-in account may book: it can create work orders. */
   canBook: boolean
+  /** It may also add a customer, so a booking can offer to. */
+  canAddCustomer: boolean
 }
 
-const BookingAccessContext = createContext<BookingAccess>({ canBook: false })
+const BookingAccessContext = createContext<BookingAccess>({ canBook: false, canAddCustomer: false })
 
 /** Resolved once in the layout, like the plate lookup's access. */
 export function BookingAccessProvider({
@@ -58,6 +60,12 @@ export function useBookingAccess() {
 
 /** The event a "Book appointment" anywhere fires; the host in the layout listens for it. */
 export const BOOKING_EVENT = 'torqvoice:booking'
+
+/**
+ * Fired once a booking opened this way is saved. A screen that keeps its own
+ * list of what is booked, as the calendar does, reads it again on this.
+ */
+export const BOOKING_SAVED_EVENT = 'torqvoice:booking-saved'
 
 export function openBooking(start?: BookingStart) {
   document.dispatchEvent(new CustomEvent(BOOKING_EVENT, { detail: start ?? {} }))

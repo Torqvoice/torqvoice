@@ -68,7 +68,11 @@ vi.mock('@/features/customers/Actions/customerActions', () => ({
   getCustomerOption: vi.fn(async () => ({ success: true, data: null })),
 }))
 
-import { BookingAccessProvider, openBooking } from '@/components/booking-launcher'
+import {
+  BOOKING_SAVED_EVENT,
+  BookingAccessProvider,
+  openBooking,
+} from '@/components/booking-launcher'
 import { BookingHost } from '@/features/calendar/Components/BookingHost'
 
 const karisCar = {
@@ -83,7 +87,7 @@ const karisCar = {
 
 function renderHost(canBook = true) {
   render(
-    <BookingAccessProvider value={{ canBook }}>
+    <BookingAccessProvider value={{ canBook, canAddCustomer: true }}>
       <BookingHost />
     </BookingAccessProvider>
   )
@@ -93,6 +97,16 @@ function renderHost(canBook = true) {
 function fieldUnder(label: string) {
   const row = screen.getByText(label, { selector: 'p' }).parentElement as HTMLElement
   return within(row).getByRole('combobox')
+}
+
+/** Opens a booking for Kari's car from anywhere and books it as an appointment. */
+async function bookKarisCar() {
+  act(() => openBooking({ vehicle: karisCar }))
+  await screen.findByRole('dialog', { name: 'Book appointment' })
+  fireEvent.mouseDown(screen.getByRole('tab', { name: 'Appointment' }), { button: 0 })
+  fireEvent.change(screen.getByLabelText('Title'), { target: { value: 'Service' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Book appointment' }))
+  await waitFor(() => expect(createBooking).toHaveBeenCalledTimes(1))
 }
 
 beforeEach(() => {
@@ -148,6 +162,38 @@ describe('BookingHost', () => {
     expect(await screen.findByRole('dialog', { name: 'Book appointment' })).toBeInTheDocument()
     expect(fieldUnder('Vehicle')).toHaveTextContent('Select vehicle')
     expect(fieldUnder('Customer')).toHaveTextContent('Select customer')
+  })
+
+  it('starts at the next full hour on the workshop clock', async () => {
+    // 10:20 on the 17th in Auckland.
+    vi.setSystemTime(new Date('2026-11-16T21:20:00Z'))
+    renderHost()
+    await bookKarisCar()
+    expect(createBooking).toHaveBeenCalledWith(
+      expect.objectContaining({ startDate: '2026-11-17', startTime: '11:00' })
+    )
+  })
+
+  it('starts at midnight tomorrow when booked after the last hour of the day', async () => {
+    // 23:30 on the 17th in Auckland: the next hour is the 18th.
+    vi.setSystemTime(new Date('2026-11-17T10:30:00Z'))
+    renderHost()
+    await bookKarisCar()
+    expect(createBooking).toHaveBeenCalledWith(
+      expect.objectContaining({ startDate: '2026-11-18', startTime: '00:00' })
+    )
+  })
+
+  it('tells the screen underneath that a booking was saved', async () => {
+    const saved = vi.fn()
+    document.addEventListener(BOOKING_SAVED_EVENT, saved)
+    try {
+      renderHost()
+      await bookKarisCar()
+      await waitFor(() => expect(saved).toHaveBeenCalledTimes(1))
+    } finally {
+      document.removeEventListener(BOOKING_SAVED_EVENT, saved)
+    }
   })
 
   it('opens nothing for someone who may not book', async () => {
