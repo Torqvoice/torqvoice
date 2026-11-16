@@ -1413,6 +1413,7 @@
     "pickAnother": "Escolher outro",
     "problems": {
       "reserved": "{keys} pertence ao navegador ou ao sistema e não pode ser utilizado.",
+      "taken": "{keys} está fixo noutro atalho e não pode ser movido.",
       "needsModifier": "Este atalho funciona em todas as páginas, por isso precisa de {mod} ou {alt} em conjunto com a tecla.",
       "invalid": "Essa tecla não pode ser utilizada."
     },

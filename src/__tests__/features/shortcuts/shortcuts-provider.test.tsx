@@ -287,6 +287,13 @@ describe('keyboard shortcuts in the app', () => {
       '/settings/shortcuts'
     )
   })
+  it('offers no way to the settings page to someone who is turned away from it', async () => {
+    render(<App commands={{ visibleSubjects: ['work_orders'] }} />)
+    press({ key: '/', ctrlKey: true })
+    const dialog = await screen.findByRole('dialog', { name: 'Keyboard shortcuts' })
+    expect(within(dialog).getByText('New work order')).toBeInTheDocument()
+    expect(within(dialog).queryByRole('link', { name: 'Change shortcuts' })).toBeNull()
+  })
 })
 
 describe('the Keyboard shortcuts settings page', () => {
@@ -446,6 +453,38 @@ describe('the Keyboard shortcuts settings page', () => {
       )
     )
     expect(screen.getByRole('switch', { name: 'Shortcut for New part' })).toBeChecked()
+  })
+
+  it('refuses the key that starts the go-to set, and a key fixed to another shortcut', () => {
+    render(
+      <App>
+        <ShortcutsSettings />
+      </App>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Change the shortcut for New quote' }))
+    fireEvent.keyDown(screen.getByRole('button', { name: /Recording/ }), { key: 'g', altKey: true })
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Alt+G is fixed to another shortcut and cannot be moved.'
+    )
+    expect(screen.queryByRole('button', { name: 'Use it here' })).toBeNull()
+    expect(save).not.toHaveBeenCalled()
+  })
+
+  it('keeps a later choice when an earlier save fails behind it', async () => {
+    save.mockResolvedValueOnce({ success: false, data: null })
+    render(
+      <App>
+        <ShortcutsSettings />
+      </App>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Change the shortcut for New quote' }))
+    fireEvent.keyDown(screen.getByRole('button', { name: /Recording/ }), { key: 'z', altKey: true })
+    // Before the first save has answered.
+    fireEvent.click(screen.getByRole('switch', { name: 'Single-letter keys' }))
+    await waitFor(() => expect(save).toHaveBeenCalledTimes(2))
+    await pause(20)
+    expect(screen.getByRole('switch', { name: 'Single-letter keys' })).not.toBeChecked()
+    expect(row('New quote')).toHaveTextContent('AltZ')
   })
 
   it('puts the old key back when saving fails', async () => {

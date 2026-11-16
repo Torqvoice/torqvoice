@@ -1413,6 +1413,7 @@
     "pickAnother": "Andere kiezen",
     "problems": {
       "reserved": "{keys} is van de browser of het systeem en kan niet worden gebruikt.",
+      "taken": "{keys} ligt vast voor een andere sneltoets en kan niet worden verplaatst.",
       "needsModifier": "Deze sneltoets werkt op elke pagina en heeft daarom {mod} of {alt} samen met de toets nodig.",
       "invalid": "Die toets kan niet worden gebruikt."
     },

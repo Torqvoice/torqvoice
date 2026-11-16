@@ -1413,6 +1413,7 @@
     "pickAnother": "Scegline un altro",
     "problems": {
       "reserved": "{keys} è riservato al browser o al sistema e non può essere usato.",
+      "taken": "{keys} è riservato a un'altra scorciatoia e non può essere spostato.",
       "needsModifier": "Questa scorciatoia funziona in ogni pagina, quindi richiede {mod} o {alt} insieme al tasto.",
       "invalid": "Questo tasto non può essere usato."
     },

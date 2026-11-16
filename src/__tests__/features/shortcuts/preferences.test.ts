@@ -340,6 +340,16 @@ describe('changing a key', () => {
     expect(comboProblem(def('calendar.week'), 'v')).toBeNull()
     expect(comboProblem(def('create.workOrder'), 'alt+n')).toBeNull()
   })
+
+  it('refuses the first press of the go-to set, which would leave every page key dead', () => {
+    expect(comboProblem(def('create.quote'), 'alt+g')).toBe('taken')
+    expect(normalizeShortcutPrefs({ overrides: { 'create.quote': 'alt+g' } }).overrides).toEqual({})
+  })
+
+  it('refuses a key that is fixed to another shortcut and cannot be taken from it', () => {
+    expect(comboProblem(def('calendar.previous'), 'arrowright')).toBe('taken')
+    expect(comboProblem(def('calendar.next'), 'arrowright')).toBeNull()
+  })
 })
 
 describe('reading stored preferences', () => {

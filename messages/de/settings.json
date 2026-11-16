@@ -1413,6 +1413,7 @@
     "pickAnother": "Andere wählen",
     "problems": {
       "reserved": "{keys} ist vom Browser oder System belegt und kann nicht verwendet werden.",
+      "taken": "{keys} ist fest einem anderen Kürzel zugewiesen und kann nicht verschoben werden.",
       "needsModifier": "Dieses Tastenkürzel gilt auf jeder Seite und braucht deshalb {mod} oder {alt} zusammen mit der Taste.",
       "invalid": "Diese Taste kann nicht verwendet werden."
     },

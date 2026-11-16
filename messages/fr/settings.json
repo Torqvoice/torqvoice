@@ -1413,6 +1413,7 @@
     "pickAnother": "En choisir un autre",
     "problems": {
       "reserved": "{keys} est réservé au navigateur ou au système et ne peut pas être utilisé.",
+      "taken": "{keys} est réservé à un autre raccourci et ne peut pas être déplacé.",
       "needsModifier": "Ce raccourci fonctionne sur toutes les pages, il doit donc combiner {mod} ou {alt} avec la touche.",
       "invalid": "Cette touche ne peut pas être utilisée."
     },

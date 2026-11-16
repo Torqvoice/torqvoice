@@ -1413,6 +1413,7 @@
     "pickAnother": "Pasirinkti kitą",
     "problems": {
       "reserved": "{keys} naudoja naršyklė arba sistema, todėl jo priskirti negalima.",
+      "taken": "{keys} yra pastoviai priskirtas kitam sparčiajam klavišui ir jo perkelti negalima.",
       "needsModifier": "Šis spartusis klavišas veikia visuose puslapiuose, todėl kartu su klavišu reikia {mod} arba {alt}.",
       "invalid": "Šio klavišo naudoti negalima."
     },

@@ -1413,6 +1413,7 @@
     "pickAnother": "Pick another",
     "problems": {
       "reserved": "{keys} belongs to the browser or the system and cannot be used.",
+      "taken": "{keys} is fixed to another shortcut and cannot be moved.",
       "needsModifier": "This shortcut works on every page, so it needs {mod} or {alt} together with the key.",
       "invalid": "That key cannot be used."
     },

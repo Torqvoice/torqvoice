@@ -68,6 +68,8 @@ type ShortcutsContextValue = {
   updatePrefs: (next: ShortcutPrefs) => void
   /** This person may use it: their role, their plan and the modules that are on. */
   isVisible: (def: ShortcutDef) => boolean
+  /** The settings page is theirs to open: it sits behind the settings gate. */
+  canCustomize: boolean
   register: (id: string, handler: Handler) => () => void
   openHelp: () => void
   /** While the settings page records a key, nothing else answers the keyboard. */
@@ -84,6 +86,7 @@ const ShortcutsContext = createContext<ShortcutsContextValue>({
   platform: 'other',
   updatePrefs: noop,
   isVisible: () => true,
+  canCustomize: false,
   register: () => noop,
   openHelp: noop,
   setRecording: noop,
@@ -147,6 +150,8 @@ export function ShortcutsProvider({
     [visibleCommands, commands, plateLookupAvailable]
   )
 
+  const canCustomize = canAccessSubject(commands, 'settings')
+
   const register = useCallback((id: string, handler: Handler) => {
     const list = handlers.current.get(id) ?? []
     handlers.current.set(id, [...list, handler])
@@ -158,19 +163,24 @@ export function ShortcutsProvider({
   }, [])
 
   // Saves run one after another, so a slow early one cannot land on top of a
-  // later choice.
+  // later choice. A save that fails goes back to what the server last took,
+  // and only when nothing newer is waiting: a later choice that is still on
+  // its way stays on screen and settles itself.
   const saving = useRef<Promise<unknown>>(Promise.resolve())
+  const saved = useRef(prefs)
+  const latestSave = useRef(0)
   const updatePrefs = useCallback(
     (next: ShortcutPrefs) => {
-      const previous = prefsRef.current
+      const ticket = ++latestSave.current
       setPrefs(next)
       saving.current = saving.current
         .then(() => saveKeyboardShortcuts(next))
         .then((result) => {
           if (!result.success) throw new Error(result.error)
+          saved.current = next
         })
         .catch(() => {
-          setPrefs(previous)
+          if (ticket === latestSave.current) setPrefs(saved.current)
           toast.error(t('saveFailed'))
         })
     },
@@ -180,9 +190,10 @@ export function ShortcutsProvider({
 
   useEffect(() => {
     // Opening a page goes through a click on a real link, not straight to
-    // the router. The work order and quote pages hold an unsaved job back by
-    // catching link clicks (save first, then let the click through), and a
-    // shortcut must be held back the same way a click on the sidebar is.
+    // the router. The work order page holds an unsaved job back by catching
+    // link clicks (save first, then let the click through), and a shortcut
+    // must be held back the same way a click on the sidebar is. A page with
+    // no such guard treats the shortcut exactly as it treats that click.
     const link = document.createElement('a')
     link.hidden = true
     link.tabIndex = -1
@@ -308,6 +319,7 @@ export function ShortcutsProvider({
       platform,
       updatePrefs,
       isVisible,
+      canCustomize,
       register,
       openHelp,
       setRecording: (on) => {
@@ -315,7 +327,7 @@ export function ShortcutsProvider({
       },
       isRecording: () => recording.current,
     }),
-    [prefs, platform, updatePrefs, isVisible, register, openHelp]
+    [prefs, platform, updatePrefs, isVisible, canCustomize, register, openHelp]
   )
 
   return (

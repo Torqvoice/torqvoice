@@ -35,7 +35,7 @@ export function ShortcutsHelpDialog({
   onOpenChange: (open: boolean) => void
 }) {
   const t = useTranslations('settings.shortcuts')
-  const { prefs, isVisible } = useShortcuts()
+  const { prefs, isVisible, canCustomize } = useShortcuts()
   const labelOf = useShortcutLabel()
   const [query, setQuery] = useState('')
 
@@ -140,13 +140,17 @@ export function ShortcutsHelpDialog({
             </div>
           )}
         </DialogBody>
-        <DialogFooter>
-          <Button asChild variant="outline">
-            <Link href="/settings/shortcuts" onClick={() => onOpenChange(false)}>
-              {t('help.customize')}
-            </Link>
-          </Button>
-        </DialogFooter>
+        {/* A custom role without settings access is turned away from every
+            settings page, this one included, so the link would lead nowhere. */}
+        {canCustomize && (
+          <DialogFooter>
+            <Button asChild variant="outline">
+              <Link href="/settings/shortcuts" onClick={() => onOpenChange(false)}>
+                {t('help.customize')}
+              </Link>
+            </Button>
+          </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   )

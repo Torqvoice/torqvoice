@@ -1413,6 +1413,7 @@
     "pickAnother": "Velg en annen",
     "problems": {
       "reserved": "{keys} tilhører nettleseren eller systemet og kan ikke brukes.",
+      "taken": "{keys} er låst til en annen snarvei og kan ikke flyttes.",
       "needsModifier": "Denne hurtigtasten virker på alle sider, så den trenger {mod} eller {alt} sammen med tasten.",
       "invalid": "Den tasten kan ikke brukes."
     },

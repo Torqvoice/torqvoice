@@ -27,12 +27,27 @@ export const DEFAULT_SHORTCUT_PREFS: ShortcutPrefs = {
   disabled: [],
 }
 
-export type ComboProblem = 'invalid' | 'reserved' | 'needsModifier'
+export type ComboProblem = 'invalid' | 'reserved' | 'taken' | 'needsModifier'
+
+/**
+ * Keys that cannot be handed over. A fixed key stays with its shortcut
+ * whatever is recorded elsewhere, and the first press of a sequence (Alt+G)
+ * given to something else would fire that instead and leave the whole go-to
+ * set unreachable.
+ */
+function isHeldForGood(def: ShortcutDef, combo: Combo): boolean {
+  return SHORTCUTS.some(
+    (other) =>
+      other.sequence?.startsWith(`${combo} `) ||
+      (other.id !== def.id && other.fixedKeys?.includes(combo))
+  )
+}
 
 /** Why a key cannot be given to this shortcut, or null when it can. */
 export function comboProblem(def: ShortcutDef, combo: Combo): ComboProblem | null {
   if (!parseCombo(combo)) return 'invalid'
   if (isReservedCombo(combo)) return 'reserved'
+  if (isHeldForGood(def, combo)) return 'taken'
   // A shortcut that works on every page would otherwise fire on a letter
   // meant for nothing in particular.
   if (def.scope === 'global' && !hasModifier(combo)) return 'needsModifier'

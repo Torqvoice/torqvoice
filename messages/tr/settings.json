@@ -1413,6 +1413,7 @@
     "pickAnother": "Başka seç",
     "problems": {
       "reserved": "{keys} tarayıcıya veya sisteme ait olduğu için kullanılamaz.",
+      "taken": "{keys} başka bir kısayola sabitlenmiş ve taşınamaz.",
       "needsModifier": "Bu kısayol her sayfada çalışır, bu yüzden tuşla birlikte {mod} veya {alt} gerekir.",
       "invalid": "Bu tuş kullanılamaz."
     },

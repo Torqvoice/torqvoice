@@ -1413,6 +1413,7 @@
     "pickAnother": "Wybierz inny",
     "problems": {
       "reserved": "{keys} należy do przeglądarki lub systemu i nie może zostać użyty.",
+      "taken": "{keys} jest na stałe przypisany do innego skrótu i nie można go przenieść.",
       "needsModifier": "Ten skrót działa na każdej stronie, więc wymaga {mod} lub {alt} razem z klawiszem.",
       "invalid": "Tego klawisza nie można użyć."
     },
