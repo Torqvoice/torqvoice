@@ -58,7 +58,12 @@
       "everyone": "Tutto il lavoro",
       "thisWeek": "Questa settimana"
     },
-    "dropNeedsLane": "Raggruppa la lavagna per tecnico o postazione prima di trascinarci un lavoro."
+    "dropNeedsLane": "Raggruppa la lavagna per tecnico o postazione prima di trascinarci un lavoro.",
+    "load": {
+      "over": "{amount} in più",
+      "spoken": "Pianificato: {booked} su {capacity}",
+      "spokenOver": "Pianificato: {booked} su {capacity}, eccedenza di {amount}"
+    }
   },
   "unassigned": {
     "title": "Lavori Non Assegnati ({count})",

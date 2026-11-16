@@ -7,6 +7,7 @@
  * directly and reused by any view that draws jobs against a clock.
  */
 
+import type { MinuteSpan } from '@/features/workshop-calendar/Lib/boardDays'
 import type { WorkBoardJob } from '../Actions/boardActions'
 import { getJobDateRange } from './datetime'
 
@@ -217,26 +218,122 @@ export function snapToStep(mins: number, step: number, window: TimeWindow): numb
   return Math.max(window.startMins, Math.min(window.endMins, snapped))
 }
 
+/** What is known about one lane's working day, for counting the work on it. */
+export type DayHours = {
+  /**
+   * The parts of the day the workshop is closed, in minutes from midnight, its
+   * usual closed hours included. Leave out when the opening hours are not
+   * known (the workshop calendar has not loaded).
+   */
+  closedSpans?: MinuteSpan[]
+  /** The parts of the day the lane's technician is away. */
+  awaySpans?: MinuteSpan[]
+  /** The lane's daily capacity in minutes; 0 or missing when it has none. */
+  capacityMinutes?: number
+}
+
+/** The minutes of `from`-`to` left once every span is taken out of it. */
+function minutesOutside(from: number, to: number, spans: MinuteSpan[]): number {
+  let pieces: MinuteSpan[] = to > from ? [{ startMins: from, endMins: to }] : []
+  for (const cut of spans) {
+    const next: MinuteSpan[] = []
+    for (const piece of pieces) {
+      if (cut.endMins <= piece.startMins || cut.startMins >= piece.endMins) {
+        next.push(piece)
+        continue
+      }
+      if (cut.startMins > piece.startMins)
+        next.push({ startMins: piece.startMins, endMins: cut.startMins })
+      if (cut.endMins < piece.endMins) next.push({ startMins: cut.endMins, endMins: piece.endMins })
+    }
+    pieces = next
+  }
+  return pieces.reduce((sum, piece) => sum + piece.endMins - piece.startMins, 0)
+}
+
 /**
- * Minutes of work a lane carries on one day.
+ * Minutes of work a lane carries on one day: the one figure every view of a
+ * day shows (the card grid, the timeline's lane header and its tooltip), so
+ * two views of the same day cannot disagree.
  *
- * Clamped to the calendar day rather than to the visible hours: a job that runs
- * past closing time is still work someone has to do, and the utilisation figure
- * is the one number that tells a planner whether the day is full.
+ * A job that starts and ends on the day counts every minute of it, the part
+ * outside opening hours included: a job that runs past closing time is still
+ * work someone has to do, and the utilisation figure is the one number that
+ * tells a planner whether the day is full.
+ *
+ * A job that runs over more than one day cannot be counted that way. Clipped
+ * to the calendar day it is 24 hours on every day it passes through, and
+ * counted whole it is its entire length on each of them (a seven week
+ * restoration once read "1117h / 8h" on a wall screen). Nobody works on it
+ * through the night, so on each day it touches it counts only the part of it
+ * inside the working day:
+ *
+ * - the workshop's opening hours that day, less any closure, when `hours`
+ *   brings them. A closed day adds nothing.
+ * - less the time the lane's technician is away.
+ * - and never more than the lane's daily capacity, which is also the limit
+ *   when the opening hours are not known: one job cannot take more of a
+ *   person's day than their day.
+ *
+ * So a job passing through an ordinary day fills that day once, and three of
+ * them read as three days' work booked into one.
+ *
+ * Who a job counts for is not decided here: the caller passes the lane's
+ * jobs, and a job shared with helpers is in each of their lanes.
  */
-export function bookedMinutesOnDay(jobs: WorkBoardJob[], dateStr: string): number {
+export function bookedMinutesOnDay(
+  jobs: WorkBoardJob[],
+  dateStr: string,
+  hours: DayHours = {}
+): number {
   const dayStart = dayStartDate(dateStr)
   const dayEnd = new Date(dayStart)
   dayEnd.setDate(dayEnd.getDate() + 1)
+  const capacity = hours.capacityMinutes ?? 0
+  const notWorked = [...(hours.closedSpans ?? []), ...(hours.awaySpans ?? [])]
 
   let total = 0
   for (const job of jobs) {
     const { start, end } = getJobDateRange(job)
     if (!start || !end) continue
     if (!(start < dayEnd && end > dayStart)) continue
-    const from = start < dayStart ? dayStart : start
-    const to = end > dayEnd ? dayEnd : end
-    total += Math.max(0, Math.round((to.getTime() - from.getTime()) / 60000))
+
+    if (start >= dayStart && end <= dayEnd) {
+      total += Math.max(0, Math.round((end.getTime() - start.getTime()) / 60000))
+      continue
+    }
+
+    // Clock minutes, not time elapsed: the spans it is measured against are
+    // minutes on the day's clock.
+    const from = start <= dayStart ? 0 : minutesOfDay(start)
+    const to = end >= dayEnd ? MINUTES_IN_DAY : minutesOfDay(end)
+    const worked = minutesOutside(from, to, notWorked)
+    total += capacity > 0 ? Math.min(worked, capacity) : worked
   }
   return total
+}
+
+/** A day's booked minutes read against its capacity. */
+export type DayLoad = {
+  bookedMinutes: number
+  capacityMinutes: number
+  /** Booked as a share of capacity; 0 for a lane with no capacity. */
+  pct: number
+  /** How far past capacity the day is; 0 when it is not, or has no capacity. */
+  overMinutes: number
+}
+
+/**
+ * How full a day (or a week of days) is: the share that sizes and colours the
+ * bar and the minutes over capacity, worked out once so the card grid, the
+ * timeline and the lane tooltip cannot say different things about one day.
+ */
+export function dayLoad(bookedMinutes: number, capacityMinutes: number): DayLoad {
+  const hasCapacity = capacityMinutes > 0
+  return {
+    bookedMinutes,
+    capacityMinutes,
+    pct: hasCapacity ? (bookedMinutes / capacityMinutes) * 100 : 0,
+    overMinutes: hasCapacity ? Math.max(0, bookedMinutes - capacityMinutes) : 0,
+  }
 }

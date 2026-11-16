@@ -58,7 +58,12 @@
       "everyone": "Al het werk",
       "thisWeek": "Deze week"
     },
-    "dropNeedsLane": "Groepeer het bord op monteur of werkplek voordat je een klus erop sleept."
+    "dropNeedsLane": "Groepeer het bord op monteur of werkplek voordat je een klus erop sleept.",
+    "load": {
+      "over": "{amount} te veel",
+      "spoken": "Ingepland: {booked} van {capacity}",
+      "spokenOver": "Ingepland: {booked} van {capacity}, {amount} te veel"
+    }
   },
   "unassigned": {
     "title": "Niet-toegewezen taken ({count})",

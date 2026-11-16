@@ -58,7 +58,12 @@
       "everyone": "All work",
       "thisWeek": "This week"
     },
-    "dropNeedsLane": "Group the board by technician or work bay before dropping a job onto it."
+    "dropNeedsLane": "Group the board by technician or work bay before dropping a job onto it.",
+    "load": {
+      "over": "{amount} over",
+      "spoken": "{booked} booked of {capacity}",
+      "spokenOver": "{booked} booked of {capacity}, {amount} over"
+    }
   },
   "unassigned": {
     "title": "Unassigned Jobs ({count})",
