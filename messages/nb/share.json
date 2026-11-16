@@ -266,5 +266,15 @@
       "inspection": "Kontakt verkstedet for å få en ny lenke til denne inspeksjonen.",
       "statusReport": "Kontakt verkstedet for å få en ny lenke til denne oppdateringen."
     }
+  },
+  "gone": {
+    "pageTitle": "Lenken virker ikke",
+    "title": "Denne lenken virker ikke lenger",
+    "body": "Den kan ha blitt fjernet, eller adressen kan være ufullstendig. Kontakt {workshop} for å få en ny lenke.",
+    "bodyNoName": "Den kan ha blitt fjernet, eller adressen kan være ufullstendig. Kontakt verkstedet for å få en ny lenke."
+  },
+  "openUntil": {
+    "text": "Denne lenken virker til og med {date}. Etter det kan du be {workshop} om en ny.",
+    "textNoName": "Denne lenken virker til og med {date}. Etter det kan du be verkstedet om en ny."
   }
 }

@@ -266,5 +266,15 @@
       "inspection": "Neem contact op met de werkplaats voor een nieuwe link naar deze inspectie.",
       "statusReport": "Neem contact op met de werkplaats voor een nieuwe link naar deze update."
     }
+  },
+  "gone": {
+    "pageTitle": "Link werkt niet",
+    "title": "Deze link werkt niet meer",
+    "body": "Mogelijk is hij verwijderd, of is het adres onvolledig. Neem contact op met {workshop} voor een nieuwe link.",
+    "bodyNoName": "Mogelijk is hij verwijderd, of is het adres onvolledig. Neem contact op met de werkplaats voor een nieuwe link."
+  },
+  "openUntil": {
+    "text": "Deze link werkt tot en met {date}. Vraag daarna een nieuwe aan {workshop}.",
+    "textNoName": "Deze link werkt tot en met {date}. Vraag daarna een nieuwe aan de werkplaats."
   }
 }

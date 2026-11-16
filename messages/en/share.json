@@ -266,5 +266,15 @@
       "inspection": "Contact the workshop to get a new link to this inspection.",
       "statusReport": "Contact the workshop to get a new link to this update."
     }
+  },
+  "gone": {
+    "pageTitle": "Link not working",
+    "title": "This link no longer works",
+    "body": "It may have been removed, or the address may be incomplete. Contact {workshop} to get a new link.",
+    "bodyNoName": "It may have been removed, or the address may be incomplete. Contact the workshop to get a new link."
+  },
+  "openUntil": {
+    "text": "This link works until {date}. After that, ask {workshop} for a new one.",
+    "textNoName": "This link works until {date}. After that, ask the workshop for a new one."
   }
 }

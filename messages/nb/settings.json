@@ -3134,7 +3134,7 @@
     "saveFailed": "Kunne ikke lagre innstillingene for delte lenker. Prøv igjen.",
     "rules": {
       "title": "Utløp for lenker",
-      "description": "Hvor lenge en lenke du sender til en kunde virker. Etter det ser kunden en side som ber dem kontakte deg.",
+      "description": "Hvor lenge en lenke du sender til en kunde virker. Siden viser kunden siste dag; etter det ser kunden en side som ber dem kontakte deg.",
       "kind": {
         "invoice": "Fakturaer",
         "quote": "Tilbud",

@@ -266,5 +266,15 @@
       "inspection": "Susisiekite su dirbtuvėmis, kad gautumėte naują nuorodą į šią apžiūrą.",
       "statusReport": "Susisiekite su dirbtuvėmis, kad gautumėte naują nuorodą į šią naujieną."
     }
+  },
+  "gone": {
+    "pageTitle": "Nuoroda neveikia",
+    "title": "Ši nuoroda nebeveikia",
+    "body": "Galbūt ji buvo pašalinta arba adresas nepilnas. Susisiekite su {workshop}, kad gautumėte naują nuorodą.",
+    "bodyNoName": "Galbūt ji buvo pašalinta arba adresas nepilnas. Susisiekite su dirbtuvėmis, kad gautumėte naują nuorodą."
+  },
+  "openUntil": {
+    "text": "Ši nuoroda veikia iki {date} imtinai. Po to susisiekite su {workshop}, kad gautumėte naują.",
+    "textNoName": "Ši nuoroda veikia iki {date} imtinai. Po to susisiekite su dirbtuvėmis, kad gautumėte naują."
   }
 }

@@ -1,4 +1,4 @@
-import { addZonedDays } from '@/lib/timezone'
+import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
 
 /**
  * When a share link stops working.
@@ -167,6 +167,28 @@ export function shareExpiry(
 
 export function isShareExpired(expiry: ShareExpiry, now: Date = new Date()): boolean {
   return expiry.kind === 'date' && expiry.at.getTime() < now.getTime()
+}
+
+/**
+ * The last day a customer can be told the link works, or null when there is
+ * no such day to name: the link has no date, or the date has passed (a
+ * portal customer still reading their own document).
+ *
+ * A link that closes at the end of a workshop day works for the whole of
+ * that day. One that closes partway through a day (a status report lives 14
+ * days to the minute) is promised only up to the day before, unless that
+ * day is today.
+ */
+export function shareOpenUntilDay(
+  expiry: ShareExpiry,
+  timeZone: string,
+  now: Date = new Date()
+): Date | null {
+  if (expiry.kind !== 'date' || isShareExpired(expiry, now)) return null
+  const dayStart = startOfZonedDay(expiry.at, timeZone)
+  const endsTheDay = addZonedDays(expiry.at, 1, timeZone).getTime() - 1 === expiry.at.getTime()
+  if (endsTheDay || dayStart.getTime() <= now.getTime()) return expiry.at
+  return new Date(dayStart.getTime() - 1)
 }
 
 /**

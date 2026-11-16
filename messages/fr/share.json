@@ -266,5 +266,15 @@
       "inspection": "Contactez l'atelier pour obtenir un nouveau lien vers cette inspection.",
       "statusReport": "Contactez l'atelier pour obtenir un nouveau lien vers ce point d'avancement."
     }
+  },
+  "gone": {
+    "pageTitle": "Lien indisponible",
+    "title": "Ce lien ne fonctionne plus",
+    "body": "Il a peut-être été supprimé, ou l'adresse est incomplète. Contactez {workshop} pour obtenir un nouveau lien.",
+    "bodyNoName": "Il a peut-être été supprimé, ou l'adresse est incomplète. Contactez l'atelier pour obtenir un nouveau lien."
+  },
+  "openUntil": {
+    "text": "Ce lien est valable jusqu'au {date}. Ensuite, demandez-en un nouveau à {workshop}.",
+    "textNoName": "Ce lien est valable jusqu'au {date}. Ensuite, demandez-en un nouveau à l'atelier."
   }
 }

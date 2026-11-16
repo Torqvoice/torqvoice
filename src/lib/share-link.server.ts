@@ -1,4 +1,5 @@
 import 'server-only'
+import { cache } from 'react'
 import { getCustomerSession } from '@/lib/customer-session'
 import { db } from '@/lib/db'
 import {
@@ -17,6 +18,7 @@ import {
   type ShareKind,
   type ShareLinkFacts,
 } from '@/lib/share-expiry'
+import { resolvePortalOrg } from '@/lib/portal-slug'
 import { resolveWorkshopTimeZone } from '@/lib/timezone'
 
 /**
@@ -216,3 +218,39 @@ export async function findSharedDocumentOfAnyKind(
   }
   return null
 }
+
+/**
+ * What a share page finds at its address.
+ *
+ * - `unknownWorkshop`: nothing answers to the workshop part of the address.
+ * - `gone`: the workshop is real, the token opens nothing. A removed link, a
+ *   mistyped one and one that never existed are the same answer, so the page
+ *   confirms nothing about any token.
+ * - `expired`: the link is real and past its date.
+ * - `open`: the document, for the page to render.
+ */
+export type ShareLinkLookup<T> =
+  | { status: 'unknownWorkshop' }
+  | { status: 'gone'; organizationId: string }
+  | { status: 'expired'; organizationId: string }
+  | { status: 'open'; organizationId: string; shared: T }
+
+/**
+ * A share page's address, read once per request: the page and its tab title
+ * both ask, and get the same answer from one lookup.
+ */
+export const lookUpShareLink = cache(
+  async (
+    kind: ShareKind,
+    orgParam: string,
+    token: string
+  ): Promise<ShareLinkLookup<SharedDocument>> => {
+    // A slug (e.g. "egelandauto") or the organization's id.
+    const org = await resolvePortalOrg(orgParam)
+    if (!org) return { status: 'unknownWorkshop' }
+    const shared = await findSharedDocument(kind, token, org.id)
+    if (!shared) return { status: 'gone', organizationId: org.id }
+    if (!shared.open) return { status: 'expired', organizationId: org.id }
+    return { status: 'open', organizationId: org.id, shared }
+  }
+)

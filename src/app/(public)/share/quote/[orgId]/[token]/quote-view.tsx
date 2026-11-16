@@ -173,6 +173,7 @@ export function QuoteView({
   certificateUrl,
   logoUrl,
   showTorqvoiceBranding,
+  expiryNote,
   dateFormat,
   timezone,
   primaryColor = '#d97706',
@@ -198,6 +199,8 @@ export function QuoteView({
   certificateUrl?: string
   logoUrl?: string
   showTorqvoiceBranding?: boolean
+  /** The line saying when this link closes. Page chrome, never part of the sheet. */
+  expiryNote?: React.ReactNode
   dateFormat?: string
   timezone?: string
   primaryColor?: string
@@ -573,6 +576,7 @@ export function QuoteView({
           <p className="text-center text-xs text-gray-400">{shopName}</p>
         )}
       </div>
+      {expiryNote}
 
       {/* Image Carousel Modal */}
       {carouselIndex !== null && imageAttachments[carouselIndex] && (

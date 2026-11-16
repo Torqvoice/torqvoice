@@ -266,5 +266,15 @@
       "inspection": "Ponte en contacto con el taller para obtener un nuevo enlace a esta inspección.",
       "statusReport": "Ponte en contacto con el taller para obtener un nuevo enlace a esta actualización."
     }
+  },
+  "gone": {
+    "pageTitle": "El enlace no funciona",
+    "title": "Este enlace ya no funciona",
+    "body": "Puede que se haya eliminado o que la dirección esté incompleta. Ponte en contacto con {workshop} para obtener un nuevo enlace.",
+    "bodyNoName": "Puede que se haya eliminado o que la dirección esté incompleta. Ponte en contacto con el taller para obtener un nuevo enlace."
+  },
+  "openUntil": {
+    "text": "Este enlace funciona hasta el {date}. Después, pide uno nuevo a {workshop}.",
+    "textNoName": "Este enlace funciona hasta el {date}. Después, pide uno nuevo al taller."
   }
 }

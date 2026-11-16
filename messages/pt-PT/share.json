@@ -266,5 +266,15 @@
       "inspection": "Contacte a oficina para receber um novo link para esta inspeção.",
       "statusReport": "Contacte a oficina para receber um novo link para esta atualização."
     }
+  },
+  "gone": {
+    "pageTitle": "Link indisponível",
+    "title": "Este link já não funciona",
+    "body": "Pode ter sido removido ou o endereço pode estar incompleto. Contacte {workshop} para receber um novo link.",
+    "bodyNoName": "Pode ter sido removido ou o endereço pode estar incompleto. Contacte a oficina para receber um novo link."
+  },
+  "openUntil": {
+    "text": "Este link funciona até {date}. Depois disso, contacte {workshop} para receber um novo.",
+    "textNoName": "Este link funciona até {date}. Depois disso, contacte a oficina para receber um novo."
   }
 }

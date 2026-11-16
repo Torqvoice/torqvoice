@@ -109,6 +109,7 @@ export function InspectionView({
   logoUrl,
   primaryColor,
   showTorqvoiceBranding,
+  expiryNote,
   dateFormat,
   timezone,
   publicToken,
@@ -124,6 +125,8 @@ export function InspectionView({
   logoUrl: string
   primaryColor: string
   showTorqvoiceBranding: boolean
+  /** The line saying when this link closes. Page chrome, never part of the sheet. */
+  expiryNote?: React.ReactNode
   dateFormat?: string
   timezone?: string
   publicToken: string
@@ -727,6 +730,7 @@ export function InspectionView({
             </a>
           </p>
         )}
+        {expiryNote}
       </footer>
 
       <MediaLightbox

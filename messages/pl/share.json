@@ -266,5 +266,15 @@
       "inspection": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej inspekcji.",
       "statusReport": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej aktualizacji."
     }
+  },
+  "gone": {
+    "pageTitle": "Link nie działa",
+    "title": "Ten link już nie działa",
+    "body": "Mógł zostać usunięty albo adres jest niepełny. Skontaktuj się z {workshop}, aby otrzymać nowy link.",
+    "bodyNoName": "Mógł zostać usunięty albo adres jest niepełny. Skontaktuj się z warsztatem, aby otrzymać nowy link."
+  },
+  "openUntil": {
+    "text": "Ten link działa do {date} włącznie. Potem skontaktuj się z {workshop}, aby otrzymać nowy.",
+    "textNoName": "Ten link działa do {date} włącznie. Potem skontaktuj się z warsztatem, aby otrzymać nowy."
   }
 }

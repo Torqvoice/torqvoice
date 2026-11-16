@@ -3134,7 +3134,7 @@
     "saveFailed": "Nie udało się zapisać ustawień udostępnionych linków. Spróbuj ponownie.",
     "rules": {
       "title": "Wygasanie linków",
-      "description": "Jak długo działa link wysłany do klienta. Potem klient widzi stronę z prośbą o kontakt z Tobą.",
+      "description": "Jak długo działa link wysłany do klienta. Strona informuje klienta o ostatnim dniu; potem widzi on stronę z prośbą o kontakt z Tobą.",
       "kind": {
         "invoice": "Faktury",
         "quote": "Wyceny",

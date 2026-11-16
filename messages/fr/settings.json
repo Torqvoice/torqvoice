@@ -3134,7 +3134,7 @@
     "saveFailed": "Impossible d'enregistrer les réglages des liens de partage. Réessayez.",
     "rules": {
       "title": "Expiration des liens",
-      "description": "Combien de temps un lien envoyé à un client reste valable. Ensuite, le client voit une page qui l'invite à vous contacter.",
+      "description": "Combien de temps un lien envoyé à un client reste valable. La page indique au client le dernier jour. Ensuite, il voit une page qui l'invite à vous contacter.",
       "kind": {
         "invoice": "Factures",
         "quote": "Devis",

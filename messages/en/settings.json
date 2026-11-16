@@ -3134,7 +3134,7 @@
     "saveFailed": "Couldn't save the share link settings. Try again.",
     "rules": {
       "title": "Link expiry",
-      "description": "How long a link you send to a customer keeps working. After that the customer sees a page asking them to contact you.",
+      "description": "How long a link you send to a customer keeps working. The page tells the customer the last day; after that they see a page asking them to contact you.",
       "kind": {
         "invoice": "Invoices",
         "quote": "Quotes",

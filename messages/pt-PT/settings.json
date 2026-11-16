@@ -3134,7 +3134,7 @@
     "saveFailed": "Não foi possível guardar as definições de links partilhados. Tente novamente.",
     "rules": {
       "title": "Expiração de links",
-      "description": "Durante quanto tempo um link enviado a um cliente continua a funcionar. Depois disso, o cliente vê uma página a pedir que o contacte.",
+      "description": "Durante quanto tempo um link enviado a um cliente continua a funcionar. A página indica ao cliente o último dia; depois disso, vê uma página a pedir que o contacte.",
       "kind": {
         "invoice": "Faturas",
         "quote": "Orçamentos",
