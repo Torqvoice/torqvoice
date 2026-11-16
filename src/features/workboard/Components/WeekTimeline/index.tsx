@@ -457,6 +457,8 @@ export function WeekTimeline({
                     )
                     const load = dayLoad(booked, lane.dailyCapacity)
                     const away = awayByLaneDay?.[awayKey(lane.id, day)]
+                    const loadId =
+                      lane.dailyCapacity > 0 ? `lane-load-${day}-${lane.id}` : undefined
                     return (
                       <LaneHeaderTooltip
                         key={`lane-${day}-${lane.id}`}
@@ -473,6 +475,7 @@ export function WeekTimeline({
                           type="button"
                           disabled={lane.isPlaceholder || readOnly || !onLaneClick}
                           onClick={() => onLaneClick?.(lane)}
+                          aria-describedby={loadId}
                           className={cn(
                             'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
                             isLastLane ? 'border-r-2 border-r-border' : 'border-r'
@@ -496,7 +499,7 @@ export function WeekTimeline({
                           ) : (
                             lane.dailyCapacity > 0 && <DayLoadBar load={load} className="h-0.5" />
                           )}
-                          <DayLoadSpoken load={load} />
+                          <DayLoadSpoken load={load} id={loadId} />
                         </button>
                       </LaneHeaderTooltip>
                     )

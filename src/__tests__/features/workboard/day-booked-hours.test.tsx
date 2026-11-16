@@ -294,7 +294,8 @@ describe.each(['Pacific/Auckland', 'America/Los_Angeles'])('booked hours on a da
     const jobs = [restoration, engineRebuild, respray]
     expect(await timelineBooked(jobs, MON, calendar())).toBe('24h')
     expect(screen.getByRole('tooltip')).toHaveTextContent('Over by16h')
-    expect(screen.getByRole('button', { name: /^Ada/ })).toHaveTextContent(
+    // The lane's button keeps the lane's name; the load is what describes it.
+    expect(screen.getByRole('button', { name: 'Ada' })).toHaveAccessibleDescription(
       '24h booked of 8h, 16h over'
     )
   })

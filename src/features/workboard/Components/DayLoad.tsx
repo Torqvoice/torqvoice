@@ -29,14 +29,18 @@ export function DayLoadBar({ load, className }: { load: DayLoad; className?: str
  * The day's load as one statement for a screen reader: booked, capacity and,
  * past capacity, how much over. What is drawn beside it is hidden from one,
  * so the figure is heard once and whole.
+ *
+ * Inside a control, pass an `id` and point the control's `aria-describedby`
+ * at it: the statement is then the control's description and stays out of
+ * its name, so a lane's button is still called by the lane's name alone.
  */
-export function DayLoadSpoken({ load }: { load: DayLoad }) {
+export function DayLoadSpoken({ load, id }: { load: DayLoad; id?: string }) {
   const t = useTranslations('workBoard.board.load')
   if (load.capacityMinutes <= 0) return null
   const booked = formatDuration(load.bookedMinutes)
   const capacity = formatDuration(load.capacityMinutes)
   return (
-    <span className="sr-only">
+    <span className="sr-only" id={id} aria-hidden={id ? true : undefined}>
       {load.overMinutes > 0
         ? t('spokenOver', { booked, capacity, amount: formatDuration(load.overMinutes) })
         : t('spoken', { booked, capacity })}
