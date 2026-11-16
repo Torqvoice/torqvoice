@@ -83,6 +83,23 @@ describe('opening a page from a dialog, the palette or a shortcut over an unsave
     expect(result.current.blockedLeave).toBeNull()
   })
 
+  it('goes where the first attempt pointed when a second one is made while it waits', async () => {
+    const { result, el, go } = renderWorkOrder()
+    act(() => result.current.markDirty())
+    const revision = result.current.editRevisionRef.current
+    vi.spyOn(el, 'requestSubmit').mockImplementation(() => {
+      result.current.markSaved(revision)
+    })
+
+    act(() => go('/work-orders'))
+    act(() => go('/customers'))
+    await settle()
+
+    expect(push).toHaveBeenCalledOnce()
+    expect(push).toHaveBeenCalledWith('/work-orders')
+    expect(document.querySelectorAll('a[data-guarded-link]')).toHaveLength(0)
+  })
+
   it('stays when the save is refused, and goes only once the person chooses to', async () => {
     const { result, el, go } = renderWorkOrder()
     vi.spyOn(el, 'requestSubmit').mockImplementation(() => {

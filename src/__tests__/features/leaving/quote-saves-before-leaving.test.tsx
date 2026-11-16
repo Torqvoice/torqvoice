@@ -183,6 +183,23 @@ describe('leaving a quote with an edit the autosave has not taken yet', () => {
     expect(updateQuote.mock.calls[0][0]).toMatchObject({ title: 'Timing belt' })
   })
 
+  it('saves an edit made while an earlier save was still on its way', async () => {
+    const { sidebar, arrived } = renderPage()
+    const answerFirst = slowSave()
+    retitle('Brakes')
+    fireEvent.submit(screen.getByLabelText('Title').closest('form') as HTMLFormElement)
+    await waitFor(() => expect(updateQuote).toHaveBeenCalledOnce())
+
+    // The first save has left with "Brakes"; the title is changed again.
+    retitle('Brakes and discs')
+    fireEvent.click(sidebar)
+    await answerFirst({ success: true })
+
+    await waitFor(() => expect(arrived).toHaveBeenCalledOnce())
+    expect(updateQuote).toHaveBeenCalledTimes(2)
+    expect(updateQuote.mock.calls[1][0]).toMatchObject({ title: 'Brakes and discs' })
+  })
+
   it('holds the person on the page when the save fails, and says why', async () => {
     renderPage()
     updateQuote.mockResolvedValue({ success: false, error: 'The quote could not be reached' })

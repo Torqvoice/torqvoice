@@ -214,6 +214,12 @@ export function useQuoteFormState({
   // Read through a ref by code that awaits a save and must know its outcome.
   const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
   hasUnsavedChangesRef.current = hasUnsavedChanges
+  /**
+   * Counts edits. A save clears the unsaved mark only when no edit was made
+   * while it ran: the fields stay editable during a save, and an edit the
+   * save did not carry must still be saved before the page is left.
+   */
+  const editRevisionRef = useRef(0)
   /** Why the last save failed, for the dialog that holds a link back. */
   const lastSaveErrorRef = useRef<string | null>(null)
   /** True while a link waits on its save: a failure goes into that dialog. */
@@ -235,6 +241,7 @@ export function useQuoteFormState({
     // A locked quote cannot be saved, so nothing may queue an autosave that
     // the server will only refuse five seconds later.
     if (locked) return
+    editRevisionRef.current += 1
     hasUnsavedChangesRef.current = true
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
@@ -513,6 +520,7 @@ export function useQuoteFormState({
     setSaving(true)
     try {
       const formData = new FormData(form)
+      const revision = editRevisionRef.current
       const result = await updateQuote({
         id: quote.id,
         title: formData.get('title') as string,
@@ -540,7 +548,11 @@ export function useQuoteFormState({
         warrantyMileage: warranty.warrantyMileage ?? 0,
         warrantyNotes: warranty.warrantyNotes ?? '',
       })
-      if (result.success) {
+      if (result.success && editRevisionRef.current !== revision) {
+        // Edited while this save ran: still unsaved, and the autosave that
+        // edit queued (or a link waiting to leave) saves it next.
+        router.refresh()
+      } else if (result.success) {
         hasUnsavedChangesRef.current = false
         setHasUnsavedChanges(false)
         if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
