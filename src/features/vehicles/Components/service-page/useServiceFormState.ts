@@ -9,6 +9,7 @@ import {
 } from '@/lib/taxable-lines'
 import { normalizeWarranty, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
+import { useSaveBeforeLeaving } from '@/hooks/use-save-before-leaving'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
 import { addedLaborLines } from '@/features/vehicles/Lib/laborLines'
@@ -248,23 +249,13 @@ export function useServiceFormState({
   }
 
   /**
-   * Leaving the page by a link saves first.
-   *
-   * The autosave waits five seconds after the last edit, and the beforeunload
-   * warning only covers leaving the site: a title retyped and then the back
-   * arrow pressed within those seconds went nowhere, and in-app navigation
-   * raised no warning about it. So a click on any link to another page of
-   * the app is held until the pending save has run, and the same click is
-   * then let through. A save the rules refuse holds the link and asks: stay
-   * and fix it, or leave without the unsaved changes (blockedLeave below).
+   * Leaving the page by a link saves first (useSaveBeforeLeaving). A save the
+   * rules refuse, such as a required custom field left empty, holds the link
+   * and asks: stay and fix it, or leave without the unsaved changes.
    */
-  const saveNowRef = useRef(saveNow)
-  saveNowRef.current = saveNow
-  const releasedLink = useRef<HTMLAnchorElement | null>(null)
-
   /**
-   * Why the latest save was refused, in words, so the way out can say it.
-   * Set by the save itself; cleared when a link starts a new attempt.
+   * Why the last save was refused, written by the save itself. The link
+   * guard reads it once the save has settled, and shows it in the dialog.
    */
   const lastSaveErrorRef = useRef<string | null>(null)
   /**
@@ -272,88 +263,22 @@ export function useServiceFormState({
    * dialog rather than a toast or an error box on top of it.
    */
   const leavingRef = useRef(false)
-  /**
-   * The link a refused save held back, and why it was refused.
-   *
-   * Holding the link used to be the end of it: a required custom field left
-   * empty refused every save, so a note typed on the job could neither be
-   * saved nor left behind, and every link on the page answered with the same
-   * error. The person now chooses: stay and fix it, or leave without the
-   * changes made since the last save.
-   */
-  const [blockedLeave, setBlockedLeave] = useState<{
-    anchor: HTMLAnchorElement
-    reason: string | null
-  } | null>(null)
-
-  const stayOnPage = useCallback(() => setBlockedLeave(null), [])
-
-  const leaveWithoutSaving = useCallback(() => {
-    if (!blockedLeave) return
-    if (autosaveTimer.current) {
-      clearTimeout(autosaveTimer.current)
-      autosaveTimer.current = null
-    }
-    hasUnsavedChangesRef.current = false
-    setHasUnsavedChanges(false)
-    setBlockedLeave(null)
-    const { anchor } = blockedLeave
-    if (!anchor.isConnected) {
-      // A link inside a menu that has since closed: go by its address.
-      window.location.assign(anchor.href)
-      return
-    }
-    releasedLink.current = anchor
-    anchor.click()
-  }, [blockedLeave])
-
-  useEffect(() => {
-    if (!hasUnsavedChanges) return
-    const handler = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0) return
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-      const anchor = (event.target as Element | null)?.closest?.('a[href]')
-      if (!(anchor instanceof HTMLAnchorElement)) return
-      // The click this handler released after saving: let it through.
-      if (releasedLink.current === anchor) {
-        releasedLink.current = null
-        return
+  const { blockedLeave, stayOnPage, leaveWithoutSaving } = useSaveBeforeLeaving({
+    active: hasUnsavedChanges,
+    isDirty: () => hasUnsavedChangesRef.current,
+    isSaving: () => isSavingRef.current,
+    save: saveNow,
+    lastErrorRef: lastSaveErrorRef,
+    leavingRef,
+    discard: () => {
+      if (autosaveTimer.current) {
+        clearTimeout(autosaveTimer.current)
+        autosaveTimer.current = null
       }
-      if (anchor.target && anchor.target !== '_self') return
-      if (anchor.hasAttribute('download')) return
-      const destination = new URL(anchor.href, window.location.href)
-      if (destination.origin !== window.location.origin) return
-      const here = `${window.location.pathname}${window.location.search}`
-      if (`${destination.pathname}${destination.search}` === here) return
-
-      event.preventDefault()
-      event.stopPropagation()
-      // One way out at a time: a second link clicked while the first waits
-      // would start its own wait, and both would navigate once the save landed.
-      if (leavingRef.current) return
-      leavingRef.current = true
-      lastSaveErrorRef.current = null
-      // An autosave already under way answers first; a second save would be
-      // turned away while it runs and read as a refusal.
-      const settled = new Promise<void>((resolve) => {
-        const check = () => (isSavingRef.current ? setTimeout(check, 50) : resolve())
-        check()
-      })
-      void settled
-        .then(() => (hasUnsavedChangesRef.current ? saveNowRef.current() : undefined))
-        .then(() => {
-          leavingRef.current = false
-          if (hasUnsavedChangesRef.current) {
-            setBlockedLeave({ anchor, reason: lastSaveErrorRef.current })
-            return
-          }
-          releasedLink.current = anchor
-          anchor.click()
-        })
-    }
-    document.addEventListener('click', handler, true)
-    return () => document.removeEventListener('click', handler, true)
-  }, [hasUnsavedChanges])
+      hasUnsavedChangesRef.current = false
+      setHasUnsavedChanges(false)
+    },
+  })
 
   // Custom fields save callback ref
   const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)

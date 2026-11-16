@@ -49,6 +49,7 @@ import type { QuoteAttachment, QuoteRecord, TabType } from './quote-page-types'
 import { StatusBadge } from '@/components/status-badge'
 import { useQuoteFormState, type ConvertTarget } from './useQuoteFormState'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
+import { LeaveUnsavedDialog } from '@/features/vehicles/Components/service-page/LeaveUnsavedDialog'
 import {
   LaborPresetPickerDialog,
   type LaborPresetOption,
@@ -726,6 +727,13 @@ export function QuotePageClient({
                 </div>
               </DialogContent>
             </Dialog>
+
+            <LeaveUnsavedDialog
+              open={state.blockedLeave !== null}
+              reason={state.blockedLeave?.reason ?? null}
+              onStay={state.stayOnPage}
+              onLeave={state.leaveWithoutSaving}
+            />
           </div>
         </WorkshopTaxOfferProvider>
       </LineTaxProvider>

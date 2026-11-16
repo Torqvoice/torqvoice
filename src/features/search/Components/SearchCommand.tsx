@@ -1,8 +1,8 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
 import {
   Bell,
   Car,
@@ -346,7 +346,7 @@ export function SearchCommand({
   connectors = [],
   faultCodesEnabled,
 }: SearchCommandProps) {
-  const router = useRouter()
+  const go = useGuardedPush()
   const t = useTranslations('search')
   const tNav = useTranslations('navigation.sidebar')
   const tSettings = useTranslations('settings')
@@ -658,19 +658,19 @@ export function SearchCommand({
         item.run()
         return
       }
-      router.push(item.href)
+      go(item.href)
       if (item.anchor) requestSpotlight(item.anchor)
     },
-    [close, router]
+    [close, go]
   )
 
   const pickRecord = useCallback(
     (href: string, title: string, subtitle?: string) => {
       close()
       pushRecent({ id: href, href, title, subtitle, kind: 'record' })
-      router.push(href)
+      go(href)
     },
-    [close, router]
+    [close, go]
   )
 
   const hasRecords =

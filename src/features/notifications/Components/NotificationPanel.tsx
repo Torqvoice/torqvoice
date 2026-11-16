@@ -1,5 +1,6 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -50,6 +51,7 @@ export function NotificationBell() {
 export function NotificationPanel() {
   const t = useTranslations('notifications')
   const router = useRouter()
+  const go = useGuardedPush()
   const {
     notifications,
     unreadCount,
@@ -130,7 +132,7 @@ export function NotificationPanel() {
       // is about.
       const here = `${window.location.pathname}${window.location.search}`
       if (entityUrl === here) router.refresh()
-      else router.push(entityUrl)
+      else go(entityUrl)
     }, 300)
   }
 

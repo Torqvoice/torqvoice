@@ -1,5 +1,6 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import {
   createContext,
   useCallback,
@@ -10,7 +11,6 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { useServiceType } from '@/components/service-type-context'
@@ -115,7 +115,7 @@ export function ShortcutsProvider({
   plateLookupAvailable: boolean
   children: ReactNode
 }) {
-  const router = useRouter()
+  const go = useGuardedPush()
   const t = useTranslations('settings.shortcuts')
   const [prefs, setPrefs] = useState(() => normalizeShortcutPrefs(initialPrefs))
   const [platform, setPlatform] = useState<Platform>('other')
@@ -189,31 +189,14 @@ export function ShortcutsProvider({
   const openHelp = useCallback(() => setHelpOpen(true), [])
 
   useEffect(() => {
-    // Opening a page goes through a click on a real link, not straight to
-    // the router. The work order page holds an unsaved job back by catching
-    // link clicks (save first, then let the click through), and a shortcut
-    // must be held back the same way a click on the sidebar is. A page with
-    // no such guard treats the shortcut exactly as it treats that click.
-    const link = document.createElement('a')
-    link.hidden = true
-    link.tabIndex = -1
-    link.setAttribute('aria-hidden', 'true')
-    link.dataset.shortcutLink = ''
-    const follow = (event: MouseEvent) => {
-      event.preventDefault()
-      const href = link.getAttribute('href')
-      if (href) router.push(href)
-    }
-    link.addEventListener('click', follow)
-    document.body.appendChild(link)
-
     const run = (def: ShortcutDef) => {
       const handler = handlers.current.get(def.id)?.at(-1)
       if (handler) {
         handler()
       } else if (def.href) {
-        link.setAttribute('href', def.href)
-        link.click()
+        // Through the save guard, as a click on the sidebar is: an editor
+        // with unsaved changes saves before the page is left.
+        go(def.href)
       }
     }
     const forget = () => {
@@ -305,13 +288,11 @@ export function ShortcutsProvider({
     window.addEventListener('blur', forget)
     return () => {
       forget()
-      link.removeEventListener('click', follow)
-      link.remove()
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('pointerdown', forget, true)
       window.removeEventListener('blur', forget)
     }
-  }, [isVisible, router])
+  }, [isVisible, go])
 
   const value = useMemo<ShortcutsContextValue>(
     () => ({

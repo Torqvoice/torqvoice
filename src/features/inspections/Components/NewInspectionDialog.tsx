@@ -1,7 +1,7 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useState, useEffect, useMemo, useTransition } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { DocsLink } from '@/components/docs-link'
@@ -47,7 +47,7 @@ export function NewInspectionDialog({
   serviceRecordId?: string
 }) {
   const t = useTranslations('inspections.new')
-  const router = useRouter()
+  const go = useGuardedPush()
   const serviceType = useServiceType()
   const [isPending, startTransition] = useTransition()
   const [fetchedTemplates, setFetchedTemplates] = useState<TemplateOption[]>([])
@@ -103,7 +103,7 @@ export function NewInspectionDialog({
       if (result.success && result.data) {
         toast.success('Inspection created')
         onOpenChange(false)
-        router.push(`/inspections/${result.data.id}`)
+        go(`/inspections/${result.data.id}`)
       } else {
         toast.error(result.error || 'Failed to create inspection')
       }

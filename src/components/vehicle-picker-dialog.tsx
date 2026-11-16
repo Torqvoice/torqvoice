@@ -1,7 +1,7 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useState, useEffect, useRef, type KeyboardEvent } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -55,7 +55,7 @@ export function VehiclePickerDialog({
   title,
   redirectQuery,
 }: VehiclePickerDialogProps) {
-  const router = useRouter()
+  const go = useGuardedPush()
   const t = useTranslations('workOrders.vehiclePicker')
   const tc = useTranslations('common.buttons')
   const isMarine = useServiceType() === 'marine'
@@ -184,7 +184,7 @@ export function VehiclePickerDialog({
 
       onOpenChange(false)
       resetState()
-      router.push(`/sales/${result.data.id}`)
+      go(`/sales/${result.data.id}`)
     } catch {
       toast.error(t('somethingWentWrong'))
       setCreating(false)
@@ -195,7 +195,7 @@ export function VehiclePickerDialog({
     onOpenChange(false)
     resetState()
     const qs = redirectQuery ? '?' + new URLSearchParams(redirectQuery).toString() : ''
-    router.push(`/vehicles/${vehicleId}/service/new${qs}`)
+    go(`/vehicles/${vehicleId}/service/new${qs}`)
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
