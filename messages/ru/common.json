@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp отправлено",
     "failedWhatsapp": "Не удалось отправить сообщение WhatsApp",
-    "whatsappWindowClosed": "Этот клиент не писал вам в WhatsApp за последние 24 часа, а одобренный шаблон для связи с ним не настроен."
+    "whatsappWindowClosed": "Этот клиент не писал вам в WhatsApp за последние 24 часа, а одобренный шаблон для связи с ним не настроен.",
+    "expiry": {
+      "never": "Бессрочно",
+      "untilPaid": "Действует до оплаты",
+      "expires": "Действует до {date}",
+      "expired": "Истекла {date}",
+      "change": "Изменить",
+      "openAgain": "Открыть снова",
+      "reopened": "Ссылка снова действует",
+      "formTitle": "Срок действия ссылки",
+      "choice": {
+        "workshop": "Настройка мастерской",
+        "date": "До даты",
+        "never": "Бессрочно"
+      },
+      "rule": {
+        "never": "Ссылки действуют бессрочно",
+        "afterSharing": "{days, plural, one {# день} few {# дня} many {# дней} other {# дня}} после отправки",
+        "afterPayment": "{days, plural, one {# день} few {# дня} many {# дней} other {# дня}} после оплаты счёта"
+      },
+      "dateHint": "Ссылка действует весь этот день.",
+      "chooseDate": "Выберите дату",
+      "cancel": "Отмена",
+      "save": "Сохранить",
+      "saved": "Срок действия ссылки сохранён",
+      "saveFailed": "Не удалось сохранить срок действия ссылки. Попробуйте ещё раз."
+    }
   },
   "searchableSelect": {
     "choose": "Выберите...",

@@ -59,3 +59,26 @@ describe('a document’s share link', () => {
     expect(model.updateMany.mock.calls[0][0].where.publicToken).toBeNull()
   })
 })
+
+describe('sending a document that already has a link', () => {
+  it('starts the workshop’s expiry counting again and keeps the link', async () => {
+    quote.findFirst.mockResolvedValue({ publicToken: 'held-by-customer' })
+
+    expect(await ensureShareToken('quote', 'q1', 'org1')).toBe('held-by-customer')
+
+    const renewed = quote.updateMany.mock.calls.find((c) => 'shareRenewedAt' in c[0].data)
+    expect(renewed?.[0].where).toMatchObject({ id: 'q1', organizationId: 'org1' })
+    expect(renewed?.[0].data.shareRenewedAt).toBeInstanceOf(Date)
+  })
+
+  it('drops a date on the document only when that date has passed', async () => {
+    serviceRecord.findFirst.mockResolvedValue({ publicToken: 'tok' })
+
+    await ensureShareToken('invoice', 'i1', 'org1')
+
+    const dropped = serviceRecord.updateMany.mock.calls.find(
+      (c) => c[0].data.shareExpiresAt === null
+    )
+    expect(dropped?.[0].where.shareExpiresAt.lt).toBeInstanceOf(Date)
+  })
+})

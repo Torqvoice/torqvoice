@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Zaloguj się",
     "save": "Zapisz",
+    "saveChanges": "Zapisz zmiany",
     "cancel": "Anuluj",
     "delete": "Usuń",
     "submit": "Wyślij",
     "back": "Wstecz",
     "confirm": "Potwierdź",
-    "saveChanges": "Zapisz zmiany",
     "edit": "Edytuj",
     "add": "Dodaj",
     "gotIt": "Rozumiem"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp wysłany",
     "failedWhatsapp": "Nie udało się wysłać wiadomości WhatsApp",
-    "whatsappWindowClosed": "Ten klient nie napisał do Ciebie na WhatsAppie w ciągu ostatnich 24 godzin, a nie skonfigurowano zatwierdzonego szablonu, aby się z nim skontaktować."
+    "whatsappWindowClosed": "Ten klient nie napisał do Ciebie na WhatsAppie w ciągu ostatnich 24 godzin, a nie skonfigurowano zatwierdzonego szablonu, aby się z nim skontaktować.",
+    "expiry": {
+      "never": "Nigdy nie wygasa",
+      "untilPaid": "Aktywny do opłacenia",
+      "expires": "Wygasa {date}",
+      "expired": "Wygasł {date}",
+      "change": "Zmień",
+      "openAgain": "Otwórz ponownie",
+      "reopened": "Link znów jest aktywny",
+      "formTitle": "Wygaśnięcie linku",
+      "choice": {
+        "workshop": "Ustawienie warsztatu",
+        "date": "W wybranym dniu",
+        "never": "Nigdy"
+      },
+      "rule": {
+        "never": "Linki nigdy nie wygasają",
+        "afterSharing": "{days, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} po wysłaniu",
+        "afterPayment": "{days, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} po opłaceniu faktury"
+      },
+      "dateHint": "Link działa przez cały ten dzień.",
+      "chooseDate": "Wybierz datę",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saved": "Zapisano wygaśnięcie linku",
+      "saveFailed": "Nie udało się zapisać wygaśnięcia linku. Spróbuj ponownie."
+    }
   },
   "searchableSelect": {
     "choose": "Wybierz...",

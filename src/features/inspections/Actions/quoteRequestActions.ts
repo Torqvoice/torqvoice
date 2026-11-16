@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { findSharedDocument } from '@/lib/share-link.server'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { notify } from '@/lib/notify'
@@ -35,6 +36,9 @@ export async function createQuoteRequest(input: unknown) {
   })
   if (!inspection) {
     return { success: false, error: 'Inspection not found' }
+  }
+  if (!(await findSharedDocument('inspection', data.publicToken))?.open) {
+    return { success: false, error: 'This link has expired' }
   }
   // No withAuth on a public action, so the restore freeze is checked here.
   assertNotRestoring(inspection.organizationId)
@@ -92,6 +96,9 @@ export async function cancelQuoteRequest(input: { inspectionId: string; publicTo
   })
   if (!inspection) {
     return { success: false, error: 'Inspection not found' }
+  }
+  if (!(await findSharedDocument('inspection', publicToken))?.open) {
+    return { success: false, error: 'This link has expired' }
   }
   assertNotRestoring(inspection.organizationId)
 

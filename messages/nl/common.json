@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Inloggen",
     "save": "Opslaan",
+    "saveChanges": "Wijzigingen opslaan",
     "cancel": "Annuleren",
     "delete": "Verwijderen",
     "submit": "Verzenden",
     "back": "Terug",
     "confirm": "Bevestigen",
-    "saveChanges": "Wijzigingen opslaan",
     "edit": "Bewerken",
     "add": "Toevoegen",
     "gotIt": "Duidelijk"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp verzonden",
     "failedWhatsapp": "WhatsApp-bericht verzenden mislukt",
-    "whatsappWindowClosed": "Deze klant heeft je de afgelopen 24 uur niet via WhatsApp geschreven en er is geen goedgekeurde sjabloon ingesteld om hem te bereiken."
+    "whatsappWindowClosed": "Deze klant heeft je de afgelopen 24 uur niet via WhatsApp geschreven en er is geen goedgekeurde sjabloon ingesteld om hem te bereiken.",
+    "expiry": {
+      "never": "Verloopt nooit",
+      "untilPaid": "Blijft open tot betaling",
+      "expires": "Verloopt op {date}",
+      "expired": "Verlopen op {date}",
+      "change": "Wijzigen",
+      "openAgain": "Opnieuw openen",
+      "reopened": "Link is weer open",
+      "formTitle": "Link verloopt",
+      "choice": {
+        "workshop": "Instelling van de werkplaats",
+        "date": "Op een datum",
+        "never": "Nooit"
+      },
+      "rule": {
+        "never": "Links verlopen nooit",
+        "afterSharing": "{days, plural, one {# dag} other {# dagen}} na verzending",
+        "afterPayment": "{days, plural, one {# dag} other {# dagen}} nadat de factuur is betaald"
+      },
+      "dateHint": "De link werkt de hele dag.",
+      "chooseDate": "Kies een datum",
+      "cancel": "Annuleren",
+      "save": "Opslaan",
+      "saved": "Vervaldatum van de link opgeslagen",
+      "saveFailed": "Kon de vervaldatum van de link niet opslaan. Probeer het opnieuw."
+    }
   },
   "searchableSelect": {
     "choose": "Kiezen...",

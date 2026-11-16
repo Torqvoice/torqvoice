@@ -75,6 +75,10 @@
         "title": "Portal do cliente",
         "description": "Portal self-service para clientes"
       },
+      "shareLinks": {
+        "title": "Links partilhados",
+        "description": "Expiração e links enviados aos clientes"
+      },
       "workshop": {
         "title": "Oficina",
         "description": "Predefinições de técnicos e mão de obra"
@@ -977,6 +981,11 @@
     "paymentReceivedDescription": "Enviada quando é registado um pagamento numa fatura.",
     "saveSmsTemplates": "Guardar modelos de SMS",
     "smsTemplateSaved": "Definições dos modelos de SMS guardadas",
+    "layoutTitle": "Layout da fatura",
+    "layoutDescription": "Personalize a ordem e a visibilidade das secções nas suas faturas e orçamentos.",
+    "layoutSaved": "Layout guardado com sucesso",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Orçamento",
     "smsDefaults": {
       "invoiceReady": "A fatura de {company_name} está pronta. Consulte-a aqui: {share_link}\nCumprimentos {company_name} - {current_user}",
       "quoteReady": "O seu orçamento está pronto para análise. Consulte-o aqui: {share_link}",
@@ -997,11 +1006,6 @@
       "rose": "Rosa",
       "indigo": "Índigo"
     },
-    "layoutTitle": "Layout da fatura",
-    "layoutDescription": "Personalize a ordem e a visibilidade das secções nas suas faturas e orçamentos.",
-    "layoutSaved": "Layout guardado com sucesso",
-    "layoutDocInvoice": "Fatura",
-    "layoutDocQuote": "Orçamento",
     "goToLayout": "Disposição e secções",
     "openDesigner": "Abrir o editor de modelos",
     "designerIntro": "Escolha um ponto de partida e depois abra o editor para alterar o que quiser.",
@@ -2042,13 +2046,13 @@
     "noMembers": "Nenhum membro da equipa encontrado",
     "addRecipient": "Adicionar destinatário...",
     "searchMembers": "Pesquisar membros...",
-    "sendNow": "Enviar agora",
-    "sentNow": "Relatório enviado com sucesso",
     "newSchedule": "Novo agendamento",
     "editSchedule": "Editar agendamento",
     "edit": "Editar",
     "cancel": "Cancelar",
     "sent": "enviados",
+    "sendNow": "Enviar agora",
+    "sentNow": "Relatório enviado com sucesso",
     "emptyTitle": "Nenhum relatório agendado",
     "emptyDescription": "Crie um agendamento para gerar relatórios automaticamente e enviá-los por e-mail à sua equipa.",
     "sectionLabels": {
@@ -2904,9 +2908,9 @@
       "uploading": "A carregar…",
       "width": "Largura do logótipo",
       "hint": "Separado do logótipo da empresa. Ao ser carregado, é recortado e preparado para e-mail. PNG, JPEG ou WebP até 4 MB.",
-      "position": "Posição",
       "tooLarge": "A imagem deve ter menos de 4 MB",
-      "uploadFailed": "Não foi possível carregar o logótipo"
+      "uploadFailed": "Não foi possível carregar o logótipo",
+      "position": "Posição"
     },
     "image": {
       "empty": "Nenhuma imagem carregada. O bloco não mostra nada enquanto não houver uma.",
@@ -3029,6 +3033,91 @@
       "calendars": "Calendários de feriados",
       "closedDays": "Dias de encerramento",
       "timeOff": "Férias e ausências"
+    }
+  },
+  "shareLinks": {
+    "save": "Guardar",
+    "saved": "Definições de links partilhados guardadas",
+    "saveFailed": "Não foi possível guardar as definições de links partilhados. Tente novamente.",
+    "rules": {
+      "title": "Expiração de links",
+      "description": "Durante quanto tempo um link enviado a um cliente continua a funcionar. Depois disso, o cliente vê uma página a pedir que o contacte.",
+      "kind": {
+        "invoice": "Faturas",
+        "quote": "Orçamentos",
+        "inspection": "Inspeções"
+      },
+      "mode": {
+        "never": "Nunca expiram",
+        "afterSharing": "Expiram após o envio",
+        "afterPayment": "Expiram após o pagamento"
+      },
+      "hint": {
+        "never": "O link funciona até o remover.",
+        "afterSharing": "Contado a partir do dia em que o link foi enviado ou partilhado pela última vez.",
+        "afterPayment": "O link fica aberto enquanto a fatura estiver por pagar, para que o cliente possa pagar. Os dias começam a contar quando é paga na totalidade."
+      },
+      "days": "dias",
+      "daysLabel": "Dias até os links para {kind} expirarem",
+      "appliesNote": "Estas regras também se aplicam aos links que já enviou. Pode definir outra data em qualquer documento, aqui na lista ou no próprio documento."
+    },
+    "list": {
+      "title": "Links enviados aos clientes",
+      "description": "Todos os links para faturas, orçamentos, inspeções ou relatórios de estado, e quando deixam de funcionar.",
+      "statusLabel": "Mostrar links",
+      "status": {
+        "active": "Ativos",
+        "expired": "Expirados",
+        "all": "Todos"
+      },
+      "kindLabel": "Tipo de documento",
+      "kind": {
+        "all": "Todos os documentos",
+        "invoice": "Faturas",
+        "quote": "Orçamentos",
+        "inspection": "Inspeções",
+        "statusReport": "Relatórios de estado"
+      },
+      "kindOne": {
+        "invoice": "Fatura",
+        "quote": "Orçamento",
+        "inspection": "Inspeção",
+        "statusReport": "Relatório de estado"
+      },
+      "searchPlaceholder": "Pesquisar documento ou cliente",
+      "columns": {
+        "document": "Documento",
+        "customer": "Cliente",
+        "shared": "Partilhado",
+        "views": "Visualizações",
+        "expires": "Expira",
+        "actions": "Ações"
+      },
+      "sharedOn": "Partilhado a {date}",
+      "none": "-",
+      "copy": "Copiar link",
+      "copyFailed": "Não foi possível copiar o link.",
+      "open": "Abrir documento",
+      "revoke": "Remover link",
+      "revokeTitle": "Remover este link?",
+      "revokeDescription": "O link para {document} deixa de funcionar para todos os que o têm. Pode voltar a partilhar o documento para criar um novo link.",
+      "revoked": "Link removido",
+      "empty": {
+        "active": "Nenhum link ativo. Um link aparece aqui quando envia ou partilha um documento.",
+        "expired": "Nenhum link expirado.",
+        "all": "Ainda não há links. Um link aparece aqui quando envia ou partilha um documento."
+      },
+      "emptyFiltered": "Nenhum link corresponde à sua pesquisa.",
+      "loadFailed": "Não foi possível carregar os links. Recarregue a página para tentar novamente.",
+      "selectAll": "Selecionar todos os links desta página",
+      "selectRow": "Selecionar o link para {document}",
+      "selectedCount": "{count, plural, one {# link selecionado} other {# links selecionados}}",
+      "clearSelection": "Limpar seleção",
+      "removeSelected": "Remover selecionados",
+      "bulkRevokeTitle": "Remover {count, plural, one {# link} other {# links}}?",
+      "bulkRevokeDescription": "Estes links deixam de funcionar para todos os que os têm. Pode voltar a partilhar um documento para criar um novo link.",
+      "bulkRevoked": "{count, plural, one {# link removido} other {# links removidos}}",
+      "bulkRevokeFailed": "Não foi possível remover os links. Tente novamente."
     }
   }
 }

@@ -250,5 +250,21 @@
     "telegramConnect": "Fale conosco no Telegram",
     "telegramScan": "Escaneie este código QR para nos enviar uma mensagem no Telegram para atualizações e suporte.",
     "downloadCertificate": "Baixar laudo de inspeção"
+  },
+  "expired": {
+    "pageTitle": "Link expirado",
+    "title": "Este link expirou",
+    "body": {
+      "invoice": "Entre em contato com {workshop} para receber um novo link para esta fatura.",
+      "quote": "Entre em contato com {workshop} para receber um novo link para este orçamento.",
+      "inspection": "Entre em contato com {workshop} para receber um novo link para esta inspeção.",
+      "statusReport": "Entre em contato com {workshop} para receber um novo link para esta atualização."
+    },
+    "bodyNoName": {
+      "invoice": "Entre em contato com a oficina para receber um novo link para esta fatura.",
+      "quote": "Entre em contato com a oficina para receber um novo link para este orçamento.",
+      "inspection": "Entre em contato com a oficina para receber um novo link para esta inspeção.",
+      "statusReport": "Entre em contato com a oficina para receber um novo link para esta atualização."
+    }
   }
 }

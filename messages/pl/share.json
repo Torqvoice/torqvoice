@@ -250,5 +250,21 @@
     "telegramConnect": "Porozmawiaj z nami na Telegramie",
     "telegramScan": "Zeskanuj ten kod QR, aby napisać do nas na Telegramie w sprawie aktualizacji i wsparcia.",
     "downloadCertificate": "Pobierz zaświadczenie z przeglądu"
+  },
+  "expired": {
+    "pageTitle": "Link wygasł",
+    "title": "Ten link wygasł",
+    "body": {
+      "invoice": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej faktury.",
+      "quote": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej wyceny.",
+      "inspection": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej inspekcji.",
+      "statusReport": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej aktualizacji."
+    },
+    "bodyNoName": {
+      "invoice": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej faktury.",
+      "quote": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej wyceny.",
+      "inspection": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej inspekcji.",
+      "statusReport": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej aktualizacji."
+    }
   }
 }

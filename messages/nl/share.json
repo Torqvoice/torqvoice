@@ -250,5 +250,21 @@
     "telegramConnect": "Chat met ons op Telegram",
     "telegramScan": "Scan deze QR-code om ons een bericht te sturen op Telegram voor updates en ondersteuning.",
     "downloadCertificate": "Keuringsrapport downloaden"
+  },
+  "expired": {
+    "pageTitle": "Link verlopen",
+    "title": "Deze link is verlopen",
+    "body": {
+      "invoice": "Neem contact op met {workshop} voor een nieuwe link naar deze factuur.",
+      "quote": "Neem contact op met {workshop} voor een nieuwe link naar deze offerte.",
+      "inspection": "Neem contact op met {workshop} voor een nieuwe link naar deze inspectie.",
+      "statusReport": "Neem contact op met {workshop} voor een nieuwe link naar deze update."
+    },
+    "bodyNoName": {
+      "invoice": "Neem contact op met de werkplaats voor een nieuwe link naar deze factuur.",
+      "quote": "Neem contact op met de werkplaats voor een nieuwe link naar deze offerte.",
+      "inspection": "Neem contact op met de werkplaats voor een nieuwe link naar deze inspectie.",
+      "statusReport": "Neem contact op met de werkplaats voor een nieuwe link naar deze update."
+    }
   }
 }

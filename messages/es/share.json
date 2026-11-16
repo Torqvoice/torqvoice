@@ -250,5 +250,21 @@
     "telegramConnect": "Chatea con nosotros en Telegram",
     "telegramScan": "Escanea este código QR para enviarnos un mensaje en Telegram para actualizaciones y soporte.",
     "downloadCertificate": "Descargar informe de inspección"
+  },
+  "expired": {
+    "pageTitle": "Enlace caducado",
+    "title": "Este enlace ha caducado",
+    "body": {
+      "invoice": "Ponte en contacto con {workshop} para obtener un nuevo enlace a esta factura.",
+      "quote": "Ponte en contacto con {workshop} para obtener un nuevo enlace a este presupuesto.",
+      "inspection": "Ponte en contacto con {workshop} para obtener un nuevo enlace a esta inspección.",
+      "statusReport": "Ponte en contacto con {workshop} para obtener un nuevo enlace a esta actualización."
+    },
+    "bodyNoName": {
+      "invoice": "Ponte en contacto con el taller para obtener un nuevo enlace a esta factura.",
+      "quote": "Ponte en contacto con el taller para obtener un nuevo enlace a este presupuesto.",
+      "inspection": "Ponte en contacto con el taller para obtener un nuevo enlace a esta inspección.",
+      "statusReport": "Ponte en contacto con el taller para obtener un nuevo enlace a esta actualización."
+    }
   }
 }

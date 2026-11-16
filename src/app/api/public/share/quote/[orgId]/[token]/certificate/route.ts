@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import {
   certificateDownload,
@@ -24,6 +25,9 @@ export async function GET(
     const { orgId: orgParam, token } = await params
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const organizationId = resolvedOrg?.id ?? orgParam
+
+    const closed = await refuseClosedShareLink('quote', token, organizationId)
+    if (closed) return closed
 
     const quote = await db.quote.findFirst({
       where: { publicToken: token, organizationId },

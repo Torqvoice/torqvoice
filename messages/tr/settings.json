@@ -75,6 +75,10 @@
         "title": "Müşteri Portalı",
         "description": "Müşteri self-servis portalı"
       },
+      "shareLinks": {
+        "title": "Paylaşım bağlantıları",
+        "description": "Bağlantı süresi ve müşterilere gönderilen bağlantılar"
+      },
       "workshop": {
         "title": "Atölye",
         "description": "Teknisyen & işçilik varsayılanları"
@@ -977,6 +981,11 @@
     "paymentReceivedDescription": "Bir fatura için ödeme kaydedildiğinde gönderilir.",
     "saveSmsTemplates": "SMS Şablonlarını Kaydet",
     "smsTemplateSaved": "SMS şablon ayarları kaydedildi",
+    "layoutTitle": "Fatura Düzeni",
+    "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
+    "layoutSaved": "Düzen başarıyla kaydedildi",
+    "layoutDocInvoice": "Fatura",
+    "layoutDocQuote": "Teklif",
     "smsDefaults": {
       "invoiceReady": "{company_name} faturanız hazır. Buradan görüntüleyin: {share_link}\nSaygılarımızla {company_name} - {current_user}",
       "quoteReady": "Teklifiniz incelemeye hazır. Buradan görüntüleyin: {share_link}",
@@ -997,11 +1006,6 @@
       "rose": "Gül",
       "indigo": "İndigo"
     },
-    "layoutTitle": "Fatura Düzeni",
-    "layoutDescription": "Fatura ve tekliflerinizdeki bölümlerin sırasını ve görünürlüğünü özelleştirin.",
-    "layoutSaved": "Düzen başarıyla kaydedildi",
-    "layoutDocInvoice": "Fatura",
-    "layoutDocQuote": "Teklif",
     "goToLayout": "Düzen ve bölümler",
     "openDesigner": "Tasarımcıyı aç",
     "designerIntro": "Bir başlangıç noktası seçin, sonra her şeyi değiştirmek için tasarımcıyı açın.",
@@ -2042,13 +2046,13 @@
     "noMembers": "Ekip üyesi bulunamadı",
     "addRecipient": "Alıcı ekle...",
     "searchMembers": "Üye ara...",
-    "sendNow": "Şimdi gönder",
-    "sentNow": "Rapor başarıyla gönderildi",
     "newSchedule": "Yeni zamanlama",
     "editSchedule": "Zamanlamayı düzenle",
     "edit": "Düzenle",
     "cancel": "İptal",
     "sent": "gönderildi",
+    "sendNow": "Şimdi gönder",
+    "sentNow": "Rapor başarıyla gönderildi",
     "emptyTitle": "Zamanlanmış rapor yok",
     "emptyDescription": "Ekibinize otomatik olarak rapor oluşturmak ve göndermek için bir zamanlama oluşturun.",
     "sectionLabels": {
@@ -2904,9 +2908,9 @@
       "uploading": "Yükleniyor…",
       "width": "Logo genişliği",
       "hint": "Şirket logosundan bağımsızdır. Yüklenirken kırpılır ve e-posta için hazırlanır. En fazla 4 MB PNG, JPEG veya WebP.",
-      "position": "Konum",
       "tooLarge": "Görsel 4 MB'den küçük olmalıdır",
-      "uploadFailed": "Logo yüklenemedi"
+      "uploadFailed": "Logo yüklenemedi",
+      "position": "Konum"
     },
     "image": {
       "empty": "Görsel yüklenmedi. Bir görsel eklenene kadar blok hiçbir şey yazdırmaz.",
@@ -3029,6 +3033,91 @@
       "calendars": "Tatil takvimleri",
       "closedDays": "Kapalı günler",
       "timeOff": "İzinler"
+    }
+  },
+  "shareLinks": {
+    "save": "Kaydet",
+    "saved": "Paylaşım bağlantısı ayarları kaydedildi",
+    "saveFailed": "Paylaşım bağlantısı ayarları kaydedilemedi. Tekrar deneyin.",
+    "rules": {
+      "title": "Bağlantı süresi",
+      "description": "Müşteriye gönderdiğiniz bir bağlantının ne kadar süre çalışacağı. Sonrasında müşteri, sizinle iletişime geçmesini isteyen bir sayfa görür.",
+      "kind": {
+        "invoice": "Faturalar",
+        "quote": "Teklifler",
+        "inspection": "Muayeneler"
+      },
+      "mode": {
+        "never": "Süresi dolmasın",
+        "afterSharing": "Gönderimden sonra dolsun",
+        "afterPayment": "Ödemeden sonra dolsun"
+      },
+      "hint": {
+        "never": "Bağlantı siz kaldırana kadar çalışır.",
+        "afterSharing": "Bağlantının son gönderildiği veya paylaşıldığı günden itibaren sayılır.",
+        "afterPayment": "Fatura ödenmediği sürece bağlantı açık kalır, böylece müşteri ödeme yapabilir. Günler, fatura tamamen ödendiğinde başlar."
+      },
+      "days": "gün",
+      "daysLabel": "{kind} bağlantılarının süresi dolmadan önceki gün sayısı",
+      "appliesNote": "Bu kurallar daha önce gönderdiğiniz bağlantılar için de geçerlidir. Herhangi bir belge için burada listede veya belgenin kendisinde farklı bir tarih belirleyebilirsiniz."
+    },
+    "list": {
+      "title": "Müşterilere gönderilen bağlantılar",
+      "description": "Fatura, teklif, muayene veya durum raporlarına giden tüm bağlantılar ve ne zaman çalışmayı bıraktıkları.",
+      "statusLabel": "Bağlantıları göster",
+      "status": {
+        "active": "Etkin",
+        "expired": "Süresi dolmuş",
+        "all": "Tümü"
+      },
+      "kindLabel": "Belge türü",
+      "kind": {
+        "all": "Tüm belgeler",
+        "invoice": "Faturalar",
+        "quote": "Teklifler",
+        "inspection": "Muayeneler",
+        "statusReport": "Durum raporları"
+      },
+      "kindOne": {
+        "invoice": "Fatura",
+        "quote": "Teklif",
+        "inspection": "Muayene",
+        "statusReport": "Durum raporu"
+      },
+      "searchPlaceholder": "Belge veya müşteri ara",
+      "columns": {
+        "document": "Belge",
+        "customer": "Müşteri",
+        "shared": "Paylaşıldı",
+        "views": "Görüntülenme",
+        "expires": "Son geçerlilik",
+        "actions": "İşlemler"
+      },
+      "sharedOn": "Paylaşıldı: {date}",
+      "none": "-",
+      "copy": "Bağlantıyı kopyala",
+      "copyFailed": "Bağlantı kopyalanamadı.",
+      "open": "Belgeyi aç",
+      "revoke": "Bağlantıyı kaldır",
+      "revokeTitle": "Bu bağlantı kaldırılsın mı?",
+      "revokeDescription": "{document} bağlantısı, ona sahip olan herkes için çalışmayı bırakır. Yeni bir bağlantı oluşturmak için belgeyi yeniden paylaşabilirsiniz.",
+      "revoked": "Bağlantı kaldırıldı",
+      "empty": {
+        "active": "Etkin bağlantı yok. Bir belge gönderdiğinizde veya paylaştığınızda bağlantı burada görünür.",
+        "expired": "Süresi dolmuş bağlantı yok.",
+        "all": "Henüz bağlantı yok. Bir belge gönderdiğinizde veya paylaştığınızda bağlantı burada görünür."
+      },
+      "emptyFiltered": "Aramanızla eşleşen bağlantı yok.",
+      "loadFailed": "Bağlantılar yüklenemedi. Tekrar denemek için sayfayı yenileyin.",
+      "selectAll": "Bu sayfadaki tüm bağlantıları seç",
+      "selectRow": "{document} bağlantısını seç",
+      "selectedCount": "{count, plural, one {# bağlantı seçildi} other {# bağlantı seçildi}}",
+      "clearSelection": "Seçimi temizle",
+      "removeSelected": "Seçilenleri kaldır",
+      "bulkRevokeTitle": "{count, plural, one {# bağlantı} other {# bağlantı}} kaldırılsın mı?",
+      "bulkRevokeDescription": "Bu bağlantılar, onlara sahip olan herkes için çalışmayı bırakır. Yeni bir bağlantı oluşturmak için bir belgeyi yeniden paylaşabilirsiniz.",
+      "bulkRevoked": "{count, plural, one {# bağlantı kaldırıldı} other {# bağlantı kaldırıldı}}",
+      "bulkRevokeFailed": "Bağlantılar kaldırılamadı. Tekrar deneyin."
     }
   }
 }

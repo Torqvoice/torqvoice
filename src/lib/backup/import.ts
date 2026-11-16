@@ -256,6 +256,12 @@ async function importServiceRecordTree(
       ...warrantyFromUntyped(sr),
       warrantyExpiresAt: sr.warrantyExpiresAt ? toSafeDate(sr.warrantyExpiresAt as string) : null,
       publicToken: (sr.publicToken as string) || null,
+      // The link's own expiry answers travel with its token, or a restored
+      // link would forget the date the workshop set on it.
+      sharedAt: toSafeDate(sr.sharedAt as string) ?? null,
+      shareExpiresAt: toSafeDate(sr.shareExpiresAt as string) ?? null,
+      shareNeverExpires: sr.shareNeverExpires === true,
+      shareRenewedAt: toSafeDate(sr.shareRenewedAt as string) ?? null,
       // Only a technician this import restored: a job pointing at one the
       // backup does not carry would be refused, and take the import with it.
       technicianId: keptReference(sr.technicianId, opts.technicianIds),
@@ -1484,6 +1490,10 @@ export async function restoreBackup(
                 startDateTime: toSafeDate(insp.startDateTime as string) ?? null,
                 endDateTime: toSafeDate(insp.endDateTime as string) ?? null,
                 publicToken: (insp.publicToken as string) || null,
+                sharedAt: toSafeDate(insp.sharedAt as string) ?? null,
+                shareExpiresAt: toSafeDate(insp.shareExpiresAt as string) ?? null,
+                shareNeverExpires: insp.shareNeverExpires === true,
+                shareRenewedAt: toSafeDate(insp.shareRenewedAt as string) ?? null,
                 completedAt: toSafeDate(insp.completedAt as string) ?? null,
                 sortOrder: (insp.sortOrder as number) || 0,
                 severityScale: (insp.severityScale as string) || null,

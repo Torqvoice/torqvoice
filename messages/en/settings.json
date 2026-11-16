@@ -75,6 +75,10 @@
         "title": "Customer Portal",
         "description": "Customer self-service portal"
       },
+      "shareLinks": {
+        "title": "Share links",
+        "description": "Link expiry & links sent to customers"
+      },
       "workshop": {
         "title": "Workshop",
         "description": "Technician & labor defaults"
@@ -3029,6 +3033,91 @@
       "calendars": "Holiday calendars",
       "closedDays": "Closed days",
       "timeOff": "Leave and out of office"
+    }
+  },
+  "shareLinks": {
+    "save": "Save",
+    "saved": "Share link settings saved",
+    "saveFailed": "Couldn't save the share link settings. Try again.",
+    "rules": {
+      "title": "Link expiry",
+      "description": "How long a link you send to a customer keeps working. After that the customer sees a page asking them to contact you.",
+      "kind": {
+        "invoice": "Invoices",
+        "quote": "Quotes",
+        "inspection": "Inspections"
+      },
+      "mode": {
+        "never": "Never expire",
+        "afterSharing": "Expire after sending",
+        "afterPayment": "Expire after payment"
+      },
+      "hint": {
+        "never": "The link works until you remove it.",
+        "afterSharing": "Counted from the day the link was last sent or shared.",
+        "afterPayment": "The link stays open while the invoice is unpaid, so the customer can pay. The days start when it is paid in full."
+      },
+      "days": "days",
+      "daysLabel": "Days before links to {kind} expire",
+      "appliesNote": "These rules also apply to links you have already sent. You can set a different date on any single document, here in the list or on the document itself."
+    },
+    "list": {
+      "title": "Links sent to customers",
+      "description": "Every link to an invoice, quote, inspection or status report, and when it stops working.",
+      "statusLabel": "Show links",
+      "status": {
+        "active": "Active",
+        "expired": "Expired",
+        "all": "All"
+      },
+      "kindLabel": "Type of document",
+      "kind": {
+        "all": "All documents",
+        "invoice": "Invoices",
+        "quote": "Quotes",
+        "inspection": "Inspections",
+        "statusReport": "Status reports"
+      },
+      "kindOne": {
+        "invoice": "Invoice",
+        "quote": "Quote",
+        "inspection": "Inspection",
+        "statusReport": "Status report"
+      },
+      "searchPlaceholder": "Search document or customer",
+      "columns": {
+        "document": "Document",
+        "customer": "Customer",
+        "shared": "Shared",
+        "views": "Views",
+        "expires": "Expires",
+        "actions": "Actions"
+      },
+      "sharedOn": "Shared {date}",
+      "none": "-",
+      "copy": "Copy link",
+      "copyFailed": "Couldn't copy the link.",
+      "open": "Open document",
+      "revoke": "Remove link",
+      "revokeTitle": "Remove this link?",
+      "revokeDescription": "The link to {document} stops working for everyone who has it. You can share the document again to make a new link.",
+      "revoked": "Link removed",
+      "empty": {
+        "active": "No active links. A link appears here when you send or share a document.",
+        "expired": "No expired links.",
+        "all": "No links yet. A link appears here when you send or share a document."
+      },
+      "emptyFiltered": "No links match your search.",
+      "loadFailed": "Couldn't load the links. Reload the page to try again.",
+      "selectAll": "Select all links on this page",
+      "selectRow": "Select the link to {document}",
+      "selectedCount": "{count, plural, one {# link selected} other {# links selected}}",
+      "clearSelection": "Clear selection",
+      "removeSelected": "Remove selected",
+      "bulkRevokeTitle": "Remove {count, plural, one {# link} other {# links}}?",
+      "bulkRevokeDescription": "These links stop working for everyone who has them. You can share a document again to make a new link.",
+      "bulkRevoked": "{count, plural, one {# link removed} other {# links removed}}",
+      "bulkRevokeFailed": "Couldn't remove the links. Try again."
     }
   }
 }

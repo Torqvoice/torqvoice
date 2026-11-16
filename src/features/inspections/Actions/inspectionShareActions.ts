@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { FRESH_SHARE_LINK } from '@/lib/share-expiry'
 
 export async function generateInspectionPublicLink(inspectionId: string) {
   return withAuth(
@@ -17,7 +18,7 @@ export async function generateInspectionPublicLink(inspectionId: string) {
       const token = randomUUID()
       await db.inspection.update({
         where: { id: inspectionId },
-        data: { publicToken: token },
+        data: { publicToken: token, sharedAt: new Date(), ...FRESH_SHARE_LINK },
       })
 
       revalidatePath(`/inspections/${inspectionId}`)
@@ -41,7 +42,7 @@ export async function revokeInspectionPublicLink(inspectionId: string) {
 
       await db.inspection.update({
         where: { id: inspectionId },
-        data: { publicToken: null },
+        data: { publicToken: null, sharedAt: null, ...FRESH_SHARE_LINK },
       })
 
       revalidatePath(`/inspections/${inspectionId}`)

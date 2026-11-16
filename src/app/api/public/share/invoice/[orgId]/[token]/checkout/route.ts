@@ -10,6 +10,7 @@ import {
 import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
 import { taxableSubtotalOf } from '@/lib/taxable-lines'
 import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { getFeatures } from '@/lib/features'
@@ -33,6 +34,9 @@ export async function POST(
     // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const orgId = resolvedOrg?.id ?? orgParam
+
+    const closed = await refuseClosedShareLink('invoice', token, orgId)
+    if (closed) return closed
 
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },

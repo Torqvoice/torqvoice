@@ -8,6 +8,7 @@ import { rateLimit } from '@/lib/rate-limit'
 import { notify } from '@/lib/notify'
 import { serviceRecordHref } from '@/lib/service-record'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
 import { workshopMoneyFormatter } from '@/lib/workshop-currency'
 
 const verifySchema = z.object({
@@ -28,6 +29,9 @@ export async function POST(
     // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const orgId = resolvedOrg?.id ?? orgParam
+
+    const closed = await refuseClosedShareLink('invoice', token, orgId)
+    if (closed) return closed
 
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },

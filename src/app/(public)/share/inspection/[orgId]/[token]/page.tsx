@@ -1,4 +1,6 @@
 import { getTranslations } from 'next-intl/server'
+import { ShareLinkExpired } from '@/components/share-link-expired'
+import { findSharedDocument } from '@/lib/share-link.server'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InspectionView } from './inspection-view'
@@ -43,6 +45,10 @@ export default async function PublicInspectionPage({
   // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
   const resolvedOrg = await resolvePortalOrg(orgParam)
   const orgId = resolvedOrg?.id ?? orgParam
+
+  const shared = await findSharedDocument('inspection', token, orgId)
+  if (!shared) notFound()
+  if (!shared.open) return <ShareLinkExpired organizationId={orgId} kind="inspection" />
 
   const inspection = await db.inspection.findFirst({
     where: { publicToken: token, organizationId: orgId },

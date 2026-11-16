@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Giriş Yap",
     "save": "Kaydet",
+    "saveChanges": "Değişiklikleri Kaydet",
     "cancel": "İptal",
     "delete": "Sil",
     "submit": "Gönder",
     "back": "Geri",
     "confirm": "Onayla",
-    "saveChanges": "Değişiklikleri Kaydet",
     "edit": "Düzenle",
     "add": "Ekle",
     "gotIt": "Anladım"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp gönderildi",
     "failedWhatsapp": "WhatsApp mesajı gönderilemedi",
-    "whatsappWindowClosed": "Bu müşteri son 24 saat içinde size WhatsApp üzerinden yazmadı ve ona ulaşmak için onaylı bir şablon ayarlanmamış."
+    "whatsappWindowClosed": "Bu müşteri son 24 saat içinde size WhatsApp üzerinden yazmadı ve ona ulaşmak için onaylı bir şablon ayarlanmamış.",
+    "expiry": {
+      "never": "Süresi dolmaz",
+      "untilPaid": "Ödenene kadar açık kalır",
+      "expires": "Son geçerlilik: {date}",
+      "expired": "Süresi doldu: {date}",
+      "change": "Değiştir",
+      "openAgain": "Yeniden aç",
+      "reopened": "Bağlantı yeniden açık",
+      "formTitle": "Bağlantının süresi",
+      "choice": {
+        "workshop": "Atölye ayarı",
+        "date": "Belirli bir tarihte",
+        "never": "Hiçbir zaman"
+      },
+      "rule": {
+        "never": "Bağlantıların süresi dolmaz",
+        "afterSharing": "Gönderildikten {days, plural, one {# gün} other {# gün}} sonra",
+        "afterPayment": "Fatura ödendikten {days, plural, one {# gün} other {# gün}} sonra"
+      },
+      "dateHint": "Bağlantı bu günün sonuna kadar çalışır.",
+      "chooseDate": "Tarih seçin",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saved": "Bağlantı süresi kaydedildi",
+      "saveFailed": "Bağlantı süresi kaydedilemedi. Tekrar deneyin."
+    }
   },
   "searchableSelect": {
     "choose": "Seçin...",

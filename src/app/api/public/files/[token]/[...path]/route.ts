@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { refuseExpiredShareToken } from '@/lib/share-link-route'
 import { svgDownloadHeaders } from '@/lib/upload-url'
 import { db } from '@/lib/db'
 import { readFile, stat } from 'fs/promises'
@@ -53,6 +54,10 @@ export async function GET(
   if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
     return NextResponse.json({ error: 'Invalid filename' }, { status: 400 })
   }
+
+  // A document's pictures close with its link.
+  const closed = await refuseExpiredShareToken(token)
+  if (closed) return closed
 
   // Validate token and get org (check both invoice and quote tokens)
   let orgId: string | undefined

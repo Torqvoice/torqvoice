@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { findSharedDocument } from '@/lib/share-link.server'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -31,6 +32,11 @@ export async function respondToQuote(input: unknown) {
   })
   if (!quote) {
     return { success: false, error: 'Quote not found' }
+  }
+  // An expired link cannot answer the quote any more than it can show it.
+  const shared = await findSharedDocument('quote', data.publicToken)
+  if (!shared?.open) {
+    return { success: false, error: 'This link has expired' }
   }
 
   // Only allow response on quotes that are draft or sent

@@ -250,5 +250,21 @@
     "telegramConnect": "Fale connosco no Telegram",
     "telegramScan": "Leia este código QR para nos enviar uma mensagem no Telegram e receber atualizações e apoio.",
     "downloadCertificate": "Transferir certificado de inspeção"
+  },
+  "expired": {
+    "pageTitle": "Link expirado",
+    "title": "Este link expirou",
+    "body": {
+      "invoice": "Contacte {workshop} para receber um novo link para esta fatura.",
+      "quote": "Contacte {workshop} para receber um novo link para este orçamento.",
+      "inspection": "Contacte {workshop} para receber um novo link para esta inspeção.",
+      "statusReport": "Contacte {workshop} para receber um novo link para esta atualização."
+    },
+    "bodyNoName": {
+      "invoice": "Contacte a oficina para receber um novo link para esta fatura.",
+      "quote": "Contacte a oficina para receber um novo link para este orçamento.",
+      "inspection": "Contacte a oficina para receber um novo link para esta inspeção.",
+      "statusReport": "Contacte a oficina para receber um novo link para esta atualização."
+    }
   }
 }
