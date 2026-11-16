@@ -75,6 +75,10 @@
         "title": "Portal klienta",
         "description": "Portal samoobslugowy klienta"
       },
+      "shareLinks": {
+        "title": "Udostępnione linki",
+        "description": "Wygasanie linków i linki wysłane do klientów"
+      },
       "workshop": {
         "title": "Warsztat",
         "description": "Domyślne ustawienia technika i robocizny"
@@ -3031,6 +3035,91 @@
       "calendars": "Kalendarze świąt",
       "closedDays": "Dni zamknięcia",
       "timeOff": "Urlopy i nieobecności"
+    }
+  },
+  "shareLinks": {
+    "save": "Zapisz",
+    "saved": "Zapisano ustawienia udostępnionych linków",
+    "saveFailed": "Nie udało się zapisać ustawień udostępnionych linków. Spróbuj ponownie.",
+    "rules": {
+      "title": "Wygasanie linków",
+      "description": "Jak długo działa link wysłany do klienta. Potem klient widzi stronę z prośbą o kontakt z Tobą.",
+      "kind": {
+        "invoice": "Faktury",
+        "quote": "Wyceny",
+        "inspection": "Inspekcje"
+      },
+      "mode": {
+        "never": "Nigdy nie wygasają",
+        "afterSharing": "Wygasają po wysłaniu",
+        "afterPayment": "Wygasają po płatności"
+      },
+      "hint": {
+        "never": "Link działa, dopóki go nie usuniesz.",
+        "afterSharing": "Liczone od dnia, w którym link został ostatnio wysłany lub udostępniony.",
+        "afterPayment": "Link pozostaje aktywny, dopóki faktura jest nieopłacona, aby klient mógł zapłacić. Dni liczą się od opłacenia jej w całości."
+      },
+      "days": "dni",
+      "daysLabel": "Liczba dni do wygaśnięcia linków do {kind}",
+      "appliesNote": "Te reguły dotyczą też linków, które już wysłano. Dla każdego dokumentu możesz ustawić inną datę, tutaj na liście lub w samym dokumencie."
+    },
+    "list": {
+      "title": "Linki wysłane do klientów",
+      "description": "Wszystkie linki do faktur, wycen, inspekcji i raportów statusu oraz data, kiedy przestają działać.",
+      "statusLabel": "Pokaż linki",
+      "status": {
+        "active": "Aktywne",
+        "expired": "Wygasłe",
+        "all": "Wszystkie"
+      },
+      "kindLabel": "Rodzaj dokumentu",
+      "kind": {
+        "all": "Wszystkie dokumenty",
+        "invoice": "Faktury",
+        "quote": "Wyceny",
+        "inspection": "Inspekcje",
+        "statusReport": "Raporty statusu"
+      },
+      "kindOne": {
+        "invoice": "Faktura",
+        "quote": "Wycena",
+        "inspection": "Inspekcja",
+        "statusReport": "Raport statusu"
+      },
+      "searchPlaceholder": "Szukaj dokumentu lub klienta",
+      "columns": {
+        "document": "Dokument",
+        "customer": "Klient",
+        "shared": "Udostępniono",
+        "views": "Wyświetlenia",
+        "expires": "Wygasa",
+        "actions": "Akcje"
+      },
+      "sharedOn": "Udostępniono {date}",
+      "none": "-",
+      "copy": "Kopiuj link",
+      "copyFailed": "Nie udało się skopiować linku.",
+      "open": "Otwórz dokument",
+      "revoke": "Usuń link",
+      "revokeTitle": "Usunąć ten link?",
+      "revokeDescription": "Link do {document} przestanie działać dla wszystkich, którzy go mają. Możesz udostępnić dokument ponownie, aby utworzyć nowy link.",
+      "revoked": "Usunięto link",
+      "empty": {
+        "active": "Brak aktywnych linków. Link pojawi się tutaj, gdy wyślesz lub udostępnisz dokument.",
+        "expired": "Brak wygasłych linków.",
+        "all": "Nie ma jeszcze linków. Link pojawi się tutaj, gdy wyślesz lub udostępnisz dokument."
+      },
+      "emptyFiltered": "Żaden link nie pasuje do wyszukiwania.",
+      "loadFailed": "Nie udało się wczytać linków. Odśwież stronę, aby spróbować ponownie.",
+      "selectAll": "Zaznacz wszystkie linki na tej stronie",
+      "selectRow": "Zaznacz link do {document}",
+      "selectedCount": "{count, plural, one {Zaznaczono # link} few {Zaznaczono # linki} many {Zaznaczono # linków} other {Zaznaczono # linku}}",
+      "clearSelection": "Wyczyść zaznaczenie",
+      "removeSelected": "Usuń zaznaczone",
+      "bulkRevokeTitle": "Usunąć {count, plural, one {# link} few {# linki} many {# linków} other {# linku}}?",
+      "bulkRevokeDescription": "Te linki przestaną działać dla wszystkich, którzy je mają. Możesz udostępnić dokument ponownie, aby utworzyć nowy link.",
+      "bulkRevoked": "{count, plural, one {Usunięto # link} few {Usunięto # linki} many {Usunięto # linków} other {Usunięto # linku}}",
+      "bulkRevokeFailed": "Nie udało się usunąć linków. Spróbuj ponownie."
     }
   }
 }

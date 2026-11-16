@@ -210,7 +210,9 @@
     "settings_markType_remove": "Tipo di segno rimosso",
     "settings_markType_reorder": "Tipi di segno riordinati",
     "integration_backup_run": "Backup avviato",
-    "integration_backup_restore": "Backup ripristinato"
+    "integration_backup_restore": "Backup ripristinato",
+    "shareLink_expiry": "Scadenza del link condiviso modificata",
+    "shareLink_revoke": "Link condivisi rimossi"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ha attivato l'accesso a due fattori",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Ha tolto la mappa dello stato dalla fattura",
     "backup_run_started": "Ha avviato un backup su {name}",
     "backup_restore_started": "Ha avviato il ripristino del backup {snapshot} da {name}",
-    "backup_restored": "Ha ripristinato il backup {snapshot} da {name}"
+    "backup_restored": "Ha ripristinato il backup {snapshot} da {name}",
+    "share_link_expiry_workshop": "Link condiviso impostato per seguire l'impostazione dell'officina",
+    "share_link_expiry_never": "Link condiviso impostato per non scadere mai",
+    "share_link_expiry_date": "Link condiviso impostato per scadere il {date}",
+    "share_link_revoke_bulk": "{count, plural, one {# link condiviso rimosso} other {# link condivisi rimossi}}"
   }
 }

@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Accedi",
     "save": "Salva",
+    "saveChanges": "Salva modifiche",
     "cancel": "Annulla",
     "delete": "Elimina",
     "submit": "Invia",
     "back": "Indietro",
     "confirm": "Conferma",
-    "saveChanges": "Salva modifiche",
     "edit": "Modifica",
     "add": "Aggiungi",
     "gotIt": "Ho capito"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp inviato",
     "failedWhatsapp": "Impossibile inviare il messaggio WhatsApp",
-    "whatsappWindowClosed": "Questo cliente non ti ha scritto su WhatsApp nelle ultime 24 ore e non è configurato alcun modello approvato per contattarlo."
+    "whatsappWindowClosed": "Questo cliente non ti ha scritto su WhatsApp nelle ultime 24 ore e non è configurato alcun modello approvato per contattarlo.",
+    "expiry": {
+      "never": "Non scade mai",
+      "untilPaid": "Resta aperto fino al pagamento",
+      "expires": "Scade il {date}",
+      "expired": "Scaduto il {date}",
+      "change": "Modifica",
+      "openAgain": "Riapri",
+      "reopened": "Il link è di nuovo aperto",
+      "formTitle": "Scadenza del link",
+      "choice": {
+        "workshop": "Impostazione dell'officina",
+        "date": "In una data",
+        "never": "Mai"
+      },
+      "rule": {
+        "never": "I link non scadono mai",
+        "afterSharing": "{days, plural, one {# giorno} other {# giorni}} dopo l'invio",
+        "afterPayment": "{days, plural, one {# giorno} other {# giorni}} dopo il pagamento della fattura"
+      },
+      "dateHint": "Il link funziona per tutta la giornata.",
+      "chooseDate": "Scegli una data",
+      "cancel": "Annulla",
+      "save": "Salva",
+      "saved": "Scadenza del link salvata",
+      "saveFailed": "Impossibile salvare la scadenza del link. Riprova."
+    }
   },
   "searchableSelect": {
     "choose": "Scegli...",

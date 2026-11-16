@@ -29,6 +29,11 @@ model Quote {
   sharedAt        DateTime?
   viewCount       Int       @default(0)
   lastViewedAt    DateTime?
+  /// See ServiceRecord: this document's own answer to when its share link
+  /// stops working, and the last time the link was sent again or reopened.
+  shareExpiresAt    DateTime?
+  shareNeverExpires Boolean   @default(false)
+  shareRenewedAt    DateTime?
   customerMessage String?
   convertedToId   String?
   createdAt       DateTime  @default(now())

@@ -81,6 +81,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
       {/* Shared Link */}
       {quote.publicToken && (
         <SharedLinkCard
+          documentId={quote.id}
           publicToken={quote.publicToken}
           organizationId={organizationId}
           type="quote"

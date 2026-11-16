@@ -94,6 +94,13 @@ model Inspection {
   startDateTime DateTime?
   endDateTime   DateTime?
   publicToken   String?   @unique
+  /// When the share link was made. Null on links older than this column.
+  sharedAt      DateTime?
+  /// See ServiceRecord: this document's own answer to when its share link
+  /// stops working, and the last time the link was sent again or reopened.
+  shareExpiresAt    DateTime?
+  shareNeverExpires Boolean   @default(false)
+  shareRenewedAt    DateTime?
   completedAt   DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

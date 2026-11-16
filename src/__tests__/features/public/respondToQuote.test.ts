@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// The link is open: whether an expired one is refused is share-link-open's
+// business, and each of these tests is about what happens after that.
+const findSharedDocument = vi.hoisted(() => vi.fn(async () => ({ open: true })))
+vi.mock('@/lib/share-link.server', () => ({ findSharedDocument }))
+
 vi.mock('@/lib/db', () => ({
   db: {
     quote: {
@@ -33,6 +38,7 @@ const SENT_QUOTE = {
 beforeEach(() => {
   vi.resetAllMocks()
   mockUpdate.mockResolvedValue({ count: 1 })
+  findSharedDocument.mockResolvedValue({ open: true })
 })
 
 describe('respondToQuote', () => {
@@ -54,6 +60,18 @@ describe('respondToQuote', () => {
       action: 'accepted',
     })
     expect(result).toEqual({ success: false, error: 'Quote not found' })
+  })
+
+  it('refuses an answer through a link that has expired, and changes nothing', async () => {
+    mockFindFirst.mockResolvedValue(SENT_QUOTE as any)
+    findSharedDocument.mockResolvedValue({ open: false })
+    const result = await respondToQuote({
+      quoteId: 'quote-1',
+      publicToken: 'tok-1',
+      action: 'accepted',
+    })
+    expect(result).toEqual({ success: false, error: 'This link has expired' })
+    expect(mockUpdate).not.toHaveBeenCalled()
   })
 
   it('returns error when quote status is already accepted', async () => {

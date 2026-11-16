@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { buildCustomerCertificatePdf } from '@/features/inspections/Pdf/customerCertificatePdf'
 
@@ -15,6 +16,9 @@ export async function GET(
     // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const orgId = resolvedOrg?.id ?? orgParam
+
+    const closed = await refuseClosedShareLink('inspection', token, orgId)
+    if (closed) return closed
 
     const headerStore = await headers()
     const locale = await resolveCustomerLocale(orgId, headerStore.get('accept-language'))

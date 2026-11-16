@@ -250,5 +250,21 @@
     "telegramConnect": "Susisiekite su mumis per Telegram",
     "telegramScan": "Nuskaitykite šį QR kodą, kad parašytumėte mums per Telegram dėl atnaujinimų ir palaikymo.",
     "downloadCertificate": "Atsisiųsti apžiūros pažymą"
+  },
+  "expired": {
+    "pageTitle": "Nuoroda nebegalioja",
+    "title": "Ši nuoroda nebegalioja",
+    "body": {
+      "invoice": "Susisiekite su {workshop}, kad gautumėte naują nuorodą į šią sąskaitą.",
+      "quote": "Susisiekite su {workshop}, kad gautumėte naują nuorodą į šį pasiūlymą.",
+      "inspection": "Susisiekite su {workshop}, kad gautumėte naują nuorodą į šią apžiūrą.",
+      "statusReport": "Susisiekite su {workshop}, kad gautumėte naują nuorodą į šią naujieną."
+    },
+    "bodyNoName": {
+      "invoice": "Susisiekite su dirbtuvėmis, kad gautumėte naują nuorodą į šią sąskaitą.",
+      "quote": "Susisiekite su dirbtuvėmis, kad gautumėte naują nuorodą į šį pasiūlymą.",
+      "inspection": "Susisiekite su dirbtuvėmis, kad gautumėte naują nuorodą į šią apžiūrą.",
+      "statusReport": "Susisiekite su dirbtuvėmis, kad gautumėte naują nuorodą į šią naujieną."
+    }
   }
 }

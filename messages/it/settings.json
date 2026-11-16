@@ -75,6 +75,10 @@
         "title": "Portale clienti",
         "description": "Portale self-service clienti"
       },
+      "shareLinks": {
+        "title": "Link condivisi",
+        "description": "Scadenza e link inviati ai clienti"
+      },
       "workshop": {
         "title": "Officina",
         "description": "Tecnico e valori predefiniti manodopera"
@@ -3031,6 +3035,91 @@
       "calendars": "Calendari delle festività",
       "closedDays": "Giorni di chiusura",
       "timeOff": "Ferie e assenze"
+    }
+  },
+  "shareLinks": {
+    "save": "Salva",
+    "saved": "Impostazioni dei link condivisi salvate",
+    "saveFailed": "Impossibile salvare le impostazioni dei link condivisi. Riprova.",
+    "rules": {
+      "title": "Scadenza dei link",
+      "description": "Per quanto tempo funziona un link inviato a un cliente. Dopo, il cliente vede una pagina che gli chiede di contattarti.",
+      "kind": {
+        "invoice": "Fatture",
+        "quote": "Preventivi",
+        "inspection": "Ispezioni"
+      },
+      "mode": {
+        "never": "Non scadono mai",
+        "afterSharing": "Scadono dopo l'invio",
+        "afterPayment": "Scadono dopo il pagamento"
+      },
+      "hint": {
+        "never": "Il link funziona finché non lo rimuovi.",
+        "afterSharing": "Contati dal giorno in cui il link è stato inviato o condiviso l'ultima volta.",
+        "afterPayment": "Il link resta aperto finché la fattura non è pagata, così il cliente può pagare. I giorni partono quando è pagata per intero."
+      },
+      "days": "giorni",
+      "daysLabel": "Giorni prima che scadano i link a {kind}",
+      "appliesNote": "Queste regole valgono anche per i link già inviati. Puoi impostare una data diversa per un singolo documento, qui nell'elenco o nel documento stesso."
+    },
+    "list": {
+      "title": "Link inviati ai clienti",
+      "description": "Tutti i link a fatture, preventivi, ispezioni o rapporti di stato, e quando smettono di funzionare.",
+      "statusLabel": "Mostra link",
+      "status": {
+        "active": "Attivi",
+        "expired": "Scaduti",
+        "all": "Tutti"
+      },
+      "kindLabel": "Tipo di documento",
+      "kind": {
+        "all": "Tutti i documenti",
+        "invoice": "Fatture",
+        "quote": "Preventivi",
+        "inspection": "Ispezioni",
+        "statusReport": "Rapporti di stato"
+      },
+      "kindOne": {
+        "invoice": "Fattura",
+        "quote": "Preventivo",
+        "inspection": "Ispezione",
+        "statusReport": "Rapporto di stato"
+      },
+      "searchPlaceholder": "Cerca documento o cliente",
+      "columns": {
+        "document": "Documento",
+        "customer": "Cliente",
+        "shared": "Condiviso",
+        "views": "Visualizzazioni",
+        "expires": "Scadenza",
+        "actions": "Azioni"
+      },
+      "sharedOn": "Condiviso il {date}",
+      "none": "-",
+      "copy": "Copia link",
+      "copyFailed": "Impossibile copiare il link.",
+      "open": "Apri documento",
+      "revoke": "Rimuovi link",
+      "revokeTitle": "Rimuovere questo link?",
+      "revokeDescription": "Il link a {document} smette di funzionare per chiunque lo abbia. Puoi condividere di nuovo il documento per creare un nuovo link.",
+      "revoked": "Link rimosso",
+      "empty": {
+        "active": "Nessun link attivo. Un link compare qui quando invii o condividi un documento.",
+        "expired": "Nessun link scaduto.",
+        "all": "Ancora nessun link. Un link compare qui quando invii o condividi un documento."
+      },
+      "emptyFiltered": "Nessun link corrisponde alla ricerca.",
+      "loadFailed": "Impossibile caricare i link. Ricarica la pagina per riprovare.",
+      "selectAll": "Seleziona tutti i link di questa pagina",
+      "selectRow": "Seleziona il link a {document}",
+      "selectedCount": "{count, plural, one {# link selezionato} other {# link selezionati}}",
+      "clearSelection": "Annulla selezione",
+      "removeSelected": "Rimuovi selezionati",
+      "bulkRevokeTitle": "Rimuovere {count, plural, one {# link} other {# link}}?",
+      "bulkRevokeDescription": "Questi link smettono di funzionare per chiunque li abbia. Puoi condividere di nuovo un documento per creare un nuovo link.",
+      "bulkRevoked": "{count, plural, one {# link rimosso} other {# link rimossi}}",
+      "bulkRevokeFailed": "Impossibile rimuovere i link. Riprova."
     }
   }
 }

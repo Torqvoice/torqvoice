@@ -210,7 +210,9 @@
     "settings_markType_remove": "Usunięto rodzaj oznaczenia",
     "settings_markType_reorder": "Zmieniono kolejność rodzajów oznaczeń",
     "integration_backup_run": "Rozpoczęto kopię zapasową",
-    "integration_backup_restore": "Przywrócono kopię zapasową"
+    "integration_backup_restore": "Przywrócono kopię zapasową",
+    "shareLink_expiry": "Zmieniono wygaśnięcie udostępnionego linku",
+    "shareLink_revoke": "Usunięto udostępnione linki"
   },
   "summary": {
     "auth_twoFactorEnabled": "Włączono logowanie dwuskładnikowe",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Usunięto mapę stanu z faktury",
     "backup_run_started": "Rozpoczęto kopię zapasową do {name}",
     "backup_restore_started": "Rozpoczęto przywracanie kopii zapasowej {snapshot} z {name}",
-    "backup_restored": "Przywrócono kopię zapasową {snapshot} z {name}"
+    "backup_restored": "Przywrócono kopię zapasową {snapshot} z {name}",
+    "share_link_expiry_workshop": "Ustawiono udostępniony link zgodnie z ustawieniem warsztatu",
+    "share_link_expiry_never": "Ustawiono udostępniony link jako niewygasający",
+    "share_link_expiry_date": "Ustawiono wygaśnięcie udostępnionego linku na {date}",
+    "share_link_revoke_bulk": "Usunięto {count, plural, one {# udostępniony link} few {# udostępnione linki} many {# udostępnionych linków} other {# udostępnionego linku}}"
   }
 }

@@ -106,6 +106,7 @@ export const SETTINGS_SHIPPED_AT: Record<string, string> = {
   '/settings/email-templates': '2026-09-11',
   '/settings/warranty': '2026-09-18',
   '/settings/opening-hours': '2026-11-09',
+  '/settings/share-links': '2026-11-16',
 }
 
 /** How long an entry counts as new. A month covers the slowest weekly visitor. */

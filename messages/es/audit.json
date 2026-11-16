@@ -210,7 +210,9 @@
     "settings_markType_remove": "Tipo de marca eliminado",
     "settings_markType_reorder": "Tipos de marca reordenados",
     "integration_backup_run": "Copia de seguridad iniciada",
-    "integration_backup_restore": "Copia de seguridad restaurada"
+    "integration_backup_restore": "Copia de seguridad restaurada",
+    "shareLink_expiry": "Caducidad del enlace compartido cambiada",
+    "shareLink_revoke": "Enlaces compartidos eliminados"
   },
   "summary": {
     "auth_twoFactorEnabled": "Activó el inicio de sesión en dos pasos",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Quitó el mapa de estado de la factura",
     "backup_run_started": "Inició una copia de seguridad en {name}",
     "backup_restore_started": "Inició la restauración de la copia de seguridad {snapshot} desde {name}",
-    "backup_restored": "Restauró la copia de seguridad {snapshot} desde {name}"
+    "backup_restored": "Restauró la copia de seguridad {snapshot} desde {name}",
+    "share_link_expiry_workshop": "Enlace compartido configurado para seguir el ajuste del taller",
+    "share_link_expiry_never": "Enlace compartido configurado para no caducar nunca",
+    "share_link_expiry_date": "Enlace compartido configurado para caducar el {date}",
+    "share_link_revoke_bulk": "{count, plural, one {# enlace compartido eliminado} other {# enlaces compartidos eliminados}}"
   }
 }

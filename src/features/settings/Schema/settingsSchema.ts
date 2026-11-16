@@ -326,6 +326,17 @@ export const SETTING_KEYS = {
   /// quote only. Unset means on.
   WARRANTY_APPLY_TO_QUOTES: 'warranty.applyToQuotes',
   WARRANTY_APPLY_TO_WORK_ORDERS: 'warranty.applyToWorkOrders',
+  /// When a share link stops working, per kind of document: 'never',
+  /// 'afterSharing', and for invoices also 'afterPayment'. Unset means the
+  /// default: 30 days after payment for invoices, 30 days after sending for
+  /// the rest. The days go with either counting mode. See
+  /// src/lib/share-expiry.ts.
+  SHARE_INVOICE_EXPIRY: 'shareLinks.invoiceExpiry',
+  SHARE_INVOICE_EXPIRY_DAYS: 'shareLinks.invoiceExpiryDays',
+  SHARE_QUOTE_EXPIRY: 'shareLinks.quoteExpiry',
+  SHARE_QUOTE_EXPIRY_DAYS: 'shareLinks.quoteExpiryDays',
+  SHARE_INSPECTION_EXPIRY: 'shareLinks.inspectionExpiry',
+  SHARE_INSPECTION_EXPIRY_DAYS: 'shareLinks.inspectionExpiryDays',
 } as const
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]

@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp sendt",
     "failedWhatsapp": "Kunne ikke sende WhatsApp-melding",
-    "whatsappWindowClosed": "Denne kunden har ikke skrevet til deg på WhatsApp de siste 24 timene, og ingen godkjent mal er satt opp for å nå dem."
+    "whatsappWindowClosed": "Denne kunden har ikke skrevet til deg på WhatsApp de siste 24 timene, og ingen godkjent mal er satt opp for å nå dem.",
+    "expiry": {
+      "never": "Utløper aldri",
+      "untilPaid": "Åpen til den er betalt",
+      "expires": "Utløper {date}",
+      "expired": "Utløpt {date}",
+      "change": "Endre",
+      "openAgain": "Åpne igjen",
+      "reopened": "Lenken er åpen igjen",
+      "formTitle": "Lenken utløper",
+      "choice": {
+        "workshop": "Verkstedets innstilling",
+        "date": "På en dato",
+        "never": "Aldri"
+      },
+      "rule": {
+        "never": "Lenker utløper aldri",
+        "afterSharing": "{days, plural, one {# dag} other {# dager}} etter at den er sendt",
+        "afterPayment": "{days, plural, one {# dag} other {# dager}} etter at fakturaen er betalt"
+      },
+      "dateHint": "Lenken virker hele denne dagen.",
+      "chooseDate": "Velg en dato",
+      "cancel": "Avbryt",
+      "save": "Lagre",
+      "saved": "Utløp for lenken er lagret",
+      "saveFailed": "Kunne ikke lagre utløpet for lenken. Prøv igjen."
+    }
   },
   "searchableSelect": {
     "choose": "Velg...",

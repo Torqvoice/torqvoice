@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp sent",
     "failedWhatsapp": "Failed to send WhatsApp message",
-    "whatsappWindowClosed": "This customer has not written to you on WhatsApp in the last 24 hours, and no approved template is set up to reach them."
+    "whatsappWindowClosed": "This customer has not written to you on WhatsApp in the last 24 hours, and no approved template is set up to reach them.",
+    "expiry": {
+      "never": "Never expires",
+      "untilPaid": "Stays open until paid",
+      "expires": "Expires {date}",
+      "expired": "Expired {date}",
+      "change": "Change",
+      "openAgain": "Open again",
+      "reopened": "Link is open again",
+      "formTitle": "Link expires",
+      "choice": {
+        "workshop": "Workshop setting",
+        "date": "On a date",
+        "never": "Never"
+      },
+      "rule": {
+        "never": "Links never expire",
+        "afterSharing": "{days, plural, one {# day} other {# days}} after it is sent",
+        "afterPayment": "{days, plural, one {# day} other {# days}} after the invoice is paid"
+      },
+      "dateHint": "The link works for the whole of this day.",
+      "chooseDate": "Choose a date",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Link expiry saved",
+      "saveFailed": "Couldn't save the link expiry. Try again."
+    }
   },
   "searchableSelect": {
     "choose": "Choose...",

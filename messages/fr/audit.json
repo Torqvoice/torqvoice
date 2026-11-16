@@ -210,7 +210,9 @@
     "settings_markType_remove": "Type de marque supprimé",
     "settings_markType_reorder": "Types de marque réordonnés",
     "integration_backup_run": "Sauvegarde lancée",
-    "integration_backup_restore": "Sauvegarde restaurée"
+    "integration_backup_restore": "Sauvegarde restaurée",
+    "shareLink_expiry": "Expiration du lien de partage modifiée",
+    "shareLink_revoke": "Liens de partage supprimés"
   },
   "summary": {
     "auth_twoFactorEnabled": "A activé la connexion à deux facteurs",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "A retiré la carte d'état de la facture",
     "backup_run_started": "A lancé une sauvegarde vers {name}",
     "backup_restore_started": "A lancé la restauration de la sauvegarde {snapshot} depuis {name}",
-    "backup_restored": "A restauré la sauvegarde {snapshot} depuis {name}"
+    "backup_restored": "A restauré la sauvegarde {snapshot} depuis {name}",
+    "share_link_expiry_workshop": "Lien de partage réglé pour suivre le réglage de l'atelier",
+    "share_link_expiry_never": "Lien de partage réglé pour ne jamais expirer",
+    "share_link_expiry_date": "Lien de partage réglé pour expirer le {date}",
+    "share_link_revoke_bulk": "{count, plural, one {# lien de partage supprimé} other {# liens de partage supprimés}}"
   }
 }
