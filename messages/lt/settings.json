@@ -3134,7 +3134,7 @@
     "saveFailed": "Nepavyko įrašyti bendrinimo nuorodų nustatymų. Bandykite dar kartą.",
     "rules": {
       "title": "Nuorodų galiojimas",
-      "description": "Kiek laiko veikia klientui išsiųsta nuoroda. Vėliau klientas mato puslapį, kuriame prašoma susisiekti su jumis.",
+      "description": "Kiek laiko veikia klientui išsiųsta nuoroda. Puslapyje klientui nurodoma paskutinė diena; vėliau jis mato puslapį, kuriame prašoma susisiekti su jumis.",
       "kind": {
         "invoice": "Sąskaitos",
         "quote": "Pasiūlymai",

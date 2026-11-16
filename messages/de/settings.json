@@ -3134,7 +3134,7 @@
     "saveFailed": "Die Einstellungen für Freigabelinks konnten nicht gespeichert werden. Versuchen Sie es erneut.",
     "rules": {
       "title": "Ablauf von Links",
-      "description": "Wie lange ein Link, den Sie an einen Kunden senden, funktioniert. Danach sieht der Kunde eine Seite, die ihn bittet, sich bei Ihnen zu melden.",
+      "description": "Wie lange ein Link, den Sie an einen Kunden senden, funktioniert. Die Seite nennt dem Kunden den letzten Tag; danach sieht er eine Seite, die ihn bittet, sich bei Ihnen zu melden.",
       "kind": {
         "invoice": "Rechnungen",
         "quote": "Angebote",

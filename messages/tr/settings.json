@@ -3134,7 +3134,7 @@
     "saveFailed": "Paylaşım bağlantısı ayarları kaydedilemedi. Tekrar deneyin.",
     "rules": {
       "title": "Bağlantı süresi",
-      "description": "Müşteriye gönderdiğiniz bir bağlantının ne kadar süre çalışacağı. Sonrasında müşteri, sizinle iletişime geçmesini isteyen bir sayfa görür.",
+      "description": "Müşteriye gönderdiğiniz bir bağlantının ne kadar süre çalışacağı. Sayfa müşteriye son günü gösterir; sonrasında müşteri, sizinle iletişime geçmesini isteyen bir sayfa görür.",
       "kind": {
         "invoice": "Faturalar",
         "quote": "Teklifler",

@@ -3134,7 +3134,7 @@
     "saveFailed": "Impossibile salvare le impostazioni dei link condivisi. Riprova.",
     "rules": {
       "title": "Scadenza dei link",
-      "description": "Per quanto tempo funziona un link inviato a un cliente. Dopo, il cliente vede una pagina che gli chiede di contattarti.",
+      "description": "Per quanto tempo funziona un link inviato a un cliente. La pagina indica al cliente l'ultimo giorno; dopo, vede una pagina che gli chiede di contattarti.",
       "kind": {
         "invoice": "Fatture",
         "quote": "Preventivi",

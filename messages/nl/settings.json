@@ -3134,7 +3134,7 @@
     "saveFailed": "Kon de instellingen voor deellinks niet opslaan. Probeer het opnieuw.",
     "rules": {
       "title": "Verloop van links",
-      "description": "Hoe lang een link die je naar een klant stuurt blijft werken. Daarna ziet de klant een pagina die vraagt contact met je op te nemen.",
+      "description": "Hoe lang een link die je naar een klant stuurt blijft werken. De pagina toont de klant de laatste dag; daarna ziet de klant een pagina die vraagt contact met je op te nemen.",
       "kind": {
         "invoice": "Facturen",
         "quote": "Offertes",

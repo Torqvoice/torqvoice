@@ -1,11 +1,11 @@
 import { getTranslations } from 'next-intl/server'
-import { ShareLinkExpired } from '@/components/share-link-expired'
-import { findSharedDocument } from '@/lib/share-link.server'
+import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
+import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { lookUpShareLink } from '@/lib/share-link.server'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InspectionView } from './inspection-view'
 import { getFeatures } from '@/lib/features'
-import { resolvePortalOrg } from '@/lib/portal-slug'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { getAppBaseUrl } from '@/lib/app-url'
@@ -30,9 +30,20 @@ import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySe
 
 export const revalidate = 60
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orgId: string; token: string }>
+}): Promise<Metadata> {
+  const { orgId, token } = await params
+  const link = await lookUpShareLink('inspection', orgId, token)
+  const robots = { index: false, follow: false }
+  // A closed link's tab does not say what the link led to.
+  if (link.status === 'expired' || link.status === 'gone') {
+    return { title: await closedShareLinkTitle(link.organizationId, link.status), robots }
+  }
   const t = await getTranslations('portal.inspectionDetail')
-  return { title: t('title'), robots: { index: false, follow: false } }
+  return { title: t('title'), robots }
 }
 
 export default async function PublicInspectionPage({
@@ -42,13 +53,20 @@ export default async function PublicInspectionPage({
 }) {
   const { orgId: orgParam, token } = await params
 
-  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-  const resolvedOrg = await resolvePortalOrg(orgParam)
-  const orgId = resolvedOrg?.id ?? orgParam
-
-  const shared = await findSharedDocument('inspection', token, orgId)
-  if (!shared) notFound()
-  if (!shared.open) return <ShareLinkExpired organizationId={orgId} kind="inspection" />
+  // Only an address with no workshop behind it is the plain 404. A customer
+  // whose link is closed gets a page that tells them who to ask.
+  const link = await lookUpShareLink('inspection', orgParam, token)
+  if (link.status === 'unknownWorkshop') notFound()
+  if (link.status !== 'open') {
+    return (
+      <ShareLinkClosed
+        organizationId={link.organizationId}
+        status={link.status}
+        kind="inspection"
+      />
+    )
+  }
+  const { organizationId: orgId, shared } = link
 
   const inspection = await db.inspection.findFirst({
     where: { publicToken: token, organizationId: orgId },
@@ -96,7 +114,7 @@ export default async function PublicInspectionPage({
   })
 
   if (!inspection) {
-    notFound()
+    return <ShareLinkClosed organizationId={orgId} status="gone" kind="inspection" />
   }
 
   // Every setting, as the PDF loads them: the certificate design reads its
@@ -219,6 +237,7 @@ export default async function PublicInspectionPage({
 
   return (
     <InspectionView
+      expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}
       inspection={publicInspection}
       spec={spec}
       workshop={workshop}

@@ -266,5 +266,15 @@
       "inspection": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu dieser Inspektion zu erhalten.",
       "statusReport": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu diesem Update zu erhalten."
     }
+  },
+  "gone": {
+    "pageTitle": "Link funktioniert nicht",
+    "title": "Dieser Link funktioniert nicht mehr",
+    "body": "Möglicherweise wurde er entfernt oder die Adresse ist unvollständig. Wenden Sie sich an {workshop}, um einen neuen Link zu erhalten.",
+    "bodyNoName": "Möglicherweise wurde er entfernt oder die Adresse ist unvollständig. Wenden Sie sich an die Werkstatt, um einen neuen Link zu erhalten."
+  },
+  "openUntil": {
+    "text": "Dieser Link funktioniert bis einschließlich {date}. Wenden Sie sich danach an {workshop}, um einen neuen zu erhalten.",
+    "textNoName": "Dieser Link funktioniert bis einschließlich {date}. Wenden Sie sich danach an die Werkstatt, um einen neuen zu erhalten."
   }
 }

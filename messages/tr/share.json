@@ -266,5 +266,15 @@
       "inspection": "Bu muayeneye yeni bir bağlantı almak için atölyeyle iletişime geçin.",
       "statusReport": "Bu güncellemeye yeni bir bağlantı almak için atölyeyle iletişime geçin."
     }
+  },
+  "gone": {
+    "pageTitle": "Bağlantı çalışmıyor",
+    "title": "Bu bağlantı artık çalışmıyor",
+    "body": "Bağlantı kaldırılmış ya da adres eksik olabilir. Yeni bir bağlantı almak için {workshop} ile iletişime geçin.",
+    "bodyNoName": "Bağlantı kaldırılmış ya da adres eksik olabilir. Yeni bir bağlantı almak için atölyeyle iletişime geçin."
+  },
+  "openUntil": {
+    "text": "Bu bağlantı {date} tarihine kadar çalışır. Sonrasında yeni bir bağlantı için {workshop} ile iletişime geçin.",
+    "textNoName": "Bu bağlantı {date} tarihine kadar çalışır. Sonrasında yeni bir bağlantı için atölyeyle iletişime geçin."
   }
 }

@@ -238,6 +238,7 @@ export function InvoiceView({
   showLogo = true,
   showCompanyName = true,
   showTorqvoiceBranding,
+  expiryNote,
   dateFormat,
   timezone,
   termsOfSaleUrl,
@@ -267,6 +268,8 @@ export function InvoiceView({
   showLogo?: boolean
   showCompanyName?: boolean
   showTorqvoiceBranding?: boolean
+  /** The line saying when this link closes. Page chrome, never part of the sheet. */
+  expiryNote?: React.ReactNode
   dateFormat?: string
   timezone?: string
   termsOfSaleUrl?: string
@@ -843,6 +846,7 @@ export function InvoiceView({
           </a>
         )}
       </div>
+      {expiryNote}
 
       {/* Image Carousel Modal */}
       {carouselIndex !== null && imageAttachments[carouselIndex] && (

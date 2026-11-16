@@ -5,7 +5,6 @@ import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { QuoteView } from './quote-view'
 import { getFeatures } from '@/lib/features'
-import { resolvePortalOrg } from '@/lib/portal-slug'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { buildQuotePrintSpec } from '@/features/invoice-designer/Pdf/buildQuotePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
@@ -18,17 +17,29 @@ import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getAppBaseUrl } from '@/lib/app-url'
-import { ShareLinkExpired } from '@/components/share-link-expired'
-import { findSharedDocument } from '@/lib/share-link.server'
+import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
+import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { lookUpShareLink } from '@/lib/share-link.server'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export const revalidate = 60
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orgId: string; token: string }>
+}): Promise<Metadata> {
+  const { orgId, token } = await params
+  const link = await lookUpShareLink('quote', orgId, token)
+  const robots = { index: false, follow: false }
+  // A closed link's tab does not say what the link led to.
+  if (link.status === 'expired' || link.status === 'gone') {
+    return { title: await closedShareLinkTitle(link.organizationId, link.status), robots }
+  }
   const t = await getTranslations('share.quote')
-  return { title: t('title'), robots: { index: false, follow: false } }
+  return { title: t('title'), robots }
 }
 
 export default async function PublicQuotePage({
@@ -38,13 +49,16 @@ export default async function PublicQuotePage({
 }) {
   const { orgId: orgParam, token } = await params
 
-  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-  const resolvedOrg = await resolvePortalOrg(orgParam)
-  const orgId = resolvedOrg?.id ?? orgParam
-
-  const shared = await findSharedDocument('quote', token, orgId)
-  if (!shared) notFound()
-  if (!shared.open) return <ShareLinkExpired organizationId={orgId} kind="quote" />
+  // Only an address with no workshop behind it is the plain 404. A customer
+  // whose link is closed gets a page that tells them who to ask.
+  const link = await lookUpShareLink('quote', orgParam, token)
+  if (link.status === 'unknownWorkshop') notFound()
+  if (link.status !== 'open') {
+    return (
+      <ShareLinkClosed organizationId={link.organizationId} status={link.status} kind="quote" />
+    )
+  }
+  const { organizationId: orgId, shared } = link
 
   const quote = await db.quote.findFirst({
     where: { publicToken: token, organizationId: orgId },
@@ -93,9 +107,7 @@ export default async function PublicQuotePage({
     },
   })
 
-  if (!quote) {
-    notFound()
-  }
+  if (!quote) return <ShareLinkClosed organizationId={orgId} status="gone" kind="quote" />
 
   const [settings, org, features] = await Promise.all([
     db.appSetting.findMany({
@@ -298,6 +310,7 @@ export default async function PublicQuotePage({
       customFields={customFields}
       serviceType={(settingsMap['workshop.serviceType'] || 'automotive') as 'automotive' | 'marine'}
       taxLabel={settingsMap['workshop.taxLabel']?.trim() || undefined}
+      expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}
       certificateUrl={
         certificateInspection
           ? `/api/public/share/quote/${orgParam}/${token}/certificate`

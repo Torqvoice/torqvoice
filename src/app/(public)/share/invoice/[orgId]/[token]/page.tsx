@@ -3,7 +3,6 @@ import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { notFound } from 'next/navigation'
 import { InvoiceView } from './invoice-view'
 import { getFeatures } from '@/lib/features'
-import { resolvePortalOrg } from '@/lib/portal-slug'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { visitConditionMapIn } from '@/features/condition-map/Lib/loadMarks.server'
@@ -16,8 +15,9 @@ import type { Metadata } from 'next'
 import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { getAppBaseUrl } from '@/lib/app-url'
-import { ShareLinkExpired } from '@/components/share-link-expired'
-import { findSharedDocument } from '@/lib/share-link.server'
+import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
+import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { lookUpShareLink } from '@/lib/share-link.server'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -29,9 +29,20 @@ function toPublicFileUrl(fileUrl: string, token: string): string {
 
 export const revalidate = 60
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orgId: string; token: string }>
+}): Promise<Metadata> {
+  const { orgId, token } = await params
+  const link = await lookUpShareLink('invoice', orgId, token)
+  const robots = { index: false, follow: false }
+  // A closed link's tab does not say what the link led to.
+  if (link.status === 'expired' || link.status === 'gone') {
+    return { title: await closedShareLinkTitle(link.organizationId, link.status), robots }
+  }
   const t = await getTranslations('share.invoice')
-  return { title: t('title'), robots: { index: false, follow: false } }
+  return { title: t('title'), robots }
 }
 
 export default async function PublicInvoicePage({
@@ -41,18 +52,21 @@ export default async function PublicInvoicePage({
 }) {
   const { orgId: orgParam, token } = await params
 
-  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-  const resolvedOrg = await resolvePortalOrg(orgParam)
-  const orgId = resolvedOrg?.id ?? orgParam
-
-  const shared = await findSharedDocument('invoice', token, orgId)
-  if (!shared) notFound()
-  if (!shared.open) return <ShareLinkExpired organizationId={orgId} kind="invoice" />
+  // Only an address with no workshop behind it is the plain 404. A customer
+  // whose link is closed gets a page that tells them who to ask.
+  const link = await lookUpShareLink('invoice', orgParam, token)
+  if (link.status === 'unknownWorkshop') notFound()
+  if (link.status !== 'open') {
+    return (
+      <ShareLinkClosed organizationId={link.organizationId} status={link.status} kind="invoice" />
+    )
+  }
+  const { organizationId: orgId, shared } = link
 
   // The document as it was issued, or the live draft: one assembler decides,
   // and the page a customer opens is the sheet the PDF prints.
   const assembly = await assembleInvoicePrint(shared.id)
-  if (!assembly) notFound()
+  if (!assembly) return <ShareLinkClosed organizationId={orgId} status="gone" kind="invoice" />
   const { record, settingsMap, org } = assembly
 
   const features = await getFeatures(orgId)
@@ -182,6 +196,7 @@ export default async function PublicInvoicePage({
       findings={assembly.data.findings}
       serviceType={assembly.serviceType}
       taxLabel={assembly.taxLabel}
+      expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}
       certificateUrl={
         certificateInspection
           ? `/api/public/share/invoice/${orgParam}/${token}/certificate`

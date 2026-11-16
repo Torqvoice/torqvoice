@@ -3134,7 +3134,7 @@
     "saveFailed": "No se pudieron guardar los ajustes de enlaces compartidos. Inténtalo de nuevo.",
     "rules": {
       "title": "Caducidad de enlaces",
-      "description": "Cuánto tiempo funciona un enlace que envías a un cliente. Después, el cliente ve una página que le pide que se ponga en contacto contigo.",
+      "description": "Cuánto tiempo funciona un enlace que envías a un cliente. La página le indica al cliente el último día; después, ve una página que le pide que se ponga en contacto contigo.",
       "kind": {
         "invoice": "Facturas",
         "quote": "Presupuestos",
