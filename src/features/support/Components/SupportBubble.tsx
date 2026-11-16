@@ -37,6 +37,7 @@ import {
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
 import { useDraggablePosition } from '@/features/support/Lib/useDraggablePosition'
+import { useTouchScreen } from '@/features/support/Lib/useTouchScreen'
 
 type Status = 'idle' | 'sending' | 'sent'
 
@@ -93,6 +94,13 @@ export function SupportBubble({ userId }: { userId: string }) {
       window.removeEventListener(SUPPORT_VISIBILITY_EVENT, sync)
     }
   }, [])
+
+  // On a phone or tablet the floating button sits on top of what is being
+  // tapped, so neither it nor its edge tab is drawn there. Support is still a
+  // tap away in Settings, and the form opens as usual when a page asks for it.
+  // Unknown for the first render: nothing is drawn until it is known, so the
+  // button never shows for a frame on a phone.
+  const touchScreen = useTouchScreen()
 
   /**
    * The panel follows the button. It is right-aligned to the button and opens
@@ -268,12 +276,16 @@ export function SupportBubble({ userId }: { userId: string }) {
   )
 
   // position is null until localStorage and the viewport have been read.
-  if (!position) return null
+  if (!position || touchScreen === null) return null
+
+  // Only the form, and only while it is open. The dismissal below is about
+  // the button, so it has no say here.
+  if (touchScreen && !isOpen) return null
 
   // Dismissed collapses to a tab tucked against the right edge rather than
   // disappearing. Removing the button outright leaves no way back except the
   // settings page, which is not somewhere you look when you want support.
-  if (hidden) {
+  if (hidden && !touchScreen) {
     return (
       <button
         type="button"
@@ -319,25 +331,41 @@ export function SupportBubble({ userId }: { userId: string }) {
 
       {isOpen && (
         <div
-          style={panelStyle}
-          className="fixed z-50 overflow-hidden rounded-xl border bg-popover shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+          // With no button to follow, the form sits at the top of the screen:
+          // clear of the bottom navigation, and of the on-screen keyboard that
+          // covers the lower half as soon as a field is tapped. Below a
+          // laptop's width it hangs from the left edge: a page that is a few
+          // pixels too wide pushes the right edge, and the close button with
+          // it, off a phone or small tablet.
+          style={touchScreen ? undefined : panelStyle}
+          className={`fixed z-50 overflow-hidden rounded-xl border bg-popover shadow-2xl ring-1 ring-black/5 dark:ring-white/10 ${
+            touchScreen
+              ? 'top-[calc(0.75rem+env(safe-area-inset-top))] left-3 w-[min(380px,calc(100vw-1.5rem))] lg:right-3 lg:left-auto'
+              : ''
+          }`}
         >
-          <div className="flex items-center gap-1 border-b bg-muted/40 py-2 pl-1 pr-2">
+          <div
+            className={`flex items-center gap-1 border-b bg-muted/40 py-2 pr-2 ${
+              touchScreen ? 'pl-3' : 'pl-1'
+            }`}
+          >
             {/* Hidden from assistive tech rather than announced as a button.
                 Dragging is pointer-only, so exposing it as a control would
                 advertise something a keyboard user cannot operate. Nothing is
                 lost: every control in the panel is reachable regardless of
                 where it sits, and the position is only a convenience. */}
-            <span
-              {...dragHandlers}
-              aria-hidden="true"
-              title={t('move')}
-              className={`flex h-7 w-6 shrink-0 touch-none items-center justify-center text-muted-foreground/60 hover:text-muted-foreground ${
-                dragging ? 'cursor-grabbing' : 'cursor-grab'
-              }`}
-            >
-              <GripVertical className="h-4 w-4" />
-            </span>
+            {!touchScreen && (
+              <span
+                {...dragHandlers}
+                aria-hidden="true"
+                title={t('move')}
+                className={`flex h-7 w-6 shrink-0 touch-none items-center justify-center text-muted-foreground/60 hover:text-muted-foreground ${
+                  dragging ? 'cursor-grabbing' : 'cursor-grab'
+                }`}
+              >
+                <GripVertical className="h-4 w-4" />
+              </span>
+            )}
             <Headset className="h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
             <span className="flex-1 truncate text-sm font-medium">{t('title')}</span>
             <button
@@ -477,13 +505,16 @@ export function SupportBubble({ userId }: { userId: string }) {
                   {status === 'sending' ? t('sending') : t('send')}
                 </Button>
 
-                <button
-                  type="button"
-                  onClick={handleDismiss}
-                  className="w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground hover:underline"
-                >
-                  {t('hideButton')}
-                </button>
+                {/* There is no button to hide on a phone or tablet. */}
+                {!touchScreen && (
+                  <button
+                    type="button"
+                    onClick={handleDismiss}
+                    className="w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground hover:underline"
+                  >
+                    {t('hideButton')}
+                  </button>
+                )}
               </form>
             )}
           </div>
