@@ -35,8 +35,10 @@ vi.mock('@/lib/with-auth', () => ({
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 // The link's own rules (kept when it exists, minted once) have their own test.
 const ensureShareToken = vi.fn()
+const renewShareLink = vi.fn()
 vi.mock('@/lib/share-token.server', () => ({
   ensureShareToken: (...args: unknown[]) => ensureShareToken(...args),
+  renewShareLink: (...args: unknown[]) => renewShareLink(...args),
 }))
 vi.mock('@/lib/demo', () => ({ demoGuard: vi.fn() }))
 vi.mock('@/lib/app-url', () => ({ getAppBaseUrl: () => 'https://app.test' }))
@@ -110,6 +112,8 @@ describe('texting a quote', () => {
 
     expect(result.success).toBe(true)
     expect(ensureShareToken).toHaveBeenCalledWith('quote', 'q1', 'org1')
+    // Sent, so the link's expiry counts from now.
+    expect(renewShareLink).toHaveBeenCalledWith('quote', 'q1', 'org1')
     const sent = deliverSms.mock.calls[0][1]
     expect(sent.to).toBe('+4790000000')
     expect(sent.body).toContain('https://app.test/share/quote/org1/held')
@@ -173,6 +177,8 @@ describe('texting a quote', () => {
     expect(result).toMatchObject({ success: false })
     expect(result.error).toContain('"912 345 678" is not a phone number we can text')
     expect(deliverSms).not.toHaveBeenCalled()
+    // Nothing went out, so a link that had expired stays closed.
+    expect(renewShareLink).not.toHaveBeenCalled()
   })
 
   it('refuses a quote from another workshop', async () => {

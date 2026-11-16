@@ -1,6 +1,5 @@
 import { getTranslations } from 'next-intl/server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
-import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InvoiceView } from './invoice-view'
 import { getFeatures } from '@/lib/features'
@@ -17,6 +16,8 @@ import type { Metadata } from 'next'
 import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { ShareLinkExpired } from '@/components/share-link-expired'
+import { findSharedDocument } from '@/lib/share-link.server'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -44,13 +45,9 @@ export default async function PublicInvoicePage({
   const resolvedOrg = await resolvePortalOrg(orgParam)
   const orgId = resolvedOrg?.id ?? orgParam
 
-  const shared = await db.serviceRecord.findUnique({
-    where: { publicToken: token },
-    select: { id: true, organizationId: true },
-  })
-  if (!shared || shared.organizationId !== orgId) {
-    notFound()
-  }
+  const shared = await findSharedDocument('invoice', token, orgId)
+  if (!shared) notFound()
+  if (!shared.open) return <ShareLinkExpired organizationId={orgId} kind="invoice" />
 
   // The document as it was issued, or the live draft: one assembler decides,
   // and the page a customer opens is the sheet the PDF prints.

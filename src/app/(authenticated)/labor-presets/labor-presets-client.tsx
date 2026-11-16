@@ -180,6 +180,7 @@ export function LaborPresetsClient({
       title: t('deletePreset.title'),
       description: t('deletePreset.description', { name }),
       confirmLabel: t('deletePreset.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

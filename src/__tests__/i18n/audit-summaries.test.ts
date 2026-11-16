@@ -180,6 +180,7 @@ describe('audit summaries', () => {
     const sample: Record<string, string | number> = {
       name: 'X',
       kind: 'invoice',
+      date: '2026-12-14',
       id: 'X',
       ref: 'X',
       code: 'X',

@@ -18,6 +18,8 @@ import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { ShareLinkExpired } from '@/components/share-link-expired'
+import { findSharedDocument } from '@/lib/share-link.server'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
@@ -39,6 +41,10 @@ export default async function PublicQuotePage({
   // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
   const resolvedOrg = await resolvePortalOrg(orgParam)
   const orgId = resolvedOrg?.id ?? orgParam
+
+  const shared = await findSharedDocument('quote', token, orgId)
+  if (!shared) notFound()
+  if (!shared.open) return <ShareLinkExpired organizationId={orgId} kind="quote" />
 
   const quote = await db.quote.findFirst({
     where: { publicToken: token, organizationId: orgId },

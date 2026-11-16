@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Se connecter",
     "save": "Enregistrer",
+    "saveChanges": "Enregistrer les modifications",
     "cancel": "Annuler",
     "delete": "Supprimer",
     "submit": "Soumettre",
     "back": "Retour",
     "confirm": "Confirmer",
-    "saveChanges": "Enregistrer les modifications",
     "edit": "Modifier",
     "add": "Ajouter",
     "gotIt": "J’ai compris"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp envoyé",
     "failedWhatsapp": "Impossible d'envoyer le message WhatsApp",
-    "whatsappWindowClosed": "Ce client ne vous a pas écrit sur WhatsApp au cours des dernières 24 heures, et aucun modèle approuvé n'est configuré pour le contacter."
+    "whatsappWindowClosed": "Ce client ne vous a pas écrit sur WhatsApp au cours des dernières 24 heures, et aucun modèle approuvé n'est configuré pour le contacter.",
+    "expiry": {
+      "never": "N'expire jamais",
+      "untilPaid": "Reste ouvert jusqu'au paiement",
+      "expires": "Expire le {date}",
+      "expired": "Expiré le {date}",
+      "change": "Modifier",
+      "openAgain": "Rouvrir",
+      "reopened": "Le lien est de nouveau ouvert",
+      "formTitle": "Expiration du lien",
+      "choice": {
+        "workshop": "Réglage de l'atelier",
+        "date": "À une date",
+        "never": "Jamais"
+      },
+      "rule": {
+        "never": "Les liens n'expirent jamais",
+        "afterSharing": "{days, plural, one {# jour} other {# jours}} après l'envoi",
+        "afterPayment": "{days, plural, one {# jour} other {# jours}} après le paiement de la facture"
+      },
+      "dateHint": "Le lien fonctionne pendant toute cette journée.",
+      "chooseDate": "Choisir une date",
+      "cancel": "Annuler",
+      "save": "Enregistrer",
+      "saved": "Expiration du lien enregistrée",
+      "saveFailed": "Impossible d'enregistrer l'expiration du lien. Réessayez."
+    }
   },
   "searchableSelect": {
     "choose": "Choisir...",
@@ -289,5 +315,11 @@
     "dismiss": "Fermer",
     "selectAll": "Tout sélectionner",
     "selectRow": "Sélectionner {name}"
+  },
+  "confirmDialog": {
+    "title": "Êtes-vous sûr ?",
+    "irreversible": "Cette action est irréversible.",
+    "andMore": "et {count} de plus",
+    "typeToConfirm": "Saisissez <b>{text}</b> pour confirmer"
   }
 }

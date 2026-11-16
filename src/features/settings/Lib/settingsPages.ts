@@ -24,6 +24,7 @@ export type SettingsPageKey =
   | 'warranty'
   | 'emailTemplates'
   | 'customerPortal'
+  | 'shareLinks'
   | 'workshop'
   | 'openingHours'
   | 'workOrderStatuses'
@@ -99,6 +100,7 @@ export const SETTINGS_PAGES: SettingsPage[] = [
     category: 'communications',
     gate: 'customerPortal',
   },
+  { key: 'shareLinks', href: '/settings/share-links', category: 'communications' },
 
   { key: 'workshop', href: '/settings/workshop', category: 'workshop' },
   { key: 'openingHours', href: '/settings/opening-hours', category: 'workshop' },

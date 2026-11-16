@@ -250,5 +250,21 @@
     "telegramConnect": "Chatta con noi su Telegram",
     "telegramScan": "Scansiona questo codice QR per inviarci un messaggio su Telegram per aggiornamenti e supporto.",
     "downloadCertificate": "Scarica il verbale di ispezione"
+  },
+  "expired": {
+    "pageTitle": "Link scaduto",
+    "title": "Questo link è scaduto",
+    "body": {
+      "invoice": "Contatta {workshop} per ricevere un nuovo link a questa fattura.",
+      "quote": "Contatta {workshop} per ricevere un nuovo link a questo preventivo.",
+      "inspection": "Contatta {workshop} per ricevere un nuovo link a questa ispezione.",
+      "statusReport": "Contatta {workshop} per ricevere un nuovo link a questo aggiornamento."
+    },
+    "bodyNoName": {
+      "invoice": "Contatta l'officina per ricevere un nuovo link a questa fattura.",
+      "quote": "Contatta l'officina per ricevere un nuovo link a questo preventivo.",
+      "inspection": "Contatta l'officina per ricevere un nuovo link a questa ispezione.",
+      "statusReport": "Contatta l'officina per ricevere un nuovo link a questo aggiornamento."
+    }
   }
 }

@@ -5,7 +5,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
-import { useState, useCallback, useTransition, useEffect } from 'react'
+import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -118,6 +118,12 @@ export function CustomersClient({
   const [showImport, setShowImport] = useState(false)
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  // Selection outlives the page of rows it was made on, so every row shown is
+  // remembered: the delete prompt can still name what is selected elsewhere.
+  const seenRows = useRef(new Map<string, (typeof data.customers)[number]>())
+  useEffect(() => {
+    for (const row of data.customers) seenRows.current.set(row.id, row)
+  }, [data.customers])
   const [isDeleting, setIsDeleting] = useState(false)
   const modal = useGlassModal()
   const confirm = useConfirm()
@@ -199,6 +205,7 @@ export function CustomersClient({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name }),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -214,10 +221,21 @@ export function CustomersClient({
 
   const handleBatchDelete = async () => {
     if (selected.size === 0) return
+    // Name the first few customers so the count is not taken on trust.
+    const named = Array.from(selected)
+      .map((id) => seenRows.current.get(id))
+      .filter((row) => row !== undefined)
+      .slice(0, 3)
     const ok = await confirm({
       title: t('batchDeleteTitle'),
       description: t('batchDeleteDescription', { count: selected.size }),
+      subject: named.map((c) => ({
+        label: c.name,
+        detail: c.company && c.company !== c.name ? c.company : undefined,
+      })),
+      subjectMore: selected.size - named.length,
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { ShareExpiryLine } from '@/features/share-links/Components/ShareExpiryControl'
 import { useRouter } from 'next/navigation'
 import {
   Dialog,
@@ -108,6 +109,8 @@ export function InspectionShareDialog({
                   )}
                 </Button>
               </div>
+
+              {token && <ShareExpiryLine kind="inspection" id={inspectionId} token={token} />}
 
               <Button
                 variant="outline"

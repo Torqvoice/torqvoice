@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Eye, EyeOff, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, PenLine, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
 import { withOrgNumberLabel } from '../Lib/labelOverrides'
 import { RAIL_FOCUS, railArrow } from './railKeys'
@@ -455,6 +455,7 @@ export function InvoiceDesigner({
           .filter(Boolean)
           .join(' '),
         confirmLabel: t('delete'),
+        icon: Trash2,
         destructive: true,
       })
       if (!ok) return false
@@ -663,6 +664,9 @@ export function InvoiceDesigner({
         title: t('leaveTitle'),
         description: t('leaveBody'),
         confirmLabel: t('leaveConfirm'),
+        cancelLabel: t('leaveCancel'),
+        icon: PenLine,
+        defaultFocus: 'cancel',
       })
       if (!go) return
     }

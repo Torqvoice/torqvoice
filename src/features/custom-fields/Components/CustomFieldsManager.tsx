@@ -100,6 +100,7 @@ export function CustomFieldsManager({
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
+  const tc = useTranslations('common')
   const modal = useGlassModal()
   const confirm = useConfirm()
   const fields = initialFields
@@ -225,7 +226,8 @@ export function CustomFieldsManager({
     const ok = await confirm({
       title: t('customFields.deleteTitle'),
       description: t('customFields.deleteDescription', { label: field.label }),
-      confirmLabel: 'Delete',
+      confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

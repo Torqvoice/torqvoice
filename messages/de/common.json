@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Anmelden",
     "save": "Speichern",
+    "saveChanges": "Änderungen speichern",
     "cancel": "Abbrechen",
     "delete": "Löschen",
     "submit": "Absenden",
     "back": "Zurück",
     "confirm": "Bestätigen",
-    "saveChanges": "Änderungen speichern",
     "edit": "Bearbeiten",
     "add": "Hinzufügen",
     "gotIt": "Verstanden"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp gesendet",
     "failedWhatsapp": "WhatsApp-Nachricht konnte nicht gesendet werden",
-    "whatsappWindowClosed": "Dieser Kunde hat Ihnen in den letzten 24 Stunden nicht über WhatsApp geschrieben, und es ist keine genehmigte Vorlage eingerichtet, um ihn zu erreichen."
+    "whatsappWindowClosed": "Dieser Kunde hat Ihnen in den letzten 24 Stunden nicht über WhatsApp geschrieben, und es ist keine genehmigte Vorlage eingerichtet, um ihn zu erreichen.",
+    "expiry": {
+      "never": "Läuft nie ab",
+      "untilPaid": "Bleibt bis zur Zahlung offen",
+      "expires": "Läuft ab am {date}",
+      "expired": "Abgelaufen am {date}",
+      "change": "Ändern",
+      "openAgain": "Wieder öffnen",
+      "reopened": "Link ist wieder offen",
+      "formTitle": "Link läuft ab",
+      "choice": {
+        "workshop": "Werkstatteinstellung",
+        "date": "An einem Datum",
+        "never": "Nie"
+      },
+      "rule": {
+        "never": "Links laufen nie ab",
+        "afterSharing": "{days, plural, one {# Tag} other {# Tage}} nach dem Versand",
+        "afterPayment": "{days, plural, one {# Tag} other {# Tage}} nach Bezahlung der Rechnung"
+      },
+      "dateHint": "Der Link funktioniert den ganzen Tag lang.",
+      "chooseDate": "Datum wählen",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "saved": "Ablauf des Links gespeichert",
+      "saveFailed": "Der Ablauf des Links konnte nicht gespeichert werden. Versuchen Sie es erneut."
+    }
   },
   "searchableSelect": {
     "choose": "Auswählen...",
@@ -289,5 +315,11 @@
     "dismiss": "Schließen",
     "selectAll": "Alle auswählen",
     "selectRow": "{name} auswählen"
+  },
+  "confirmDialog": {
+    "title": "Sind Sie sicher?",
+    "irreversible": "Dies kann nicht rückgängig gemacht werden.",
+    "andMore": "und {count} weitere",
+    "typeToConfirm": "Geben Sie <b>{text}</b> zur Bestätigung ein"
   }
 }

@@ -42,6 +42,10 @@ model ServiceRecord {
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)
   manuallyPaid    Boolean   @default(false)
+  /// When the workshop marked the invoice paid by hand, which is the day a
+  /// share link set to expire "after payment" starts counting from. Null on
+  /// invoices marked before this column, and on ones paid through payments.
+  manuallyPaidAt  DateTime?
 
   // Warranty tracking
   /// What the workshop tells the customer about its own warranty on this job:
@@ -63,6 +67,13 @@ model ServiceRecord {
   sharedAt     DateTime?
   viewCount    Int       @default(0)
   lastViewedAt DateTime?
+  /// When the share link stops working, for this document only. Both null
+  /// and false means the workshop's rule decides (src/lib/share-expiry.ts).
+  /// shareRenewedAt is the last time the link was sent again or reopened,
+  /// which starts the workshop's rule counting afresh.
+  shareExpiresAt    DateTime?
+  shareNeverExpires Boolean   @default(false)
+  shareRenewedAt    DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

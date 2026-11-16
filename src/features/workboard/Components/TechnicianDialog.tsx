@@ -6,7 +6,7 @@ import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, UserX } from 'lucide-react'
+import { Loader2, UserX, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   createTechnician,
@@ -230,6 +230,7 @@ export function TechnicianDialog({
                     title: t('deleteTitle'),
                     description: t('deleteDescription', { name: technician.name }),
                     confirmLabel: tc('delete'),
+                    icon: Trash2,
                     destructive: true,
                   })
                   if (!ok) return

@@ -250,5 +250,21 @@
     "telegramConnect": "Discutez avec nous sur Telegram",
     "telegramScan": "Scannez ce code QR pour nous envoyer un message sur Telegram pour les mises à jour et le support.",
     "downloadCertificate": "Télécharger le procès-verbal d'inspection"
+  },
+  "expired": {
+    "pageTitle": "Lien expiré",
+    "title": "Ce lien a expiré",
+    "body": {
+      "invoice": "Contactez {workshop} pour obtenir un nouveau lien vers cette facture.",
+      "quote": "Contactez {workshop} pour obtenir un nouveau lien vers ce devis.",
+      "inspection": "Contactez {workshop} pour obtenir un nouveau lien vers cette inspection.",
+      "statusReport": "Contactez {workshop} pour obtenir un nouveau lien vers ce point d'avancement."
+    },
+    "bodyNoName": {
+      "invoice": "Contactez l'atelier pour obtenir un nouveau lien vers cette facture.",
+      "quote": "Contactez l'atelier pour obtenir un nouveau lien vers ce devis.",
+      "inspection": "Contactez l'atelier pour obtenir un nouveau lien vers cette inspection.",
+      "statusReport": "Contactez l'atelier pour obtenir un nouveau lien vers ce point d'avancement."
+    }
   }
 }

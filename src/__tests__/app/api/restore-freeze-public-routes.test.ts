@@ -19,6 +19,11 @@ vi.mock('@/lib/backup/freeze', async (importOriginal) => {
     },
   }
 })
+// The link is open: whether an expired one is refused is share-link-open's
+// business, and each of these tests is about what happens after that.
+const findSharedDocument = vi.hoisted(() => vi.fn(async () => ({ open: true })))
+vi.mock('@/lib/share-link.server', () => ({ findSharedDocument }))
+
 vi.mock('@/lib/db', () => ({
   db: {
     inspection: { findFirst: vi.fn() },

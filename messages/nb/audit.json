@@ -210,7 +210,9 @@
     "settings_markType_remove": "Fjernet en merketype",
     "settings_markType_reorder": "Endret rekkefølgen på merketypene",
     "integration_backup_run": "Startet sikkerhetskopiering",
-    "integration_backup_restore": "Gjenopprettet sikkerhetskopi"
+    "integration_backup_restore": "Gjenopprettet sikkerhetskopi",
+    "shareLink_expiry": "Endret utløp for delt lenke",
+    "shareLink_revoke": "Fjernet delte lenker"
   },
   "summary": {
     "auth_twoFactorEnabled": "Slo på tofaktorinnlogging",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Tok tilstandskartet av fakturaen",
     "backup_run_started": "Startet en sikkerhetskopi til {name}",
     "backup_restore_started": "Startet gjenoppretting av sikkerhetskopi {snapshot} fra {name}",
-    "backup_restored": "Gjenopprettet sikkerhetskopi {snapshot} fra {name}"
+    "backup_restored": "Gjenopprettet sikkerhetskopi {snapshot} fra {name}",
+    "share_link_expiry_workshop": "Satte en delt lenke til å følge verkstedets innstilling",
+    "share_link_expiry_never": "Satte en delt lenke til å aldri utløpe",
+    "share_link_expiry_date": "Satte en delt lenke til å utløpe {date}",
+    "share_link_revoke_bulk": "Fjernet {count, plural, one {# delt lenke} other {# delte lenker}}"
   }
 }

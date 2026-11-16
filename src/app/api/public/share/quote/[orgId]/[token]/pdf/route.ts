@@ -4,6 +4,7 @@ import { buildQuotePdfBuffer } from '@/features/quotes/Pdf/buildQuotePdfBuffer'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { db } from '@/lib/db'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
 
 /**
  * The customer's copy of a quote, behind the share link's token.
@@ -23,6 +24,9 @@ export async function GET(
     // The link may carry a slug ("egelandauto") or the organisation's id.
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const organizationId = resolvedOrg?.id ?? orgParam
+
+    const closed = await refuseClosedShareLink('quote', token, organizationId)
+    if (closed) return closed
 
     const quote = await db.quote.findFirst({
       where: { publicToken: token, organizationId },

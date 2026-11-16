@@ -40,6 +40,7 @@ import { assertInvoiceEditable, getDocumentLockSettings } from '@/lib/document-l
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
 import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
 import { ACTIVE_HELPERS } from '@/features/workboard/Lib/jobTeam'
+import { FRESH_SHARE_LINK } from '@/lib/share-expiry'
 
 export async function getServiceRecords(vehicleId: string) {
   return withAuth(
@@ -1234,7 +1235,12 @@ export async function toggleManuallyPaid(recordId: string) {
 
       await db.serviceRecord.update({
         where: { id: recordId },
-        data: { manuallyPaid: !record.manuallyPaid },
+        // The day goes with the mark: a share link set to expire "after
+        // payment" counts from it.
+        data: {
+          manuallyPaid: !record.manuallyPaid,
+          manuallyPaidAt: record.manuallyPaid ? null : new Date(),
+        },
       })
       // A paid invoice is the customer's document whether or not it was ever
       // sent through the app.
@@ -1498,6 +1504,7 @@ export async function generatePublicLink(serviceRecordId: string) {
         data: {
           publicToken: token,
           sharedAt: new Date(),
+          ...FRESH_SHARE_LINK,
           // Handing over a link is a way of sending the invoice, so it counts
           // for "lock when sent". Unlike sharedAt this is never cleared:
           // revoking the link does not unsend what the customer already saw.
@@ -1534,7 +1541,13 @@ export async function revokePublicLink(serviceRecordId: string) {
 
       await db.serviceRecord.update({
         where: { id: serviceRecordId },
-        data: { publicToken: null, sharedAt: null, viewCount: 0, lastViewedAt: null },
+        data: {
+          publicToken: null,
+          sharedAt: null,
+          viewCount: 0,
+          lastViewedAt: null,
+          ...FRESH_SHARE_LINK,
+        },
       })
 
       revalidatePath(`/vehicles/${record.vehicleId}/service/${serviceRecordId}`)

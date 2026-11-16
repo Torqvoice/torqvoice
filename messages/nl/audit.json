@@ -210,7 +210,9 @@
     "settings_markType_remove": "Markeringstype verwijderd",
     "settings_markType_reorder": "Markeringstypen herschikt",
     "integration_backup_run": "Back-up gestart",
-    "integration_backup_restore": "Back-up teruggezet"
+    "integration_backup_restore": "Back-up teruggezet",
+    "shareLink_expiry": "Verloop van deellink gewijzigd",
+    "shareLink_revoke": "Deellinks verwijderd"
   },
   "summary": {
     "auth_twoFactorEnabled": "Inloggen in twee stappen ingeschakeld",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Staatkaart van de factuur gehaald",
     "backup_run_started": "Back-up naar {name} gestart",
     "backup_restore_started": "Terugzetten van back-up {snapshot} uit {name} gestart",
-    "backup_restored": "Back-up {snapshot} uit {name} teruggezet"
+    "backup_restored": "Back-up {snapshot} uit {name} teruggezet",
+    "share_link_expiry_workshop": "Deellink ingesteld op de instelling van de werkplaats",
+    "share_link_expiry_never": "Deellink ingesteld om nooit te verlopen",
+    "share_link_expiry_date": "Deellink ingesteld om te verlopen op {date}",
+    "share_link_revoke_bulk": "{count, plural, one {# deellink verwijderd} other {# deellinks verwijderd}}"
   }
 }

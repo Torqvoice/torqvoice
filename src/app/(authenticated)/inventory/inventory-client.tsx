@@ -8,7 +8,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts'
 
-import { useState, useCallback, useTransition, useEffect } from 'react'
+import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog'
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
@@ -195,6 +195,12 @@ export function InventoryClient({
   const [scannedBarcode, setScannedBarcode] = useState('')
   const [showScanActions, setShowScanActions] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  // Selection outlives the page of rows it was made on, so every row shown is
+  // remembered: the delete prompt can still name what is selected elsewhere.
+  const seenRows = useRef(new Map<string, (typeof data.parts)[number]>())
+  useEffect(() => {
+    for (const row of data.parts) seenRows.current.set(row.id, row)
+  }, [data.parts])
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   useEffect(() => {
@@ -275,6 +281,7 @@ export function InventoryClient({
       title: t('deletePart.title'),
       description: t('deletePart.description', { name }),
       confirmLabel: t('deletePart.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -307,10 +314,18 @@ export function InventoryClient({
 
   const handleBulkDelete = async () => {
     if (selected.size === 0) return
+    // Name the first few parts so the count is not taken on trust.
+    const named = Array.from(selected)
+      .map((id) => seenRows.current.get(id))
+      .filter((row) => row !== undefined)
+      .slice(0, 3)
     const ok = await confirm({
       title: t('bulkDelete.title'),
       description: t('bulkDelete.description', { count: selected.size }),
+      subject: named.map((p) => ({ label: p.name, detail: p.partNumber ?? undefined })),
+      subjectMore: selected.size - named.length,
       confirmLabel: t('bulkDelete.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

@@ -75,6 +75,10 @@
         "title": "Klantenportaal",
         "description": "Selfservice klantenportaal"
       },
+      "shareLinks": {
+        "title": "Deellinks",
+        "description": "Verloop van links en links die naar klanten zijn verzonden"
+      },
       "workshop": {
         "title": "Werkplaats",
         "description": "Standaard technicus en arbeid"
@@ -2602,6 +2606,7 @@
     "leaveTitle": "Weggaan zonder opslaan?",
     "leaveBody": "Je wijzigingen aan dit ontwerp zijn niet opgeslagen en gaan verloren.",
     "leaveConfirm": "Weggaan",
+    "leaveCancel": "Verder bewerken",
     "boldField": "Vet",
     "deleteDesignDrafts": "{count, plural, one {# conceptfactuur} other {# conceptfacturen}} die het gebruiken, vallen terug op het standaardontwerp.",
     "deleteDesignCustomers": "{count, plural, one {# klant} other {# klanten}} die erop zijn ingesteld, vallen terug op het standaardontwerp.",
@@ -2858,6 +2863,7 @@
     "leaveTitle": "Verlaten zonder op te slaan?",
     "leaveBody": "Uw wijzigingen aan dit sjabloon zijn niet opgeslagen. Ze gaan verloren.",
     "leaveConfirm": "Verlaten",
+    "leaveCancel": "Verder bewerken",
     "subjectAndTheme": "Onderwerp en thema",
     "settingsSubtitle": "Geldt voor de hele e-mail",
     "blocksTitle": "Blokken",
@@ -3120,6 +3126,91 @@
       "calendars": "Feestdagenagenda's",
       "closedDays": "Sluitingsdagen",
       "timeOff": "Verlof en afwezigheid"
+    }
+  },
+  "shareLinks": {
+    "save": "Opslaan",
+    "saved": "Instellingen voor deellinks opgeslagen",
+    "saveFailed": "Kon de instellingen voor deellinks niet opslaan. Probeer het opnieuw.",
+    "rules": {
+      "title": "Verloop van links",
+      "description": "Hoe lang een link die je naar een klant stuurt blijft werken. Daarna ziet de klant een pagina die vraagt contact met je op te nemen.",
+      "kind": {
+        "invoice": "Facturen",
+        "quote": "Offertes",
+        "inspection": "Inspecties"
+      },
+      "mode": {
+        "never": "Nooit laten verlopen",
+        "afterSharing": "Verlopen na verzending",
+        "afterPayment": "Verlopen na betaling"
+      },
+      "hint": {
+        "never": "De link werkt tot je hem verwijdert.",
+        "afterSharing": "Geteld vanaf de dag waarop de link voor het laatst is verzonden of gedeeld.",
+        "afterPayment": "De link blijft open zolang de factuur onbetaald is, zodat de klant kan betalen. De dagen gaan in zodra de factuur volledig is betaald."
+      },
+      "days": "dagen",
+      "daysLabel": "Dagen voordat links naar {kind} verlopen",
+      "appliesNote": "Deze regels gelden ook voor links die je al hebt verzonden. Je kunt voor elk afzonderlijk document een andere datum instellen, hier in de lijst of in het document zelf."
+    },
+    "list": {
+      "title": "Links naar klanten",
+      "description": "Alle links naar facturen, offertes, inspecties of statusrapporten, en wanneer ze stoppen met werken.",
+      "statusLabel": "Links tonen",
+      "status": {
+        "active": "Actief",
+        "expired": "Verlopen",
+        "all": "Alle"
+      },
+      "kindLabel": "Soort document",
+      "kind": {
+        "all": "Alle documenten",
+        "invoice": "Facturen",
+        "quote": "Offertes",
+        "inspection": "Inspecties",
+        "statusReport": "Statusrapporten"
+      },
+      "kindOne": {
+        "invoice": "Factuur",
+        "quote": "Offerte",
+        "inspection": "Inspectie",
+        "statusReport": "Statusrapport"
+      },
+      "searchPlaceholder": "Zoek document of klant",
+      "columns": {
+        "document": "Document",
+        "customer": "Klant",
+        "shared": "Gedeeld",
+        "views": "Weergaven",
+        "expires": "Verloopt",
+        "actions": "Acties"
+      },
+      "sharedOn": "Gedeeld op {date}",
+      "none": "-",
+      "copy": "Link kopiëren",
+      "copyFailed": "Kon de link niet kopiëren.",
+      "open": "Document openen",
+      "revoke": "Link verwijderen",
+      "revokeTitle": "Deze link verwijderen?",
+      "revokeDescription": "De link naar {document} werkt niet meer voor iedereen die hem heeft. Je kunt het document opnieuw delen om een nieuwe link te maken.",
+      "revoked": "Link verwijderd",
+      "empty": {
+        "active": "Geen actieve links. Een link verschijnt hier wanneer je een document verzendt of deelt.",
+        "expired": "Geen verlopen links.",
+        "all": "Nog geen links. Een link verschijnt hier wanneer je een document verzendt of deelt."
+      },
+      "emptyFiltered": "Geen links gevonden voor je zoekopdracht.",
+      "loadFailed": "Kon de links niet laden. Herlaad de pagina om het opnieuw te proberen.",
+      "selectAll": "Alle links op deze pagina selecteren",
+      "selectRow": "De link naar {document} selecteren",
+      "selectedCount": "{count, plural, one {# link geselecteerd} other {# links geselecteerd}}",
+      "clearSelection": "Selectie wissen",
+      "removeSelected": "Geselecteerde verwijderen",
+      "bulkRevokeTitle": "{count, plural, one {# link} other {# links}} verwijderen?",
+      "bulkRevokeDescription": "Deze links werken niet meer voor iedereen die ze heeft. Je kunt een document opnieuw delen om een nieuwe link te maken.",
+      "bulkRevoked": "{count, plural, one {# link verwijderd} other {# links verwijderd}}",
+      "bulkRevokeFailed": "Kon de links niet verwijderen. Probeer het opnieuw."
     }
   }
 }

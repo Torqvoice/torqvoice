@@ -119,6 +119,7 @@ export function TimeOffDialog({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name: absence.technicianName }),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

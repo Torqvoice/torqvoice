@@ -10,8 +10,8 @@ import {
 import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
-import { taxableSubtotalOf } from '@/lib/taxable-lines'
-import { calculateTotals, discountAmountFor } from '@/lib/tax'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
+import { invoiceDisplayTotal } from '@/lib/invoice-display-total'
 import { getFeatures } from '@/lib/features'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
@@ -33,6 +33,9 @@ export async function POST(
     // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const orgId = resolvedOrg?.id ?? orgParam
+
+    const closed = await refuseClosedShareLink('invoice', token, orgId)
+    if (closed) return closed
 
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },
@@ -67,26 +70,8 @@ export async function POST(
 
     const { provider, amount } = parsed.data
 
-    // Calculate balance due — mirrors invoice-view.tsx so the server's
-    // notion of total matches what the customer sees on the share page.
-    const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0)
-    const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0)
-    const computedSubtotal = partsSubtotal + laborSubtotal
-    const computedDiscount = discountAmountFor(
-      computedSubtotal,
-      record.discountType,
-      record.discountValue
-    )
-    const { totalAmount: computedTotal } = calculateTotals({
-      subtotal: computedSubtotal,
-      discountAmount: computedDiscount,
-      taxRate: record.taxRate,
-      taxInclusive: record.taxInclusive ?? false,
-      // The stored lines carry a plain yes or no.
-      taxableSubtotal: taxableSubtotalOf(record.partItems, record.laborItems),
-    })
-    const displayTotal =
-      record.totalAmount > 0 ? record.totalAmount : computedTotal > 0 ? computedTotal : record.cost
+    // The same total the customer sees on the share page.
+    const displayTotal = invoiceDisplayTotal(record)
     const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0)
     const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
     const balanceDue = displayTotal - totalPaid

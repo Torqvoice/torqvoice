@@ -210,7 +210,9 @@
     "settings_markType_remove": "Markierungsart entfernt",
     "settings_markType_reorder": "Markierungsarten neu geordnet",
     "integration_backup_run": "Sicherung gestartet",
-    "integration_backup_restore": "Sicherung wiederhergestellt"
+    "integration_backup_restore": "Sicherung wiederhergestellt",
+    "shareLink_expiry": "Ablauf des Freigabelinks geändert",
+    "shareLink_revoke": "Freigabelinks entfernt"
   },
   "summary": {
     "auth_twoFactorEnabled": "Zwei-Faktor-Anmeldung aktiviert",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Zustandskarte von der Rechnung genommen",
     "backup_run_started": "Sicherung nach {name} gestartet",
     "backup_restore_started": "Wiederherstellung der Sicherung {snapshot} von {name} gestartet",
-    "backup_restored": "Sicherung {snapshot} von {name} wiederhergestellt"
+    "backup_restored": "Sicherung {snapshot} von {name} wiederhergestellt",
+    "share_link_expiry_workshop": "Freigabelink auf die Werkstatteinstellung gesetzt",
+    "share_link_expiry_never": "Freigabelink auf nie ablaufen gesetzt",
+    "share_link_expiry_date": "Freigabelink auf Ablauf am {date} gesetzt",
+    "share_link_revoke_bulk": "{count, plural, one {# Freigabelink} other {# Freigabelinks}} entfernt"
   }
 }

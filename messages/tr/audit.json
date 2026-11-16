@@ -210,7 +210,9 @@
     "settings_markType_remove": "İşaret türü kaldırıldı",
     "settings_markType_reorder": "İşaret türleri yeniden sıralandı",
     "integration_backup_run": "Yedekleme başlatıldı",
-    "integration_backup_restore": "Yedek geri yüklendi"
+    "integration_backup_restore": "Yedek geri yüklendi",
+    "shareLink_expiry": "Paylaşım bağlantısı süresi değiştirildi",
+    "shareLink_revoke": "Paylaşım bağlantıları kaldırıldı"
   },
   "summary": {
     "auth_twoFactorEnabled": "İki adımlı giriş açıldı",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Durum haritasını faturadan kaldırdı",
     "backup_run_started": "{name} hedefine yedekleme başlattı",
     "backup_restore_started": "{name} hedefinden {snapshot} yedeğini geri yüklemeye başladı",
-    "backup_restored": "{name} hedefinden {snapshot} yedeğini geri yükledi"
+    "backup_restored": "{name} hedefinden {snapshot} yedeğini geri yükledi",
+    "share_link_expiry_workshop": "Paylaşım bağlantısı atölye ayarını izleyecek şekilde ayarlandı",
+    "share_link_expiry_never": "Paylaşım bağlantısı süresi dolmayacak şekilde ayarlandı",
+    "share_link_expiry_date": "Paylaşım bağlantısının süresi {date} olarak ayarlandı",
+    "share_link_revoke_bulk": "{count, plural, one {# paylaşım bağlantısı kaldırıldı} other {# paylaşım bağlantısı kaldırıldı}}"
   }
 }

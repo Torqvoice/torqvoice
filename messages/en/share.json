@@ -250,5 +250,21 @@
     "telegramConnect": "Chat with us on Telegram",
     "telegramScan": "Scan this QR code to message us on Telegram for updates and support.",
     "downloadCertificate": "Download inspection certificate"
+  },
+  "expired": {
+    "pageTitle": "Link expired",
+    "title": "This link has expired",
+    "body": {
+      "invoice": "Contact {workshop} to get a new link to this invoice.",
+      "quote": "Contact {workshop} to get a new link to this quote.",
+      "inspection": "Contact {workshop} to get a new link to this inspection.",
+      "statusReport": "Contact {workshop} to get a new link to this update."
+    },
+    "bodyNoName": {
+      "invoice": "Contact the workshop to get a new link to this invoice.",
+      "quote": "Contact the workshop to get a new link to this quote.",
+      "inspection": "Contact the workshop to get a new link to this inspection.",
+      "statusReport": "Contact the workshop to get a new link to this update."
+    }
   }
 }
