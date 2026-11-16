@@ -173,6 +173,17 @@ function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): 
 }
 
 /**
+ * When a restored inspection's link started. A backup from before links
+ * carried a start date has none: the link then counts from the inspection's
+ * last change, as the migration did, or it would never expire.
+ */
+function restoredInspectionSharedAt(insp: Record<string, unknown>): Date | null {
+  const sharedAt = toSafeDate(insp.sharedAt as string)
+  if (sharedAt || !insp.publicToken) return sharedAt ?? null
+  return toSafeDate(insp.updatedAt as string) ?? new Date()
+}
+
+/**
  * Restores one service record with its nested parts/labor/attachments/payments.
  * Used for both vehicle-linked records (nested under vehicles in the backup)
  * and counter sales (top-level records without a vehicle).
@@ -1495,12 +1506,7 @@ export async function restoreBackup(
                 startDateTime: toSafeDate(insp.startDateTime as string) ?? null,
                 endDateTime: toSafeDate(insp.endDateTime as string) ?? null,
                 publicToken: (insp.publicToken as string) || null,
-                // A backup from before links carried a start date has none.
-                // The link then counts from the inspection's last change, as
-                // the migration did, or it would never expire.
-                sharedAt:
-                  toSafeDate(insp.sharedAt as string) ??
-                  (insp.publicToken ? (toSafeDate(insp.updatedAt as string) ?? new Date()) : null),
+                sharedAt: restoredInspectionSharedAt(insp),
                 shareExpiresAt: toSafeDate(insp.shareExpiresAt as string) ?? null,
                 shareNeverExpires: insp.shareNeverExpires === true,
                 shareRenewedAt: toSafeDate(insp.shareRenewedAt as string) ?? null,
