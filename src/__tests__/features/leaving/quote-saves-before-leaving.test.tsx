@@ -21,7 +21,11 @@ vi.mock('sonner', () => ({ toast: { success: vi.fn(), error: (m: string) => toas
 vi.mock('@/components/glass-modal', () => ({
   useGlassModal: () => ({ open: (...args: unknown[]) => modalOpen(...args) }),
 }))
-vi.mock('@/components/confirm-dialog', () => ({ useConfirm: () => vi.fn(async () => true) }))
+vi.mock('@/components/confirm-dialog', async (importOriginal) => ({
+  // The leave prompt draws itself with the real frame; only the question is stubbed.
+  ...(await importOriginal<typeof import('@/components/confirm-dialog')>()),
+  useConfirm: () => vi.fn(async () => true),
+}))
 const updateQuote = vi.fn()
 vi.mock('@/features/quotes/Actions/quoteActions', () => ({
   updateQuote: (input: unknown) => updateQuote(input),

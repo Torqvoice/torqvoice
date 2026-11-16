@@ -2,7 +2,15 @@ import { createEvent, fireEvent, render, screen, waitFor, within } from '@testin
 import userEvent from '@testing-library/user-event'
 import { Building2 } from 'lucide-react'
 import { describe, expect, it, vi } from 'vitest'
-import { type ConfirmOptions, ConfirmProvider, useConfirm } from '@/components/confirm-dialog'
+import {
+  type ConfirmOptions,
+  ConfirmFrame,
+  ConfirmFrameAction,
+  ConfirmFrameCancel,
+  ConfirmFrameText,
+  ConfirmProvider,
+  useConfirm,
+} from '@/components/confirm-dialog'
 
 /**
  * The shared confirmation dialog, as someone at a keyboard or on a phone
@@ -255,5 +263,49 @@ describe('confirm dialog: phone sheet', () => {
     drag(dialog.querySelector('[data-slot="confirm-grab"]') as Element, 300, 320)
     expect(onAnswer).not.toHaveBeenCalled()
     expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+  })
+})
+
+describe('confirm frame: a prompt that is more than a question', () => {
+  function Upgrade({ ready, onDismiss }: { ready: boolean; onDismiss: () => void }) {
+    return (
+      <ConfirmFrame
+        open
+        onDismiss={onDismiss}
+        title="Upgrade to Enterprise?"
+        footer={
+          <>
+            <ConfirmFrameCancel>Cancel</ConfirmFrameCancel>
+            <ConfirmFrameAction disabled={!ready}>Upgrade now</ConfirmFrameAction>
+          </>
+        }
+      >
+        <ConfirmFrameText>
+          <p>{ready ? 'Amount due today: USD 50.00' : 'Calculating cost...'}</p>
+        </ConfirmFrameText>
+      </ConfirmFrame>
+    )
+  }
+
+  it('draws the same dialog, keeps its action asleep until it is ready, and opens on Cancel', () => {
+    const { rerender } = render(<Upgrade ready={false} onDismiss={vi.fn()} />)
+
+    const dialog = screen.getByRole('alertdialog', { name: 'Upgrade to Enterprise?' })
+    expect(dialog).toHaveAttribute('data-slot', 'confirm-dialog')
+    expect(dialog).toHaveAccessibleDescription('Calculating cost...')
+    expect(within(dialog).getByRole('button', { name: 'Cancel' })).toHaveFocus()
+    expect(within(dialog).getByRole('button', { name: 'Upgrade now' })).toBeDisabled()
+
+    rerender(<Upgrade ready onDismiss={vi.fn()} />)
+    expect(within(dialog).getByRole('button', { name: 'Upgrade now' })).toBeEnabled()
+  })
+
+  it('takes Escape as the safe answer', async () => {
+    const onDismiss = vi.fn()
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+    render(<Upgrade ready onDismiss={onDismiss} />)
+
+    await user.keyboard('{Escape}')
+    expect(onDismiss).toHaveBeenCalled()
   })
 })

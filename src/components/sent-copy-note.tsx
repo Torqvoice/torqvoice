@@ -2,15 +2,11 @@
 
 import { useTranslations } from 'next-intl'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  ConfirmFrame,
+  ConfirmFrameAction,
+  ConfirmFrameCancel,
+  ConfirmFrameText,
+} from '@/components/confirm-dialog'
 import { useDayFormatter } from '@/features/calendar/Components/useDayFormatter'
 import { cn } from '@/lib/utils'
 
@@ -59,17 +55,20 @@ export function SentCopyConfirm({
 }) {
   const t = useTranslations('common.sentCopy')
   return (
-    <AlertDialog open={open} onOpenChange={(next) => !next && onCancel()}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
-          <AlertDialogDescription>{t('confirmBody')}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>{t('cancel')}</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>{t('confirm')}</AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <ConfirmFrame
+      open={open}
+      onDismiss={onCancel}
+      title={t('confirmTitle')}
+      footer={
+        <>
+          <ConfirmFrameCancel>{t('cancel')}</ConfirmFrameCancel>
+          <ConfirmFrameAction onClick={onConfirm}>{t('confirm')}</ConfirmFrameAction>
+        </>
+      }
+    >
+      <ConfirmFrameText>
+        <p>{t('confirmBody')}</p>
+      </ConfirmFrameText>
+    </ConfirmFrame>
   )
 }

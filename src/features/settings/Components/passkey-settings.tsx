@@ -7,13 +7,13 @@ import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Fingerprint, Loader2, LogIn, Pencil, Plus, Trash2 } from 'lucide-react'
@@ -45,8 +45,7 @@ export function PasskeySettings() {
   const [renamingPasskey, setRenamingPasskey] = useState<Passkey | null>(null)
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [passKeyToDelete, setPassKeyToDelete] = useState<Passkey | null>(null)
+  const confirm = useConfirm()
 
   const fetchPasskeys = async () => {
     try {
@@ -124,8 +123,17 @@ export function PasskeySettings() {
     }
   }
 
-  const handleDelete = async () => {
-    if (!passKeyToDelete) return
+  const handleDelete = async (passKeyToDelete: Passkey) => {
+    const ok = await confirm({
+      title: t('account.passkey.confirmDeleteTitle'),
+      description: t('account.passkey.confirmDelete'),
+      subject: [{ label: passKeyToDelete.name || t('account.passkey.unnamed'), icon: Fingerprint }],
+      confirmLabel: t('account.passkey.delete'),
+      cancelLabel: t('account.passkey.cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     setDeletingId(passKeyToDelete.id)
     try {
       await authClient.passkey.deletePasskey({ id: passKeyToDelete.id })
@@ -135,8 +143,6 @@ export function PasskeySettings() {
       toast.error(t('account.passkey.deleteFailed'))
     }
     setDeletingId(null)
-    setDeleteDialogOpen(false)
-    setPassKeyToDelete(null)
   }
 
   const handleRename = async () => {
@@ -214,10 +220,7 @@ export function PasskeySettings() {
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
                     disabled={deletingId === pk.id}
-                    onClick={() => {
-                      setPassKeyToDelete(pk)
-                      setDeleteDialogOpen(true)
-                    }}
+                    onClick={() => handleDelete(pk)}
                     aria-label={t('account.passkey.delete')}
                   >
                     {deletingId === pk.id ? (
@@ -269,25 +272,6 @@ export function PasskeySettings() {
             <Button onClick={handleRename} disabled={saving || !newName.trim()}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('account.passkey.save')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('account.passkey.confirmDeleteTitle')}</DialogTitle>
-            <DialogDescription>{t('account.passkey.confirmDelete')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('account.passkey.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deletingId !== null}>
-              {deletingId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('account.passkey.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

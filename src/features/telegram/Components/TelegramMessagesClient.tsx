@@ -3,17 +3,8 @@
 import { useState, useEffect, useCallback, useTransition, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Loader2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
+import { useConfirm } from '@/components/confirm-dialog'
 import { toast } from 'sonner'
 import { getTelegramConversation, deleteTelegramConversation } from '../Actions/telegramActions'
 import { getRecentTelegramThreads } from '../Actions/telegramThreadActions'
@@ -75,8 +66,7 @@ export function TelegramMessagesClient({
   } | null>(null)
   const [loadingConversation, setLoadingConversation] = useState(false)
   const [isLoadingMore, startLoadMore] = useTransition()
-  const [deleteTarget, setDeleteTarget] = useState<TelegramThread | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const confirm = useConfirm()
 
   const normalizeMessages = (msgs: TelegramMessage[]) =>
     msgs.map((m) => ({
@@ -164,9 +154,16 @@ export function TelegramMessagesClient({
     }
   }, [threads.length])
 
-  const handleDeleteConversation = async () => {
-    if (!deleteTarget) return
-    setIsDeleting(true)
+  const handleDeleteConversation = async (deleteTarget: TelegramThread) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription', { name: deleteTarget.customerName }),
+      confirmLabel: tc('delete'),
+      cancelLabel: tc('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     // An action that cannot reach the server throws instead of answering, so
     // it is caught and reported the way a refusal is.
     const result = await deleteTelegramConversation(deleteTarget.customerId).catch(() => null)
@@ -181,8 +178,6 @@ export function TelegramMessagesClient({
     } else {
       toast.error(result?.error || t('deleteError'))
     }
-    setIsDeleting(false)
-    setDeleteTarget(null)
   }
 
   useEffect(() => {
@@ -216,30 +211,9 @@ export function TelegramMessagesClient({
         loadingConversation={loadingConversation}
         threads={threads}
         onBack={handleBack}
-        onDeleteThread={setDeleteTarget}
+        onDeleteThread={handleDeleteConversation}
         t={t}
       />
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('deleteDescription', { name: deleteTarget?.customerName ?? '' })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConversation}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

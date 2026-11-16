@@ -5,7 +5,9 @@
  * same button adds one of those, so there is one place to add from and never
  * a second button under it. An archived vehicle offers neither.
  */
-import { fireEvent, render, screen } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { fireEvent, render as renderBare, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
 /** The page's query string: which list is showing. */
@@ -62,6 +64,10 @@ vi.mock('@/app/(authenticated)/vehicles/[id]/notes-table', () => ({ NotesTable: 
 vi.mock('@/app/(authenticated)/vehicles/[id]/findings-table', () => ({ FindingsTable: () => null }))
 
 import { VehicleDetailClient } from '@/app/(authenticated)/vehicles/[id]/vehicle-detail-client'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const VEHICLE = {
   id: 'v1',

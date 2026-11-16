@@ -75,6 +75,7 @@ import {
   Pencil,
   Pin,
   Plus,
+  Ship,
   StickyNote,
   Trash2,
   TrendingUp,
@@ -91,18 +92,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { useTranslations } from 'next-intl'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
+import { useConfirm } from '@/components/confirm-dialog'
 import { useServiceType } from '@/components/service-type-context'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
@@ -336,6 +328,7 @@ export function VehicleDetailClassic({
   const ti = useTranslations('vehicles.inspections')
   const tr = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
+  const confirm = useConfirm()
 
   const tq = useTranslations('vehicles.quotes')
   const tQuoteStatus = useTranslations('quotes.statusLabels')
@@ -387,7 +380,6 @@ export function VehicleDetailClassic({
   const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
   const [showNewQuoteDialog, setShowNewQuoteDialog] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
   const [isDismissPending, startDismissTransition] = useTransition()
   const [aiSummaryLoading, setAiSummaryLoading] = useState(false)
@@ -585,6 +577,18 @@ export function VehicleDetailClassic({
   }
 
   const handleDelete = async () => {
+    const name = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription', { name }),
+      subject: [
+        { label: name, detail: vehicle.licensePlate ?? undefined, icon: isMarine ? Ship : Car },
+      ],
+      confirmLabel: tc('delete'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     const result = await deleteVehicle(vehicle.id)
     if (result.success) {
       toast.success(t('vehicleDeleted'))
@@ -661,10 +665,7 @@ export function VehicleDetailClassic({
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => setShowDeleteDialog(true)}
-                >
+                <DropdownMenuItem className="text-destructive" onClick={handleDelete}>
                   <Trash2 className="mr-2 h-4 w-4" />
                   {t('delete')}
                 </DropdownMenuItem>
@@ -1766,7 +1767,7 @@ export function VehicleDetailClassic({
         // The page's own confirmation does the deleting.
         onDelete={() => {
           setShowEditForm(false)
-          setShowDeleteDialog(true)
+          handleDelete()
         }}
       />
       <NoteForm
@@ -1837,25 +1838,6 @@ export function VehicleDetailClassic({
         vehicleId={vehicle.id}
         vehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
       />
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('deleteDescription', { name: `${vehicle.year} ${vehicle.make} ${vehicle.model}` })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       {/* Image lightbox */}
       {showImage && vehicle.imageUrl && (

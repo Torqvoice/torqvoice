@@ -4,7 +4,9 @@
  * nudged with the arrow keys once focused on the drawing. Marks from an
  * earlier visit stay where they are, as they do under a pointer.
  */
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { act, render as renderBare, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -45,6 +47,10 @@ import { getBodyDrawing } from '@/features/condition-map/Drawings'
 import { builtinMarkTypes } from '@/features/condition-map/Lib/markTypes'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import { panelSpots } from '@/features/condition-map/Lib/panelSpots'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const TYPES = builtinMarkTypes({ dent: 'Dent', scratch: 'Scratch' })
 

@@ -5,13 +5,13 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  ConfirmConsequenceList,
+  ConfirmFrame,
+  ConfirmFrameAction,
+  ConfirmFrameCancel,
+  ConfirmFrameText,
+} from '@/components/confirm-dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Eye, FileText, Loader2, Lock, Sparkles } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
@@ -124,47 +124,42 @@ export function NotesSection({
   const internalHasContent = hasContent(internalNotes)
 
   const aiDialog = (
-    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4" />
-            {t('aiDialogTitle')}
-          </AlertDialogTitle>
-          <AlertDialogDescription>{t('aiDialogDescription')}</AlertDialogDescription>
-        </AlertDialogHeader>
-        {notesHaveContent && (
-          <p className="text-sm text-amber-600 dark:text-amber-400">
-            {t('aiOverwriteDescription')}
-          </p>
-        )}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="dont-show-again"
-            checked={dontShowAgain}
-            onChange={(e) => setDontShowAgain(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300"
-          />
-          <label htmlFor="dont-show-again" className="text-sm text-muted-foreground">
-            {t('aiDontShowAgain')}
-          </label>
-        </div>
-        <AlertDialogFooter>
-          <Button variant="outline" onClick={() => setShowDialog(false)}>
-            {t('aiOverwriteCancel')}
-          </Button>
+    <ConfirmFrame
+      open={showDialog}
+      onDismiss={() => setShowDialog(false)}
+      title={t('aiDialogTitle')}
+      icon={Sparkles}
+      footer={
+        <>
+          <ConfirmFrameCancel>{t('aiOverwriteCancel')}</ConfirmFrameCancel>
           {notesHaveContent && (
-            <Button variant="outline" onClick={() => handleGenerate('append')}>
+            <ConfirmFrameAction variant="outline" onClick={() => handleGenerate('append')}>
               {t('aiOverwriteAppend')}
-            </Button>
+            </ConfirmFrameAction>
           )}
-          <Button onClick={() => handleGenerate('replace')}>
+          <ConfirmFrameAction onClick={() => handleGenerate('replace')}>
             {notesHaveContent ? t('aiOverwriteReplace') : t('aiGenerate')}
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </ConfirmFrameAction>
+        </>
+      }
+    >
+      <ConfirmFrameText className={notesHaveContent ? 'pb-1' : undefined}>
+        <p>{t('aiDialogDescription')}</p>
+      </ConfirmFrameText>
+      {notesHaveContent && (
+        <ConfirmConsequenceList lines={[{ text: t('aiOverwriteDescription'), emphasis: true }]} />
+      )}
+      <div className="border-card-edge/45 flex items-center gap-2.5 border-t px-5 py-3">
+        <Checkbox
+          id="dont-show-again"
+          checked={dontShowAgain}
+          onCheckedChange={(checked) => setDontShowAgain(checked === true)}
+        />
+        <label htmlFor="dont-show-again" className="text-muted-foreground text-[13px]">
+          {t('aiDontShowAgain')}
+        </label>
+      </div>
+    </ConfirmFrame>
   )
 
   const isLocked = (target: 'public' | 'internal') =>

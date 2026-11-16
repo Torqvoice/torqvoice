@@ -3,7 +3,9 @@
  * a technician scrolling the sections sees the request without opening the
  * card above.
  */
-import { render, screen } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { render as renderBare, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }) }))
@@ -20,6 +22,10 @@ vi.mock('@/features/vehicles/Components/service-page/PhotoHandoffButton', () => 
 }))
 
 import { InspectionItemRow } from '@/features/inspections/Components/InspectionItemRow'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const ITEM = {
   id: 'tyres',

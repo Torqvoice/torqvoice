@@ -95,6 +95,8 @@
     "completeTitle": "Clôturer cette inspection ?",
     "completeBody": "Les points sont verrouillés à la clôture, et le résultat devient « {result} ».",
     "completeBlocked": "{count} contrôle(s) que la liste marque comme obligatoires restent à faire.",
+    "blockerMissingGrade": "doit être évalué",
+    "blockerNeedsPhoto": "nécessite une photo du défaut",
     "completeUngraded": "{count} point(s) n'ont pas été évalués.",
     "completeDangerous": "{count} défaillance(s) critique(s) constatée(s). Le véhicule ne doit pas circuler sur la voie publique.",
     "reopenTitle": "Rouvrir cette inspection ?",

@@ -95,6 +95,8 @@
     "completeTitle": "Diese Inspektion abschließen?",
     "completeBody": "Die Prüfpunkte werden mit dem Abschluss gesperrt, und das Ergebnis lautet dann „{result}“.",
     "completeBlocked": "{count} Prüfung(en), die die Checkliste als Pflicht markiert, sind noch offen.",
+    "blockerMissingGrade": "muss bewertet werden",
+    "blockerNeedsPhoto": "braucht ein Foto des Mangels",
     "completeUngraded": "{count} Prüfpunkt(e) wurden nicht bewertet.",
     "completeDangerous": "{count} gefährliche(r) Mangel erfasst. Das Fahrzeug darf nicht am öffentlichen Verkehr teilnehmen.",
     "reopenTitle": "Diese Inspektion wieder öffnen?",
