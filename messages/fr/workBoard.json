@@ -58,7 +58,12 @@
       "everyone": "Tout le travail",
       "thisWeek": "Cette semaine"
     },
-    "dropNeedsLane": "Groupez le tableau par technicien ou par poste avant d'y déposer une tâche."
+    "dropNeedsLane": "Groupez le tableau par technicien ou par poste avant d'y déposer une tâche.",
+    "load": {
+      "over": "{amount} de trop",
+      "spoken": "Planifié : {booked} sur {capacity}",
+      "spokenOver": "Planifié : {booked} sur {capacity}, dépassement de {amount}"
+    }
   },
   "unassigned": {
     "title": "Travaux Non Assignés ({count})",

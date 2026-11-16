@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { getWorkshopCalendar } from '@/features/workshop-calendar/Actions/calendarActions'
 import type { WorkshopCalendar } from '@/features/workshop-calendar/Lib/calendar'
 import { type MinuteSpan, awayDay, closedDay } from '@/features/workshop-calendar/Lib/boardDays'
+import type { DayHours } from '../utils/layout'
 
 /** A day on the board that is closed for some or all of it. */
 export interface BoardClosed {
@@ -31,6 +32,24 @@ export type ClosedByDay = Record<string, BoardClosed>
 export type AwayByLaneDay = Record<string, BoardAway>
 
 export const awayKey = (laneId: string, date: string) => `${laneId}|${date}`
+
+/**
+ * One lane's working day as `bookedMinutesOnDay` reads it: when the workshop
+ * is closed, when the technician is away, and the lane's capacity. Every view
+ * builds it here, so they all count a day the same way.
+ */
+export function laneDayHours(
+  lane: { id: string; dailyCapacity: number },
+  date: string,
+  closedByDay?: ClosedByDay,
+  awayByLaneDay?: AwayByLaneDay
+): DayHours {
+  return {
+    closedSpans: closedByDay?.[date]?.spans,
+    awaySpans: awayByLaneDay?.[awayKey(lane.id, date)]?.spans,
+    capacityMinutes: lane.dailyCapacity,
+  }
+}
 
 /**
  * The workshop calendar for the days the board shows: what is closed each

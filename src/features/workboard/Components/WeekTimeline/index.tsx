@@ -1,6 +1,11 @@
 'use client'
 
-import { type AwayByLaneDay, type ClosedByDay, awayKey } from '../../hooks/useBoardCalendar'
+import {
+  type AwayByLaneDay,
+  type ClosedByDay,
+  awayKey,
+  laneDayHours,
+} from '../../hooks/useBoardCalendar'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDndMonitor } from '@dnd-kit/core'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -22,11 +27,13 @@ import {
 import {
   MINUTES_IN_DAY,
   bookedMinutesOnDay,
+  dayLoad,
   computeTimeWindow,
   hourMarks,
   isUnscheduled,
   resolveJobOnDay,
 } from '../../utils/layout'
+import { DayLoadBar, DayLoadSpoken } from '../DayLoad'
 import { LaneHeaderTooltip } from '../LaneHeaderTooltip'
 import { UnscheduledStrip } from './UnscheduledStrip'
 import { WeekLaneColumn } from './WeekLaneColumn'
@@ -443,12 +450,15 @@ export function WeekTimeline({
                 {days.flatMap((day) =>
                   lanes.map((lane, laneIndex) => {
                     const isLastLane = laneIndex === lanes.length - 1
-                    const booked = bookedMinutesOnDay(byLane.get(lane.id) ?? [], day)
-                    const pct =
-                      lane.dailyCapacity > 0
-                        ? Math.round((booked / lane.dailyCapacity) * 100)
-                        : null
+                    const booked = bookedMinutesOnDay(
+                      byLane.get(lane.id) ?? [],
+                      day,
+                      laneDayHours(lane, day, closedByDay, awayByLaneDay)
+                    )
+                    const load = dayLoad(booked, lane.dailyCapacity)
                     const away = awayByLaneDay?.[awayKey(lane.id, day)]
+                    const loadId =
+                      lane.dailyCapacity > 0 ? `lane-load-${day}-${lane.id}` : undefined
                     return (
                       <LaneHeaderTooltip
                         key={`lane-${day}-${lane.id}`}
@@ -458,11 +468,14 @@ export function WeekTimeline({
                         capacityMinutes={lane.dailyCapacity}
                         periodLabel={dayFormatter.format(new Date(`${day}T12:00:00`))}
                         awayLabel={away?.label}
+                        closedByDay={closedByDay}
+                        awayByLaneDay={awayByLaneDay}
                       >
                         <button
                           type="button"
                           disabled={lane.isPlaceholder || readOnly || !onLaneClick}
                           onClick={() => onLaneClick?.(lane)}
+                          aria-describedby={loadId}
                           className={cn(
                             'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
                             isLastLane ? 'border-r-2 border-r-border' : 'border-r'
@@ -484,22 +497,9 @@ export function WeekTimeline({
                               {away.label}
                             </span>
                           ) : (
-                            pct !== null && (
-                              <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
-                                <span
-                                  className={cn(
-                                    'block h-full rounded-full',
-                                    pct > 100
-                                      ? 'bg-red-500'
-                                      : pct >= 75
-                                        ? 'bg-amber-500'
-                                        : 'bg-emerald-500'
-                                  )}
-                                  style={{ width: `${Math.min(pct, 100)}%` }}
-                                />
-                              </span>
-                            )
+                            lane.dailyCapacity > 0 && <DayLoadBar load={load} className="h-0.5" />
                           )}
+                          <DayLoadSpoken load={load} id={loadId} />
                         </button>
                       </LaneHeaderTooltip>
                     )
