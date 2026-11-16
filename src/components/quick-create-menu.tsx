@@ -1,7 +1,7 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
@@ -37,7 +37,9 @@ interface TemplateOption {
 
 export function QuickCreateMenu() {
   const t = useTranslations('navigation')
-  const router = useRouter()
+  // Through the save guard: the menu is in the header of every page, an
+  // open work order or quote with unsaved edits included.
+  const go = useGuardedPush()
   const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false)
   const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -93,22 +95,22 @@ export function QuickCreateMenu() {
             {t('quickCreate.workOrder')}
             <ShortcutKeys id="create.workOrder" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/customers?create=true')}>
+          <DropdownMenuItem onSelect={() => go('/customers?create=true')}>
             <Users className="h-4 w-4" />
             {t('quickCreate.customer')}
             <ShortcutKeys id="create.customer" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/vehicles?create=true')}>
+          <DropdownMenuItem onSelect={() => go('/vehicles?create=true')}>
             <Car className="h-4 w-4" />
             {t('quickCreate.vehicle')}
             <ShortcutKeys id="create.vehicle" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/quotes?create=true')}>
+          <DropdownMenuItem onSelect={() => go('/quotes?create=true')}>
             <FileText className="h-4 w-4" />
             {t('quickCreate.quote')}
             <ShortcutKeys id="create.quote" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/inventory?create=true')}>
+          <DropdownMenuItem onSelect={() => go('/inventory?create=true')}>
             <Package className="h-4 w-4" />
             {t('quickCreate.part')}
             <ShortcutKeys id="create.part" className="ml-auto" />
@@ -124,7 +126,7 @@ export function QuickCreateMenu() {
               adding a mechanic is not the same errand as booking a car in. */}
           <DropdownMenuSeparator />
           <DropdownMenuLabel>{t('quickCreate.shopActions')}</DropdownMenuLabel>
-          <DropdownMenuItem onSelect={() => router.push('/settings/team?add=true')}>
+          <DropdownMenuItem onSelect={() => go('/settings/team?add=true')}>
             <UserPlus className="mr-2 h-4 w-4" />
             {t('quickCreate.person')}
           </DropdownMenuItem>

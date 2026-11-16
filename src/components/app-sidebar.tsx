@@ -1,5 +1,6 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import * as React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -178,6 +179,7 @@ export function AppSidebar({
   const pathname = usePathname()
   const { openHelp: openShortcutsHelp } = useShortcuts()
   const router = useRouter()
+  const go = useGuardedPush()
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
   const { setOpenMobile, isMobile } = useSidebar()
@@ -412,7 +414,7 @@ export function AppSidebar({
                   className="pointer-events-auto cursor-pointer"
                   onClick={() => {
                     closeMobileSidebar()
-                    router.push(item.url)
+                    go(item.url)
                   }}
                 >
                   {count > 99 ? '99+' : count}

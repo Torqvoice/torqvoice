@@ -4,6 +4,7 @@ import { Trash2 } from 'lucide-react'
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
+import { useSaveBeforeLeaving } from '@/hooks/use-save-before-leaving'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { useDateSettings } from '@/components/date-settings-context'
@@ -210,6 +211,19 @@ export function useQuoteFormState({
 
   // Unsaved changes tracking & autosave
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  // Read through a ref by code that awaits a save and must know its outcome.
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
+  hasUnsavedChangesRef.current = hasUnsavedChanges
+  /**
+   * Counts edits. A save clears the unsaved mark only when no edit was made
+   * while it ran: the fields stay editable during a save, and an edit the
+   * save did not carry must still be saved before the page is left.
+   */
+  const editRevisionRef = useRef(0)
+  /** Why the last save failed, for the dialog that holds a link back. */
+  const lastSaveErrorRef = useRef<string | null>(null)
+  /** True while a link waits on its save: a failure goes into that dialog. */
+  const leavingRef = useRef(false)
   const [showSaved, setShowSaved] = useState(false)
   const savedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
@@ -227,6 +241,8 @@ export function useQuoteFormState({
     // A locked quote cannot be saved, so nothing may queue an autosave that
     // the server will only refuse five seconds later.
     if (locked) return
+    editRevisionRef.current += 1
+    hasUnsavedChangesRef.current = true
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
@@ -278,6 +294,7 @@ export function useQuoteFormState({
       clearTimeout(autosaveTimer.current)
       autosaveTimer.current = null
     }
+    hasUnsavedChangesRef.current = false
     setHasUnsavedChanges(false)
   }, [locked])
 
@@ -290,6 +307,9 @@ export function useQuoteFormState({
   useEffect(() => {
     if (!hasUnsavedChanges) return
     const handler = (e: BeforeUnloadEvent) => {
+      // Read live: "Leave without saving" drops the edits and goes in the
+      // same moment, before this listener is taken down.
+      if (!hasUnsavedChangesRef.current) return
       e.preventDefault()
     }
     window.addEventListener('beforeunload', handler)
@@ -468,26 +488,39 @@ export function useQuoteFormState({
     const form = e.currentTarget
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    // Saving from here on, the custom fields included: whoever waits for this
+    // save (a link held back, the PDF) must not take that first step for the end.
+    isSavingRef.current = true
+    // A save a link is waiting on says why it failed in the dialog that holds
+    // the link, not in a toast or an error box on top of it.
+    const failed = (message: string, show: () => void) => {
+      lastSaveErrorRef.current = message
+      if (!leavingRef.current) show()
+    }
 
     // Validate and save custom fields before saving; a locked quote saves nothing.
     if (!locked && customFieldsSaveRef.current) {
       try {
         const { valid } = await customFieldsSaveRef.current()
         if (!valid) {
-          toast.error(t('page.customFieldsInvalid'))
+          isSavingRef.current = false
+          const message = t('page.customFieldsInvalid')
+          failed(message, () => toast.error(message))
           return
         }
       } catch (err) {
         console.error('Custom fields save error:', err)
-        toast.error(t('page.customFieldsSaveFailed'))
+        isSavingRef.current = false
+        const message = t('page.customFieldsSaveFailed')
+        failed(message, () => toast.error(message))
         return
       }
     }
 
-    isSavingRef.current = true
     setSaving(true)
     try {
       const formData = new FormData(form)
+      const revision = editRevisionRef.current
       const result = await updateQuote({
         id: quote.id,
         title: formData.get('title') as string,
@@ -515,18 +548,25 @@ export function useQuoteFormState({
         warrantyMileage: warranty.warrantyMileage ?? 0,
         warrantyNotes: warranty.warrantyNotes ?? '',
       })
-      if (result.success) {
+      if (result.success && editRevisionRef.current !== revision) {
+        // Edited while this save ran: still unsaved, and the autosave that
+        // edit queued (or a link waiting to leave) saves it next.
+        router.refresh()
+      } else if (result.success) {
+        hasUnsavedChangesRef.current = false
         setHasUnsavedChanges(false)
         if (savedTimerRef.current) clearTimeout(savedTimerRef.current)
         setShowSaved(true)
         savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
         router.refresh()
       } else {
-        modal.open('error', 'Error', result.error || t('page.failedSave'))
+        const message = result.error || t('page.failedSave')
+        failed(message, () => modal.open('error', 'Error', message))
       }
     } catch (err) {
       console.error('Quote save error:', err)
-      modal.open('error', 'Error', t('page.failedSave'))
+      const message = t('page.failedSave')
+      failed(message, () => modal.open('error', 'Error', message))
     } finally {
       // Whatever happened, the save button must stop spinning.
       isSavingRef.current = false
@@ -552,10 +592,6 @@ export function useQuoteFormState({
     }
   }
 
-  // Read through a ref by code that awaits a save and must know its outcome.
-  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
-  hasUnsavedChangesRef.current = hasUnsavedChanges
-
   const saveNow = async () => {
     if (!formRef.current || isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
@@ -568,6 +604,28 @@ export function useQuoteFormState({
       setTimeout(check, 50)
     })
   }
+
+  // Leaving by a link, a shortcut or the search palette saves first. The
+  // autosave waits five seconds after the last edit, and until this guard an
+  // edit made inside that window was dropped without a word when the page
+  // was left. A save that fails holds the link and asks: stay, or leave
+  // without the unsaved changes.
+  const { blockedLeave, stayOnPage, leaveWithoutSaving } = useSaveBeforeLeaving({
+    active: hasUnsavedChanges,
+    isDirty: () => hasUnsavedChangesRef.current,
+    isSaving: () => isSavingRef.current,
+    save: saveNow,
+    lastErrorRef: lastSaveErrorRef,
+    leavingRef,
+    discard: () => {
+      if (autosaveTimer.current) {
+        clearTimeout(autosaveTimer.current)
+        autosaveTimer.current = null
+      }
+      hasUnsavedChangesRef.current = false
+      setHasUnsavedChanges(false)
+    },
+  })
 
   const handleDownloadPDF = async () => {
     if (hasUnsavedChanges) await saveNow()
@@ -776,6 +834,9 @@ export function useQuoteFormState({
     handleConvert,
     handleResolveResponse,
     saveNow,
+    blockedLeave,
+    stayOnPage,
+    leaveWithoutSaving,
   }
 }
 

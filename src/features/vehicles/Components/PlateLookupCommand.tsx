@@ -1,7 +1,7 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
 import {
   ArrowRight,
@@ -73,7 +73,7 @@ export function PlateLookupCommand() {
   const t = useTranslations('vehicles.plateLookup')
   const tf = useTranslations('vehicles.form')
   const format = useFormatter()
-  const router = useRouter()
+  const go = useGuardedPush()
   const { available, canCreate, registryName } = usePlateLookupAccess()
 
   const [open, setOpen] = useState(false)
@@ -157,7 +157,7 @@ export function PlateLookupCommand() {
 
   const openVehicle = (id: string) => {
     handleOpenChange(false)
-    router.push(`/vehicles/${id}`)
+    go(`/vehicles/${id}`)
   }
 
   const addVehicle = async () => {
