@@ -12,6 +12,7 @@ import {
   openSupport,
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
+import { useTouchScreen } from '@/features/support/Lib/useTouchScreen'
 
 /**
  * The way back for someone who dismissed the button. Reads and writes the same
@@ -24,6 +25,9 @@ export function SupportSettingsControls() {
   // Rendered on the server first, so the stored preference is unknown until
   // mount. Without this the switch flips visibly on load.
   const [ready, setReady] = useState(false)
+  // A phone or tablet has no floating button, so there is nothing to switch
+  // on or off there. The classes on the row hide it before this is known.
+  const touchScreen = useTouchScreen()
 
   useEffect(() => {
     const sync = () => setVisible(!isSupportBubbleHidden())
@@ -39,23 +43,27 @@ export function SupportSettingsControls() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-4">
-        <div className="space-y-0.5">
-          <Label htmlFor="support-visible">{t('support.showButton')}</Label>
-          <p className="text-xs text-muted-foreground">{t('support.showButtonHint')}</p>
-        </div>
-        <Switch
-          id="support-visible"
-          checked={visible}
-          disabled={!ready}
-          onCheckedChange={(checked) => {
-            setVisible(checked)
-            setSupportBubbleHidden(!checked)
-          }}
-        />
-      </div>
+      {!touchScreen && (
+        <div className="space-y-4 max-lg:hidden pointer-coarse:hidden">
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-0.5">
+              <Label htmlFor="support-visible">{t('support.showButton')}</Label>
+              <p className="text-xs text-muted-foreground">{t('support.showButtonHint')}</p>
+            </div>
+            <Switch
+              id="support-visible"
+              checked={visible}
+              disabled={!ready}
+              onCheckedChange={(checked) => {
+                setVisible(checked)
+                setSupportBubbleHidden(!checked)
+              }}
+            />
+          </div>
 
-      <Separator />
+          <Separator />
+        </div>
+      )}
 
       <div id="support-contact" className="flex items-center justify-between gap-4">
         <div className="space-y-0.5">

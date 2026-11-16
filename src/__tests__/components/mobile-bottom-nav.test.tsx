@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 
 vi.mock('next/navigation', () => ({
@@ -56,5 +56,36 @@ describe('MobileBottomNav', () => {
     expect(link).toHaveAttribute('href', '/vehicles')
     expect(link.querySelector('.lucide-ship')).not.toBeNull()
     expect(screen.queryByRole('link', { name: 'Vehicles' })).toBeNull()
+  })
+
+  // The floating support button is not drawn on a phone, and Settings >
+  // Support is closed to a role without settings access.
+  it('opens the support form from More when support is on', async () => {
+    const opened = vi.fn()
+    window.addEventListener('torqvoice:support:open', opened)
+    render(
+      <ServiceTypeProvider serviceType="automotive">
+        <MobileBottomNav supportEnabled />
+      </ServiceTypeProvider>
+    )
+
+    act(() => screen.getByRole('button', { name: 'More' }).click())
+    const contact = await screen.findByRole('button', { name: 'Contact support' })
+    await act(async () => {
+      contact.click()
+      await new Promise((resolve) => setTimeout(resolve, 300))
+    })
+
+    expect(opened).toHaveBeenCalled()
+    window.removeEventListener('torqvoice:support:open', opened)
+  })
+
+  it('has no support entry in More when support is off', async () => {
+    renderNav('automotive')
+
+    act(() => screen.getByRole('button', { name: 'More' }).click())
+    await screen.findByRole('link', { name: 'Settings' })
+
+    expect(screen.queryByRole('button', { name: 'Contact support' })).toBeNull()
   })
 })

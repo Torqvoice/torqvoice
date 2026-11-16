@@ -95,6 +95,8 @@
     "completeTitle": "Chiudere questa ispezione?",
     "completeBody": "I punti vengono bloccati alla chiusura e l'esito diventa «{result}».",
     "completeBlocked": "{count} controllo/i che la checklist segna come obbligatori sono ancora da fare.",
+    "blockerMissingGrade": "da valutare",
+    "blockerNeedsPhoto": "serve una foto del difetto",
     "completeUngraded": "{count} punto/i non sono stati valutati.",
     "completeDangerous": "{count} carenza/e pericolosa/e registrata/e. Il veicolo non deve circolare su strada pubblica.",
     "reopenTitle": "Riaprire questa ispezione?",

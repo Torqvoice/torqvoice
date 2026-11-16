@@ -7,7 +7,16 @@
  * reloaded, and said nothing.
  */
 import { Component, type ReactNode } from 'react'
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import {
+  act,
+  fireEvent,
+  render as renderBare,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { toast } from 'sonner'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -30,6 +39,10 @@ vi.mock('@/features/sms/Actions/smsActions', () => ({
 vi.mock('@/features/sms/Components/SmsTemplateMenu', () => ({ SmsTemplateMenu: () => null }))
 
 import { SmsConversation } from '@/features/sms/Components/SmsConversation'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 /** Stands in for the app's error page, so losing the page is visible. */
 class ErrorPage extends Component<{ children: ReactNode }, { failed: boolean }> {

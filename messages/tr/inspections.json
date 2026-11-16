@@ -95,6 +95,8 @@
     "completeTitle": "Bu muayene tamamlansın mı?",
     "completeBody": "Tamamlandığında maddeler kilitlenir ve sonuç “{result}” olur.",
     "completeBlocked": "Kontrol listesinin zorunlu olarak işaretlediği {count} kontrol henüz yapılmadı.",
+    "blockerMissingGrade": "değerlendirilmeli",
+    "blockerNeedsPhoto": "kusurun fotoğrafı gerekli",
     "completeUngraded": "{count} madde değerlendirilmedi.",
     "completeDangerous": "{count} tehlikeli kusur kaydedildi. Araç karayolunda kullanılmamalıdır.",
     "reopenTitle": "Bu muayene yeniden açılsın mı?",

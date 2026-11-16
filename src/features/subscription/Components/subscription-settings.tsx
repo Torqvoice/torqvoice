@@ -5,21 +5,18 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useLocale, useTranslations } from 'next-intl'
 import { useRouter } from 'next/navigation'
+import {
+  ConfirmFrame,
+  ConfirmFrameAction,
+  ConfirmFrameCancel,
+  ConfirmFrameText,
+  ConfirmSubjectList,
+  useConfirm,
+} from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
 import { AppCard } from '@/components/app-card'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import {
   Check,
   CheckCircle2,
@@ -91,6 +88,8 @@ export function SubscriptionSettings({
     prorationDate: number
   } | null>(null)
   const [previewLoading, setPreviewLoading] = useState(false)
+  const [upgradeOpen, setUpgradeOpen] = useState(false)
+  const confirm = useConfirm()
 
   const isPaid = plan === 'pro' || plan === 'enterprise'
 
@@ -135,6 +134,7 @@ export function SubscriptionSettings({
   }
 
   const handleUpgradeDialogOpen = async (open: boolean) => {
+    setUpgradeOpen(open)
     if (!open) {
       setUpgradePreview(null)
       return
@@ -157,6 +157,7 @@ export function SubscriptionSettings({
   }
 
   const handleUpgrade = async () => {
+    setUpgradeOpen(false)
     setUpgradeLoading(true)
     try {
       const res = await fetch('/api/protected/subscription/upgrade', {
@@ -181,6 +182,16 @@ export function SubscriptionSettings({
   }
 
   const handleCancel = async () => {
+    const ok = await confirm({
+      title: t('subscription.cancelDialogTitle'),
+      description: t('subscription.cancelDialogDescription', {
+        date: formatDate(currentPeriodEnd),
+      }),
+      confirmLabel: t('subscription.cancelDialogConfirm'),
+      cancelLabel: t('subscription.cancelDialogCancel'),
+      destructive: true,
+    })
+    if (!ok) return
     setCancelLoading(true)
     // An action that cannot reach the server throws instead of answering, so
     // it is caught and reported the way a refusal is.
@@ -669,32 +680,10 @@ export function SubscriptionSettings({
           ) : (
             status === 'active' &&
             !cancelAtPeriodEnd && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">{t('subscription.cancelSubscription')}</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{t('subscription.cancelDialogTitle')}</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      {t('subscription.cancelDialogDescription', {
-                        date: formatDate(currentPeriodEnd),
-                      })}
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t('subscription.cancelDialogCancel')}</AlertDialogCancel>
-                    <AlertDialogAction
-                      variant="destructive"
-                      onClick={handleCancel}
-                      disabled={cancelLoading}
-                    >
-                      {cancelLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                      {t('subscription.cancelDialogConfirm')}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
+              <Button variant="destructive" onClick={handleCancel} disabled={cancelLoading}>
+                {cancelLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t('subscription.cancelSubscription')}
+              </Button>
             )
           )}
         </AppCard>
@@ -706,56 +695,63 @@ export function SubscriptionSettings({
           title={t('subscription.upgradeTitle')}
           description={t('subscription.upgradeToEnterpriseDescription')}
         >
-          <AlertDialog onOpenChange={handleUpgradeDialogOpen}>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" size="sm" disabled={upgradeLoading}>
-                {upgradeLoading ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : (
-                  <Crown className="mr-2 h-4 w-4" />
-                )}
-                {t('subscription.upgradeToEnterprise')}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('subscription.upgradeDialogTitle')}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t('subscription.upgradeDialogDescription')}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              {previewLoading && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {t('subscription.upgradeCalculating')}
-                </div>
-              )}
-              {upgradePreview && (
-                <div className="rounded-md border bg-muted/50 p-3 text-sm">
-                  <p>
-                    {t('subscription.upgradeAmountDue')}:{' '}
-                    <span className="font-semibold">
-                      {formatCurrency(
-                        upgradePreview.amountDue,
-                        upgradePreview.currency.toUpperCase(),
-                        'code'
-                      )}
-                    </span>
-                  </p>
-                </div>
-              )}
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('subscription.cancelDialogCancel')}</AlertDialogCancel>
-                <AlertDialogAction
+          <Button
+            variant="outline"
+            size="sm"
+            disabled={upgradeLoading}
+            onClick={() => handleUpgradeDialogOpen(true)}
+          >
+            {upgradeLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Crown className="mr-2 h-4 w-4" />
+            )}
+            {t('subscription.upgradeToEnterprise')}
+          </Button>
+          {/* Not a plain question: the amount due is worked out while the prompt
+              is open, and the upgrade waits for it. */}
+          <ConfirmFrame
+            open={upgradeOpen}
+            onDismiss={() => handleUpgradeDialogOpen(false)}
+            title={t('subscription.upgradeDialogTitle')}
+            icon={Crown}
+            footer={
+              <>
+                <ConfirmFrameCancel>{t('subscription.cancelDialogCancel')}</ConfirmFrameCancel>
+                <ConfirmFrameAction
                   onClick={handleUpgrade}
                   disabled={upgradeLoading || previewLoading || !upgradePreview}
                 >
-                  {upgradeLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   {t('subscription.upgradeConfirm')}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                </ConfirmFrameAction>
+              </>
+            }
+          >
+            <ConfirmFrameText>
+              <p>{t('subscription.upgradeDialogDescription')}</p>
+              {previewLoading && (
+                <p className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t('subscription.upgradeCalculating')}
+                </p>
+              )}
+            </ConfirmFrameText>
+            {upgradePreview && (
+              <ConfirmSubjectList
+                divided
+                rows={[
+                  {
+                    label: t('subscription.upgradeAmountDue'),
+                    detail: formatCurrency(
+                      upgradePreview.amountDue,
+                      upgradePreview.currency.toUpperCase(),
+                      'code'
+                    ),
+                  },
+                ]}
+              />
+            )}
+          </ConfirmFrame>
         </AppCard>
       )}
     </div>

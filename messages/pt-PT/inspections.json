@@ -95,6 +95,8 @@
     "completeTitle": "Concluir esta inspeção?",
     "completeBody": "Os itens ficam bloqueados quando a inspeção é concluída, e o resultado passa a ser “{result}”.",
     "completeBlocked": "{count} item(ns) que a lista de verificação marca como obrigatórios continuam pendentes.",
+    "blockerMissingGrade": "tem de ser avaliado",
+    "blockerNeedsPhoto": "precisa de uma fotografia do defeito",
     "completeUngraded": "{count} item(ns) ainda não foram classificados.",
     "completeDangerous": "{count} deficiência(s) perigosa(s) registada(s). O veículo não deve circular na via pública.",
     "reopenTitle": "Reabrir esta inspeção?",

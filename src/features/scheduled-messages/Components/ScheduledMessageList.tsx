@@ -16,6 +16,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -24,16 +25,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import {
@@ -81,7 +72,7 @@ export function ScheduledMessageList({
   const [filter, setFilter] = useState<StatusFilter>('upcoming')
   const [editing, setEditing] = useState<ScheduledMessageListItem | undefined>()
   const [showDialog, setShowDialog] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<ScheduledMessageListItem | null>(null)
+  const confirm = useConfirm()
   const [busyId, setBusyId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
@@ -128,10 +119,18 @@ export function ScheduledMessageList({
     setBusyId(null)
   }
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return
-    setBusyId(deleteTarget.id)
-    const result = await deleteScheduledMessage(deleteTarget.id).catch(() => null)
+  const handleDelete = async (message: ScheduledMessageListItem) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription'),
+      confirmLabel: tc('delete'),
+      cancelLabel: tc('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
+    setBusyId(message.id)
+    const result = await deleteScheduledMessage(message.id).catch(() => null)
     if (result?.success) {
       toast.success(t('deleted'))
       onChanged()
@@ -139,7 +138,6 @@ export function ScheduledMessageList({
       toast.error(result?.error || t('deleteError'))
     }
     setBusyId(null)
-    setDeleteTarget(null)
   }
 
   return (
@@ -274,7 +272,7 @@ export function ScheduledMessageList({
                       )}
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => setDeleteTarget(message)}
+                        onClick={() => handleDelete(message)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         {tc('delete')}
@@ -298,24 +296,6 @@ export function ScheduledMessageList({
         message={editing}
         onSaved={onChanged}
       />
-
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('deleteDescription')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

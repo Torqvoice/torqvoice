@@ -4,7 +4,9 @@
  * so. A request that never reached the server used to throw inside the card's
  * transition, which replaced the whole page with the error page.
  */
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { act, fireEvent, render as renderBare, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const removeConditionMark = vi.fn()
@@ -32,6 +34,10 @@ vi.mock('@/hooks/use-native-camera', () => ({ useNativeCamera: () => false }))
 import { ConditionMapCard } from '@/features/condition-map/Components/ConditionMapCard'
 import { builtinMarkTypes } from '@/features/condition-map/Lib/markTypes'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const TYPES = builtinMarkTypes({ dent: 'Dent', scratch: 'Scratch' })
 
