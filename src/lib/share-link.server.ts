@@ -2,6 +2,11 @@ import 'server-only'
 import { getCustomerSession } from '@/lib/customer-session'
 import { db } from '@/lib/db'
 import {
+  INVOICE_DISPLAY_TOTAL_COLUMNS,
+  type InvoiceDisplayTotalRow,
+  invoiceDisplayTotal,
+} from '@/lib/invoice-display-total'
+import {
   ALL_SHARE_EXPIRY_SETTING_KEYS,
   invoicePayment,
   isShareExpired,
@@ -53,7 +58,7 @@ export const SHARE_FACT_COLUMNS = {
 
 /** What an invoice's link also needs: whether it is paid, and when. */
 export const INVOICE_PAYMENT_COLUMNS = {
-  totalAmount: true,
+  ...INVOICE_DISPLAY_TOTAL_COLUMNS,
   manuallyPaid: true,
   manuallyPaidAt: true,
   payments: { select: { amount: true, date: true } },
@@ -66,7 +71,11 @@ type FactRow = {
   shareNeverExpires: boolean
 }
 
-type InvoicePaymentRow = Parameters<typeof invoicePayment>[0]
+type InvoicePaymentRow = InvoiceDisplayTotalRow & {
+  manuallyPaid: boolean
+  manuallyPaidAt: Date | null
+  payments: { amount: number; date: Date }[]
+}
 
 export function shareFacts(row: FactRow, invoice?: InvoicePaymentRow): ShareLinkFacts {
   return {
@@ -74,7 +83,11 @@ export function shareFacts(row: FactRow, invoice?: InvoicePaymentRow): ShareLink
     renewedAt: row.shareRenewedAt,
     expiresAt: row.shareExpiresAt,
     neverExpires: row.shareNeverExpires,
-    payment: invoice ? invoicePayment(invoice) : undefined,
+    // Paid is measured against what the share page asks for, so a job
+    // with only a cost on it is not taken for settled.
+    payment: invoice
+      ? invoicePayment({ ...invoice, totalAmount: invoiceDisplayTotal(invoice) })
+      : undefined,
   }
 }
 
@@ -121,7 +134,6 @@ async function findByToken(kind: ShareKind, token: string): Promise<Found | null
         id: true,
         organizationId: true,
         customerId: true,
-        vehicle: { select: { customerId: true } },
         ...SHARE_FACT_COLUMNS,
       },
     })
@@ -129,7 +141,9 @@ async function findByToken(kind: ShareKind, token: string): Promise<Found | null
     return {
       id: row.id,
       organizationId: row.organizationId,
-      customerIds: [row.customerId, row.vehicle?.customerId],
+      // The portal's own rule: a quote belongs to the customer it was made
+      // for, not to whoever owns the vehicle now.
+      customerIds: [row.customerId],
       facts: () => shareFacts(row),
     }
   }

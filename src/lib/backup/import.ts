@@ -262,6 +262,11 @@ async function importServiceRecordTree(
       shareExpiresAt: toSafeDate(sr.shareExpiresAt as string) ?? null,
       shareNeverExpires: sr.shareNeverExpires === true,
       shareRenewedAt: toSafeDate(sr.shareRenewedAt as string) ?? null,
+      // Marked paid by hand is what closes an invoice's link under the
+      // "after payment" rule; without it a settled invoice restores as owed
+      // and its link stays open.
+      manuallyPaid: sr.manuallyPaid === true,
+      manuallyPaidAt: toSafeDate(sr.manuallyPaidAt as string) ?? null,
       // Only a technician this import restored: a job pointing at one the
       // backup does not carry would be refused, and take the import with it.
       technicianId: keptReference(sr.technicianId, opts.technicianIds),
@@ -1490,7 +1495,12 @@ export async function restoreBackup(
                 startDateTime: toSafeDate(insp.startDateTime as string) ?? null,
                 endDateTime: toSafeDate(insp.endDateTime as string) ?? null,
                 publicToken: (insp.publicToken as string) || null,
-                sharedAt: toSafeDate(insp.sharedAt as string) ?? null,
+                // A backup from before links carried a start date has none.
+                // The link then counts from the inspection's last change, as
+                // the migration did, or it would never expire.
+                sharedAt:
+                  toSafeDate(insp.sharedAt as string) ??
+                  (insp.publicToken ? (toSafeDate(insp.updatedAt as string) ?? new Date()) : null),
                 shareExpiresAt: toSafeDate(insp.shareExpiresAt as string) ?? null,
                 shareNeverExpires: insp.shareNeverExpires === true,
                 shareRenewedAt: toSafeDate(insp.shareRenewedAt as string) ?? null,

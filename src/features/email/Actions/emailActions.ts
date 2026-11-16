@@ -17,7 +17,7 @@ import {
 } from '@/features/inspections/Pdf/customerCertificatePdf'
 import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
-import { ensureShareToken } from '@/lib/share-token.server'
+import { ensureShareToken, renewShareLink } from '@/lib/share-token.server'
 import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
 import type { VehicleContext } from '@/features/email/Lib/emailContext'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
@@ -186,6 +186,8 @@ export async function sendQuoteEmail(input: {
           },
         })
       )
+      // The mail is on its way: the link in it counts from now.
+      if (token) await renewShareLink('quote', quoteId, organizationId)
 
       // Stamps sentAt and moves a draft to "sent" (accepted and converted
       // quotes keep their status).
@@ -367,6 +369,8 @@ export async function sendInvoiceEmail(input: {
           },
         })
       )
+      // The mail is on its way: the link in it counts from now.
+      if (token) await renewShareLink('invoice', serviceRecordId, organizationId)
 
       await markInvoiceSent(serviceRecordId, organizationId, { alreadyIssued: true })
 
@@ -482,6 +486,8 @@ export async function sendInspectionEmail(input: {
           },
         })
       )
+      // The mail is on its way: the link in it counts from now.
+      if (token) await renewShareLink('inspection', inspectionId, organizationId)
 
       return { sent: true, inspectionId, recipientEmail }
     },
