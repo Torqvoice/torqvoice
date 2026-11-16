@@ -203,6 +203,8 @@ const DATASETS: readonly Dataset[] = [
           laborItems: true,
           attachments: true,
           payments: true,
+          // A counter sale can be reported on like any other job.
+          statusReports: true,
           timeEntries: true,
           helpers: true,
         },

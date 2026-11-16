@@ -167,6 +167,15 @@ function storedTaxableSubtotalFromBackup(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null
 }
 
+/**
+ * A number as the backup holds it, zero included. The fallback is for a file
+ * that has none: written as `value || fallback`, a part line with a quantity
+ * of zero came back as one and an odometer at zero as unknown.
+ */
+function numberOr<T>(value: unknown, fallback: T): number | T {
+  return typeof value === 'number' && Number.isFinite(value) ? value : fallback
+}
+
 /** A foreign key from the backup, kept only when this import restored its target. */
 function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): string | null {
   return typeof id === 'string' && id && restored?.has(id) ? id : null
@@ -202,6 +211,12 @@ async function importServiceRecordTree(
     technicianIds: ReadonlySet<string>
     /** The workshop's own statuses restored by this import. */
     workOrderStatusIds: ReadonlySet<string>
+    /**
+     * The people in the restored workshop. Whoever opened or unlocked a job is
+     * kept only when they are one of them: a backup brought to another install
+     * names accounts that do not exist there.
+     */
+    memberUserIds: ReadonlySet<string>
     /**
      * Designs and snapshots restored by this import. A reference to one the
      * backup did not carry is dropped rather than left dangling: the record
@@ -240,7 +255,7 @@ async function importServiceRecordTree(
       type: (sr.type as string) || 'maintenance',
       status: (sr.status as string) || 'completed',
       cost: (sr.cost as number) || 0,
-      mileage: (sr.mileage as number) || null,
+      mileage: numberOr(sr.mileage, null),
       serviceDate: toSafeDate(sr.serviceDate as string),
       startDateTime: startDT ?? undefined,
       endDateTime: endDT ?? undefined,
@@ -248,7 +263,7 @@ async function importServiceRecordTree(
       shopName: (sr.shopName as string) || null,
       techName: (sr.techName as string) || null,
       parts: (sr.parts as string) || null,
-      laborHours: (sr.laborHours as number) || null,
+      laborHours: numberOr(sr.laborHours, null),
       diagnosticNotes: (sr.diagnosticNotes as string) || null,
       invoiceNotes: (sr.invoiceNotes as string) || null,
       subtotal: (sr.subtotal as number) || 0,
@@ -259,6 +274,8 @@ async function importServiceRecordTree(
       taxableSubtotal: storedTaxableSubtotalFromBackup(sr.taxableSubtotal),
       totalAmount: (sr.totalAmount as number) || 0,
       invoiceNumber: (sr.invoiceNumber as string) || null,
+      invoiceDate: sr.invoiceDate ? toSafeDate(sr.invoiceDate as string) : null,
+      invoiceDueDate: sr.invoiceDueDate ? toSafeDate(sr.invoiceDueDate as string) : null,
       discountType: (sr.discountType as string) || null,
       discountValue: (sr.discountValue as number) || 0,
       discountAmount: (sr.discountAmount as number) || 0,
@@ -266,6 +283,8 @@ async function importServiceRecordTree(
       // which is read as the included warranty it was.
       ...warrantyFromUntyped(sr),
       warrantyExpiresAt: sr.warrantyExpiresAt ? toSafeDate(sr.warrantyExpiresAt as string) : null,
+      conditionMapOnInvoice:
+        typeof sr.conditionMapOnInvoice === 'boolean' ? sr.conditionMapOnInvoice : null,
       publicToken: (sr.publicToken as string) || null,
       // The link's own expiry answers travel with its token, or a restored
       // link would forget the date the workshop set on it.
@@ -278,6 +297,13 @@ async function importServiceRecordTree(
       // and its link stays open.
       manuallyPaid: sr.manuallyPaid === true,
       manuallyPaidAt: toSafeDate(sr.manuallyPaidAt as string) ?? null,
+      viewCount: (sr.viewCount as number) || 0,
+      lastViewedAt: sr.lastViewedAt ? toSafeDate(sr.lastViewedAt as string) : null,
+      sentAt: sr.sentAt ? toSafeDate(sr.sentAt as string) : null,
+      bookingSource: (sr.bookingSource as string) || null,
+      createdById: keptReference(sr.createdById, opts.memberUserIds),
+      editUnlockedAt: sr.editUnlockedAt ? toSafeDate(sr.editUnlockedAt as string) : null,
+      editUnlockedById: keptReference(sr.editUnlockedById, opts.memberUserIds),
       // Only a technician this import restored: a job pointing at one the
       // backup does not carry would be refused, and take the import with it.
       technicianId: keptReference(sr.technicianId, opts.technicianIds),
@@ -315,7 +341,7 @@ async function importServiceRecordTree(
         id: p.id as string,
         partNumber: (p.partNumber as string) || null,
         name: p.name as string,
-        quantity: (p.quantity as number) || 1,
+        quantity: numberOr(p.quantity, 1),
         unit: (p.unit as string) || null,
         category: (p.category as string) || null,
         unitPrice: (p.unitPrice as number) || 0,
@@ -345,10 +371,13 @@ async function importServiceRecordTree(
         cause: (c.cause as string) || null,
         correction: (c.correction as string) || null,
         confirmation: (c.confirmation as string) || null,
-        // When it was confirmed comes back; who does not. The id belongs to
-        // an account in the installation the backup was taken from, and the
-        // same person here has another one, if they are here at all.
+        // When it was confirmed always comes back; who, only when that person
+        // is in this workshop. A backup brought from another installation
+        // names an account that is not here.
         confirmedAt: c.confirmedAt ? (toSafeDate(c.confirmedAt as string) ?? null) : null,
+        confirmedById: keptReference(c.confirmedById, opts.memberUserIds),
+        createdAt: toSafeDate(c.createdAt as string),
+        updatedAt: toSafeDate(c.updatedAt as string),
         serviceRecordId: sr.id as string,
       })),
     })
@@ -457,6 +486,10 @@ async function importServiceRecordTree(
         date: toSafeDate(p.date as string),
         method: (p.method as string) || 'other',
         note: (p.note as string) || null,
+        // Which payment provider took it and under what reference. This pair
+        // is how a webhook delivered twice is told from a second payment.
+        provider: (p.provider as string) || null,
+        externalId: (p.externalId as string) || null,
         createdAt: toSafeDate(p.createdAt as string),
         updatedAt: toSafeDate(p.updatedAt as string),
         serviceRecordId: sr.id as string,
@@ -737,6 +770,8 @@ export async function restoreBackup(
                 d.template ?? {},
                 ctx.organizationId
               ) as Prisma.InputJsonValue,
+              // The rule that picks this design by itself, for counter sales.
+              autoRule: (d.autoRule as string) || null,
               createdAt: toSafeDate(d.createdAt as string),
               updatedAt: toSafeDate(d.updatedAt as string),
             })),
@@ -814,12 +849,22 @@ export async function restoreBackup(
             data: (data.customers as Record<string, unknown>[]).map(
               (c: Record<string, unknown>) => ({
                 id: c.id as string,
+                customerNumber: (c.customerNumber as string) || null,
                 name: c.name as string,
                 email: (c.email as string) || null,
                 phone: (c.phone as string) || null,
                 address: (c.address as string) || null,
                 company: (c.company as string) || null,
                 notes: (c.notes as string) || null,
+                // What the invoice prints and charges by: a tax number, and
+                // whether this customer pays tax at all.
+                taxId: (c.taxId as string) || null,
+                taxExempt: (c.taxExempt as boolean) || false,
+                // A customer who asked not to be reminded stays unreminded.
+                reminderOptOut: (c.reminderOptOut as boolean) || false,
+                // The Telegram chat the customer linked; without it their
+                // messages arrive from nobody.
+                telegramChatId: (c.telegramChatId as string) || null,
                 invoiceDesignId: keptReference(c.invoiceDesignId, designIds),
                 createdAt: toSafeDate(c.createdAt as string),
                 updatedAt: toSafeDate(c.updatedAt as string),
@@ -862,7 +907,7 @@ export async function restoreBackup(
                 color: (t.color as string) || '#3b82f6',
                 isActive: t.isActive !== false,
                 sortOrder: (t.sortOrder as number) || 0,
-                dailyCapacity: (t.dailyCapacity as number) || 480,
+                dailyCapacity: numberOr(t.dailyCapacity, 480),
                 skills: (t.skills as string) || null,
                 // memberId from old backups is ignored: it has no FK to users.
                 userId:
@@ -888,6 +933,17 @@ export async function restoreBackup(
           ).map((t) => t.id)
         )
 
+        // Who is in this workshop, for the jobs and quotes that name the
+        // person who opened or unlocked them.
+        const memberUserIds = new Set(
+          (
+            await tx.organizationMember.findMany({
+              where: { organizationId: ctx.organizationId },
+              select: { userId: true },
+            })
+          ).map((m) => m.userId)
+        )
+
         // Each technician's time off, for the technicians this restore has.
         const absences = ((data.technicians as Record<string, unknown>[] | undefined) ?? [])
           .flatMap((t) => (t.absences as Record<string, unknown>[] | undefined) ?? [])
@@ -910,7 +966,7 @@ export async function restoreBackup(
                 color: (b.color as string) || '#64748b',
                 isActive: b.isActive !== false,
                 sortOrder: (b.sortOrder as number) || 0,
-                dailyCapacity: (b.dailyCapacity as number) || 480,
+                dailyCapacity: numberOr(b.dailyCapacity, 480),
                 createdAt: toSafeDate(b.createdAt as string),
                 updatedAt: toSafeDate(b.updatedAt as string),
                 organizationId: ctx.organizationId,
@@ -954,6 +1010,7 @@ export async function restoreBackup(
                 label: def.label as string,
                 fieldType: (def.fieldType as string) || 'text',
                 options: (def.options as string) || null,
+                defaultValue: (def.defaultValue as string) || null,
                 required: (def.required as boolean) || false,
                 entityType: def.entityType as string,
                 sortOrder: (def.sortOrder as number) || 0,
@@ -988,6 +1045,7 @@ export async function restoreBackup(
               (p: Record<string, unknown>) => ({
                 id: p.id as string,
                 partNumber: (p.partNumber as string) || null,
+                barcode: (p.barcode as string) || null,
                 name: p.name as string,
                 description: (p.description as string) || null,
                 category: (p.category as string) || null,
@@ -1007,6 +1065,10 @@ export async function restoreBackup(
                 tags: Array.isArray(p.tags)
                   ? (p.tags as unknown[]).filter((tag): tag is string => typeof tag === 'string')
                   : [],
+                // When the low stock alert went out, so it is not sent again.
+                lowStockAlertedAt: p.lowStockAlertedAt
+                  ? (toSafeDate(p.lowStockAlertedAt as string) ?? null)
+                  : null,
                 createdAt: toSafeDate(p.createdAt as string),
                 updatedAt: toSafeDate(p.updatedAt as string),
                 userId: ctx.userId,
@@ -1060,9 +1122,17 @@ export async function restoreBackup(
                 tsn: (v.tsn as string) || null,
                 bodyType: (v.bodyType as string) || null,
                 purchaseDate: toSafeDate(v.purchaseDate as string) ?? null,
-                purchasePrice: (v.purchasePrice as number) || null,
+                purchasePrice: numberOr(v.purchasePrice, null),
                 imageUrl: rewriteFileUrl(v.imageUrl as string, ctx.organizationId),
                 isArchived: (v.isArchived as boolean) || false,
+                archiveReason: (v.archiveReason as string) || null,
+                soldReportedAt: v.soldReportedAt
+                  ? (toSafeDate(v.soldReportedAt as string) ?? null)
+                  : null,
+                maintenanceDismissed: (v.maintenanceDismissed as boolean) || false,
+                maintenanceDismissedAt: v.maintenanceDismissedAt
+                  ? (toSafeDate(v.maintenanceDismissedAt as string) ?? null)
+                  : null,
                 createdAt: toSafeDate(v.createdAt as string),
                 updatedAt: toSafeDate(v.updatedAt as string),
                 userId: ctx.userId,
@@ -1117,10 +1187,13 @@ export async function restoreBackup(
                   title: r.title as string,
                   description: (r.description as string) || null,
                   dueDate: toSafeDate(r.dueDate as string) ?? null,
-                  dueMileage: (r.dueMileage as number) || null,
+                  hasDueTime: (r.hasDueTime as boolean) || false,
+                  dueMileage: numberOr(r.dueMileage, null),
                   isCompleted: (r.isCompleted as boolean) || false,
                   notifyInApp: (r.notifyInApp as boolean) ?? true,
                   notifyEmail: (r.notifyEmail as boolean) ?? false,
+                  // Already announced: left out, a restore announced it again.
+                  notifiedAt: r.notifiedAt ? (toSafeDate(r.notifiedAt as string) ?? null) : null,
                   createdAt: toSafeDate(r.createdAt as string),
                   updatedAt: toSafeDate(r.updatedAt as string),
                   vehicleId: v.id as string,
@@ -1137,11 +1210,14 @@ export async function restoreBackup(
                 await importServiceRecordTree(tx, sr, {
                   organizationId: ctx.organizationId,
                   vehicleId: v.id as string,
-                  customerId: null,
+                  // Most vehicle jobs have none and follow the vehicle's
+                  // customer; one booked online names who booked it.
+                  customerId: (sr.customerId as string) || null,
                   workDayStartTime,
                   timeZone,
                   technicianIds,
                   workOrderStatusIds,
+                  memberUserIds,
                   designIds,
                   designSnapshotIds,
                   assetSnapshotIds,
@@ -1206,10 +1282,12 @@ export async function restoreBackup(
               title: r.title as string,
               description: (r.description as string) || null,
               dueDate: toSafeDate(r.dueDate as string) ?? null,
-              dueMileage: (r.dueMileage as number) || null,
+              hasDueTime: (r.hasDueTime as boolean) || false,
+              dueMileage: numberOr(r.dueMileage, null),
               isCompleted: (r.isCompleted as boolean) || false,
               notifyInApp: (r.notifyInApp as boolean) ?? true,
               notifyEmail: (r.notifyEmail as boolean) ?? false,
+              notifiedAt: r.notifiedAt ? (toSafeDate(r.notifiedAt as string) ?? null) : null,
               createdAt: toSafeDate(r.createdAt as string),
               updatedAt: toSafeDate(r.updatedAt as string),
               vehicleId: null,
@@ -1231,6 +1309,7 @@ export async function restoreBackup(
               timeZone,
               technicianIds,
               workOrderStatusIds,
+              memberUserIds,
               designIds,
               designSnapshotIds,
               assetSnapshotIds,
@@ -1353,6 +1432,22 @@ export async function restoreBackup(
                 totalAmount: (q.totalAmount as number) || 0,
                 notes: (q.notes as string) || null,
                 ...warrantyFromUntyped(q),
+                // The link the customer already holds. Left out, every shared
+                // quote answered "not found" after a restore.
+                publicToken: (q.publicToken as string) || null,
+                sharedAt: toSafeDate(q.sharedAt as string) ?? null,
+                shareExpiresAt: toSafeDate(q.shareExpiresAt as string) ?? null,
+                shareNeverExpires: q.shareNeverExpires === true,
+                shareRenewedAt: toSafeDate(q.shareRenewedAt as string) ?? null,
+                viewCount: (q.viewCount as number) || 0,
+                lastViewedAt: q.lastViewedAt ? toSafeDate(q.lastViewedAt as string) : null,
+                customerMessage: (q.customerMessage as string) || null,
+                sentAt: q.sentAt ? toSafeDate(q.sentAt as string) : null,
+                responseDismissedAt: q.responseDismissedAt
+                  ? toSafeDate(q.responseDismissedAt as string)
+                  : null,
+                editUnlockedAt: q.editUnlockedAt ? toSafeDate(q.editUnlockedAt as string) : null,
+                editUnlockedById: keptReference(q.editUnlockedById, memberUserIds),
                 convertedToId: (q.convertedToId as string) || null,
                 createdAt: toSafeDate(q.createdAt as string),
                 updatedAt: toSafeDate(q.updatedAt as string),
@@ -1371,7 +1466,7 @@ export async function restoreBackup(
                   id: p.id as string,
                   partNumber: (p.partNumber as string) || null,
                   name: p.name as string,
-                  quantity: (p.quantity as number) || 1,
+                  quantity: numberOr(p.quantity, 1),
                   unit: (p.unit as string) || null,
                   category: (p.category as string) || null,
                   unitPrice: (p.unitPrice as number) || 0,
@@ -1501,7 +1596,7 @@ export async function restoreBackup(
               data: {
                 id: insp.id as string,
                 status: (insp.status as string) || 'in_progress',
-                mileage: (insp.mileage as number) || null,
+                mileage: numberOr(insp.mileage, null),
                 notes: (insp.notes as string) || null,
                 startDateTime: toSafeDate(insp.startDateTime as string) ?? null,
                 endDateTime: toSafeDate(insp.endDateTime as string) ?? null,
@@ -1625,28 +1720,47 @@ export async function restoreBackup(
 
         // 10b. The jobs and quotes raised from an inspection point back at it.
         // Both were restored before the inspections existed, so the link is
-        // written now, and only where the inspection came back with the backup.
-        if (data.inspections?.length) {
+        // written now, to any inspection the workshop holds at this point:
+        // one that came back with the backup, or one that was never cleared
+        // because the backup did not carry inspections at all.
+        {
           const restoredInspections = new Set(
-            (data.inspections as Record<string, unknown>[]).map((insp) => insp.id as string)
+            (
+              await tx.inspection.findMany({
+                where: { organizationId: ctx.organizationId },
+                select: { id: true },
+              })
+            ).map((insp) => insp.id)
           )
           const linked = (rows: unknown) =>
             ((rows as Record<string, unknown>[] | undefined) ?? []).filter(
               (row) =>
                 typeof row.inspectionId === 'string' && restoredInspections.has(row.inspectionId)
             )
-          for (const vehicle of (data.vehicles as Record<string, unknown>[] | undefined) ?? []) {
-            for (const sr of linked(vehicle.serviceRecords)) {
-              await tx.serviceRecord.updateMany({
-                where: { id: sr.id as string, organizationId: ctx.organizationId },
-                data: { inspectionId: sr.inspectionId as string },
-              })
-            }
+          const jobs = [
+            ...((data.vehicles as Record<string, unknown>[] | undefined) ?? []).flatMap((vehicle) =>
+              linked(vehicle.serviceRecords)
+            ),
+            ...linked(data.counterSales),
+          ]
+          // The row's own "last changed" is written with the link: left to the
+          // database, every linked job and quote came back changed today.
+          for (const sr of jobs) {
+            await tx.serviceRecord.updateMany({
+              where: { id: sr.id as string, organizationId: ctx.organizationId },
+              data: {
+                inspectionId: sr.inspectionId as string,
+                updatedAt: toSafeDate(sr.updatedAt as string),
+              },
+            })
           }
           for (const q of linked(data.quotes)) {
             await tx.quote.updateMany({
               where: { id: q.id as string, organizationId: ctx.organizationId },
-              data: { inspectionId: q.inspectionId as string },
+              data: {
+                inspectionId: q.inspectionId as string,
+                updatedAt: toSafeDate(q.updatedAt as string),
+              },
             })
           }
         }
@@ -1654,8 +1768,8 @@ export async function restoreBackup(
         // 10c. The condition map's marks. They hang off the vehicle but name
         // the inspection check or the job they were drawn on, so they come
         // after both; a sheet the backup did not carry leaves the mark with no
-        // sheet rather than failing the import. The people who drew and cleared
-        // them have no account on this instance.
+        // sheet rather than failing the import. Who drew and cleared them
+        // comes back when that person is in this workshop.
         if (data.vehicles?.length) {
           const marks = (data.vehicles as Record<string, unknown>[]).flatMap((vehicle) =>
             ((vehicle.conditionMarks as Record<string, unknown>[] | undefined) ?? []).map(
@@ -1687,6 +1801,7 @@ export async function restoreBackup(
             const restoredInspectionIds = new Set(inspectionRows.map((row) => row.id))
             const restoredItemIds = new Set(itemRows.map((row) => row.id))
             const restoredJobIds = new Set(jobRows.map((row) => row.id))
+            const restoredMarkIds = new Set(marks.map(({ mark }) => mark.id as string))
             await tx.conditionMark.createMany({
               data: marks.map(({ mark, vehicleId: markVehicleId }) => ({
                 id: mark.id as string,
@@ -1707,9 +1822,12 @@ export async function restoreBackup(
                   (url) => rewriteFileUrl(url, ctx.organizationId) ?? url
                 ),
                 recordedAt: toSafeDate(mark.recordedAt as string),
-                recordedById: null,
+                recordedById: keptReference(mark.recordedById, memberUserIds),
                 resolvedAt: toSafeDate(mark.resolvedAt as string) ?? null,
-                resolvedById: null,
+                resolvedById: keptReference(mark.resolvedById, memberUserIds),
+                // The newer mark this one was recorded again as. Without it
+                // the same dent shows twice on the vehicle.
+                carriedToId: keptReference(mark.carriedToId, restoredMarkIds),
                 createdAt: toSafeDate(mark.createdAt as string),
                 updatedAt: toSafeDate(mark.updatedAt as string),
               })),
@@ -1732,7 +1850,9 @@ export async function restoreBackup(
                   log.metadata != null ? (log.metadata as Prisma.InputJsonValue) : Prisma.DbNull,
                 ip: (log.ip as string) || null,
                 userAgent: (log.userAgent as string) || null,
-                userId: ctx.userId,
+                // Who did it, when that person is in this workshop; an entry
+                // by somebody who is not goes to whoever restores, as before.
+                userId: keptReference(log.userId, memberUserIds) ?? ctx.userId,
                 organizationId: ctx.organizationId,
               })
             ),
@@ -1754,6 +1874,9 @@ export async function restoreBackup(
                 errorMessage: (msg.errorMessage as string) || null,
                 relatedEntityType: (msg.relatedEntityType as string) || null,
                 relatedEntityId: (msg.relatedEntityId as string) || null,
+                // Read stays read: left out, every text ever received came
+                // back as unread.
+                readAt: msg.readAt ? (toSafeDate(msg.readAt as string) ?? null) : null,
                 createdAt: toSafeDate(msg.createdAt as string),
                 updatedAt: toSafeDate(msg.updatedAt as string),
                 organizationId: ctx.organizationId,
@@ -2228,7 +2351,7 @@ export async function restoreBackup(
                 withRims: (set.withRims as boolean) || false,
                 rimType: (set.rimType as string) || null,
                 hasTpms: (set.hasTpms as boolean) || false,
-                quantity: (set.quantity as number) || 4,
+                quantity: numberOr(set.quantity, 4),
                 status: (set.status as string) || 'stored',
                 notes: (set.notes as string) || null,
                 checkedInAt: set.checkedInAt ? toSafeDate(set.checkedInAt as string) : null,
@@ -2243,6 +2366,30 @@ export async function restoreBackup(
               },
             })
 
+            // Movements first: a reading names the movement it was taken at.
+            const movements = set.movements as Record<string, unknown>[] | undefined
+            if (movements?.length) {
+              await tx.tireMovement.createMany({
+                data: movements.map((mv) => ({
+                  id: mv.id as string,
+                  type: mv.type as string,
+                  fromCode: (mv.fromCode as string) || null,
+                  toCode: (mv.toCode as string) || null,
+                  note: (mv.note as string) || null,
+                  createdAt: toSafeDate(mv.createdAt as string),
+                  tireSetId: set.id as string,
+                  // The codes above carry the history in readable form; the
+                  // links come back for the shelves that came across, and
+                  // who moved the set when that person is in this workshop.
+                  fromLocationId: keptReference(mv.fromLocationId, knownLocations),
+                  toLocationId: keptReference(mv.toLocationId, knownLocations),
+                  performedById: keptReference(mv.performedById, memberUserIds),
+                  organizationId: ctx.organizationId,
+                })),
+              })
+            }
+
+            const restoredMovements = new Set((movements ?? []).map((mv) => mv.id as string))
             const measurements = set.measurements as Record<string, unknown>[] | undefined
             if (measurements?.length) {
               await tx.tireMeasurement.createMany({
@@ -2257,9 +2404,10 @@ export async function restoreBackup(
                   measuredAt: toSafeDate(m.measuredAt as string),
                   tireSetId: set.id as string,
                   // The person who took the reading may not exist here, and a
-                  // wrong name on a condition record is worse than none.
-                  measuredById: null,
-                  movementId: null,
+                  // wrong name on a condition record is worse than none: kept
+                  // only when they are in this workshop.
+                  measuredById: keptReference(m.measuredById, memberUserIds),
+                  movementId: keptReference(m.movementId, restoredMovements),
                 })),
               })
 
@@ -2275,28 +2423,6 @@ export async function restoreBackup(
                   { fields: ['url'], organizationId: ctx.organizationId }
                 )
               }
-            }
-
-            const movements = set.movements as Record<string, unknown>[] | undefined
-            if (movements?.length) {
-              await tx.tireMovement.createMany({
-                data: movements.map((mv) => ({
-                  id: mv.id as string,
-                  type: mv.type as string,
-                  fromCode: (mv.fromCode as string) || null,
-                  toCode: (mv.toCode as string) || null,
-                  note: (mv.note as string) || null,
-                  createdAt: toSafeDate(mv.createdAt as string),
-                  tireSetId: set.id as string,
-                  // The codes above carry the history in readable form, so the
-                  // relations are left off rather than pointed at shelves that
-                  // may not have come across.
-                  fromLocationId: null,
-                  toLocationId: null,
-                  performedById: null,
-                  organizationId: ctx.organizationId,
-                })),
-              })
             }
 
             const attachments = set.attachments as Record<string, unknown>[] | undefined
@@ -2315,7 +2441,7 @@ export async function restoreBackup(
                   tireSetId: set.id as string,
                   organizationId: ctx.organizationId,
                   // The uploader may not exist in the target organization.
-                  uploadedById: null,
+                  uploadedById: keptReference(att.uploadedById, memberUserIds),
                 })),
               })
             }
@@ -2329,7 +2455,7 @@ export async function restoreBackup(
                   status: (tr.status as string) || 'pending',
                   notes: (tr.notes as string) || null,
                   completedAt: tr.completedAt ? toSafeDate(tr.completedAt as string) : null,
-                  completedById: null,
+                  completedById: keptReference(tr.completedById, memberUserIds),
                   createdAt: toSafeDate(tr.createdAt as string),
                   updatedAt: toSafeDate(tr.updatedAt as string),
                   tireSetId: set.id as string,
@@ -2337,6 +2463,50 @@ export async function restoreBackup(
                 })),
               })
             }
+          }
+        }
+
+        // The jobs and quotes raised for a stored set point back at it. Both
+        // were restored before the sets existed, so the link is written now,
+        // to any set the workshop holds at this point: one that came back with
+        // the backup, or one that was never cleared because the backup did not
+        // carry the tire hotel.
+        {
+          const restoredTireSets = new Set(
+            (
+              await tx.tireSet.findMany({
+                where: { organizationId: ctx.organizationId },
+                select: { id: true },
+              })
+            ).map((set) => set.id)
+          )
+          const aboutASet = (rows: unknown) =>
+            ((rows as Record<string, unknown>[] | undefined) ?? []).filter(
+              (row) => typeof row.tireSetId === 'string' && restoredTireSets.has(row.tireSetId)
+            )
+          const jobs = [
+            ...((data.vehicles as Record<string, unknown>[] | undefined) ?? []).flatMap((vehicle) =>
+              aboutASet(vehicle.serviceRecords)
+            ),
+            ...aboutASet(data.counterSales),
+          ]
+          for (const sr of jobs) {
+            await tx.serviceRecord.updateMany({
+              where: { id: sr.id as string, organizationId: ctx.organizationId },
+              data: {
+                tireSetId: sr.tireSetId as string,
+                updatedAt: toSafeDate(sr.updatedAt as string),
+              },
+            })
+          }
+          for (const q of aboutASet(data.quotes)) {
+            await tx.quote.updateMany({
+              where: { id: q.id as string, organizationId: ctx.organizationId },
+              data: {
+                tireSetId: q.tireSetId as string,
+                updatedAt: toSafeDate(q.updatedAt as string),
+              },
+            })
           }
         }
       },

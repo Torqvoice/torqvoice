@@ -442,6 +442,8 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   RepairDataCache:
     "Labor times and fluid specs kept from a repair data source while the workshop's key is on a paid plan. They belong to the connection, which a backup does not carry, and may only be kept while that plan lasts; the guide fetches them again when needed.",
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
+  MemberSignature:
+    "A member's own signature, which belongs to the membership a backup does not carry. What an issued document was signed with is in the backup, as a frozen copy on the document; the member draws a new one after joining again.",
   PlatformMailUsage:
     "Today's count of mail sent through the platform address, for the daily cap; it starts again every day.",
   PlatformSmsUsage:
