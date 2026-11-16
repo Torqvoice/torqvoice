@@ -58,7 +58,12 @@
       "everyone": "Cała praca",
       "thisWeek": "Ten tydzień"
     },
-    "dropNeedsLane": "Pogrupuj tablicę według mechanika lub stanowiska, zanim przeciągniesz na nią zlecenie."
+    "dropNeedsLane": "Pogrupuj tablicę według mechanika lub stanowiska, zanim przeciągniesz na nią zlecenie.",
+    "load": {
+      "over": "{amount} za dużo",
+      "spoken": "Zaplanowano {booked} z {capacity}",
+      "spokenOver": "Zaplanowano {booked} z {capacity}, przekroczono o {amount}"
+    }
   },
   "unassigned": {
     "title": "Nieprzyzdzielone Zadania ({count})",

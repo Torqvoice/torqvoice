@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { refuseExpiredShareToken } from '@/lib/share-link-route'
 import { svgDownloadHeaders } from '@/lib/upload-url'
 import { db } from '@/lib/db'
 import { readFile, stat } from 'fs/promises'
@@ -54,6 +55,10 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid filename' }, { status: 400 })
   }
 
+  // A document's pictures close with its link.
+  const closed = await refuseExpiredShareToken(token)
+  if (closed) return closed
+
   // Validate token and get org (check both invoice and quote tokens)
   let orgId: string | undefined
 
@@ -103,11 +108,13 @@ export async function GET(
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
+  // Never cached: a cache would keep serving the file after the link closed,
+  // and a portal customer's file must not reach anyone else.
   const buffer = await readFile(filePath)
   const ext = filename.split('.').pop()?.toLowerCase() || ''
   if (ext === 'svg') {
     return new NextResponse(buffer, {
-      headers: svgDownloadHeaders('public, max-age=31536000, immutable'),
+      headers: svgDownloadHeaders('private, no-store'),
     })
   }
   const contentType = MIME_TYPES[ext] || 'application/octet-stream'
@@ -115,7 +122,7 @@ export async function GET(
   return new NextResponse(buffer, {
     headers: {
       'Content-Type': contentType,
-      'Cache-Control': 'public, max-age=31536000, immutable',
+      'Cache-Control': 'private, no-store',
       'X-Robots-Tag': 'noindex, nofollow',
     },
   })

@@ -58,7 +58,12 @@
       "everyone": "Todo el trabajo",
       "thisWeek": "Esta semana"
     },
-    "dropNeedsLane": "Agrupa el tablero por técnico o puesto de trabajo antes de soltar un trabajo en él."
+    "dropNeedsLane": "Agrupa el tablero por técnico o puesto de trabajo antes de soltar un trabajo en él.",
+    "load": {
+      "over": "{amount} de más",
+      "spoken": "Programado: {booked} de {capacity}",
+      "spokenOver": "Programado: {booked} de {capacity}, excedido en {amount}"
+    }
   },
   "unassigned": {
     "title": "Trabajos Sin Asignar ({count})",

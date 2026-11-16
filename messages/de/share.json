@@ -250,5 +250,21 @@
     "telegramConnect": "Chatten Sie mit uns auf Telegram",
     "telegramScan": "Scannen Sie diesen QR-Code, um uns auf Telegram für Updates und Support zu kontaktieren.",
     "downloadCertificate": "Prüfbericht herunterladen"
+  },
+  "expired": {
+    "pageTitle": "Link abgelaufen",
+    "title": "Dieser Link ist abgelaufen",
+    "body": {
+      "invoice": "Wenden Sie sich an {workshop}, um einen neuen Link zu dieser Rechnung zu erhalten.",
+      "quote": "Wenden Sie sich an {workshop}, um einen neuen Link zu diesem Angebot zu erhalten.",
+      "inspection": "Wenden Sie sich an {workshop}, um einen neuen Link zu dieser Inspektion zu erhalten.",
+      "statusReport": "Wenden Sie sich an {workshop}, um einen neuen Link zu diesem Update zu erhalten."
+    },
+    "bodyNoName": {
+      "invoice": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu dieser Rechnung zu erhalten.",
+      "quote": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu diesem Angebot zu erhalten.",
+      "inspection": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu dieser Inspektion zu erhalten.",
+      "statusReport": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu diesem Update zu erhalten."
+    }
   }
 }

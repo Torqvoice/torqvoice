@@ -5,9 +5,12 @@ import { useState } from 'react'
 import { Link2, Copy, Check, Trash2, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { ShareExpiryLine } from '@/features/share-links/Components/ShareExpiryControl'
 import { useFormatDate } from '@/lib/use-format-date'
 
 interface SharedLinkCardProps {
+  /** The document the link belongs to; with it the card shows when the link expires. */
+  documentId?: string
   publicToken: string
   organizationId: string
   type: 'quote' | 'invoice'
@@ -19,6 +22,7 @@ interface SharedLinkCardProps {
 }
 
 export function SharedLinkCard({
+  documentId,
   publicToken,
   organizationId,
   type,
@@ -117,6 +121,8 @@ export function SharedLinkCard({
           {t('sidebar.sharedLink.sharedOn', { date: formatDate(sharedAt) })}
         </p>
       )}
+
+      {documentId && <ShareExpiryLine kind={type} id={documentId} token={publicToken} />}
 
       {/* View status */}
       <div className="flex items-center gap-1.5">

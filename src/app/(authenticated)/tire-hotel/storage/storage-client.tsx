@@ -124,6 +124,7 @@ export function StorageClient({
       title: t('storage.deleteLocationTitle', { code: location.code }),
       description: t('storage.deleteLocationBody'),
       confirmLabel: t('common.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -144,6 +145,7 @@ export function StorageClient({
           ? t('storage.deleteWarehouseBodyOccupied', { count: warehouse.summary.used })
           : t('storage.deleteWarehouseBody'),
       confirmLabel: t('common.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

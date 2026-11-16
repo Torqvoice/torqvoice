@@ -58,7 +58,12 @@
       "everyone": "Visi darbai",
       "thisWeek": "Ši savaitė"
     },
-    "dropNeedsLane": "Prieš vilkdami darbą, sugrupuokite lentą pagal meistrą arba darbo vietą."
+    "dropNeedsLane": "Prieš vilkdami darbą, sugrupuokite lentą pagal meistrą arba darbo vietą.",
+    "load": {
+      "over": "{amount} per daug",
+      "spoken": "Suplanuota {booked} iš {capacity}",
+      "spokenOver": "Suplanuota {booked} iš {capacity}, viršyta {amount}"
+    }
   },
   "unassigned": {
     "title": "Nepriskirti darbai ({count})",

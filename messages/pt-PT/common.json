@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Iniciar sessão",
     "save": "Guardar",
+    "saveChanges": "Guardar alterações",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "submit": "Enviar",
     "back": "Voltar",
     "confirm": "Confirmar",
-    "saveChanges": "Guardar alterações",
     "edit": "Editar",
     "add": "Adicionar",
     "gotIt": "Entendido"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp enviado",
     "failedWhatsapp": "Não foi possível enviar a mensagem de WhatsApp",
-    "whatsappWindowClosed": "Este cliente não lhe escreveu no WhatsApp nas últimas 24 horas, e não está configurado nenhum modelo aprovado para o contactar."
+    "whatsappWindowClosed": "Este cliente não lhe escreveu no WhatsApp nas últimas 24 horas, e não está configurado nenhum modelo aprovado para o contactar.",
+    "expiry": {
+      "never": "Nunca expira",
+      "untilPaid": "Fica aberto até ao pagamento",
+      "expires": "Expira a {date}",
+      "expired": "Expirou a {date}",
+      "change": "Alterar",
+      "openAgain": "Voltar a abrir",
+      "reopened": "O link voltou a estar aberto",
+      "formTitle": "Expiração do link",
+      "choice": {
+        "workshop": "Definição da oficina",
+        "date": "Numa data",
+        "never": "Nunca"
+      },
+      "rule": {
+        "never": "Os links nunca expiram",
+        "afterSharing": "{days, plural, one {# dia} other {# dias}} após o envio",
+        "afterPayment": "{days, plural, one {# dia} other {# dias}} após o pagamento da fatura"
+      },
+      "dateHint": "O link funciona durante todo esse dia.",
+      "chooseDate": "Escolha uma data",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saved": "Expiração do link guardada",
+      "saveFailed": "Não foi possível guardar a expiração do link. Tente novamente."
+    }
   },
   "searchableSelect": {
     "choose": "Escolher...",
@@ -289,5 +315,11 @@
     "dismiss": "Fechar",
     "selectAll": "Selecionar tudo",
     "selectRow": "Selecionar {name}"
+  },
+  "confirmDialog": {
+    "title": "Tem a certeza?",
+    "irreversible": "Esta ação não pode ser anulada.",
+    "andMore": "e mais {count}",
+    "typeToConfirm": "Escreva <b>{text}</b> para confirmar"
   }
 }

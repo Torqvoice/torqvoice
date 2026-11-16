@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server'
+import { ShareLinkExpired } from '@/components/share-link-expired'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { StatusReportView } from './status-report-view'
@@ -53,7 +54,7 @@ export default async function PublicStatusReportPage({
 
   // Check if expired
   if (report.expiresAt && report.expiresAt < new Date()) {
-    notFound()
+    return <ShareLinkExpired organizationId={orgId} kind="statusReport" />
   }
 
   const subject = report.serviceRecord ?? report.inspection

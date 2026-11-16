@@ -210,7 +210,9 @@
     "settings_markType_remove": "Removed a kind of mark",
     "settings_markType_reorder": "Reordered the kinds of mark",
     "integration_backup_run": "Started Backup",
-    "integration_backup_restore": "Restored Backup"
+    "integration_backup_restore": "Restored Backup",
+    "shareLink_expiry": "Changed Share Link Expiry",
+    "shareLink_revoke": "Removed Share Links"
   },
   "summary": {
     "auth_twoFactorEnabled": "Turned on two-factor sign-in",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Left the condition map off the invoice",
     "backup_run_started": "Started a backup to {name}",
     "backup_restore_started": "Started restoring backup {snapshot} from {name}",
-    "backup_restored": "Restored backup {snapshot} from {name}"
+    "backup_restored": "Restored backup {snapshot} from {name}",
+    "share_link_expiry_workshop": "Set a share link to follow the workshop setting",
+    "share_link_expiry_never": "Set a share link to never expire",
+    "share_link_expiry_date": "Set a share link to expire on {date}",
+    "share_link_revoke_bulk": "Removed {count, plural, one {# share link} other {# share links}}"
   }
 }

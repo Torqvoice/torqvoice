@@ -552,6 +552,7 @@ export function ModernDetails(props: ModernDetailsProps) {
 
                 {record.publicToken && (
                   <SharedLinkCard
+                    documentId={record.id}
                     publicToken={record.publicToken}
                     organizationId={props.organizationId}
                     type="invoice"

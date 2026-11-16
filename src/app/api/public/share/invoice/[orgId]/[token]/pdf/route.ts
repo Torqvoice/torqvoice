@@ -3,6 +3,7 @@ import { headers } from 'next/headers'
 import { db } from '@/lib/db'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
 import { buildInvoicePdfBuffer } from '@/features/invoices/Pdf/buildInvoicePdfBuffer'
 
 export async function GET(
@@ -18,6 +19,9 @@ export async function GET(
     // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const orgId = resolvedOrg?.id ?? orgParam
+
+    const closed = await refuseClosedShareLink('invoice', token, orgId)
+    if (closed) return closed
 
     // Look up the record by public share token and verify it belongs to the
     // org in the URL. The token lookup must stay in the route because the

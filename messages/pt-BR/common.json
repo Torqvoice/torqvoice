@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Entrar",
     "save": "Salvar",
+    "saveChanges": "Salvar alterações",
     "cancel": "Cancelar",
     "delete": "Excluir",
     "submit": "Enviar",
     "back": "Voltar",
     "confirm": "Confirmar",
-    "saveChanges": "Salvar alterações",
     "edit": "Editar",
     "add": "Adicionar",
     "gotIt": "Entendi"
@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp enviado",
     "failedWhatsapp": "Falha ao enviar mensagem de WhatsApp",
-    "whatsappWindowClosed": "Este cliente não escreveu para você no WhatsApp nas últimas 24 horas, e nenhum modelo aprovado está configurado para contatá-lo."
+    "whatsappWindowClosed": "Este cliente não escreveu para você no WhatsApp nas últimas 24 horas, e nenhum modelo aprovado está configurado para contatá-lo.",
+    "expiry": {
+      "never": "Nunca expira",
+      "untilPaid": "Fica aberto até o pagamento",
+      "expires": "Expira em {date}",
+      "expired": "Expirou em {date}",
+      "change": "Alterar",
+      "openAgain": "Abrir novamente",
+      "reopened": "O link está aberto novamente",
+      "formTitle": "Expiração do link",
+      "choice": {
+        "workshop": "Configuração da oficina",
+        "date": "Em uma data",
+        "never": "Nunca"
+      },
+      "rule": {
+        "never": "Os links nunca expiram",
+        "afterSharing": "{days, plural, one {# dia} other {# dias}} após o envio",
+        "afterPayment": "{days, plural, one {# dia} other {# dias}} após o pagamento da fatura"
+      },
+      "dateHint": "O link funciona durante todo esse dia.",
+      "chooseDate": "Escolha uma data",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "saved": "Expiração do link salva",
+      "saveFailed": "Não foi possível salvar a expiração do link. Tente novamente."
+    }
   },
   "searchableSelect": {
     "choose": "Escolher...",
@@ -289,5 +315,11 @@
     "dismiss": "Fechar",
     "selectAll": "Selecionar tudo",
     "selectRow": "Selecionar {name}"
+  },
+  "confirmDialog": {
+    "title": "Tem certeza?",
+    "irreversible": "Esta ação não pode ser desfeita.",
+    "andMore": "e mais {count}",
+    "typeToConfirm": "Digite <b>{text}</b> para confirmar"
   }
 }

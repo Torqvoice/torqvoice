@@ -182,6 +182,17 @@ function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): 
 }
 
 /**
+ * When a restored inspection's link started. A backup from before links
+ * carried a start date has none: the link then counts from the inspection's
+ * last change, as the migration did, or it would never expire.
+ */
+function restoredInspectionSharedAt(insp: Record<string, unknown>): Date | null {
+  const sharedAt = toSafeDate(insp.sharedAt as string)
+  if (sharedAt || !insp.publicToken) return sharedAt ?? null
+  return toSafeDate(insp.updatedAt as string) ?? new Date()
+}
+
+/**
  * Restores one service record with its nested parts/labor/attachments/payments.
  * Used for both vehicle-linked records (nested under vehicles in the backup)
  * and counter sales (top-level records without a vehicle).
@@ -268,9 +279,6 @@ async function importServiceRecordTree(
       discountType: (sr.discountType as string) || null,
       discountValue: (sr.discountValue as number) || 0,
       discountAmount: (sr.discountAmount as number) || 0,
-      // An invoice the workshop marked paid by hand has no payment rows to
-      // say so; without this it comes back unpaid.
-      manuallyPaid: (sr.manuallyPaid as boolean) || false,
       // A backup from before the statement existed has months and no status,
       // which is read as the included warranty it was.
       ...warrantyFromUntyped(sr),
@@ -278,7 +286,17 @@ async function importServiceRecordTree(
       conditionMapOnInvoice:
         typeof sr.conditionMapOnInvoice === 'boolean' ? sr.conditionMapOnInvoice : null,
       publicToken: (sr.publicToken as string) || null,
-      sharedAt: sr.sharedAt ? toSafeDate(sr.sharedAt as string) : null,
+      // The link's own expiry answers travel with its token, or a restored
+      // link would forget the date the workshop set on it.
+      sharedAt: toSafeDate(sr.sharedAt as string) ?? null,
+      shareExpiresAt: toSafeDate(sr.shareExpiresAt as string) ?? null,
+      shareNeverExpires: sr.shareNeverExpires === true,
+      shareRenewedAt: toSafeDate(sr.shareRenewedAt as string) ?? null,
+      // Marked paid by hand is what closes an invoice's link under the
+      // "after payment" rule; without it a settled invoice restores as owed
+      // and its link stays open.
+      manuallyPaid: sr.manuallyPaid === true,
+      manuallyPaidAt: toSafeDate(sr.manuallyPaidAt as string) ?? null,
       viewCount: (sr.viewCount as number) || 0,
       lastViewedAt: sr.lastViewedAt ? toSafeDate(sr.lastViewedAt as string) : null,
       sentAt: sr.sentAt ? toSafeDate(sr.sentAt as string) : null,
@@ -1417,7 +1435,10 @@ export async function restoreBackup(
                 // The link the customer already holds. Left out, every shared
                 // quote answered "not found" after a restore.
                 publicToken: (q.publicToken as string) || null,
-                sharedAt: q.sharedAt ? toSafeDate(q.sharedAt as string) : null,
+                sharedAt: toSafeDate(q.sharedAt as string) ?? null,
+                shareExpiresAt: toSafeDate(q.shareExpiresAt as string) ?? null,
+                shareNeverExpires: q.shareNeverExpires === true,
+                shareRenewedAt: toSafeDate(q.shareRenewedAt as string) ?? null,
                 viewCount: (q.viewCount as number) || 0,
                 lastViewedAt: q.lastViewedAt ? toSafeDate(q.lastViewedAt as string) : null,
                 customerMessage: (q.customerMessage as string) || null,
@@ -1580,6 +1601,10 @@ export async function restoreBackup(
                 startDateTime: toSafeDate(insp.startDateTime as string) ?? null,
                 endDateTime: toSafeDate(insp.endDateTime as string) ?? null,
                 publicToken: (insp.publicToken as string) || null,
+                sharedAt: restoredInspectionSharedAt(insp),
+                shareExpiresAt: toSafeDate(insp.shareExpiresAt as string) ?? null,
+                shareNeverExpires: insp.shareNeverExpires === true,
+                shareRenewedAt: toSafeDate(insp.shareRenewedAt as string) ?? null,
                 completedAt: toSafeDate(insp.completedAt as string) ?? null,
                 sortOrder: (insp.sortOrder as number) || 0,
                 severityScale: (insp.severityScale as string) || null,

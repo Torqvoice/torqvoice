@@ -15,7 +15,7 @@ const serviceRecord = table()
 const inspection = table()
 vi.mock('@/lib/db', () => ({ db: { quote, serviceRecord, inspection } }))
 
-const { ensureShareToken } = await import('@/lib/share-token.server')
+const { ensureShareToken, renewShareLink } = await import('@/lib/share-token.server')
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -57,5 +57,35 @@ describe('a document’s share link', () => {
 
     expect(await ensureShareToken(kind, 'd1', 'org1')).toBe('tok')
     expect(model.updateMany.mock.calls[0][0].where.publicToken).toBeNull()
+  })
+})
+
+describe('getting a document’s link', () => {
+  it('does not renew it: a send that is then refused must not reopen a closed link', async () => {
+    quote.findFirst.mockResolvedValue({ publicToken: 'held-by-customer' })
+
+    await ensureShareToken('quote', 'q1', 'org1')
+
+    const writes = quote.updateMany.mock.calls.map((c) => c[0].data)
+    expect(writes.some((d) => 'shareRenewedAt' in d || d.shareExpiresAt === null)).toBe(false)
+  })
+})
+
+describe('a link that was just sent', () => {
+  it('starts the workshop’s expiry counting again, inside its own workshop', async () => {
+    await renewShareLink('quote', 'q1', 'org1')
+
+    const renewed = quote.updateMany.mock.calls.find((c) => 'shareRenewedAt' in c[0].data)
+    expect(renewed?.[0].where).toMatchObject({ id: 'q1', organizationId: 'org1' })
+    expect(renewed?.[0].data.shareRenewedAt).toBeInstanceOf(Date)
+  })
+
+  it('drops a date on the document only when that date has passed', async () => {
+    await renewShareLink('invoice', 'i1', 'org1')
+
+    const dropped = serviceRecord.updateMany.mock.calls.find(
+      (c) => c[0].data.shareExpiresAt === null
+    )
+    expect(dropped?.[0].where.shareExpiresAt.lt).toBeInstanceOf(Date)
   })
 })

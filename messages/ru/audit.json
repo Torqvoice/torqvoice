@@ -210,7 +210,9 @@
     "settings_markType_remove": "Удалён тип отметки",
     "settings_markType_reorder": "Изменён порядок типов отметок",
     "integration_backup_run": "Запущено резервное копирование",
-    "integration_backup_restore": "Восстановлена резервная копия"
+    "integration_backup_restore": "Восстановлена резервная копия",
+    "shareLink_expiry": "Изменён срок действия ссылки",
+    "shareLink_revoke": "Удалены ссылки"
   },
   "summary": {
     "auth_twoFactorEnabled": "Включён двухфакторный вход",
@@ -377,6 +379,10 @@
     "condition_map_on_invoice_off": "Убрал(а) карту состояния из счёта",
     "backup_run_started": "Запустил(а) резервное копирование в {name}",
     "backup_restore_started": "Запустил(а) восстановление резервной копии {snapshot} из {name}",
-    "backup_restored": "Восстановил(а) резервную копию {snapshot} из {name}"
+    "backup_restored": "Восстановил(а) резервную копию {snapshot} из {name}",
+    "share_link_expiry_workshop": "Для ссылки установлена настройка мастерской",
+    "share_link_expiry_never": "Ссылка сделана бессрочной",
+    "share_link_expiry_date": "Ссылка будет действовать до {date}",
+    "share_link_revoke_bulk": "{count, plural, one {Удалена # ссылка} few {Удалено # ссылки} many {Удалено # ссылок} other {Удалено # ссылки}}"
   }
 }

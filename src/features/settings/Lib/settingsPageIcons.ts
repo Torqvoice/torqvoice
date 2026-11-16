@@ -27,6 +27,7 @@ import {
   UsersRound,
   Webhook,
   Wrench,
+  Link2,
 } from 'lucide-react'
 import type { SettingsPageKey } from './settingsPages'
 
@@ -46,6 +47,7 @@ export const SETTINGS_PAGE_ICONS: Record<SettingsPageKey, LucideIcon> = {
   warranty: ShieldCheck,
   emailTemplates: Mail,
   customerPortal: Globe,
+  shareLinks: Link2,
   workshop: Wrench,
   openingHours: CalendarDays,
   workOrderStatuses: ListChecks,

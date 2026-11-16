@@ -274,6 +274,7 @@ export function TeamSettings({
       title: t('team.deleteRole'),
       description: t('team.deleteRoleDescription', { name: role.name }),
       confirmLabel: t('team.deleteRole'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

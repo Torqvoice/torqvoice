@@ -55,7 +55,10 @@ vi.mock('@/features/email/Lib/sendTemplatedMail', () => ({
 }))
 
 // The link's own rules (kept when it exists, minted once) have their own test.
-vi.mock('@/lib/share-token.server', () => ({ ensureShareToken: async () => 'minted' }))
+vi.mock('@/lib/share-token.server', () => ({
+  ensureShareToken: async () => 'minted',
+  renewShareLink: async () => undefined,
+}))
 
 const { sendInspectionEmail } = await import('@/features/email/Actions/emailActions')
 

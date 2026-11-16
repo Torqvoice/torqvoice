@@ -6,6 +6,7 @@ import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { markQuoteSent } from '@/lib/document-lock.server'
+import { FRESH_SHARE_LINK } from '@/lib/share-expiry'
 
 export async function generateQuotePublicLink(quoteId: string) {
   return withAuth(
@@ -18,7 +19,7 @@ export async function generateQuotePublicLink(quoteId: string) {
       const token = randomUUID()
       await db.quote.update({
         where: { id: quoteId },
-        data: { publicToken: token, sharedAt: new Date() },
+        data: { publicToken: token, sharedAt: new Date(), ...FRESH_SHARE_LINK },
       })
       // Handing over a link is a way of sending the quote, exactly as it is
       // for invoices: it stamps sentAt (which "lock when sent" keys off, and
@@ -44,7 +45,13 @@ export async function revokeQuotePublicLink(quoteId: string) {
 
       await db.quote.update({
         where: { id: quoteId },
-        data: { publicToken: null, sharedAt: null, viewCount: 0, lastViewedAt: null },
+        data: {
+          publicToken: null,
+          sharedAt: null,
+          viewCount: 0,
+          lastViewedAt: null,
+          ...FRESH_SHARE_LINK,
+        },
       })
 
       revalidatePath(`/quotes/${quoteId}`)

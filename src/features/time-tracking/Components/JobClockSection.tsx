@@ -156,6 +156,7 @@ export function JobClockSection({
         technician: entry.technicianName,
       }),
       confirmLabel: tPage('deleteConfirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

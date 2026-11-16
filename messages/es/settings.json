@@ -75,6 +75,10 @@
         "title": "Portal del cliente",
         "description": "Portal de autoservicio del cliente"
       },
+      "shareLinks": {
+        "title": "Enlaces compartidos",
+        "description": "Caducidad y enlaces enviados a clientes"
+      },
       "workshop": {
         "title": "Taller",
         "description": "Valores predeterminados de técnico y mano de obra"
@@ -2511,6 +2515,7 @@
     "leaveTitle": "¿Salir sin guardar?",
     "leaveBody": "Los cambios de este diseño no se han guardado y se perderán.",
     "leaveConfirm": "Salir",
+    "leaveCancel": "Seguir editando",
     "boldField": "Negrita",
     "deleteDesignDrafts": "{count, plural, one {# borrador de factura} other {# borradores de factura}} que lo usan volverán al diseño predeterminado.",
     "deleteDesignCustomers": "{count, plural, one {# cliente} other {# clientes}} asignados a él volverán al diseño predeterminado.",
@@ -2767,6 +2772,7 @@
     "leaveTitle": "¿Salir sin guardar?",
     "leaveBody": "Los cambios en esta plantilla no se han guardado. Se perderán.",
     "leaveConfirm": "Salir",
+    "leaveCancel": "Seguir editando",
     "subjectAndTheme": "Asunto y tema",
     "settingsSubtitle": "Se aplica a todo el correo",
     "blocksTitle": "Bloques",
@@ -3029,6 +3035,91 @@
       "calendars": "Calendarios de festivos",
       "closedDays": "Días de cierre",
       "timeOff": "Vacaciones y ausencias"
+    }
+  },
+  "shareLinks": {
+    "save": "Guardar",
+    "saved": "Ajustes de enlaces compartidos guardados",
+    "saveFailed": "No se pudieron guardar los ajustes de enlaces compartidos. Inténtalo de nuevo.",
+    "rules": {
+      "title": "Caducidad de enlaces",
+      "description": "Cuánto tiempo funciona un enlace que envías a un cliente. Después, el cliente ve una página que le pide que se ponga en contacto contigo.",
+      "kind": {
+        "invoice": "Facturas",
+        "quote": "Presupuestos",
+        "inspection": "Inspecciones"
+      },
+      "mode": {
+        "never": "No caducan nunca",
+        "afterSharing": "Caducan tras el envío",
+        "afterPayment": "Caducan tras el pago"
+      },
+      "hint": {
+        "never": "El enlace funciona hasta que lo elimines.",
+        "afterSharing": "Se cuenta desde el último día en que se envió o compartió el enlace.",
+        "afterPayment": "El enlace sigue abierto mientras la factura esté pendiente, para que el cliente pueda pagar. Los días empiezan a contar cuando se paga por completo."
+      },
+      "days": "días",
+      "daysLabel": "Días hasta que caducan los enlaces a {kind}",
+      "appliesNote": "Estas reglas también se aplican a los enlaces que ya has enviado. Puedes fijar otra fecha en cualquier documento, aquí en la lista o en el propio documento."
+    },
+    "list": {
+      "title": "Enlaces enviados a clientes",
+      "description": "Todos los enlaces a facturas, presupuestos, inspecciones o informes de estado, y cuándo dejan de funcionar.",
+      "statusLabel": "Mostrar enlaces",
+      "status": {
+        "active": "Activos",
+        "expired": "Caducados",
+        "all": "Todos"
+      },
+      "kindLabel": "Tipo de documento",
+      "kind": {
+        "all": "Todos los documentos",
+        "invoice": "Facturas",
+        "quote": "Presupuestos",
+        "inspection": "Inspecciones",
+        "statusReport": "Informes de estado"
+      },
+      "kindOne": {
+        "invoice": "Factura",
+        "quote": "Presupuesto",
+        "inspection": "Inspección",
+        "statusReport": "Informe de estado"
+      },
+      "searchPlaceholder": "Buscar documento o cliente",
+      "columns": {
+        "document": "Documento",
+        "customer": "Cliente",
+        "shared": "Compartido",
+        "views": "Visitas",
+        "expires": "Caduca",
+        "actions": "Acciones"
+      },
+      "sharedOn": "Compartido el {date}",
+      "none": "-",
+      "copy": "Copiar enlace",
+      "copyFailed": "No se pudo copiar el enlace.",
+      "open": "Abrir documento",
+      "revoke": "Eliminar enlace",
+      "revokeTitle": "¿Eliminar este enlace?",
+      "revokeDescription": "El enlace a {document} deja de funcionar para todos los que lo tienen. Puedes volver a compartir el documento para crear un enlace nuevo.",
+      "revoked": "Enlace eliminado",
+      "empty": {
+        "active": "No hay enlaces activos. Aquí aparece un enlace cuando envías o compartes un documento.",
+        "expired": "No hay enlaces caducados.",
+        "all": "Todavía no hay enlaces. Aquí aparece un enlace cuando envías o compartes un documento."
+      },
+      "emptyFiltered": "Ningún enlace coincide con tu búsqueda.",
+      "loadFailed": "No se pudieron cargar los enlaces. Recarga la página para volver a intentarlo.",
+      "selectAll": "Seleccionar todos los enlaces de esta página",
+      "selectRow": "Seleccionar el enlace a {document}",
+      "selectedCount": "{count, plural, one {# enlace seleccionado} other {# enlaces seleccionados}}",
+      "clearSelection": "Borrar selección",
+      "removeSelected": "Eliminar seleccionados",
+      "bulkRevokeTitle": "¿Eliminar {count, plural, one {# enlace} other {# enlaces}}?",
+      "bulkRevokeDescription": "Estos enlaces dejan de funcionar para todos los que los tienen. Puedes volver a compartir un documento para crear un enlace nuevo.",
+      "bulkRevoked": "{count, plural, one {# enlace eliminado} other {# enlaces eliminados}}",
+      "bulkRevokeFailed": "No se pudieron eliminar los enlaces. Inténtalo de nuevo."
     }
   }
 }

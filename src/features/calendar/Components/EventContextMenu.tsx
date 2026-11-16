@@ -35,6 +35,7 @@ export function EventContextMenu({
   children: ReactNode
 }) {
   const t = useTranslations('calendar.eventMenu')
+  const tc = useTranslations('common')
   const router = useRouter()
   const confirm = useConfirm()
   const { refresh, editBooking } = useEventPeek()
@@ -63,6 +64,8 @@ export function EventContextMenu({
   const removeReminder = async () => {
     const ok = await confirm({
       description: t('deleteReminderConfirm', { title: event.title }),
+      confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (ok) await run(() => deleteReminder(event.id), t('deleted'))
@@ -71,6 +74,8 @@ export function EventContextMenu({
   const removeMessage = async () => {
     const ok = await confirm({
       description: t('deleteMessageConfirm', { title: event.title }),
+      confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (ok) await run(() => deleteScheduledMessage(event.id), t('deleted'))
@@ -79,6 +84,8 @@ export function EventContextMenu({
   const removeAppointment = async () => {
     const ok = await confirm({
       description: t('deleteAppointmentConfirm', { title: event.title }),
+      confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (ok) await run(() => deleteAppointment(event.id), t('deleted'))

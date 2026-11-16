@@ -75,6 +75,10 @@
         "title": "Kundeportal",
         "description": "Kundeselvbetjeningsportal"
       },
+      "shareLinks": {
+        "title": "Delte lenker",
+        "description": "Utløp og lenker sendt til kunder"
+      },
       "workshop": {
         "title": "Verksted",
         "description": "Tekniker- og arbeidsstandarder"
@@ -2511,6 +2515,7 @@
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
     "leaveConfirm": "Forlat",
+    "leaveCancel": "Fortsett å redigere",
     "boldField": "Fet",
     "deleteDesignDrafts": "{count, plural, one {# fakturautkast} other {# fakturautkast}} som bruker det, går tilbake til standarddesignet.",
     "deleteDesignCustomers": "{count, plural, one {# kunde} other {# kunder}} som er satt til det, går tilbake til standarddesignet.",
@@ -2767,6 +2772,7 @@
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene dine i denne malen er ikke lagret. De går tapt.",
     "leaveConfirm": "Forlat",
+    "leaveCancel": "Fortsett å redigere",
     "subjectAndTheme": "Emne og tema",
     "settingsSubtitle": "Gjelder hele e-posten",
     "blocksTitle": "Blokker",
@@ -3029,6 +3035,91 @@
       "calendars": "Helligdagskalendere",
       "closedDays": "Stengte dager",
       "timeOff": "Ferie og fravær"
+    }
+  },
+  "shareLinks": {
+    "save": "Lagre",
+    "saved": "Innstillinger for delte lenker er lagret",
+    "saveFailed": "Kunne ikke lagre innstillingene for delte lenker. Prøv igjen.",
+    "rules": {
+      "title": "Utløp for lenker",
+      "description": "Hvor lenge en lenke du sender til en kunde virker. Etter det ser kunden en side som ber dem kontakte deg.",
+      "kind": {
+        "invoice": "Fakturaer",
+        "quote": "Tilbud",
+        "inspection": "Inspeksjoner"
+      },
+      "mode": {
+        "never": "Utløper aldri",
+        "afterSharing": "Utløper etter sending",
+        "afterPayment": "Utløper etter betaling"
+      },
+      "hint": {
+        "never": "Lenken virker til du fjerner den.",
+        "afterSharing": "Regnes fra dagen lenken sist ble sendt eller delt.",
+        "afterPayment": "Lenken holdes åpen mens fakturaen er ubetalt, slik at kunden kan betale. Dagene telles fra den er betalt i sin helhet."
+      },
+      "days": "dager",
+      "daysLabel": "Dager før lenker til {kind} utløper",
+      "appliesNote": "Disse reglene gjelder også lenker du allerede har sendt. Du kan sette en annen dato på et enkelt dokument, her i listen eller på selve dokumentet."
+    },
+    "list": {
+      "title": "Lenker sendt til kunder",
+      "description": "Alle lenker til fakturaer, tilbud, inspeksjoner og statusrapporter, og når de slutter å virke.",
+      "statusLabel": "Vis lenker",
+      "status": {
+        "active": "Aktive",
+        "expired": "Utløpt",
+        "all": "Alle"
+      },
+      "kindLabel": "Dokumenttype",
+      "kind": {
+        "all": "Alle dokumenter",
+        "invoice": "Fakturaer",
+        "quote": "Tilbud",
+        "inspection": "Inspeksjoner",
+        "statusReport": "Statusrapporter"
+      },
+      "kindOne": {
+        "invoice": "Faktura",
+        "quote": "Tilbud",
+        "inspection": "Inspeksjon",
+        "statusReport": "Statusrapport"
+      },
+      "searchPlaceholder": "Søk etter dokument eller kunde",
+      "columns": {
+        "document": "Dokument",
+        "customer": "Kunde",
+        "shared": "Delt",
+        "views": "Visninger",
+        "expires": "Utløper",
+        "actions": "Handlinger"
+      },
+      "sharedOn": "Delt {date}",
+      "none": "-",
+      "copy": "Kopier lenke",
+      "copyFailed": "Kunne ikke kopiere lenken.",
+      "open": "Åpne dokument",
+      "revoke": "Fjern lenke",
+      "revokeTitle": "Fjerne denne lenken?",
+      "revokeDescription": "Lenken til {document} slutter å virke for alle som har den. Du kan dele dokumentet på nytt for å lage en ny lenke.",
+      "revoked": "Lenken er fjernet",
+      "empty": {
+        "active": "Ingen aktive lenker. En lenke dukker opp her når du sender eller deler et dokument.",
+        "expired": "Ingen utløpte lenker.",
+        "all": "Ingen lenker ennå. En lenke dukker opp her når du sender eller deler et dokument."
+      },
+      "emptyFiltered": "Ingen lenker passer søket ditt.",
+      "loadFailed": "Kunne ikke laste lenkene. Last inn siden på nytt for å prøve igjen.",
+      "selectAll": "Velg alle lenkene på denne siden",
+      "selectRow": "Velg lenken til {document}",
+      "selectedCount": "{count, plural, one {# lenke valgt} other {# lenker valgt}}",
+      "clearSelection": "Nullstill valg",
+      "removeSelected": "Fjern valgte",
+      "bulkRevokeTitle": "Fjerne {count, plural, one {# lenke} other {# lenker}}?",
+      "bulkRevokeDescription": "Disse lenkene slutter å virke for alle som har dem. Du kan dele et dokument på nytt for å lage en ny lenke.",
+      "bulkRevoked": "{count, plural, one {# lenke er fjernet} other {# lenker er fjernet}}",
+      "bulkRevokeFailed": "Kunne ikke fjerne lenkene. Prøv igjen."
     }
   }
 }

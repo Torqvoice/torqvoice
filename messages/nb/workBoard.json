@@ -58,7 +58,12 @@
       "everyone": "Alt arbeid",
       "thisWeek": "Denne uken"
     },
-    "dropNeedsLane": "Grupper tavlen etter mekaniker eller arbeidsplass før du slipper en jobb på den."
+    "dropNeedsLane": "Grupper tavlen etter mekaniker eller arbeidsplass før du slipper en jobb på den.",
+    "load": {
+      "over": "{amount} for mye",
+      "spoken": "Booket: {booked} av {capacity}",
+      "spokenOver": "Booket: {booked} av {capacity}, overbooket med {amount}"
+    }
   },
   "unassigned": {
     "title": "Utildelte jobber ({count})",

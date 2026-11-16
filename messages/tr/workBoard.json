@@ -58,7 +58,12 @@
       "everyone": "Tüm işler",
       "thisWeek": "Bu hafta"
     },
-    "dropNeedsLane": "Bir işi panoya bırakmadan önce panoyu teknisyene veya çalışma alanına göre gruplayın."
+    "dropNeedsLane": "Bir işi panoya bırakmadan önce panoyu teknisyene veya çalışma alanına göre gruplayın.",
+    "load": {
+      "over": "{amount} fazla",
+      "spoken": "Planlanan: {booked} / {capacity}",
+      "spokenOver": "Planlanan: {booked} / {capacity}, {amount} aşım"
+    }
   },
   "unassigned": {
     "title": "Atanmamış İşler ({count})",

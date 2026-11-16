@@ -11,7 +11,7 @@ import { demoGuard } from '@/lib/demo'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { ensureShareToken } from '@/lib/share-token.server'
+import { ensureShareToken, renewShareLink } from '@/lib/share-token.server'
 import { normalizeOrgPhone } from '@/lib/sms'
 import { interpolateSmsTemplate } from '@/lib/sms-templates'
 import { smsTemplateDefaults } from '@/features/sms/Lib/smsTemplateDefaults.server'
@@ -216,6 +216,10 @@ async function sendLink(
       await markQuoteSent(input.id, organizationId)
     }
   }
+
+  // Only now, with the message accepted: a refused send must not reopen a
+  // link that had expired.
+  await renewShareLink(kind, input.id, organizationId)
 
   revalidatePath(document.path)
   return {

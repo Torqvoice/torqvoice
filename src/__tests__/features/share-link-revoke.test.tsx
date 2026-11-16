@@ -51,6 +51,11 @@ vi.mock('@/features/messaging/Lib/useShareChannels', () => ({
 vi.mock('@/features/whatsapp/Actions/whatsappActions', () => ({
   sendWhatsappToCustomer: vi.fn(),
 }))
+// The expiry line asks the server where the link stands; these tests are
+// about revoking, so it stays out of the way.
+vi.mock('@/features/share-links/Components/ShareExpiryControl', () => ({
+  ShareExpiryLine: () => null,
+}))
 vi.mock('@/features/email/Actions/emailPreferenceActions', () => ({
   getAttachPdfDefault: async () => ({ success: true, data: { attachPdf: true } }),
 }))

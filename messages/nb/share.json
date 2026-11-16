@@ -250,5 +250,21 @@
     "telegramConnect": "Chat med oss på Telegram",
     "telegramScan": "Skann denne QR-koden for å sende oss en melding på Telegram for oppdateringer og støtte.",
     "downloadCertificate": "Last ned kontrollseddel"
+  },
+  "expired": {
+    "pageTitle": "Lenken er utløpt",
+    "title": "Denne lenken er utløpt",
+    "body": {
+      "invoice": "Kontakt {workshop} for å få en ny lenke til denne fakturaen.",
+      "quote": "Kontakt {workshop} for å få en ny lenke til dette tilbudet.",
+      "inspection": "Kontakt {workshop} for å få en ny lenke til denne inspeksjonen.",
+      "statusReport": "Kontakt {workshop} for å få en ny lenke til denne oppdateringen."
+    },
+    "bodyNoName": {
+      "invoice": "Kontakt verkstedet for å få en ny lenke til denne fakturaen.",
+      "quote": "Kontakt verkstedet for å få en ny lenke til dette tilbudet.",
+      "inspection": "Kontakt verkstedet for å få en ny lenke til denne inspeksjonen.",
+      "statusReport": "Kontakt verkstedet for å få en ny lenke til denne oppdateringen."
+    }
   }
 }

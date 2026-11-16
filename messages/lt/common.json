@@ -269,7 +269,33 @@
     "whatsapp": "WhatsApp",
     "whatsappSent": "WhatsApp išsiųsta",
     "failedWhatsapp": "Nepavyko išsiųsti WhatsApp žinutės",
-    "whatsappWindowClosed": "Šis klientas per pastarąsias 24 valandas jums nerašė per WhatsApp, o patvirtinto šablono jam pasiekti nesukurta."
+    "whatsappWindowClosed": "Šis klientas per pastarąsias 24 valandas jums nerašė per WhatsApp, o patvirtinto šablono jam pasiekti nesukurta.",
+    "expiry": {
+      "never": "Galioja neribotai",
+      "untilPaid": "Galioja, kol bus apmokėta",
+      "expires": "Galioja iki {date}",
+      "expired": "Nebegalioja nuo {date}",
+      "change": "Keisti",
+      "openAgain": "Atverti iš naujo",
+      "reopened": "Nuoroda vėl galioja",
+      "formTitle": "Nuorodos galiojimas",
+      "choice": {
+        "workshop": "Dirbtuvių nustatymas",
+        "date": "Iki datos",
+        "never": "Neribotai"
+      },
+      "rule": {
+        "never": "Nuorodos galioja neribotai",
+        "afterSharing": "{days, plural, one {# diena} few {# dienos} many {# dienos} other {# dienų}} po išsiuntimo",
+        "afterPayment": "{days, plural, one {# diena} few {# dienos} many {# dienos} other {# dienų}} po sąskaitos apmokėjimo"
+      },
+      "dateHint": "Nuoroda veikia visą tą dieną.",
+      "chooseDate": "Pasirinkite datą",
+      "cancel": "Atšaukti",
+      "save": "Įrašyti",
+      "saved": "Nuorodos galiojimas įrašytas",
+      "saveFailed": "Nepavyko įrašyti nuorodos galiojimo. Bandykite dar kartą."
+    }
   },
   "searchableSelect": {
     "choose": "Pasirinkite...",
@@ -289,5 +315,11 @@
     "dismiss": "Uždaryti",
     "selectAll": "Pasirinkti visus",
     "selectRow": "Pasirinkti: {name}"
+  },
+  "confirmDialog": {
+    "title": "Ar tikrai?",
+    "irreversible": "Šio veiksmo negalima atšaukti.",
+    "andMore": "ir dar {count}",
+    "typeToConfirm": "Įveskite <b>{text}</b>, kad patvirtintumėte"
   }
 }

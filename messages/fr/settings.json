@@ -75,6 +75,10 @@
         "title": "Portail client",
         "description": "Portail libre-service client"
       },
+      "shareLinks": {
+        "title": "Liens de partage",
+        "description": "Expiration et liens envoyés aux clients"
+      },
       "workshop": {
         "title": "Atelier",
         "description": "Valeurs par défaut technicien et main-d'oeuvre"
@@ -2511,6 +2515,7 @@
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Les modifications de cette maquette ne sont pas enregistrées et seront perdues.",
     "leaveConfirm": "Quitter",
+    "leaveCancel": "Continuer à modifier",
     "boldField": "Gras",
     "deleteDesignDrafts": "{count, plural, one {# brouillon de facture} other {# brouillons de facture}} qui l'utilisent reviendront au design par défaut.",
     "deleteDesignCustomers": "{count, plural, one {# client} other {# clients}} qui y sont associés reviendront au design par défaut.",
@@ -2767,6 +2772,7 @@
     "leaveTitle": "Quitter sans enregistrer ?",
     "leaveBody": "Vos modifications de ce modèle n'ont pas été enregistrées. Elles seront perdues.",
     "leaveConfirm": "Quitter",
+    "leaveCancel": "Continuer à modifier",
     "subjectAndTheme": "Objet et thème",
     "settingsSubtitle": "S'applique à tout l'e-mail",
     "blocksTitle": "Blocs",
@@ -3029,6 +3035,91 @@
       "calendars": "Calendriers de jours fériés",
       "closedDays": "Jours de fermeture",
       "timeOff": "Congés et absences"
+    }
+  },
+  "shareLinks": {
+    "save": "Enregistrer",
+    "saved": "Réglages des liens de partage enregistrés",
+    "saveFailed": "Impossible d'enregistrer les réglages des liens de partage. Réessayez.",
+    "rules": {
+      "title": "Expiration des liens",
+      "description": "Combien de temps un lien envoyé à un client reste valable. Ensuite, le client voit une page qui l'invite à vous contacter.",
+      "kind": {
+        "invoice": "Factures",
+        "quote": "Devis",
+        "inspection": "Inspections"
+      },
+      "mode": {
+        "never": "N'expirent jamais",
+        "afterSharing": "Expirent après l'envoi",
+        "afterPayment": "Expirent après le paiement"
+      },
+      "hint": {
+        "never": "Le lien fonctionne jusqu'à ce que vous le supprimiez.",
+        "afterSharing": "Compté à partir du dernier jour où le lien a été envoyé ou partagé.",
+        "afterPayment": "Le lien reste ouvert tant que la facture est impayée, pour que le client puisse payer. Les jours commencent à courir une fois la facture entièrement payée."
+      },
+      "days": "jours",
+      "daysLabel": "Jours avant l'expiration des liens vers {kind}",
+      "appliesNote": "Ces règles s'appliquent aussi aux liens déjà envoyés. Vous pouvez fixer une autre date pour un document précis, ici dans la liste ou dans le document lui-même."
+    },
+    "list": {
+      "title": "Liens envoyés aux clients",
+      "description": "Tous les liens vers une facture, un devis, une inspection ou un rapport d'état, et la date à laquelle ils cessent de fonctionner.",
+      "statusLabel": "Afficher les liens",
+      "status": {
+        "active": "Actifs",
+        "expired": "Expirés",
+        "all": "Tous"
+      },
+      "kindLabel": "Type de document",
+      "kind": {
+        "all": "Tous les documents",
+        "invoice": "Factures",
+        "quote": "Devis",
+        "inspection": "Inspections",
+        "statusReport": "Rapports d'état"
+      },
+      "kindOne": {
+        "invoice": "Facture",
+        "quote": "Devis",
+        "inspection": "Inspection",
+        "statusReport": "Rapport d'état"
+      },
+      "searchPlaceholder": "Rechercher un document ou un client",
+      "columns": {
+        "document": "Document",
+        "customer": "Client",
+        "shared": "Partagé",
+        "views": "Vues",
+        "expires": "Expire",
+        "actions": "Actions"
+      },
+      "sharedOn": "Partagé le {date}",
+      "none": "-",
+      "copy": "Copier le lien",
+      "copyFailed": "Impossible de copier le lien.",
+      "open": "Ouvrir le document",
+      "revoke": "Supprimer le lien",
+      "revokeTitle": "Supprimer ce lien ?",
+      "revokeDescription": "Le lien vers {document} cesse de fonctionner pour toutes les personnes qui l'ont. Vous pouvez partager de nouveau le document pour créer un nouveau lien.",
+      "revoked": "Lien supprimé",
+      "empty": {
+        "active": "Aucun lien actif. Un lien apparaît ici quand vous envoyez ou partagez un document.",
+        "expired": "Aucun lien expiré.",
+        "all": "Aucun lien pour l'instant. Un lien apparaît ici quand vous envoyez ou partagez un document."
+      },
+      "emptyFiltered": "Aucun lien ne correspond à votre recherche.",
+      "loadFailed": "Impossible de charger les liens. Rechargez la page pour réessayer.",
+      "selectAll": "Sélectionner tous les liens de cette page",
+      "selectRow": "Sélectionner le lien vers {document}",
+      "selectedCount": "{count, plural, one {# lien sélectionné} other {# liens sélectionnés}}",
+      "clearSelection": "Effacer la sélection",
+      "removeSelected": "Supprimer la sélection",
+      "bulkRevokeTitle": "Supprimer {count, plural, one {# lien} other {# liens}} ?",
+      "bulkRevokeDescription": "Ces liens cessent de fonctionner pour toutes les personnes qui les ont. Vous pouvez partager de nouveau un document pour créer un nouveau lien.",
+      "bulkRevoked": "{count, plural, one {# lien supprimé} other {# liens supprimés}}",
+      "bulkRevokeFailed": "Impossible de supprimer les liens. Réessayez."
     }
   }
 }

@@ -75,6 +75,10 @@
         "title": "Kundenportal",
         "description": "Kunden-Self-Service-Portal"
       },
+      "shareLinks": {
+        "title": "Freigabelinks",
+        "description": "Ablauf von Links und an Kunden gesendete Links"
+      },
       "workshop": {
         "title": "Werkstatt",
         "description": "Techniker- & Arbeitsstandards"
@@ -2511,6 +2515,7 @@
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
     "leaveConfirm": "Verlassen",
+    "leaveCancel": "Weiter bearbeiten",
     "boldField": "Fett",
     "deleteDesignDrafts": "{count, plural, one {# Rechnungsentwurf} other {# Rechnungsentwürfe}} mit diesem Design fallen auf das Standarddesign zurück.",
     "deleteDesignCustomers": "{count, plural, one {# Kunde} other {# Kunden}} mit diesem Design fallen auf das Standarddesign zurück.",
@@ -2767,6 +2772,7 @@
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an dieser Vorlage wurden nicht gespeichert. Sie gehen verloren.",
     "leaveConfirm": "Verlassen",
+    "leaveCancel": "Weiter bearbeiten",
     "subjectAndTheme": "Betreff und Design",
     "settingsSubtitle": "Gilt für die ganze E-Mail",
     "blocksTitle": "Blöcke",
@@ -3029,6 +3035,91 @@
       "calendars": "Feiertagskalender",
       "closedDays": "Schließtage",
       "timeOff": "Urlaub und Abwesenheit"
+    }
+  },
+  "shareLinks": {
+    "save": "Speichern",
+    "saved": "Einstellungen für Freigabelinks gespeichert",
+    "saveFailed": "Die Einstellungen für Freigabelinks konnten nicht gespeichert werden. Versuchen Sie es erneut.",
+    "rules": {
+      "title": "Ablauf von Links",
+      "description": "Wie lange ein Link, den Sie an einen Kunden senden, funktioniert. Danach sieht der Kunde eine Seite, die ihn bittet, sich bei Ihnen zu melden.",
+      "kind": {
+        "invoice": "Rechnungen",
+        "quote": "Angebote",
+        "inspection": "Inspektionen"
+      },
+      "mode": {
+        "never": "Nie ablaufen",
+        "afterSharing": "Nach dem Versand ablaufen",
+        "afterPayment": "Nach der Zahlung ablaufen"
+      },
+      "hint": {
+        "never": "Der Link funktioniert, bis Sie ihn entfernen.",
+        "afterSharing": "Gezählt ab dem Tag, an dem der Link zuletzt gesendet oder geteilt wurde.",
+        "afterPayment": "Der Link bleibt offen, solange die Rechnung unbezahlt ist, damit der Kunde bezahlen kann. Die Tage zählen ab der vollständigen Bezahlung."
+      },
+      "days": "Tage",
+      "daysLabel": "Tage, bis Links zu {kind} ablaufen",
+      "appliesNote": "Diese Regeln gelten auch für bereits gesendete Links. Sie können für jedes einzelne Dokument ein anderes Datum festlegen, hier in der Liste oder im Dokument selbst."
+    },
+    "list": {
+      "title": "An Kunden gesendete Links",
+      "description": "Alle Links zu Rechnungen, Angeboten, Inspektionen und Statusberichten und wann sie nicht mehr funktionieren.",
+      "statusLabel": "Links anzeigen",
+      "status": {
+        "active": "Aktiv",
+        "expired": "Abgelaufen",
+        "all": "Alle"
+      },
+      "kindLabel": "Dokumenttyp",
+      "kind": {
+        "all": "Alle Dokumente",
+        "invoice": "Rechnungen",
+        "quote": "Angebote",
+        "inspection": "Inspektionen",
+        "statusReport": "Statusberichte"
+      },
+      "kindOne": {
+        "invoice": "Rechnung",
+        "quote": "Angebot",
+        "inspection": "Inspektion",
+        "statusReport": "Statusbericht"
+      },
+      "searchPlaceholder": "Dokument oder Kunde suchen",
+      "columns": {
+        "document": "Dokument",
+        "customer": "Kunde",
+        "shared": "Geteilt",
+        "views": "Aufrufe",
+        "expires": "Läuft ab",
+        "actions": "Aktionen"
+      },
+      "sharedOn": "Geteilt am {date}",
+      "none": "-",
+      "copy": "Link kopieren",
+      "copyFailed": "Der Link konnte nicht kopiert werden.",
+      "open": "Dokument öffnen",
+      "revoke": "Link entfernen",
+      "revokeTitle": "Diesen Link entfernen?",
+      "revokeDescription": "Der Link zu {document} funktioniert für niemanden mehr, der ihn hat. Sie können das Dokument erneut teilen, um einen neuen Link zu erstellen.",
+      "revoked": "Link entfernt",
+      "empty": {
+        "active": "Keine aktiven Links. Ein Link erscheint hier, wenn Sie ein Dokument senden oder teilen.",
+        "expired": "Keine abgelaufenen Links.",
+        "all": "Noch keine Links. Ein Link erscheint hier, wenn Sie ein Dokument senden oder teilen."
+      },
+      "emptyFiltered": "Keine Links passen zu Ihrer Suche.",
+      "loadFailed": "Die Links konnten nicht geladen werden. Laden Sie die Seite neu, um es erneut zu versuchen.",
+      "selectAll": "Alle Links auf dieser Seite auswählen",
+      "selectRow": "Link zu {document} auswählen",
+      "selectedCount": "{count, plural, one {# Link ausgewählt} other {# Links ausgewählt}}",
+      "clearSelection": "Auswahl aufheben",
+      "removeSelected": "Ausgewählte entfernen",
+      "bulkRevokeTitle": "{count, plural, one {# Link entfernen} other {# Links entfernen}}?",
+      "bulkRevokeDescription": "Diese Links funktionieren für niemanden mehr, der sie hat. Sie können ein Dokument erneut teilen, um einen neuen Link zu erstellen.",
+      "bulkRevoked": "{count, plural, one {# Link entfernt} other {# Links entfernt}}",
+      "bulkRevokeFailed": "Die Links konnten nicht entfernt werden. Versuchen Sie es erneut."
     }
   }
 }
