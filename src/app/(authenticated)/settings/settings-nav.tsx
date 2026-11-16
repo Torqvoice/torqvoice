@@ -267,7 +267,8 @@ export function SettingsNav({
                     <Icon className="h-4 w-4 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <p className={cn('truncate', isActive && 'font-medium')}>
+                        {/* Two lines at most: a long title wraps instead of being cut. */}
+                        <p className={cn('line-clamp-2 min-w-0', isActive && 'font-medium')}>
                           {t(`nav.items.${item.key}.title`)}
                         </p>
                         {isLocked && (
@@ -277,7 +278,7 @@ export function SettingsNav({
                         )}
                         {newPill(item)}
                       </div>
-                      <p className="hidden truncate text-xs text-muted-foreground lg:block">
+                      <p className="hidden text-xs text-muted-foreground lg:line-clamp-2">
                         {t(`nav.items.${item.key}.description`)}
                       </p>
                     </div>
