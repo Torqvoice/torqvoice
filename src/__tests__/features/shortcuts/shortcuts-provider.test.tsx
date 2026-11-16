@@ -455,6 +455,31 @@ describe('the Keyboard shortcuts settings page', () => {
     expect(screen.getByRole('switch', { name: 'Shortcut for New part' })).toBeChecked()
   })
 
+  it('leaves the keyboard to a confirmation while it is asking', async () => {
+    const onWeek = vi.fn()
+    render(
+      <App prefs={{ overrides: { 'create.quote': 'alt+z' } }}>
+        <Calendar onWeek={onWeek} />
+        <ShortcutsSettings />
+      </App>
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Reset all to default' }))
+    const dialog = await screen.findByRole('alertdialog')
+    const focused = (document.activeElement ?? dialog) as HTMLElement
+    press({ key: 'w', altKey: true }, focused)
+    press({ key: 'g', altKey: true }, focused)
+    press({ key: 'w', altKey: true }, focused)
+    press({ key: 'w' }, focused)
+    expect(push).not.toHaveBeenCalled()
+    expect(onWeek).not.toHaveBeenCalled()
+
+    // Escape is the dialog's own key and still answers no.
+    fireEvent.keyDown(focused, { key: 'Escape' })
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).toBeNull())
+    expect(save).not.toHaveBeenCalled()
+    expect(row('New quote')).toHaveTextContent('AltZ')
+  })
+
   it('refuses the key that starts the go-to set, and a key fixed to another shortcut', () => {
     render(
       <App>
