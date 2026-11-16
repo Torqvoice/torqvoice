@@ -3,21 +3,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
-import { History, Loader2, Undo2 } from 'lucide-react'
+import { FileSpreadsheet, History, Loader2, Undo2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
 import { Badge } from '@/components/ui/badge'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { listImportBatches, undoImportBatch } from '@/features/import/Actions/importActions'
 
 type Batch = NonNullable<Awaited<ReturnType<typeof listImportBatches>>['data']>[number]
@@ -33,8 +24,9 @@ export function ImportHistoryCard({ refreshKey = 0 }: { refreshKey?: number }) {
   const format = useFormatter()
   const router = useRouter()
   const [batches, setBatches] = useState<Batch[] | null>(null)
-  const [pending, setPending] = useState<Batch | null>(null)
-  const [busy, setBusy] = useState(false)
+  const confirm = useConfirm()
+  // The import being undone; its button waits while the answer is out.
+  const [busyId, setBusyId] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     const res = await listImportBatches()
@@ -46,12 +38,27 @@ export function ImportHistoryCard({ refreshKey = 0 }: { refreshKey?: number }) {
     load()
   }, [load, refreshKey])
 
-  const undo = async () => {
-    if (!pending) return
-    setBusy(true)
-    const res = await undoImportBatch(pending.id)
-    setBusy(false)
-    setPending(null)
+  const undo = async (batch: Batch) => {
+    const ok = await confirm({
+      title: t('confirmTitle'),
+      description: t('confirmDescription', {
+        file: batch.fileName,
+        customers: batch.attached.customers,
+        vehicles: batch.attached.vehicles,
+        services: batch.attached.serviceRecords,
+      }),
+      subject: [{ label: batch.fileName, detail: te(batch.entity), icon: FileSpreadsheet }],
+      confirmLabel: t('confirm'),
+      cancelLabel: t('cancel'),
+      icon: Undo2,
+      // Undoing deletes what the import created, so it reads and focuses
+      // like any other delete.
+      destructive: true,
+    })
+    if (!ok) return
+    setBusyId(batch.id)
+    const res = await undoImportBatch(batch.id)
+    setBusyId(null)
     if (res.success && res.data) {
       toast.success(
         t('undone', {
@@ -118,11 +125,16 @@ export function ImportHistoryCard({ refreshKey = 0 }: { refreshKey?: number }) {
                   variant="outline"
                   size="sm"
                   className="h-8"
-                  onClick={() => setPending(b)}
+                  onClick={() => undo(b)}
+                  disabled={busyId !== null}
                   aria-label={t('undo')}
                   title={t('undo')}
                 >
-                  <Undo2 className="mr-1 h-3.5 w-3.5" />
+                  {busyId === b.id ? (
+                    <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Undo2 className="mr-1 h-3.5 w-3.5" />
+                  )}
                   {t('undo')}
                 </Button>
               )}
@@ -130,33 +142,6 @@ export function ImportHistoryCard({ refreshKey = 0 }: { refreshKey?: number }) {
           )
         })}
       </div>
-
-      <AlertDialog
-        open={pending !== null}
-        onOpenChange={(open) => !open && !busy && setPending(null)}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('confirmTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {pending &&
-                t('confirmDescription', {
-                  file: pending.fileName,
-                  customers: pending.attached.customers,
-                  vehicles: pending.attached.vehicles,
-                  services: pending.attached.serviceRecords,
-                })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={busy}>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={undo} disabled={busy}>
-              {busy && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('confirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </AppCard>
   )
 }

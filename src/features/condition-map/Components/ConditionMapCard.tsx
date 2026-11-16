@@ -5,17 +5,8 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { CheckCheck, Eraser, Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import {
   Dialog,
   DialogContent,
@@ -115,7 +106,7 @@ export function ConditionMapCard({
   const [body, setBody] = useState<BodyType>(bodyTypeFor(vehicle, { serviceType }))
   const [focusView, setFocusView] = useState<View | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [clearingId, setClearingId] = useState<string | null>(null)
+  const confirm = useConfirm()
   /** The Add mark dialog: open, and the panel chosen in it so far. */
   const [adding, setAdding] = useState(false)
   const [addSpot, setAddSpot] = useState<PanelSpot | null>(null)
@@ -333,12 +324,19 @@ export function ConditionMapCard({
     })
   }
 
-  const handleClear = () => {
-    const id = clearingId
-    if (!id) return
-    setClearingId(null)
+  const handleClear = async (id: string) => {
     const before = marks.find((m) => m.id === id)
     if (!before) return
+    const ok = await confirm({
+      title: t('clearRepaired'),
+      description: t('clearBody', {
+        n: numberOf.get(before.id) ?? 0,
+        area: t(`panels.${before.panel}`),
+      }),
+      confirmLabel: t('clearRepaired'),
+      cancelLabel: t('cancel'),
+    })
+    if (!ok) return
     replace({ ...before, resolvedAt: new Date().toISOString() })
     startTransition(async () => {
       const result = await save(
@@ -438,7 +436,6 @@ export function ConditionMapCard({
   }))
 
   const editing = editingId ? (marks.find((m) => m.id === editingId) ?? null) : null
-  const clearing = clearingId ? (marks.find((m) => m.id === clearingId) ?? null) : null
 
   return (
     <div className="space-y-3" data-testid="condition-map">
@@ -571,7 +568,7 @@ export function ConditionMapCard({
                       number={numberOf.get(mark.id) ?? 0}
                       previous
                       onOpen={() => setEditingId(mark.id)}
-                      onClear={readOnly ? undefined : () => setClearingId(mark.id)}
+                      onClear={readOnly ? undefined : () => handleClear(mark.id)}
                     />
                   ))}
               </ul>
@@ -718,25 +715,6 @@ export function ConditionMapCard({
           </form>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={clearing !== null} onOpenChange={(open) => !open && setClearingId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('clearRepaired')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {clearing &&
-                t('clearBody', {
-                  n: numberOf.get(clearing.id) ?? 0,
-                  area: t(`panels.${clearing.panel}`),
-                })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClear}>{t('clearRepaired')}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

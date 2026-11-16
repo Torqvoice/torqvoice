@@ -2,15 +2,11 @@
 
 import { useTranslations } from 'next-intl'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  ConfirmFrame,
+  ConfirmFrameAction,
+  ConfirmFrameCancel,
+  ConfirmFrameText,
+} from '@/components/confirm-dialog'
 
 /**
  * A link was clicked with edits on the page, and the save it waited for was
@@ -32,24 +28,24 @@ export function LeaveUnsavedDialog({
 }) {
   const t = useTranslations('service.leaveUnsaved')
   return (
-    <AlertDialog open={open} onOpenChange={(next) => !next && onStay()}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{t('title')}</AlertDialogTitle>
-          <AlertDialogDescription asChild>
-            <div className="space-y-2">
-              <p className="font-medium text-foreground">{reason || t('fallbackReason')}</p>
-              <p>{t('hint')}</p>
-            </div>
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>{t('stay')}</AlertDialogCancel>
-          <AlertDialogAction variant="destructive" onClick={onLeave}>
+    <ConfirmFrame
+      open={open}
+      onDismiss={onStay}
+      title={t('title')}
+      destructive
+      footer={
+        <>
+          <ConfirmFrameCancel>{t('stay')}</ConfirmFrameCancel>
+          <ConfirmFrameAction destructive onClick={onLeave}>
             {t('leave')}
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </ConfirmFrameAction>
+        </>
+      }
+    >
+      <ConfirmFrameText>
+        <p className="text-foreground font-medium">{reason || t('fallbackReason')}</p>
+        <p>{t('hint')}</p>
+      </ConfirmFrameText>
+    </ConfirmFrame>
   )
 }

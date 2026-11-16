@@ -5,7 +5,9 @@
  * connection it used to stay gone until the page was reloaded, where it was
  * back as if nothing had been pressed.
  */
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { act, fireEvent, render as renderBare, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const removeInspectionItemMedia = vi.fn()
@@ -27,6 +29,10 @@ vi.mock('@/features/vehicles/Components/service-page/PhotoHandoffButton', () => 
 }))
 
 import { InspectionItemRow } from '@/features/inspections/Components/InspectionItemRow'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const ITEM = {
   id: 'tyres',

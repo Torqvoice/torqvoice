@@ -16,6 +16,7 @@ import {
   MessageCircle,
 } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -35,16 +36,6 @@ import {
 } from '@/components/ui/context-menu'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
 import { CreateStatusReportDialog } from './CreateStatusReportDialog'
 import { SendStatusReportDialog } from './SendStatusReportDialog'
@@ -108,8 +99,7 @@ export function StatusReportList({
   const [showCreate, setShowCreate] = useState(false)
   const tableNav = useTableKeyboardNav()
   const [sendReportId, setSendReportId] = useState<string | null>(null)
-  const [deleteReportId, setDeleteReportId] = useState<string | null>(null)
-  const [deleting, setDeleting] = useState(false)
+  const confirm = useConfirm()
   const [detailReport, setDetailReport] = useState<StatusReportSummary | null>(null)
 
   function copyLink(publicToken: string) {
@@ -122,11 +112,18 @@ export function StatusReportList({
     window.open(`/share/status-report/${organizationId}/${publicToken}`, '_blank')
   }
 
-  async function confirmDelete() {
-    if (!deleteReportId) return
-    setDeleting(true)
+  async function handleDelete(reportId: string) {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteConfirm'),
+      confirmLabel: t('delete'),
+      cancelLabel: t('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     try {
-      const result = await deleteStatusReport(deleteReportId)
+      const result = await deleteStatusReport(reportId)
       if (result.success) {
         toast.success(t('deleted'))
         router.refresh()
@@ -135,9 +132,6 @@ export function StatusReportList({
       }
     } catch {
       toast.error(t('deleteFailed'))
-    } finally {
-      setDeleting(false)
-      setDeleteReportId(null)
     }
   }
 
@@ -270,7 +264,7 @@ export function StatusReportList({
                       variant="ghost"
                       size="icon"
                       className="h-9 w-9 text-destructive hover:text-destructive"
-                      onClick={() => setDeleteReportId(report.id)}
+                      onClick={() => handleDelete(report.id)}
                       aria-label={t('delete')}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -385,7 +379,7 @@ export function StatusReportList({
                                 variant="ghost"
                                 size="sm"
                                 className="h-7 px-2 text-destructive hover:text-destructive"
-                                onClick={() => setDeleteReportId(report.id)}
+                                onClick={() => handleDelete(report.id)}
                               >
                                 <Trash2 className="h-3.5 w-3.5" />
                                 <span className="hidden xl:inline ml-1.5">{t('delete')}</span>
@@ -412,7 +406,7 @@ export function StatusReportList({
                         <ContextMenuSeparator />
                         <ContextMenuItem
                           variant="destructive"
-                          onClick={() => setDeleteReportId(report.id)}
+                          onClick={() => handleDelete(report.id)}
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
                           {t('delete')}
@@ -560,26 +554,6 @@ export function StatusReportList({
           telegramEnabled={telegramEnabled}
         />
       )}
-
-      <AlertDialog
-        open={!!deleteReportId}
-        onOpenChange={(open) => {
-          if (!open) setDeleteReportId(null)
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('deleteConfirm')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={deleting}>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction variant="destructive" disabled={deleting} onClick={confirmDelete}>
-              {t('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   )
 }

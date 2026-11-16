@@ -17,6 +17,7 @@ import {
   Search,
   Trash2,
 } from 'lucide-react'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -26,16 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -146,8 +137,7 @@ export function UnifiedInbox({
   const [smsData, setSmsData] = useState<SmsConversationData | null>(null)
   const [telegramData, setTelegramData] = useState<TelegramConversationData | null>(null)
 
-  const [deleteTarget, setDeleteTarget] = useState<InboxThread | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const confirm = useConfirm()
   const [showChannelChoice, setShowChannelChoice] = useState(false)
   const [composeChannel, setComposeChannel] = useState<MessagingChannel | null>(null)
 
@@ -373,10 +363,20 @@ export function UnifiedInbox({
   }, [focusKey])
 
   /** Removes our copy of a conversation; the customer's phone keeps theirs. */
-  const confirmDelete = async () => {
-    const thread = deleteTarget
-    if (!thread) return
-    setIsDeleting(true)
+  const handleDelete = async (thread: InboxThread) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      // A portal thread has no copy on the customer's phone: it goes for them too.
+      description:
+        thread.channel === 'portal'
+          ? tp('deleteDescription', { name: thread.name })
+          : t('deleteDescription', { name: thread.name }),
+      confirmLabel: t('delete'),
+      cancelLabel: t('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
 
     // A WhatsApp thread can exist under a bare number, and those are the ones
     // most worth clearing away: test sends and wrong numbers. Email threads
@@ -403,9 +403,6 @@ export function UnifiedInbox({
       // it is caught and reported the way a refusal is.
       result = null
     }
-
-    setIsDeleting(false)
-    setDeleteTarget(null)
 
     if (result?.success) {
       if (selected?.key === thread.key) setSelected(null)
@@ -620,7 +617,7 @@ export function UnifiedInbox({
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-destructive"
-                      onClick={() => setDeleteTarget(selected)}
+                      onClick={() => handleDelete(selected)}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       {t('deleteConversation')}
@@ -759,31 +756,6 @@ export function UnifiedInbox({
           </div>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {/* A portal thread has no copy on the customer's phone: it goes for them too. */}
-              {deleteTarget?.channel === 'portal'
-                ? tp('deleteDescription', { name: deleteTarget.name })
-                : t('deleteDescription', { name: deleteTarget?.name ?? '' })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <NewSmsDialog
         open={composeChannel === 'sms'}

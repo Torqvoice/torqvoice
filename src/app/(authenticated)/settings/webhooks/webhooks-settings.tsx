@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -253,8 +254,7 @@ function WebhookRow({
 }) {
   const t = useTranslations('settings.webhooks')
   const [isPending, startTransition] = useTransition()
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const [confirmRotate, setConfirmRotate] = useState(false)
+  const confirm = useConfirm()
   const [rotated, setRotated] = useState<string | null>(null)
   const [urlCopied, setUrlCopied] = useState(false)
 
@@ -288,28 +288,45 @@ function WebhookRow({
       }
     })
 
-  const handleDelete = () =>
+  const handleDelete = async () => {
+    const ok = await confirm({
+      title: t('confirmDeleteTitle'),
+      description: t('confirmDeleteDescription', { name: webhook.name }),
+      confirmLabel: t('delete'),
+      cancelLabel: t('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     startTransition(async () => {
       const r = await deleteWebhook(webhook.id).catch(() => null)
       if (r?.success) {
         toast.success(t('deleted'))
-        setConfirmDelete(false)
         onRefresh()
       } else {
         toast.error(r?.error || t('deleteFailed'))
       }
     })
+  }
 
-  const handleRotate = () =>
+  const handleRotate = async () => {
+    const ok = await confirm({
+      title: t('confirmRotateTitle'),
+      description: t('confirmRotateDescription'),
+      confirmLabel: t('rotate'),
+      cancelLabel: t('cancel'),
+      icon: RefreshCw,
+    })
+    if (!ok) return
     startTransition(async () => {
       const r = await rotateWebhookSecret(webhook.id).catch(() => null)
       if (r?.success && r.data) {
         setRotated(r.data.secret)
-        setConfirmRotate(false)
       } else {
         toast.error(r?.error || t('rotateFailed'))
       }
     })
+  }
 
   const status = webhook.autoDisabled
     ? 'auto_disabled'
@@ -448,7 +465,7 @@ function WebhookRow({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setConfirmRotate(true)}
+                  onClick={handleRotate}
                   disabled={isPending}
                   title={t('rotateSecret')}
                 >
@@ -457,7 +474,7 @@ function WebhookRow({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setConfirmDelete(true)}
+                  onClick={handleDelete}
                   disabled={isPending}
                   className="text-red-600 hover:text-red-700"
                 >
@@ -469,71 +486,31 @@ function WebhookRow({
         </div>
       </CardContent>
 
-      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('confirmDeleteTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('confirmDeleteDescription', { name: webhook.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(false)} disabled={isPending}>
-              {t('cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
+      {/* The new secret, shown once after the rotation was confirmed. */}
       <Dialog
-        open={confirmRotate || !!rotated}
+        open={!!rotated}
         onOpenChange={(open) => {
-          if (!open) {
-            setConfirmRotate(false)
-            if (rotated) {
-              setRotated(null)
-              onRefresh()
-            }
+          if (!open && rotated) {
+            setRotated(null)
+            onRefresh()
           }
         }}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{rotated ? t('secretRotated') : t('confirmRotateTitle')}</DialogTitle>
-            <DialogDescription>
-              {rotated ? t('secretRotatedDescription') : t('confirmRotateDescription')}
-            </DialogDescription>
+            <DialogTitle>{t('secretRotated')}</DialogTitle>
+            <DialogDescription>{t('secretRotatedDescription')}</DialogDescription>
           </DialogHeader>
           {rotated && <SecretBlock value={rotated} />}
           <DialogFooter>
-            {rotated ? (
-              <Button
-                onClick={() => {
-                  setRotated(null)
-                  onRefresh()
-                }}
-              >
-                {t('done')}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => setConfirmRotate(false)}
-                  disabled={isPending}
-                >
-                  {t('cancel')}
-                </Button>
-                <Button onClick={handleRotate} disabled={isPending}>
-                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('rotate')}
-                </Button>
-              </>
-            )}
+            <Button
+              onClick={() => {
+                setRotated(null)
+                onRefresh()
+              }}
+            >
+              {t('done')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -4,7 +4,9 @@
  * new customer's selection, with a composer that sends to the new customer.
  * An answer for an earlier pick that arrives late is dropped as well.
  */
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { act, fireEvent, render as renderBare, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const getTelegramConversation = vi.fn()
@@ -51,6 +53,10 @@ vi.mock('@/features/telegram/Components/TelegramConversation', () => ({
 }))
 
 import { TelegramMessagesClient } from '@/features/telegram/Components/TelegramMessagesClient'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const thread = (customerId: string, customerName: string) => ({
   customerId,

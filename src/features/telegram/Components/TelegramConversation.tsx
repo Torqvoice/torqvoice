@@ -3,19 +3,10 @@
 import { useState, useTransition, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { setActiveConversation } from '@/features/messaging/activeConversation'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Loader2, Send, ChevronUp } from 'lucide-react'
+import { Loader2, Send, ChevronUp, Trash2 } from 'lucide-react'
 import { TelegramConnectCard } from './TelegramQrCode'
 import { cn } from '@/lib/utils'
 import {
@@ -60,8 +51,7 @@ export function TelegramConversation({
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor)
   const [newMessage, setNewMessage] = useState('')
   const [mounted, setMounted] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<TelegramMessage | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const confirm = useConfirm()
   const [isSending, startSend] = useTransition()
   const [isLoadingMore, startLoadMore] = useTransition()
   const scrollAreaRef = useRef<HTMLDivElement>(null)
@@ -165,9 +155,16 @@ export function TelegramConversation({
     })
   }
 
-  const handleDeleteMessage = async () => {
-    if (!deleteTarget) return
-    setIsDeleting(true)
+  const handleDeleteMessage = async (deleteTarget: TelegramMessage) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription'),
+      confirmLabel: tc('delete'),
+      cancelLabel: tc('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     // An action that cannot reach the server throws instead of answering, so
     // it is caught and reported the way a refusal is.
     const result = await deleteTelegramMessage(deleteTarget.id).catch(() => null)
@@ -177,8 +174,6 @@ export function TelegramConversation({
     } else {
       toast.error(result?.error || t('deleteError'))
     }
-    setIsDeleting(false)
-    setDeleteTarget(null)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -243,7 +238,7 @@ export function TelegramConversation({
             msg={msg}
             mounted={mounted}
             deleteLabel={t('deleteMessage')}
-            onDelete={setDeleteTarget}
+            onDelete={handleDeleteMessage}
           />
         ))}
         <div ref={bottomRef} />
@@ -272,25 +267,6 @@ export function TelegramConversation({
           </Button>
         </div>
       </div>
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('deleteDescription')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteMessage}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }
