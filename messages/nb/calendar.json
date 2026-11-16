@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Ingen båter funnet.",
     "none": "Ingen",
     "optional": "Valgfritt",
-    "whoHint": "En kunde, en bil eller begge. En bil som ikke er registrert ennå, kan legges til jobben når den kommer.",
-    "whoHintMarine": "En kunde, en båt eller begge. En båt som ikke er registrert ennå, kan legges til jobben når den kommer.",
+    "whoHint": "En kunde, en bil eller begge. Ikke registrert ennå? Legg til med Ny.",
+    "whoHintMarine": "En kunde, en båt eller begge. Ikke registrert ennå? Legg til med Ny.",
     "work": "Arbeid som trengs",
     "workPlaceholder": "Bremsene foran piper\nOljeskift",
     "workPlaceholderMarine": "Motoren blir for varm i høy fart\nÅrsservice",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Velg en kunde for å varsle kunden.",
     "descriptionPlaceholder": "Legg til beskrivelse",
     "convertSubmit": "Lag arbeidsordre",
-    "saved": "Booking lagret"
+    "saved": "Booking lagret",
+    "new": "Ny",
+    "newCustomer": "Ny kunde",
+    "newCustomerNamed": "Ny kunde «{name}»",
+    "newVehicle": "Nytt kjøretøy",
+    "newVehicleMarine": "Ny båt",
+    "newVehicleNamed": "Nytt kjøretøy med skilt {plate}",
+    "newVehicleNamedMarine": "Ny båt med registreringsnummer {plate}",
+    "openCalendar": "Åpne kalenderen"
   },
   "notify": {
     "inAppTitle": "Snart: {title}",

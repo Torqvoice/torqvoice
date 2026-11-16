@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Nenhum barco encontrado.",
     "none": "Nenhum",
     "optional": "Opcional",
-    "whoHint": "Um cliente, um carro ou os dois. Um carro que ainda não está cadastrado pode ser adicionado à ordem quando chegar.",
-    "whoHintMarine": "Um cliente, um barco ou os dois. Um barco que ainda não está cadastrado pode ser adicionado à ordem quando chegar.",
+    "whoHint": "Um cliente, um carro ou os dois. Ainda não cadastrado? Adicione com Novo.",
+    "whoHintMarine": "Um cliente, um barco ou os dois. Ainda não cadastrado? Adicione com Novo.",
     "work": "Serviço necessário",
     "workPlaceholder": "Freios dianteiros chiando\nTroca de óleo",
     "workPlaceholderMarine": "Motor superaquece em alta velocidade\nRevisão anual",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Escolha um cliente para notificá-lo.",
     "descriptionPlaceholder": "Adicionar descrição",
     "convertSubmit": "Criar ordem de serviço",
-    "saved": "Agendamento salvo"
+    "saved": "Agendamento salvo",
+    "new": "Novo",
+    "newCustomer": "Novo cliente",
+    "newCustomerNamed": "Novo cliente “{name}”",
+    "newVehicle": "Novo veículo",
+    "newVehicleMarine": "Novo barco",
+    "newVehicleNamed": "Novo veículo com placa {plate}",
+    "newVehicleNamedMarine": "Novo barco com registro {plate}",
+    "openCalendar": "Abrir calendário"
   },
   "notify": {
     "inAppTitle": "Em breve: {title}",

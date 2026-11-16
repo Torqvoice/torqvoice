@@ -86,7 +86,8 @@
     "part": "Onderdeel",
     "inspection": "Keuring",
     "shopActions": "Werkplaats",
-    "person": "Persoon toevoegen"
+    "person": "Persoon toevoegen",
+    "appointment": "Afspraak"
   },
   "purchaseWhiteLabel": "White-label aanschaffen",
   "licenseExpired": "Uw licentie is verlopen. Functies kunnen beperkt zijn.",

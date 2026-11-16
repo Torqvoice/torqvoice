@@ -1,7 +1,9 @@
 /**
  * The edit vehicle dialog: which vehicle is open, the choices in sight, the
  * VIN counted as it is typed, delete handed to the page, and a dialog closed
- * without saving that opens again on what is saved.
+ * without saving that opens again on what is saved. Adding one: the vehicle
+ * handed to whoever goes on with it, or a booking offered straight from the
+ * confirmation, and Enter in the plate asking the registry.
  */
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -17,6 +19,9 @@ vi.mock('@/features/vehicles/Actions/vehicleActions', () => ({
   createVehicle: vi.fn(),
   updateVehicle: vi.fn(async () => ({ success: true })),
 }))
+vi.mock('sonner', () => ({
+  toast: { error: vi.fn(), success: vi.fn(), loading: vi.fn(), warning: vi.fn() },
+}))
 vi.mock('@/features/customers/Actions/customerActions', () => ({
   createCustomer: vi.fn(),
   findOwnerCandidates: vi.fn(async () => ({ success: true, data: [] })),
@@ -27,9 +32,11 @@ vi.mock('@/features/vehicles/Actions/aiAnalyzeVehicleDocument', () => ({
   aiAnalyzeVehicleDocument: vi.fn(),
   isVehicleScanAvailable: vi.fn(async () => ({ success: true, data: false })),
 }))
+const isVehicleLookupAvailable = vi.hoisted(() => vi.fn())
+const lookupVehicle = vi.hoisted(() => vi.fn())
 vi.mock('@/features/integrations/Actions/vehicleLookupActions', () => ({
-  isVehicleLookupAvailable: vi.fn(async () => ({ success: true, data: true })),
-  lookupVehicle: vi.fn(),
+  isVehicleLookupAvailable,
+  lookupVehicle,
 }))
 vi.mock('@/features/vehicles/Actions/photoHandoffActions', () => ({
   countPhotosSince: vi.fn(),
@@ -42,9 +49,11 @@ vi.mock('@/features/inspections/Actions/attachmentActions', () => ({
   createInspectionHandoffLink: vi.fn(),
 }))
 
+import { toast } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { BOOKING_EVENT, BookingAccessProvider } from '@/components/booking-launcher'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
-import { updateVehicle } from '@/features/vehicles/Actions/vehicleActions'
+import { createVehicle, updateVehicle } from '@/features/vehicles/Actions/vehicleActions'
 
 const VEHICLE = {
   id: 'veh-1',
@@ -83,6 +92,8 @@ function renderForm(props: Partial<React.ComponentProps<typeof VehicleForm>> = {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  // No registry connected unless a test connects one.
+  isVehicleLookupAvailable.mockResolvedValue({ success: true, data: {} })
 })
 
 describe('edit vehicle dialog', () => {
@@ -224,5 +235,154 @@ describe('saving the photo', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
     await waitFor(() => expect(updateVehicle).toHaveBeenCalled())
     expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ imageUrl: '' })
+  })
+})
+
+describe('adding a vehicle', () => {
+  const SAVED = {
+    id: 'veh-9',
+    make: 'Volvo',
+    model: 'V70',
+    year: 2015,
+    licensePlate: 'AB12345',
+    customerId: null,
+  }
+
+  function renderNew(
+    props: Partial<React.ComponentProps<typeof VehicleForm>> = {},
+    canBook = true
+  ) {
+    const onOpenChange = vi.fn()
+    render(
+      <BookingAccessProvider value={{ canBook, canAddCustomer: true }}>
+        <TooltipProvider>
+          <VehicleForm open onOpenChange={onOpenChange} {...props} />
+        </TooltipProvider>
+      </BookingAccessProvider>
+    )
+    return { onOpenChange }
+  }
+
+  async function fillAndSave() {
+    fireEvent.change(await screen.findByLabelText('Make *'), { target: { value: 'Volvo' } })
+    fireEvent.change(screen.getByLabelText('Model *'), { target: { value: 'V70' } })
+    fireEvent.change(screen.getByLabelText('Year *'), { target: { value: '2015' } })
+    fireEvent.change(screen.getByLabelText('License Plate'), { target: { value: 'AB12345' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Add New Vehicle' }))
+    await waitFor(() => expect(createVehicle).toHaveBeenCalled())
+  }
+
+  beforeEach(() => {
+    vi.mocked(createVehicle).mockResolvedValue({ success: true, data: SAVED } as never)
+  })
+
+  it('hands the vehicle just added to the caller that goes on with it', async () => {
+    const onCreated = vi.fn()
+    const { onOpenChange } = renderNew({ onCreated })
+    await fillAndSave()
+
+    await waitFor(() => expect(onCreated).toHaveBeenCalledTimes(1))
+    expect(onCreated).toHaveBeenCalledWith({
+      id: 'veh-9',
+      make: 'Volvo',
+      model: 'V70',
+      year: 2015,
+      licensePlate: 'AB12345',
+      customerId: null,
+      customer: null,
+    })
+    expect(onOpenChange).toHaveBeenCalledWith(false)
+    // The caller books it or opens its work order; the toast offers nothing more.
+    expect(toast.success).toHaveBeenCalledWith('Vehicle added')
+  })
+
+  it('offers to book the new vehicle in from the confirmation', async () => {
+    renderNew()
+    await fillAndSave()
+    await waitFor(() => expect(toast.success).toHaveBeenCalled())
+
+    const [message, options] = vi.mocked(toast.success).mock.calls[0] as unknown as [
+      string,
+      { action: { label: string; onClick: () => void } },
+    ]
+    expect(message).toBe('Vehicle added')
+    expect(options.action.label).toBe('Book appointment')
+
+    const booked = vi.fn()
+    document.addEventListener(BOOKING_EVENT, booked)
+    options.action.onClick()
+    document.removeEventListener(BOOKING_EVENT, booked)
+    expect(booked).toHaveBeenCalledTimes(1)
+    expect((booked.mock.calls[0][0] as CustomEvent).detail).toEqual({
+      vehicle: expect.objectContaining({ id: 'veh-9', make: 'Volvo', licensePlate: 'AB12345' }),
+    })
+  })
+
+  it('offers no booking to someone who may not book', async () => {
+    renderNew({}, false)
+    await fillAndSave()
+    await waitFor(() => expect(toast.success).toHaveBeenCalled())
+    expect(toast.success).toHaveBeenCalledWith('Vehicle added')
+  })
+
+  it('asks the registry when Enter is pressed in the plate field', async () => {
+    isVehicleLookupAvailable.mockResolvedValue({ success: true, data: { plate: true } })
+    lookupVehicle.mockResolvedValue({ success: true, data: null })
+    renderNew()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Look up plate' })).toBeEnabled())
+    const plate = screen.getByLabelText('License Plate')
+    fireEvent.change(plate, { target: { value: 'AB12345' } })
+    fireEvent.keyDown(plate, { key: 'Enter' })
+
+    await waitFor(() =>
+      expect(lookupVehicle).toHaveBeenCalledWith(
+        expect.objectContaining({ by: 'plate', value: 'AB12345' })
+      )
+    )
+    expect(createVehicle).not.toHaveBeenCalled()
+  })
+
+  it('does not save the form on a second Enter while the registry is still answering', async () => {
+    isVehicleLookupAvailable.mockResolvedValue({ success: true, data: { plate: true } })
+    // The registry never answers in this test.
+    lookupVehicle.mockReturnValue(new Promise(() => undefined))
+    renderNew()
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Look up plate' })).toBeEnabled())
+    // Everything a save needs is filled in.
+    fireEvent.change(screen.getByLabelText('Make *'), { target: { value: 'Volvo' } })
+    fireEvent.change(screen.getByLabelText('Model *'), { target: { value: 'V70' } })
+    fireEvent.change(screen.getByLabelText('Year *'), { target: { value: '2015' } })
+    const plate = screen.getByLabelText('License Plate')
+    fireEvent.change(plate, { target: { value: 'AB12345' } })
+
+    expect(fireEvent.keyDown(plate, { key: 'Enter' })).toBe(false)
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: 'Look up plate' })).toBeDisabled()
+    )
+    // The second Enter is taken by the lookup still running, not the form.
+    expect(fireEvent.keyDown(plate, { key: 'Enter' })).toBe(false)
+    await act(async () => undefined)
+
+    expect(lookupVehicle).toHaveBeenCalledTimes(1)
+    expect(createVehicle).not.toHaveBeenCalled()
+  })
+
+  it('asks nothing on Enter without a registry', async () => {
+    renderNew()
+    await waitFor(() => expect(isVehicleLookupAvailable).toHaveBeenCalled())
+    const plate = screen.getByLabelText('License Plate')
+    expect(screen.getByRole('button', { name: 'Look up plate' })).toBeDisabled()
+    fireEvent.change(plate, { target: { value: 'AB12345' } })
+    // Enter is left to the form, as in any other field.
+    expect(fireEvent.keyDown(plate, { key: 'Enter' })).toBe(true)
+    await act(async () => undefined)
+    expect(lookupVehicle).not.toHaveBeenCalled()
+    expect(createVehicle).not.toHaveBeenCalled()
+  })
+
+  it('starts on a plate typed elsewhere, with the cursor in it', async () => {
+    renderNew({ initialPlate: 'AB 12345' })
+    await waitFor(() => expect(screen.getByLabelText('License Plate')).toHaveValue('AB 12345'))
+    expect(screen.getByLabelText('License Plate')).toHaveFocus()
   })
 })

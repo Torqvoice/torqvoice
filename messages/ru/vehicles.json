@@ -457,7 +457,9 @@
     "deleteVehicle": "Удалить транспортное средство",
     "deleteVehicleMarine": "Удалить лодку",
     "editMileage": "Изменить пробег",
-    "editMileageMarine": "Изменить моточасы"
+    "editMileageMarine": "Изменить моточасы",
+    "bookAppointment": "Создать запись",
+    "addTitleMarine": "Добавить новое судно"
   },
   "archiveDialog": {
     "title": "Архивировать транспортное средство",
@@ -615,7 +617,9 @@
     "dueSoon": "Скоро",
     "emptyTitle": "Найдите любой номер",
     "emptyBody": "Посмотрите автомобиль, кто его владелец здесь и что о нём есть в {source}. Ещё не ваш? Добавьте за один шаг.",
-    "registryWord": "реестр"
+    "registryWord": "реестр",
+    "bookAppointment": "Создать запись",
+    "newWorkOrder": "Новый заказ-наряд"
   },
   "safety": {
     "title": "Безопасность и известные проблемы",

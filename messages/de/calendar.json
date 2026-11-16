@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Keine Boote gefunden.",
     "none": "Keine",
     "optional": "Optional",
-    "whoHint": "Ein Kunde, ein Fahrzeug oder beides. Ein Fahrzeug, das noch nicht erfasst ist, kann bei der Ankunft zum Auftrag hinzugefügt werden.",
-    "whoHintMarine": "Ein Kunde, ein Boot oder beides. Ein Boot, das noch nicht erfasst ist, kann bei der Ankunft zum Auftrag hinzugefügt werden.",
+    "whoHint": "Ein Kunde, ein Fahrzeug oder beides. Noch nicht erfasst? Mit Neu anlegen.",
+    "whoHintMarine": "Ein Kunde, ein Boot oder beides. Noch nicht erfasst? Mit Neu anlegen.",
     "work": "Erforderliche Arbeiten",
     "workPlaceholder": "Bremsen vorne quietschen\nÖlservice",
     "workPlaceholderMarine": "Motor überhitzt bei hoher Fahrt\nJahresservice",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Wählen Sie einen Kunden, um ihn zu benachrichtigen.",
     "descriptionPlaceholder": "Beschreibung hinzufügen",
     "convertSubmit": "Arbeitsauftrag erstellen",
-    "saved": "Termin gespeichert"
+    "saved": "Termin gespeichert",
+    "new": "Neu",
+    "newCustomer": "Neuer Kunde",
+    "newCustomerNamed": "Neuer Kunde „{name}“",
+    "newVehicle": "Neues Fahrzeug",
+    "newVehicleMarine": "Neues Boot",
+    "newVehicleNamed": "Neues Fahrzeug mit Kennzeichen {plate}",
+    "newVehicleNamedMarine": "Neues Boot mit Kennzeichen {plate}",
+    "openCalendar": "Kalender öffnen"
   },
   "notify": {
     "inAppTitle": "Demnächst: {title}",

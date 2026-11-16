@@ -86,7 +86,8 @@
     "part": "Part",
     "inspection": "Inspection",
     "shopActions": "Shop actions",
-    "person": "Add a person"
+    "person": "Add a person",
+    "appointment": "Appointment"
   },
   "purchaseWhiteLabel": "Purchase White-Label",
   "licenseExpired": "Your license has expired. Features may be limited.",

@@ -33,8 +33,11 @@ interface CustomerComboboxProps {
   noneLabel?: string
   /** What the list says when nothing matches */
   emptyLabel?: string
-  /** Shown under the list, e.g. a way to add a customer; `close` shuts the list */
-  footer?: (close: () => void) => ReactNode
+  /**
+   * Shown under the list, e.g. a way to add a customer; `close` shuts the
+   * list, and `search` is what was typed, for a form that starts from it
+   */
+  footer?: (close: () => void, search: string) => ReactNode
   /** Shown but not changeable here */
   disabled?: boolean
   /** The chosen customer's initials in a circle before the name, as an owner is shown */
@@ -207,7 +210,7 @@ export function CustomerCombobox({
               </div>
             )}
           </CommandList>
-          {footer?.(() => setOpen(false))}
+          {footer?.(() => setOpen(false), search)}
         </Command>
       </PopoverContent>
     </Popover>

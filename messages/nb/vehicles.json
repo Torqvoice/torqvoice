@@ -457,7 +457,9 @@
     "deleteVehicle": "Slett kjøretøy",
     "deleteVehicleMarine": "Slett båt",
     "editMileage": "Endre kilometerstand",
-    "editMileageMarine": "Endre motortimer"
+    "editMileageMarine": "Endre motortimer",
+    "bookAppointment": "Book time",
+    "addTitleMarine": "Legg til nytt fartøy"
   },
   "archiveDialog": {
     "title": "Arkiver kjøretøy",
@@ -615,7 +617,9 @@
     "dueSoon": "Snart",
     "emptyTitle": "Slå opp et hvilket som helst skilt",
     "emptyBody": "Se kjøretøyet, hvem som eier det her, og hva {source} har registrert. Ikke ditt enda? Legg det til i ett steg.",
-    "registryWord": "registeret"
+    "registryWord": "registeret",
+    "bookAppointment": "Book time",
+    "newWorkOrder": "Ny arbeidsordre"
   },
   "safety": {
     "title": "Sikkerhet og kjente problemer",

@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Predeterminado del taller",
     "invoiceDesignHint": "Las facturas de este cliente se imprimen con este diseño en lugar del predeterminado del taller. Una factura puede elegir el suyo.",
     "reminderOptOut": "Sin recordatorios",
-    "reminderOptOutHint": "No incluir a este cliente en recordatorios de inspección ni otras campañas."
+    "reminderOptOutHint": "No incluir a este cliente en recordatorios de inspección ni otras campañas.",
+    "bookAppointment": "Reservar cita"
   },
   "serviceRequests": {
     "statusNew": "Nuevo",

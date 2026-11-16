@@ -31,6 +31,7 @@ import type { VehicleDocumentScan } from '@/features/vehicles/Actions/aiAnalyzeV
 import { Loader2 } from 'lucide-react'
 import { clearableInput } from '@/lib/clearable'
 import { handleGated } from '@/components/upgrade-gate'
+import { openBooking, useBookingAccess } from '@/components/booking-launcher'
 
 interface CustomerFormProps {
   open: boolean
@@ -65,6 +66,7 @@ export function CustomerForm({
   onCreated,
 }: CustomerFormProps) {
   const t = useTranslations('customers.form')
+  const { canBook } = useBookingAccess()
   const tc = useTranslations('common')
   const router = useRouter()
   const modal = useGlassModal()
@@ -146,10 +148,19 @@ export function CustomerForm({
 
     if (result.success) {
       if (!customer) track('customer:create')
-      toast.success(customer ? t('customerUpdated') : t('customerCreated'))
       const created = result.data as
         | { id: string; name: string; company: string | null }
         | undefined
+      if (!customer && created && !onCreated && canBook) {
+        // Never a dead end: a customer added on their own can be booked in
+        // straight from the confirmation.
+        const start = { id: created.id, name: created.name, company: created.company ?? null }
+        toast.success(t('customerCreated'), {
+          action: { label: t('bookAppointment'), onClick: () => openBooking({ customer: start }) },
+        })
+      } else {
+        toast.success(customer ? t('customerUpdated') : t('customerCreated'))
+      }
       const customerId = customer?.id ?? created?.id
 
       // The scanned papers describe a vehicle too, and the customer it belongs

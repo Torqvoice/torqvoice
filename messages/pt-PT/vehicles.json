@@ -457,7 +457,9 @@
     "deleteVehicle": "Eliminar viatura",
     "deleteVehicleMarine": "Eliminar embarcação",
     "editMileage": "Alterar quilometragem",
-    "editMileageMarine": "Alterar horas de motor"
+    "editMileageMarine": "Alterar horas de motor",
+    "bookAppointment": "Fazer marcação",
+    "addTitleMarine": "Adicionar Nova Embarcação"
   },
   "archiveDialog": {
     "title": "Arquivar Viatura",
@@ -615,7 +617,9 @@
     "dueSoon": "Em breve",
     "emptyTitle": "Consulte qualquer matrícula",
     "emptyBody": "Veja a viatura, a quem pertence aqui e o que {source} tem registado. Ainda não é sua? Adicione-a num passo.",
-    "registryWord": "o registo"
+    "registryWord": "o registo",
+    "bookAppointment": "Fazer marcação",
+    "newWorkOrder": "Nova ordem de serviço"
   },
   "safety": {
     "title": "Segurança e problemas conhecidos",

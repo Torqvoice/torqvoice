@@ -15,6 +15,7 @@ import {
 import {
   Plus,
   Loader2,
+  CalendarPlus,
   Wrench,
   Users,
   Car,
@@ -26,6 +27,7 @@ import {
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
+import { openBooking, useBookingAccess } from '@/components/booking-launcher'
 import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
 import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
 
@@ -40,6 +42,7 @@ export function QuickCreateMenu() {
   // Through the save guard: the menu is in the header of every page, an
   // open work order or quote with unsaved edits included.
   const go = useGuardedPush()
+  const { canBook } = useBookingAccess()
   const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false)
   const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -95,6 +98,13 @@ export function QuickCreateMenu() {
             {t('quickCreate.workOrder')}
             <ShortcutKeys id="create.workOrder" className="ml-auto" />
           </DropdownMenuItem>
+          {/* Beside the work order: the same car, for another day. */}
+          {canBook && (
+            <DropdownMenuItem onSelect={() => openBooking()}>
+              <CalendarPlus className="h-4 w-4" />
+              {t('quickCreate.appointment')}
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem onSelect={() => go('/customers?create=true')}>
             <Users className="h-4 w-4" />
             {t('quickCreate.customer')}

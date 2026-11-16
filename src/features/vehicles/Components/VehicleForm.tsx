@@ -28,6 +28,7 @@ import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
 import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
 import { ScanDocumentButton } from './ScanDocumentButton'
 import { VehicleLookupButton } from './VehicleLookupButton'
+import { type BookingVehicle, openBooking, useBookingAccess } from '@/components/booking-launcher'
 import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
 import { nameSimilarity } from '@/lib/name-similarity'
 import { Camera, Check, Loader2, Pencil, Plus, Trash2, X } from 'lucide-react'
@@ -102,12 +103,30 @@ interface VehicleFormProps {
    */
   initialLookup?: VehicleLookup | null
   /**
+   * A plate typed somewhere else, such as a vehicle search that found
+   * nothing: the new vehicle starts with it in the plate field and the cursor
+   * there, so Enter asks the registry where one is connected. An empty string
+   * only puts the cursor there. Nothing is looked up until the person asks.
+   */
+  initialPlate?: string
+  /**
    * Offers "Delete vehicle" in the footer, for a page that has its own
    * confirmation to hand the delete to. Left out where nothing should be deleted.
    */
   onDelete?: () => void
   /** "km" or "mi", where the caller knows it, shown beside the mileage. */
   distanceUnit?: string
+  /**
+   * Handed the vehicle just added, for a caller that goes on with it: the
+   * booking dialog selects it, the work order picker opens its work order.
+   * Without one, the form itself offers to book the new vehicle in.
+   */
+  onCreated?: (vehicle: BookingVehicle) => void
+  /**
+   * The owner is the one given and cannot be changed here: a vehicle added
+   * to a job that already has its customer has to belong to that customer.
+   */
+  ownerLocked?: boolean
 }
 
 export function VehicleForm({
@@ -117,9 +136,13 @@ export function VehicleForm({
   defaultCustomerId,
   defaultCustomer,
   initialLookup,
+  initialPlate,
   onDelete,
   distanceUnit,
+  onCreated,
+  ownerLocked = false,
 }: VehicleFormProps) {
+  const { canBook } = useBookingAccess()
   const serviceType = useServiceType()
   const isMarine = serviceType === 'marine'
   // Only a workshop that switched the type key on sees the two boxes; a hidden
@@ -413,6 +436,16 @@ export function VehicleForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, vehicle, initialLookup])
   useEffect(() => {
+    if (!open || vehicle || initialPlate === undefined) return
+    const frame = requestAnimationFrame(() => {
+      const input = formRef.current?.elements.namedItem('licensePlate') as HTMLInputElement | null
+      if (!input) return
+      if (initialPlate && !input.value) input.value = initialPlate
+      input.focus()
+    })
+    return () => cancelAnimationFrame(frame)
+  }, [open, vehicle, initialPlate])
+  useEffect(() => {
     if (!open) {
       appliedLookupRef.current = null
       lookupRef.current = null
@@ -531,10 +564,44 @@ export function VehicleForm({
         : await createVehicle(payload)
 
       if (result.success) {
-        toast.success(vehicle ? t('vehicleUpdated') : t('vehicleAdded'))
+        // The vehicle as a picker shows it, with the owner it was saved under:
+        // the one chosen, or the keeper off the papers just made a customer.
+        const saved = !vehicle && result.data && 'make' in result.data ? result.data : null
+        const owner = selectedCustomer
+        const created: BookingVehicle | null = saved
+          ? {
+              id: saved.id,
+              make: saved.make,
+              model: saved.model,
+              year: saved.year,
+              licensePlate: saved.licensePlate,
+              customerId: saved.customerId,
+              customer: saved.customerId
+                ? {
+                    id: saved.customerId,
+                    name: owner?.id === saved.customerId ? owner.name : (scannedOwner?.name ?? ''),
+                  }
+                : null,
+            }
+          : null
+        if (created && !onCreated && canBook) {
+          // Never a dead end: a vehicle added on its own can be booked in
+          // straight from the confirmation.
+          toast.success(t('vehicleAdded'), {
+            action: {
+              label: t('bookAppointment'),
+              onClick: () => openBooking({ vehicle: created }),
+            },
+          })
+        } else {
+          toast.success(vehicle ? t('vehicleUpdated') : t('vehicleAdded'))
+        }
         onOpenChange(false)
         setImageFile(null)
-        router.refresh()
+        // A caller that goes on with the vehicle shows it itself; anywhere
+        // else the page underneath is read again to list it.
+        if (created && onCreated) onCreated(created)
+        else router.refresh()
       } else {
         modal.open('error', 'Error', result.error || t('saveError'))
       }
@@ -591,6 +658,7 @@ export function VehicleForm({
     vehicle.inspectionStatus.source !== 'manual' &&
     inspectionDraft === openedInspectionDue
   const vinLength = vinDraft.trim().length
+  const addTitle = isMarine ? t('addTitleMarine') : t('addTitle')
   const swatch = cssColor(colorDraft)
 
   return (
@@ -620,11 +688,11 @@ export function VehicleForm({
                       {`${vehicle.make} ${vehicle.model}`.trim()}
                     </>
                   ) : (
-                    t('addTitle')
+                    addTitle
                   )}
                 </DialogTitle>
                 <DialogDescription className={vehicleSummary ? 'text-[13px]' : 'sr-only'}>
-                  {vehicleSummary || (vehicle ? t('editTitle') : t('addTitle'))}
+                  {vehicleSummary || (vehicle ? t('editTitle') : addTitle)}
                 </DialogDescription>
               </div>
               <DocsLink href="/docs/features/vehicles" variant="hint" className="mt-1 shrink-0" />
@@ -714,6 +782,7 @@ export function VehicleForm({
                     </Label>
                     <CustomerCombobox
                       showAvatar
+                      disabled={ownerLocked}
                       value={selectedCustomerId === 'none' ? '' : selectedCustomerId}
                       initialCustomer={selectedCustomer}
                       // A customer given by id alone is named once the lookup below answers
@@ -906,6 +975,21 @@ export function VehicleForm({
                         placeholder="ABC-1234"
                         defaultValue={vehicle?.licensePlate ?? ''}
                         className="flex-1"
+                        // Enter in the plate asks the registry, where one is
+                        // connected, instead of trying to save half a form.
+                        onKeyDown={(e) => {
+                          if (e.key !== 'Enter') return
+                          const lookup = formRef.current?.querySelector<HTMLButtonElement>(
+                            'button[data-lookup="plate"]'
+                          )
+                          // No registry: Enter is the form's own.
+                          if (!lookup || (lookup.disabled && !lookup.dataset.busy)) return
+                          // A second Enter while the registry is still
+                          // answering must not save the form under it; a
+                          // click on the busy button does nothing.
+                          e.preventDefault()
+                          lookup.click()
+                        }}
                       />
                       {!isMarine && (
                         <VehicleLookupButton
@@ -1192,7 +1276,7 @@ export function VehicleForm({
               </Button>
               <Button data-save-shortcut type="submit" disabled={loading || ownerLookupPending}>
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {vehicle ? tc('saveChanges') : t('addTitle')}
+                {vehicle ? tc('saveChanges') : addTitle}
               </Button>
             </DialogFooter>
           </form>
@@ -1332,7 +1416,7 @@ function cssColor(name: string): string | null {
 /** A titled card holding one group of the form's fields. */
 function FormCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="rounded-xl border bg-card">
+    <section className="min-w-0 rounded-xl border bg-card">
       <h3 className="border-b px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
         {title}
       </h3>

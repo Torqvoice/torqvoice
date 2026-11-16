@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Valčių nerasta.",
     "none": "Nėra",
     "optional": "Neprivaloma",
-    "whoHint": "Klientas, automobilis arba abu. Automobilį, kurio dar nėra sistemoje, galima pridėti prie užsakymo, kai jis atvyks.",
-    "whoHintMarine": "Klientas, valtis arba abu. Valtį, kurios dar nėra sistemoje, galima pridėti prie užsakymo, kai ji bus pristatyta.",
+    "whoHint": "Klientas, automobilis arba abu. Dar nėra sistemoje? Pridėkite paspaudę Sukurti.",
+    "whoHintMarine": "Klientas, valtis arba abu. Dar nėra sistemoje? Pridėkite paspaudę Sukurti.",
     "work": "Reikalingi darbai",
     "workPlaceholder": "Cypia priekiniai stabdžiai\nAlyvos keitimas",
     "workPlaceholderMarine": "Didesniu greičiu perkaista variklis\nMetinė priežiūra",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Pasirinkite klientą, kad jam būtų pranešta.",
     "descriptionPlaceholder": "Pridėti aprašymą",
     "convertSubmit": "Sukurti darbo užsakymą",
-    "saved": "Registracija išsaugota"
+    "saved": "Registracija išsaugota",
+    "new": "Sukurti",
+    "newCustomer": "Naujas klientas",
+    "newCustomerNamed": "Naujas klientas „{name}“",
+    "newVehicle": "Nauja transporto priemonė",
+    "newVehicleMarine": "Nauja valtis",
+    "newVehicleNamed": "Nauja transporto priemonė su numeriu {plate}",
+    "newVehicleNamedMarine": "Nauja valtis su registracijos numeriu {plate}",
+    "openCalendar": "Atidaryti kalendorių"
   },
   "notify": {
     "inAppTitle": "Artėja: {title}",

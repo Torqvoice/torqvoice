@@ -50,6 +50,8 @@ import { getManifest, listManifests } from '@/integrations/registry'
 import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
 import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
+import { BookingAccessProvider } from '@/components/booking-launcher'
+import { BookingHost } from '@/features/calendar/Components/BookingHost'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { countUnreadMessages } from '@/features/messaging/Lib/unreadCount'
 import { addZonedDays, safeTimeZone, startOfZonedDay } from '@/lib/timezone'
@@ -136,6 +138,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   let hasAnyAccess = true
   /** Whether the plate lookup may offer to add a vehicle it did not find. */
   let canCreateVehicles = true
+  /** Whether a vehicle found or added anywhere may be booked in from there. */
+  let canBook = true
+  /** Whether a booking may offer to add the customer it is for. */
+  let canAddCustomer = true
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
@@ -156,6 +162,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
        */
       visibleSubjects = []
       canCreateVehicles = false
+      canBook = false
+      canAddCustomer = false
       hasAnyAccess = false
     } else {
       const userPermissions = membership?.customRole?.permissions ?? []
@@ -168,6 +176,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
       canCreateVehicles = hasPermission(userPermissions, {
         action: PermissionAction.CREATE,
         subject: PermissionSubject.VEHICLES,
+      })
+      canBook = hasPermission(userPermissions, {
+        action: PermissionAction.CREATE,
+        subject: PermissionSubject.SERVICES,
+      })
+      canAddCustomer = hasPermission(userPermissions, {
+        action: PermissionAction.CREATE,
+        subject: PermissionSubject.CUSTOMERS,
       })
       // A role that grants nothing readable. Every page behind the nav would
       // answer "Your role does not allow this", so say it once instead.
@@ -412,83 +428,86 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         currencyFormat={data.currencyFormat}
                       >
                         <ConfirmProvider>
-                          <PlateLookupProvider
-                            value={{
-                              available: plateLookupAvailable,
-                              canCreate: canCreateVehicles,
-                              registryName: plateLookupRegistry,
-                            }}
-                          >
-                            <FeatureHintProvider
-                              initialSeen={seenHints}
-                              pending={[...pendingHints, ...announcements]}
+                          <BookingAccessProvider value={{ canBook, canAddCustomer }}>
+                            <PlateLookupProvider
+                              value={{
+                                available: plateLookupAvailable,
+                                canCreate: canCreateVehicles,
+                                registryName: plateLookupRegistry,
+                              }}
                             >
-                              {/* One socket for the whole app: record changes, who
+                              <FeatureHintProvider
+                                initialSeen={seenHints}
+                                pending={[...pendingHints, ...announcements]}
+                              >
+                                {/* One socket for the whole app: record changes, who
                           else is on a record, and the older workshop-wide
                           channels the remaining pages still read. */}
-                              <RealtimeProvider>
-                                <TimeClockProvider technicianIds={technicianIds}>
-                                  <SaveShortcutListener />
-                                  <SidebarShortcut />
-                                  <AnalyticsIdentity
-                                    userId={data.userId}
-                                    organizationId={data.organizationId}
-                                  />
-                                  <AppSidebar
-                                    companyLogo={data.companyLogo}
-                                    organizations={data.organizations}
-                                    activeOrgId={data.organizationId}
-                                    isSuperAdmin={data.isSuperAdmin}
-                                    features={features}
-                                    tireHotelEnabled={tireHotelEnabled}
-                                    aiEnabled={aiEnabled}
-                                    faultCodesEnabled={faultCodesEnabled}
-                                    visibleSubjects={visibleSubjects}
-                                    announcement={announcements[0] ?? null}
-                                    isAdminOrOwner={isOwnerOrAdmin}
-                                    counts={sidebarCounts}
-                                    isTechnician={technicianIds.length > 0}
-                                    supportEnabled={supportEnabled}
-                                  />
-                                  <SidebarInset
-                                    id="main-content"
-                                    tabIndex={-1}
-                                    className="outline-none"
-                                  >
-                                    {/* A flex column with a real height, so the `flex-1` every
+                                <RealtimeProvider>
+                                  <TimeClockProvider technicianIds={technicianIds}>
+                                    <SaveShortcutListener />
+                                    <SidebarShortcut />
+                                    <AnalyticsIdentity
+                                      userId={data.userId}
+                                      organizationId={data.organizationId}
+                                    />
+                                    <AppSidebar
+                                      companyLogo={data.companyLogo}
+                                      organizations={data.organizations}
+                                      activeOrgId={data.organizationId}
+                                      isSuperAdmin={data.isSuperAdmin}
+                                      features={features}
+                                      tireHotelEnabled={tireHotelEnabled}
+                                      aiEnabled={aiEnabled}
+                                      faultCodesEnabled={faultCodesEnabled}
+                                      visibleSubjects={visibleSubjects}
+                                      announcement={announcements[0] ?? null}
+                                      isAdminOrOwner={isOwnerOrAdmin}
+                                      counts={sidebarCounts}
+                                      isTechnician={technicianIds.length > 0}
+                                      supportEnabled={supportEnabled}
+                                    />
+                                    <SidebarInset
+                                      id="main-content"
+                                      tabIndex={-1}
+                                      className="outline-none"
+                                    >
+                                      {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the
                           work board's week timeline) stopped at its content and
                           left the rest of the screen blank. */}
-                                    <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
-                                      {children}
-                                    </div>
-                                  </SidebarInset>
-                                  <SearchCommand
-                                    visibleSubjects={visibleSubjects}
-                                    features={features}
-                                    tireHotelEnabled={tireHotelEnabled}
-                                    aiEnabled={aiEnabled}
-                                    isAdminOrOwner={isOwnerOrAdmin}
-                                    isCloud={cloudLinked}
-                                    supportEnabled={supportEnabled}
-                                    isMarine={data.serviceType === 'marine'}
-                                    connectors={searchConnectors}
-                                    faultCodesEnabled={faultCodesEnabled}
-                                  />
-                                  <PlateLookupCommand />
-                                  {isOwnerOrAdmin && <NotificationInitializer />}
-                                  <OnlineTracker />
-                                  <ConnectionWatcher />
-                                  <UpdateWatcher version={buildVersion()} />
-                                  <InstallBanner
-                                    appName={appBranding.name}
-                                    iconUrl={appBranding.iconUrl}
-                                  />
-                                </TimeClockProvider>
-                              </RealtimeProvider>
-                            </FeatureHintProvider>
-                          </PlateLookupProvider>
+                                      <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
+                                        {children}
+                                      </div>
+                                    </SidebarInset>
+                                    <SearchCommand
+                                      visibleSubjects={visibleSubjects}
+                                      features={features}
+                                      tireHotelEnabled={tireHotelEnabled}
+                                      aiEnabled={aiEnabled}
+                                      isAdminOrOwner={isOwnerOrAdmin}
+                                      isCloud={cloudLinked}
+                                      supportEnabled={supportEnabled}
+                                      isMarine={data.serviceType === 'marine'}
+                                      connectors={searchConnectors}
+                                      faultCodesEnabled={faultCodesEnabled}
+                                    />
+                                    <PlateLookupCommand />
+                                    <BookingHost />
+                                    {isOwnerOrAdmin && <NotificationInitializer />}
+                                    <OnlineTracker />
+                                    <ConnectionWatcher />
+                                    <UpdateWatcher version={buildVersion()} />
+                                    <InstallBanner
+                                      appName={appBranding.name}
+                                      iconUrl={appBranding.iconUrl}
+                                    />
+                                  </TimeClockProvider>
+                                </RealtimeProvider>
+                              </FeatureHintProvider>
+                            </PlateLookupProvider>
+                          </BookingAccessProvider>
                         </ConfirmProvider>
                       </CurrencySettingsProvider>
                     </DateSettingsProvider>

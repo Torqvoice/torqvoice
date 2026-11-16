@@ -457,7 +457,9 @@
     "deleteVehicle": "Elimina veicolo",
     "deleteVehicleMarine": "Elimina imbarcazione",
     "editMileage": "Cambia chilometraggio",
-    "editMileageMarine": "Cambia ore motore"
+    "editMileageMarine": "Cambia ore motore",
+    "bookAppointment": "Prenota appuntamento",
+    "addTitleMarine": "Aggiungi Nuova Imbarcazione"
   },
   "archiveDialog": {
     "title": "Archivia Veicolo",
@@ -615,7 +617,9 @@
     "dueSoon": "In scadenza",
     "emptyTitle": "Cerca qualsiasi targa",
     "emptyBody": "Vedi il veicolo, chi ne è il proprietario qui e cosa ha registrato {source}. Non è ancora tuo? Aggiungilo in un passaggio.",
-    "registryWord": "il registro"
+    "registryWord": "il registro",
+    "bookAppointment": "Prenota appuntamento",
+    "newWorkOrder": "Nuovo ordine di lavoro"
   },
   "safety": {
     "title": "Sicurezza e problemi noti",

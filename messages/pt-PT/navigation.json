@@ -86,7 +86,8 @@
     "part": "Peça",
     "inspection": "Inspeção",
     "shopActions": "Oficina",
-    "person": "Adicionar uma pessoa"
+    "person": "Adicionar uma pessoa",
+    "appointment": "Marcação"
   },
   "purchaseWhiteLabel": "Adquirir White-Label",
   "licenseExpired": "A sua licença expirou. Algumas funcionalidades podem estar limitadas.",

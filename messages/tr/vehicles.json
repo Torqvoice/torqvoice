@@ -457,7 +457,9 @@
     "deleteVehicle": "Aracı sil",
     "deleteVehicleMarine": "Tekneyi sil",
     "editMileage": "Kilometreyi değiştir",
-    "editMileageMarine": "Motor saatlerini değiştir"
+    "editMileageMarine": "Motor saatlerini değiştir",
+    "bookAppointment": "Randevu oluştur",
+    "addTitleMarine": "Yeni Tekne Ekle"
   },
   "archiveDialog": {
     "title": "Aracı Arşivle",
@@ -615,7 +617,9 @@
     "dueSoon": "Yaklaşıyor",
     "emptyTitle": "Herhangi bir plakayı sorgulayın",
     "emptyBody": "Aracı, burada kime ait olduğunu ve {source} kaydında ne olduğunu görün. Henüz sizin değil mi? Tek adımda ekleyin.",
-    "registryWord": "sicil"
+    "registryWord": "sicil",
+    "bookAppointment": "Randevu oluştur",
+    "newWorkOrder": "Yeni iş emri"
   },
   "safety": {
     "title": "Güvenlik ve bilinen sorunlar",

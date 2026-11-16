@@ -457,7 +457,9 @@
     "deleteVehicle": "Excluir veículo",
     "deleteVehicleMarine": "Excluir embarcação",
     "editMileage": "Alterar quilometragem",
-    "editMileageMarine": "Alterar horas de motor"
+    "editMileageMarine": "Alterar horas de motor",
+    "bookAppointment": "Agendar horário",
+    "addTitleMarine": "Adicionar Nova Embarcação"
   },
   "archiveDialog": {
     "title": "Arquivar Veículo",
@@ -615,7 +617,9 @@
     "dueSoon": "Em breve",
     "emptyTitle": "Consulte qualquer placa",
     "emptyBody": "Veja o veículo, de quem é aqui e o que {source} tem registrado. Ainda não é seu? Adicione em um passo.",
-    "registryWord": "o registro"
+    "registryWord": "o registro",
+    "bookAppointment": "Agendar horário",
+    "newWorkOrder": "Nova ordem de serviço"
   },
   "safety": {
     "title": "Segurança e problemas conhecidos",

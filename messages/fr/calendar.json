@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Aucun bateau trouvé.",
     "none": "Aucun",
     "optional": "Facultatif",
-    "whoHint": "Un client, un véhicule ou les deux. Un véhicule qui n’est pas encore enregistré peut être ajouté à l’ordre à son arrivée.",
-    "whoHintMarine": "Un client, un bateau ou les deux. Un bateau qui n’est pas encore enregistré peut être ajouté à l’ordre à son arrivée.",
+    "whoHint": "Un client, un véhicule ou les deux. Pas encore enregistré ? Ajoutez-le avec Nouveau.",
+    "whoHintMarine": "Un client, un bateau ou les deux. Pas encore enregistré ? Ajoutez-le avec Nouveau.",
     "work": "Travaux à faire",
     "workPlaceholder": "Les freins avant grincent\nVidange",
     "workPlaceholderMarine": "Le moteur chauffe à haute vitesse\nEntretien annuel",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Choisissez un client pour le prévenir.",
     "descriptionPlaceholder": "Ajouter une description",
     "convertSubmit": "Créer l’ordre de travail",
-    "saved": "Réservation enregistrée"
+    "saved": "Réservation enregistrée",
+    "new": "Nouveau",
+    "newCustomer": "Nouveau client",
+    "newCustomerNamed": "Nouveau client « {name} »",
+    "newVehicle": "Nouveau véhicule",
+    "newVehicleMarine": "Nouveau bateau",
+    "newVehicleNamed": "Nouveau véhicule immatriculé {plate}",
+    "newVehicleNamedMarine": "Nouveau bateau immatriculé {plate}",
+    "openCalendar": "Ouvrir le calendrier"
   },
   "notify": {
     "inAppTitle": "Bientôt : {title}",

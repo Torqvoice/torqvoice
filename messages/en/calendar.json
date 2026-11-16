@@ -189,8 +189,8 @@
     "noVehiclesMarine": "No boats found.",
     "none": "None",
     "optional": "Optional",
-    "whoHint": "A customer, a car or both. A car that is not on file yet can be added to the job when it arrives.",
-    "whoHintMarine": "A customer, a boat or both. A boat that is not on file yet can be added to the job when it arrives.",
+    "whoHint": "A customer, a car or both. Not on file yet? Add them with New.",
+    "whoHintMarine": "A customer, a boat or both. Not on file yet? Add them with New.",
     "work": "Work needed",
     "workPlaceholder": "Front brakes squeal\nOil service",
     "workPlaceholderMarine": "Engine overheats at speed\nAnnual service",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Choose a customer to notify them.",
     "descriptionPlaceholder": "Add description",
     "convertSubmit": "Make work order",
-    "saved": "Booking saved"
+    "saved": "Booking saved",
+    "new": "New",
+    "newCustomer": "New customer",
+    "newCustomerNamed": "New customer \"{name}\"",
+    "newVehicle": "New vehicle",
+    "newVehicleMarine": "New boat",
+    "newVehicleNamed": "New vehicle with plate {plate}",
+    "newVehicleNamedMarine": "New boat with registration {plate}",
+    "openCalendar": "Open calendar"
   },
   "notify": {
     "inAppTitle": "Coming up: {title}",

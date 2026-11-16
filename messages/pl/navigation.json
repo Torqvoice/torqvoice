@@ -86,7 +86,8 @@
     "part": "Część",
     "inspection": "Przegląd",
     "shopActions": "Warsztat",
-    "person": "Dodaj osobę"
+    "person": "Dodaj osobę",
+    "appointment": "Wizyta"
   },
   "purchaseWhiteLabel": "Kup White-Label",
   "licenseExpired": "Twoja licencja wygasła. Funkcje mogą być ograniczone.",

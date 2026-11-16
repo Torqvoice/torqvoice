@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Nie znaleziono łodzi.",
     "none": "Brak",
     "optional": "Opcjonalnie",
-    "whoHint": "Klient, auto lub jedno i drugie. Auto, którego jeszcze nie ma w bazie, można dodać do zlecenia, gdy trafi do warsztatu.",
-    "whoHintMarine": "Klient, łódź lub jedno i drugie. Łódź, której jeszcze nie ma w bazie, można dodać do zlecenia, gdy trafi do warsztatu.",
+    "whoHint": "Klient, auto lub jedno i drugie. Jeszcze nie ma w bazie? Dodaj przyciskiem Nowy.",
+    "whoHintMarine": "Klient, łódź lub jedno i drugie. Jeszcze nie ma w bazie? Dodaj przyciskiem Nowy.",
     "work": "Prace do wykonania",
     "workPlaceholder": "Piszczą przednie hamulce\nWymiana oleju",
     "workPlaceholderMarine": "Silnik przegrzewa się przy dużej prędkości\nPrzegląd roczny",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Wybierz klienta, aby go powiadomić.",
     "descriptionPlaceholder": "Dodaj opis",
     "convertSubmit": "Utwórz zlecenie",
-    "saved": "Rezerwacja zapisana"
+    "saved": "Rezerwacja zapisana",
+    "new": "Nowy",
+    "newCustomer": "Nowy klient",
+    "newCustomerNamed": "Nowy klient „{name}”",
+    "newVehicle": "Nowy pojazd",
+    "newVehicleMarine": "Nowa łódź",
+    "newVehicleNamed": "Nowy pojazd o numerze rejestracyjnym {plate}",
+    "newVehicleNamedMarine": "Nowa łódź o numerze rejestracyjnym {plate}",
+    "openCalendar": "Otwórz kalendarz"
   },
   "notify": {
     "inAppTitle": "Wkrótce: {title}",

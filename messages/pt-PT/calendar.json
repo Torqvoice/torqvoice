@@ -189,8 +189,8 @@
     "noVehiclesMarine": "Nenhum barco encontrado.",
     "none": "Nenhum",
     "optional": "Opcional",
-    "whoHint": "Um cliente, uma viatura ou ambos. Uma viatura que ainda não esteja registada pode ser adicionada à ordem quando chegar.",
-    "whoHintMarine": "Um cliente, um barco ou ambos. Um barco que ainda não esteja registado pode ser adicionado à ordem quando chegar.",
+    "whoHint": "Um cliente, uma viatura ou ambos. Ainda não registado? Adicione com Novo.",
+    "whoHintMarine": "Um cliente, um barco ou ambos. Ainda não registado? Adicione com Novo.",
     "work": "Trabalho necessário",
     "workPlaceholder": "Travões da frente a chiar\nMudança de óleo",
     "workPlaceholderMarine": "Motor sobreaquece a alta velocidade\nRevisão anual",
@@ -271,7 +271,15 @@
     "customerChannelNeedsCustomer": "Escolha um cliente para o notificar.",
     "descriptionPlaceholder": "Adicionar descrição",
     "convertSubmit": "Criar ordem de serviço",
-    "saved": "Marcação guardada"
+    "saved": "Marcação guardada",
+    "new": "Novo",
+    "newCustomer": "Novo cliente",
+    "newCustomerNamed": "Novo cliente «{name}»",
+    "newVehicle": "Nova viatura",
+    "newVehicleMarine": "Novo barco",
+    "newVehicleNamed": "Nova viatura com matrícula {plate}",
+    "newVehicleNamedMarine": "Novo barco com matrícula {plate}",
+    "openCalendar": "Abrir calendário"
   },
   "notify": {
     "inAppTitle": "Em breve: {title}",

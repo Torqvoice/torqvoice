@@ -457,7 +457,9 @@
     "deleteVehicle": "Usuń pojazd",
     "deleteVehicleMarine": "Usuń łódź",
     "editMileage": "Zmień przebieg",
-    "editMileageMarine": "Zmień godziny pracy silnika"
+    "editMileageMarine": "Zmień godziny pracy silnika",
+    "bookAppointment": "Umów wizytę",
+    "addTitleMarine": "Dodaj nową jednostkę"
   },
   "archiveDialog": {
     "title": "Archiwizuj pojazd",
@@ -615,7 +617,9 @@
     "dueSoon": "Wkrótce",
     "emptyTitle": "Sprawdź dowolną tablicę",
     "emptyBody": "Zobacz pojazd, kto jest tu jego właścicielem i co ma o nim {source}. Jeszcze nie Twój? Dodaj go jednym krokiem.",
-    "registryWord": "rejestr"
+    "registryWord": "rejestr",
+    "bookAppointment": "Umów wizytę",
+    "newWorkOrder": "Nowe zlecenie"
   },
   "safety": {
     "title": "Bezpieczeństwo i znane problemy",

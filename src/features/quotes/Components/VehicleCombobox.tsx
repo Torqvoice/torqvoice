@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -41,6 +41,11 @@ interface VehicleComboboxProps {
   emptyLabel?: string
   /** When set, only this customer's vehicles are offered */
   customerId?: string
+  /**
+   * Shown under the list, e.g. a way to add a vehicle; `close` shuts the
+   * list, and `search` is what was typed, for a form that starts from it
+   */
+  footer?: (close: () => void, search: string) => ReactNode
   /** Shown but not changeable here */
   disabled?: boolean
 }
@@ -59,6 +64,7 @@ export function VehicleCombobox({
   allowNone = true,
   emptyLabel = 'No vehicles found.',
   customerId,
+  footer,
   disabled = false,
 }: VehicleComboboxProps) {
   const [open, setOpen] = useState(false)
@@ -188,7 +194,7 @@ export function VehicleCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+      <PopoverContent className="w-(--radix-popover-trigger-width) min-w-64 p-0">
         <Command shouldFilter={false}>
           <CommandInput
             placeholder={searchPlaceholder ?? placeholder}
@@ -247,6 +253,7 @@ export function VehicleCombobox({
               </div>
             )}
           </CommandList>
+          {footer?.(() => setOpen(false), search)}
         </Command>
       </PopoverContent>
     </Popover>

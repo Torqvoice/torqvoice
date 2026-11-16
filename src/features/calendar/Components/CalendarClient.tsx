@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
+import { BOOKING_SAVED_EVENT } from '@/components/booking-launcher'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ReminderFormDialog } from '@/features/vehicles/Components/ReminderFormDialog'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
@@ -186,6 +187,13 @@ export default function CalendarClient({
   const refresh = useCallback(() => {
     load(loadedRange ?? fetchRangeFor(view, date, weekStartDay))
   }, [load, loadedRange, view, date, weekStartDay])
+
+  // A booking made from the header while the calendar is open: the events
+  // here are the calendar's own, so they are read again.
+  useEffect(() => {
+    document.addEventListener(BOOKING_SAVED_EVENT, refresh)
+    return () => document.removeEventListener(BOOKING_SAVED_EVENT, refresh)
+  }, [refresh])
 
   // ── URL ────────────────────────────────────────────────────────────────
   const firstRender = useRef(true)

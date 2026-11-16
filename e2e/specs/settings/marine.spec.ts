@@ -103,11 +103,17 @@ async function setServiceType(page: Page, type: 'Automotive' | 'Marine'): Promis
     .toBe(type.toLowerCase())
 }
 
-/** The vehicle list's add form, open. */
-async function openAddVehicle(page: Page): Promise<Locator> {
+/**
+ * The vehicle list's add form, open. A marine workshop's is titled "Add New
+ * Vessel", an automotive one's "Add New Vehicle".
+ */
+async function openAddVehicle(
+  page: Page,
+  title: 'Add New Vehicle' | 'Add New Vessel' = 'Add New Vehicle'
+): Promise<Locator> {
   await page.goto('/vehicles')
   await settle(page)
-  const dialog = page.getByRole('dialog', { name: 'Add New Vehicle' })
+  const dialog = page.getByRole('dialog', { name: title })
   await expect(async () => {
     await page
       .getByRole('button', { name: 'Add Vehicle' })
@@ -156,7 +162,7 @@ test.describe('a workshop that picks Marine', () => {
   })
 
   test('asks for what a boat has when one is added', async ({ page }) => {
-    const dialog = await openAddVehicle(page)
+    const dialog = await openAddVehicle(page, 'Add New Vessel')
 
     await expect(label(dialog, 'make')).toHaveText('Manufacturer *')
     await expect(label(dialog, 'mileage')).toHaveText('Engine Hours')
@@ -185,7 +191,7 @@ test.describe('a workshop that picks Marine', () => {
     await dialog.locator('#mileage').fill(VESSEL.hours)
     await dialog.locator('#vin').fill(`BWC${stamp}`.slice(0, 12))
     await dialog.locator('#licensePlate').fill('NB-4521-E')
-    await dialog.getByRole('button', { name: 'Add New Vehicle' }).click()
+    await dialog.getByRole('button', { name: 'Add New Vessel' }).click()
     await expect(page.getByText('Vehicle added')).toBeVisible({ timeout: 30_000 })
   })
 
@@ -249,22 +255,31 @@ test.describe('a workshop that picks Marine', () => {
     await expect(picker).toBeVisible({ timeout: 30_000 })
     await expect(picker.getByPlaceholder('Search vessels...')).toBeVisible()
 
+    // The full vessel form, the one the vessel list opens, over the picker.
+    const create = page.getByRole('dialog', { name: 'Add New Vessel' })
     await expect(async () => {
       await picker.getByRole('button', { name: 'Add New Vessel' }).first().click()
-      await expect(page.locator('#new-make')).toBeVisible({ timeout: 2_000 })
+      await expect(create.locator('#make')).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    const create = page.getByRole('dialog', { name: 'Add New Vessel' })
-    await expect(create.getByText('Manufacturer *', { exact: true })).toBeVisible()
-    await expect(create.getByText('Registration Number', { exact: true })).toBeVisible()
+    await expect(label(create, 'make')).toHaveText('Manufacturer *')
+    await expect(label(create, 'licensePlate')).toContainText('Registration Number')
     await expect(create.getByText('License Plate', { exact: true })).toHaveCount(0)
 
-    // A vessel and its owner, made in one go, for the customer page below.
-    await page.locator('#new-make').fill('Yamaha')
-    await page.locator('#new-model').fill(`242X ${stamp.toString(36)}`)
-    await page.locator('#new-year').fill('2019')
-    await page.getByRole('button', { name: 'Create new customer' }).click()
-    await page.locator('#new-customer-name').fill(SKIPPER)
-    await page.getByRole('button', { name: 'Create & Continue' }).click()
+    // A vessel and its owner, the owner added from the owner picker, for the
+    // customer page below.
+    await create.locator('#make').fill('Yamaha')
+    await create.locator('#model').fill(`242X ${stamp.toString(36)}`)
+    await create.locator('#year').fill('2019')
+    await create.getByRole('combobox').click()
+    await page.getByRole('button', { name: 'Add Customer', exact: true }).click()
+    const owner = page.getByRole('dialog', { name: 'Add New Customer' })
+    await expect(owner).toBeVisible()
+    await owner.locator('#name').fill(SKIPPER)
+    await owner.locator('button[type="submit"]').click()
+    await expect(owner).toBeHidden({ timeout: 30_000 })
+    await expect(create.getByRole('combobox')).toContainText(SKIPPER)
+
+    await create.getByRole('button', { name: 'Add New Vessel' }).click()
     await page.waitForURL(/\/vehicles\/[^/]+\/service\//, { timeout: 30_000 })
   })
 

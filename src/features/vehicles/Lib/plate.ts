@@ -12,3 +12,13 @@ export function looksLikePlate(plate: string): boolean {
   const compact = compactPlate(plate)
   return compact.length >= 2 && compact.length <= 12
 }
+
+/**
+ * The plate in a vehicle search that found nothing, for the new vehicle that
+ * follows: a plate has a digit in it, which a make or a customer's name does
+ * not. Empty when the search was for something else.
+ */
+export function plateFromSearch(search: string): string {
+  const typed = search.trim().toUpperCase()
+  return /\d/.test(typed) && looksLikePlate(typed) ? typed : ''
+}
