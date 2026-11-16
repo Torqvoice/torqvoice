@@ -79,6 +79,10 @@ function checkedReferences(model: string, row: Row): [string, Reference][] {
       continue
     }
     const target = column.charAt(0).toUpperCase() + column.slice(1, -2)
+    // A column named after its own model is the row's id somewhere else
+    // (`telegramMessageId` on a Telegram message is Telegram's number for
+    // it), never a link to another row; read as one, it was always cleared.
+    if (target === model) continue
     if (TENANCY_SCHEMA[target] && !UNCHECKED_TARGETS.has(target)) {
       out.push([column, { target, required: false }])
     }
