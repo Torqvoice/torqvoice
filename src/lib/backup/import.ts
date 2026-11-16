@@ -1695,10 +1695,17 @@ export async function restoreBackup(
 
         // 10b. The jobs and quotes raised from an inspection point back at it.
         // Both were restored before the inspections existed, so the link is
-        // written now, and only where the inspection came back with the backup.
-        if (data.inspections?.length) {
+        // written now, to any inspection the workshop holds at this point:
+        // one that came back with the backup, or one that was never cleared
+        // because the backup did not carry inspections at all.
+        {
           const restoredInspections = new Set(
-            (data.inspections as Record<string, unknown>[]).map((insp) => insp.id as string)
+            (
+              await tx.inspection.findMany({
+                where: { organizationId: ctx.organizationId },
+                select: { id: true },
+              })
+            ).map((insp) => insp.id)
           )
           const linked = (rows: unknown) =>
             ((rows as Record<string, unknown>[] | undefined) ?? []).filter(
@@ -2432,12 +2439,21 @@ export async function restoreBackup(
               })
             }
           }
+        }
 
-          // The jobs and quotes raised for a stored set point back at it. Both
-          // were restored before the sets existed, so the link is written now,
-          // and only where the set came back with the backup.
+        // The jobs and quotes raised for a stored set point back at it. Both
+        // were restored before the sets existed, so the link is written now,
+        // to any set the workshop holds at this point: one that came back with
+        // the backup, or one that was never cleared because the backup did not
+        // carry the tire hotel.
+        {
           const restoredTireSets = new Set(
-            (data.tireSets as Record<string, unknown>[]).map((set) => set.id as string)
+            (
+              await tx.tireSet.findMany({
+                where: { organizationId: ctx.organizationId },
+                select: { id: true },
+              })
+            ).map((set) => set.id)
           )
           const aboutASet = (rows: unknown) =>
             ((rows as Record<string, unknown>[] | undefined) ?? []).filter(

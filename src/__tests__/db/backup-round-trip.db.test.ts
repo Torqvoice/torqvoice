@@ -399,11 +399,19 @@ async function seedRows(variant: Variant): Promise<number> {
   return rows.length
 }
 
-async function exportWorkshop(): Promise<{ dataFile: string; filesDir: string; text: string }> {
+async function exportWorkshop(
+  only?: (keyof typeof buildData.DEFAULT_OPTIONS)[]
+): Promise<{ dataFile: string; filesDir: string; text: string }> {
   const chunks: string[] = []
   const out = new PassThrough()
   out.on('data', (chunk: Buffer | string) => chunks.push(chunk.toString()))
-  await buildData.writeBackupData(ORG, { ...buildData.DEFAULT_OPTIONS, includeSecrets: true }, out)
+  const options = { ...buildData.DEFAULT_OPTIONS }
+  if (only) {
+    for (const key of Object.keys(options) as (keyof typeof options)[]) {
+      options[key] = only.includes(key)
+    }
+  }
+  await buildData.writeBackupData(ORG, { ...options, includeSecrets: true }, out)
   out.end()
   const text = chunks.join('')
   const dir = mkdtempSync(path.join(dataRoot, 'backup-'))
@@ -581,5 +589,37 @@ describeDb('a backup round trip', () => {
     ).toEqual([])
     expect(stale, 'listed as expected to differ, but came back as it was').toEqual([])
     expect(filesOf(path.join(dataRoot, 'uploads', ORG))).toEqual(filesBefore)
+  })
+
+  it('keeps a quote tied to its tire set and inspection when the backup carries only quotes', async () => {
+    // A selective export leaves the tire hotel and the inspections where they
+    // are. The quotes are replaced, and each still belongs to the set and the
+    // inspection it was raised from, because both are still in the workshop.
+    await emptyDatabase()
+    await createWorkshop()
+    await seedRows('filled')
+
+    const links = () =>
+      db.quote.findMany({
+        where: { organizationId: ORG },
+        select: { id: true, tireSetId: true, inspectionId: true },
+        orderBy: { id: 'asc' },
+      })
+    const before = await links()
+    expect(before.length).toBeGreaterThan(0)
+    expect(before.every((quote) => quote.tireSetId && quote.inspectionId)).toBe(true)
+
+    const backup = await exportWorkshop(['quotes'])
+    const carried = (JSON.parse(backup.text) as { data: Record<string, unknown> }).data
+    expect(carried.quotes).toBeTruthy()
+    expect(carried.tireSets).toBeUndefined()
+    expect(carried.inspections).toBeUndefined()
+
+    await importCore.restoreFromDisk(
+      { organizationId: ORG, userId: OWNER },
+      { dataFile: backup.dataFile, filesDir: backup.filesDir }
+    )
+
+    expect(await links()).toEqual(before)
   })
 })
