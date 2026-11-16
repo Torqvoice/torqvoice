@@ -43,6 +43,7 @@ export function ImageCarousel({
 
   return (
     <div
+      data-shortcut-layer
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
       onClick={onClose}
       onTouchStart={(e) => {

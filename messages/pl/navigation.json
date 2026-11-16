@@ -42,6 +42,7 @@
     "warranty": "Gwarancja",
     "workshop": "Warsztat",
     "appearance": "Wygląd",
+    "shortcuts": "Skróty klawiszowe",
     "email": "E-mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Szczegóły przeglądu"
   },
   "search": "Szukaj...",
-  "shortcut": "Ctrl+K",
   "readMore": "Dowiedz się więcej",
   "newWorkOrder": "Nowe zlecenie",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Anuluj",
     "createCompany": "Utwórz firmę",
     "theme": "Motyw",
+    "keyboardShortcuts": "Skróty klawiszowe",
     "signOut": "Wyloguj się",
     "more": "Więcej",
     "auditLog": "Dziennik audytu",

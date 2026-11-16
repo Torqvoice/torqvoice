@@ -13,6 +13,7 @@ import {
   type LucideIcon,
   Package,
   Plug,
+  Keyboard,
   ScanLine,
   Search,
   Users,
@@ -47,6 +48,10 @@ import {
   splitByRanges,
 } from '@/features/search/Lib/matcher'
 import { pushRecent, readRecent, type RecentPick } from '@/features/search/Lib/recent'
+import { SEARCH_OPEN_EVENT } from '@/features/search/Lib/open'
+import { useShortcut, useShortcuts } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
+import { SHORTCUTS_HELP_COMMAND, shortcutForCommand } from '@/features/shortcuts/Lib/registry'
 import { searchFaultCodes } from '@/features/fault-codes/Actions/searchFaultCodes'
 import {
   isManufacturerCode,
@@ -228,6 +233,12 @@ function Highlight({ text, ranges }: { text: string; ranges: Range[] }) {
   )
 }
 
+/** The shortcut for a page or an action, on the right of its row. */
+function LocalShortcut({ id }: { id: string }) {
+  const shortcut = shortcutForCommand(id)
+  return shortcut ? <ShortcutKeys id={shortcut.id} /> : null
+}
+
 function Kbd({ children }: { children: ReactNode }) {
   return (
     <kbd className="pointer-events-none inline-flex h-5 min-w-5 items-center justify-center rounded border bg-muted px-1 font-mono text-[10px] font-medium text-muted-foreground">
@@ -342,6 +353,8 @@ export function SearchCommand({
   const tIntegrations = useTranslations('integrations')
   const tTire = useTranslations('tireHotel')
   const tPlate = useTranslations('vehicles.plateLookup')
+  const tShortcuts = useTranslations('settings.shortcuts')
+  const { openHelp: openShortcutsHelp } = useShortcuts()
   const tFault = useTranslations('faultCodes.search')
   const tCodes = useTranslations('faultCodes')
   const typeKeyEnabled = useTypeKeyEnabled()
@@ -422,6 +435,24 @@ export function SearchCommand({
       })
     }
 
+    {
+      const title = tShortcuts('help.title')
+      out.push({
+        item: {
+          kind: 'action',
+          id: SHORTCUTS_HELP_COMMAND,
+          href: '#',
+          title,
+          icon: Keyboard,
+          run: openShortcutsHelp,
+        },
+        prepared: prepareItem({
+          title,
+          keywords: ['hotkeys', 'keys', 'shortcut', 'keyboard', 'key bindings', 'cheat sheet'],
+        }),
+      })
+    }
+
     if (canSettings) {
       for (const { item, prepared } of settingsItems) {
         const subtitle = item.description
@@ -476,6 +507,8 @@ export function SearchCommand({
     tSettings,
     tIntegrations,
     tPlate,
+    tShortcuts,
+    openShortcutsHelp,
   ])
 
   const preparedQuery = useMemo(() => prepareQuery(query), [query])
@@ -508,15 +541,13 @@ export function SearchCommand({
     }
   }, [ranked])
 
+  // Opened by its shortcut, and by the header's search box, which has no
+  // other way to reach this component.
+  useShortcut('general.search', () => setOpen((prev) => !prev))
   useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault()
-        setOpen((prev) => !prev)
-      }
-    }
-    document.addEventListener('keydown', down)
-    return () => document.removeEventListener('keydown', down)
+    const onOpen = () => setOpen(true)
+    document.addEventListener(SEARCH_OPEN_EVENT, onOpen)
+    return () => document.removeEventListener(SEARCH_OPEN_EVENT, onOpen)
   }, [])
 
   // On opening: forget what the server said last time (records change), read
@@ -722,6 +753,7 @@ export function SearchCommand({
             subtitle={item.subtitle}
             locked={item.locked}
             proLabel={t('pro')}
+            trailing={<LocalShortcut id={item.id} />}
           />
         ))}
       </CommandGroup>
@@ -785,6 +817,7 @@ export function SearchCommand({
                   subtitle={item.subtitle}
                   locked={item.locked}
                   proLabel={t('pro')}
+                  trailing={<LocalShortcut id={item.id} />}
                 />
               ) : (
                 <Row
@@ -833,6 +866,7 @@ export function SearchCommand({
                   icon={item.icon}
                   title={item.title}
                   subtitle={item.subtitle}
+                  trailing={<LocalShortcut id={item.id} />}
                 />
               ))}
           </CommandGroup>

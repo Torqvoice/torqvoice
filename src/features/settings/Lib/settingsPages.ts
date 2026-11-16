@@ -15,6 +15,7 @@ export type SettingsPageKey =
   | 'team'
   | 'localization'
   | 'appearance'
+  | 'shortcuts'
   | 'support'
   | 'invoice'
   | 'templates'
@@ -78,6 +79,7 @@ export const SETTINGS_PAGES: SettingsPage[] = [
   { key: 'team', href: '/settings/team', category: 'general' },
   { key: 'localization', href: '/settings/localization', category: 'general' },
   { key: 'appearance', href: '/settings/appearance', category: 'general' },
+  { key: 'shortcuts', href: '/settings/shortcuts', category: 'general' },
   { key: 'support', href: '/settings/support', category: 'general', supportOnly: true },
 
   { key: 'invoice', href: '/settings/invoice', category: 'billing' },

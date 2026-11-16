@@ -42,6 +42,7 @@
     "warranty": "Garantie",
     "workshop": "Werkstatt",
     "appearance": "Erscheinungsbild",
+    "shortcuts": "Tastenkürzel",
     "email": "E-Mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Inspektionsdetails"
   },
   "search": "Suchen...",
-  "shortcut": "Ctrl+K",
   "readMore": "Mehr erfahren",
   "newWorkOrder": "Neuer Arbeitsauftrag",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Abbrechen",
     "createCompany": "Unternehmen erstellen",
     "theme": "Design",
+    "keyboardShortcuts": "Tastenkürzel",
     "signOut": "Abmelden",
     "more": "Mehr",
     "auditLog": "Aktivitätsprotokoll",

@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Kenteken opzoeken",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Kenteken opzoeken",
     "description": "Typ een kenteken om te zien wat je werkplaats en het voertuigregister erover weten",
     "placeholder": "Typ een kenteken",

@@ -6,6 +6,9 @@ import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { signOut, useSession } from '@/lib/auth-client'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
+import { useShortcuts } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { goToShortcutForHref } from '@/features/shortcuts/Lib/registry'
 import { resetAnalytics } from '@/lib/analytics'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -61,6 +64,7 @@ import {
   LogOut,
   Monitor,
   Package,
+  Keyboard,
   Palette,
   Plus,
   Receipt,
@@ -109,6 +113,17 @@ export type SidebarCounts = {
   workOrders: number
   inspections: number
   reminders: number
+}
+
+/** A collapsed sidebar's tooltip: the page, and the key that opens it. */
+function NavTooltip({ label, href }: { label: string; href: string }) {
+  const shortcut = goToShortcutForHref(href)
+  return (
+    <span className="flex items-center gap-2">
+      {label}
+      {shortcut && <ShortcutKeys id={shortcut.id} />}
+    </span>
+  )
 }
 
 type NavItem = {
@@ -161,6 +176,7 @@ export function AppSidebar({
   isTechnician?: boolean
 }) {
   const pathname = usePathname()
+  const { openHelp: openShortcutsHelp } = useShortcuts()
   const router = useRouter()
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
@@ -331,7 +347,7 @@ export function AppSidebar({
         <SidebarMenuButton
           asChild
           isActive={pathname.startsWith('/settings')}
-          tooltip={t('sidebar.settings')}
+          tooltip={{ children: <NavTooltip label={t('sidebar.settings')} href="/settings" /> }}
           className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
         >
           <Link href="/settings" onClick={closeMobileSidebar}>
@@ -374,7 +390,7 @@ export function AppSidebar({
           <SidebarMenuButton
             asChild
             isActive={isActive}
-            tooltip={t(item.titleKey)}
+            tooltip={{ children: <NavTooltip label={t(item.titleKey)} href={item.url} /> }}
             // Marked while the card is up, so it is obvious which of a dozen
             // links the card is talking about.
             className={cn(
@@ -682,6 +698,11 @@ export function AppSidebar({
                     </Link>
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem onSelect={openShortcutsHelp}>
+                  <Keyboard className="mr-2 size-4" />
+                  {t('sidebar.keyboardShortcuts')}
+                  <ShortcutKeys id="general.help" className="ml-auto" />
+                </DropdownMenuItem>
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Palette className="mr-2 size-4" />

@@ -115,6 +115,10 @@
         "title": "Weergave",
         "description": "Thema en weergave"
       },
+      "shortcuts": {
+        "title": "Sneltoetsen",
+        "description": "Uw eigen toetsen"
+      },
       "data": {
         "title": "Gegevens",
         "description": "Exporteer en importeer back-up"
@@ -1377,6 +1381,93 @@
         "name": "Goed leesbaar",
         "description": "Atkinson Hyperlegible. 0 en O, 1 en l lijken nooit op elkaar; ook van de andere kant van de werkplaats goed te lezen."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Sneltoetsen",
+    "description": "Uw eigen toetsen. Ze gaan mee naar elk apparaat waarop u inlogt.",
+    "enableLabel": "Sneltoetsen gebruiken",
+    "enableHint": "Zet alle sneltoetsen op deze pagina aan of uit.",
+    "singleKeysLabel": "Toetsen met één letter",
+    "singleKeysHint": "Sneltoetsen die uit één letter bestaan. Alleen de agenda heeft ze, zoals W voor de weekweergave. Zet ze uit als u spraakbesturing gebruikt of ze per ongeluk indrukt.",
+    "goToSequencesLabel": "{prefix}, dan de letter van een pagina, opent die pagina",
+    "goToSequencesHint": "Beide aanslagen gebruiken dezelfde modificatietoets, dus niets wat u typt kan ze activeren: {example} opent {workOrders}. De letters staan onder Ga naar.",
+    "allTitle": "Alle sneltoetsen",
+    "allHint": "Kies Wijzigen en druk daarna op de toetsen die u wilt. Esc annuleert.",
+    "resetAll": "Alles terugzetten naar standaard",
+    "resetAllTitle": "Alle sneltoetsen terugzetten?",
+    "resetAllDescription": "Elke toets gaat terug naar de oorspronkelijke, en sneltoetsen die u hebt uitgezet, gaan weer aan.",
+    "change": "Wijzigen",
+    "cancel": "Annuleren",
+    "reset": "Herstellen",
+    "resetTo": "Terug naar {keys}",
+    "resetToNone": "Terug naar geen toets",
+    "changed": "Gewijzigd",
+    "off": "Uit",
+    "noKey": "Geen toets",
+    "or": "of",
+    "then": "dan",
+    "pressKeys": "Druk op de nieuwe toetsen…",
+    "recordingFor": "Nieuwe sneltoets opnemen voor {action}. Druk op de toetsen, of op Esc om te annuleren.",
+    "changeFor": "Sneltoets voor {action} wijzigen",
+    "resetFor": "Sneltoets voor {action} herstellen",
+    "switchFor": "Sneltoets voor {action}",
+    "clash": "{keys} hoort al bij {action}. Gebruikt u hem hier, dan heeft {action} geen sneltoets meer.",
+    "useHere": "Hier gebruiken",
+    "pickAnother": "Andere kiezen",
+    "problems": {
+      "reserved": "{keys} is van de browser of het systeem en kan niet worden gebruikt.",
+      "taken": "{keys} ligt vast voor een andere sneltoets en kan niet worden verplaatst.",
+      "needsModifier": "Deze sneltoets werkt op elke pagina en heeft daarom {mod} of {alt} samen met de toets nodig.",
+      "invalid": "Die toets kan niet worden gebruikt."
+    },
+    "alsoUsedBy": "Ook de toets voor {action}. Slechts een van beide zal werken.",
+    "goToNote": "Zoeken ({keys}) opent elke pagina en {prefix} gevolgd door een letter opent de belangrijkste. Geef hier elke pagina die u wilt een eigen toets.",
+    "announceSet": "{action} is nu {keys}",
+    "announceReset": "{action} is terug naar de standaard",
+    "announceResetAll": "Alle sneltoetsen zijn terug naar de standaard",
+    "phoneNote": "Sneltoetsen hebben een toetsenbord nodig. Wat u hier wijzigt, geldt ook op uw computer.",
+    "saveFailed": "Uw sneltoetsen konden niet worden opgeslagen",
+    "groups": {
+      "general": "Algemeen",
+      "create": "Aanmaken",
+      "goTo": "Ga naar",
+      "calendar": "Agenda",
+      "fixed": "Lijsten en foto's"
+    },
+    "scopes": {
+      "global": "Overal in de app",
+      "calendar": "Alleen in de agenda"
+    },
+    "actions": {
+      "search": "Zoeken",
+      "plateLookup": "Kenteken opzoeken",
+      "save": "Opslaan",
+      "sidebar": "Zijbalk tonen of verbergen",
+      "help": "Sneltoetsen tonen",
+      "newInspection": "Nieuwe inspectie",
+      "calendar_day": "Dagweergave",
+      "calendar_week": "Weekweergave",
+      "calendar_month": "Maandweergave",
+      "calendar_year": "Jaarweergave",
+      "calendar_schedule": "Planningweergave",
+      "calendar_fourDays": "4-dagenweergave",
+      "calendar_today": "Naar vandaag",
+      "calendar_next": "Volgende periode",
+      "calendar_previous": "Vorige periode"
+    },
+    "help": {
+      "title": "Sneltoetsen",
+      "description": "Uw huidige toetsen. Zoeken opent elke pagina. Wijzig toetsen of zet ze uit in Instellingen.",
+      "disabledNote": "Sneltoetsen staan uit. Zet ze aan in Instellingen.",
+      "find": "Sneltoets zoeken",
+      "noMatch": "Geen sneltoets gevonden",
+      "customize": "Sneltoetsen wijzigen",
+      "fixedHint": "altijd hetzelfde",
+      "listMove": "Door een lijst bewegen",
+      "listOpen": "Rij openen",
+      "photos": "Volgende of vorige foto",
+      "close": "Dialoogvenster of menu sluiten"
     }
   },
   "data": {

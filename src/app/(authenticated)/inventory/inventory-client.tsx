@@ -1023,6 +1023,7 @@ export function InventoryClient({
 
       {galleryIndex !== null && galleryImages.length > 0 && (
         <div
+          data-shortcut-layer
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
           onClick={() => setGalleryIndex(null)}
         >

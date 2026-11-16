@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Skiltoppslag",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Skiltoppslag",
     "description": "Skriv inn et registreringsnummer for å se hva verkstedet og kjøretøyregisteret vet om det",
     "placeholder": "Skriv inn et skilt",

@@ -16,6 +16,7 @@ import { localizationEntries } from './localization'
 import { maintenanceEntries } from './maintenance'
 import { paymentEntries } from './payment'
 import { reportScheduleEntries } from './reportSchedule'
+import { shortcutsEntries } from './shortcuts'
 import { subscriptionEntries } from './subscription'
 import { supportEntries } from './support'
 import { taxEntries } from './tax'
@@ -44,6 +45,7 @@ export const SETTINGS_SEARCH_INDEX: readonly SettingsEntry[] = [
   ...teamEntries,
   ...localizationEntries,
   ...appearanceEntries,
+  ...shortcutsEntries,
   ...supportEntries,
   ...invoiceEntries,
   ...templatesEntries,

@@ -115,6 +115,10 @@
         "title": "Darstellung",
         "description": "Design & Anzeige"
       },
+      "shortcuts": {
+        "title": "Tastenkürzel",
+        "description": "Ihre eigenen Tasten"
+      },
       "data": {
         "title": "Daten",
         "description": "Export & Import-Backup"
@@ -1377,6 +1381,93 @@
         "name": "Gut lesbar",
         "description": "Atkinson Hyperlegible. 0 und O, 1 und l sehen nie gleich aus; auch quer durch die Werkstatt gut lesbar."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Tastenkürzel",
+    "description": "Ihre eigenen Tasten. Sie gelten auf jedem Gerät, auf dem Sie sich anmelden.",
+    "enableLabel": "Tastenkürzel verwenden",
+    "enableHint": "Schaltet alle Tastenkürzel auf dieser Seite ein oder aus.",
+    "singleKeysLabel": "Einzelne Buchstabentasten",
+    "singleKeysHint": "Tastenkürzel, die nur aus einem einzelnen Buchstaben bestehen. Nur der Kalender hat sie, etwa W für die Wochenansicht. Schalten Sie sie aus, wenn Sie die Sprachsteuerung nutzen oder sie versehentlich drücken.",
+    "goToSequencesLabel": "{prefix}, dann der Buchstabe einer Seite, öffnet diese Seite",
+    "goToSequencesHint": "Beide Tastendrücke nutzen dieselbe Zusatztaste, daher kann nichts, was Sie tippen, sie auslösen: {example} öffnet {workOrders}. Die Buchstaben stehen unter Gehe zu.",
+    "allTitle": "Alle Tastenkürzel",
+    "allHint": "Wählen Sie Ändern und drücken Sie dann die gewünschten Tasten. Esc bricht ab.",
+    "resetAll": "Alle auf Standard zurücksetzen",
+    "resetAllTitle": "Alle Tastenkürzel zurücksetzen?",
+    "resetAllDescription": "Jede Taste wird auf ihre ursprüngliche Belegung zurückgesetzt, und ausgeschaltete Tastenkürzel werden wieder eingeschaltet.",
+    "change": "Ändern",
+    "cancel": "Abbrechen",
+    "reset": "Zurücksetzen",
+    "resetTo": "Zurück zu {keys}",
+    "resetToNone": "Zurück zu keiner Taste",
+    "changed": "Geändert",
+    "off": "Aus",
+    "noKey": "Keine Taste",
+    "or": "oder",
+    "then": "dann",
+    "pressKeys": "Neue Tasten drücken…",
+    "recordingFor": "Neues Tastenkürzel für {action} wird aufgenommen. Drücken Sie die Tasten, oder Esc zum Abbrechen.",
+    "changeFor": "Tastenkürzel für {action} ändern",
+    "resetFor": "Tastenkürzel für {action} zurücksetzen",
+    "switchFor": "Tastenkürzel für {action}",
+    "clash": "{keys} ist bereits {action} zugewiesen. Verwenden Sie es hier, hat {action} danach keine Taste mehr.",
+    "useHere": "Hier verwenden",
+    "pickAnother": "Andere wählen",
+    "problems": {
+      "reserved": "{keys} ist vom Browser oder System belegt und kann nicht verwendet werden.",
+      "taken": "{keys} ist fest einem anderen Kürzel zugewiesen und kann nicht verschoben werden.",
+      "needsModifier": "Dieses Tastenkürzel gilt auf jeder Seite und braucht deshalb {mod} oder {alt} zusammen mit der Taste.",
+      "invalid": "Diese Taste kann nicht verwendet werden."
+    },
+    "alsoUsedBy": "Auch die Taste für {action}. Nur eines von beiden wird funktionieren.",
+    "goToNote": "Suchen ({keys}) öffnet jede Seite, und {prefix} gefolgt von einem Buchstaben öffnet die wichtigsten. Hier können Sie jeder Seite eine eigene Taste geben.",
+    "announceSet": "{action} ist jetzt {keys}",
+    "announceReset": "{action} ist wieder auf Standard",
+    "announceResetAll": "Alle Tastenkürzel sind wieder auf Standard",
+    "phoneNote": "Tastenkürzel brauchen eine Tastatur. Was Sie hier ändern, gilt auch auf Ihrem Computer.",
+    "saveFailed": "Ihre Tastenkürzel konnten nicht gespeichert werden",
+    "groups": {
+      "general": "Allgemein",
+      "create": "Erstellen",
+      "goTo": "Gehe zu",
+      "calendar": "Kalender",
+      "fixed": "Listen und Fotos"
+    },
+    "scopes": {
+      "global": "Überall in der App",
+      "calendar": "Nur im Kalender"
+    },
+    "actions": {
+      "search": "Suchen",
+      "plateLookup": "Kennzeichenabfrage",
+      "save": "Speichern",
+      "sidebar": "Seitenleiste ein- oder ausblenden",
+      "help": "Tastenkürzel anzeigen",
+      "newInspection": "Neue Inspektion",
+      "calendar_day": "Tagesansicht",
+      "calendar_week": "Wochenansicht",
+      "calendar_month": "Monatsansicht",
+      "calendar_year": "Jahresansicht",
+      "calendar_schedule": "Terminübersicht",
+      "calendar_fourDays": "4-Tage-Ansicht",
+      "calendar_today": "Zu heute",
+      "calendar_next": "Nächster Zeitraum",
+      "calendar_previous": "Vorheriger Zeitraum"
+    },
+    "help": {
+      "title": "Tastenkürzel",
+      "description": "Ihre aktuellen Tasten. Suchen öffnet jede Seite. Tasten ändern oder ausschalten können Sie in den Einstellungen.",
+      "disabledNote": "Tastenkürzel sind ausgeschaltet. Schalten Sie sie in den Einstellungen ein.",
+      "find": "Tastenkürzel suchen",
+      "noMatch": "Kein passendes Tastenkürzel",
+      "customize": "Tastenkürzel ändern",
+      "fixedHint": "immer gleich",
+      "listMove": "In einer Liste bewegen",
+      "listOpen": "Zeile öffnen",
+      "photos": "Nächstes oder vorheriges Foto",
+      "close": "Dialog oder Menü schließen"
     }
   },
   "data": {

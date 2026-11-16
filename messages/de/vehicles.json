@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Kennzeichenabfrage",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Kennzeichenabfrage",
     "description": "Geben Sie ein Kennzeichen ein, um zu sehen, was Ihre Werkstatt und das Fahrzeugregister darüber wissen",
     "placeholder": "Kennzeichen eingeben",

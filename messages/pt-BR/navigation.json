@@ -42,6 +42,7 @@
     "warranty": "Garantia",
     "workshop": "Oficina",
     "appearance": "Aparência",
+    "shortcuts": "Atalhos de teclado",
     "email": "E-mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Detalhes da Inspeção"
   },
   "search": "Buscar...",
-  "shortcut": "Ctrl+K",
   "readMore": "Saiba mais",
   "newWorkOrder": "Nova Ordem de Serviço",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Cancelar",
     "createCompany": "Criar Empresa",
     "theme": "Tema",
+    "keyboardShortcuts": "Atalhos de teclado",
     "signOut": "Sair",
     "more": "Mais",
     "auditLog": "Registro de auditoria",

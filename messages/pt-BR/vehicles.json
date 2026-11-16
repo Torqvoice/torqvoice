@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Consultar placa",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Consultar placa",
     "description": "Digite uma placa para ver o que a sua oficina e o registro de veículos sabem sobre ela",
     "placeholder": "Digite uma placa",

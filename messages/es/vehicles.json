@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Buscar matrícula",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Buscar matrícula",
     "description": "Escribe una matrícula para ver lo que tu taller y el registro de vehículos saben de ella",
     "placeholder": "Escribe una matrícula",

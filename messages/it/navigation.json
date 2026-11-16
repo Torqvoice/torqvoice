@@ -42,6 +42,7 @@
     "warranty": "Garanzia",
     "workshop": "Officina",
     "appearance": "Aspetto",
+    "shortcuts": "Scorciatoie da tastiera",
     "email": "Email",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -74,7 +75,6 @@
     "inspectionDetails": "Dettagli ispezione"
   },
   "search": "Cerca...",
-  "shortcut": "Ctrl+K",
   "readMore": "Scopri di più",
   "newWorkOrder": "Nuovo ordine di lavoro",
   "quickCreate": {
@@ -129,6 +129,7 @@
     "cancel": "Annulla",
     "createCompany": "Crea azienda",
     "theme": "Tema",
+    "keyboardShortcuts": "Scorciatoie da tastiera",
     "signOut": "Esci",
     "more": "Altro",
     "auditLog": "Registro attività",

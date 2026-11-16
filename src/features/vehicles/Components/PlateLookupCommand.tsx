@@ -25,6 +25,8 @@ import { cn } from '@/lib/utils'
 import { type PlateLookup, lookupPlate } from '../Actions/plateLookupActions'
 import { compactPlate, looksLikePlate } from '../Lib/plate'
 import { VehicleForm } from './VehicleForm'
+import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
 
 /**
  * The header's plate lookup: one field, one answer sheet.
@@ -117,7 +119,9 @@ export function PlateLookupCommand() {
     [t]
   )
 
-  // Open on the header button, the shortcut, or a request carrying a plate.
+  useShortcut('general.plateLookup', () => setOpen((prev) => !prev), available)
+
+  // Open on the header button or a request carrying a plate.
   useEffect(() => {
     if (!available) return
     const onEvent = (e: Event) => {
@@ -128,18 +132,8 @@ export function PlateLookupCommand() {
         void run(detail.plate)
       }
     }
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
-        e.preventDefault()
-        setOpen((prev) => !prev)
-      }
-    }
     document.addEventListener(PLATE_LOOKUP_EVENT, onEvent)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener(PLATE_LOOKUP_EVENT, onEvent)
-      document.removeEventListener('keydown', onKey)
-    }
+    return () => document.removeEventListener(PLATE_LOOKUP_EVENT, onEvent)
   }, [available, run])
 
   useEffect(() => {
@@ -610,7 +604,7 @@ export function PlateLookupCommand() {
               </kbd>
               <span className="ml-1.5">{t('hintClose')}</span>
             </span>
-            <span className="ml-auto hidden sm:inline">{t('shortcut')}</span>
+            <ShortcutKeys id="general.plateLookup" className="ml-auto" />
           </div>
         </DialogContent>
       </Dialog>

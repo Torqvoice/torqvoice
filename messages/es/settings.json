@@ -115,6 +115,10 @@
         "title": "Apariencia",
         "description": "Tema y visualización"
       },
+      "shortcuts": {
+        "title": "Atajos de teclado",
+        "description": "Sus propias teclas"
+      },
       "data": {
         "title": "Datos",
         "description": "Exportar e importar respaldo"
@@ -1377,6 +1381,93 @@
         "name": "Legible",
         "description": "Atkinson Hyperlegible. 0 y O, 1 y l nunca se parecen; fácil de leer desde el otro lado del taller."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Atajos de teclado",
+    "description": "Sus propias teclas. Le acompañan en cada dispositivo en el que inicie sesión.",
+    "enableLabel": "Usar atajos de teclado",
+    "enableHint": "Activa o desactiva todos los atajos de esta página.",
+    "singleKeysLabel": "Teclas de una sola letra",
+    "singleKeysHint": "Atajos que son una sola letra. Solo el calendario los tiene, como W para la vista semanal. Desactívelos si usa control por voz o los pulsa sin querer.",
+    "goToSequencesLabel": "{prefix} y luego la letra de una página abre esa página",
+    "goToSequencesHint": "Ambas pulsaciones usan la misma tecla modificadora, así que nada de lo que escriba puede activarlas: {example} abre {workOrders}. Las letras aparecen en Ir a.",
+    "allTitle": "Todos los atajos",
+    "allHint": "Seleccione Cambiar y pulse las teclas que desee. Esc cancela.",
+    "resetAll": "Restablecer todos",
+    "resetAllTitle": "¿Restablecer todos los atajos?",
+    "resetAllDescription": "Cada tecla vuelve a la original, y los atajos que desactivó se vuelven a activar.",
+    "change": "Cambiar",
+    "cancel": "Cancelar",
+    "reset": "Restablecer",
+    "resetTo": "Volver a {keys}",
+    "resetToNone": "Volver a sin tecla",
+    "changed": "Cambiado",
+    "off": "Desactivado",
+    "noKey": "Sin tecla",
+    "or": "o",
+    "then": "luego",
+    "pressKeys": "Pulse las nuevas teclas…",
+    "recordingFor": "Grabando un nuevo atajo para {action}. Pulse las teclas, o Esc para cancelar.",
+    "changeFor": "Cambiar el atajo de {action}",
+    "resetFor": "Restablecer el atajo de {action}",
+    "switchFor": "Atajo de {action}",
+    "clash": "{keys} ya está asignado a {action}. Si lo usa aquí, {action} se queda sin él.",
+    "useHere": "Usar aquí",
+    "pickAnother": "Elegir otro",
+    "problems": {
+      "reserved": "{keys} lo usa el navegador o el sistema y no se puede asignar.",
+      "taken": "{keys} está fijado a otro atajo y no se puede mover.",
+      "needsModifier": "Este atajo funciona en todas las páginas, así que necesita {mod} o {alt} junto con la tecla.",
+      "invalid": "Esa tecla no se puede usar."
+    },
+    "alsoUsedBy": "También es la tecla de {action}. Solo uno de los dos funcionará.",
+    "goToNote": "Buscar ({keys}) abre cualquier página y {prefix} seguido de una letra abre las principales. Asigne aquí una tecla propia a cualquier página.",
+    "announceSet": "{action} es ahora {keys}",
+    "announceReset": "{action} vuelve a su valor predeterminado",
+    "announceResetAll": "Todos los atajos vuelven a sus valores predeterminados",
+    "phoneNote": "Los atajos necesitan un teclado. Los cambios que haga aquí se aplican también en su ordenador.",
+    "saveFailed": "No se pudieron guardar sus atajos",
+    "groups": {
+      "general": "General",
+      "create": "Crear",
+      "goTo": "Ir a",
+      "calendar": "Calendario",
+      "fixed": "Listas y fotos"
+    },
+    "scopes": {
+      "global": "En cualquier parte de la aplicación",
+      "calendar": "Solo en el calendario"
+    },
+    "actions": {
+      "search": "Buscar",
+      "plateLookup": "Buscar matrícula",
+      "save": "Guardar",
+      "sidebar": "Mostrar u ocultar la barra lateral",
+      "help": "Mostrar atajos de teclado",
+      "newInspection": "Nueva inspección",
+      "calendar_day": "Vista de día",
+      "calendar_week": "Vista de semana",
+      "calendar_month": "Vista de mes",
+      "calendar_year": "Vista de año",
+      "calendar_schedule": "Vista de agenda",
+      "calendar_fourDays": "Vista de 4 días",
+      "calendar_today": "Ir a hoy",
+      "calendar_next": "Periodo siguiente",
+      "calendar_previous": "Periodo anterior"
+    },
+    "help": {
+      "title": "Atajos de teclado",
+      "description": "Sus teclas actuales. Buscar abre cualquier página. Cambie o desactive teclas en Configuración.",
+      "disabledNote": "Los atajos de teclado están desactivados. Actívelos en Configuración.",
+      "find": "Buscar un atajo",
+      "noMatch": "Ningún atajo coincide",
+      "customize": "Cambiar atajos",
+      "fixedHint": "siempre igual",
+      "listMove": "Moverse por una lista",
+      "listOpen": "Abrir la fila",
+      "photos": "Foto siguiente o anterior",
+      "close": "Cerrar un diálogo o menú"
     }
   },
   "data": {

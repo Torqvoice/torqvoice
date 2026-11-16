@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Numerio paieška",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Numerio paieška",
     "description": "Įveskite registracijos numerį ir pamatysite, ką apie jį žino jūsų dirbtuvės ir transporto priemonių registras",
     "placeholder": "Įveskite numerį",

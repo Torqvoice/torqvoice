@@ -40,8 +40,9 @@ import {
 import { compareEvents, isEventDone } from './calendar-utils'
 import { CalendarEventList } from './CalendarEventList'
 import { CalendarSidebar, type TypeFilters } from './CalendarSidebar'
-import { CalendarToolbar, VIEW_SHORTCUTS, type CreateKind } from './CalendarToolbar'
+import { CalendarToolbar, type CreateKind } from './CalendarToolbar'
 import type { DayActions } from './DayContextMenu'
+import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
 import { type BookingEdit, EventPeekProvider } from './EventPeek'
 import { MonthView } from './MonthView'
 import { ScheduleView } from './ScheduleView'
@@ -294,47 +295,17 @@ export default function CalendarClient({
     setView('day')
   }, [])
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return
-      const target = e.target as HTMLElement | null
-      if (
-        target?.closest(
-          'input, textarea, select, [contenteditable="true"], [role="dialog"], [role="menu"]'
-        )
-      ) {
-        return
-      }
-      const key = e.key.length === 1 ? e.key.toUpperCase() : e.key
-      const viewFor = (Object.keys(VIEW_SHORTCUTS) as CalendarView[]).find(
-        (v) => VIEW_SHORTCUTS[v] === key
-      )
-      if (viewFor) {
-        setView(viewFor)
-        return
-      }
-      switch (key) {
-        case 'T':
-          goToday()
-          break
-        case 'J':
-        case 'N':
-        case 'ArrowRight':
-          goNext()
-          break
-        case 'K':
-        case 'P':
-        case 'ArrowLeft':
-          goPrev()
-          break
-        default:
-          return
-      }
-      e.preventDefault()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [goToday, goNext, goPrev])
+  // The calendar's keys. Which key does what, and whether it may fire (not
+  // while typing, not over a dialog), is the shortcut registry's business.
+  useShortcut('calendar.day', () => setView('day'))
+  useShortcut('calendar.week', () => setView('week'))
+  useShortcut('calendar.month', () => setView('month'))
+  useShortcut('calendar.year', () => setView('year'))
+  useShortcut('calendar.schedule', () => setView('schedule'))
+  useShortcut('calendar.fourDays', () => setView('fourDays'))
+  useShortcut('calendar.today', goToday)
+  useShortcut('calendar.next', goNext)
+  useShortcut('calendar.previous', goPrev)
 
   // ── Creating things ────────────────────────────────────────────────────
   const openWorkOrderPicker = useCallback((query?: Record<string, string>) => {

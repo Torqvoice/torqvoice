@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Consultar matrícula",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Consultar matrícula",
     "description": "Introduza uma matrícula para ver o que a sua oficina e o registo automóvel sabem sobre ela",
     "placeholder": "Introduza uma matrícula",

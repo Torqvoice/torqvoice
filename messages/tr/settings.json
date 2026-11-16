@@ -115,6 +115,10 @@
         "title": "Görünüm",
         "description": "Tema & görüntüleme"
       },
+      "shortcuts": {
+        "title": "Klavye kısayolları",
+        "description": "Kendi tuşlarınız"
+      },
       "data": {
         "title": "Veri",
         "description": "Dışa & içe aktarma yedeği"
@@ -1377,6 +1381,93 @@
         "name": "Okunaklı",
         "description": "Atkinson Hyperlegible. 0 ile O, 1 ile l asla birbirine benzemez; atölyenin öbür ucundan bile kolayca okunur."
       }
+    }
+  },
+  "shortcuts": {
+    "title": "Klavye kısayolları",
+    "description": "Kendi tuşlarınız. Oturum açtığınız her cihazda sizinle gelir.",
+    "enableLabel": "Klavye kısayollarını kullan",
+    "enableHint": "Bu sayfadaki tüm kısayolları açar veya kapatır.",
+    "singleKeysLabel": "Tek harfli tuşlar",
+    "singleKeysHint": "Tek bir harften oluşan kısayollar. Yalnızca takvimde vardır, örneğin hafta görünümü için W. Sesli kontrol kullanıyorsanız veya yanlışlıkla basıyorsanız kapatın.",
+    "goToSequencesLabel": "{prefix}, ardından bir sayfanın harfi, o sayfayı açar",
+    "goToSequencesHint": "Her iki basışta da aynı değiştirici tuş kullanılır, bu yüzden yazdığınız hiçbir şey bunu tetikleyemez: {example}, {workOrders} sayfasını açar. Harfler Git altında listelenir.",
+    "allTitle": "Tüm kısayollar",
+    "allHint": "Değiştir'i seçin, ardından istediğiniz tuşlara basın. Esc iptal eder.",
+    "resetAll": "Tümünü varsayılana sıfırla",
+    "resetAllTitle": "Tüm kısayollar sıfırlansın mı?",
+    "resetAllDescription": "Her tuş ilk haline döner ve kapattığınız kısayollar yeniden açılır.",
+    "change": "Değiştir",
+    "cancel": "İptal",
+    "reset": "Sıfırla",
+    "resetTo": "{keys} olarak geri al",
+    "resetToNone": "Tuşsuz haline geri al",
+    "changed": "Değiştirildi",
+    "off": "Kapalı",
+    "noKey": "Tuş yok",
+    "or": "veya",
+    "then": "ardından",
+    "pressKeys": "Yeni tuşlara basın…",
+    "recordingFor": "{action} için yeni kısayol kaydediliyor. Tuşlara basın ya da iptal etmek için Esc'ye basın.",
+    "changeFor": "{action} kısayolunu değiştir",
+    "resetFor": "{action} kısayolunu sıfırla",
+    "switchFor": "{action} kısayolu",
+    "clash": "{keys} zaten {action} için kullanılıyor. Burada kullanırsanız o işlem kısayolsuz kalır.",
+    "useHere": "Burada kullan",
+    "pickAnother": "Başka seç",
+    "problems": {
+      "reserved": "{keys} tarayıcıya veya sisteme ait olduğu için kullanılamaz.",
+      "taken": "{keys} başka bir kısayola sabitlenmiş ve taşınamaz.",
+      "needsModifier": "Bu kısayol her sayfada çalışır, bu yüzden tuşla birlikte {mod} veya {alt} gerekir.",
+      "invalid": "Bu tuş kullanılamaz."
+    },
+    "alsoUsedBy": "Aynı zamanda {action} tuşu. Yalnızca biri çalışacak.",
+    "goToNote": "Ara ({keys}) her sayfayı açar, {prefix} ve ardından bir harf ise başlıca sayfaları açar. Buradan istediğiniz sayfaya kendi tuşunu verin.",
+    "announceSet": "{action} artık {keys}",
+    "announceReset": "{action} varsayılana döndü",
+    "announceResetAll": "Tüm kısayollar varsayılana döndü",
+    "phoneNote": "Kısayollar için klavye gerekir. Burada yaptığınız değişiklikler bilgisayarınızda da geçerli olur.",
+    "saveFailed": "Kısayollarınız kaydedilemedi",
+    "groups": {
+      "general": "Genel",
+      "create": "Oluştur",
+      "goTo": "Git",
+      "calendar": "Takvim",
+      "fixed": "Listeler ve fotoğraflar"
+    },
+    "scopes": {
+      "global": "Uygulamanın her yerinde",
+      "calendar": "Yalnızca takvimde"
+    },
+    "actions": {
+      "search": "Ara",
+      "plateLookup": "Plaka sorgula",
+      "save": "Kaydet",
+      "sidebar": "Kenar çubuğunu göster veya gizle",
+      "help": "Klavye kısayollarını göster",
+      "newInspection": "Yeni muayene",
+      "calendar_day": "Gün görünümü",
+      "calendar_week": "Hafta görünümü",
+      "calendar_month": "Ay görünümü",
+      "calendar_year": "Yıl görünümü",
+      "calendar_schedule": "Program görünümü",
+      "calendar_fourDays": "4 gün görünümü",
+      "calendar_today": "Bugüne git",
+      "calendar_next": "Sonraki dönem",
+      "calendar_previous": "Önceki dönem"
+    },
+    "help": {
+      "title": "Klavye kısayolları",
+      "description": "Şu anki tuşlarınız. Ara her sayfayı açar. Tuşları Ayarlar'dan değiştirebilir veya kapatabilirsiniz.",
+      "disabledNote": "Klavye kısayolları kapalı. Ayarlar'dan açın.",
+      "find": "Kısayol bul",
+      "noMatch": "Eşleşen kısayol yok",
+      "customize": "Kısayolları değiştir",
+      "fixedHint": "her zaman aynı",
+      "listMove": "Listede gezin",
+      "listOpen": "Satırı aç",
+      "photos": "Sonraki veya önceki fotoğraf",
+      "close": "İletişim kutusunu veya menüyü kapat"
     }
   },
   "data": {

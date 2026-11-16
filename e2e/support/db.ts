@@ -2182,3 +2182,19 @@ export async function closuresNamed(
 export async function deleteClosuresNamed(name: string): Promise<void> {
   await withDb((db) => db.query(`delete from workshop_closures where name = $1`, [name]))
 }
+
+/**
+ * Sets a person's own keyboard shortcut choices (users."keyboardShortcuts"),
+ * or clears them with null. The settings page writes the same column.
+ */
+export async function setKeyboardShortcuts(
+  email: string,
+  prefs: Record<string, unknown> | null
+): Promise<void> {
+  await withDb(async (db) => {
+    await db.query(
+      `update users set "keyboardShortcuts" = $2::jsonb where lower(email) = lower($1)`,
+      [email, prefs === null ? null : JSON.stringify(prefs)]
+    )
+  })
+}

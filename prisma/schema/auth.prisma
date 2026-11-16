@@ -35,6 +35,10 @@ model User {
   /// Per-user dashboard grid layout (card positions/sizes/hidden set).
   /// Null = default layout. Shape validated in dashboardLayoutActions.
   dashboardLayout     Json?
+  /// This person's keyboard shortcuts: only what differs from the defaults
+  /// in features/shortcuts/Lib/registry.ts. Null = every default as shipped.
+  /// Shape validated in features/shortcuts/Schema/preferences.ts.
+  keyboardShortcuts   Json?
 
   sessions                 Session[]
   portalMessages           PortalMessage[]

@@ -562,7 +562,6 @@
   },
   "plateLookup": {
     "open": "Ricerca targa",
-    "shortcut": "Ctrl+Shift+L",
     "title": "Ricerca targa",
     "description": "Digita una targa per vedere cosa sanno la tua officina e il registro veicoli",
     "placeholder": "Digita una targa",
