@@ -8,6 +8,7 @@ import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 import { AppCard } from '@/components/app-card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
@@ -21,16 +22,6 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
@@ -97,9 +88,7 @@ export function WorkshopSettings({
   const [creatingTech, setCreatingTech] = useState(false)
   const [showNewInput, setShowNewInput] = useState(false)
   const [newTechName, setNewTechName] = useState('')
-  const [showAssignDialog, setShowAssignDialog] = useState(false)
-  const [pendingTechId, setPendingTechId] = useState<string | null>(null)
-  const [assigning, setAssigning] = useState(false)
+  const confirm = useConfirm()
   const [defaultLaborRate, setDefaultLaborRate] = useState(
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ''
   )
@@ -153,19 +142,22 @@ export function WorkshopSettings({
   const handleTechSelect = (techId: string) => {
     setDefaultTechnicianId(techId)
     setTechOpen(false)
-    if (techId) {
-      setPendingTechId(techId)
-      setShowAssignDialog(true)
-    }
+    if (techId) handleAssignUnassigned(techId)
   }
 
-  const handleAssignUnassigned = async () => {
-    if (!pendingTechId) return
-    setAssigning(true)
-    const result = await assignTechToUnassignedWorkOrders(pendingTechId)
-    setAssigning(false)
-    setShowAssignDialog(false)
-    setPendingTechId(null)
+  const handleAssignUnassigned = async (techId: string) => {
+    const ok = await confirm({
+      title: t('workshop.assignDialogTitle'),
+      description: t('workshop.assignDialogDescription', {
+        name: technicians.find((tech) => tech.id === techId)?.name || '',
+      }),
+      confirmLabel: t('workshop.assignDialogConfirm'),
+      cancelLabel: t('workshop.assignDialogSkip'),
+      // It rewrites every unassigned work order, so Enter must not do it.
+      defaultFocus: 'cancel',
+    })
+    if (!ok) return
+    const result = await assignTechToUnassignedWorkOrders(techId)
     if (result.success && result.data) {
       toast.success(t('workshop.assignedUnassigned', { count: result.data.updated }))
     } else {
@@ -591,32 +583,6 @@ export function WorkshopSettings({
           </SaveButton>
         </AppCard>
       </ReadOnlyWrapper>
-
-      <AlertDialog
-        open={showAssignDialog}
-        onOpenChange={(open) => {
-          if (!open) setPendingTechId(null)
-          setShowAssignDialog(open)
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('workshop.assignDialogTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('workshop.assignDialogDescription', {
-                name: technicians.find((tech) => tech.id === pendingTechId)?.name || '',
-              })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('workshop.assignDialogSkip')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleAssignUnassigned} disabled={assigning}>
-              {assigning && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('workshop.assignDialogConfirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

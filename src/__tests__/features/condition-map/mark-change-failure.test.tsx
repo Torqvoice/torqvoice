@@ -9,7 +9,16 @@
  * fails beside another that went through has the card read back from the
  * server rather than undo the other.
  */
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import {
+  act,
+  fireEvent,
+  render as renderBare,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const updateConditionMark = vi.fn()
@@ -40,6 +49,10 @@ vi.mock('@/hooks/use-native-camera', () => ({ useNativeCamera: () => false }))
 import { ConditionMapCard } from '@/features/condition-map/Components/ConditionMapCard'
 import { builtinMarkTypes } from '@/features/condition-map/Lib/markTypes'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const TYPES = builtinMarkTypes({ dent: 'Dent', scratch: 'Scratch' })
 

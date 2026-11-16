@@ -1,9 +1,13 @@
 import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { render as renderBare, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 // Mock lucide-react icons
-vi.mock('lucide-react', () => ({
+vi.mock('lucide-react', async (importOriginal) => ({
+  // The confirm dialog draws its own icons; the page's are stubbed below.
+  ...(await importOriginal<typeof import('lucide-react')>()),
   Fingerprint: () => <svg data-testid="icon-fingerprint" />,
   Loader2: () => <svg data-testid="icon-loader" />,
   LogIn: () => <svg data-testid="icon-log-in" />,
@@ -112,6 +116,10 @@ vi.mock('@/lib/auth-client', () => ({
 }))
 
 import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const MOCK_PASSKEY = {
   id: 'pk_1',
@@ -391,11 +399,13 @@ describe('PasskeySettings', () => {
       })
 
       // Click the "Delete" button in dialog
-      const deleteButtons = screen.getAllByText('Delete')
-      const confirmButton = deleteButtons.find(
-        (btn) => btn.closest("[data-testid='dialog']") !== null
-      )
-      await userEvent.click(confirmButton!)
+      // The question names the passkey it is about to remove.
+      const question = screen.getByRole('alertdialog')
+      expect(within(question).getByText('MacBook Pro')).toBeInTheDocument()
+      // The Button stub above wraps the real action in a second button; the
+      // inner one is the one that answers.
+      const answers = within(question).getAllByRole('button', { name: 'Delete' })
+      await userEvent.click(answers[answers.length - 1])
 
       await waitFor(() => {
         expect(mockDeletePasskey).toHaveBeenCalledWith({ id: 'pk_1' })
@@ -421,11 +431,13 @@ describe('PasskeySettings', () => {
         ).toBeInTheDocument()
       })
 
-      const deleteButtons = screen.getAllByText('Delete')
-      const confirmButton = deleteButtons.find(
-        (btn) => btn.closest("[data-testid='dialog']") !== null
-      )
-      await userEvent.click(confirmButton!)
+      // The question names the passkey it is about to remove.
+      const question = screen.getByRole('alertdialog')
+      expect(within(question).getByText('MacBook Pro')).toBeInTheDocument()
+      // The Button stub above wraps the real action in a second button; the
+      // inner one is the one that answers.
+      const answers = within(question).getAllByRole('button', { name: 'Delete' })
+      await userEvent.click(answers[answers.length - 1])
 
       await waitFor(() => {
         expect(mockToastError).toHaveBeenCalledWith('Failed to delete passkey')

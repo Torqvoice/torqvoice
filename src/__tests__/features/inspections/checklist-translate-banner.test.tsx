@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { render as renderBare, screen, fireEvent, waitFor } from '@testing-library/react'
 
 const translateChecklists = vi.fn()
 
@@ -21,6 +23,10 @@ vi.mock('@/features/inspections/Actions/packageActions', () => ({
 }))
 
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const TEMPLATE = {
   id: 't1',

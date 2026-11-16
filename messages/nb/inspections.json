@@ -95,6 +95,8 @@
     "completeTitle": "Fullføre denne inspeksjonen?",
     "completeBody": "Punktene låses når inspeksjonen fullføres, og resultatet blir «{result}».",
     "completeBlocked": "{count} kontroll(er) som sjekklisten merker som obligatoriske gjenstår.",
+    "blockerMissingGrade": "må vurderes",
+    "blockerNeedsPhoto": "trenger bilde av mangelen",
     "completeUngraded": "{count} punkt(er) er ikke vurdert.",
     "completeDangerous": "{count} farlig(e) mangel(er) registrert. Kjøretøyet skal ikke brukes på offentlig vei.",
     "reopenTitle": "Gjenåpne denne inspeksjonen?",

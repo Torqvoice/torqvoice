@@ -15,6 +15,7 @@ import {
   Columns3,
   Disc3,
   FileText,
+  Headset,
   History,
   Layers,
   Loader2,
@@ -47,6 +48,7 @@ import {
   getInventoryPart,
 } from '@/features/inventory/Actions/inventoryActions'
 import { Separator } from '@/components/ui/separator'
+import { openSupport } from '@/features/support/Lib/supportVisibility'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -90,9 +92,11 @@ const allDrawerItems = [
 export function MobileBottomNav({
   isSuperAdmin,
   tireHotelEnabled,
+  supportEnabled,
 }: {
   isSuperAdmin?: boolean
   tireHotelEnabled?: boolean
+  supportEnabled?: boolean
 }) {
   const pathname = usePathname()
   const isMarine = useServiceType() === 'marine'
@@ -103,6 +107,7 @@ export function MobileBottomNav({
   const router = useRouter()
   const t = useTranslations('navigation.sidebar')
   const tScan = useTranslations('inventory.barcodeScan')
+  const tSupport = useTranslations('support')
   const ta = useTranslations('common.a11y')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [scannerOpen, setScannerOpen] = useState(false)
@@ -273,6 +278,24 @@ export function MobileBottomNav({
                 <Settings className="h-5 w-5" />
                 <span>{t('settings')}</span>
               </Link>
+              {/* A phone has no floating support button, and the settings
+                  page that opens the form turns away a role without settings
+                  access. This is the way in for everyone. */}
+              {supportEnabled && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDrawerOpen(false)
+                    // After the drawer has let go of the page, or it takes
+                    // the focus back from the form.
+                    setTimeout(() => openSupport(), 200)
+                  }}
+                  className="flex flex-col items-center gap-1.5 rounded-lg py-3 text-center text-xs text-muted-foreground transition-colors hover:bg-accent"
+                >
+                  <Headset className="h-5 w-5" />
+                  <span>{tSupport('open')}</span>
+                </button>
+              )}
               {isSuperAdmin && (
                 <Link
                   href="/admin"

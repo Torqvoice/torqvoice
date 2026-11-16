@@ -95,6 +95,8 @@
     "completeTitle": "Deze inspectie afronden?",
     "completeBody": "De punten worden bij afronding vergrendeld en de uitkomst wordt “{result}”.",
     "completeBlocked": "{count} controle(s) die de checklist als verplicht markeert, staan nog open.",
+    "blockerMissingGrade": "moet beoordeeld worden",
+    "blockerNeedsPhoto": "foto van het gebrek nodig",
     "completeUngraded": "{count} punt(en) zijn niet beoordeeld.",
     "completeDangerous": "{count} gevaarlijk(e) gebrek(en) vastgelegd. Het voertuig mag niet de openbare weg op.",
     "reopenTitle": "Deze inspectie heropenen?",

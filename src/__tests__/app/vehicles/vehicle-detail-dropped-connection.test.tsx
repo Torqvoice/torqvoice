@@ -11,7 +11,9 @@
  * made on a dropped connection left the button busy.
  */
 import { Component, type ReactNode } from 'react'
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { act, fireEvent, render as renderBare, screen, waitFor } from '@testing-library/react'
 import { toast } from 'sonner'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GlassModal, useGlassModal } from '@/components/glass-modal'
@@ -98,6 +100,10 @@ vi.mock('@/app/(authenticated)/vehicles/[id]/findings-table', () => ({
 }))
 
 import { VehicleDetailClient } from '@/app/(authenticated)/vehicles/[id]/vehicle-detail-client'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 /** Stands in for the app's error page, so losing the page is visible. */
 class ErrorPage extends Component<{ children: ReactNode }, { failed: boolean }> {

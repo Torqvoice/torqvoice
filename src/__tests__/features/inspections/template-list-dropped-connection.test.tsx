@@ -5,7 +5,16 @@
  * boundary and the whole page was replaced by the error page.
  */
 import { Component, type ReactNode } from 'react'
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import {
+  act,
+  fireEvent,
+  render as renderBare,
+  screen,
+  waitFor,
+  within,
+} from '@testing-library/react'
 import { toast } from 'sonner'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -38,6 +47,10 @@ vi.mock('@/features/inspections/Actions/packageActions', () => ({
 }))
 
 import { TemplateListClient } from '@/features/inspections/Components/TemplateListClient'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 /** Stands in for the app's error page, so losing the page is visible. */
 class ErrorPage extends Component<{ children: ReactNode }, { failed: boolean }> {

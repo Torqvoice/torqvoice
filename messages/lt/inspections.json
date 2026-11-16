@@ -95,6 +95,8 @@
     "completeTitle": "Užbaigti šią apžiūrą?",
     "completeBody": "Užbaigus punktai užrakinami, o rezultatas tampa „{result}“.",
     "completeBlocked": "{count} patikrinimas (-ai), kuriuos kontrolinis sąrašas žymi privalomais, dar neatlikti.",
+    "blockerMissingGrade": "turi būti įvertinta",
+    "blockerNeedsPhoto": "reikia defekto nuotraukos",
     "completeUngraded": "{count} punktas (-ai) neįvertinti.",
     "completeDangerous": "Užfiksuota pavojingų trūkumų: {count}. Transporto priemone važiuoti viešaisiais keliais draudžiama.",
     "reopenTitle": "Atverti šią apžiūrą iš naujo?",
