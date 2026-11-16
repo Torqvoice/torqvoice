@@ -143,6 +143,7 @@ function KindRow({
       title: t('deleteTitle'),
       description: t('deleteConfirm', { name: template.name }),
       confirmLabel: t('delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

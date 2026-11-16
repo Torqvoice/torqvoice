@@ -42,6 +42,7 @@ export function ClosedDaysCard({
       title: t('deleteTitle', { name: closure.name }),
       description: t('deleteDescription'),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

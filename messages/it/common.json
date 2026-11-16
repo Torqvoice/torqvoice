@@ -289,5 +289,11 @@
     "dismiss": "Chiudi",
     "selectAll": "Seleziona tutto",
     "selectRow": "Seleziona {name}"
+  },
+  "confirmDialog": {
+    "title": "Sei sicuro?",
+    "irreversible": "Questa azione non può essere annullata.",
+    "andMore": "e altri {count}",
+    "typeToConfirm": "Digita <b>{text}</b> per confermare"
   }
 }

@@ -289,5 +289,11 @@
     "dismiss": "Dismiss",
     "selectAll": "Select all",
     "selectRow": "Select {name}"
+  },
+  "confirmDialog": {
+    "title": "Are you sure?",
+    "irreversible": "This cannot be undone.",
+    "andMore": "and {count} more",
+    "typeToConfirm": "Type <b>{text}</b> to confirm"
   }
 }

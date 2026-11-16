@@ -289,5 +289,11 @@
     "dismiss": "Uždaryti",
     "selectAll": "Pasirinkti visus",
     "selectRow": "Pasirinkti: {name}"
+  },
+  "confirmDialog": {
+    "title": "Ar tikrai?",
+    "irreversible": "Šio veiksmo negalima atšaukti.",
+    "andMore": "ir dar {count}",
+    "typeToConfirm": "Įveskite <b>{text}</b>, kad patvirtintumėte"
   }
 }

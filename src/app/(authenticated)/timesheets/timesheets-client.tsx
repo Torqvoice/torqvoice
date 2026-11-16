@@ -331,6 +331,7 @@ export default function TimesheetsClient({
         technician: entry.technicianName,
       }),
       confirmLabel: t('deleteConfirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

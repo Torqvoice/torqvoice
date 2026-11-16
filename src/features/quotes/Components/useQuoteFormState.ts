@@ -1,5 +1,6 @@
 'use client'
 
+import { Trash2 } from 'lucide-react'
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -538,6 +539,7 @@ export function useQuoteFormState({
       title: t('page.deleteTitle'),
       description: t('page.deleteDescription'),
       confirmLabel: t('page.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

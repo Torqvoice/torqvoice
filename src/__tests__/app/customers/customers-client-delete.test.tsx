@@ -102,4 +102,27 @@ describe('customer list deletes', () => {
     // there to try again once the message is closed.
     expect(screen.getByRole('button', { name: 'Delete (1)', hidden: true })).toBeEnabled()
   })
+
+  it('still names a selected customer in the question after moving to another page', async () => {
+    const page = (customers: (typeof CUSTOMER)[], n: number) => (
+      <ConfirmProvider>
+        <CustomersClient
+          data={{ customers, total: 21, page: n, pageSize: 20, totalPages: 2 }}
+          search=""
+          sortBy="name"
+          sortOrder="asc"
+        />
+      </ConfirmProvider>
+    )
+    const { rerender } = render(page([CUSTOMER], 1))
+    fireEvent.click(screen.getAllByRole('checkbox')[0])
+
+    // Page two: Ada is no longer among the rows, but is still selected.
+    rerender(page([{ ...CUSTOMER, id: 'c2', customerNumber: '1002', name: 'Bo Lind' }], 2))
+    fireEvent.click(screen.getByRole('button', { name: 'Delete (1)' }))
+
+    const question = await screen.findByRole('alertdialog')
+    expect(within(question).getByText('Ada Berg')).toBeInTheDocument()
+    expect(within(question).queryByText('Bo Lind')).not.toBeInTheDocument()
+  })
 })

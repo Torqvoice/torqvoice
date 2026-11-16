@@ -289,5 +289,11 @@
     "dismiss": "Kapat",
     "selectAll": "Tümünü seç",
     "selectRow": "{name} seç"
+  },
+  "confirmDialog": {
+    "title": "Emin misiniz?",
+    "irreversible": "Bu işlem geri alınamaz.",
+    "andMore": "ve {count} tane daha",
+    "typeToConfirm": "Onaylamak için <b>{text}</b> yazın"
   }
 }

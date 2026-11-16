@@ -59,6 +59,7 @@ import {
   Undo2,
   Users,
   X,
+  Trash2,
 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import {
@@ -466,6 +467,7 @@ export function DashboardClient({
       title: t('customCards.deleteConfirmTitle'),
       description: t('customCards.deleteConfirmDescription', { name: w.name }),
       confirmLabel: t('customCards.deleteCard'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

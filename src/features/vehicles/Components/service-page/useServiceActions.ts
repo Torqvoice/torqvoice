@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -261,6 +262,7 @@ export function useServiceActions({
       title: t('page.deleteTitle'),
       description: t('page.deleteDescription'),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -307,6 +309,7 @@ export function useServiceActions({
       title: t('attachments.deleteTitle'),
       description: t('attachments.deleteDescription'),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -390,6 +393,7 @@ export function useServiceActions({
       title: t('payments.deleteTitle'),
       description: t('payments.deleteDescription'),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
