@@ -16,7 +16,6 @@ export type SettingsPageKey =
   | 'localization'
   | 'appearance'
   | 'shortcuts'
-  | 'support'
   | 'invoice'
   | 'templates'
   | 'payment'
@@ -38,6 +37,7 @@ export type SettingsPageKey =
   | 'data'
   | 'install'
   | 'license'
+  | 'support'
   | 'about'
 
 export type SettingsCategoryKey =
@@ -80,7 +80,6 @@ export const SETTINGS_PAGES: SettingsPage[] = [
   { key: 'localization', href: '/settings/localization', category: 'general' },
   { key: 'appearance', href: '/settings/appearance', category: 'general' },
   { key: 'shortcuts', href: '/settings/shortcuts', category: 'general' },
-  { key: 'support', href: '/settings/support', category: 'general', supportOnly: true },
 
   { key: 'invoice', href: '/settings/invoice', category: 'billing' },
   { key: 'templates', href: '/settings/templates', category: 'billing', gate: 'customTemplates' },
@@ -122,6 +121,8 @@ export const SETTINGS_PAGES: SettingsPage[] = [
   { key: 'data', href: '/settings/data', category: 'system' },
   { key: 'install', href: '/settings/install', category: 'system' },
   { key: 'license', href: '/settings/license', category: 'system', selfHostedOnly: true },
+  // Help sits with About at the foot of the menu, where people look for it.
+  { key: 'support', href: '/settings/support', category: 'system', supportOnly: true },
   { key: 'about', href: '/settings/about', category: 'system' },
 ]
 
