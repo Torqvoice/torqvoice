@@ -58,7 +58,12 @@
       "everyone": "Alle Arbeiten",
       "thisWeek": "Diese Woche"
     },
-    "dropNeedsLane": "Gruppieren Sie das Board nach Mechaniker oder Arbeitsplatz, bevor Sie einen Auftrag darauf ziehen."
+    "dropNeedsLane": "Gruppieren Sie das Board nach Mechaniker oder Arbeitsplatz, bevor Sie einen Auftrag darauf ziehen.",
+    "load": {
+      "over": "{amount} zu viel",
+      "spoken": "Verplant: {booked} von {capacity}",
+      "spokenOver": "Verplant: {booked} von {capacity}, überbucht um {amount}"
+    }
   },
   "unassigned": {
     "title": "Nicht zugewiesene Aufträge ({count})",

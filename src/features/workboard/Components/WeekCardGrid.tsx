@@ -5,18 +5,20 @@ import {
   type BoardAway,
   type ClosedByDay,
   awayKey,
+  laneDayHours,
 } from '../hooks/useBoardCalendar'
 import { useDroppable } from '@dnd-kit/core'
 import { ClipboardCheck, Users, Wrench } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../Actions/boardActions'
-import { getDurationMinutes, getJobDateRange, jobOverlapsDate } from '../utils/datetime'
+import { jobOverlapsDate } from '../utils/datetime'
+import { bookedMinutesOnDay } from '../utils/layout'
 import type { ClockFormat } from '../utils/clock'
 import { type BoardLane, isHelperLane } from '../utils/lanes'
 import { interactiveRow } from '@/lib/interactive-row'
 import { BoardJobCard, TeamCount } from './BoardJobCard'
-import { formatDuration } from './DurationSlider'
+import { DayLoadFigure } from './DayLoad'
 import { JobTooltip } from './JobTooltip'
 import { LaneHeaderTooltip } from './LaneHeaderTooltip'
 
@@ -100,6 +102,8 @@ export function WeekCardGrid({
                 days={days}
                 capacityMinutes={lane.dailyCapacity * days.length}
                 periodLabel={t('lanes.thisWeek')}
+                closedByDay={closedByDay}
+                awayByLaneDay={awayByLaneDay}
               >
                 <button
                   type="button"
@@ -124,6 +128,11 @@ export function WeekCardGrid({
                   date={day}
                   jobs={laneJobs.filter((job) => jobOverlapsDate(job, day))}
                   isToday={day === todayStr}
+                  booked={bookedMinutesOnDay(
+                    laneJobs,
+                    day,
+                    laneDayHours(lane, day, closedByDay, awayByLaneDay)
+                  )}
                   closedAllDay={!!closedByDay?.[day]?.allDay}
                   away={awayByLaneDay?.[awayKey(lane.id, day)]}
                   readOnly={readOnly}
@@ -146,6 +155,7 @@ function DayCell({
   lane,
   date,
   jobs,
+  booked,
   isToday,
   closedAllDay,
   away,
@@ -157,6 +167,8 @@ function DayCell({
   lane: BoardLane
   date: string
   jobs: WorkBoardJob[]
+  /** Minutes of work on the day, the same figure the timeline shows. */
+  booked: number
   isToday: boolean
   /** The workshop is closed the whole day. */
   closedAllDay?: boolean
@@ -172,12 +184,6 @@ function DayCell({
     data: { laneId: lane.id, date, week: true },
     disabled: readOnly,
   })
-
-  const booked = jobs.reduce((sum, job) => {
-    const { start, end } = getJobDateRange(job)
-    return start && end ? sum + getDurationMinutes(start, end) : sum
-  }, 0)
-  const pct = lane.dailyCapacity > 0 ? (booked / lane.dailyCapacity) * 100 : 0
 
   return (
     <div
@@ -231,28 +237,7 @@ function DayCell({
         )
       })}
 
-      {booked > 0 && (
-        <div className="mt-auto space-y-0.5 pt-1">
-          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className={cn(
-                'h-full rounded-full',
-                pct > 100 ? 'bg-red-500' : pct >= 75 ? 'bg-amber-500' : 'bg-emerald-500'
-              )}
-              style={{ width: `${Math.min(pct, 100)}%` }}
-            />
-          </div>
-          <p
-            className={cn(
-              'text-center text-[10px] font-medium tabular-nums',
-              pct > 100 ? 'text-red-500' : 'text-muted-foreground'
-            )}
-          >
-            {formatDuration(booked)}
-            {lane.dailyCapacity > 0 ? ` / ${formatDuration(lane.dailyCapacity)}` : ''}
-          </p>
-        </div>
-      )}
+      {booked > 0 && <DayLoadFigure bookedMinutes={booked} capacityMinutes={lane.dailyCapacity} />}
     </div>
   )
 }

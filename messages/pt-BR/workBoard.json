@@ -58,7 +58,12 @@
       "everyone": "Todo o trabalho",
       "thisWeek": "Esta semana"
     },
-    "dropNeedsLane": "Agrupe o quadro por técnico ou baia antes de soltar um serviço nele."
+    "dropNeedsLane": "Agrupe o quadro por técnico ou baia antes de soltar um serviço nele.",
+    "load": {
+      "over": "{amount} a mais",
+      "spoken": "Agendado: {booked} de {capacity}",
+      "spokenOver": "Agendado: {booked} de {capacity}, excedido em {amount}"
+    }
   },
   "unassigned": {
     "title": "Trabalhos Não Atribuídos ({count})",

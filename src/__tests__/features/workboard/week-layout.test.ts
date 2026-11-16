@@ -255,6 +255,47 @@ describe('bookedMinutesOnDay', () => {
     expect(total).toBe(120)
   })
 
+  // Closed before 08:00 and after 16:00.
+  const OPEN_8_TO_16 = [
+    { startMins: 0, endMins: 480 },
+    { startMins: 960, endMins: 1440 },
+  ]
+
+  it('counts a job passing through the day for its opening hours, not 24 hours', () => {
+    const passing = job('a', '2026-01-01T08:00:00', '2026-12-31T16:00:00')
+    expect(bookedMinutesOnDay([passing], DAY, { closedSpans: OPEN_8_TO_16 })).toBe(480)
+  })
+
+  it('never lets one such job take more than the lane’s capacity', () => {
+    const passing = job('a', '2026-01-01T08:00:00', '2026-12-31T16:00:00')
+    expect(
+      bookedMinutesOnDay([passing], DAY, { closedSpans: OPEN_8_TO_16, capacityMinutes: 360 })
+    ).toBe(360)
+    // With no opening hours to go by, the capacity is all there is.
+    expect(bookedMinutesOnDay([passing], DAY, { capacityMinutes: 480 })).toBe(480)
+  })
+
+  it('takes the technician’s time away out of a passing job', () => {
+    const passing = job('a', '2026-01-01T08:00:00', '2026-12-31T16:00:00')
+    expect(
+      bookedMinutesOnDay([passing], DAY, {
+        closedSpans: OPEN_8_TO_16,
+        awaySpans: [{ startMins: 720, endMins: 1440 }],
+      })
+    ).toBe(240)
+  })
+
+  it('leaves a same-day job whole whatever the hours say', () => {
+    const late = job('a', `${DAY}T15:00:00`, `${DAY}T19:00:00`)
+    expect(
+      bookedMinutesOnDay([late], DAY, {
+        closedSpans: [{ startMins: 0, endMins: 1440 }],
+        awaySpans: [{ startMins: 0, endMins: 1440 }],
+        capacityMinutes: 60,
+      })
+    ).toBe(240)
+  })
+
   it('counts work booked outside the visible hours', () => {
     const total = bookedMinutesOnDay([job('a', `${DAY}T19:00:00`, `${DAY}T21:00:00`)], DAY)
     expect(total).toBe(120)
