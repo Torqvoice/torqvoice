@@ -183,6 +183,7 @@ export function TireSetClient({
       title: t('detail.deleteTitle'),
       description: t('detail.deleteBody'),
       confirmLabel: t('common.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

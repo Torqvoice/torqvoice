@@ -199,6 +199,7 @@ export function CustomersClient({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name }),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -214,10 +215,18 @@ export function CustomersClient({
 
   const handleBatchDelete = async () => {
     if (selected.size === 0) return
+    // Name the first few customers so the count is not taken on trust.
+    const named = data.customers.filter((c) => selected.has(c.id)).slice(0, 3)
     const ok = await confirm({
       title: t('batchDeleteTitle'),
       description: t('batchDeleteDescription', { count: selected.size }),
+      subject: named.map((c) => ({
+        label: c.name,
+        detail: c.company && c.company !== c.name ? c.company : undefined,
+      })),
+      subjectMore: selected.size - named.length,
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

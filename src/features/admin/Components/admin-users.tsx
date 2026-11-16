@@ -175,6 +175,7 @@ export function AdminUsers({
       title: t('users.deleteTitle'),
       description: t('users.deleteConfirm', { name: user.name, email: user.email }),
       confirmLabel: t('users.delete'),
+      icon: Trash2,
       destructive: true,
     })
 

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import {
   Dialog,
@@ -160,6 +160,7 @@ export function WorkBayDialog({
                     title: t('deleteTitle'),
                     description: t('deleteDescription', { name: workBay.name }),
                     confirmLabel: tc('delete'),
+                    icon: Trash2,
                     destructive: true,
                   })
                   if (!ok) return

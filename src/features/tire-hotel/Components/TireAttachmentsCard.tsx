@@ -140,6 +140,7 @@ export function TireAttachmentsCard({
       title: t('files.deleteTitle'),
       description: t('files.deleteBody', { name: file.fileName }),
       confirmLabel: t('common.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

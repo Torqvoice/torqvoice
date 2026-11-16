@@ -289,5 +289,11 @@
     "dismiss": "Закрыть",
     "selectAll": "Выбрать все",
     "selectRow": "Выбрать: {name}"
+  },
+  "confirmDialog": {
+    "title": "Вы уверены?",
+    "irreversible": "Это действие необратимо.",
+    "andMore": "и ещё {count}",
+    "typeToConfirm": "Введите <b>{text}</b> для подтверждения"
   }
 }

@@ -258,6 +258,7 @@ export function VehiclesClient({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name }),
       confirmLabel: tc('delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

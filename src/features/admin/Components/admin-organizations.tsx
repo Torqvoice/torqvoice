@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
-import { Loader2, MoreHorizontal, Search, Trash2 } from 'lucide-react'
+import { Building2, Loader2, MoreHorizontal, Search, Trash2 } from 'lucide-react'
 import { deleteOrganization } from '../Actions/deleteOrganization'
 
 type OrgRow = {
@@ -88,6 +88,9 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
       title: t('organizations.deleteTitle'),
       description: t('organizations.deleteConfirm', { name: org.name }),
       confirmLabel: t('organizations.delete'),
+      icon: Trash2,
+      subject: [{ label: org.name, detail: org.ownerEmail, icon: Building2 }],
+      requireText: org.name,
       destructive: true,
     })
 

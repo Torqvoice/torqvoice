@@ -275,6 +275,7 @@ export function InventoryClient({
       title: t('deletePart.title'),
       description: t('deletePart.description', { name }),
       confirmLabel: t('deletePart.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -307,10 +308,15 @@ export function InventoryClient({
 
   const handleBulkDelete = async () => {
     if (selected.size === 0) return
+    // Name the first few parts so the count is not taken on trust.
+    const named = data.parts.filter((p) => selected.has(p.id)).slice(0, 3)
     const ok = await confirm({
       title: t('bulkDelete.title'),
       description: t('bulkDelete.description', { count: selected.size }),
+      subject: named.map((p) => ({ label: p.name, detail: p.partNumber ?? undefined })),
+      subjectMore: selected.size - named.length,
       confirmLabel: t('bulkDelete.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return

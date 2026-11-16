@@ -289,5 +289,11 @@
     "dismiss": "Sluiten",
     "selectAll": "Alles selecteren",
     "selectRow": "{name} selecteren"
+  },
+  "confirmDialog": {
+    "title": "Weet u het zeker?",
+    "irreversible": "Dit kan niet ongedaan worden gemaakt.",
+    "andMore": "en {count} meer",
+    "typeToConfirm": "Typ <b>{text}</b> om te bevestigen"
   }
 }

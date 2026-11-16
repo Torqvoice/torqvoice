@@ -289,5 +289,11 @@
     "dismiss": "Zamknij",
     "selectAll": "Zaznacz wszystko",
     "selectRow": "Zaznacz: {name}"
+  },
+  "confirmDialog": {
+    "title": "Czy na pewno?",
+    "irreversible": "Tej operacji nie można cofnąć.",
+    "andMore": "i jeszcze {count}",
+    "typeToConfirm": "Wpisz <b>{text}</b>, aby potwierdzić"
   }
 }
