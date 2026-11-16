@@ -448,6 +448,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                     isAdminOrOwner={isOwnerOrAdmin}
                                     counts={sidebarCounts}
                                     isTechnician={technicianIds.length > 0}
+                                    supportEnabled={supportEnabled}
                                   />
                                   <SidebarInset
                                     id="main-content"
@@ -495,6 +496,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                   <MobileBottomNav
                     isSuperAdmin={data.isSuperAdmin}
                     tireHotelEnabled={tireHotelEnabled}
+                    supportEnabled={supportEnabled}
                   />
                   {supportEnabled && <SupportBubble userId={data.userId} />}
                 </ShortcutsProvider>

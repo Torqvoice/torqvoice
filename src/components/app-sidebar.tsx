@@ -65,6 +65,7 @@ import {
   LogOut,
   Monitor,
   Package,
+  Headset,
   Keyboard,
   Palette,
   Plus,
@@ -97,6 +98,8 @@ import { FullscreenLauncher, FullscreenMenuItem } from '@/components/fullscreen-
 import { FeatureHint } from '@/components/feature-hint'
 import { ANNOUNCEMENTS } from '@/features/settings/Lib/featureHints'
 import { cn } from '@/lib/utils'
+import { openSupport } from '@/features/support/Lib/supportVisibility'
+import { useTouchScreen } from '@/features/support/Lib/useTouchScreen'
 import { handleGated } from '@/components/upgrade-gate'
 
 type OrgInfo = { id: string; name: string; role: string }
@@ -156,6 +159,7 @@ export function AppSidebar({
   announcement = null,
   counts,
   isTechnician = false,
+  supportEnabled = false,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -175,6 +179,7 @@ export function AppSidebar({
   counts?: SidebarCounts
   /** Linked to a technician row: the dashboard is their job list even without the figures. */
   isTechnician?: boolean
+  supportEnabled?: boolean
 }) {
   const pathname = usePathname()
   const { openHelp: openShortcutsHelp } = useShortcuts()
@@ -187,6 +192,8 @@ export function AppSidebar({
   const t = useTranslations('navigation')
   const tHint = useTranslations('featureHints')
   const tSettings = useTranslations('settings')
+  const tSupport = useTranslations('support')
+  const touchScreen = useTouchScreen()
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
@@ -698,6 +705,22 @@ export function AppSidebar({
                       <UserRound className="mr-2 size-4" />
                       {t('sidebar.account')}
                     </Link>
+                  </DropdownMenuItem>
+                )}
+                {/* A phone or tablet has no floating support button, and the
+                    settings page that opens the form turns away a role
+                    without settings access. */}
+                {supportEnabled && touchScreen && (
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      // On a phone the sidebar is a sheet over the page; the
+                      // form would open underneath it.
+                      if (isMobile) setOpenMobile(false)
+                      openSupport()
+                    }}
+                  >
+                    <Headset className="mr-2 size-4" />
+                    {tSupport('open')}
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onSelect={openShortcutsHelp}>
