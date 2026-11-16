@@ -325,6 +325,9 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
                       spellCheck={false}
                       onChange={(e) => setTyped(e.target.value)}
                       onKeyDown={(e) => {
+                        // An Enter that accepts an input method's composition
+                        // finishes the text; it is not an answer.
+                        if (e.nativeEvent.isComposing || e.keyCode === 229) return
                         if (e.key === 'Enter' && typedMatches) {
                           e.preventDefault()
                           settle(true)

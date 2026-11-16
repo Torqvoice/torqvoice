@@ -201,6 +201,21 @@ describe('confirm dialog: type to confirm', () => {
     await user.keyboard('{Enter}')
     await waitFor(() => expect(onAnswer).toHaveBeenCalledWith(true))
   })
+
+  it('does not confirm on the Enter that accepts an input method composition', async () => {
+    const { user, onAnswer, dialog } = await ask(deleteWorkshop)
+
+    const field = within(dialog).getByRole('textbox')
+    await user.type(field, 'Nordby Auto')
+    // The name already matches while the input method is still composing.
+    fireEvent.keyDown(field, { key: 'Enter', isComposing: true })
+    fireEvent.keyDown(field, { key: 'Enter', keyCode: 229 })
+    expect(onAnswer).not.toHaveBeenCalled()
+    expect(screen.getByRole('alertdialog')).toBeInTheDocument()
+
+    await user.keyboard('{Enter}')
+    await waitFor(() => expect(onAnswer).toHaveBeenCalledWith(true))
+  })
 })
 
 describe('confirm dialog: phone sheet', () => {
