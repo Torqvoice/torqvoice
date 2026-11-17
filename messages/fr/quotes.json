@@ -115,6 +115,7 @@
     "total": "Total",
     "subtotal": "Sous-total pièces : {amount}",
     "deleteRow": "Supprimer la ligne",
+    "reorderRow": "Faire glisser pour réorganiser",
     "excludeFromTotal": "Exclure du total",
     "addFromInventory": "Du stock",
     "unitCost": "Coût",
@@ -139,6 +140,7 @@
     "hourlyHint": "À l'heure : facturé selon les heures travaillées (heures × taux/h). Cliquez pour changer.",
     "serviceHint": "Forfait : facturé au prix fixe par unité. Cliquez pour changer.",
     "deleteRow": "Supprimer la ligne",
+    "reorderRow": "Faire glisser pour réorganiser",
     "excludeFromTotal": "Exclure du total"
   },
   "notes": {

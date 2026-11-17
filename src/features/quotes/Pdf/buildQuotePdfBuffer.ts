@@ -41,8 +41,9 @@ export function quoteNumberOf(quote: { id: string; quoteNumber?: string | null }
 }
 
 const QUOTE_INCLUDE = {
-  partItems: true,
-  laborItems: true,
+  // The sheet lists the lines in the order the workshop arranged them.
+  partItems: { orderBy: { sortOrder: 'asc' as const } },
+  laborItems: { orderBy: { sortOrder: 'asc' as const } },
   attachments: true,
   customer: {
     select: { name: true, email: true, phone: true, address: true, company: true, taxId: true },

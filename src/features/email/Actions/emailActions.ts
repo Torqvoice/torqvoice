@@ -105,8 +105,8 @@ export async function sendQuoteEmail(input: {
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
         include: {
-          partItems: true,
-          laborItems: true,
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
           customer: {
             select: { name: true, email: true, phone: true, address: true, company: true },
           },

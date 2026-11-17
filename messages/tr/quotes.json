@@ -115,6 +115,7 @@
     "total": "Toplam",
     "subtotal": "Parçalar Ara Toplam: {amount}",
     "deleteRow": "Satırı sil",
+    "reorderRow": "Sıralamak için sürükleyin",
     "excludeFromTotal": "Toplama dahil etme",
     "addFromInventory": "Stoktan",
     "unitCost": "Maliyet",
@@ -139,6 +140,7 @@
     "hourlyHint": "Saatlik: çalışılan saate göre hesaplanır (saat × ücret/saat). Değiştirmek için tıklayın.",
     "serviceHint": "Hizmet: birim başına sabit ücret olarak hesaplanır. Değiştirmek için tıklayın.",
     "deleteRow": "Satırı sil",
+    "reorderRow": "Sıralamak için sürükleyin",
     "excludeFromTotal": "Toplama dahil etme"
   },
   "notes": {

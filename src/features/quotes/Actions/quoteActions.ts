@@ -186,8 +186,8 @@ export async function getQuote(quoteId: string) {
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
         include: {
-          partItems: true,
-          laborItems: true,
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
           attachments: true,
           customer: {
             select: {
@@ -372,7 +372,8 @@ export async function updateQuote(input: unknown) {
           await tx.quotePart.deleteMany({ where: { quoteId: id } })
           if (taxedParts && taxedParts.length > 0) {
             await tx.quotePart.createMany({
-              data: taxedParts.map((p) => ({ ...p, quoteId: id })),
+              // The array order is the order the workshop arranged the lines in.
+              data: taxedParts.map((p, index) => ({ ...p, sortOrder: index, quoteId: id })),
             })
           }
         }
@@ -381,7 +382,7 @@ export async function updateQuote(input: unknown) {
           await tx.quoteLabor.deleteMany({ where: { quoteId: id } })
           if (taxedLabor && taxedLabor.length > 0) {
             await tx.quoteLabor.createMany({
-              data: taxedLabor.map((l) => ({ ...l, quoteId: id })),
+              data: taxedLabor.map((l, index) => ({ ...l, sortOrder: index, quoteId: id })),
             })
           }
         }
@@ -481,7 +482,12 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     async ({ userId, organizationId }) => {
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
-        include: { partItems: true, laborItems: true, attachments: true },
+        include: {
+          // Lines reach the job in the order the quote shows them.
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
+          attachments: true,
+        },
       })
       if (!quote) throw new Error('Quote not found')
       // A second pass would raise a second job and take the parts out of
@@ -777,7 +783,12 @@ export async function addQuoteToServiceRecord(
     async ({ userId, organizationId }) => {
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
-        include: { partItems: true, laborItems: true, attachments: true },
+        include: {
+          // Lines reach the job in the order the quote shows them.
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
+          attachments: true,
+        },
       })
       if (!quote) throw new Error('Quote not found')
       // A second pass would put the same lines on the job twice.

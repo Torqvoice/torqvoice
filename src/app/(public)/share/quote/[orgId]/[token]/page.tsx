@@ -80,8 +80,9 @@ export default async function PublicQuotePage({
           // whether it is taxed; left out here, every line would be.
           taxable: true,
         },
+        orderBy: { sortOrder: 'asc' },
       },
-      laborItems: true,
+      laborItems: { orderBy: { sortOrder: 'asc' } },
       attachments: true,
       customer: {
         select: {

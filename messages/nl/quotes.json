@@ -115,6 +115,7 @@
     "total": "Totaal",
     "subtotal": "Subtotaal onderdelen: {amount}",
     "deleteRow": "Rij verwijderen",
+    "reorderRow": "Sleep om te herschikken",
     "excludeFromTotal": "Buiten het totaal houden",
     "addFromInventory": "Uit voorraad",
     "unitCost": "Inkoop",
@@ -139,6 +140,7 @@
     "hourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
     "serviceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
     "deleteRow": "Rij verwijderen",
+    "reorderRow": "Sleep om te herschikken",
     "excludeFromTotal": "Buiten het totaal houden"
   },
   "notes": {

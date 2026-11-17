@@ -3,6 +3,7 @@
 import { Trash2 } from 'lucide-react'
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
+import { arrayMove } from '@dnd-kit/sortable'
 import { toast } from 'sonner'
 import { useSaveBeforeLeaving } from '@/hooks/use-save-before-leaving'
 import { useGlassModal } from '@/components/glass-modal'
@@ -465,6 +466,24 @@ export function useQuoteFormState({
     [markDirty]
   )
 
+  // A dragged line is an edit like any other: it is saved, and the quote's
+  // documents list the lines in this order.
+  const movePart = useCallback(
+    (from: number, to: number) => {
+      setPartItems((prev) => arrayMove(prev, from, to))
+      markDirty()
+    },
+    [markDirty]
+  )
+
+  const moveLabor = useCallback(
+    (from: number, to: number) => {
+      setLaborItems((prev) => arrayMove(prev, from, to))
+      markDirty()
+    },
+    [markDirty]
+  )
+
   const deletePart = useCallback(
     (index: number) => {
       setPartItems((prev) => prev.filter((_, j) => j !== index))
@@ -828,6 +847,8 @@ export function useQuoteFormState({
     addLaborBulk,
     deletePart,
     deleteLabor,
+    movePart,
+    moveLabor,
     handleSubmit,
     handleDelete,
     handleDownloadPDF,

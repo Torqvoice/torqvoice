@@ -266,6 +266,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'excluded',
     'taxable',
     'inventoryPartId',
+    'sortOrder',
     'quoteId',
   ],
   quote_labor: [
@@ -277,6 +278,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'pricingType',
     'excluded',
     'taxable',
+    'sortOrder',
     'quoteId',
   ],
   quote_attachments: [

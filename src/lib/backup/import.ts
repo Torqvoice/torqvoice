@@ -1462,7 +1462,7 @@ export async function restoreBackup(
             const partItems = q.partItems as Record<string, unknown>[] | undefined
             if (partItems?.length) {
               await tx.quotePart.createMany({
-                data: partItems.map((p) => ({
+                data: partItems.map((p, index) => ({
                   id: p.id as string,
                   partNumber: (p.partNumber as string) || null,
                   name: p.name as string,
@@ -1478,6 +1478,9 @@ export async function restoreBackup(
                   // carried into ServicePart on conversion stays intact.
                   inventoryPartId: (p.inventoryPartId as string) || null,
                   taxable: p.taxable !== false,
+                  // A backup from before lines had an order keeps the order
+                  // it was written in.
+                  sortOrder: numberOr(p.sortOrder, index),
                   quoteId: q.id as string,
                 })),
               })
@@ -1487,7 +1490,7 @@ export async function restoreBackup(
             const laborItems = q.laborItems as Record<string, unknown>[] | undefined
             if (laborItems?.length) {
               await tx.quoteLabor.createMany({
-                data: laborItems.map((l) => ({
+                data: laborItems.map((l, index) => ({
                   id: l.id as string,
                   description: l.description as string,
                   hours: (l.hours as number) || 0,
@@ -1498,6 +1501,7 @@ export async function restoreBackup(
                   // came back counted in a total that never included it.
                   excluded: (l.excluded as boolean) || false,
                   taxable: l.taxable !== false,
+                  sortOrder: numberOr(l.sortOrder, index),
                   quoteId: q.id as string,
                 })),
               })

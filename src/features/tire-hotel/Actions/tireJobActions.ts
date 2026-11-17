@@ -394,7 +394,9 @@ export async function createQuoteFromTireSet(input: unknown) {
                 },
               }
             : {}),
-          ...(labor.length > 0 ? { laborItems: { create: labor } } : {}),
+          ...(labor.length > 0
+            ? { laborItems: { create: labor.map((l, i) => ({ ...l, sortOrder: i })) } }
+            : {}),
         },
       })
 

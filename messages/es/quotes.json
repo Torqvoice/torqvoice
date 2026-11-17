@@ -115,6 +115,7 @@
     "total": "Total",
     "subtotal": "Subtotal de repuestos: {amount}",
     "deleteRow": "Eliminar fila",
+    "reorderRow": "Arrastrar para reordenar",
     "excludeFromTotal": "Excluir del total",
     "addFromInventory": "Del inventario",
     "unitCost": "Costo",
@@ -139,6 +140,7 @@
     "hourlyHint": "Por horas: se calcula por las horas trabajadas (horas × tarifa/h). Haz clic para cambiar.",
     "serviceHint": "Servicio: se cobra como tarifa fija por unidad. Haz clic para cambiar.",
     "deleteRow": "Eliminar fila",
+    "reorderRow": "Arrastrar para reordenar",
     "excludeFromTotal": "Excluir del total"
   },
   "notes": {

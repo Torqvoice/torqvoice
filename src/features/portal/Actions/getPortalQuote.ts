@@ -71,8 +71,9 @@ export async function getPortalQuote(quoteId: string) {
             excluded: true,
             taxable: true,
           },
+          orderBy: { sortOrder: 'asc' },
         },
-        laborItems: true,
+        laborItems: { orderBy: { sortOrder: 'asc' } },
         customer: {
           select: {
             name: true,
