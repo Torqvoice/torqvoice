@@ -152,4 +152,21 @@ describe('reordering quote lines', () => {
     fireEvent.click(screen.getAllByRole('button', { name: 'parts.deleteRow' })[1])
     expect(partNames()).toEqual(['Oil filter', 'Brake pads'])
   })
+
+  // Every save puts the shop fee last, so the editor keeps it there rather
+  // than show an order that a reload would undo.
+  const shopFee: QuoteLaborInput = { ...labor('Shop fee'), pricingType: 'shopFee' }
+
+  it('gives the shop fee no grip', () => {
+    render(<LaborHarness initial={[labor('Diagnose'), labor('Replace pads'), shopFee]} />)
+    expect(screen.getAllByRole('button', { name: 'labor.reorderRow' })).toHaveLength(2)
+  })
+
+  it('does not move a line below the shop fee', async () => {
+    render(<LaborHarness initial={[labor('Diagnose'), labor('Replace pads'), shopFee]} />)
+    await moveWithKeyboard('labor.reorderRow', 1, 'ArrowDown')
+    expect(laborDescriptions()).toEqual(['Diagnose', 'Replace pads', 'Shop fee'])
+    await moveWithKeyboard('labor.reorderRow', 1, 'ArrowUp')
+    expect(laborDescriptions()).toEqual(['Replace pads', 'Diagnose', 'Shop fee'])
+  })
 })

@@ -229,6 +229,7 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
               handleLabel={t('labor.reorderRow')}
               onMove={onMove}
               onDelete={onDelete}
+              isPinned={(i) => isShopFeeLine(laborItems[i])}
               renderLine={(i, deleteLine) => (
                 <QuoteLaborRow
                   labor={laborItems[i]}

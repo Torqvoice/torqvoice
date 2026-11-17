@@ -37,6 +37,7 @@ export function SortableQuoteLines({
   onMove,
   onDelete,
   renderLine,
+  isPinned,
 }: {
   count: number
   keyPrefix: string
@@ -46,6 +47,11 @@ export function SortableQuoteLines({
   onDelete: (index: number) => void
   /** Draws line `index`; its delete must call the `onDelete` handed to it. */
   renderLine: (index: number, onDelete: (index: number) => void) => ReactNode
+  /**
+   * A line that stays where it is: it has no grip and nothing moves past it.
+   * The shop fee is one, because every save puts it last again.
+   */
+  isPinned?: (index: number) => boolean
 }) {
   // Rendering the drag context only once mounted, as the work order does, so
   // the server and the browser agree on the ids dnd-kit generates.
@@ -74,10 +80,17 @@ export function SortableQuoteLines({
       const from = keysRef.current.indexOf(active.id as string)
       const to = keysRef.current.indexOf(over.id as string)
       if (from === -1 || to === -1) return
+      // A move that would carry a line across a pinned one is refused, so the
+      // editor never shows an order the save would not keep.
+      if (isPinned) {
+        for (let i = Math.min(from, to); i <= Math.max(from, to); i++) {
+          if (isPinned(i)) return
+        }
+      }
       keysRef.current = arrayMove(keysRef.current, from, to)
       onMove(from, to)
     },
-    [onMove]
+    [onMove, isPinned]
   )
 
   // A deleted line takes its key with it, so the lines below keep theirs.
@@ -89,16 +102,21 @@ export function SortableQuoteLines({
     [onDelete]
   )
 
-  const lines = keysRef.current.map((key, index) => (
-    <SortableQuoteLine key={key} id={key} dragEnabled={mounted} handleLabel={handleLabel}>
-      {renderLine(index, deleteLine)}
-    </SortableQuoteLine>
-  ))
+  const lines = keysRef.current.map((key, index) =>
+    isPinned?.(index) ? (
+      <PinnedQuoteLine key={key}>{renderLine(index, deleteLine)}</PinnedQuoteLine>
+    ) : (
+      <SortableQuoteLine key={key} id={key} dragEnabled={mounted} handleLabel={handleLabel}>
+        {renderLine(index, deleteLine)}
+      </SortableQuoteLine>
+    )
+  )
+  const sortableKeys = keysRef.current.filter((_, index) => !isPinned?.(index))
 
   if (!mounted) return <>{lines}</>
   return (
     <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <SortableContext items={keysRef.current} strategy={verticalListSortingStrategy}>
+      <SortableContext items={sortableKeys} strategy={verticalListSortingStrategy}>
         {lines}
       </SortableContext>
     </DndContext>
@@ -134,6 +152,16 @@ function SortableQuoteLine({
         title={handleLabel}
         {...(dragEnabled ? { ...attributes, ...listeners } : {})}
       />
+      <div className="min-w-0 flex-1">{children}</div>
+    </div>
+  )
+}
+
+/** A line without a grip, lined up with the ones that have one. */
+function PinnedQuoteLine({ children }: { children: ReactNode }) {
+  return (
+    <div data-testid="sortable-line" className="flex items-start gap-1">
+      <span aria-hidden className="w-6 shrink-0" />
       <div className="min-w-0 flex-1">{children}</div>
     </div>
   )
