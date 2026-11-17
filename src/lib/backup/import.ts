@@ -1051,6 +1051,8 @@ export async function restoreBackup(
                 category: (p.category as string) || null,
                 quantity: (p.quantity as number) || 0,
                 minQuantity: (p.minQuantity as number) || 0,
+                // Backups from before the switch have none: every part counted.
+                trackStock: p.trackStock !== false,
                 unit: (p.unit as string) || null,
                 unitCost: (p.unitCost as number) || 0,
                 sellPrice: (p.sellPrice as number) || 0,

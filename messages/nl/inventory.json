@@ -14,7 +14,8 @@
     "supplier": "Leverancier",
     "location": "Locatie",
     "low": "Laag",
-    "barcode": "Barcode"
+    "barcode": "Barcode",
+    "notTracked": "Niet bijgehouden"
   },
   "empty": {
     "noMatch": "Geen onderdelen gevonden voor uw zoekopdracht.",
@@ -74,7 +75,8 @@
     "currentStock": "Huidige voorraad: {quantity}",
     "addedStock": "{amount} toegevoegd aan voorraad",
     "customAmount": "Aantal...",
-    "scanParts": "Onderdelen scannen"
+    "scanParts": "Onderdelen scannen",
+    "notTracked": "Voorraad wordt niet bijgehouden voor dit onderdeel"
   },
   "form": {
     "editPart": "Onderdeel bewerken",
@@ -142,7 +144,10 @@
     "tagsHint": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het voertuig bovenaan.",
     "tagsHintMarine": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het vaartuig bovenaan.",
     "removeTag": "{tag} verwijderen",
-    "tagTooLong": "Een tag mag maximaal {max} tekens lang zijn. Maak hem korter voordat je opslaat."
+    "tagTooLong": "Een tag mag maximaal {max} tekens lang zijn. Maak hem korter voordat je opslaat.",
+    "trackStock": "Voorraad bijhouden",
+    "trackStockHint": "Zet uit voor toeslagen en verbruiksmaterialen die je rekent maar nooit telt.",
+    "trackStockOffNote": "Bij opslaan gaat de hoeveelheid naar nul en wordt dit genoteerd in de voorraadgeschiedenis. Klussen wijzigen deze niet meer."
   },
   "openMenu": "Menu openen",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Werkorder verwijderd",
       "quote_conversion": "Offerte omgezet",
       "manual_adjustment": "Handmatige aanpassing",
-      "bulk_markup": "Bulkopslag"
+      "bulk_markup": "Bulkopslag",
+      "stock_tracking_off": "Voorraad bijhouden uitgezet"
     },
     "backToInventory": "Voorraad",
     "reason": "Reden",

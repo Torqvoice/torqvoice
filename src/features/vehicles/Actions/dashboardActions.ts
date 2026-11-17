@@ -46,6 +46,7 @@ export async function getDashboardStats() {
         FROM "public"."inventory_parts" p
         WHERE p."organizationId" = ${organizationId}
           AND p."isArchived" = false
+          AND p."trackStock" = true
           AND COALESCE(NULLIF(p."minQuantity", 0), ${lowStockDefault}) > 0
           AND p."quantity" <= COALESCE(NULLIF(p."minQuantity", 0), ${lowStockDefault})
       `,

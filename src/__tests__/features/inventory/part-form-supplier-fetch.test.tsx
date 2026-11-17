@@ -22,6 +22,15 @@ vi.stubGlobal('matchMedia', (query: string) => ({
   removeEventListener: noop,
 }))
 
+// The Track stock switch sits in the form, and Radix measures a switch in a
+// form; jsdom has no ResizeObserver.
+class NoResize {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+vi.stubGlobal('ResizeObserver', NoResize)
+
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }) }))
 vi.mock('sonner', () => ({
   toast: { success: vi.fn(), error: vi.fn(), loading: vi.fn() },

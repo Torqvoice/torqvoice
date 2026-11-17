@@ -59,6 +59,11 @@ model InventoryPart {
   category      String?
   quantity      Float    @default(0)
   minQuantity   Float    @default(0)
+  /// False for a charge kept as a part but never counted, such as a
+  /// consumables or environmental fee. Using one on a job moves no stock and
+  /// writes no ledger row, its `quantity` stays 0, and it is left out of
+  /// low-stock alerts and stock value.
+  trackStock    Boolean  @default(true)
   /// Unit of measure for `quantity` (e.g. "pcs", "l", "kg"). Free text,
   /// snapshotted onto part lines at pick time so invoices keep the unit the
   /// part had when it was billed.

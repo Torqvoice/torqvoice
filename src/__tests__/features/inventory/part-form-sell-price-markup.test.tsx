@@ -11,6 +11,15 @@
 import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 
+// The Track stock switch sits in the form, and Radix measures a switch in a
+// form; jsdom has no ResizeObserver.
+class NoResize {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+vi.stubGlobal('ResizeObserver', NoResize)
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn(), push: vi.fn() }),
 }))

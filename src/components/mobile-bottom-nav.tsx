@@ -117,6 +117,7 @@ export function MobileBottomNav({
     partNumber: string | null
     barcode: string | null
     quantity: number
+    trackStock?: boolean
     category: string | null
   } | null>(null)
   const [scannedBarcode, setScannedBarcode] = useState('')
@@ -353,11 +354,19 @@ export function MobileBottomNav({
                   </div>
                 </div>
                 <div className="text-right text-sm text-muted-foreground shrink-0">
-                  {tScan('currentStock', { quantity: scannedPart.quantity })}
+                  {scannedPart.trackStock === false
+                    ? tScan('notTracked')
+                    : tScan('currentStock', { quantity: scannedPart.quantity })}
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-4 py-6">
+              <div
+                className={
+                  scannedPart.trackStock === false
+                    ? 'hidden'
+                    : 'flex items-center justify-center gap-4 py-6'
+                }
+              >
                 <Button
                   variant="outline"
                   size="icon"
@@ -396,7 +405,7 @@ export function MobileBottomNav({
               <div className="flex gap-2">
                 <Button
                   size="lg"
-                  className="flex-1"
+                  className={scannedPart.trackStock === false ? 'hidden' : 'flex-1'}
                   onClick={async () => {
                     setAddingStock(true)
                     const result = await adjustInventoryStock({
@@ -422,6 +431,7 @@ export function MobileBottomNav({
                 <Button
                   size="lg"
                   variant="outline"
+                  className={scannedPart.trackStock === false ? 'flex-1' : undefined}
                   onClick={async () => {
                     const result = await getInventoryPart(scannedPart.id)
                     if (result.success && result.data) {

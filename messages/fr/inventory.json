@@ -14,7 +14,8 @@
     "supplier": "Fournisseur",
     "location": "Emplacement",
     "low": "Bas",
-    "barcode": "Code-barres"
+    "barcode": "Code-barres",
+    "notTracked": "Non suivi"
   },
   "empty": {
     "noMatch": "Aucune pièce ne correspond à votre recherche.",
@@ -74,7 +75,8 @@
     "currentStock": "Stock actuel : {quantity}",
     "addedStock": "{amount} ajoutés au stock",
     "customAmount": "Qté...",
-    "scanParts": "Scanner des pièces"
+    "scanParts": "Scanner des pièces",
+    "notTracked": "Le stock de cette pièce n'est pas suivi"
   },
   "form": {
     "editPart": "Modifier la pièce",
@@ -142,7 +144,10 @@
     "tagsHint": "Appuyez sur Entrée ou une virgule après chaque étiquette. Sur une intervention, les pièces étiquetées avec la marque ou le modèle du véhicule apparaissent en premier.",
     "tagsHintMarine": "Appuyez sur Entrée ou une virgule après chaque étiquette. Sur une intervention, les pièces étiquetées avec la marque ou le modèle du bateau apparaissent en premier.",
     "removeTag": "Retirer {tag}",
-    "tagTooLong": "Une étiquette peut contenir au plus {max} caractères. Raccourcissez-la avant d'enregistrer."
+    "tagTooLong": "Une étiquette peut contenir au plus {max} caractères. Raccourcissez-la avant d'enregistrer.",
+    "trackStock": "Suivre le stock",
+    "trackStockHint": "Désactivez pour les frais et consommables que vous facturez sans jamais les compter.",
+    "trackStockOffNote": "L'enregistrement remet la quantité à zéro et le note dans l'historique du stock. Les travaux ne la modifient plus."
   },
   "openMenu": "Ouvrir le menu",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Ordre supprimé",
       "quote_conversion": "Devis converti",
       "manual_adjustment": "Ajustement manuel",
-      "bulk_markup": "Marge en masse"
+      "bulk_markup": "Marge en masse",
+      "stock_tracking_off": "Suivi du stock désactivé"
     },
     "backToInventory": "Inventaire",
     "reason": "Motif",

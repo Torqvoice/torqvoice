@@ -30,6 +30,8 @@ export interface StockPart {
   sellPrice: number
   /** In stock, in `unit`. */
   quantity: number
+  /** False for a part that is charged but never counted. */
+  trackStock?: boolean
 }
 
 /** A part line the page adds as it would a pick from stock. */

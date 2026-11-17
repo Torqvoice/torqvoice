@@ -39,6 +39,9 @@ export async function GET(request: Request) {
           unitCost: true,
           sellPrice: true,
           quantity: true,
+          // False for a fee or consumable that is charged but never counted:
+          // the app shows no stock figure for it.
+          trackStock: true,
           category: true,
         },
       })

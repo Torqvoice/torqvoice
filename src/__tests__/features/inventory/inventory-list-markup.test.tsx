@@ -16,6 +16,15 @@ const applyMarkupToAll = vi.fn()
 const setSetting = vi.fn()
 const refresh = vi.fn()
 
+// The Track stock switch sits in the form, and Radix measures a switch in a
+// form; jsdom has no ResizeObserver.
+class NoResize {
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
+}
+vi.stubGlobal('ResizeObserver', NoResize)
+
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh, push: vi.fn(), replace: vi.fn() }),
   usePathname: () => '/inventory',

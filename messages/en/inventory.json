@@ -14,7 +14,8 @@
     "supplier": "Supplier",
     "location": "Location",
     "low": "Low",
-    "barcode": "Barcode"
+    "barcode": "Barcode",
+    "notTracked": "Not tracked"
   },
   "empty": {
     "noMatch": "No parts match your search.",
@@ -74,7 +75,8 @@
     "currentStock": "Current stock: {quantity}",
     "addedStock": "Added {amount} to stock",
     "customAmount": "Qty...",
-    "scanParts": "Scan Parts"
+    "scanParts": "Scan Parts",
+    "notTracked": "Stock is not tracked for this part"
   },
   "form": {
     "editPart": "Edit Part",
@@ -142,7 +144,10 @@
     "tagsHint": "Press Enter or a comma after each one. On a job, parts tagged with the vehicle's make or model are listed first.",
     "tagsHintMarine": "Press Enter or a comma after each one. On a job, parts tagged with the vessel's make or model are listed first.",
     "removeTag": "Remove {tag}",
-    "tagTooLong": "A tag can be at most {max} characters. Shorten it before saving."
+    "tagTooLong": "A tag can be at most {max} characters. Shorten it before saving.",
+    "trackStock": "Track stock",
+    "trackStockHint": "Turn off for fees and consumables you charge but never count.",
+    "trackStockOffNote": "Saving sets the quantity to zero and notes it in the stock history. Jobs no longer change it."
   },
   "openMenu": "Open menu",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Work order deleted",
       "quote_conversion": "Quote converted",
       "manual_adjustment": "Manual adjustment",
-      "bulk_markup": "Bulk markup"
+      "bulk_markup": "Bulk markup",
+      "stock_tracking_off": "Stock tracking turned off"
     },
     "backToInventory": "Inventory",
     "reason": "Reason",

@@ -21,6 +21,8 @@ interface BarcodeScanActionDialogProps {
     partNumber: string | null
     barcode: string | null
     quantity: number
+    /** False for a part that is charged but never counted: nothing to add to. */
+    trackStock?: boolean
     unit: string | null
     category: string | null
   } | null
@@ -77,11 +79,13 @@ export function BarcodeScanActionDialog({
                 )}
               </div>
               <p className="mt-1 text-sm">
-                {t('currentStock', { quantity: formatQuantity(part.quantity, part.unit) })}
+                {part.trackStock === false
+                  ? t('notTracked')
+                  : t('currentStock', { quantity: formatQuantity(part.quantity, part.unit) })}
               </p>
             </div>
 
-            <div className="space-y-2">
+            <div className={part.trackStock === false ? 'hidden' : 'space-y-2'}>
               <Label className="text-sm font-medium">{t('addStock')}</Label>
               <div className="flex gap-2">
                 <Button

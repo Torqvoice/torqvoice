@@ -14,7 +14,8 @@
     "supplier": "Leverandør",
     "location": "Plassering",
     "low": "Lav",
-    "barcode": "Strekkode"
+    "barcode": "Strekkode",
+    "notTracked": "Føres ikke"
   },
   "empty": {
     "noMatch": "Ingen deler samsvarer med søket ditt.",
@@ -74,7 +75,8 @@
     "currentStock": "Nåværende beholdning: {quantity}",
     "addedStock": "{amount} lagt til på lager",
     "customAmount": "Antall...",
-    "scanParts": "Skann deler"
+    "scanParts": "Skann deler",
+    "notTracked": "Lager føres ikke for denne delen"
   },
   "form": {
     "editPart": "Rediger del",
@@ -142,7 +144,10 @@
     "tagsHint": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med kjøretøyets merke eller modell først.",
     "tagsHintMarine": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med båtens merke eller modell først.",
     "removeTag": "Fjern {tag}",
-    "tagTooLong": "Et stikkord kan være på høyst {max} tegn. Gjør det kortere før du lagrer."
+    "tagTooLong": "Et stikkord kan være på høyst {max} tegn. Gjør det kortere før du lagrer.",
+    "trackStock": "Før lager",
+    "trackStockHint": "Slå av for gebyrer og forbruksmateriell du tar betalt for, men aldri teller.",
+    "trackStockOffNote": "Når du lagrer, settes antallet til null og det noteres i lagerhistorikken. Jobber endrer det ikke lenger."
   },
   "openMenu": "Åpne meny",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Arbeidsordre slettet",
       "quote_conversion": "Tilbud konvertert",
       "manual_adjustment": "Manuell justering",
-      "bulk_markup": "Masse-påslag"
+      "bulk_markup": "Masse-påslag",
+      "stock_tracking_off": "Lagerføring slått av"
     },
     "backToInventory": "Lager",
     "reason": "Årsak",

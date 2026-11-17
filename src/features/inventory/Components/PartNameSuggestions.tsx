@@ -19,6 +19,8 @@ export interface PartSuggestion {
   unitCost: number
   sellPrice: number
   quantity: number
+  /** False for a fee or consumable that is charged but never counted. */
+  trackStock?: boolean
   tags?: string[]
 }
 
@@ -203,7 +205,7 @@ export function PartNameSuggestions({
             {part.unitCost > 0 && priceOf(part) !== part.unitCost && (
               <span className="line-through">{formatCurrency(part.unitCost, currencyCode)}</span>
             )}
-            {part.quantity > 0 ? (
+            {part.trackStock === false ? null : part.quantity > 0 ? (
               <span>
                 {t('suggestions.inStock', { quantity: formatQuantity(part.quantity, part.unit) })}
               </span>

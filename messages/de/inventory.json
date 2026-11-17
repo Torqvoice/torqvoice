@@ -14,7 +14,8 @@
     "supplier": "Lieferant",
     "location": "Lagerort",
     "low": "Niedrig",
-    "barcode": "Barcode"
+    "barcode": "Barcode",
+    "notTracked": "Nicht erfasst"
   },
   "empty": {
     "noMatch": "Keine Teile entsprechen Ihrer Suche.",
@@ -74,7 +75,8 @@
     "currentStock": "Aktueller Bestand: {quantity}",
     "addedStock": "{amount} zum Bestand hinzugefügt",
     "customAmount": "Menge...",
-    "scanParts": "Teile scannen"
+    "scanParts": "Teile scannen",
+    "notTracked": "Für dieses Teil wird kein Bestand geführt"
   },
   "form": {
     "editPart": "Teil bearbeiten",
@@ -142,7 +144,10 @@
     "tagsHint": "Nach jedem Tag Enter oder ein Komma drücken. In einem Auftrag stehen Teile mit der Marke oder dem Modell des Fahrzeugs ganz oben.",
     "tagsHintMarine": "Nach jedem Tag Enter oder ein Komma drücken. In einem Auftrag stehen Teile mit der Marke oder dem Modell des Bootes ganz oben.",
     "removeTag": "{tag} entfernen",
-    "tagTooLong": "Ein Tag darf höchstens {max} Zeichen lang sein. Bitte vor dem Speichern kürzen."
+    "tagTooLong": "Ein Tag darf höchstens {max} Zeichen lang sein. Bitte vor dem Speichern kürzen.",
+    "trackStock": "Bestand führen",
+    "trackStockHint": "Ausschalten für Gebühren und Verbrauchsmaterial, das Sie berechnen, aber nie zählen.",
+    "trackStockOffNote": "Beim Speichern wird die Menge auf null gesetzt und im Bestandsverlauf vermerkt. Aufträge ändern sie nicht mehr."
   },
   "openMenu": "Menü öffnen",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Auftrag gelöscht",
       "quote_conversion": "Angebot umgewandelt",
       "manual_adjustment": "Manuelle Anpassung",
-      "bulk_markup": "Massenaufschlag"
+      "bulk_markup": "Massenaufschlag",
+      "stock_tracking_off": "Bestandsführung ausgeschaltet"
     },
     "backToInventory": "Lager",
     "reason": "Grund",

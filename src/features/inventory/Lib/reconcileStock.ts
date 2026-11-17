@@ -21,6 +21,7 @@ export type StockMovementReason =
   | 'quote_conversion'
   | 'manual_adjustment'
   | 'bulk_markup'
+  | 'stock_tracking_off'
 
 /**
  * Provenance recorded alongside every movement, so the ledger can answer
@@ -75,6 +76,12 @@ function stockUnits(quantity: number): number {
  * `inventoryPartId` simply matches no rows, records no movement, and is
  * skipped — it can never mutate another tenant's inventory.
  *
+ * A part that does not track stock (`trackStock` false: a fee or consumable
+ * charged on jobs but never counted) is skipped the same way: the UPDATE
+ * matches no row, so its quantity stays put and no ledger row is written.
+ * Every path that uses or returns parts comes through here, which is what
+ * makes this the one place the rule lives.
+ *
  * Stock is allowed to go negative: over-consuming is real information
  * ("you used more than you had on hand") and, crucially, keeps the operation
  * reversible. Clamping at zero would corrupt the count as soon as the part is
@@ -114,11 +121,14 @@ export async function reconcileInventoryForParts(
     const updated = await tx.$queryRaw<{ quantity: number }[]>`
       UPDATE "public"."inventory_parts"
       SET "quantity" = "quantity" - ${decrement}, "updatedAt" = NOW()
-      WHERE "id" = ${inventoryPartId} AND "organizationId" = ${organizationId}
+      WHERE "id" = ${inventoryPartId}
+        AND "organizationId" = ${organizationId}
+        AND "trackStock" = true
       RETURNING "quantity"
     `
 
-    // No row matched — unknown part, or one belonging to another organization.
+    // No row matched — unknown part, one belonging to another organization,
+    // or one that does not track stock.
     if (updated.length === 0) continue
 
     ledgerRows.push({
@@ -152,7 +162,8 @@ export async function reconcileInventoryForParts(
  * RETURNING would always yield 0, since RETURNING evaluates against the updated
  * row.)
  *
- * Returns false when no row matched — unknown part, or wrong organization.
+ * Returns false when no row matched — unknown part, wrong organization, or a
+ * part that does not track stock.
  */
 export async function recordAbsoluteStockChange(
   tx: TxClient,
@@ -168,6 +179,7 @@ export async function recordAbsoluteStockChange(
     WHERE p."id" = prev."id"
       AND p."id" = ${inventoryPartId}
       AND p."organizationId" = ${organizationId}
+      AND p."trackStock" = true
     RETURNING p."quantity" AS "quantity", (p."quantity" - prev."quantity") AS "delta"
   `
 

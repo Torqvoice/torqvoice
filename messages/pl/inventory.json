@@ -14,7 +14,8 @@
     "supplier": "Dostawca",
     "location": "Lokalizacja",
     "low": "Niski",
-    "barcode": "Kod kreskowy"
+    "barcode": "Kod kreskowy",
+    "notTracked": "Nieśledzone"
   },
   "empty": {
     "noMatch": "Żadne części nie pasują do wyszukiwania.",
@@ -74,7 +75,8 @@
     "currentStock": "Aktualny stan: {quantity}",
     "addedStock": "Dodano {amount} do stanu",
     "customAmount": "Ilość...",
-    "scanParts": "Skanuj części"
+    "scanParts": "Skanuj części",
+    "notTracked": "Stan tej części nie jest śledzony"
   },
   "form": {
     "editPart": "Edytuj część",
@@ -142,7 +144,10 @@
     "tagsHint": "Po każdym tagu naciśnij Enter lub przecinek. W zleceniu najpierw widać części oznaczone marką lub modelem pojazdu.",
     "tagsHintMarine": "Po każdym tagu naciśnij Enter lub przecinek. W zleceniu najpierw widać części oznaczone marką lub modelem jednostki pływającej.",
     "removeTag": "Usuń {tag}",
-    "tagTooLong": "Tag może mieć najwyżej {max} znaków. Skróć go przed zapisaniem."
+    "tagTooLong": "Tag może mieć najwyżej {max} znaków. Skróć go przed zapisaniem.",
+    "trackStock": "Śledź stan",
+    "trackStockHint": "Wyłącz dla opłat i materiałów eksploatacyjnych, które doliczasz, ale nigdy nie liczysz.",
+    "trackStockOffNote": "Zapisanie ustawia ilość na zero i odnotowuje to w historii stanu. Zlecenia już jej nie zmieniają."
   },
   "openMenu": "Otwórz menu",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Zlecenie usunięte",
       "quote_conversion": "Wycena przekształcona",
       "manual_adjustment": "Korekta ręczna",
-      "bulk_markup": "Marża zbiorcza"
+      "bulk_markup": "Marża zbiorcza",
+      "stock_tracking_off": "Śledzenie stanu wyłączone"
     },
     "backToInventory": "Magazyn",
     "reason": "Powód",

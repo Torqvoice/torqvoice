@@ -117,6 +117,8 @@ export function PartDetailClient({
         return t('history.reasons.manual_adjustment')
       case 'bulk_markup':
         return t('history.reasons.bulk_markup')
+      case 'stock_tracking_off':
+        return t('history.reasons.stock_tracking_off')
       default:
         // A row written by a newer build may carry a reason this one has no
         // translation for; show the raw value rather than an empty cell.
@@ -161,7 +163,9 @@ export function PartDetailClient({
         <div className="rounded-lg border bg-card px-3 py-2">
           <p className="text-[11px] text-muted-foreground">{t('table.inStock')}</p>
           <p className={`text-lg font-bold ${isLow ? 'text-destructive' : ''}`}>
-            {formatQuantity(part.quantity, part.unit)}
+            {part.trackStock === false
+              ? t('table.notTracked')
+              : formatQuantity(part.quantity, part.unit)}
             {isLow && (
               <Badge variant="destructive" className="ml-2 px-1.5 py-0 text-[10px]">
                 {t('table.low')}
@@ -171,7 +175,9 @@ export function PartDetailClient({
         </div>
         <div className="rounded-lg border bg-card px-3 py-2">
           <p className="text-[11px] text-muted-foreground">{t('form.minQty')}</p>
-          <p className="text-lg font-bold">{formatQuantity(part.minQuantity, part.unit)}</p>
+          <p className="text-lg font-bold">
+            {part.trackStock === false ? '-' : formatQuantity(part.minQuantity, part.unit)}
+          </p>
         </div>
         <div className="rounded-lg border bg-card px-3 py-2">
           <p className="text-[11px] text-muted-foreground">{t('table.unitCost')}</p>

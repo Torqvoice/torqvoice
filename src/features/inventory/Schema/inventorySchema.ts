@@ -11,6 +11,10 @@ export const createInventoryPartSchema = z.object({
   category: z.string().optional(),
   quantity: z.coerce.number().min(0, 'Quantity must be 0 or more').default(0),
   minQuantity: z.coerce.number().min(0, 'Min quantity must be 0 or more').default(0),
+  // No default: on an update, leaving it out keeps what the part has, and a
+  // page opened before the switch existed sends none. A new part tracks stock
+  // unless told otherwise (the column default).
+  trackStock: z.boolean().optional(),
   unit: z.string().max(20).optional(),
   unitCost: z.coerce.number().min(0, 'Unit cost must be 0 or more').default(0),
   sellPrice: z.coerce.number().min(0, 'Sell price must be 0 or more').default(0),

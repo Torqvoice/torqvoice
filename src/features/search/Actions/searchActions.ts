@@ -239,6 +239,7 @@ export async function globalSearch(query: string) {
                 name: true,
                 partNumber: true,
                 quantity: true,
+                trackStock: true,
                 unit: true,
               },
               take: 10,
