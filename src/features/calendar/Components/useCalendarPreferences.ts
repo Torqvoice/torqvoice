@@ -1,59 +1,64 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import {
+  type CalendarPreferences,
+  DEFAULT_CALENDAR_PREFERENCES,
+  LEGACY_STORAGE_KEY,
+  parseCalendarPreferences,
+  rememberCalendarPreferences,
+} from '../Lib/calendar-preferences'
+
+export type { CalendarPreferences } from '../Lib/calendar-preferences'
 
 /**
- * How this person likes the calendar drawn. Kept in the browser: these are
- * viewing habits, not workshop data, and a planner on the front desk PC and
- * a phone in the pit may well want different ones.
+ * The calendar's viewing preferences. `initial` is what the page read from
+ * the cookie on the server, so the first paint matches what was chosen;
+ * null when there is no cookie yet.
  */
-export interface CalendarPreferences {
-  showWeekends: boolean
-  showCompleted: boolean
-  showWeekNumbers: boolean
-  sidebarOpen: boolean
-}
+export function useCalendarPreferences(initial: CalendarPreferences | null = null) {
+  const [preferences, setPreferences] = useState<CalendarPreferences>(
+    initial ?? DEFAULT_CALENDAR_PREFERENCES
+  )
 
-const STORAGE_KEY = 'torqvoice.calendar.preferences'
-
-const DEFAULTS: CalendarPreferences = {
-  showWeekends: true,
-  showCompleted: true,
-  showWeekNumbers: false,
-  sidebarOpen: true,
-}
-
-function read(): CalendarPreferences {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
-    if (!raw) return DEFAULTS
-    const parsed = JSON.parse(raw) as Partial<CalendarPreferences>
-    return { ...DEFAULTS, ...parsed }
-  } catch {
-    return DEFAULTS
-  }
-}
-
-export function useCalendarPreferences() {
-  // Defaults on the server and the first client paint, so hydration agrees;
-  // the stored values land right after.
-  const [preferences, setPreferences] = useState<CalendarPreferences>(DEFAULTS)
-
+  // No cookie yet: carry over what an earlier build kept in local storage,
+  // once, and from then on the cookie is what counts.
   useEffect(() => {
-    setPreferences(read())
+    if (initial) return
+    let legacy: CalendarPreferences | null = null
+    try {
+      legacy = parseCalendarPreferences(window.localStorage.getItem(LEGACY_STORAGE_KEY))
+    } catch {
+      // Storage blocked: stay on the defaults.
+    }
+    if (legacy) {
+      setPreferences(legacy)
+      rememberCalendarPreferences(legacy)
+    }
   }, [])
 
-  const update = useCallback((patch: Partial<CalendarPreferences>) => {
-    setPreferences((current) => {
-      const next = { ...current, ...patch }
-      try {
-        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-      } catch {
-        // Private mode or a full store: the choice still applies for the session.
-      }
-      return next
-    })
-  }, [])
+  const change = useCallback(
+    (patchFor: (current: CalendarPreferences) => Partial<CalendarPreferences>) => {
+      setPreferences((current) => {
+        const next = { ...current, ...patchFor(current) }
+        rememberCalendarPreferences(next)
+        return next
+      })
+    },
+    []
+  )
 
-  return { preferences, update }
+  const update = useCallback((patch: Partial<CalendarPreferences>) => change(() => patch), [change])
+
+  /** Ticks or unticks one kind in the sidebar list and remembers it. */
+  const setTypeShown = useCallback(
+    (type: string, shown: boolean) =>
+      change((current) => {
+        const others = current.hiddenTypes.filter((hidden) => hidden !== type)
+        return { hiddenTypes: shown ? others : [...others, type] }
+      }),
+    [change]
+  )
+
+  return { preferences, update, setTypeShown }
 }

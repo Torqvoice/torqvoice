@@ -20,6 +20,16 @@ const FILTER_ORDER: CalendarEventType[] = [
   'external',
 ]
 
+/**
+ * The ticks the list shows for what this person has hidden. A kind not in
+ * the stored list is shown, and stored names the calendar does not know
+ * are passed over.
+ */
+export function typeFiltersFrom(hiddenTypes: readonly string[]): TypeFilters {
+  const hidden = new Set(hiddenTypes)
+  return Object.fromEntries(FILTER_ORDER.map((type) => [type, !hidden.has(type)])) as TypeFilters
+}
+
 /** Shown only when there is something of the kind in view. */
 const ONLY_WHEN_PRESENT: CalendarEventType[] = ['external', 'closure', 'absence']
 

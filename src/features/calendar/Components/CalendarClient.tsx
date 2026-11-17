@@ -40,7 +40,7 @@ import {
 } from '../Lib/calendar-range'
 import { compareEvents, isEventDone } from './calendar-utils'
 import { CalendarEventList } from './CalendarEventList'
-import { CalendarSidebar, type TypeFilters } from './CalendarSidebar'
+import { CalendarSidebar, typeFiltersFrom } from './CalendarSidebar'
 import { CalendarToolbar, type CreateKind } from './CalendarToolbar'
 import type { DayActions } from './DayContextMenu'
 import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
@@ -48,7 +48,7 @@ import { type BookingEdit, EventPeekProvider } from './EventPeek'
 import { MonthView } from './MonthView'
 import { ScheduleView } from './ScheduleView'
 import { TimeGridView } from './TimeGridView'
-import { useCalendarPreferences } from './useCalendarPreferences'
+import { type CalendarPreferences, useCalendarPreferences } from './useCalendarPreferences'
 import { YearView } from './YearView'
 
 interface CalendarClientProps {
@@ -67,6 +67,8 @@ interface CalendarClientProps {
    * the workshop does not track time off.
    */
   timeOff?: { technicians: TechnicianOption[] } | null
+  /** The viewing preferences from the cookie; null when none are stored yet. */
+  initialPreferences?: CalendarPreferences | null
 }
 
 const ALL_TYPES: CalendarEventType[] = [
@@ -107,6 +109,7 @@ export default function CalendarClient({
   currencyCode,
   messageChannels,
   timeOff = null,
+  initialPreferences = null,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
   const tWorkOrders = useTranslations('workOrders.list')
@@ -114,7 +117,11 @@ export default function CalendarClient({
   const pathname = usePathname()
   const isMobile = useIsMobile()
   const { weekStartDay } = useDateSettings()
-  const { preferences, update: updatePreferences } = useCalendarPreferences()
+  const {
+    preferences,
+    update: updatePreferences,
+    setTypeShown,
+  } = useCalendarPreferences(initialPreferences)
 
   const [view, setView] = useState<CalendarView>(initialView)
   const [date, setDate] = useState<Date>(
@@ -127,16 +134,9 @@ export default function CalendarClient({
     return start && end ? { start, end } : null
   })
   const [loading, setLoading] = useState(false)
-  const [filters, setFilters] = useState<TypeFilters>({
-    service: true,
-    reminder: true,
-    quote: true,
-    message: true,
-    external: true,
-    closure: true,
-    absence: true,
-    appointment: true,
-  })
+  // Remembered in the browser with the other viewing preferences, so a kind
+  // unticked here stays unticked after a trip to the work board or a reload.
+  const filters = useMemo(() => typeFiltersFrom(preferences.hiddenTypes), [preferences.hiddenTypes])
 
   // Dialogs the calendar can open
   const [showPicker, setShowPicker] = useState(false)
@@ -553,9 +553,7 @@ export default function CalendarClient({
                   setDate(new Date(m.getFullYear(), m.getMonth(), 1))
                 }
               }}
-              onFilterChange={(type, checked) =>
-                setFilters((current) => ({ ...current, [type]: checked }))
-              }
+              onFilterChange={setTypeShown}
             />
           )}
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">{body}</div>
