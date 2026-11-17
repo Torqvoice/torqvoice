@@ -74,3 +74,18 @@ export function rememberCalendarPreferences(preferences: CalendarPreferences): v
     JSON.stringify(preferences)
   )}; path=/; max-age=${MAX_AGE}; samesite=lax`
 }
+
+/** The cookie as this browser holds it now; null when there is none. */
+export function readCalendarPreferencesCookie(): CalendarPreferences | null {
+  if (typeof document === 'undefined') return null
+  const raw = document.cookie
+    .split('; ')
+    .find((c) => c.startsWith(`${CALENDAR_PREFERENCES_COOKIE}=`))
+    ?.slice(CALENDAR_PREFERENCES_COOKIE.length + 1)
+  if (!raw) return null
+  try {
+    return parseCalendarPreferences(decodeURIComponent(raw))
+  } catch {
+    return null
+  }
+}

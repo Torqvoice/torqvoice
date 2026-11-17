@@ -6,6 +6,7 @@ import {
   DEFAULT_CALENDAR_PREFERENCES,
   LEGACY_STORAGE_KEY,
   parseCalendarPreferences,
+  readCalendarPreferencesCookie,
   rememberCalendarPreferences,
 } from '../Lib/calendar-preferences'
 
@@ -21,10 +22,16 @@ export function useCalendarPreferences(initial: CalendarPreferences | null = nul
     initial ?? DEFAULT_CALENDAR_PREFERENCES
   )
 
-  // No cookie yet: carry over what an earlier build kept in local storage,
+  // The cookie in the browser is the latest word: a page restored by Back
+  // or Forward can carry preferences older than the last change. With no
+  // cookie at all, carry over what an earlier build kept in local storage,
   // once, and from then on the cookie is what counts.
   useEffect(() => {
-    if (initial) return
+    const current = readCalendarPreferencesCookie()
+    if (current) {
+      setPreferences(current)
+      return
+    }
     let legacy: CalendarPreferences | null = null
     try {
       legacy = parseCalendarPreferences(window.localStorage.getItem(LEGACY_STORAGE_KEY))

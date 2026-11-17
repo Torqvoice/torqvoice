@@ -21,7 +21,9 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -31,6 +33,9 @@ import {
 import { cn } from '@/lib/utils'
 import type { CalendarView } from '../Lib/calendar-range'
 import type { CalendarPreferences } from './useCalendarPreferences'
+import type { CalendarEventType } from '../Actions/calendarActions'
+import { FILTER_LABEL, listedTypes, type TypeFilters } from './CalendarSidebar'
+import { typePalette } from './calendar-utils'
 
 export type CreateKind = 'workOrder' | 'appointment' | 'reminder' | 'quote' | 'message' | 'timeOff'
 
@@ -58,6 +63,10 @@ interface CalendarToolbarProps {
   onCreate: (kind: CreateKind) => void
   /** Whether this person may set technicians on leave, and the workshop tracks it. */
   canSetTimeOff?: boolean
+  /** The kinds shown, for the menu copy of the sidebar list where the sidebar is not drawn. */
+  filters: TypeFilters
+  counts: Record<CalendarEventType, number>
+  onFilterChange: (type: CalendarEventType, checked: boolean) => void
 }
 
 /**
@@ -78,6 +87,9 @@ export function CalendarToolbar({
   onToggleSidebar,
   onPreferenceChange,
   onCreate,
+  filters,
+  counts,
+  onFilterChange,
   canSetTimeOff = false,
 }: CalendarToolbarProps) {
   const t = useTranslations('calendar')
@@ -169,6 +181,30 @@ export function CalendarToolbar({
             >
               {t('options.showWeekNumbers')}
             </DropdownMenuCheckboxItem>
+            {/* The sidebar's list, for widths where the sidebar is not drawn or
+                when it is closed, so a hidden kind can always be shown again. */}
+            <DropdownMenuGroup className={cn(sidebarOpen && 'lg:hidden')}>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
+                {t('sidebar.calendars')}
+              </DropdownMenuLabel>
+              {listedTypes(counts, filters).map((type) => (
+                <DropdownMenuCheckboxItem
+                  key={type}
+                  checked={filters[type]}
+                  onCheckedChange={(checked) => onFilterChange(type, !!checked)}
+                  onSelect={(event) => event.preventDefault()}
+                >
+                  <span
+                    className={cn('mr-2 h-2.5 w-2.5 shrink-0 rounded-sm', typePalette(type).dot)}
+                  />
+                  <span className="flex-1">{t(`filters.${FILTER_LABEL[type]}`)}</span>
+                  <span className="ml-2 text-xs tabular-nums text-muted-foreground">
+                    {counts[type]}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 

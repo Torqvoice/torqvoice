@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { CalendarSidebar, typeFiltersFrom } from '@/features/calendar/Components/CalendarSidebar'
+import { CalendarToolbar } from '@/features/calendar/Components/CalendarToolbar'
 import { useCalendarPreferences } from '@/features/calendar/Components/useCalendarPreferences'
 import {
   CALENDAR_PREFERENCES_COOKIE,
@@ -117,5 +118,54 @@ describe('calendar type filters', () => {
     openCalendar()
     await waitFor(() => expect(checkbox('Quotes')).toHaveAttribute('data-state', 'unchecked'))
     expect(parseCalendarPreferences(cookieValue())?.hiddenTypes).toEqual(['quote'])
+  })
+
+  it('trusts the browser cookie over an older copy the page was restored from', async () => {
+    setCookie(JSON.stringify({ hiddenTypes: ['quote'] }))
+    // What a Back navigation can hand over: preferences from before Quotes was hidden.
+    render(<Calendar initial={parseCalendarPreferences(JSON.stringify({ hiddenTypes: [] }))} />)
+    await waitFor(() => expect(checkbox('Quotes')).toHaveAttribute('data-state', 'unchecked'))
+    expect(parseCalendarPreferences(cookieValue())?.hiddenTypes).toEqual(['quote'])
+  })
+
+  it('lets the view menu show a hidden kind again where the sidebar is not drawn', async () => {
+    setCookie(JSON.stringify({ hiddenTypes: ['quote', 'absence'] }))
+    function Toolbar() {
+      const { preferences, update, setTypeShown } = useCalendarPreferences(
+        parseCalendarPreferences(cookieValue())
+      )
+      return (
+        <CalendarToolbar
+          title="November 2026"
+          view="month"
+          loading={false}
+          sidebarOpen={false}
+          preferences={preferences}
+          onViewChange={() => undefined}
+          onPrev={() => undefined}
+          onNext={() => undefined}
+          onToday={() => undefined}
+          onToggleSidebar={() => undefined}
+          onPreferenceChange={update}
+          onCreate={() => undefined}
+          filters={typeFiltersFrom(preferences.hiddenTypes)}
+          counts={counts}
+          onFilterChange={setTypeShown}
+        />
+      )
+    }
+    render(<Toolbar />)
+    const trigger = screen.getByRole('button', { name: /Month/ })
+    fireEvent.pointerDown(trigger, { button: 0, ctrlKey: false })
+    const quotes = await screen.findByRole('menuitemcheckbox', { name: /Quotes/ })
+    expect(quotes).toHaveAttribute('data-state', 'unchecked')
+    // Leave has nothing this month but is hidden, so it is listed to be undone.
+    expect(screen.getByRole('menuitemcheckbox', { name: /Leave/ })).toBeInTheDocument()
+    expect(screen.queryByRole('menuitemcheckbox', { name: /Closed days/ })).toBeNull()
+
+    fireEvent.click(quotes)
+    await waitFor(() =>
+      expect(parseCalendarPreferences(cookieValue())?.hiddenTypes).toEqual(['absence'])
+    )
   })
 })

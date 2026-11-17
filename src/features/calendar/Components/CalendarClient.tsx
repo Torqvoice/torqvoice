@@ -535,6 +535,9 @@ export default function CalendarClient({
           onPreferenceChange={updatePreferences}
           onCreate={handleCreate}
           canSetTimeOff={timeOff !== null}
+          filters={filters}
+          counts={counts}
+          onFilterChange={setTypeShown}
         />
         <div className="flex min-h-0 flex-1">
           {preferences.sidebarOpen && (

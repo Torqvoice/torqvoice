@@ -30,10 +30,24 @@ export function typeFiltersFrom(hiddenTypes: readonly string[]): TypeFilters {
   return Object.fromEntries(FILTER_ORDER.map((type) => [type, !hidden.has(type)])) as TypeFilters
 }
 
-/** Shown only when there is something of the kind in view. */
+/** Listed only when there is something of the kind in view, or it is hidden. */
 const ONLY_WHEN_PRESENT: CalendarEventType[] = ['external', 'closure', 'absence']
 
-const FILTER_LABEL: Record<CalendarEventType, string> = {
+/**
+ * The kinds the list offers, in order. A hidden kind is always listed, so a
+ * choice remembered from another visit can be undone.
+ */
+export function listedTypes(
+  counts: Record<CalendarEventType, number>,
+  filters: TypeFilters
+): CalendarEventType[] {
+  return FILTER_ORDER.filter(
+    (type) => !ONLY_WHEN_PRESENT.includes(type) || counts[type] > 0 || !filters[type]
+  )
+}
+
+/** The key under `calendar.filters` that names a kind. */
+export const FILTER_LABEL: Record<CalendarEventType, string> = {
   service: 'services',
   reminder: 'reminders',
   quote: 'quotes',
@@ -98,8 +112,7 @@ export function CalendarSidebar({
           </span>
         </div>
         <ul className="space-y-0.5">
-          {FILTER_ORDER.map((type) => {
-            if (ONLY_WHEN_PRESENT.includes(type) && counts[type] === 0) return null
+          {listedTypes(counts, filters).map((type) => {
             const palette = typePalette(type)
             return (
               <li key={type}>
