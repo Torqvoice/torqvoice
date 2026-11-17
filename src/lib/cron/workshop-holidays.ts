@@ -4,6 +4,7 @@ import { isRestoring } from '@/lib/backup/freeze'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { syncPublicHolidays } from '@/features/workshop-calendar/Lib/holidaySync.server'
 import { refreshLinkedFeeds } from '@/features/workshop-calendar/Lib/feedSync.server'
+import { createLogger } from '@/lib/logger'
 
 /**
  * Once a day, fetch each workshop's public holidays again (so next year's
@@ -31,7 +32,7 @@ export async function syncWorkshopHolidaysOnce(now = new Date()): Promise<number
       await refreshLinkedFeeds(organizationId, { now })
       synced++
     } catch (error) {
-      console.error(`[cron] Holiday sync failed for ${organizationId}:`, error)
+      createLogger('cron').error('Holiday sync failed', { organizationId, err: error })
     }
   }
   return synced
@@ -43,7 +44,7 @@ export function syncWorkshopHolidays() {
     try {
       await syncWorkshopHolidaysOnce()
     } catch (error) {
-      console.error('[cron] Holiday sync failed:', error)
+      createLogger('cron').error('Holiday sync failed', { err: error })
     }
   })
   job.start()

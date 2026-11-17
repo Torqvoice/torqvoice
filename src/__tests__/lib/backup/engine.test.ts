@@ -205,6 +205,7 @@ import {
   openPlatform,
   openTarget,
   queueBackupRun,
+  reportBackupRollup,
   runBackup,
   stagingDirFor,
   takeSafetySnapshot,
@@ -958,8 +959,9 @@ describe('runBackup, failure', () => {
       expect(view.status).toBe('failed')
       expect(view.error).toMatch(/incomplete/)
       expect(errors).toHaveBeenCalledWith(
-        expect.stringContaining('Backup is incomplete: some files could not be read'),
-        expect.objectContaining({ snapshot: SNAPSHOT_ID })
+        expect.stringContaining(
+          `Backup is incomplete: some files could not be read organizationId=${ORG} snapshot=${SNAPSHOT_ID}`
+        )
       )
       expect(callsOf('forget')).toHaveLength(0)
       expect(callsOf('snapshots')).toHaveLength(0)
@@ -1384,8 +1386,7 @@ describe('takeSafetySnapshot', () => {
       expect(safety).toEqual({ snapshotId: SNAPSHOT_ID, kind: 'platform' })
       expect(callsOf('snapshots')).toHaveLength(1)
       expect(errors).toHaveBeenCalledWith(
-        expect.stringContaining('Could not list the restore points'),
-        expect.objectContaining({ error: expect.any(String) })
+        expect.stringMatching(/Could not list the restore points .*error=/)
       )
       expect((h.platform.get(ORG) as Row).snapshots).toBeUndefined()
     } finally {
@@ -1432,4 +1433,123 @@ describe.skipIf(!realBin)('runBackup with the real restic binary', () => {
     const state = h.connections.get(CONN)?.state
     expect(state['backup.repositorySize']).toBeGreaterThan(200_000)
   }, 120_000)
+})
+
+/**
+ * What `docker logs` shows for backups. The roll-up's clock is Date.now, so
+ * each test moves it well past anything an earlier test counted, then an hour
+ * on for the line itself.
+ */
+describe('the server log', () => {
+  const HOUR = 60 * 60 * 1000
+  let clockBase = Date.now() + 1000 * HOUR
+
+  function lines(spy: { mock: { calls: unknown[][] } }): string[] {
+    return spy.mock.calls.map((c) => c.map(String).join(' '))
+  }
+
+  /** Flushes whatever earlier tests counted, so this test starts from zero. */
+  function freshRollup(): void {
+    clockBase += 10 * HOUR
+    const now = vi.spyOn(Date, 'now').mockReturnValue(clockBase)
+    reportBackupRollup()
+    now.mockRestore()
+  }
+
+  /** The cron tick an hour and a minute after the start. */
+  function tickAnHourLater(): void {
+    const now = vi.spyOn(Date, 'now').mockReturnValue(clockBase + HOUR + 60_000)
+    reportBackupRollup()
+    now.mockRestore()
+  }
+
+  it('says nothing per successful run at the default level, then one hourly total', async () => {
+    setPlatformEnv()
+    delete process.env.LOG_LEVEL
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      freshRollup()
+      warn.mockClear()
+      for (let i = 0; i < 2; i++) {
+        const view = await runBackup(
+          addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' })
+        )
+        expect(view.status, view.error ?? '').toBe('done')
+      }
+      expect(lines(warn)).toEqual([])
+      expect(lines(error)).toEqual([])
+
+      tickAnHourLater()
+      expect(lines(warn)).toEqual(['[backup] Backups: 2 finished, 0 failed over the last 61 min'])
+      // Nothing more until the next hour has something to say.
+      tickAnHourLater()
+      expect(warn).toHaveBeenCalledTimes(1)
+    } finally {
+      warn.mockRestore()
+      error.mockRestore()
+    }
+  })
+
+  it('prints nothing at all for an hour with no runs', () => {
+    delete process.env.LOG_LEVEL
+    freshRollup()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    try {
+      tickAnHourLater()
+      expect(warn).not.toHaveBeenCalled()
+    } finally {
+      warn.mockRestore()
+    }
+  })
+
+  it('prints a failure at once on one line with the workshop, and counts it in the total', async () => {
+    setPlatformEnv()
+    delete process.env.LOG_LEVEL
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    try {
+      freshRollup()
+      warn.mockClear()
+      await runBackup(addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' }))
+      failRestic('backup')
+      const runId = addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' })
+      const view = await runBackup(runId)
+      expect(view.status).toBe('failed')
+
+      const failed = lines(error).filter((l) => l.startsWith('[backup] Backup run failed'))
+      expect(failed).toHaveLength(1)
+      expect(failed[0]).toContain(`runId=${runId} organizationId=${ORG} kind=platform`)
+      expect(failed[0]).toContain('trigger=scheduled error="')
+      for (const line of [...lines(warn), ...lines(error)]) expect(line).not.toMatch(/[\r\n]/)
+
+      tickAnHourLater()
+      expect(lines(warn)).toContain('[backup] Backups: 1 finished, 1 failed over the last 61 min')
+    } finally {
+      warn.mockRestore()
+      error.mockRestore()
+    }
+  })
+
+  it('shows every run on one line each at LOG_LEVEL=debug', async () => {
+    setPlatformEnv()
+    process.env.LOG_LEVEL = 'debug'
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
+    try {
+      freshRollup()
+      warn.mockClear()
+      await runBackup(addRun({ kind: 'platform', connectionId: null, trigger: 'scheduled' }))
+      const finished = lines(warn).filter((l) => l.includes('Backup finished'))
+      expect(finished).toEqual([
+        expect.stringMatching(
+          new RegExp(
+            `^\\[platform-backup\\] Backup finished organizationId=${ORG} snapshot=${SNAPSHOT_ID} filesNew=\\d+ dataAdded=\\d+$`
+          )
+        ),
+      ])
+      for (const line of lines(warn)) expect(line).not.toMatch(/[\r\n]/)
+    } finally {
+      warn.mockRestore()
+    }
+  })
 })

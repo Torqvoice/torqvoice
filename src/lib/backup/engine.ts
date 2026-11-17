@@ -23,6 +23,7 @@ import { getManifest } from '@/integrations/registry'
 import { db } from '@/lib/db'
 import { getFromAddress, getOrgFromAddress, sendMail, sendOrgMail } from '@/lib/email'
 import { getFeatures } from '@/lib/features'
+import { createLogger, createRollup } from '@/lib/logger'
 import { notify } from '@/lib/notify'
 import { orgUploadDir } from '@/lib/upload-root'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -76,6 +77,20 @@ import { connectMessage, ensureCacheDir, repositoryPassword, sanitizeRepository 
 const PRUNE_EVERY_MS = 7 * 24 * 60 * 60 * 1000
 const CHECK_EVERY_MS = 30 * 24 * 60 * 60 * 1000
 const FAILURE_MAIL_EVERY_MS = 24 * 60 * 60 * 1000
+
+const log = createLogger('backup')
+const platformLog = createLogger('platform-backup')
+/**
+ * Finished and failed backup runs, said once an hour at `info`. Every run,
+ * whoever started it, counts here; the backup cron calls `reportBackupRollup`
+ * on each tick so the hour's line goes out on time. A failure is also logged
+ * at `error` the moment it happens.
+ */
+const rollup = createRollup('backup', 'Backups', { order: ['finished', 'failed'] })
+
+export function reportBackupRollup(): void {
+  rollup.add({})
+}
 /** One retry after a failed scheduled run, before the next slot. */
 export const RETRY_AFTER_MS = 30 * 60 * 1000
 
@@ -140,7 +155,17 @@ export interface OpenedTarget {
   retention: RetentionPolicy
   /** Last prune and check times, and the repository size, as the target keeps them. */
   state: { lastPruneAt: Date | null; lastCheckAt: Date | null }
-  log(level: 'info' | 'error', message: string, details?: Record<string, unknown>): Promise<void>
+  /**
+   * A line in the destination's log, or the server log for the platform. A
+   * `routine` line (a scheduled backup that went fine) is printed by the
+   * platform only at LOG_LEVEL=debug; the hourly roll-up counts it.
+   */
+  log(
+    level: 'info' | 'error',
+    message: string,
+    details?: Record<string, unknown>,
+    options?: { routine?: boolean }
+  ): Promise<void>
   /** Record a good run: when, how big, and (platform) the restore points now in the repository. */
   recordGood(data: {
     at: Date
@@ -233,10 +258,11 @@ export async function openPlatform(organizationId: string): Promise<OpenedTarget
     includeSecrets: true,
     retention: PLATFORM_RETENTION,
     state: { lastPruneAt: row.lastPruneAt, lastCheckAt: row.lastCheckAt },
-    async log(level, message, details) {
-      const line = `[platform-backup] ${organizationId}: ${message}`
-      if (level === 'error') console.error(line, details ?? '')
-      else console.warn(line, details ?? '')
+    async log(level, message, details, options) {
+      const fields = { organizationId, ...details }
+      if (level === 'error') platformLog.error(message, fields)
+      else if (options?.routine) platformLog.debug(message, fields)
+      else platformLog.info(message, fields)
     },
     async recordGood({ at, totalBytes, snapshots, prunedAt, checkedAt }) {
       await db.platformBackup.update({
@@ -475,7 +501,7 @@ export async function takeSnapshot(
     return await resticBackup(target.base, { paths, host: target.host, tags: target.tags(trigger) })
   } finally {
     await rm(dataFile, { force: true }).catch((err) =>
-      console.warn('[backup] could not remove the staging file:', err)
+      log.warn('Could not remove the staging file', { organizationId: target.organizationId, err })
     )
   }
 }
@@ -577,11 +603,16 @@ export async function runBackup(runId: string): Promise<BackupRunView> {
         `Some files could not be read, so this backup is incomplete (restic snapshot ${result.snapshotId.slice(0, 8)}). Check the server log and run the backup again.`
       )
     }
-    await target.log('info', 'Backup finished', {
-      snapshot: result.snapshotId,
-      filesNew: result.filesNew,
-      dataAdded: result.dataAdded,
-    })
+    await target.log(
+      'info',
+      'Backup finished',
+      {
+        snapshot: result.snapshotId,
+        filesNew: result.filesNew,
+        dataAdded: result.dataAdded,
+      },
+      { routine: true }
+    )
 
     // Retention after every run; the expensive prune once a week, the
     // read-back check once a month. Safety copies are kept whatever the
@@ -645,29 +676,53 @@ export async function runBackup(runId: string): Promise<BackupRunView> {
       prunedAt: prune ? now : null,
       checkedAt,
     })
-    return await finishRun(runId, {
+    const view = await finishRun(runId, {
       status: 'done',
       snapshotId: result.snapshotId,
       filesNew: result.filesNew,
       bytesAdded: BigInt(Math.round(result.dataAdded)),
       ...(totalBytes !== null ? { totalBytes: BigInt(Math.round(totalBytes)) } : {}),
     })
+    // The platform said so through target.log; a destination's line went to
+    // its own log on the card, so the server log hears it here, at debug.
+    if (target.kind !== 'platform') {
+      log.debug('Backup run finished', {
+        runId,
+        organizationId,
+        kind: run.kind,
+        connectionId: run.connectionId ?? undefined,
+        trigger: run.trigger,
+        snapshot: result.snapshotId,
+        filesNew: result.filesNew,
+        dataAdded: result.dataAdded,
+      })
+    }
+    rollup.add({ finished: 1 })
+    return view
   } catch (err) {
     const message = describeFailure(err)
-    console.error(`[backup] run ${runId} failed:`, message)
+    log.error('Backup run failed', {
+      runId,
+      organizationId,
+      kind: run.kind,
+      connectionId: run.connectionId ?? undefined,
+      trigger: run.trigger,
+      error: message,
+    })
+    rollup.add({ failed: 1 })
     const view = await finishRun(runId, { status: 'failed', error: message })
     if (run.trigger === 'scheduled') {
       await bookRetry(run, target, new Date(Date.now() + RETRY_AFTER_MS)).catch((e) =>
-        console.error('[backup] could not schedule the retry:', e)
+        log.error('Could not schedule the retry', { runId, organizationId, err: e })
       )
     }
     await reportFailure(run.kind as BackupKind, run.connectionId, organizationId, message).catch(
-      (e) => console.error('[backup] could not report the failure:', e)
+      (e) => log.error('Could not report the failure', { runId, organizationId, err: e })
     )
     return view
   } finally {
     releaseBackupLock(runId)
-    void drainBackupQueue().catch((err) => console.error('[backup] drain failed:', err))
+    void drainBackupQueue().catch((err) => log.error('Queue drain failed', { err }))
   }
 }
 
@@ -896,7 +951,7 @@ export async function mailAdmins(
       try {
         await sendMail({ to, from: await getFromAddress(), subject, html })
       } catch (fallbackErr) {
-        console.error('[backup] alert email failed:', err, fallbackErr)
+        log.error('Alert email failed', { organizationId, err, fallbackErr })
       }
     }
   }

@@ -7,6 +7,7 @@ import { organizationTranslator } from '@/i18n/organization-translator'
 import { getManifest } from '@/integrations/registry'
 import { logAudit } from '@/lib/audit'
 import { db } from '@/lib/db'
+import { createLogger } from '@/lib/logger'
 import { notify } from '@/lib/notify'
 import { dataRoot } from '@/lib/upload-root'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
@@ -30,6 +31,8 @@ import { restoreFromDisk } from './import'
 import { RESTORE_DISK_HEADROOM_BYTES, maxDataFileBytes } from './limits'
 import { ResticError, resticRestore, resticRestoreSize, resticSnapshots } from './restic'
 import { connectMessage } from './target'
+
+const log = createLogger('restore')
 
 /**
  * Putting a snapshot back into the workshop, from a destination it connected
@@ -321,13 +324,13 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
           reason: run.reason,
         },
       }
-    ).catch((err) => console.error('[restore] could not write the audit row:', err))
+    ).catch((err) => log.error('Could not write the audit row', { runId, organizationId, err }))
     await tellWorkshop(organizationId, {
       name,
       snapshotId,
       bySupport: run.requestedBy === null,
       reason: run.reason,
-    }).catch((err) => console.error('[restore] could not tell the workshop:', err))
+    }).catch((err) => log.error('Could not tell the workshop', { runId, organizationId, err }))
 
     return await finishRun(runId, {
       status: 'done',
@@ -338,7 +341,7 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
     })
   } catch (err) {
     const message = err instanceof ResticError ? connectMessage(err) : describe(err)
-    console.error(`[restore] run ${runId} failed (${phase}):`, message)
+    log.error('Restore run failed', { runId, organizationId, phase, error: message })
     const error =
       phase === 'safety'
         ? `Could not take a safety copy of the workshop first; nothing was changed. ${message}`
@@ -353,11 +356,11 @@ export async function runRestore(runId: string): Promise<BackupRunView> {
     if (frozen) unfreezeOrganization(organizationId)
     if (folder) {
       await rm(folder, { recursive: true, force: true }).catch((err) =>
-        console.warn('[restore] could not remove the restore folder:', err)
+        log.warn('Could not remove the restore folder', { runId, organizationId, err })
       )
     }
     releaseBackupLock(runId)
-    void drainBackupQueue().catch((err) => console.error('[restore] drain failed:', err))
+    void drainBackupQueue().catch((err) => log.error('Queue drain failed', { err }))
   }
 }
 

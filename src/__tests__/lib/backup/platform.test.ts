@@ -84,7 +84,7 @@ describe('platformBackupConfig', () => {
     expect(platformBackupConfig()).toBeNull()
     expect(platformBackupConfig()).toBeNull()
     expect(error).toHaveBeenCalledTimes(1)
-    expect(String(error.mock.calls[0][0])).toMatch(/platform backups are off/)
+    expect(String(error.mock.calls[0][0])).toMatch(/Platform backups are off/)
     expect(String(error.mock.calls[0][0])).toMatch(/ACCESS_KEY/)
     expect(String(error.mock.calls[0][0])).toMatch(/MASTER_KEY/)
     // Nothing secret in the log line.

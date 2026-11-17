@@ -39,4 +39,26 @@ describe('createTickSummary', () => {
     summary.add(1)
     expect(console.warn).toHaveBeenCalledTimes(1)
   })
+
+  it('sends the total when the hour is up even if the last ticks were idle', () => {
+    const summary = createTickSummary('Scheduled messages sent')
+    summary.add(4)
+    vi.advanceTimersByTime(60 * 60 * 1000)
+    summary.add(0)
+    expect(console.warn).toHaveBeenCalledWith(
+      '[cron] Scheduled messages sent: 4 in 1 run(s) over the last 60 min'
+    )
+  })
+
+  it('says each run at LOG_LEVEL=debug', () => {
+    process.env.LOG_LEVEL = 'debug'
+    try {
+      createTickSummary('Webhook deliveries processed').add(3)
+      expect(console.warn).toHaveBeenCalledWith(
+        '[cron] Webhook deliveries processed this run count=3'
+      )
+    } finally {
+      delete process.env.LOG_LEVEL
+    }
+  })
 })

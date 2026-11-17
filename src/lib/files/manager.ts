@@ -17,12 +17,15 @@ import path from 'node:path'
 import { UPLOAD_CATEGORIES } from '@/lib/upload-url'
 import { uploadsRoot, uploadsRoots } from '@/lib/upload-root'
 import { isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
 import {
   allReferencedSuffixes,
   existingOrganizationIds,
   hasAnyOrganization,
   referencedSuffixes,
 } from './references'
+
+const log = createLogger('files')
 
 /**
  * The one place uploaded files are deleted from disk.
@@ -200,7 +203,7 @@ export async function releaseFiles(
     inUse = await referencedSuffixes([...candidates.keys()])
   } catch (err) {
     // Unable to tell whether they are in use: keep every one.
-    console.error(`[files] could not check references (${reason}); nothing deleted:`, err)
+    log.error('Could not check references; nothing deleted', { organizationId, reason, err })
     result.skipped.push(...[...candidates.values()].map((c) => c.url))
     return result
   }
@@ -217,18 +220,19 @@ export async function releaseFiles(
       try {
         if (await trashFile(root, target, file, now)) removed = true
       } catch (err) {
-        console.error(`[files] could not delete ${file.suffix} (${reason}):`, err)
+        log.error('Could not delete a file', { organizationId, file: file.suffix, reason, err })
       }
     }
     if (removed) result.removed.push(url)
   }
 
   if (result.removed.length > 0) {
-    console.warn(
-      `[files] ${reason}: moved ${result.removed.length} unused file(s) of ${organizationId} to the trash: ${result.removed
-        .map((url) => parseStoredFileUrl(url)?.suffix)
-        .join(', ')}`
-    )
+    log.info('Moved unused files to the trash', {
+      organizationId,
+      reason,
+      count: result.removed.length,
+      files: result.removed.map((url) => parseStoredFileUrl(url)?.suffix).join(','),
+    })
   }
   return result
 }
@@ -254,7 +258,7 @@ export async function discardUnsavedUpload(
   })
   if (!target) return
   await deleteFile(target).catch((err) =>
-    console.error(`[files] could not discard /${folder}/${name}:`, err)
+    log.error('Could not discard a file', { file: `/${folder}/${name}`, err })
   )
 }
 
@@ -327,7 +331,7 @@ export async function removeOrganizationFiles(
       if (!(await taken(dir))) continue
       await moveInto(dir, path.join(path.resolve(root), TRASH, day, organizationId))
     } catch (err) {
-      console.error(`[files] could not move the uploads of ${organizationId} to the trash:`, err)
+      log.error('Could not move the uploads to the trash', { organizationId, err })
     }
   }
 }
@@ -356,7 +360,7 @@ export async function releaseInstallFile(
   try {
     return await trashFile(root, target, file, now)
   } catch (err) {
-    console.error(`[files] could not release install file ${file.suffix}:`, err)
+    log.error('Could not release an install file', { file: file.suffix, err })
     return false
   }
 }
@@ -454,7 +458,7 @@ export async function sweepOrphanFiles({
   const result: SweepResult = { checked: 0, removed: 0, skipped: [], deferred: 0 }
   const refuse = (reason: string, err?: unknown) => {
     result.refused = reason
-    console.error(`[files] sweep refused, nothing moved: ${reason}`, ...(err ? [err] : []))
+    log.error('Sweep refused, nothing moved', { reason, err })
     return result
   }
   if (!(await hasAnyOrganization())) return refuse('the database has no workshops')
@@ -519,7 +523,7 @@ export async function sweepOrphanFiles({
     if (!trustDatabase && checked >= SWEEP_MIN_FOR_SHARE && share > SWEEP_MAX_SHARE) {
       const reason = `${theirs.length} of ${checked} files look unused, more than a sweep should find; check the database, then run with ${SWEEP_TRUST_DATABASE}=1 if they really are`
       result.skipped.push({ organizationId, reason })
-      console.error(`[files] sweep left ${organizationId} alone: ${reason}`)
+      log.error('Sweep left a workshop alone', { organizationId, reason })
       continue
     }
     unused.push(...theirs)
@@ -542,13 +546,14 @@ export async function sweepOrphanFiles({
     if (stillUsed.has(file.suffix)) continue
     if (await trashFile(root, target, file, now).catch(() => false)) {
       result.removed += 1
-      console.warn(
-        `[files] sweep: moved unused ${file.suffix} of ${file.organizationId} to the trash`
-      )
+      log.debug('Sweep moved an unused file to the trash', {
+        organizationId: file.organizationId,
+        file: file.suffix,
+      })
     }
   }
   if (result.deferred > 0) {
-    console.warn(`[files] sweep: ${result.deferred} more unused file(s) left for the next run`)
+    log.info('Sweep left unused files for the next run', { count: result.deferred })
   }
   return result
 }

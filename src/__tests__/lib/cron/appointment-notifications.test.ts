@@ -261,8 +261,9 @@ describe('a notification to the customer', () => {
 
     expect(sent).toBe(1)
     expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining('customer_sms for n-sms failed'),
-      'SMS provider down'
+      expect.stringMatching(
+        /^\[appointment-notifications\] Notification failed .*notificationId=n-sms channel=customer_sms error="SMS provider down"$/
+      )
     )
     expect(notify).toHaveBeenCalledTimes(1)
   })

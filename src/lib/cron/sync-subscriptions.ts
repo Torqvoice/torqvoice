@@ -1,6 +1,7 @@
 import { CronJob } from 'cron'
 import { isCloudMode } from '@/lib/features'
 import { billingRequest, isTorqvoiceComBillingConfigured } from '@/lib/torqvoice-com'
+import { createLogger } from '@/lib/logger'
 
 /**
  * Cloud mode: once a day, asks torqvoice.com to compare every Stripe-backed
@@ -18,12 +19,14 @@ export function syncSubscriptions() {
         {}
       )
       if (result.synced > 0 || result.errors > 0) {
-        console.warn(
-          `[cron] Subscription sync: ${result.checked} checked, ${result.synced} synced, ${result.errors} errors`
-        )
+        createLogger('cron').info('Subscription sync', {
+          checked: result.checked,
+          synced: result.synced,
+          errors: result.errors,
+        })
       }
     } catch (error) {
-      console.error('[cron] Subscription sync failed:', error)
+      createLogger('cron').error('Subscription sync failed', { err: error })
     }
   })
 

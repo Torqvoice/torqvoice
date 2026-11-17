@@ -1,5 +1,8 @@
 import { CronJob } from 'cron'
 import { purgeTrash, sweepOrphanFiles, TRASH_DAYS } from '@/lib/files/manager'
+import { createLogger } from '@/lib/logger'
+
+const log = createLogger('cron')
 
 /**
  * Uploaded files no row points at, once a day at 03:30 UTC: moved to the
@@ -18,22 +21,22 @@ export function sweepOrphanFilesDaily() {
   const job = new CronJob('30 3 * * *', async () => {
     try {
       const { checked, removed, refused, skipped, deferred } = await sweepOrphanFiles()
-      if (refused) console.error(`[cron] File sweep refused: ${refused}`)
+      if (refused) log.error('File sweep refused', { reason: refused })
       else if (removed > 0 || deferred > 0) {
-        console.warn(
-          `[cron] File sweep: ${removed} unused files of ${checked} moved to the trash, ${deferred} left for the next run`
-        )
+        log.info('File sweep moved unused files to the trash', {
+          removed,
+          checked,
+          deferred,
+        })
       }
       if (skipped.length > 0) {
-        console.error(`[cron] File sweep left ${skipped.length} workshop(s) alone, see above`)
+        log.error('File sweep left workshops alone, see above', { count: skipped.length })
       }
       const purged = await purgeTrash()
       if (purged > 0)
-        console.warn(
-          `[cron] File sweep: ${purged} trash day(s) older than ${TRASH_DAYS} days deleted`
-        )
+        log.info('File sweep deleted old trash days', { days: purged, olderThanDays: TRASH_DAYS })
     } catch (error) {
-      console.error('[cron] File sweep failed:', error)
+      log.error('File sweep failed', { err: error })
     }
   })
   job.start()

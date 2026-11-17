@@ -3,6 +3,8 @@ import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
+import { createTickSummary } from './tick-summary'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import {
   buildAlertSummary,
@@ -12,7 +14,7 @@ import {
   type LowStockCandidate,
 } from '@/features/inventory/Lib/lowStockAlerts'
 
-const LOG_PREFIX = '[low-stock]'
+const log = createLogger('low-stock')
 const DEFAULT_EMAIL_MIN_INTERVAL_HOURS = 24
 
 interface OrgAlertSettings {
@@ -76,10 +78,10 @@ async function sendDigest(
   try {
     fromAddress = await getOrgFromAddress(organizationId)
   } catch (error) {
-    console.error(
-      `${LOG_PREFIX} email is misconfigured (could not resolve sender); skipping digest:`,
-      error
-    )
+    log.error('Email is misconfigured (could not resolve the sender); skipping the digest', {
+      organizationId,
+      err: error,
+    })
     return false
   }
 
@@ -106,7 +108,7 @@ async function sendDigest(
       })
       sent++
     } catch (error) {
-      console.error(`${LOG_PREFIX} email to ${recipient.email} failed:`, error)
+      log.error('Digest email failed', { organizationId, err: error })
     }
   }
 
@@ -138,7 +140,7 @@ async function sendDigest(
     })
   } catch (error) {
     // Losing the timestamp only costs an extra digest later; never fail here.
-    console.error(`${LOG_PREFIX} could not record last-email time:`, error)
+    log.error('Could not record the last-email time', { organizationId, err: error })
   }
 
   return true
@@ -247,7 +249,7 @@ export async function processOrgLowStock(organizationId: string, now = new Date(
     try {
       emailed = await sendDigest(organizationId, newlyLow, now, settings.defaultThreshold)
     } catch (error) {
-      console.error(`${LOG_PREFIX} digest email failed:`, error)
+      log.error('Digest email failed', { organizationId, err: error })
     }
   }
 
@@ -267,6 +269,7 @@ export async function processOrgLowStock(organizationId: string, now = new Date(
 
 /** Hourly low-stock scan. Organizations opt in via settings. */
 export function checkLowStock() {
+  const summary = createTickSummary('Low-stock parts alerted')
   const job = new CronJob('15 * * * *', async () => {
     try {
       // Only organizations that switched the feature on.
@@ -284,15 +287,16 @@ export function checkLowStock() {
           const result = await processOrgLowStock(row.organizationId)
           if (!result.skipped) alerted += result.alerted
         } catch (error) {
-          console.error(`${LOG_PREFIX} org ${row.organizationId} failed:`, error)
+          log.error('Low-stock scan failed for a workshop', {
+            organizationId: row.organizationId,
+            err: error,
+          })
         }
       }
 
-      if (alerted > 0) {
-        console.warn(`${LOG_PREFIX} alerted on ${alerted} newly low part(s)`)
-      }
+      summary.add(alerted)
     } catch (error) {
-      console.error(`${LOG_PREFIX} scan failed:`, error)
+      log.error('Scan failed', { err: error })
     }
   })
 

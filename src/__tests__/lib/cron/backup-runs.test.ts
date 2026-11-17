@@ -426,7 +426,9 @@ describe('processDueBackups, what is queued', () => {
     expect(await processDueBackups(now)).toBe(1)
 
     expect(queuedConnections()).toEqual(['c1', 'c2'])
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('connection c1'), expect.any(Error))
+    expect(error).toHaveBeenCalledWith(
+      expect.stringMatching(/connectionId=c1 err="database went away"$/)
+    )
     error.mockRestore()
   })
 })
