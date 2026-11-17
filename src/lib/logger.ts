@@ -20,7 +20,7 @@ export type LogFields = Record<string, unknown>
 /** The level set by LOG_LEVEL, read on every call so a test or a restart changes it. */
 export function logLevel(): LogLevel {
   const raw = process.env.LOG_LEVEL?.trim().toLowerCase()
-  return raw && raw in RANK ? (raw as LogLevel) : 'info'
+  return raw && Object.hasOwn(RANK, raw) ? (raw as LogLevel) : 'info'
 }
 
 export function logEnabled(level: LogLevel): boolean {

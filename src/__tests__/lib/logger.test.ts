@@ -88,9 +88,13 @@ describe('LOG_LEVEL', () => {
     sayEverything()
     expect(printed()).toEqual(['[cron] e'])
     vi.mocked(console.error).mockClear()
-    process.env.LOG_LEVEL = 'verbose'
-    sayEverything()
-    expect(printed()).toEqual(['[cron] w', '[cron] i', '[cron] e'])
+    for (const unknown of ['verbose', 'constructor', '__proto__']) {
+      vi.mocked(console.warn).mockClear()
+      vi.mocked(console.error).mockClear()
+      process.env.LOG_LEVEL = unknown
+      sayEverything()
+      expect(printed()).toEqual(['[cron] w', '[cron] i', '[cron] e'])
+    }
   })
 })
 

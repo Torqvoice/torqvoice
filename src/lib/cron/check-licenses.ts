@@ -77,7 +77,7 @@ async function emailOwner(organizationId: string, subject: string, html: string)
     const from = await getOrgFromAddress(organizationId)
     await sendOrgMail(organizationId, { from, to: owner.user.email, subject, html })
   } catch (error) {
-    createLogger('cron').warn('Could not send the licence email', { organizationId, err: error })
+    createLogger('cron').error('Could not send the licence email', { organizationId, err: error })
   }
 }
 

@@ -814,7 +814,7 @@ export async function processOneSchedule(
 // --------------- main cron ---------------
 
 export function processReportSchedules() {
-  const summary = createTickSummary('Report schedules processed', 24 * 60 * 60 * 1000)
+  const summary = createTickSummary('Report schedules processed')
   const job = new CronJob('0 * * * *', async () => {
     let processed = 0
     const dueSchedules = await db.reportSchedule.findMany({

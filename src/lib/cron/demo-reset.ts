@@ -42,7 +42,7 @@ function runSeed(): Promise<void> {
     })
     child.stderr?.on('data', (buf: Buffer) => {
       const line = buf.toString().trimEnd()
-      if (line) log.warn(line)
+      if (line) log.error(line)
     })
 
     child.on('close', (code) => {

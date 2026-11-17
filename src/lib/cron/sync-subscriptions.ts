@@ -18,13 +18,9 @@ export function syncSubscriptions() {
         'sync',
         {}
       )
-      if (result.synced > 0 || result.errors > 0) {
-        createLogger('cron').info('Subscription sync', {
-          checked: result.checked,
-          synced: result.synced,
-          errors: result.errors,
-        })
-      }
+      const fields = { checked: result.checked, synced: result.synced, errors: result.errors }
+      if (result.errors > 0) createLogger('cron').error('Subscription sync had errors', fields)
+      else if (result.synced > 0) createLogger('cron').info('Subscription sync', fields)
     } catch (error) {
       createLogger('cron').error('Subscription sync failed', { err: error })
     }

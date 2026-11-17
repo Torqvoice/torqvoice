@@ -86,7 +86,16 @@ const platformLog = createLogger('platform-backup')
  * on each tick so the hour's line goes out on time. A failure is also logged
  * at `error` the moment it happens.
  */
-const rollup = createRollup('backup', 'Backups', { order: ['finished', 'failed'] })
+function newRollup() {
+  return createRollup('backup', 'Backups', { order: ['finished', 'failed'] })
+}
+// On globalThis, like the backup lock: a server action and the cron can load
+// separate copies of this module, and both must count into the same total.
+const rollupHolder = globalThis as unknown as {
+  __torqvoiceBackupRollup?: ReturnType<typeof newRollup>
+}
+rollupHolder.__torqvoiceBackupRollup ??= newRollup()
+const rollup = rollupHolder.__torqvoiceBackupRollup
 
 export function reportBackupRollup(): void {
   rollup.add({})
