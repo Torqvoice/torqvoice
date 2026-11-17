@@ -504,7 +504,8 @@ async function fetchRetention(orgId: string, start: Date, end: Date) {
 
 async function fetchInventory(orgId: string) {
   const parts = await db.inventoryPart.findMany({
-    where: { organizationId: orgId, isArchived: false },
+    // Stock on hand only: parts that do not track stock are left out.
+    where: { organizationId: orgId, isArchived: false, trackStock: true },
     select: {
       id: true,
       name: true,

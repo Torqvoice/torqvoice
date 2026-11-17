@@ -302,6 +302,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'category',
     'quantity',
     'minQuantity',
+    'trackStock',
     'unit',
     'unitCost',
     'sellPrice',

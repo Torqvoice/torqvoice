@@ -14,7 +14,8 @@
     "supplier": "Tiekėjas",
     "location": "Vieta",
     "low": "Mažas",
-    "barcode": "Brūkšninis kodas"
+    "barcode": "Brūkšninis kodas",
+    "notTracked": "Nesekama"
   },
   "empty": {
     "noMatch": "Nėra dalių, atitinkančių paiešką.",
@@ -74,7 +75,8 @@
     "currentStock": "Dabartinės atsargos: {quantity}",
     "addedStock": "Pridėta {amount} prie atsargų",
     "customAmount": "Kiekis...",
-    "scanParts": "Nuskaityti dalis"
+    "scanParts": "Nuskaityti dalis",
+    "notTracked": "Šios dalies atsargos nesekamos"
   },
   "form": {
     "editPart": "Redaguoti dalį",
@@ -142,7 +144,10 @@
     "tagsHint": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos transporto priemonės marke ar modeliu.",
     "tagsHintMarine": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos laivo marke ar modeliu.",
     "removeTag": "Pašalinti {tag}",
-    "tagTooLong": "Žyma gali būti ne ilgesnė nei {max} simbolių. Sutrumpinkite ją prieš išsaugodami."
+    "tagTooLong": "Žyma gali būti ne ilgesnė nei {max} simbolių. Sutrumpinkite ją prieš išsaugodami.",
+    "trackStock": "Sekti atsargas",
+    "trackStockHint": "Išjunkite mokesčiams ir eksploatacinėms medžiagoms, kurias apmokestinate, bet niekada neskaičiuojate.",
+    "trackStockOffNote": "Išsaugojus kiekis nustatomas į nulį ir tai įrašoma atsargų istorijoje. Darbai jo nebekeičia."
   },
   "openMenu": "Atidaryti meniu",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Užsakymas ištrintas",
       "quote_conversion": "Pasiūlymas konvertuotas",
       "manual_adjustment": "Rankinis koregavimas",
-      "bulk_markup": "Masinis antkainis"
+      "bulk_markup": "Masinis antkainis",
+      "stock_tracking_off": "Atsargų sekimas išjungtas"
     },
     "backToInventory": "Sandėlis",
     "reason": "Priežastis",

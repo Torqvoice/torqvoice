@@ -14,7 +14,8 @@
     "supplier": "Fornitore",
     "location": "Posizione",
     "low": "Basso",
-    "barcode": "Codice a barre"
+    "barcode": "Codice a barre",
+    "notTracked": "Non tracciato"
   },
   "empty": {
     "noMatch": "Nessun ricambio corrisponde alla ricerca.",
@@ -74,7 +75,8 @@
     "currentStock": "Stock attuale: {quantity}",
     "addedStock": "{amount} aggiunti allo stock",
     "customAmount": "Qtà...",
-    "scanParts": "Scansiona ricambi"
+    "scanParts": "Scansiona ricambi",
+    "notTracked": "La giacenza di questo ricambio non è tracciata"
   },
   "form": {
     "editPart": "Modifica ricambio",
@@ -142,7 +144,10 @@
     "tagsHint": "Premi Invio o una virgola dopo ogni tag. In un lavoro, i ricambi con la marca o il modello del veicolo compaiono per primi.",
     "tagsHintMarine": "Premi Invio o una virgola dopo ogni tag. In un lavoro, i ricambi con la marca o il modello dell'imbarcazione compaiono per primi.",
     "removeTag": "Rimuovi {tag}",
-    "tagTooLong": "Un tag può avere al massimo {max} caratteri. Accorcialo prima di salvare."
+    "tagTooLong": "Un tag può avere al massimo {max} caratteri. Accorcialo prima di salvare.",
+    "trackStock": "Traccia giacenza",
+    "trackStockHint": "Disattiva per contributi e materiali di consumo che addebiti ma non conti mai.",
+    "trackStockOffNote": "Salvando, la quantità va a zero e viene annotato nello storico della giacenza. I lavori non la modificano più."
   },
   "openMenu": "Apri menu",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Ordine eliminato",
       "quote_conversion": "Preventivo convertito",
       "manual_adjustment": "Rettifica manuale",
-      "bulk_markup": "Ricarico massivo"
+      "bulk_markup": "Ricarico massivo",
+      "stock_tracking_off": "Tracciamento giacenza disattivato"
     },
     "backToInventory": "Magazzino",
     "reason": "Motivo",

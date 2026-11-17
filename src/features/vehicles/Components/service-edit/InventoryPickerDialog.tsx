@@ -174,7 +174,7 @@ export function InventoryPickerDialog({
                 ) : (
                   <span>{formatCurrency(ip.unitCost, currencyCode)}</span>
                 )}
-                {ip.quantity > 0 ? (
+                {ip.trackStock === false ? null : ip.quantity > 0 ? (
                   <span>{t('inStock', { quantity: formatQuantity(ip.quantity, ip.unit) })}</span>
                 ) : ip.quantity === 0 ? (
                   <span className="font-medium text-amber-600 dark:text-amber-500">

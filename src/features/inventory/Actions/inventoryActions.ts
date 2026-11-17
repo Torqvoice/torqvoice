@@ -1,6 +1,6 @@
 'use server'
 
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { withAuth } from '@/lib/with-auth'
 import {
@@ -9,6 +9,7 @@ import {
   adjustStockSchema,
 } from '../Schema/inventorySchema'
 import { onInventoryChanged } from '../Lib/onInventoryChanged'
+import { recordAbsoluteStockChange } from '../Lib/reconcileStock'
 import { Prisma } from '@/generated/prisma/client'
 import { z } from 'zod'
 import { releaseFiles, parseStoredFileUrl } from '@/lib/files/manager'
@@ -95,6 +96,7 @@ export async function getInventoryPartsPaginated(params: {
         FROM "public"."inventory_parts"
         WHERE "organizationId" = ${organizationId}
           AND "isArchived" = false
+          AND "trackStock" = true
           AND COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault}) > 0
           AND "quantity" <= COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault})
       `
@@ -174,6 +176,8 @@ export async function createInventoryPart(input: unknown) {
         db.inventoryPart.create({
           data: {
             ...rest,
+            // A part that does not track stock has none to start with.
+            quantity: rest.trackStock === false ? 0 : rest.quantity,
             partNumber: rest.partNumber || undefined,
             unit: rest.unit?.trim() || undefined,
             barcode: barcode ?? undefined,
@@ -233,9 +237,14 @@ export async function updateInventoryPart(input: unknown) {
       // gallery rows are keyed by the part alone.
       const owned = await db.inventoryPart.findFirst({
         where: { id, organizationId },
-        select: { id: true },
+        select: { id: true, trackStock: true },
       })
       if (!owned) throw new Error('Part not found')
+
+      // Left out (a page opened before the switch existed), the part keeps
+      // what it has.
+      const tracksStock = updateData.trackStock ?? owned.trackStock
+      const turningTrackingOff = owned.trackStock && !tracksStock
 
       // The images the part had before a change to them, let go at the end
       // once nothing uses them (the new gallery keeps the ones it still has).
@@ -274,29 +283,49 @@ export async function updateInventoryPart(input: unknown) {
 
       const nextBarcode =
         updateData.barcode !== undefined ? normalizeBarcode(updateData.barcode) : undefined
+      const changes: Prisma.InventoryPartUpdateManyMutationInput = {
+        ...updateData,
+        // An untracked part holds no stock and is never low, whatever
+        // the form sent. Turned back on, it starts from what is typed.
+        ...(tracksStock ? {} : { quantity: 0, lowStockAlertedAt: null }),
+        partNumber: updateData.partNumber !== undefined ? updateData.partNumber || null : undefined,
+        unit: updateData.unit !== undefined ? updateData.unit.trim() || null : undefined,
+        barcode: nextBarcode,
+        description:
+          updateData.description !== undefined ? updateData.description || null : undefined,
+        category: updateData.category !== undefined ? updateData.category || null : undefined,
+        supplier: updateData.supplier !== undefined ? updateData.supplier || null : undefined,
+        supplierPhone:
+          updateData.supplierPhone !== undefined ? updateData.supplierPhone || null : undefined,
+        supplierEmail:
+          updateData.supplierEmail !== undefined ? updateData.supplierEmail || null : undefined,
+        supplierUrl:
+          updateData.supplierUrl !== undefined ? updateData.supplierUrl || null : undefined,
+        location: updateData.location !== undefined ? updateData.location || null : undefined,
+        tags: updateData.tags !== undefined ? normalizePartTags(updateData.tags) : undefined,
+      }
+      const writePart = (client: Pick<TxClient, 'inventoryPart'>) =>
+        client.inventoryPart.updateMany({ where: { id, organizationId }, data: changes })
+
       const result = await withBarcodeConflictMessage(organizationId, nextBarcode ?? null, () =>
-        db.inventoryPart.updateMany({
-          where: { id, organizationId },
-          data: {
-            ...updateData,
-            partNumber:
-              updateData.partNumber !== undefined ? updateData.partNumber || null : undefined,
-            unit: updateData.unit !== undefined ? updateData.unit.trim() || null : undefined,
-            barcode: nextBarcode,
-            description:
-              updateData.description !== undefined ? updateData.description || null : undefined,
-            category: updateData.category !== undefined ? updateData.category || null : undefined,
-            supplier: updateData.supplier !== undefined ? updateData.supplier || null : undefined,
-            supplierPhone:
-              updateData.supplierPhone !== undefined ? updateData.supplierPhone || null : undefined,
-            supplierEmail:
-              updateData.supplierEmail !== undefined ? updateData.supplierEmail || null : undefined,
-            supplierUrl:
-              updateData.supplierUrl !== undefined ? updateData.supplierUrl || null : undefined,
-            location: updateData.location !== undefined ? updateData.location || null : undefined,
-            tags: updateData.tags !== undefined ? normalizePartTags(updateData.tags) : undefined,
-          },
-        })
+        turningTrackingOff
+          ? // Turning tracking off empties the shelf in the ledger first, while
+            // the part still counts: one entry takes whatever was there (often
+            // a large negative) to zero, so it stops showing in stock reports.
+            db.$transaction(async (tx) => {
+              await recordAbsoluteStockChange(
+                tx,
+                organizationId,
+                id,
+                0,
+                { reason: 'stock_tracking_off', userId },
+                // A part already at zero still gets the entry: the history
+                // is where the day tracking stopped is read from.
+                { recordUnchanged: true }
+              )
+              return writePart(tx)
+            })
+          : writePart(db)
       )
       if (result.count === 0) throw new Error('Part not found')
       await releaseFiles(replacedImages, { organizationId, reason: 'inventory images replaced' })
@@ -385,14 +414,18 @@ export async function adjustInventoryStock(input: unknown) {
         where: { id, organizationId },
       })
       if (!part) throw new Error('Part not found')
+      if (part.trackStock === false) throw new Error('This part does not track stock')
 
       const newQuantity = part.quantity + adjustment
       if (newQuantity < 0) throw new Error('Insufficient stock')
 
-      await db.inventoryPart.updateMany({
-        where: { id, organizationId },
+      // Tracking is checked again in the write itself: switched off between
+      // the read above and here, the part must stay at zero.
+      const written = await db.inventoryPart.updateMany({
+        where: { id, organizationId, trackStock: true },
         data: { quantity: newQuantity },
       })
+      if (written.count === 0) throw new Error('This part does not track stock')
       await onInventoryChanged(organizationId)
       return { quantity: newQuantity }
     },
@@ -462,6 +495,7 @@ export async function getInventoryPartsList() {
           unitCost: true,
           sellPrice: true,
           quantity: true,
+          trackStock: true,
           category: true,
           tags: true,
           gallery: {
@@ -544,7 +578,7 @@ export async function hasAnyReorderPoint() {
       if ((Number(setting?.value) || 0) > 0) return true
 
       const configured = await db.inventoryPart.count({
-        where: { organizationId, isArchived: false, minQuantity: { gt: 0 } },
+        where: { organizationId, isArchived: false, trackStock: true, minQuantity: { gt: 0 } },
       })
       return configured > 0
     },

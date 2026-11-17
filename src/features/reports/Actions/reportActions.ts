@@ -741,7 +741,9 @@ export async function getInventoryReport() {
   return withAuth(
     async ({ organizationId }) => {
       const parts = await db.inventoryPart.findMany({
-        where: { organizationId, isArchived: false },
+        // Stock on hand: a part that does not track stock (a fee,
+        // consumables) has none, so it is not counted, valued or listed low.
+        where: { organizationId, isArchived: false, trackStock: true },
         select: {
           id: true,
           name: true,

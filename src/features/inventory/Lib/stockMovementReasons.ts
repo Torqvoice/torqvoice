@@ -12,4 +12,5 @@ export const STOCK_MOVEMENT_REASONS = [
   'quote_conversion',
   'manual_adjustment',
   'bulk_markup',
+  'stock_tracking_off',
 ] as const

@@ -14,7 +14,8 @@
     "supplier": "Tedarikçi",
     "location": "Konum",
     "low": "Düşük",
-    "barcode": "Barkod"
+    "barcode": "Barkod",
+    "notTracked": "Takip edilmiyor"
   },
   "empty": {
     "noMatch": "Aramanızla eşleşen parça bulunamadı.",
@@ -74,7 +75,8 @@
     "currentStock": "Mevcut stok: {quantity}",
     "addedStock": "Stoka {amount} eklendi",
     "customAmount": "Adet...",
-    "scanParts": "Parça tara"
+    "scanParts": "Parça tara",
+    "notTracked": "Bu parçanın stoğu takip edilmiyor"
   },
   "form": {
     "editPart": "Parçayı düzenle",
@@ -142,7 +144,10 @@
     "tagsHint": "Her etiketten sonra Enter'a veya virgüle basın. Bir işte, aracın markası veya modeliyle etiketlenmiş parçalar önce listelenir.",
     "tagsHintMarine": "Her etiketten sonra Enter'a veya virgüle basın. Bir işte, teknenin markası veya modeliyle etiketlenmiş parçalar önce listelenir.",
     "removeTag": "{tag} kaldır",
-    "tagTooLong": "Bir etiket en fazla {max} karakter olabilir. Kaydetmeden önce kısaltın."
+    "tagTooLong": "Bir etiket en fazla {max} karakter olabilir. Kaydetmeden önce kısaltın.",
+    "trackStock": "Stok takibi",
+    "trackStockHint": "Ücretlendirdiğiniz ama hiç saymadığınız ücretler ve sarf malzemeleri için kapatın.",
+    "trackStockOffNote": "Kaydedince miktar sıfırlanır ve stok geçmişine not düşülür. İşler artık miktarı değiştirmez."
   },
   "openMenu": "Menüyü aç",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "İş emri silindi",
       "quote_conversion": "Teklif dönüştürüldü",
       "manual_adjustment": "Manuel düzeltme",
-      "bulk_markup": "Toplu kâr marjı"
+      "bulk_markup": "Toplu kâr marjı",
+      "stock_tracking_off": "Stok takibi kapatıldı"
     },
     "backToInventory": "Stok",
     "reason": "Neden",

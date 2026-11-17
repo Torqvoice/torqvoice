@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
 import {
   Dialog,
   DialogBody,
@@ -92,6 +93,11 @@ interface InventoryPartFormProps {
     category: string | null
     quantity: number
     minQuantity: number
+    /**
+     * Whether jobs count this part down. A part opened without it keeps what
+     * is stored: the switch is then not sent on Save.
+     */
+    trackStock?: boolean
     unit: string | null
     unitCost: number
     sellPrice: number
@@ -161,6 +167,7 @@ export function InventoryPartForm({
   const shownIssue = fetchIssue?.url === supplierUrl ? fetchIssue.issue : null
   const [category, setCategory] = useState(part?.category ?? '')
   const [unit, setUnit] = useState(part ? (part.unit ?? '') : (defaultUnit ?? ''))
+  const [trackStock, setTrackStock] = useState(part?.trackStock ?? true)
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [categorySearch, setCategorySearch] = useState('')
   const [tags, setTags] = useState<string[]>(part?.tags ?? [])
@@ -195,6 +202,7 @@ export function InventoryPartForm({
       setFetchIssue(null)
       setCategory(part?.category ?? '')
       setUnit(part ? (part.unit ?? '') : (defaultUnit ?? ''))
+      setTrackStock(part?.trackStock ?? true)
       setCategorySearch('')
       setTags(part?.tags ?? [])
       sellPriceManualRef.current = !!(part?.sellPrice && part.sellPrice > 0)
@@ -397,6 +405,9 @@ export function InventoryPartForm({
     }
   }, [gallery, t])
 
+  // Switching tracking off on a part that has a count: Save takes it to zero.
+  const willEmptyStock = Boolean(part?.trackStock) && !trackStock && part?.quantity !== 0
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -406,6 +417,7 @@ export function InventoryPartForm({
     // ones rather than being saved with none.
     const typedTags = splitTagInput(String(formData.get('tagDraft') ?? ''))
     const knowsTags = !part || Array.isArray(part.tags)
+    const knowsTrackStock = !part || typeof part.trackStock === 'boolean'
     // The box keeps a tag that is too long, with a note under it; saving it
     // would only come back refused, so it is shortened first.
     if (typedTags.some((tag) => tag.length > MAX_TAG_LENGTH)) {
@@ -431,8 +443,12 @@ export function InventoryPartForm({
       barcode: optional(formData.get('barcode')),
       description: optional(formData.get('description')),
       category: optional(category),
-      quantity: Number(formData.get('quantity')) || 0,
-      minQuantity: Number(formData.get('minQuantity')) || 0,
+      // The stock fields are not on the form while tracking is off. The
+      // reorder point is sent back as stored, for the day tracking comes
+      // back: left out, the action would read it as zero.
+      quantity: trackStock ? Number(formData.get('quantity')) || 0 : 0,
+      minQuantity: trackStock ? Number(formData.get('minQuantity')) || 0 : (part?.minQuantity ?? 0),
+      trackStock: knowsTrackStock ? trackStock : undefined,
       unit: unit.trim(),
       unitCost: Number(formData.get('unitCost')) || 0,
       sellPrice: Number(formData.get('sellPrice')) || 0,
@@ -875,18 +891,35 @@ export function InventoryPartForm({
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="quantity">{t('form.quantity')}</Label>
-                    <Input
-                      id="quantity"
-                      name="quantity"
-                      type="number"
-                      min="0"
-                      step="any"
-                      defaultValue={part?.quantity ?? 1}
-                    />
+                <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="trackStock">{t('form.trackStock')}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {willEmptyStock ? t('form.trackStockOffNote') : t('form.trackStockHint')}
+                    </p>
                   </div>
+                  <Switch id="trackStock" checked={trackStock} onCheckedChange={setTrackStock} />
+                </div>
+
+                <div
+                  className={cn(
+                    'grid grid-cols-2 gap-3 sm:gap-4',
+                    trackStock ? 'sm:grid-cols-5' : 'sm:grid-cols-3'
+                  )}
+                >
+                  {trackStock && (
+                    <div className="space-y-2">
+                      <Label htmlFor="quantity">{t('form.quantity')}</Label>
+                      <Input
+                        id="quantity"
+                        name="quantity"
+                        type="number"
+                        min="0"
+                        step="any"
+                        defaultValue={part ? (part.trackStock === false ? 0 : part.quantity) : 1}
+                      />
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label htmlFor="unit">{t('form.unit')}</Label>
                     <UnitCombobox
@@ -896,17 +929,19 @@ export function InventoryPartForm({
                       unitSystem={unitSystem}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
-                    <Input
-                      id="minQuantity"
-                      name="minQuantity"
-                      type="number"
-                      min="0"
-                      step="any"
-                      defaultValue={part?.minQuantity ?? 0}
-                    />
-                  </div>
+                  {trackStock && (
+                    <div className="space-y-2">
+                      <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
+                      <Input
+                        id="minQuantity"
+                        name="minQuantity"
+                        type="number"
+                        min="0"
+                        step="any"
+                        defaultValue={part?.minQuantity ?? 0}
+                      />
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label htmlFor="unitCost">{t('form.unitCost')}</Label>
                     <Input

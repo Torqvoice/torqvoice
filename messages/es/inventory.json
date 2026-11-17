@@ -14,7 +14,8 @@
     "supplier": "Proveedor",
     "location": "Ubicación",
     "low": "Bajo",
-    "barcode": "Código de barras"
+    "barcode": "Código de barras",
+    "notTracked": "Sin seguimiento"
   },
   "empty": {
     "noMatch": "Ninguna pieza coincide con su búsqueda.",
@@ -74,7 +75,8 @@
     "currentStock": "Stock actual: {quantity}",
     "addedStock": "{amount} agregados al stock",
     "customAmount": "Cant...",
-    "scanParts": "Escanear piezas"
+    "scanParts": "Escanear piezas",
+    "notTracked": "No se lleva el stock de esta pieza"
   },
   "form": {
     "editPart": "Editar pieza",
@@ -142,7 +144,10 @@
     "tagsHint": "Pulsa Intro o una coma después de cada una. En un trabajo, las piezas etiquetadas con la marca o el modelo del vehículo aparecen primero.",
     "tagsHintMarine": "Pulsa Intro o una coma después de cada una. En un trabajo, las piezas etiquetadas con la marca o el modelo de la embarcación aparecen primero.",
     "removeTag": "Quitar {tag}",
-    "tagTooLong": "Una etiqueta puede tener como máximo {max} caracteres. Acórtala antes de guardar."
+    "tagTooLong": "Una etiqueta puede tener como máximo {max} caracteres. Acórtala antes de guardar.",
+    "trackStock": "Controlar stock",
+    "trackStockHint": "Desactívalo para tasas y consumibles que cobras pero nunca cuentas.",
+    "trackStockOffNote": "Al guardar, la cantidad pasa a cero y queda anotado en el historial de stock. Los trabajos ya no la cambian."
   },
   "openMenu": "Abrir menú",
   "history": {
@@ -159,7 +164,8 @@
       "service_record_deleted": "Orden eliminada",
       "quote_conversion": "Presupuesto convertido",
       "manual_adjustment": "Ajuste manual",
-      "bulk_markup": "Margen masivo"
+      "bulk_markup": "Margen masivo",
+      "stock_tracking_off": "Control de stock desactivado"
     },
     "backToInventory": "Inventario",
     "reason": "Motivo",

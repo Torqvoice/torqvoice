@@ -92,6 +92,8 @@ interface SearchResult {
     name: string
     partNumber: string | null
     quantity: number
+    /** False for a fee or consumable that is charged but never counted. */
+    trackStock?: boolean
     unit: string | null
   }[]
   quotes: {
@@ -1050,7 +1052,11 @@ export function SearchCommand({
                 onSelect={() => pickRecord('/inventory', p.name, p.partNumber ?? undefined)}
                 icon={Package}
                 title={p.name}
-                subtitle={`${formatQuantity(p.quantity, p.unit)} in stock`}
+                subtitle={
+                  p.trackStock === false
+                    ? undefined
+                    : `${formatQuantity(p.quantity, p.unit)} in stock`
+                }
                 trailing={p.partNumber}
               />
             ))}

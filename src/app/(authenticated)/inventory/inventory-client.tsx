@@ -89,6 +89,7 @@ interface InventoryPart {
   category: string | null
   quantity: number
   minQuantity: number
+  trackStock: boolean
   unit: string | null
   unitCost: number
   sellPrice: number
@@ -574,7 +575,9 @@ export function InventoryClient({
                       <span className="inline-flex items-center gap-1.5">
                         {t('table.inStock')}:{' '}
                         <span className="font-medium text-foreground">
-                          {formatQuantity(part.quantity, part.unit)}
+                          {part.trackStock
+                            ? formatQuantity(part.quantity, part.unit)
+                            : t('table.notTracked')}
                         </span>
                         {isLow && (
                           <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
@@ -828,7 +831,11 @@ export function InventoryClient({
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span>{formatQuantity(part.quantity, part.unit)}</span>
+                            {part.trackStock ? (
+                              <span>{formatQuantity(part.quantity, part.unit)}</span>
+                            ) : (
+                              <span className="text-muted-foreground">{t('table.notTracked')}</span>
+                            )}
                             {isLow && (
                               <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
                                 {t('table.low')}

@@ -175,7 +175,8 @@ export async function processOrgLowStock(organizationId: string, now = new Date(
   // run on every stock movement, not just on the hourly sweep.
   //
   // The COALESCE mirrors effectiveThreshold(): the part's own reorder point
-  // wins, else the org-wide default.
+  // wins, else the org-wide default. A part that does not track stock is
+  // never low; one still carrying a marker is only re-armed.
   const threshold = settings.defaultThreshold
   const candidates = await db.$queryRaw<
     {
@@ -186,15 +187,18 @@ export async function processOrgLowStock(organizationId: string, now = new Date(
       minQuantity: number
       unit: string | null
       lowStockAlertedAt: Date | null
+      trackStock: boolean
     }[]
   >`
-    SELECT "id", "name", "partNumber", "quantity", "minQuantity", "unit", "lowStockAlertedAt"
+    SELECT "id", "name", "partNumber", "quantity", "minQuantity", "unit", "lowStockAlertedAt",
+      "trackStock"
     FROM "public"."inventory_parts"
     WHERE "organizationId" = ${organizationId}
       AND "isArchived" = false
       AND (
         (
-          COALESCE(NULLIF("minQuantity", 0), ${threshold}) > 0
+          "trackStock" = true
+          AND COALESCE(NULLIF("minQuantity", 0), ${threshold}) > 0
           AND "quantity" <= COALESCE(NULLIF("minQuantity", 0), ${threshold})
         )
         OR "lowStockAlertedAt" IS NOT NULL

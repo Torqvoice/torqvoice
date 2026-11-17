@@ -106,6 +106,7 @@ export function MyActiveJobs({
     partNumber: string | null
     barcode: string | null
     quantity: number
+    trackStock?: boolean
     unit: string | null
     category: string | null
     sellPrice: number
@@ -695,11 +696,13 @@ export function MyActiveJobs({
                     )}
                   </div>
                 </div>
-                <div className="text-right text-sm text-muted-foreground shrink-0">
-                  {t('inStock', {
-                    quantity: formatQuantity(scannedPart.quantity, scannedPart.unit),
-                  })}
-                </div>
+                {scannedPart.trackStock !== false && (
+                  <div className="text-right text-sm text-muted-foreground shrink-0">
+                    {t('inStock', {
+                      quantity: formatQuantity(scannedPart.quantity, scannedPart.unit),
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-center gap-4 py-6">

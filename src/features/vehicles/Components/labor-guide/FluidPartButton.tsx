@@ -138,14 +138,17 @@ export function FluidPartButton({ fluid, units, stock, added, onAdd }: FluidPart
                     <span className="block text-xs text-muted-foreground">
                       {formatCurrency(line.unitPrice)}
                       {part.unit ? ` / ${part.unit}` : ''}
-                      {' · '}
-                      {part.quantity > 0
-                        ? tParts('inStock', {
-                            quantity: part.unit
-                              ? `${num(part.quantity)} ${part.unit}`
-                              : num(part.quantity),
-                          })
-                        : tParts('outOfStock')}
+                      {part.trackStock === false
+                        ? null
+                        : ` · ${
+                            part.quantity > 0
+                              ? tParts('inStock', {
+                                  quantity: part.unit
+                                    ? `${num(part.quantity)} ${part.unit}`
+                                    : num(part.quantity),
+                                })
+                              : tParts('outOfStock')
+                          }`}
                     </span>
                   </span>
                   <span className="shrink-0 text-xs font-medium tabular-nums">{qty(line)}</span>
