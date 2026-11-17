@@ -1,4 +1,4 @@
-import type { IncomingMessage } from 'node:http'
+import type { NextRequest } from 'next/server'
 import type WebSocket from 'ws'
 import { isPortalLive } from '@/features/portal/Lib/portalLive'
 import { getCustomerSession } from '@/lib/customer-session'
@@ -58,7 +58,7 @@ const frameSize = (raw: unknown): number =>
         0)
 
 /** The slug or id in the address: /portal/<org>/ws. */
-function orgParamOf(request: IncomingMessage): string | null {
+function orgParamOf(request: NextRequest): string | null {
   // next-ws hands over the address as a path on some versions and as a whole
   // URL on others; read the path from either.
   let path: string
@@ -76,7 +76,7 @@ function orgParamOf(request: IncomingMessage): string | null {
   }
 }
 
-export function UPGRADE(ws: WebSocket, _server: unknown, request: IncomingMessage) {
+export function UPGRADE(ws: WebSocket, _server: unknown, request: NextRequest) {
   const socket = ws as WebSocket & PortalSocket
   let alive = true
   let closed = false

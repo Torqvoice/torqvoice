@@ -10,6 +10,7 @@
  * drive the real bus, rooms and route with pretend sockets.
  */
 import { EventEmitter } from 'node:events'
+import { NextRequest } from 'next/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 const state = vi.hoisted(() => ({
@@ -79,7 +80,7 @@ async function connect(
 ) {
   state.session = as
   const socket = new FakeSocket()
-  UPGRADE(socket as never, null, { url: `/portal/${address}/ws` } as never)
+  UPGRADE(socket as never, null, new NextRequest(`http://localhost/portal/${address}/ws`))
   await settle()
   return socket
 }
