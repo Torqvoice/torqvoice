@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -20,6 +21,10 @@ import {
   type CalendarView,
 } from '@/features/calendar/Lib/calendar-range'
 import { pageTitle } from '@/lib/page-title'
+import {
+  CALENDAR_PREFERENCES_COOKIE,
+  parseCalendarPreferences,
+} from '@/features/calendar/Lib/calendar-preferences'
 
 export function generateMetadata() {
   return pageTitle('calendar')
@@ -84,6 +89,11 @@ export default async function CalendarPage({
         }
       : null
 
+  // Read here so the first paint already has the kinds this person hid.
+  const preferences = parseCalendarPreferences(
+    (await cookies()).get(CALENDAR_PREFERENCES_COOKIE)?.value
+  )
+
   const events = eventsResult.success && eventsResult.data ? eventsResult.data : []
 
   return (
@@ -99,6 +109,7 @@ export default async function CalendarPage({
           currencyCode={currencyCode}
           messageChannels={messageChannels}
           timeOff={timeOff}
+          initialPreferences={preferences}
         />
       </div>
     </>
