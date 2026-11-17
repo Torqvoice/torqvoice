@@ -115,6 +115,7 @@
     "total": "Total",
     "subtotal": "Subtotal de peças: {amount}",
     "deleteRow": "Excluir linha",
+    "reorderRow": "Arraste para reordenar",
     "excludeFromTotal": "Não somar ao total",
     "addFromInventory": "Do estoque",
     "unitCost": "Custo",
@@ -139,6 +140,7 @@
     "hourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
     "serviceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
     "deleteRow": "Excluir linha",
+    "reorderRow": "Arraste para reordenar",
     "excludeFromTotal": "Não somar ao total"
   },
   "notes": {

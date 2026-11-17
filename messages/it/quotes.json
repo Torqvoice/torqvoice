@@ -115,6 +115,7 @@
     "total": "Totale",
     "subtotal": "Subtotale ricambi: {amount}",
     "deleteRow": "Elimina riga",
+    "reorderRow": "Trascina per riordinare",
     "excludeFromTotal": "Escludi dal totale",
     "addFromInventory": "Dal magazzino",
     "unitCost": "Costo",
@@ -139,6 +140,7 @@
     "hourlyHint": "A ore: calcolato sulle ore lavorate (ore × tariffa/h). Clicca per cambiare.",
     "serviceHint": "Servizio: addebitato come importo fisso per unità. Clicca per cambiare.",
     "deleteRow": "Elimina riga",
+    "reorderRow": "Trascina per riordinare",
     "excludeFromTotal": "Escludi dal totale"
   },
   "notes": {

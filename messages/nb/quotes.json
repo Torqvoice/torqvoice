@@ -115,6 +115,7 @@
     "total": "Totalt",
     "subtotal": "Deler delsum: {amount}",
     "deleteRow": "Slett rad",
+    "reorderRow": "Dra for å endre rekkefølge",
     "excludeFromTotal": "Hold utenfor summen",
     "addFromInventory": "Fra lager",
     "unitCost": "Kostnad",
@@ -139,6 +140,7 @@
     "hourlyHint": "Timepris: beregnes etter arbeidede timer (timer × sats/t). Klikk for å bytte.",
     "serviceHint": "Fastpris: beregnes som en fast sum per enhet. Klikk for å bytte.",
     "deleteRow": "Slett rad",
+    "reorderRow": "Dra for å endre rekkefølge",
     "excludeFromTotal": "Hold utenfor summen"
   },
   "notes": {

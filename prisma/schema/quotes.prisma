@@ -128,6 +128,10 @@ model QuotePart {
   /// ServicePart on conversion so the job deducts the right inventory item.
   inventoryPartId String?
 
+  /// Where the line sits on the quote, as the workshop dragged it. Rows are
+  /// rewritten on every save, so this is the array index they were sent in.
+  sortOrder Int @default(0)
+
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
 
@@ -145,6 +149,8 @@ model QuoteLabor {
   excluded    Boolean @default(false)
   /// Carried into ServiceLabor on conversion. See there.
   taxable     Boolean @default(true)
+  /// Where the line sits on the quote. See QuotePart.sortOrder.
+  sortOrder   Int     @default(0)
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)

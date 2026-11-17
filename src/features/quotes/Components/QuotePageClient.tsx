@@ -268,6 +268,7 @@ export function QuotePageClient({
         partsSubtotal={state.partsSubtotal}
         onUpdate={state.updatePart}
         onDelete={state.deletePart}
+        onMove={state.movePart}
         onAdd={state.addPart}
         onAddBulk={state.addPartBulk}
         inventoryParts={inventoryParts}
@@ -281,6 +282,7 @@ export function QuotePageClient({
         laborSubtotal={state.laborSubtotal}
         onUpdate={state.updateLabor}
         onDelete={state.deleteLabor}
+        onMove={state.moveLabor}
         onAdd={state.addLabor}
         onAddService={state.addService}
         hasPresets={laborPresets.length > 0}

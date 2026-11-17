@@ -9,19 +9,11 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  AlertTriangle,
-  Eye,
-  GripVertical,
-  Layers,
-  Plus,
-  ScanLine,
-  Trash2,
-  Wrench,
-} from 'lucide-react'
+import { AlertTriangle, Eye, Layers, Plus, ScanLine, Trash2, Wrench } from 'lucide-react'
 import { IconActionButton } from '@/components/icon-action-button'
 import { FieldRow } from '@/components/line-item-field'
 import { cn } from '@/lib/utils'
+import { LineDragHandle } from '@/components/line-drag-handle'
 import { AppCard } from '@/components/app-card'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import {
@@ -139,13 +131,7 @@ function SortableLaborRow({
         isDragging && dragEnabled && 'z-10 opacity-75'
       )}
     >
-      <button
-        type="button"
-        className="flex h-9 w-6 cursor-grab items-center justify-center text-muted-foreground hover:text-foreground active:cursor-grabbing"
-        {...(dragEnabled ? { ...attributes, ...listeners } : {})}
-      >
-        <GripVertical className="h-4 w-4" />
-      </button>
+      <LineDragHandle {...(dragEnabled ? { ...attributes, ...listeners } : {})} />
       <div className="flex min-w-0 flex-col gap-2 @2xl:contents">
         <div className="flex gap-2">
           <Textarea

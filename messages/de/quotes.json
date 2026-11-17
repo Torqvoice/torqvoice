@@ -115,6 +115,7 @@
     "total": "Gesamt",
     "subtotal": "Teile Zwischensumme: {amount}",
     "deleteRow": "Zeile löschen",
+    "reorderRow": "Ziehen zum Neuordnen",
     "excludeFromTotal": "Von der Summe ausnehmen",
     "addFromInventory": "Aus Lager",
     "unitCost": "Kosten",
@@ -139,6 +140,7 @@
     "hourlyHint": "Stundenbasiert: nach geleisteten Stunden berechnet (Stunden × Satz/Std.). Zum Wechseln klicken.",
     "serviceHint": "Pauschale: als Festpreis pro Einheit berechnet. Zum Wechseln klicken.",
     "deleteRow": "Zeile löschen",
+    "reorderRow": "Ziehen zum Neuordnen",
     "excludeFromTotal": "Von der Summe ausnehmen"
   },
   "notes": {

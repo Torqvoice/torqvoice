@@ -115,6 +115,7 @@
     "total": "Suma",
     "subtotal": "Dalių tarpinė suma: {amount}",
     "deleteRow": "Ištrinti eilutę",
+    "reorderRow": "Vilkite, kad pakeistumėte tvarką",
     "excludeFromTotal": "Neįskaičiuoti į sumą",
     "addFromInventory": "Iš sandėlio",
     "unitCost": "Savikaina",
@@ -139,6 +140,7 @@
     "hourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
     "serviceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
     "deleteRow": "Ištrinti eilutę",
+    "reorderRow": "Vilkite, kad pakeistumėte tvarką",
     "excludeFromTotal": "Neįskaičiuoti į sumą"
   },
   "notes": {

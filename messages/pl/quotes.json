@@ -115,6 +115,7 @@
     "total": "Suma",
     "subtotal": "Części suma częściowa: {amount}",
     "deleteRow": "Usuń wiersz",
+    "reorderRow": "Przeciągnij, aby zmienić kolejność",
     "excludeFromTotal": "Wyłącz z sumy",
     "addFromInventory": "Z magazynu",
     "unitCost": "Koszt",
@@ -139,6 +140,7 @@
     "hourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
     "serviceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
     "deleteRow": "Usuń wiersz",
+    "reorderRow": "Przeciągnij, aby zmienić kolejność",
     "excludeFromTotal": "Wyłącz z sumy"
   },
   "notes": {

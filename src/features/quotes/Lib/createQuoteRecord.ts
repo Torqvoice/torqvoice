@@ -227,13 +227,13 @@ export async function createQuoteRecord(
 
     if (partItems && partItems.length > 0) {
       await tx.quotePart.createMany({
-        data: taxedParts.map((p) => ({ ...p, quoteId: created.id })),
+        data: taxedParts.map((p, index) => ({ ...p, sortOrder: index, quoteId: created.id })),
       })
     }
 
     if (laborItems && laborItems.length > 0) {
       await tx.quoteLabor.createMany({
-        data: taxedLabor.map((l) => ({ ...l, quoteId: created.id })),
+        data: taxedLabor.map((l, index) => ({ ...l, sortOrder: index, quoteId: created.id })),
       })
     }
 

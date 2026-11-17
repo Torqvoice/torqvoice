@@ -8,6 +8,7 @@ import { Layers, Plus, Trash2, Wrench } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { QuoteLaborInput } from './quote-page-types'
+import { SortableQuoteLines } from './SortableQuoteLines'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/ShopFeeTag'
 import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
@@ -145,6 +146,8 @@ interface QuoteLaborEditorProps {
   laborSubtotal: number
   onUpdate: (index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => void
   onDelete: (index: number) => void
+  /** Moves the line at `from` to `to`, as the workshop dragged it. */
+  onMove: (from: number, to: number) => void
   onAdd: () => void
   onAddService?: () => void
   hasPresets?: boolean
@@ -167,6 +170,7 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
   laborSubtotal,
   onUpdate,
   onDelete,
+  onMove,
   onAdd,
   onAddService,
   hasPresets,
@@ -211,32 +215,39 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
         </div>
         {laborItems.length > 0 && (
           <>
-            <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+            {/* Indented past the drag grip each line starts with. */}
+            <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 pl-7 text-xs font-medium text-muted-foreground sm:grid">
               <span>{t('labor.description')}</span>
               <span>{t('labor.qtyOrHours')}</span>
               <span>{t('labor.rate', { currency: cs })}</span>
               <span>{t('labor.total')}</span>
               <span />
             </div>
-            {laborItems.map((labor, i) => (
-              <QuoteLaborRow
-                key={i}
-                labor={labor}
-                index={i}
-                currencyCode={currencyCode}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
-                tDescriptionPlaceholder={t('labor.descriptionPlaceholder')}
-                tHourlyTag={t('labor.hourlyTag')}
-                tServiceTag={t('labor.serviceTag')}
-                tHourlyHint={t('labor.hourlyHint')}
-                tServiceHint={t('labor.serviceHint')}
-                tQty={t('labor.qty')}
-                tHours={t('labor.hours')}
-                tDeleteRow={t('labor.deleteRow')}
-                tExcludeFromTotal={t('labor.excludeFromTotal')}
-              />
-            ))}
+            <SortableQuoteLines
+              count={laborItems.length}
+              keyPrefix="labor"
+              handleLabel={t('labor.reorderRow')}
+              onMove={onMove}
+              onDelete={onDelete}
+              renderLine={(i, deleteLine) => (
+                <QuoteLaborRow
+                  labor={laborItems[i]}
+                  index={i}
+                  currencyCode={currencyCode}
+                  onUpdate={onUpdate}
+                  onDelete={deleteLine}
+                  tDescriptionPlaceholder={t('labor.descriptionPlaceholder')}
+                  tHourlyTag={t('labor.hourlyTag')}
+                  tServiceTag={t('labor.serviceTag')}
+                  tHourlyHint={t('labor.hourlyHint')}
+                  tServiceHint={t('labor.serviceHint')}
+                  tQty={t('labor.qty')}
+                  tHours={t('labor.hours')}
+                  tDeleteRow={t('labor.deleteRow')}
+                  tExcludeFromTotal={t('labor.excludeFromTotal')}
+                />
+              )}
+            />
             <button
               type="button"
               className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"

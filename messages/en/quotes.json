@@ -115,6 +115,7 @@
     "total": "Total",
     "subtotal": "Parts Subtotal: {amount}",
     "deleteRow": "Delete row",
+    "reorderRow": "Drag to reorder",
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "From stock",
     "unitCost": "Cost",
@@ -139,6 +140,7 @@
     "hourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "serviceHint": "Service: priced as a flat fee per unit. Click to switch.",
     "deleteRow": "Delete row",
+    "reorderRow": "Drag to reorder",
     "excludeFromTotal": "Exclude from total"
   },
   "notes": {
