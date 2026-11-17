@@ -162,6 +162,10 @@ export async function reconcileInventoryForParts(
  * RETURNING would always yield 0, since RETURNING evaluates against the updated
  * row.)
  *
+ * A change that leaves the quantity where it was writes no ledger row, unless
+ * `recordUnchanged` asks for one: an event worth keeping in the history even
+ * when the balance did not move, such as stock tracking being turned off.
+ *
  * Returns false when no row matched — unknown part, wrong organization, or a
  * part that does not track stock.
  */
@@ -170,7 +174,8 @@ export async function recordAbsoluteStockChange(
   organizationId: string,
   inventoryPartId: string,
   newQuantity: number,
-  context: StockMovementContext
+  context: StockMovementContext,
+  options: { recordUnchanged?: boolean } = {}
 ): Promise<boolean> {
   const updated = await tx.$queryRaw<{ quantity: number; delta: number }[]>`
     UPDATE "public"."inventory_parts" AS p
@@ -186,7 +191,7 @@ export async function recordAbsoluteStockChange(
   if (updated.length === 0) return false
 
   const delta = Number(updated[0].delta)
-  if (delta === 0) return true
+  if (delta === 0 && !options.recordUnchanged) return true
 
   await tx.stockMovement.create({
     data: {

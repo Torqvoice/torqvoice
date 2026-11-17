@@ -313,10 +313,16 @@ export async function updateInventoryPart(input: unknown) {
             // the part still counts: one entry takes whatever was there (often
             // a large negative) to zero, so it stops showing in stock reports.
             db.$transaction(async (tx) => {
-              await recordAbsoluteStockChange(tx, organizationId, id, 0, {
-                reason: 'stock_tracking_off',
-                userId,
-              })
+              await recordAbsoluteStockChange(
+                tx,
+                organizationId,
+                id,
+                0,
+                { reason: 'stock_tracking_off', userId },
+                // A part already at zero still gets the entry: the history
+                // is where the day tracking stopped is read from.
+                { recordUnchanged: true }
+              )
               return writePart(tx)
             })
           : writePart(db)
@@ -413,10 +419,13 @@ export async function adjustInventoryStock(input: unknown) {
       const newQuantity = part.quantity + adjustment
       if (newQuantity < 0) throw new Error('Insufficient stock')
 
-      await db.inventoryPart.updateMany({
-        where: { id, organizationId },
+      // Tracking is checked again in the write itself: switched off between
+      // the read above and here, the part must stay at zero.
+      const written = await db.inventoryPart.updateMany({
+        where: { id, organizationId, trackStock: true },
         data: { quantity: newQuantity },
       })
+      if (written.count === 0) throw new Error('This part does not track stock')
       await onInventoryChanged(organizationId)
       return { quantity: newQuantity }
     },

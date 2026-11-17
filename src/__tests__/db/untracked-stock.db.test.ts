@@ -160,4 +160,23 @@ describe('turning stock tracking off', () => {
     expect(await quantityOf(fee)).toBe(0)
     expect(await ledgerOf(fee)).toHaveLength(2)
   })
+
+  it('leaves an entry in the history for a part that already stood at zero', async () => {
+    const fee = await makePart('Disposal fee', { quantity: 0 })
+
+    await db.$transaction((tx) =>
+      stock.recordAbsoluteStockChange(
+        tx,
+        organizationId,
+        fee,
+        0,
+        { reason: 'stock_tracking_off', userId },
+        { recordUnchanged: true }
+      )
+    )
+
+    expect(await ledgerOf(fee)).toMatchObject([
+      { reason: 'stock_tracking_off', delta: 0, quantityAfter: 0 },
+    ])
+  })
 })

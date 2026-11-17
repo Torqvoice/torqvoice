@@ -135,6 +135,20 @@ describe('turning stock tracking off', () => {
     })
   })
 
+  it('notes it in the ledger even when the part already stood at zero', async () => {
+    m.inventoryPart.findFirst.mockResolvedValue({ id: 'fee', trackStock: true })
+    m.$queryRaw.mockResolvedValue([{ quantity: 0, delta: 0 }])
+
+    await updateInventoryPart({ id: 'fee', trackStock: false })
+
+    expect(m.stockMovement.create).toHaveBeenCalledTimes(1)
+    expect(m.stockMovement.create.mock.calls[0][0].data).toMatchObject({
+      reason: 'stock_tracking_off',
+      delta: 0,
+      quantityAfter: 0,
+    })
+  })
+
   it('writes no ledger entry for a part that was already uncounted, and keeps it at zero', async () => {
     m.inventoryPart.findFirst.mockResolvedValue({ id: 'fee', trackStock: false })
 
@@ -177,5 +191,16 @@ describe('an untracked part', () => {
 
     expect(result.success).toBe(false)
     expect(m.inventoryPart.updateMany).not.toHaveBeenCalled()
+  })
+
+  it('refuses the scan when tracking was switched off while it was being added', async () => {
+    // Counted when the scan read it, uncounted by the time it wrote.
+    m.inventoryPart.findFirst.mockResolvedValue({ id: 'fee', trackStock: true, quantity: 0 })
+    m.inventoryPart.updateMany.mockResolvedValue({ count: 0 })
+
+    const result = await adjustInventoryStock({ id: 'fee', adjustment: 5 })
+
+    expect(result.success).toBe(false)
+    expect(m.inventoryPart.updateMany.mock.lastCall[0].where).toMatchObject({ trackStock: true })
   })
 })

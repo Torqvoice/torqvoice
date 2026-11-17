@@ -444,9 +444,10 @@ export function InventoryPartForm({
       description: optional(formData.get('description')),
       category: optional(category),
       // The stock fields are not on the form while tracking is off. The
-      // reorder point is left as stored, for the day tracking comes back.
+      // reorder point is sent back as stored, for the day tracking comes
+      // back: left out, the action would read it as zero.
       quantity: trackStock ? Number(formData.get('quantity')) || 0 : 0,
-      minQuantity: trackStock ? Number(formData.get('minQuantity')) || 0 : undefined,
+      minQuantity: trackStock ? Number(formData.get('minQuantity')) || 0 : (part?.minQuantity ?? 0),
       trackStock: knowsTrackStock ? trackStock : undefined,
       unit: unit.trim(),
       unitCost: Number(formData.get('unitCost')) || 0,

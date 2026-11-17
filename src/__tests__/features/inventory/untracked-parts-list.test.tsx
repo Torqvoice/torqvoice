@@ -173,7 +173,7 @@ describe('the part form', () => {
 
   it('opens an uncounted part with the switch off and says what turning it off does', async () => {
     const user = userEvent.setup()
-    renderList([part({ id: 'supplies', name: 'Shop supplies', quantity: -40 })])
+    renderList([part({ id: 'supplies', name: 'Shop supplies', quantity: -40, minQuantity: 6 })])
 
     await user.click(rowOf('Shop supplies'))
     const dialog = screen.getByRole('dialog')
@@ -188,6 +188,8 @@ describe('the part form', () => {
       id: 'supplies',
       trackStock: false,
       quantity: 0,
+      // Kept for the day tracking is switched back on.
+      minQuantity: 6,
     })
   })
 })
