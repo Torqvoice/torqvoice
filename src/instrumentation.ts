@@ -15,7 +15,8 @@ export async function register() {
       warnAboutAppUrl()
       const { markBackgroundJobsDisabled } = await import('./lib/background-jobs')
       markBackgroundJobsDisabled()
-      console.warn('[cron] DISABLE_BACKGROUND_JOBS=1, no scheduled work started')
+      const { createLogger } = await import('./lib/logger')
+      createLogger('cron').info('DISABLE_BACKGROUND_JOBS=1, no scheduled work started')
       return
     }
     const {

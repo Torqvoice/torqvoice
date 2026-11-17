@@ -21,6 +21,10 @@ import { shiftWorkshopTime, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
+import { createTickSummary } from './tick-summary'
+
+const log = createLogger('cron')
 
 // --------------- date helpers ---------------
 // All in the workshop's zone: the server runs in UTC and its clock says
@@ -778,7 +782,11 @@ export async function processOneSchedule(
         ],
       })
     } catch (emailErr) {
-      console.error(`[cron] Failed to email report to ${recipient.email}:`, emailErr)
+      log.error('Could not email a scheduled report', {
+        organizationId: schedule.organizationId,
+        scheduleId: schedule.id,
+        err: emailErr,
+      })
     }
   }
 
@@ -796,15 +804,19 @@ export async function processOneSchedule(
     },
   })
 
-  console.warn(
-    `[cron] Report schedule ${schedule.id} processed, sent to ${recipients.length} recipients`
-  )
+  log.debug('Report schedule processed', {
+    organizationId: schedule.organizationId,
+    scheduleId: schedule.id,
+    recipients: recipients.length,
+  })
 }
 
 // --------------- main cron ---------------
 
 export function processReportSchedules() {
+  const summary = createTickSummary('Report schedules processed')
   const job = new CronJob('0 * * * *', async () => {
+    let processed = 0
     const dueSchedules = await db.reportSchedule.findMany({
       where: { isActive: true, nextRunDate: { lte: new Date() } },
     })
@@ -821,12 +833,18 @@ export function processReportSchedules() {
           zones.set(schedule.organizationId, timeZone)
         }
         await processOneSchedule(schedule, timeZone)
+        processed++
       } catch (err) {
-        console.error(`[cron] Failed to process report schedule ${schedule.id}:`, err)
+        log.error('Report schedule failed', {
+          organizationId: schedule.organizationId,
+          scheduleId: schedule.id,
+          err,
+        })
       }
     }
+    summary.add(processed)
   })
 
   job.start()
-  console.warn('[cron] Report schedule processor started (hourly)')
+  log.info('Report schedule processor started (hourly)')
 }

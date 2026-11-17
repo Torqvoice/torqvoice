@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { notify } from '@/lib/notify'
 import { revalidateLicense } from '@/lib/license/revalidate'
+import { createLogger } from '@/lib/logger'
 import {
   LICENSE_TOKEN_MAX_AGE_DAYS,
   LICENSE_TOKEN_WARN_AGE_DAYS,
@@ -76,7 +77,7 @@ async function emailOwner(organizationId: string, subject: string, html: string)
     const from = await getOrgFromAddress(organizationId)
     await sendOrgMail(organizationId, { from, to: owner.user.email, subject, html })
   } catch (error) {
-    console.warn(`[cron] Failed to send license email for org ${organizationId}:`, error)
+    createLogger('cron').error('Could not send the licence email', { organizationId, err: error })
   }
 }
 
@@ -160,7 +161,10 @@ async function revalidateAll(orgs: KeyedOrg[]) {
     try {
       await revalidateOrganizationLicense(org.organizationId, org.key)
     } catch (error) {
-      console.error(`[cron] Failed to revalidate license for org ${org.organizationId}:`, error)
+      createLogger('cron').error('Licence revalidation failed', {
+        organizationId: org.organizationId,
+        err: error,
+      })
     }
   }
 }
@@ -191,7 +195,7 @@ export async function refreshLicensesMissingTokens() {
     if (needing.length === 0) return
     await revalidateAll(needing)
   } catch (error) {
-    console.error('[license] Boot-time licence refresh failed:', error)
+    createLogger('license').error('Boot-time licence refresh failed', { err: error })
   }
 }
 
@@ -201,7 +205,7 @@ export function checkLicenses() {
     try {
       await revalidateAll(await orgsWithKeys())
     } catch (error) {
-      console.error('[cron] License revalidation failed:', error)
+      createLogger('cron').error('Licence revalidation failed', { err: error })
     }
   })
 

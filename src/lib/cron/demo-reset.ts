@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process'
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
+import { createLogger } from '@/lib/logger'
 
 /**
  * Auto-reset the demo org's data every 3 hours so visitors get a clean slate.
@@ -14,20 +15,20 @@ import { isDemoMode } from '@/lib/demo'
 
 const DEMO_ORG_ID = 'cmmh0vczm0000oiyan37vuyqf'
 const SEED_SCRIPT = 'prisma/seed_dummy_data.ts'
-const LOG_PREFIX = '[demo-reset]'
+const log = createLogger('demo-reset')
 
 let seedInFlight = false
 
 function runSeed(): Promise<void> {
   return new Promise((resolve) => {
     if (seedInFlight) {
-      console.warn(`${LOG_PREFIX} seed already running, skipping this tick`)
+      log.warn('Seed already running, skipping this tick')
       resolve()
       return
     }
     seedInFlight = true
     const startedAt = Date.now()
-    console.warn(`${LOG_PREFIX} starting seed: npx tsx ${SEED_SCRIPT}`)
+    log.info('Starting seed', { script: SEED_SCRIPT })
 
     const child = spawn('npx', ['tsx', SEED_SCRIPT], {
       cwd: process.cwd(),
@@ -37,26 +38,26 @@ function runSeed(): Promise<void> {
 
     child.stdout?.on('data', (buf: Buffer) => {
       const line = buf.toString().trimEnd()
-      if (line) console.warn(`${LOG_PREFIX} ${line}`)
+      if (line) log.debug(line)
     })
     child.stderr?.on('data', (buf: Buffer) => {
       const line = buf.toString().trimEnd()
-      if (line) console.error(`${LOG_PREFIX} ${line}`)
+      if (line) log.error(line)
     })
 
     child.on('close', (code) => {
       seedInFlight = false
       const ms = Date.now() - startedAt
       if (code === 0) {
-        console.warn(`${LOG_PREFIX} seed completed in ${ms}ms`)
+        log.info('Seed completed', { ms })
       } else {
-        console.error(`${LOG_PREFIX} seed exited with code ${code} after ${ms}ms`)
+        log.error('Seed failed', { exitCode: code, ms })
       }
       resolve()
     })
     child.on('error', (err) => {
       seedInFlight = false
-      console.error(`${LOG_PREFIX} failed to spawn seed process:`, err)
+      log.error('Could not spawn the seed process', { err })
       resolve()
     })
   })
@@ -66,13 +67,13 @@ async function seedIfEmpty() {
   try {
     const count = await db.customer.count({ where: { organizationId: DEMO_ORG_ID } })
     if (count === 0) {
-      console.warn(`${LOG_PREFIX} demo org empty on boot — seeding now`)
+      log.info('Demo org empty on boot, seeding now')
       await runSeed()
     } else {
-      console.warn(`${LOG_PREFIX} demo org has ${count} customers — skipping boot seed`)
+      log.info('Demo org already has data, skipping the boot seed', { customers: count })
     }
   } catch (err) {
-    console.error(`${LOG_PREFIX} boot-seed check failed:`, err)
+    log.error('Boot-seed check failed', { err })
   }
 }
 
@@ -90,9 +91,9 @@ export function startDemoResetCron() {
     try {
       await runSeed()
     } catch (err) {
-      console.error(`${LOG_PREFIX} scheduled reset failed:`, err)
+      log.error('Scheduled reset failed', { err })
     }
   })
   job.start()
-  console.warn(`${LOG_PREFIX} scheduled: every 3 hours (cron: 0 */3 * * *)`)
+  log.info('Scheduled every 3 hours', { cron: '0 */3 * * *' })
 }

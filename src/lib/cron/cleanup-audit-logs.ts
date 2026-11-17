@@ -1,5 +1,6 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
+import { createLogger } from '@/lib/logger'
 
 /**
  * Audit log retention cleanup — runs daily at 03:00 UTC.
@@ -21,12 +22,13 @@ export function cleanupAuditLogs() {
       })
 
       if (result.count > 0) {
-        console.warn(
-          `[cron] Audit log cleanup: deleted ${result.count} logs older than ${retentionDays} days`
-        )
+        createLogger('cron').info('Audit log cleanup', {
+          deleted: result.count,
+          olderThanDays: retentionDays,
+        })
       }
     } catch (error) {
-      console.error('[cron] Audit log cleanup failed:', error)
+      createLogger('cron').error('Audit log cleanup failed', { err: error })
     }
   })
 

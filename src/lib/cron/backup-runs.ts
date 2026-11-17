@@ -15,6 +15,7 @@ import {
   drainBackupQueue,
   openPlatform,
   queueBackupRun,
+  reportBackupRollup,
   reportOverdue,
 } from '@/lib/backup/engine'
 import {
@@ -30,6 +31,7 @@ import { BACKUP_SETTING_DEFAULTS, intervalMs, isDue } from '@/lib/backup/schedul
 import { db } from '@/lib/db'
 import { sendMail } from '@/lib/email'
 import { getFeatures } from '@/lib/features'
+import { createLogger } from '@/lib/logger'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
 /**
@@ -57,6 +59,8 @@ const RUN_HISTORY_MS = 90 * 24 * 60 * 60 * 1000
 const KEEP_RUNS = 100
 const PRUNE_EVERY_MS = 24 * 60 * 60 * 1000
 
+const log = createLogger('cron')
+
 const PLATFORM_FREQUENCIES: BackupFrequency[] = ['hourly', 'every4h', 'daily']
 
 function stateDate(state: Record<string, unknown>, key: string): Date | null {
@@ -79,21 +83,24 @@ export async function failStaleRuns(now = new Date()): Promise<number> {
         { status: 'queued', createdAt: { lt: new Date(now.getTime() - STALE_QUEUE_MS) } },
       ],
     },
-    select: { id: true, status: true },
+    select: { id: true, status: true, organizationId: true, kind: true },
   })
   let count = 0
   for (const run of stale) {
     if (holder?.runId === run.id) continue
+    const error =
+      run.status === 'queued'
+        ? 'The run was never started; the server was probably restarted'
+        : 'The run did not finish; the server was probably restarted'
     await db.backupRun.update({
       where: { id: run.id },
-      data: {
-        status: 'failed',
-        finishedAt: now,
-        error:
-          run.status === 'queued'
-            ? 'The run was never started; the server was probably restarted'
-            : 'The run did not finish; the server was probably restarted',
-      },
+      data: { status: 'failed', finishedAt: now, error },
+    })
+    log.error('Stale backup run marked as failed', {
+      runId: run.id,
+      organizationId: run.organizationId,
+      kind: run.kind,
+      error,
     })
     count++
   }
@@ -198,7 +205,11 @@ export async function processDueBackups(now = new Date()): Promise<number> {
       }
       await alertIfOverdue(c.id, c.organizationId, settings, state, now)
     } catch (err) {
-      console.error(`[cron] backup for connection ${c.id} failed:`, err)
+      log.error('Scheduling a backup failed', {
+        organizationId: c.organizationId,
+        connectionId: c.id,
+        err,
+      })
     }
   }
   return queued
@@ -304,7 +315,7 @@ export async function processDuePlatformBackups(now = new Date()): Promise<numbe
       }
       if (row) await alertIfPlatformOverdue(org.id, row, now)
     } catch (err) {
-      console.error(`[cron] platform backup for ${org.id} failed:`, err)
+      log.error('Scheduling a platform backup failed', { organizationId: org.id, err })
     }
   }
   return queued
@@ -330,7 +341,7 @@ async function purgeRepository(organizationId: string): Promise<void> {
     where: { organizationId },
     data: { purgedAt: new Date(), snapshots: [], repositorySize: BigInt(0) },
   })
-  console.warn(`[cron] platform repository of ${organizationId} purged after the grace period`)
+  log.info('Platform repository purged after the grace period', { organizationId })
 }
 
 /**
@@ -359,9 +370,10 @@ async function alertIfPlatformOverdue(
     return
   }
   await db.platformBackup.update({ where: { organizationId }, data: { lastOverdueAlertAt: now } })
-  console.error(
-    `[cron] platform backup of ${organizationId} overdue; last good ${row.lastGoodAt?.toISOString() ?? 'never'}`
-  )
+  log.error('Platform backup overdue', {
+    organizationId,
+    lastGoodAt: row.lastGoodAt?.toISOString() ?? 'never',
+  })
   const operator = process.env.PLATFORM_BACKUP_ALERT_EMAIL?.trim()
   if (operator) {
     try {
@@ -372,7 +384,7 @@ async function alertIfPlatformOverdue(
         html: `<p>No platform backup of workshop <code>${organizationId}</code> has succeeded since ${row.lastGoodAt?.toISOString() ?? 'it was first scheduled'}.</p><p>See the Backups page on torqvoice.com admin for the failing runs.</p>`,
       })
     } catch (err) {
-      console.error('[cron] could not mail the operator:', err)
+      log.error('Could not mail the operator', { organizationId, err })
     }
   }
   await reportOverdue(null, organizationId, row.lastGoodAt)
@@ -388,31 +400,31 @@ export function processBackupRuns() {
     ticking = true
     // Restore points nobody looks at any more leave the disk now, not when the
     // next one is opened. On its own so a bad folder never holds up a backup.
-    await sweepRestorePoints().catch((err) =>
-      console.error('[cron] Restore point sweep failed:', err)
-    )
+    await sweepRestorePoints().catch((err) => log.error('Restore point sweep failed', { err }))
     // And the folder a restore that died mid-way left, for the same reason.
     await sweepAbandonedRestoreDirs()
       .then((n) => {
-        if (n > 0) console.warn(`[cron] Removed ${n} abandoned restore folder(s)`)
+        if (n > 0) log.info('Removed abandoned restore folders', { count: n })
       })
-      .catch((err) => console.error('[cron] Restore folder sweep failed:', err))
+      .catch((err) => log.error('Restore folder sweep failed', { err }))
     try {
-      const stale = await failStaleRuns()
-      if (stale > 0) console.warn(`[cron] Marked ${stale} stale backup run(s) as failed`)
+      await failStaleRuns()
+      // Routine: per tick at debug only. Each run's outcome is counted by
+      // the engine's hourly roll-up, and a failed one is logged as it fails.
       const queued = (await processDueBackups()) + (await processDuePlatformBackups())
-      if (queued > 0) console.warn(`[cron] Scheduled backups queued: ${queued}`)
+      if (queued > 0) log.debug('Scheduled backups queued', { count: queued })
       const ran = await drainBackupQueue()
-      if (ran > 0) console.warn(`[cron] Backup runs finished: ${ran}`)
+      if (ran > 0) log.debug('Backup runs finished this tick', { count: ran })
       // Old run rows go once a day, after the day's work, not on every tick.
       if (Date.now() - prunedAt > PRUNE_EVERY_MS) {
         prunedAt = Date.now()
         const pruned = await pruneOldRuns()
-        if (pruned > 0) console.warn(`[cron] Pruned ${pruned} old backup run row(s)`)
+        if (pruned > 0) log.info('Pruned old backup run rows', { count: pruned })
       }
     } catch (err) {
-      console.error('[cron] Backup scheduler failed:', err)
+      log.error('Backup scheduler failed', { err })
     } finally {
+      reportBackupRollup()
       ticking = false
     }
   })

@@ -6,8 +6,10 @@ import {
 } from '@/features/scheduled-messages/Lib/dispatchScheduledMessage'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { frozenOrganizationIds, isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
+import { createTickSummary } from './tick-summary'
 
-const LOG_PREFIX = '[scheduled-messages]'
+const log = createLogger('scheduled-messages')
 
 /** Nothing older than this is sent on a late start; it is marked failed instead. */
 const MAX_LATENESS_MS = 24 * 60 * 60 * 1000
@@ -74,7 +76,10 @@ export async function processDueMessages(now = new Date()): Promise<number> {
           errorMessage: 'Missed its send window and was skipped',
         },
       })
-      console.warn(`${LOG_PREFIX} skipped stale message ${message.id}`)
+      log.warn('Skipped a stale message', {
+        organizationId: message.organizationId,
+        messageId: message.id,
+      })
       continue
     }
 
@@ -104,7 +109,11 @@ export async function processDueMessages(now = new Date()): Promise<number> {
           errorMessage,
         },
       })
-      console.error(`${LOG_PREFIX} send failed for ${message.id}:`, errorMessage)
+      log.error('Send failed', {
+        organizationId: message.organizationId,
+        messageId: message.id,
+        error: errorMessage,
+      })
     }
   }
 
@@ -113,16 +122,14 @@ export async function processDueMessages(now = new Date()): Promise<number> {
 
 /** Minute-by-minute scan, so a message goes out on the minute it was set for. */
 export function processScheduledMessages() {
+  const summary = createTickSummary('Scheduled messages sent')
   const job = new CronJob('* * * * *', async () => {
     try {
-      const sent = await processDueMessages()
-      if (sent > 0) {
-        console.warn(`${LOG_PREFIX} sent ${sent} scheduled message(s)`)
-      }
+      summary.add(await processDueMessages())
     } catch (error) {
-      console.error(`${LOG_PREFIX} scan failed:`, error)
+      log.error('Scan failed', { err: error })
     }
   })
   job.start()
-  console.warn(`${LOG_PREFIX} Scheduled-message processor started (every minute)`)
+  log.info('Scheduled-message processor started (every minute)')
 }

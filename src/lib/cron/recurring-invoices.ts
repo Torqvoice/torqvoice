@@ -13,6 +13,10 @@ import { lineTotal } from '@/features/inventory/Lib/partPricing'
 import { shiftWorkshopTime } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
+import { createTickSummary } from './tick-summary'
+
+const log = createLogger('cron')
 
 /**
  * One period on from `current`, at the same time on the workshop's clock.
@@ -49,6 +53,7 @@ async function generateInvoiceNumber(organizationId: string, timeZone: string): 
 
 /** Generates invoices from recurring templates every hour */
 export function processRecurringInvoices() {
+  const summary = createTickSummary('Recurring invoices processed')
   const job = new CronJob('0 * * * *', async () => {
     try {
       const now = new Date()
@@ -167,15 +172,17 @@ export function processRecurringInvoices() {
 
           processed++
         } catch (error) {
-          console.error(`[cron] Failed to process recurring invoice ${ri.id}:`, error)
+          log.error('Recurring invoice failed', {
+            organizationId: ri.vehicle.organizationId,
+            recurringInvoiceId: ri.id,
+            err: error,
+          })
         }
       }
 
-      if (processed > 0) {
-        console.warn(`[cron] Processed ${processed} recurring invoices`)
-      }
+      summary.add(processed)
     } catch (error) {
-      console.error('[cron] Recurring invoice processing failed:', error)
+      log.error('Recurring invoice processing failed', { err: error })
     }
   })
 

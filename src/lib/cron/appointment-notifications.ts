@@ -14,8 +14,10 @@ import { isNotificationDue } from '@/features/calendar/Lib/notificationTiming'
 import { MAX_NOTICE_MINUTES } from '@/features/calendar/Schema/bookingSchema'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { DEFAULT_TIME_FORMAT } from '@/lib/format'
+import { createLogger } from '@/lib/logger'
+import { createTickSummary } from './tick-summary'
 
-const LOG_PREFIX = '[appointment-notifications]'
+const log = createLogger('appointment-notifications')
 
 type Translate = (key: string, values?: Record<string, string | number>) => string
 
@@ -246,10 +248,12 @@ export async function processDueAppointmentNotifications(now = new Date()): Prom
       }
       sent++
     } catch (error) {
-      console.error(
-        `${LOG_PREFIX} ${row.channel} for ${row.id} failed:`,
-        error instanceof Error ? error.message : error
-      )
+      log.error('Notification failed', {
+        organizationId: row.organizationId,
+        notificationId: row.id,
+        channel: row.channel,
+        error: error instanceof Error ? error.message : error,
+      })
     }
   }
   return sent
@@ -257,14 +261,14 @@ export async function processDueAppointmentNotifications(now = new Date()): Prom
 
 /** Minute by minute, so a notification goes out on the minute it was set for. */
 export function processAppointmentNotifications() {
+  const summary = createTickSummary('Appointment notifications sent')
   const job = new CronJob('* * * * *', async () => {
     try {
-      const sent = await processDueAppointmentNotifications()
-      if (sent > 0) console.warn(`${LOG_PREFIX} sent ${sent} notification(s)`)
+      summary.add(await processDueAppointmentNotifications())
     } catch (error) {
-      console.error(`${LOG_PREFIX} scan failed:`, error)
+      log.error('Scan failed', { err: error })
     }
   })
   job.start()
-  console.warn(`${LOG_PREFIX} Appointment notifications started (every minute)`)
+  log.info('Appointment notifications started (every minute)')
 }

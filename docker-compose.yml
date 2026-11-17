@@ -14,6 +14,8 @@ services:
       # Optional, see .env.example: the largest backup data file a restore reads
       # into memory, in MiB (128 unless set).
       - BACKUP_MAX_DATA_FILE_MB=${BACKUP_MAX_DATA_FILE_MB:-}
+      # Optional, see .env.example: error, warn, info (the default) or debug.
+      - LOG_LEVEL=${LOG_LEVEL:-}
     volumes:
       - uploads:/app/data/uploads
       - backups:/app/data/backups

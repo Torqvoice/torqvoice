@@ -3,8 +3,10 @@ import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { frozenOrganizationIds, isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
+import { createTickSummary } from './tick-summary'
 
-const LOG_PREFIX = '[reminder-alerts]'
+const log = createLogger('reminder-alerts')
 
 type DueReminder = {
   id: string
@@ -61,7 +63,7 @@ async function sendReminderEmail(organizationId: string, reminders: DueReminder[
   try {
     fromAddress = await getOrgFromAddress(organizationId)
   } catch (error) {
-    console.error(`${LOG_PREFIX} could not resolve sender; skipping email:`, error)
+    log.error('Could not resolve the sender; skipping the email', { organizationId, err: error })
     return
   }
 
@@ -179,7 +181,7 @@ export async function processDueReminders(now = new Date()) {
       try {
         await sendReminderEmail(organizationId, emailReminders)
       } catch (error) {
-        console.error(`${LOG_PREFIX} email failed for org ${organizationId}:`, error)
+        log.error('Email failed', { organizationId, err: error })
       }
     }
 
@@ -196,16 +198,14 @@ export async function processDueReminders(now = new Date()) {
 
 /** Hourly scan for reminders that have come due. */
 export function checkDueReminders() {
+  const summary = createTickSummary('Due reminders notified')
   const job = new CronJob('*/10 * * * *', async () => {
     try {
-      const notified = await processDueReminders()
-      if (notified > 0) {
-        console.warn(`${LOG_PREFIX} notified on ${notified} due reminder(s)`)
-      }
+      summary.add(await processDueReminders())
     } catch (error) {
-      console.error(`${LOG_PREFIX} scan failed:`, error)
+      log.error('Scan failed', { err: error })
     }
   })
   job.start()
-  console.warn(`${LOG_PREFIX} Due-reminder processor started (hourly)`)
+  log.info('Due-reminder processor started (every 10 minutes)')
 }

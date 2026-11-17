@@ -3,6 +3,7 @@ import { backupHost, backupTag } from '@/features/integrations/Lib/backup'
 import type { ResticRepository } from '@/features/integrations/Lib/backup-types'
 import type { PlanFeatures } from '@/lib/features'
 import { isCloudMode } from '@/lib/features'
+import { createLogger } from '@/lib/logger'
 
 /**
  * The backups Torqvoice runs for a workshop on the cloud instance.
@@ -77,7 +78,7 @@ export function platformBackupConfig(): PlatformBackupConfig | null {
   if (problems.length > 0) {
     if (!warned) {
       warned = true
-      console.error(`[backup] platform backups are off: ${problems.join('; ')}`)
+      createLogger('backup').error('Platform backups are off', { problems: problems.join('; ') })
     }
     return null
   }

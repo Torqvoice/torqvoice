@@ -1,7 +1,10 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { processDueDeliveries, recoverStuckDeliveries } from '@/features/webhooks/Lib/deliver'
+import { createLogger } from '@/lib/logger'
 import { createTickSummary } from './tick-summary'
+
+const log = createLogger('cron')
 
 /**
  * Webhook delivery retry cron — runs every minute. First sweeps any
@@ -13,16 +16,14 @@ export function processWebhookDeliveries() {
   const job = new CronJob('* * * * *', async () => {
     try {
       const recovered = await recoverStuckDeliveries()
-      if (recovered > 0) {
-        console.warn(`[cron] Recovered ${recovered} stuck webhook deliveries`)
-      }
+      if (recovered > 0) log.warn('Recovered stuck webhook deliveries', { count: recovered })
       summary.add(await processDueDeliveries(100))
     } catch (err) {
-      console.error('[cron] Webhook delivery processor failed:', err)
+      log.error('Webhook delivery processor failed', { err })
     }
   })
   job.start()
-  console.warn('[cron] Webhook delivery processor started (every minute)')
+  log.info('Webhook delivery processor started (every minute)')
 }
 
 /**
@@ -40,12 +41,10 @@ export function cleanupWebhookDeliveries() {
         where: { createdAt: { lt: cutoff } },
       })
       if (result.count > 0) {
-        console.warn(
-          `[cron] Webhook delivery cleanup: deleted ${result.count} rows older than ${days} days`
-        )
+        log.info('Webhook delivery cleanup', { deleted: result.count, olderThanDays: days })
       }
     } catch (err) {
-      console.error('[cron] Webhook delivery cleanup failed:', err)
+      log.error('Webhook delivery cleanup failed', { err })
     }
   })
   job.start()
