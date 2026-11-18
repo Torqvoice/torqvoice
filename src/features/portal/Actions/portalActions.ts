@@ -8,6 +8,7 @@ import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalen
 import { addDays, dayState } from '@/features/workshop-calendar/Lib/calendar'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
+import { normalizePlate } from '@/lib/license-plate'
 import { readPortalOpeningHours } from '@/features/portal/Lib/openingHours.server'
 import { withPortalAuth } from '@/features/portal/Lib/portalAuth'
 import { SENT_TO_CUSTOMER } from '@/features/portal/Lib/quoteVisibility'
@@ -382,7 +383,7 @@ export async function createServiceRequest(input: {
       } else if (input.newVehicle) {
         const make = input.newVehicle.make?.trim().slice(0, 60)
         const model = input.newVehicle.model?.trim().slice(0, 60)
-        const licensePlate = input.newVehicle.licensePlate?.trim().slice(0, 20) || null
+        const licensePlate = normalizePlate(input.newVehicle.licensePlate?.trim().slice(0, 20))
         const currentYear = new Date().getFullYear()
         const year =
           Number.isInteger(input.newVehicle.year) &&

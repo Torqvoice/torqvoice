@@ -574,11 +574,7 @@ export function normalizeTypeKey(
   }
 }
 
-/** Uppercase, single spaces. The plate is stored as people write it. */
-export function normalizePlate(value: string | null | undefined): string | null {
-  const cleaned = cleanText(value)
-  return cleaned ? cleaned.toUpperCase() : null
-}
+export { normalizePlate } from '@/lib/license-plate'
 
 /** "AB 12345", "AB-12345" and "ab12345" are the same plate. */
 export function plateKey(value: string | null | undefined): string | null {

@@ -15,6 +15,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createVehicleSchema, updateVehicleSchema } from '../Schema/vehicleSchema'
 import { holdsRegistryDate, lookupAppliesTo, type RegistryLookup } from '../Lib/registryLookup'
 import { revalidatePath } from 'next/cache'
+import { normalizePlate } from '@/lib/license-plate'
 import { releaseFiles } from '@/lib/files/manager'
 import { vehicleFileUrls } from '@/lib/files/collect'
 import { auditDetails } from '@/lib/audit'
@@ -301,6 +302,7 @@ export async function createVehicle(input: unknown) {
       const vehicle = await db.vehicle.create({
         data: {
           ...data,
+          licensePlate: normalizePlate(data.licensePlate),
           hsn: data.hsn || null,
           tsn: data.tsn || null,
           purchaseDate: toSafeWorkshopDate(data.purchaseDate, timeZone) ?? null,
@@ -336,6 +338,10 @@ export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
       const { id, inspectionDueAt, registryLookup, ...data } = updateVehicleSchema.parse(input)
+      // An edit that leaves the plate out leaves it alone; one that sends it
+      // stores the same form a new vehicle gets.
+      const licensePlate =
+        data.licensePlate !== undefined ? normalizePlate(data.licensePlate) : undefined
       assertOwnUploads(data, organizationId)
 
       // Fetch current record for display/diff, and the image it had
@@ -358,7 +364,7 @@ export async function updateVehicle(input: unknown) {
         data: {
           ...data,
           vin: data.vin !== undefined ? data.vin || null : undefined,
-          licensePlate: data.licensePlate !== undefined ? data.licensePlate || null : undefined,
+          licensePlate,
           color: data.color !== undefined ? data.color || null : undefined,
           fuelType: data.fuelType !== undefined ? data.fuelType || null : undefined,
           transmission: data.transmission !== undefined ? data.transmission || null : undefined,
@@ -382,7 +388,7 @@ export async function updateVehicle(input: unknown) {
         await releaseFiles([before.imageUrl], { organizationId, reason: 'vehicle image replaced' })
       }
       await saveInspectionDate(organizationId, id, inspectionDueAt, registryLookup, {
-        licensePlate: data.licensePlate !== undefined ? data.licensePlate : before.licensePlate,
+        licensePlate: licensePlate !== undefined ? licensePlate : before.licensePlate,
         vin: data.vin !== undefined ? data.vin : before.vin,
       })
       const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
