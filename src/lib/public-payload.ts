@@ -28,15 +28,15 @@ export interface PublicInvoiceRecord {
   startDateTime: Date | null
   invoiceDate: Date | null
   taxRate: number
-  taxInclusive: boolean
+  taxInclusive?: boolean
   totalAmount: number
   cost: number
   manuallyPaid: boolean
   discountType: string | null
   discountValue: number
   discountAmount: number
-  partItems: { total: number; taxable: boolean }[]
-  laborItems: { total: number; taxable: boolean }[]
+  partItems: { total: number; taxable?: boolean | null }[]
+  laborItems: { total: number; taxable?: boolean | null }[]
   payments: { amount: number }[]
   attachments: PublicAttachment[]
   vehicle: { make: string; model: string; year: number } | null
@@ -215,18 +215,18 @@ export interface PublicInspectionItem {
   id: string
   name: string
   section: string
-  sectionCode: string | null
-  code: string | null
+  sectionCode?: string | null
+  code?: string | null
   sortOrder: number
   condition: string
   notes: string | null
   imageUrls: string[]
-  inputType: string | null
-  unit: string | null
-  minValue: number | null
-  maxValue: number | null
-  measuredValue: number | null
-  textValue: string | null
+  inputType?: string | null
+  unit?: string | null
+  minValue?: number | null
+  maxValue?: number | null
+  measuredValue?: number | null
+  textValue?: string | null
 }
 
 export interface PublicInspectionVehicle {
@@ -236,8 +236,8 @@ export interface PublicInspectionVehicle {
   vin: string | null
   licensePlate: string | null
   /** Null unless the workshop records the German type key. */
-  hsn: string | null
-  tsn: string | null
+  hsn?: string | null
+  tsn?: string | null
   mileage: number
   customer: { name: string } | null
 }
@@ -248,25 +248,21 @@ export interface PublicInspection {
   notes: string | null
   completedAt: Date | null
   createdAt: Date
-  severityScale: string | null
-  country: string | null
-  vehicleCategory: string | null
-  nextTestDue: Date | null
-  certificateNumber: string | null
-  inspectorName: string | null
-  testLocation: string | null
+  severityScale?: string | null
+  country?: string | null
+  vehicleCategory?: string | null
+  nextTestDue?: Date | null
+  certificateNumber?: string | null
+  inspectorName?: string | null
+  testLocation?: string | null
   vehicle: PublicInspectionVehicle
-  template: { name: string; severityScale: string | null; country: string | null }
+  template: { name: string; severityScale?: string | null; country?: string | null }
   items: PublicInspectionItem[]
   /** Files on the inspection as a whole that the workshop chose to show. */
-  attachments: PublicAttachment[]
+  attachments?: PublicAttachment[]
 }
 
-type InspectionSource = Omit<PublicInspection, 'vehicle' | 'attachments'> & {
-  vehicle: Omit<PublicInspectionVehicle, 'hsn' | 'tsn'> & {
-    hsn?: string | null
-    tsn?: string | null
-  }
+type InspectionSource = Omit<PublicInspection, 'attachments'> & {
   attachments: (PublicAttachment & { includeInReport?: boolean | null })[]
 }
 
@@ -278,7 +274,7 @@ type InspectionSource = Omit<PublicInspection, 'vehicle' | 'attachments'> & {
 export function publicInspection(
   inspection: InspectionSource,
   toPublicUrl: ToPublicUrl
-): PublicInspection {
+): PublicInspection & { attachments: PublicAttachment[] } {
   const { vehicle, template } = inspection
   return {
     id: inspection.id,
