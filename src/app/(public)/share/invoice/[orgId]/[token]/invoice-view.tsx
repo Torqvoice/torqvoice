@@ -161,8 +161,6 @@ export function InvoiceView({
   logoSize = 100,
   portalUrl,
   layoutConfig,
-  customFields = [],
-  findings = [],
   serviceType = 'automotive',
   taxLabel,
 }: {
@@ -192,8 +190,6 @@ export function InvoiceView({
   logoSize?: number
   portalUrl?: string
   layoutConfig?: InvoiceLayoutConfig
-  customFields?: CustomField[]
-  findings?: Array<{ description: string; severity: string; notes: string | null }>
   serviceType?: 'automotive' | 'marine'
   taxLabel?: string
 }) {

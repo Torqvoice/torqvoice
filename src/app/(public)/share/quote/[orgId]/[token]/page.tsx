@@ -270,7 +270,6 @@ export default async function PublicQuotePage({
       imageAttachments={imageAttachments}
       documentAttachments={documentAttachments}
       layoutConfig={layoutConfig}
-      customFields={customFields}
       serviceType={(settingsMap['workshop.serviceType'] || 'automotive') as 'automotive' | 'marine'}
       taxLabel={settingsMap['workshop.taxLabel']?.trim() || undefined}
       expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}

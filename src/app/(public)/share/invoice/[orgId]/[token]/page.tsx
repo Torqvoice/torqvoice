@@ -173,8 +173,6 @@ export default async function PublicInvoicePage({
       logoSize={assembly.template.logoSize || 100}
       portalUrl={portalUrl}
       layoutConfig={assembly.layoutConfig}
-      customFields={assembly.data.customFields}
-      findings={assembly.data.findings}
       serviceType={assembly.serviceType}
       taxLabel={assembly.taxLabel}
       expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}

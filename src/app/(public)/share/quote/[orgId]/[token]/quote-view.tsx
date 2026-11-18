@@ -120,7 +120,6 @@ export function QuoteView({
   imageAttachments = [],
   documentAttachments = [],
   layoutConfig,
-  customFields = [],
   serviceType = 'automotive',
   taxLabel,
 }: {
@@ -147,7 +146,6 @@ export function QuoteView({
   imageAttachments?: PublicAttachment[]
   documentAttachments?: PublicAttachment[]
   layoutConfig?: InvoiceLayoutConfig
-  customFields?: CustomField[]
   serviceType?: 'automotive' | 'marine'
   taxLabel?: string
 }) {

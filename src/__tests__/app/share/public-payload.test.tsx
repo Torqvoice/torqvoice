@@ -497,8 +497,25 @@ describe('the shared invoice', () => {
           customer: { name: 'Kari Nordmann' },
           vehicle: { make: 'Volvo', model: 'V70', year: 2012 },
           technicianName: 'Ola Mekaniker',
-          findings: [],
-          customFields: [],
+          // A finding the sheet prints, a custom field no section of the
+          // design shows, and keys on both that the sheet has no use for.
+          findings: [
+            {
+              description: 'Rear disc worn',
+              severity: 'medium',
+              notes: null,
+              unprinted: `${MARK}finding`,
+            },
+          ],
+          customFields: [
+            {
+              fieldId: 'field1',
+              label: 'Internal reference',
+              value: `${MARK}custom field in no section`,
+              fieldType: 'text',
+              unprinted: `${MARK}customField`,
+            },
+          ],
           // Anything a snapshot holds beyond what the sheet prints.
           unprinted: `${MARK}issuedData`,
         },
