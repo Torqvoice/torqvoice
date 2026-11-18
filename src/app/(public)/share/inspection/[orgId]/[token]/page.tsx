@@ -1,6 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
 import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { publicInspection } from '@/lib/public-payload'
 import { lookUpShareLink } from '@/lib/share-link.server'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -162,19 +163,11 @@ export default async function PublicInspectionPage({
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
   // Gated here, once, so neither the certificate nor the page's own data
-  // carries the type key while the workshop has it switched off.
-  const publicInspection = {
-    ...inspection,
-    vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
-    items: inspection.items.map((item) => ({
-      ...item,
-      imageUrls: item.imageUrls.map(toPublic),
-    })),
-    attachments: inspection.attachments.map((file) => ({
-      ...file,
-      fileUrl: toPublic(file.fileUrl),
-    })),
-  }
+  // carries the type key while the workshop has it switched off. What the
+  // browser gets is named field by field, never the row: a prop of a client
+  // component is readable by anyone holding the link, drawn or not.
+  const gatedVehicle = gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap))
+  const publicView = publicInspection({ ...inspection, vehicle: gatedVehicle }, toPublic)
 
   const linkedQuote = inspection.quotes?.[0]
   const quoteShareUrl = linkedQuote?.publicToken
@@ -195,7 +188,7 @@ export default async function PublicInspectionPage({
     const labels = await loadCertificateLabels(locale, settingsMap)
     const design = templateConfigFromSource(source)
     const itemPhotos: Record<string, { dataUri: string }[]> = {}
-    for (const item of publicInspection.items) {
+    for (const item of publicView.items) {
       const photos = item.imageUrls.filter((url) => !isVideo(url)).map((url) => ({ dataUri: url }))
       if (photos.length > 0) itemPhotos[item.id] = photos
     }
@@ -203,7 +196,7 @@ export default async function PublicInspectionPage({
     spec = buildCertificatePrintSpec({
       data: {
         ...inspection,
-        vehicle: publicInspection.vehicle,
+        vehicle: gatedVehicle,
       },
       conditionMarks: hasMap ? await loadVehicleConditionMarks(orgId, inspection.vehicleId) : [],
       bodyType: hasMap ? inspection.vehicle.bodyType : null,
@@ -228,7 +221,7 @@ export default async function PublicInspectionPage({
       layoutConfig: design.layoutConfig,
       portalUrl,
       itemPhotos,
-      overviewPhotos: publicInspection.attachments
+      overviewPhotos: publicView.attachments
         .filter((file) => file.fileType.startsWith('image/'))
         .map((file) => ({ dataUri: file.fileUrl, caption: file.description })),
       attachedDocuments: certificateDocuments(inspection.attachments).map((file) => file.fileName),
@@ -238,7 +231,7 @@ export default async function PublicInspectionPage({
   return (
     <InspectionView
       expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}
-      inspection={publicInspection}
+      inspection={publicView}
       spec={spec}
       workshop={workshop}
       logoUrl={logoUrl}

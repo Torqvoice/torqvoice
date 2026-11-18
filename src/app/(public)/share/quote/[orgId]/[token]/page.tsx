@@ -19,6 +19,7 @@ import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomF
 import { getAppBaseUrl } from '@/lib/app-url'
 import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
 import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { PUBLIC_QUOTE_SELECT, publicAttachment, publicQuoteRecord } from '@/lib/public-payload'
 import { lookUpShareLink } from '@/lib/share-link.server'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -60,49 +61,20 @@ export default async function PublicQuotePage({
   }
   const { organizationId: orgId, shared } = link
 
+  // Only the columns a customer's copy is built from are read: the
+  // workshop's own notes and a line's cost and markup never leave the database.
   const quote = await db.quote.findFirst({
     where: { publicToken: token, organizationId: orgId },
-    include: {
-      // Explicit select: internal unitCost/markupPercent must never reach
-      // the public customer-facing payload
-      partItems: {
+    select: {
+      ...PUBLIC_QUOTE_SELECT,
+      attachments: {
         select: {
           id: true,
-          partNumber: true,
-          name: true,
-          quantity: true,
-          unit: true,
+          fileName: true,
+          fileUrl: true,
+          fileType: true,
           category: true,
-          unitPrice: true,
-          total: true,
-          excluded: true,
-          // The sheet works its tax out from the lines, so each has to say
-          // whether it is taxed; left out here, every line would be.
-          taxable: true,
-        },
-        orderBy: { sortOrder: 'asc' },
-      },
-      laborItems: { orderBy: { sortOrder: 'asc' } },
-      attachments: true,
-      customer: {
-        select: {
-          name: true,
-          email: true,
-          phone: true,
-          address: true,
-          company: true,
-          taxId: true,
-        },
-      },
-      vehicle: {
-        select: {
-          make: true,
-          model: true,
-          year: true,
-          vin: true,
-          licensePlate: true,
-          hsn: true,
-          tsn: true,
+          description: true,
         },
       },
     },
@@ -199,25 +171,15 @@ export default async function PublicQuotePage({
     else logoUrl = rawLogoUrl
   }
 
-  // Rewrite attachment URLs for public access
-  const imageAttachments = (quote.attachments || [])
-    .filter((a) => a.category === 'image')
-    .map((a) => ({
-      ...a,
-      fileUrl: a.fileUrl.replace(
-        /^\/api\/protected\/files\/[^/]+\//,
-        `/api/public/files/${token}/`
-      ),
-    }))
-  const documentAttachments = (quote.attachments || [])
-    .filter((a) => a.category === 'document')
-    .map((a) => ({
-      ...a,
-      fileUrl: a.fileUrl.replace(
-        /^\/api\/protected\/files\/[^/]+\//,
-        `/api/public/files/${token}/`
-      ),
-    }))
+  // Attachments, named field by field, with addresses this link's token opens.
+  const toPublicUrl = (url: string) =>
+    url.replace(/^\/api\/protected\/files\/[^/]+\//, `/api/public/files/${token}/`)
+  const attachmentsOf = (category: string) =>
+    quote.attachments
+      .filter((file) => file.category === category)
+      .map((file) => publicAttachment(file, toPublicUrl))
+  const imageAttachments = attachmentsOf('image')
+  const documentAttachments = attachmentsOf('document')
 
   // Parse layout config
   const layoutConfig = mergeWithDefaults(
@@ -291,7 +253,7 @@ export default async function PublicQuotePage({
   return (
     <QuoteView
       spec={spec}
-      quote={shownQuote}
+      quote={publicQuoteRecord(quote)}
       workshop={workshop}
       currencyCode={currencyCode}
       currencyFormat={currencyFormat}

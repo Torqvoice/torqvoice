@@ -17,6 +17,7 @@ import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
 import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { publicInvoiceRecord } from '@/lib/public-payload'
 import { lookUpShareLink } from '@/lib/share-link.server'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
@@ -100,33 +101,13 @@ export default async function PublicInvoicePage({
   // into the integrations catalog they were connected on.
   const enabledProviders = await offeredPaymentProviders(orgId)
 
-  // What reaches the browser: internal unitCost/markupPercent must never be
-  // in the customer-facing payload, attachment URLs go through the public
-  // file route, and the customer, vehicle and technician are the ones the
-  // sheet prints, frozen at issue or live for a draft.
-  const publicRecord = {
-    ...record,
-    techName: assembly.data.techName,
-    customer: assembly.data.customer,
-    vehicle: assembly.data.vehicle,
-    partItems: record.partItems.map((p) => ({
-      id: p.id,
-      partNumber: p.partNumber,
-      name: p.name,
-      quantity: p.quantity,
-      unit: p.unit,
-      category: p.category,
-      unitPrice: p.unitPrice,
-      total: p.total,
-      taxable: p.taxable,
-    })),
-    attachments: record.attachments
-      .filter((att) => att.includeInInvoice !== false)
-      .map((att) => ({
-        ...att,
-        fileUrl: toPublicFileUrl(att.fileUrl, token),
-      })),
-  }
+  // What reaches the browser is named field by field, never the row: a prop
+  // of a client component is readable by anyone holding the link, drawn or
+  // not. The vehicle is the one the sheet prints, frozen at issue or live for
+  // a draft, and attachment addresses go through the public file route.
+  const publicRecord = publicInvoiceRecord(record, assembly.data.vehicle, (url) =>
+    toPublicFileUrl(url, token)
+  )
 
   const acceptLanguage = (await headers()).get('accept-language')
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
