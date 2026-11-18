@@ -102,6 +102,40 @@ describe('the booking token on PostgreSQL', () => {
     expect(await db.serviceRecord.count({ where: { organizationId, bookingToken: token } })).toBe(1)
   })
 
+  it('makes two sends of one token take turns, whichever kind each is', async () => {
+    const token = `turns-${randomUUID()}`
+    const key = `${organizationId}:${token}`
+    const order: string[] = []
+    const send = (name: string, book: () => Promise<unknown>) =>
+      db.$transaction(async (tx) => {
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('booking_token'), hashtext(${key}))`
+        // What the action does once it holds the lock: look, then book.
+        const booked =
+          (await tx.serviceRecord.count({ where: { organizationId, bookingToken: token } })) +
+          (await tx.appointment.count({ where: { organizationId, bookingToken: token } }))
+        if (booked > 0) {
+          order.push(`${name} found it`)
+          return
+        }
+        await new Promise((resolve) => setTimeout(resolve, 200))
+        await book()
+        order.push(`${name} booked`)
+      })
+
+    await Promise.all([
+      send('job', () => job(organizationId, token)),
+      send('appointment', () => appointment(organizationId, token)),
+    ])
+
+    expect(order.filter((line) => line.endsWith('booked'))).toHaveLength(1)
+    expect(order.filter((line) => line.endsWith('found it'))).toHaveLength(1)
+    const jobs = await db.serviceRecord.count({ where: { organizationId, bookingToken: token } })
+    const appointments = await db.appointment.count({
+      where: { organizationId, bookingToken: token },
+    })
+    expect(jobs + appointments).toBe(1)
+  })
+
   it('is only unique within the workshop', async () => {
     await expect(job(otherOrganizationId, TOKEN)).resolves.toBeTruthy()
     await expect(appointment(otherOrganizationId, TOKEN)).resolves.toBeTruthy()

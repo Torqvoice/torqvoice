@@ -26,6 +26,8 @@ vi.mock('@/features/inspection-reminders/Lib/booking', async (importOriginal) =>
 const db = vi.hoisted(() => ({
   // The job number query: nothing yet in the workshop's format.
   $queryRaw: async () => [],
+  // The lock that makes sends of one booking take turns.
+  $executeRaw: vi.fn(),
   user: { findUnique: vi.fn() },
   auditLog: { create: vi.fn() },
   vehicle: { findFirst: vi.fn() },
@@ -425,6 +427,55 @@ describe('the same booking sent twice', () => {
   it('finds the job when the appointment it was made from is already gone', async () => {
     // The first send made the work order and removed the appointment.
     alreadyBooked({ job: { id: 'job-1', vehicleId: 'veh-1', invoiceNumber: '2026-1044' } })
+
+    const result = await createBookingOnce(
+      booking({ kind: 'workOrder', vehicleId: 'veh-1', fromAppointmentId: 'appt-1' })
+    )
+
+    expect(result.success).toBe(true)
+    expect(result.data?.id).toBe('job-1')
+    expect(db.serviceRecord.create).not.toHaveBeenCalled()
+  })
+
+  it('waits its turn and books nothing when the first send finishes meanwhile', async () => {
+    // Nothing booked when this send first looks. By the time it holds the
+    // lock the other send has finished, as either kind.
+    let turn = false
+    db.$executeRaw.mockImplementation(async () => {
+      turn = true
+      return 1
+    })
+    db.serviceRecord.findFirst.mockImplementation(
+      async (args?: { where?: { bookingToken?: string } }) =>
+        args?.where?.bookingToken ? null : { invoiceNumber: '2026-1043' }
+    )
+    db.appointment.findFirst.mockImplementation(
+      async (args?: { where?: { bookingToken?: string } }) =>
+        args?.where?.bookingToken && turn
+          ? { id: 'appt-first', title: 'Call Kari', vehicleId: null }
+          : null
+    )
+
+    const result = await createBookingOnce(booking({ kind: 'workOrder', vehicleId: 'veh-1' }))
+
+    expect(result.success).toBe(true)
+    expect(result.data).toMatchObject({ kind: 'appointment', id: 'appt-first' })
+    expect(db.$executeRaw).toHaveBeenCalledTimes(1)
+    expect(db.serviceRecord.create).not.toHaveBeenCalled()
+  })
+
+  it('finds the job when the appointment goes between its two lookups', async () => {
+    // Not booked at the first look; the first send then commits, taking the
+    // appointment with it, before this one looks the appointment up.
+    let looks = 0
+    db.serviceRecord.findFirst.mockImplementation(
+      async (args?: { where?: { bookingToken?: string } }) => {
+        if (!args?.where?.bookingToken) return { invoiceNumber: '2026-1043' }
+        looks += 1
+        return looks > 1 ? { id: 'job-1', vehicleId: 'veh-1', invoiceNumber: '2026-1044' } : null
+      }
+    )
+    db.appointment.findFirst.mockResolvedValue(null)
 
     const result = await createBookingOnce(
       booking({ kind: 'workOrder', vehicleId: 'veh-1', fromAppointmentId: 'appt-1' })

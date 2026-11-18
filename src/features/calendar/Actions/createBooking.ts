@@ -1,6 +1,6 @@
 'use server'
 
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { demoGuard } from '@/lib/demo'
 import { withAuth } from '@/lib/with-auth'
 import type { AuditEvent } from '@/lib/audit'
@@ -72,11 +72,19 @@ export async function createBookingOnce(input: SaveBookingInput) {
             select: { id: true },
           })
         : null
-      if (data.fromAppointmentId && !from) throw new Error('Appointment not found')
+      if (data.fromAppointmentId && !from) {
+        // Gone because the first send finished between the two lookups and
+        // took it with it: then the work order is there by now.
+        const meanwhile = await bookedWith(organizationId, token)
+        if (meanwhile) return meanwhile
+        throw new Error('Appointment not found')
+      }
 
       if (data.kind === 'appointment') {
         if (from) throw new Error('An appointment becomes a work order, not another appointment')
         const booking = db.$transaction(async (tx) => {
+          const earlier = await claimToken(tx, organizationId, token)
+          if (earlier) return earlier
           const appointment = await tx.appointment.create({
             data: {
               organizationId,
@@ -114,6 +122,8 @@ export async function createBookingOnce(input: SaveBookingInput) {
       const minutes = Math.round((end.getTime() - start.getTime()) / 60_000)
       const { resource, full } = await resourceFor(organizationId, start, minutes)
       const booking = db.$transaction(async (tx) => {
+        const earlier = await claimToken(tx, organizationId, token)
+        if (earlier) return earlier
         const created = await createDraftRecord(
           { organizationId, userId },
           {
@@ -205,13 +215,17 @@ type Booked = {
 }
 
 /** What this token already booked in this workshop, if it booked anything. */
-async function bookedWith(organizationId: string, token: string): Promise<Booked | null> {
+async function bookedWith(
+  organizationId: string,
+  token: string,
+  client: Pick<TxClient, 'serviceRecord' | 'appointment'> = db
+): Promise<Booked | null> {
   const [job, appointment] = await Promise.all([
-    db.serviceRecord.findFirst({
+    client.serviceRecord.findFirst({
       where: { organizationId, bookingToken: token },
       select: { id: true, vehicleId: true, invoiceNumber: true },
     }),
-    db.appointment.findFirst({
+    client.appointment.findFirst({
       where: { organizationId, bookingToken: token },
       select: { id: true, title: true, vehicleId: true },
     }),
@@ -238,6 +252,26 @@ async function bookedWith(organizationId: string, token: string): Promise<Booked
     }
   }
   return null
+}
+
+/**
+ * Makes sends of one booking take turns, and tells the one whose turn comes
+ * second what the first booked.
+ *
+ * The lookup before the transaction is passed by both of two sends that
+ * arrive together. The token is unique among jobs and among appointments,
+ * but a send made again as the other kind (the dialog stays open after a
+ * failure, and the kind can be switched) writes to the other table, where
+ * nothing refuses it. So each send waits here for any other with its token
+ * to finish, and then looks again.
+ */
+async function claimToken(
+  tx: TxClient,
+  organizationId: string,
+  token: string
+): Promise<Booked | null> {
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('booking_token'), hashtext(${`${organizationId}:${token}`}))`
+  return bookedWith(organizationId, token, tx)
 }
 
 /**
