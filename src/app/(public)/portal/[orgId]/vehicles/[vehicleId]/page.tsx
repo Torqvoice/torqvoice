@@ -31,6 +31,7 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 import { loadPortalWorkshop } from '@/features/portal/Lib/workshop.server'
 import { titleFrom } from '@/lib/page-title'
 import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
+import { vehicleName } from '@/lib/vehicle-name'
 
 // "Your cars" or "Your boats": the workshop read here is the one PortalShell
 // loads for the page anyway (request-cached), and a failure reads as cars.
@@ -130,7 +131,7 @@ export default async function PortalVehicleDetailPage({
     <PortalShell orgId={orgId}>
       <PortalPageHead
         back={back}
-        title={`${v.year} ${v.make} ${v.model}`}
+        title={`${vehicleName(v)}`}
         badge={v.licensePlate ? <PortalPlate>{v.licensePlate}</PortalPlate> : undefined}
       />
 

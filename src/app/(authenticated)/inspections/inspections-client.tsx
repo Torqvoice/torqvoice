@@ -52,6 +52,7 @@ import {
 import { useConditionLabels } from '@/features/inspections/Lib/useConditionLabels'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { ListEmpty } from '@/components/list-empty'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface InspectionRecord {
   id: string
@@ -333,7 +334,7 @@ export function InspectionsClient({
               >
                 <div className="flex items-start justify-between gap-3">
                   <span className="min-w-0 flex-1 truncate font-medium">
-                    {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                    {vehicleName(insp.vehicle)}
                   </span>
                   <StatusBadge kind="inspection" status={insp.status} className="shrink-0">
                     {insp.status === 'in_progress' ? t('statusInProgress') : t('statusCompleted')}
@@ -431,9 +432,7 @@ export function InspectionsClient({
                     >
                       <TableCell>
                         <TableCellLink href={`/vehicles/${insp.vehicle.id}`} block>
-                          <p className="truncate font-medium">
-                            {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
-                          </p>
+                          <p className="truncate font-medium">{vehicleName(insp.vehicle)}</p>
                           {insp.vehicle.licensePlate && (
                             <p className="text-xs text-muted-foreground font-mono">
                               {insp.vehicle.licensePlate}

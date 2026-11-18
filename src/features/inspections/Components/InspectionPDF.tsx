@@ -14,6 +14,7 @@ import {
   type Condition,
 } from '../Lib/conditions'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { vehicleName } from '@/lib/vehicle-name'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
@@ -514,9 +515,7 @@ export function InspectionPDF({
         <View style={styles.infoRow}>
           <View style={{ ...styles.infoBox, flex: 1 }}>
             <Text style={styles.infoLabel}>{labels.vehicle || 'Vehicle'}</Text>
-            <Text style={styles.infoTextBold}>
-              {data.vehicle.year} {data.vehicle.make} {data.vehicle.model}
-            </Text>
+            <Text style={styles.infoTextBold}>{vehicleName(data.vehicle)}</Text>
             {data.vehicle.vin && (
               <Text style={styles.infoTextSmall}>
                 {labels.vin

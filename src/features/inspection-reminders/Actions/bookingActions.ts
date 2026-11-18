@@ -11,6 +11,7 @@ import { type InspectionReminderSettings, loadInspectionReminderSettings } from 
 import { releaseFiles } from '@/lib/files/manager'
 import { serviceRecordFileUrls } from '@/lib/files/collect'
 import { assertNotRestoring } from '@/lib/backup/freeze'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * The public side of a reminder link. No sign-in: the token was sent to the
@@ -146,7 +147,7 @@ export async function getBookingPage(rawToken: string): Promise<BookingPage | nu
   const base = {
     workshop,
     vehicle: {
-      label: `${send.vehicle.year} ${send.vehicle.make} ${send.vehicle.model}`,
+      label: `${vehicleName(send.vehicle)}`,
       licensePlate: send.vehicle.licensePlate,
     },
     dueAt: send.dueAt.toISOString(),
@@ -196,7 +197,7 @@ export async function confirmBooking(raw: unknown) {
   const end = new Date(start.getTime() + settings.durationMinutes * 60_000)
 
   const t = await getTranslations('portal.booking')
-  const vehicleLabel = `${send.vehicle.year} ${send.vehicle.make} ${send.vehicle.model}`
+  const vehicleLabel = `${vehicleName(send.vehicle)}`
   const title = t('workOrderTitle', { vehicle: vehicleLabel })
   const note = input.note?.trim() || null
 
@@ -313,7 +314,7 @@ export async function cancelBooking(rawToken: string) {
     throw new Error('There is no upcoming booking to cancel')
   }
   const t = await getTranslations('portal.booking')
-  const vehicleLabel = `${send.vehicle.year} ${send.vehicle.make} ${send.vehicle.model}`
+  const vehicleLabel = `${vehicleName(send.vehicle)}`
 
   if (send.bookedServiceRecordId) {
     // Only the placeholder the link created, and only while nobody has

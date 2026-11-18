@@ -35,6 +35,7 @@ import {
   type SeverityScale,
 } from '@/features/inspections/Lib/conditions'
 import { toast } from 'sonner'
+import { vehicleName } from '@/lib/vehicle-name'
 
 const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: string }>> = {
   pass: Check,
@@ -325,9 +326,7 @@ export function InspectionView({
                   <dt className="text-xs text-gray-500">
                     {serviceType === 'marine' ? t('vesselLabel') : t('vehicle')}
                   </dt>
-                  <dd className="font-semibold">
-                    {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
-                  </dd>
+                  <dd className="font-semibold">{vehicleName(inspection.vehicle)}</dd>
                 </div>
                 {inspection.vehicle.vin && (
                   <div>

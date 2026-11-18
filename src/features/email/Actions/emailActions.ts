@@ -21,6 +21,7 @@ import { ensureShareToken, renewShareLink } from '@/lib/share-token.server'
 import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
 import type { VehicleContext } from '@/features/email/Lib/emailContext'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 /** Whoever pressed send, for a template that signs off with a name. */
 async function senderName(userId: string): Promise<string | null> {
@@ -440,7 +441,7 @@ export async function sendInspectionEmail(input: {
       // One language for the certificate's labels and the mail around it.
       const locale = await resolveDocumentLocale(organizationId)
 
-      const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
+      const vehicleName = `${vehicleNameOf(inspection.vehicle)}`
       const fileName = `Inspection-${vehicleName}.pdf`
 
       let pdfBuffer: Buffer | null = null

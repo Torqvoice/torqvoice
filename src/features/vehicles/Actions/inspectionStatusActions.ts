@@ -3,6 +3,7 @@
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
+import { vehicleName } from '@/lib/vehicle-name'
 
 const DAY_MS = 86_400_000
 
@@ -77,7 +78,7 @@ export async function getInspectionsDueSummary() {
             ? [
                 {
                   vehicleId: r.vehicle.id,
-                  label: `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`,
+                  label: `${vehicleName(r.vehicle)}`,
                   licensePlate: r.vehicle.licensePlate,
                   customerName: r.vehicle.customer?.name ?? null,
                   dueAt: r.dueAt.toISOString(),

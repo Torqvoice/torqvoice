@@ -8,6 +8,7 @@ import {
 import { createStyles, gray, getFontBold } from '../invoice-pdf/styles'
 import type { WorkshopInfo, InvoiceSettingsProps } from '../invoice-pdf/types'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 interface ServiceHistoryRecord {
   id: string
@@ -85,7 +86,7 @@ export function ServiceHistoryPDF({
   const tz = invoiceSettings?.timezone || undefined
   const unitLabel = invoiceSettings?.unitSystem === 'metric' ? labels.km || 'km' : labels.mi || 'mi'
 
-  const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+  const vehicleName = `${vehicleNameOf(vehicle)}`
   const shopDisplayName = workshop?.name || 'Torqvoice'
 
   const grandTotal = records.reduce((sum, r) => {

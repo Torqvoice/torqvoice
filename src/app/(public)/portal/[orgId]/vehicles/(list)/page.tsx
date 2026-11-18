@@ -24,6 +24,7 @@ import { resolvePortalOrg } from '@/lib/portal-slug'
 import { loadPortalWorkshop } from '@/features/portal/Lib/workshop.server'
 import { titleFrom } from '@/lib/page-title'
 import { ChevronRight } from 'lucide-react'
+import { vehicleName } from '@/lib/vehicle-name'
 
 // "Your cars" or "Your boats": the workshop read here is the one PortalShell
 // loads for the page anyway (request-cached), and a failure reads as cars.
@@ -70,7 +71,7 @@ export default async function PortalVehiclesPage({
 
   const vehicles = result.data.map((v) => ({
     v,
-    name: `${v.year} ${v.make} ${v.model}`,
+    name: `${vehicleName(v)}`,
     href: `/portal/${orgId}/vehicles/${v.id}`,
   }))
 

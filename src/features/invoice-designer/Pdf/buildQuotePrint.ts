@@ -37,6 +37,7 @@ import {
   type InspectionResults,
   inspectionResultsForPrint,
 } from '@/features/inspections/Lib/inspectionResults'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * A quote, expressed as the document the designer edits, the same way the
@@ -218,9 +219,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     customer_tax_id: data.customer?.taxId
       ? `${L('customerTaxId', 'Tax ID')}: ${data.customer.taxId}`
       : '',
-    vehicle_name: data.vehicle
-      ? `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
-      : '',
+    vehicle_name: data.vehicle ? `${vehicleName(data.vehicle)}` : '',
     vin: data.vehicle?.vin
       ? labels.vin
         ? fillTemplate(labels.vin, { vin: data.vehicle.vin })

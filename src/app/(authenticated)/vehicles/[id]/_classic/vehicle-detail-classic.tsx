@@ -100,6 +100,7 @@ import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 import { useSwitchVehiclePageLayout } from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 interface PaginatedServices {
   records: {
@@ -486,7 +487,7 @@ export function VehicleDetailClassic({
   const handleCreateWorkOrderFromFindings = async (findingIds: string[]) => {
     setCreatingWorkOrder(true)
     const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
-    const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const vehicleName = `${vehicleNameOf(vehicle)}`
     // An action that cannot reach the server throws instead of answering, so
     // it is caught and reported the way a refusal is.
     const result = await createServiceRecord({
@@ -577,7 +578,7 @@ export function VehicleDetailClassic({
   }
 
   const handleDelete = async () => {
-    const name = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const name = `${vehicleNameOf(vehicle)}`
     const ok = await confirm({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name }),
@@ -689,9 +690,7 @@ export function VehicleDetailClassic({
           )}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
-              <h1 className="text-lg font-bold leading-tight">
-                {vehicle.year} {vehicle.make} {vehicle.model}
-              </h1>
+              <h1 className="text-lg font-bold leading-tight">{vehicleNameOf(vehicle)}</h1>
               <div className="flex min-w-0 flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
                 {vehicle.licensePlate && <span className="font-mono">{vehicle.licensePlate}</span>}
                 {vehicle.vin && (
@@ -927,7 +926,7 @@ export function VehicleDetailClassic({
           {aiEnabled && (
             <AskAiSheet
               subject={{ type: 'vehicle', id: vehicle.id }}
-              title={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+              title={`${vehicleNameOf(vehicle)}`}
               className="h-7 text-xs"
             />
           )}
@@ -1836,7 +1835,7 @@ export function VehicleDetailClassic({
         open={showArchiveDialog}
         onOpenChange={setShowArchiveDialog}
         vehicleId={vehicle.id}
-        vehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+        vehicleName={`${vehicleNameOf(vehicle)}`}
       />
 
       {/* Image lightbox */}
@@ -1848,7 +1847,7 @@ export function VehicleDetailClassic({
         >
           <img
             src={vehicle.imageUrl}
-            alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+            alt={`${vehicleNameOf(vehicle)}`}
             className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
             onClick={(e) => e.stopPropagation()}
           />

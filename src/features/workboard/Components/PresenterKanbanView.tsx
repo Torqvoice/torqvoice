@@ -5,6 +5,7 @@ import type { Technician } from '../store/workboardStore'
 import type { WorkBoardJob } from '../Actions/boardActions'
 import { jobOverlapsDate } from '../utils/datetime'
 import { useTranslations } from 'next-intl'
+import { vehicleName } from '@/lib/vehicle-name'
 
 const STATUS_COLUMNS = [
   { key: 'pending', i18nKey: 'pending', color: 'bg-yellow-500' },
@@ -36,7 +37,7 @@ function KanbanCard({ job, withLabel }: { job: WorkBoardJob; withLabel?: string 
       </div>
       {job.vehicle && (
         <p className="mt-1 truncate text-sm text-muted-foreground">
-          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+          {vehicleName(job.vehicle)}
           {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
         </p>
       )}

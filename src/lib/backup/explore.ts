@@ -2,6 +2,7 @@ import { mkdir, readdir, rm, stat } from 'node:fs/promises'
 import path from 'node:path'
 import { z } from 'zod'
 import { dataRoot } from '@/lib/upload-root'
+import { vehicleName } from '@/lib/vehicle-name'
 import { type OpenedTarget, openTarget, type RunTarget } from './engine'
 import { MAX_OPEN_RESTORE_POINTS as MAX_OPEN, maxDataFileBytes } from './limits'
 import { UPLOAD_CATEGORIES } from './manifest'
@@ -384,12 +385,8 @@ function text(v: unknown): string {
 }
 
 function vehicleLabel(v: Row): string {
-  return [
-    text(v.licensePlate),
-    [text(v.year), text(v.make), text(v.model)].filter(Boolean).join(' '),
-  ]
-    .filter(Boolean)
-    .join(' · ')
+  const name = vehicleName({ year: text(v.year), make: text(v.make), model: text(v.model) })
+  return [text(v.licensePlate), name].filter(Boolean).join(' · ')
 }
 
 /** One row as the list shows it: a title, a line under it, and the fields searched. */

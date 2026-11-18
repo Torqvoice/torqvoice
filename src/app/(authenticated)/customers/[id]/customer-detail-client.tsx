@@ -77,6 +77,7 @@ import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
 import type { RequestTextParts } from '@/features/portal/Lib/requestText'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface ServiceRequestItem {
   id: string
@@ -611,7 +612,7 @@ export function CustomerDetailClient({
                     >
                       <div className="flex items-start justify-between gap-3">
                         <span className="min-w-0 flex-1 truncate font-medium">
-                          {v.year} {v.make} {v.model}
+                          {vehicleName(v)}
                         </span>
                         {v.licensePlate && (
                           <span className="shrink-0 font-mono text-sm">{v.licensePlate}</span>
@@ -660,9 +661,7 @@ export function CustomerDetailClient({
                           <TableCell className="font-mono text-sm">
                             {v.licensePlate || '-'}
                           </TableCell>
-                          <TableCell className="font-medium">
-                            {v.year} {v.make} {v.model}
-                          </TableCell>
+                          <TableCell className="font-medium">{vehicleName(v)}</TableCell>
                           <TableCell className="hidden sm:table-cell text-right font-mono text-sm">
                             {v.mileage.toLocaleString()} {readingUnit}
                           </TableCell>
@@ -898,7 +897,7 @@ function DocumentList({
   const tableNav = useTableKeyboardNav()
 
   const vehicleLabel = useCallback(
-    (v: DocumentRow['vehicle']) => (v ? `${v.year} ${v.make} ${v.model}` : ''),
+    (v: DocumentRow['vehicle']) => (v ? `${vehicleName(v)}` : ''),
     []
   )
 
@@ -1175,7 +1174,7 @@ export function ServiceRequestCard({
   }
 
   const canSms = smsEnabled && !!customerPhone
-  const vehicleDisplay = `${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}`
+  const vehicleDisplay = `${vehicleName(request.vehicle)}`
   // A request from the portal can start with the quick choice the customer picked.
   const words = request.words ?? { topic: null, body: request.description }
 

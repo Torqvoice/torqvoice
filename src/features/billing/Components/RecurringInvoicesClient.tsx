@@ -56,6 +56,7 @@ import {
   processRecurringInvoices,
 } from '../Actions/recurringInvoiceActions'
 import { toast } from 'sonner'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface Vehicle {
   id: string
@@ -381,7 +382,7 @@ export default function RecurringInvoicesClient({
                       <span className="shrink-0 font-semibold">{fmt(total)}</span>
                     </div>
                     <p className="truncate text-xs text-muted-foreground">
-                      {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                      {vehicleName(inv.vehicle)}
                       {inv.vehicle.customer && ` · ${inv.vehicle.customer.name}`}
                     </p>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
@@ -467,7 +468,7 @@ export default function RecurringInvoicesClient({
                             <TableCell className="text-sm font-medium">{inv.title}</TableCell>
                             <TableCell className="text-sm">
                               <TableCellLink href={`/vehicles/${inv.vehicle.id}`}>
-                                {inv.vehicle.year} {inv.vehicle.make} {inv.vehicle.model}
+                                {vehicleName(inv.vehicle)}
                               </TableCellLink>
                             </TableCell>
                             <TableCell className="text-sm">
@@ -597,7 +598,7 @@ export default function RecurringInvoicesClient({
                   placeholder={t('recurring.selectVehicle')}
                   options={vehicles.map((v) => ({
                     value: v.id,
-                    label: `${v.year} ${v.make} ${v.model}${v.customer ? ` (${v.customer.name})` : ''}`,
+                    label: `${vehicleName(v)}${v.customer ? ` (${v.customer.name})` : ''}`,
                   }))}
                 />
               </div>

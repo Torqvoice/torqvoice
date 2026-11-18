@@ -53,6 +53,7 @@ import { defaultTreatments, type TreatmentPrices, type TreatmentType } from '../
 import { checkInTireSet, getReturningSets, returnTireSet } from '../Actions/tireSetActions'
 import { groupRounds } from '../Lib/wear'
 import { TIRE_SEASONS, TIRE_ROAD_POSITIONS, thirtySecondsToMm } from '../Lib/tireConstants'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /** The three steps, in order. Keys only; the labels are translated where they are drawn. */
 const STEPS = ['tires', 'storage', 'review'] as const
@@ -441,9 +442,7 @@ export function CheckInDialog({
                           {lockedVehicle.licensePlate}
                         </span>
                       )}
-                      <p className="truncate text-sm font-medium">
-                        {lockedVehicle.year} {lockedVehicle.make} {lockedVehicle.model}
-                      </p>
+                      <p className="truncate text-sm font-medium">{vehicleName(lockedVehicle)}</p>
                     </div>
                   ) : (
                     <OwnerVehicleFields

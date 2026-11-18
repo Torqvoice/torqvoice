@@ -50,6 +50,7 @@ import { useTimeClock } from '@/features/time-tracking/Components/TimeClockProvi
 import { useTick } from '@/features/time-tracking/hooks/useTick'
 import { formatElapsed } from '@/features/time-tracking/Lib/timesheet'
 import { cn } from '@/lib/utils'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface MyActiveJobsProps {
   jobs: MyActiveJob[]
@@ -424,7 +425,7 @@ export function MyActiveJobs({
                       </p>
                       <p className="text-xs text-muted-foreground truncate">
                         {job.vehicle
-                          ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}${job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}`
+                          ? `${vehicleName(job.vehicle)}${job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}`
                           : (job.customer?.name ?? '')}
                       </p>
                     </div>
@@ -767,11 +768,7 @@ export function MyActiveJobs({
                 if (!open) setStatusReportJobId(null)
               }}
               serviceRecordId={statusReportJobId}
-              vehicleName={
-                job.vehicle
-                  ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`
-                  : job.title
-              }
+              vehicleName={job.vehicle ? `${vehicleName(job.vehicle)}` : job.title}
               customer={job.customer}
               smsEnabled={smsEnabled}
               emailEnabled={emailEnabled}

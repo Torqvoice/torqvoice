@@ -21,6 +21,7 @@ import {
   loadVehicleConditionMarks,
 } from '@/features/condition-map/Lib/loadMarks.server'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 export { certificateDesignSource, liveCertificateDesign } from './certificateDesign'
 
@@ -177,6 +178,6 @@ export async function buildCertificatePdfBuffer({
   }) as unknown as React.ReactElement<DocumentProps>
   const rendered = await renderToBuffer(element)
   const body = await appendCertificateDocuments(Buffer.from(rendered), documents)
-  const vehicleName = `${inspection.vehicle.year}-${inspection.vehicle.make}-${inspection.vehicle.model}`
+  const vehicleName = vehicleNameOf(inspection.vehicle, '-')
   return { body, fileName: `Inspection-${vehicleName}.pdf` }
 }

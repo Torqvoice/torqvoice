@@ -6,6 +6,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { serviceRecordHref } from '@/lib/service-record'
 import type { CardEntity, CardFilter, CustomCardConfig } from './registry'
 import { getField } from './registry'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * Server-side execution for custom cards. Every query is built exclusively
@@ -254,7 +255,7 @@ export async function runEntityQuery(
           techName: r.techName,
           totalAmount: r.totalAmount,
           serviceDate: iso(r.invoiceDate ?? r.startDateTime ?? r.serviceDate),
-          vehicle: r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : null,
+          vehicle: r.vehicle ? `${vehicleName(r.vehicle)}` : null,
           customer: (r.customer ?? r.vehicle?.customer)?.name ?? null,
         },
       }))
@@ -287,7 +288,7 @@ export async function runEntityQuery(
           validUntil: iso(r.validUntil),
           createdAt: iso(r.createdAt),
           customer: r.customer?.name ?? null,
-          vehicle: r.vehicle ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}` : null,
+          vehicle: r.vehicle ? `${vehicleName(r.vehicle)}` : null,
         },
       }))
     }

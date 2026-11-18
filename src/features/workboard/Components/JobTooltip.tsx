@@ -12,6 +12,7 @@ import { formatDuration } from './DurationSlider'
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import { useDateSettings } from '@/components/date-settings-context'
 import { toBoardDate } from '../utils/board-time'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /** Status strings as the translation file spells them. */
 const STATUS_KEY: Record<string, string> = {
@@ -59,9 +60,7 @@ export function JobTooltip({
   const statusKey = STATUS_KEY[normalizeStatus(job.status)]
 
   const vehicle = job.vehicle
-    ? [`${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}`, job.vehicle.licensePlate]
-        .filter(Boolean)
-        .join(' · ')
+    ? [`${vehicleName(job.vehicle)}`, job.vehicle.licensePlate].filter(Boolean).join(' · ')
     : null
 
   return (

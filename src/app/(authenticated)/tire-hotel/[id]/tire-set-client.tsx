@@ -55,6 +55,7 @@ import {
   User,
   Warehouse,
 } from 'lucide-react'
+import { vehicleName } from '@/lib/vehicle-name'
 
 type Measurement = {
   id: string
@@ -273,7 +274,7 @@ export function TireSetClient({
   }
 
   const title = set.vehicle
-    ? `${set.vehicle.year} ${set.vehicle.make} ${set.vehicle.model}`
+    ? `${vehicleName(set.vehicle)}`
     : (set.customer?.name ?? t('list.unassigned'))
 
   return (

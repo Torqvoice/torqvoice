@@ -70,6 +70,7 @@ import { ModernDetails } from './modern/ModernDetails'
 import { ModernHero } from './modern/ModernHero'
 import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
 
@@ -288,9 +289,7 @@ export function ServicePageClient({
     const tplResult = await getSmsTemplates()
     const tplData = tplResult.success && tplResult.data ? tplResult.data : null
     const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || ''
-    const vehicle = record.vehicle
-      ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-      : record.title
+    const vehicle = record.vehicle ? `${vehicleName(record.vehicle)}` : record.title
     const message = interpolateSmsTemplate(tpl, {
       customer_name: customer.name,
       vehicle,
@@ -309,9 +308,7 @@ export function ServicePageClient({
       if (!customer) return
       const tplResult = await getSmsTemplates()
       const tplData = tplResult.success && tplResult.data ? tplResult.data : null
-      const vehicle = record.vehicle
-        ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-        : record.title
+      const vehicle = record.vehicle ? `${vehicleName(record.vehicle)}` : record.title
       const message = interpolateSmsTemplate(
         // Read raw: the text carries {tokens} of its own, which are filled in
         // below and are not message arguments.

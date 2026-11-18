@@ -10,6 +10,7 @@ import {
   OPENAI_BASE,
   normalizeBaseUrl,
 } from '@/integrations/ai/models'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface AiConfig {
   provider: string
@@ -329,7 +330,7 @@ upcomingMaintenance: predict 2-4 likely upcoming needs based on mileage, age, an
     )
     .join('\n')
 
-  const userPrompt = `Vehicle: ${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}
+  const userPrompt = `Vehicle: ${vehicleName(vehicle)}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}
 
 Service history (${records.length} records):
 ${recordsStr || 'No service records found.'}
@@ -351,7 +352,7 @@ Return ONLY valid JSON, no markdown, no explanation. Use this exact schema:
 
 severity is 1-5 based on how widely reported the issue is (5 = extremely common/well-documented, affects majority of vehicles; 1 = rare but critical).${languageInstruction(locale)}`
 
-  const userPrompt = `What are the 5 most critical and common issues with the ${vehicle.year} ${vehicle.make} ${vehicle.model}? Return JSON only.`
+  const userPrompt = `What are the 5 most critical and common issues with the ${vehicleName(vehicle)}? Return JSON only.`
 
   return chatCompletion(organizationId, systemPrompt, userPrompt)
 }

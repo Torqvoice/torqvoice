@@ -18,6 +18,7 @@ import type { ServiceDetail } from '../../service-detail/types'
 import type { InitialData } from '../../service-edit/form-types'
 import { formatTypeKey } from '../../../Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 interface JobFactsCardProps {
   record: ServiceDetail
@@ -286,7 +287,7 @@ export function JobFactsCard({
                   href={`/vehicles/${vehicle.id}`}
                   className={cn(nameLink, 'block truncate text-sm font-semibold leading-tight')}
                 >
-                  {vehicle.year} {vehicle.make} {vehicle.model}
+                  {vehicleNameOf(vehicle)}
                 </Link>
                 {vehicle.vin && (
                   <p className="flex min-w-0 items-center gap-0.5 font-mono text-xs text-muted-foreground">
@@ -454,7 +455,7 @@ function VehicleDetails({
     {
       key: 'vehicle',
       label: t('basicInfo.vehicle'),
-      value: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+      value: vehicleNameOf(vehicle),
       copy: true,
     },
     { key: 'color', label: tv('color'), value: vehicle.color ?? null },

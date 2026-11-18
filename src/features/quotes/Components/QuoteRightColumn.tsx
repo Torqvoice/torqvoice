@@ -25,6 +25,7 @@ import type { QuoteFormState } from './useQuoteFormState'
 import type { QuoteRecord } from './quote-page-types'
 import { VehicleCombobox } from './VehicleCombobox'
 import { CustomerCombobox } from './CustomerCombobox'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface QuoteRightColumnProps {
   state: QuoteFormState
@@ -181,10 +182,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
                 target="_blank"
                 className="min-w-0 flex-1 text-sm hover:underline"
               >
-                <span className="font-medium">
-                  {state.selectedVehicle.year} {state.selectedVehicle.make}{' '}
-                  {state.selectedVehicle.model}
-                </span>
+                <span className="font-medium">{vehicleName(state.selectedVehicle)}</span>
                 {state.selectedVehicle.licensePlate && (
                   <span className="ml-1.5 text-muted-foreground">
                     {state.selectedVehicle.licensePlate}

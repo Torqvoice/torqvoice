@@ -124,6 +124,7 @@ import {
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { pdf } from '@react-pdf/renderer'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
+import { vehicleName } from '@/lib/vehicle-name'
 
 type ReportTab =
   | 'financial'
@@ -2442,8 +2443,7 @@ export default function ReportsClient({
                     </div>
                     <div className="min-w-0">
                       <p className="text-base font-semibold">
-                        {vehicleData.vehicleInfo.year} {vehicleData.vehicleInfo.make}{' '}
-                        {vehicleData.vehicleInfo.model}
+                        {vehicleName(vehicleData.vehicleInfo)}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {[

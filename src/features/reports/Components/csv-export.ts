@@ -13,6 +13,7 @@ import type {
   VehicleReportData,
 } from '../Schema/reportTypes'
 import { formatCurrency } from '@/lib/format'
+import { vehicleName } from '@/lib/vehicle-name'
 
 function downloadCsv(
   filename: string,
@@ -304,7 +305,7 @@ export function exportVehicleReportCsv(
     partsCount: s.partsCount,
     laborHours: s.laborHours.toFixed(1),
   }))
-  const vehicleLabel = `${data.vehicleInfo.year} ${data.vehicleInfo.make} ${data.vehicleInfo.model}`
+  const vehicleLabel = `${vehicleName(data.vehicleInfo)}`
   downloadCsv(`vehicle-report-${vehicleLabel.replace(/\s+/g, '-')}.csv`, headers, rows, [
     'date',
     'title',

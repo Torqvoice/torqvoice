@@ -21,6 +21,7 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -184,7 +185,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     // The signed forms follow the certificate as pages of their own.
     const body = await appendCertificateDocuments(buffer, documents)
 
-    const vehicleName = `${inspection.vehicle.year}-${inspection.vehicle.make}-${inspection.vehicle.model}`
+    const vehicleName = vehicleNameOf(inspection.vehicle, '-')
     const fileName = `Inspection-${vehicleName}.pdf`
 
     return new NextResponse(body, {

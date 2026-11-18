@@ -54,6 +54,7 @@ import {
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 import { ListEmpty } from '@/components/list-empty'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface QuoteRecord {
   id: string
@@ -293,7 +294,7 @@ export function QuotesClient({
                     {q.vehicle && (
                       <p className="flex items-center gap-1.5 truncate">
                         <Car className="h-3 w-3 shrink-0" />
-                        {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                        {vehicleName(q.vehicle)}
                         {q.vehicle.licensePlate && ` · ${q.vehicle.licensePlate}`}
                       </p>
                     )}
@@ -425,7 +426,7 @@ export function QuotesClient({
                       <TableCell className="hidden truncate lg:table-cell text-muted-foreground">
                         {q.vehicle ? (
                           <TableCellLink href={`/vehicles/${q.vehicle.id}`}>
-                            {q.vehicle.year} {q.vehicle.make} {q.vehicle.model}
+                            {vehicleName(q.vehicle)}
                           </TableCellLink>
                         ) : (
                           '-'

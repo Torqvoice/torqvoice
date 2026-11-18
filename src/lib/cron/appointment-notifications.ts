@@ -16,6 +16,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { DEFAULT_TIME_FORMAT } from '@/lib/format'
 import { createLogger } from '@/lib/logger'
 import { createTickSummary } from './tick-summary'
+import { vehicleName } from '@/lib/vehicle-name'
 
 const log = createLogger('appointment-notifications')
 
@@ -45,7 +46,7 @@ const vehicleLabel = (v: {
   make: string
   model: string
   licensePlate: string | null
-}) => `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
+}) => `${vehicleName(v)}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
 
 /**
  * Sends the notifications whose time has come: for appointments, and for

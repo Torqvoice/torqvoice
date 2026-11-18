@@ -44,6 +44,7 @@ import { useRememberedSort } from '@/hooks/use-remembered-sort'
 import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { rememberCompletedOnly } from '@/lib/completed-only-preference'
 import { ListEmpty } from '@/components/list-empty'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface BillingRecord {
   id: string
@@ -481,7 +482,7 @@ export default function BillingClient({
                   <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
                     {record.vehicle && (
                       <p className="truncate">
-                        {record.vehicle.year} {record.vehicle.make} {record.vehicle.model}
+                        {vehicleName(record.vehicle)}
                         {record.vehicle.licensePlate && ` · ${record.vehicle.licensePlate}`}
                       </p>
                     )}
@@ -612,7 +613,7 @@ export default function BillingClient({
                     <TableCell className="truncate">
                       {record.vehicle ? (
                         <TableCellLink href={`/vehicles/${record.vehicle.id}`}>
-                          {record.vehicle.year} {record.vehicle.make} {record.vehicle.model}
+                          {vehicleName(record.vehicle)}
                         </TableCellLink>
                       ) : (
                         '\u2014'

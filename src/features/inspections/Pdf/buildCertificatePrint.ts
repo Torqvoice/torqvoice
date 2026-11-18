@@ -35,6 +35,7 @@ import {
 } from '../Lib/conditions'
 import { defectsWorstFirst } from '../Lib/conversion'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * A completed inspection, expressed as the document the designer edits, the
@@ -324,7 +325,7 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
     customer_email: data.vehicle.customer?.email || '',
     customer_phone: data.vehicle.customer?.phone || '',
     customer_tax_id: '',
-    vehicle_name: `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`,
+    vehicle_name: `${vehicleName(data.vehicle)}`,
     vin: data.vehicle.vin ? fillTemplate(L('vin', 'VIN: {vin}'), { vin: data.vehicle.vin }) : '',
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     license_plate: data.vehicle.licensePlate

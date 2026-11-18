@@ -45,6 +45,7 @@ import {
   type InspectionResults,
   inspectionResultsForPrint,
 } from '@/features/inspections/Lib/inspectionResults'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 /**
  * A job as the sheet the customer signs and the technician works from.
@@ -232,9 +233,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
 
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
   const customer = data.customer ?? data.vehicle?.customer
-  const vehicleName = data.vehicle
-    ? `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
-    : ''
+  const vehicleName = data.vehicle ? `${vehicleNameOf(data.vehicle)}` : ''
   // The technician first, then whoever is on the job with them.
   const tech = [data.technician?.name || data.techName || '', ...(job.helperNames ?? [])]
     .filter(Boolean)

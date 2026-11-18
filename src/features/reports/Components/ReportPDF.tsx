@@ -15,6 +15,7 @@ import type {
   VehicleReportData,
 } from '../Schema/reportTypes'
 import { formatCurrency } from '@/lib/format'
+import { vehicleName } from '@/lib/vehicle-name'
 
 // --------------- fonts ---------------
 
@@ -879,7 +880,7 @@ export function ReportPDF({
         <Page size="A4" style={s.page}>
           <ReportHeader
             title={l.vehiclesSection || 'Vehicle Report'}
-            subtitle={`${vehicleData.vehicleInfo.year} ${vehicleData.vehicleInfo.make} ${vehicleData.vehicleInfo.model}${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).length > 0 ? ` — ${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(' · ')}` : ''}`}
+            subtitle={`${vehicleName(vehicleData.vehicleInfo)}${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).length > 0 ? ` — ${[vehicleData.vehicleInfo.licensePlate, vehicleData.vehicleInfo.vin, vehicleData.vehicleInfo.customerName].filter(Boolean).join(' · ')}` : ''}`}
           />
 
           <View
