@@ -76,6 +76,7 @@ export function QuickCreateMenu() {
   // page, which the shortcut registry does on its own.
   useShortcut('create.workOrder', handleNewWorkOrder)
   useShortcut('create.inspection', () => void handleNewInspection())
+  useShortcut('create.appointment', () => openBooking(), canBook)
 
   return (
     <>
@@ -103,6 +104,7 @@ export function QuickCreateMenu() {
             <DropdownMenuItem onSelect={() => openBooking()}>
               <CalendarPlus className="h-4 w-4" />
               {t('quickCreate.appointment')}
+              <ShortcutKeys id="create.appointment" className="ml-auto" />
             </DropdownMenuItem>
           )}
           <DropdownMenuItem onSelect={() => go('/customers?create=true')}>

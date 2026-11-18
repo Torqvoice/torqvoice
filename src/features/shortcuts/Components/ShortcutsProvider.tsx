@@ -106,6 +106,7 @@ export function ShortcutsProvider({
   initialPrefs,
   commands,
   plateLookupAvailable,
+  bookingAvailable,
   children,
 }: {
   /** User.keyboardShortcuts as stored. */
@@ -113,6 +114,8 @@ export function ShortcutsProvider({
   /** What the search palette is told about this person, for the same reason. */
   commands: CommandContext
   plateLookupAvailable: boolean
+  /** May book an appointment: the + menu offers one, so the shortcut does too. */
+  bookingAvailable: boolean
   children: ReactNode
 }) {
   const go = useGuardedPush()
@@ -143,11 +146,12 @@ export function ShortcutsProvider({
   const isVisible = useCallback(
     (def: ShortcutDef) => {
       if (def.id === 'general.plateLookup') return plateLookupAvailable
+      if (def.id === 'create.appointment') return bookingAvailable
       if (def.command) return visibleCommands.has(def.command)
       if (def.subject) return canAccessSubject(commands, def.subject)
       return true
     },
-    [visibleCommands, commands, plateLookupAvailable]
+    [visibleCommands, commands, plateLookupAvailable, bookingAvailable]
   )
 
   const canCustomize = canAccessSubject(commands, 'settings')
