@@ -2084,14 +2084,14 @@ export function DashboardClient({
                           <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
                             <Badge
                               variant="outline"
-                              className={`px-1.5 py-0 text-[10px] ${observationSeverityColors[obs.severity] || ''}`}
+                              className={`shrink-0 px-1.5 py-0 text-[10px] ${observationSeverityColors[obs.severity] || ''}`}
                             >
                               {obs.severity}
                             </Badge>
-                            <span className="font-mono text-[11px] text-muted-foreground">
+                            <span className="min-w-0 max-w-full truncate font-mono text-[11px] text-muted-foreground">
                               {obs.vehicle.licensePlate ?? `${vehicleName(obs.vehicle)}`}
                             </span>
-                            <span className="text-[11px] text-muted-foreground">
+                            <span className="shrink-0 text-[11px] text-muted-foreground">
                               {formatRelativeTime(obs.createdAt)}
                             </span>
                           </div>
