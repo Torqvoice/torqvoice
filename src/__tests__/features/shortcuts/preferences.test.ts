@@ -327,6 +327,22 @@ describe('changing a key', () => {
     expect(assignedKeys(def('calendar.next'), prefs)).toEqual(['n'])
   })
 
+  it('keeps a key someone chose before a later default claimed it', () => {
+    // Alt+L was free for anyone to take until New appointment shipped on it.
+    const prefs = normalizeShortcutPrefs({ overrides: { 'goTo.calendar': 'alt+l' } })
+    expect(match('alt+l', { prefs })).toBe('goTo.calendar')
+    expect(assignedKeys(def('create.appointment'), prefs)).toEqual([])
+    expect(findClash(def('create.quote'), 'alt+l', prefs)?.id).toBe('goTo.calendar')
+    // Everyone else still gets the new default.
+    expect(match('alt+l')).toBe('create.appointment')
+  })
+
+  it('gives the default back once the person moves their own key elsewhere', () => {
+    const chosen = normalizeShortcutPrefs({ overrides: { 'goTo.calendar': 'alt+l' } })
+    const moved = assignKey(def('goTo.calendar'), 'alt+z', chosen)
+    expect(match('alt+l', { prefs: moved })).toBe('create.appointment')
+  })
+
   it('goes back to the shipped key on reset', () => {
     const changed = assignKey(def('create.workOrder'), 'alt+n', DEFAULT_SHORTCUT_PREFS)
     const prefs = resetKey(def('create.workOrder'), changed)
