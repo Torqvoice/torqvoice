@@ -71,6 +71,12 @@ import {
 } from '../Schema/bookingSchema'
 import { MAX_APPOINTMENT_MINUTES } from '../Schema/appointmentSchema'
 import { minutesToTime, timeToMinutes } from '../Lib/calendar-range'
+import {
+  appointmentConcerns,
+  descriptionLines,
+  linesAsDescription,
+  withoutRepeats,
+} from '../Lib/appointment'
 import type { BookingEdit } from './EventPeek'
 import { ConcernListEditor } from './ConcernListEditor'
 
@@ -304,14 +310,15 @@ function BookingForm({
         const b = booking.data
         setLoaded(b)
         setTitleText(b.title)
-        setDescription(b.description)
+        // An appointment made a work order: what it says becomes the job's
+        // conditions, which are the only copy a job keeps.
+        setDescription(converting ? '' : b.description)
         setCustomerId(b.customer?.id ?? '')
         setCustomerInitial(b.customer)
         setVehicleId(b.vehicle?.id ?? '')
         setVehicleInitial(b.vehicle)
         setVehicleCustomerId(b.vehicle?.customerId ?? null)
-        // An appointment made a work order: its words become the work needed.
-        setWork(converting ? '' : b.work)
+        setWork(converting ? descriptionLines(b.description).join('\n') : b.work)
         setStart({ date: b.startDate, time: b.startTime })
         setEnd({ date: b.endDate, time: b.endTime })
         setRows(
@@ -395,6 +402,19 @@ function BookingForm({
             : null
 
   const chooseKind = (next: BookingKind) => {
+    // What it is about is one text, kept the way the kind keeps it: an
+    // appointment's description, a job's conditions. It follows the kind, so
+    // nothing typed is left behind in a field that is no longer shown.
+    if (next !== kind) {
+      if (next === 'workOrder') {
+        setWork(withoutRepeats(appointmentConcerns(work), descriptionLines(description)).join('\n'))
+        setDescription('')
+      } else {
+        const lines = appointmentConcerns(work)
+        if (lines.length > 0) setDescription(description + linesAsDescription(lines))
+        setWork('')
+      }
+    }
     setKind(next)
     if (!edit) {
       try {
@@ -427,7 +447,7 @@ function BookingForm({
         id: editing?.id,
         fromAppointmentId: converting?.id,
         title: titleText.trim(),
-        description,
+        description: isWorkOrder ? undefined : description,
         customerId: customerId || undefined,
         vehicleId: vehicleId || undefined,
         work: isWorkOrder ? work : undefined,
@@ -733,14 +753,33 @@ function BookingForm({
                   </p>
                 )}
               </Row>
-              <Row icon={AlignLeft} label={t('description')}>
-                <RichTextEditor
-                  content={description}
-                  onChange={setDescription}
-                  placeholder={t('descriptionPlaceholder')}
-                  contentClassName="min-h-[8rem] max-h-[30vh]"
-                />
-              </Row>
+              {/* What it is about, in the same place for both kinds: a
+                  description on an appointment, and on a work order the
+                  conditions, which are the only copy the job keeps. */}
+              {isWorkOrder ? (
+                <Row icon={ListChecks} label={t('work')}>
+                  <ConcernListEditor
+                    value={work}
+                    onChange={setWork}
+                    disabled={lockedWork}
+                    placeholder={isMarine ? t('addConcernMarine') : t('addConcern')}
+                  />
+                  {(lockedWork || work.trim() === '') && (
+                    <p className="px-2 text-xs text-muted-foreground">
+                      {lockedWork ? t('workLocked') : t('workEmptyHint')}
+                    </p>
+                  )}
+                </Row>
+              ) : (
+                <Row icon={AlignLeft} label={t('description')}>
+                  <RichTextEditor
+                    content={description}
+                    onChange={setDescription}
+                    placeholder={t('descriptionPlaceholder')}
+                    contentClassName="min-h-[8rem] max-h-[30vh]"
+                  />
+                </Row>
+              )}
             </div>
 
             <div className="min-w-0 space-y-4">
@@ -776,21 +815,6 @@ function BookingForm({
                   )}
                 </div>
               </Row>
-              {isWorkOrder && (
-                <Row icon={ListChecks} label={t('work')}>
-                  <ConcernListEditor
-                    value={work}
-                    onChange={setWork}
-                    disabled={lockedWork}
-                    placeholder={isMarine ? t('addConcernMarine') : t('addConcern')}
-                  />
-                  {(lockedWork || work.trim() === '') && (
-                    <p className="px-2 text-xs text-muted-foreground">
-                      {lockedWork ? t('workLocked') : t('workEmptyHint')}
-                    </p>
-                  )}
-                </Row>
-              )}
               {isWorkOrder && video.length > 0 && (
                 <Row icon={Video} label={t('video')}>
                   {loaded?.meeting ? (

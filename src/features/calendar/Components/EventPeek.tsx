@@ -98,15 +98,27 @@ export function EventPeekProvider({
   onRefresh,
   onEditAbsence,
   onEditBooking,
+  showing,
   children,
 }: {
   currencyCode: string
   onRefresh?: () => void
   onEditAbsence?: PeekActions['onEditAbsence']
   onEditBooking?: PeekActions['onEditBooking']
+  /**
+   * What the calendar is showing: the view and the day. The card closes when
+   * it changes, because the chip it hangs off is no longer on the screen and
+   * a card with nothing to hang off lands in the corner.
+   */
+  showing?: string
   children: ReactNode
 }) {
   const [peek, setPeek] = useState<PeekState | null>(null)
+  const [shown, setShown] = useState(showing)
+  if (shown !== showing) {
+    setShown(showing)
+    if (peek) setPeek(null)
+  }
   const [external, setExternal] = useState<CalendarEvent | null>(null)
   // Radix measures the anchor through a ref, so the clicked element is handed
   // over as one; a new object each time so the popper re-measures.
@@ -274,6 +286,7 @@ function PeekCard({
         : formatClock(timeToMinutes(event.time), timeFormat)
       : t('events.external.allDay')
   const done = isEventDone(event)
+  const conditions = event.conditions ?? []
 
   return (
     <div className="overflow-hidden rounded-md">
@@ -361,11 +374,29 @@ function PeekCard({
           )}
         </dl>
 
-        {event.description && (
-          <div
-            className="notes-content mt-3 max-h-40 overflow-y-auto border-t pt-3 text-sm"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
-          />
+        {/* What it is about, under the divider: an appointment's description,
+            a job's conditions. A job from before the conditions were the one
+            copy can still carry a description, which is shown after them. */}
+        {(conditions.length > 0 || event.description) && (
+          <div className="mt-3 max-h-40 space-y-2 overflow-y-auto border-t pt-3 text-sm">
+            {conditions.length === 1 && <p className="break-words">{conditions[0]}</p>}
+            {conditions.length > 1 && (
+              <ul aria-label={t('appointment.work')} className="list-disc space-y-0.5 pl-5">
+                {conditions.map((line, i) => (
+                  // Plain lines with no id; the order is what they are.
+                  <li key={i} className="break-words">
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {event.description && (
+              <div
+                className="notes-content"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
+              />
+            )}
+          </div>
         )}
 
         <div className="mt-4 flex flex-wrap items-center justify-end gap-2">

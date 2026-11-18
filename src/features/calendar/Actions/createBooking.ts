@@ -115,12 +115,15 @@ export async function createBooking(input: SaveBookingInput) {
           where: { id: created.id },
           data: {
             status: 'scheduled',
-            description,
+            // What was typed as a description is the job's conditions: one
+            // copy, on the work order, the print and the technician's phone.
             concerns: {
-              create: bookingConcerns(data.work, data.title).map((text, sortOrder) => ({
-                description: text,
-                sortOrder,
-              })),
+              create: bookingConcerns(data.work, description, data.title).map(
+                (text, sortOrder) => ({
+                  description: text,
+                  sortOrder,
+                })
+              ),
             },
           },
           select: { id: true, vehicleId: true, invoiceNumber: true },

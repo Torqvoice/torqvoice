@@ -93,6 +93,8 @@ beforeEach(() => {
       vehicleId: 'car-1',
       customer: { name: 'Kari' },
       vehicle: { make: 'Volvo', model: 'V70', year: 2012, customer: null },
+      description: null,
+      concerns: [{ description: 'Brake service' }],
       _count: { appointmentNotifications: 0 },
     },
   ] as never)
@@ -214,6 +216,44 @@ describe('calendar events by role', () => {
     })
     expect(appointment?.description).toContain('Wants winter tyres')
     expect(appointment?.description).not.toContain('script')
+  })
+
+  const jobWith = async (extra: Record<string, unknown>) => {
+    const [row] = (await vi.mocked(db.serviceRecord.findMany).getMockImplementation()?.(
+      {} as never
+    )) as unknown as Record<string, unknown>[]
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([{ ...row, ...extra }] as never)
+    signInAs('owner', [])
+    const res = await getCalendarEvents({ start: '2026-11-16', end: '2026-11-22' })
+    return res.data?.find((e) => e.type === 'service')
+  }
+
+  it('lists a job with its conditions, which are what the job is about', async () => {
+    const job = await jobWith({
+      concerns: [{ description: 'Front brakes squeal' }, { description: 'Oil service' }],
+    })
+    expect(job?.conditions).toEqual(['Front brakes squeal', 'Oil service'])
+    expect(job?.description).toBeNull()
+  })
+
+  it('does not repeat the title as the condition of a job booked with nothing more to say', async () => {
+    const job = await jobWith({ concerns: [{ description: 'Brake service' }] })
+    expect(job?.conditions).toEqual([])
+  })
+
+  it('keeps the description an older job carries, cleaned, unless it only repeats the conditions', async () => {
+    const kept = await jobWith({
+      concerns: [{ description: 'Brakes' }],
+      description: '<p>Customer waits in reception</p><script>x()</script>',
+    })
+    expect(kept?.description).toContain('Customer waits in reception')
+    expect(kept?.description).not.toContain('script')
+
+    const repeated = await jobWith({
+      concerns: [{ description: 'Brakes' }, { description: 'Oil service' }],
+      description: 'Brakes\nOil service',
+    })
+    expect(repeated?.description).toBeNull()
   })
 
   it('refuses the calendar to a role that cannot read jobs', async () => {

@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { timeToMinutes } from '../Lib/calendar-range'
 import { eventPalette, isEventDone, openEndedSide } from './calendar-utils'
 import { EventContextMenu } from './EventContextMenu'
-import { useEventPeek } from './EventPeek'
+import { isEditableBooking, useEventPeek } from './EventPeek'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
 /**
@@ -21,7 +21,8 @@ import type { CalendarEvent } from '../Actions/calendarActions'
  * - `row`   a list row for the schedule view and the day sheet
  *
  * Every shape opens the same peek card on click and the same menu on
- * right-click, so nothing here links out.
+ * right-click, so nothing here links out. A double-click opens a booking
+ * that can still be changed in the booking dialog.
  */
 export function EventChip({
   event,
@@ -38,7 +39,7 @@ export function EventChip({
   compact?: boolean
 }) {
   const { timeFormat } = useDateSettings()
-  const { openPeek } = useEventPeek()
+  const { openPeek, editBooking } = useEventPeek()
   const palette = eventPalette(event)
   const done = isEventDone(event)
   const start = event.time ? formatClock(timeToMinutes(event.time), timeFormat) : null
@@ -58,7 +59,17 @@ export function EventChip({
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
+    // The second click of a double-click: the first opened the card, and
+    // this one would close it again.
+    if (e.detail > 1) return
     openPeek(event, e.currentTarget)
+  }
+  // A double-click changes the booking, as in a desktop calendar. It stops
+  // here either way: the day underneath opens day view on a double-click,
+  // and that is for the empty part of a day.
+  const onDoubleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    if (editBooking && isEditableBooking(event)) editBooking({ mode: 'edit', event })
   }
   // The day underneath has a menu of its own; a right-click on the event
   // must open the event's, not both.
@@ -72,6 +83,7 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         title={label}
         style={style}
@@ -95,6 +107,7 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         title={label}
         style={style}
@@ -117,6 +130,7 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         title={range ? `${range} ${event.title}` : event.title}
         style={style}
@@ -153,6 +167,7 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         style={style}
         className={cn(

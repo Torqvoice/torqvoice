@@ -8,6 +8,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getManifest } from '@/integrations/registry'
 import { accessFor } from '@/lib/viewer-access'
 import { sanitizeHtml } from '@/lib/sanitize-html'
+import { descriptionLines } from '../Lib/appointment'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
@@ -42,8 +43,13 @@ export type CalendarEvent = {
   customerName: string | null
   invoiceNumber: string | null
   amount: number | null
-  /** Only on appointments: what it is about, as cleaned rich text. */
+  /**
+   * What it is about, as cleaned rich text. An appointment's description; on
+   * a job only what an older booking still carries beside its conditions.
+   */
   description?: string | null
+  /** Only on jobs: the conditions, the one copy of what the job is about. */
+  conditions?: string[]
   /** Appointments and booked jobs: how many notifications go out before it. */
   notificationCount?: number
   /** Only on external events: whether it fills the day, where it came from. */
@@ -122,6 +128,8 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
               totalAmount: true,
               cost: true,
               vehicleId: true,
+              description: true,
+              concerns: { orderBy: { sortOrder: 'asc' }, select: { description: true } },
               _count: { select: { appointmentNotifications: true } },
               customer: { select: { name: true } },
               vehicle: {
@@ -387,6 +395,14 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
                 ? toTimeStr(s.endDateTime, timeZone)
                 : '23:59'
               : null
+          // A job booked with nothing to say has its title as its one
+          // condition, which the card already shows as the title.
+          const conditions = s.concerns
+            .map((c) => c.description.trim())
+            .filter((line, i, all) => line && !(all.length === 1 && line === s.title.trim()))
+          // A description from before the conditions were the one copy is
+          // still shown, unless it only repeats them.
+          const legacy = descriptionLines(s.description).some((line) => !conditions.includes(line))
           return {
             id: s.id,
             title: s.title,
@@ -400,6 +416,8 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
             customerName: (s.customer ?? s.vehicle?.customer)?.name ?? null,
             invoiceNumber: s.invoiceNumber,
             amount: s.totalAmount > 0 ? s.totalAmount : s.cost > 0 ? s.cost : null,
+            conditions,
+            description: legacy && s.description ? sanitizeHtml(s.description) : null,
             notificationCount: s._count.appointmentNotifications,
           }
         }),

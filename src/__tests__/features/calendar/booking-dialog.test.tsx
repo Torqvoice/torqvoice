@@ -423,6 +423,44 @@ describe('a new booking', () => {
     expect(toast.success).not.toHaveBeenCalled()
   })
 
+  it('books a work order with what it is about as conditions, and no description beside them', async () => {
+    await renderDialog()
+    fireEvent.change(titleField(), { target: { value: 'Brake job' } })
+    chooseKind('Work order')
+    await chooseCustomer()
+    // One field says what it is about: the conditions.
+    expect(screen.queryByPlaceholderText('Add description')).not.toBeInTheDocument()
+    addConcern('Front brakes squeal')
+
+    fireEvent.click(saveButton())
+
+    await waitFor(() => expect(createBooking).toHaveBeenCalled())
+    const sent = createBooking.mock.calls[0][0]
+    expect(sent.work).toBe('Front brakes squeal')
+    expect(sent.description).toBeUndefined()
+  })
+
+  it('takes a description already typed along as conditions when it becomes a work order, and back', async () => {
+    await renderDialog()
+    fireEvent.change(titleField(), { target: { value: 'Brake job' } })
+    chooseKind('Appointment')
+    fireEvent.change(screen.getByPlaceholderText('Add description'), {
+      target: { value: '<p>Front brakes squeal</p><ul><li><p>Oil service</p></li></ul>' },
+    })
+
+    chooseKind('Work order')
+
+    expect(screen.getByLabelText('Concern 1')).toHaveValue('Front brakes squeal')
+    expect(screen.getByLabelText('Concern 2')).toHaveValue('Oil service')
+
+    chooseKind('Appointment')
+
+    expect(screen.getByPlaceholderText('Add description')).toHaveValue(
+      '<p>Front brakes squeal</p><p>Oil service</p>'
+    )
+    expect(screen.queryByLabelText('Concern 1')).not.toBeInTheDocument()
+  })
+
   it('starts on the kind this person booked last', async () => {
     window.localStorage.setItem('torqvoice.calendar.bookingKind', 'appointment')
     await renderDialog()
@@ -667,6 +705,34 @@ describe('making an appointment a work order', () => {
       startTime: '09:30',
     })
     expect(sent.id).toBeUndefined()
+  })
+
+  it("opens with the appointment's description as the job's conditions", async () => {
+    getBooking.mockResolvedValue({
+      success: true,
+      data: loadedBooking({ description: '<p>Wants winter tyres</p><p>Has own rims</p>' }),
+    })
+    createBooking.mockResolvedValue({
+      success: true,
+      data: {
+        kind: 'workOrder',
+        id: 'job-1',
+        ref: '2026-1044',
+        vehicleId: null,
+        overbooked: false,
+      },
+    })
+    await renderDialog({ edit: { mode: 'convert', event: calendarEvent({}) } })
+
+    expect(await screen.findByLabelText('Concern 1')).toHaveValue('Wants winter tyres')
+    expect(screen.getByLabelText('Concern 2')).toHaveValue('Has own rims')
+
+    fireEvent.click(saveButton('Make work order'))
+
+    await waitFor(() => expect(createBooking).toHaveBeenCalled())
+    const sent = createBooking.mock.calls[0][0]
+    expect(sent.work).toBe('Wants winter tyres\nHas own rims')
+    expect(sent.description).toBeUndefined()
   })
 })
 

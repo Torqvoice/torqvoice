@@ -268,6 +268,43 @@ describe('createBooking: a work order', () => {
     expect(db.appointment.create).not.toHaveBeenCalled()
   })
 
+  it('makes the description the conditions, a line per paragraph and list item, and keeps no other copy', async () => {
+    const result = await createBooking(
+      booking({
+        kind: 'workOrder',
+        title: 'Brake job',
+        vehicleId: 'veh-1',
+        description:
+          '<p>Front brakes <strong>squeal</strong> when cold</p><ul><li><p>Oil service</p></li><li><p>Check wipers</p></li></ul>',
+      })
+    )
+
+    expect(result.success).toBe(true)
+    expect(jobData().title).toBe('Brake job')
+    expect(jobUpdate().data.concerns.create).toEqual([
+      { description: 'Front brakes squeal when cold', sortOrder: 0 },
+      { description: 'Oil service', sortOrder: 1 },
+      { description: 'Check wipers', sortOrder: 2 },
+    ])
+    expect(jobUpdate().data).not.toHaveProperty('description')
+  })
+
+  it('puts a description after the work lines, without saying anything twice', async () => {
+    await createBooking(
+      booking({
+        kind: 'workOrder',
+        vehicleId: 'veh-1',
+        work: 'Oil service',
+        description: '<p>Oil service</p><p>Customer waits</p>',
+      })
+    )
+
+    expect(jobUpdate().data.concerns.create).toEqual([
+      { description: 'Oil service', sortOrder: 0 },
+      { description: 'Customer waits', sortOrder: 1 },
+    ])
+  })
+
   it('makes the title the only concern when no work lines are given', async () => {
     db.vehicle.findFirst.mockResolvedValue(null)
 
@@ -320,6 +357,25 @@ describe('createBooking: an appointment made a work order', () => {
     )
     expect(db.serviceRecord.create).toHaveBeenCalledTimes(1)
     expect(db.appointment.delete).toHaveBeenCalledWith({ where: { id: 'appt-1' } })
+  })
+
+  it("carries the appointment's description over as the job's conditions", async () => {
+    db.appointment.findFirst.mockResolvedValue({ id: 'appt-1' })
+
+    await createBooking(
+      booking({
+        kind: 'workOrder',
+        title: 'Tyre quote talk',
+        vehicleId: 'veh-1',
+        fromAppointmentId: 'appt-1',
+        description: '<p>Wants winter tyres</p><p>Has own rims</p>',
+      })
+    )
+
+    expect(jobUpdate().data.concerns.create).toEqual([
+      { description: 'Wants winter tyres', sortOrder: 0 },
+      { description: 'Has own rims', sortOrder: 1 },
+    ])
   })
 
   it("refuses another workshop's appointment and creates nothing", async () => {
@@ -574,6 +630,48 @@ describe('updateBooking: a booked job', () => {
         { serviceRecordId: 'job-1', description: 'Oil service', sortOrder: 1 },
       ],
     })
+  })
+
+  it('keeps no description beside the conditions once the booking is saved', async () => {
+    db.serviceRecord.findFirst.mockResolvedValue(bookedJob())
+
+    await updateBooking(jobEdit({ work: 'Brakes\nCustomer waits' }))
+
+    expect(jobUpdate().data.description).toBeNull()
+    expect(db.serviceConcern.createMany).toHaveBeenCalledWith({
+      data: [
+        { serviceRecordId: 'job-1', description: 'Brakes', sortOrder: 0 },
+        { serviceRecordId: 'job-1', description: 'Customer waits', sortOrder: 1 },
+      ],
+    })
+  })
+
+  it('makes a description sent by a tab opened before the change conditions too', async () => {
+    db.serviceRecord.findFirst.mockResolvedValue(bookedJob())
+
+    await updateBooking(jobEdit({ work: 'Brakes', description: '<p>Customer waits</p>' }))
+
+    expect(jobUpdate().data.description).toBeNull()
+    expect(db.serviceConcern.createMany).toHaveBeenCalledWith({
+      data: [
+        { serviceRecordId: 'job-1', description: 'Brakes', sortOrder: 0 },
+        { serviceRecordId: 'job-1', description: 'Customer waits', sortOrder: 1 },
+      ],
+    })
+  })
+
+  it('leaves the description alone on a job with work recorded, where the conditions cannot change', async () => {
+    db.serviceRecord.findFirst.mockResolvedValue(
+      bookedJob({ concerns: [{ ...bookedJob().concerns[0], cause: 'Worn pads' }] })
+    )
+
+    const result = await updateBooking(
+      jobEdit({ title: 'Brakes, front', description: '<p>Customer waits</p>' })
+    )
+
+    expect(result.success).toBe(true)
+    expect(jobUpdate().data).not.toHaveProperty('description')
+    expect(db.serviceConcern.deleteMany).not.toHaveBeenCalled()
   })
 
   it.each([
