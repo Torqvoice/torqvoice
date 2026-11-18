@@ -17,6 +17,11 @@ import { useGlassModal } from '@/components/glass-modal'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
 import { NoteForm } from '@/features/vehicles/Components/NoteForm'
 import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
+import { appointmentHref } from '@/features/calendar/Lib/appointmentLink'
+import {
+  type VehicleAppointment,
+  VehicleAppointments,
+} from '@/features/vehicles/Components/VehicleAppointments'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
 import { VehicleSafetyPanel } from '@/features/vehicles/Components/VehicleSafetyPanel'
 import { VehicleActivityFeed, type FeedFilter } from './vehicle-activity-feed'
@@ -362,6 +367,7 @@ export function VehicleDetailClient({
   jobWarnings = NO_WARNINGS,
   feedNotes,
   glance = null,
+  appointments = [],
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
@@ -378,6 +384,8 @@ export function VehicleDetailClient({
   feedNotes?: PaginatedNotes['records']
   /** Last visit, next booking, what is owed; null for a role that may not read work orders. */
   glance?: VehicleGlance | null
+  /** Coming appointments, then the last few; empty for a role that may not read the calendar. */
+  appointments?: VehicleAppointment[]
   currencyCode?: string
   unitSystem?: 'metric' | 'imperial'
   predictionData?: {
@@ -610,6 +618,14 @@ export function VehicleDetailClient({
 
   const openFindings = paginatedFindings.records.filter((f) => f.status === 'open')
   const activeReminders = vehicle.reminders.filter((r) => !r.isCompleted)
+  // An appointment with no job behind it is a booking too: "Next booking"
+  // shows it when it comes before the next booked work order.
+  const firstAppointment = appointments.find((a) => a.upcoming)
+  const nextAppointment =
+    firstAppointment &&
+    (!glance?.nextBooking || new Date(firstAppointment.startAt) < new Date(glance.nextBooking))
+      ? firstAppointment
+      : null
 
   const optionLabel = (value: string | null, known: Set<string>) => {
     if (!value) return null
@@ -1208,7 +1224,11 @@ export function VehicleDetailClient({
 
                     <dt className="text-muted-foreground">{t('nextBooking')}</dt>
                     <dd className="min-w-0 tabular-nums">
-                      {glance.nextBooking && glance.nextBookingJobId ? (
+                      {nextAppointment ? (
+                        <Link href={appointmentHref(nextAppointment.id)} className={RAIL_LINK}>
+                          {formatDateTime(new Date(nextAppointment.startAt))}
+                        </Link>
+                      ) : glance.nextBooking && glance.nextBookingJobId ? (
                         <Link
                           href={`/vehicles/${vehicle.id}/service/${glance.nextBookingJobId}`}
                           className={RAIL_LINK}
@@ -1430,6 +1450,14 @@ export function VehicleDetailClient({
                       </>
                     )}
                   </dl>
+                </>
+              )}
+
+              {/* "Is this car booked?" answered without the calendar. */}
+              {appointments.length > 0 && (
+                <>
+                  <div className="mx-1.5 my-3 h-px bg-border" />
+                  <VehicleAppointments appointments={appointments} />
                 </>
               )}
 

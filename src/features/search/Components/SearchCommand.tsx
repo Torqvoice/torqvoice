@@ -5,6 +5,7 @@ import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useS
 import { useTranslations } from 'next-intl'
 import {
   Bell,
+  CalendarClock,
   Car,
   ClipboardCheck,
   CornerDownLeft,
@@ -60,6 +61,8 @@ import {
   normalizeFaultCode,
 } from '@/features/fault-codes/Lib/codes'
 import type { OemSearchHit } from '@/features/fault-codes/Lib/types'
+import { appointmentHref } from '@/features/calendar/Lib/appointmentLink'
+import { useFormatDate } from '@/lib/use-format-date'
 
 type Vehicle = {
   id: string
@@ -128,6 +131,17 @@ interface SearchResult {
     customer: { id: string; name: string } | null
     vehicle: Vehicle | null
   }[]
+  /** `date` (YYYY-MM-DD) and `time` (HH:MM) are on the workshop's clock. */
+  appointments?: {
+    id: string
+    title: string
+    startAt: Date | string
+    date: string
+    time: string
+    upcoming: boolean
+    customer: { id: string; name: string } | null
+    vehicle: Vehicle | null
+  }[]
 }
 
 /** The palette's fault code groups, asked for on their own beside the normal search. */
@@ -165,6 +179,7 @@ const EMPTY: SearchResult = {
   reminders: [],
   inspections: [],
   tireSets: [],
+  appointments: [],
 }
 
 type RecentCustomer = {
@@ -332,6 +347,7 @@ function iconForHref(href: string): LucideIcon {
   if (href.startsWith('/tire-hotel')) return Disc3
   if (href.startsWith('/inspections')) return ClipboardCheck
   if (href.startsWith('/reminders')) return Bell
+  if (href.startsWith('/calendar')) return CalendarClock
   if (href.startsWith('/settings')) return Search
   return Wrench
 }
@@ -358,6 +374,7 @@ export function SearchCommand({
   const tShortcuts = useTranslations('settings.shortcuts')
   const { openHelp: openShortcutsHelp } = useShortcuts()
   const tFault = useTranslations('faultCodes.search')
+  const { formatDate, formatTime } = useFormatDate()
   const tCodes = useTranslations('faultCodes')
   const typeKeyEnabled = useTypeKeyEnabled()
   const plateLookup = usePlateLookupAccess()
@@ -683,7 +700,8 @@ export function SearchCommand({
     results.quotes.length > 0 ||
     results.reminders.length > 0 ||
     results.inspections.length > 0 ||
-    results.tireSets.length > 0
+    results.tireSets.length > 0 ||
+    (results.appointments?.length ?? 0) > 0
   // The palette's fault code rows: the service's codes for what was typed, and
   // the whole code itself when the service has nothing for it, so Enter still
   // opens its page.
@@ -1023,6 +1041,33 @@ export function SearchCommand({
                   title={s.title}
                   subtitle={subtitle}
                   trailing={s.invoiceNumber}
+                />
+              )
+            })}
+          </CommandGroup>
+        )}
+        {hasQuery && results.appointments && results.appointments.length > 0 && (
+          <CommandGroup heading={t('groups.appointments')}>
+            {results.appointments.map((a) => {
+              const when = `${formatDate(a.startAt)} ${formatTime(a.startAt)}`
+              const subtitle = [
+                when,
+                a.customer?.name,
+                a.vehicle && !a.customer ? vehicleLine(a.vehicle) : null,
+              ]
+                .filter(Boolean)
+                .join(' · ')
+              return (
+                <Row
+                  key={a.id}
+                  value={`appointment:${a.id}`}
+                  onSelect={() => pickRecord(appointmentHref(a.id), a.title, subtitle)}
+                  icon={CalendarClock}
+                  title={
+                    <span className={cn(!a.upcoming && 'text-muted-foreground')}>{a.title}</span>
+                  }
+                  subtitle={subtitle}
+                  trailing={a.vehicle?.licensePlate}
                 />
               )
             })}

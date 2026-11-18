@@ -13,7 +13,8 @@
     "settings": "Innstillinger",
     "pages": "Sider",
     "actions": "Handlinger",
-    "integrations": "Integrasjoner"
+    "integrations": "Integrasjoner",
+    "appointments": "Avtaler"
   },
   "hints": {
     "navigate": "naviger",

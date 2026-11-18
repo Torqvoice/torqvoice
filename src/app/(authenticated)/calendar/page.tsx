@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import { db } from '@/lib/db'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -33,7 +34,7 @@ export function generateMetadata() {
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; date?: string }>
+  searchParams: Promise<{ view?: string; date?: string; appointment?: string }>
 }) {
   const params = await searchParams
   const ctx = await getAuthContext()
@@ -42,8 +43,20 @@ export default async function CalendarPage({
   // ring in the next day at 01:00 Oslo time.
   const todayStr = zonedDayKey(new Date(), timeZone)
 
-  const view: CalendarView = isCalendarView(params.view) ? params.view : 'month'
-  const date = parseDateKey(params.date) ?? parseDateKey(todayStr) ?? new Date()
+  // A link to one appointment (from search, a vehicle's page) opens its day
+  // with its card up. Only this workshop's: any other id, or one since
+  // deleted, opens the calendar as if the link had no appointment at all.
+  const linked =
+    ctx && typeof params.appointment === 'string' && params.appointment
+      ? await db.appointment.findFirst({
+          where: { id: params.appointment, organizationId: ctx.organizationId },
+          select: { id: true, startAt: true },
+        })
+      : null
+  const linkedDay = linked ? zonedDayKey(linked.startAt, timeZone) : null
+
+  const view: CalendarView = isCalendarView(params.view) ? params.view : linked ? 'day' : 'month'
+  const date = parseDateKey(linkedDay ?? params.date) ?? parseDateKey(todayStr) ?? new Date()
 
   const messageChannels = ctx ? await getAvailableChannels(ctx.organizationId) : []
   const settingsResult = await getDisplaySettings([
@@ -101,6 +114,9 @@ export default async function CalendarPage({
       <PageHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
         <CalendarClient
+          // A new link while the calendar is open starts it over on that day.
+          key={linked?.id ?? 'calendar'}
+          openAppointmentId={linked?.id ?? null}
           initialEvents={events}
           initialRange={rangeKeys}
           initialView={view}

@@ -44,7 +44,7 @@ import { CalendarSidebar, typeFiltersFrom } from './CalendarSidebar'
 import { CalendarToolbar, type CreateKind } from './CalendarToolbar'
 import type { DayActions } from './DayContextMenu'
 import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
-import { type BookingEdit, EventPeekProvider } from './EventPeek'
+import { type BookingEdit, EventPeekProvider, useEventPeek } from './EventPeek'
 import { MonthView } from './MonthView'
 import { ScheduleView } from './ScheduleView'
 import { TimeGridView } from './TimeGridView'
@@ -69,6 +69,8 @@ interface CalendarClientProps {
   timeOff?: { technicians: TechnicianOption[] } | null
   /** The viewing preferences from the cookie; null when none are stored yet. */
   initialPreferences?: CalendarPreferences | null
+  /** An appointment a link asked for: its card opens once the day is drawn. */
+  openAppointmentId?: string | null
 }
 
 const ALL_TYPES: CalendarEventType[] = [
@@ -110,6 +112,7 @@ export default function CalendarClient({
   messageChannels,
   timeOff = null,
   initialPreferences = null,
+  openAppointmentId = null,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
   const tWorkOrders = useTranslations('workOrders.list')
@@ -559,7 +562,16 @@ export default function CalendarClient({
               onFilterChange={setTypeShown}
             />
           )}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">{body}</div>
+          <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+            {body}
+            {openAppointmentId && (
+              <LinkedAppointment
+                event={initialEvents.find(
+                  (e) => e.type === 'appointment' && e.id === openAppointmentId
+                )}
+              />
+            )}
+          </div>
         </div>
       </div>
 
@@ -671,5 +683,28 @@ export default function CalendarClient({
         />
       )}
     </EventPeekProvider>
+  )
+}
+
+/**
+ * Opens the card of the appointment a link asked for, once. The card is
+ * anchored to a point near the top of the view rather than to the chip,
+ * which knows nothing of links; closing it leaves the day on screen.
+ */
+function LinkedAppointment({ event }: { event: CalendarEvent | undefined }) {
+  const { openPeek } = useEventPeek()
+  const anchor = useRef<HTMLSpanElement>(null)
+  const opened = useRef(false)
+  useEffect(() => {
+    if (opened.current || !event || !anchor.current) return
+    opened.current = true
+    openPeek(event, anchor.current)
+  }, [event, openPeek])
+  return (
+    <span
+      ref={anchor}
+      aria-hidden
+      className="pointer-events-none absolute top-16 left-1/2 h-0 w-0"
+    />
   )
 }
