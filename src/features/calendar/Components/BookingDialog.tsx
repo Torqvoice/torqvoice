@@ -52,7 +52,8 @@ import { plateFromSearch } from '@/features/vehicles/Lib/plate'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { VehicleCombobox } from '@/features/quotes/Components/VehicleCombobox'
 import { createServiceMeeting } from '@/features/integrations/Actions/integrationActions'
-import { createBooking } from '../Actions/createBooking'
+import { createBookingOnce } from '../Actions/createBooking'
+import { newBookingToken } from '../Lib/bookingToken'
 import { updateBooking } from '../Actions/updateBooking'
 import { getBooking, type BookingForEdit } from '../Actions/getBooking'
 import { getBookingOptions, type BookingOptions } from '../Actions/getBookingOptions'
@@ -278,6 +279,9 @@ function BookingForm({
   const [multiDay, setMultiDay] = useState(false)
   // Set by a press of the button that could not save.
   const [tried, setTried] = useState(false)
+  // One for as long as this form is open, so pressing Book again after a
+  // failure that was really a lost answer finds the booking already made.
+  const [bookingToken] = useState(newBookingToken)
   const titleRef = useRef<HTMLInputElement>(null)
 
   // What the workshop offers, and the booking being changed.
@@ -426,6 +430,7 @@ function BookingForm({
         kind,
         id: editing?.id,
         fromAppointmentId: converting?.id,
+        token: editing ? undefined : bookingToken,
         title: titleText.trim(),
         description,
         customerId: customerId || undefined,
@@ -442,9 +447,9 @@ function BookingForm({
           atTime: isDayUnit(r.unit) ? r.atTime : null,
         })),
       }
-      const result: Awaited<ReturnType<typeof createBooking>> = editing
+      const result: Awaited<ReturnType<typeof updateBooking>> = editing
         ? await updateBooking(payload)
-        : await createBooking(payload)
+        : await createBookingOnce(payload)
       if (!result.success || !result.data) {
         toast.error(result.error || t('failed'))
         return

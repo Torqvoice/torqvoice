@@ -4,7 +4,7 @@
  * that is still only a booking, and turns an appointment into a work order.
  */
 
-import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { CalendarEvent } from '@/features/calendar/Actions/calendarActions'
 import type { BookingForEdit } from '@/features/calendar/Actions/getBooking'
@@ -56,7 +56,9 @@ vi.mock('@/components/ui/rich-text-editor', () => ({
 }))
 
 const createBooking = vi.hoisted(() => vi.fn())
-vi.mock('@/features/calendar/Actions/createBooking', () => ({ createBooking }))
+vi.mock('@/features/calendar/Actions/createBooking', () => ({
+  createBookingOnce: createBooking,
+}))
 const updateBooking = vi.hoisted(() => vi.fn())
 vi.mock('@/features/calendar/Actions/updateBooking', () => ({ updateBooking }))
 const getBooking = vi.hoisted(() => vi.fn())
@@ -301,6 +303,44 @@ describe('a new booking', () => {
     // On the calendar itself there is no way to the calendar to offer.
     expect(toast.success).toHaveBeenCalledWith('Appointment booked', undefined)
     expect(onOpenChange).toHaveBeenCalledWith(false)
+  })
+
+  it('sends the same token again when Book is pressed after a failure', async () => {
+    // The answer to the first send never arrived; the booking may be made.
+    createBooking.mockRejectedValueOnce(new Error('Failed to fetch'))
+    const { onSaved } = await renderDialog()
+    fireEvent.change(titleField(), { target: { value: 'Call Kari' } })
+    chooseKind('Appointment')
+
+    fireEvent.click(saveButton())
+    await waitFor(() => expect(toast.error).toHaveBeenCalled())
+    expect(onSaved).not.toHaveBeenCalled()
+    // Still filled in, to press again.
+    expect(titleField()).toHaveValue('Call Kari')
+    fireEvent.click(saveButton())
+    await waitFor(() => expect(onSaved).toHaveBeenCalled())
+
+    expect(createBooking).toHaveBeenCalledTimes(2)
+    const [first, second] = createBooking.mock.calls.map(([sent]) => sent.token)
+    expect(first).toMatch(/^[A-Za-z0-9_-]{16,64}$/)
+    expect(second).toBe(first)
+  })
+
+  it('sends a token of its own each time the dialog is opened', async () => {
+    await renderDialog()
+    fireEvent.change(titleField(), { target: { value: 'Call Kari' } })
+    chooseKind('Appointment')
+    fireEvent.click(saveButton())
+    await waitFor(() => expect(createBooking).toHaveBeenCalledTimes(1))
+    cleanup()
+
+    await renderDialog()
+    fireEvent.change(titleField(), { target: { value: 'Call Ola' } })
+    chooseKind('Appointment')
+    fireEvent.click(saveButton())
+    await waitFor(() => expect(createBooking).toHaveBeenCalledTimes(2))
+
+    expect(createBooking.mock.calls[1][0].token).not.toBe(createBooking.mock.calls[0][0].token)
   })
 
   it('will not save without a title or with the end before the start', async () => {

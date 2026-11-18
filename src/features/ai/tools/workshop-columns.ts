@@ -22,6 +22,7 @@ export const HIDDEN_COLUMNS: readonly string[] = [
   'createdById',
   'concernId',
   'telegramChatId',
+  'bookingToken',
 ]
 
 export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {

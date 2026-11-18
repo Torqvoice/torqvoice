@@ -1,6 +1,6 @@
 'use server'
 
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { demoGuard } from '@/lib/demo'
 import { withAuth } from '@/lib/with-auth'
 import type { AuditEvent } from '@/lib/audit'
@@ -33,12 +33,29 @@ import {
  *
  * An appointment can become a work order: the dialog opens on it, and the
  * appointment goes once the job exists, in the same transaction.
+ *
+ * Booked once however often it is sent. The dialog makes up a token when it
+ * opens and sends it with the booking; what gets booked carries it, unique
+ * within the workshop. When the answer to the first send is lost (the
+ * network dropped, the server restarted under a deploy) the dialog shows a
+ * failure and stays filled in, and the second press finds the first booking
+ * by its token instead of making another with the next job number.
+ *
+ * Named `createBookingOnce` because the token is required: a tab opened
+ * before this existed calls `createBooking`, which is gone, and is asked to
+ * reload rather than book without one.
  */
-export async function createBooking(input: SaveBookingInput) {
+export async function createBookingOnce(input: SaveBookingInput) {
   return withAuth(
     async ({ organizationId, userId }) => {
       const data = saveBookingSchema.parse(input)
       if (data.id) throw new Error('This booking already exists')
+      const token = data.token
+      if (!token) throw new Error('This booking has no token')
+      // Before anything else is looked up: an appointment that became a work
+      // order the first time is gone by now, and must not read as an error.
+      const already = await bookedWith(organizationId, token)
+      if (already) return already
       // A message to the customer will go out from the workshop's own SMS or
       // email, which the public demo must not do.
       if (data.notifications.some((n) => isCustomerChannel(n.channel))) demoGuard()
@@ -55,14 +72,23 @@ export async function createBooking(input: SaveBookingInput) {
             select: { id: true },
           })
         : null
-      if (data.fromAppointmentId && !from) throw new Error('Appointment not found')
+      if (data.fromAppointmentId && !from) {
+        // Gone because the first send finished between the two lookups and
+        // took it with it: then the work order is there by now.
+        const meanwhile = await bookedWith(organizationId, token)
+        if (meanwhile) return meanwhile
+        throw new Error('Appointment not found')
+      }
 
       if (data.kind === 'appointment') {
         if (from) throw new Error('An appointment becomes a work order, not another appointment')
-        const created = await db.$transaction(async (tx) => {
+        const booking = db.$transaction(async (tx) => {
+          const earlier = await claimToken(tx, organizationId, token)
+          if (earlier) return earlier
           const appointment = await tx.appointment.create({
             data: {
               organizationId,
+              bookingToken: token,
               title: data.title,
               description,
               startAt: start,
@@ -81,18 +107,23 @@ export async function createBooking(input: SaveBookingInput) {
           )
           return appointment
         })
+        const created = await booking.catch(theOneBooked(organizationId, token))
+        if ('kind' in created) return created
         return {
           kind: 'appointment' as const,
           id: created.id,
           ref: created.title,
           vehicleId: created.vehicleId,
           overbooked: false,
+          repeated: false,
         }
       }
 
       const minutes = Math.round((end.getTime() - start.getTime()) / 60_000)
       const { resource, full } = await resourceFor(organizationId, start, minutes)
-      const job = await db.$transaction(async (tx) => {
+      const booking = db.$transaction(async (tx) => {
+        const earlier = await claimToken(tx, organizationId, token)
+        if (earlier) return earlier
         const created = await createDraftRecord(
           { organizationId, userId },
           {
@@ -115,6 +146,7 @@ export async function createBooking(input: SaveBookingInput) {
           where: { id: created.id },
           data: {
             status: 'scheduled',
+            bookingToken: token,
             description,
             concerns: {
               create: bookingConcerns(data.work, data.title).map((text, sortOrder) => ({
@@ -133,6 +165,8 @@ export async function createBooking(input: SaveBookingInput) {
         if (from) await tx.appointment.delete({ where: { id: from.id } })
         return record
       })
+      const job = await booking.catch(theOneBooked(organizationId, token))
+      if ('kind' in job) return job
       // Booked all the same when everything is taken then: the office may
       // fill an hour the booking page would refuse. The dialog says so.
       return {
@@ -141,27 +175,118 @@ export async function createBooking(input: SaveBookingInput) {
         ref: job.invoiceNumber || job.id,
         vehicleId: job.vehicleId,
         overbooked: full,
+        repeated: false,
       }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.CREATE, subject: PermissionSubject.SERVICES },
       ],
-      audit: ({ result }): AuditEvent =>
-        result.kind === 'appointment'
-          ? {
-              action: 'appointment.create',
-              entity: 'Appointment',
-              entityId: result.id,
-              details: { key: 'appointment_create', params: { title: result.ref } },
-            }
-          : {
-              action: 'service.create',
-              entity: 'ServiceRecord',
-              entityId: result.id,
-              details: { key: 'service_bookAppointment', params: { ref: result.ref } },
-              metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
-            },
+      // Written down when it was booked, not again each time it is found.
+      audit: ({ result }): AuditEvent | null =>
+        result.repeated
+          ? null
+          : result.kind === 'appointment'
+            ? {
+                action: 'appointment.create',
+                entity: 'Appointment',
+                entityId: result.id,
+                details: { key: 'appointment_create', params: { title: result.ref } },
+              }
+            : {
+                action: 'service.create',
+                entity: 'ServiceRecord',
+                entityId: result.id,
+                details: { key: 'service_bookAppointment', params: { ref: result.ref } },
+                metadata: { serviceRecordId: result.id, vehicleId: result.vehicleId },
+              },
     }
   )
+}
+
+/** What the dialog is told it booked. `repeated` when it was booked before. */
+type Booked = {
+  kind: 'appointment' | 'workOrder'
+  id: string
+  ref: string
+  vehicleId: string | null
+  overbooked: boolean
+  repeated: boolean
+}
+
+/** What this token already booked in this workshop, if it booked anything. */
+async function bookedWith(
+  organizationId: string,
+  token: string,
+  client: Pick<TxClient, 'serviceRecord' | 'appointment'> = db
+): Promise<Booked | null> {
+  const [job, appointment] = await Promise.all([
+    client.serviceRecord.findFirst({
+      where: { organizationId, bookingToken: token },
+      select: { id: true, vehicleId: true, invoiceNumber: true },
+    }),
+    client.appointment.findFirst({
+      where: { organizationId, bookingToken: token },
+      select: { id: true, title: true, vehicleId: true },
+    }),
+  ])
+  if (job) {
+    return {
+      kind: 'workOrder',
+      id: job.id,
+      ref: job.invoiceNumber || job.id,
+      vehicleId: job.vehicleId,
+      // Said the first time, if it was; nothing was taken from anyone now.
+      overbooked: false,
+      repeated: true,
+    }
+  }
+  if (appointment) {
+    return {
+      kind: 'appointment',
+      id: appointment.id,
+      ref: appointment.title,
+      vehicleId: appointment.vehicleId,
+      overbooked: false,
+      repeated: true,
+    }
+  }
+  return null
+}
+
+/**
+ * Makes sends of one booking take turns, and tells the one whose turn comes
+ * second what the first booked.
+ *
+ * The lookup before the transaction is passed by both of two sends that
+ * arrive together. The token is unique among jobs and among appointments,
+ * but a send made again as the other kind (the dialog stays open after a
+ * failure, and the kind can be switched) writes to the other table, where
+ * nothing refuses it. So each send waits here for any other with its token
+ * to finish, and then looks again.
+ */
+async function claimToken(
+  tx: TxClient,
+  organizationId: string,
+  token: string
+): Promise<Booked | null> {
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('booking_token'), hashtext(${`${organizationId}:${token}`}))`
+  return bookedWith(organizationId, token, tx)
+}
+
+/**
+ * Two sends of one booking that arrive together both find nothing booked
+ * and both write. The database lets one through and refuses the other its
+ * token, or, for an appointment being made a work order, finds the
+ * appointment already gone. The one refused answers with what the other
+ * booked; anything else that went wrong is still what went wrong.
+ */
+function theOneBooked(organizationId: string, token: string) {
+  return async (error: unknown): Promise<Booked> => {
+    const code = (error as { code?: string } | null)?.code
+    if (code !== 'P2002' && code !== 'P2025') throw error
+    const already = await bookedWith(organizationId, token)
+    if (!already) throw error
+    return already
+  }
 }

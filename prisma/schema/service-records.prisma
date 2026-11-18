@@ -195,6 +195,12 @@ model ServiceRecord {
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
 
+  /// Made up by the booking dialog each time it opens and sent with the
+  /// booking, so a booking sent twice (the answer to the first was lost) is
+  /// found again instead of made again. Only jobs booked there have one.
+  bookingToken String?
+
+  @@unique([organizationId, bookingToken])
   @@index([vehicleId])
   @@index([technicianId])
   @@index([workBayId])

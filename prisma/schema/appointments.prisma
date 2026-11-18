@@ -27,6 +27,12 @@ model Appointment {
 
   notifications AppointmentNotification[]
 
+  /// Made up by the booking dialog each time it opens and sent with the
+  /// booking, so a booking sent twice (the answer to the first was lost) is
+  /// found again instead of made again.
+  bookingToken String?
+
+  @@unique([organizationId, bookingToken])
   @@index([organizationId, startAt])
   @@index([customerId])
   @@index([vehicleId])

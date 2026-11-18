@@ -43,7 +43,9 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }))
 const createBooking = vi.hoisted(() => vi.fn())
-vi.mock('@/features/calendar/Actions/createBooking', () => ({ createBooking }))
+vi.mock('@/features/calendar/Actions/createBooking', () => ({
+  createBookingOnce: createBooking,
+}))
 vi.mock('@/features/calendar/Actions/updateBooking', () => ({ updateBooking: vi.fn() }))
 vi.mock('@/features/calendar/Actions/getBooking', () => ({ getBooking: vi.fn() }))
 vi.mock('@/features/calendar/Actions/getBookingOptions', () => ({
