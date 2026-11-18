@@ -289,6 +289,18 @@ describe('createBooking: a work order', () => {
     expect(jobUpdate().data).not.toHaveProperty('description')
   })
 
+  it('takes work lines as long as a full description folded into them', async () => {
+    const long = Array.from({ length: 100 }, (_, i) => `Line ${i} ${'x'.repeat(190)}`).join('\n')
+    expect(long.length).toBeGreaterThan(19_000)
+
+    const result = await createBooking(
+      booking({ kind: 'workOrder', vehicleId: 'veh-1', work: `Brakes\n${long}` })
+    )
+
+    expect(result.success).toBe(true)
+    expect(jobUpdate().data.concerns.create).toHaveLength(101)
+  })
+
   it('puts a description after the work lines, without saying anything twice', async () => {
     await createBooking(
       booking({

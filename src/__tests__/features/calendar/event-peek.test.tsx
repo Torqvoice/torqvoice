@@ -133,10 +133,21 @@ function Month({
 const chip = (title: string) => screen.getByRole('button', { name: new RegExp(title) })
 
 /** A double-click as the browser sends it: two clicks, then the double-click. */
-function doubleClick(el: HTMLElement) {
-  fireEvent.click(el, { detail: 1 })
-  fireEvent.click(el, { detail: 2 })
+async function doubleClick(el: HTMLElement) {
+  press(el, 1)
+  // The card listens for a press outside it from the next tick on.
+  await new Promise((resolve) => setTimeout(resolve, 20))
+  press(el, 2)
   fireEvent.doubleClick(el, { detail: 2 })
+}
+
+/** One press of the mouse button, with everything the browser sends for it. */
+function press(el: HTMLElement, detail: number) {
+  fireEvent.pointerDown(el, { detail, button: 0 })
+  fireEvent.mouseDown(el, { detail, button: 0 })
+  fireEvent.pointerUp(el, { detail, button: 0 })
+  fireEvent.mouseUp(el, { detail, button: 0 })
+  fireEvent.click(el, { detail })
 }
 
 describe('the card a click on an event opens', () => {
@@ -192,10 +203,10 @@ describe('the card a click on an event opens', () => {
 })
 
 describe('a double-click in the month', () => {
-  it('opens a booking for editing and leaves the view alone', () => {
+  it('opens a booking for editing and leaves the view alone', async () => {
     render(<Month events={[bookedJob, appointment]} />)
 
-    doubleClick(chip('Brake job'))
+    await doubleClick(chip('Brake job'))
 
     expect(onEditBooking).toHaveBeenCalledTimes(1)
     expect(onEditBooking).toHaveBeenCalledWith({ mode: 'edit', event: bookedJob })
@@ -203,7 +214,7 @@ describe('a double-click in the month', () => {
     // The card the first click opened is gone: the dialog took its place.
     expect(screen.queryByText('Oil service')).not.toBeInTheDocument()
 
-    doubleClick(chip('Tyre quote talk'))
+    await doubleClick(chip('Tyre quote talk'))
     expect(onEditBooking).toHaveBeenLastCalledWith({ mode: 'edit', event: appointment })
     expect(onOpenDay).not.toHaveBeenCalled()
   })
@@ -211,11 +222,24 @@ describe('a double-click in the month', () => {
   it('leaves the card open on a job that is changed on the work order, and the view alone', async () => {
     render(<Month events={[startedJob]} />)
 
-    doubleClick(chip('Clutch'))
+    await doubleClick(chip('Clutch'))
 
     expect(onEditBooking).not.toHaveBeenCalled()
     expect(onOpenDay).not.toHaveBeenCalled()
     expect(await screen.findByRole('link', { name: /Open work order/ })).toBeInTheDocument()
+  })
+
+  it('closes the card on a second, separate click on the same item', async () => {
+    render(<Month events={[startedJob]} />)
+
+    press(chip('Clutch'), 1)
+    expect(await screen.findByRole('link', { name: /Open work order/ })).toBeInTheDocument()
+    await new Promise((resolve) => setTimeout(resolve, 20))
+    press(chip('Clutch'), 1)
+
+    await waitFor(() =>
+      expect(screen.queryByRole('link', { name: /Open work order/ })).not.toBeInTheDocument()
+    )
   })
 
   it('still opens the day on the empty part of a day', () => {
@@ -229,14 +253,18 @@ describe('a double-click in the month', () => {
 })
 
 describe('a double-click on the time grid and in a list', () => {
-  it.each(['block', 'row', 'chip'] as const)('opens a booking for editing from a %s', (variant) => {
+  it.each([
+    'block',
+    'row',
+    'chip',
+  ] as const)('opens a booking for editing from a %s', async (variant) => {
     render(
       <EventPeekProvider currencyCode="NOK" onEditBooking={onEditBooking}>
         <EventChip event={bookedJob} variant={variant} />
       </EventPeekProvider>
     )
 
-    doubleClick(chip('Brake job'))
+    await doubleClick(chip('Brake job'))
 
     expect(onEditBooking).toHaveBeenCalledWith({ mode: 'edit', event: bookedJob })
   })

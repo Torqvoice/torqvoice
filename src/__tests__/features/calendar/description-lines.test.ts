@@ -27,6 +27,16 @@ describe('a description as plain lines', () => {
     expect(descriptionLines('Brakes\nOil service')).toEqual(['Brakes', 'Oil service'])
   })
 
+  it('keeps comparisons and addresses in angle brackets, which are not formatting', () => {
+    expect(
+      descriptionLines('Pressure < 2 bar; voltage > 12 V\nMail <accounts@example.com> when done')
+    ).toEqual(['Pressure < 2 bar; voltage > 12 V', 'Mail <accounts@example.com> when done'])
+    expect(descriptionLines('<p>a <b>b</b> <span class="x">c</span><br/>d</p>')).toEqual([
+      'a b c',
+      'd',
+    ])
+  })
+
   it('says nothing for a description that says nothing', () => {
     expect(descriptionLines('<p></p>')).toEqual([])
     expect(descriptionLines(null)).toEqual([])

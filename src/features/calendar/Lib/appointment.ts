@@ -43,7 +43,9 @@ export function descriptionLines(html: string | null | undefined): string[] {
   return appointmentConcerns(
     html
       .replace(/<br\s*\/?>|<\/(p|li|div|h[1-6]|blockquote|pre|tr)>/gi, '\n')
-      .replace(/<[^>]*>/g, '')
+      // Only what is written as a tag: "pressure < 2 bar, voltage > 12 V" and
+      // "<post@example.com>" are the customer's words and stay.
+      .replace(/<\/?[a-z][a-z0-9]*(\s[^<>]*)?\/?>/gi, '')
       .replace(/&(nbsp|amp|lt|gt|quot|apos|#39);/g, (_, name: string) => ENTITIES[name])
   )
 }

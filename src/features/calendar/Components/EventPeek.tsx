@@ -169,6 +169,14 @@ export function EventPeekProvider({
           collisionPadding={12}
           className="w-[22rem] max-w-[calc(100vw-1.5rem)] p-0 shadow-xl"
           onOpenAutoFocus={(e) => e.preventDefault()}
+          // The chip the card hangs off is not its trigger as far as the
+          // popover knows, so a press on it counts as one outside and would
+          // close the card before the chip's own click is heard. The chip
+          // decides: a click closes the card, a double-click leaves it or
+          // opens the booking.
+          onInteractOutside={(e) => {
+            if (peek?.anchor.contains(e.target as Node)) e.preventDefault()
+          }}
         >
           {peek && (
             <PeekCard
