@@ -182,11 +182,13 @@ function numberOr<T>(value: unknown, fallback: T): number | T {
  * integer, and 0 is the app's unknown-year marker, so a row without a
  * decodable year restores as 0 instead of failing the whole restore
  * mid-transaction; a year written as text (a hand-edited backup) is read
- * as its number, as the vehicle form's own coercion does.
+ * as its number, as the vehicle form's own coercion does. Values above
+ * the column's signed 32-bit maximum are rejected the same way: they
+ * would still fail the insert and roll the restore back.
  */
 function restoredVehicleYear(value: unknown): number {
   const n = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : NaN
-  return Number.isInteger(n) && n > 0 ? n : 0
+  return Number.isInteger(n) && n > 0 && n <= 2147483647 ? n : 0
 }
 
 /** A foreign key from the backup, kept only when this import restored its target. */

@@ -132,18 +132,24 @@ describe('restoreFromDisk', () => {
           { id: 'v2', make: 'Ford', model: 'Focus', createdAt: at, updatedAt: at },
           { id: 'v3', make: 'VW', model: 'Golf', year: '1998', createdAt: at, updatedAt: at },
           { id: 'v4', make: 'Opel', model: 'Astra', year: 0, createdAt: at, updatedAt: at },
+          // Above the year column's signed 32-bit maximum: a hand-edited
+          // backup must restore the vehicle as unknown, not roll the
+          // restore back when the insert rejects the value.
+          { id: 'v5', make: 'Ford', model: 'S-Max', year: 2147483648, createdAt: at, updatedAt: at },
+          { id: 'v6', make: 'Skoda', model: 'Octavia', year: '3000000000', createdAt: at, updatedAt: at },
         ],
       },
     })
 
     await restoreFromDisk(actor, { dataFile: path.join(dir, 'stage', 'data.json'), filesDir: null })
 
-    // A missing, text or zero year all restore as the app's unknown-year
-    // marker instead of failing the restore on the vehicle's row.
+    // A missing, text, zero or out-of-column-range year all restore as
+    // the app's unknown-year marker instead of failing the restore on
+    // the vehicle's row.
     const years = state.calls
       .filter((c) => c.model === 'vehicle' && c.method === 'create')
       .map((c) => c.args.data.year)
-    expect(years).toEqual([2021, 0, 1998, 0])
+    expect(years).toEqual([2021, 0, 1998, 0, 0, 0])
   })
 
   it('refuses a file that is not a backup before any row is touched', async () => {
