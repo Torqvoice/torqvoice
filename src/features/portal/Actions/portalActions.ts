@@ -28,6 +28,7 @@ import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySe
 import { loadPortalLook } from '@/features/portal/Lib/portalLook.server'
 import { PORTAL_REQUEST_MAX_FILES } from '@/features/portal/Lib/portalUploads'
 import { ownPortalUploadUrl } from '@/features/portal/Lib/portalUploadOwner.server'
+import { vehicleName } from '@/lib/vehicle-name'
 
 // ─── Vehicles ─────────────────────────────────────────────────────────────
 
@@ -543,7 +544,7 @@ export async function reportVehicleSold(vehicleId: string) {
         where: { id: customerId },
         select: { name: true },
       })
-      const label = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
+      const label = `${vehicleName(vehicle)}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
       await notify({
         organizationId,
         type: 'vehicle_sold',

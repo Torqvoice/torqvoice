@@ -63,6 +63,7 @@ import {
 import type { OemSearchHit } from '@/features/fault-codes/Lib/types'
 import { appointmentHref } from '@/features/calendar/Lib/appointmentLink'
 import { useFormatDate } from '@/lib/use-format-date'
+import { vehicleName } from '@/lib/vehicle-name'
 
 type Vehicle = {
   id: string
@@ -336,7 +337,7 @@ function Row({
 }
 
 function vehicleLine(v: Vehicle) {
-  return `${v.year} ${v.make} ${v.model}`
+  return `${vehicleName(v)}`
 }
 
 function iconForHref(href: string): LucideIcon {

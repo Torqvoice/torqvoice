@@ -23,6 +23,7 @@ import {
   statusMessageKeys,
   type ServiceDetail,
 } from '../../service-detail/types'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface ModernHeroProps {
   record: ServiceDetail
@@ -334,7 +335,7 @@ export function ModernHero({
                 {customer && vehicle && <span aria-hidden="true">·</span>}
                 {vehicle && (
                   <Link href={`/vehicles/${vehicle.id}`} className={factLink}>
-                    {vehicle.year} {vehicle.make} {vehicle.model}
+                    {vehicleName(vehicle)}
                   </Link>
                 )}
                 {vehicle?.licensePlate && (

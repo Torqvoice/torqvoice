@@ -13,6 +13,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
 import { type ClosedPeriod, eachDay } from '@/features/workshop-calendar/Lib/calendar'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export type CalendarEventType =
   | 'service'
@@ -259,7 +260,7 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
 
       const now = new Date()
       const vehicleLabel = (v: { year: number; make: string; model: string } | null) =>
-        v ? `${v.year} ${v.make} ${v.model}` : ''
+        v ? `${vehicleName(v)}` : ''
 
       // Closed days and time off, one all-day (or part-day) entry per day.
       const { calendar } = await loadWorkshopCalendar(organizationId, {

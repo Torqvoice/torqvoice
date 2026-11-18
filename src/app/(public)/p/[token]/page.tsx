@@ -16,6 +16,7 @@ import { PhotoHandoffClient } from './photo-handoff-client'
 import { InspectionHandoffClient } from './inspection-handoff-client'
 import { FixHandoffClient } from './fix-handoff-client'
 import { VehicleHandoffClient } from './vehicle-handoff-client'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations('service.photoHandoff')
@@ -240,7 +241,7 @@ async function VehicleHandoffPage({ token }: { token: string }) {
       brand={brand}
       vehicle={{
         plate: vehicle.licensePlate,
-        name: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+        name: `${vehicleName(vehicle)}`,
       }}
     />
   )

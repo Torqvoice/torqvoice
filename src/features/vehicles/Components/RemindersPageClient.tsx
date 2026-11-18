@@ -39,6 +39,7 @@ import { toast } from 'sonner'
 import { toggleReminder, deleteReminder } from '../Actions/reminderActions'
 import { ReminderFormDialog } from './ReminderFormDialog'
 import { ReminderImportDialog } from './ReminderImportDialog'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface Reminder {
   id: string
@@ -223,7 +224,7 @@ export function RemindersPageClient({ reminders, unitSystem }: RemindersPageClie
                           {r.vehicle ? (
                             <span className="text-xs text-muted-foreground">
                               <TableCellLink href={`/vehicles/${r.vehicle.id}?tab=reminders`}>
-                                {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                                {vehicleName(r.vehicle)}
                                 {r.vehicle.licensePlate && ` · ${r.vehicle.licensePlate}`}
                               </TableCellLink>
                             </span>

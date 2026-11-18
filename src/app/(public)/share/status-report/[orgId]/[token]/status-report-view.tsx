@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Loader2, CheckCircle, User, Calendar, Wrench, CarFront } from 'lucide-react'
 import { submitStatusReportFeedback } from '@/features/status-reports/Actions/submitFeedback'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface StatusReportViewProps {
   report: {
@@ -57,7 +58,7 @@ export function StatusReportView({
     month: 'long',
     day: 'numeric',
   })
-  const vehicleLabel = vehicle ? `${vehicle.year} ${vehicle.make} ${vehicle.model}` : null
+  const vehicleLabel = vehicle ? `${vehicleName(vehicle)}` : null
 
   async function handleSubmitFeedback() {
     if (!feedback.trim() || submitting) return

@@ -26,6 +26,7 @@ import {
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { SpecSheet } from '@/features/invoice-designer/Render/SpecSheet'
 import { type PayVendor, VendorPayButton } from '@/features/payments/Components/VendorPayButton'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 /** The vendors in the order their buttons stand, with the sentence each one is read out as. */
 const PAY_VENDORS: {
@@ -216,9 +217,7 @@ export function InvoiceView({
     })
   }, [token])
 
-  const vehicleName = record.vehicle
-    ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-    : ''
+  const vehicleName = record.vehicle ? `${vehicleNameOf(record.vehicle)}` : ''
   const partsSubtotalStored = record.partItems.reduce((sum, p) => sum + p.total, 0)
   const laborSubtotalStored = record.laborItems.reduce((sum, l) => sum + l.total, 0)
   const computedSubtotalStored = partsSubtotalStored + laborSubtotalStored

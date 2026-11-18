@@ -49,6 +49,7 @@ import {
   TrendingUp,
   Warehouse,
 } from 'lucide-react'
+import { vehicleName } from '@/lib/vehicle-name'
 
 type TireSetRecord = {
   id: string
@@ -255,7 +256,7 @@ export function TireHotelClient({
               <div className="flex items-start justify-between gap-3">
                 <span className="min-w-0 flex-1 truncate font-medium">
                   {set.vehicle
-                    ? `${set.vehicle.year} ${set.vehicle.make} ${set.vehicle.model}`
+                    ? `${vehicleName(set.vehicle)}`
                     : (set.customer?.name ?? t('list.unassigned'))}
                 </span>
                 <Badge
@@ -340,9 +341,7 @@ export function TireHotelClient({
                       <TableCell>
                         {set.vehicle ? (
                           <TableCellLink href={`/vehicles/${set.vehicle.id}`} block>
-                            <p className="truncate font-medium">
-                              {set.vehicle.year} {set.vehicle.make} {set.vehicle.model}
-                            </p>
+                            <p className="truncate font-medium">{vehicleName(set.vehicle)}</p>
                             {set.vehicle.licensePlate && (
                               <p className="font-mono text-xs text-muted-foreground">
                                 {set.vehicle.licensePlate}

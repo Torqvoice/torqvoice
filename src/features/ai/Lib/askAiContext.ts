@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { zonedDayKey } from '@/lib/timezone'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * Everything the model is allowed to know when someone asks about one
@@ -177,7 +178,7 @@ function jobOneLine(job: JobRow, o: AskAiContextOptions, withVehicle: boolean): 
   const date = dayOf(job.startDateTime ?? job.serviceDate, o.timeZone)
   const vehicle =
     withVehicle && job.vehicle
-      ? `${job.vehicle.year} ${job.vehicle.make} ${job.vehicle.model}${job.vehicle.licensePlate ? ` (${job.vehicle.licensePlate})` : ''}`
+      ? `${vehicleName(job.vehicle)}${job.vehicle.licensePlate ? ` (${job.vehicle.licensePlate})` : ''}`
       : withVehicle
         ? 'no vehicle (counter sale)'
         : ''
@@ -330,7 +331,7 @@ async function vehicleContext(
   })
   if (!vehicle) return null
 
-  const title = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+  const title = `${vehicleName(vehicle)}`
   const b = new Budget()
   b.add(`# Vehicle: ${title}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`)
   b.add(`link: /vehicles/${vehicle.id}`)
@@ -556,7 +557,7 @@ async function customerContext(
     `Vehicles (${customer.vehicles.length})`,
     customer.vehicles.map(
       (v) =>
-        `- ${v.year} ${v.make} ${v.model} [${fields([
+        `- ${vehicleName(v)} [${fields([
           ['plate', v.licensePlate],
           [`mileage (${distance})`, v.mileage],
           ['jobs', v._count.serviceRecords],
@@ -577,10 +578,7 @@ async function customerContext(
           ['number', q.quoteNumber],
           ['status', q.status],
           ['date', dayOf(q.createdAt, o.timeZone)],
-          [
-            'vehicle',
-            q.vehicle ? `${q.vehicle.year} ${q.vehicle.make} ${q.vehicle.model}` : undefined,
-          ],
+          ['vehicle', q.vehicle ? `${vehicleName(q.vehicle)}` : undefined],
           ['total', o.showMoney ? money(q.totalAmount, o.currencyCode) : undefined],
           ['link', `/quotes/${q.id}`],
         ])}]`

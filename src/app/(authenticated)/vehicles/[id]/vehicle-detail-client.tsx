@@ -108,6 +108,7 @@ import { FeatureHint } from '@/components/feature-hint'
 import { CopyValue } from '@/components/copy-value'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
 import { cn } from '@/lib/utils'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 interface PaginatedServices {
   records: {
@@ -608,7 +609,7 @@ export function VehicleDetailClient({
     }
   }
 
-  const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+  const vehicleName = `${vehicleNameOf(vehicle)}`
   const VehicleIcon = isMarine ? Ship : Car
 
   // Without a lifetime total from the server, the latest ten are the best guess.
@@ -795,7 +796,7 @@ export function VehicleDetailClient({
   const handleCreateWorkOrderFromFindings = async (findingIds: string[]) => {
     setCreatingWorkOrder(true)
     const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
-    const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const vehicleName = `${vehicleNameOf(vehicle)}`
     // An action that cannot reach the server throws instead of answering, so
     // it is caught and reported the way a refusal is.
     const result = await createServiceRecord({
@@ -885,7 +886,7 @@ export function VehicleDetailClient({
   }
 
   const handleDelete = async () => {
-    const name = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const name = `${vehicleNameOf(vehicle)}`
     const ok = await confirm({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name }),
@@ -2510,7 +2511,7 @@ export function VehicleDetailClient({
         open={showArchiveDialog}
         onOpenChange={setShowArchiveDialog}
         vehicleId={vehicle.id}
-        vehicleName={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+        vehicleName={`${vehicleNameOf(vehicle)}`}
       />
 
       {/* Image lightbox */}
@@ -2522,7 +2523,7 @@ export function VehicleDetailClient({
         >
           <img
             src={vehicle.imageUrl}
-            alt={`${vehicle.year} ${vehicle.make} ${vehicle.model}`}
+            alt={`${vehicleNameOf(vehicle)}`}
             className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
             onClick={(e) => e.stopPropagation()}
           />

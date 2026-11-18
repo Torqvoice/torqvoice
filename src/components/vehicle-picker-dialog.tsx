@@ -26,6 +26,7 @@ import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { handleGated } from '@/components/upgrade-gate'
 import { useServiceType } from '@/components/service-type-context'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface Vehicle {
   id: string
@@ -269,9 +270,7 @@ export function VehiclePickerDialog({
                           <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium">
-                            {v.year} {v.make} {v.model}
-                          </p>
+                          <p className="truncate text-sm font-medium">{vehicleName(v)}</p>
                           <p className="truncate text-xs text-muted-foreground">
                             {[v.licensePlate, v.customer?.name].filter(Boolean).join(' · ') ||
                               (isMarine ? t('noPlateMarine') : t('noPlate'))}

@@ -5,6 +5,7 @@ import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { frozenOrganizationIds, isRestoring } from '@/lib/backup/freeze'
 import { createLogger } from '@/lib/logger'
 import { createTickSummary } from './tick-summary'
+import { vehicleName } from '@/lib/vehicle-name'
 
 const log = createLogger('reminder-alerts')
 
@@ -30,7 +31,7 @@ type DueReminder = {
 /** What the reminder relates to: vehicle, customer, or the workshop itself. */
 function targetLabel(r: DueReminder) {
   if (r.vehicle) {
-    const base = `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`
+    const base = `${vehicleName(r.vehicle)}`
     return r.vehicle.licensePlate ? `${base} (${r.vehicle.licensePlate})` : base
   }
   return r.customer?.name ?? null

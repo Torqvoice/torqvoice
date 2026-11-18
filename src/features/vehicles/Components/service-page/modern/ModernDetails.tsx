@@ -38,6 +38,7 @@ import { JobFactsCard } from './JobFactsCard'
 import { MoneyBar, MoneyLine } from './MoneyBar'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import { StatusStepper } from './StatusStepper'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export interface ModernDetailsProps
   extends WorkOrderJobProps,
@@ -371,11 +372,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                     openObservationsCount={props.openObservationsCount}
                     onShowExistingObservations={props.onShowExistingObservations}
                     vehicleId={record.vehicle?.id ?? null}
-                    vehicleLabel={
-                      record.vehicle
-                        ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-                        : undefined
-                    }
+                    vehicleLabel={record.vehicle ? `${vehicleName(record.vehicle)}` : undefined}
                     guideStock={guideStock}
                     onAddGuidePart={(line) =>
                       formState.dirtySetPartItems((prev) => [servicePartFromFluid(line), ...prev])

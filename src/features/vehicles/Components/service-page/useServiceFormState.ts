@@ -22,6 +22,7 @@ import {
 import type { ConcernRow } from '../service-edit/form-types'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 export function useServiceFormState({
   vehicleId,
@@ -379,9 +380,7 @@ export function useServiceFormState({
         ? 'paid'
         : 'partial'
   const imageAttachments = record.attachments?.filter((a) => a.category === 'image') || []
-  const vehicleName = record.vehicle
-    ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-    : ''
+  const vehicleName = record.vehicle ? `${vehicleNameOf(record.vehicle)}` : ''
 
   // Part/labor update helpers
   //

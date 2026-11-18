@@ -52,6 +52,7 @@ import type {
   ResearchState,
   SharedFix,
 } from './types'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * Fault codes as the app's screens and actions ask for them: through
@@ -724,7 +725,7 @@ export async function jobsWithCode(
     serviceRecordId: r.serviceRecord?.id ?? null,
     title: r.serviceRecord?.title ?? null,
     vehicleId: r.vehicleId,
-    vehicle: `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}`,
+    vehicle: `${vehicleName(r.vehicle)}`,
     licensePlate: r.vehicle.licensePlate,
     status: r.status,
     faultStatus: r.faultStatus,

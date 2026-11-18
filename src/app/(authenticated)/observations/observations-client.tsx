@@ -33,6 +33,7 @@ import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Car, ExternalLink, Search, Loader2 } from 'lucide-react'
+import { vehicleName } from '@/lib/vehicle-name'
 
 type ObservationsData = {
   records: {
@@ -184,7 +185,7 @@ export function ObservationsClient({
                     {obs.vehicle.licensePlate}{' '}
                   </span>
                 )}
-                {obs.vehicle.year} {obs.vehicle.make} {obs.vehicle.model}
+                {vehicleName(obs.vehicle)}
               </p>
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5">
                 <Badge
@@ -238,9 +239,7 @@ export function ObservationsClient({
               </TableRow>
             ) : (
               data.records.map((obs) => {
-                const vehicleLabel =
-                  obs.vehicle.licensePlate ??
-                  `${obs.vehicle.year} ${obs.vehicle.make} ${obs.vehicle.model}`
+                const vehicleLabel = obs.vehicle.licensePlate ?? `${vehicleName(obs.vehicle)}`
                 return (
                   <ContextMenu key={obs.id} modal={false}>
                     <ContextMenuTrigger asChild>
@@ -283,7 +282,7 @@ export function ObservationsClient({
                             </span>
                             {obs.vehicle.licensePlate && (
                               <span className="block text-[11px] text-muted-foreground">
-                                {obs.vehicle.year} {obs.vehicle.make} {obs.vehicle.model}
+                                {vehicleName(obs.vehicle)}
                               </span>
                             )}
                           </TableCellLink>

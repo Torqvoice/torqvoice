@@ -67,6 +67,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 import { ListEmpty } from '@/components/list-empty'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface WorkOrder {
   id: string
@@ -269,9 +270,7 @@ export function WorkOrdersClient({
       const tplResult = await getSmsTemplates()
       const tplData = tplResult.success && tplResult.data ? tplResult.data : null
       const tpl = tplData?.templates[templateKey] || SMS_TEMPLATE_DEFAULTS[templateKey] || ''
-      const vehicle = workOrder.vehicle
-        ? `${workOrder.vehicle.year} ${workOrder.vehicle.make} ${workOrder.vehicle.model}`
-        : workOrder.title
+      const vehicle = workOrder.vehicle ? `${vehicleName(workOrder.vehicle)}` : workOrder.title
       const message = interpolateSmsTemplate(tpl, {
         customer_name: notifyTarget.name,
         vehicle,
@@ -441,7 +440,7 @@ export function WorkOrdersClient({
                           {r.vehicle.licensePlate}{' '}
                         </span>
                       )}
-                      {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                      {vehicleName(r.vehicle)}
                     </p>
                   )}
                   {rowCustomer && (
@@ -628,7 +627,7 @@ export function WorkOrdersClient({
                                 </span>
                               )}
                               <p className="truncate text-xs text-muted-foreground">
-                                {r.vehicle.year} {r.vehicle.make} {r.vehicle.model}
+                                {vehicleName(r.vehicle)}
                               </p>
                             </TableCellLink>
                           ) : (

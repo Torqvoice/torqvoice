@@ -9,6 +9,7 @@ import { sendSmsToCustomer } from '@/features/sms/Actions/smsActions'
 import { sendNotificationEmail } from '@/features/email/Actions/emailActions'
 import { sendTelegramToCustomer } from '@/features/telegram/Actions/telegramActions'
 import { demoGuard } from '@/lib/demo'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 export async function sendStatusReport(input: unknown) {
   return withAuth(
@@ -50,7 +51,7 @@ export async function sendStatusReport(input: unknown) {
       const publicUrl = `${appUrl}/share/status-report/${organizationId}/${report.publicToken}`
 
       const vehicleName = vehicle
-        ? `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+        ? `${vehicleNameOf(vehicle)}`
         : (report.serviceRecord?.title ?? report.inspection?.template.name ?? '')
 
       const t = await getTranslations('statusReport.notify')

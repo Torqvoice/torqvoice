@@ -30,6 +30,7 @@ import { useGlassModal } from '@/components/glass-modal'
 import { createReminder, updateReminder } from '../Actions/reminderActions'
 import { searchVehicles } from '../Actions/vehicleActions'
 import { clearableInput } from '@/lib/clearable'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export interface ReminderFormVehicle {
   id: string
@@ -307,7 +308,7 @@ export function ReminderFormDialog({
                   className="w-full justify-between font-normal"
                 >
                   {selectedVehicle && formVehicleId
-                    ? `${selectedVehicle.year} ${selectedVehicle.make} ${selectedVehicle.model}${selectedVehicle.licensePlate ? ` · ${selectedVehicle.licensePlate}` : ''}`
+                    ? `${vehicleName(selectedVehicle)}${selectedVehicle.licensePlate ? ` · ${selectedVehicle.licensePlate}` : ''}`
                     : t('selectVehicle')}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -371,7 +372,7 @@ export function ReminderFormDialog({
                           />
                           <div>
                             <p className="text-sm">
-                              {v.year} {v.make} {v.model}
+                              {vehicleName(v)}
                               {v.licensePlate && (
                                 <span className="ml-1.5 text-muted-foreground">
                                   · {v.licensePlate}

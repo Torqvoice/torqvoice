@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { X } from 'lucide-react'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export type VehicleOption = {
   id: string
@@ -130,7 +131,7 @@ export function OwnerVehicleFields({
             className="min-w-0 flex-1"
             options={visibleVehicles.map((vehicle) => ({
               value: vehicle.id,
-              label: `${vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+              label: `${vehicle.licensePlate ? `${vehicle.licensePlate} - ` : ''}${vehicleName(vehicle)}`,
             }))}
           />
           {/* The way back to another customer, since choosing a car narrows

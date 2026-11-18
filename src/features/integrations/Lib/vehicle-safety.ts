@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { getManifest } from '@/integrations/registry'
 import { loadConnection } from './connections'
 import type { ConnectorContext, JobHandler, JobOutcome, VehicleSafetyReport } from './types'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * Recalls, owner complaints and crash ratings for the vehicles a workshop
@@ -212,7 +213,7 @@ export async function refreshFleetReports(ctx: ConnectorContext): Promise<JobOut
     } catch (err) {
       await ctx.log(
         'warn',
-        `Could not refresh ${query.year} ${query.make} ${query.model}: ${err instanceof Error ? err.message : String(err)}`
+        `Could not refresh ${vehicleName(query)}: ${err instanceof Error ? err.message : String(err)}`
       )
     }
   }
@@ -253,8 +254,7 @@ export async function warmVehicleReport(
     return { summary: 'vehicle has no model to ask about' }
   const key = modelKey(vehicle)
   const cached = await readCache(connection.connectorId, key)
-  if (cached && !cached.stale)
-    return { summary: `${key.year} ${key.make} ${key.model} already fresh` }
+  if (cached && !cached.stale) return { summary: `${vehicleName(key)} already fresh` }
   const result = await fetchAndCache(ctx.connection.id, key, {
     make: vehicle.make,
     model: vehicle.model,
@@ -264,8 +264,8 @@ export async function warmVehicleReport(
   const recalls = result.report.recalls.length
   return {
     summary: result.report.matched
-      ? `${key.year} ${key.make} ${key.model}: ${recalls} recalls, ${result.report.complaints.total} complaints`
-      : `${key.year} ${key.make} ${key.model}: not known to the source`,
+      ? `${vehicleName(key)}: ${recalls} recalls, ${result.report.complaints.total} complaints`
+      : `${vehicleName(key)}: not known to the source`,
   }
 }
 

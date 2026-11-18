@@ -104,6 +104,7 @@ import { isEventDone } from '@/features/calendar/Components/calendar-utils'
 import type { CalendarEvent } from '@/features/calendar/Actions/calendarActions'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
 import type { RequestTextParts } from '@/features/portal/Lib/requestText'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface ServiceItem {
   id: string
@@ -802,9 +803,7 @@ export function DashboardClient({
                               )}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-medium text-sm truncate">
-                                {v.year} {v.make} {v.model}
-                              </p>
+                              <p className="font-medium text-sm truncate">{vehicleName(v)}</p>
                               <p className="text-xs text-muted-foreground truncate">
                                 {v.licensePlate && `${v.licensePlate} · `}
                                 {t('maintenance.estimated', {
@@ -877,9 +876,7 @@ export function DashboardClient({
                             <EyeOff className="h-4 w-4 text-muted-foreground" />
                           </div>
                           <div className="min-w-0">
-                            <p className="font-medium text-sm truncate">
-                              {v.year} {v.make} {v.model}
-                            </p>
+                            <p className="font-medium text-sm truncate">{vehicleName(v)}</p>
                             <p className="text-xs text-muted-foreground truncate">
                               {v.licensePlate && `${v.licensePlate} · `}
                               {v.dismissedAt &&
@@ -991,7 +988,7 @@ export function DashboardClient({
                               <p className="font-medium text-sm truncate">{r.title}</p>
                               <p className="text-xs text-muted-foreground truncate">
                                 {r.vehicle
-                                  ? `${r.vehicle.year} ${r.vehicle.make} ${r.vehicle.model}${r.vehicle.licensePlate ? ` · ${r.vehicle.licensePlate}` : ''}`
+                                  ? `${vehicleName(r.vehicle)}${r.vehicle.licensePlate ? ` · ${r.vehicle.licensePlate}` : ''}`
                                   : (r.customer?.name ?? '')}
                               </p>
                             </div>
@@ -1174,7 +1171,7 @@ export function DashboardClient({
                             </div>
                             <div className="min-w-0">
                               <p className="font-medium text-sm truncate">
-                                {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                                {vehicleName(insp.vehicle)}
                               </p>
                               <p className="text-xs text-muted-foreground truncate">
                                 {insp.vehicle.licensePlate && `${insp.vehicle.licensePlate} · `}
@@ -1225,7 +1222,7 @@ export function DashboardClient({
                             </div>
                             <div className="min-w-0">
                               <p className="font-medium text-sm truncate">
-                                {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
+                                {vehicleName(insp.vehicle)}
                               </p>
                               <p className="text-xs text-muted-foreground truncate">
                                 {insp.vehicle.licensePlate && `${insp.vehicle.licensePlate} · `}
@@ -1296,7 +1293,7 @@ export function DashboardClient({
                           <div className="min-w-0">
                             <p className="truncate text-sm font-medium">
                               {req.vehicle
-                                ? `${req.vehicle.year} ${req.vehicle.make} ${req.vehicle.model}`
+                                ? `${vehicleName(req.vehicle)}`
                                 : (req.customer?.name ?? '')}
                             </p>
                             <p className="truncate text-xs text-muted-foreground">
@@ -1395,8 +1392,7 @@ export function DashboardClient({
                             </div>
                             <div className="min-w-0">
                               <p className="font-medium text-sm truncate">
-                                {req.inspection.vehicle.year} {req.inspection.vehicle.make}{' '}
-                                {req.inspection.vehicle.model}
+                                {vehicleName(req.inspection.vehicle)}
                               </p>
                               <p className="text-xs text-muted-foreground truncate">
                                 {req.inspection.vehicle.customer?.name &&
@@ -1421,7 +1417,7 @@ export function DashboardClient({
                                     (i) => i.condition === 'fail' || i.condition === 'attention'
                                   )
                                   const result = await createQuote({
-                                    title: `${req.inspection.vehicle.year} ${req.inspection.vehicle.make} ${req.inspection.vehicle.model} - Inspection Quote`,
+                                    title: `${vehicleName(req.inspection.vehicle)} - Inspection Quote`,
                                     vehicleId: req.inspection.vehicle.id,
                                     customerId: req.inspection.vehicle.customer?.id || undefined,
                                     inspectionId: req.inspection.id,
@@ -1674,7 +1670,7 @@ export function DashboardClient({
                                   {s.vehicle.licensePlate && (
                                     <span className="font-mono">{s.vehicle.licensePlate} · </span>
                                   )}
-                                  {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                  {vehicleName(s.vehicle)}
                                 </>
                               )}
                               {rowCustomer && ` · ${rowCustomer.name}`}
@@ -1733,7 +1729,7 @@ export function DashboardClient({
                                             </span>
                                           )}
                                           <p className="text-xs text-muted-foreground">
-                                            {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                            {vehicleName(s.vehicle)}
                                           </p>
                                         </TableCellLink>
                                       ) : (
@@ -1860,7 +1856,7 @@ export function DashboardClient({
                                   {s.vehicle.licensePlate && (
                                     <span className="font-mono">{s.vehicle.licensePlate} · </span>
                                   )}
-                                  {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                  {vehicleName(s.vehicle)}
                                 </>
                               )}
                               {rowCustomer && ` · ${rowCustomer.name}`}
@@ -1911,7 +1907,7 @@ export function DashboardClient({
                                             </span>
                                           )}
                                           <p className="text-xs text-muted-foreground">
-                                            {s.vehicle.year} {s.vehicle.make} {s.vehicle.model}
+                                            {vehicleName(s.vehicle)}
                                           </p>
                                         </TableCellLink>
                                       ) : (
@@ -2093,8 +2089,7 @@ export function DashboardClient({
                               {obs.severity}
                             </Badge>
                             <span className="font-mono text-[11px] text-muted-foreground">
-                              {obs.vehicle.licensePlate ??
-                                `${obs.vehicle.year} ${obs.vehicle.make}`}
+                              {obs.vehicle.licensePlate ?? `${vehicleName(obs.vehicle)}`}
                             </span>
                             <span className="text-[11px] text-muted-foreground">
                               {formatRelativeTime(obs.createdAt)}
@@ -2119,7 +2114,7 @@ export function DashboardClient({
                         <TableBody>
                           {recentObservations.map((obs) => {
                             const vehicleLabel =
-                              obs.vehicle.licensePlate ?? `${obs.vehicle.year} ${obs.vehicle.make}`
+                              obs.vehicle.licensePlate ?? `${vehicleName(obs.vehicle)}`
                             return (
                               <ContextMenu key={obs.id} modal={false}>
                                 <ContextMenuTrigger asChild>

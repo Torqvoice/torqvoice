@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * Who a reminder campaign may write to, and who it must not, with the
@@ -140,7 +141,7 @@ export async function reminderCandidates(input: {
         vehicleId: v.id,
         customerId: customer?.id ?? null,
         customerName: customer?.name ?? null,
-        vehicle: `${v.year} ${v.make} ${v.model}`,
+        vehicle: `${vehicleName(v)}`,
         licensePlate: v.licensePlate,
         dueAt: r.dueAt.toISOString(),
         recipient,

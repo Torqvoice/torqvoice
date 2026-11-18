@@ -40,6 +40,7 @@ import {
   isTypeKeyEnabled,
   typeKeySearch,
 } from '@/features/vehicles/Lib/typeKeySetting'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export async function getInspectionsPaginated(params: {
   page?: number
@@ -880,7 +881,7 @@ export async function createQuoteFromInspection(id: string) {
         { organizationId, userId },
         createQuoteSchema.parse({
           title: t('quoteTitle', {
-            vehicle: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+            vehicle: `${vehicleName(vehicle)}`,
           }),
           vehicleId: vehicle.id,
           customerId: vehicle.customerId ?? undefined,

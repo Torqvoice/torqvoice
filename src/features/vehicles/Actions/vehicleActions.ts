@@ -22,6 +22,7 @@ import { auditDetails } from '@/lib/audit'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
 import { searchWordsOf, typeKeySearchTerms } from '../Lib/typeKey'
 import { isTypeKeyEnabled } from '../Lib/typeKeySetting'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export async function getVehicles() {
   return withAuth(
@@ -391,7 +392,7 @@ export async function updateVehicle(input: unknown) {
         licensePlate: licensePlate !== undefined ? licensePlate : before.licensePlate,
         vin: data.vin !== undefined ? data.vin : before.vin,
       })
-      const vehicleDisplay = `${before.year} ${before.make} ${before.model}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
+      const vehicleDisplay = `${vehicleName(before)}${before.licensePlate ? ` (${before.licensePlate})` : ''}`
       const changedKeys = Object.keys(data).filter(
         (k) => (data as Record<string, unknown>)[k] !== undefined
       )
@@ -439,7 +440,7 @@ export async function deleteVehicle(vehicleId: string) {
       await db.vehicle.deleteMany({ where: { id: vehicleId, organizationId } })
       await releaseFiles(files, { organizationId, reason: 'vehicle deleted' })
 
-      const vehicleDisplay = `${vehicle.year} ${vehicle.make} ${vehicle.model}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
+      const vehicleDisplay = `${vehicleName(vehicle)}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
       revalidatePath('/')
       revalidatePath('/vehicles')
       return { vehicleId, vehicleDisplay }

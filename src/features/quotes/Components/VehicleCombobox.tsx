@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface VehicleOption {
   id: string
@@ -51,7 +52,7 @@ interface VehicleComboboxProps {
 }
 
 function formatVehicle(v: VehicleOption) {
-  return `${v.year} ${v.make} ${v.model}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
+  return `${vehicleName(v)}${v.licensePlate ? ` (${v.licensePlate})` : ''}`
 }
 
 export function VehicleCombobox({
@@ -235,7 +236,7 @@ export function VehicleCombobox({
                   />
                   <div>
                     <p className="text-sm">
-                      {v.year} {v.make} {v.model}
+                      {vehicleName(v)}
                       {v.licensePlate && (
                         <span className="ml-1.5 text-muted-foreground">· {v.licensePlate}</span>
                       )}

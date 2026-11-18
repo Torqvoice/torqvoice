@@ -33,6 +33,7 @@ import {
   splitVehicleDescription,
 } from './normalize'
 import type { ColumnMapping } from './suggest'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export type DuplicateRule = 'skip' | 'update' | 'create'
 
@@ -436,7 +437,7 @@ function vehicleLabel(v: {
   licensePlate: string | null
 }): string {
   const plate = v.licensePlate ? ` (${v.licensePlate})` : ''
-  return `${v.year} ${v.make} ${v.model}${plate}`
+  return `${vehicleName(v)}${plate}`
 }
 
 class ExistingIndex {

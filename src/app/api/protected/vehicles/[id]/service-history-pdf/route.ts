@@ -16,6 +16,7 @@ import {
   withMarineDocumentLabels,
 } from '@/features/invoice-designer/Lib/marineLabels'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -181,7 +182,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     }) as any
     const pdfBuffer = await renderToBuffer(element)
 
-    const vehicleName = `${vehicle.year} ${vehicle.make} ${vehicle.model}`
+    const vehicleName = `${vehicleNameOf(vehicle)}`
     const fileName = `Service-History-${vehicleName.replace(/\s+/g, '-')}`
 
     const finalBuffer = pdfBuffer.buffer.slice(

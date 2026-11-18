@@ -22,6 +22,7 @@ import { useDateSettings } from '@/components/date-settings-context'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { getJobDateRange } from '../utils/datetime'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export function JobDetailPopover({
   job,
@@ -138,7 +139,7 @@ export function JobDetailPopover({
         <div className="space-y-3">
           {liveJob.vehicle && (
             <p className="text-sm text-muted-foreground">
-              {liveJob.vehicle.year} {liveJob.vehicle.make} {liveJob.vehicle.model}
+              {vehicleName(liveJob.vehicle)}
               {liveJob.vehicle.licensePlate ? ` · ${liveJob.vehicle.licensePlate}` : ''}
             </p>
           )}

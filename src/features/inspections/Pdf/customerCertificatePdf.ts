@@ -21,6 +21,7 @@ import { getAppBaseUrl } from '@/lib/app-url'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 import { linkedCertificateInspectionId } from '@/features/inspections/Lib/linkedCertificate.server'
 import { buildCertificatePdfBuffer } from './buildCertificatePdfBuffer'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 /**
  * The inspection certificate as a customer receives it, whichever way it
@@ -197,7 +198,7 @@ export async function buildCustomerCertificatePdf({
   // The signed forms follow the certificate as pages of their own.
   const body = await appendCertificateDocuments(buffer, documents)
 
-  const vehicleName = `${inspection.vehicle.year}-${inspection.vehicle.make}-${inspection.vehicle.model}`
+  const vehicleName = vehicleNameOf(inspection.vehicle, '-')
   return { body, fileName: `Inspection-${vehicleName}.pdf` }
 }
 

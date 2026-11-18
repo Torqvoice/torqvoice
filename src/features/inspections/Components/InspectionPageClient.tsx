@@ -80,6 +80,7 @@ import {
 } from '../Lib/conditions'
 import { useConditionLabels } from '../Lib/useConditionLabels'
 import { findCompletionBlockers } from '../Lib/completion'
+import { vehicleName } from '@/lib/vehicle-name'
 
 export interface InspectionData {
   id: string
@@ -511,7 +512,7 @@ export function InspectionPageClient({
             <div className="bg-border h-5 w-px" aria-hidden="true" />
             <div className="min-w-0">
               <h1 className="truncate text-base leading-tight font-semibold">
-                {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
+                {vehicleName(inspection.vehicle)}
               </h1>
               <p className="text-muted-foreground truncate text-xs">
                 {inspection.template.name} &middot; {formatDate(new Date(inspection.createdAt))}
@@ -826,7 +827,7 @@ export function InspectionPageClient({
             inspectionId={inspection.id}
             attachments={inspection.attachments ?? []}
             organizationId={organizationId}
-            vehicleName={`${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`}
+            vehicleName={`${vehicleName(inspection.vehicle)}`}
             customer={
               inspection.vehicle.customer
                 ? {
@@ -1005,9 +1006,7 @@ export function InspectionPageClient({
                 <dt className="text-muted-foreground text-xs">
                   {serviceType === 'marine' ? t('vessel') : t('vehicle')}
                 </dt>
-                <dd>
-                  {inspection.vehicle.year} {inspection.vehicle.make} {inspection.vehicle.model}
-                </dd>
+                <dd>{vehicleName(inspection.vehicle)}</dd>
               </div>
               {inspection.vehicle.vin && (
                 <div>

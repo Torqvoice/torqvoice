@@ -21,6 +21,7 @@ import { BoardJobCard, TeamCount } from './BoardJobCard'
 import { DayLoadFigure } from './DayLoad'
 import { JobTooltip } from './JobTooltip'
 import { LaneHeaderTooltip } from './LaneHeaderTooltip'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /**
  * The week as a list per lane per day.
@@ -262,7 +263,7 @@ function StaticJobCard({ job }: { job: WorkBoardJob }) {
       </div>
       {job.vehicle && (
         <p className="truncate text-muted-foreground">
-          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+          {vehicleName(job.vehicle)}
           {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
         </p>
       )}
@@ -300,7 +301,7 @@ function ShadowJobCard({
       </div>
       {job.vehicle && (
         <p className="truncate text-muted-foreground">
-          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+          {vehicleName(job.vehicle)}
           {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
         </p>
       )}

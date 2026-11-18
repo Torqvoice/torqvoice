@@ -43,6 +43,7 @@ import {
   type InspectionResults,
   inspectionResultsForPrint,
 } from '@/features/inspections/Lib/inspectionResults'
+import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -208,9 +209,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
 
   const shopDisplayName = workshop?.name || data.shopName || 'Torqvoice'
   const customer = data.customer ?? data.vehicle?.customer
-  const vehicleName = data.vehicle
-    ? `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
-    : ''
+  const vehicleName = data.vehicle ? `${vehicleNameOf(data.vehicle)}` : ''
   const tech = data.technician?.name || data.techName
 
   // -------------------------------------------------------------------------

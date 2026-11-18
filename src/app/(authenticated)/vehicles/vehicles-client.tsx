@@ -71,6 +71,7 @@ import { useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
 import { useServiceType } from '@/components/service-type-context'
 import { ListEmpty } from '@/components/list-empty'
+import { vehicleName } from '@/lib/vehicle-name'
 
 interface Vehicle {
   id: string
@@ -466,9 +467,7 @@ export function VehiclesClient({
                   onClick={() => router.push(`/vehicles/${v.id}`)}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <span className="min-w-0 flex-1 truncate font-medium">
-                      {v.year} {v.make} {v.model}
-                    </span>
+                    <span className="min-w-0 flex-1 truncate font-medium">{vehicleName(v)}</span>
                     {v.licensePlate && (
                       <span className="shrink-0 font-mono text-sm">{v.licensePlate}</span>
                     )}
@@ -514,17 +513,13 @@ export function VehiclesClient({
                       </DropdownMenuItem>
                     )}
                     {isArchived ? (
-                      <DropdownMenuItem
-                        onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
-                      >
+                      <DropdownMenuItem onClick={() => handleUnarchive(v.id, `${vehicleName(v)}`)}>
                         <ArchiveRestore className="mr-2 h-4 w-4" />
                         {t('unarchive')}
                       </DropdownMenuItem>
                     ) : (
                       <DropdownMenuItem
-                        onClick={() =>
-                          setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
-                        }
+                        onClick={() => setArchiveTarget({ id: v.id, name: `${vehicleName(v)}` })}
                       >
                         <Archive className="mr-2 h-4 w-4" />
                         {t('archive')}
@@ -532,7 +527,7 @@ export function VehiclesClient({
                     )}
                     <DropdownMenuItem
                       className="text-destructive"
-                      onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                      onClick={() => handleDelete(v.id, `${vehicleName(v)}`)}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       {t('delete')}
@@ -618,9 +613,7 @@ export function VehiclesClient({
                       >
                         <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
                         <TableCell className="truncate">
-                          <span className="font-medium">
-                            {v.year} {v.make} {v.model}
-                          </span>
+                          <span className="font-medium">{vehicleName(v)}</span>
                           {v.inspectionStatus?.dueAt && (
                             <span
                               className={`ml-2 rounded border px-1.5 py-0.5 font-sans text-xs ${INSPECTION_TONE_CLASS[inspectionTone(v.inspectionStatus.dueAt)]}`}
@@ -671,7 +664,7 @@ export function VehiclesClient({
                                 <DropdownMenuItem
                                   onClick={(e) => {
                                     e.stopPropagation()
-                                    handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
+                                    handleUnarchive(v.id, `${vehicleName(v)}`)
                                   }}
                                 >
                                   <ArchiveRestore className="mr-2 h-4 w-4" />
@@ -683,7 +676,7 @@ export function VehiclesClient({
                                     e.stopPropagation()
                                     setArchiveTarget({
                                       id: v.id,
-                                      name: `${v.year} ${v.make} ${v.model}`,
+                                      name: `${vehicleName(v)}`,
                                     })
                                   }}
                                 >
@@ -695,7 +688,7 @@ export function VehiclesClient({
                                 className="text-destructive"
                                 onClick={(e) => {
                                   e.stopPropagation()
-                                  handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)
+                                  handleDelete(v.id, `${vehicleName(v)}`)
                                 }}
                               >
                                 <Trash2 className="mr-2 h-4 w-4" />
@@ -732,17 +725,13 @@ export function VehiclesClient({
                         </ContextMenuItem>
                       )}
                       {isArchived ? (
-                        <ContextMenuItem
-                          onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
-                        >
+                        <ContextMenuItem onClick={() => handleUnarchive(v.id, `${vehicleName(v)}`)}>
                           <ArchiveRestore className="mr-2 h-4 w-4" />
                           {t('unarchive')}
                         </ContextMenuItem>
                       ) : (
                         <ContextMenuItem
-                          onClick={() =>
-                            setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
-                          }
+                          onClick={() => setArchiveTarget({ id: v.id, name: `${vehicleName(v)}` })}
                         >
                           <Archive className="mr-2 h-4 w-4" />
                           {t('archive')}
@@ -750,7 +739,7 @@ export function VehiclesClient({
                       )}
                       <ContextMenuItem
                         variant="destructive"
-                        onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                        onClick={() => handleDelete(v.id, `${vehicleName(v)}`)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         {t('delete')}
@@ -795,7 +784,7 @@ export function VehiclesClient({
                     <div className="relative aspect-[16/10] overflow-hidden bg-muted">
                       <Image
                         src={v.imageUrl || '/car_placeholder.avif'}
-                        alt={`${v.year} ${v.make} ${v.model}`}
+                        alt={`${vehicleName(v)}`}
                         fill
                         unoptimized
                         className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -807,7 +796,7 @@ export function VehiclesClient({
                         <h3
                           className={`font-bold text-white drop-shadow-sm ${view === 'grid6' ? 'text-sm' : 'text-lg'}`}
                         >
-                          {v.year} {v.make} {v.model}
+                          {vehicleName(v)}
                         </h3>
                         {v.licensePlate && (
                           <p
@@ -847,7 +836,7 @@ export function VehiclesClient({
                               <DropdownMenuItem
                                 onClick={(e) => {
                                   e.preventDefault()
-                                  handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)
+                                  handleUnarchive(v.id, `${vehicleName(v)}`)
                                 }}
                               >
                                 <ArchiveRestore className="mr-2 h-4 w-4" />
@@ -859,7 +848,7 @@ export function VehiclesClient({
                                   e.preventDefault()
                                   setArchiveTarget({
                                     id: v.id,
-                                    name: `${v.year} ${v.make} ${v.model}`,
+                                    name: `${vehicleName(v)}`,
                                   })
                                 }}
                               >
@@ -871,7 +860,7 @@ export function VehiclesClient({
                               className="text-destructive"
                               onClick={(e) => {
                                 e.preventDefault()
-                                handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)
+                                handleDelete(v.id, `${vehicleName(v)}`)
                               }}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
@@ -935,17 +924,13 @@ export function VehiclesClient({
                   </ContextMenuItem>
                 )}
                 {isArchived ? (
-                  <ContextMenuItem
-                    onClick={() => handleUnarchive(v.id, `${v.year} ${v.make} ${v.model}`)}
-                  >
+                  <ContextMenuItem onClick={() => handleUnarchive(v.id, `${vehicleName(v)}`)}>
                     <ArchiveRestore className="mr-2 h-4 w-4" />
                     {t('unarchive')}
                   </ContextMenuItem>
                 ) : (
                   <ContextMenuItem
-                    onClick={() =>
-                      setArchiveTarget({ id: v.id, name: `${v.year} ${v.make} ${v.model}` })
-                    }
+                    onClick={() => setArchiveTarget({ id: v.id, name: `${vehicleName(v)}` })}
                   >
                     <Archive className="mr-2 h-4 w-4" />
                     {t('archive')}
@@ -953,7 +938,7 @@ export function VehiclesClient({
                 )}
                 <ContextMenuItem
                   variant="destructive"
-                  onClick={() => handleDelete(v.id, `${v.year} ${v.make} ${v.model}`)}
+                  onClick={() => handleDelete(v.id, `${vehicleName(v)}`)}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   {t('delete')}

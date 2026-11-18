@@ -11,6 +11,7 @@ import { sendSmsToCustomer } from '@/features/sms/Actions/smsActions'
 import { sendNotificationEmail } from '@/features/email/Actions/emailActions'
 import { sendTelegramToCustomer } from '@/features/telegram/Actions/telegramActions'
 import { serviceVideoLink, videoCallMessage } from '../Lib/video-call'
+import { vehicleName } from '@/lib/vehicle-name'
 
 const sendVideoCallSchema = z.object({
   serviceRecordId: z.string(),
@@ -60,9 +61,7 @@ export async function sendServiceVideoCall(input: unknown) {
       const link = await serviceVideoLink(organizationId, record.id)
       if (!link) throw new Error('No video call on this work order')
 
-      const vehicle = record.vehicle
-        ? `${record.vehicle.year} ${record.vehicle.make} ${record.vehicle.model}`
-        : record.title
+      const vehicle = record.vehicle ? `${vehicleName(record.vehicle)}` : record.title
       const t = await getTranslations('service.videoCall.notify')
       let when: string | null = null
       if (record.startDateTime) {

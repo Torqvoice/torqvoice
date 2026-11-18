@@ -8,6 +8,7 @@ import type { WorkBoardJob } from '../Actions/boardActions'
 import { getJobDateRange, getDurationMinutes } from '../utils/datetime'
 import { formatDuration } from './DurationSlider'
 import { PromiseOverdueMark } from './PromiseOverdueMark'
+import { vehicleName } from '@/lib/vehicle-name'
 
 /** How many people are on a job besides its technician, on the card itself. */
 export function TeamCount({ count }: { count: number }) {
@@ -67,7 +68,7 @@ export function BoardJobCard({ job, onClick }: { job: WorkBoardJob; onClick?: ()
         </div>
         {job.vehicle && (
           <p className="truncate text-muted-foreground">
-            {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+            {vehicleName(job.vehicle)}
             {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
           </p>
         )}
@@ -163,7 +164,7 @@ export function UnassignedJobCard({
         </div>
         {job.vehicle && (
           <p className="truncate text-muted-foreground">
-            {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+            {vehicleName(job.vehicle)}
             {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
           </p>
         )}

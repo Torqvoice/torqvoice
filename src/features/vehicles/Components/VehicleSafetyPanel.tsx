@@ -18,6 +18,7 @@ import {
   Star,
 } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
+import { vehicleName } from '@/lib/vehicle-name'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -103,7 +104,7 @@ export function VehicleSafetyPanel({
   const urgent = recalls.some((r) => r.parkIt || r.parkOutside)
   const modelLabel = report?.matched
     ? `${report.matched.year} ${titleCase(report.matched.make)} ${titleCase(report.matched.model)}`
-    : `${year} ${make} ${model}`
+    : vehicleName({ year, make, model })
 
   const alreadyAdded = useMemo(() => {
     const set = new Set(added)
