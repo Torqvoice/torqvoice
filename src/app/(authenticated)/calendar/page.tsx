@@ -1,8 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { cookies } from 'next/headers'
-import { accessFor } from '@/lib/viewer-access'
-import { PermissionSubject } from '@/lib/permissions'
-import { db } from '@/lib/db'
+import { findLinkedAppointment } from '@/features/calendar/Lib/linkedAppointment.server'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -47,17 +45,8 @@ export default async function CalendarPage({
   const todayStr = zonedDayKey(new Date(), timeZone)
 
   // A link to one appointment (from search, a vehicle's page) opens its day
-  // with its card up. Only this workshop's: any other id, or one since
-  // deleted, opens the calendar as if the link had no appointment at all.
-  // Seeing an appointment is reading the calendar, which follows reading jobs.
-  const canReadCalendar = ctx ? (await accessFor(ctx)).reads(PermissionSubject.SERVICES) : false
-  const linked =
-    ctx && canReadCalendar && typeof params.appointment === 'string' && params.appointment
-      ? await db.appointment.findFirst({
-          where: { id: params.appointment, organizationId: ctx.organizationId },
-          select: { id: true, startAt: true },
-        })
-      : null
+  // with its card up; see findLinkedAppointment for who may follow one.
+  const linked = await findLinkedAppointment(ctx, params.appointment)
   const linkedDay = linked ? zonedDayKey(linked.startAt, timeZone) : null
 
   const view: CalendarView = isCalendarView(params.view) ? params.view : linked ? 'day' : 'month'
