@@ -33,9 +33,11 @@ import {
  * - The car can be added to a booking made for a customer whose car was not
  *   on file. A different car or customer is changed on the work order, where
  *   the prices and tax that follow the customer are worked out again.
- * - The work lines are the job's concerns. They are replaced only while
- *   nobody has recorded anything on them; after that they are the job's
- *   history and are changed on the work order.
+ * - The work lines are the job's concerns, and the only copy of what the job
+ *   is about. They are replaced only while nobody has recorded anything on
+ *   them; after that they are the job's history and are changed on the work
+ *   order. A description an older job still carries becomes concerns too the
+ *   first time the booking is saved here.
  */
 export async function updateBooking(input: SaveBookingInput) {
   return withAuth(
@@ -134,21 +136,25 @@ export async function updateBooking(input: SaveBookingInput) {
         throw new Error('Change the customer on the work order')
       }
 
-      const lines = bookingConcerns(data.work, data.title)
+      const recorded = job.concerns.some(
+        (c) =>
+          c.cause ||
+          c.correction ||
+          c.confirmation ||
+          c.confirmedAt ||
+          c._count.findings > 0 ||
+          c._count.attachments > 0
+      )
+      // The conditions are the one copy of what the job is about. The dialog
+      // offers a description an older job still carries as work lines
+      // (`getBooking`), so what is saved here is all of it and the
+      // description goes. A tab opened before this still sends one, and it is
+      // folded in the same way. Once work is recorded the conditions are the
+      // job's history: nothing is folded in and the description stays.
+      const lines = bookingConcerns(data.work, recorded ? null : description, data.title)
       const workChanged = lines.join('\n') !== job.concerns.map((c) => c.description).join('\n')
-      if (workChanged) {
-        const recorded = job.concerns.some(
-          (c) =>
-            c.cause ||
-            c.correction ||
-            c.confirmation ||
-            c.confirmedAt ||
-            c._count.findings > 0 ||
-            c._count.attachments > 0
-        )
-        if (recorded) {
-          throw new Error('Work is recorded on these concerns. Change them on the work order.')
-        }
+      if (workChanged && recorded) {
+        throw new Error('Work is recorded on these concerns. Change them on the work order.')
       }
 
       const moved =
@@ -172,7 +178,7 @@ export async function updateBooking(input: SaveBookingInput) {
           where: { id: job.id },
           data: {
             title: data.title,
-            description,
+            ...(recorded ? {} : { description: null }),
             startDateTime: start,
             endDateTime: end,
             ...(who ?? {}),

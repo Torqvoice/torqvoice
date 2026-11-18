@@ -8,7 +8,7 @@ import {
   freeResources,
 } from '@/features/inspection-reminders/Lib/booking'
 import type { BookingNotification } from '../Schema/bookingSchema'
-import { appointmentConcerns } from './appointment'
+import { appointmentConcerns, descriptionLines, withoutRepeats } from './appointment'
 
 /*
  * The parts of booking from the calendar that more than one action needs. A
@@ -110,9 +110,17 @@ export function cleanDescription(html: string | undefined): string | null {
   return text ? clean : null
 }
 
-/** A booked job's concerns: the work lines, or the title when none were given. */
-export function bookingConcerns(work: string | undefined, title: string): string[] {
-  const lines = appointmentConcerns(work ?? '')
+/**
+ * A booked job's conditions: the work lines, then what the description says
+ * that they do not, as plain lines. The title only when neither says anything.
+ * A job keeps no description of its own, so the conditions are the one copy.
+ */
+export function bookingConcerns(
+  work: string | undefined,
+  description: string | null | undefined,
+  title: string
+): string[] {
+  const lines = withoutRepeats(appointmentConcerns(work ?? ''), descriptionLines(description))
   return lines.length > 0 ? lines : [title.trim()]
 }
 

@@ -10,6 +10,7 @@ import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopF
 import { documentNumbers, serviceTypeName } from '@/lib/document-numbers'
 import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
+import { descriptionLines } from '@/features/calendar/Lib/appointment'
 import { taxLines } from './taxLines'
 import { printFigures } from './printFigures'
 import {
@@ -123,6 +124,21 @@ export function plainTextHtml(text: string | null | undefined): string | undefin
     .split(/\n{2,}/)
     .map((paragraph) => `<p>${escapeText(paragraph).replace(/\n/g, '<br/>')}</p>`)
     .join('')
+}
+
+/**
+ * A job's description as the print takes it: plain text. One booked from the
+ * calendar before the conditions took its place was kept as rich text, and
+ * would print with its tags showing; it prints as its lines instead.
+ */
+export function printedDescription(text: string | null | undefined): string | null | undefined {
+  if (
+    !text ||
+    !/<\/?(p|br|ul|ol|li|h[1-6]|div|blockquote|strong|em|u|s|a|span)\b[^>]*>/i.test(text)
+  ) {
+    return text
+  }
+  return descriptionLines(text).join('\n')
 }
 
 /**
@@ -477,7 +493,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
         description: concern.description,
         detail: concern.correction?.trim() || undefined,
       })),
-      description: { html: plainTextHtml(data.description) },
+      description: { html: plainTextHtml(printedDescription(data.description)) },
       checklist,
       qr: job.qrDataUri
         ? { dataUri: job.qrDataUri, label: L('scanToOpen', 'Scan to open this work order') }

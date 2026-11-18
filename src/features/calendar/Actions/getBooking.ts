@@ -7,6 +7,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDateInput, zonedTimeInput } from '@/lib/timezone'
 import { serviceVideoLink } from '@/features/integrations/Lib/video-call'
+import { descriptionLines, withoutRepeats } from '../Lib/appointment'
 import { BOOKING_KINDS, type BookingKind, type NotificationChannel } from '../Schema/bookingSchema'
 
 const vehicleSelect = {
@@ -156,12 +157,19 @@ export async function getBooking(input: { kind: BookingKind; id: string }) {
         kind,
         id: job.id,
         title: job.title,
-        description: job.description ?? '',
+        // A job keeps no description beside its conditions.
+        description: '',
         // A job on a car finds its customer through the car.
         customer: job.customer ?? job.vehicle?.customer ?? null,
         vehicle: job.vehicle,
         ...times(job.startDateTime, end),
-        work: job.concerns.map((c) => c.description).join('\n'),
+        // A description from before the conditions were the one copy is
+        // offered as conditions, and becomes them when this is saved. Not
+        // once work is recorded: the lines cannot change here then.
+        work: withoutRepeats(
+          job.concerns.map((c) => c.description),
+          recorded ? [] : descriptionLines(job.description)
+        ).join('\n'),
         notifications: job.appointmentNotifications as BookingForEdit['notifications'],
         locked: { who: Boolean(job.vehicle), work: recorded },
         meeting: await serviceVideoLink(organizationId, job.id),

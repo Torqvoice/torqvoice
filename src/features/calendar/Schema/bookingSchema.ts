@@ -99,8 +99,12 @@ export const saveBookingSchema = z
     description: z.string().max(20_000).optional(),
     customerId: z.string().min(1).optional(),
     vehicleId: z.string().min(1).optional(),
-    /** Work order only: what needs doing, one concern per line. */
-    work: z.string().max(4000).optional(),
+    /**
+     * Work order only: what needs doing, one concern per line. Room for the
+     * lines a job had and a description of full length folded into them, so
+     * a booking that could be saved before can still be.
+     */
+    work: z.string().max(24_000).optional(),
     /** YYYY-MM-DD and HH:MM on the workshop's clock, and days that exist. */
     startDate: z.string().refine(isDateKey, 'Pick a valid date'),
     startTime: z.string().refine(isTime, 'Pick a valid time'),

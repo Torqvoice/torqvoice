@@ -530,6 +530,7 @@ export default function CalendarClient({
       currencyCode={currencyCode}
       onRefresh={refresh}
       onEditAbsence={timeOff ? editAbsence : undefined}
+      showing={`${view}:${toLocalDateStr(date)}`}
       onEditBooking={(edit) => {
         setBookingEdit(edit)
         setShowAppointmentDialog(true)
