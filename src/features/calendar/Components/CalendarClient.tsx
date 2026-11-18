@@ -45,6 +45,7 @@ import { CalendarToolbar, type CreateKind } from './CalendarToolbar'
 import type { DayActions } from './DayContextMenu'
 import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
 import { type BookingEdit, EventPeekProvider } from './EventPeek'
+import { LinkedAppointment } from './LinkedAppointment'
 import { MonthView } from './MonthView'
 import { ScheduleView } from './ScheduleView'
 import { TimeGridView } from './TimeGridView'
@@ -69,6 +70,17 @@ interface CalendarClientProps {
   timeOff?: { technicians: TechnicianOption[] } | null
   /** The viewing preferences from the cookie; null when none are stored yet. */
   initialPreferences?: CalendarPreferences | null
+  /**
+   * An appointment a link asked for: the calendar goes to its day and opens
+   * its card. `token` is new on every request, so following the same link
+   * again while the calendar is open does it again.
+   */
+  linkedAppointment?: {
+    event: CalendarEvent
+    date: string
+    view: CalendarView
+    token: string
+  } | null
 }
 
 const ALL_TYPES: CalendarEventType[] = [
@@ -110,6 +122,7 @@ export default function CalendarClient({
   messageChannels,
   timeOff = null,
   initialPreferences = null,
+  linkedAppointment = null,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
   const tWorkOrders = useTranslations('workOrders.list')
@@ -210,6 +223,15 @@ export default function CalendarClient({
     // through months would otherwise re-run the whole page on the server.
     window.history.replaceState(window.history.state, '', `${pathname}?${params.toString()}`)
   }, [view, dateStr, pathname])
+
+  // A followed appointment link moves the calendar to its day.
+  const linkToken = linkedAppointment?.token
+  useEffect(() => {
+    if (!linkedAppointment) return
+    const day = parseDateKey(linkedAppointment.date)
+    setView(linkedAppointment.view)
+    if (day) setDate(day)
+  }, [linkToken])
 
   // ── Derived data ───────────────────────────────────────────────────────
   const counts = useMemo(() => {
@@ -559,7 +581,17 @@ export default function CalendarClient({
               onFilterChange={setTypeShown}
             />
           )}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">{body}</div>
+          <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+            {body}
+            {linkedAppointment && (
+              <LinkedAppointment
+                key={linkedAppointment.token}
+                event={linkedAppointment.event}
+                view={linkedAppointment.view}
+                date={linkedAppointment.date}
+              />
+            )}
+          </div>
         </div>
       </div>
 

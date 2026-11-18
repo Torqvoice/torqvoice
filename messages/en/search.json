@@ -13,7 +13,8 @@
     "settings": "Settings",
     "pages": "Pages",
     "actions": "Actions",
-    "integrations": "Integrations"
+    "integrations": "Integrations",
+    "appointments": "Appointments"
   },
   "hints": {
     "navigate": "navigate",

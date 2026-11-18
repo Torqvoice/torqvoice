@@ -1,4 +1,6 @@
+import { randomUUID } from 'node:crypto'
 import { cookies } from 'next/headers'
+import { findLinkedAppointment } from '@/features/calendar/Lib/linkedAppointment.server'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
@@ -33,7 +35,7 @@ export function generateMetadata() {
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; date?: string }>
+  searchParams: Promise<{ view?: string; date?: string; appointment?: string }>
 }) {
   const params = await searchParams
   const ctx = await getAuthContext()
@@ -42,8 +44,13 @@ export default async function CalendarPage({
   // ring in the next day at 01:00 Oslo time.
   const todayStr = zonedDayKey(new Date(), timeZone)
 
-  const view: CalendarView = isCalendarView(params.view) ? params.view : 'month'
-  const date = parseDateKey(params.date) ?? parseDateKey(todayStr) ?? new Date()
+  // A link to one appointment (from search, a vehicle's page) opens its day
+  // with its card up; see findLinkedAppointment for who may follow one.
+  const linked = await findLinkedAppointment(ctx, params.appointment)
+  const linkedDay = linked ? zonedDayKey(linked.startAt, timeZone) : null
+
+  const view: CalendarView = isCalendarView(params.view) ? params.view : linked ? 'day' : 'month'
+  const date = parseDateKey(linkedDay ?? params.date) ?? parseDateKey(todayStr) ?? new Date()
 
   const messageChannels = ctx ? await getAvailableChannels(ctx.organizationId) : []
   const settingsResult = await getDisplaySettings([
@@ -96,11 +103,22 @@ export default async function CalendarPage({
 
   const events = eventsResult.success && eventsResult.data ? eventsResult.data : []
 
+  // A token for this one request, so the same link followed again while the
+  // calendar is open (from search, say) goes back to the day and reopens it.
+  const linkedEvent = linked
+    ? events.find((e) => e.type === 'appointment' && e.id === linked.id)
+    : undefined
+  const linkedAppointment =
+    linkedEvent && linkedDay
+      ? { event: linkedEvent, date: linkedDay, view, token: randomUUID() }
+      : null
+
   return (
     <>
       <PageHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
         <CalendarClient
+          linkedAppointment={linkedAppointment}
           initialEvents={events}
           initialRange={rangeKeys}
           initialView={view}

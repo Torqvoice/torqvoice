@@ -12,6 +12,7 @@ import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
 import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
 import { getVehicleJobWarnings } from '@/features/vehicles/Actions/getVehicleJobWarnings'
 import { getVehicleGlance } from '@/features/vehicles/Actions/getVehicleGlance'
+import { getVehicleAppointments } from '@/features/calendar/Actions/getVehicleAppointments'
 import { getFeatures } from '@/lib/features'
 import { findSafetyConnection } from '@/features/integrations/Lib/vehicle-safety'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
@@ -95,6 +96,7 @@ export default async function VehicleDetailPage({
     jobWarningsResult,
     feedNotesResult,
     glanceResult,
+    appointmentsResult,
   ] = await Promise.all([
     getVehicle(id),
     // The new page shows the vehicle's history as one feed, so it asks for all
@@ -126,6 +128,9 @@ export default async function VehicleDetailPage({
     // Last visit, next booking and what is owed, over every work order and
     // not only the ones a search has left in the list.
     classic ? null : readIfAllowed(access, S.SERVICES, () => getVehicleGlance(id)),
+    // Plain appointments, which have no work order and so are not in the
+    // feed: the rail lists them so nobody scrolls the calendar to find one.
+    classic ? null : readIfAllowed(access, S.SERVICES, () => getVehicleAppointments(id)),
   ])
 
   if (!result.success || !result.data) {
@@ -277,6 +282,9 @@ export default async function VehicleDetailPage({
               jobWarningsResult?.success && jobWarningsResult.data ? jobWarningsResult.data : []
             }
             glance={glanceResult?.success && glanceResult.data ? glanceResult.data : null}
+            appointments={
+              appointmentsResult?.success && appointmentsResult.data ? appointmentsResult.data : []
+            }
             feedNotes={
               feedNotesResult?.success && feedNotesResult.data
                 ? feedNotesResult.data.records

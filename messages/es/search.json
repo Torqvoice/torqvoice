@@ -13,7 +13,8 @@
     "settings": "Configuración",
     "pages": "Páginas",
     "actions": "Acciones",
-    "integrations": "Integraciones"
+    "integrations": "Integraciones",
+    "appointments": "Citas"
   },
   "hints": {
     "navigate": "navegar",
