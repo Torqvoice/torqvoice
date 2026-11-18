@@ -370,6 +370,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                 <ShortcutsProvider
                   initialPrefs={data.keyboardShortcuts}
                   plateLookupAvailable={plateLookupAvailable}
+                  bookingAvailable={canBook}
                   commands={{
                     visibleSubjects,
                     features,
