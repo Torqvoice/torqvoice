@@ -42,13 +42,15 @@ const db = vi.hoisted(() => ({
 }))
 vi.mock('@/lib/db', () => ({ db }))
 
-import { createBooking } from '@/features/calendar/Actions/createBooking'
+import { createBookingOnce } from '@/features/calendar/Actions/createBooking'
 import { updateBooking } from '@/features/calendar/Actions/updateBooking'
 import { deleteAppointment } from '@/features/calendar/Actions/deleteAppointment'
 import type { SaveBookingInput } from '@/features/calendar/Schema/bookingSchema'
 
 const ORG = 'org-1'
 const USER = 'user-1'
+/** What one opened booking dialog sends with whatever it books. */
+const TOKEN = 'a3f1c2d4e5f60718293a4b5c6d7e8f90'
 
 function signInAs(
   role: 'owner' | 'member' = 'owner',
@@ -81,7 +83,11 @@ beforeEach(() => {
   })
   db.customer.findFirst.mockResolvedValue({ id: 'cust-1', taxExempt: false })
   // The newest numbered job, for the next job number.
-  db.serviceRecord.findFirst.mockResolvedValue({ invoiceNumber: '2026-1043' })
+  // And nothing booked with this dialog's token yet.
+  db.serviceRecord.findFirst.mockImplementation(
+    async (args?: { where?: { bookingToken?: string } }) =>
+      args?.where?.bookingToken ? null : { invoiceNumber: '2026-1043' }
+  )
   db.serviceRecord.create.mockResolvedValue({ id: 'job-1' })
   db.serviceRecord.update.mockResolvedValue({
     id: 'job-1',
@@ -107,6 +113,7 @@ beforeEach(() => {
 function booking(overrides: Partial<SaveBookingInput> = {}): SaveBookingInput {
   return {
     kind: 'appointment',
+    token: TOKEN,
     title: 'Call Kari',
     startDate: '2026-11-16',
     startTime: '09:30',
@@ -115,6 +122,14 @@ function booking(overrides: Partial<SaveBookingInput> = {}): SaveBookingInput {
     notifications: [],
     ...overrides,
   }
+}
+
+/** The appointment a lookup by id finds; none is found by this dialog's token. */
+function appointmentOnFile(appointment: { id: string }) {
+  db.appointment.findFirst.mockImplementation(
+    async (args?: { where?: { bookingToken?: string } }) =>
+      args?.where?.bookingToken ? null : appointment
+  )
 }
 
 /** Something already on the calendar on Monday, 08:00 to 10:00 UTC. */
@@ -136,7 +151,7 @@ const createdNotifications = () => db.appointmentNotification.createMany.mock.ca
 
 describe('createBooking: an appointment', () => {
   it("puts it on the workshop's clock with its title, description, customer and notifications", async () => {
-    const result = await createBooking(
+    const result = await createBookingOnce(
       booking({
         vehicleId: 'veh-1',
         description: '<p>Bring the <strong>spare key</strong></p><script>alert(1)</script>',
@@ -192,14 +207,14 @@ describe('createBooking: an appointment', () => {
   })
 
   it('keeps no description that says nothing', async () => {
-    await createBooking(booking({ description: '<p>  </p>' }))
+    await createBookingOnce(booking({ description: '<p>  </p>' }))
     expect(appointmentData().description).toBeNull()
   })
 
   it("refuses another workshop's car and creates nothing", async () => {
     db.vehicle.findFirst.mockResolvedValue(null)
 
-    const result = await createBooking(booking({ vehicleId: 'someone-elses-car' }))
+    const result = await createBookingOnce(booking({ vehicleId: 'someone-elses-car' }))
 
     expect(result.success).toBe(false)
     expect(result.error).toBe('Vehicle not found')
@@ -209,7 +224,7 @@ describe('createBooking: an appointment', () => {
 
 describe('createBooking: a work order', () => {
   it('needs a car or a customer, and writes nothing without one', async () => {
-    const result = await createBooking(booking({ kind: 'workOrder', work: 'Brakes' }))
+    const result = await createBookingOnce(booking({ kind: 'workOrder', work: 'Brakes' }))
 
     expect(result.success).toBe(false)
     expect(db.serviceRecord.create).not.toHaveBeenCalled()
@@ -225,7 +240,7 @@ describe('createBooking: a work order', () => {
       closuresEnabled: false,
     })
 
-    const result = await createBooking(
+    const result = await createBookingOnce(
       booking({
         kind: 'workOrder',
         title: 'Brake job',
@@ -242,6 +257,7 @@ describe('createBooking: a work order', () => {
       ref: '2026-1044',
       vehicleId: 'veh-1',
       overbooked: false,
+      repeated: false,
     })
     const job = jobData()
     expect(job.organizationId).toBe(ORG)
@@ -271,7 +287,7 @@ describe('createBooking: a work order', () => {
   it('makes the title the only concern when no work lines are given', async () => {
     db.vehicle.findFirst.mockResolvedValue(null)
 
-    const result = await createBooking(
+    const result = await createBookingOnce(
       booking({ kind: 'workOrder', title: 'Winter tyres on', customerId: 'cust-1' })
     )
 
@@ -291,7 +307,7 @@ describe('createBooking: a work order', () => {
       closuresEnabled: false,
     })
 
-    const result = await createBooking(
+    const result = await createBookingOnce(
       booking({ kind: 'workOrder', vehicleId: 'veh-1', work: 'Service' })
     )
 
@@ -303,9 +319,9 @@ describe('createBooking: a work order', () => {
 
 describe('createBooking: an appointment made a work order', () => {
   it('books the job and takes the appointment off the calendar', async () => {
-    db.appointment.findFirst.mockResolvedValue({ id: 'appt-1' })
+    appointmentOnFile({ id: 'appt-1' })
 
-    const result = await createBooking(
+    const result = await createBookingOnce(
       booking({
         kind: 'workOrder',
         vehicleId: 'veh-1',
@@ -325,7 +341,7 @@ describe('createBooking: an appointment made a work order', () => {
   it("refuses another workshop's appointment and creates nothing", async () => {
     db.appointment.findFirst.mockResolvedValue(null)
 
-    const result = await createBooking(
+    const result = await createBookingOnce(
       booking({
         kind: 'workOrder',
         vehicleId: 'veh-1',
@@ -341,9 +357,128 @@ describe('createBooking: an appointment made a work order', () => {
   })
 })
 
+describe('the same booking sent twice', () => {
+  /** What a lookup by the token finds once the first send has booked. */
+  function alreadyBooked(found: {
+    job?: { id: string; vehicleId: string | null; invoiceNumber: string | null }
+    appointment?: { id: string; title: string; vehicleId: string | null }
+  }) {
+    db.serviceRecord.findFirst.mockImplementation(
+      async (args?: { where?: { bookingToken?: string } }) =>
+        args?.where?.bookingToken ? (found.job ?? null) : { invoiceNumber: '2026-1044' }
+    )
+    db.appointment.findFirst.mockImplementation(
+      async (args?: { where?: { bookingToken?: string } }) =>
+        args?.where?.bookingToken ? (found.appointment ?? null) : null
+    )
+  }
+
+  it('keeps the token on the job it books', async () => {
+    const result = await createBookingOnce(booking({ kind: 'workOrder', vehicleId: 'veh-1' }))
+
+    expect(result.success).toBe(true)
+    expect(jobUpdate().data.bookingToken).toBe(TOKEN)
+  })
+
+  it('keeps the token on the appointment it books', async () => {
+    await createBookingOnce(booking())
+
+    expect(appointmentData().bookingToken).toBe(TOKEN)
+  })
+
+  it('answers with the job already booked and books no second one', async () => {
+    alreadyBooked({ job: { id: 'job-1', vehicleId: 'veh-1', invoiceNumber: '2026-1044' } })
+
+    const result = await createBookingOnce(booking({ kind: 'workOrder', vehicleId: 'veh-1' }))
+
+    expect(result.success).toBe(true)
+    expect(result.data).toMatchObject({ kind: 'workOrder', id: 'job-1', ref: '2026-1044' })
+    expect(db.serviceRecord.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { organizationId: ORG, bookingToken: TOKEN } })
+    )
+    expect(db.serviceRecord.create).not.toHaveBeenCalled()
+    expect(db.appointment.create).not.toHaveBeenCalled()
+  })
+
+  it('answers with the appointment already booked and books no second one', async () => {
+    alreadyBooked({ appointment: { id: 'appt-1', title: 'Call Kari', vehicleId: null } })
+
+    const result = await createBookingOnce(booking())
+
+    expect(result.success).toBe(true)
+    expect(result.data).toMatchObject({ kind: 'appointment', id: 'appt-1', ref: 'Call Kari' })
+    expect(db.appointment.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { organizationId: ORG, bookingToken: TOKEN } })
+    )
+    expect(db.appointment.create).not.toHaveBeenCalled()
+  })
+
+  it('does not write the booking into the audit log a second time', async () => {
+    alreadyBooked({ job: { id: 'job-1', vehicleId: 'veh-1', invoiceNumber: '2026-1044' } })
+
+    await createBookingOnce(booking({ kind: 'workOrder', vehicleId: 'veh-1' }))
+    await new Promise((resolve) => setTimeout(resolve, 20))
+
+    expect(db.auditLog.create).not.toHaveBeenCalled()
+  })
+
+  it('finds the job when the appointment it was made from is already gone', async () => {
+    // The first send made the work order and removed the appointment.
+    alreadyBooked({ job: { id: 'job-1', vehicleId: 'veh-1', invoiceNumber: '2026-1044' } })
+
+    const result = await createBookingOnce(
+      booking({ kind: 'workOrder', vehicleId: 'veh-1', fromAppointmentId: 'appt-1' })
+    )
+
+    expect(result.success).toBe(true)
+    expect(result.data?.id).toBe('job-1')
+    expect(db.serviceRecord.create).not.toHaveBeenCalled()
+  })
+
+  it("answers with the other send's job when both arrive together", async () => {
+    // Nothing booked when this send looks; the other one commits first and
+    // the database refuses this one the token.
+    let committed = false
+    db.serviceRecord.findFirst.mockImplementation(
+      async (args?: { where?: { bookingToken?: string } }) =>
+        args?.where?.bookingToken
+          ? committed
+            ? { id: 'job-first', vehicleId: 'veh-1', invoiceNumber: '2026-1044' }
+            : null
+          : { invoiceNumber: '2026-1043' }
+    )
+    db.serviceRecord.update.mockImplementation(async () => {
+      committed = true
+      throw Object.assign(new Error('Unique constraint failed'), { code: 'P2002' })
+    })
+
+    const result = await createBookingOnce(booking({ kind: 'workOrder', vehicleId: 'veh-1' }))
+
+    expect(result.success).toBe(true)
+    expect(result.data).toMatchObject({ kind: 'workOrder', id: 'job-first', ref: '2026-1044' })
+  })
+
+  it('still fails when the database refuses it for another reason', async () => {
+    db.serviceRecord.update.mockRejectedValue(
+      Object.assign(new Error('Unique constraint failed'), { code: 'P2002' })
+    )
+
+    const result = await createBookingOnce(booking({ kind: 'workOrder', vehicleId: 'veh-1' }))
+
+    expect(result.success).toBe(false)
+  })
+
+  it('refuses a booking sent without a token', async () => {
+    const result = await createBookingOnce(booking({ token: undefined }))
+
+    expect(result.success).toBe(false)
+    expect(db.appointment.create).not.toHaveBeenCalled()
+  })
+})
+
 describe('notifications to the customer', () => {
   it('need somebody to go to', async () => {
-    const result = await createBooking(
+    const result = await createBookingOnce(
       booking({ notifications: [{ channel: 'customer_sms', amount: 1, unit: 'days' }] })
     )
 
@@ -354,7 +489,7 @@ describe('notifications to the customer', () => {
   it('are refused on the demo, while a notice in the app is not', async () => {
     vi.stubEnv('DEMO_MODE', 'true')
     vi.resetModules()
-    const { createBooking: demoCreateBooking } = await import(
+    const { createBookingOnce: demoCreateBooking } = await import(
       '@/features/calendar/Actions/createBooking'
     )
 
@@ -679,7 +814,7 @@ describe('who may book', () => {
   it('refuses a role that may not create jobs', async () => {
     signInAs('member', [{ action: 'read', subject: 'services' }])
 
-    const result = await createBooking(booking())
+    const result = await createBookingOnce(booking())
 
     expect(result.success).toBe(false)
     expect(result.forbidden).toBe(true)
@@ -689,7 +824,7 @@ describe('who may book', () => {
   it('lets a role that may create jobs book', async () => {
     signInAs('member', [{ action: 'create', subject: 'services' }])
 
-    const result = await createBooking(booking())
+    const result = await createBookingOnce(booking())
 
     expect(result.success).toBe(true)
     expect(db.appointment.create).toHaveBeenCalledTimes(1)
