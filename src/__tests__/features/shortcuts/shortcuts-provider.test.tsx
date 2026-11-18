@@ -27,15 +27,22 @@ function Calendar({ onWeek }: { onWeek: () => void }) {
 function App({
   prefs = null,
   commands = everyone,
+  bookingAvailable = true,
   children,
 }: {
   prefs?: unknown
+  bookingAvailable?: boolean
   commands?: Parameters<typeof ShortcutsProvider>[0]['commands']
   children?: React.ReactNode
 }) {
   return (
     <ConfirmProvider>
-      <ShortcutsProvider initialPrefs={prefs} commands={commands} plateLookupAvailable={false}>
+      <ShortcutsProvider
+        initialPrefs={prefs}
+        commands={commands}
+        plateLookupAvailable={false}
+        bookingAvailable={bookingAvailable}
+      >
         {children}
       </ShortcutsProvider>
     </ConfirmProvider>
@@ -321,6 +328,36 @@ describe('the Keyboard shortcuts settings page', () => {
       }
       expect(anchored).toBe(true)
     }
+  })
+
+  it('lists New appointment on Alt+L with the other things to create, and lets it be changed', async () => {
+    render(
+      <App>
+        <ShortcutsSettings />
+      </App>
+    )
+    expect(row('New appointment')).toHaveTextContent('AltL')
+    fireEvent.click(screen.getByRole('button', { name: 'Change the shortcut for New appointment' }))
+    const recorder = screen.getByRole('button', {
+      name: /Recording a new shortcut for New appointment/,
+    })
+    fireEvent.keyDown(recorder, { key: 'z', altKey: true })
+    expect(row('New appointment')).toHaveTextContent('AltZ')
+    await waitFor(() =>
+      expect(save).toHaveBeenCalledWith(
+        expect.objectContaining({ overrides: { 'create.appointment': 'alt+z' } })
+      )
+    )
+  })
+
+  it('lists no New appointment for someone who may not book', () => {
+    render(
+      <App bookingAvailable={false}>
+        <ShortcutsSettings />
+      </App>
+    )
+    expect(screen.getByText('New work order')).toBeInTheDocument()
+    expect(screen.queryByText('New appointment')).toBeNull()
   })
 
   it('records a new key, shows it and saves it', async () => {

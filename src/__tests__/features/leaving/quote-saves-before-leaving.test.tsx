@@ -98,6 +98,7 @@ function renderPage() {
       initialPrefs={null}
       commands={{ isAdminOrOwner: true }}
       plateLookupAvailable={false}
+      bookingAvailable
     >
       <QuotePage />
     </ShortcutsProvider>

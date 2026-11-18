@@ -3,7 +3,7 @@
  * whoever may book, beside starting a work order.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const noop = () => undefined
@@ -49,13 +49,25 @@ vi.mock('@/features/shortcuts/Actions/saveKeyboardShortcuts', () => ({
 
 import { BOOKING_EVENT, BookingAccessProvider } from '@/components/booking-launcher'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
+import { ShortcutsProvider } from '@/features/shortcuts/Components/ShortcutsProvider'
 
-function openMenu(canBook: boolean) {
+function renderMenu(canBook: boolean, prefs: unknown = null) {
   render(
-    <BookingAccessProvider value={{ canBook, canAddCustomer: true }}>
-      <QuickCreateMenu />
-    </BookingAccessProvider>
+    <ShortcutsProvider
+      initialPrefs={prefs}
+      commands={{ isAdminOrOwner: true }}
+      plateLookupAvailable={false}
+      bookingAvailable={canBook}
+    >
+      <BookingAccessProvider value={{ canBook, canAddCustomer: true }}>
+        <QuickCreateMenu />
+      </BookingAccessProvider>
+    </ShortcutsProvider>
   )
+}
+
+function openMenu(canBook: boolean, prefs: unknown = null) {
+  renderMenu(canBook, prefs)
   fireEvent.keyDown(screen.getByRole('button', { name: 'Quick Add' }), { key: 'Enter' })
 }
 
@@ -68,7 +80,7 @@ describe('QuickCreateMenu', () => {
     openMenu(true)
     const booked = vi.fn()
     document.addEventListener(BOOKING_EVENT, booked)
-    fireEvent.click(await screen.findByRole('menuitem', { name: 'Appointment' }))
+    fireEvent.click(await screen.findByRole('menuitem', { name: /Appointment/ }))
     document.removeEventListener(BOOKING_EVENT, booked)
     expect(booked).toHaveBeenCalledTimes(1)
     expect((booked.mock.calls[0][0] as CustomEvent).detail).toEqual({})
@@ -77,6 +89,44 @@ describe('QuickCreateMenu', () => {
   it('offers no appointment to someone who may not book', async () => {
     openMenu(false)
     expect(await screen.findByRole('menuitem', { name: /Work Order/ })).toBeInTheDocument()
-    expect(screen.queryByRole('menuitem', { name: 'Appointment' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: /Appointment/ })).not.toBeInTheDocument()
+  })
+
+  it('shows Alt+L beside "Appointment", like the other rows show theirs', async () => {
+    openMenu(true)
+    const row = await screen.findByRole('menuitem', { name: /Appointment/ })
+    expect(row).toHaveTextContent('AltL')
+  })
+
+  it('shows the key a person chose instead', async () => {
+    openMenu(true, { overrides: { 'create.appointment': 'alt+z' } })
+    const row = await screen.findByRole('menuitem', { name: /Appointment/ })
+    expect(row).toHaveTextContent('AltZ')
+  })
+
+  it('opens a booking on Alt+L from anywhere, without opening the menu', () => {
+    renderMenu(true)
+    const booked = vi.fn()
+    document.addEventListener(BOOKING_EVENT, booked)
+    act(() => {
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'l', altKey: true, bubbles: true, cancelable: true })
+      )
+    })
+    document.removeEventListener(BOOKING_EVENT, booked)
+    expect(booked).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not book on Alt+L for someone who may not book', () => {
+    renderMenu(false)
+    const booked = vi.fn()
+    document.addEventListener(BOOKING_EVENT, booked)
+    act(() => {
+      document.body.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'l', altKey: true, bubbles: true, cancelable: true })
+      )
+    })
+    document.removeEventListener(BOOKING_EVENT, booked)
+    expect(booked).not.toHaveBeenCalled()
   })
 })
