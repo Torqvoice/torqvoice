@@ -103,8 +103,17 @@ export function isDefaultShortcutPrefs(prefs: ShortcutPrefs): boolean {
 /** The keys a person may change: their own, or the ones it shipped with. */
 export function assignedKeys(def: ShortcutDef, prefs: ShortcutPrefs): Combo[] {
   const override = prefs.overrides[def.id]
-  if (override === undefined) return def.defaultKeys
+  if (override === undefined) {
+    // A key someone gave to another shortcut themselves stays theirs. A
+    // default added in a later release (Alt+L for a new appointment) must not
+    // take it back from them.
+    return def.defaultKeys.filter((combo) => !isChosenElsewhere(def, combo, prefs))
+  }
   return override ? [override] : []
+}
+
+function isChosenElsewhere(def: ShortcutDef, combo: Combo, prefs: ShortcutPrefs): boolean {
+  return Object.entries(prefs.overrides).some(([id, key]) => id !== def.id && key === combo)
 }
 
 export function isChanged(def: ShortcutDef, prefs: ShortcutPrefs): boolean {
