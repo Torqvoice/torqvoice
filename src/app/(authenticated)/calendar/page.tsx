@@ -1,4 +1,7 @@
+import { randomUUID } from 'node:crypto'
 import { cookies } from 'next/headers'
+import { accessFor } from '@/lib/viewer-access'
+import { PermissionSubject } from '@/lib/permissions'
 import { db } from '@/lib/db'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
@@ -46,8 +49,10 @@ export default async function CalendarPage({
   // A link to one appointment (from search, a vehicle's page) opens its day
   // with its card up. Only this workshop's: any other id, or one since
   // deleted, opens the calendar as if the link had no appointment at all.
+  // Seeing an appointment is reading the calendar, which follows reading jobs.
+  const canReadCalendar = ctx ? (await accessFor(ctx)).reads(PermissionSubject.SERVICES) : false
   const linked =
-    ctx && typeof params.appointment === 'string' && params.appointment
+    ctx && canReadCalendar && typeof params.appointment === 'string' && params.appointment
       ? await db.appointment.findFirst({
           where: { id: params.appointment, organizationId: ctx.organizationId },
           select: { id: true, startAt: true },
@@ -109,14 +114,22 @@ export default async function CalendarPage({
 
   const events = eventsResult.success && eventsResult.data ? eventsResult.data : []
 
+  // A token for this one request, so the same link followed again while the
+  // calendar is open (from search, say) goes back to the day and reopens it.
+  const linkedEvent = linked
+    ? events.find((e) => e.type === 'appointment' && e.id === linked.id)
+    : undefined
+  const linkedAppointment =
+    linkedEvent && linkedDay
+      ? { event: linkedEvent, date: linkedDay, view, token: randomUUID() }
+      : null
+
   return (
     <>
       <PageHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
         <CalendarClient
-          // A new link while the calendar is open starts it over on that day.
-          key={linked?.id ?? 'calendar'}
-          openAppointmentId={linked?.id ?? null}
+          linkedAppointment={linkedAppointment}
           initialEvents={events}
           initialRange={rangeKeys}
           initialView={view}

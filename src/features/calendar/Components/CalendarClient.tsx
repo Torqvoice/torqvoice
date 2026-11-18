@@ -69,8 +69,17 @@ interface CalendarClientProps {
   timeOff?: { technicians: TechnicianOption[] } | null
   /** The viewing preferences from the cookie; null when none are stored yet. */
   initialPreferences?: CalendarPreferences | null
-  /** An appointment a link asked for: its card opens once the day is drawn. */
-  openAppointmentId?: string | null
+  /**
+   * An appointment a link asked for: the calendar goes to its day and opens
+   * its card. `token` is new on every request, so following the same link
+   * again while the calendar is open does it again.
+   */
+  linkedAppointment?: {
+    event: CalendarEvent
+    date: string
+    view: CalendarView
+    token: string
+  } | null
 }
 
 const ALL_TYPES: CalendarEventType[] = [
@@ -112,7 +121,7 @@ export default function CalendarClient({
   messageChannels,
   timeOff = null,
   initialPreferences = null,
-  openAppointmentId = null,
+  linkedAppointment = null,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
   const tWorkOrders = useTranslations('workOrders.list')
@@ -213,6 +222,15 @@ export default function CalendarClient({
     // through months would otherwise re-run the whole page on the server.
     window.history.replaceState(window.history.state, '', `${pathname}?${params.toString()}`)
   }, [view, dateStr, pathname])
+
+  // A followed appointment link moves the calendar to its day.
+  const linkToken = linkedAppointment?.token
+  useEffect(() => {
+    if (!linkedAppointment) return
+    const day = parseDateKey(linkedAppointment.date)
+    setView(linkedAppointment.view)
+    if (day) setDate(day)
+  }, [linkToken])
 
   // ── Derived data ───────────────────────────────────────────────────────
   const counts = useMemo(() => {
@@ -564,11 +582,12 @@ export default function CalendarClient({
           )}
           <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
             {body}
-            {openAppointmentId && (
+            {linkedAppointment && (
               <LinkedAppointment
-                event={initialEvents.find(
-                  (e) => e.type === 'appointment' && e.id === openAppointmentId
-                )}
+                key={linkedAppointment.token}
+                event={linkedAppointment.event}
+                view={linkedAppointment.view}
+                date={linkedAppointment.date}
               />
             )}
           </div>
@@ -690,16 +709,47 @@ export default function CalendarClient({
  * Opens the card of the appointment a link asked for, once. The card is
  * anchored to a point near the top of the view rather than to the chip,
  * which knows nothing of links; closing it leaves the day on screen.
+ *
+ * It waits for any dialog to finish closing first: a link followed from the
+ * search palette arrives while the palette hands focus back, and a card
+ * opened then would close again at once. Then the link leaves the address,
+ * so a refresh does not open the card a second time.
  */
-function LinkedAppointment({ event }: { event: CalendarEvent | undefined }) {
+function LinkedAppointment({
+  event,
+  view,
+  date,
+}: {
+  event: CalendarEvent
+  view: string
+  date: string
+}) {
   const { openPeek } = useEventPeek()
   const anchor = useRef<HTMLSpanElement>(null)
   const opened = useRef(false)
   useEffect(() => {
-    if (opened.current || !event || !anchor.current) return
-    opened.current = true
-    openPeek(event, anchor.current)
-  }, [event, openPeek])
+    if (opened.current) return
+    const started = Date.now()
+    let frame = 0
+    const tryOpen = () => {
+      const dialogOpen = document.querySelector('[role="dialog"]') !== null
+      if (dialogOpen && Date.now() - started < 2000) {
+        frame = requestAnimationFrame(tryOpen)
+        return
+      }
+      if (opened.current || !anchor.current) return
+      opened.current = true
+      const params = new URLSearchParams({ view, date })
+      window.history.replaceState(
+        window.history.state,
+        '',
+        `${window.location.pathname}?${params.toString()}`
+      )
+      openPeek(event, anchor.current)
+    }
+    frame = requestAnimationFrame(tryOpen)
+    return () => cancelAnimationFrame(frame)
+  }, [event, view, date, openPeek])
   return (
     <span
       ref={anchor}
