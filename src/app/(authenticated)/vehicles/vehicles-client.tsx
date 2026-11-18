@@ -94,12 +94,6 @@ interface Vehicle {
   _count: { serviceRecords: number }
 }
 
-interface CustomerOption {
-  id: string
-  name: string
-  company: string | null
-}
-
 interface PaginatedData {
   vehicles: Vehicle[]
   total: number
@@ -130,7 +124,6 @@ const INSPECTION_TONE_CLASS: Record<ReturnType<typeof inspectionTone>, string> =
 
 export function VehiclesClient({
   data,
-  customers,
   search,
   sortBy = '',
   sortOrder = 'desc',
@@ -141,7 +134,6 @@ export function VehiclesClient({
   hasInspectionData = false,
 }: {
   data: PaginatedData
-  customers: CustomerOption[]
   search: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
@@ -266,14 +258,17 @@ export function VehiclesClient({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name }),
       confirmLabel: tc('delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
-    const result = await deleteVehicle(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteVehicle(id).catch(() => null)
+    if (result?.success) {
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || t('deleteError'))
+      modal.open('error', 'Error', result?.error || t('deleteError'))
     }
   }
 
@@ -390,6 +385,7 @@ export function VehiclesClient({
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('searchPlaceholder')}
+              aria-label={t('searchPlaceholder')}
               defaultValue={search}
               onChange={(e) => handleSearchChange(e.target.value)}
               className="h-9 pl-9"
@@ -988,7 +984,6 @@ export function VehiclesClient({
           }
         }}
         vehicle={editVehicle ?? undefined}
-        customers={customers}
         defaultCustomerId={createCustomerId}
       />
 

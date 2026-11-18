@@ -10,6 +10,8 @@ import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getTranslations } from 'next-intl/server'
 import { newSettingsEntries } from '@/features/settings/Lib/featureHints'
+import { SettingsSpotlight } from '@/features/settings/Components/SettingsSpotlight'
+import { Suspense } from 'react'
 
 export default async function SettingsLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -50,6 +52,10 @@ export default async function SettingsLayout({ children }: { children: React.Rea
 
   return (
     <SettingsPermissionProvider canEdit={canEditSettings}>
+      {/* Lands a deep link from search on its card or field. */}
+      <Suspense fallback={null}>
+        <SettingsSpotlight />
+      </Suspense>
       <div className="flex h-svh flex-col">
         <PageHeader />
         <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">

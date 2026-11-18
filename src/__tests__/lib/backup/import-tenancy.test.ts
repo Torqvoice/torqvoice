@@ -1,0 +1,412 @@
+/**
+ * @vitest-environment node
+ *
+ * The upload route with a crafted file: ids that are another workshop's
+ * rows refuse the whole file before anything is written, foreign keys that
+ * point outside the file never reach a write, a second restore is told the
+ * server is busy, and on the cloud an administrator is sent to the owner.
+ */
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+const state = vi.hoisted(() => ({
+  /** Rows of other workshops, by model: what the tenancy check finds. */
+  foreign: {} as Record<string, string[]>,
+  /** Rows this workshop already has, by model. */
+  own: {} as Record<string, string[]>,
+  /** People who are members of this workshop. */
+  members: [] as string[],
+  /** The portal chat this workshop holds before the restore. */
+  portalMessages: [] as Record<string, unknown>[],
+  calls: [] as { model: string; method: string; args: any }[],
+  cloud: false,
+  role: 'admin',
+}))
+
+vi.mock('@/lib/db', () => {
+  const tx = new Proxy(
+    {},
+    {
+      get: (_target, model: string) => {
+        // The row locks a restore takes before it reads the portal chat.
+        if (model === '$queryRaw') {
+          return async () => {
+            state.calls.push({ model: '$queryRaw', method: 'lock', args: undefined })
+            return [{ count: 0 }]
+          }
+        }
+        return new Proxy(
+          {},
+          {
+            get: (_t, method: string) => async (args: any) => {
+              state.calls.push({ model, method, args })
+              if (method === 'findMany' && model === 'organizationMember') {
+                const ids: string[] = args?.where?.userId?.in ?? []
+                return state.members.filter((id) => ids.includes(id)).map((userId) => ({ userId }))
+              }
+              if (method === 'findMany' && args?.where?.id?.in) {
+                const ids: string[] = args.where.id.in
+                const table = 'NOT' in args.where ? state.foreign : state.own
+                return (table[model] ?? []).filter((id) => ids.includes(id)).map((id) => ({ id }))
+              }
+              if (method === 'findMany' && model === 'portalMessage') return state.portalMessages
+              // Asked without ids: the customers in the workshop once the file's are in.
+              if (method === 'findMany' && model === 'customer') {
+                return (state.own.customer ?? []).map((id) => ({ id }))
+              }
+              if (method === 'findMany') return []
+              if (method === 'findFirst' || method === 'findUnique') return null
+              return { count: 0 }
+            },
+          }
+        )
+      },
+    }
+  )
+  return {
+    db: {
+      $transaction: async (fn: (t: unknown) => unknown) => fn(tx),
+      // The cloud check reads the membership itself, not the session's role.
+      organizationMember: { findFirst: async () => ({ role: state.role }) },
+    },
+  }
+})
+vi.mock('@/lib/rate-limit', () => ({ rateLimit: vi.fn(() => null) }))
+vi.mock('@/lib/get-auth-context', () => ({
+  getAuthContext: vi.fn(async () => ({
+    organizationId: 'org-a',
+    userId: 'user-1',
+    isAdmin: true,
+    role: state.role,
+  })),
+}))
+vi.mock('@/lib/features', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/features')>()),
+  isCloudMode: () => state.cloud,
+}))
+vi.mock('@/lib/files/manager', () => ({ releaseFilesNotRestored: vi.fn(async () => undefined) }))
+vi.mock('@/lib/upload-root', () => ({ uploadsRoot: () => '/tmp/uploads-test' }))
+
+import { NextRequest } from 'next/server'
+import { POST } from '@/app/api/protected/backup/import/route'
+import { acquireRestoreLock, releaseRestoreLock } from '@/lib/backup/tenancy'
+
+function importJson(data: Record<string, unknown>) {
+  return POST(
+    new NextRequest('http://app.test/api/protected/backup/import', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ version: 2, exportedAt: new Date().toISOString(), data }),
+    })
+  )
+}
+
+const WRITES = new Set(['create', 'createMany', 'deleteMany', 'updateMany', 'update', 'upsert'])
+const writes = () => state.calls.filter((c) => WRITES.has(c.method))
+
+/** A workshop's file with a customer, a vehicle with a job, a quote and an inspection. */
+function file() {
+  return {
+    customers: [{ id: 'cust-a', name: 'Kari', userId: 'u' }],
+    technicians: [{ id: 'tech-a', name: 'Ola' }],
+    inspectionTemplates: [{ id: 'tmpl-a', name: 'Default', sections: [] }],
+    vehicles: [
+      {
+        id: 'veh-a',
+        make: 'Volvo',
+        model: 'V70',
+        year: 2015,
+        customerId: 'cust-a',
+        serviceRecords: [
+          {
+            id: 'job-a',
+            title: 'Brakes',
+            technicianId: 'tech-a',
+            workBayId: 'bay-of-org-b',
+            partItems: [{ id: 'part-a', name: 'Pads', inventoryPartId: 'inv-of-org-b' }],
+          },
+        ],
+      },
+    ],
+    quotes: [{ id: 'quote-a', title: 'Tyres', vehicleId: 'veh-a', inspectionId: 'insp-of-org-b' }],
+    inspections: [{ id: 'insp-a', vehicleId: 'veh-a', templateId: 'tmpl-of-org-b', items: [] }],
+  }
+}
+
+beforeEach(() => {
+  state.foreign = {}
+  state.own = {}
+  state.members = []
+  state.portalMessages = []
+  state.calls = []
+  state.cloud = false
+  state.role = 'admin'
+})
+
+describe("a file that reuses another workshop's ids", () => {
+  it('is refused before anything is written, with a reason', async () => {
+    state.foreign = { vehicle: ['veh-a'] }
+    const response = await importJson(file())
+    expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({
+      error: 'The file holds 1 Vehicle id(s) that belong to another workshop',
+      code: 'foreign_ids',
+    })
+    expect(writes()).toEqual([])
+  })
+
+  it('is refused for a child row too', async () => {
+    state.foreign = { servicePart: ['part-a'] }
+    const response = await importJson(file())
+    expect(response.status).toBe(400)
+    expect((await response.json()).code).toBe('foreign_ids')
+    expect(writes()).toEqual([])
+    // Asked through the part's job, since a part has no organisation column.
+    const asked = state.calls.find(
+      (c) => c.model === 'servicePart' && c.method === 'findMany' && 'NOT' in c.args.where
+    )
+    expect(asked?.args.where.NOT).toEqual({ serviceRecord: { organizationId: 'org-a' } })
+  })
+})
+
+describe('a file whose foreign keys point at another workshop', () => {
+  it('never writes one of those ids', async () => {
+    const response = await importJson(file())
+    expect(response.status).toBe(200)
+    const written = JSON.stringify(writes())
+    expect(written).not.toContain('org-b')
+    // The job and the quote came through without the links; the inspection,
+    // whose template is required, did not come through at all.
+    expect(written).toContain('job-a')
+    expect(written).toContain('quote-a')
+    expect(written).not.toContain('insp-a')
+    expect(
+      state.calls.some(
+        (c) => c.model === 'inspection' && WRITES.has(c.method) && c.method !== 'deleteMany'
+      )
+    ).toBe(false)
+  })
+
+  it('keeps a link to a row this workshop already has', async () => {
+    state.own = { inventoryPart: ['inv-of-org-b'] }
+    await importJson(file())
+    const parts = state.calls.find((c) => c.model === 'servicePart' && c.method === 'createMany')
+    expect(parts?.args.data[0].inventoryPartId).toBe('inv-of-org-b')
+  })
+})
+
+describe('appointments and their alerts', () => {
+  /** The workshop file, with the calendar: an appointment and three alerts. */
+  function withCalendar() {
+    return {
+      ...file(),
+      appointments: [
+        {
+          id: 'appt-a',
+          title: 'Test drive',
+          startAt: '2026-11-20T09:00:00.000Z',
+          endAt: '2026-11-20T10:00:00.000Z',
+          customerId: 'cust-a',
+          vehicleId: 'veh-of-org-b',
+          createdById: 'user-member',
+        },
+      ],
+      appointmentNotifications: [
+        {
+          id: 'alert-appt',
+          channel: 'email',
+          amount: 1,
+          unit: 'days',
+          atTime: '16:00',
+          sentForStart: '2026-11-20T09:00:00.000Z',
+          appointmentId: 'appt-a',
+          userId: 'user-elsewhere',
+        },
+        {
+          id: 'alert-job',
+          channel: 'in_app',
+          amount: 30,
+          unit: 'minutes',
+          serviceRecordId: 'job-a',
+        },
+        {
+          id: 'alert-theirs',
+          channel: 'in_app',
+          amount: 2,
+          unit: 'hours',
+          serviceRecordId: 'job-of-org-b',
+        },
+      ],
+    }
+  }
+
+  it('clears the alerts first, and never writes a link to another workshop', async () => {
+    // What the restore finds in this workshop once the file's rows are in.
+    state.own = { customer: ['cust-a'], appointment: ['appt-a'], serviceRecord: ['job-a'] }
+    state.members = ['user-member']
+    const response = await importJson(withCalendar())
+    expect(response.status).toBe(200)
+
+    const cleared = writes()
+      .filter((c) => c.method === 'deleteMany')
+      .map((c) => c.model)
+    expect(cleared.indexOf('appointmentNotification')).toBeGreaterThanOrEqual(0)
+    expect(cleared.indexOf('appointmentNotification')).toBeLessThan(cleared.indexOf('appointment'))
+    expect(cleared.indexOf('appointment')).toBeLessThan(cleared.indexOf('vehicle'))
+    expect(cleared.indexOf('appointment')).toBeLessThan(cleared.indexOf('customer'))
+
+    // The vehicle was someone else's, so the appointment comes back without it;
+    // the person who booked it is a member here and stays.
+    const appointments = state.calls.find(
+      (c) => c.model === 'appointment' && c.method === 'createMany'
+    )
+    expect(appointments?.args.data).toEqual([
+      expect.objectContaining({
+        id: 'appt-a',
+        title: 'Test drive',
+        organizationId: 'org-a',
+        customerId: 'cust-a',
+        vehicleId: null,
+        createdById: 'user-member',
+        startAt: new Date('2026-11-20T09:00:00.000Z'),
+      }),
+    ])
+
+    // The alert on someone else's job points at nothing here and is left out;
+    // the one set by a person who is not a member goes to the importing user,
+    // and remembers which start it already went out for.
+    const alerts = state.calls.find(
+      (c) => c.model === 'appointmentNotification' && c.method === 'createMany'
+    )
+    expect(
+      alerts?.args.data.map((n: Record<string, unknown>) => [
+        n.id,
+        n.appointmentId,
+        n.serviceRecordId,
+        n.userId,
+        n.organizationId,
+      ])
+    ).toEqual([
+      ['alert-appt', 'appt-a', null, 'user-1', 'org-a'],
+      ['alert-job', null, 'job-a', 'user-1', 'org-a'],
+    ])
+    expect(alerts?.args.data[0].sentForStart).toEqual(new Date('2026-11-20T09:00:00.000Z'))
+    expect(JSON.stringify(writes())).not.toContain('org-b')
+  })
+
+  it('leaves out an alert whose appointment did not come back', async () => {
+    // An appointment with no readable time is not restored, so after the
+    // write the workshop has the job but not the appointment.
+    state.own = { customer: ['cust-a'], serviceRecord: ['job-a'] }
+    const data = withCalendar()
+    data.appointments[0].startAt = 'not a date'
+    const response = await importJson(data)
+    expect(response.status).toBe(200)
+
+    expect(state.calls.some((c) => c.model === 'appointment' && c.method === 'createMany')).toBe(
+      false
+    )
+    const alerts = state.calls.find(
+      (c) => c.model === 'appointmentNotification' && c.method === 'createMany'
+    )
+    expect(alerts?.args.data.map((n: Record<string, unknown>) => n.id)).toEqual(['alert-job'])
+  })
+})
+
+describe('one restore at a time', () => {
+  it('tells a second restore the server is busy', async () => {
+    expect(acquireRestoreLock('another-restore')).toBe(true)
+    try {
+      const response = await importJson(file())
+      expect(response.status).toBe(409)
+      expect((await response.json()).code).toBe('busy')
+      expect(state.calls).toEqual([])
+    } finally {
+      releaseRestoreLock('another-restore')
+    }
+  })
+})
+
+describe('on the cloud', () => {
+  it('sends an administrator to the owner, and lets the owner through', async () => {
+    state.cloud = true
+    // The session says super_admin for a platform administrator; the
+    // membership is what decides.
+    state.role = 'admin'
+    const refused = await importJson(file())
+    expect(refused.status).toBe(403)
+    expect((await refused.json()).code).toBe('owner_only')
+    expect(state.calls).toEqual([])
+
+    state.role = 'owner'
+    const allowed = await importJson(file())
+    expect(allowed.status).toBe(200)
+  })
+})
+
+describe('the portal chat when the file replaces customers without carrying it', () => {
+  const message = (id: string, extra: Record<string, unknown> = {}) => ({
+    id,
+    direction: 'outbound',
+    body: 'Your car is ready',
+    attachments: [],
+    readAt: null,
+    createdAt: new Date('2026-11-14T10:00:00Z'),
+    organizationId: 'org-a',
+    customerId: 'cust-a',
+    authorUserId: null,
+    ...extra,
+  })
+
+  it('puts the conversations back under the recreated customers', async () => {
+    state.own = { customer: ['cust-a'] }
+    state.members = ['staff-1']
+    state.portalMessages = [
+      message('msg-1', { authorUserId: 'staff-1' }),
+      message('msg-2', { authorUserId: 'someone-from-another-workshop' }),
+      message('msg-3', { customerId: 'cust-not-in-the-file' }),
+    ]
+
+    const response = await importJson({ customers: [{ id: 'cust-a', name: 'Kari', userId: 'u' }] })
+    expect(response.status).toBe(200)
+
+    const restored = state.calls.find(
+      (c) => c.model === 'portalMessage' && c.method === 'createMany'
+    )
+    expect(restored?.args.data).toEqual([
+      expect.objectContaining({ id: 'msg-1', customerId: 'cust-a', authorUserId: 'staff-1' }),
+      expect.objectContaining({ id: 'msg-2', customerId: 'cust-a', authorUserId: null }),
+    ])
+  })
+
+  it('locks the rows before reading them, and reads them before the customers go', async () => {
+    state.own = { customer: ['cust-a'] }
+    state.portalMessages = [message('msg-1')]
+
+    await importJson({ customers: [{ id: 'cust-a', name: 'Kari', userId: 'u' }] })
+
+    const at = (model: string, method: string) =>
+      state.calls.findIndex((c) => c.model === model && c.method === method)
+    const read = state.calls.findIndex(
+      (c) => c.model === 'portalMessage' && c.method === 'findMany' && !c.args?.where?.id
+    )
+    expect(at('$queryRaw', 'lock')).toBeGreaterThanOrEqual(0)
+    expect(at('$queryRaw', 'lock')).toBeLessThan(read)
+    expect(read).toBeLessThan(at('customer', 'deleteMany'))
+  })
+
+  it('takes no locks and keeps nothing aside when the file carries the chat itself', async () => {
+    state.own = { customer: ['cust-a'] }
+    state.portalMessages = [message('msg-old')]
+
+    await importJson({
+      customers: [{ id: 'cust-a', name: 'Kari', userId: 'u' }],
+      portalMessages: [message('msg-from-file', { createdAt: '2026-11-10T10:00:00.000Z' })],
+    })
+
+    expect(state.calls.some((c) => c.model === '$queryRaw')).toBe(false)
+    const restored = state.calls.find(
+      (c) => c.model === 'portalMessage' && c.method === 'createMany'
+    )
+    expect(restored?.args.data.map((r: { id: string }) => r.id)).toEqual(['msg-from-file'])
+  })
+})

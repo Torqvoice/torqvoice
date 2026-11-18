@@ -3,7 +3,6 @@ import {
   getCustomer,
   getCustomerInvoices,
   getCustomerQuotes,
-  getCustomersList,
 } from '@/features/customers/Actions/customerActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -15,19 +14,23 @@ import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { channelEnabled } from '@/features/integrations/Lib/messaging'
 import { CustomerDetailClient } from './customer-detail-client'
+import { splitRequestText } from '@/features/portal/Lib/requestText'
 import { PageHeader } from '@/components/page-header'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('customerDetails')
+}
 
 export default async function CustomerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const [result, settingsResult, layoutData, customersResult, invoicesResult, quotesResult] =
-    await Promise.all([
-      getCustomer(id),
-      getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
-      getLayoutData(),
-      getCustomersList(),
-      getCustomerInvoices(id),
-      getCustomerQuotes(id),
-    ])
+  const [result, settingsResult, layoutData, invoicesResult, quotesResult] = await Promise.all([
+    getCustomer(id),
+    getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
+    getLayoutData(),
+    getCustomerInvoices(id),
+    getCustomerQuotes(id),
+  ])
 
   if (!result.success || !result.data) {
     const t = await getTranslations('customers.detail')
@@ -57,6 +60,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
     toNumber: string
   }[] = []
   let smsNextCursor: string | null = null
+  let platformSmsPerDay: number | null = null
   let telegramMessages: {
     id: string
     direction: string
@@ -89,6 +93,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       if (convResult.success && convResult.data) {
         smsMessages = convResult.data.messages
         smsNextCursor = convResult.data.nextCursor
+        platformSmsPerDay = convResult.data.platformSmsPerDay
       }
     }
 
@@ -107,8 +112,14 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
       <PageHeader />
       <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
         <CustomerDetailClient
-          customer={result.data}
-          customers={customersResult.success && customersResult.data ? customersResult.data : []}
+          customer={{
+            ...result.data,
+            // Taken apart here: the client card cannot know every language's quick choices.
+            serviceRequests: result.data.serviceRequests?.map((request) => ({
+              ...request,
+              words: splitRequestText(request.description),
+            })),
+          }}
           unitSystem={
             ((settingsResult.success && settingsResult.data?.[SETTING_KEYS.UNIT_SYSTEM]) ||
               'imperial') as 'metric' | 'imperial'
@@ -116,6 +127,7 @@ export default async function CustomerDetailPage({ params }: { params: Promise<{
           smsEnabled={smsEnabled}
           smsMessages={smsMessages}
           smsNextCursor={smsNextCursor}
+          platformSmsPerDay={platformSmsPerDay}
           telegramEnabled={telegramEnabled}
           whatsappEnabled={whatsappEnabled}
           telegramBotUsername={telegramBotUsername}

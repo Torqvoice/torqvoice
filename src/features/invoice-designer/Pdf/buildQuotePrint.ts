@@ -1,10 +1,11 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
-import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
+import { documentNumbers } from '@/lib/document-numbers'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
+import { printFigures } from './printFigures'
 import { LABOR_GROUP, lineGroupsFor, partGroupKey } from './lineGroups'
 import {
   getDefaultInvoiceLayout,
@@ -59,7 +60,8 @@ export interface QuotePrintData {
   discountValue: number
   discountAmount: number
   totalAmount: number
-  notes: string | null
+  /** The workshop's own note. Never printed: the sheet's note is `description`. */
+  notes?: string | null
   /** The warranty the customer is offered; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
   warrantyMonths?: number | null
@@ -75,6 +77,8 @@ export interface QuotePrintData {
     unitPrice: number
     total: number
     excluded?: boolean
+    /** False when the quote's tax is not charged on the line. */
+    taxable?: boolean | null
   }[]
   laborItems: {
     description: string
@@ -83,6 +87,8 @@ export interface QuotePrintData {
     total: number
     pricingType?: string
     excluded?: boolean
+    /** False when the quote's tax is not charged on the line. */
+    taxable?: boolean | null
   }[]
   customer: {
     name: string
@@ -122,6 +128,8 @@ export interface QuotePrintInput {
   otherAttachmentNames?: string[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
+  /** The document's language, the one its labels are in; numbers are written its way. */
+  locale?: string
   layoutConfig?: InvoiceLayoutConfig
   /** Print each line with tax included, and say how much of the subtotal is tax. */
   lineItemsInclTax?: boolean
@@ -143,6 +151,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   // The fee under the work, and a fee of nothing left out.
   const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
+  const nums = documentNumbers(input.locale)
   const L = (key: string, fallback: string) => labels[key] || fallback
 
   const saved = input.layoutConfig
@@ -180,12 +189,18 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
-  const net = (value: number) => netLineTotal(value, taxRate, taxInclusive)
   // The same choice the invoice offers: lines with tax in them, the subtotal
-  // following, and the tax row saying how much of it is tax.
+  // following, and the tax row saying how much of it is tax. Either way a
+  // line left out of the tax prints as entered; see printFigures.
   const linesInclTax = input.lineItemsInclTax === true && taxRate > 0
-  const gross = (value: number) => (taxInclusive ? value : value * (1 + taxRate / 100))
-  const shown = linesInclTax ? gross : net
+  const figures = printFigures({
+    taxRate,
+    taxInclusive,
+    linesInclTax,
+    parts: data.partItems,
+    labor: data.laborItems,
+  })
+  const shown = figures.shown
 
   const df = input.dateFormat || DEFAULT_DATE_FORMAT
   const tz = input.timezone || undefined
@@ -247,22 +262,22 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   const items: DocumentData['items'] = [
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
-      qty: String(l.hours),
+      qty: nums.count(l.hours),
       unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
-      price: money(shown(l.rate)),
-      total: money(shown(l.total)),
+      price: money(shown(l.rate, l.taxable !== false)),
+      total: money(shown(l.total, l.taxable !== false)),
       excluded: l.excluded,
       group: LABOR_GROUP,
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
-      qty: formatQuantity(p.quantity, p.unit),
+      qty: nums.quantity(p.quantity, p.unit),
       unit: p.unit || '',
       desc: p.name,
       sub: p.partNumber || undefined,
-      price: money(shown(p.unitPrice)),
-      total: money(shown(p.total)),
+      price: money(shown(p.unitPrice, p.taxable !== false)),
+      total: money(shown(p.total, p.taxable !== false)),
       excluded: p.excluded,
       group: partGroupKey(p.category),
     })),
@@ -271,9 +286,9 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
   const parts: DocumentData['parts'] = data.partItems.map((p) => ({
     ref: p.partNumber || '-',
     desc: p.name,
-    qty: formatQuantity(p.quantity, p.unit),
-    price: money(shown(p.unitPrice)),
-    total: money(shown(p.total)),
+    qty: nums.quantity(p.quantity, p.unit),
+    price: money(shown(p.unitPrice, p.taxable !== false)),
+    total: money(shown(p.total, p.taxable !== false)),
     excluded: p.excluded,
     group: partGroupKey(p.category),
   }))
@@ -291,47 +306,50 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
-      qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
+      qty: isService
+        ? `${nums.count(l.hours)} ${L('unit', 'unit')}`
+        : `${nums.count(l.hours)} ${L('hrs', 'hrs')}`,
       rate: isService
-        ? money(shown(l.rate))
+        ? money(shown(l.rate, l.taxable !== false))
         : labels.ratePerHour
-          ? fillTemplate(labels.ratePerHour, { rate: money(shown(l.rate)) })
-          : `${money(shown(l.rate))}/hr`,
-      total: money(shown(l.total)),
+          ? fillTemplate(labels.ratePerHour, { rate: money(shown(l.rate, l.taxable !== false)) })
+          : `${money(shown(l.rate, l.taxable !== false))}/hr`,
+      total: money(shown(l.total, l.taxable !== false)),
       excluded: l.excluded,
     }
   })
 
   // Totals from the lines the customer kept; excluded ones do not count.
-  const laborTotal = data.laborItems.reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0)
-  const partsTotal = data.partItems.reduce((sum, p) => (p.excluded ? sum : sum + p.total), 0)
-  const subtotal = laborTotal + partsTotal
+  const subtotal = figures.laborTotal + figures.partsTotal
   const discount = discountAmountFor(subtotal, data.discountType, data.discountValue)
   const { taxAmount, totalAmount } = calculateTotals({
     subtotal,
     discountAmount: discount,
     taxRate,
     taxInclusive,
+    taxableSubtotal: figures.taxableSubtotal,
   })
 
   const itemsTableVisible = layout.sections.some((s) => s.id === 'items_table' && s.visible)
   const totals: TotalLine[] = []
   if (!itemsTableVisible && data.laborItems.length > 0) {
-    totals.push({ label: L('labor', 'Labor'), value: money(shown(laborTotal)), kind: 'line' })
+    totals.push({ label: L('labor', 'Labor'), value: money(figures.laborShown), kind: 'line' })
   }
   if (!itemsTableVisible && data.partItems.length > 0) {
-    totals.push({ label: L('parts', 'Parts'), value: money(shown(partsTotal)), kind: 'line' })
+    totals.push({ label: L('parts', 'Parts'), value: money(figures.partsShown), kind: 'line' })
   }
-  if (shown(subtotal) > 0) {
+  const displaySubtotal = figures.subtotalShown(subtotal)
+  const displayDiscount = figures.discountShown(discount, subtotal)
+  if (displaySubtotal > 0) {
     totals.push({
       label: linesInclTax
         ? L('subtotalInclTax', 'Subtotal (incl. tax)')
         : L('subtotal', 'Subtotal'),
-      value: money(shown(subtotal)),
+      value: money(displaySubtotal),
       kind: 'line',
     })
   }
-  if (shown(discount) > 0) {
+  if (displayDiscount > 0) {
     totals.push({
       label:
         data.discountType === 'percentage'
@@ -339,7 +357,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
             ? fillTemplate(labels.discountPercent, { percent: String(data.discountValue) })
             : `Discount (${data.discountValue}%)`
           : L('discount', 'Discount'),
-      value: money(-shown(discount)),
+      value: money(-displayDiscount),
       kind: 'discount',
     })
   }
@@ -351,6 +369,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
       linesInclTax,
       labels,
       money,
+      taxableAmount: figures.taxableAmount(subtotal, discount),
     })
   )
   totals.push({ label: L('total', 'Total'), value: money(totalAmount), kind: 'total' })
@@ -385,7 +404,11 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     totals,
     notes: { html: data.description ?? undefined },
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
-    warranty: warrantyForPrint(data, { labels, unitSystem: input.unitSystem }),
+    warranty: warrantyForPrint(data, {
+      labels,
+      locale: input.locale,
+      unitSystem: input.unitSystem,
+    }),
     payment: [],
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     // What the inspection found, through the certificate's own blocks.

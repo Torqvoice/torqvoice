@@ -58,7 +58,12 @@
       "everyone": "All work",
       "thisWeek": "This week"
     },
-    "dropNeedsLane": "Group the board by technician or work bay before dropping a job onto it."
+    "dropNeedsLane": "Group the board by technician or work bay before dropping a job onto it.",
+    "load": {
+      "over": "{amount} over",
+      "spoken": "{booked} booked of {capacity}",
+      "spokenOver": "{booked} booked of {capacity}, {amount} over"
+    }
   },
   "unassigned": {
     "title": "Unassigned Jobs ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Managed on the Team page, along with their app access.",
     "skills": "Skills",
     "skillsPlaceholder": "Diagnostics, EV certified",
-    "skillsHint": "Shown under the name where work is handed out. Optional."
+    "skillsHint": "Shown under the name where work is handed out. Optional.",
+    "saveFailed": "Couldn't save the technician. Try again.",
+    "deleteFailed": "Couldn't delete the technician. Try again."
   },
   "jobDetail": {
     "viewDetails": "View Details",
@@ -90,7 +97,9 @@
     "endTime": "End Time",
     "failedDuration": "Failed to update duration",
     "failedTimes": "Failed to update times",
-    "endBeforeStart": "End time must be after start time"
+    "endBeforeStart": "End time must be after start time",
+    "alsoOnJob": "Also on this job",
+    "failedHelper": "Failed to update who is on the job"
   },
   "presenter": {
     "title": "Work Board",
@@ -160,6 +169,9 @@
     "none": "Nobody yet",
     "promised": "Promised",
     "promiseLate": "Late",
-    "promiseOverdue": "Promised to the customer before now"
+    "promiseOverdue": "Promised to the customer before now",
+    "alsoOnJob": "Also on the job",
+    "with": "With {name}",
+    "helping": "Helping"
   }
 }

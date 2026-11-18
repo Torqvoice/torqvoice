@@ -187,19 +187,13 @@ describe('withIssuedDataFileUrls', () => {
   })
 
   it('is what the import route restores issued data through', () => {
-    const route = fs.readFileSync(
-      path.join(process.cwd(), 'src/app/api/protected/backup/import/route.ts'),
-      'utf8'
-    )
+    const route = fs.readFileSync(path.join(process.cwd(), 'src/lib/backup/import.ts'), 'utf8')
     expect(route).toMatch(/issuedData:[\s\S]{0,200}?withIssuedDataFileUrls\(sr\.issuedData/)
   })
 })
 
 describe('the import route rewrites every restored file column', () => {
-  const source = fs.readFileSync(
-    path.join(process.cwd(), 'src/app/api/protected/backup/import/route.ts'),
-    'utf-8'
-  )
+  const source = fs.readFileSync(path.join(process.cwd(), 'src/lib/backup/import.ts'), 'utf-8')
 
   /** Where each column is restored, and what proves it is rewritten there. */
   const RESTORED: Record<string, RegExp> = {
@@ -215,6 +209,9 @@ describe('the import route rewrites every restored file column', () => {
     'ConditionMark.imageUrls': /imageUrls: \(\(mark\.imageUrls[\s\S]{0,200}?rewriteFileUrl/,
     'StatusReport.videoUrl': /statusReport[\s\S]{0,400}?fields: \['videoUrl'\]/,
     'WhatsappMessage.mediaUrl': /whatsappMessage[\s\S]{0,400}?fields: \['mediaUrl'\]/,
+    'EmailAttachment.url': /emailAttachment[\s\S]{0,400}?fields: \['url'\]/,
+    'PortalMessage.attachments': /portalMessage[\s\S]{0,400}?fields: \['attachments'\]/,
+    'ServiceRequest.attachments': /serviceRequest[\s\S]{0,400}?fields: \['attachments'\]/,
     'AppSetting.value': /const value = \(rewriteFileUrl\(s\.value/,
     'DocumentDesign.template': /template: rewriteFileUrlsWithin\(/,
     'EmailTemplate.theme': /theme: rewriteAssets\(/,

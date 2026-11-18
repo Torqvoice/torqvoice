@@ -2,7 +2,7 @@
  * Due-reminder notifications: per-reminder channel choice (bell / email),
  * notify-once semantics, and re-arming when a reminder is rescheduled.
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 vi.mock('@/lib/cached-session', () => ({
   getCachedSession: vi.fn(),
@@ -39,6 +39,7 @@ import { notify } from '@/lib/notify'
 import { sendOrgMail } from '@/lib/email'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { processDueReminders } from '@/lib/cron/reminder-alerts'
+import { freezeOrganization, unfreezeOrganization } from '@/lib/backup/freeze'
 import { createReminder, updateReminder } from '@/features/vehicles/Actions/reminderActions'
 
 const ORG_A = 'org-a'
@@ -68,7 +69,37 @@ beforeEach(() => {
   vi.mocked(db.reminder.updateMany).mockResolvedValue({ count: 1 } as never)
 })
 
+afterEach(() => {
+  unfreezeOrganization(ORG_A)
+})
+
 describe('processDueReminders', () => {
+  it("keeps a frozen workshop's reminders out of the batch, but not reminders without a workshop", async () => {
+    vi.mocked(db.reminder.findMany).mockResolvedValue([])
+    await processDueReminders(new Date('2026-08-13T12:00:00Z'))
+    expect(vi.mocked(db.reminder.findMany).mock.calls[0][0]?.where).not.toHaveProperty('AND')
+
+    freezeOrganization(ORG_A)
+    await processDueReminders(new Date('2026-08-13T12:00:00Z'))
+    expect(vi.mocked(db.reminder.findMany).mock.calls[1][0]?.where).toMatchObject({
+      isCompleted: false,
+      AND: [{ OR: [{ organizationId: null }, { organizationId: { notIn: [ORG_A] } }] }],
+    })
+  })
+
+  it('skips a reminder whose workshop froze after the query', async () => {
+    vi.mocked(db.reminder.findMany).mockImplementation((async () => {
+      freezeOrganization(ORG_A)
+      return [dueReminder()]
+    }) as never)
+
+    const count = await processDueReminders(new Date('2026-08-13T12:00:00Z'))
+
+    expect(count).toBe(0)
+    expect(vi.mocked(notify)).not.toHaveBeenCalled()
+    expect(vi.mocked(db.reminder.updateMany)).not.toHaveBeenCalled()
+  })
+
   it('only picks up uncompleted, unnotified reminders with a channel enabled', async () => {
     vi.mocked(db.reminder.findMany).mockResolvedValue([])
     await processDueReminders(new Date('2026-08-13T12:00:00Z'))

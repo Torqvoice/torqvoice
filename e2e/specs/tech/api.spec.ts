@@ -286,9 +286,15 @@ test.describe('the technician app', () => {
     expect(entries.status()).toBe(200)
     expect(JSON.stringify(await entries.json())).toContain(jobId)
 
-    // The job list now says the clock is on it, which is what draws the bar.
+    // The job list now says the clock is on it, which is what draws the bar,
+    // and the job it had not started yet is In Progress.
     const running = await phone(device).get('/api/v1/tech/jobs')
-    expect((await running.json()).data.openEntryJobId).toBe(jobId)
+    const runningData = (await running.json()).data
+    expect(runningData.openEntryJobId).toBe(jobId)
+    expect(
+      runningData.jobs.find((job: { id: string }) => job.id === jobId)?.status,
+      'starting work moved the job along'
+    ).toBe('in-progress')
 
     const stopped = await phone(device).post('/api/v1/tech/time/stop')
     expect(stopped.status()).toBe(200)

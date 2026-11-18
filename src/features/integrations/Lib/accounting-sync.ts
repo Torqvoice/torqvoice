@@ -9,9 +9,12 @@
  */
 
 import { db } from '@/lib/db'
+import { organizationTranslator } from '@/i18n/organization-translator'
 import type { Prisma } from '@/generated/prisma/client'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
+import { richTextToPlain } from '@/lib/rich-text-plain'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { SHOP_FEE_PRICING } from '@/features/settings/Lib/shopFee'
 import { serviceUrl } from './calendar-sync'
 
 export const INVOICE_ENTITY = 'ServiceRecord'
@@ -37,6 +40,10 @@ export interface AccountingLine {
   quantity: number
   unitPrice: number
   total: number
+  /** Whether the invoice's tax was charged on the line; a ledger books it under a code that says so. */
+  taxable: boolean
+  /** The workshop's shop fee, a labor line of its own that a ledger may book to its own account. */
+  shopFee?: boolean
 }
 
 export interface AccountingPayment {
@@ -53,6 +60,8 @@ export interface AccountingPayment {
 export interface AccountingInvoice {
   id: string
   vehicleId: string | null
+  /** The job's own title, which a ledger can carry as the invoice's reference. */
+  title?: string
   invoiceNumber: string | null
   status: string
   issuedAt: Date | null
@@ -62,8 +71,11 @@ export interface AccountingInvoice {
   serviceDate: Date
   dueDate: Date | null
   mileage: number | null
+  /** The notes to the customer as plain text, the editor's markup taken out. */
   notes: string | null
   subtotal: number
+  /** The sum of the taxable lines, or null when every line is taxed. */
+  taxableSubtotal: number | null
   discountType: string | null
   discountValue: number
   discountAmount: number
@@ -113,6 +125,7 @@ export async function loadInvoiceForAccounting(
     select: {
       id: true,
       vehicleId: true,
+      title: true,
       invoiceNumber: true,
       status: true,
       issuedAt: true,
@@ -124,6 +137,7 @@ export async function loadInvoiceForAccounting(
       mileage: true,
       invoiceNotes: true,
       subtotal: true,
+      taxableSubtotal: true,
       discountType: true,
       discountValue: true,
       discountAmount: true,
@@ -150,10 +164,18 @@ export async function loadInvoiceForAccounting(
           rate: true,
           total: true,
           pricingType: true,
+          taxable: true,
         },
       },
       partItems: {
-        select: { partNumber: true, name: true, quantity: true, unitPrice: true, total: true },
+        select: {
+          partNumber: true,
+          name: true,
+          quantity: true,
+          unitPrice: true,
+          total: true,
+          taxable: true,
+        },
       },
       payments: {
         select: {
@@ -181,6 +203,8 @@ export async function loadInvoiceForAccounting(
         quantity: hourly ? l.hours : 1,
         unitPrice: hourly ? l.rate : l.total,
         total: l.total,
+        taxable: l.taxable,
+        shopFee: l.pricingType === SHOP_FEE_PRICING,
       }
     }),
     ...r.partItems.map((p) => ({
@@ -190,11 +214,13 @@ export async function loadInvoiceForAccounting(
       quantity: p.quantity > 0 ? p.quantity : 1,
       unitPrice: p.quantity > 0 ? p.unitPrice : p.total,
       total: p.total,
+      taxable: p.taxable,
     })),
   ]
   return {
     id: r.id,
     vehicleId: r.vehicleId,
+    title: r.title,
     invoiceNumber: r.invoiceNumber,
     status: r.status,
     issuedAt: issuedAtOf(r),
@@ -202,8 +228,9 @@ export async function loadInvoiceForAccounting(
     serviceDate: r.serviceDate,
     dueDate: r.invoiceDueDate,
     mileage: r.mileage,
-    notes: r.invoiceNotes,
+    notes: richTextToPlain(r.invoiceNotes) || null,
     subtotal: r.subtotal,
+    taxableSubtotal: r.taxableSubtotal,
     discountType: r.discountType,
     discountValue: r.discountValue,
     discountAmount: r.discountAmount,
@@ -276,6 +303,29 @@ export async function workshopCurrency(organizationId: string): Promise<string |
   })
   const code = row?.value?.trim().toUpperCase()
   return code && /^[A-Z]{3}$/.test(code) ? code : null
+}
+
+/**
+ * The word in front of the vehicle on a ledger's invoice, in the language
+ * the workshop's documents print in: "Vehicle", or "Vessel" for a workshop
+ * that fixes boats. The same words the invoice PDF uses.
+ */
+export async function workshopVehicleLabel(organizationId: string): Promise<string> {
+  const row = await db.appSetting.findFirst({
+    where: { organizationId, key: SETTING_KEYS.SERVICE_TYPE },
+    select: { value: true },
+  })
+  const t = await organizationTranslator(organizationId, 'pdf')
+  return t(row?.value === 'marine' ? 'invoice.vehicleMarine' : 'invoice.vehicle')
+}
+
+/** How the workshop writes mileage: km when it chose metric, miles otherwise (the default). */
+export async function workshopDistanceUnit(organizationId: string): Promise<'km' | 'mi'> {
+  const row = await db.appSetting.findUnique({
+    where: { organizationId_key: { organizationId, key: SETTING_KEYS.UNIT_SYSTEM } },
+    select: { value: true },
+  })
+  return row?.value === 'metric' ? 'km' : 'mi'
 }
 
 export interface PulledPaymentInput {

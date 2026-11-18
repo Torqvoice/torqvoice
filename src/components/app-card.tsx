@@ -28,7 +28,10 @@ export function AppCard({
   children,
   className,
   contentClassName,
+  id,
 }: {
+  /** Anchor for deep links from search; the card scrolls into view and lights up. */
+  id?: string
   icon?: ComponentType<{ className?: string }>
   title: ReactNode
   /** Small count pill after the title. Pass `list.length || undefined` to hide zeros. */
@@ -48,9 +51,10 @@ export function AppCard({
 }) {
   return (
     <div
+      id={id}
       data-slot="card"
       className={cn(
-        'group/card relative flex flex-col overflow-hidden rounded-lg border border-card-edge bg-card text-card-foreground',
+        'group/card relative flex flex-col overflow-hidden rounded-lg border border-card-edge bg-card text-card-foreground scroll-mt-4',
         // Two shadows instead of one: a crisp 1px seat and a soft, low drop.
         // Reads as depth rather than the flat grey smudge of shadow-sm.
         'shadow-[0_1px_2px_rgb(0_0_0/0.05),0_12px_32px_-16px_rgb(0_0_0/0.18)]',

@@ -1,11 +1,16 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import * as React from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { signOut, useSession } from '@/lib/auth-client'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
+import { useShortcuts } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { goToShortcutForHref } from '@/features/shortcuts/Lib/registry'
+import { resetAnalytics } from '@/lib/analytics'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
@@ -60,6 +65,8 @@ import {
   LogOut,
   Monitor,
   Package,
+  Headset,
+  Keyboard,
   Palette,
   Plus,
   Receipt,
@@ -70,6 +77,7 @@ import {
   Users,
   UserRound,
   Sparkles,
+  ScanSearch,
 } from 'lucide-react'
 import { useLocale, useTranslations } from 'next-intl'
 import { switchOrganization } from '@/features/team/Actions/switchOrganization'
@@ -85,10 +93,13 @@ import {
   NotificationPanel,
 } from '@/features/notifications/Components/NotificationPanel'
 import { InstallMenuItem } from '@/components/pwa-install-prompt'
+import { WhatsNewMenuItem } from '@/features/whats-new/Components/WhatsNewMenuItem'
 import { FullscreenLauncher, FullscreenMenuItem } from '@/components/fullscreen-toggle'
 import { FeatureHint } from '@/components/feature-hint'
 import { ANNOUNCEMENTS } from '@/features/settings/Lib/featureHints'
 import { cn } from '@/lib/utils'
+import { openSupport } from '@/features/support/Lib/supportVisibility'
+import { useTouchScreen } from '@/features/support/Lib/useTouchScreen'
 import { handleGated } from '@/components/upgrade-gate'
 
 type OrgInfo = { id: string; name: string; role: string }
@@ -106,6 +117,17 @@ export type SidebarCounts = {
   workOrders: number
   inspections: number
   reminders: number
+}
+
+/** A collapsed sidebar's tooltip: the page, and the key that opens it. */
+function NavTooltip({ label, href }: { label: string; href: string }) {
+  const shortcut = goToShortcutForHref(href)
+  return (
+    <span className="flex items-center gap-2">
+      {label}
+      {shortcut && <ShortcutKeys id={shortcut.id} />}
+    </span>
+  )
 }
 
 type NavItem = {
@@ -131,11 +153,13 @@ export function AppSidebar({
   features,
   tireHotelEnabled = false,
   aiEnabled = false,
+  faultCodesEnabled = false,
   isAdminOrOwner = false,
   visibleSubjects,
   announcement = null,
   counts,
   isTechnician = false,
+  supportEnabled = false,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -146,6 +170,8 @@ export function AppSidebar({
   tireHotelEnabled?: boolean
   /** An AI vendor is connected and the plan includes AI, so the assistant page can answer. */
   aiEnabled?: boolean
+  /** The code service is connected, so the fault code page can answer. */
+  faultCodesEnabled?: boolean
   isAdminOrOwner?: boolean
   visibleSubjects?: string[]
   /** The one product announcement to show, worked out on the server. */
@@ -153,9 +179,12 @@ export function AppSidebar({
   counts?: SidebarCounts
   /** Linked to a technician row: the dashboard is their job list even without the figures. */
   isTechnician?: boolean
+  supportEnabled?: boolean
 }) {
   const pathname = usePathname()
+  const { openHelp: openShortcutsHelp } = useShortcuts()
   const router = useRouter()
+  const go = useGuardedPush()
   const { data: session } = useSession()
   const { theme, setTheme } = useTheme()
   const { setOpenMobile, isMobile } = useSidebar()
@@ -163,6 +192,8 @@ export function AppSidebar({
   const t = useTranslations('navigation')
   const tHint = useTranslations('featureHints')
   const tSettings = useTranslations('settings')
+  const tSupport = useTranslations('support')
+  const touchScreen = useTouchScreen()
   const [showCreateOrg, setShowCreateOrg] = React.useState(false)
   const [newOrgName, setNewOrgName] = React.useState('')
   const [creatingOrg, setCreatingOrg] = React.useState(false)
@@ -220,6 +251,17 @@ export function AppSidebar({
       count: counts?.inspections,
       countKey: 'sidebar.badges.inspections',
     },
+    // Only once the code service is connected: without it the page can only say so.
+    ...(faultCodesEnabled
+      ? [
+          {
+            titleKey: 'sidebar.faultCodes' as const,
+            url: '/fault-codes',
+            icon: ScanSearch,
+            subject: 'vehicles',
+          },
+        ]
+      : []),
     {
       titleKey: 'sidebar.calendar' as const,
       url: '/calendar',
@@ -314,7 +356,7 @@ export function AppSidebar({
         <SidebarMenuButton
           asChild
           isActive={pathname.startsWith('/settings')}
-          tooltip={t('sidebar.settings')}
+          tooltip={{ children: <NavTooltip label={t('sidebar.settings')} href="/settings" /> }}
           className={cn(highlighted && 'ring-2 ring-primary ring-offset-1 ring-offset-sidebar')}
         >
           <Link href="/settings" onClick={closeMobileSidebar}>
@@ -357,7 +399,7 @@ export function AppSidebar({
           <SidebarMenuButton
             asChild
             isActive={isActive}
-            tooltip={t(item.titleKey)}
+            tooltip={{ children: <NavTooltip label={t(item.titleKey)} href={item.url} /> }}
             // Marked while the card is up, so it is obvious which of a dozen
             // links the card is talking about.
             className={cn(
@@ -379,7 +421,7 @@ export function AppSidebar({
                   className="pointer-events-auto cursor-pointer"
                   onClick={() => {
                     closeMobileSidebar()
-                    router.push(item.url)
+                    go(item.url)
                   }}
                 >
                   {count > 99 ? '99+' : count}
@@ -444,6 +486,7 @@ export function AppSidebar({
 
   const handleSignOut = async () => {
     await signOut()
+    resetAnalytics()
     router.push('/auth/sign-in')
   }
 
@@ -664,6 +707,27 @@ export function AppSidebar({
                     </Link>
                   </DropdownMenuItem>
                 )}
+                {/* A phone or tablet has no floating support button, and the
+                    settings page that opens the form turns away a role
+                    without settings access. */}
+                {supportEnabled && touchScreen && (
+                  <DropdownMenuItem
+                    onSelect={() => {
+                      // On a phone the sidebar is a sheet over the page; the
+                      // form would open underneath it.
+                      if (isMobile) setOpenMobile(false)
+                      openSupport()
+                    }}
+                  >
+                    <Headset className="mr-2 size-4" />
+                    {tSupport('open')}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem onSelect={openShortcutsHelp}>
+                  <Keyboard className="mr-2 size-4" />
+                  {t('sidebar.keyboardShortcuts')}
+                  <ShortcutKeys id="general.help" className="ml-auto" />
+                </DropdownMenuItem>
                 <DropdownMenuSub>
                   <DropdownMenuSubTrigger>
                     <Palette className="mr-2 size-4" />
@@ -719,6 +783,7 @@ export function AppSidebar({
                 {/* Device conveniences, out of the navigation where they
                     used to pass for pages. Each renders nothing where it
                     does not apply. */}
+                <WhatsNewMenuItem />
                 <InstallMenuItem />
                 <FullscreenMenuItem />
                 <DropdownMenuSeparator />
@@ -735,7 +800,7 @@ export function AppSidebar({
       {isAdminOrOwner && <NotificationPanel />}
 
       <Dialog open={showCreateOrg} onOpenChange={setShowCreateOrg}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('sidebar.addNewCompany')}</DialogTitle>
           </DialogHeader>

@@ -10,6 +10,7 @@
 import { db } from '@/lib/db'
 import { getOrgFromAddress, sendOrgMail } from '@/lib/email'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { resolveWorkshopTimeZone } from '@/lib/timezone'
 import {
   buildServiceRequestEmailHtml,
   buildServiceRequestSubject,
@@ -43,6 +44,10 @@ export interface ServiceRequestAlertInput {
   vehicleLabel: string
   description: string
   preferredDate: Date | null
+  /** "morning" or "afternoon", when the customer said which suits. */
+  preferredTime?: string | null
+  /** How many photos and videos came with the request. */
+  attachmentCount?: number
 }
 
 /**
@@ -61,6 +66,9 @@ export async function sendServiceRequestAlert(input: ServiceRequestAlertInput): 
           in: [
             SETTING_KEYS.SERVICE_REQUEST_ALERTS_EMAIL,
             SETTING_KEYS.SERVICE_REQUEST_ALERTS_RECIPIENTS,
+            // The day the customer asked for is a day on the workshop's calendar.
+            SETTING_KEYS.TIMEZONE,
+            SETTING_KEYS.TIMEZONE_DETECTED,
           ],
         },
       },
@@ -122,7 +130,15 @@ export async function sendServiceRequestAlert(input: ServiceRequestAlertInput): 
       customerPhone: input.customerPhone,
       vehicleLabel: input.vehicleLabel,
       description: input.description,
-      preferredDate: formatPreferredDate(input.preferredDate),
+      preferredDate: formatPreferredDate(
+        input.preferredDate,
+        resolveWorkshopTimeZone(
+          settings.get(SETTING_KEYS.TIMEZONE),
+          settings.get(SETTING_KEYS.TIMEZONE_DETECTED)
+        )
+      ),
+      preferredTime: input.preferredTime ?? null,
+      attachmentCount: input.attachmentCount ?? 0,
       requestUrl: appUrl ? `${appUrl}/customers/${input.customerId}?tab=requests` : null,
     })
 

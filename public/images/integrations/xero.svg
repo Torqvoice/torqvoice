@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Xero">
+  <circle cx="32" cy="32" r="32" fill="#13B5EA"/>
+  <g fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" transform="translate(1.25 0)">
+    <!-- x: two strokes crossing -->
+    <path d="M9.5 26.5l8 11M17.5 26.5l-8 11"/>
+    <!-- e: a ring cut by its bar, open at the lower right -->
+    <path d="M20 32h11a5.5 5.5 0 1 0-1.6 3.9"/>
+    <!-- r: stem and shoulder -->
+    <path d="M34 37.5V31a4.5 4.5 0 0 1 4.5-4.5"/>
+    <!-- o -->
+    <circle cx="46.5" cy="32" r="5.5"/>
+  </g>
+</svg>

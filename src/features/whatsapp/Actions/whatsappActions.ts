@@ -5,6 +5,7 @@ import { withAuth } from '@/lib/with-auth'
 import { getFeatures, requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuard } from '@/lib/demo'
+import { normalizeOrgPhone } from '@/lib/sms'
 import { releaseFiles } from '@/lib/files/manager'
 import {
   getWhatsappConfig,
@@ -36,15 +37,20 @@ export async function getWhatsappWindowState(customerId: string) {
           configured: false,
           open: false,
           hasTemplate: false,
+          templateCarriesMessage: false,
           hasMediaTemplate: false,
           lastInboundAt: null,
         }
       }
 
+      // Inbound messages are stored under the number as WhatsApp reports it,
+      // so the customer's number is put in that shape before looking: one
+      // saved as a local number would otherwise never match its own replies.
+      const phone = (await normalizeOrgPhone(organizationId, customer.phone)) ?? customer.phone
       const [config, open, last] = await Promise.all([
         getWhatsappConfig(organizationId),
-        isWithinServiceWindow(organizationId, customer.phone),
-        lastInboundAt(organizationId, customer.phone),
+        isWithinServiceWindow(organizationId, phone),
+        lastInboundAt(organizationId, phone),
       ])
 
       // Whether a template exists decides what the compose box may promise: a
@@ -54,6 +60,9 @@ export async function getWhatsappWindowState(customerId: string) {
         configured: config !== null,
         open,
         hasTemplate: config?.template != null,
+        // Whether that template has room for words of the workshop's own,
+        // which is where a document's link travels.
+        templateCarriesMessage: config?.template?.tokens.includes('message') ?? false,
         hasMediaTemplate: config?.mediaTemplate != null,
         lastInboundAt: last,
       }

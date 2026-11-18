@@ -65,6 +65,7 @@ describe('regcheck mapper, Australia state by state', () => {
       licensePlate: 'BEW76P',
       transmission: 'manual',
       engineSize: '1.6 L',
+      engineCc: 1600,
       vehicleClass: 'Lx 5-Speed Manual',
     })
   })
@@ -88,6 +89,7 @@ describe('regcheck mapper, Australia state by state', () => {
       vin: 'WV1ZZZ2HZEA044303',
       fuelType: 'diesel',
       engineSize: '2.0 L',
+      engineCc: 1968,
       engineCode: 'CNEA|CSHA',
       vehicleClass: 'Ute',
     })
@@ -144,6 +146,7 @@ describe('regcheck mapper, other countries', () => {
       vin: '7AT0H64TX13059294',
       fuelType: 'gasoline',
       engineSize: '2.5 L',
+      engineCc: 2499,
       vehicleClass: 'SEDAN',
     })
   })
@@ -155,6 +158,7 @@ describe('regcheck mapper, other countries', () => {
       year: 2009,
       vin: 'KNADE223696445551',
       engineSize: '1.6 L',
+      engineCc: 1600,
       vehicleClass: 'Sedan 4D',
     })
   })
@@ -167,6 +171,7 @@ describe('regcheck mapper, other countries', () => {
       vin: 'WAUZZZ4BX4N093080',
       fuelType: 'diesel',
       engineSize: '1.9 L',
+      engineCc: 1896,
       vehicleClass: 'SALOON',
     })
   })
@@ -181,6 +186,7 @@ describe('regcheck mapper, other countries', () => {
       fuelType: 'gasoline',
       transmission: 'manual',
       engineSize: '1.8 L',
+      engineCc: 1798,
       vehicleClass: 'Halvkombi',
     })
   })
@@ -193,6 +199,7 @@ describe('regcheck mapper, other countries', () => {
       vin: 'ZFFKA36B000096243',
       fuelType: 'gasoline',
       engineSize: '3.4 L',
+      engineCc: 3405,
       firstRegistered: '1993-05-03',
       lastInspected: '2025-04-10',
       weights: { kerb: 1440, grossMax: 1680 },
@@ -208,6 +215,7 @@ describe('regcheck mapper, other countries', () => {
       fuelType: 'diesel',
       transmission: 'automatic',
       engineSize: '1.6 L',
+      engineCc: 1598,
       engineCode: 'CAYC',
       vehicleClass: 'Car',
       firstRegistered: '2010-09-21',
@@ -230,6 +238,7 @@ describe('regcheck mapper, other countries', () => {
       vin: 'TMBCK11U4Y2370804',
       color: 'Modrá',
       engineSize: '1.6 L',
+      engineCc: 1595,
     })
     expect(mapVehicle(fixture('HR'))).toEqual({
       make: 'BMW',
@@ -246,6 +255,7 @@ describe('regcheck mapper, other countries', () => {
       vin: 'TMBCS21Z262149586',
       fuelType: 'diesel',
       engineSize: '1.9 L',
+      engineCc: 1896,
       vehicleClass: 'sedan/limuzína',
       firstRegistered: '2005-10-04',
       weights: { kerb: undefined, grossMax: 1970 },
@@ -262,6 +272,7 @@ describe('regcheck mapper, other countries', () => {
       color: 'Hvit',
       fuelType: 'diesel',
       engineSize: '2.3 L',
+      engineCc: 2287,
       firstRegistered: '2014-08-19',
       inspectionDue: '2018-10-31',
       tyres: [
@@ -282,6 +293,7 @@ describe('regcheck mapper, other countries', () => {
       vin: 'VTTBK232100104138',
       fuelType: 'gasoline',
       engineSize: '0.5 L',
+      engineCc: 487,
       firstRegistered: '2006-11-23',
       weights: { kerb: 380, grossMax: 380 },
     })
@@ -299,6 +311,7 @@ describe('regcheck mapper, other countries', () => {
       color: 'Silver',
       fuelType: 'gasoline',
       engineSize: '1.4 L',
+      engineCc: 1360,
       vehicleClass: 'Motorbike',
     })
     expect(vehicleJsonOf(envelope('AU-NSW'))?.State).toBe('NSW')

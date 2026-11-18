@@ -145,6 +145,10 @@ export function CalendarDayCell({
                 align="start"
                 className="w-72 p-2"
                 onOpenAutoFocus={(e) => e.preventDefault()}
+                // The list is drawn elsewhere on the page but still inside
+                // the day as far as React goes: a double-click in it is not
+                // one on the day.
+                onDoubleClick={(e) => e.stopPropagation()}
               >
                 <div className="mb-1.5 flex items-baseline justify-between px-1">
                   <span className="text-sm font-semibold">

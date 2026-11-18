@@ -5,9 +5,15 @@ const vehicle = { findMany: vi.fn() }
 const vehicleInspectionStatus = { upsert: vi.fn(), count: vi.fn() }
 vi.mock('@/lib/db', () => ({ db: { vehicle, vehicleInspectionStatus } }))
 
-const { BATCH_SIZE, recordRegistryAnswer, refreshInspections, vehiclesDueForCheck } = await import(
-  '@/features/integrations/Lib/inspection-sync'
-)
+const {
+  BATCH_SIZE,
+  DEFAULT_SYNC_OPTIONS,
+  RegistryQuotaError,
+  inspectionSyncOptions,
+  recordRegistryAnswer,
+  refreshInspections,
+  vehiclesDueForCheck,
+} = await import('@/features/integrations/Lib/inspection-sync')
 
 function context(settings: Record<string, unknown>, state: Record<string, unknown> = {}) {
   const log = vi.fn(
@@ -52,13 +58,74 @@ describe('inspection refresh job', () => {
   })
 
   it('asks only for this organisation’s live vehicles with a plate', async () => {
-    await vehiclesDueForCheck('org-a', new Date('2026-09-03T08:00:00Z'))
+    const now = new Date('2026-09-03T08:00:00Z')
+    await vehiclesDueForCheck('org-a', now)
     const where = vehicle.findMany.mock.calls[0][0].where
     expect(where.organizationId).toBe('org-a')
     expect(where.isArchived).toBe(false)
     expect(where.licensePlate).toEqual({ not: null })
-    // Never checked, or checked long enough ago.
-    expect(where.OR).toHaveLength(4)
+    expect(where).not.toHaveProperty('customerId')
+    // Never checked, no date yet, monthly, weekly near the deadline, and failed a month ago.
+    expect(where.OR).toHaveLength(6)
+    expect(where.OR[5]).toEqual({
+      inspectionStatus: {
+        lastError: { not: null },
+        checkedAt: { lt: new Date('2026-08-04T08:00:00Z') },
+      },
+    })
+    expect(where.OR[3]).toEqual({
+      inspectionStatus: { checkedAt: { lt: new Date('2026-08-04T08:00:00Z') } },
+    })
+    expect(where.OR[4]).toEqual({
+      inspectionStatus: {
+        dueAt: { lt: new Date('2026-11-02T08:00:00Z') },
+        checkedAt: { lt: new Date('2026-08-27T08:00:00Z') },
+      },
+    })
+  })
+
+  it('rechecks a dated vehicle only near its deadline when the workshop chose that', async () => {
+    const now = new Date('2026-09-03T08:00:00Z')
+    await vehiclesDueForCheck('org-a', now, {
+      recheckDays: null,
+      soonDays: 30,
+      onlyWithCustomer: true,
+    })
+    const where = vehicle.findMany.mock.calls[0][0].where
+    expect(where.customerId).toEqual({ not: null })
+    // No cadence rule: never checked, no date yet, near the deadline, and failed a month ago.
+    expect(where.OR).toHaveLength(5)
+    expect(where.OR[3].inspectionStatus.dueAt).toEqual({
+      lt: new Date('2026-10-03T08:00:00Z'),
+    })
+    expect(where.OR[4].inspectionStatus.lastError).toEqual({ not: null })
+  })
+
+  it('reads the cadence off the connection settings, falling back to the defaults', () => {
+    expect(inspectionSyncOptions({})).toEqual(DEFAULT_SYNC_OPTIONS)
+    expect(inspectionSyncOptions({ inspectionRecheck: '90', inspectionSoonDays: '90' })).toEqual({
+      recheckDays: 90,
+      soonDays: 90,
+      onlyWithCustomer: false,
+    })
+    expect(
+      inspectionSyncOptions({
+        inspectionRecheck: 'deadline',
+        inspectionSoonDays: '7',
+        inspectionOnlyWithCustomer: true,
+      })
+    ).toEqual({ recheckDays: null, soonDays: 60, onlyWithCustomer: true })
+  })
+
+  it('passes the connection’s cadence to the query', async () => {
+    const { ctx } = context({ syncInspections: true, inspectionRecheck: '90' })
+    await refreshInspections(ctx, vi.fn())
+    const where = vehicle.findMany.mock.calls[0][0].where
+    expect(where.OR[3]).toEqual({
+      inspectionStatus: { checkedAt: { lt: expect.any(Date) } },
+    })
+    const cutoff = where.OR[3].inspectionStatus.checkedAt.lt as Date
+    expect(Date.now() - cutoff.getTime()).toBeGreaterThan(89 * 86_400_000)
   })
 
   it('looks each vehicle up and records the answer against the same organisation', async () => {
@@ -111,6 +178,22 @@ describe('inspection refresh job', () => {
     const { ctx } = context({ syncInspections: true })
     await expect(refreshInspections(ctx, lookup)).rejects.toThrow(/rejected/)
     expect(lookup).toHaveBeenCalledTimes(1)
+  })
+
+  it('stops the pass when the registry allowance is spent, leaving the rest unchecked', async () => {
+    vehicle.findMany.mockResolvedValueOnce([
+      { id: 'v1', licensePlate: 'EA65AMX' },
+      { id: 'v2', licensePlate: 'MA19ZXC' },
+    ])
+    const lookup = vi
+      .fn()
+      .mockRejectedValue(
+        new RegistryQuotaError('Check Car Details: the daily lookup limit is reached')
+      )
+    const { ctx } = context({ syncInspections: true })
+    await expect(refreshInspections(ctx, lookup)).rejects.toThrow(RegistryQuotaError)
+    expect(lookup).toHaveBeenCalledTimes(1)
+    expect(vehicleInspectionStatus.upsert).not.toHaveBeenCalled()
   })
 
   it('notes a one-off failure and moves on', async () => {

@@ -154,16 +154,18 @@ export function AdminUsers({
     if (!confirmed) return
 
     startTransition(async () => {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       const result = await toggleSuperAdmin({
         userId: user.id,
         isSuperAdmin: !user.isSuperAdmin,
-      })
+      }).catch(() => null)
 
-      if (result.success) {
+      if (result?.success) {
         toast.success(action === 'promote' ? t('users.promotedSuccess') : t('users.demotedSuccess'))
         router.refresh()
       } else {
-        toast.error(result.error ?? t('users.failedUpdate'))
+        toast.error(result?.error ?? t('users.failedUpdate'))
       }
     })
   }
@@ -173,18 +175,19 @@ export function AdminUsers({
       title: t('users.deleteTitle'),
       description: t('users.deleteConfirm', { name: user.name, email: user.email }),
       confirmLabel: t('users.delete'),
+      icon: Trash2,
       destructive: true,
     })
 
     if (!confirmed) return
 
     startTransition(async () => {
-      const result = await deleteUser({ userId: user.id })
-      if (result.success) {
+      const result = await deleteUser({ userId: user.id }).catch(() => null)
+      if (result?.success) {
         toast.success(t('users.deletedSuccess'))
         router.refresh()
       } else {
-        toast.error(result.error ?? t('users.failedDelete'))
+        toast.error(result?.error ?? t('users.failedDelete'))
       }
     })
   }
@@ -196,6 +199,7 @@ export function AdminUsers({
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('users.searchPlaceholder')}
+            aria-label={t('users.searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-9"

@@ -28,6 +28,12 @@ export interface TaxSetup {
    * switch is turned off and the workshop is back to one rate.
    */
   components?: TaxComponentSetup[]
+  /**
+   * Tax on only some kinds of charge (parts and not labor). Given, "Tax only
+   * some charges" is turned on with these three answers; left out, it is
+   * turned off and the workshop is back to taxing everything.
+   */
+  appliesTo?: { parts: boolean; labor: boolean; shopFee: boolean }
 }
 
 /** Flips a switch to the wanted state, retried because a click before hydration does nothing. */
@@ -65,6 +71,12 @@ export async function setTax(page: Page, tax: TaxSetup): Promise<void> {
     } else {
       await page.locator('#defaultTaxRate').fill(String(tax.rate ?? 0))
       await page.locator('#taxLabel').fill(tax.label ?? '')
+    }
+    await setSwitch(page.locator('#taxSelective'), Boolean(tax.appliesTo))
+    if (tax.appliesTo) {
+      await setSwitch(page.locator('#taxOnParts'), tax.appliesTo.parts)
+      await setSwitch(page.locator('#taxOnLabor'), tax.appliesTo.labor)
+      await setSwitch(page.locator('#taxOnShopFee'), tax.appliesTo.shopFee)
     }
     await page
       .getByRole('button', { name: tax.inclusive ? 'Inclusive' : 'Exclusive', exact: true })

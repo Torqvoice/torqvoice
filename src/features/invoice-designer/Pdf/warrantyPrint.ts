@@ -1,3 +1,4 @@
+import { documentNumbers } from '@/lib/document-numbers'
 import { normalizeWarranty } from '@/lib/warranty'
 import type { DocumentData } from '../Spec/buildSpec'
 
@@ -23,6 +24,8 @@ export function warrantyForPrint(
     unitSystem?: string
     /** The expiry, already formatted; a quote has none. */
     expires?: string
+    /** The document's language, for the mileage limit. */
+    locale?: string
   }
 ): DocumentData['warranty'] {
   const { labels } = opts
@@ -48,7 +51,7 @@ export function warrantyForPrint(
   }
   if (warranty.warrantyMileage) {
     const unit = opts.unitSystem === 'metric' ? labels.km || 'km' : labels.mi || 'mi'
-    parts.push(`${warranty.warrantyMileage.toLocaleString()} ${unit}`)
+    parts.push(`${documentNumbers(opts.locale).distance(warranty.warrantyMileage)} ${unit}`)
   }
 
   const duration = parts.length ? parts.join(' / ') : undefined

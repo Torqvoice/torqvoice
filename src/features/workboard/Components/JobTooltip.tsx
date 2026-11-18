@@ -5,11 +5,13 @@ import { useTranslations } from 'next-intl'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../Actions/boardActions'
-import { type ClockFormat, formatClockRange } from '../utils/clock'
+import { type ClockFormat, formatClock, formatClockRange } from '../utils/clock'
 import { getDurationMinutes, getJobDateRange } from '../utils/datetime'
 import { normalizeStatus } from '../utils/job-colors'
 import { formatDuration } from './DurationSlider'
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
+import { useDateSettings } from '@/components/date-settings-context'
+import { toBoardDate } from '../utils/board-time'
 
 /** Status strings as the translation file spells them. */
 const STATUS_KEY: Record<string, string> = {
@@ -33,6 +35,7 @@ export function JobTooltip({
   timeFormat,
   ownerName,
   ownerColor,
+  helperNames,
   bayName,
   children,
 }: {
@@ -41,12 +44,16 @@ export function JobTooltip({
   /** Technician on the job, when one is assigned. */
   ownerName?: string | null
   ownerColor?: string | null
+  /** Everybody else on the job with that technician. */
+  helperNames?: string[]
   bayName?: string | null
   children: React.ReactNode
 }) {
   const t = useTranslations('workBoard.job')
   const tStatus = useTranslations('workBoard.presenter.statusLabels')
+  const { timezone } = useDateSettings()
 
+  // The job as the board draws it, already on the workshop's clock.
   const { start, end } = getJobDateRange(job)
   const minutes = start && end ? getDurationMinutes(start, end) : null
   const statusKey = STATUS_KEY[normalizeStatus(job.status)]
@@ -103,6 +110,9 @@ export function JobTooltip({
             value={ownerName ?? t('none')}
             colour={ownerName ? ownerColor : null}
           />
+          {helperNames && helperNames.length > 0 && (
+            <Row label={t('alsoOnJob')} value={helperNames.join(', ')} />
+          )}
           {bayName && <Row label={t('workBay')} value={bayName} />}
           {statusKey && <Row label={t('status')} value={tStatus(statusKey)} />}
           {/* The marker on the block says a promise is broken; this says when
@@ -110,7 +120,7 @@ export function JobTooltip({
           {job.promisedAt && (
             <Row
               label={t('promised')}
-              value={formatPromised(job.promisedAt, timeFormat)}
+              value={formatPromised(job.promisedAt, timeFormat, timezone)}
               late={isPromiseOverdue(job.promisedAt, job.status)}
             />
           )}
@@ -127,14 +137,14 @@ export function JobTooltip({
  * contrast on both the near-black light-theme tooltip and the near-white dark
  * one. Fading the tooltip's own text colour tracks the inversion.
  */
-/** The promised moment, in the board's own clock format. */
-function formatPromised(promisedAt: string, timeFormat: ClockFormat): string {
-  const at = new Date(promisedAt)
-  const time = formatClockRange(
-    at.getHours() * 60 + at.getMinutes(),
-    at.getHours() * 60 + at.getMinutes(),
-    timeFormat
-  ).split(' - ')[0]
+/**
+ * The promised moment, in the board's own clock format. `promisedAt` is a
+ * real instant (the board only rewrites a job's start and end), so it is put
+ * on the workshop's clock here.
+ */
+function formatPromised(promisedAt: string, timeFormat: ClockFormat, timeZone: string): string {
+  const at = toBoardDate(new Date(promisedAt), timeZone)
+  const time = formatClock(at.getHours() * 60 + at.getMinutes(), timeFormat)
   return `${at.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} ${time}`
 }
 

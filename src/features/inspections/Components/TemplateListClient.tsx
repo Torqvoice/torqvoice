@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -11,16 +12,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import {
   ClipboardCheck,
   Copy,
@@ -239,7 +230,7 @@ export function TemplateListClient({
   const [showImport, setShowImport] = useState(false)
   const [exportTarget, setExportTarget] = useState<{ id: string; name: string } | null>(null)
   const [editingTemplate, setEditingTemplate] = useState<TemplateFormData | undefined>()
-  const [deleteTarget, setDeleteTarget] = useState<Template | null>(null)
+  const confirm = useConfirm()
   const [duplicatingId, setDuplicatingId] = useState<string | null>(null)
   const [isInstalling, startInstalling] = useTransition()
   const [isTranslating, startTranslating] = useTransition()
@@ -262,53 +253,63 @@ export function TemplateListClient({
 
   const handleTranslate = () => {
     startTranslating(async () => {
-      const result = await translateChecklists(locale)
-      if (result.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const result = await translateChecklists(locale).catch(() => null)
+      if (result?.success) {
         toast.success(t('translated', { language: languageName(locale, locale) }))
         router.refresh()
       } else {
-        toast.error(result.error || t('translateFailed'))
+        toast.error(result?.error || t('translateFailed'))
       }
     })
   }
 
   const handleRestore = () => {
     startInstalling(async () => {
-      const result = await restoreMissingPresets()
-      if (result.success && result.data) {
+      const result = await restoreMissingPresets().catch(() => null)
+      if (result?.success && result.data) {
         toast.success(
           result.data.added === 0 ? t('allPresent') : t('restored', { count: result.data.added })
         )
         router.refresh()
       } else {
-        toast.error(result.error || t('restoreFailed'))
+        toast.error(result?.error || t('restoreFailed'))
       }
     })
   }
-  const [isDeleting, startDeleteTransition] = useTransition()
+  const [, startDeleteTransition] = useTransition()
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (template: Template) => {
+    const ok = await confirm({
+      title: t('deleteTitle', { name: template.name }),
+      description: t('deleteBody'),
+      confirmLabel: t('delete'),
+      cancelLabel: t('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     startDeleteTransition(async () => {
-      const result = await deleteTemplate(id)
-      if (result.success) {
+      const result = await deleteTemplate(template.id).catch(() => null)
+      if (result?.success) {
         toast.success(t('deleted'))
-        setDeleteTarget(null)
         router.refresh()
       } else {
-        toast.error(result.error || t('deleteFailed'))
+        toast.error(result?.error || t('deleteFailed'))
       }
     })
   }
 
   const handleDuplicate = async (id: string) => {
     setDuplicatingId(id)
-    const result = await duplicateTemplate(id)
+    const result = await duplicateTemplate(id).catch(() => null)
     setDuplicatingId(null)
-    if (result.success) {
+    if (result?.success) {
       toast.success(t('duplicated'))
       router.refresh()
     } else {
-      toast.error(result.error || t('duplicateFailed'))
+      toast.error(result?.error || t('duplicateFailed'))
     }
   }
 
@@ -418,7 +419,7 @@ export function TemplateListClient({
               onEdit={() => handleEdit(t)}
               onDuplicate={() => handleDuplicate(t.id)}
               onExport={() => setExportTarget({ id: t.id, name: t.name })}
-              onDelete={() => setDeleteTarget(t)}
+              onDelete={() => handleDelete(t)}
             />
           ))}
         </div>
@@ -451,28 +452,6 @@ export function TemplateListClient({
         installedNames={templates.map((t) => t.name)}
         installedPackageIds={templates.flatMap((t) => (t.packageId ? [t.packageId] : []))}
       />
-
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              {t('deleteTitle', { name: deleteTarget?.name ?? '' })}
-            </AlertDialogTitle>
-            <AlertDialogDescription>{t('deleteBody')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => deleteTarget && handleDelete(deleteTarget.id)}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              {t('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

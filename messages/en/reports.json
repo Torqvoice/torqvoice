@@ -150,7 +150,7 @@
       "tableTitle": "Clocked against billed",
       "clocked": "Clocked",
       "billed": "Billed",
-      "hint": "Clocked hours come from the time clock. Billed hours are the labor lines on jobs assigned to the technician that started in the range. Efficiency is billed divided by clocked.",
+      "hint": "Clocked hours come from the time clock. Billed hours are the labor lines on jobs assigned to the technician that started in the range. A job with more than one person on it shares its billed hours by the time each of them clocked on it; if any of them did not clock on it, the hours stay with the technician. Efficiency is billed divided by clocked.",
       "noClock": "No clock",
       "jobsClocked": "Jobs clocked"
     }

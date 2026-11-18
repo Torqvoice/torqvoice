@@ -12,6 +12,8 @@
     "payWithCard": "Zapłać {amount} kartą",
     "payWithVipps": "Zapłać {amount} przez Vipps",
     "payWithPaypal": "Zapłać {amount} przez PayPal",
+    "payWithPaystack": "Zapłać {amount} przez Paystack",
+    "payWithVendor": "Zapłać przez <vendor></vendor>",
     "errorInvalidAmount": "Proszę wprowadzić prawidłową kwotę.",
     "errorExceedsBalance": "Kwota nie może przekraczać {amount}.",
     "errorVerifyFailed": "Nie można zweryfikować płatności. Może być jeszcze przetwarzana.",
@@ -202,7 +204,21 @@
     "deficienciesFound": "Stwierdzone usterki ({count})",
     "allResults": "Wszystkie wyniki",
     "privacyNotice": "Ten raport udostępnia Ci warsztat, który wykonał badanie. Może go zobaczyć każdy, kto ma ten link — prosimy go nie przekazywać. Skontaktuj się z warsztatem, aby wycofać link lub usunąć swoje dane.",
-    "inspectionPhotos": "Zdjęcia i dokumenty"
+    "inspectionPhotos": "Zdjęcia i dokumenty",
+    "checkResult": {
+      "pass": "Wszystko w porządku",
+      "pass_minor": "Kilka punktów do obserwacji",
+      "fail": "Kilka punktów wymaga naprawy",
+      "fail_dangerous": "Kilka punktów wymaga pilnej naprawy",
+      "incomplete": "Nie zakończono"
+    },
+    "checkResultDetail": {
+      "pass": "Nic nie wymagało uwagi.",
+      "pass_minor": "Nic pilnego. Warto zaplanować oznaczone punkty.",
+      "fail": "Niektóre punkty wymagają naprawy. Notatki opisują, co znaleziono.",
+      "fail_dangerous": "Niektóre punkty nie są bezpieczne i należy je naprawić przed dalszym użytkowaniem.",
+      "incomplete": "Ta kontrola wciąż trwa."
+    }
   },
   "terms": {
     "title": "Warunki sprzedaży",
@@ -234,5 +250,31 @@
     "telegramConnect": "Porozmawiaj z nami na Telegramie",
     "telegramScan": "Zeskanuj ten kod QR, aby napisać do nas na Telegramie w sprawie aktualizacji i wsparcia.",
     "downloadCertificate": "Pobierz zaświadczenie z przeglądu"
+  },
+  "expired": {
+    "pageTitle": "Link wygasł",
+    "title": "Ten link wygasł",
+    "body": {
+      "invoice": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej faktury.",
+      "quote": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej wyceny.",
+      "inspection": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej inspekcji.",
+      "statusReport": "Skontaktuj się z {workshop}, aby otrzymać nowy link do tej aktualizacji."
+    },
+    "bodyNoName": {
+      "invoice": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej faktury.",
+      "quote": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej wyceny.",
+      "inspection": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej inspekcji.",
+      "statusReport": "Skontaktuj się z warsztatem, aby otrzymać nowy link do tej aktualizacji."
+    }
+  },
+  "gone": {
+    "pageTitle": "Link nie działa",
+    "title": "Ten link już nie działa",
+    "body": "Mógł zostać usunięty albo adres jest niepełny. Skontaktuj się z {workshop}, aby otrzymać nowy link.",
+    "bodyNoName": "Mógł zostać usunięty albo adres jest niepełny. Skontaktuj się z warsztatem, aby otrzymać nowy link."
+  },
+  "openUntil": {
+    "text": "Ten link działa do {date} włącznie. Potem skontaktuj się z {workshop}, aby otrzymać nowy.",
+    "textNoName": "Ten link działa do {date} włącznie. Potem skontaktuj się z warsztatem, aby otrzymać nowy."
   }
 }

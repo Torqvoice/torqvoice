@@ -40,6 +40,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   ChevronDown,
   Copy,
@@ -818,19 +819,19 @@ export function TemplateForm({
 
               <div className="space-y-2">
                 <Label htmlFor="template-country">{t('country')}</Label>
-                <Select value={country} onValueChange={setCountry}>
-                  <SelectTrigger id="template-country">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">{t('notCountrySpecific')}</SelectItem>
-                    {templateCountries(locale).map((c) => (
-                      <SelectItem key={c.code} value={c.code}>
-                        {c.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  id="template-country"
+                  value={country}
+                  onValueChange={setCountry}
+                  options={[
+                    { value: 'none', label: t('notCountrySpecific') },
+                    ...templateCountries(locale).map((c) => ({
+                      value: c.code,
+                      label: c.name,
+                      keywords: c.code,
+                    })),
+                  ]}
+                />
                 <p className="text-muted-foreground text-xs">{t('countryHelp')}</p>
               </div>
 

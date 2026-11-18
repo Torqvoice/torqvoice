@@ -10,12 +10,22 @@ import {
   listEmailTemplates,
 } from '@/features/email/Actions/emailTemplateActions'
 import { EmailDesigner } from '@/features/email/Components/EmailDesigner'
-import { sampleSummaryRows, sampleValuesFor } from '@/features/email/Lib/emailContext'
+import {
+  SAMPLE_FORMAT_KEYS,
+  sampleFormatFrom,
+  sampleSummaryRows,
+  sampleValuesFor,
+} from '@/features/email/Lib/emailContext'
 import { isEmailKind } from '@/features/email/Lib/emailKinds'
 import { loadEmailMessages } from '@/features/email/Lib/emailMessages.server'
 import { presetTemplate } from '@/features/email/Lib/emailPresets'
 import { DismissOnArrival } from '@/components/feature-hint'
 import { EMAIL_DESIGNER_ANNOUNCEMENT, parseHintIds } from '@/features/settings/Lib/featureHints'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('emailTemplates')
+}
 
 const SETTINGS_PAGE = '/settings/email-templates'
 
@@ -47,6 +57,7 @@ export default async function EmailDesignerPage({
         SETTING_KEYS.WORKSHOP_PHONE,
         SETTING_KEYS.WORKSHOP_EMAIL,
         SETTING_KEYS.WORKSHOP_ADDRESS,
+        ...SAMPLE_FORMAT_KEYS,
       ]),
       db.organization.findUnique({
         where: { id: data.organizationId },
@@ -79,6 +90,8 @@ export default async function EmailDesignerPage({
     email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
     address: settings[SETTING_KEYS.WORKSHOP_ADDRESS],
   }
+  // The stand-in amounts and dates, written the way this workshop's mail writes them.
+  const sampleFormat = sampleFormatFrom(settings)
 
   const saved = (
     templatesResult.success && templatesResult.data ? templatesResult.data : []
@@ -102,8 +115,8 @@ export default async function EmailDesignerPage({
         savedNames={saved.map((template) => ({ id: template.id, name: template.name }))}
         activeId={active}
         sample={{
-          values: sampleValuesFor(kind, workshop),
-          summary: sampleSummaryRows(kind, messages.summary),
+          values: sampleValuesFor(kind, workshop, sampleFormat),
+          summary: sampleSummaryRows(kind, messages.summary, sampleFormat),
         }}
         userEmail={user?.email ?? ''}
       />

@@ -4,19 +4,16 @@ import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Wrench } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { reportError } from '@/lib/analytics'
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js error boundary convention
-export default function Error({
-  error,
-  reset,
-}: {
-  error: Error & { digest?: string }
-  reset: () => void
-}) {
+export default function Error({ error }: { error: Error & { digest?: string } }) {
   const t = useTranslations('common')
 
   useEffect(() => {
     console.error(error)
+    // The digest finds the error in the server log when the server threw it
+    reportError(error, { error_page: 'page', digest: error.digest ?? null })
   }, [error])
 
   return (
@@ -36,7 +33,14 @@ export default function Error({
         <p className="mt-2 text-sm text-muted-foreground">{t('errorPage.description')}</p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button onClick={reset}>{t('errorPage.tryAgain')}</Button>
+          {/*
+            A full reload, not reset(). reset() only drew the page again from
+            what the tab already had, so an error from the server or from the
+            tab's own state came straight back and the button did nothing:
+            people pressed it over and over. A tab left open for days may also
+            be on an old build, and only a reload brings the new one.
+          */}
+          <Button onClick={() => window.location.reload()}>{t('errorPage.tryAgain')}</Button>
           <Button variant="outline" asChild>
             <a href="/">{t('errorPage.backToDashboard')}</a>
           </Button>

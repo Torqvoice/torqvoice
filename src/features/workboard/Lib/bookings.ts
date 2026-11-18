@@ -1,6 +1,12 @@
 import { db } from '@/lib/db'
 import { resolveWorkshopTimeZone } from '@/lib/workshop-timezone'
-import type { Booking, WorkingHours } from './availability'
+import { dayOf } from '@/features/workshop-calendar/Lib/calendar'
+import {
+  loadWorkshopCalendar,
+  rangeAround,
+} from '@/features/workshop-calendar/Lib/loadCalendar.server'
+import { type Booking, type WorkingHours, absenceBookings } from './availability'
+import { ACTIVE_HELPERS } from './jobTeam'
 
 /**
  * Everything currently holding a person or a bay, and the hours the shop works.
@@ -10,17 +16,32 @@ import type { Booking, WorkingHours } from './availability'
  * organization id, which must never be something a caller can choose.
  */
 
-/** How far ahead to read. Long enough to answer "next free slot" honestly. */
+/** How far ahead to read by default. Long enough to answer "next free slot" honestly. */
 const WINDOW_DAYS = 45
+/** The most a caller can ask for: a year and a bit. */
+export const MAX_WINDOW_DAYS = 400
+
+/**
+ * `days` is how far past `from` to read. Online booking asks for its whole
+ * horizon: jobs, closed days and leave past the default window would
+ * otherwise be invisible, and a closed day there offered to a customer.
+ */
+export interface BookingContext {
+  bookings: Booking[]
+  hours: WorkingHours
+  closuresEnabled: boolean
+}
 
 export async function loadBookingContext(
   organizationId: string,
-  from: Date
-): Promise<{ bookings: Booking[]; hours: WorkingHours }> {
+  from: Date,
+  opts: { days?: number } = {}
+): Promise<BookingContext> {
+  const days = Math.min(Math.max(Math.ceil(opts.days ?? WINDOW_DAYS), 1), MAX_WINDOW_DAYS)
   const windowStart = new Date(from)
   windowStart.setDate(windowStart.getDate() - 1)
   const windowEnd = new Date(from)
-  windowEnd.setDate(windowEnd.getDate() + WINDOW_DAYS)
+  windowEnd.setDate(windowEnd.getDate() + days)
 
   // Only work that actually holds a resource can be clashed with; anything
   // unassigned is on the list rather than in the shop.
@@ -40,6 +61,8 @@ export async function loadBookingContext(
         startDateTime: true,
         endDateTime: true,
         technicianId: true,
+        // A helper's time is taken by the job as much as the technician's.
+        helpers: ACTIVE_HELPERS,
         workBayId: true,
         vehicle: { select: { make: true, model: true, licensePlate: true } },
       },
@@ -83,6 +106,7 @@ export async function loadBookingContext(
       start: r.startDateTime as Date,
       end: r.endDateTime as Date,
       technicianId: r.technicianId,
+      helperIds: r.helpers.map((h) => h.technicianId),
       workBayId: r.workBayId,
     })),
     ...inspections.map((i) => ({
@@ -97,13 +121,25 @@ export async function loadBookingContext(
   ]
 
   const map = Object.fromEntries(settings.map((s) => [s.key, s.value]))
+  const timeZone = resolveWorkshopTimeZone(
+    map['workshop.timezone'],
+    map['workshop.timezoneDetected']
+  )
+  // Opening hours per weekday, closed days and time off for the same window.
+  // Time off joins the bookings, so a technician away is never free.
+  const { enabled, calendar } = await loadWorkshopCalendar(
+    organizationId,
+    rangeAround(dayOf(from, timeZone), days)
+  )
   return {
-    bookings,
+    bookings: [...bookings, ...absenceBookings(calendar)],
     hours: {
       start: map['workboard.workDayStart'] || '07:00',
       end: map['workboard.workDayEnd'] || '15:00',
       includeWeekends: map['workboard.showWeekends'] === 'true',
-      timeZone: resolveWorkshopTimeZone(map['workshop.timezone'], map['workshop.timezoneDetected']),
+      timeZone,
+      calendar,
     },
+    closuresEnabled: enabled,
   }
 }

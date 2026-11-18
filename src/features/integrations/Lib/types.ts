@@ -10,6 +10,7 @@
  */
 
 import type { PlanFeatures } from '@/lib/features'
+import type { ResticRepository } from './backup-types'
 
 export type IntegrationCategory =
   | 'ai'
@@ -21,9 +22,19 @@ export type IntegrationCategory =
   | 'automation'
   | 'storage'
   | 'registry'
+  | 'repair'
   | 'other'
 
 export type ConnectionStatus = 'pending' | 'active' | 'error' | 'disconnected'
+
+/**
+ * A field or setting that is only asked for while another setting has one
+ * of the given values: a region for the vendors that have one, an account id
+ * for the one that uses it instead.
+ */
+export type SettingCondition =
+  | { key: string; equals: string | number | boolean }
+  | { key: string; in: readonly (string | number | boolean)[] }
 
 export interface CredentialField {
   key: string
@@ -37,6 +48,12 @@ export interface CredentialField {
   /** i18n key with guidance on where the value comes from */
   help?: string
   /**
+   * Only asked for while a setting on the connect page has this value: the
+   * address of a custom endpoint belongs to one provider choice and would be
+   * a puzzle under the others.
+   */
+  showWhen?: SettingCondition
+  /**
    * A field almost nobody fills in. The connect page keeps it behind an
    * "Advanced" fold, shut unless it already holds a value, so the usual case
    * is one box and not a question about what the second one is for.
@@ -49,6 +66,39 @@ export interface CredentialField {
    * an address would be a way to reach whatever runs next to it.
    */
   selfHostedOnly?: boolean
+  /**
+   * The connect page offers to fill the field with a random value, for a
+   * secret the workshop makes up rather than copies from a vendor, such as
+   * the password a backup repository is encrypted with.
+   */
+  generate?: 'password'
+  /**
+   * Needed to use the service but not to connect it, because the vendor
+   * only hands the value out once the connection's webhook is live: Meta
+   * issues a WhatsApp phone number ID after it has verified the callback.
+   * The connect page lets it stay empty, the connection goes live without
+   * it, and the page says what is still missing until it is entered.
+   */
+  deferrable?: boolean
+  /**
+   * The name of an environment variable that can hold a key the server uses
+   * for every workshop, for a service Torqvoice pays for on the workshop's
+   * behalf. While it is set, the registry makes the field optional and
+   * swaps in `serverKeyHelp`: a workshop that leaves the field empty uses
+   * the server's key, one that fills it in uses its own.
+   */
+  serverKeyEnv?: string
+  /** i18n key with the help shown instead of `help` while the server holds a key. */
+  serverKeyHelp?: string
+  /**
+   * While the server holds the key (`serverKeyEnv` set), the field is left
+   * out of the manifest rather than made optional: the server's key is the
+   * only one used, so there is nothing for the workshop to type and no way
+   * to put a key of its own in its place. For a service Torqvoice runs and
+   * includes in the plan. Where the variable is not set, the field is drawn
+   * and required as written.
+   */
+  hiddenWhenServerKey?: boolean
 }
 
 /**
@@ -63,6 +113,8 @@ export type AuthSpec =
       authorizeUrl: string
       tokenUrl: string
       scopes: string[]
+      /** How scopes are joined on the authorize request: a space by the standard, a comma for Zoho. */
+      scopeSeparator?: string
       /** Extra query parameters on the authorize request, such as access_type=offline. */
       authorizeParams?: Record<string, string>
       pkce?: boolean
@@ -84,6 +136,25 @@ export type AuthSpec =
        * the authorize request; Fiken lists it as required on both.
        */
       stateOnExchange?: boolean
+      /**
+       * The word before the access token in the Authorization header. Bearer
+       * unless the vendor wants its own: Zoho reads `Zoho-oauthtoken`.
+       */
+      authScheme?: string
+      /**
+       * A vendor that runs a sign-in server per region (Zoho) names the
+       * workshop's own on the callback. The token exchange and every refresh
+       * go there instead of `tokenUrl`, but only to a host on `allowedHosts`:
+       * the parameter comes back through the browser, and the request
+       * carries the app's client secret.
+       */
+      regionalTokenServer?: {
+        /** The callback parameter that names the server, such as `accounts-server`. Must be listed in callbackParams. */
+        param: string
+        /** Path of the token endpoint on that server, such as `/oauth/v2/token`. */
+        path: string
+        allowedHosts: string[]
+      }
       /** Environment variable names holding the platform-owned app's client id and secret. */
       platformEnv?: { clientId: string; clientSecret: string }
       /** Fields a workshop fills in to use its own app. */
@@ -94,9 +165,24 @@ export type AuthSpec =
   | { type: 'api-key'; fields: CredentialField[] }
   | { type: 'client-credentials'; tokenUrl: string; fields: CredentialField[] }
 
+/** What a check of typed keys found, worded by the form. */
+export interface PreviewTestResult {
+  ok: boolean
+  /** The step that failed: settings, list, write, delete or folder. */
+  step?: string
+  /** The vendor's or the system's own words for it. */
+  reason?: string
+}
+
 export interface SettingOption {
   value: string
   label: string
+  /**
+   * Only offered on a self-hosted install. The registry drops the option
+   * from the manifest on the cloud instance, so it is neither drawn nor
+   * accepted there. For a choice that lets the workshop type an address.
+   */
+  selfHostedOnly?: boolean
 }
 
 export interface SettingField {
@@ -108,14 +194,42 @@ export interface SettingField {
   help?: string
   default?: string | number | boolean
   options?: SettingOption[]
+  /**
+   * For select: a list that depends on another setting, such as the regions
+   * of the chosen provider. A value of that setting with no list here gets a
+   * plain text box instead, for the choice that takes anything.
+   */
+  optionsBy?: { key: string; options: Record<string, readonly SettingOption[]> }
   /** For remote-select: the key in the server module's remoteOptions map. */
   source?: string
+  /**
+   * For remote-select: the list can be read with what is typed on the connect
+   * page, before anything is saved, from these credential fields and
+   * settings. It is read once every required credential among them has a
+   * value, and again whenever one of them changes.
+   */
+  preview?: { credentials: readonly string[]; settings: readonly string[] }
+  /**
+   * For remote-select: a name that is not in the list can be typed in, for a
+   * key that is allowed to use one bucket but not to list them.
+   */
+  allowCustom?: boolean
   /** Only shown while another setting has this value. */
-  showWhen?: { key: string; equals: string | number | boolean }
+  showWhen?: SettingCondition
   required?: boolean
 }
 
 export interface ConnectorManifest {
+  /**
+   * On the connect page the settings come before the keys: a provider choice
+   * decides which keys and which address are asked for, so it is asked first.
+   */
+  settingsFirst?: boolean
+  /**
+   * The connect page offers a check of the typed keys before anything is
+   * saved, through the server module's previewTest.
+   */
+  testBeforeConnect?: boolean
   id: string
   /** Vendor's product name, not translated. */
   name: string
@@ -157,6 +271,21 @@ export interface ConnectorManifest {
    * a way to point the server at whatever else runs next to it.
    */
   selfHostedOnly?: boolean
+  /**
+   * Only offered on the Torqvoice cloud instance, the mirror of
+   * `selfHostedOnly`. The registry leaves the connector out entirely on a
+   * self-hosted install, so it is neither listed nor loadable there. For a
+   * service Torqvoice runs itself, reached over its own network. Lifting the
+   * flag later is how a self-hosted install gets it with a key of its own.
+   */
+  cloudOnly?: boolean
+  /**
+   * Connected for every workshop without a visit to the connect page, once
+   * there is nothing left for the workshop to type: an api-key connector
+   * whose every key the server holds (see `serverKeyEnv`). A workshop that
+   * disconnects it stays disconnected, see `src/features/integrations/Lib/auto-connect.ts`.
+   */
+  autoConnect?: boolean
 }
 
 export type LogLevel = 'info' | 'warn' | 'error'
@@ -272,7 +401,14 @@ export interface VehicleLookupResult {
   fuelType?: string
   /** One of the form's transmission options, already normalised. */
   transmission?: string
+  /**
+   * Displacement as the form shows it. Registries that know the exact
+   * figure also give engineCc, and the lookup rewrites this from it in the
+   * workshop's own unit (litres or cubic centimetres).
+   */
   engineSize?: string
+  /** Exact displacement in cubic centimetres, when the registry gives it. */
+  engineCc?: number
   engineCode?: string
   /** Registry's own class label, such as "Personbil" or "Light goods vehicle". */
   vehicleClass?: string
@@ -369,12 +505,498 @@ export interface VehicleSafetyReport {
   url: string
 }
 
+/**
+ * One engine and drivetrain of a model, as a repair data source tells them
+ * apart. Engine and drivetrain are the guide's own ids, passed back to ask
+ * about that variant alone.
+ */
+export interface RepairDataVariantRef {
+  engineId: string
+  drivetrain: string | null
+  /** The guide's id for this exact variant, when it has one. */
+  vehicleId: string | null
+}
+
+/**
+ * What a repair data source is asked about: the model, and the VIN when the
+ * vehicle has one. `variant` narrows to one engine and drivetrain, `item` to
+ * one job or fluid system, for a key that unlocks values one at a time.
+ */
+export interface RepairDataQuery {
+  make: string
+  model: string
+  year: number
+  vin?: string
+  /**
+   * The source's own id for the model, from an earlier answer for this
+   * vehicle, so it is asked under the name that worked and not guessed again.
+   */
+  modelId?: string
+  variant?: RepairDataVariantRef
+  item?: string
+}
+
+/** How sure the source is of a value: checked against the maker's data, verified, likely, or a guess. */
+export type RepairDataConfidence = 'oem' | 'high' | 'medium' | 'estimated'
+
+/** A job's book time. */
+export interface LaborTime {
+  /** The source's id for the job, to ask for it alone. */
+  id: string
+  name: string
+  category: string
+  /** Book hours; null while the key does not unlock this job. */
+  hours: number | null
+  low: number | null
+  high: number | null
+  confidence: RepairDataConfidence | null
+  /** The key lists the job but not its hours; ask for it alone to get them. */
+  locked: boolean
+}
+
+/** What one system takes, and how much. */
+export interface FluidSpec {
+  /** The source's id for the system, to ask for it alone. */
+  id: string
+  system: string
+  fluid: string | null
+  spec: string | null
+  capacityLiters: number | null
+  capacityQuarts: number | null
+  drainRefillLiters: number | null
+  drainRefillQuarts: number | null
+  intervalKm: number | null
+  intervalMiles: number | null
+  notes: string | null
+  confidence: RepairDataConfidence | null
+  locked: boolean
+}
+
+export interface RepairDataVariant<T> extends RepairDataVariantRef {
+  /** The engine as the source names it, such as "5.0L V8 Coyote". */
+  engine: string
+  items: T[]
+}
+
+/** What a source lists for one model year, per engine and drivetrain. */
+export interface RepairDataAnswer<T> {
+  make: string
+  model: string
+  variants: RepairDataVariant<T>[]
+  /**
+   * Whether the model name found it, or only the VIN did. A model-name
+   * answer serves every vehicle of that model year; a VIN answer is kept
+   * for that one vehicle.
+   */
+  matchedBy?: 'model' | 'vin'
+  /** The source's own id for the model, passed back to ask about the vehicle again. */
+  modelId?: string
+  /** The market the values are for, as an ISO country code, such as "US". */
+  region?: string
+}
+
+/**
+ * A source's answer, and whether the account's plan lets it keep what it
+ * fetched. Open Labor Project lets a paid plan keep its answers for as long
+ * as it stays subscribed; a free key may only show them.
+ */
+export interface RepairDataReply<T> {
+  answer: RepairDataAnswer<T> | null
+  keep: boolean
+}
+
+/** The key was refused: revoked, mistyped, or its subscription has ended. */
+export class RepairDataKeyRejected extends Error {}
+
+/**
+ * What a fault code service is told about the vehicle, so it can pick the
+ * meaning for that make. Never a VIN, a plate or anything about the owner.
+ */
+export interface FaultCodeVehicle {
+  make?: string
+  model?: string
+  year?: number
+  /** Engine code, or the size when there is no code. */
+  engine?: string
+}
+
+/** A text in the language it came back in, which is English when the asked one has none yet. */
+export interface FaultCodeText {
+  text: string
+  lang: string
+  machineTranslated: boolean
+}
+
+/** Where a meaning comes from, named neutrally. */
+export type FaultCodeSource = 'standard' | 'manufacturer' | 'scan_report' | 'workshop' | 'editor'
+
+/** One labelled part of a code's description, in the order the text has them. */
+export type FaultCodeSectionKind =
+  | 'how_it_works'
+  | 'meaning'
+  | 'causes'
+  | 'manufacturer'
+  | 'related'
+  | 'diagnosis'
+  | 'common_issues'
+  | 'resolution'
+  | 'advisory'
+  | 'other'
+
+export interface FaultCodeMeaning {
+  system: 'P' | 'C' | 'B' | 'U'
+  /** powertrain, chassis, body or network. */
+  category: string
+  /** How narrow the meaning is: every vehicle, one make, one model, one engine. */
+  scope: 'generic' | 'make' | 'model' | 'engine'
+  source: FaultCodeSource
+  /** Sent back with a report that the meaning is wrong. */
+  version: number
+  /** A reviewer has checked it. */
+  verified: boolean
+  /** The service's own checks flagged it, so only the title is served until a person clears it. */
+  pendingCheck: boolean
+  title: FaultCodeText
+  flags: { warningLight: boolean; emissions: boolean; driveCycle: boolean; limpMode: boolean }
+  related: { code: string; title?: string }[]
+  /** Only when details were asked for and the service has them. */
+  description?: FaultCodeText
+  /** The description cut into labelled parts, when the service sends them. */
+  sections?: { kind: FaultCodeSectionKind; text: FaultCodeText }[]
+  causes: { key: string; likelihood: 'low' | 'medium' | 'high'; label: FaultCodeText }[]
+}
+
+/**
+ * Whether a code means the same on every vehicle (SAE J2012's standard
+ * ranges) or depends on the make (the manufacturer ranges).
+ */
+export type FaultCodeRange = 'standard' | 'manufacturer'
+
+export interface FaultCodeAnswer {
+  code: string
+  /** False for a code the service has no meaning for, and for text that is not a code. */
+  found: boolean
+  /** Known for every valid code, found or not. */
+  range: FaultCodeRange
+  meaning?: FaultCodeMeaning
+}
+
+/** A vehicle a manufacturer code's meaning applies to: the chassis, with its model when known. */
+export interface OemVehicle {
+  chassis: string
+  model: string | null
+  body: string | null
+  yearFrom: number | null
+  yearTo: number | null
+}
+
+/** One meaning of a manufacturer code, as the manufacturer words it. */
+export interface OemMeaning {
+  /** The meaning's id in the make's data ("einlass-vanos"). */
+  id: string
+  /** The text as the control unit has it. */
+  text: string
+  /** The language of `text` ("de" for most BMW units). */
+  textLang: string
+  /** The manufacturer's English text, when it has one. */
+  textEn: string | null
+  modules: { ref: string; family: string | null; name: string | null }[]
+  vehicles: OemVehicle[]
+  engines: string[]
+  /** One of its control units fits the vehicle asked about. */
+  matches: boolean
+  /**
+   * The service's own text for this meaning, as for an OBD-II code: a plain
+   * title, the description (in labelled parts when it is cut so) and likely
+   * causes, in `lang` (the language asked, or English). `lang` and `title`
+   * are null when nothing is written for this meaning yet.
+   */
+  lang: string | null
+  title: string | null
+  description: string | null
+  sections: { kind: FaultCodeSectionKind; text: string }[]
+  causes: { key: string; likelihood: 'low' | 'medium' | 'high'; label: string }[]
+}
+
+export interface OemCodeAnswer {
+  source: string
+  code: string
+  meanings: OemMeaning[]
+}
+
+export interface FaultCodeSearchHit {
+  code: string
+  title: FaultCodeText
+}
+
+/** Why a workshop says a meaning is wrong. */
+export type FaultCodeReportReason =
+  | 'wrong_for_vehicle'
+  | 'text_mismatch'
+  | 'wrong_position'
+  | 'bad_translation'
+  | 'other'
+
+export interface FaultCodeReport {
+  code: string
+  /** The version of the meaning that was shown. */
+  version: number
+  lang: string
+  reason: FaultCodeReportReason
+  note?: string
+  /** What the scan tool printed for the code, when the technician has it. */
+  scanText?: string
+  vehicle?: FaultCodeVehicle
+  /** Found by the app rather than sent by a person. */
+  automatic: boolean
+  /** A stable id of the workshop; the service keeps only a keyed hash of it. */
+  workshopRef: string
+}
+
+export interface FaultCodeReportStatus {
+  id: string
+  code: string
+  status: 'open' | 'resolved'
+  outcome: 'fixed' | 'no_change' | 'duplicate' | null
+  resolvedAt: string | null
+  message: string | null
+}
+
+/** A photo on a shared fix, as the service re-encoded it. */
+export interface FaultCodeFixPhoto {
+  /** 0 to 3, in the order they were sent. */
+  n: number
+  width: number
+  height: number
+}
+
+/** What fixed a code, as a workshop shared it and the service publishes it. */
+export interface FaultCodeFix {
+  id: string
+  code: string
+  /** For a make's own code, the meaning the fix is for ("einlass-vanos"). */
+  meaning: string | null
+  /** The language the text was written in. */
+  lang: string
+  text: string
+  vehicle: FaultCodeVehicle | null
+  photos: FaultCodeFixPhoto[]
+  createdAt: string
+}
+
+/** A fix this workshop shared, with how its review stands. */
+export interface FaultCodeOwnFix extends FaultCodeFix {
+  status: 'pending' | 'published' | 'rejected'
+  /** The reviewer's reason, when it was not published. */
+  reason: string | null
+  reviewedAt: string | null
+  /** A reviewer corrected the text, the vehicle or the photos. */
+  edited: boolean
+}
+
+export interface FaultCodeFixInput {
+  code: string
+  /** For a make's own code, the meaning the fix is for. */
+  meaning?: string
+  text: string
+  lang: string
+  vehicle?: FaultCodeVehicle
+  /** A stable id of the workshop; the service keeps only a keyed hash of it. */
+  workshopRef: string
+  /** Up to four photos, already compressed in the browser. */
+  photos: Blob[]
+}
+
+/**
+ * A researched fix for a code, or for one meaning of a make's code: what an AI found on the
+ * web, waiting for a person's check (pending) or checked (published); or a search that found
+ * nothing specific (missed); or one running right now.
+ */
+export interface FaultCodeResearch {
+  id: string
+  code: string
+  meaning: string | null
+  status: 'running' | 'pending' | 'published' | 'missed'
+  findings: {
+    title: string
+    meaning: string
+    commonIssues: string[]
+    steps: string[]
+    causes: { label: string; likelihood: 'low' | 'medium' | 'high' }[]
+    advice: string | null
+    sources: { url: string; title: string | null }[]
+  } | null
+  /** Why nothing was kept, for a miss. */
+  reason: string | null
+  /** How many times workshops asked for it. */
+  requests: number
+  helpful: number
+  notHelpful: number
+  createdAt: string
+}
+
+/** Why a research did not run: another one is running, the daily limit, or no research. */
+export type FaultCodeResearchRefusal = 'busy' | 'limited' | 'unavailable'
+
+/** Whether a shared waveform shows how it should look or what was wrong. */
+export type WaveformKind = 'good' | 'faulty'
+/** How the engine ran when it was recorded. */
+export type WaveformCondition =
+  | 'key_on'
+  | 'cranking'
+  | 'idle'
+  | 'rpm_2500'
+  | 'driving'
+  | 'under_load'
+/** The recording (PicoScope's .psdata), its settings, a CSV export, a picture of the screen. */
+export type WaveformFileRole = 'psdata' | 'pssettings' | 'csv' | 'image'
+
+/** A CSV export drawn small: each channel's lowest and highest value per time slice. */
+export interface WaveformPreview {
+  timeUnit: string
+  start: number
+  end: number
+  channels: { name: string; unit: string; min: (number | null)[]; max: (number | null)[] }[]
+}
+
+/** A scope recording a workshop shared for a code, known good or faulty. */
+export interface FaultCodeWaveform {
+  id: string
+  code: string
+  meaning: string | null
+  kind: WaveformKind
+  /** What was measured, in the workshop's words. */
+  title: string
+  condition: WaveformCondition | null
+  note: string | null
+  lang: string
+  vehicle: FaultCodeVehicle | null
+  preview: WaveformPreview | null
+  files: {
+    role: WaveformFileRole
+    name: string
+    size: number
+    width: number | null
+    height: number | null
+  }[]
+  createdAt: string
+}
+
+/** A waveform this workshop shared, with how its review stands. */
+export interface FaultCodeOwnWaveform extends FaultCodeWaveform {
+  status: 'pending' | 'published' | 'rejected'
+  reason: string | null
+  reviewedAt: string | null
+}
+
+export interface FaultCodeWaveformInput {
+  code: string
+  meaning?: string
+  kind: WaveformKind
+  title: string
+  condition?: WaveformCondition
+  note?: string
+  lang: string
+  vehicle?: FaultCodeVehicle
+  workshopRef: string
+  files: { role: WaveformFileRole; blob: Blob; name: string }[]
+}
+
+/** A make's code found without knowing the make: Ford's P1000, BMW's 2A82. */
+export interface OemFindHit {
+  make: string
+  code: string
+  meanings: number
+  title: string | null
+}
+
+/** One code from a workshop's import file, field by field. */
+export interface CodeImportRow {
+  code: string
+  title?: string
+  description?: string
+  commonIssues?: string
+  resolution?: string
+  advisory?: string
+  causes: { label: string; likelihood?: string }[]
+}
+
+/** Why a row of an import cannot go. */
+export type CodeImportProblem =
+  | 'code'
+  | 'duplicate'
+  | 'title'
+  | 'empty'
+  | 'too_long'
+  | 'likelihood'
+  | 'meanings'
+
+/** What a row would do: new for the make, a change to our text, the same, or a problem. */
+export interface CodeImportChecked {
+  n: number
+  code: string
+  state: 'new' | 'change' | 'same' | 'problem'
+  problem: CodeImportProblem | null
+  /** What a change sets: title, description, common_issues, resolution, advisory, causes. */
+  fields: string[]
+  addedCauses: number
+}
+
+export interface CodeImportCounts {
+  new: number
+  change: number
+  same: number
+  problem: number
+}
+
+export interface CodeImportInput {
+  /** The make as the service keys it: ford, land-rover. */
+  make: string
+  lang: string
+  rows: CodeImportRow[]
+  source?: string
+  fileName?: string
+  workshopRef: string
+}
+
+/** An import this workshop sent, with how its codes stand. */
+export interface CodeImportStatus {
+  id: string
+  make: string
+  lang: string
+  source: string | null
+  fileName: string | null
+  createdAt: string
+  counts: { new: number; change: number; pending: number; published: number; rejected: number }
+  reviewedAt: string | null
+}
+
+/** Why the service would not take an import; anything else is FaultCodesUnavailable. */
+export type CodeImportRefusal = 'paused' | 'too_large' | 'invalid' | 'nothing'
+
+/** Why the service would not take a fix; anything else is FaultCodesUnavailable. */
+export type FaultCodeFixRefusal = 'paused' | 'photo' | 'too_large' | 'invalid'
+
+/**
+ * The fault code service did not answer in time, refused the key, or is not
+ * configured on this server. Callers turn it into "not available right now";
+ * it never reaches a screen as an error.
+ */
+export class FaultCodesUnavailable extends Error {}
+
 export interface ConnectorServer {
   manifest: ConnectorManifest
   /** After connecting: who the account is, shown on the connection page. */
   identify?(ctx: ConnectorContext): Promise<{ id: string; name: string }>
   /** Cheap round trip that proves the credentials still work. */
   test(ctx: ConnectorContext): Promise<{ ok: boolean; message?: string }>
+  /**
+   * Whether a 429 or 5xx is worth retrying, from the vendor's answer. The
+   * client retries them by default; a vendor that says the caller is
+   * blocked for a while or out of calls for the day (Zoho) is only held
+   * longer by retries, so the call fails at once with the vendor's words.
+   */
+  shouldRetry?(status: number, body: string): boolean
   /**
    * Send a real message to the signed-in user, for vendors where a key check
    * is not proof that mail or texts actually go out. Throws with the vendor's
@@ -383,6 +1005,28 @@ export interface ConnectorServer {
   sendTest?(ctx: ConnectorContext, to: { email: string }): Promise<void>
   /** Providers for remote-select settings, keyed by SettingField.source. */
   remoteOptions?: Record<string, (ctx: ConnectorContext) => Promise<SettingOption[]>>
+  /**
+   * A check of keys and settings typed but not yet saved, for a manifest
+   * with testBeforeConnect. It proves access and leaves nothing behind: a
+   * test object written and removed, never a repository.
+   */
+  previewTest?(input: {
+    credentials: Record<string, unknown>
+    settings: Record<string, unknown>
+    organizationId: string
+  }): Promise<PreviewTestResult>
+  /**
+   * The same lists from credentials and settings that are typed but not yet
+   * saved, for a remote-select with `preview`. Nothing is written; a wrong
+   * key gives an empty list, never an error the form has to explain.
+   */
+  previewOptions?: Record<
+    string,
+    (input: {
+      credentials: Record<string, unknown>
+      settings: Record<string, unknown>
+    }) => Promise<SettingOption[]>
+  >
   /**
    * Ask a vehicle registry about one vehicle, for connectors with the
    * 'vehicle.lookup' capability. Synchronous because a form is waiting on it.
@@ -398,6 +1042,151 @@ export interface ConnectorServer {
    * the authority has no record of the model.
    */
   vehicleSafety?(ctx: ConnectorContext, query: VehicleSafetyQuery): Promise<VehicleSafetyReport>
+  /**
+   * Book times for a model year, for connectors with the 'repair.labor'
+   * capability. Synchronous because a dialog is waiting on it. The answer is
+   * null when the source has no such vehicle. Throws RepairDataKeyRejected
+   * when the key is refused.
+   */
+  laborTimes?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<LaborTime>>
+  /** Fluid types and capacities, for connectors with the 'repair.fluids' capability. */
+  fluidSpecs?(ctx: ConnectorContext, query: RepairDataQuery): Promise<RepairDataReply<FluidSpec>>
+  /**
+   * What each code means on this vehicle, for connectors with the
+   * 'diagnostics.codes' capability. Every code of a job or a scan in one
+   * call. Throws FaultCodesUnavailable when the service cannot answer.
+   */
+  lookupCodes?(
+    ctx: ConnectorContext,
+    query: { codes: string[]; vehicle?: FaultCodeVehicle; locale: string; details?: boolean }
+  ): Promise<FaultCodeAnswer[]>
+  /** One code with its description and causes. Null when the service has no such code. */
+  codeDetail?(
+    ctx: ConnectorContext,
+    query: { code: string; vehicle?: FaultCodeVehicle; locale: string }
+  ): Promise<FaultCodeAnswer | null>
+  /**
+   * A manufacturer's own code (BMW's 2A82) from one make's data (`source`,
+   * such as "bmw"): every meaning it has, with the control units, vehicles
+   * and engines behind each. Null when the service does not serve that
+   * make's codes, or does not know the code.
+   */
+  /** Whether research can be asked for, and each meaning's research of a code (P0420, BMW-2A82). */
+  researchFor?(
+    ctx: ConnectorContext,
+    query: { code: string }
+  ): Promise<{ available: boolean; research: FaultCodeResearch[] }>
+  /**
+   * Researches a code (or a meaning of a make's code) with AI and web search, or answers with
+   * what is known. Can take a minute or two.
+   */
+  research?(
+    ctx: ConnectorContext,
+    input: { code: string; meaning?: string; vehicle?: FaultCodeVehicle; workshopRef: string }
+  ): Promise<
+    { ok: true; research: FaultCodeResearch } | { ok: false; reason: FaultCodeResearchRefusal }
+  >
+  /** "Did this fix it?" for a research; false when there is no such research. */
+  rateResearch?(
+    ctx: ConnectorContext,
+    input: { id: string; helpful: boolean; workshopRef: string }
+  ): Promise<boolean>
+  /** Shares a scope recording for a code; it waits for a person's review. */
+  shareWaveform?(
+    ctx: ConnectorContext,
+    input: FaultCodeWaveformInput
+  ): Promise<{ ok: true; id: string } | { ok: false; reason: FaultCodeFixRefusal }>
+  /** Published waveforms for a code (P0420, BMW-2A82), newest first. */
+  publishedWaveforms?(ctx: ConnectorContext, query: { code: string }): Promise<FaultCodeWaveform[]>
+  /** This workshop's own waveforms among `ids`, with how their review stands. */
+  waveformStatus?(ctx: ConnectorContext, ids: string[]): Promise<FaultCodeOwnWaveform[]>
+  withdrawWaveform?(
+    ctx: ConnectorContext,
+    input: { id: string; workshopRef: string }
+  ): Promise<boolean>
+  /** One of a waveform's files, streamed; null when there is none to see. */
+  waveformFile?(
+    ctx: ConnectorContext,
+    query: { id: string; role: WaveformFileRole; size: 'full' | 'thumb'; workshopRef: string }
+  ): Promise<{
+    body: ReadableStream<Uint8Array>
+    length: number | null
+    contentType: string
+    disposition: string | null
+  } | null>
+  /** The makes whose own codes the service answers for ("bmw"); none while it serves none. */
+  oemMakes?(ctx: ConnectorContext): Promise<string[]>
+  /** Every make that has a code, for a search box that does not know the make. */
+  findOemCode?(
+    ctx: ConnectorContext,
+    query: { code: string; locale?: string }
+  ): Promise<OemFindHit[]>
+  /** What each row of an import file would do, keeping nothing. */
+  checkCodeImport?(
+    ctx: ConnectorContext,
+    input: Omit<CodeImportInput, 'workshopRef' | 'source' | 'fileName'>
+  ): Promise<
+    | { ok: true; counts: CodeImportCounts; rows: CodeImportChecked[] }
+    | { ok: false; reason: CodeImportRefusal }
+  >
+  /** Sends an import's new and changed codes for a person to review. */
+  sendCodeImport?(
+    ctx: ConnectorContext,
+    input: CodeImportInput
+  ): Promise<
+    { ok: true; id: string; counts: CodeImportCounts } | { ok: false; reason: CodeImportRefusal }
+  >
+  /** This workshop's imports among `ids`, with how their codes stand. */
+  codeImportStatus?(ctx: ConnectorContext, ids: string[]): Promise<CodeImportStatus[]>
+  oemCode?(
+    ctx: ConnectorContext,
+    query: { source: string; code: string; chassis?: string; engine?: string; locale?: string }
+  ): Promise<OemCodeAnswer | null>
+  /** Codes by prefix ("p04") or by the words of their meaning ("lean bank 1"). */
+  searchCodes?(
+    ctx: ConnectorContext,
+    query: { query: string; locale: string; limit?: number }
+  ): Promise<FaultCodeSearchHit[]>
+  /** Tells the service a meaning looks wrong. Answers with the report's id there. */
+  reportDefinition?(
+    ctx: ConnectorContext,
+    report: FaultCodeReport
+  ): Promise<{ id: string; status: 'open' | 'resolved' }>
+  /** Where the reports this workshop sent stand now. */
+  reportStatus?(ctx: ConnectorContext, ids: string[]): Promise<FaultCodeReportStatus[]>
+  /**
+   * Shares what fixed a code, photos included, for a person at the service to
+   * review. Answers with the fix's id there, or why it was refused. Throws
+   * FaultCodesUnavailable when the service cannot be reached.
+   */
+  shareFix?(
+    ctx: ConnectorContext,
+    fix: FaultCodeFixInput
+  ): Promise<{ ok: true; id: string } | { ok: false; reason: FaultCodeFixRefusal }>
+  /** How the fixes this workshop shared stand now; a withdrawn one is left out. */
+  fixStatus?(ctx: ConnectorContext, ids: string[]): Promise<FaultCodeOwnFix[]>
+  /** Deletes a shared fix and its photos. False when the service has no such fix from it. */
+  withdrawFix?(ctx: ConnectorContext, input: { id: string; workshopRef: string }): Promise<boolean>
+  /** Published fixes for a code, newest first. */
+  publishedFixes?(
+    ctx: ConnectorContext,
+    query: { code: string; limit?: number }
+  ): Promise<FaultCodeFix[]>
+  /**
+   * One photo of a fix as JPEG: a published one, or one of this workshop's
+   * own (`workshopRef`). Null when there is no such photo for it.
+   */
+  fixPhoto?(
+    ctx: ConnectorContext,
+    query: { id: string; n: number; size: 'full' | 'thumb'; workshopRef: string }
+  ): Promise<{ body: ReadableStream<Uint8Array>; length: number | null } | null>
+  /**
+   * Whether the key's plan still lets the account keep what it fetched, for
+   * the daily check on stored answers. Null when the source would not say,
+   * such as a key that has used its calls for the day. Throws
+   * RepairDataKeyRejected when the key is refused.
+   */
+  repairDataPlan?(ctx: ConnectorContext): Promise<{ keep: boolean | null }>
   jobs: Record<string, JobHandler>
   /** Inbound webhook handling, where the vendor pushes. */
   webhook?: {
@@ -414,6 +1203,14 @@ export interface ConnectorServer {
   onConnect?(ctx: ConnectorContext): Promise<{ settings?: Record<string, unknown> } | void>
   /** Clean up remote state when the workshop disconnects. */
   onDisconnect?(ctx: ConnectorContext): Promise<void>
+  /**
+   * For connectors with the 'backup.target' capability: where restic keeps
+   * this workshop's repository and how it authenticates there. Throws when
+   * the saved settings cannot be turned into a safe address.
+   */
+  backupTarget?: {
+    repository(ctx: ConnectorContext): Promise<ResticRepository>
+  }
 }
 
 /** Stored, sealed, in IntegrationConnection.credentials. */
@@ -424,6 +1221,8 @@ export interface OAuthCredentials {
   expiresAt?: number
   tokenType?: string
   scope?: string
+  /** The API host the vendor named for this account, when it has one per region (Zoho). */
+  apiDomain?: string
   /** Present for tenant-owned apps. */
   clientId?: string
   clientSecret?: string
@@ -453,3 +1252,30 @@ export interface ActivityBatch {
 }
 
 export type ActivityItem = ({ type: 'job' } & ActivityJob) | ({ type: 'batch' } & ActivityBatch)
+
+/** Where the next page of the activity list starts: the oldest line already shown. */
+export interface ActivityCursor {
+  /** When that line's first job was queued, ISO. */
+  at: string
+  /** Its batch id, or the job's own id. */
+  key: string
+}
+
+/** One log line on the activity card. */
+export interface ActivityLog {
+  id: string
+  level: string
+  message: string
+  details?: unknown
+  createdAt: string
+}
+
+/**
+ * One page of the activity list. The newest page also carries the latest log
+ * lines; older pages leave them empty.
+ */
+export interface ActivityPage {
+  items: ActivityItem[]
+  logs: ActivityLog[]
+  nextCursor: ActivityCursor | null
+}

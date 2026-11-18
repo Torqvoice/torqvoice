@@ -46,7 +46,8 @@ interface NotesTableProps {
   pageSize: number
   totalPages: number
   onSelectNote: (note: NoteRow) => void
-  onAddNote: () => void
+  /** Leave out where the page has its own button for adding a note. */
+  onAddNote?: () => void
   onTogglePin: (id: string) => void
   onDeleteNote: (id: string) => void
 }
@@ -103,21 +104,25 @@ export function NotesTable({
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center justify-between">
-        {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-        <div className="ml-auto">
-          <Button
-            size="sm"
-            onClick={onAddNote}
-            aria-label={t('addNote')}
-            title={t('addNote')}
-            className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
-          >
-            <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
-            <span className="hidden md:inline">{t('addNote')}</span>
-          </Button>
+      {(onAddNote || isPending) && (
+        <div className="flex items-center justify-between">
+          {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          {onAddNote && (
+            <div className="ml-auto">
+              <Button
+                size="sm"
+                onClick={onAddNote}
+                aria-label={t('addNote')}
+                title={t('addNote')}
+                className="h-9 w-9 p-0 md:h-8 md:w-auto md:px-3"
+              >
+                <Plus className="h-4 w-4 md:mr-1 md:h-3.5 md:w-3.5" />
+                <span className="hidden md:inline">{t('addNote')}</span>
+              </Button>
+            </div>
+          )}
         </div>
-      </div>
+      )}
 
       {/* Card list (phones + small tablets) */}
       <div className="space-y-2 md:hidden">

@@ -1,0 +1,125 @@
+import type { SettingsEntry } from './types'
+
+/**
+ * Tax. One card; everything below the enable switch renders only while tax
+ * is on, and the split and selective fields only under their own switches.
+ * The per-charge switches are drawn from a list, so they land on their box.
+ */
+export const taxEntries: SettingsEntry[] = [
+  {
+    id: 'tax.enabled',
+    page: 'tax',
+    title: 'currency.enableTax',
+    description: 'currency.enableTaxHint',
+    anchor: 'tax-enabled',
+    keywords: ['enable tax', 'vat', 'sales tax', 'mva', 'moms', 'mwst', 'tva', 'iva'],
+  },
+  {
+    id: 'tax.defaultRate',
+    page: 'tax',
+    title: 'currency.defaultTaxRate',
+    description: 'currency.defaultTaxRateHint',
+    anchor: 'defaultTaxRate',
+    keywords: ['tax rate', 'vat rate', 'tax percentage', 'gst', 'mva', 'moms', 'btw', 'iva'],
+  },
+  {
+    id: 'tax.label',
+    page: 'tax',
+    title: 'tax.labelLabel',
+    description: 'tax.labelHint',
+    anchor: 'taxLabel',
+    keywords: ['tax name', 'tax label', 'vat label', 'mva', 'mwst', 'gst'],
+  },
+  {
+    id: 'tax.split',
+    page: 'tax',
+    title: 'tax.splitLabel',
+    description: 'tax.splitHint',
+    anchor: 'taxSplit',
+    keywords: [
+      'split tax',
+      'two taxes',
+      'gst qst',
+      'gst pst',
+      'hst',
+      'cgst sgst',
+      'multiple taxes',
+    ],
+  },
+  {
+    id: 'tax.preset',
+    page: 'tax',
+    title: 'tax.presetLabel',
+    anchor: 'taxPreset',
+    keywords: ['tax preset', 'region', 'quebec', 'canada', 'india'],
+  },
+  {
+    id: 'tax.components',
+    page: 'tax',
+    title: 'tax.addComponent',
+    description: 'tax.combinedRateHint',
+    anchor: 'tax-components',
+    keywords: ['tax components', 'add tax', 'combined rate', 'second tax'],
+  },
+  {
+    id: 'tax.registration',
+    page: 'tax',
+    title: 'tax.componentRegistration',
+    description: 'tax.registrationHint',
+    anchor: 'tax-components',
+    keywords: ['tax registration', 'vat number', 'gst number', 'tax id', 'registration number'],
+  },
+  {
+    id: 'tax.selective',
+    page: 'tax',
+    title: 'tax.selectiveLabel',
+    description: 'tax.selectiveHint',
+    anchor: 'taxSelective',
+    keywords: ['tax only parts', 'no tax on labor', 'tax exempt', 'selective tax'],
+  },
+  {
+    id: 'tax.appliesTo',
+    page: 'tax',
+    title: 'tax.appliesTitle',
+    description: 'tax.appliesHint',
+    anchor: 'tax-applies-to',
+    keywords: ['charge tax on', 'taxable', 'tax on parts', 'tax on labor', 'tax on shop fee'],
+  },
+  {
+    id: 'tax.appliesParts',
+    page: 'tax',
+    title: 'tax.appliesParts',
+    anchor: 'tax-applies-to',
+    keywords: ['tax on parts', 'parts taxable', 'vat on parts'],
+  },
+  {
+    id: 'tax.appliesLabor',
+    page: 'tax',
+    title: 'tax.appliesLabor',
+    anchor: 'tax-applies-to',
+    keywords: ['tax on labor', 'labour tax', 'labor taxable'],
+  },
+  {
+    id: 'tax.appliesShopFee',
+    page: 'tax',
+    title: 'tax.appliesShopFee',
+    anchor: 'tax-applies-to',
+    keywords: ['tax on shop fee', 'shop fee taxable', 'vat on fees'],
+  },
+  {
+    id: 'tax.mode',
+    page: 'tax',
+    title: 'tax.modeLabel',
+    description: 'tax.modeHint',
+    anchor: 'tax-mode',
+    keywords: ['inclusive', 'exclusive', 'prices include tax', 'gross', 'net', 'tax included'],
+  },
+  {
+    id: 'tax.lineItemsInclTax',
+    page: 'tax',
+    title: 'tax.lineItemsInclTaxLabel',
+    description: 'tax.lineItemsInclTaxHint',
+    anchor: 'lineItemsInclTax',
+    keywords: ['line prices incl tax', 'show prices with tax', 'gross prices', 'incl vat'],
+  },
+]

@@ -1,9 +1,8 @@
+import { getTranslations } from 'next-intl/server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
-import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InvoiceView } from './invoice-view'
 import { getFeatures } from '@/lib/features'
-import { resolvePortalOrg } from '@/lib/portal-slug'
 import { buildInvoicePrintSpec } from '@/features/invoice-designer/Pdf/buildInvoicePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
 import { visitConditionMapIn } from '@/features/condition-map/Lib/loadMarks.server'
@@ -16,6 +15,10 @@ import type { Metadata } from 'next'
 import { documentCustomerId, telegramQrForPrint } from '@/features/invoices/Lib/telegramQr'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
+import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { publicInvoiceRecord } from '@/lib/public-payload'
+import { lookUpShareLink } from '@/lib/share-link.server'
 
 /** Rewrites /api/protected/files/[orgId]/[category]/[filename] to /api/public/files/[token]/[category]/[filename] */
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -27,8 +30,20 @@ function toPublicFileUrl(fileUrl: string, token: string): string {
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orgId: string; token: string }>
+}): Promise<Metadata> {
+  const { orgId, token } = await params
+  const link = await lookUpShareLink('invoice', orgId, token)
+  const robots = { index: false, follow: false }
+  // A closed link's tab does not say what the link led to.
+  if (link.status === 'expired' || link.status === 'gone') {
+    return { title: await closedShareLinkTitle(link.organizationId, link.status), robots }
+  }
+  const t = await getTranslations('share.invoice')
+  return { title: t('title'), robots }
 }
 
 export default async function PublicInvoicePage({
@@ -38,22 +53,21 @@ export default async function PublicInvoicePage({
 }) {
   const { orgId: orgParam, token } = await params
 
-  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-  const resolvedOrg = await resolvePortalOrg(orgParam)
-  const orgId = resolvedOrg?.id ?? orgParam
-
-  const shared = await db.serviceRecord.findUnique({
-    where: { publicToken: token },
-    select: { id: true, organizationId: true },
-  })
-  if (!shared || shared.organizationId !== orgId) {
-    notFound()
+  // Only an address with no workshop behind it is the plain 404. A customer
+  // whose link is closed gets a page that tells them who to ask.
+  const link = await lookUpShareLink('invoice', orgParam, token)
+  if (link.status === 'unknownWorkshop') notFound()
+  if (link.status !== 'open') {
+    return (
+      <ShareLinkClosed organizationId={link.organizationId} status={link.status} kind="invoice" />
+    )
   }
+  const { organizationId: orgId, shared } = link
 
   // The document as it was issued, or the live draft: one assembler decides,
   // and the page a customer opens is the sheet the PDF prints.
   const assembly = await assembleInvoicePrint(shared.id)
-  if (!assembly) notFound()
+  if (!assembly) return <ShareLinkClosed organizationId={orgId} status="gone" kind="invoice" />
   const { record, settingsMap, org } = assembly
 
   const features = await getFeatures(orgId)
@@ -87,32 +101,13 @@ export default async function PublicInvoicePage({
   // into the integrations catalog they were connected on.
   const enabledProviders = await offeredPaymentProviders(orgId)
 
-  // What reaches the browser: internal unitCost/markupPercent must never be
-  // in the customer-facing payload, attachment URLs go through the public
-  // file route, and the customer, vehicle and technician are the ones the
-  // sheet prints, frozen at issue or live for a draft.
-  const publicRecord = {
-    ...record,
-    techName: assembly.data.techName,
-    customer: assembly.data.customer,
-    vehicle: assembly.data.vehicle,
-    partItems: record.partItems.map((p) => ({
-      id: p.id,
-      partNumber: p.partNumber,
-      name: p.name,
-      quantity: p.quantity,
-      unit: p.unit,
-      category: p.category,
-      unitPrice: p.unitPrice,
-      total: p.total,
-    })),
-    attachments: record.attachments
-      .filter((att) => att.includeInInvoice !== false)
-      .map((att) => ({
-        ...att,
-        fileUrl: toPublicFileUrl(att.fileUrl, token),
-      })),
-  }
+  // What reaches the browser is named field by field, never the row: a prop
+  // of a client component is readable by anyone holding the link, drawn or
+  // not. The vehicle is the one the sheet prints, frozen at issue or live for
+  // a draft, and attachment addresses go through the public file route.
+  const publicRecord = publicInvoiceRecord(record, assembly.data.vehicle, (url) =>
+    toPublicFileUrl(url, token)
+  )
 
   const acceptLanguage = (await headers()).get('accept-language')
   const locale = await resolveCustomerLocale(orgId, acceptLanguage)
@@ -141,6 +136,7 @@ export default async function PublicInvoicePage({
     telegramQrDataUri: telegramQr?.dataUri,
     telegramLabel: labels?.telegramConnect,
     labels,
+    locale,
     conditionMap,
     inspectionResults: assembly.inspectionResults,
   })
@@ -177,10 +173,9 @@ export default async function PublicInvoicePage({
       logoSize={assembly.template.logoSize || 100}
       portalUrl={portalUrl}
       layoutConfig={assembly.layoutConfig}
-      customFields={assembly.data.customFields}
-      findings={assembly.data.findings}
       serviceType={assembly.serviceType}
       taxLabel={assembly.taxLabel}
+      expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}
       certificateUrl={
         certificateInspection
           ? `/api/public/share/invoice/${orgParam}/${token}/certificate`

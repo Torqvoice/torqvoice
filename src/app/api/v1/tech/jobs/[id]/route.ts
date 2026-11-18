@@ -3,6 +3,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry } from '@/features/time-tracking/Lib/timeEntries'
 import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * One job, with everything the technician needs while standing at the car.
@@ -22,7 +23,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: {
           id: true,
@@ -37,7 +38,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               id: true,
               description: true,
               findings: {
-                select: { id: true, description: true, severity: true, status: true },
+                select: {
+                  id: true,
+                  description: true,
+                  severity: true,
+                  status: true,
+                  faultCode: true,
+                  faultStatus: true,
+                  faultModule: true,
+                  faultMeaning: true,
+                },
               },
             },
           },
@@ -84,6 +94,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               fileUrl: true,
               fileName: true,
               fileType: true,
+              description: true,
               createdAt: true,
             },
             orderBy: { createdAt: 'desc' },

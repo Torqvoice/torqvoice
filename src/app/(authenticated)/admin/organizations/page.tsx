@@ -1,5 +1,10 @@
 import { getOrganizations } from '@/features/admin/Actions/getOrganizations'
 import { AdminOrganizations } from '@/features/admin/Components/admin-organizations'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('organizations')
+}
 
 export default async function AdminOrganizationsPage({
   searchParams,

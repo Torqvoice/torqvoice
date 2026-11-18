@@ -48,10 +48,10 @@ describe('the designer sample and a split tax', () => {
     // 480.00 net: GST 24.00, QST 47.88, total 551.88
     expect(totals).toEqual(
       expect.arrayContaining([
-        ['Subtotal', '€ 480.00'],
-        ['GST (5%)', '€ 24.00'],
-        ['QST (9.975%)', '€ 47.88'],
-        ['Total', '€ 551.88'],
+        ['Subtotal', '$480.00'],
+        ['GST (5%)', '$24.00'],
+        ['QST (9.975%)', '$47.88'],
+        ['Total', '$551.88'],
       ])
     )
     expect(totals.some(([label]) => label.startsWith('Tax ('))).toBe(false)
@@ -87,8 +87,8 @@ describe('the designer sample and a split tax', () => {
     const data = buildSampleData(workshop, [], t, labels, 'invoice')
     expect(data.totals.map((line) => [line.label, line.value])).toEqual(
       expect.arrayContaining([
-        ['Tax (25%)', '€ 120.00'],
-        ['Total', '€ 600.00'],
+        ['Tax (25%)', '$120.00'],
+        ['Total', '$600.00'],
       ])
     )
     expect(data.payment.some((pair) => pair.label.endsWith('No.'))).toBe(false)

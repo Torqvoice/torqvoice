@@ -42,6 +42,7 @@
     "warranty": "Garantie",
     "workshop": "Werkplaats",
     "appearance": "Weergave",
+    "shortcuts": "Sneltoetsen",
     "email": "E-mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Bandenset",
     "tireForecast": "Volgend seizoen",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Keuringsherinneringen"
+    "inspectionReminders": "Keuringsherinneringen",
+    "faultCodes": "Foutcodes",
+    "faultCode": "Foutcode",
+    "calendar": "Kalender",
+    "messages": "Berichten",
+    "inspections": "Inspecties",
+    "inspectionDetails": "Inspectiegegevens"
   },
   "search": "Zoeken...",
-  "shortcut": "Ctrl+K",
   "readMore": "Meer lezen",
   "newWorkOrder": "Nieuwe werkorder",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Onderdeel",
     "inspection": "Keuring",
     "shopActions": "Werkplaats",
-    "person": "Persoon toevoegen"
+    "person": "Persoon toevoegen",
+    "appointment": "Afspraak"
   },
   "purchaseWhiteLabel": "White-label aanschaffen",
   "licenseExpired": "Uw licentie is verlopen. Functies kunnen beperkt zijn.",
@@ -123,6 +130,7 @@
     "cancel": "Annuleren",
     "createCompany": "Bedrijf aanmaken",
     "theme": "Thema",
+    "keyboardShortcuts": "Sneltoetsen",
     "signOut": "Uitloggen",
     "more": "Meer",
     "auditLog": "Activiteitenlog",
@@ -141,6 +149,7 @@
       "workOrders": "{count} open werkorders",
       "inspections": "{count} lopende inspecties",
       "reminders": "{count} herinneringen vervallen"
-    }
+    },
+    "faultCodes": "Foutcodes"
   }
 }

@@ -19,6 +19,7 @@
  * the reader's translations.
  */
 
+import { findingLine } from '@/features/fault-codes/Lib/codes'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'fs/promises'
 import { db } from '@/lib/db'
@@ -401,11 +402,27 @@ async function assembleLive(
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
   const [findings, customFields, look, signatureDataUri, conditionMap] = await Promise.all([
-    db.vehicleFinding.findMany({
-      where: { serviceRecordId: record.id, status: { not: 'resolved' } },
-      select: { description: true, severity: true, notes: true },
-      orderBy: { createdAt: 'desc' },
-    }),
+    db.vehicleFinding
+      .findMany({
+        where: { serviceRecordId: record.id, status: { not: 'resolved' } },
+        select: {
+          description: true,
+          severity: true,
+          notes: true,
+          faultCode: true,
+          faultMeaning: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      })
+      // A fault code prints as the code and the meaning saved with it,
+      // "P0420 Catalyst efficiency below threshold", never what the code
+      // service says today: a print does not wait on it.
+      .then((rows) =>
+        rows.map(({ faultCode, faultMeaning, ...f }) => ({
+          ...f,
+          description: findingLine({ description: f.description, faultCode, faultMeaning }),
+        }))
+      ),
     getCustomFieldsForPrint(organizationId, record.id, 'service_record'),
     currentLook(organizationId, settingsMap, record, customerRow?.invoiceDesignId),
     memberSignatureDataUri(organizationId, record.createdBy?.id),

@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Iniciar sesión",
     "save": "Guardar",
+    "saveChanges": "Guardar cambios",
     "cancel": "Cancelar",
     "delete": "Eliminar",
     "submit": "Enviar",
     "back": "Volver",
     "confirm": "Confirmar",
-    "saveChanges": "Guardar cambios",
     "edit": "Editar",
     "add": "Agregar",
     "gotIt": "Entendido"
@@ -54,6 +54,36 @@
     "whatsNew": "Ver novedades",
     "dismiss": "Cerrar"
   },
+  "whatsNew": {
+    "title": "Novedades",
+    "openUnread": "Novedades: actualizaciones que aún no ha visto",
+    "description": "Las últimas incorporaciones, las más recientes primero.",
+    "unread": "Nuevo desde su última visita",
+    "newCount": "{count, plural, one {# nueva} other {# nuevas}}",
+    "showOlder": "Ver anteriores",
+    "hideTab": "Ocultar esta pestaña",
+    "tabHidden": "Pestaña oculta. Puede volver a activarla en Configuración, Acerca de.",
+    "kindNew": "Nuevo",
+    "kindImproved": "Mejorado",
+    "open": "Abrir",
+    "guide": "Leer la guía",
+    "video": "Ver el vídeo",
+    "version": "Versión {version}",
+    "allReleaseNotes": "Todas las notas de versión",
+    "feedback": {
+      "question": "¿Le ha resultado útil?",
+      "up": "Sí, es útil",
+      "down": "No, no es lo que esperaba",
+      "askUp": "¿Qué le gusta de esto? (opcional)",
+      "askDown": "¿Qué no ha funcionado como esperaba?",
+      "privacyIdentified": "Se envía al equipo de Torqvoice con su correo electrónico para que podamos responderle.",
+      "privacyAnonymous": "Se envía al equipo de Torqvoice sin su nombre ni su correo electrónico.",
+      "skip": "Omitir",
+      "send": "Enviar",
+      "thanks": "Gracias, su comentario se ha enviado.",
+      "failed": "No se ha podido enviar su opinión. Inténtelo de nuevo en un momento."
+    }
+  },
   "pagination": {
     "showing": "Mostrando {start}–{end} de {total}",
     "perPage": "por página",
@@ -76,6 +106,26 @@
     "enterManually": "Introducir manualmente",
     "enterBarcode": "Introducir código de barras…",
     "scanHint": "Apunte la cámara a un código de barras o introdúzcalo manualmente",
+    "submitBarcode": "Ir",
+    "camera": {
+      "tryAgain": "Reintentar",
+      "denied": {
+        "title": "El acceso a la cámara está bloqueado",
+        "body": "Permita la cámara para este sitio en su navegador, desde el icono de la cámara o del candado en la barra de direcciones, y pulse Reintentar. O escriba el código abajo."
+      },
+      "insecure": {
+        "title": "La cámara necesita HTTPS",
+        "body": "Los navegadores solo permiten la cámara con una conexión segura, y esta página está en HTTP ({host}). Abra Torqvoice por HTTPS para escanear, o escriba el código abajo."
+      },
+      "notFound": {
+        "title": "No se encontró ninguna cámara",
+        "body": "Conecte una cámara y pulse Reintentar, o escriba el código abajo."
+      },
+      "failed": {
+        "title": "No se pudo iniciar la cámara",
+        "body": "Puede que otra aplicación la esté usando. Ciérrela y pulse Reintentar, o escriba el código abajo."
+      }
+    },
     "iosInstallHint": "Toque Compartir > Añadir a inicio",
     "installDescription": "Añádela a tu pantalla de inicio para acceder rápido",
     "enterFullscreen": "Pantalla completa",
@@ -85,6 +135,8 @@
     "title": "Mejore su plan para continuar",
     "maxCustomers": "Su plan incluye hasta {limit} clientes y ya ha alcanzado ese número. Mejore el plan para añadir todos los que necesite.",
     "maxUsers": "Su plan incluye {limit, plural, one {un miembro del equipo} other {# miembros del equipo}}. Mejore el plan para invitar a más personas.",
+    "maxPlatformMail": "Su plan envía hasta {limit} correos al día desde la dirección de Torqvoice, y los de hoy ya se han usado. Mejore su plan para enviar todos los que necesite, o envíe el resto mañana.",
+    "maxPlatformSms": "Su plan envía hasta {limit} SMS al día desde el número de Torqvoice, y los de hoy ya se han usado. Mejore su plan para tener un límite mayor, conecte su propio proveedor de SMS para enviar sin límite, o envíe el resto mañana.",
     "generic": "Esta función no está incluida en su plan actual.",
     "featureNotIncluded": "{feature} no está incluido en su plan actual.",
     "notNow": "Ahora no"
@@ -109,8 +161,6 @@
     "preview": "Vista previa",
     "failed": "No se pudo generar la vista previa del PDF."
   },
-  "attachPdf": "Adjuntar PDF",
-  "attachPdfHint": "Desactívalo para enviar un enlace en su lugar y ver cuándo lo abre el cliente.",
   "sentCopy": {
     "note": "Enviada el {date}. Los cambios hechos aquí pasan a la factura cuando se vuelva a enviar.",
     "confirmTitle": "Esta factura ya se ha enviado",
@@ -131,5 +181,145 @@
     "retake": "Volver a grabar",
     "use": "Usar este vídeo",
     "limit": "La grabación se detiene sola a los {minutes} minutos."
+  },
+  "photoCapture": {
+    "title": "Hacer una foto",
+    "description": "Con la cámara de este ordenador o una webcam conectada.",
+    "starting": "Iniciando la cámara...",
+    "live": "Vista previa de la cámara",
+    "preview": "La foto que acaba de hacer",
+    "camera": "Cámara",
+    "take": "Hacer foto",
+    "retake": "Repetir",
+    "use": "Usar esta foto",
+    "tryAgain": "Reintentar",
+    "uploadInstead": "Subir un archivo",
+    "denied": {
+      "title": "El acceso a la cámara está bloqueado",
+      "body": "Permita la cámara para este sitio en su navegador, desde el icono de la cámara o del candado en la barra de direcciones, y pulse Reintentar."
+    },
+    "insecure": {
+      "title": "La cámara necesita HTTPS",
+      "body": "Los navegadores solo permiten la cámara con una conexión segura, y esta página está en HTTP ({host}). Abra Torqvoice por HTTPS, o suba un archivo."
+    },
+    "notFound": {
+      "title": "No se encontró ninguna cámara",
+      "body": "Conecte una webcam y pulse Reintentar, o suba un archivo."
+    },
+    "failed": {
+      "title": "No se pudo iniciar la cámara",
+      "body": "Puede que otra aplicación la esté usando. Ciérrela y pulse Reintentar."
+    }
+  },
+  "richText": {
+    "openLinkHint": "Mantén pulsado {key} y haz clic para abrir",
+    "placeholder": "Escribe algo...",
+    "toolbar": "Formato",
+    "editor": "Texto",
+    "bold": "Negrita",
+    "italic": "Cursiva",
+    "underline": "Subrayado",
+    "strikethrough": "Tachado",
+    "bulletList": "Lista con viñetas",
+    "numberedList": "Lista numerada"
+  },
+  "appUpdated": {
+    "title": "Hay una nueva versión disponible",
+    "description": "Recarga la página para obtener las últimas novedades.",
+    "reload": "Recargar"
+  },
+  "signedOut": {
+    "title": "Se ha cerrado tu sesión",
+    "description": "Inicia sesión de nuevo para seguir trabajando. Copia primero lo que estabas escribiendo.",
+    "signIn": "Iniciar sesión"
+  },
+  "connectionLost": {
+    "title": "No se pudo conectar con Torqvoice",
+    "description": "Puede que tu último cambio no se haya guardado. Revisa tu conexión e inténtalo de nuevo."
+  },
+  "sendDocument": {
+    "titleQuote": "Enviar presupuesto",
+    "titleInvoice": "Enviar factura",
+    "titleInspection": "Enviar inspección",
+    "description": "El cliente recibe un enlace para verlo y descargarlo.",
+    "email": "Correo Electrónico",
+    "emailAddress": "Dirección de correo electrónico",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Adjuntar también el PDF",
+    "sms": "SMS",
+    "smsNumber": "Número de teléfono para SMS",
+    "whatsappNumber": "Número de teléfono para WhatsApp",
+    "phonePlaceholder": "Número de teléfono",
+    "message": "Mensaje (opcional, se añade al correo electrónico)",
+    "messagePlaceholder": "Añade un mensaje personal...",
+    "copyLink": "Copiar enlace",
+    "send": "Enviar",
+    "emailSent": "Correo electrónico enviado",
+    "failedEmail": "Error al enviar correo electrónico",
+    "smsSent": "SMS enviado",
+    "failedSms": "Error al enviar SMS"
+  },
+  "shareLink": {
+    "generateFailed": "No se pudo crear el enlace. Inténtalo de nuevo.",
+    "revokeFailed": "No se pudo confirmar que el enlace se revocó. Puede que siga funcionando para cualquiera que lo tenga.",
+    "channelNotConnected": "Conecta {channel} en Integraciones para enviar por esta vía.",
+    "openIntegrations": "Abrir Integraciones",
+    "channelNotInPlan": "{channel} no está incluido en tu plan.",
+    "channelTurnedOff": "El envío por {channel} está desactivado para este taller.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp enviado",
+    "failedWhatsapp": "Error al enviar el mensaje de WhatsApp",
+    "whatsappWindowClosed": "Este cliente no te ha escrito por WhatsApp en las últimas 24 horas y no hay ninguna plantilla aprobada configurada para contactarlo.",
+    "expiry": {
+      "never": "No caduca nunca",
+      "untilPaid": "Abierto hasta que se pague",
+      "expires": "Caduca el {date}",
+      "expired": "Caducó el {date}",
+      "change": "Cambiar",
+      "openAgain": "Volver a abrir",
+      "reopened": "El enlace vuelve a estar abierto",
+      "formTitle": "El enlace caduca",
+      "choice": {
+        "workshop": "Ajuste del taller",
+        "date": "En una fecha",
+        "never": "Nunca"
+      },
+      "rule": {
+        "never": "Los enlaces no caducan nunca",
+        "afterSharing": "{days, plural, one {# día} other {# días}} después de enviarlo",
+        "afterPayment": "{days, plural, one {# día} other {# días}} después de pagar la factura"
+      },
+      "dateHint": "El enlace funciona durante todo ese día.",
+      "chooseDate": "Elige una fecha",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "saved": "Caducidad del enlace guardada",
+      "saveFailed": "No se pudo guardar la caducidad del enlace. Inténtalo de nuevo."
+    }
+  },
+  "searchableSelect": {
+    "choose": "Elegir...",
+    "search": "Buscar...",
+    "noMatch": "Nada coincide"
+  },
+  "a11y": {
+    "skipToContent": "Saltar al contenido",
+    "mainNavigation": "Navegación principal",
+    "close": "Cerrar",
+    "breadcrumb": "Ruta de navegación",
+    "more": "Más",
+    "toggleSidebar": "Mostrar u ocultar la barra lateral",
+    "sidebar": "Barra lateral",
+    "sidebarDescription": "El menú principal.",
+    "openCalendar": "Abrir calendario",
+    "dismiss": "Cerrar",
+    "selectAll": "Seleccionar todo",
+    "selectRow": "Seleccionar {name}"
+  },
+  "confirmDialog": {
+    "title": "¿Está seguro?",
+    "irreversible": "Esta acción no se puede deshacer.",
+    "andMore": "y {count} más",
+    "typeToConfirm": "Escriba <b>{text}</b> para confirmar"
   }
 }

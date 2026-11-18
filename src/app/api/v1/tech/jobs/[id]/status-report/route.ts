@@ -10,6 +10,7 @@ import { isDemoMode } from '@/lib/demo'
 import { refuseDeclaredOversize, uploadLimit } from '@/lib/upload-guard'
 import { uploadsRoot } from '@/lib/upload-root'
 import { sniffDeclaredVideo } from '@/lib/video-sniff'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * A short update for the customer, recorded standing at the car.
@@ -55,7 +56,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: { id: true, technicianId: true },
       })

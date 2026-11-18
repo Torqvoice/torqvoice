@@ -4,6 +4,11 @@ import { getTranslations } from 'next-intl/server'
 import { Headset } from 'lucide-react'
 import { isSupportEnabled } from '@/lib/support'
 import { SupportSettingsControls } from '@/features/support/Components/SupportSettingsControls'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('support')
+}
 
 /**
  * Somewhere to find the support button again after dismissing it.
@@ -19,7 +24,12 @@ export default async function SupportSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <AppCard icon={Headset} title={t('support.title')} contentClassName="space-y-4">
+      <AppCard
+        id="support-settings"
+        icon={Headset}
+        title={t('support.title')}
+        contentClassName="space-y-4"
+      >
         <p className="text-sm text-muted-foreground">{t('support.description')}</p>
         <SupportSettingsControls />
       </AppCard>

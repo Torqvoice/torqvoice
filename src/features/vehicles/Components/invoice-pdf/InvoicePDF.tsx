@@ -39,6 +39,7 @@ export function InvoicePDF({
   telegramQrDataUri,
   telegramLabel,
   labels = {},
+  locale,
   conditionMap,
   inspectionResults,
 }: {
@@ -57,6 +58,8 @@ export function InvoicePDF({
   telegramQrDataUri?: string
   telegramLabel?: string
   labels?: Record<string, string>
+  /** The document's language; numbers are written its way. */
+  locale?: string
   conditionMap?: VisitConditionMap
   inspectionResults?: InspectionResults | null
 }) {
@@ -75,6 +78,7 @@ export function InvoicePDF({
     telegramQrDataUri,
     telegramLabel,
     labels,
+    locale,
     conditionMap,
     inspectionResults,
   })

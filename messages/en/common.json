@@ -54,6 +54,36 @@
     "whatsNew": "See what is new",
     "dismiss": "Dismiss"
   },
+  "whatsNew": {
+    "title": "What's new",
+    "openUnread": "What's new: updates you have not seen",
+    "description": "The latest additions, newest first.",
+    "unread": "New since you last looked",
+    "newCount": "{count} new",
+    "showOlder": "Show older updates",
+    "hideTab": "Hide this tab",
+    "tabHidden": "Tab hidden. You can turn it back on in Settings, About.",
+    "kindNew": "New",
+    "kindImproved": "Improved",
+    "open": "Open",
+    "guide": "Read the guide",
+    "video": "Watch the video",
+    "version": "Version {version}",
+    "allReleaseNotes": "All release notes",
+    "feedback": {
+      "question": "Was this useful?",
+      "up": "Yes, this is useful",
+      "down": "No, not what I expected",
+      "askUp": "What do you like about it? (optional)",
+      "askDown": "What did not work the way you expected?",
+      "privacyIdentified": "Sent to the Torqvoice team with your email address, so we can reply.",
+      "privacyAnonymous": "Sent to the Torqvoice team without your name or email address.",
+      "skip": "Skip",
+      "send": "Send",
+      "thanks": "Thank you, your comment was sent.",
+      "failed": "Your feedback could not be sent. Try again in a moment."
+    }
+  },
   "pagination": {
     "showing": "Showing {start}-{end} of {total}",
     "perPage": "per page",
@@ -76,6 +106,26 @@
     "enterManually": "Enter manually",
     "enterBarcode": "Enter barcode...",
     "scanHint": "Point your camera at a barcode or enter it manually",
+    "submitBarcode": "Go",
+    "camera": {
+      "tryAgain": "Try again",
+      "denied": {
+        "title": "Camera access is blocked",
+        "body": "Allow the camera for this site in your browser, from the camera or lock icon in the address bar, then press Try again. Or type the code below."
+      },
+      "insecure": {
+        "title": "The camera needs HTTPS",
+        "body": "Browsers only allow the camera on a secure connection, and this page is on HTTP ({host}). Open Torqvoice over HTTPS to scan, or type the code below."
+      },
+      "notFound": {
+        "title": "No camera found",
+        "body": "Connect a camera and press Try again, or type the code below."
+      },
+      "failed": {
+        "title": "The camera could not start",
+        "body": "Another app may be using it. Close that app and press Try again, or type the code below."
+      }
+    },
     "iosInstallHint": "Tap Share > Add to Home Screen",
     "installDescription": "Add to your home screen for quick access",
     "enterFullscreen": "Fullscreen",
@@ -85,6 +135,8 @@
     "title": "Upgrade to keep going",
     "maxCustomers": "Your plan includes up to {limit} customers, and you have reached that number. Upgrade to add as many as you need.",
     "maxUsers": "Your plan includes {limit, plural, one {one team member} other {# team members}}. Upgrade to invite more people.",
+    "maxPlatformMail": "Your plan sends up to {limit} emails a day from the Torqvoice address, and today's are used. Upgrade to send as many as you need, or send the rest tomorrow.",
+    "maxPlatformSms": "Your plan sends up to {limit} text messages a day from the Torqvoice number, and today's are used. Upgrade for a higher limit, connect your own SMS provider to send without one, or send the rest tomorrow.",
     "generic": "This feature is not included in your current plan.",
     "featureNotIncluded": "{feature} is not included in your current plan.",
     "notNow": "Not now"
@@ -109,8 +161,6 @@
     "preview": "Preview",
     "failed": "Could not generate the PDF preview."
   },
-  "attachPdf": "Attach PDF",
-  "attachPdfHint": "Turn this off to send a link instead, so you can see when the customer opens it.",
   "sentCopy": {
     "note": "Sent {date}. Changes here go on the invoice when it is sent again.",
     "confirmTitle": "This invoice has already been sent",
@@ -131,5 +181,145 @@
     "retake": "Record again",
     "use": "Use this video",
     "limit": "Recording stops by itself after {minutes} minutes."
+  },
+  "photoCapture": {
+    "title": "Take a photo",
+    "description": "Use this computer's camera or a webcam plugged into it.",
+    "starting": "Starting the camera...",
+    "live": "Camera preview",
+    "preview": "The photo you just took",
+    "camera": "Camera",
+    "take": "Take photo",
+    "retake": "Take again",
+    "use": "Use this photo",
+    "tryAgain": "Try again",
+    "uploadInstead": "Upload a file instead",
+    "denied": {
+      "title": "Camera access is blocked",
+      "body": "Allow the camera for this site in your browser, from the camera or lock icon in the address bar, then press Try again."
+    },
+    "insecure": {
+      "title": "The camera needs HTTPS",
+      "body": "Browsers only allow the camera on a secure connection, and this page is on HTTP ({host}). Open Torqvoice over HTTPS, or upload a file instead."
+    },
+    "notFound": {
+      "title": "No camera found",
+      "body": "Plug in a webcam and press Try again, or upload a file instead."
+    },
+    "failed": {
+      "title": "The camera could not start",
+      "body": "Another app may be using it. Close that app and press Try again."
+    }
+  },
+  "richText": {
+    "openLinkHint": "Hold {key} and click to open",
+    "placeholder": "Write something...",
+    "toolbar": "Formatting",
+    "editor": "Text",
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strikethrough": "Strikethrough",
+    "bulletList": "Bullet list",
+    "numberedList": "Numbered list"
+  },
+  "appUpdated": {
+    "title": "A new version is available",
+    "description": "Reload the page to get the latest updates.",
+    "reload": "Reload"
+  },
+  "signedOut": {
+    "title": "You have been signed out",
+    "description": "Sign in again to keep working. Copy anything you were typing first.",
+    "signIn": "Sign in"
+  },
+  "connectionLost": {
+    "title": "Couldn't reach Torqvoice",
+    "description": "Your last change may not have been saved. Check your connection and try again."
+  },
+  "sendDocument": {
+    "titleQuote": "Send quote",
+    "titleInvoice": "Send invoice",
+    "titleInspection": "Send inspection",
+    "description": "The customer gets a link to view and download it.",
+    "email": "Email",
+    "emailAddress": "Email address",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Attach the PDF as well",
+    "sms": "SMS",
+    "smsNumber": "Phone number for SMS",
+    "whatsappNumber": "Phone number for WhatsApp",
+    "phonePlaceholder": "Phone number",
+    "message": "Message (optional, added to the email)",
+    "messagePlaceholder": "Add a personal message...",
+    "copyLink": "Copy link",
+    "send": "Send",
+    "emailSent": "Email sent",
+    "failedEmail": "Failed to send email",
+    "smsSent": "SMS sent",
+    "failedSms": "Failed to send SMS"
+  },
+  "shareLink": {
+    "generateFailed": "Couldn't create the link. Try again.",
+    "revokeFailed": "Couldn't confirm the link was revoked. It may still work for anyone who has it.",
+    "channelNotConnected": "Connect {channel} under Integrations to send this way.",
+    "openIntegrations": "Open Integrations",
+    "channelNotInPlan": "{channel} is not included in your plan.",
+    "channelTurnedOff": "{channel} sending is turned off for this workshop.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp sent",
+    "failedWhatsapp": "Failed to send WhatsApp message",
+    "whatsappWindowClosed": "This customer has not written to you on WhatsApp in the last 24 hours, and no approved template is set up to reach them.",
+    "expiry": {
+      "never": "Never expires",
+      "untilPaid": "Stays open until paid",
+      "expires": "Expires {date}",
+      "expired": "Expired {date}",
+      "change": "Change",
+      "openAgain": "Open again",
+      "reopened": "Link is open again",
+      "formTitle": "Link expires",
+      "choice": {
+        "workshop": "Workshop setting",
+        "date": "On a date",
+        "never": "Never"
+      },
+      "rule": {
+        "never": "Links never expire",
+        "afterSharing": "{days, plural, one {# day} other {# days}} after it is sent",
+        "afterPayment": "{days, plural, one {# day} other {# days}} after the invoice is paid"
+      },
+      "dateHint": "The link works for the whole of this day.",
+      "chooseDate": "Choose a date",
+      "cancel": "Cancel",
+      "save": "Save",
+      "saved": "Link expiry saved",
+      "saveFailed": "Couldn't save the link expiry. Try again."
+    }
+  },
+  "searchableSelect": {
+    "choose": "Choose...",
+    "search": "Search...",
+    "noMatch": "Nothing matches"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content",
+    "mainNavigation": "Main navigation",
+    "close": "Close",
+    "breadcrumb": "Breadcrumb",
+    "more": "More",
+    "toggleSidebar": "Toggle sidebar",
+    "sidebar": "Sidebar",
+    "sidebarDescription": "The main menu.",
+    "openCalendar": "Open calendar",
+    "dismiss": "Dismiss",
+    "selectAll": "Select all",
+    "selectRow": "Select {name}"
+  },
+  "confirmDialog": {
+    "title": "Are you sure?",
+    "irreversible": "This cannot be undone.",
+    "andMore": "and {count} more",
+    "typeToConfirm": "Type <b>{text}</b> to confirm"
   }
 }

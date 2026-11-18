@@ -2,17 +2,20 @@
 
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
 import {
   Dialog,
+  DialogBody,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -25,6 +28,7 @@ import {
   deleteOrphanedUploads,
 } from '../Actions/inventoryActions'
 import { aiAnalyzePartImage } from '../Actions/aiAnalyzePartImage'
+import { isSupplierUrl, normalizeSupplierUrl } from '../Lib/supplierUrl'
 import {
   Camera,
   Check,
@@ -32,6 +36,7 @@ import {
   ExternalLink,
   History,
   ImageIcon,
+  Info,
   Loader2,
   Plus,
   Sparkles,
@@ -49,9 +54,22 @@ import {
 } from '@/components/ui/command'
 import { cn } from '@/lib/utils'
 import { compressImage } from '@/lib/compress-image'
-import { priceFromCostAndMultiplier } from '@/features/inventory/Lib/partPricing'
+import {
+  markupPercentFromMultiplier,
+  priceFromCostAndMultiplier,
+} from '@/features/inventory/Lib/partPricing'
 import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 import { clearableInput } from '@/lib/clearable'
+import { TagInput } from '@/components/tag-input'
+import { useServiceType } from '@/components/service-type-context'
+import { CameraPhotoDialog } from '@/components/camera-photo-dialog'
+import { useNativeCamera } from '@/hooks/use-native-camera'
+import {
+  MAX_PART_TAGS,
+  MAX_TAG_LENGTH,
+  normalizePartTags,
+  splitTagInput,
+} from '@/features/inventory/Lib/partTags'
 
 interface InventoryPartFormProps {
   open: boolean
@@ -63,6 +81,8 @@ interface InventoryPartFormProps {
   unitSystem?: string
   initialBarcode?: string
   categories?: string[]
+  /** Tags the workshop's parts already carry, suggested in the tag field. */
+  tagSuggestions?: string[]
   onViewImages?: (urls: string[], startIndex: number) => void
   part?: {
     id: string
@@ -73,6 +93,11 @@ interface InventoryPartFormProps {
     category: string | null
     quantity: number
     minQuantity: number
+    /**
+     * Whether jobs count this part down. A part opened without it keeps what
+     * is stored: the switch is then not sent on Save.
+     */
+    trackStock?: boolean
     unit: string | null
     unitCost: number
     sellPrice: number
@@ -89,7 +114,25 @@ interface InventoryPartFormProps {
       sortOrder: number
     }[]
     location: string | null
+    /** Required: a part opened without its tags would lose them on Save. */
+    tags: string[]
   }
+}
+
+/**
+ * Why Fetch filled nothing in. It is a convenience: the server reads the
+ * supplier's page to prefill the fields, and a page it cannot read never stops
+ * the part from being saved. So the answer is a note under the link, not an
+ * error dialog over the form.
+ */
+type FetchIssue = 'blocked' | 'timedOut' | 'unreadable'
+
+/** Reads the `code` the lookup route sends with a failure. */
+function fetchIssueFrom(body: unknown): FetchIssue {
+  const code = typeof body === 'object' && body !== null && 'code' in body ? body.code : undefined
+  if (code === 'bot_protected') return 'blocked'
+  if (code === 'timeout') return 'timedOut'
+  return 'unreadable'
 }
 
 export function InventoryPartForm({
@@ -101,20 +144,33 @@ export function InventoryPartForm({
   unitSystem,
   initialBarcode,
   categories = [],
+  tagSuggestions = [],
   onViewImages,
 }: InventoryPartFormProps) {
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('inventory')
+  const tNav = useTranslations('navigation')
+  const format = useFormatter()
+  const isMarine = useServiceType() === 'marine'
+  // A sell price that appears by itself needs to say where it came from. Only
+  // while it still follows the cost: a part that already has a price keeps it.
+  const autoFillMarkupPercent =
+    part?.sellPrice && part.sellPrice > 0 ? 0 : markupPercentFromMultiplier(markupMultiplier)
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
   const [supplierUrl, setSupplierUrl] = useState(part?.supplierUrl ?? '')
+  const [fetchIssue, setFetchIssue] = useState<{ url: string; issue: FetchIssue } | null>(null)
+  // An answer that arrives after the link was edited says nothing about the new one.
+  const shownIssue = fetchIssue?.url === supplierUrl ? fetchIssue.issue : null
   const [category, setCategory] = useState(part?.category ?? '')
   const [unit, setUnit] = useState(part ? (part.unit ?? '') : (defaultUnit ?? ''))
+  const [trackStock, setTrackStock] = useState(part?.trackStock ?? true)
   const [categoryOpen, setCategoryOpen] = useState(false)
   const [categorySearch, setCategorySearch] = useState('')
+  const [tags, setTags] = useState<string[]>(part?.tags ?? [])
   const sellPriceManualRef = useRef(false)
   const [gallery, setGallery] = useState<
     {
@@ -133,15 +189,22 @@ export function InventoryPartForm({
   const formRef = useRef<HTMLFormElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const cameraInputRef = useRef<HTMLInputElement>(null)
+  // A phone opens its camera app from the capture input; a desk browser would
+  // only show the file picker, so it gets the page's own camera instead.
+  const nativeCamera = useNativeCamera()
+  const [cameraOpen, setCameraOpen] = useState(false)
   const uploadedUrlsRef = useRef<string[]>([])
 
   useEffect(() => {
     if (open) {
       uploadedUrlsRef.current = []
       setSupplierUrl(part?.supplierUrl ?? '')
+      setFetchIssue(null)
       setCategory(part?.category ?? '')
       setUnit(part ? (part.unit ?? '') : (defaultUnit ?? ''))
+      setTrackStock(part?.trackStock ?? true)
       setCategorySearch('')
+      setTags(part?.tags ?? [])
       sellPriceManualRef.current = !!(part?.sellPrice && part.sellPrice > 0)
       if (part?.gallery && part.gallery.length > 0) {
         setGallery(part.gallery)
@@ -215,16 +278,13 @@ export function InventoryPartForm({
 
   const handleFetchMetadata = useCallback(
     async (url?: string) => {
-      const targetUrl = url ?? supplierUrl
-      if (!targetUrl) return
-
-      try {
-        new URL(targetUrl)
-      } catch {
-        return
-      }
+      // A link typed as `www.supplier.com/...` is looked up, and kept, as https://.
+      const targetUrl = normalizeSupplierUrl(url ?? supplierUrl)
+      if (!targetUrl || !isSupplierUrl(targetUrl)) return
+      if (url === undefined && targetUrl !== supplierUrl) setSupplierUrl(targetUrl)
 
       setFetching(true)
+      setFetchIssue(null)
       try {
         const res = await fetch('/api/protected/fetch-metadata', {
           method: 'POST',
@@ -233,8 +293,8 @@ export function InventoryPartForm({
         })
 
         if (!res.ok) {
-          const data = await res.json().catch(() => ({}))
-          modal.open('error', t('form.fetchFailed'), data.error || t('form.fetchError'))
+          const body: unknown = await res.json().catch(() => null)
+          setFetchIssue({ url: targetUrl, issue: fetchIssueFrom(body) })
           return
         }
 
@@ -269,12 +329,12 @@ export function InventoryPartForm({
           setGallery([{ url: metadata.imageUrl, sortOrder: 0 }])
         }
       } catch {
-        modal.open('error', t('form.fetchFailed'), t('form.fetchError'))
+        setFetchIssue({ url: targetUrl, issue: 'unreadable' })
       } finally {
         setFetching(false)
       }
     },
-    [supplierUrl, gallery, modal]
+    [supplierUrl, gallery]
   )
 
   const handleAiAnalyze = useCallback(async () => {
@@ -345,11 +405,35 @@ export function InventoryPartForm({
     }
   }, [gallery, t])
 
+  // Switching tracking off on a part that has a count: Save takes it to zero.
+  const willEmptyStock = Boolean(part?.trackStock) && !trackStock && part?.quantity !== 0
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
 
     const formData = new FormData(e.currentTarget)
+    // Text still in the tag box (saved with the keyboard shortcut, say) is a
+    // tag too. A part that reached the form without its tags keeps the stored
+    // ones rather than being saved with none.
+    const typedTags = splitTagInput(String(formData.get('tagDraft') ?? ''))
+    const knowsTags = !part || Array.isArray(part.tags)
+    const knowsTrackStock = !part || typeof part.trackStock === 'boolean'
+    // The box keeps a tag that is too long, with a note under it; saving it
+    // would only come back refused, so it is shortened first.
+    if (typedTags.some((tag) => tag.length > MAX_TAG_LENGTH)) {
+      modal.open('error', t('errors.error'), t('form.tagTooLong', { max: MAX_TAG_LENGTH }))
+      return
+    }
+
+    // Stored as the server will check it: `www.supplier.com/...` gets https://.
+    const link = normalizeSupplierUrl(supplierUrl)
+    if (link !== supplierUrl) setSupplierUrl(link)
+    if (link && !isSupplierUrl(link)) {
+      modal.open('error', t('errors.error'), t('form.supplierLinkInvalid'))
+      return
+    }
+
+    setLoading(true)
     // An emptied field reaches the update action as '' so it can be cleared.
     const optional = (value: FormDataEntryValue | string | null) =>
       clearableInput(value, Boolean(part))
@@ -359,15 +443,19 @@ export function InventoryPartForm({
       barcode: optional(formData.get('barcode')),
       description: optional(formData.get('description')),
       category: optional(category),
-      quantity: Number(formData.get('quantity')) || 0,
-      minQuantity: Number(formData.get('minQuantity')) || 0,
+      // The stock fields are not on the form while tracking is off. The
+      // reorder point is sent back as stored, for the day tracking comes
+      // back: left out, the action would read it as zero.
+      quantity: trackStock ? Number(formData.get('quantity')) || 0 : 0,
+      minQuantity: trackStock ? Number(formData.get('minQuantity')) || 0 : (part?.minQuantity ?? 0),
+      trackStock: knowsTrackStock ? trackStock : undefined,
       unit: unit.trim(),
       unitCost: Number(formData.get('unitCost')) || 0,
       sellPrice: Number(formData.get('sellPrice')) || 0,
       supplier: optional(formData.get('supplier')),
       supplierPhone: optional(formData.get('supplierPhone')),
       supplierEmail: optional(formData.get('supplierEmail')),
-      supplierUrl: optional(supplierUrl),
+      supplierUrl: optional(link),
       gallery: gallery.map((g, i) => ({
         id: g.id,
         url: g.url,
@@ -376,6 +464,7 @@ export function InventoryPartForm({
         sortOrder: i,
       })),
       location: optional(formData.get('location')),
+      tags: knowsTags ? normalizePartTags([...tags, ...typedTags]) : undefined,
     }
 
     const result = part
@@ -397,7 +486,11 @@ export function InventoryPartForm({
     if (!isOpen) {
       // Clean up all images uploaded during this session (they won't be saved)
       if (uploadedUrlsRef.current.length > 0) {
-        deleteOrphanedUploads(uploadedUrlsRef.current)
+        deleteOrphanedUploads(uploadedUrlsRef.current).catch(() => {
+          // Tidying up after the form, which nobody asked for: on a dropped
+          // connection the files stay for the nightly orphan sweep, and the
+          // lost-connection notice is not raised for it.
+        })
       }
       uploadedUrlsRef.current = []
     }
@@ -406,7 +499,7 @@ export function InventoryPartForm({
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+      <DialogContent className="max-h-[90vh] sm:max-w-3xl">
         <DialogHeader>
           <div className="flex items-center justify-between gap-4 pr-6">
             <DialogTitle>{part ? t('form.editPart') : t('form.addNewPart')}</DialogTitle>
@@ -428,89 +521,132 @@ export function InventoryPartForm({
           </DialogDescription>
         </DialogHeader>
 
-        <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
-          {/* Supplier Link */}
-          <div className="space-y-2">
-            <Label htmlFor="supplierUrl">{t('form.supplierLink')}</Label>
-            <div className="flex gap-2">
-              <div className="relative flex-1">
-                <Input
-                  id="supplierUrl"
-                  placeholder={t('form.supplierLinkPlaceholder')}
-                  value={supplierUrl}
-                  onChange={(e) => setSupplierUrl(e.target.value)}
-                />
-                {supplierUrl &&
-                  (() => {
-                    try {
-                      new URL(supplierUrl)
-                      return true
-                    } catch {
-                      return false
-                    }
-                  })() && (
-                    <a
-                      href={supplierUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    >
-                      <ExternalLink className="h-4 w-4" />
-                    </a>
-                  )}
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={fetching || !supplierUrl}
-                onClick={() => handleFetchMetadata()}
-              >
-                {fetching ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}
-                {t('form.fetch')}
-              </Button>
-            </div>
-          </div>
-
-          {/* Image + fields: stacked on mobile, side-by-side on sm+ */}
-          <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
-            {/* Image area */}
-            <div className={`flex-shrink-0 ${gallery.length > 0 ? 'sm:w-52' : 'sm:w-44'}`}>
-              <Label className="mb-2 block">{t('form.image')}</Label>
-              {gallery.length > 0 ? (
-                <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-2">
-                  {gallery.map((g, i) => (
-                    <div
-                      key={g.url}
-                      className="relative aspect-square overflow-hidden rounded-lg border bg-muted cursor-pointer"
-                      {...interactiveRow(() => {
-                        onOpenChange(false)
-                        onViewImages?.(
-                          gallery.map((img) => img.url),
-                          i
-                        )
-                      })}
-                    >
-                      <img
-                        src={g.url}
-                        alt={`Part ${i + 1}`}
-                        className="h-full w-full object-cover"
-                      />
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setGallery((prev) => prev.filter((_, j) => j !== i))
-                        }}
-                        className="absolute right-0.5 top-0.5 rounded-full bg-background/80 p-0.5 text-muted-foreground hover:text-foreground"
+        <form ref={formRef} onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+          <DialogBody className="space-y-4">
+            {/* Supplier Link */}
+            <div className="space-y-2">
+              <Label htmlFor="supplierUrl">{t('form.supplierLink')}</Label>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    id="supplierUrl"
+                    placeholder={t('form.supplierLinkPlaceholder')}
+                    value={supplierUrl}
+                    aria-describedby={shownIssue ? 'supplierUrl-note' : undefined}
+                    onChange={(e) => {
+                      setSupplierUrl(e.target.value)
+                      setFetchIssue(null)
+                    }}
+                  />
+                  {supplierUrl &&
+                    (() => {
+                      try {
+                        new URL(supplierUrl)
+                        return true
+                      } catch {
+                        return false
+                      }
+                    })() && (
+                      <a
+                        href={supplierUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                       >
-                        <X className="h-3 w-3" />
-                      </button>
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    )}
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  // A site that turns the lookup away answers the same for the
+                  // same link, so Fetch waits for the link to change.
+                  disabled={fetching || !supplierUrl || shownIssue === 'blocked'}
+                  onClick={() => handleFetchMetadata()}
+                >
+                  {fetching ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : null}
+                  {t('form.fetch')}
+                </Button>
+              </div>
+              {shownIssue && (
+                <p
+                  id="supplierUrl-note"
+                  role="status"
+                  className="flex items-start gap-1.5 text-sm text-muted-foreground"
+                >
+                  <Info className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>
+                    {shownIssue === 'blocked'
+                      ? t('form.fetchBlocked')
+                      : shownIssue === 'timedOut'
+                        ? t('form.fetchTimedOut')
+                        : t('form.fetchUnreadable')}
+                  </span>
+                </p>
+              )}
+            </div>
+
+            {/* Image + fields: stacked on mobile, side-by-side on sm+ */}
+            <div className="flex flex-col gap-4 sm:flex-row sm:gap-5">
+              {/* Image area */}
+              <div className={`flex-shrink-0 ${gallery.length > 0 ? 'sm:w-52' : 'sm:w-44'}`}>
+                <Label className="mb-2 block">{t('form.image')}</Label>
+                {gallery.length > 0 ? (
+                  <div className="grid grid-cols-3 gap-1.5 sm:grid-cols-2">
+                    {gallery.map((g, i) => (
+                      <div
+                        key={g.url}
+                        className="relative aspect-square overflow-hidden rounded-lg border bg-muted cursor-pointer"
+                        {...interactiveRow(() => {
+                          onOpenChange(false)
+                          onViewImages?.(
+                            gallery.map((img) => img.url),
+                            i
+                          )
+                        })}
+                      >
+                        <img
+                          src={g.url}
+                          alt={`Part ${i + 1}`}
+                          className="h-full w-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setGallery((prev) => prev.filter((_, j) => j !== i))
+                          }}
+                          className="absolute right-0.5 top-0.5 rounded-full bg-background/80 p-0.5 text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {/* Add more */}
+                    <div
+                      className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors ${
+                        dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
+                      }`}
+                      onDragOver={(e) => {
+                        e.preventDefault()
+                        setDragOver(true)
+                      }}
+                      onDragLeave={() => setDragOver(false)}
+                      onDrop={handleDrop}
+                      {...interactiveRow(() => fileInputRef.current?.click())}
+                    >
+                      {uploading ? (
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Plus className="h-6 w-6 text-muted-foreground" />
+                      )}
                     </div>
-                  ))}
-                  {/* Add more */}
+                  </div>
+                ) : (
                   <div
-                    className={`flex aspect-square cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors ${
+                    className={`flex h-36 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors sm:h-44 ${
                       dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
                     }`}
                     onDragOver={(e) => {
@@ -522,344 +658,391 @@ export function InventoryPartForm({
                     {...interactiveRow(() => fileInputRef.current?.click())}
                   >
                     {uploading ? (
-                      <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                      <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                     ) : (
-                      <Plus className="h-6 w-6 text-muted-foreground" />
+                      <>
+                        <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                        <span className="mt-2 text-xs text-muted-foreground">
+                          {t('form.dropOrClick')}
+                        </span>
+                      </>
                     )}
                   </div>
+                )}
+                {/* Hidden file inputs */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  multiple
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png"
+                  capture="environment"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <div className="mt-2 flex gap-1">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() =>
+                      nativeCamera ? cameraInputRef.current?.click() : setCameraOpen(true)
+                    }
+                    disabled={uploading}
+                  >
+                    <Camera className="mr-1 h-3 w-3" />
+                    {t('form.camera')}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="flex-1 text-xs"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                  >
+                    <Upload className="mr-1 h-3 w-3" />
+                    {t('form.upload')}
+                  </Button>
                 </div>
-              ) : (
-                <div
-                  className={`flex h-36 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-muted transition-colors sm:h-44 ${
-                    dragOver ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
-                  }`}
-                  onDragOver={(e) => {
-                    e.preventDefault()
-                    setDragOver(true)
-                  }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={handleDrop}
-                  {...interactiveRow(() => fileInputRef.current?.click())}
-                >
-                  {uploading ? (
-                    <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                  ) : (
-                    <>
-                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                      <span className="mt-2 text-xs text-muted-foreground">
-                        {t('form.dropOrClick')}
-                      </span>
-                    </>
-                  )}
-                </div>
-              )}
-              {/* Hidden file inputs */}
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/avif"
-                multiple
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <input
-                ref={cameraInputRef}
-                type="file"
-                accept="image/jpeg,image/png"
-                capture="environment"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <div className="mt-2 flex gap-1">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 text-xs"
-                  onClick={() => cameraInputRef.current?.click()}
-                  disabled={uploading}
-                >
-                  <Camera className="mr-1 h-3 w-3" />
-                  {t('form.camera')}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 text-xs"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
-                >
-                  <Upload className="mr-1 h-3 w-3" />
-                  {t('form.upload')}
-                </Button>
-              </div>
-              {gallery.length > 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="mt-1 w-full text-xs"
-                  onClick={handleAiAnalyze}
-                  disabled={analyzing}
-                >
-                  {analyzing ? (
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                  ) : (
-                    <Sparkles className="mr-1 h-3 w-3" />
-                  )}
-                  {t('form.aiAnalyze')}
-                </Button>
-              )}
-            </div>
-
-            {/* Fields */}
-            <div className="flex-1 space-y-4">
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
-                  <Input
-                    id="partNumber"
-                    name="partNumber"
-                    placeholder={t('form.partNumberPlaceholder')}
-                    defaultValue={part?.partNumber ?? ''}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="barcode">{t('form.barcode')}</Label>
-                  <Input
-                    id="barcode"
-                    name="barcode"
-                    placeholder={t('form.barcodePlaceholder')}
-                    defaultValue={part?.barcode ?? initialBarcode ?? ''}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="name">{t('form.nameLabel')}</Label>
-                  <Input
-                    id="name"
-                    name="name"
-                    placeholder={t('form.namePlaceholder')}
-                    defaultValue={part?.name}
-                    required
-                  />
-                </div>
+                <CameraPhotoDialog
+                  open={cameraOpen}
+                  onOpenChange={setCameraOpen}
+                  onCaptured={(file) => void uploadFile(file)}
+                  onUploadInstead={() => fileInputRef.current?.click()}
+                />
+                {gallery.length > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="mt-1 w-full text-xs"
+                    onClick={handleAiAnalyze}
+                    disabled={analyzing}
+                  >
+                    {analyzing ? (
+                      <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    ) : (
+                      <Sparkles className="mr-1 h-3 w-3" />
+                    )}
+                    {t('form.aiAnalyze')}
+                  </Button>
+                )}
               </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                <div className="space-y-2">
-                  <Label>{t('form.category')}</Label>
-                  <Popover open={categoryOpen} onOpenChange={setCategoryOpen} modal>
-                    <PopoverTrigger asChild>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        role="combobox"
-                        aria-expanded={categoryOpen}
-                        className="w-full justify-between font-normal h-9"
+              {/* Fields */}
+              <div className="flex-1 space-y-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
+                    <Input
+                      id="partNumber"
+                      name="partNumber"
+                      placeholder={t('form.partNumberPlaceholder')}
+                      defaultValue={part?.partNumber ?? ''}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="barcode">{t('form.barcode')}</Label>
+                    <Input
+                      id="barcode"
+                      name="barcode"
+                      placeholder={t('form.barcodePlaceholder')}
+                      defaultValue={part?.barcode ?? initialBarcode ?? ''}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="name">{t('form.nameLabel')}</Label>
+                    <Input
+                      id="name"
+                      name="name"
+                      placeholder={t('form.namePlaceholder')}
+                      defaultValue={part?.name}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                  <div className="space-y-2">
+                    <Label>{t('form.category')}</Label>
+                    <Popover open={categoryOpen} onOpenChange={setCategoryOpen} modal>
+                      <PopoverTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={categoryOpen}
+                          className="w-full justify-between font-normal h-9"
+                        >
+                          <span className={category ? '' : 'text-muted-foreground'}>
+                            {category || t('form.categoryPlaceholder')}
+                          </span>
+                          <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent
+                        className="w-(--radix-popover-trigger-width) min-w-64 p-0"
+                        align="start"
                       >
-                        <span className={category ? '' : 'text-muted-foreground'}>
-                          {category || t('form.categoryPlaceholder')}
-                        </span>
-                        <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent
-                      className="w-(--radix-popover-trigger-width) min-w-64 p-0"
-                      align="start"
-                    >
-                      <Command>
-                        <CommandInput
-                          placeholder={t('form.categorySearch')}
-                          value={categorySearch}
-                          onValueChange={setCategorySearch}
-                        />
-                        <CommandList>
-                          <CommandEmpty>
-                            {categorySearch.trim() ? (
-                              <button
-                                type="button"
-                                className="flex w-full items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
-                                onClick={() => {
-                                  setCategory(categorySearch.trim())
-                                  setCategorySearch('')
-                                  setCategoryOpen(false)
-                                }}
-                              >
-                                <Plus className="h-3.5 w-3.5" />
-                                {t('form.categoryCreate', { name: categorySearch.trim() })}
-                              </button>
-                            ) : (
-                              <span className="text-muted-foreground text-xs">
-                                {t('form.categoryNone')}
-                              </span>
-                            )}
-                          </CommandEmpty>
-                          <CommandGroup>
-                            {categories.map((cat) => (
-                              <CommandItem
-                                key={cat}
-                                value={cat}
-                                onSelect={() => {
-                                  setCategory(cat === category ? '' : cat)
-                                  setCategorySearch('')
-                                  setCategoryOpen(false)
-                                }}
-                              >
-                                <Check
-                                  className={cn(
-                                    'mr-2 h-3.5 w-3.5',
-                                    category === cat ? 'opacity-100' : 'opacity-0'
-                                  )}
-                                />
-                                {cat}
-                              </CommandItem>
-                            ))}
-                            {categorySearch.trim() &&
-                              !categories.some(
-                                (c) => c.toLowerCase() === categorySearch.trim().toLowerCase()
-                              ) && (
-                                <CommandItem
-                                  value={`__create__${categorySearch.trim()}`}
-                                  onSelect={() => {
+                        <Command>
+                          <CommandInput
+                            placeholder={t('form.categorySearch')}
+                            value={categorySearch}
+                            onValueChange={setCategorySearch}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              {categorySearch.trim() ? (
+                                <button
+                                  type="button"
+                                  className="flex w-full items-center gap-2 px-2 py-1.5 text-sm hover:bg-accent rounded-sm"
+                                  onClick={() => {
                                     setCategory(categorySearch.trim())
                                     setCategorySearch('')
                                     setCategoryOpen(false)
                                   }}
                                 >
-                                  <Plus className="mr-2 h-3.5 w-3.5" />
+                                  <Plus className="h-3.5 w-3.5" />
                                   {t('form.categoryCreate', { name: categorySearch.trim() })}
-                                </CommandItem>
+                                </button>
+                              ) : (
+                                <span className="text-muted-foreground text-xs">
+                                  {t('form.categoryNone')}
+                                </span>
                               )}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {categories.map((cat) => (
+                                <CommandItem
+                                  key={cat}
+                                  value={cat}
+                                  onSelect={() => {
+                                    setCategory(cat === category ? '' : cat)
+                                    setCategorySearch('')
+                                    setCategoryOpen(false)
+                                  }}
+                                >
+                                  <Check
+                                    className={cn(
+                                      'mr-2 h-3.5 w-3.5',
+                                      category === cat ? 'opacity-100' : 'opacity-0'
+                                    )}
+                                  />
+                                  {cat}
+                                </CommandItem>
+                              ))}
+                              {categorySearch.trim() &&
+                                !categories.some(
+                                  (c) => c.toLowerCase() === categorySearch.trim().toLowerCase()
+                                ) && (
+                                  <CommandItem
+                                    value={`__create__${categorySearch.trim()}`}
+                                    onSelect={() => {
+                                      setCategory(categorySearch.trim())
+                                      setCategorySearch('')
+                                      setCategoryOpen(false)
+                                    }}
+                                  >
+                                    <Plus className="mr-2 h-3.5 w-3.5" />
+                                    {t('form.categoryCreate', { name: categorySearch.trim() })}
+                                  </CommandItem>
+                                )}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="location">{t('form.location')}</Label>
+                    <Input
+                      id="location"
+                      name="location"
+                      placeholder={t('form.locationPlaceholder')}
+                      defaultValue={part?.location ?? ''}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">{t('form.location')}</Label>
-                  <Input
-                    id="location"
-                    name="location"
-                    placeholder={t('form.locationPlaceholder')}
-                    defaultValue={part?.location ?? ''}
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5 sm:gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="quantity">{t('form.quantity')}</Label>
-                  <Input
-                    id="quantity"
-                    name="quantity"
-                    type="number"
-                    min="0"
-                    step="any"
-                    defaultValue={part?.quantity ?? 1}
+                  <Label htmlFor="part-tags">{t('form.tags')}</Label>
+                  <TagInput
+                    id="part-tags"
+                    name="tagDraft"
+                    value={tags}
+                    onChange={setTags}
+                    suggestions={tagSuggestions}
+                    placeholder={t('form.tagsPlaceholder')}
+                    maxTags={MAX_PART_TAGS}
+                    maxLength={MAX_TAG_LENGTH}
+                    tooLongMessage={t('form.tagTooLong', { max: MAX_TAG_LENGTH })}
+                    removeLabel={(tag) => t('form.removeTag', { tag })}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    {isMarine ? t('form.tagsHintMarine') : t('form.tagsHint')}
+                  </p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="unit">{t('form.unit')}</Label>
-                  <UnitCombobox id="unit" value={unit} onChange={setUnit} unitSystem={unitSystem} />
+
+                <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="trackStock">{t('form.trackStock')}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {willEmptyStock ? t('form.trackStockOffNote') : t('form.trackStockHint')}
+                    </p>
+                  </div>
+                  <Switch id="trackStock" checked={trackStock} onCheckedChange={setTrackStock} />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
-                  <Input
-                    id="minQuantity"
-                    name="minQuantity"
-                    type="number"
-                    min="0"
-                    step="any"
-                    defaultValue={part?.minQuantity ?? 0}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="unitCost">{t('form.unitCost')}</Label>
-                  <Input
-                    id="unitCost"
-                    name="unitCost"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    defaultValue={part?.unitCost ?? 0}
-                    onChange={(e) => {
-                      if (!markupMultiplier || markupMultiplier <= 0 || sellPriceManualRef.current)
-                        return
-                      const cost = Number(e.target.value) || 0
-                      const sellPriceInput = document.getElementById(
-                        'sellPrice'
-                      ) as HTMLInputElement | null
-                      if (sellPriceInput) {
-                        sellPriceInput.value = String(
-                          priceFromCostAndMultiplier(cost, markupMultiplier)
+
+                <div
+                  className={cn(
+                    'grid grid-cols-2 gap-3 sm:gap-4',
+                    trackStock ? 'sm:grid-cols-5' : 'sm:grid-cols-3'
+                  )}
+                >
+                  {trackStock && (
+                    <div className="space-y-2">
+                      <Label htmlFor="quantity">{t('form.quantity')}</Label>
+                      <Input
+                        id="quantity"
+                        name="quantity"
+                        type="number"
+                        min="0"
+                        step="any"
+                        defaultValue={part ? (part.trackStock === false ? 0 : part.quantity) : 1}
+                      />
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="unit">{t('form.unit')}</Label>
+                    <UnitCombobox
+                      id="unit"
+                      value={unit}
+                      onChange={setUnit}
+                      unitSystem={unitSystem}
+                    />
+                  </div>
+                  {trackStock && (
+                    <div className="space-y-2">
+                      <Label htmlFor="minQuantity">{t('form.minQty')}</Label>
+                      <Input
+                        id="minQuantity"
+                        name="minQuantity"
+                        type="number"
+                        min="0"
+                        step="any"
+                        defaultValue={part?.minQuantity ?? 0}
+                      />
+                    </div>
+                  )}
+                  <div className="space-y-2">
+                    <Label htmlFor="unitCost">{t('form.unitCost')}</Label>
+                    <Input
+                      id="unitCost"
+                      name="unitCost"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      defaultValue={part?.unitCost ?? 0}
+                      onChange={(e) => {
+                        if (
+                          !markupMultiplier ||
+                          markupMultiplier <= 0 ||
+                          sellPriceManualRef.current
                         )
-                      }
-                    }}
-                  />
+                          return
+                        const cost = Number(e.target.value) || 0
+                        const sellPriceInput = document.getElementById(
+                          'sellPrice'
+                        ) as HTMLInputElement | null
+                        if (sellPriceInput) {
+                          sellPriceInput.value = String(
+                            priceFromCostAndMultiplier(cost, markupMultiplier)
+                          )
+                        }
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="sellPrice">{t('form.sellPrice')}</Label>
+                    <Input
+                      id="sellPrice"
+                      name="sellPrice"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      defaultValue={part?.sellPrice ?? 0}
+                      onChange={() => {
+                        sellPriceManualRef.current = true
+                      }}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="sellPrice">{t('form.sellPrice')}</Label>
-                  <Input
-                    id="sellPrice"
-                    name="sellPrice"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    defaultValue={part?.sellPrice ?? 0}
-                    onChange={() => {
-                      sellPriceManualRef.current = true
-                    }}
-                  />
-                </div>
+                {autoFillMarkupPercent > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {t('form.sellPriceMarkupHint', {
+                      sellPrice: t('form.sellPrice'),
+                      unitCost: t('form.unitCost'),
+                      applyMarkup: t('applyMarkup'),
+                      inventory: tNav('sidebar.inventory'),
+                      percent: format.number(autoFillMarkupPercent, { maximumFractionDigits: 2 }),
+                    })}
+                  </p>
+                )}
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="supplier">{t('form.supplier')}</Label>
+                <Input
+                  id="supplier"
+                  name="supplier"
+                  placeholder={t('form.supplierPlaceholder')}
+                  defaultValue={part?.supplier ?? ''}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="supplierPhone">{t('form.supplierPhone')}</Label>
+                <Input
+                  id="supplierPhone"
+                  name="supplierPhone"
+                  placeholder={t('form.supplierPhonePlaceholder')}
+                  defaultValue={part?.supplierPhone ?? ''}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="supplierEmail">{t('form.supplierEmail')}</Label>
+                <Input
+                  id="supplierEmail"
+                  name="supplierEmail"
+                  type="email"
+                  placeholder={t('form.supplierEmailPlaceholder')}
+                  defaultValue={part?.supplierEmail ?? ''}
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label htmlFor="supplier">{t('form.supplier')}</Label>
-              <Input
-                id="supplier"
-                name="supplier"
-                placeholder={t('form.supplierPlaceholder')}
-                defaultValue={part?.supplier ?? ''}
+              <Label htmlFor="description">{t('form.description')}</Label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder={t('form.descriptionPlaceholder')}
+                rows={3}
+                defaultValue={part?.description ?? ''}
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="supplierPhone">{t('form.supplierPhone')}</Label>
-              <Input
-                id="supplierPhone"
-                name="supplierPhone"
-                placeholder={t('form.supplierPhonePlaceholder')}
-                defaultValue={part?.supplierPhone ?? ''}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="supplierEmail">{t('form.supplierEmail')}</Label>
-              <Input
-                id="supplierEmail"
-                name="supplierEmail"
-                type="email"
-                placeholder={t('form.supplierEmailPlaceholder')}
-                defaultValue={part?.supplierEmail ?? ''}
-              />
-            </div>
-          </div>
+          </DialogBody>
 
-          <div className="space-y-2">
-            <Label htmlFor="description">{t('form.description')}</Label>
-            <Textarea
-              id="description"
-              name="description"
-              placeholder={t('form.descriptionPlaceholder')}
-              rows={3}
-              defaultValue={part?.description ?? ''}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4">
+          <DialogFooter>
             <Button type="button" variant="outline" onClick={() => handleOpenChange(false)}>
               {t('form.cancel')}
             </Button>
@@ -867,7 +1050,7 @@ export function InventoryPartForm({
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {part ? t('form.saveChanges') : t('form.addPart')}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

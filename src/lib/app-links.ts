@@ -9,5 +9,8 @@
 export const PLAY_STORE_URL =
   'https://play.google.com/store/apps/details?id=com.torqvoice.technician'
 
+/** The iPhone listing, offered next to Google Play wherever the app is. */
+export const APP_STORE_URL = 'https://apps.apple.com/app/id6809578893'
+
 /** The Android package, which is also what a deep link resolves against. */
 export const ANDROID_PACKAGE = 'com.torqvoice.technician'

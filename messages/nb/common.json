@@ -54,6 +54,36 @@
     "whatsNew": "Se hva som er nytt",
     "dismiss": "Lukk"
   },
+  "whatsNew": {
+    "title": "Hva er nytt",
+    "openUnread": "Hva er nytt: oppdateringer du ikke har sett",
+    "description": "De siste nyhetene, nyeste først.",
+    "unread": "Nytt siden sist",
+    "newCount": "{count, plural, one {# ny} other {# nye}}",
+    "showOlder": "Vis eldre",
+    "hideTab": "Skjul denne fanen",
+    "tabHidden": "Fanen er skjult. Du kan slå den på igjen under Innstillinger, Om.",
+    "kindNew": "Nytt",
+    "kindImproved": "Forbedret",
+    "open": "Åpne",
+    "guide": "Les veiledningen",
+    "video": "Se videoen",
+    "version": "Versjon {version}",
+    "allReleaseNotes": "Alle versjonsmerknader",
+    "feedback": {
+      "question": "Var dette nyttig?",
+      "up": "Ja, dette er nyttig",
+      "down": "Nei, ikke det jeg forventet",
+      "askUp": "Hva liker du med det? (valgfritt)",
+      "askDown": "Hva fungerte ikke slik du forventet?",
+      "privacyIdentified": "Sendes til Torqvoice-teamet med e-postadressen din, slik at vi kan svare.",
+      "privacyAnonymous": "Sendes til Torqvoice-teamet uten navnet eller e-postadressen din.",
+      "skip": "Hopp over",
+      "send": "Send",
+      "thanks": "Takk, kommentaren din er sendt.",
+      "failed": "Tilbakemeldingen din kunne ikke sendes. Prøv igjen om litt."
+    }
+  },
   "pagination": {
     "showing": "Viser {start}–{end} av {total}",
     "perPage": "per side",
@@ -76,6 +106,26 @@
     "enterManually": "Skriv inn manuelt",
     "enterBarcode": "Skriv inn strekkode…",
     "scanHint": "Rett kameraet mot en strekkode, eller skriv den inn manuelt",
+    "submitBarcode": "OK",
+    "camera": {
+      "tryAgain": "Prøv igjen",
+      "denied": {
+        "title": "Tilgang til kameraet er blokkert",
+        "body": "Tillat kameraet for dette nettstedet i nettleseren, fra kamera- eller hengelåsikonet i adressefeltet, og trykk deretter Prøv igjen. Eller skriv inn koden nedenfor."
+      },
+      "insecure": {
+        "title": "Kameraet krever HTTPS",
+        "body": "Nettlesere tillater bare kameraet over en sikker tilkobling, og denne siden er på HTTP ({host}). Åpne Torqvoice over HTTPS for å skanne, eller skriv inn koden nedenfor."
+      },
+      "notFound": {
+        "title": "Fant ikke noe kamera",
+        "body": "Koble til et kamera og trykk Prøv igjen, eller skriv inn koden nedenfor."
+      },
+      "failed": {
+        "title": "Kameraet kunne ikke starte",
+        "body": "Kanskje en annen app bruker det. Lukk den appen og trykk Prøv igjen, eller skriv inn koden nedenfor."
+      }
+    },
     "iosInstallHint": "Trykk Del > Legg til på Hjem-skjerm",
     "installDescription": "Legg den til på hjem-skjermen for rask tilgang",
     "enterFullscreen": "Fullskjerm",
@@ -85,6 +135,8 @@
     "title": "Oppgrader for å fortsette",
     "maxCustomers": "Planen din inkluderer opptil {limit} kunder, og du har nådd det antallet. Oppgrader for å legge til så mange du trenger.",
     "maxUsers": "Planen din inkluderer {limit, plural, one {ett teammedlem} other {# teammedlemmer}}. Oppgrader for å invitere flere.",
+    "maxPlatformMail": "Planen din sender opptil {limit} e-poster om dagen fra Torqvoice-adressen, og dagens er brukt opp. Oppgrader for å sende så mange du trenger, eller send resten i morgen.",
+    "maxPlatformSms": "Planen din sender opptil {limit} SMS-er om dagen fra Torqvoice-nummeret, og dagens er brukt opp. Oppgrader for en høyere grense, koble til din egen SMS-leverandør for å sende uten grense, eller send resten i morgen.",
     "generic": "Denne funksjonen er ikke inkludert i planen din.",
     "featureNotIncluded": "{feature} er ikke inkludert i planen din.",
     "notNow": "Ikke nå"
@@ -109,8 +161,6 @@
     "preview": "Forhåndsvisning",
     "failed": "Kunne ikke generere PDF-forhåndsvisningen."
   },
-  "attachPdf": "Legg ved PDF",
-  "attachPdfHint": "Slå av for å sende en lenke i stedet, så ser du når kunden åpner den.",
   "sentCopy": {
     "note": "Sendt {date}. Endringer her kommer på fakturaen når den sendes på nytt.",
     "confirmTitle": "Denne fakturaen er allerede sendt",
@@ -131,5 +181,145 @@
     "retake": "Ta opp på nytt",
     "use": "Bruk denne videoen",
     "limit": "Opptaket stopper av seg selv etter {minutes} minutter."
+  },
+  "photoCapture": {
+    "title": "Ta et bilde",
+    "description": "Med kameraet på denne datamaskinen eller et tilkoblet webkamera.",
+    "starting": "Starter kameraet...",
+    "live": "Forhåndsvisning fra kameraet",
+    "preview": "Bildet du nettopp tok",
+    "camera": "Kamera",
+    "take": "Ta bilde",
+    "retake": "Ta på nytt",
+    "use": "Bruk dette bildet",
+    "tryAgain": "Prøv igjen",
+    "uploadInstead": "Last opp en fil i stedet",
+    "denied": {
+      "title": "Tilgang til kameraet er blokkert",
+      "body": "Tillat kameraet for dette nettstedet i nettleseren, fra kamera- eller hengelåsikonet i adressefeltet, og trykk deretter Prøv igjen."
+    },
+    "insecure": {
+      "title": "Kameraet krever HTTPS",
+      "body": "Nettlesere tillater bare kameraet over en sikker tilkobling, og denne siden er på HTTP ({host}). Åpne Torqvoice over HTTPS, eller last opp en fil i stedet."
+    },
+    "notFound": {
+      "title": "Fant ikke noe kamera",
+      "body": "Koble til et webkamera og trykk Prøv igjen, eller last opp en fil i stedet."
+    },
+    "failed": {
+      "title": "Kameraet kunne ikke starte",
+      "body": "Kanskje en annen app bruker det. Lukk den appen og trykk Prøv igjen."
+    }
+  },
+  "richText": {
+    "openLinkHint": "Hold {key} og klikk for å åpne",
+    "placeholder": "Skriv noe...",
+    "toolbar": "Formatering",
+    "editor": "Tekst",
+    "bold": "Fet",
+    "italic": "Kursiv",
+    "underline": "Understreket",
+    "strikethrough": "Gjennomstreket",
+    "bulletList": "Punktliste",
+    "numberedList": "Nummerert liste"
+  },
+  "appUpdated": {
+    "title": "En ny versjon er tilgjengelig",
+    "description": "Last inn siden på nytt for å få de siste oppdateringene.",
+    "reload": "Last inn på nytt"
+  },
+  "signedOut": {
+    "title": "Du er logget ut",
+    "description": "Logg inn igjen for å fortsette. Kopier det du holdt på å skrive først.",
+    "signIn": "Logg inn"
+  },
+  "connectionLost": {
+    "title": "Får ikke kontakt med Torqvoice",
+    "description": "Den siste endringen din ble kanskje ikke lagret. Sjekk tilkoblingen og prøv igjen."
+  },
+  "sendDocument": {
+    "titleQuote": "Send tilbud",
+    "titleInvoice": "Send faktura",
+    "titleInspection": "Send inspeksjon",
+    "description": "Kunden får en lenke for å se og laste den ned.",
+    "email": "E-post",
+    "emailAddress": "E-postadresse",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Legg ved PDF-en også",
+    "sms": "SMS",
+    "smsNumber": "Telefonnummer for SMS",
+    "whatsappNumber": "Telefonnummer for WhatsApp",
+    "phonePlaceholder": "Telefonnummer",
+    "message": "Melding (valgfritt, legges til i e-posten)",
+    "messagePlaceholder": "Legg til en personlig melding...",
+    "copyLink": "Kopier lenke",
+    "send": "Send",
+    "emailSent": "E-post sendt",
+    "failedEmail": "Kunne ikke sende e-post",
+    "smsSent": "SMS sendt",
+    "failedSms": "Kunne ikke sende SMS"
+  },
+  "shareLink": {
+    "generateFailed": "Kunne ikke opprette lenken. Prøv igjen.",
+    "revokeFailed": "Kunne ikke bekrefte at lenken ble tilbakekalt. Den kan fortsatt virke for alle som har den.",
+    "channelNotConnected": "Koble til {channel} under Integrasjoner for å sende på denne måten.",
+    "openIntegrations": "Åpne Integrasjoner",
+    "channelNotInPlan": "{channel} er ikke inkludert i planen din.",
+    "channelTurnedOff": "Sending med {channel} er slått av for dette verkstedet.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp sendt",
+    "failedWhatsapp": "Kunne ikke sende WhatsApp-melding",
+    "whatsappWindowClosed": "Denne kunden har ikke skrevet til deg på WhatsApp de siste 24 timene, og ingen godkjent mal er satt opp for å nå dem.",
+    "expiry": {
+      "never": "Utløper aldri",
+      "untilPaid": "Åpen til den er betalt",
+      "expires": "Utløper {date}",
+      "expired": "Utløpt {date}",
+      "change": "Endre",
+      "openAgain": "Åpne igjen",
+      "reopened": "Lenken er åpen igjen",
+      "formTitle": "Lenken utløper",
+      "choice": {
+        "workshop": "Verkstedets innstilling",
+        "date": "På en dato",
+        "never": "Aldri"
+      },
+      "rule": {
+        "never": "Lenker utløper aldri",
+        "afterSharing": "{days, plural, one {# dag} other {# dager}} etter at den er sendt",
+        "afterPayment": "{days, plural, one {# dag} other {# dager}} etter at fakturaen er betalt"
+      },
+      "dateHint": "Lenken virker hele denne dagen.",
+      "chooseDate": "Velg en dato",
+      "cancel": "Avbryt",
+      "save": "Lagre",
+      "saved": "Utløp for lenken er lagret",
+      "saveFailed": "Kunne ikke lagre utløpet for lenken. Prøv igjen."
+    }
+  },
+  "searchableSelect": {
+    "choose": "Velg...",
+    "search": "Søk...",
+    "noMatch": "Ingen treff"
+  },
+  "a11y": {
+    "skipToContent": "Hopp til innhold",
+    "mainNavigation": "Hovednavigasjon",
+    "close": "Lukk",
+    "breadcrumb": "Brødsmulesti",
+    "more": "Mer",
+    "toggleSidebar": "Vis eller skjul sidepanel",
+    "sidebar": "Sidepanel",
+    "sidebarDescription": "Hovedmenyen.",
+    "openCalendar": "Åpne kalender",
+    "dismiss": "Lukk",
+    "selectAll": "Velg alle",
+    "selectRow": "Velg {name}"
+  },
+  "confirmDialog": {
+    "title": "Er du sikker?",
+    "irreversible": "Dette kan ikke angres.",
+    "andMore": "og {count} til",
+    "typeToConfirm": "Skriv <b>{text}</b> for å bekrefte"
   }
 }

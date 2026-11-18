@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Ottieni la tua chiave API da resend.com",
     "postmarkApiKeyHint": "Ottieni il tuo Server Token da postmarkapp.com",
     "mailgunApiKeyHint": "Ottieni la tua chiave API da app.mailgun.com",
-    "sendgridApiKeyHint": "Ottieni la tua chiave API da app.sendgrid.com"
+    "sendgridApiKeyHint": "Ottieni la tua chiave API da app.sendgrid.com",
+    "branding": {
+      "title": "Personalizzazione dell'app",
+      "description": "Cambia il titolo della scheda del browser, la favicon e il nome e l'icona dell'app installata su questa installazione. I documenti e il resto dell'app restano invariati. Lascia un campo vuoto per usare il valore predefinito.",
+      "nameLabel": "Nome dell'app",
+      "nameHint": "Compare nella scheda del browser e come nome dell'app installata.",
+      "save": "Salva nome",
+      "saved": "Nome dell'app salvato",
+      "saveFailed": "Impossibile salvare il nome dell'app",
+      "iconLabel": "Icona dell'app",
+      "iconHint": "Un’immagine quadrata di almeno 512 × 512 pixel. Meglio in PNG.",
+      "iconAlt": "Icona attuale dell'app",
+      "upload": "Carica",
+      "replace": "Sostituisci",
+      "remove": "Rimuovi",
+      "uploaded": "Icona dell'app aggiornata",
+      "uploadFailed": "Impossibile caricare l'icona",
+      "removed": "Icona dell'app rimossa",
+      "removeFailed": "Impossibile rimuovere l'icona",
+      "lockedBadge": "Richiede una licenza",
+      "lockedHint": "Una licenza white-label sblocca nome e icona dell'app.",
+      "lockedLink": "Apri la pagina Licenza"
+    }
   },
   "common": {
     "openMenu": "Apri menu"

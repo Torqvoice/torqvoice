@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 import { useDayFormatter } from './useDayFormatter'
 import { CalendarDays, CalendarOff, Plus } from 'lucide-react'
 import { useDateSettings } from '@/components/date-settings-context'
@@ -10,12 +11,19 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
+import { BOOKING_SAVED_EVENT } from '@/components/booking-launcher'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { ReminderFormDialog } from '@/features/vehicles/Components/ReminderFormDialog'
 import { NewQuoteDialog } from '@/features/quotes/Components/NewQuoteDialog'
 import { ScheduleMessageDialog } from '@/features/scheduled-messages/Components/ScheduleMessageDialog'
 import type { MessageChannel } from '@/features/scheduled-messages/Schema/scheduledMessageSchema'
+import {
+  TimeOffDialog,
+  type TechnicianOption,
+} from '@/features/workshop-calendar/Components/TimeOffDialog'
+import { listAbsences, type AbsenceView } from '@/features/workshop-calendar/Actions/absenceActions'
 import { getCalendarEvents } from '../Actions/calendarActions'
+import { BookingDialog } from './BookingDialog'
 import type { CalendarEvent, CalendarEventType } from '../Actions/calendarActions'
 import {
   eachDay,
@@ -32,30 +40,17 @@ import {
 } from '../Lib/calendar-range'
 import { compareEvents, isEventDone } from './calendar-utils'
 import { CalendarEventList } from './CalendarEventList'
-import { CalendarSidebar, type TypeFilters } from './CalendarSidebar'
-import { CalendarToolbar, VIEW_SHORTCUTS, type CreateKind } from './CalendarToolbar'
+import { CalendarSidebar, typeFiltersFrom } from './CalendarSidebar'
+import { CalendarToolbar, type CreateKind } from './CalendarToolbar'
 import type { DayActions } from './DayContextMenu'
-import { EventPeekProvider } from './EventPeek'
+import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { type BookingEdit, EventPeekProvider } from './EventPeek'
+import { LinkedAppointment } from './LinkedAppointment'
 import { MonthView } from './MonthView'
 import { ScheduleView } from './ScheduleView'
 import { TimeGridView } from './TimeGridView'
-import { useCalendarPreferences } from './useCalendarPreferences'
+import { type CalendarPreferences, useCalendarPreferences } from './useCalendarPreferences'
 import { YearView } from './YearView'
-
-interface Vehicle {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
-}
-
-interface Customer {
-  id: string
-  name: string
-  company: string | null
-}
 
 interface CalendarClientProps {
   initialEvents: CalendarEvent[]
@@ -65,14 +60,39 @@ interface CalendarClientProps {
   /** YYYY-MM-DD the calendar opens on. */
   initialDate: string
   todayStr: string // YYYY-MM-DD computed on server to avoid hydration mismatch
-  vehicles: Vehicle[]
-  customers: Customer[]
   currencyCode: string
   /** Channels the workshop can actually send on, resolved on the server */
   messageChannels: MessageChannel[]
+  /**
+   * The technicians this person may set on leave; null when they may not, or
+   * the workshop does not track time off.
+   */
+  timeOff?: { technicians: TechnicianOption[] } | null
+  /** The viewing preferences from the cookie; null when none are stored yet. */
+  initialPreferences?: CalendarPreferences | null
+  /**
+   * An appointment a link asked for: the calendar goes to its day and opens
+   * its card. `token` is new on every request, so following the same link
+   * again while the calendar is open does it again.
+   */
+  linkedAppointment?: {
+    event: CalendarEvent
+    date: string
+    view: CalendarView
+    token: string
+  } | null
 }
 
-const ALL_TYPES: CalendarEventType[] = ['service', 'reminder', 'quote', 'message', 'external']
+const ALL_TYPES: CalendarEventType[] = [
+  'service',
+  'appointment',
+  'reminder',
+  'quote',
+  'message',
+  'external',
+  'closure',
+  'absence',
+]
 
 /** Minutes a work order started from a time slot is booked for. */
 const SLOT_WORK_ORDER_MINUTES = 60
@@ -98,10 +118,11 @@ export default function CalendarClient({
   initialView,
   initialDate,
   todayStr,
-  vehicles,
-  customers,
   currencyCode,
   messageChannels,
+  timeOff = null,
+  initialPreferences = null,
+  linkedAppointment = null,
 }: CalendarClientProps) {
   const t = useTranslations('calendar')
   const tWorkOrders = useTranslations('workOrders.list')
@@ -109,7 +130,11 @@ export default function CalendarClient({
   const pathname = usePathname()
   const isMobile = useIsMobile()
   const { weekStartDay } = useDateSettings()
-  const { preferences, update: updatePreferences } = useCalendarPreferences()
+  const {
+    preferences,
+    update: updatePreferences,
+    setTypeShown,
+  } = useCalendarPreferences(initialPreferences)
 
   const [view, setView] = useState<CalendarView>(initialView)
   const [date, setDate] = useState<Date>(
@@ -122,24 +147,28 @@ export default function CalendarClient({
     return start && end ? { start, end } : null
   })
   const [loading, setLoading] = useState(false)
-  const [filters, setFilters] = useState<TypeFilters>({
-    service: true,
-    reminder: true,
-    quote: true,
-    message: true,
-    external: true,
-  })
+  // Remembered in the browser with the other viewing preferences, so a kind
+  // unticked here stays unticked after a trip to the work board or a reload.
+  const filters = useMemo(() => typeFiltersFrom(preferences.hiddenTypes), [preferences.hiddenTypes])
 
   // Dialogs the calendar can open
   const [showPicker, setShowPicker] = useState(false)
   const [showDateChoice, setShowDateChoice] = useState(false)
   const [workOrderQuery, setWorkOrderQuery] = useState<Record<string, string> | undefined>()
+  const [showAppointmentDialog, setShowAppointmentDialog] = useState(false)
+  // An appointment or booked job opened from its peek or menu; null for a new booking.
+  const [bookingEdit, setBookingEdit] = useState<BookingEdit | null>(null)
   const [showReminderDialog, setShowReminderDialog] = useState(false)
   const [showQuoteDialog, setShowQuoteDialog] = useState(false)
   const [showMessageDialog, setShowMessageDialog] = useState(false)
   const [menuDateStr, setMenuDateStr] = useState<string | undefined>(undefined)
   const [menuTime, setMenuTime] = useState<string | undefined>(undefined)
   const [daySheetOpen, setDaySheetOpen] = useState(false)
+  /** The leave being added (absence null) or edited, and the day it starts on. */
+  const [timeOffEdit, setTimeOffEdit] = useState<{
+    date: string
+    absence: AbsenceView | null
+  } | null>(null)
 
   const dateStr = toLocalDateStr(date)
   const range = useMemo(() => visibleRange(view, date, weekStartDay), [view, date, weekStartDay])
@@ -172,6 +201,13 @@ export default function CalendarClient({
     load(loadedRange ?? fetchRangeFor(view, date, weekStartDay))
   }, [load, loadedRange, view, date, weekStartDay])
 
+  // A booking made from the header while the calendar is open: the events
+  // here are the calendar's own, so they are read again.
+  useEffect(() => {
+    document.addEventListener(BOOKING_SAVED_EVENT, refresh)
+    return () => document.removeEventListener(BOOKING_SAVED_EVENT, refresh)
+  }, [refresh])
+
   // ── URL ────────────────────────────────────────────────────────────────
   const firstRender = useRef(true)
   useEffect(() => {
@@ -188,14 +224,26 @@ export default function CalendarClient({
     window.history.replaceState(window.history.state, '', `${pathname}?${params.toString()}`)
   }, [view, dateStr, pathname])
 
+  // A followed appointment link moves the calendar to its day.
+  const linkToken = linkedAppointment?.token
+  useEffect(() => {
+    if (!linkedAppointment) return
+    const day = parseDateKey(linkedAppointment.date)
+    setView(linkedAppointment.view)
+    if (day) setDate(day)
+  }, [linkToken])
+
   // ── Derived data ───────────────────────────────────────────────────────
   const counts = useMemo(() => {
     const c: Record<CalendarEventType, number> = {
       service: 0,
+      appointment: 0,
       reminder: 0,
       quote: 0,
       message: 0,
       external: 0,
+      closure: 0,
+      absence: 0,
     }
     const startKey = toLocalDateStr(range.start)
     const endKey = toLocalDateStr(range.end)
@@ -277,47 +325,17 @@ export default function CalendarClient({
     setView('day')
   }, [])
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.metaKey || e.ctrlKey || e.altKey) return
-      const target = e.target as HTMLElement | null
-      if (
-        target?.closest(
-          'input, textarea, select, [contenteditable="true"], [role="dialog"], [role="menu"]'
-        )
-      ) {
-        return
-      }
-      const key = e.key.length === 1 ? e.key.toUpperCase() : e.key
-      const viewFor = (Object.keys(VIEW_SHORTCUTS) as CalendarView[]).find(
-        (v) => VIEW_SHORTCUTS[v] === key
-      )
-      if (viewFor) {
-        setView(viewFor)
-        return
-      }
-      switch (key) {
-        case 'T':
-          goToday()
-          break
-        case 'J':
-        case 'N':
-        case 'ArrowRight':
-          goNext()
-          break
-        case 'K':
-        case 'P':
-        case 'ArrowLeft':
-          goPrev()
-          break
-        default:
-          return
-      }
-      e.preventDefault()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [goToday, goNext, goPrev])
+  // The calendar's keys. Which key does what, and whether it may fire (not
+  // while typing, not over a dialog), is the shortcut registry's business.
+  useShortcut('calendar.day', () => setView('day'))
+  useShortcut('calendar.week', () => setView('week'))
+  useShortcut('calendar.month', () => setView('month'))
+  useShortcut('calendar.year', () => setView('year'))
+  useShortcut('calendar.schedule', () => setView('schedule'))
+  useShortcut('calendar.fourDays', () => setView('fourDays'))
+  useShortcut('calendar.today', goToday)
+  useShortcut('calendar.next', goNext)
+  useShortcut('calendar.previous', goPrev)
 
   // ── Creating things ────────────────────────────────────────────────────
   const openWorkOrderPicker = useCallback((query?: Record<string, string>) => {
@@ -336,6 +354,9 @@ export default function CalendarClient({
           if (dateStr !== todayStr) setShowDateChoice(true)
           else openWorkOrderPicker(undefined)
           break
+        case 'appointment':
+          setShowAppointmentDialog(true)
+          break
         case 'reminder':
           setShowReminderDialog(true)
           break
@@ -344,6 +365,9 @@ export default function CalendarClient({
           break
         case 'message':
           setShowMessageDialog(true)
+          break
+        case 'timeOff':
+          setTimeOffEdit({ date: dateStr, absence: null })
           break
       }
     },
@@ -372,6 +396,11 @@ export default function CalendarClient({
           boardEnd: minutesToTime(Math.min(startMins + SLOT_WORK_ORDER_MINUTES, 24 * 60 - 1)),
         })
       },
+      onBookAppointment: (day, time) => {
+        setMenuDateStr(day)
+        setMenuTime(time)
+        setShowAppointmentDialog(true)
+      },
       onNewReminder: (day, time) => {
         setMenuDateStr(day)
         setMenuTime(time)
@@ -386,8 +415,25 @@ export default function CalendarClient({
         setMenuTime(time)
         setShowMessageDialog(true)
       },
+      onTimeOff: timeOff ? (day) => setTimeOffEdit({ date: day, absence: null }) : undefined,
     }),
-    [openWorkOrderPicker]
+    [openWorkOrderPicker, timeOff]
+  )
+
+  /** A leave entry is one row a day; its id carries the stretch it belongs to. */
+  const editAbsence = useCallback(
+    async (event: CalendarEvent) => {
+      const id = event.id.split(':')[1]
+      const res = await listAbsences({ from: event.date })
+      const absence = res.success ? res.data?.find((a) => a.id === id) : undefined
+      if (!absence) {
+        toast.error(res.error ?? t('timeOffMissing'))
+        refresh()
+        return
+      }
+      setTimeOffEdit({ date: absence.startDate, absence })
+    },
+    [refresh, t]
   )
 
   // Noon parse, so the seeded day survives any timezone the workshop sits in.
@@ -395,21 +441,6 @@ export default function CalendarClient({
   const menuDate = useMemo(
     () => (menuDateStr ? new Date(`${menuDateStr}T12:00:00`) : undefined),
     [menuDateStr]
-  )
-
-  // The reminder dialog picks vehicles from a flat list with the customer inlined
-  const reminderVehicles = useMemo(
-    () =>
-      vehicles.map((v) => ({
-        id: v.id,
-        make: v.make,
-        model: v.model,
-        year: v.year,
-        licensePlate: v.licensePlate,
-        customerName: v.customer?.name ?? null,
-        customerId: v.customer?.id ?? null,
-      })),
-    [vehicles]
   )
 
   const monthDays = useMemo(
@@ -495,7 +526,16 @@ export default function CalendarClient({
   })()
 
   return (
-    <EventPeekProvider currencyCode={currencyCode} onRefresh={refresh}>
+    <EventPeekProvider
+      currencyCode={currencyCode}
+      onRefresh={refresh}
+      onEditAbsence={timeOff ? editAbsence : undefined}
+      showing={`${view}:${toLocalDateStr(date)}`}
+      onEditBooking={(edit) => {
+        setBookingEdit(edit)
+        setShowAppointmentDialog(true)
+      }}
+    >
       {/*
         A definite height, not flex-1: nothing above this in the layout has
         one (the shell is min-h-svh), so a flexed calendar would grow to the
@@ -517,6 +557,10 @@ export default function CalendarClient({
           onToggleSidebar={() => updatePreferences({ sidebarOpen: !preferences.sidebarOpen })}
           onPreferenceChange={updatePreferences}
           onCreate={handleCreate}
+          canSetTimeOff={timeOff !== null}
+          filters={filters}
+          counts={counts}
+          onFilterChange={setTypeShown}
         />
         <div className="flex min-h-0 flex-1">
           {preferences.sidebarOpen && (
@@ -535,17 +579,29 @@ export default function CalendarClient({
                   setDate(new Date(m.getFullYear(), m.getMonth(), 1))
                 }
               }}
-              onFilterChange={(type, checked) =>
-                setFilters((current) => ({ ...current, [type]: checked }))
-              }
+              onFilterChange={setTypeShown}
             />
           )}
-          <div className="flex min-h-0 min-w-0 flex-1 flex-col">{body}</div>
+          <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
+            {body}
+            {linkedAppointment && (
+              <LinkedAppointment
+                key={linkedAppointment.token}
+                event={linkedAppointment.event}
+                view={linkedAppointment.view}
+                date={linkedAppointment.date}
+              />
+            )}
+          </div>
         </div>
       </div>
 
       <Sheet open={daySheetOpen} onOpenChange={setDaySheetOpen}>
-        <SheetContent side="bottom" className="max-h-[80vh] overflow-y-auto">
+        <SheetContent
+          side="bottom"
+          className="max-h-[80vh] overflow-y-auto"
+          aria-describedby={undefined}
+        >
           <SheetHeader className="sr-only">
             <SheetTitle>{format.dateTime(date, { dateStyle: 'full' })}</SheetTitle>
           </SheetHeader>
@@ -566,7 +622,7 @@ export default function CalendarClient({
       </Sheet>
 
       <Dialog open={showDateChoice} onOpenChange={setShowDateChoice}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('dateChoice.title')}</DialogTitle>
           </DialogHeader>
@@ -594,10 +650,21 @@ export default function CalendarClient({
         </DialogContent>
       </Dialog>
 
+      <BookingDialog
+        open={showAppointmentDialog}
+        onOpenChange={(open) => {
+          setShowAppointmentDialog(open)
+          if (!open) setBookingEdit(null)
+        }}
+        defaultDate={menuDateStr}
+        defaultTime={menuTime}
+        edit={bookingEdit}
+        onSaved={refresh}
+      />
+
       <ReminderFormDialog
         open={showReminderDialog}
         onOpenChange={setShowReminderDialog}
-        vehicles={reminderVehicles}
         defaultDueDate={menuDate}
         defaultDueTime={menuTime}
         onSaved={refresh}
@@ -621,11 +688,21 @@ export default function CalendarClient({
       <VehiclePickerDialog
         open={showPicker}
         onOpenChange={setShowPicker}
-        vehicles={vehicles}
-        customers={customers}
         title={t('selectVehicle')}
         redirectQuery={workOrderQuery}
       />
+      {timeOff && (
+        <TimeOffDialog
+          open={timeOffEdit !== null}
+          onOpenChange={(open) => {
+            if (!open) setTimeOffEdit(null)
+          }}
+          absence={timeOffEdit?.absence ?? null}
+          technicians={timeOff.technicians}
+          defaultDate={timeOffEdit?.date ?? dateStr}
+          onSaved={refresh}
+        />
+      )}
     </EventPeekProvider>
   )
 }

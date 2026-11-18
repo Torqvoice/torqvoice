@@ -12,6 +12,7 @@
   "noChats": "Não há conversas anteriores sobre este registo",
   "chatsPrivate": "As suas conversas são privadas e só são visíveis para si.",
   "deleteChat": "Eliminar conversa",
+  "deleteChatFailed": "Não foi possível eliminar a conversa. Tente novamente.",
   "error": "Algo correu mal. Tente novamente.",
   "disclaimer": "As respostas são geradas a partir dos registos apresentados na aplicação e podem estar erradas. Confirme antes de agir com base nelas.",
   "vehicleSuggestion1": "Resuma o histórico de serviços",

@@ -13,6 +13,8 @@
     "availableTitle": "Disponibili",
     "availableDescription": "Servizi che puoi aggiungere. Ognuno si configura una volta e lavora in background.",
     "allConnected": "Tutti i servizi disponibili sono collegati.",
+    "cloudOnly": "Solo cloud",
+    "cloudOnlyHint": "Disponibile su Torqvoice Cloud",
     "searchPlaceholder": "Cerca integrazioni",
     "noMatches": "Nessun risultato per «{query}».",
     "readMore": "Scopri di più",
@@ -30,6 +32,7 @@
     "automation": "Automazione",
     "storage": "File",
     "registry": "Registro veicoli",
+    "repair": "Dati di riparazione",
     "other": "Altro",
     "ai": "IA"
   },
@@ -70,6 +73,16 @@
       "invoices": "Fatture in contabilità",
       "customers": "Clienti in contabilità",
       "payments": "Pagamenti in entrambe le direzioni"
+    },
+    "backup": {
+      "target": "Destinazione dei backup"
+    },
+    "repair": {
+      "labor": "Tempi di manodopera su ordini di lavoro e preventivi",
+      "fluids": "Tipi e capacità dei fluidi"
+    },
+    "diagnostics": {
+      "codes": "Significato dei codici di errore"
     }
   },
   "statuses": {
@@ -138,13 +151,18 @@
     "inboundUrl": "URL del webhook in entrata",
     "inboundHintSecret": "Incolla questo URL nelle impostazioni dei messaggi in entrata del provider. Contiene un segreto che identifica la tua officina, quindi tienilo riservato.",
     "inboundHintMeta": "Incolla questo URL come URL di callback nella tua app Meta, con il token di verifica inserito sopra, e iscriviti ai messaggi.",
-    "inboundHintStripe": "Aggiungi questo URL nella dashboard di Stripe sotto Developers, Webhooks, iscritto a checkout.session.completed. Poi incolla il segreto di firma mostrato da Stripe nel campo segreto del webhook qui, così le notifiche possono essere verificate.",
+    "inboundHintStripe": "Aggiungi questo URL nella dashboard di Stripe: apri Workbench, poi Webhooks, scegli Create an event destination e iscrivilo a checkout.session.completed. Stripe mostra quindi un segreto di firma per l'endpoint; incollalo qui nel campo del segreto di firma, così ogni notifica viene controllata tramite la sua firma. Fino ad allora, Torqvoice conferma ogni notifica chiedendo il checkout a Stripe.",
     "inboundHintVipps": "Inserisci questo URL come URL di callback nel portale Vipps MobilePay. Vipps richiede anche condizioni di vendita pubblicate, impostate in Impostazioni, Pagamento.",
     "inboundHintPaypal": "Aggiungi questo URL nella dashboard sviluppatori di PayPal sotto Webhooks, iscritto a PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Incolla questo URL come Webhook URL nella dashboard di Paystack, in Settings, API Keys & Webhooks. Paystack ne tiene uno per la modalità test e uno per la modalità live, quindi impostalo nella modalità a cui appartiene la tua chiave.",
     "copy": "Copia",
     "copied": "Copiato",
     "updateKeys": "Aggiorna le chiavi",
     "updateKeysHint": "L'ultimo controllo non è riuscito. Inserisci di nuovo le chiavi per riprovare.",
+    "awaitingKeys": "Connesso, ma manca ancora: {keys}.",
+    "awaitingKeysHint": "Il webhook risponde già al fornitore, quindi registralo ora. Aggiungi questi valori qui una volta che il fornitore li ha rilasciati.",
+    "saveKeys": "Salva le chiavi",
+    "keysSaved": "Chiavi salvate",
     "inspectionSync": {
       "title": "Sincronizzazione revisioni",
       "vehicles": "{count} veicoli con targa in questa officina",
@@ -154,11 +172,101 @@
       "never": "Nessun passaggio completo finora",
       "inProgress": "Un passaggio è in corso",
       "off": "Attiva l'impostazione e salva; fino ad allora un passaggio non controlla nulla.",
-      "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti."
+      "syncNowHelp": "Sincronizza ora avvia subito un passaggio invece di attendere quello orario. Cerca 25 veicoli alla volta e prosegue da solo finché tutti i veicoli da controllare sono stati fatti. Il primo passaggio cerca tutti i veicoli con una targa.",
+      "confirmTitle": "Cercare i veicoli adesso?",
+      "confirmDescription": "{count} dei {total} veicoli con targa verranno cercati in {name} adesso, 25 alla volta, e verranno salvate le loro scadenze di revisione. I veicoli controllati di recente vengono saltati. Se {name} addebita ogni ricerca, ogni veicolo trovato viene addebitato al tuo account.",
+      "confirmLabel": "Cerca {count} veicoli",
+      "nothingDue": "Tutti i veicoli con targa sono stati controllati di recente, quindi non c'è ancora niente da cercare."
     },
     "supersedes": "Collegare {next} scollega {current}. Solo uno può essere attivo alla volta, quindi {current} smette di essere usato appena {next} entra in servizio.",
+    "platformHandlesBackupsTitle": "I backup sono già inclusi",
+    "platformHandlesBackups": "Torqvoice esegue già un backup di questa officina ogni ora e conserva i punti di ripristino per 30 giorni. Collega un bucket se vuoi anche una copia tua, leggibile senza Torqvoice.",
+    "platformHandlesBackupsLink": "Vedi i tuoi punti di ripristino",
     "batchRetried": "{count, plural, =0 {Niente da riprovare} one {# attività rimessa in coda} other {# attività rimesse in coda}}",
-    "advanced": "Avanzate"
+    "advanced": "Avanzate",
+    "generate": "Genera",
+    "show": "Mostra",
+    "hide": "Nascondi",
+    "generatedPasswordWarning": "Conserva una copia di questa password in un posto sicuro, lontano da questo server. Senza di essa nessuno può aprire questi backup, nemmeno Torqvoice.",
+    "backup": {
+      "title": "Backup",
+      "description": "Quando questa destinazione ha ricevuto l'ultimo backup riuscito, quando parte il prossimo e le esecuzioni più recenti.",
+      "lastGood": "Ultimo backup riuscito",
+      "added": "{size} aggiunti",
+      "never": "Ancora nessuno",
+      "nextRun": "Prossima esecuzione",
+      "notScheduled": "Non pianificato",
+      "repositorySize": "Archiviato nella destinazione",
+      "runNow": "Esegui backup ora",
+      "running": "Backup in corso",
+      "runningHint": "È in corso un backup. Questa pagina si aggiorna da sola finché non è terminato.",
+      "started": "Backup avviato",
+      "recentTitle": "Esecuzioni recenti",
+      "noRuns": "Non è ancora stato eseguito nessun backup.",
+      "addedNote": "La prima esecuzione carica tutto. Ognuna delle successive aggiunge solo le parti cambiate da allora, per questo è piccola. Ogni backup resta comunque completo e può essere ripristinato o esplorato da solo.",
+      "notStarted": "Non avviato",
+      "filesNewCount": "{count, plural, one {# nuovo file} other {# nuovi file}}",
+      "columns": {
+        "status": "Stato",
+        "started": "Avviato",
+        "trigger": "Avviato da",
+        "duration": "Durata",
+        "filesNew": "Nuovi file",
+        "bytesAdded": "Aggiunti"
+      },
+      "trigger": {
+        "scheduled": "Pianificazione",
+        "manual": "Manuale",
+        "restore": "Ripristino"
+      },
+      "status": {
+        "queued": "In coda",
+        "running": "In corso",
+        "done": "Completato",
+        "failed": "Non riuscito",
+        "skipped": "Saltato"
+      },
+      "restoring": "Ripristino in corso",
+      "restoringHint": "È in corso un ripristino: i dati dell'officina vengono sostituiti con il backup. Questa pagina si aggiorna da sola finché non è terminato. Fino ad allora non lavorare nell'officina.",
+      "explore": "Esplora",
+      "restore": {
+        "showAll": "Mostra tutti i backup",
+        "refresh": "Aggiorna",
+        "loading": "Lettura dei backup nella destinazione",
+        "loadFailed": "Non è stato possibile elencare i backup",
+        "empty": "Ancora nessun backup in questa destinazione.",
+        "needsOwner": "Qui solo il proprietario dell'officina può ripristinare un backup.",
+        "needsAdmin": "Solo un proprietario o un amministratore può ripristinare un backup.",
+        "filesIncluded": "Foto e file inclusi",
+        "filesNotIncluded": "Foto e file non inclusi",
+        "earlierInstall": "Installazione precedente",
+        "action": "Ripristina",
+        "dialogTitle": "Ripristinare il backup del {time}?",
+        "warning": "Il ripristino <bold>sostituisce tutto ciò che questa officina contiene ora</bold>: clienti, veicoli, lavori, fatture, impostazioni e, quando il backup li include, foto e file. Tutto ciò che è stato aggiunto dopo il backup va perso. L'operazione non è reversibile.",
+        "secretsNote": "Le chiavi segrete lasciate fuori dal backup mantengono i valori che questa installazione ha ora. Account utente e password non vengono toccati.",
+        "confirmPrompt": "Digita il nome dell'officina, <bold>{name}</bold>, per confermare.",
+        "whileRunning": "Il ripristino avviene in background e richiede qualche minuto quando ci sono molte foto. La pagina si aggiorna da sola finché non è terminato.",
+        "cancel": "Annulla",
+        "confirm": "Ripristina questo backup",
+        "started": "Ripristino avviato"
+      }
+    },
+    "lockedBackups": "Backup pianificati e cifrati della tua officina su uno spazio di archiviazione tuo.",
+    "searchOrType": "Cerca o digita un nome",
+    "useTyped": "Usa \"{value}\"",
+    "listNeedsKeys": "Inserisci le chiavi qui sopra per vedere l'elenco",
+    "listEmpty": "L'elenco è vuoto. Digita un nome.",
+    "testing": "Prova della connessione in corso",
+    "testOk": "La connessione funziona: un oggetto di prova è stato scritto e poi eliminato.",
+    "testFailed": "La prova non è riuscita",
+    "testSteps": {
+      "settings": "Controlla le impostazioni del fornitore",
+      "list": "La chiave non può elencare il bucket",
+      "write": "La chiave non può scrivere nel bucket",
+      "delete": "La chiave non può eliminare dal bucket",
+      "folder": "Impossibile creare o aprire la cartella"
+    },
+    "testHint": "Inserisci le chiavi e il bucket per provarli prima di collegare. La prova scrive un piccolo oggetto e lo elimina."
   },
   "activity": {
     "title": "Attività",
@@ -181,7 +289,10 @@
     },
     "noFailures": "Nessun errore.",
     "retryFailed": "Riprova quelle non riuscite",
-    "details": "Mostra dettagli"
+    "details": "Mostra dettagli",
+    "loadingMore": "Caricamento delle attività precedenti",
+    "loadFailed": "Impossibile caricare le attività precedenti.",
+    "cleared": "Le attività completate vengono eliminate dopo 7 giorni."
   },
   "errors": {
     "generic": "Qualcosa è andato storto",
@@ -195,7 +306,10 @@
     "invalid": "La risposta del provider era incompleta. Riprova.",
     "state": "Questo accesso è scaduto o appartiene a un'altra sessione. Ricomincia da capo.",
     "exchange": "Il provider ha rifiutato l'accesso. Controlla le credenziali dell'app e riprova.",
-    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo."
+    "identify": "Collegato, ma non è stato possibile leggere l'account. Prova a ricollegarlo.",
+    "backupRunning": "È già in corso un backup.",
+    "restoreOwnerOnly": "Su Torqvoice Cloud solo il proprietario dell'officina può ripristinare un backup.",
+    "restoreBusy": "Su questo server è già in corso un backup o un ripristino. Riprova quando è terminato."
   },
   "meeting": {
     "join": "Partecipa alla videochiamata",
@@ -226,6 +340,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Calendario Microsoft 365",
       "description": "Inserisci gli ordini di lavoro pianificati in un calendario Outlook, aggiungi un link Microsoft Teams e vedi gli impegni del calendario in Torqvoice.",
       "tenantHelp": "Registra un'applicazione in Microsoft Entra (Registrazioni app), consenti gli account personali e aziendali, aggiungi l'URI di reindirizzamento qui sotto come piattaforma Web, crea un segreto client e incolla entrambi qui.",
       "fields": {
@@ -298,7 +413,10 @@
         "verifyToken": "Token di verifica del webhook",
         "appSecret": "Chiave segreta dell'app",
         "apiVersion": "Versione della Graph API",
-        "appSecretHelp": "Meta firma ogni consegna con questa chiave. Finché non viene inserita, i messaggi inviati al webhook vengono rifiutati, perché altrimenti chiunque conosca l'URL potrebbe scrivere a nome dei tuoi clienti."
+        "appSecretHelp": "Meta firma ogni consegna con questa chiave. Finché non viene inserita, i messaggi inviati al webhook vengono rifiutati, perché altrimenti chiunque conosca l'URL potrebbe scrivere a nome dei tuoi clienti.",
+        "phoneNumberIdHelp": "Da WhatsApp Manager, sul numero da cui invii; non è il numero di telefono in sé. Meta lo rilascia solo dopo aver verificato il webhook, quindi lascialo vuoto, connetti, registra il webhook e poi torna ad aggiungerlo.",
+        "accessTokenHelp": "Un token permanente di utente di sistema. Quello che Meta mostra durante la configurazione scade entro 24 ore. Aggiungilo insieme all'ID del numero di telefono una volta verificato il webhook.",
+        "verifyTokenHelp": "Una frase a tua scelta. Incolla la stessa in Meta quando registri il webhook."
       },
       "settings": {
         "enabled": "Invia messaggi su questo canale",
@@ -417,7 +535,19 @@
       },
       "settings": {
         "syncInspections": "Tieni aggiornate le scadenze di revisione di tutti i veicoli di questa officina",
-        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data della prossima EU-kontroll viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+        "syncInspectionsHelp": "Una volta all'ora i veicoli da controllare vengono cercati per targa e la prossima data di EU-kontroll viene salvata; la frequenza dei ricontrolli si imposta qui sotto. Vengono inviati solo i veicoli salvati in questa officina.",
+        "inspectionRecheck": "Ricontrolla i veicoli che hanno già una data",
+        "inspectionRecheckHelp": "Una data cambia solo quando una revisione viene superata. Mensile nota prima una revisione anticipata; solo vicino alla scadenza costa meno. Vicino alla scadenza ogni veicolo è ricontrollato ogni settimana, qualunque sia la scelta.",
+        "recheckMonthly": "Ogni mese",
+        "recheckQuarterly": "Ogni tre mesi",
+        "recheckNearDeadline": "Solo vicino alla scadenza",
+        "inspectionSoonDays": "Vicino alla scadenza significa entro",
+        "inspectionSoonDaysHelp": "In questa finestra un veicolo è ricontrollato ogni settimana, così una revisione superata lo toglie dalla lista dei promemoria in pochi giorni. Una finestra più corta significa meno ricerche.",
+        "soon30": "30 giorni",
+        "soon60": "60 giorni",
+        "soon90": "90 giorni",
+        "inspectionOnlyWithCustomer": "Solo veicoli con un cliente",
+        "inspectionOnlyWithCustomerHelp": "Salta i veicoli senza cliente registrato. Nessuno può ricevere un promemoria su di loro, quindi cercarli costa per niente."
       }
     },
     "openapi-automotive": {
@@ -429,8 +559,33 @@
       "settings": {
         "country": "Paese",
         "countryHelp": "Il registro da consultare. Le targhe francesi e italiane hanno lo stesso formato, quindi il paese non si può ricavare dalla targa.",
-        "bikes": "Cerca anche i motocicli",
-        "bikesHelp": "Quando una targa non è di un'auto, viene consultato anche il registro dei motocicli. Una ricerca auto senza esito è gratuita, quindi non costa nulla in più a meno che non venga trovato un motociclo. Non disponibile per il Portogallo."
+        "cars": "Cerca le auto",
+        "carsHelp": "Consulta il registro delle auto. Disattivalo se lavori solo su motocicli, così la ricerca salta le auto e risponde più in fretta.",
+        "bikes": "Cerca i motocicli",
+        "bikesHelp": "Consulta il registro dei motocicli. Se sono attive anche le auto, viene consultato solo quando nessuna auto corrisponde, e una ricerca auto senza esito è gratuita. Non disponibile per il Portogallo."
+      }
+    },
+    "checkcardetails": {
+      "description": "Compila un veicolo dalla sua targa britannica o dal VIN: marca, modello, anno, colore, alimentazione, cilindrata e la scadenza della MOT, dai dati DVLA tramite Check Car Details. Auto e moto arrivano dallo stesso registro. Con UK Vehicle Data attivo sul tuo account arrivano anche VIN, cambio e pesi. Ogni ricerca è addebitata all'account Check Car Details dell'officina. Non vengono restituiti dati del proprietario.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Crea un account su api.checkcardetails.co.uk e copia la chiave di produzione in API Keys. Vehicle Registration è incluso in ogni account. Per avere anche il VIN, fai clic su Request Access accanto a UK Vehicle Data in Your Data Points; le ricerche lo usano appena è attivo. Una chiave di prova trova solo targhe che contengono la lettera A."
+      },
+      "settings": {
+        "syncInspections": "Mantieni aggiornate le scadenze MOT di tutti i veicoli di questa officina",
+        "syncInspectionsHelp": "Quando è attivo, ogni veicolo con targa viene cercato una volta e la sua scadenza MOT salvata. Poi i veicoli vengono ricontrollati come impostato qui sotto. Ogni veicolo trovato è fatturato come una ricerca Vehicle Registration; le targhe sconosciute al registro sono gratuite. Vengono inviati solo i veicoli salvati in questa officina.",
+        "inspectionRecheck": "Ricontrolla i veicoli che hanno già una data",
+        "inspectionRecheckHelp": "Una data cambia solo quando una revisione viene superata. Mensile nota prima una revisione anticipata; solo vicino alla scadenza costa meno. Vicino alla scadenza ogni veicolo è ricontrollato ogni settimana, qualunque sia la scelta.",
+        "recheckMonthly": "Ogni mese",
+        "recheckQuarterly": "Ogni tre mesi",
+        "recheckNearDeadline": "Solo vicino alla scadenza",
+        "inspectionSoonDays": "Vicino alla scadenza significa entro",
+        "inspectionSoonDaysHelp": "In questa finestra un veicolo è ricontrollato ogni settimana, così una revisione superata lo toglie dalla lista dei promemoria in pochi giorni. Una finestra più corta significa meno ricerche.",
+        "soon30": "30 giorni",
+        "soon60": "60 giorni",
+        "soon90": "90 giorni",
+        "inspectionOnlyWithCustomer": "Solo veicoli con un cliente",
+        "inspectionOnlyWithCustomerHelp": "Salta i veicoli senza cliente registrato. Nessuno può ricevere un promemoria su di loro, quindi cercarli costa per niente."
       }
     },
     "rdw": {
@@ -441,7 +596,19 @@
       },
       "settings": {
         "syncInspections": "Tieni aggiornate le date APK di tutti i veicoli di questa officina",
-        "syncInspectionsHelp": "Una volta all'ora i veicoli non controllati di recente vengono cercati per targa e la data del prossimo APK viene salvata. Vengono inviati solo i veicoli di questa officina. Un veicolo è ricontrollato ogni mese, e ogni settimana quando la scadenza è a meno di due mesi."
+        "syncInspectionsHelp": "Una volta all'ora i veicoli da controllare vengono cercati per targa e la prossima data di APK viene salvata; la frequenza dei ricontrolli si imposta qui sotto. Vengono inviati solo i veicoli salvati in questa officina.",
+        "inspectionRecheck": "Ricontrolla i veicoli che hanno già una data",
+        "inspectionRecheckHelp": "Una data cambia solo quando una revisione viene superata. Mensile nota prima una revisione anticipata; solo vicino alla scadenza costa meno. Vicino alla scadenza ogni veicolo è ricontrollato ogni settimana, qualunque sia la scelta.",
+        "recheckMonthly": "Ogni mese",
+        "recheckQuarterly": "Ogni tre mesi",
+        "recheckNearDeadline": "Solo vicino alla scadenza",
+        "inspectionSoonDays": "Vicino alla scadenza significa entro",
+        "inspectionSoonDaysHelp": "In questa finestra un veicolo è ricontrollato ogni settimana, così una revisione superata lo toglie dalla lista dei promemoria in pochi giorni. Una finestra più corta significa meno ricerche.",
+        "soon30": "30 giorni",
+        "soon60": "60 giorni",
+        "soon90": "90 giorni",
+        "inspectionOnlyWithCustomer": "Solo veicoli con un cliente",
+        "inspectionOnlyWithCustomerHelp": "Salta i veicoli senza cliente registrato. Nessuno può ricevere un promemoria su di loro, quindi cercarli costa per niente."
       }
     },
     "regcheck": {
@@ -482,6 +649,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Compatibile con OpenAI",
       "description": "Descrizioni di servizio, riepiloghi dello storico, lettura di documenti e assistente, forniti da qualsiasi server che parli l'API chat di OpenAI: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM e simili. I tuoi dati restano sul tuo hardware.",
       "fields": {
         "baseUrl": "URL di base",
@@ -501,7 +669,7 @@
         "secretKeyHelp": "Dalla dashboard di Stripe sotto Developers, API keys. Le chiavi di test non elaborano nulla di reale, quindi prova prima un pagamento con quelle e passa poi alle chiavi live.",
         "publishableKey": "Chiave pubblicabile",
         "webhookSecret": "Segreto di firma del webhook",
-        "webhookSecretHelp": "Mostrato da Stripe quando aggiungi come webhook l'URL di notifica di questa pagina. Con esso ogni notifica viene verificata prima di registrare un pagamento."
+        "webhookSecretHelp": "Facoltativo, e si può aggiungere dopo la connessione. Stripe lo mostra sotto Reveal secret una volta aggiunto l'URL di notifica di questa pagina come endpoint. Con esso, ogni notifica viene verificata tramite la firma; senza, Torqvoice chiede il checkout a Stripe prima di registrare un pagamento."
       },
       "settings": {
         "enabled": "Offri nei link delle fatture",
@@ -535,6 +703,17 @@
         "enabledHelp": "Disattiva per togliere il pulsante di pagamento dalle fatture condivise per un po', senza disconnettere. I pagamenti già avviati vengono comunque registrati.",
         "sandbox": "Modalità sandbox",
         "sandboxHelp": "Usa la sandbox di PayPal con le chiavi dell'app sandbox. Lasciala attiva finché un pagamento completo non è andato a buon fine, poi disattivala e inserisci le chiavi dell'app live."
+      }
+    },
+    "paystack": {
+      "description": "Pagamento Paystack dal link della fattura, sul tuo account Paystack. Il cliente paga con carta, bonifico bancario o mobile money, a seconda del paese, e la fattura si segna come pagata da sola.",
+      "fields": {
+        "secretKey": "Chiave segreta",
+        "secretKeyHelp": "Nella dashboard di Paystack, in Settings, API Keys & Webhooks. Una chiave di test (sk_test_) non elabora nulla di reale, quindi prova prima un pagamento con quella e passa poi alla chiave live."
+      },
+      "settings": {
+        "enabled": "Offri nei link delle fatture",
+        "enabledHelp": "Disattiva per togliere il pulsante di pagamento dalle fatture condivise per un po', senza disconnettere. I pagamenti già avviati vengono comunque registrati."
       }
     },
     "quickbooks": {
@@ -571,6 +750,192 @@
         "manualPaidAsPaymentHelp": "Una fattura segnata come pagata in Torqvoice senza registrazione di pagamento riceve in QuickBooks un pagamento per quanto risulta ancora dovuto lì. Disattivato, resta aperta lì finché non viene registrato un pagamento.",
         "pullPayments": "Riporta i pagamenti registrati in QuickBooks",
         "pullPaymentsHelp": "Ogni 30 minuti. Un pagamento ricevuto in QuickBooks su una fattura di Torqvoice viene registrato qui sulla fattura."
+      }
+    },
+    "xero": {
+      "description": "Invia le fatture emesse, i loro clienti e i loro pagamenti a Xero e riporta i pagamenti registrati lì.",
+      "tenantHelp": "Crea una Web app su developer.xero.com in My Apps. Nella sua pagina Configuration copia l'ID client, genera un segreto client e aggiungi l'URI di reindirizzamento qui sotto. Perché i pagamenti registrati in Xero arrivino subito, apri la pagina Webhooks dell'app, inserisci come URL il tuo indirizzo Torqvoice seguito da /api/webhooks/xero, spunta Invoices e Payments e inserisci la chiave del webhook qui sotto.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Segreto client",
+        "webhookKey": "Chiave del webhook",
+        "webhookKeyHelp": "Facoltativa. La chiave nella pagina Webhooks della tua app Xero. Con questa, i pagamenti registrati in Xero arrivano qui subito; senza, entro 30 minuti."
+      },
+      "settings": {
+        "tenantId": "Organizzazione Xero",
+        "tenantIdHelp": "L'organizzazione in cui vengono scritte le fatture. Sono elencate solo le organizzazioni che hai autorizzato durante il collegamento; ricollega per autorizzarne un'altra.",
+        "pushInvoices": "Invia le fatture emesse a Xero",
+        "pushOnComplete": "Invia le fatture anche quando il lavoro viene segnato come completato",
+        "pushOnCompleteHelp": "Senza questa opzione una fattura passa quando viene inviata, condivisa o pagata. Con questa, un lavoro completato passa subito e viene aggiornato se cambia.",
+        "startDate": "Solo fatture con data a partire dal",
+        "startDateHelp": "Lascia vuoto per inviare ogni fattura emessa. Usa la data in cui la contabilità è passata a Xero, così le fatture più vecchie non vengono registrate due volte.",
+        "invoiceStatus": "Stato in Xero",
+        "invoiceStatusHelp": "Le fatture approvate contano subito come vendite e possono ricevere pagamenti. Scegli Bozza o In attesa di approvazione se qualcuno controlla prima ogni fattura in Xero; i pagamenti vengono poi registrati una volta approvata lì.",
+        "invoiceStatusAuthorised": "Approvata",
+        "invoiceStatusSubmitted": "In attesa di approvazione",
+        "invoiceStatusDraft": "Bozza",
+        "invoiceNumbers": "Numeri di fattura",
+        "invoiceNumbersHelp": "Mantieni il numero Torqvoice così i due sistemi coincidono, oppure lascia che Xero numeri la fattura con la propria sequenza. Con la numerazione di Xero, scegli il numero di fattura Torqvoice come riferimento per ritrovare ogni fattura.",
+        "invoiceNumbersTorqvoice": "Usa il numero Torqvoice",
+        "invoiceNumbersXero": "Lascia la numerazione a Xero",
+        "reference": "Riferimento",
+        "referenceHelp": "Cosa va nel campo Riferimento (Reference) della fattura in Xero, che compare sulla fattura e negli elenchi e nelle ricerche di Xero.",
+        "referenceVehicle": "Veicolo e targa",
+        "referenceTitle": "Titolo del lavoro",
+        "referenceInvoiceNumber": "Numero di fattura Torqvoice",
+        "referenceNone": "Niente",
+        "includeVehicle": "Indicare il veicolo sulla fattura",
+        "includeVehicleHelp": "Una riga di testo sopra le voci con anno, marca, modello, targa e chilometraggio.",
+        "includeNotes": "Includi le note per il cliente",
+        "includeNotesHelp": "Le note per il cliente della fattura, come riga di testo sulla fattura.",
+        "notesPosition": "Posizione delle note per il cliente",
+        "notesPositionHelp": "Sopra le voci mette le note subito dopo la riga del veicolo, prima di manodopera e ricambi. Sotto le voci le mette in fondo.",
+        "notesPositionBelow": "Sotto le voci",
+        "notesPositionAbove": "Sopra le voci",
+        "includePartNumbers": "Mostra i numeri ricambio sulle righe dei ricambi",
+        "includePartNumbersHelp": "La descrizione di ogni riga di ricambio inizia con il suo numero ricambio.",
+        "brandingThemeId": "Tema grafico",
+        "brandingThemeIdHelp": "Il tema grafico (Branding theme) di Xero usato dalla fattura, che ne decide l'impaginazione quando viene visualizzata o inviata da Xero. Lascia vuoto per usare quello predefinito dell'organizzazione.",
+        "laborAccount": "Conto per la manodopera",
+        "laborAccountHelp": "Il conto ricavi su cui vengono registrate le righe di manodopera. Lascia vuoto per usare il conto Sales dell'organizzazione, o il conto dell'articolo scelto qui sotto.",
+        "partsAccount": "Conto per i ricambi",
+        "partsAccountHelp": "Il conto ricavi su cui vengono registrate le righe di ricambi. Lascia vuoto per usare il conto Sales dell'organizzazione, o il conto dell'articolo scelto qui sotto.",
+        "shopFeeAccount": "Conto per il contributo officina",
+        "shopFeeAccountHelp": "La riga del contributo officina va qui. Lascia vuoto per registrarla con la manodopera.",
+        "laborItem": "Articolo per le righe di manodopera",
+        "laborItemHelp": "Facoltativo. Un articolo Xero assegnato a ogni riga di manodopera, per i report sugli articoli in Xero. Il conto scelto sopra ha comunque la precedenza.",
+        "partsItem": "Articolo per le righe di ricambi",
+        "partsItemHelp": "Facoltativo. Un articolo Xero assegnato a ogni riga di ricambi, per i report sugli articoli in Xero. Il conto scelto sopra ha comunque la precedenza.",
+        "matchItemsByPartNumber": "Abbina i ricambi agli articoli Xero tramite numero ricambio",
+        "matchItemsByPartNumberHelp": "Un ricambio il cui numero è anche il codice di un articolo in Xero viene venduto come quell'articolo, così la giacenza gestita in Xero diminuisce. Xero rifiuta la fattura quando un articolo a magazzino non ha giacenza sufficiente.",
+        "taxAmounts": "Importi delle imposte",
+        "taxAmountsHelp": "Come fatturato invia l'imposta di ogni riga esattamente come compare sulla fattura ricevuta dal cliente, così i due sistemi coincidono al centesimo. Calcolato da Xero lascia che Xero applichi la percentuale dell'aliquota di ogni riga, e il registro segnala i totali diversi.",
+        "taxAmountsBilled": "Come fatturato in Torqvoice",
+        "taxAmountsXero": "Calcolato da Xero",
+        "taxType": "Aliquota per le righe imponibili",
+        "taxTypeHelp": "Torqvoice sceglie l'aliquota Xero la cui percentuale corrisponde a ogni fattura, come GST on Income. Scegline una qui per usare sempre quella.",
+        "zeroTaxType": "Aliquota per le righe senza imposta",
+        "zeroTaxTypeHelp": "Usata per le righe senza imposta e per i clienti esenti. Lascia vuoto per usare GST Free Income, Zero Rated o No GST, a seconda di quale ha l'organizzazione.",
+        "tracking1": "Opzione di tracking",
+        "tracking1Help": "Assegna a ogni riga un'opzione di tracking, come la filiale o il reparto, per i report in Xero.",
+        "tracking2": "Seconda opzione di tracking",
+        "tracking2Help": "Un'opzione dell'altra categoria di tracking, se l'organizzazione ne ha due.",
+        "sendFromXero": "Invia la fattura al cliente via email da Xero",
+        "sendFromXeroHelp": "Xero invia la propria copia della fattura all'email del cliente, con le opzioni di pagamento online configurate in Xero. Disattiva questa opzione se Torqvoice invia già la fattura, così il cliente non la riceve due volte.",
+        "markAsSent": "Segna le fatture come inviate in Xero",
+        "markAsSentHelp": "Torqvoice consegna la fattura, quindi Xero la mostra come inviata invece di attendere che qualcuno la invii da lì. Vale per le fatture approvate.",
+        "attachPdf": "Allega il PDF della fattura",
+        "attachPdfHelp": "La fattura che il cliente ha ricevuto da Torqvoice viene allegata alla fattura in Xero.",
+        "updateContacts": "Mantieni aggiornati i dati dei clienti in Xero",
+        "updateContactsHelp": "Una modifica qui a nome, email, telefono, indirizzo o partita IVA di un cliente viene copiata nel suo contatto in Xero. Disattivato, i contatti vengono solo creati e poi lasciati come li tiene il contabile.",
+        "sameEmail": "Clienti con la stessa email",
+        "sameEmailHelp": "Più clienti possono condividere un indirizzo email, come una famiglia o la casella amministrativa di un'azienda. Con la prima scelta, un contatto Xero trovato tramite email viene usato solo se anche il suo nome corrisponde al cliente; altrimenti il cliente riceve un nuovo contatto e il registro indica l'altro, così puoi unirli in Xero se sono lo stesso cliente.",
+        "sameEmailCreate": "Crea un nuovo contatto se il nome è diverso",
+        "sameEmailReuse": "Usa il contatto esistente anche se il nome è diverso",
+        "voidOnDelete": "Annulla la fattura Xero quando il lavoro viene eliminato qui",
+        "voidOnDeleteHelp": "Una fattura con pagamenti in Xero non viene mai annullata; il registro indica che è stata lasciata invariata.",
+        "pushPayments": "Registra i pagamenti in Xero",
+        "paymentAccount": "Deposita i pagamenti su",
+        "paymentAccountHelp": "Il conto bancario in Xero su cui finiscono i pagamenti registrati in Torqvoice. Lascia vuoto per usare il primo conto bancario.",
+        "cashAccount": "Pagamenti in contanti su",
+        "cardAccount": "Pagamenti con carta su",
+        "transferAccount": "Bonifici su",
+        "onlineAccount": "Pagamenti online su",
+        "methodAccountHelp": "Lascia vuoto per usare il conto qui sopra.",
+        "onlineAccountHelp": "Pagamenti incassati tramite Stripe, PayPal, Vipps e le altre integrazioni di pagamento, spesso su un conto transitorio. Lascia vuoto per usare il conto qui sopra.",
+        "manualPaidAsPayment": "Registrare un pagamento quando una fattura viene segnata come pagata a mano",
+        "manualPaidAsPaymentHelp": "Una fattura segnata come pagata in Torqvoice senza registrazione di pagamento riceve in Xero un pagamento per quanto risulta ancora dovuto lì. Disattivato, resta aperta lì finché non viene registrato un pagamento.",
+        "pullPayments": "Riporta i pagamenti registrati in Xero",
+        "pullPaymentsHelp": "Un pagamento registrato in Xero su una fattura di Torqvoice viene registrato qui sulla fattura: subito se il webhook è configurato, altrimenti entro 30 minuti."
+      }
+    },
+    "zoho-books": {
+      "description": "Invia le fatture emesse, i loro clienti e i loro pagamenti a Zoho Books e riporta i pagamenti registrati lì.",
+      "tenantHelp": "Crea una Server-based Application nella Zoho API Console (api-console.zoho.com, o la console della tua regione, come api-console.zoho.eu). Aggiungi l'URI di reindirizzamento qui sotto, copia l'ID client e il segreto client e, nella scheda Settings del client, spunta \"Use the same OAuth credentials for all data centers\" se ci sono officine che accedono da altre regioni.",
+      "fields": {
+        "clientId": "ID client",
+        "clientSecret": "Segreto client"
+      },
+      "settings": {
+        "organizationId": "Organizzazione Zoho Books",
+        "organizationIdHelp": "L'organizzazione in cui vengono scritte le fatture. Sono elencate tutte le organizzazioni a cui ha accesso l'utente Zoho che ha effettuato il collegamento.",
+        "pushInvoices": "Invia le fatture emesse a Zoho Books",
+        "pushOnComplete": "Invia le fatture anche quando il lavoro viene segnato come completato",
+        "pushOnCompleteHelp": "Senza questa opzione una fattura passa quando viene inviata, condivisa o pagata. Con questa, un lavoro completato passa subito e viene aggiornato se cambia.",
+        "startDate": "Solo fatture con data a partire dal",
+        "startDateHelp": "Lascia vuoto per inviare ogni fattura emessa. Usa la data in cui la contabilità è passata a Zoho Books, così le fatture più vecchie non vengono registrate due volte.",
+        "invoiceStatus": "Stato in Zoho Books",
+        "invoiceStatusHelp": "Le fatture inviate contano subito come vendite e possono ricevere pagamenti. Scegli Bozza se qualcuno controlla prima ogni fattura in Zoho Books; i pagamenti vengono poi registrati una volta inviata da lì.",
+        "invoiceStatusSent": "Inviata",
+        "invoiceStatusDraft": "Bozza",
+        "invoiceNumbers": "Numeri di fattura",
+        "invoiceNumbersHelp": "Mantieni il numero Torqvoice così i due sistemi coincidono, oppure lascia che Zoho Books numeri la fattura con la propria sequenza. Con la numerazione di Zoho, scegli il numero di fattura Torqvoice come riferimento per ritrovare ogni fattura.",
+        "invoiceNumbersTorqvoice": "Usa il numero Torqvoice",
+        "invoiceNumbersZoho": "Lascia la numerazione a Zoho Books",
+        "reference": "Riferimento",
+        "referenceHelp": "Cosa va nel campo Reference# della fattura in Zoho Books, che compare sulla fattura e negli elenchi e nelle ricerche di Zoho.",
+        "referenceVehicle": "Veicolo e targa",
+        "referenceTitle": "Titolo del lavoro",
+        "referenceInvoiceNumber": "Numero di fattura Torqvoice",
+        "referenceNone": "Niente",
+        "includeVehicle": "Indicare il veicolo sulla fattura",
+        "includeVehicleHelp": "Anno, marca, modello, targa e chilometraggio, insieme alle note per il cliente.",
+        "includeNotes": "Includi le note per il cliente",
+        "includeNotesHelp": "Le note per il cliente della fattura, come testo semplice.",
+        "notesPosition": "Dove vanno il veicolo e le note",
+        "notesPositionHelp": "Customer Notes è il campo di Zoho, stampato sotto le voci sulla fattura di Zoho. Sopra o sotto le voci li mette invece in una riga di testo tra le righe della fattura.",
+        "notesPositionCustomerNotes": "Il campo Customer Notes di Zoho",
+        "notesPositionBelow": "Una riga sotto le voci",
+        "notesPositionAbove": "Una riga sopra le voci",
+        "includePartNumbers": "Mostra i numeri ricambio sulle righe dei ricambi",
+        "includePartNumbersHelp": "La descrizione di ogni riga di ricambio inizia con il suo numero ricambio.",
+        "templateId": "Modello di fattura",
+        "templateIdHelp": "Il modello di Zoho Books usato dalla fattura quando viene visualizzata o inviata da Zoho. Lascia vuoto per usare quello predefinito dell'organizzazione.",
+        "locationId": "Sede",
+        "locationIdHelp": "Solo per le organizzazioni con le sedi attivate in Zoho Books, dove ogni fattura ne richiede una. Altrimenti lascia vuoto.",
+        "laborAccount": "Conto per la manodopera",
+        "laborAccountHelp": "Il conto ricavi su cui vengono registrate le righe di manodopera. Lascia vuoto per usare il conto dell'articolo scelto qui sotto, o il conto Sales di Zoho.",
+        "partsAccount": "Conto per i ricambi",
+        "partsAccountHelp": "Il conto ricavi su cui vengono registrate le righe di ricambi. Lascia vuoto per usare il conto dell'articolo scelto qui sotto, o il conto Sales di Zoho.",
+        "shopFeeAccount": "Conto per il contributo officina",
+        "shopFeeAccountHelp": "La riga del contributo officina va qui. Lascia vuoto per registrarla con la manodopera.",
+        "laborItem": "Articolo per le righe di manodopera",
+        "laborItemHelp": "Facoltativo. Un articolo Zoho Books assegnato a ogni riga di manodopera, per i report sugli articoli in Zoho. Il conto scelto sopra ha comunque la precedenza.",
+        "partsItem": "Articolo per le righe di ricambi",
+        "partsItemHelp": "Facoltativo. Un articolo Zoho Books assegnato a ogni riga di ricambi, per i report sugli articoli in Zoho. Il conto scelto sopra ha comunque la precedenza.",
+        "matchItemsByPartNumber": "Abbina i ricambi agli articoli Zoho tramite numero ricambio",
+        "matchItemsByPartNumberHelp": "Un ricambio il cui numero è anche lo SKU di un articolo in Zoho Books viene venduto come quell'articolo, così la giacenza gestita in Zoho diminuisce. Perché trovi qualcosa, attiva gli SKU in Settings, Items in Zoho Books.",
+        "taxId": "Imposta per le righe imponibili",
+        "taxIdHelp": "Torqvoice sceglie l'imposta di Zoho Books la cui percentuale corrisponde a ogni fattura. Scegline una qui per quando più imposte hanno la stessa percentuale, o nessuna corrisponde.",
+        "zeroTaxId": "Imposta per le righe senza imposta",
+        "zeroTaxIdHelp": "Usata per le righe senza imposta e per i clienti esenti, quando l'organizzazione ha un'imposta allo 0% per loro. Lascia vuoto per inviare quelle righe senza imposta.",
+        "roundingAdjustment": "Fai coincidere il totale al centesimo",
+        "roundingAdjustmentHelp": "Zoho Books calcola l'imposta da solo. Quando il suo totale si scosta di un centesimo o due dalla fattura ricevuta dal cliente, la differenza viene inserita come arrotondamento di Zoho, così i due sistemi coincidono. Disattivato, il registro segnala quando differiscono.",
+        "sendFromZoho": "Invia la fattura al cliente via email da Zoho Books",
+        "sendFromZohoHelp": "Zoho Books invia la propria copia della fattura all'email del cliente, con le opzioni di pagamento online configurate in Zoho. Disattiva questa opzione se Torqvoice invia già la fattura, così il cliente non la riceve due volte.",
+        "attachPdf": "Allega il PDF della fattura",
+        "attachPdfHelp": "La fattura che il cliente ha ricevuto da Torqvoice viene allegata alla fattura in Zoho Books e sostituita quando cambia.",
+        "updateContacts": "Mantieni aggiornati i dati dei clienti in Zoho Books",
+        "updateContactsHelp": "Una modifica qui a nome, email, telefono o indirizzo di un cliente viene copiata nel suo contatto in Zoho Books. Disattivato, i contatti vengono solo creati e poi lasciati come li tiene il contabile.",
+        "sameEmail": "Clienti con la stessa email",
+        "sameEmailHelp": "Più clienti possono condividere un indirizzo email, come una famiglia o la casella amministrativa di un'azienda. Con la prima scelta, un contatto Zoho trovato tramite email viene usato solo se anche il suo nome corrisponde al cliente; altrimenti il cliente riceve un nuovo contatto e il registro indica l'altro, così puoi unirli in Zoho se sono lo stesso cliente.",
+        "sameEmailCreate": "Crea un nuovo contatto se il nome è diverso",
+        "sameEmailReuse": "Usa il contatto esistente anche se il nome è diverso",
+        "voidOnDelete": "Annulla la fattura Zoho quando il lavoro viene eliminato qui",
+        "voidOnDeleteHelp": "Una bozza viene eliminata e una fattura inviata viene annullata. Una fattura con pagamenti in Zoho Books non viene mai toccata; il registro indica che è stata lasciata invariata.",
+        "pushPayments": "Registra i pagamenti in Zoho Books",
+        "paymentAccount": "Deposita su",
+        "paymentAccountHelp": "Il conto in Zoho Books su cui vengono depositati i pagamenti registrati in Torqvoice. Lascia vuoto per usare Undeposited Funds.",
+        "cashAccount": "Pagamenti in contanti su",
+        "cardAccount": "Pagamenti con carta su",
+        "transferAccount": "Bonifici su",
+        "onlineAccount": "Pagamenti online su",
+        "methodAccountHelp": "Lascia vuoto per usare il conto qui sopra.",
+        "onlineAccountHelp": "Pagamenti incassati tramite Stripe, PayPal, Vipps, Paystack e le altre integrazioni di pagamento, spesso su un conto transitorio. Lascia vuoto per usare il conto qui sopra.",
+        "manualPaidAsPayment": "Registrare un pagamento quando una fattura viene segnata come pagata a mano",
+        "manualPaidAsPaymentHelp": "Una fattura segnata come pagata in Torqvoice senza registrazione di pagamento riceve in Zoho Books un pagamento per quanto risulta ancora dovuto lì. Disattivato, resta aperta lì finché non viene registrato un pagamento.",
+        "pullPayments": "Riporta i pagamenti registrati in Zoho Books",
+        "pullPaymentsHelp": "Un pagamento registrato in Zoho Books su una fattura di Torqvoice viene registrato qui sulla fattura entro 30 minuti, e uno eliminato lì viene rimosso qui."
       }
     },
     "fiken": {
@@ -620,7 +985,43 @@
         "refreshFleetHelp": "Una volta al giorno i modelli non aggiornati nell'ultima settimana vengono richiesti di nuovo, così la pagina del veicolo non attende mai e un nuovo richiamo compare entro una settimana. Vengono inviati solo marca, modello e anno."
       }
     },
+    "openlaborproject": {
+      "description": "Consulta i tempi di manodopera e le capacità dei fluidi del veicolo di un ordine di lavoro o di un preventivo, e aggiungi le ore di un lavoro come riga di manodopera con un clic. La maggior parte dei dati riguarda veicoli del mercato statunitense, e il tempario indica a quale mercato si riferisce ogni ricerca. Ogni valore mostra quanto Open Labor Project ne è sicuro, e molti sono stime generate dall’IA, quindi verificali prima di fare un preventivo al cliente. Le ricerche usano la chiave API dell’officina. Con un piano a pagamento di Open Labor Project, un veicolo cercato una volta resta salvato finché il piano è attivo, quindi cercarlo di nuovo non costa alcuna chiamata.",
+      "fields": {
+        "apiKey": "Chiave API",
+        "apiKeyHelp": "Richiedi una chiave su openlaborproject.com alla voce Developers; arriva via email. Una chiave gratuita ha 10 chiamate al giorno e mostra le ore un lavoro alla volta. Dal piano Builder in su il limite sale e le ore di tutti i lavori compaiono insieme.",
+        "apiKeyServerHelp": "Lascia vuoto per usare la chiave fornita da questo server, oppure incolla la tua chiave di openlaborproject.com per usare il tuo piano."
+      },
+      "settings": {
+        "minConfidence": "Mostra i tempi da",
+        "minConfidenceHelp": "Esclude i tempi di cui la fonte è meno sicura. Molti tempi per le marche europee sono stime dell’IA, quindi una scelta rigida può lasciare pochi lavori.",
+        "confidenceAll": "Ogni livello di affidabilità",
+        "confidenceMedium": "Media e oltre",
+        "confidenceHigh": "Verificato e oltre",
+        "confidenceOem": "Solo OEM",
+        "hoursFrom": "Ore da aggiungere",
+        "hoursFromHelp": "Quale valore va sull’ordine di lavoro: il tempo del tempario, o il massimo dell’intervallo indicato da Open Labor Project (ad esempio 1,6 h invece di 1,2 h). Il massimo lascia margine per i lavori che si allungano.",
+        "hoursBook": "Tempo del tempario",
+        "hoursHigh": "Massimo dell’intervallo",
+        "adjustPercent": "Regola i tempi del (%)",
+        "adjustPercentHelp": "Una percentuale aggiunta a ogni tempo prima che vada sull’ordine di lavoro: 10 trasforma 1,2 h in 1,32 h, -10 in 1,08 h. Da -50 a 200.",
+        "rounding": "Arrotonda le ore per eccesso a",
+        "roundingHelp": "Arrotonda per eccesso le ore di ogni lavoro, dopo l’eventuale regolazione: con 0,25, 1,32 h diventa 1,5 h. Un tempo che è già su un passo resta com’è.",
+        "roundNone": "Non arrotondare",
+        "roundTenth": "0,1 ora",
+        "roundQuarter": "0,25 ore",
+        "roundHalf": "0,5 ore",
+        "fluids": "Mostra le specifiche dei fluidi",
+        "fluidsHelp": "Aggiunge una scheda Fluidi con capacità, specifiche e intervalli di sostituzione. Aprirla usa una chiamata a parte.",
+        "units": "Unità dei fluidi",
+        "unitsHelp": "Le unità in cui sono mostrati capacità e intervalli di sostituzione.",
+        "unitsBoth": "Entrambe",
+        "unitsMetric": "Metriche (L, km)",
+        "unitsUs": "USA (qt, mi)"
+      }
+    },
     "speech-to-text": {
+      "name": "Da voce a testo",
       "description": "La dettatura su un ordine di lavoro viene trascritta da un modello vocale invece che dal browser: molto più precisa, in qualsiasi lingua e conosce le parole dell'officina. È separata dal tuo fornitore di IA, quindi puoi lasciarlo com'è. Usa la tua chiave OpenAI o un tuo server che parli l'API di trascrizione di OpenAI. La registrazione viene inviata per la trascrizione e non viene conservata.",
       "fields": {
         "apiKey": "Chiave API",
@@ -636,6 +1037,116 @@
         "modeAi": "Sempre il modello vocale",
         "modeChoice": "Sceglie ciascuno: modello vocale o browser"
       }
+    },
+    "s3": {
+      "name": "Bucket di archiviazione cloud",
+      "description": "Backup cifrati di questa officina in un bucket di tua proprietà su Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage o qualsiasi altro storage compatibile S3, con la frequenza che scegli. Dopo la prima esecuzione viene caricato solo ciò che è cambiato, quindi i backup orari restano economici.",
+      "fields": {
+        "accessKeyId": "ID chiave di accesso",
+        "accessKeyIdHelp": "Una chiave del tuo fornitore di archiviazione con il permesso di elencare, leggere, scrivere ed eliminare gli oggetti nel bucket. Crea una chiave solo per Torqvoice, così puoi revocarla separatamente.",
+        "secretAccessKey": "Chiave di accesso segreta",
+        "password": "Password dei backup",
+        "passwordHelp": "Ogni backup è cifrato con questa password. Inventane una o premi Genera, e conservane una copia lontano da questo server: senza di essa nessuno può aprire questi backup, nemmeno Torqvoice. Per ricollegare uno spazio che contiene già backup di Torqvoice, inserisci la password con cui sono stati creati.",
+        "endpoint": "Endpoint personalizzato",
+        "endpointHelp": "Solo per l'opzione Altro storage compatibile S3: l'indirizzo S3 del tuo storage, ad esempio un server MinIO, come nome host con la porta se serve."
+      },
+      "settings": {
+        "provider": "Fornitore",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Altro storage compatibile S3",
+        "region": "Regione",
+        "regionHelp": "Dove si trova il bucket. Sceglila dall'elenco del fornitore; per un altro storage, digita quella che richiede, se ne richiede una. Non usata da Cloudflare R2.",
+        "accountId": "ID account Cloudflare",
+        "accountIdHelp": "L'ID di 32 caratteri mostrato nella pagina di panoramica di R2 nella dashboard di Cloudflare.",
+        "bucket": "Bucket",
+        "bucketHelp": "I bucket vengono elencati con la chiave appena la inserisci. Se la chiave può usare un bucket ma non elencarli, digita il nome.",
+        "prefix": "Cartella nel bucket",
+        "prefixHelp": "I backup vengono salvati in questa cartella. Usa una cartella diversa per ogni officina che condivide il bucket.",
+        "frequency": "Frequenza",
+        "frequencyHourly": "Ogni ora",
+        "frequencyEvery4h": "Ogni 4 ore",
+        "frequencyDaily": "Ogni giorno",
+        "frequencyWeekly": "Ogni settimana",
+        "frequencyMonthly": "Ogni mese",
+        "time": "Ora del giorno",
+        "timeHelp": "Secondo l'orologio dell'officina, nel formato HH:MM. Usata dai backup giornalieri, settimanali e mensili.",
+        "weekday": "Giorno della settimana",
+        "sunday": "Domenica",
+        "monday": "Lunedì",
+        "tuesday": "Martedì",
+        "wednesday": "Mercoledì",
+        "thursday": "Giovedì",
+        "friday": "Venerdì",
+        "saturday": "Sabato",
+        "monthDay": "Giorno del mese",
+        "monthDayLast": "Ultimo giorno",
+        "contents": "Contenuto",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup. Un backup contiene i dati dell'officina e, se lo scegli, i suoi file. Account utente e password non ne fanno parte: su un nuovo server accedi, inviti il team e ripristini i dati in quell'officina.",
+        "contentsData": "Solo dati",
+        "contentsDataAndSecrets": "Dati e chiavi segrete",
+        "includeFiles": "Includi foto e file",
+        "includeFilesHelp": "Ogni file viene caricato una sola volta e riutilizzato dai backup successivi, quindi dopo la prima esecuzione costa poco.",
+        "keepHourly": "Backup orari da conservare",
+        "keepHourlyHelp": "Quanti dei backup orari più recenti conservare. Conta solo con le pianificazioni ogni ora e ogni 4 ore.",
+        "keepDaily": "Backup giornalieri da conservare",
+        "keepWeekly": "Backup settimanali da conservare",
+        "keepMonthly": "Backup mensili da conservare",
+        "keepMonthlyHelp": "I backup più vecchi vengono rimossi dopo ogni esecuzione, mantenendo i più recenti di ogni tipo. Imposta un numero a 0 per non conservarne nessuno di quel tipo."
+      }
+    },
+    "local-folder": {
+      "name": "Cartella locale",
+      "description": "Backup cifrati di questa officina in una cartella su questo server: il volume dei backup nel file compose, o un'unità di rete montata lì. Una copia sullo stesso disco del database non è sicura da sola; abbinala a uno spazio di archiviazione altrove.",
+      "fields": {
+        "password": "Password dei backup",
+        "passwordHelp": "Ogni backup è cifrato con questa password. Inventane una o premi Genera, e conservane una copia lontano da questo server: senza di essa nessuno può aprire questi backup, nemmeno Torqvoice. Per ricollegare uno spazio che contiene già backup di Torqvoice, inserisci la password con cui sono stati creati."
+      },
+      "settings": {
+        "folder": "Cartella",
+        "folderHelp": "La cartella, sotto la radice dei backup del server, che contiene i backup di questa officina. Lasciala vuota per usare una cartella con il nome di questa officina. Su un nuovo server, inserisci il nome della cartella usata da un'installazione precedente per recuperarne i backup.",
+        "frequency": "Frequenza",
+        "frequencyHourly": "Ogni ora",
+        "frequencyEvery4h": "Ogni 4 ore",
+        "frequencyDaily": "Ogni giorno",
+        "frequencyWeekly": "Ogni settimana",
+        "frequencyMonthly": "Ogni mese",
+        "time": "Ora del giorno",
+        "timeHelp": "Secondo l'orologio dell'officina, nel formato HH:MM. Usata dai backup giornalieri, settimanali e mensili.",
+        "weekday": "Giorno della settimana",
+        "sunday": "Domenica",
+        "monday": "Lunedì",
+        "tuesday": "Martedì",
+        "wednesday": "Mercoledì",
+        "thursday": "Giovedì",
+        "friday": "Venerdì",
+        "saturday": "Sabato",
+        "monthDay": "Giorno del mese",
+        "monthDayLast": "Ultimo giorno",
+        "contents": "Contenuto",
+        "contentsHelp": "Le chiavi segrete sono quelle che questa officina ha inserito in Torqvoice: chiavi di pagamento, IA e webhook. In ogni caso, ogni backup è cifrato con la password dei backup. Un backup contiene i dati dell'officina e, se lo scegli, i suoi file. Account utente e password non ne fanno parte: su un nuovo server accedi, inviti il team e ripristini i dati in quell'officina.",
+        "contentsData": "Solo dati",
+        "contentsDataAndSecrets": "Dati e chiavi segrete",
+        "includeFiles": "Includi foto e file",
+        "includeFilesHelp": "Ogni file viene caricato una sola volta e riutilizzato dai backup successivi, quindi dopo la prima esecuzione costa poco.",
+        "keepHourly": "Backup orari da conservare",
+        "keepHourlyHelp": "Quanti dei backup orari più recenti conservare. Conta solo con le pianificazioni ogni ora e ogni 4 ore.",
+        "keepDaily": "Backup giornalieri da conservare",
+        "keepWeekly": "Backup settimanali da conservare",
+        "keepMonthly": "Backup mensili da conservare",
+        "keepMonthlyHelp": "I backup più vecchi vengono rimossi dopo ogni esecuzione, mantenendo i più recenti di ogni tipo. Imposta un numero a 0 per non conservarne nessuno di quel tipo."
+      }
+    },
+    "torqvoice-codes": {
+      "description": "Scopri cosa significa un codice di errore sul veicolo che hai davanti, nella tua lingua: il significato, le cause probabili e i codici correlati. Digita o incolla i codici in un ordine di lavoro e diventano osservazioni con il significato salvato, così stampe e storico non aspettano mai una connessione. Gestito da Torqvoice e incluso in ogni piano cloud. Una ricerca invia solo marca, modello, anno e motore, mai un VIN, una targa o un cliente.",
+      "fields": {
+        "apiToken": "Chiave di accesso",
+        "apiTokenHelp": "La chiave che Torqvoice ti ha dato per il servizio dei codici."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {
@@ -658,6 +1169,42 @@
     "safety": {
       "refresh": "Aggiornamento dei dati sui richiami",
       "vehicle": "Controllo richiami per un nuovo veicolo"
+    },
+    "repair": {
+      "checkPlan": "Verifica che le ricerche salvate possano restare"
     }
+  },
+  "backupAlerts": {
+    "destination": "destinazione dei backup",
+    "failedTitle": "Backup non riuscito",
+    "failedMessage": "Il backup su {name} non è stato completato: {reason}",
+    "failedSubject": "Backup su {name} non riuscito",
+    "failedEmailIntro": "Il backup programmato della tua officina su {name} non è stato completato.",
+    "openToRetry": "Apri Impostazioni, Integrazioni, {name} per vedere l'esecuzione e riprovare.",
+    "overdueTitle": "Backup in ritardo",
+    "overdueSince": "Nessun backup su {name} è stato completato dal {time}.",
+    "overdueNever": "Nessun backup su {name} è stato ancora completato.",
+    "overdueSubject": "Il backup su {name} è in ritardo",
+    "openToSee": "Apri Impostazioni, Integrazioni, {name} per vedere cosa è andato storto.",
+    "platformName": "Backup di Torqvoice",
+    "restoredTitle": "Officina ripristinata",
+    "restoredSubject": "La tua officina è stata ripristinata da un backup",
+    "restoredIntro": "{name}: l'officina è stata riportata al punto di ripristino {snapshot} il {time}. Tutto ciò che è stato inserito dopo quel punto non è più presente nell'officina.",
+    "restoredByMember": "Un membro della tua officina ha richiesto questo ripristino.",
+    "restoredBySupport": "L'assistenza Torqvoice lo ha fatto su tua richiesta. Motivo indicato: {reason}",
+    "noReason": "nessuno",
+    "restoredUndo": "Prima è stata creata una copia di sicurezza dell'officina com'era subito prima del ripristino, che viene conservata per 90 giorni. Contatta l'assistenza per tornarci."
+  },
+  "aiErrors": {
+    "modelAccess": "Questa chiave API non ha accesso al modello selezionato. Scegline un altro in Impostazioni → Integrazioni.",
+    "spendLimit": "Questo account OpenAI ha raggiunto il limite di spesa. Controlla i limiti su platform.openai.com.",
+    "noCredit": "Questo account OpenAI non ha più credito. Aggiungi un metodo di pagamento su platform.openai.com.",
+    "keyRejected": "Il fornitore di IA ha rifiutato la chiave API. Controllala in Impostazioni → Integrazioni.",
+    "noUsableCredit": "Il fornitore di IA non segnala credito utilizzabile per questa chiave API.",
+    "modelUnavailable": "Il fornitore di IA non offre il modello selezionato. Scegline un altro in Impostazioni → Integrazioni.",
+    "imageTooLarge": "L'immagine era troppo grande per il fornitore di IA.",
+    "rateLimited": "Il fornitore di IA sta limitando le richieste di questa chiave API. Riprova tra un momento.",
+    "providerDown": "Il fornitore di IA non è disponibile al momento. Riprova tra un momento.",
+    "unexpected": "Il fornitore di IA ha restituito una risposta inattesa."
   }
 }

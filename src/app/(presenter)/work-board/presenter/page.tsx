@@ -7,6 +7,11 @@ import { WorkBoardPresenter } from '@/features/workboard/Components/WorkBoardPre
 import { getAuthContext } from '@/lib/get-auth-context'
 import { zonedDate, zonedParts } from '@/lib/timezone'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('workBoard')
+}
 
 export const dynamic = 'force-dynamic'
 

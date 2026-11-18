@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Download, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { PLAY_STORE_URL } from '@/lib/app-links'
+import { APP_STORE_URL, PLAY_STORE_URL } from '@/lib/app-links'
 
 /**
  * Reads the code out of the fragment and tells the technician what to do.
@@ -70,15 +70,23 @@ export function AppSetupLanding() {
         {/* For a phone that does not have it yet. The button above opens the
             app and does nothing visible when it is missing, which is exactly
             the moment somebody needs this. */}
-        <a
-          href={PLAY_STORE_URL}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-3 inline-flex items-center gap-2 text-muted-foreground text-sm underline underline-offset-4 hover:text-foreground"
-        >
-          <Download className="h-4 w-4" />
-          {t('team.setupPageInstall')}
-        </a>
+        <div className="mt-3 flex flex-col gap-2">
+          {[
+            { href: PLAY_STORE_URL, label: t('team.setupPageInstall') },
+            { href: APP_STORE_URL, label: t('team.setupPageInstallIos') },
+          ].map((store) => (
+            <a
+              key={store.href}
+              href={store.href}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-muted-foreground text-sm underline underline-offset-4 hover:text-foreground"
+            >
+              <Download className="h-4 w-4" />
+              {store.label}
+            </a>
+          ))}
+        </div>
 
         <p className="pt-6 text-muted-foreground text-xs">{t('team.setupPageExpiry')}</p>
       </div>

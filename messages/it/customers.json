@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Predefinito dell'officina",
     "invoiceDesignHint": "Le fatture di questo cliente vengono stampate con questo design invece del predefinito dell'officina. Una fattura può comunque sceglierne uno proprio.",
     "reminderOptOut": "Nessun promemoria",
-    "reminderOptOutHint": "Non includere questo cliente nei promemoria revisione o in altre campagne."
+    "reminderOptOutHint": "Non includere questo cliente nei promemoria revisione o in altre campagne.",
+    "bookAppointment": "Prenota appuntamento"
   },
   "serviceRequests": {
     "statusNew": "Nuova",
@@ -120,6 +121,12 @@
     "saveNotes": "Salva note",
     "submitted": "Inviata il {date}",
     "preferred": "Preferita: {date}",
+    "preferredMorning": "Preferita: {date}, mattina",
+    "preferredAfternoon": "Preferita: {date}, pomeriggio",
+    "files": "{count, plural, one {# foto o video dal cliente} other {# foto o video dal cliente}}",
+    "openPhoto": "Apri la foto {number}",
+    "openVideo": "Apri il video {number}",
+    "fileMissing": "La foto {number} non è più disponibile",
     "workOrderCreated": "Ordine di lavoro creato",
     "workOrderError": "Creazione dell'ordine di lavoro non riuscita",
     "requestDismissed": "Richiesta archiviata",

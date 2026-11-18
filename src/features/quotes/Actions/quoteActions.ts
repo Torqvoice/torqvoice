@@ -13,7 +13,10 @@ import { db } from '@/lib/db'
 import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
 import { Prisma } from '@/generated/prisma/client'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
-import { documentTotals, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
+import { savedDocumentTax, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
+import { withTaxableLabor, withTaxableParts } from '@/lib/taxable-lines'
+import { parseSentFields } from '@/lib/parse-sent-fields'
 import {
   isShopFeeLine,
   newShopFeeLine,
@@ -45,7 +48,7 @@ import {
 } from '../Lib/conversionConflicts'
 import { revalidatePath } from 'next/cache'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import { clearNextNumberSetting, JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -183,8 +186,8 @@ export async function getQuote(quoteId: string) {
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
         include: {
-          partItems: true,
-          laborItems: true,
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
           attachments: true,
           customer: {
             select: {
@@ -249,7 +252,8 @@ export async function createQuote(input: unknown) {
 export async function updateQuote(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const data = updateQuoteSchema.parse(input)
+      // Only what was sent: see parseSentFields for what the defaults did.
+      const data = parseSentFields(updateQuoteSchema, input)
       await assertQuoteEditable(data.id, organizationId)
       const existing = await db.quote.findFirst({
         where: { id: data.id, organizationId },
@@ -288,20 +292,55 @@ export async function updateQuote(input: unknown) {
 
       // Same as the work order: a quote with tax components has its split
       // recomputed from the row, since the editor sends one combined figure.
-      const splitTax =
-        quoteData.subtotal !== undefined && parseTaxComponentDefinitions(existing.taxComponents)
-          ? documentTotals({
-              subtotal: quoteData.subtotal,
-              discountAmount: quoteData.discountAmount ?? existing.discountAmount,
-              taxRate: existing.taxRate,
-              taxInclusive: existing.taxInclusive,
-              taxComponents: existing.taxComponents,
-            })
+      //
+      // And the same for a quote with a line left out of the tax: what the
+      // tax is charged on comes from the lines as they are about to be
+      // stored. Lines the caller did not send are the ones already there.
+      const linesSent = partItems !== undefined || laborItems !== undefined
+      const taxApplies = linesSent ? await loadTaxApplies(organizationId) : null
+      const taxedParts =
+        partItems !== undefined && taxApplies ? withTaxableParts(partItems, taxApplies) : undefined
+      const taxedLabor =
+        laborItems !== undefined && taxApplies
+          ? withTaxableLabor(laborItems, taxApplies)
+          : undefined
+      const moneyTouched =
+        linesSent ||
+        quoteData.subtotal !== undefined ||
+        quoteData.discountAmount !== undefined ||
+        quoteData.taxRate !== undefined
+      const savedTax = moneyTouched
+        ? savedDocumentTax({
+            subtotal: quoteData.subtotal ?? existing.subtotal,
+            discountAmount: quoteData.discountAmount ?? existing.discountAmount,
+            // A quote with components keeps the rate they add up to.
+            taxRate: parseTaxComponentDefinitions(existing.taxComponents)
+              ? existing.taxRate
+              : (quoteData.taxRate ?? existing.taxRate),
+            taxInclusive: quoteData.taxInclusive ?? existing.taxInclusive,
+            taxComponents: existing.taxComponents,
+            parts:
+              taxedParts ??
+              (await db.quotePart.findMany({
+                where: { quoteId: id },
+                select: { total: true, taxable: true, excluded: true },
+              })),
+            labor:
+              taxedLabor ??
+              (await db.quoteLabor.findMany({
+                where: { quoteId: id },
+                select: { total: true, taxable: true, excluded: true, pricingType: true },
+              })),
+          })
+        : null
+      const restated =
+        savedTax?.totals && (quoteData.subtotal !== undefined || savedTax.taxableSubtotal !== null)
+          ? savedTax.totals
           : null
-      if (splitTax) {
-        quoteData.taxRate = existing.taxRate
-        quoteData.taxAmount = splitTax.taxAmount
-        quoteData.totalAmount = splitTax.totalAmount
+      if (restated) {
+        if (restated.taxComponents) quoteData.taxRate = existing.taxRate
+        quoteData.taxAmount = restated.taxAmount
+        quoteData.totalAmount = restated.totalAmount
       }
 
       const quote = await db.$transaction(async (tx) => {
@@ -312,7 +351,8 @@ export async function updateQuote(input: unknown) {
           data: {
             ...quoteData,
             ...warranty,
-            taxComponents: splitTax?.taxComponents,
+            taxComponents: restated?.taxComponents,
+            ...(savedTax ? { taxableSubtotal: savedTax.taxableSubtotal } : {}),
             description: clearedToNull(quoteData.description),
             notes: clearedToNull(quoteData.notes),
             customerId: clearedToNull(quoteData.customerId),
@@ -330,18 +370,19 @@ export async function updateQuote(input: unknown) {
 
         if (partItems !== undefined) {
           await tx.quotePart.deleteMany({ where: { quoteId: id } })
-          if (partItems.length > 0) {
+          if (taxedParts && taxedParts.length > 0) {
             await tx.quotePart.createMany({
-              data: partItems.map((p) => ({ ...p, quoteId: id })),
+              // The array order is the order the workshop arranged the lines in.
+              data: taxedParts.map((p, index) => ({ ...p, sortOrder: index, quoteId: id })),
             })
           }
         }
 
         if (laborItems !== undefined) {
           await tx.quoteLabor.deleteMany({ where: { quoteId: id } })
-          if (laborItems.length > 0) {
+          if (taxedLabor && taxedLabor.length > 0) {
             await tx.quoteLabor.createMany({
-              data: laborItems.map((l) => ({ ...l, quoteId: id })),
+              data: taxedLabor.map((l, index) => ({ ...l, sortOrder: index, quoteId: id })),
             })
           }
         }
@@ -441,7 +482,12 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
     async ({ userId, organizationId }) => {
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
-        include: { partItems: true, laborItems: true, attachments: true },
+        include: {
+          // Lines reach the job in the order the quote shows them.
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
+          attachments: true,
+        },
       })
       if (!quote) throw new Error('Quote not found')
       // A second pass would raise a second job and take the parts out of
@@ -469,7 +515,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
           where: {
             organizationId,
             key: {
-              in: ['workshop.invoicePrefix', ...WARRANTY_SETTING_KEYS, ...SHOP_FEE_SETTING_KEYS],
+              in: [...JOB_NUMBER_SETTING_KEYS, ...WARRANTY_SETTING_KEYS, ...SHOP_FEE_SETTING_KEYS],
             },
           },
         }),
@@ -480,25 +526,19 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
       ])
       const settingsMap: Record<string, string> = {}
       for (const s of settings) settingsMap[s.key] = s.value
-      const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
-
-      const lastRecord = await db.serviceRecord.findFirst({
-        where: { organizationId },
-        orderBy: { createdAt: 'desc' },
-        select: { invoiceNumber: true },
+      const timeZone = await workshopTimeZone(organizationId)
+      // The next number in the workshop's format, like any new job; see
+      // src/lib/job-number.ts. It ignored "Next invoice number" before.
+      const { invoiceNumber, usesNextNumberSetting } = await nextJobNumber({
+        organizationId,
+        settings: settingsMap,
+        timeZone,
       })
-      let nextNum = 1001
-      if (lastRecord?.invoiceNumber) {
-        const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-        if (match) nextNum = parseInt(match[1], 10) + 1
-      }
-      const invoiceNumber = `${prefix}${nextNum}`
 
       // What the customer was told on the quote is what the job carries, "not
       // included" as much as twelve months: they accepted on those words. A
       // quote that never mentioned warranty leaves the job to start like any
       // other, from the workshop's standing answer.
-      const timeZone = await workshopTimeZone(organizationId)
       const serviceDate = new Date()
       const warranty = quote.warrantyStatus
         ? normalizeWarranty(quote)
@@ -523,6 +563,7 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             invoiceNumber,
             subtotal: quote.subtotal,
             taxComponents: taxComponentsForCopy(quote.taxComponents),
+            taxableSubtotal: quote.taxableSubtotal,
             taxRate: quote.taxRate,
             taxAmount: quote.taxAmount,
             taxInclusive: quote.taxInclusive,
@@ -537,6 +578,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             startDateTime: serviceDate,
           },
         })
+        // Spent only once the job is written, in the same transaction.
+        if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, tx)
 
         const includedParts = await copyQuotePartsToJob(tx, {
           organizationId,
@@ -554,10 +597,14 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
         // A quote that carried the fee already brought it across above.
         const jobFee = shopFeeFor(readShopFee(settingsMap), 'workOrder')
         if (jobFee && !includedLabor.some(isShopFeeLine)) {
-          const feeLine = newShopFeeLine(jobFee, {
-            labor: includedLabor.reduce((sum, l) => sum + l.total, 0),
-            parts: includedParts.reduce((sum, p) => sum + p.total, 0),
-          })
+          const feeLine = newShopFeeLine(
+            jobFee,
+            {
+              labor: includedLabor.reduce((sum, l) => sum + l.total, 0),
+              parts: includedParts.reduce((sum, p) => sum + p.total, 0),
+            },
+            (await loadTaxApplies(organizationId, tx)).shopFee
+          )
           await tx.serviceLabor.create({ data: { ...feeLine, serviceRecordId: created.id } })
           await retotalServiceRecord(created.id, tx)
         }
@@ -736,7 +783,12 @@ export async function addQuoteToServiceRecord(
     async ({ userId, organizationId }) => {
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
-        include: { partItems: true, laborItems: true, attachments: true },
+        include: {
+          // Lines reach the job in the order the quote shows them.
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
+          attachments: true,
+        },
       })
       if (!quote) throw new Error('Quote not found')
       // A second pass would put the same lines on the job twice.

@@ -1,5 +1,6 @@
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
+import { createLogger } from '@/lib/logger'
 
 /** Deletes expired portal sessions and used magic links daily at 02:00 UTC */
 export function cleanupPortalSessions() {
@@ -19,12 +20,13 @@ export function cleanupPortalSessions() {
       ])
 
       if (deletedSessions.count > 0 || deletedLinks.count > 0) {
-        console.warn(
-          `[cron] Cleanup: ${deletedSessions.count} sessions, ${deletedLinks.count} magic links`
-        )
+        createLogger('cron').info('Portal session cleanup', {
+          sessions: deletedSessions.count,
+          magicLinks: deletedLinks.count,
+        })
       }
     } catch (error) {
-      console.error('[cron] Portal session cleanup failed:', error)
+      createLogger('cron').error('Portal session cleanup failed', { err: error })
     }
   })
 

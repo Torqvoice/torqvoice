@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Pobierz klucz API z resend.com",
     "postmarkApiKeyHint": "Pobierz Server Token z postmarkapp.com",
     "mailgunApiKeyHint": "Pobierz klucz API z app.mailgun.com",
-    "sendgridApiKeyHint": "Pobierz klucz API z app.sendgrid.com"
+    "sendgridApiKeyHint": "Pobierz klucz API z app.sendgrid.com",
+    "branding": {
+      "title": "Wygląd aplikacji",
+      "description": "Zmienia tytuł karty przeglądarki, favicon oraz nazwę i ikonę zainstalowanej aplikacji w tej instalacji. Dokumenty i reszta aplikacji pozostają bez zmian. Zostaw pole puste, aby użyć wartości domyślnej.",
+      "nameLabel": "Nazwa aplikacji",
+      "nameHint": "Widoczna na karcie przeglądarki i jako nazwa zainstalowanej aplikacji.",
+      "save": "Zapisz nazwę",
+      "saved": "Nazwa aplikacji zapisana",
+      "saveFailed": "Nie udało się zapisać nazwy aplikacji",
+      "iconLabel": "Ikona aplikacji",
+      "iconHint": "Kwadratowy obraz o rozmiarze co najmniej 512 × 512 pikseli. Najlepiej w formacie PNG.",
+      "iconAlt": "Obecna ikona aplikacji",
+      "upload": "Prześlij",
+      "replace": "Zamień",
+      "remove": "Usuń",
+      "uploaded": "Ikona aplikacji zaktualizowana",
+      "uploadFailed": "Nie udało się przesłać ikony",
+      "removed": "Ikona aplikacji usunięta",
+      "removeFailed": "Nie udało się usunąć ikony",
+      "lockedBadge": "Wymaga licencji",
+      "lockedHint": "Licencja white-label odblokowuje nazwę i ikonę aplikacji.",
+      "lockedLink": "Otwórz stronę licencji"
+    }
   },
   "common": {
     "openMenu": "Otwórz menu"

@@ -122,11 +122,19 @@ export function PhotoHandoffClient({
           update(item.key, { status: 'added' })
           return
         }
-        const code = ((await res.json().catch(() => null)) as { code?: string } | null)?.code
+        const answer = (await res.json().catch(() => null)) as {
+          code?: string
+          error?: string
+        } | null
+        const code = answer?.code
         if (code === 'expired' || code === 'invalid') setProblem(code)
         update(item.key, {
           status: 'failed',
-          error: t(code && ERROR_KEYS[code] ? ERROR_KEYS[code] : 'errors.failed'),
+          // A restore of the workshop says so in its own words, to try again later.
+          error:
+            code === 'restoring' && answer?.error
+              ? answer.error
+              : t(code && ERROR_KEYS[code] ? ERROR_KEYS[code] : 'errors.failed'),
         })
       } catch {
         update(item.key, { status: 'failed', error: t('errors.failed') })

@@ -12,6 +12,7 @@
   "noChats": "Geen eerdere chats over dit record",
   "chatsPrivate": "Je chats zijn privé en alleen voor jou zichtbaar.",
   "deleteChat": "Chat verwijderen",
+  "deleteChatFailed": "Kon de chat niet verwijderen. Probeer het opnieuw.",
   "error": "Er ging iets mis. Probeer het opnieuw.",
   "disclaimer": "Antwoorden worden gemaakt op basis van de gegevens in de app en kunnen fout zijn. Controleer ze voordat je ernaar handelt.",
   "vehicleSuggestion1": "Vat de onderhoudshistorie samen",

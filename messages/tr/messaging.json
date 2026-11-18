@@ -26,5 +26,53 @@
     "markUnread": "Okunmadı olarak işaretle",
     "nothingToMarkUnread": "Müşteri bu konuşmada henüz bir şey yazmadı.",
     "markUnreadFailed": "Konuşma okunmadı olarak işaretlenemedi."
+  },
+  "email": {
+    "badge": "E-posta",
+    "empty": "Bu görüşmede henüz mesaj yok.",
+    "placeholder": "Bir yanıt yazın",
+    "subjectPlaceholder": "Konu",
+    "send": "Gönder",
+    "sendHint": "Enter gönderir, Shift+Enter yeni satır ekler",
+    "sendFailed": "E-posta gönderilemedi",
+    "sentDocument": "Gönderildi: {subject}",
+    "showQuoted": "Alıntılanan metni göster",
+    "hideQuoted": "Alıntılanan metni gizle",
+    "spamFlag": "Posta filtresi bu mesajı olası spam olarak işaretledi.",
+    "unknownSender": "Bu adres henüz bir müşteriye ait değil. Yanıtlamak için müşteri olarak ekleyin.",
+    "ownVendorChoice": "E-postalarınızı kendi sağlayıcınız üzerinden gönderiyorsunuz, bu yüzden yanıtlar o adrese gider.",
+    "ownVendorSettings": "E-posta ayarları",
+    "ownVendorThread": "E-postalarınızı kendi sağlayıcınız üzerinden gönderiyorsunuz, bu yüzden bu müşterinin yanıtları kendi posta kutunuza gider.",
+    "replyFromMailApp": "E-posta uygulamanızdan yanıtlayın",
+    "attachment": "Ek",
+    "compose": {
+      "title": "Yeni e-posta",
+      "searchPlaceholder": "Müşteri ara",
+      "noMatches": "Aramanızla eşleşen müşteri yok.",
+      "noRecipients": "Henüz e-posta adresi olan müşteri yok."
+    }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} henüz portala yazmadı.",
+    "placeholder": "Portalda {name} ile yazışın",
+    "send": "Mesaj gönder",
+    "sendFailed": "Mesaj gönderilemedi",
+    "sendHint": "Enter gönderir, Shift+Enter yeni satır başlatır. {name} portalı bir sonraki açışında görür.",
+    "loadOlder": "Eski mesajları yükle",
+    "loadFailed": "Görüşme yüklenemedi.",
+    "tryAgain": "Tekrar dene",
+    "addPhoto": "Fotoğraf ekle",
+    "removePhoto": "{name} dosyasını kaldır",
+    "uploadFailed": "Fotoğraf eklenemedi. En fazla {size} MB fotoğraf gönderilebilir.",
+    "tooManyPhotos": "Bir mesaja en fazla {count} fotoğraf eklenebilir.",
+    "photoFrom": "Fotoğraf: {name}",
+    "videoFrom": "Video: {name}",
+    "openFile": "Dosyayı aç",
+    "you": "Siz",
+    "seen": "Görüldü",
+    "off": "Müşteri portalında mesajlar kapalı, bu yüzden bu görüşme okunabilir ama yanıtlanamaz.",
+    "offSettings": "Müşteri portalı ayarları",
+    "deleteDescription": "{name} ile olan tüm görüşmeyi onun için de kaldırır: görüşme portalından kaybolur."
   }
 }

@@ -87,6 +87,12 @@ export function fuelType(fuels: RdwFuel[]): string | undefined {
 /** Colours RDW records for vehicles that have none, or has not recorded. */
 const NO_COLOUR = new Set(['n.v.t.', 'niet geregistreerd', 'diversen'])
 
+/** A positive number from the register's text, or nothing. */
+function positive(value: string | undefined): number | undefined {
+  const n = Number(value)
+  return Number.isFinite(n) && n > 0 ? n : undefined
+}
+
 /** Displacement as the form shows it: litres with one decimal, from cubic centimetres. */
 function engineSize(value: string | undefined): string | undefined {
   const cc = Number(value)
@@ -121,6 +127,7 @@ export function mapVehicle(vehicle: RdwVehicle, fuels: RdwFuel[]): VehicleLookup
     color: colour && !NO_COLOUR.has(colour.toLowerCase()) ? makeCase(colour) : undefined,
     fuelType: fuelType(fuels),
     engineSize: engineSize(vehicle.cilinderinhoud),
+    engineCc: positive(vehicle.cilinderinhoud),
     vehicleClass: text(vehicle.voertuigsoort),
     firstRegistered,
     inspectionDue: isoDate(vehicle.vervaldatum_apk),

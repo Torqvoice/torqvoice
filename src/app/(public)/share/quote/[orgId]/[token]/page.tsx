@@ -1,10 +1,10 @@
+import { getTranslations } from 'next-intl/server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { QuoteView } from './quote-view'
 import { getFeatures } from '@/lib/features'
-import { resolvePortalOrg } from '@/lib/portal-slug'
 import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { buildQuotePrintSpec } from '@/features/invoice-designer/Pdf/buildQuotePrint'
 import { loadPrintLabels } from '@/features/invoice-designer/Pdf/printLabels'
@@ -17,14 +17,30 @@ import { headers } from 'next/headers'
 import type { Metadata } from 'next'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
+import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { PUBLIC_QUOTE_SELECT, publicAttachment, publicQuoteRecord } from '@/lib/public-payload'
+import { lookUpShareLink } from '@/lib/share-link.server'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orgId: string; token: string }>
+}): Promise<Metadata> {
+  const { orgId, token } = await params
+  const link = await lookUpShareLink('quote', orgId, token)
+  const robots = { index: false, follow: false }
+  // A closed link's tab does not say what the link led to.
+  if (link.status === 'expired' || link.status === 'gone') {
+    return { title: await closedShareLinkTitle(link.organizationId, link.status), robots }
+  }
+  const t = await getTranslations('share.quote')
+  return { title: t('title'), robots }
 }
 
 export default async function PublicQuotePage({
@@ -34,57 +50,37 @@ export default async function PublicQuotePage({
 }) {
   const { orgId: orgParam, token } = await params
 
-  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-  const resolvedOrg = await resolvePortalOrg(orgParam)
-  const orgId = resolvedOrg?.id ?? orgParam
+  // Only an address with no workshop behind it is the plain 404. A customer
+  // whose link is closed gets a page that tells them who to ask.
+  const link = await lookUpShareLink('quote', orgParam, token)
+  if (link.status === 'unknownWorkshop') notFound()
+  if (link.status !== 'open') {
+    return (
+      <ShareLinkClosed organizationId={link.organizationId} status={link.status} kind="quote" />
+    )
+  }
+  const { organizationId: orgId, shared } = link
 
+  // Only the columns a customer's copy is built from are read: the
+  // workshop's own notes and a line's cost and markup never leave the database.
   const quote = await db.quote.findFirst({
     where: { publicToken: token, organizationId: orgId },
-    include: {
-      // Explicit select: internal unitCost/markupPercent must never reach
-      // the public customer-facing payload
-      partItems: {
+    select: {
+      ...PUBLIC_QUOTE_SELECT,
+      attachments: {
         select: {
           id: true,
-          partNumber: true,
-          name: true,
-          quantity: true,
-          unit: true,
+          fileName: true,
+          fileUrl: true,
+          fileType: true,
           category: true,
-          unitPrice: true,
-          total: true,
-          excluded: true,
-        },
-      },
-      laborItems: true,
-      attachments: true,
-      customer: {
-        select: {
-          name: true,
-          email: true,
-          phone: true,
-          address: true,
-          company: true,
-          taxId: true,
-        },
-      },
-      vehicle: {
-        select: {
-          make: true,
-          model: true,
-          year: true,
-          vin: true,
-          licensePlate: true,
-          hsn: true,
-          tsn: true,
+          description: true,
         },
       },
     },
   })
 
-  if (!quote) {
-    notFound()
-  }
+  if (!quote) return <ShareLinkClosed organizationId={orgId} status="gone" kind="quote" />
 
   const [settings, org, features] = await Promise.all([
     db.appSetting.findMany({
@@ -175,25 +171,15 @@ export default async function PublicQuotePage({
     else logoUrl = rawLogoUrl
   }
 
-  // Rewrite attachment URLs for public access
-  const imageAttachments = (quote.attachments || [])
-    .filter((a) => a.category === 'image')
-    .map((a) => ({
-      ...a,
-      fileUrl: a.fileUrl.replace(
-        /^\/api\/protected\/files\/[^/]+\//,
-        `/api/public/files/${token}/`
-      ),
-    }))
-  const documentAttachments = (quote.attachments || [])
-    .filter((a) => a.category === 'document')
-    .map((a) => ({
-      ...a,
-      fileUrl: a.fileUrl.replace(
-        /^\/api\/protected\/files\/[^/]+\//,
-        `/api/public/files/${token}/`
-      ),
-    }))
+  // Attachments, named field by field, with addresses this link's token opens.
+  const toPublicUrl = (url: string) =>
+    url.replace(/^\/api\/protected\/files\/[^/]+\//, `/api/public/files/${token}/`)
+  const attachmentsOf = (category: string) =>
+    quote.attachments
+      .filter((file) => file.category === category)
+      .map((file) => publicAttachment(file, toPublicUrl))
+  const imageAttachments = attachmentsOf('image')
+  const documentAttachments = attachmentsOf('document')
 
   // Parse layout config
   const layoutConfig = mergeWithDefaults(
@@ -253,6 +239,7 @@ export default async function PublicQuotePage({
     },
     customFields,
     labels,
+    locale,
     layoutConfig,
     conditionMap,
     inspectionResults,
@@ -266,7 +253,7 @@ export default async function PublicQuotePage({
   return (
     <QuoteView
       spec={spec}
-      quote={shownQuote}
+      quote={publicQuoteRecord(quote)}
       workshop={workshop}
       currencyCode={currencyCode}
       currencyFormat={currencyFormat}
@@ -283,9 +270,9 @@ export default async function PublicQuotePage({
       imageAttachments={imageAttachments}
       documentAttachments={documentAttachments}
       layoutConfig={layoutConfig}
-      customFields={customFields}
       serviceType={(settingsMap['workshop.serviceType'] || 'automotive') as 'automotive' | 'marine'}
       taxLabel={settingsMap['workshop.taxLabel']?.trim() || undefined}
+      expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}
       certificateUrl={
         certificateInspection
           ? `/api/public/share/quote/${orgParam}/${token}/certificate`

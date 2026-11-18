@@ -10,7 +10,9 @@ export async function createDraftServiceRecord(
   startDateTime?: Date,
   endDateTime?: Date,
   technicianId?: string,
-  workBayId?: string
+  workBayId?: string,
+  /** The day the job is wanted, when no time was given; see createDraftRecord. */
+  bookFrom?: Date
 ) {
   return withAuth(
     async ({ organizationId, userId }) => {
@@ -32,6 +34,7 @@ export async function createDraftServiceRecord(
           endDateTime,
           technicianId,
           workBayId,
+          bookFrom,
         }
       )
     },

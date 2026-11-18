@@ -93,7 +93,7 @@ export function TelegramQrCode({
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-sm">
+        <DialogContent className="sm:max-w-sm" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle className="text-center">{t('title')}</DialogTitle>
           </DialogHeader>

@@ -45,6 +45,7 @@
   "showCards": "Vis kort",
   "cards": {
     "maintenance": "Forventet vedlikehold",
+    "calendarEvents": "Kalenderhendelser",
     "reminders": "Kommende påminnelser",
     "inspections": "Inspeksjoner",
     "serviceRequests": "Serviceforespørsler",
@@ -75,7 +76,13 @@
     "dismissedOn": "Avvist {date}",
     "restore": "Gjenopprett",
     "settingsAriaLabel": "Innstillinger for vedlikehold",
-    "dismissAriaLabel": "Avvis"
+    "dismissAriaLabel": "Avvis",
+    "dismissError": "Kunne ikke avvise kjøretøyet. Prøv igjen."
+  },
+  "calendarEvents": {
+    "title": "Kalenderhendelser",
+    "description": "Neste {days} dager",
+    "noData": "Ingenting i kalenderen de neste {days} dagene."
   },
   "reminders": {
     "title": "Kommende påminnelser",

@@ -6,10 +6,15 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Package, Plus, Trash2 } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
+import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
+import { useLineTax } from '@/features/settings/Components/LineTaxContext'
+import { partTaxable } from '@/lib/taxable-lines'
 import { cn } from '@/lib/utils'
 import { InventoryPickerDialog } from '@/features/vehicles/Components/service-edit/InventoryPickerDialog'
 import type { InventoryPartOption } from '@/features/vehicles/Components/service-edit/form-types'
+import type { FitVehicle } from '@/features/inventory/Lib/partTags'
 import type { QuotePartInput } from './quote-page-types'
+import { SortableQuoteLines } from './SortableQuoteLines'
 import {
   PartNameSuggestions,
   type PartSuggestion,
@@ -57,6 +62,7 @@ const QuotePartRow = memo(function QuotePartRow({
   tExcludeFromTotal: string
 }) {
   const formatCurrency = useFormatCurrency()
+  const { applies } = useLineTax()
   // Content without a name would be silently dropped on save (name is
   // required); flag it loudly instead
   const nameMissing =
@@ -155,6 +161,11 @@ const QuotePartRow = memo(function QuotePartRow({
         {formatCurrency(part.total, currencyCode)}
       </div>
       <div className="flex items-center gap-1">
+        <LineTaxToggle
+          className="h-7 self-center"
+          taxable={partTaxable(part, applies)}
+          onToggle={() => onUpdate(index, 'taxable', !partTaxable(part, applies))}
+        />
         <input
           type="checkbox"
           checked={part.excluded ?? false}
@@ -189,9 +200,13 @@ interface QuotePartsEditorProps {
     options?: { commit?: boolean }
   ) => void
   onDelete: (index: number) => void
+  /** Moves the line at `from` to `to`, as the workshop dragged it. */
+  onMove: (from: number, to: number) => void
   onAdd: () => void
   onAddBulk?: (items: QuotePartInput[]) => void
   inventoryParts?: InventoryPartOption[]
+  /** The quote's vehicle, so stock tagged for it is listed first. */
+  vehicle?: FitVehicle | null
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }
@@ -202,9 +217,11 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
   partsSubtotal,
   onUpdate,
   onDelete,
+  onMove,
   onAdd,
   onAddBulk,
   inventoryParts = [],
+  vehicle,
   t,
 }: QuotePartsEditorProps) {
   const formatCurrency = useFormatCurrency()
@@ -268,7 +285,8 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
               <option key={category} value={category} />
             ))}
           </datalist>
-          <div className="hidden grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+          {/* Indented past the drag grip each line starts with. */}
+          <div className="hidden grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 pl-7 text-xs font-medium text-muted-foreground sm:grid">
             <span>{t('parts.partNumber')}</span>
             <span>{t('parts.name')}</span>
             <span>{t('parts.qty')}</span>
@@ -278,24 +296,30 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
             <span>{t('parts.total')}</span>
             <span />
           </div>
-          {partItems.map((part, i) => (
-            <QuotePartRow
-              key={i}
-              part={part}
-              index={i}
-              currencyCode={currencyCode}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-              inventoryParts={inventoryParts}
-              onSelectSuggestion={handleSelectSuggestion}
-              tPartNumber={t('parts.partNumber')}
-              tCategory={t('parts.category')}
-              categoryListId={categoryListId}
-              tNamePlaceholder={t('parts.namePlaceholder')}
-              tDeleteRow={t('parts.deleteRow')}
-              tExcludeFromTotal={t('parts.excludeFromTotal')}
-            />
-          ))}
+          <SortableQuoteLines
+            count={partItems.length}
+            keyPrefix="part"
+            handleLabel={t('parts.reorderRow')}
+            onMove={onMove}
+            onDelete={onDelete}
+            renderLine={(i, deleteLine) => (
+              <QuotePartRow
+                part={partItems[i]}
+                index={i}
+                currencyCode={currencyCode}
+                onUpdate={onUpdate}
+                onDelete={deleteLine}
+                inventoryParts={inventoryParts}
+                onSelectSuggestion={handleSelectSuggestion}
+                tPartNumber={t('parts.partNumber')}
+                tCategory={t('parts.category')}
+                categoryListId={categoryListId}
+                tNamePlaceholder={t('parts.namePlaceholder')}
+                tDeleteRow={t('parts.deleteRow')}
+                tExcludeFromTotal={t('parts.excludeFromTotal')}
+              />
+            )}
+          />
           <button
             type="button"
             className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"
@@ -324,6 +348,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
           onOpenChange={setPickerOpen}
           inventoryParts={inventoryParts}
           currencyCode={currencyCode}
+          vehicle={vehicle}
           onSelectPart={(picked) => {
             onAddBulk?.([
               {

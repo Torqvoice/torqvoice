@@ -12,6 +12,8 @@
     "payWithCard": "{amount} Kartla Öde",
     "payWithVipps": "{amount} Vipps ile Öde",
     "payWithPaypal": "{amount} PayPal ile Öde",
+    "payWithPaystack": "{amount} Paystack ile Öde",
+    "payWithVendor": "<vendor></vendor> ile öde",
     "errorInvalidAmount": "Lütfen geçerli bir tutar girin.",
     "errorExceedsBalance": "Tutar {amount} miktarını aşamaz.",
     "errorVerifyFailed": "Ödeme doğrulanamadı. İşlem hâlâ devam ediyor olabilir.",
@@ -202,7 +204,21 @@
     "deficienciesFound": "Tespit edilen kusurlar ({count})",
     "allResults": "Tüm sonuçlar",
     "privacyNotice": "Bu rapor, muayeneyi yapan servis tarafından sizinle paylaşılmıştır. Bu bağlantıya sahip herkes raporu görebilir, lütfen iletmeyin. Bağlantının geri çekilmesi veya verilerinizin silinmesi için servisle iletişime geçin.",
-    "inspectionPhotos": "Fotoğraflar ve belgeler"
+    "inspectionPhotos": "Fotoğraflar ve belgeler",
+    "checkResult": {
+      "pass": "Her şey yolunda",
+      "pass_minor": "Takip edilmesi gereken birkaç nokta",
+      "fail": "Onarım gereken birkaç nokta",
+      "fail_dangerous": "Acil onarım gereken birkaç nokta",
+      "incomplete": "Tamamlanmadı"
+    },
+    "checkResultDetail": {
+      "pass": "Dikkat gerektiren bir şey yoktu.",
+      "pass_minor": "Acil bir şey yok. İşaretli noktaları planlamakta fayda var.",
+      "fail": "Bazı noktaların onarılması gerekiyor. Notlar neyin bulunduğunu anlatıyor.",
+      "fail_dangerous": "Bazı noktalar güvenli değil ve kullanıma devam etmeden önce onarılmalı.",
+      "incomplete": "Bu kontrol hâlâ sürüyor."
+    }
   },
   "terms": {
     "title": "Satış Koşulları",
@@ -234,5 +250,31 @@
     "telegramConnect": "Telegram'da bizimle sohbet edin",
     "telegramScan": "Güncellemeler ve destek için Telegram'da bize mesaj göndermek üzere bu QR kodunu tarayın.",
     "downloadCertificate": "Muayene raporunu indir"
+  },
+  "expired": {
+    "pageTitle": "Bağlantının süresi doldu",
+    "title": "Bu bağlantının süresi doldu",
+    "body": {
+      "invoice": "Bu faturaya yeni bir bağlantı almak için {workshop} ile iletişime geçin.",
+      "quote": "Bu teklife yeni bir bağlantı almak için {workshop} ile iletişime geçin.",
+      "inspection": "Bu muayeneye yeni bir bağlantı almak için {workshop} ile iletişime geçin.",
+      "statusReport": "Bu güncellemeye yeni bir bağlantı almak için {workshop} ile iletişime geçin."
+    },
+    "bodyNoName": {
+      "invoice": "Bu faturaya yeni bir bağlantı almak için atölyeyle iletişime geçin.",
+      "quote": "Bu teklife yeni bir bağlantı almak için atölyeyle iletişime geçin.",
+      "inspection": "Bu muayeneye yeni bir bağlantı almak için atölyeyle iletişime geçin.",
+      "statusReport": "Bu güncellemeye yeni bir bağlantı almak için atölyeyle iletişime geçin."
+    }
+  },
+  "gone": {
+    "pageTitle": "Bağlantı çalışmıyor",
+    "title": "Bu bağlantı artık çalışmıyor",
+    "body": "Bağlantı kaldırılmış ya da adres eksik olabilir. Yeni bir bağlantı almak için {workshop} ile iletişime geçin.",
+    "bodyNoName": "Bağlantı kaldırılmış ya da adres eksik olabilir. Yeni bir bağlantı almak için atölyeyle iletişime geçin."
+  },
+  "openUntil": {
+    "text": "Bu bağlantı {date} tarihine kadar çalışır. Sonrasında yeni bir bağlantı için {workshop} ile iletişime geçin.",
+    "textNoName": "Bu bağlantı {date} tarihine kadar çalışır. Sonrasında yeni bir bağlantı için atölyeyle iletişime geçin."
   }
 }

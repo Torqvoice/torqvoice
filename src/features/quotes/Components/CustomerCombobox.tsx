@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -28,7 +28,20 @@ interface CustomerComboboxProps {
   onChange: (id: string, customer: CustomerOption | null) => void
   initialCustomer?: CustomerOption | null
   placeholder?: string
+  /** What the search box says; the placeholder when left out */
+  searchPlaceholder?: string
   noneLabel?: string
+  /** What the list says when nothing matches */
+  emptyLabel?: string
+  /**
+   * Shown under the list, e.g. a way to add a customer; `close` shuts the
+   * list, and `search` is what was typed, for a form that starts from it
+   */
+  footer?: (close: () => void, search: string) => ReactNode
+  /** Shown but not changeable here */
+  disabled?: boolean
+  /** The chosen customer's initials in a circle before the name, as an owner is shown */
+  showAvatar?: boolean
 }
 
 export function CustomerCombobox({
@@ -36,7 +49,12 @@ export function CustomerCombobox({
   onChange,
   initialCustomer,
   placeholder = 'Select customer...',
+  searchPlaceholder,
   noneLabel = 'None',
+  emptyLabel = 'No customers found.',
+  footer,
+  disabled = false,
+  showAvatar = false,
 }: CustomerComboboxProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -98,6 +116,11 @@ export function CustomerCombobox({
     if (initialCustomer) setSelected(initialCustomer)
   }, [initialCustomer])
 
+  // Parent can clear the selection (e.g. the form was reset); drop the label too
+  useEffect(() => {
+    if (!value) setSelected(null)
+  }, [value])
+
   // Infinite scroll
   const handleScroll = useCallback(() => {
     const el = listRef.current
@@ -115,25 +138,44 @@ export function CustomerCombobox({
     // the popover its own lock with its own content whitelisted.
     <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
-          <span className="truncate">
-            {selected
-              ? `${selected.name}${selected.company ? ` (${selected.company})` : ''}`
-              : placeholder}
+        <Button
+          variant="outline"
+          role="combobox"
+          disabled={disabled}
+          className="w-full justify-between font-normal"
+        >
+          <span className="flex min-w-0 items-center gap-2">
+            {showAvatar && selected && (
+              <span
+                aria-hidden
+                className="flex size-5 shrink-0 items-center justify-center rounded-full bg-muted text-[9.5px] font-semibold text-muted-foreground"
+              >
+                {initialsOf(selected.name)}
+              </span>
+            )}
+            <span className="truncate">
+              {selected
+                ? `${selected.name}${selected.company ? ` (${selected.company})` : ''}`
+                : placeholder}
+            </span>
           </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-(--radix-popover-trigger-width) min-w-64 p-0">
         <Command shouldFilter={false}>
-          <CommandInput placeholder={placeholder} value={search} onValueChange={setSearch} />
+          <CommandInput
+            placeholder={searchPlaceholder ?? placeholder}
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList ref={listRef} onScroll={handleScroll}>
             {searching && options.length === 0 && (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               </div>
             )}
-            <CommandEmpty>No customers found.</CommandEmpty>
+            <CommandEmpty>{emptyLabel}</CommandEmpty>
             <CommandGroup>
               <CommandItem
                 onSelect={() => {
@@ -168,8 +210,19 @@ export function CustomerCombobox({
               </div>
             )}
           </CommandList>
+          {footer?.(() => setOpen(false), search)}
         </Command>
       </PopoverContent>
     </Popover>
   )
+}
+
+/** The first letters of the first two names, as the vehicle page shows an owner. */
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('')
 }

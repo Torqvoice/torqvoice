@@ -153,5 +153,13 @@
   },
   "manageKinds": "Administrer typer",
   "photosHeading": "Bilder",
-  "previousShort": "tidligere"
+  "previousShort": "tidligere",
+  "addMark": "Legg til merke",
+  "addMarkTitle": "Legg til et merke",
+  "addMarkBody": "Velg delen skaden er på. Merket plasseres midt på den, og du kan flytte det etterpå.",
+  "panel": "Del",
+  "choosePanel": "Velg en del",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Flytter merket til midten av den valgte delen.",
+  "markKeysHint": "Enter åpner merket. Piltastene flytter det, lenger med Shift."
 }

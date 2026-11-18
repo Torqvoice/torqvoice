@@ -25,7 +25,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
-import { Loader2, MoreHorizontal, Search, Trash2 } from 'lucide-react'
+import { Building2, Loader2, MoreHorizontal, Search, Trash2 } from 'lucide-react'
 import { deleteOrganization } from '../Actions/deleteOrganization'
 
 type OrgRow = {
@@ -88,18 +88,23 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
       title: t('organizations.deleteTitle'),
       description: t('organizations.deleteConfirm', { name: org.name }),
       confirmLabel: t('organizations.delete'),
+      icon: Trash2,
+      subject: [{ label: org.name, detail: org.ownerEmail, icon: Building2 }],
+      requireText: org.name,
       destructive: true,
     })
 
     if (!confirmed) return
 
     startTransition(async () => {
-      const result = await deleteOrganization({ organizationId: org.id })
-      if (result.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const result = await deleteOrganization({ organizationId: org.id }).catch(() => null)
+      if (result?.success) {
         toast.success(t('organizations.deletedSuccess'))
         router.refresh()
       } else {
-        toast.error(result.error ?? t('organizations.failedDelete'))
+        toast.error(result?.error ?? t('organizations.failedDelete'))
       }
     })
   }

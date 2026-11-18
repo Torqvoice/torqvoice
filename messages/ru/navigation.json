@@ -42,6 +42,7 @@
     "warranty": "Гарантия",
     "workshop": "Мастерская",
     "appearance": "Внешний вид",
+    "shortcuts": "Горячие клавиши",
     "email": "Эл. почта",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Комплект шин",
     "tireForecast": "Следующий сезон",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Напоминания о техосмотре"
+    "inspectionReminders": "Напоминания о техосмотре",
+    "faultCodes": "Коды неисправностей",
+    "faultCode": "Код неисправности",
+    "calendar": "Календарь",
+    "messages": "Сообщения",
+    "inspections": "Осмотры",
+    "inspectionDetails": "Детали осмотра"
   },
   "search": "Поиск...",
-  "shortcut": "Ctrl+K",
   "readMore": "Подробнее",
   "newWorkOrder": "Новый заказ-наряд",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Запчасть",
     "inspection": "Осмотр",
     "shopActions": "Мастерская",
-    "person": "Добавить человека"
+    "person": "Добавить человека",
+    "appointment": "Запись"
   },
   "purchaseWhiteLabel": "Купить White-Label",
   "licenseExpired": "Ваша лицензия истекла. Функции могут быть ограничены.",
@@ -123,6 +130,7 @@
     "cancel": "Отмена",
     "createCompany": "Создать компанию",
     "theme": "Тема",
+    "keyboardShortcuts": "Горячие клавиши",
     "signOut": "Выйти",
     "more": "Ещё",
     "auditLog": "Журнал аудита",
@@ -141,6 +149,7 @@
       "workOrders": "{count} открытых заказ-нарядов",
       "inspections": "{count} проверок в работе",
       "reminders": "{count} напоминаний просрочено"
-    }
+    },
+    "faultCodes": "Коды неисправностей"
   }
 }

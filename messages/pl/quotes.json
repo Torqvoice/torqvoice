@@ -22,7 +22,7 @@
     "quote": "Wycena",
     "save": "Zapisz",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Wyślij",
     "share": "Udostępnij",
     "delete": "Usuń",
     "deleteTitle": "Usuń wycenę",
@@ -115,6 +115,7 @@
     "total": "Suma",
     "subtotal": "Części suma częściowa: {amount}",
     "deleteRow": "Usuń wiersz",
+    "reorderRow": "Przeciągnij, aby zmienić kolejność",
     "excludeFromTotal": "Wyłącz z sumy",
     "addFromInventory": "Z magazynu",
     "unitCost": "Koszt",
@@ -139,6 +140,7 @@
     "hourlyHint": "Godzinowo: liczone według przepracowanych godzin (godziny × stawka/godz.). Kliknij, aby zmienić.",
     "serviceHint": "Usługa: rozliczana jako stała opłata za jednostkę. Kliknij, aby zmienić.",
     "deleteRow": "Usuń wiersz",
+    "reorderRow": "Przeciągnij, aby zmienić kolejność",
     "excludeFromTotal": "Wyłącz z sumy"
   },
   "notes": {
@@ -192,24 +194,15 @@
     "discountFixed": "Stały",
     "tax": "Podatek",
     "taxIncluded": "Podatek (zaw.)",
+    "taxableAmount": "Podstawa opodatkowania",
     "total": "Suma",
     "inclusiveModeHint": "Ceny pozycji są wprowadzane z podatkiem. Sumy pokazują podział netto + podatek."
   },
   "shareDialog": {
     "title": "Udostępnij wycenę",
     "description": "Wygeneruj publiczny link, który pozwoli każdemu przeglądać i pobierać tę wycenę bez logowania.",
-    "notifyTitle": "Powiadom {name}",
-    "email": "E-mail",
-    "noEmail": "(brak adresu e-mail)",
-    "sms": "SMS",
-    "noPhone": "(brak numeru telefonu)",
-    "sendNotification": "Wyślij powiadomienie",
     "revokeLink": "Unieważnij link",
     "generateLink": "Wygeneruj publiczny link",
-    "emailSent": "E-mail wysłany",
-    "failedEmail": "Nie udało się wysłać e-maila",
-    "smsSent": "SMS wysłany",
-    "failedSms": "Nie udało się wysłać SMS-a",
     "copyLink": "Kopiuj link"
   },
   "images": {

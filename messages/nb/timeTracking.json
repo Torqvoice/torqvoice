@@ -106,6 +106,7 @@
     "deleteBody": "{duration} på {job} av {technician} fjernes fra timelisten. Dette kan ikke angres.",
     "deleteConfirm": "Slett",
     "deleted": "Oppføring slettet",
+    "deleteFailed": "Kunne ikke slette oppføringen",
     "stoppedByManager": "Klokken stoppet ved {minutes}",
     "csv": {
       "technician": "Tekniker",

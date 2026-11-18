@@ -1,8 +1,10 @@
 'use client'
 
+import { useShortcutKey } from '@/features/shortcuts/Components/ShortcutsProvider'
 import { useTranslations } from 'next-intl'
 import {
   Bell,
+  CalendarPlus,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
@@ -11,6 +13,7 @@ import {
   PanelLeft,
   Plus,
   Send,
+  UserX,
   Wrench,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,7 +21,9 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
@@ -28,17 +33,17 @@ import {
 import { cn } from '@/lib/utils'
 import type { CalendarView } from '../Lib/calendar-range'
 import type { CalendarPreferences } from './useCalendarPreferences'
+import type { CalendarEventType } from '../Actions/calendarActions'
+import { FILTER_LABEL, listedTypes, type TypeFilters } from './CalendarSidebar'
+import { typePalette } from './calendar-utils'
 
-export type CreateKind = 'workOrder' | 'reminder' | 'quote' | 'message'
+export type CreateKind = 'workOrder' | 'appointment' | 'reminder' | 'quote' | 'message' | 'timeOff'
 
-/** The keys the view switcher shows and the keyboard listens for. */
-export const VIEW_SHORTCUTS: Record<CalendarView, string> = {
-  day: 'D',
-  week: 'W',
-  month: 'M',
-  year: 'Y',
-  schedule: 'A',
-  fourDays: 'X',
+/** The key that switches to a view, from the shortcut registry, so a changed key reads changed. */
+function ViewShortcut({ view }: { view: CalendarView }) {
+  const shortcut = useShortcutKey(`calendar.${view}`)
+  if (!shortcut) return null
+  return <DropdownMenuShortcut>{shortcut.text}</DropdownMenuShortcut>
 }
 
 const VIEW_ORDER: CalendarView[] = ['day', 'week', 'month', 'year', 'schedule', 'fourDays']
@@ -56,6 +61,12 @@ interface CalendarToolbarProps {
   onToggleSidebar: () => void
   onPreferenceChange: (patch: Partial<CalendarPreferences>) => void
   onCreate: (kind: CreateKind) => void
+  /** Whether this person may set technicians on leave, and the workshop tracks it. */
+  canSetTimeOff?: boolean
+  /** The kinds shown, for the menu copy of the sidebar list where the sidebar is not drawn. */
+  filters: TypeFilters
+  counts: Record<CalendarEventType, number>
+  onFilterChange: (type: CalendarEventType, checked: boolean) => void
 }
 
 /**
@@ -76,8 +87,13 @@ export function CalendarToolbar({
   onToggleSidebar,
   onPreferenceChange,
   onCreate,
+  filters,
+  counts,
+  onFilterChange,
+  canSetTimeOff = false,
 }: CalendarToolbarProps) {
   const t = useTranslations('calendar')
+  const tTimeOff = useTranslations('workshopCalendar.timeOff')
 
   return (
     <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border/70 px-2 py-2 sm:px-3">
@@ -142,7 +158,7 @@ export function CalendarToolbar({
               {VIEW_ORDER.map((v) => (
                 <DropdownMenuRadioItem key={v} value={v}>
                   {t(`views.${v}`)}
-                  <DropdownMenuShortcut>{VIEW_SHORTCUTS[v]}</DropdownMenuShortcut>
+                  <ViewShortcut view={v} />
                 </DropdownMenuRadioItem>
               ))}
             </DropdownMenuRadioGroup>
@@ -165,6 +181,30 @@ export function CalendarToolbar({
             >
               {t('options.showWeekNumbers')}
             </DropdownMenuCheckboxItem>
+            {/* The sidebar's list, for widths where the sidebar is not drawn or
+                when it is closed, so a hidden kind can always be shown again. */}
+            <DropdownMenuGroup className={cn(sidebarOpen && 'lg:hidden')}>
+              <DropdownMenuSeparator />
+              <DropdownMenuLabel className="text-xs text-muted-foreground">
+                {t('sidebar.calendars')}
+              </DropdownMenuLabel>
+              {listedTypes(counts, filters).map((type) => (
+                <DropdownMenuCheckboxItem
+                  key={type}
+                  checked={filters[type]}
+                  onCheckedChange={(checked) => onFilterChange(type, !!checked)}
+                  onSelect={(event) => event.preventDefault()}
+                >
+                  <span
+                    className={cn('mr-2 h-2.5 w-2.5 shrink-0 rounded-sm', typePalette(type).dot)}
+                  />
+                  <span className="flex-1">{t(`filters.${FILTER_LABEL[type]}`)}</span>
+                  <span className="ml-2 text-xs tabular-nums text-muted-foreground">
+                    {counts[type]}
+                  </span>
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuGroup>
           </DropdownMenuContent>
         </DropdownMenu>
 
@@ -175,10 +215,14 @@ export function CalendarToolbar({
               <span className="hidden sm:inline">{t('toolbar.create')}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuContent align="end" className="w-60">
             <DropdownMenuItem onClick={() => onCreate('workOrder')}>
               <Wrench className="mr-2 h-4 w-4" />
               {t('contextMenu.newWorkOrder')}
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onCreate('appointment')}>
+              <CalendarPlus className="mr-2 h-4 w-4" />
+              {t('contextMenu.bookAppointment')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => onCreate('reminder')}>
               <Bell className="mr-2 h-4 w-4" />
@@ -192,6 +236,15 @@ export function CalendarToolbar({
               <Send className="mr-2 h-4 w-4" />
               {t('contextMenu.scheduleMessage')}
             </DropdownMenuItem>
+            {canSetTimeOff && (
+              <>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => onCreate('timeOff')}>
+                  <UserX className="mr-2 h-4 w-4" />
+                  {tTimeOff('add')}
+                </DropdownMenuItem>
+              </>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

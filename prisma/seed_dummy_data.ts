@@ -696,6 +696,24 @@ function signaturePng(): Buffer {
 }
 
 async function provisionDemoAccount() {
+  // This script deletes every organization except the demo one. It runs in
+  // two places: the demo container (the deploy step and the reset cron, both
+  // with DEMO_MODE on) and the e2e suite's throwaway database, whose name
+  // says what it is (see e2e/prepare-db.ts). Anywhere else, a stray
+  // `npm run seed:demo` stops here instead of emptying a real database.
+  const database =
+    process.env.DATABASE_URL?.split("/").pop()?.split("?")[0]?.toLowerCase() ?? "";
+  const throwaway = ["e2e", "test"].some((marker) => database.includes(marker));
+  if (
+    process.env.DEMO_MODE !== "true" &&
+    !throwaway &&
+    process.env.E2E_ALLOW_ANY_DB !== "1"
+  ) {
+    throw new Error(
+      `Refusing to seed database "${database}": this script wipes every workshop except the demo one. ` +
+        "Set DEMO_MODE=true if that is what you want.",
+    );
+  }
   console.log("Provisioning demo user + organization...");
 
   // Owner user (idempotent — safe to re-run)

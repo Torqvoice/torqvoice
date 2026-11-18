@@ -150,7 +150,7 @@
       "tableTitle": "Pointé contre facturé",
       "clocked": "Pointé",
       "billed": "Facturé",
-      "hint": "Les heures pointées viennent de la pointeuse. Les heures facturées sont les lignes de main-d'œuvre des travaux attribués au technicien et commencés dans la période. L'efficacité est facturé divisé par pointé.",
+      "hint": "Les heures pointées viennent de la pointeuse. Les heures facturées sont les lignes de main-d'œuvre des travaux attribués au technicien et commencés dans la période. Un travail sur lequel interviennent plusieurs personnes répartit ses heures facturées selon le temps pointé par chacune ; si l'une d'elles n'a pas pointé dessus, les heures restent au technicien. L'efficacité est facturé divisé par pointé.",
       "noClock": "Pas de pointage",
       "jobsClocked": "Travaux pointés"
     }

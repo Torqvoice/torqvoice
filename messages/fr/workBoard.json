@@ -58,7 +58,12 @@
       "everyone": "Tout le travail",
       "thisWeek": "Cette semaine"
     },
-    "dropNeedsLane": "Groupez le tableau par technicien ou par poste avant d'y déposer une tâche."
+    "dropNeedsLane": "Groupez le tableau par technicien ou par poste avant d'y déposer une tâche.",
+    "load": {
+      "over": "{amount} de trop",
+      "spoken": "Planifié : {booked} sur {capacity}",
+      "spokenOver": "Planifié : {booked} sur {capacity}, dépassement de {amount}"
+    }
   },
   "unassigned": {
     "title": "Travaux Non Assignés ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Géré depuis la page Équipe, avec son accès à l'application.",
     "skills": "Compétences",
     "skillsPlaceholder": "Diagnostic, habilité VE",
-    "skillsHint": "Affiché sous le nom là où le travail est attribué. Facultatif."
+    "skillsHint": "Affiché sous le nom là où le travail est attribué. Facultatif.",
+    "saveFailed": "Impossible d'enregistrer le technicien. Veuillez réessayer.",
+    "deleteFailed": "Impossible de supprimer le technicien. Veuillez réessayer."
   },
   "jobDetail": {
     "viewDetails": "Voir les Détails",
@@ -90,7 +97,9 @@
     "endTime": "Heure de fin",
     "failedDuration": "Échec de la mise à jour de la durée",
     "failedTimes": "Échec de la mise à jour des horaires",
-    "startTime": "Heure de début"
+    "startTime": "Heure de début",
+    "alsoOnJob": "Aussi sur ce travail",
+    "failedHelper": "Échec de la mise à jour des intervenants"
   },
   "presenter": {
     "title": "Tableau de Bord des Travaux",
@@ -160,6 +169,9 @@
     "none": "Personne pour l'instant",
     "promised": "Promis",
     "promiseLate": "En retard",
-    "promiseOverdue": "Promis au client pour un moment déjà passé"
+    "promiseOverdue": "Promis au client pour un moment déjà passé",
+    "alsoOnJob": "Aussi sur le travail",
+    "with": "Avec {name}",
+    "helping": "En renfort"
   }
 }

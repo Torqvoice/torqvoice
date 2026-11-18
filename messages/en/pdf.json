@@ -47,6 +47,7 @@
     "tax": "Tax ({rate}%)",
     "taxIncluded": "Includes tax ({rate}%)",
     "taxIncludedNamed": "Includes {name} ({rate}%)",
+    "taxableAmount": "Taxable amount",
     "paymentsReceived": "Payments Received",
     "paidInFull": "PAID IN FULL",
     "amountDue": "Amount Due",
@@ -115,6 +116,7 @@
     "tax": "Tax ({rate}%)",
     "taxIncluded": "Includes tax ({rate}%)",
     "taxIncludedNamed": "Includes {name} ({rate}%)",
+    "taxableAmount": "Taxable amount",
     "validUntil": "Valid until: {date}",
     "attachedDocuments": "Attached Documents",
     "attached": "{name} (attached)",
@@ -193,7 +195,18 @@
     "basicNotApplicable": "Not applicable",
     "allResults": "All results",
     "signature": "Signature",
-    "sectionColumn": "Section"
+    "sectionColumn": "Section",
+    "checkPass": "All checks passed",
+    "checkPassMinor": "Some items to keep an eye on",
+    "checkFail": "Some items need work",
+    "checkFailDangerous": "Some items need urgent work",
+    "checkIncomplete": "Not completed",
+    "checkDetailPass": "Nothing needed attention.",
+    "checkDetailPassMinor": "Nothing urgent. The items marked for attention are worth planning for.",
+    "checkDetailFail": "Some items need repairing. The notes say what was found.",
+    "checkDetailFailDangerous": "Some items are unsafe and should be repaired before further use.",
+    "checkDetailIncomplete": "This check is still in progress.",
+    "overallCheck": "Summary"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVICE HISTORY",
@@ -219,7 +232,11 @@
     "conditionMapArea": "Area",
     "conditionMapKind": "Type",
     "conditionMapSeverity": "Severity",
-    "conditionMapNote": "Note"
+    "conditionMapNote": "Note",
+    "serviceTypeMaintenance": "Maintenance",
+    "serviceTypeRepair": "Repair",
+    "serviceTypeUpgrade": "Upgrade",
+    "serviceTypeInspection": "Inspection"
   },
   "workOrder": {
     "title": "WORK ORDER",

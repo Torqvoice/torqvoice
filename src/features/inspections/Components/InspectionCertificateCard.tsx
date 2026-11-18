@@ -8,14 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { DateInput } from '@/components/ui/date-input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectSeparator,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { FileCheck2, Loader2, RotateCcw, UserPlus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -208,41 +201,36 @@ export function InspectionCertificateCard({
       <div className="grid gap-4 p-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <Label htmlFor={`${fieldId}-inspector`}>{t('inspector')}</Label>
-          <Select
+          <SearchableSelect
+            id={`${fieldId}-inspector`}
             value={technicianId}
             onValueChange={handleTechnicianChange}
             disabled={isCompleted}
-          >
-            <SelectTrigger id={`${fieldId}-inspector`}>
-              <SelectValue placeholder={t('notRecorded')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_TECHNICIAN}>{t('notRecorded')}</SelectItem>
-              {roster.map((tech) => (
-                <SelectItem key={tech.id} value={tech.id}>
-                  <span className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: tech.color }}
-                      aria-hidden="true"
-                    />
-                    {tech.name}
-                  </span>
-                </SelectItem>
-              ))}
-              {!isCompleted && (
-                <>
-                  <SelectSeparator />
-                  <SelectItem value={ADD_TECHNICIAN}>
-                    <span className="flex items-center gap-2">
-                      <UserPlus className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t('addTechnician')}
-                    </span>
-                  </SelectItem>
-                </>
-              )}
-            </SelectContent>
-          </Select>
+            placeholder={t('notRecorded')}
+            options={[
+              { value: NO_TECHNICIAN, label: t('notRecorded') },
+              ...roster.map((tech) => ({
+                value: tech.id,
+                label: tech.name,
+                icon: (
+                  <span
+                    className="h-2.5 w-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: tech.color }}
+                    aria-hidden="true"
+                  />
+                ),
+              })),
+              ...(isCompleted
+                ? []
+                : [
+                    {
+                      value: ADD_TECHNICIAN,
+                      label: t('addTechnician'),
+                      icon: <UserPlus className="h-3.5 w-3.5" aria-hidden="true" />,
+                    },
+                  ]),
+            ]}
+          />
           {/* An inspection carried out before the roster existed still has a
               name on it; say so rather than showing an empty field. */}
           {technicianId === NO_TECHNICIAN && inspection.inspectorName && (
@@ -254,29 +242,23 @@ export function InspectionCertificateCard({
 
         <div className="space-y-1.5">
           <Label htmlFor={`${fieldId}-category`}>{t('vehicleCategory')}</Label>
-          <Select
+          <SearchableSelect
+            id={`${fieldId}-category`}
             value={vehicleCategory}
             onValueChange={(value) => {
               setVehicleCategory(value)
               commit({ vehicleCategory: value === NO_TECHNICIAN ? null : value })
             }}
             disabled={isCompleted}
-          >
-            <SelectTrigger id={`${fieldId}-category`}>
-              <SelectValue placeholder={t('notRecorded')} />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_TECHNICIAN}>{t('notRecorded')}</SelectItem>
-              {VEHICLE_CATEGORIES.map((code) => (
-                <SelectItem key={code} value={code}>
-                  <span className="flex gap-2">
-                    <span className="font-medium">{code}</span>
-                    <span className="text-muted-foreground">{t(`categories.${code}`)}</span>
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={t('notRecorded')}
+            options={[
+              { value: NO_TECHNICIAN, label: t('notRecorded') },
+              ...VEHICLE_CATEGORIES.map((code) => ({
+                value: code,
+                label: `${code} ${t(`categories.${code}`)}`,
+              })),
+            ]}
+          />
         </div>
 
         <div className="space-y-1.5">

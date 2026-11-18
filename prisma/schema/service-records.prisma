@@ -29,6 +29,11 @@ model ServiceRecord {
   /// no change. Shape in src/lib/tax-components.ts; read leniently so an old
   /// row renders on new code.
   taxComponents   Json?
+  /// The sum of the lines the tax is charged on, before the discount and in
+  /// the same terms as subtotal. Null when every line is taxable, which is
+  /// every document written before a line could be left untaxed. Written
+  /// with the totals by documentTotals; see src/lib/taxable-lines.ts.
+  taxableSubtotal Float?
   totalAmount     Float     @default(0)
   invoiceNumber   String?
   invoiceDate     DateTime?
@@ -37,6 +42,10 @@ model ServiceRecord {
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)
   manuallyPaid    Boolean   @default(false)
+  /// When the workshop marked the invoice paid by hand, which is the day a
+  /// share link set to expire "after payment" starts counting from. Null on
+  /// invoices marked before this column, and on ones paid through payments.
+  manuallyPaidAt  DateTime?
 
   // Warranty tracking
   /// What the workshop tells the customer about its own warranty on this job:
@@ -58,6 +67,13 @@ model ServiceRecord {
   sharedAt     DateTime?
   viewCount    Int       @default(0)
   lastViewedAt DateTime?
+  /// When the share link stops working, for this document only. Both null
+  /// and false means the workshop's rule decides (src/lib/share-expiry.ts).
+  /// shareRenewedAt is the last time the link was sent again or reopened,
+  /// which starts the workshop's rule counting afresh.
+  shareExpiresAt    DateTime?
+  shareNeverExpires Boolean   @default(false)
+  shareRenewedAt    DateTime?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
@@ -150,7 +166,9 @@ model ServiceRecord {
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   technicianId String?
-  technician   Technician? @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+  technician   Technician?           @relation(fields: [technicianId], references: [id], onDelete: SetNull)
+  /// Everybody else working the job with that technician.
+  helpers      ServiceRecordHelper[]
 
   /// Where in the shop the job is booked in: a lift, a ramp, an alignment
   /// stand. Independent of the technician, because a shop plans its bays and
@@ -167,14 +185,22 @@ model ServiceRecord {
   stockMovements StockMovement[]
   timeEntries    TimeEntry[]
 
-  concerns           ServiceConcern[]
-  conditionMarks     ConditionMark[]
-  discoveredFindings VehicleFinding[] @relation("FindingDiscoveredIn")
-  resolvedFindings   VehicleFinding[] @relation("FindingResolvedIn")
+  concerns                 ServiceConcern[]
+  /// Alerts before a booked job, set when it was booked or edited from the calendar.
+  appointmentNotifications AppointmentNotification[]
+  conditionMarks           ConditionMark[]
+  discoveredFindings       VehicleFinding[]          @relation("FindingDiscoveredIn")
+  resolvedFindings         VehicleFinding[]          @relation("FindingResolvedIn")
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)
 
+  /// Made up by the booking dialog each time it opens and sent with the
+  /// booking, so a booking sent twice (the answer to the first was lost) is
+  /// found again instead of made again. Only jobs booked there have one.
+  bookingToken String?
+
+  @@unique([organizationId, bookingToken])
   @@index([vehicleId])
   @@index([technicianId])
   @@index([workBayId])
@@ -283,6 +309,14 @@ model ServiceAttachment {
   concernId String?
   concern   ServiceConcern? @relation(fields: [concernId], references: [id], onDelete: SetNull)
 
+  /// What a scan for fault codes found in this file, when one ran: the codes
+  /// with their status and module, the VIN and odometer the report printed,
+  /// how it was read (text or vision), when, and whether it was dismissed.
+  scan Json?
+
+  /// Findings whose fault code was read from this file.
+  faultFindings VehicleFinding[]
+
   @@index([serviceRecordId])
   @@index([concernId])
   @@map("service_attachments")
@@ -305,6 +339,9 @@ model ServicePart {
   unitCost        Float   @default(0)
   markupPercent   Float   @default(0)
   inventoryPartId String?
+  /// Whether the document's tax is charged on this line. Starts as the
+  /// workshop's answer for parts (Settings, Tax) and is then the line's own.
+  taxable         Boolean @default(true)
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
@@ -314,12 +351,15 @@ model ServicePart {
 }
 
 model ServiceLabor {
-  id          String @id @default(cuid())
+  id          String  @id @default(cuid())
   description String
-  hours       Float  @default(0)
-  rate        Float  @default(0)
-  total       Float  @default(0)
-  pricingType String @default("hourly")
+  hours       Float   @default(0)
+  rate        Float   @default(0)
+  total       Float   @default(0)
+  pricingType String  @default("hourly")
+  /// Whether the document's tax is charged on this line. Starts as the
+  /// workshop's answer for labor, or for the shop fee, and is then the line's own.
+  taxable     Boolean @default(true)
 
   serviceRecordId String
   serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)

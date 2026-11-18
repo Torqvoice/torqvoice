@@ -12,6 +12,8 @@
     "payWithCard": "Betaal {amount} met kaart",
     "payWithVipps": "Betaal {amount} met Vipps",
     "payWithPaypal": "Betaal {amount} met PayPal",
+    "payWithPaystack": "Betaal {amount} met Paystack",
+    "payWithVendor": "Betalen met <vendor></vendor>",
     "errorInvalidAmount": "Voer een geldig bedrag in.",
     "errorExceedsBalance": "Bedrag mag niet hoger zijn dan {amount}.",
     "errorVerifyFailed": "Betaling kon niet worden geverifieerd. De verwerking kan nog gaande zijn.",
@@ -202,7 +204,21 @@
     "deficienciesFound": "Vastgestelde gebreken ({count})",
     "allResults": "Alle resultaten",
     "privacyNotice": "Dit rapport wordt u verstrekt door de werkplaats die de keuring heeft uitgevoerd. Iedereen met deze link kan het bekijken; stuur de link daarom niet door. Neem contact op met de werkplaats om de link in te trekken of uw gegevens te laten wissen.",
-    "inspectionPhotos": "Foto's en documenten"
+    "inspectionPhotos": "Foto's en documenten",
+    "checkResult": {
+      "pass": "Alles in orde",
+      "pass_minor": "Enkele punten om in de gaten te houden",
+      "fail": "Enkele punten moeten worden gerepareerd",
+      "fail_dangerous": "Enkele punten moeten dringend worden gerepareerd",
+      "incomplete": "Niet voltooid"
+    },
+    "checkResultDetail": {
+      "pass": "Er hoefde niets te gebeuren.",
+      "pass_minor": "Niets dringends. De gemarkeerde punten zijn het inplannen waard.",
+      "fail": "Enkele punten moeten worden gerepareerd. De notities zeggen wat er is gevonden.",
+      "fail_dangerous": "Enkele punten zijn niet veilig en moeten worden gerepareerd voor verder gebruik.",
+      "incomplete": "Deze controle is nog bezig."
+    }
   },
   "terms": {
     "title": "Verkoopvoorwaarden",
@@ -234,5 +250,31 @@
     "telegramConnect": "Chat met ons op Telegram",
     "telegramScan": "Scan deze QR-code om ons een bericht te sturen op Telegram voor updates en ondersteuning.",
     "downloadCertificate": "Keuringsrapport downloaden"
+  },
+  "expired": {
+    "pageTitle": "Link verlopen",
+    "title": "Deze link is verlopen",
+    "body": {
+      "invoice": "Neem contact op met {workshop} voor een nieuwe link naar deze factuur.",
+      "quote": "Neem contact op met {workshop} voor een nieuwe link naar deze offerte.",
+      "inspection": "Neem contact op met {workshop} voor een nieuwe link naar deze inspectie.",
+      "statusReport": "Neem contact op met {workshop} voor een nieuwe link naar deze update."
+    },
+    "bodyNoName": {
+      "invoice": "Neem contact op met de werkplaats voor een nieuwe link naar deze factuur.",
+      "quote": "Neem contact op met de werkplaats voor een nieuwe link naar deze offerte.",
+      "inspection": "Neem contact op met de werkplaats voor een nieuwe link naar deze inspectie.",
+      "statusReport": "Neem contact op met de werkplaats voor een nieuwe link naar deze update."
+    }
+  },
+  "gone": {
+    "pageTitle": "Link werkt niet",
+    "title": "Deze link werkt niet meer",
+    "body": "Mogelijk is hij verwijderd, of is het adres onvolledig. Neem contact op met {workshop} voor een nieuwe link.",
+    "bodyNoName": "Mogelijk is hij verwijderd, of is het adres onvolledig. Neem contact op met de werkplaats voor een nieuwe link."
+  },
+  "openUntil": {
+    "text": "Deze link werkt tot en met {date}. Vraag daarna een nieuwe aan {workshop}.",
+    "textNoName": "Deze link werkt tot en met {date}. Vraag daarna een nieuwe aan de werkplaats."
   }
 }

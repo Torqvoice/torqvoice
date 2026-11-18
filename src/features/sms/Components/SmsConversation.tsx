@@ -2,24 +2,16 @@
 
 import { useState, useTransition, useRef, useEffect, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { handleGated } from '@/components/upgrade-gate'
 import { SmsTemplateMenu } from './SmsTemplateMenu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { Loader2, Send, MessageSquare, ChevronUp, Trash2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { sendSmsToCustomer, getConversation, deleteSmsMessage } from '../Actions/smsActions'
 import { useNotificationStore } from '@/features/notifications/store/notificationStore'
-import { setActiveSmsCustomerId } from '../activeSmsView'
+import { setActiveConversation } from '@/features/messaging/activeConversation'
 import { toast } from 'sonner'
 import { MessageText } from '@/features/messaging/Components/MessageText'
 
@@ -39,6 +31,11 @@ interface SmsConversationProps {
   customerPhone: string | null
   initialMessages: Message[]
   initialNextCursor: string | null
+  /**
+   * Texts a day from the platform's shared number, when the workshop has no
+   * provider of its own. Replies to that number do not arrive.
+   */
+  platformSmsPerDay?: number | null
   className?: string
 }
 
@@ -48,6 +45,7 @@ export function SmsConversation({
   customerPhone,
   initialMessages,
   initialNextCursor,
+  platformSmsPerDay = null,
   className,
 }: SmsConversationProps) {
   const t = useTranslations('messages.conversation')
@@ -56,8 +54,7 @@ export function SmsConversation({
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor)
   const [newMessage, setNewMessage] = useState('')
   const [mounted, setMounted] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<Message | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const confirm = useConfirm()
 
   useEffect(() => {
     setMounted(true)
@@ -68,8 +65,8 @@ export function SmsConversation({
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    setActiveSmsCustomerId(customerId)
-    return () => setActiveSmsCustomerId(null)
+    setActiveConversation([`/messages?customerId=${customerId}`])
+    return () => setActiveConversation(null)
   }, [customerId])
 
   const initialScrollDone = useRef(false)
@@ -135,11 +132,16 @@ export function SmsConversation({
     setNewMessage('')
 
     startSend(async () => {
-      const result = await sendSmsToCustomer({ customerId, body })
-      if (result.success) {
-        // Refresh conversation
-        const conv = await getConversation(customerId)
-        if (conv.success && conv.data) {
+      // An action that cannot reach the server throws instead of answering.
+      // Thrown inside a transition it would take the page down, so it is
+      // caught and treated as a send that failed: the text goes back in the
+      // box to send again.
+      const result = await sendSmsToCustomer({ customerId, body }).catch(() => null)
+      if (result?.success) {
+        // Refresh conversation. The message went; a list that cannot be read
+        // back now catches up on the next refresh.
+        const conv = await getConversation(customerId).catch(() => null)
+        if (conv?.success && conv.data) {
           setMessages(
             conv.data.messages.map((m) => ({
               ...m,
@@ -149,7 +151,7 @@ export function SmsConversation({
           setNextCursor(conv.data.nextCursor)
         }
       } else {
-        toast.error(result.error ?? t('sendError'))
+        if (!handleGated(result)) toast.error(result?.error ?? t('sendError'))
         setNewMessage(body)
       }
     })
@@ -158,8 +160,10 @@ export function SmsConversation({
   const handleLoadOlder = () => {
     if (!nextCursor) return
     startLoadMore(async () => {
-      const result = await getConversation(customerId, nextCursor)
-      if (result.success && result.data) {
+      // Caught: thrown inside a transition it would take the page down. The
+      // button is ready to try again.
+      const result = await getConversation(customerId, nextCursor).catch(() => null)
+      if (result?.success && result.data) {
         const older = result.data.messages.map((m) => ({
           ...m,
           createdAt: typeof m.createdAt === 'string' ? m.createdAt : m.createdAt.toISOString(),
@@ -170,18 +174,25 @@ export function SmsConversation({
     })
   }
 
-  const handleDeleteMessage = async () => {
-    if (!deleteTarget) return
-    setIsDeleting(true)
-    const result = await deleteSmsMessage(deleteTarget.id)
-    if (result.success) {
+  const handleDeleteMessage = async (deleteTarget: Message) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription'),
+      confirmLabel: tc('delete'),
+      cancelLabel: tc('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteSmsMessage(deleteTarget.id).catch(() => null)
+    if (result?.success) {
       setMessages((prev) => prev.filter((m) => m.id !== deleteTarget.id))
       toast.success(t('messageDeleted'))
     } else {
-      toast.error(result.error || t('deleteError'))
+      toast.error(result?.error || t('deleteError'))
     }
-    setIsDeleting(false)
-    setDeleteTarget(null)
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -241,7 +252,7 @@ export function SmsConversation({
               {isOutbound && (
                 <button
                   type="button"
-                  onClick={() => setDeleteTarget(msg)}
+                  onClick={() => handleDeleteMessage(msg)}
                   className="mr-2 self-center opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                   title={t('deleteMessage')}
                 >
@@ -268,7 +279,7 @@ export function SmsConversation({
               {!isOutbound && (
                 <button
                   type="button"
-                  onClick={() => setDeleteTarget(msg)}
+                  onClick={() => handleDeleteMessage(msg)}
                   className="ml-2 self-center opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
                   title={t('deleteMessage')}
                 >
@@ -316,28 +327,12 @@ export function SmsConversation({
             )}
           </Button>
         </div>
+        {platformSmsPerDay != null && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            {t('sharedNumber', { limit: platformSmsPerDay })}
+          </p>
+        )}
       </div>
-
-      {/* Delete confirmation dialog */}
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('deleteDescription')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteMessage}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

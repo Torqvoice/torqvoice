@@ -1,7 +1,8 @@
+import { randomUUID } from 'node:crypto'
+import { cookies } from 'next/headers'
+import { findLinkedAppointment } from '@/features/calendar/Lib/linkedAppointment.server'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { getCalendarEvents } from '@/features/calendar/Actions/calendarActions'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
@@ -10,6 +11,9 @@ import { getAvailableChannels } from '@/features/scheduled-messages/Lib/availabl
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
 import CalendarClient from '@/features/calendar/Components/CalendarClient'
+import { getTechnicians } from '@/features/workboard/Actions/technicianActions'
+import { canEditTimeOff } from '@/features/workshop-calendar/Lib/access.server'
+import { calendarEnabled } from '@/features/workshop-calendar/Lib/loadCalendar.server'
 import {
   getMonthGridDays,
   isCalendarView,
@@ -18,11 +22,20 @@ import {
   visibleRange,
   type CalendarView,
 } from '@/features/calendar/Lib/calendar-range'
+import { pageTitle } from '@/lib/page-title'
+import {
+  CALENDAR_PREFERENCES_COOKIE,
+  parseCalendarPreferences,
+} from '@/features/calendar/Lib/calendar-preferences'
+
+export function generateMetadata() {
+  return pageTitle('calendar')
+}
 
 export default async function CalendarPage({
   searchParams,
 }: {
-  searchParams: Promise<{ view?: string; date?: string }>
+  searchParams: Promise<{ view?: string; date?: string; appointment?: string }>
 }) {
   const params = await searchParams
   const ctx = await getAuthContext()
@@ -31,8 +44,13 @@ export default async function CalendarPage({
   // ring in the next day at 01:00 Oslo time.
   const todayStr = zonedDayKey(new Date(), timeZone)
 
-  const view: CalendarView = isCalendarView(params.view) ? params.view : 'month'
-  const date = parseDateKey(params.date) ?? parseDateKey(todayStr) ?? new Date()
+  // A link to one appointment (from search, a vehicle's page) opens its day
+  // with its card up; see findLinkedAppointment for who may follow one.
+  const linked = await findLinkedAppointment(ctx, params.appointment)
+  const linkedDay = linked ? zonedDayKey(linked.startAt, timeZone) : null
+
+  const view: CalendarView = isCalendarView(params.view) ? params.view : linked ? 'day' : 'month'
+  const date = parseDateKey(linkedDay ?? params.date) ?? parseDateKey(todayStr) ?? new Date()
 
   const messageChannels = ctx ? await getAvailableChannels(ctx.organizationId) : []
   const settingsResult = await getDisplaySettings([
@@ -60,40 +78,56 @@ export default async function CalendarPage({
         }
   const rangeKeys = { start: toLocalDateStr(range.start), end: toLocalDateStr(range.end) }
 
-  const [eventsResult, vehiclesResult, customersResult] = await Promise.all([
-    getCalendarEvents(rangeKeys),
-    getVehicles(),
-    getCustomersList(),
-  ])
+  const eventsResult = await getCalendarEvents(rangeKeys)
+
+  // Who can be set on leave, offered only to people who may edit the work
+  // board and only while the workshop tracks time off at all.
+  const timeOffAllowed =
+    ctx !== null &&
+    (await calendarEnabled(ctx.organizationId)) &&
+    (await canEditTimeOff(ctx.userId, ctx.role))
+  const technicians = timeOffAllowed ? await getTechnicians() : null
+  const timeOff =
+    technicians?.success && technicians.data
+      ? {
+          technicians: technicians.data
+            .filter((tech) => tech.isActive)
+            .map((tech) => ({ id: tech.id, name: tech.name, color: tech.color })),
+        }
+      : null
+
+  // Read here so the first paint already has the kinds this person hid.
+  const preferences = parseCalendarPreferences(
+    (await cookies()).get(CALENDAR_PREFERENCES_COOKIE)?.value
+  )
 
   const events = eventsResult.success && eventsResult.data ? eventsResult.data : []
-  const vehicles =
-    vehiclesResult.success && vehiclesResult.data
-      ? vehiclesResult.data.map((v) => ({
-          id: v.id,
-          make: v.make,
-          model: v.model,
-          year: v.year,
-          licensePlate: v.licensePlate,
-          customer: v.customer,
-        }))
-      : []
-  const customers = customersResult.success && customersResult.data ? customersResult.data : []
+
+  // A token for this one request, so the same link followed again while the
+  // calendar is open (from search, say) goes back to the day and reopens it.
+  const linkedEvent = linked
+    ? events.find((e) => e.type === 'appointment' && e.id === linked.id)
+    : undefined
+  const linkedAppointment =
+    linkedEvent && linkedDay
+      ? { event: linkedEvent, date: linkedDay, view, token: randomUUID() }
+      : null
 
   return (
     <>
       <PageHeader />
       <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
         <CalendarClient
+          linkedAppointment={linkedAppointment}
           initialEvents={events}
           initialRange={rangeKeys}
           initialView={view}
           initialDate={toLocalDateStr(date)}
           todayStr={todayStr}
-          vehicles={vehicles}
-          customers={customers}
           currencyCode={currencyCode}
           messageChannels={messageChannels}
+          timeOff={timeOff}
+          initialPreferences={preferences}
         />
       </div>
     </>

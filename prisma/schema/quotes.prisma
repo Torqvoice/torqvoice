@@ -11,6 +11,8 @@ model Quote {
   taxInclusive    Boolean   @default(false)
   /// See ServiceRecord.taxComponents.
   taxComponents   Json?
+  /// See ServiceRecord.taxableSubtotal.
+  taxableSubtotal Float?
   discountType    String?
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)
@@ -27,6 +29,11 @@ model Quote {
   sharedAt        DateTime?
   viewCount       Int       @default(0)
   lastViewedAt    DateTime?
+  /// See ServiceRecord: this document's own answer to when its share link
+  /// stops working, and the last time the link was sent again or reopened.
+  shareExpiresAt    DateTime?
+  shareNeverExpires Boolean   @default(false)
+  shareRenewedAt    DateTime?
   customerMessage String?
   convertedToId   String?
   createdAt       DateTime  @default(now())
@@ -114,10 +121,16 @@ model QuotePart {
   unitPrice     Float   @default(0)
   total         Float   @default(0)
   excluded      Boolean @default(false)
+  /// Carried into ServicePart on conversion. See there.
+  taxable       Boolean @default(true)
 
   /// Optional link to the stocked part this line was picked from. Carried into
   /// ServicePart on conversion so the job deducts the right inventory item.
   inventoryPartId String?
+
+  /// Where the line sits on the quote, as the workshop dragged it. Rows are
+  /// rewritten on every save, so this is the array index they were sent in.
+  sortOrder Int @default(0)
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)
@@ -134,6 +147,10 @@ model QuoteLabor {
   total       Float   @default(0)
   pricingType String  @default("hourly")
   excluded    Boolean @default(false)
+  /// Carried into ServiceLabor on conversion. See there.
+  taxable     Boolean @default(true)
+  /// Where the line sits on the quote. See QuotePart.sortOrder.
+  sortOrder   Int     @default(0)
 
   quoteId String
   quote   Quote  @relation(fields: [quoteId], references: [id], onDelete: Cascade)

@@ -1,20 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { assertContentLength } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { isDemoMode, demoOffMessage } from '@/lib/demo'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import {
+  clearNextNumberSetting,
+  JOB_NUMBER_SETTING_KEYS,
+  jobNumberSequence,
+} from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
-import { mkdir, writeFile, stat, readdir, rm } from 'fs/promises'
+import { mkdir, stat, readdir, rm } from 'fs/promises'
 import { readFileSync } from 'fs'
 import path from 'path'
 import os from 'os'
 import { BSON } from 'bson'
-import JSZip from 'jszip'
+import { extractEntry, openZip, spoolUpload, type SpooledUpload } from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
+import { prepareImportedFile, writeImportedFile } from '@/lib/backup/import-photo'
+import { releaseFiles } from '@/lib/files/manager'
+import { normalizePlate } from '@/lib/license-plate'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -122,21 +130,6 @@ function determineFuelType(v: LubeLogVehicle): string {
   return 'gasoline'
 }
 
-function getMimeType(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  const mimeMap: Record<string, string> = {
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    webp: 'image/webp',
-    pdf: 'application/pdf',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    csv: 'text/csv',
-    txt: 'text/plain',
-  }
-  return mimeMap[ext || ''] || 'application/octet-stream'
-}
-
 /**
  * Find the actual backup directory. Accepts either:
  *  - A direct path to the extracted backup folder (contains data/cartracker.db)
@@ -173,29 +166,29 @@ async function resolveBackupDir(inputPath: string): Promise<string> {
 }
 
 /**
- * Extract a zip buffer to a temporary directory on disk.
+ * Extract a zip on disk to a temporary directory, one entry at a time.
  */
-async function extractZipToTempDir(zipBuffer: Buffer): Promise<string> {
+async function extractZipToTempDir(zipPath: string): Promise<string> {
   const tmpDir = path.join(os.tmpdir(), `lubelog-import-${Date.now()}`)
   await mkdir(tmpDir, { recursive: true })
 
-  const zip = await JSZip.loadAsync(zipBuffer)
-  assertZipWithinLimits(zip.files)
-
-  for (const [relativePath, entry] of Object.entries(zip.files)) {
-    // Guard against zip-slip: skip any entry whose path escapes tmpDir.
-    const targetPath = resolveWithinDir(tmpDir, relativePath)
-    if (!targetPath) {
-      console.warn(`[import-lubelog] Skipping unsafe zip entry: ${relativePath}`)
-      continue
+  const zip = await openZip(zipPath)
+  try {
+    for (const entry of zip.entries) {
+      // Guard against zip-slip: skip any entry whose path escapes tmpDir.
+      const targetPath = resolveWithinDir(tmpDir, entry.name)
+      if (!targetPath) {
+        console.warn(`[import-lubelog] Skipping unsafe zip entry: ${entry.name}`)
+        continue
+      }
+      if (entry.dir) {
+        await mkdir(targetPath, { recursive: true })
+      } else {
+        await extractEntry(zip, entry, targetPath)
+      }
     }
-    if (entry.dir) {
-      await mkdir(targetPath, { recursive: true })
-    } else {
-      await mkdir(path.dirname(targetPath), { recursive: true })
-      const content = await entry.async('nodebuffer')
-      await writeFile(targetPath, content)
-    }
+  } finally {
+    zip.close()
   }
 
   return tmpDir
@@ -214,6 +207,10 @@ export async function POST(request: NextRequest) {
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  // While a restore replaces this workshop's rows and files, nothing is written here.
+  if (isRestoring(ctx.organizationId)) {
+    return NextResponse.json({ error: RESTORE_IN_PROGRESS_MESSAGE }, { status: 409 })
+  }
   // Reading or replacing the whole workshop is an owner's or admin's call.
   if (!ctx.isAdmin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -222,22 +219,26 @@ export async function POST(request: NextRequest) {
   const { organizationId, userId } = ctx
   const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
+  let upload: SpooledUpload | null = null
+  // Every file this import writes, so a run that fails hands them back.
+  const importedFileUrls: string[] = []
 
   try {
-    // Accept the zip as raw binary body
+    // The zip comes as the raw body and goes to disk as it arrives
     assertContentLength(request, 200 * 1024 * 1024)
-    const arrayBuffer = await request.arrayBuffer()
-    const zipBuffer = Buffer.from(arrayBuffer)
+    upload = await spoolUpload(request, 200 * 1024 * 1024, 'lubelog-upload')
 
-    if (zipBuffer.length < 100) {
+    if (upload.size < 100) {
       return NextResponse.json(
         { error: 'Uploaded file is too small to be a valid backup' },
         { status: 400 }
       )
     }
 
-    // Extract zip to temp directory
-    tmpDir = await extractZipToTempDir(zipBuffer)
+    // Extract zip to temp directory, then the upload itself is done with
+    tmpDir = await extractZipToTempDir(upload.path)
+    await upload.remove()
+    upload = null
 
     // Resolve and validate the backup directory
     let backupDir: string
@@ -265,23 +266,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Get invoice prefix settings
-    const prefixSetting = await db.appSetting.findFirst({
-      where: { organizationId, key: 'workshop.invoicePrefix' },
+    // Imported jobs carry on the workshop's own numbering, in its format and
+    // past every number already issued in it; see src/lib/job-number.ts.
+    const numberingSettings = await db.appSetting.findMany({
+      where: { organizationId, key: { in: [...JOB_NUMBER_SETTING_KEYS] } },
     })
-    const invoicePrefix = resolveInvoicePrefix(prefixSetting?.value ?? '{year}-')
-
-    // Get the current highest invoice number to continue the sequence
-    const lastRecord = await db.serviceRecord.findFirst({
-      where: { organizationId },
-      orderBy: { createdAt: 'desc' },
-      select: { invoiceNumber: true },
+    const sequence = await jobNumberSequence({
+      organizationId,
+      settings: Object.fromEntries(numberingSettings.map((s) => [s.key, s.value])),
+      timeZone,
     })
-    let nextInvoiceNum = 1001
-    if (lastRecord?.invoiceNumber) {
-      const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-      if (match) nextInvoiceNum = Number.parseInt(match[1], 10) + 1
-    }
+    const invoicePrefix = sequence.prefix
+    let nextInvoiceNum = sequence.first
 
     // Map LubeLog vehicle IDs → Torqvoice vehicle IDs
     const vehicleIdMap = new Map<number, string>()
@@ -297,14 +293,21 @@ export async function POST(request: NextRequest) {
     const uploadsBase = path.join(uploadsRoot(), organizationId)
 
     // ── Copy a file from the backup to the uploads directory ──────────────
+    // A photo is fitted and re-encoded on the way, so it lands at the size an
+    // upload through the app would have, and every file is stored under a
+    // generated name like an upload's, so the file manager keeps track of it.
     async function copyFile(
       sourcePath: string,
       category: string,
       filename: string
-    ): Promise<{ fileUrl: string; fileSize: number } | null> {
+    ): Promise<{
+      fileUrl: string
+      fileSize: number
+      fileType: string
+      compressed: boolean
+    } | null> {
       const targetDir = path.join(uploadsBase, category)
       await mkdir(targetDir, { recursive: true })
-      const targetPath = path.join(targetDir, filename)
 
       // Normalize source paths: strip leading /
       const normalizedSource = sourcePath.replace(/^\//, '')
@@ -323,109 +326,129 @@ export async function POST(request: NextRequest) {
         return null
       }
 
-      await writeFile(targetPath, fileData)
-      const fileUrl = `/api/protected/files/${organizationId}/${category}/${filename}`
-      return { fileUrl, fileSize: fileData.length }
+      const prepared = await prepareImportedFile(filename, fileData)
+      const storedName = await writeImportedFile(targetDir, prepared.name, prepared.data)
+      const fileUrl = `/api/protected/files/${organizationId}/${category}/${storedName}`
+      importedFileUrls.push(fileUrl)
+      return {
+        fileUrl,
+        fileSize: prepared.data.length,
+        fileType: prepared.type,
+        compressed: prepared.compressed,
+      }
     }
 
     // ── Database transaction ─────────────────────────────────────────────
-    await db.$transaction(async (tx) => {
-      // Create vehicles
-      for (const v of vehicles) {
-        let imageUrl: string | null = null
+    // As long as the route may run: the photos are re-encoded inside.
+    await db.$transaction(
+      async (tx) => {
+        // Create vehicles
+        for (const v of vehicles) {
+          let imageUrl: string | null = null
 
-        if (v.ImageLocation) {
-          const ext = v.ImageLocation.split('.').pop() || 'jpg'
-          const filename = `lubelog-vehicle-${v._id}.${ext}`
-          const result = await copyFile(v.ImageLocation, 'vehicles', filename)
-          if (result) imageUrl = result.fileUrl
+          if (v.ImageLocation) {
+            const ext = v.ImageLocation.split('.').pop() || 'jpg'
+            const filename = `lubelog-vehicle-${v._id}.${ext}`
+            const result = await copyFile(v.ImageLocation, 'vehicles', filename)
+            if (result) imageUrl = result.fileUrl
+          }
+
+          const created = await tx.vehicle.create({
+            data: {
+              make: v.Make,
+              model: v.Model,
+              year: v.Year,
+              licensePlate: normalizePlate(v.LicensePlate),
+              fuelType: determineFuelType(v),
+              mileage: vehicleMileage.get(v._id) || 0,
+              purchasePrice: parseDecimal(v.PurchasePrice) || null,
+              imageUrl,
+              userId,
+              organizationId,
+            },
+          })
+
+          vehicleIdMap.set(v._id, created.id)
         }
 
-        const created = await tx.vehicle.create({
-          data: {
-            make: v.Make,
-            model: v.Model,
-            year: v.Year,
-            licensePlate: v.LicensePlate || null,
-            fuelType: determineFuelType(v),
-            mileage: vehicleMileage.get(v._id) || 0,
-            purchasePrice: parseDecimal(v.PurchasePrice) || null,
-            imageUrl,
-            userId,
-            organizationId,
-          },
-        })
+        // Create notes (grouped by vehicle)
+        for (const n of notes) {
+          const vehicleId = vehicleIdMap.get(n.VehicleId)
+          if (!vehicleId) continue
 
-        vehicleIdMap.set(v._id, created.id)
-      }
+          await tx.note.create({
+            data: {
+              title: n.Description,
+              content: n.NoteText,
+              isPinned: n.Pinned || false,
+              vehicleId,
+            },
+          })
+        }
 
-      // Create notes (grouped by vehicle)
-      for (const n of notes) {
-        const vehicleId = vehicleIdMap.get(n.VehicleId)
-        if (!vehicleId) continue
+        // Create service records
+        for (const sr of serviceRecords) {
+          const vehicleId = vehicleIdMap.get(sr.VehicleId)
+          if (!vehicleId) continue
 
-        await tx.note.create({
-          data: {
-            title: n.Description,
-            content: n.NoteText,
-            isPinned: n.Pinned || false,
-            vehicleId,
-          },
-        })
-      }
+          const invoiceNumber = `${invoicePrefix}${nextInvoiceNum}`
+          nextInvoiceNum++
 
-      // Create service records
-      for (const sr of serviceRecords) {
-        const vehicleId = vehicleIdMap.get(sr.VehicleId)
-        if (!vehicleId) continue
+          const cost = parseDecimal(sr.Cost)
+          const serviceDate = toSafeWorkshopDate(sr.Date, timeZone) ?? new Date()
 
-        const invoiceNumber = `${invoicePrefix}${nextInvoiceNum}`
-        nextInvoiceNum++
+          const created = await tx.serviceRecord.create({
+            data: {
+              organizationId,
+              title: sr.Description,
+              description: sr.Notes || null,
+              type: 'repair',
+              status: 'completed',
+              cost,
+              mileage: sr.Mileage || null,
+              serviceDate,
+              // Reports and the calendar find a job by when it started; a job
+              // without a start is in none of them.
+              startDateTime: serviceDate,
+              invoiceNumber,
+              subtotal: cost,
+              totalAmount: cost,
+              vehicleId,
+            },
+          })
 
-        const cost = parseDecimal(sr.Cost)
+          // Copy attached files
+          if (sr.Files && sr.Files.length > 0) {
+            for (const file of sr.Files) {
+              if (!file.Location) continue
 
-        const created = await tx.serviceRecord.create({
-          data: {
-            organizationId,
-            title: sr.Description,
-            description: sr.Notes || null,
-            type: 'repair',
-            status: 'completed',
-            cost,
-            mileage: sr.Mileage || null,
-            serviceDate: toSafeWorkshopDate(sr.Date, timeZone) ?? new Date(),
-            invoiceNumber,
-            subtotal: cost,
-            totalAmount: cost,
-            vehicleId,
-          },
-        })
+              const safeName = file.Name.replace(/[^a-zA-Z0-9._-]/g, '_')
+              const filename = `lubelog-${sr._id}-${safeName}`
 
-        // Copy attached files
-        if (sr.Files && sr.Files.length > 0) {
-          for (const file of sr.Files) {
-            if (!file.Location) continue
-
-            const safeName = file.Name.replace(/[^a-zA-Z0-9._-]/g, '_')
-            const filename = `lubelog-${sr._id}-${safeName}`
-
-            const result = await copyFile(file.Location, 'services', filename)
-            if (result) {
-              await tx.serviceAttachment.create({
-                data: {
-                  fileName: file.Name,
-                  fileUrl: result.fileUrl,
-                  fileType: getMimeType(file.Name),
-                  fileSize: result.fileSize,
-                  category: file.Name.match(/\.(jpg|jpeg|png|webp)$/i) ? 'image' : 'diagnostic',
-                  serviceRecordId: created.id,
-                },
-              })
+              const result = await copyFile(file.Location, 'services', filename)
+              if (result) {
+                await tx.serviceAttachment.create({
+                  data: {
+                    // The user's own name, with the extension the stored bytes now have.
+                    fileName: result.compressed ? file.Name.replace(/\.[^.]+$/, '.jpg') : file.Name,
+                    fileUrl: result.fileUrl,
+                    fileType: result.fileType,
+                    fileSize: result.fileSize,
+                    category: result.fileType.startsWith('image/') ? 'image' : 'diagnostic',
+                    serviceRecordId: created.id,
+                  },
+                })
+              }
             }
           }
         }
-      }
-    })
+        // "Next invoice number" was used up by the first imported job.
+        if (sequence.usesNextNumberSetting && nextInvoiceNum > sequence.first) {
+          await clearNextNumberSetting(organizationId, tx)
+        }
+      },
+      { timeout: maxDuration * 1000 }
+    )
 
     return NextResponse.json({
       success: true,
@@ -438,6 +461,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[import-lubelog] Error:', error)
     console.error('[backup import]', error)
+    // The rows were rolled back, so nothing uses the files this run wrote.
+    await releaseFiles(importedFileUrls, { organizationId, reason: 'import failed' }).catch((err) =>
+      console.error('[backup import] could not release imported files:', err)
+    )
     const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   } finally {
@@ -447,5 +474,9 @@ export async function POST(request: NextRequest) {
         /* ignore cleanup errors */
       })
     }
+    // The upload is still there when the request failed before it was extracted.
+    upload?.remove().catch(() => {
+      /* ignore cleanup errors */
+    })
   }
 }

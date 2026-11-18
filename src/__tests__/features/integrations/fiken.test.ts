@@ -51,6 +51,7 @@ const invoice: AccountingInvoice = {
   mileage: 84200,
   notes: null,
   subtotal: 1500,
+  taxableSubtotal: null,
   discountType: null,
   discountValue: 0,
   discountAmount: 0,
@@ -69,6 +70,7 @@ const invoice: AccountingInvoice = {
       quantity: 2,
       unitPrice: 500,
       total: 1000,
+      taxable: true,
     },
     {
       kind: 'part',
@@ -77,6 +79,7 @@ const invoice: AccountingInvoice = {
       quantity: 1,
       unitPrice: 500,
       total: 500,
+      taxable: true,
     },
   ],
   payments: [],

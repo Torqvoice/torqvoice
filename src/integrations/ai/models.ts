@@ -20,6 +20,12 @@ export function apiKeyOf(ctx: ConnectorContext): string {
   return typeof key === 'string' ? key.trim() : ''
 }
 
+/** The model picked on the connection page; empty until the workshop has chosen one. */
+export function chosenModelOf(ctx: ConnectorContext): string {
+  const model = ctx.connection.settings.model
+  return typeof model === 'string' ? model.trim() : ''
+}
+
 /** Bearer auth, or nothing at all: a local server often has no key to check. */
 export function openAiHeaders(apiKey: string): Record<string, string> {
   return apiKey ? { Authorization: `Bearer ${apiKey}` } : {}
@@ -46,26 +52,82 @@ export function anthropicHeaders(apiKey: string): Record<string, string> {
 /** Chat-capable OpenAI models; the rest of the list is embeddings, audio and images. */
 const OPENAI_CHAT_PREFIXES = ['gpt-', 'o1', 'o3', 'o4', 'chatgpt-']
 
+/**
+ * Words in an id that carries a chat prefix and still cannot answer the app,
+ * which sends text and photos to Chat Completions. A workshop that picked one
+ * of these would get an error from every AI feature.
+ */
+const OPENAI_NOT_CHAT = [
+  // Served by another endpoint: images, speech, transcription, voice sessions.
+  'image',
+  'tts',
+  'transcribe',
+  'realtime',
+  'live',
+  // Chat Completions takes these, but only for sound in and out or a web search.
+  'audio',
+  'search',
+  // Answered by the Responses API only.
+  'pro',
+  'deep-research',
+  'codex',
+  'oss',
+  // Security research models for approved organisations, Responses only until GPT-6.
+  'cyber',
+  'daybreak',
+  // The legacy Completions endpoint.
+  'instruct',
+]
+
 function isOpenAiChatModel(id: string): boolean {
-  return OPENAI_CHAT_PREFIXES.some((prefix) => id.startsWith(prefix))
+  if (!OPENAI_CHAT_PREFIXES.some((prefix) => id.startsWith(prefix))) return false
+  // Whole words between hyphens, so "pro" does not take a model named Proxima with it.
+  return !OPENAI_NOT_CHAT.some((word) => `${id}-`.includes(`-${word}-`))
 }
 
 /**
- * Sort OpenAI models: newest version first, within a version full > mini >
- * nano. The o-series leads, then GPT-4.x, then GPT-4o, then the rest.
+ * Size within a version. The GPT-5.6 naming put Sol where the unsuffixed
+ * model was, Terra where mini was and Luna where nano was, with Astra above.
  */
-function openAiModelOrder(id: string): number {
+function openAiModelSize(id: string): number {
+  const words = id.split('-')
+  if (words.includes('astra')) return 0
+  if (words.includes('terra') || words.includes('mini')) return 2
+  if (words.includes('luna') || words.includes('nano')) return 3
+  return 1
+}
+
+/**
+ * Where an OpenAI model sorts, lowest first. The version is read out of the
+ * id rather than looked up, so a model released next month lands at the top
+ * without a change here: GPT-5 and later, then the o-series that GPT-5
+ * replaced, then GPT-4.x. Within a version the larger model leads, and a
+ * dated snapshot follows the alias it pins, the latest snapshot first.
+ */
+function openAiModelRank(id: string): number[] {
   const l = id.toLowerCase()
-  if (l.startsWith('o4')) return 100 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('o3')) return 200 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('o1')) return 300 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4.1')) return 400 + (l.includes('nano') ? 2 : l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4.5')) return 350 + (l.includes('nano') ? 2 : l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4o')) return 500 + (l.includes('mini') ? 1 : 0)
-  if (l.startsWith('gpt-4'))
-    return 600 + (l.includes('turbo') ? 0 : 1) + (l.includes('mini') ? 2 : 0)
-  if (l.startsWith('chatgpt')) return 700
-  return 900
+  const gpt = l.match(/^gpt-(\d+)(?:\.(\d+))?(o?)(?=-|$)/)
+  const oSeries = l.match(/^o(\d+)(?=-|$)/)
+  const major = Number.parseInt(gpt?.[1] ?? oSeries?.[1] ?? '0', 10)
+  const minor = Number.parseInt(gpt?.[2] ?? '0', 10)
+  const line = gpt ? (major >= 5 ? 0 : 2) : oSeries ? 1 : 3
+  // Within GPT-4: GPT-4o, then GPT-4 Turbo (its previews included), then the
+  // original GPT-4. GPT-4.1 came after all three and has its own minor.
+  const words = l.split('-')
+  const turbo = major === 4 && (words.includes('turbo') || words.includes('preview'))
+  const generation = gpt?.[3] ? 0 : turbo ? 1 : 2
+  const snapshot = l.match(/-(\d{4})-(\d{2})-(\d{2})$/)
+  const age = snapshot ? 1e8 - Number.parseInt(snapshot.slice(1).join(''), 10) : 0
+  return [line, -major, -minor, generation, openAiModelSize(l), age]
+}
+
+function compareOpenAiModels(a: string, b: string): number {
+  const rankA = openAiModelRank(a)
+  const rankB = openAiModelRank(b)
+  for (let i = 0; i < rankA.length; i++) {
+    if (rankA[i] !== rankB[i]) return rankA[i] - rankB[i]
+  }
+  return a.localeCompare(b)
 }
 
 /** Sort Anthropic models: newest version first, within a version opus > sonnet > haiku. */
@@ -79,16 +141,21 @@ function anthropicModelOrder(id: string): number {
   return versionScore + tierScore
 }
 
-/** A model id as something to read in a dropdown: gpt-4.1-mini becomes GPT 4.1 Mini. */
+/**
+ * A model id as something to read in a dropdown: gpt-4.1-mini becomes
+ * GPT 4.1 Mini, o4-mini becomes o4 Mini. A date on the end, which OpenAI
+ * writes either as -20251001 or as -2026-03-17, is left off.
+ */
 export function formatModelLabel(modelId: string): string {
-  return modelId
-    .replace(/-(\d{8})$/, '') // strip a date suffix such as -20251001
-    .replace(/^gpt-/i, 'GPT-')
-    .replace(/^claude-/i, 'Claude ')
-    .replace(/^o(\d)/i, 'o$1')
-    .replace(/-/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .replace(/Gpt/g, 'GPT')
+  return (
+    modelId
+      .replace(/-(?:\d{8}|\d{4}-\d{2}-\d{2})$/, '')
+      .replace(/-/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+      .replace(/gpt/gi, 'GPT')
+      // OpenAI writes its o-series in lower case
+      .replace(/^O(\d)/, 'o$1')
+  )
 }
 
 async function fetchModelIds(ctx: ConnectorContext, base: string): Promise<string[]> {
@@ -104,7 +171,7 @@ export async function listOpenAiModels(ctx: ConnectorContext): Promise<SettingOp
   const ids = await fetchModelIds(ctx, OPENAI_BASE)
   return ids
     .filter(isOpenAiChatModel)
-    .sort((a, b) => openAiModelOrder(a) - openAiModelOrder(b))
+    .sort(compareOpenAiModels)
     .map((id) => ({ value: id, label: formatModelLabel(id) }))
 }
 

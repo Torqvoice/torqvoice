@@ -20,6 +20,11 @@ export const UPLOAD_CATEGORIES = [
   'quotes',
   'portal',
   'tire-hotel',
+  'email',
+  // Phone photos for a fault code fix not yet shared (features/fault-codes/Lib/fixDrafts.server).
+  'fix-drafts',
+  // What a customer sends from the portal: photos in the chat, photos and video with a booking.
+  'portal-uploads',
 ] as const
 
 export type UploadCategory = (typeof UPLOAD_CATEGORIES)[number]

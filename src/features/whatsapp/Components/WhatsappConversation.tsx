@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { setActiveConversation } from '@/features/messaging/activeConversation'
+import { useNotificationStore } from '@/features/notifications/store/notificationStore'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Clock, ImagePlus, Loader2, Send, X } from 'lucide-react'
@@ -67,13 +69,22 @@ export function WhatsappConversation({
 
   useEffect(() => setMounted(true), [])
 
+  useEffect(() => {
+    if (!thread.customerId) return
+    setActiveConversation([`/messages?tab=whatsapp&customerId=${thread.customerId}`])
+    return () => setActiveConversation(null)
+  }, [thread.customerId])
+
+  // A read that cannot reach the server throws instead of answering. It is
+  // caught and treated the way a refusal is, so the spinner stops and a send
+  // that reads the thread back afterwards does not throw out of its transition.
   const load = useCallback(async () => {
     // No customer yet, so the history is filed under the number itself. It is
     // still readable: only replying needs a customer to reply to.
     if (!thread.customerId) {
-      const conversation = await getWhatsappConversationByPhone(thread.phone)
+      const conversation = await getWhatsappConversationByPhone(thread.phone).catch(() => null)
       setMessages(
-        conversation.success && conversation.data
+        conversation?.success && conversation.data
           ? (conversation.data as unknown as WhatsappMessageView[])
           : []
       )
@@ -81,13 +92,13 @@ export function WhatsappConversation({
       return
     }
     const [conversation, state] = await Promise.all([
-      getWhatsappConversation(thread.customerId),
-      getWhatsappWindowState(thread.customerId),
+      getWhatsappConversation(thread.customerId).catch(() => null),
+      getWhatsappWindowState(thread.customerId).catch(() => null),
     ])
-    if (conversation.success && conversation.data) {
+    if (conversation?.success && conversation.data) {
       setMessages(conversation.data as unknown as WhatsappMessageView[])
     }
-    if (state.success && state.data) {
+    if (state?.success && state.data) {
       setWindowState({
         open: state.data.open,
         hasTemplate: state.data.hasTemplate,
@@ -101,6 +112,23 @@ export function WhatsappConversation({
     setLoading(true)
     load()
   }, [load])
+
+  // A message from this customer arriving while the thread is open: the
+  // feed is quiet about it (the registration above), so the thread itself
+  // has to show it.
+  useEffect(() => {
+    if (!thread.customerId) return
+    const link = `/messages?tab=whatsapp&customerId=${thread.customerId}`
+    let lastCount = useNotificationStore.getState().notifications.length
+    return useNotificationStore.subscribe((state) => {
+      const { notifications } = state
+      const grew = notifications.length > lastCount
+      lastCount = notifications.length
+      if (!grew) return
+      const latest = notifications[0]
+      if (latest?.type === 'whatsapp_inbound' && latest.entityUrl === link) void load()
+    })
+  }, [thread.customerId, load])
 
   // Opening a thread should land on the newest message. Scrolling once on
   // mount ran before the messages had loaded, so it scrolled an empty list and
@@ -172,16 +200,18 @@ export function WhatsappConversation({
     if (!body.trim() && !attachment) return
 
     startSending(async () => {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       const result = await sendWhatsappToCustomer({
         customerId: thread.customerId as string,
         body: body.trim() || undefined,
         mediaUrl: attachment?.url,
         mediaType: attachment ? 'image' : undefined,
         mediaFilename: attachment?.name,
-      })
+      }).catch(() => null)
 
-      if (!result.success) {
-        toast.error(result.error ?? t('sendFailed'))
+      if (!result?.success) {
+        toast.error(result?.error ?? t('sendFailed'))
         return
       }
       if (result.data?.usedTemplate) toast.info(t('sentAsTemplateNotice'))
@@ -199,11 +229,11 @@ export function WhatsappConversation({
 
   const handleDelete = (message: WhatsappMessageView) => {
     startSending(async () => {
-      const result = await deleteWhatsappMessage(message.id)
-      if (result.success) {
+      const result = await deleteWhatsappMessage(message.id).catch(() => null)
+      if (result?.success) {
         setMessages((previous) => previous.filter((item) => item.id !== message.id))
       } else {
-        toast.error(result.error ?? t('deleteFailed'))
+        toast.error(result?.error ?? t('deleteFailed'))
       }
     })
   }

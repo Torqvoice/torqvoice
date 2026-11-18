@@ -48,6 +48,11 @@ vi.mock('@/lib/db', () => ({
     serviceRecord: { findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn() },
     inspection: { findMany: vi.fn() },
     technician: { findFirst: vi.fn() },
+    // The workshop's closed days and time off, read with what is booked.
+    workshopClosure: { findMany: vi.fn() },
+    technicianAbsence: { findMany: vi.fn() },
+    // The highest number already issued in the workshop's format.
+    $queryRaw: vi.fn(),
     $transaction: vi.fn(),
   },
 }))
@@ -83,6 +88,7 @@ function setupCommonMocks() {
   vi.mocked(db.appSetting.findMany).mockResolvedValue([])
   vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Test Shop' } as any)
   vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null) // no previous records
+  vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: null }] as any)
   vi.mocked(db.vehicle.update).mockResolvedValue(VEHICLE as any)
 }
 
@@ -92,6 +98,10 @@ beforeEach(() => {
   // to read and every other test keeps asserting what it always did.
   vi.mocked(db.serviceRecord.findMany).mockResolvedValue([])
   vi.mocked(db.inspection.findMany).mockResolvedValue([])
+  vi.mocked(db.workshopClosure.findMany).mockResolvedValue([])
+  vi.mocked(db.technicianAbsence.findMany).mockResolvedValue([])
+  // Nothing yet in the workshop's number format.
+  vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: null }] as any)
 })
 
 // ---------------------------------------------------------------------------
@@ -159,13 +169,13 @@ describe('createServiceRecord — invoice number', () => {
     )
   })
 
-  it('increments from last invoice number', async () => {
+  it('continues from the highest number in the format, not from the newest job', async () => {
     setupAuth()
     setupCommonMocks()
     const year = new Date().getFullYear()
-    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
-      invoiceNumber: `${year}-1005`,
-    } as any)
+    vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: '1005' }] as any)
+    // The newest job is numbered in another format; it used to decide the number.
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({ invoiceNumber: 'XT-1018' } as any)
 
     const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-2' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
@@ -245,6 +255,56 @@ describe('createServiceRecord — invoice number', () => {
         }),
       })
     )
+  })
+
+  /** "Next invoice number" set to 5000, and the transaction the job is written in. */
+  function withNextNumber(create: ReturnType<typeof vi.fn>) {
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      { key: 'workshop.invoiceStartNumber', value: '5000' } as any,
+    ])
+    const txUpdateMany = vi.fn()
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
+        appSetting: { updateMany: txUpdateMany },
+      })
+    )
+    return txUpdateMany
+  }
+
+  it('spends "Next invoice number" in the transaction that writes the job', async () => {
+    setupAuth()
+    setupCommonMocks()
+    const year = new Date().getFullYear()
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-5' })
+    const txUpdateMany = withNextNumber(mockCreate)
+
+    await createServiceRecord({ vehicleId: VEHICLE_ID, title: 'Test' })
+
+    expect(mockCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ data: expect.objectContaining({ invoiceNumber: `${year}-5000` }) })
+    )
+    expect(txUpdateMany).toHaveBeenCalledWith({
+      where: { organizationId: ORG, key: 'workshop.invoiceStartNumber' },
+      data: { value: '' },
+    })
+    expect(db.appSetting.updateMany).not.toHaveBeenCalled()
+  })
+
+  it('keeps "Next invoice number" when the job cannot be written', async () => {
+    setupAuth()
+    setupCommonMocks()
+    const txUpdateMany = withNextNumber(vi.fn().mockRejectedValue(new Error('insert failed')))
+
+    const result = await createServiceRecord({ vehicleId: VEHICLE_ID, title: 'Test' })
+
+    expect(result.success).toBe(false)
+    expect(txUpdateMany).not.toHaveBeenCalled()
+    expect(db.appSetting.updateMany).not.toHaveBeenCalled()
   })
 })
 
@@ -718,6 +778,88 @@ describe('createDraftServiceRecord — scheduling', () => {
     vi.useRealTimers()
   })
 
+  /**
+   * A customer asking for a day through the portal names a day, not a time.
+   * The day used to be passed as the start time, so the job was booked from
+   * midnight to one in the morning. It now takes the first free slot that day.
+   */
+  it('books a day the customer asked for from its opening, not at midnight', async () => {
+    vi.useFakeTimers()
+    // Tuesday 1 September, 11:00; the customer asked for Monday 7 September.
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-asked' } as any)
+
+    const asked = new Date(Date.UTC(2026, 8, 7, 0, 0, 0))
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, undefined, undefined, asked)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    const startDT: Date = createCall.data.startDateTime
+    expect(startDT.toISOString()).toBe('2026-09-07T08:30:00.000Z')
+    vi.useRealTimers()
+  })
+
+  it("does not book over the default technician's job on the asked-for day", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue([
+      ...SHOP_HOURS,
+      { key: 'workshop.defaultTechnician', value: 'Default Tech' },
+    ])
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.technician.findFirst)
+      .mockResolvedValueOnce({ id: 'default-tech-id', name: 'Default Tech' } as any)
+      .mockResolvedValue({ name: 'Default Tech' } as any)
+    // The default technician already has the morning of Monday 7 September.
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([
+      {
+        id: 'busy',
+        title: 'Clutch',
+        startDateTime: new Date(Date.UTC(2026, 8, 7, 8, 30)),
+        endDateTime: new Date(Date.UTC(2026, 8, 7, 11, 0)),
+        technicianId: 'default-tech-id',
+        helpers: [],
+        workBayId: null,
+        vehicle: null,
+      },
+    ] as any)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-default-busy' } as any)
+
+    const asked = new Date(Date.UTC(2026, 8, 7, 0, 0, 0))
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, undefined, undefined, asked)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    expect(createCall.data.technicianId).toBe('default-tech-id')
+    expect(createCall.data.startDateTime.toISOString()).toBe('2026-09-07T11:00:00.000Z')
+    vi.useRealTimers()
+  })
+
+  it('ignores an asked-for day that has already gone and books the next free slot', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 11, 0, 0)))
+    setupAuth()
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue(VEHICLE as any)
+    vi.mocked(db.appSetting.findMany).mockResolvedValue(SHOP_HOURS)
+    vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null)
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-past' } as any)
+
+    const past = new Date(Date.UTC(2026, 7, 20, 0, 0, 0))
+    await createDraftServiceRecord(VEHICLE_ID, undefined, undefined, undefined, undefined, past)
+
+    const createCall = vi.mocked(db.serviceRecord.create).mock.calls[0][0] as any
+    const startDT: Date = createCall.data.startDateTime
+    expect(startDT.toISOString().slice(0, 13)).toBe('2026-09-01T11')
+    vi.useRealTimers()
+  })
+
   it('steps past a booking the technician already has', async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date(Date.UTC(2026, 8, 1, 6, 0, 0)))
@@ -736,6 +878,7 @@ describe('createDraftServiceRecord — scheduling', () => {
         startDateTime: new Date(Date.UTC(2026, 8, 1, 8, 30)),
         endDateTime: new Date(Date.UTC(2026, 8, 1, 10, 0)),
         technicianId: TECH_ID,
+        helpers: [],
         workBayId: null,
         vehicle: null,
       } as any,
@@ -973,7 +1116,14 @@ describe('createDraftServiceRecord — shop fee', () => {
 
     const data = vi.mocked(db.serviceRecord.create).mock.calls[0][0].data as any
     expect(data.laborItems.create).toEqual([
-      { description: 'Shop supplies', hours: 1, rate: 12.5, total: 12.5, pricingType: 'shopFee' },
+      {
+        description: 'Shop supplies',
+        hours: 1,
+        rate: 12.5,
+        total: 12.5,
+        pricingType: 'shopFee',
+        taxable: true,
+      },
     ])
     expect(data.subtotal).toBe(12.5)
     // 25% of 12.50 is 3.125, which is 3.13 on the sheet, so the total is 15.63.

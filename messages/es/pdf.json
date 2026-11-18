@@ -46,6 +46,7 @@
     "tax": "Impuesto ({rate}%)",
     "taxIncluded": "Con impuesto ({rate}%)",
     "taxIncludedNamed": "Con {name} ({rate}%)",
+    "taxableAmount": "Base imponible",
     "paymentsReceived": "Pagos recibidos",
     "paidInFull": "PAGADO EN SU TOTALIDAD",
     "amountDue": "Monto adeudado",
@@ -114,6 +115,7 @@
     "tax": "Impuesto ({rate}%)",
     "taxIncluded": "Con impuesto ({rate}%)",
     "taxIncludedNamed": "Con {name} ({rate}%)",
+    "taxableAmount": "Base imponible",
     "validUntil": "Válido hasta: {date}",
     "attachedDocuments": "Documentos adjuntos",
     "attached": "{name} (adjunto)",
@@ -193,7 +195,18 @@
     "basicNotApplicable": "No aplicable",
     "allResults": "Todos los resultados",
     "signature": "Firma",
-    "sectionColumn": "Sección"
+    "sectionColumn": "Sección",
+    "checkPass": "Todo en orden",
+    "checkPassMinor": "Algunos puntos a vigilar",
+    "checkFail": "Algunos puntos necesitan reparación",
+    "checkFailDangerous": "Algunos puntos necesitan reparación urgente",
+    "checkIncomplete": "Sin completar",
+    "checkDetailPass": "No había nada que requiriera atención.",
+    "checkDetailPassMinor": "Nada urgente. Conviene planificar los puntos marcados.",
+    "checkDetailFail": "Algunos puntos necesitan reparación. Las notas indican lo que se encontró.",
+    "checkDetailFailDangerous": "Algunos puntos no son seguros y deben repararse antes de seguir usándolo.",
+    "checkDetailIncomplete": "Esta revisión aún está en curso.",
+    "overallCheck": "Resumen"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "HISTORIAL DE SERVICIO",
@@ -219,7 +232,11 @@
     "conditionMapArea": "Zona",
     "conditionMapKind": "Tipo",
     "conditionMapSeverity": "Gravedad",
-    "conditionMapNote": "Nota"
+    "conditionMapNote": "Nota",
+    "serviceTypeMaintenance": "Mantenimiento",
+    "serviceTypeRepair": "Reparación",
+    "serviceTypeUpgrade": "Mejora",
+    "serviceTypeInspection": "Inspección"
   },
   "workOrder": {
     "title": "ORDEN DE TRABAJO",

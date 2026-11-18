@@ -1,16 +1,26 @@
+import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import {
+  isFixHandoffToken,
+  verifyFixHandoffToken,
   isInspectionHandoffToken,
   verifyInspectionHandoffToken,
   verifyPhotoHandoffToken,
+  isVehicleHandoffToken,
+  verifyVehicleHandoffToken,
 } from '@/lib/photo-handoff'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { isDefect } from '@/features/inspections/Lib/conditions'
 import { PhotoHandoffClient } from './photo-handoff-client'
 import { InspectionHandoffClient } from './inspection-handoff-client'
+import { FixHandoffClient } from './fix-handoff-client'
+import { VehicleHandoffClient } from './vehicle-handoff-client'
 
-export const metadata: Metadata = { robots: { index: false, follow: false } }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('service.photoHandoff')
+  return { title: t('pageTitle'), robots: { index: false, follow: false } }
+}
 export const dynamic = 'force-dynamic'
 
 /**
@@ -28,6 +38,8 @@ export default async function PhotoHandoffPage({
   searchParams: Promise<{ item?: string }>
 }) {
   const { token } = await params
+  if (isFixHandoffToken(token)) return <FixHandoffPage token={token} />
+  if (isVehicleHandoffToken(token)) return <VehicleHandoffPage token={token} />
   if (isInspectionHandoffToken(token)) {
     const { item } = await searchParams
     return (
@@ -169,6 +181,67 @@ async function InspectionHandoffPage({
         })),
       }}
       focusItemId={focusItemId}
+    />
+  )
+}
+
+/**
+ * The same page for a fix being shared from a fault code: the phone adds
+ * photos to that fix's draft. It shows the workshop and the code, nothing else.
+ */
+async function FixHandoffPage({ token }: { token: string }) {
+  const check = verifyFixHandoffToken(token)
+  if (!check.ok) {
+    return (
+      <FixHandoffClient
+        token={token}
+        brand={null}
+        code={null}
+        purpose="fix"
+        problem={check.reason}
+      />
+    )
+  }
+  const brand = await workshopBrand(check.handoff.organizationId)
+  return (
+    <FixHandoffClient
+      token={token}
+      brand={brand}
+      code={check.handoff.code.replace(/^([A-Z]{2,8})-/, '$1 ')}
+      purpose={check.handoff.purpose}
+    />
+  )
+}
+
+/**
+ * The same page for a vehicle's photo: the phone takes or chooses one photo
+ * and it becomes the picture on the vehicle's page. It shows the workshop, the
+ * plate and the make and model, nothing else.
+ */
+async function VehicleHandoffPage({ token }: { token: string }) {
+  const check = verifyVehicleHandoffToken(token)
+  if (!check.ok) {
+    return <VehicleHandoffClient token={token} brand={null} vehicle={null} problem={check.reason} />
+  }
+  const { organizationId, vehicleId } = check.handoff
+  const [brand, vehicle] = await Promise.all([
+    workshopBrand(organizationId),
+    db.vehicle.findFirst({
+      where: { id: vehicleId, organizationId },
+      select: { licensePlate: true, make: true, model: true, year: true },
+    }),
+  ])
+  if (!vehicle) {
+    return <VehicleHandoffClient token={token} brand={brand} vehicle={null} problem="invalid" />
+  }
+  return (
+    <VehicleHandoffClient
+      token={token}
+      brand={brand}
+      vehicle={{
+        plate: vehicle.licensePlate,
+        name: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+      }}
     />
   )
 }

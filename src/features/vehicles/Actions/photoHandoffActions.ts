@@ -3,7 +3,11 @@
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { createPhotoHandoffToken, type PhotoHandoffPurpose } from '@/lib/photo-handoff'
+import {
+  createPhotoHandoffToken,
+  createVehicleHandoffToken,
+  type PhotoHandoffPurpose,
+} from '@/lib/photo-handoff'
 
 /**
  * A code for the work order's "Add photos from phone": a signed link that
@@ -76,6 +80,53 @@ export async function countPhotosSince(input: { serviceRecordId: string; since: 
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
+    }
+  )
+}
+
+/**
+ * A code for a vehicle's "Add from phone": a signed link that lets a phone
+ * that is not signed in set this vehicle's photo, and nothing else, for half
+ * an hour. Only somebody who could change the vehicle can hand it to a phone.
+ */
+export async function createVehiclePhotoHandoffLink(vehicleId: string) {
+  return withAuth(
+    async ({ organizationId, userId }) => {
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, organizationId },
+        select: { id: true },
+      })
+      if (!vehicle) throw new Error('Vehicle not found')
+      const { token, expiresAt } = createVehicleHandoffToken({
+        organizationId,
+        vehicleId: vehicle.id,
+        userId,
+      })
+      return { token, expiresAt: expiresAt.toISOString() }
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
+      ],
+    }
+  )
+}
+
+/**
+ * The vehicle's photo as it is now. The desk's dialog asks every few seconds
+ * and refreshes the page when it changes, the way a job counts its photos.
+ */
+export async function getVehiclePhotoUrl(vehicleId: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      const vehicle = await db.vehicle.findFirst({
+        where: { id: vehicleId, organizationId },
+        select: { imageUrl: true },
+      })
+      return vehicle?.imageUrl ?? null
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
     }
   )
 }

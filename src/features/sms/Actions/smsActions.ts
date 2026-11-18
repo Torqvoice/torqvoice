@@ -2,13 +2,13 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
-import { sendOrgSms, getOrgSmsPhoneNumber, normalizeOrgPhone } from '@/lib/sms'
+import { getPlatformSmsAllowance, normalizeOrgPhone } from '@/lib/sms'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { SMS_TEMPLATE_DEFAULTS } from '@/lib/sms-templates'
+import { smsTemplateDefaults } from '../Lib/smsTemplateDefaults.server'
 import { demoGuard } from '@/lib/demo'
-import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
+import { deliverSms } from '../Lib/deliverSms.server'
 
 export async function sendSmsToCustomer(input: {
   customerId: string
@@ -29,9 +29,6 @@ export async function sendSmsToCustomer(input: {
       if (!customer) throw new Error('Customer not found')
       if (!customer.phone) throw new Error('Customer has no phone number')
 
-      const fromNumber = await getOrgSmsPhoneNumber(organizationId)
-      if (!fromNumber) throw new Error('SMS phone number is not configured')
-
       // Normalize the destination phone using the workshop's default
       // country code so the audit-log row records the same E.164 number
       // the provider will receive. sendOrgSms re-normalizes internally as
@@ -45,60 +42,19 @@ export async function sendSmsToCustomer(input: {
         )
       }
 
-      // Create the message record first
-      const message = await db.smsMessage.create({
-        data: {
-          direction: 'outbound',
-          fromNumber,
-          toNumber: normalizedTo,
-          body: input.body,
-          status: 'queued',
-          organizationId,
-          customerId: customer.id,
-          relatedEntityType: input.relatedEntityType,
-          relatedEntityId: input.relatedEntityId,
-        },
+      const sent = await deliverSms(organizationId, {
+        to: normalizedTo,
+        body: input.body,
+        customerId: customer.id,
+        relatedEntityType: input.relatedEntityType,
+        relatedEntityId: input.relatedEntityId,
       })
 
-      try {
-        const result = await sendOrgSms(organizationId, {
-          to: normalizedTo,
-          body: input.body,
-        })
-
-        await db.smsMessage.update({
-          where: { id: message.id },
-          data: {
-            status: 'sent',
-            providerMsgId: result.providerMsgId,
-          },
-        })
-
-        // These entity types are set only by the share dialogs, whose SMS
-        // carries the document's link: texting it is a way of sending the
-        // document, so it counts for "lock when sent". Plain conversations
-        // and reminders carry no entity type and stamp nothing.
-        if (input.relatedEntityType === 'invoice' && input.relatedEntityId) {
-          await markInvoiceSent(input.relatedEntityId, organizationId)
-        } else if (input.relatedEntityType === 'quote' && input.relatedEntityId) {
-          await markQuoteSent(input.relatedEntityId, organizationId)
-        }
-
-        return {
-          id: message.id,
-          status: 'sent' as const,
-          customerPhone: result.to,
-          customerName: customer.name,
-        }
-      } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-
-        await db.smsMessage.update({
-          where: { id: message.id },
-          data: { status: 'failed', errorMessage },
-        })
-
-        throw new Error(`Failed to send SMS: ${errorMessage}`)
+      return {
+        id: sent.id,
+        status: 'sent' as const,
+        customerPhone: sent.to,
+        customerName: customer.name,
       }
     },
     {
@@ -161,10 +117,13 @@ export async function getConversation(customerId: string, cursor?: string, limit
       // The view needs the person as well as the thread: their name for the
       // header and their number to send to. Returning only messages left the
       // caller to invent both.
-      const customer = await db.customer.findFirst({
-        where: { id: customerId, organizationId },
-        select: { name: true, phone: true },
-      })
+      const [customer, platformAllowance] = await Promise.all([
+        db.customer.findFirst({
+          where: { id: customerId, organizationId },
+          select: { name: true, phone: true },
+        }),
+        getPlatformSmsAllowance(organizationId).catch(() => null),
+      ])
 
       const messages = await db.smsMessage.findMany({
         where: {
@@ -193,6 +152,9 @@ export async function getConversation(customerId: string, cursor?: string, limit
         nextCursor: hasMore ? items[items.length - 1]?.id : null,
         customerName: customer?.name ?? '',
         customerPhone: customer?.phone ?? null,
+        // Set when the workshop texts from the platform's shared number: the
+        // composer says replies will not arrive and how many a day go out.
+        platformSmsPerDay: platformAllowance,
       }
     },
     {
@@ -258,7 +220,7 @@ export async function getSmsTemplates() {
         SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED,
         SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED,
       ]
-      const [settings, org, user] = await Promise.all([
+      const [settings, org, user, defaults] = await Promise.all([
         db.appSetting.findMany({
           where: { organizationId, key: { in: smsKeys } },
         }),
@@ -270,12 +232,13 @@ export async function getSmsTemplates() {
           where: { id: userId },
           select: { name: true },
         }),
+        smsTemplateDefaults(organizationId),
       ])
 
       const templates: Record<string, string> = {}
       for (const key of smsKeys) {
         const found = settings.find((s) => s.key === key)
-        templates[key] = found?.value || SMS_TEMPLATE_DEFAULTS[key] || ''
+        templates[key] = found?.value || defaults[key] || ''
       }
       return {
         templates,

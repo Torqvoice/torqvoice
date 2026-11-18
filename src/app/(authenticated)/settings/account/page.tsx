@@ -1,17 +1,22 @@
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
+import { getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { redirect } from 'next/navigation'
 import { AccountSettings } from './account-settings'
 import { listMyDevices } from '@/features/settings/Actions/sessionActions'
 import { getMySignature } from '@/features/signatures/Actions/signatureActions'
+import { hasPassword } from '@/lib/reauth.server'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('account')
+}
 
 export default async function AccountSettingsPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getCachedSession()
   if (!session) redirect('/auth/sign-in')
 
-  const [user, verificationSetting, devices, signature] = await Promise.all([
+  const [user, verificationSetting, devices, signature, withPassword] = await Promise.all([
     db.user.findUnique({
       where: { id: session.user.id },
       select: { twoFactorEnabled: true, emailVerified: true },
@@ -22,6 +27,9 @@ export default async function AccountSettingsPage() {
     }),
     listMyDevices(),
     getMySignature(),
+    // Someone who signed up with Google has none: they are offered "set a
+    // password", since "change" has no current one to check.
+    hasPassword(session.user.id),
   ])
 
   return (
@@ -29,6 +37,7 @@ export default async function AccountSettingsPage() {
       twoFactorEnabled={user?.twoFactorEnabled ?? false}
       emailVerified={user?.emailVerified ?? false}
       emailVerificationRequired={verificationSetting?.value === 'true'}
+      hasPassword={withPassword}
       devices={devices}
       demoMode={isDemoMode}
       signature={signature.success ? (signature.data ?? null) : null}

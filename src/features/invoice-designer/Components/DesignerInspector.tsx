@@ -29,6 +29,7 @@ import {
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { FONT_OPTIONS, fontStack } from './types'
+import { RAIL_FOCUS, railArrow } from './railKeys'
 import type { DesignerTemplate } from './types'
 
 /** Sections whose body is a table, and so offer line controls. */
@@ -487,15 +488,33 @@ export function DesignerInspector({
       return new Set<string>()
     })()
     /** Slides the dragged row to the spot the pointer is over, live. */
-    const dragFieldOver = (overId: string) => {
-      if (!dragFieldId || dragFieldId === overId) return
-      const from = resolvedFields.findIndex((f) => f.id === dragFieldId)
+    const moveField = (fieldId: string, overId: string) => {
+      if (fieldId === overId) return
+      const from = resolvedFields.findIndex((f) => f.id === fieldId)
       const to = resolvedFields.findIndex((f) => f.id === overId)
       if (from === -1 || to === -1) return
       const next = [...resolvedFields]
       const [moved] = next.splice(from, 1)
       next.splice(to, 0, moved)
       setFields(next)
+    }
+    const dragFieldOver = (overId: string) => {
+      if (dragFieldId) moveField(dragFieldId, overId)
+    }
+    // The rows on screen: the type key's only for a workshop that records it.
+    const shownFields = resolvedFields.filter((field) => typeKeyEnabled || field.id !== 'hsn_tsn')
+    /**
+     * The keyboard's reorder: past the next row up or down that can move, as
+     * a drag would. A row printed in a place of its own is stepped over, the
+     * same way a drag cannot drop onto it.
+     */
+    const stepField = (fieldId: string, direction: -1 | 1) => {
+      const at = shownFields.findIndex((f) => f.id === fieldId)
+      for (let i = at + direction; i >= 0 && i < shownFields.length; i += direction) {
+        if (fieldHasFixedSlot(section.id, shownFields[i].id)) continue
+        moveField(fieldId, shownFields[i].id)
+        return
+      }
     }
     const setStyle = (patch: InvoiceSectionStyle) => {
       const next = { ...style, ...patch }
@@ -961,96 +980,114 @@ export function DesignerInspector({
             <Group title={t('fields')}>
               {/* The type key's row only for a workshop that records it. It stays in
                   the saved list either way, so its switch and place survive. */}
-              {resolvedFields
-                .filter((field) => typeKeyEnabled || field.id !== 'hsn_tsn')
-                .map((field) => (
-                  <div
-                    key={field.id}
-                    data-testid={`field-row-${field.id}`}
-                    data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
-                    // A field the sheet prints in a place of its own offers no
-                    // drag, and is no place to drop one either: the position it
-                    // would take is not a position the print reads.
-                    draggable={!fieldHasFixedSlot(section.id, field.id)}
-                    onDragStart={(e) => {
-                      if (fieldHasFixedSlot(section.id, field.id)) return
-                      e.dataTransfer.effectAllowed = 'move'
-                      setDragFieldId(field.id)
-                    }}
-                    onDragEnd={() => setDragFieldId(null)}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDragEnter={() => {
-                      if (fieldHasFixedSlot(section.id, field.id)) return
-                      dragFieldOver(field.id)
-                    }}
-                    onDrop={(e) => {
-                      e.preventDefault()
-                      setDragFieldId(null)
-                    }}
-                    className={`flex items-center justify-between gap-2 ${
-                      dragFieldId === field.id ? 'opacity-50' : ''
-                    }`}
-                  >
-                    {fieldHasFixedSlot(section.id, field.id) ? (
-                      <span
-                        className="select-none text-[13px] leading-none text-[#dcdee2]"
-                        title={t('fieldFixedSlot')}
-                      >
-                        ·
-                      </span>
-                    ) : (
-                      <span className="cursor-grab select-none text-[13px] leading-none text-[#c3c7cd]">
-                        ⠿
-                      </span>
-                    )}
-                    <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
-                      {fieldName(field.id)}
+              {shownFields.map((field) => (
+                <div
+                  key={field.id}
+                  data-testid={`field-row-${field.id}`}
+                  data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
+                  // A field the sheet prints in a place of its own offers no
+                  // drag, and is no place to drop one either: the position it
+                  // would take is not a position the print reads.
+                  draggable={!fieldHasFixedSlot(section.id, field.id)}
+                  onDragStart={(e) => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
+                    e.dataTransfer.effectAllowed = 'move'
+                    setDragFieldId(field.id)
+                  }}
+                  onDragEnd={() => setDragFieldId(null)}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDragEnter={() => {
+                    if (fieldHasFixedSlot(section.id, field.id)) return
+                    dragFieldOver(field.id)
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    setDragFieldId(null)
+                  }}
+                  onKeyDown={(e) => {
+                    // Alt with an arrow moves the field from anywhere in its row.
+                    if (fieldHasFixedSlot(section.id, field.id)) return
+                    const direction = railArrow(e, true)
+                    if (!direction) return
+                    e.preventDefault()
+                    stepField(field.id, direction)
+                  }}
+                  className={`flex items-center justify-between gap-2 ${
+                    dragFieldId === field.id ? 'opacity-50' : ''
+                  }`}
+                >
+                  {fieldHasFixedSlot(section.id, field.id) ? (
+                    <span
+                      className="select-none text-[13px] leading-none text-[#dcdee2]"
+                      title={t('fieldFixedSlot')}
+                    >
+                      ·
                     </span>
-                    {boldable(field.id) &&
-                      (() => {
-                        const boldOn = field.bold ?? defaultBoldIds.has(field.id)
-                        return (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setFields(
-                                resolvedFields.map((f) =>
-                                  f.id === field.id ? { ...f, bold: !boldOn } : f
-                                )
+                  ) : (
+                    <button
+                      type="button"
+                      aria-label={t('fieldDragHandleKeyboard', { field: fieldName(field.id) })}
+                      title={t('fieldDragHandle')}
+                      onKeyDown={(e) => {
+                        const direction = railArrow(e, false)
+                        if (!direction) return
+                        e.preventDefault()
+                        e.stopPropagation()
+                        stepField(field.id, direction)
+                      }}
+                      className={`cursor-grab select-none rounded text-[13px] leading-none text-[#c3c7cd] ${RAIL_FOCUS}`}
+                    >
+                      ⠿
+                    </button>
+                  )}
+                  <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
+                    {fieldName(field.id)}
+                  </span>
+                  {boldable(field.id) &&
+                    (() => {
+                      const boldOn = field.bold ?? defaultBoldIds.has(field.id)
+                      return (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFields(
+                              resolvedFields.map((f) =>
+                                f.id === field.id ? { ...f, bold: !boldOn } : f
                               )
-                            }
-                            className={`h-5 w-5 shrink-0 rounded text-[12px] font-bold leading-none transition-colors ${
-                              boldOn
-                                ? 'bg-[#e8edf9] text-[#2563eb]'
-                                : 'text-[#c3c7cd] hover:text-[#5b6068]'
-                            }`}
-                            title={t('boldField')}
-                          >
-                            B
-                          </button>
-                        )
-                      })()}
-                    {isCustomFieldId(field.id) && (
-                      <button
-                        type="button"
-                        onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
-                        className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
-                        title={t('removeField')}
-                      >
-                        ×
-                      </button>
-                    )}
-                    <Toggle
-                      testId={`field-${field.id}`}
-                      on={field.visible}
-                      onChange={(visible) =>
-                        setFields(
-                          resolvedFields.map((f) => (f.id === field.id ? { ...f, visible } : f))
-                        )
-                      }
-                    />
-                  </div>
-                ))}
+                            )
+                          }
+                          className={`h-5 w-5 shrink-0 rounded text-[12px] font-bold leading-none transition-colors ${
+                            boldOn
+                              ? 'bg-[#e8edf9] text-[#2563eb]'
+                              : 'text-[#c3c7cd] hover:text-[#5b6068]'
+                          }`}
+                          title={t('boldField')}
+                        >
+                          B
+                        </button>
+                      )
+                    })()}
+                  {isCustomFieldId(field.id) && (
+                    <button
+                      type="button"
+                      onClick={() => setFields(resolvedFields.filter((f) => f.id !== field.id))}
+                      className="text-[13px] text-[#8a8f97] hover:text-[#1a1d21]"
+                      title={t('removeField')}
+                    >
+                      ×
+                    </button>
+                  )}
+                  <Toggle
+                    testId={`field-${field.id}`}
+                    on={field.visible}
+                    onChange={(visible) =>
+                      setFields(
+                        resolvedFields.map((f) => (f.id === field.id ? { ...f, visible } : f))
+                      )
+                    }
+                  />
+                </div>
+              ))}
               {availableCustomFields.length > 0 && (
                 <div className="pt-1">
                   <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">{t('yourCustomFields')}</div>

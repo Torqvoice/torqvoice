@@ -1,5 +1,11 @@
 'use client'
 
+import {
+  type AwayByLaneDay,
+  type ClosedByDay,
+  awayKey,
+  laneDayHours,
+} from '../../hooks/useBoardCalendar'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDndMonitor } from '@dnd-kit/core'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
@@ -9,6 +15,7 @@ import { useDateSettings } from '@/components/date-settings-context'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import { ZOOM_STEP, clampZoom } from '../../hooks/useBoardPreferences'
 import { timeToMinutes } from '../../utils/datetime'
+import { boardNow } from '../../utils/board-time'
 import { formatClock } from '../../utils/clock'
 import {
   type BoardLane,
@@ -20,11 +27,13 @@ import {
 import {
   MINUTES_IN_DAY,
   bookedMinutesOnDay,
+  dayLoad,
   computeTimeWindow,
   hourMarks,
   isUnscheduled,
   resolveJobOnDay,
 } from '../../utils/layout'
+import { DayLoadBar, DayLoadSpoken } from '../DayLoad'
 import { LaneHeaderTooltip } from '../LaneHeaderTooltip'
 import { UnscheduledStrip } from './UnscheduledStrip'
 import { WeekLaneColumn } from './WeekLaneColumn'
@@ -87,6 +96,8 @@ export function WeekTimeline({
   onShowWholeWeek,
   owners,
   readOnly = false,
+  closedByDay,
+  awayByLaneDay,
 }: {
   days: string[]
   /** Days left out of the grid, so work on them can still be accounted for. */
@@ -119,10 +130,14 @@ export function WeekTimeline({
   owners?: Map<string, { name: string; color: string }>
   /** Wall-display mode: the same board, with nothing to drag or open. */
   readOnly?: boolean
+  /** Closed days and hours from the workshop calendar, by day. */
+  closedByDay?: ClosedByDay
+  /** Technicians away, by `awayKey(lane, day)`. */
+  awayByLaneDay?: AwayByLaneDay
 }) {
   const t = useTranslations('workBoard.week')
   const locale = useLocale()
-  const { timeFormat } = useDateSettings()
+  const { timeFormat, timezone } = useDateSettings()
   const scrollRef = useRef<HTMLDivElement>(null)
   const hasScrolled = useRef(false)
 
@@ -243,11 +258,9 @@ export function WeekTimeline({
     [displayed, grouping, knownLaneIds]
   )
 
-  const todayStr = useMemo(() => {
-    const now = new Date()
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
-  }, [])
-  const nowMinutes = useNowMinutes()
+  const now = useWorkshopNow(timezone)
+  const todayStr = now?.dayKey ?? ''
+  const nowMinutes = now?.minutes ?? null
 
   // Work booked on a day the board is not showing would otherwise vanish
   // without a word, which is worse than showing the day.
@@ -326,7 +339,13 @@ export function WeekTimeline({
     // content's, and this content is a grid eighty-five columns wide. Without
     // it the board refuses to shrink, and the unassigned panel beside it gets
     // pushed off the edge of the row instead.
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
+    //
+    // `isolate` keeps the board's own layers to itself. The sticky headers, the
+    // time gutter and the pan fades are stacked up to z-50 so they stay above
+    // the jobs, but without a stacking context of their own those numbers were
+    // weighed against the app's top bar (z-10), and once the page scrolled the
+    // board under it the gutter and the fades painted over its title.
+    <div className="isolate flex min-h-0 min-w-0 flex-1 flex-col gap-2">
       <UnscheduledStrip jobs={unscheduled} onOpenJob={onOpenJob} />
 
       {hiddenCount > 0 && (
@@ -392,19 +411,30 @@ export function WeekTimeline({
             />
             {days.map((day) => {
               const isToday = day === todayStr
+              const closed = closedByDay?.[day]
               return (
                 <div
                   key={`day-${day}`}
                   className={cn(
-                    'sticky top-0 z-40 border-b border-r bg-background px-2 py-1 text-center text-xs font-medium',
-                    isToday && 'text-primary'
+                    'sticky top-0 z-40 truncate border-b border-r bg-background px-2 py-1 text-center text-xs font-medium',
+                    isToday && 'text-primary',
+                    closed?.allDay && 'bg-muted text-muted-foreground'
                   )}
                   style={{
                     gridColumn: `span ${lanes.length}`,
                     height: DAY_HEADER_HEIGHT,
                   }}
+                  title={closed?.label ?? undefined}
                 >
                   {dayFormatter.format(new Date(`${day}T12:00:00`))}
+                  {closed?.label && (
+                    <span
+                      className="ml-1.5 font-normal text-muted-foreground"
+                      data-testid="day-closed"
+                    >
+                      · {closed.label}
+                    </span>
+                  )}
                 </div>
               )
             })}
@@ -420,11 +450,15 @@ export function WeekTimeline({
                 {days.flatMap((day) =>
                   lanes.map((lane, laneIndex) => {
                     const isLastLane = laneIndex === lanes.length - 1
-                    const booked = bookedMinutesOnDay(byLane.get(lane.id) ?? [], day)
-                    const pct =
-                      lane.dailyCapacity > 0
-                        ? Math.round((booked / lane.dailyCapacity) * 100)
-                        : null
+                    const booked = bookedMinutesOnDay(
+                      byLane.get(lane.id) ?? [],
+                      day,
+                      laneDayHours(lane, day, closedByDay, awayByLaneDay)
+                    )
+                    const load = dayLoad(booked, lane.dailyCapacity)
+                    const away = awayByLaneDay?.[awayKey(lane.id, day)]
+                    const loadId =
+                      lane.dailyCapacity > 0 ? `lane-load-${day}-${lane.id}` : undefined
                     return (
                       <LaneHeaderTooltip
                         key={`lane-${day}-${lane.id}`}
@@ -433,11 +467,15 @@ export function WeekTimeline({
                         days={[day]}
                         capacityMinutes={lane.dailyCapacity}
                         periodLabel={dayFormatter.format(new Date(`${day}T12:00:00`))}
+                        awayLabel={away?.label}
+                        closedByDay={closedByDay}
+                        awayByLaneDay={awayByLaneDay}
                       >
                         <button
                           type="button"
                           disabled={lane.isPlaceholder || readOnly || !onLaneClick}
                           onClick={() => onLaneClick?.(lane)}
+                          aria-describedby={loadId}
                           className={cn(
                             'sticky z-40 flex flex-col justify-center gap-1 border-b bg-background px-1.5 text-left disabled:cursor-default',
                             isLastLane ? 'border-r-2 border-r-border' : 'border-r'
@@ -451,21 +489,17 @@ export function WeekTimeline({
                             />
                             <span className="truncate text-[11px] font-medium">{lane.name}</span>
                           </span>
-                          {pct !== null && (
-                            <span className="h-0.5 w-full overflow-hidden rounded-full bg-muted">
-                              <span
-                                className={cn(
-                                  'block h-full rounded-full',
-                                  pct > 100
-                                    ? 'bg-red-500'
-                                    : pct >= 75
-                                      ? 'bg-amber-500'
-                                      : 'bg-emerald-500'
-                                )}
-                                style={{ width: `${Math.min(pct, 100)}%` }}
-                              />
+                          {away ? (
+                            <span
+                              className="truncate text-[10px] font-medium text-muted-foreground"
+                              data-testid="lane-away"
+                            >
+                              {away.label}
                             </span>
+                          ) : (
+                            lane.dailyCapacity > 0 && <DayLoadBar load={load} className="h-0.5" />
                           )}
+                          <DayLoadSpoken load={load} id={loadId} />
                         </button>
                       </LaneHeaderTooltip>
                     )
@@ -514,6 +548,8 @@ export function WeekTimeline({
                   lookup={owners}
                   workDayStart={dayStartMins}
                   workDayEnd={dayEndMins}
+                  closed={closedByDay?.[day]}
+                  away={awayByLaneDay?.[awayKey(lane.id, day)]}
                   nowMinutes={day === todayStr ? nowMinutes : null}
                   draggingJobId={drag.isDragging ? (drag.preview?.jobId ?? null) : null}
                   registerColumn={drag.registerColumn}
@@ -556,23 +592,26 @@ export function WeekTimeline({
 }
 
 /**
- * Minutes since midnight, refreshed often enough for the "now" line to creep.
+ * Today and the minutes since midnight on the workshop's clock, refreshed
+ * often enough for the "now" line to creep and for today to roll over.
  *
  * Starts null so the server-rendered board and the first client render agree;
  * the clock only exists once the page is live.
  */
-function useNowMinutes(): number | null {
-  const [minutes, setMinutes] = useState<number | null>(null)
+function useWorkshopNow(timeZone: string): { dayKey: string; minutes: number } | null {
+  const [now, setNow] = useState<{ dayKey: string; minutes: number } | null>(null)
 
   useEffect(() => {
     const tick = () => {
-      const now = new Date()
-      setMinutes(now.getHours() * 60 + now.getMinutes())
+      const next = boardNow(timeZone)
+      setNow((prev) =>
+        prev && prev.dayKey === next.dayKey && prev.minutes === next.minutes ? prev : next
+      )
     }
     tick()
     const timer = setInterval(tick, 30_000)
     return () => clearInterval(timer)
-  }, [])
+  }, [timeZone])
 
-  return minutes
+  return now
 }

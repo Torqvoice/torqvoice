@@ -3,6 +3,12 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { Separator } from '@/components/ui/separator'
 import { ExternalLink, Info } from 'lucide-react'
+import { WhatsNewAboutRows } from '@/features/whats-new/Components/WhatsNewAboutRows'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('about')
+}
 
 export default async function AboutSettingsPage() {
   const t = await getTranslations('settings')
@@ -18,11 +24,16 @@ export default async function AboutSettingsPage() {
 
   return (
     <div className="space-y-6">
-      <AppCard icon={Info} title={t('about.title')} contentClassName="space-y-4">
+      <AppCard
+        id="about-torqvoice"
+        icon={Info}
+        title={t('about.title')}
+        contentClassName="space-y-4"
+      >
         <p className="text-sm text-muted-foreground">{t('about.description')}</p>
         <Separator />
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
+        <div id="about-links" className="space-y-2">
+          <div id="about-version" className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">{t('about.version')}</span>
             <span className="text-sm font-medium">{version}</span>
           </div>
@@ -40,6 +51,7 @@ export default async function AboutSettingsPage() {
               </Link>
             </div>
           ))}
+          <WhatsNewAboutRows />
         </div>
       </AppCard>
     </div>

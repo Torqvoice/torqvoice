@@ -75,9 +75,17 @@
         "title": "Kundenportal",
         "description": "Kunden-Self-Service-Portal"
       },
+      "shareLinks": {
+        "title": "Freigabelinks",
+        "description": "Ablauf von Links und an Kunden gesendete Links"
+      },
       "workshop": {
         "title": "Werkstatt",
         "description": "Techniker- & Arbeitsstandards"
+      },
+      "openingHours": {
+        "title": "Öffnungszeiten und Feiertage",
+        "description": "Zeiten, Feiertage, Schließtage, Abwesenheiten"
       },
       "laborPresets": {
         "title": "Arbeitspakete",
@@ -107,6 +115,10 @@
         "title": "Darstellung",
         "description": "Design & Anzeige"
       },
+      "shortcuts": {
+        "title": "Tastenkürzel",
+        "description": "Ihre eigenen Tasten"
+      },
       "data": {
         "title": "Daten",
         "description": "Export & Import-Backup"
@@ -129,7 +141,7 @@
       },
       "support": {
         "title": "Support",
-        "description": "Support kontaktieren und die Support-Schaltfläche verwalten"
+        "description": "Hilfe & Support-Schaltfläche"
       },
       "tireHotel": {
         "title": "Reifenhotel",
@@ -242,10 +254,20 @@
     "passwordsNoMatch": "Passworter stimmen nicht uberein",
     "passwordMinLength": "Passwort muss mindestens 8 Zeichen lang sein",
     "failedChangePassword": "Passwort konnte nicht geandert werden",
+    "setPasswordTitle": "Passwort festlegen",
+    "setPasswordDescription": "Dieses Konto meldet sich ohne Passwort an, zum Beispiel mit Google. Legen Sie eines fest, um sich auch mit Ihrer E-Mail-Adresse und einem Passwort anzumelden.",
+    "setPassword": "Passwort festlegen",
+    "passwordSet": "Passwort festgelegt. Sie können sich jetzt mit Ihrer E-Mail-Adresse und diesem Passwort anmelden.",
+    "failedSetPassword": "Passwort konnte nicht festgelegt werden",
+    "passwordAlreadySet": "Dieses Konto hat bereits ein Passwort. Ändern Sie es stattdessen hier.",
+    "setPasswordFreshHint": "Zu Ihrer Sicherheit funktioniert dies nur innerhalb von {minutes} Minuten nach der Anmeldung. Ist es länger her, werden Sie gebeten, sich erneut anzumelden.",
+    "setPasswordSignInAgainHint": "Sie haben sich vor mehr als {minutes} Minuten angemeldet. Melden Sie sich erneut an und legen Sie das Passwort direkt danach fest.",
+    "signInAgain": "Erneut anmelden",
     "twoFactorTitle": "Zwei-Faktor-Authentifizierung",
     "twoFactorEnabled": "Zwei-Faktor-Authentifizierung ist aktiviert",
     "twoFactorDisablePrompt": "Geben Sie Ihr Passwort ein, um die Zwei-Faktor-Authentifizierung zu deaktivieren.",
     "twoFactorEnablePrompt": "Fugen Sie eine zusatzliche Sicherheitsebene zu Ihrem Konto hinzu, indem Sie die Zwei-Faktor-Authentifizierung mit einer Authenticator-App aktivieren.",
+    "twoFactorNeedsPassword": "Die Zwei-Faktor-Authentifizierung ergänzt die Anmeldung mit Passwort um einen Code. Legen Sie zuerst ein Passwort fest.",
     "password": "Passwort",
     "enterPassword": "Passwort eingeben",
     "disable2FA": "2FA deaktivieren",
@@ -327,6 +349,9 @@
       "registering": "Registriere...",
       "registerSuccess": "Passkey erfolgreich registriert",
       "registerFailed": "Passkey konnte nicht registriert werden",
+      "signInAgainTitle": "Melden Sie sich erneut an, um einen Passkey hinzuzufügen",
+      "signInAgainDescription": "Zum Schutz Ihres Kontos kann ein Passkey nur kurz nach der Anmeldung hinzugefügt werden. Melden Sie sich erneut an und registrieren Sie ihn dann.",
+      "signInAgain": "Erneut anmelden",
       "delete": "Löschen",
       "deleteSuccess": "Passkey gelöscht",
       "deleteFailed": "Passkey konnte nicht gelöscht werden",
@@ -356,6 +381,8 @@
     "reauthTooManyAttempts": "Zu viele Versuche. Warten Sie einige Minuten und versuchen Sie es erneut.",
     "reauthSignInAgainAccount": "Melden Sie sich erneut an, bevor Sie Ihr Konto löschen.",
     "reauthSignInAgainWorkshop": "Melden Sie sich erneut an, bevor Sie die Werkstatt löschen.",
+    "reauthSignInAgainRestore": "Melden Sie sich erneut an, bevor Sie die Werkstatt wiederherstellen.",
+    "reauthSignInAgainPassword": "Melden Sie sich erneut an, bevor Sie ein Passwort festlegen.",
     "deleteAccountMoved": "Möchten Sie Ihr Konto löschen?",
     "deleteAccountMovedLink": "Das können Sie in den Dateneinstellungen tun.",
     "signatureTitle": "Unterschrift",
@@ -554,6 +581,9 @@
     "removeBoardOnlyBody": "{name} erscheint nicht mehr auf der Werkstatttafel und kann keinen Aufträgen mehr zugewiesen werden. Bereits erfasste Arbeit und gestempelte Stunden bleiben genau so, wie sie sind.",
     "removeBoardOnlyDone": "{name} ist von der Tafel",
     "noRole": "Keine Rolle",
+    "chooseRole": "Rolle auswählen",
+    "roleRequired": "Wählen Sie vor dem Einladen eine Rolle. Ohne Rolle kann sich die Person anmelden, aber nichts öffnen.",
+    "noRoleInviteWarning": "Die Person kann sich anmelden, aber nichts öffnen, bis ein Inhaber oder Administrator ihr eine Rolle gibt.",
     "worksOnJobs": "Arbeitet an Aufträgen",
     "createDefaultRoles": "Standardrollen anlegen",
     "defaultRolesCreated": "Standardrollen angelegt",
@@ -563,7 +593,9 @@
     "revokeTechnicianDone": "{name} wurde aus der App abgemeldet",
     "noAccessTitle": "Noch kein Zugriff",
     "noAccessBody": "Ihr Konto gehört zu {workshop}, hat aber noch keine Rolle, deshalb gibt es hier nichts zu öffnen. Bitten Sie einen Inhaber oder Administrator Ihrer Werkstatt um eine Rolle.",
-    "setupPageInstall": "Bei Google Play laden"
+    "setupPageInstall": "Bei Google Play laden",
+    "setupPageInstallIos": "Laden im App Store",
+    "invalidInviteEmail": "Prüfen Sie die E-Mail-Adresse. Sie sollte so aussehen: name@beispiel.de."
   },
   "invoice": {
     "title": "Rechnungslayout",
@@ -954,8 +986,13 @@
     "paymentReceivedDescription": "Wird gesendet, wenn eine Zahlung für eine Rechnung verbucht wird.",
     "saveSmsTemplates": "SMS-Vorlagen speichern",
     "smsTemplateSaved": "SMS-Vorlageneinstellungen gespeichert",
+    "layoutTitle": "Rechnungslayout",
+    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
+    "layoutSaved": "Layout erfolgreich gespeichert",
+    "layoutDocInvoice": "Rechnung",
+    "layoutDocQuote": "Angebot",
     "smsDefaults": {
-      "invoiceReady": "Ihre Rechnung ist fertig. Hier ansehen: {share_link}",
+      "invoiceReady": "Rechnung von {company_name} ist fertig. Hier ansehen: {share_link}\nViele Grüße {company_name} - {current_user}",
       "quoteReady": "Ihr Angebot steht zur Prüfung bereit. Hier ansehen: {share_link}",
       "inspectionReady": "Ihr Fahrzeuginspektionsbericht ist fertig. Hier ansehen: {share_link}",
       "statusInProgress": "Die Arbeit an Ihrem Fahrzeug hat begonnen. Wir halten Sie auf dem Laufenden.",
@@ -974,11 +1011,6 @@
       "rose": "Rosé",
       "indigo": "Indigo"
     },
-    "layoutTitle": "Rechnungslayout",
-    "layoutDescription": "Passen Sie die Reihenfolge und Sichtbarkeit der Abschnitte in Ihren Rechnungen und Angeboten an.",
-    "layoutSaved": "Layout erfolgreich gespeichert",
-    "layoutDocInvoice": "Rechnung",
-    "layoutDocQuote": "Angebot",
     "goToLayout": "Layout und Abschnitte",
     "openDesigner": "Vorlagen-Designer öffnen",
     "designerIntro": "Wählen Sie einen Ausgangspunkt und öffnen Sie den Designer, um alles zu ändern.",
@@ -998,7 +1030,7 @@
     "paymentTermsPlaceholder": "Netto 14 Tage",
     "paymentTermsHint": "Zahlungsbedingungen auf Rechnungen (z.B. \"Netto 14 Tage\", \"Zahlbar bei Erhalt\")",
     "onlinePayments": "Online-Zahlungen",
-    "onlinePaymentsDescription": "Kunden bezahlen Rechnungen über den Link, den Sie ihnen schicken. Stripe, Vipps und PayPal werden unter Integrationen verbunden und können nebeneinander laufen.",
+    "onlinePaymentsDescription": "Kunden bezahlen Rechnungen über den Link, den Sie ihnen schicken. Stripe, Vipps, PayPal und Paystack werden unter Integrationen verbunden und können nebeneinander laufen.",
     "onlinePaymentsHint": "Bezahlt ein Kunde, meldet der Anbieter es Torqvoice und die Rechnung wird von selbst als bezahlt markiert. Die Seite jedes Anbieters zeigt die Benachrichtigungs-URL, die er braucht.",
     "offered": "Auf Rechnungslinks",
     "paused": "Verbunden, nicht angeboten",
@@ -1028,6 +1060,13 @@
     "labelPlaceholder": "MwSt.",
     "splitLabel": "Steuer in mehrere Sätze aufteilen",
     "splitHint": "Für Regionen, in denen auf derselben Rechnung mehr als eine Steuer erhoben wird, etwa GST und QST in Québec oder CGST und SGST in Indien. Jede Steuer erscheint als eigene Zeile mit eigener Registrierungsnummer, und der Steuerbericht führt sie getrennt auf.",
+    "selectiveLabel": "Nur einen Teil der Posten besteuern",
+    "selectiveHint": "Für Orte, an denen Teile besteuert werden und Arbeit nicht, oder an denen eine Pauschale steuerfrei bleibt. Ausgeschaltet wird auf alles Steuer berechnet.",
+    "appliesTitle": "Steuer berechnen auf",
+    "appliesParts": "Teile",
+    "appliesLabor": "Arbeit",
+    "appliesShopFee": "Werkstattpauschale",
+    "appliesHint": "Neue Positionen beginnen mit diesen Angaben, und jede Position lässt sich im Auftrag oder Angebot ändern. Bereits geschriebene Aufträge und Angebote behalten, was sie haben.",
     "splitIncomplete": "Geben Sie jeder Steuer vor dem Speichern einen Namen und einen Satz.",
     "presetLabel": "Mit einer Vorlage beginnen",
     "presetPlaceholder": "Region wählen",
@@ -1096,8 +1135,8 @@
     "formatCodeLabel": "Code: {value}"
   },
   "localization": {
-    "languageTitle": "Sprache",
-    "languageDescription": "Wählen Sie die Anzeigesprache der Anwendung.",
+    "languageTitle": "Werkstattsprache",
+    "languageDescription": "Rechnungen, Angebote, Arbeitsaufträge und E-Mails an Ihre Kunden werden in dieser Sprache erstellt. Um nur Ihre eigene Anzeigesprache zu ändern, nutzen Sie die Sprachauswahl in Ihrem Benutzermenü.",
     "language": "Sprache",
     "forceCustomerLocale": "Diese Sprache für kundenseitige Seiten erzwingen",
     "forceCustomerLocaleHint": "Wenn aktiviert, erscheinen das Kundenportal sowie geteilte Rechnungen, Angebote und Inspektionen in der Sprache Ihrer Werkstatt, unabhängig von den Browsereinstellungen des Besuchers. Wenn deaktiviert, folgen kundenseitige Seiten der Browsersprache des Besuchers.",
@@ -1182,7 +1221,7 @@
     "typeKeyEnabled": "HSN/TSN an Fahrzeugen erfassen",
     "typeKeyHint": "Ergänzt Fahrzeuge um Hersteller- und Typschlüsselnummer aus der Zulassungsbescheinigung Teil I (Felder 2.1 und 2.2). Sie erscheint am Fahrzeug, am Arbeitsauftrag und auf allen gedruckten Dokumenten, und Fahrzeuge lassen sich über die Suche danach finden. Beim Ausschalten wird sie wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
     "unitsTitle": "Einheiten",
-    "unitsDescription": "Wählen Sie zwischen metrisch (km, Liter) und imperial (Meilen, Gallonen).",
+    "unitsDescription": "Wie Strecken, Flüssigkeiten und Teile in dieser Werkstatt angegeben werden.",
     "unitSystem": "Einheitensystem",
     "metric": "Metrisch (km, Liter)",
     "imperial": "Imperial (Meilen, Gallonen)",
@@ -1192,6 +1231,13 @@
     "liters": "Liter (L)",
     "miles": "Meilen (mi)",
     "gallons": "Gallonen (gal)",
+    "measureSystem": "Flüssigkeiten und Teile",
+    "measureMetric": "Liter und Kilogramm",
+    "measureImperial": "Quarts, Gallonen und Pfund",
+    "engineSizeUnit": "Hubraum",
+    "engineSizeLitres": "Liter (1,6 L)",
+    "engineSizeCc": "Kubikzentimeter (1598 cc)",
+    "engineSizeUnitHint": "Wie eine Kennzeichenabfrage den Hubraum einträgt und was das leere Feld vorschlägt. Bereits gespeicherte Werte bleiben unverändert.",
     "defaultStockUnit": "Standard-Mengeneinheit",
     "defaultStockUnitHint": "Wird bei neuen Lagerteilen vorausgefüllt. Jedes Teil kann weiterhin eine eigene Einheit haben.",
     "saveWorkshop": "Werkstatteinstellungen speichern",
@@ -1204,8 +1250,6 @@
     "assignFailed": "Aufträge konnten nicht zugewiesen werden",
     "noTechnician": "Keine",
     "weekStartDay": "Wochenstart",
-    "workDayStart": "Arbeitsbeginn",
-    "workDayEnd": "Arbeitsende",
     "titleTemplateTitle": "Titel des Arbeitsauftrags",
     "titleTemplateDescription": "Wie ein neuer Arbeitsauftrag heißt, bevor jemand einen Titel eingibt. Setzen Sie ihn aus den Tags unten zusammen; jeder Auftrag öffnet mit ausgefüllten Tags, und der Titel lässt sich am Auftrag weiterhin ändern.",
     "titleTemplate": "Titelvorlage",
@@ -1233,7 +1277,9 @@
       "4": "Donnerstag",
       "5": "Freitag",
       "6": "Samstag"
-    }
+    },
+    "openingHoursMoved": "Öffnungszeiten werden für jeden Wochentag festgelegt, zusammen mit Feiertagen, Schließtagen und Abwesenheiten.",
+    "openingHoursLink": "Öffnungszeiten und Feiertage öffnen"
   },
   "maintenance": {
     "title": "Vorhergesagte Wartung",
@@ -1338,6 +1384,94 @@
       }
     }
   },
+  "shortcuts": {
+    "title": "Tastenkürzel",
+    "description": "Ihre eigenen Tasten. Sie gelten auf jedem Gerät, auf dem Sie sich anmelden.",
+    "enableLabel": "Tastenkürzel verwenden",
+    "enableHint": "Schaltet alle Tastenkürzel auf dieser Seite ein oder aus.",
+    "singleKeysLabel": "Einzelne Buchstabentasten",
+    "singleKeysHint": "Tastenkürzel, die nur aus einem einzelnen Buchstaben bestehen. Nur der Kalender hat sie, etwa W für die Wochenansicht. Schalten Sie sie aus, wenn Sie die Sprachsteuerung nutzen oder sie versehentlich drücken.",
+    "goToSequencesLabel": "{prefix}, dann der Buchstabe einer Seite, öffnet diese Seite",
+    "goToSequencesHint": "Beide Tastendrücke nutzen dieselbe Zusatztaste, daher kann nichts, was Sie tippen, sie auslösen: {example} öffnet {workOrders}. Die Buchstaben stehen unter Gehe zu.",
+    "allTitle": "Alle Tastenkürzel",
+    "allHint": "Wählen Sie Ändern und drücken Sie dann die gewünschten Tasten. Esc bricht ab.",
+    "resetAll": "Alle auf Standard zurücksetzen",
+    "resetAllTitle": "Alle Tastenkürzel zurücksetzen?",
+    "resetAllDescription": "Jede Taste wird auf ihre ursprüngliche Belegung zurückgesetzt, und ausgeschaltete Tastenkürzel werden wieder eingeschaltet.",
+    "change": "Ändern",
+    "cancel": "Abbrechen",
+    "reset": "Zurücksetzen",
+    "resetTo": "Zurück zu {keys}",
+    "resetToNone": "Zurück zu keiner Taste",
+    "changed": "Geändert",
+    "off": "Aus",
+    "noKey": "Keine Taste",
+    "or": "oder",
+    "then": "dann",
+    "pressKeys": "Neue Tasten drücken…",
+    "recordingFor": "Neues Tastenkürzel für {action} wird aufgenommen. Drücken Sie die Tasten, oder Esc zum Abbrechen.",
+    "changeFor": "Tastenkürzel für {action} ändern",
+    "resetFor": "Tastenkürzel für {action} zurücksetzen",
+    "switchFor": "Tastenkürzel für {action}",
+    "clash": "{keys} ist bereits {action} zugewiesen. Verwenden Sie es hier, hat {action} danach keine Taste mehr.",
+    "useHere": "Hier verwenden",
+    "pickAnother": "Andere wählen",
+    "problems": {
+      "reserved": "{keys} ist vom Browser oder System belegt und kann nicht verwendet werden.",
+      "taken": "{keys} ist fest einem anderen Kürzel zugewiesen und kann nicht verschoben werden.",
+      "needsModifier": "Dieses Tastenkürzel gilt auf jeder Seite und braucht deshalb {mod} oder {alt} zusammen mit der Taste.",
+      "invalid": "Diese Taste kann nicht verwendet werden."
+    },
+    "alsoUsedBy": "Auch die Taste für {action}. Nur eines von beiden wird funktionieren.",
+    "goToNote": "Suchen ({keys}) öffnet jede Seite, und {prefix} gefolgt von einem Buchstaben öffnet die wichtigsten. Hier können Sie jeder Seite eine eigene Taste geben.",
+    "announceSet": "{action} ist jetzt {keys}",
+    "announceReset": "{action} ist wieder auf Standard",
+    "announceResetAll": "Alle Tastenkürzel sind wieder auf Standard",
+    "phoneNote": "Tastenkürzel brauchen eine Tastatur. Was Sie hier ändern, gilt auch auf Ihrem Computer.",
+    "saveFailed": "Ihre Tastenkürzel konnten nicht gespeichert werden",
+    "groups": {
+      "general": "Allgemein",
+      "create": "Erstellen",
+      "goTo": "Gehe zu",
+      "calendar": "Kalender",
+      "fixed": "Listen und Fotos"
+    },
+    "scopes": {
+      "global": "Überall in der App",
+      "calendar": "Nur im Kalender"
+    },
+    "actions": {
+      "search": "Suchen",
+      "plateLookup": "Kennzeichenabfrage",
+      "save": "Speichern",
+      "sidebar": "Seitenleiste ein- oder ausblenden",
+      "help": "Tastenkürzel anzeigen",
+      "newAppointment": "Neuer Termin",
+      "newInspection": "Neue Inspektion",
+      "calendar_day": "Tagesansicht",
+      "calendar_week": "Wochenansicht",
+      "calendar_month": "Monatsansicht",
+      "calendar_year": "Jahresansicht",
+      "calendar_schedule": "Terminübersicht",
+      "calendar_fourDays": "4-Tage-Ansicht",
+      "calendar_today": "Zu heute",
+      "calendar_next": "Nächster Zeitraum",
+      "calendar_previous": "Vorheriger Zeitraum"
+    },
+    "help": {
+      "title": "Tastenkürzel",
+      "description": "Ihre aktuellen Tasten. Suchen öffnet jede Seite. Tasten ändern oder ausschalten können Sie in den Einstellungen.",
+      "disabledNote": "Tastenkürzel sind ausgeschaltet. Schalten Sie sie in den Einstellungen ein.",
+      "find": "Tastenkürzel suchen",
+      "noMatch": "Kein passendes Tastenkürzel",
+      "customize": "Tastenkürzel ändern",
+      "fixedHint": "immer gleich",
+      "listMove": "In einer Liste bewegen",
+      "listOpen": "Zeile öffnen",
+      "photos": "Nächstes oder vorheriges Foto",
+      "close": "Dialog oder Menü schließen"
+    }
+  },
   "data": {
     "title": "Datenverwaltung",
     "description": "Übernehmen Sie Daten aus Ihrem alten System, laden Sie eine Sicherung von allem herunter oder stellen Sie eine wieder her.",
@@ -1351,7 +1485,7 @@
     "optCustomers": "Kunden",
     "optCustomersDesc": "Kundendaten und Kontaktinformationen",
     "optVehicles": "Fahrzeuge & Servicedaten",
-    "optVehiclesDesc": "Fahrzeuge, Notizen, Kraftstoffprotokolle, Erinnerungen, Servicedaten",
+    "optVehiclesDesc": "Fahrzeuge, Notizen, Kraftstoffprotokolle, Erinnerungen, Servicedaten, Termine",
     "optQuotes": "Angebote",
     "optQuotesDesc": "Angebote mit Teilen und Arbeitszeit",
     "optInventory": "Inventar",
@@ -1385,6 +1519,11 @@
     "importComplete": "Import abgeschlossen",
     "importCompleteMessage": "Alle Daten wurden aus der Backup-Datei wiederhergestellt.",
     "importFailed": "Import fehlgeschlagen",
+    "restoreRefused": {
+      "busy": "Auf diesem Server läuft bereits eine Sicherung oder Wiederherstellung. Versuchen Sie es erneut, wenn sie fertig ist.",
+      "ownerOnly": "In der Torqvoice Cloud kann nur der Inhaber der Werkstatt eine Sicherung wiederherstellen.",
+      "foreignIds": "Die Datei verweist auf Datensätze, die zu einer anderen Werkstatt gehören, daher wurde nichts wiederhergestellt."
+    },
     "importFromOther": "Von anderen Diensten importieren",
     "importFromOtherDescription": "Migrieren Sie Ihre Daten von einer anderen Plattform. Wählen Sie einen Dienst, um zu beginnen.",
     "lubelogTitle": "Von LubeLog importieren",
@@ -1436,7 +1575,159 @@
     "sourceBackup": "Torqvoice-Sicherung",
     "sourceBackupDesc": "Eine auf dieser Seite heruntergeladene .zip- oder .json-Datei. Die Wiederherstellung ersetzt alles in dieser Werkstatt.",
     "restore": "Wiederherstellen",
-    "restoreTitle": "Sicherung wiederherstellen"
+    "restoreTitle": "Sicherung wiederherstellen",
+    "includeSecrets": "Geheime Schlüssel einschließen",
+    "includeSecretsHelp": "Geheime Schlüssel, etwa für Zahlungen und KI, werden weggelassen, sofern Sie dies nicht ankreuzen. Eine Wiederherstellung behält dann die Schlüssel, die diese Installation bereits hat.",
+    "platformBackups": {
+      "title": "Sicherungen von Torqvoice",
+      "description": "Torqvoice sichert diese Werkstatt stündlich und bewahrt Wiederherstellungspunkte 30 Tage lang auf, danach wöchentliche und monatliche.",
+      "runNow": "Jetzt sichern",
+      "started": "Sicherung gestartet",
+      "lastGood": "Letzte erfolgreiche Sicherung",
+      "never": "Noch keine Sicherung",
+      "nextRun": "Nächster Lauf",
+      "notScheduled": "Nicht geplant",
+      "repositorySize": "Bei Torqvoice gespeichert",
+      "running": "Läuft",
+      "restoring": "Wird wiederhergestellt",
+      "queued": "In der Warteschlange",
+      "queuedAhead": "{count, plural, one {In der Warteschlange, # Lauf davor} other {In der Warteschlange, # Läufe davor}}",
+      "runningHint": "Eine Sicherung läuft. Diese Karte aktualisiert sich selbst, bis sie fertig ist.",
+      "restoringHint": "Eine Wiederherstellung läuft: Die Daten der Werkstatt werden durch den Wiederherstellungspunkt ersetzt. Diese Seite aktualisiert sich selbst, bis sie fertig ist. Arbeiten Sie bis dahin nicht in der Werkstatt.",
+      "paused": "Ihr Tarif enthält keine Sicherungen von Torqvoice mehr. Die Läufe wurden gestoppt; die Wiederherstellungspunkte werden bis {date} aufbewahrt und danach gelöscht.",
+      "upsell": "Verfügbar mit Pro: stündliche Sicherungen durch Torqvoice mit Wiederherstellungspunkten, zu denen Sie zurückkehren können.",
+      "planLink": "Tarife ansehen",
+      "example": "Beispiel",
+      "pointsEmpty": "Die erste Sicherung ist noch nicht gelaufen.",
+      "needsOwner": "Nur der Inhaber der Werkstatt kann wiederherstellen.",
+      "listTitle": "Sicherungen",
+      "today": "Heute",
+      "yesterday": "Gestern",
+      "dayCount": "{count, plural, one {# Sicherung} other {# Sicherungen}}",
+      "latest": "Neueste",
+      "loadingMore": "Weitere Sicherungen werden geladen …",
+      "endOfList": "{count, plural, one {# Sicherung insgesamt} other {# Sicherungen insgesamt}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Sicherung in der Warteschlange",
+          "running": "Sicherung läuft",
+          "done": "Gesichert",
+          "failed": "Sicherung fehlgeschlagen",
+          "skipped": "Sicherung übersprungen"
+        },
+        "restore": {
+          "queued": "Wiederherstellung auf {time} in der Warteschlange",
+          "running": "Wird auf {time} wiederhergestellt",
+          "done": "Auf {time} wiederhergestellt",
+          "failed": "Wiederherstellung auf {time} fehlgeschlagen",
+          "skipped": "Wiederherstellung auf {time} übersprungen"
+        }
+      },
+      "sizeNote": "Jeder Wiederherstellungspunkt ist für sich vollständig; seine Größe ist alles, was er umfasst. Das Repository speichert jedes Teil nur einmal, und spätere Läufe fügen nur hinzu, was sich geändert hat. Deshalb bleibt „Bei Torqvoice gespeichert“ weit unter der Summe der Größen.",
+      "supportReason": "Vom Torqvoice-Support wiederhergestellt: {reason}",
+      "kind": {
+        "scheduled": "Geplant",
+        "manual": "Manuell",
+        "safety": "Sicherheitskopie",
+        "safetyHint": "Direkt vor einer Wiederherstellung erstellt, damit sie rückgängig gemacht werden kann"
+      },
+      "explore": "Ansehen",
+      "restore": {
+        "action": "Wiederherstellen",
+        "dialogTitle": "Die Werkstatt auf den Stand vom {time} zurücksetzen?",
+        "warning": "Der Wiederherstellungspunkt vom {time} <bold>ersetzt alles in dieser Werkstatt</bold>: Kunden, Fahrzeuge, Arbeitsaufträge, Rechnungen, Einstellungen, Fotos und Dateien. Alles, was seitdem hinzugekommen ist, ist weg.",
+        "safetyNote": "Zuerst wird eine Sicherheitskopie der Werkstatt im jetzigen Zustand erstellt und 90 Tage lang aufbewahrt, sodass sich die Wiederherstellung über die Wiederherstellungspunkte rückgängig machen lässt.",
+        "untouched": "Mitglieder, Konten, das Abonnement und Integrationen bleiben unberührt. Geheime Schlüssel, die nicht in der Sicherung enthalten sind, behalten ihre aktuellen Werte.",
+        "confirmPrompt": "Geben Sie zur Bestätigung den Namen der Werkstatt ein, <bold>{name}</bold>.",
+        "whileRunning": "Die Wiederherstellung läuft im Hintergrund und dauert bei vielen Fotos einige Minuten. Die Seite aktualisiert sich selbst, bis sie fertig ist.",
+        "cancel": "Abbrechen",
+        "confirm": "Wiederherstellen",
+        "started": "Wiederherstellung gestartet"
+      }
+    },
+    "restoreExplorer": {
+      "back": "Zurück zu den Sicherungen",
+      "title": "Wiederherstellungspunkt vom {date}",
+      "titleShort": "Wiederherstellungspunkt {id}",
+      "readOnly": "Nur lesen: Hier wird nichts an der Werkstatt geändert. Die Ansicht schließt sich nach 15 Minuten ohne Aktivität.",
+      "readOnlyBadge": "Nur lesen",
+      "opening": "Wiederherstellungspunkt wird geöffnet",
+      "openingHint": "Das Backup wird hier auf dem Server entschlüsselt und eine Viertelstunde im Arbeitsspeicher gehalten. In der Werkstatt ändert sich nichts.",
+      "openingSteps": {
+        "connecting": "Verbindung zum Backup-Repository wird hergestellt",
+        "locating": "Datendatei im Snapshot wird gesucht",
+        "pulling": "Daten werden abgerufen und entschlüsselt",
+        "reading": "Datensätze werden gelesen",
+        "indexing": "Kunden, Fahrzeuge und Aufträge werden indexiert"
+      },
+      "openingReady": "Bereit",
+      "openFailed": "Der Wiederherstellungspunkt konnte nicht geöffnet werden",
+      "tryAgain": "Erneut versuchen",
+      "ownerOnly": "Nur der Inhaber der Werkstatt oder ein Administrator kann in einen Wiederherstellungspunkt hineinsehen.",
+      "closed": "Der Wiederherstellungspunkt wurde geschlossen; öffnen Sie ihn erneut",
+      "openAgain": "Erneut öffnen",
+      "datasets": {
+        "customers": "Kunden",
+        "vehicles": "Fahrzeuge",
+        "serviceRecords": "Arbeitsaufträge",
+        "quotes": "Angebote",
+        "inventoryParts": "Teile"
+      },
+      "searchPlaceholder": "Nach Name, Nummer, Kennzeichen, FIN, E-Mail oder Telefon suchen",
+      "loading": "Wird geladen…",
+      "loadFailed": "Diese Liste konnte nicht geladen werden",
+      "empty": "Im Wiederherstellungspunkt gibt es nichts dieser Art.",
+      "noMatches": "Keine Treffer für „{query}“.",
+      "showing": "{shown} von {total} angezeigt",
+      "loadMore": "Mehr anzeigen",
+      "clearSearch": "Suche löschen",
+      "record": {
+        "loading": "Datensatz wird geladen…",
+        "loadFailed": "Der Datensatz konnte nicht geladen werden",
+        "notFound": "Dieser Datensatz ist nicht im Wiederherstellungspunkt enthalten.",
+        "fields": "Details",
+        "jumpTo": "Springen zu",
+        "previous": "Vorheriger Datensatz",
+        "next": "Nächster Datensatz",
+        "position": "{index} von {total}",
+        "noColumns": "In diesen Zeilen gibt es nichts anzuzeigen.",
+        "yes": "Ja",
+        "no": "Nein"
+      },
+      "sections": {
+        "concerns": "Kundenanliegen",
+        "partItems": "Teile",
+        "laborItems": "Arbeit",
+        "attachments": "Fotos und Dokumente",
+        "payments": "Zahlungen",
+        "statusReports": "Statusberichte",
+        "timeEntries": "Zeiteinträge",
+        "notes": "Notizen",
+        "fuelLogs": "Tankvorgänge",
+        "reminders": "Erinnerungen",
+        "serviceRequests": "Serviceanfragen",
+        "inspectionStatus": "HU-Status",
+        "findings": "Befunde",
+        "conditionMarks": "Zustandsmarkierungen",
+        "aiMessages": "KI-Nachrichten",
+        "recurringInvoices": "Wiederkehrende Rechnungen",
+        "serviceRecords": "Arbeitsaufträge",
+        "movements": "Bestandsbewegungen",
+        "gallery": "Galerie"
+      }
+    },
+    "scheduledBackups": {
+      "title": "Geplante Sicherungen",
+      "description": "Automatische Sicherungen in Ihren eigenen Speicher, nach einem Zeitplan Ihrer Wahl.",
+      "empty": "Es ist noch kein Sicherungsziel verbunden.",
+      "setUp": "Sicherungsziel einrichten",
+      "lastGood": "Letzte erfolgreiche Sicherung: {when}",
+      "noGoodBackup": "Noch keine erfolgreiche Sicherung",
+      "nextRun": "nächster Lauf: {when}",
+      "notScheduled": "nicht geplant",
+      "lastError": "Letzter Fehler: {error}",
+      "extraCopy": "Eine zusätzliche Kopie in Ihrem eigenen Speicher, nach einem Zeitplan Ihrer Wahl, ergänzend zu den Sicherungen, die Torqvoice ausführt."
+    }
   },
   "license": {
     "title": "White-Label-Lizenz",
@@ -1446,19 +1737,50 @@
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "lastChecked": "Zuletzt gepruft: {date}",
-    "enterLicenseKey": "Lizenzschlüssel eingeben",
+    "enterLicenseKey": "Lizenzschlüssel oder Offline-Lizenztoken eingeben",
     "validate": "Validieren",
     "validated": "Lizenz erfolgreich validiert",
     "invalid": "Ungültiger Lizenzschlüssel",
+    "offlineInvalid": "Dies ist kein gültiges Offline-Lizenz-Token für diese Werkstatt. Die auf diesem Server gespeicherte Lizenz ist unverändert.",
     "failedValidate": "Lizenz konnte nicht validiert werden",
-    "keyHint": "Jeder Lizenzschlüssel ist an diese Organisation gebunden und kann nicht für mehrere Organisationen verwendet werden.",
+    "keyHint": "Jeder Lizenzschlüssel und jedes Offline-Lizenztoken ist an diese Organisation gebunden und kann nicht für mehrere Organisationen verwendet werden.",
     "expired": "Abgelaufen",
     "unverified": "Nicht überprüft",
     "expiresOn": "Läuft ab: {date}",
     "unreachable": "torqvoice.com war nicht erreichbar. Die auf diesem Server gespeicherte Lizenz bleibt unverändert.",
     "unverifiedHint": "Dieser Server konnte die Lizenz seit {days} Tagen nicht bei torqvoice.com bestätigen. Nach {max} Tagen ohne erfolgreiche Prüfung kehrt das Torqvoice-Branding zurück.",
     "rejected": "torqvoice.com hat diesen Schlüssel nicht akzeptiert: {reason}",
-    "signedHint": "Die Validierung wird von torqvoice.com signiert und täglich erneuert, daher braucht der Server ausgehenden Zugriff auf torqvoice.com."
+    "signedHint": "Abo-Schlüssel werden von torqvoice.com signiert und täglich erneut geprüft, daher braucht der Server ausgehenden Zugriff auf torqvoice.com. Ein Offline-Lizenztoken wird auf diesem Server geprüft und braucht keinen Zugriff.",
+    "makeItYours": "Eigene Marke zeigen",
+    "makeItYoursHint": "Das Torqvoice-Zeichen ist weg. Zwei Schritte noch, dann sieht die App nach dem eigenen Betrieb aus.",
+    "linkAppName": "App-Namen festlegen",
+    "linkAppIcon": "Eigenes Favicon und App-Symbol hinzufügen",
+    "adminOnlyHint": "Nur ein Super-Admin kann App-Namen und App-Symbol ändern. Wenden Sie sich an die Person, die diese Installation betreibt.",
+    "makeItYoursLocked": "Eine White-Label-Lizenz schaltet App-Namen und App-Symbol frei.",
+    "needsLicense": "Lizenz erforderlich",
+    "mismatch": "Passt nicht zu dieser Werkstatt",
+    "perpetual": "Unbefristet",
+    "licensedTo": "Lizenziert für {name} ({registrationNumber}), {country}",
+    "perpetualHint": "Diese Lizenz wird auf diesem Server geprüft und muss nie Kontakt zu torqvoice.com aufnehmen.",
+    "perpetualWorkshops": "Gilt für {count, plural, one {# Werkstatt} other {# Werkstätten}} in dieser Installation.",
+    "mismatchExplain": "Diese Lizenz wurde für die Organisationsnummer {licensed} ausgestellt, die Organisationsnummer dieser Werkstatt ist aber {current}.",
+    "mismatchExplainNotSet": "Diese Lizenz wurde für die Organisationsnummer {licensed} ausgestellt, für diese Werkstatt ist aber keine Organisationsnummer hinterlegt.",
+    "openCompanySettings": "Unternehmenseinstellungen öffnen",
+    "notSet": "Nicht hinterlegt",
+    "offlineActivated": "Offline-Lizenz aktiviert",
+    "offlineTitle": "Offline-Lizenz",
+    "offlineDescription": "Ein einmaliger Kauf, der das Torqvoice-Branding für genau diese Werkstatt entfernt und nie Kontakt zu torqvoice.com aufnimmt.",
+    "offlineBinding": "Die Lizenz ist an die Organisationsnummer Ihres Unternehmens gebunden. Eine Umbenennung der Werkstatt ist kein Problem, eine neue juristische Person braucht aber eine neue Lizenz.",
+    "offlineOrganizationId": "Organisations-ID",
+    "offlineWorkshop": "Werkstatt",
+    "offlineOrgNumber": "Organisationsnummer",
+    "offlineOrgNumberRequired": "Bevor eine Offline-Lizenz ausgestellt werden kann, muss eine Organisationsnummer hinterlegt sein.",
+    "requestCode": "Lizenzanforderungscode",
+    "copyRequestCode": "Kopieren",
+    "requestCodeCopied": "Anforderungscode kopiert",
+    "requestCodeCopyFailed": "Anforderungscode konnte nicht kopiert werden",
+    "offlineOrderHint": "Bestellen Sie mit diesem Code auf torqvoice.com.",
+    "orderOffline": "Offline-Lizenz bestellen"
   },
   "about": {
     "title": "Uber Torqvoice",
@@ -1466,59 +1788,116 @@
     "version": "Version",
     "website": "Webseite",
     "documentation": "Dokumentation",
-    "changelog": "Anderungsprotokoll"
+    "changelog": "Anderungsprotokoll",
+    "whatsNew": "Neuigkeiten",
+    "whatsNewOpen": "Neuigkeiten ansehen",
+    "whatsNewTab": "Den Reiter Neuigkeiten am Bildschirmrand anzeigen",
+    "whatsNewTabHint": "Nur auf größeren Bildschirmen."
   },
   "portal": {
     "title": "Kundenportal",
-    "description": "Ermoglichen Sie Ihren Kunden, sich anzumelden und ihre Fahrzeuge, Rechnungen, Angebote und Inspektionen einzusehen. Kunden konnen auch Serviceanfragen stellen.",
-    "enablePortal": "Kundenportal aktivieren",
-    "enablePortalHint": "Kunden mit einer E-Mail-Adresse konnen sich per Magic Link anmelden",
-    "enabled": "Kundenportal aktiviert",
-    "disabled": "Kundenportal deaktiviert",
-    "failedUpdate": "Einstellung konnte nicht aktualisiert werden",
-    "customSlug": "Benutzerdefinierter Portal-Slug",
-    "save": "Speichern",
-    "slugSaved": "Portal-Slug gespeichert",
-    "slugRemoved": "Portal-Slug entfernt",
-    "failedUpdateSlug": "Slug konnte nicht aktualisiert werden",
-    "slugHint": "Kleinbuchstaben, Zahlen, Bindestriche und Unterstriche. 3-48 Zeichen. Leer lassen, um die Standard-URL zu verwenden.",
-    "portalUrl": "Portal-URL",
-    "urlCopied": "Portal-URL kopiert",
-    "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich in ihr Portal einloggen konnen.",
+    "description": "Ihre Kunden melden sich an, um ihren Auftrag zu verfolgen, Angebote zu beantworten, Rechnungen zu bezahlen, einen Termin anzufragen und Ihnen zu schreiben.",
+    "enablePortal": "Kundenportal einschalten",
+    "enablePortalHint": "Kunden melden sich mit einem Link an, der an ihre E-Mail-Adresse oder ihr Handy geschickt wird. Kein Passwort zum Merken.",
+    "failedUpdate": "Die Einstellungen konnten nicht gespeichert werden",
+    "customSlug": "Portaladresse",
+    "slugHint": "Kleinbuchstaben, Ziffern, Bindestriche und Unterstriche, 3 bis 48 Zeichen. Leer lassen, um die Standardadresse zu verwenden.",
+    "portalUrl": "Link zu Ihrem Portal",
+    "urlCopied": "Link kopiert",
+    "shareHint": "Teilen Sie diesen Link mit Ihren Kunden, damit sie sich anmelden können.",
     "serviceRequestAlertsHint": "Serviceanfragen aus dem Portal erscheinen immer in Ihrer Benachrichtigungsglocke. Sie können sie zusätzlich per E-Mail erhalten.",
-    "serviceRequestAlertsLink": "Benachrichtigungseinstellungen →",
+    "serviceRequestAlertsLink": "Benachrichtigungseinstellungen",
     "descriptionLabel": "Über Ihre Werkstatt",
     "descriptionPlaceholder": "Erzählen Sie Ihren Kunden etwas über Ihre Werkstatt, die angebotenen Leistungen und was Sie auszeichnet.",
-    "descriptionHint": "Wird Besuchern oben auf Ihrer Portal-Startseite angezeigt.",
-    "hoursLabel": "Öffnungszeiten",
-    "hoursPlaceholder": "Mo-Fr: 8:00-17:00\nSa: 9:00-13:00\nSo: Geschlossen",
-    "hoursHint": "Freitext. Verwenden Sie Zeilenumbrüche, um jeden Tag separat aufzulisten.",
-    "contentSaved": "Portalinhalt gespeichert",
-    "background": {
-      "title": "Portal-Hintergrund",
-      "description": "Wählen Sie das Aussehen der Startseite des Kundenportals.",
-      "typeNone": "Keiner",
-      "typeTemplate": "Vorlage",
-      "typeImage": "Eigenes Bild",
-      "chooseTemplate": "Vorlage auswählen",
-      "uploadLabel": "Hintergrundbild",
-      "upload": "Bild hochladen",
-      "replace": "Bild ersetzen",
-      "remove": "Entfernen",
-      "uploadHint": "JPG, PNG oder WebP. Max. 8 MB. Empfohlen mindestens 1600×900.",
-      "uploading": "Hintergrund wird hochgeladen…",
-      "uploaded": "Hintergrund aktualisiert",
-      "uploadFailed": "Hintergrund konnte nicht hochgeladen werden",
-      "templateNames": {
-        "default": "Dezent",
-        "sunrise": "Sonnenaufgang",
-        "ocean": "Ozean",
-        "forest": "Wald",
-        "slate": "Schiefer",
-        "sand": "Sand"
+    "descriptionHint": "Wird auf der Anmeldeseite Ihres Portals angezeigt.",
+    "copyUrl": "Link kopieren"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "meine-werkstatt",
+    "slugUnsaved": "Diese Adresse funktioniert, sobald Sie speichern.",
+    "slugInvalid": "Verwenden Sie 3 bis 48 Kleinbuchstaben, Ziffern, Bindestriche oder Unterstriche, mit einem Buchstaben oder einer Ziffer am Anfang und Ende.",
+    "slugReserved": "Dieses Wort ist reserviert. Wählen Sie eine andere Adresse.",
+    "slugTaken": "Eine andere Werkstatt verwendet diese Adresse bereits. Wählen Sie eine andere.",
+    "hours": {
+      "title": "Öffnungszeiten",
+      "fromCalendar": "Das Portal zeigt die Öffnungszeiten und Schließtage aus Ihrem Werkstattkalender.",
+      "link": "Einstellungen für Öffnungszeiten",
+      "typedNote": "Ihre Anmeldeseite zeigt noch die Zeiten, die hier früher eingetragen wurden, weil im Kalender noch keine Öffnungszeiten festgelegt sind. Legen Sie sie dort fest, dann zeigt das Portal diese an.",
+      "typedLabel": "Wird derzeit auf der Anmeldeseite angezeigt"
+    },
+    "look": {
+      "title": "Aussehen Ihres Kundenportals",
+      "description": "Eine Auswahl bestimmt die Anmeldeseite und alle Seiten, die Ihre Kunden danach sehen. Kunden können sie nicht ändern."
+    },
+    "theme": {
+      "legend": "Design",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Hell und ruhig"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Dunkle Boxentafel"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Redaktionell und schlicht"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Ihre Farbe, groß"
       }
     },
-    "copyUrl": "Portal-URL kopieren"
+    "colour": {
+      "title": "Ihre Farbe",
+      "description": "Wird in jedem Design für Schaltflächen und Hervorhebungen verwendet.",
+      "swatches": "Vorgeschlagene Farben",
+      "orange": "Orange",
+      "blue": "Blau",
+      "green": "Grün",
+      "red": "Rot",
+      "black": "Schwarz",
+      "hexLabel": "Farbe als Hex-Code",
+      "invalid": "Das ist keine Farbe. Geben Sie sie als Hex-Code ein, etwa #1D4ED8.",
+      "usingTheme": "Die Farbe von {theme} wird verwendet, {hex}.",
+      "themeColour": "Die Farbe von {theme} ist {hex}.",
+      "useTheme": "Farbe des Designs verwenden",
+      "sample": "Termin anfragen",
+      "inkLight": "Text auf dieser Farbe wird weiß dargestellt, damit er lesbar bleibt.",
+      "inkDark": "Text auf dieser Farbe wird schwarz dargestellt, damit er lesbar bleibt.",
+      "faint": "Diese Farbe ist auf dem Hintergrund von {theme} schwach. Links und Hervorhebungen sind eventuell schwer zu erkennen."
+    },
+    "cover": {
+      "title": "Titelbild und Logo",
+      "description": "Wird auf der Anmeldeseite angezeigt. Ihr Logo kommt aus den Firmeneinstellungen.",
+      "companyLink": "Firmeneinstellungen",
+      "hint": "PNG, JPEG oder WebP, bis 8 MB.",
+      "none": "Kein Titelbild",
+      "alt": "Das Titelbild auf der Anmeldeseite",
+      "upload": "Foto hochladen",
+      "replace": "Foto ersetzen",
+      "remove": "Foto entfernen",
+      "uploading": "Wird hochgeladen",
+      "uploadFailed": "Das Foto konnte nicht hochgeladen werden"
+    },
+    "features": {
+      "title": "Was Kunden bekommen",
+      "description": "Die Teile des Portals, die Sie ausschalten können.",
+      "messages": "Nachrichten im Portal",
+      "messagesHint": "Kunden schreiben Ihnen aus dem Portal. Ihre Nachrichten landen in Ihrem Posteingang unter Nachrichten.",
+      "tires": "Eingelagerte Reifen anzeigen",
+      "tiresHint": "Kunden sehen die Reifen, die Sie für sie einlagern, mit Profiltiefe."
+    },
+    "bar": {
+      "label": "Einstellungen des Kundenportals speichern",
+      "unsaved": "Sie haben ungespeicherte Änderungen",
+      "saved": "Alles gespeichert",
+      "discard": "Änderungen verwerfen",
+      "save": "Änderungen speichern",
+      "open": "Portal als Kunde öffnen",
+      "openOff": "Schalten Sie das Portal ein und speichern Sie, um es zu öffnen."
+    },
+    "savedToast": "Einstellungen des Kundenportals gespeichert"
   },
   "email": {
     "title": "E-Mail-Anbieter",
@@ -1760,13 +2139,13 @@
     "noMembers": "Keine Teammitglieder gefunden",
     "addRecipient": "Empfänger hinzufügen...",
     "searchMembers": "Mitglieder suchen...",
-    "sendNow": "Jetzt senden",
-    "sentNow": "Bericht erfolgreich gesendet",
     "newSchedule": "Neuer Zeitplan",
     "editSchedule": "Zeitplan bearbeiten",
     "edit": "Bearbeiten",
     "cancel": "Abbrechen",
     "sent": "gesendet",
+    "sendNow": "Jetzt senden",
+    "sentNow": "Bericht erfolgreich gesendet",
     "emptyTitle": "Keine geplanten Berichte",
     "emptyDescription": "Erstellen Sie einen Zeitplan, um Berichte automatisch an Ihr Team zu senden.",
     "sectionLabels": {
@@ -2018,6 +2397,10 @@
     "sectionEmptyHint": "Wird angezeigt, hat mit den aktuellen Daten aber nichts zu drucken.",
     "sectionShownHint": "Auf dem Blatt sichtbar. Klicken, um ihn auszublenden.",
     "sectionHiddenHint": "Vom Blatt ausgeblendet. Klicken, um ihn anzuzeigen.",
+    "sectionDragHandle": "Zum Verschieben ziehen",
+    "sectionDragHandleKeyboard": "{section} ziehen oder mit den Pfeiltasten verschieben",
+    "fieldDragHandle": "Zum Verschieben ziehen",
+    "fieldDragHandleKeyboard": "{field} ziehen oder mit den Pfeiltasten verschieben",
     "railHint": "Ziehen Sie einen Abschnitt auf die Seite: zwischen Blöcken abgelegt ändert er die Reihenfolge, auf einer Karte sitzt er daneben, und überall sonst wird er frei platziert. Die Seite macht Platz um ihn herum.",
     "returnToFlow": "{section} in den Fluss zurückholen",
     "saveDialogTitle": "Dieses Design speichern",
@@ -2146,7 +2529,7 @@
       "unitSet": "Satz",
       "unitEach": "x",
       "findingPads": "Hintere Beläge bei 15 %",
-      "findingPadsNote": "Innerhalb von 5.000 km ersetzen",
+      "findingPadsNote": "{unit, select, mi {Innerhalb von 3.000 Meilen ersetzen} other {Innerhalb von 5.000 km ersetzen}}",
       "findingOilWeep": "Leichter Ölaustritt am Ventildeckel",
       "notes": "Danke, dass Sie unsere Werkstatt gewählt haben. Melden Sie sich bei Fragen gerne.",
       "warranty": "12 Monate Garantie auf Teile und Arbeit.",
@@ -2225,6 +2608,7 @@
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an diesem Design wurden nicht gespeichert und gehen verloren.",
     "leaveConfirm": "Verlassen",
+    "leaveCancel": "Weiter bearbeiten",
     "boldField": "Fett",
     "deleteDesignDrafts": "{count, plural, one {# Rechnungsentwurf} other {# Rechnungsentwürfe}} mit diesem Design fallen auf das Standarddesign zurück.",
     "deleteDesignCustomers": "{count, plural, one {# Kunde} other {# Kunden}} mit diesem Design fallen auf das Standarddesign zurück.",
@@ -2481,6 +2865,7 @@
     "leaveTitle": "Ohne Speichern verlassen?",
     "leaveBody": "Ihre Änderungen an dieser Vorlage wurden nicht gespeichert. Sie gehen verloren.",
     "leaveConfirm": "Verlassen",
+    "leaveCancel": "Weiter bearbeiten",
     "subjectAndTheme": "Betreff und Design",
     "settingsSubtitle": "Gilt für die ganze E-Mail",
     "blocksTitle": "Blöcke",
@@ -2618,9 +3003,9 @@
       "uploading": "Wird hochgeladen…",
       "width": "Logobreite",
       "hint": "Unabhängig vom Firmenlogo. Es wird beim Hochladen zugeschnitten und für E-Mails aufbereitet. PNG, JPEG oder WebP bis 4 MB.",
-      "position": "Position",
       "tooLarge": "Das Bild muss kleiner als 4 MB sein",
-      "uploadFailed": "Logo konnte nicht hochgeladen werden"
+      "uploadFailed": "Logo konnte nicht hochgeladen werden",
+      "position": "Position"
     },
     "image": {
       "empty": "Kein Bild hochgeladen. Der Block druckt nichts, solange keines vorhanden ist.",
@@ -2733,6 +3118,101 @@
       "square": "Quadrat",
       "cross": "Kreuz",
       "hex": "Sechseck"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Öffnungszeiten",
+      "switch": "Schließtage und Abwesenheiten",
+      "publicHolidays": "Feiertage",
+      "calendars": "Feiertagskalender",
+      "closedDays": "Schließtage",
+      "timeOff": "Urlaub und Abwesenheit"
+    }
+  },
+  "shareLinks": {
+    "save": "Speichern",
+    "saved": "Einstellungen für Freigabelinks gespeichert",
+    "saveFailed": "Die Einstellungen für Freigabelinks konnten nicht gespeichert werden. Versuchen Sie es erneut.",
+    "rules": {
+      "title": "Ablauf von Links",
+      "description": "Wie lange ein Link, den Sie an einen Kunden senden, funktioniert. Die Seite nennt dem Kunden den letzten Tag; danach sieht er eine Seite, die ihn bittet, sich bei Ihnen zu melden.",
+      "kind": {
+        "invoice": "Rechnungen",
+        "quote": "Angebote",
+        "inspection": "Inspektionen"
+      },
+      "mode": {
+        "never": "Nie ablaufen",
+        "afterSharing": "Nach dem Versand ablaufen",
+        "afterPayment": "Nach der Zahlung ablaufen"
+      },
+      "hint": {
+        "never": "Der Link funktioniert, bis Sie ihn entfernen.",
+        "afterSharing": "Gezählt ab dem Tag, an dem der Link zuletzt gesendet oder geteilt wurde.",
+        "afterPayment": "Der Link bleibt offen, solange die Rechnung unbezahlt ist, damit der Kunde bezahlen kann. Die Tage zählen ab der vollständigen Bezahlung."
+      },
+      "days": "Tage",
+      "daysLabel": "Tage, bis Links zu {kind} ablaufen",
+      "appliesNote": "Diese Regeln gelten auch für bereits gesendete Links. Sie können für jedes einzelne Dokument ein anderes Datum festlegen, hier in der Liste oder im Dokument selbst."
+    },
+    "list": {
+      "title": "An Kunden gesendete Links",
+      "description": "Alle Links zu Rechnungen, Angeboten, Inspektionen und Statusberichten und wann sie nicht mehr funktionieren.",
+      "statusLabel": "Links anzeigen",
+      "status": {
+        "active": "Aktiv",
+        "expired": "Abgelaufen",
+        "all": "Alle"
+      },
+      "kindLabel": "Dokumenttyp",
+      "kind": {
+        "all": "Alle Dokumente",
+        "invoice": "Rechnungen",
+        "quote": "Angebote",
+        "inspection": "Inspektionen",
+        "statusReport": "Statusberichte"
+      },
+      "kindOne": {
+        "invoice": "Rechnung",
+        "quote": "Angebot",
+        "inspection": "Inspektion",
+        "statusReport": "Statusbericht"
+      },
+      "searchPlaceholder": "Dokument oder Kunde suchen",
+      "columns": {
+        "document": "Dokument",
+        "customer": "Kunde",
+        "shared": "Geteilt",
+        "views": "Aufrufe",
+        "expires": "Läuft ab",
+        "actions": "Aktionen"
+      },
+      "sharedOn": "Geteilt am {date}",
+      "none": "-",
+      "copy": "Link kopieren",
+      "copyFailed": "Der Link konnte nicht kopiert werden.",
+      "open": "Dokument öffnen",
+      "revoke": "Link entfernen",
+      "revokeTitle": "Diesen Link entfernen?",
+      "revokeDescription": "Der Link zu {document} funktioniert für niemanden mehr, der ihn hat. Sie können das Dokument erneut teilen, um einen neuen Link zu erstellen.",
+      "revoked": "Link entfernt",
+      "empty": {
+        "active": "Keine aktiven Links. Ein Link erscheint hier, wenn Sie ein Dokument senden oder teilen.",
+        "expired": "Keine abgelaufenen Links.",
+        "all": "Noch keine Links. Ein Link erscheint hier, wenn Sie ein Dokument senden oder teilen."
+      },
+      "emptyFiltered": "Keine Links passen zu Ihrer Suche.",
+      "loadFailed": "Die Links konnten nicht geladen werden. Laden Sie die Seite neu, um es erneut zu versuchen.",
+      "selectAll": "Alle Links auf dieser Seite auswählen",
+      "selectRow": "Link zu {document} auswählen",
+      "selectedCount": "{count, plural, one {# Link ausgewählt} other {# Links ausgewählt}}",
+      "clearSelection": "Auswahl aufheben",
+      "removeSelected": "Ausgewählte entfernen",
+      "bulkRevokeTitle": "{count, plural, one {# Link entfernen} other {# Links entfernen}}?",
+      "bulkRevokeDescription": "Diese Links funktionieren für niemanden mehr, der sie hat. Sie können ein Dokument erneut teilen, um einen neuen Link zu erstellen.",
+      "bulkRevoked": "{count, plural, one {# Link entfernt} other {# Links entfernt}}",
+      "bulkRevokeFailed": "Die Links konnten nicht entfernt werden. Versuchen Sie es erneut."
     }
   }
 }

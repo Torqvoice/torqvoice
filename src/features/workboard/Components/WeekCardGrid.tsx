@@ -1,15 +1,24 @@
 'use client'
 
+import {
+  type AwayByLaneDay,
+  type BoardAway,
+  type ClosedByDay,
+  awayKey,
+  laneDayHours,
+} from '../hooks/useBoardCalendar'
 import { useDroppable } from '@dnd-kit/core'
-import { ClipboardCheck, Wrench } from 'lucide-react'
+import { ClipboardCheck, Users, Wrench } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../Actions/boardActions'
-import { getDurationMinutes, getJobDateRange, jobOverlapsDate } from '../utils/datetime'
+import { jobOverlapsDate } from '../utils/datetime'
+import { bookedMinutesOnDay } from '../utils/layout'
 import type { ClockFormat } from '../utils/clock'
-import type { BoardLane } from '../utils/lanes'
-import { BoardJobCard } from './BoardJobCard'
-import { formatDuration } from './DurationSlider'
+import { type BoardLane, isHelperLane } from '../utils/lanes'
+import { interactiveRow } from '@/lib/interactive-row'
+import { BoardJobCard, TeamCount } from './BoardJobCard'
+import { DayLoadFigure } from './DayLoad'
 import { JobTooltip } from './JobTooltip'
 import { LaneHeaderTooltip } from './LaneHeaderTooltip'
 
@@ -31,6 +40,8 @@ export function WeekCardGrid({
   readOnly = false,
   onOpenJob,
   onLaneClick,
+  closedByDay,
+  awayByLaneDay,
 }: {
   days: string[]
   lanes: BoardLane[]
@@ -43,27 +54,40 @@ export function WeekCardGrid({
   readOnly?: boolean
   onOpenJob: (job: WorkBoardJob) => void
   onLaneClick?: (lane: BoardLane) => void
+  /** Closed days from the workshop calendar, by day. */
+  closedByDay?: ClosedByDay
+  /** Technicians away, by `awayKey(lane, day)`. */
+  awayByLaneDay?: AwayByLaneDay
 }) {
   const t = useTranslations('workBoard.board')
 
   const gridTemplateColumns = `minmax(120px, 160px) repeat(${days.length}, minmax(140px, 1fr))`
 
   return (
-    <div className="min-h-0 min-w-0 flex-1 overflow-auto rounded-md border">
+    // `isolate` so the sticky row and column stack against each other only,
+    // never against the app's top bar when the page scrolls under it.
+    <div className="isolate min-h-0 min-w-0 flex-1 overflow-auto rounded-md border">
       <div className="grid min-w-full gap-px bg-border/60" style={{ gridTemplateColumns }}>
         <div className="sticky left-0 top-0 z-30 bg-background" />
         {days.map((day) => {
           const date = new Date(`${day}T12:00:00`)
           const isToday = day === todayStr
+          const closed = closedByDay?.[day]
           return (
             <div
               key={`head-${day}`}
               className={cn(
-                'sticky top-0 z-20 bg-background px-2 py-1 text-center text-xs font-medium',
+                'sticky top-0 z-20 truncate bg-background px-2 py-1 text-center text-xs font-medium',
                 isToday ? 'text-primary' : 'text-muted-foreground'
               )}
+              title={closed?.label ?? undefined}
             >
               {t(`days.${DAY_KEYS[date.getDay()]}`)} {date.getDate()}
+              {closed?.label && (
+                <span className="block truncate text-[10px] font-normal" data-testid="day-closed">
+                  {closed.label}
+                </span>
+              )}
             </div>
           )
         })}
@@ -78,6 +102,8 @@ export function WeekCardGrid({
                 days={days}
                 capacityMinutes={lane.dailyCapacity * days.length}
                 periodLabel={t('lanes.thisWeek')}
+                closedByDay={closedByDay}
+                awayByLaneDay={awayByLaneDay}
               >
                 <button
                   type="button"
@@ -102,6 +128,13 @@ export function WeekCardGrid({
                   date={day}
                   jobs={laneJobs.filter((job) => jobOverlapsDate(job, day))}
                   isToday={day === todayStr}
+                  booked={bookedMinutesOnDay(
+                    laneJobs,
+                    day,
+                    laneDayHours(lane, day, closedByDay, awayByLaneDay)
+                  )}
+                  closedAllDay={!!closedByDay?.[day]?.allDay}
+                  away={awayByLaneDay?.[awayKey(lane.id, day)]}
                   readOnly={readOnly}
                   timeFormat={timeFormat}
                   lookup={lookup}
@@ -122,7 +155,10 @@ function DayCell({
   lane,
   date,
   jobs,
+  booked,
   isToday,
+  closedAllDay,
+  away,
   readOnly,
   timeFormat,
   lookup,
@@ -131,7 +167,13 @@ function DayCell({
   lane: BoardLane
   date: string
   jobs: WorkBoardJob[]
+  /** Minutes of work on the day, the same figure the timeline shows. */
+  booked: number
   isToday: boolean
+  /** The workshop is closed the whole day. */
+  closedAllDay?: boolean
+  /** The lane's technician is away that day. */
+  away?: BoardAway
   readOnly?: boolean
   timeFormat: ClockFormat
   lookup?: Map<string, { name: string; color: string }>
@@ -143,62 +185,59 @@ function DayCell({
     disabled: readOnly,
   })
 
-  const booked = jobs.reduce((sum, job) => {
-    const { start, end } = getJobDateRange(job)
-    return start && end ? sum + getDurationMinutes(start, end) : sum
-  }, 0)
-  const pct = lane.dailyCapacity > 0 ? (booked / lane.dailyCapacity) * 100 : 0
-
   return (
     <div
       ref={setNodeRef}
       className={cn(
         'flex min-h-[84px] flex-col gap-1 bg-background p-1.5 transition-colors',
         isToday && 'bg-primary/[0.04]',
+        closedAllDay && 'bg-muted/70',
         isOver && 'bg-primary/10'
       )}
     >
-      {jobs.map((job) => (
-        <JobTooltip
-          key={job.id}
-          job={job}
-          timeFormat={timeFormat}
-          ownerName={job.technicianId ? lookup?.get(job.technicianId)?.name : null}
-          ownerColor={job.technicianId ? lookup?.get(job.technicianId)?.color : null}
-          bayName={job.workBayId ? lookup?.get(job.workBayId)?.name : null}
+      {away && (
+        <p
+          className="truncate rounded-sm border border-dashed border-muted-foreground/40 px-1 text-[10px] font-medium text-muted-foreground"
+          data-testid="lane-away"
         >
-          <div>
-            {readOnly ? (
-              <StaticJobCard job={job} />
-            ) : (
-              <BoardJobCard job={job} onClick={() => onOpenJob(job)} />
-            )}
-          </div>
-        </JobTooltip>
-      ))}
-
-      {booked > 0 && (
-        <div className="mt-auto space-y-0.5 pt-1">
-          <div className="h-1 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className={cn(
-                'h-full rounded-full',
-                pct > 100 ? 'bg-red-500' : pct >= 75 ? 'bg-amber-500' : 'bg-emerald-500'
-              )}
-              style={{ width: `${Math.min(pct, 100)}%` }}
-            />
-          </div>
-          <p
-            className={cn(
-              'text-center text-[10px] font-medium tabular-nums',
-              pct > 100 ? 'text-red-500' : 'text-muted-foreground'
-            )}
-          >
-            {formatDuration(booked)}
-            {lane.dailyCapacity > 0 ? ` / ${formatDuration(lane.dailyCapacity)}` : ''}
-          </p>
-        </div>
+          {away.label}
+        </p>
       )}
+      {jobs.map((job) => {
+        const technician = job.technicianId ? lookup?.get(job.technicianId) : null
+        return (
+          <JobTooltip
+            key={job.id}
+            job={job}
+            timeFormat={timeFormat}
+            ownerName={technician?.name}
+            ownerColor={technician?.color}
+            helperNames={job.helperIds
+              .map((id) => lookup?.get(id)?.name)
+              .filter((name): name is string => !!name)}
+            bayName={job.workBayId ? lookup?.get(job.workBayId)?.name : null}
+          >
+            <div>
+              {isHelperLane(job, lane.id, lane.grouping) ? (
+                // Here because this lane's technician is helping on it. It
+                // opens the job and cannot be picked up: the card that moves
+                // the job is the one in its own technician's lane.
+                <ShadowJobCard
+                  job={job}
+                  technicianName={technician?.name ?? null}
+                  onClick={readOnly ? undefined : () => onOpenJob(job)}
+                />
+              ) : readOnly ? (
+                <StaticJobCard job={job} />
+              ) : (
+                <BoardJobCard job={job} onClick={() => onOpenJob(job)} />
+              )}
+            </div>
+          </JobTooltip>
+        )
+      })}
+
+      {booked > 0 && <DayLoadFigure bookedMinutes={booked} capacityMinutes={lane.dailyCapacity} />}
     </div>
   )
 }
@@ -227,6 +266,47 @@ function StaticJobCard({ job }: { job: WorkBoardJob }) {
           {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
         </p>
       )}
+      <TeamCount count={job.helperIds.length} />
+    </div>
+  )
+}
+
+/**
+ * A job as it sits in the day of somebody helping on it: an outline rather
+ * than a card, saying whose job it is.
+ */
+function ShadowJobCard({
+  job,
+  technicianName,
+  onClick,
+}: {
+  job: WorkBoardJob
+  technicianName: string | null
+  onClick?: () => void
+}) {
+  const t = useTranslations('workBoard.job')
+  return (
+    <div
+      data-testid="job-shadow"
+      className={cn(
+        'rounded-md border border-dashed border-foreground/40 bg-background/80 p-1.5 text-xs',
+        onClick && 'cursor-pointer hover:bg-muted/60'
+      )}
+      {...(onClick ? interactiveRow(onClick) : {})}
+    >
+      <div className="flex items-center gap-1">
+        <Users className="h-3 w-3 shrink-0 text-muted-foreground" />
+        <span className="truncate font-medium">{job.title}</span>
+      </div>
+      {job.vehicle && (
+        <p className="truncate text-muted-foreground">
+          {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
+          {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
+        </p>
+      )}
+      <p className="truncate text-[10px] font-medium text-muted-foreground">
+        {technicianName ? t('with', { name: technicianName }) : t('helping')}
+      </p>
     </div>
   )
 }

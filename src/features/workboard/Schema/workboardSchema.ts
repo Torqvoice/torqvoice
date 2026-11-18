@@ -63,6 +63,13 @@ export const unassignJobSchema = z.object({
   type: z.enum(['serviceRecord', 'inspection']),
 })
 
+/** Putting somebody on a job beside its technician, or taking them off it. */
+export const jobHelperSchema = z.object({
+  /** The work order. An inspection is one person's work and has no helpers. */
+  id: z.string().min(1),
+  technicianId: z.string().min(1),
+})
+
 export const updateServiceTimesSchema = z.object({
   id: z.string().min(1),
   startDateTime: z.coerce.date(),

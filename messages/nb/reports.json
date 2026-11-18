@@ -150,7 +150,7 @@
       "tableTitle": "Registrert mot fakturert",
       "clocked": "Registrert",
       "billed": "Fakturert",
-      "hint": "Registrerte timer kommer fra stemplingsklokken. Fakturerte timer er arbeidslinjene på jobber tildelt teknikeren som startet i perioden. Effektivitet er fakturert delt på registrert.",
+      "hint": "Registrerte timer kommer fra stemplingsklokken. Fakturerte timer er arbeidslinjene på jobber tildelt teknikeren som startet i perioden. En jobb med flere personer deler de fakturerte timene etter tiden hver av dem har stemplet på den; har noen av dem ikke stemplet på den, blir timene hos teknikeren. Effektivitet er fakturert delt på registrert.",
       "noClock": "Ingen tid",
       "jobsClocked": "Jobber med tid"
     }

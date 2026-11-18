@@ -15,6 +15,7 @@ import {
   Monitor,
   ListFilter,
   Plus,
+  UserX,
 } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import {
@@ -99,6 +100,7 @@ export function WorkBoardToolbar({
   onToday,
   onAddTech,
   onAddBay,
+  onTimeOff,
   onViewChange,
   onGroupingChange,
   onLayoutChange,
@@ -125,12 +127,15 @@ export function WorkBoardToolbar({
   onToday: () => void
   onAddTech: () => void
   onAddBay: () => void
+  /** Opens leave and out of office; left out when time off is switched off. */
+  onTimeOff?: () => void
   onViewChange: (view: BoardView) => void
   onGroupingChange: (grouping: LaneGrouping) => void
   onLayoutChange: (layout: BoardLayout) => void
   onToggleWeekends: () => void
 }) {
   const t = useTranslations('workBoard.toolbar')
+  const tc = useTranslations('workshopCalendar')
   const locale = useLocale()
 
   return (
@@ -299,6 +304,13 @@ export function WorkBoardToolbar({
           </Button>
         </ButtonGroup>
 
+        {onTimeOff && (
+          <Button variant="outline" size="sm" onClick={onTimeOff}>
+            <UserX className="mr-1.5 h-3.5 w-3.5" />
+            {tc('timeOff.button')}
+          </Button>
+        )}
+
         <Button variant="outline" size="sm" asChild>
           {/* Carry what you are looking at into the display, so opening the
               presenter shows the same thing rather than resetting to defaults. */}
@@ -321,6 +333,9 @@ export function WorkBoardToolbar({
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={onAddTech}>{t('addTechnician')}</DropdownMenuItem>
             <DropdownMenuItem onClick={onAddBay}>{t('addBay')}</DropdownMenuItem>
+            {onTimeOff && (
+              <DropdownMenuItem onClick={onTimeOff}>{tc('timeOff.add')}</DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

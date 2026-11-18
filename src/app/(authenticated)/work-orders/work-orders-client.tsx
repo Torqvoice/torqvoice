@@ -2,6 +2,7 @@
 
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -31,7 +32,7 @@ import {
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
-import { statusColors } from '@/lib/table-utils'
+import { CustomStatusChip, StatusBadge } from '@/components/status-badge'
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import { useListColumns } from '@/hooks/use-list-columns'
 import { WORK_ORDER_COLUMNS, type WorkOrderColumn } from '@/lib/list-columns'
@@ -64,23 +65,8 @@ import { useTranslations } from 'next-intl'
 import { getSmsTemplates } from '@/features/sms/Actions/smsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
-import { statusColorClasses } from '@/features/work-order-statuses/Lib/stages'
-import { cn } from '@/lib/utils'
 import { ListEmpty } from '@/components/list-empty'
-
-/** The workshop's own status, in its colour, beside the stage. */
-function CustomStatusChip({ status }: { status: { name: string; color: string } }) {
-  return (
-    <span
-      className={cn(
-        'max-w-40 truncate rounded-full border px-2 py-0.5 text-xs font-medium',
-        statusColorClasses(status.color).chip
-      )}
-    >
-      {status.name}
-    </span>
-  )
-}
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
 interface WorkOrder {
   id: string
@@ -108,21 +94,6 @@ interface WorkOrder {
   } | null
 }
 
-interface VehicleOption {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
-}
-
-interface CustomerOption {
-  id: string
-  name: string
-  company: string | null
-}
-
 interface PaginatedData {
   records: WorkOrder[]
   total: number
@@ -132,16 +103,9 @@ interface PaginatedData {
   statusCounts: Record<string, number>
 }
 
-const statusTabKeys = [
-  'all',
-  'active',
-  'pending',
-  'in-progress',
-  'waiting-parts',
-  'completed',
-] as const
+const statusTabKeys = LIST_STATUS_TABS.workOrders
 
-const statusTabI18nMap: Record<string, string> = {
+const statusTabI18nMap: Record<ListStatus<'workOrders'>, string> = {
   all: 'all',
   active: 'active',
   pending: 'pending',
@@ -171,8 +135,6 @@ const statusTransitions: Record<string, { actionKey: string; target: string }[]>
 
 export function WorkOrdersClient({
   data,
-  vehicles = [],
-  customers = [],
   currencyCode = DEFAULT_CURRENCY_CODE,
   search,
   statusFilter,
@@ -184,8 +146,6 @@ export function WorkOrdersClient({
   emailEnabled = false,
 }: {
   data: PaginatedData
-  vehicles?: VehicleOption[]
-  customers?: CustomerOption[]
   currencyCode?: string
   search: string
   statusFilter: string
@@ -227,6 +187,7 @@ export function WorkOrdersClient({
     Boolean
   ).length
   const t = useTranslations('workOrders.list')
+  const serviceLabel = useServiceLabels()
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
   const [showNotifyDialog, setShowNotifyDialog] = useState(false)
@@ -355,7 +316,11 @@ export function WorkOrdersClient({
               variant={isActive ? 'default' : 'outline'}
               size="sm"
               className="h-9 shrink-0 sm:h-8"
-              onClick={() => navigate({ status: key || undefined })}
+              aria-pressed={isActive}
+              onClick={() => {
+                rememberListStatus('workOrders', key)
+                navigate({ status: key })
+              }}
             >
               {t(`statusTabs.${statusTabI18nMap[key]}`)}
               {count !== undefined && (
@@ -388,6 +353,7 @@ export function WorkOrdersClient({
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('searchPlaceholder')}
+              aria-label={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="h-9 pl-9"
@@ -482,9 +448,9 @@ export function WorkOrdersClient({
                     <p className="truncate text-xs text-muted-foreground">{rowCustomer.name}</p>
                   )}
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                    <Badge variant="outline" className={`text-xs ${statusColors[r.status] || ''}`}>
-                      {r.status}
-                    </Badge>
+                    <StatusBadge kind="workOrder" status={r.status}>
+                      {serviceLabel.status(r.status)}
+                    </StatusBadge>
                     {r.customStatus && <CustomStatusChip status={r.customStatus} />}
                     <span className="font-mono">
                       {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
@@ -687,12 +653,9 @@ export function WorkOrdersClient({
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap items-center gap-1">
-                            <Badge
-                              variant="outline"
-                              className={`text-xs ${statusColors[r.status] || ''}`}
-                            >
-                              {r.status}
-                            </Badge>
+                            <StatusBadge kind="workOrder" status={r.status}>
+                              {serviceLabel.status(r.status)}
+                            </StatusBadge>
                             {r.customStatus && <CustomStatusChip status={r.customStatus} />}
                           </div>
                         </TableCell>
@@ -790,8 +753,6 @@ export function WorkOrdersClient({
       <VehiclePickerDialog
         open={showPicker}
         onOpenChange={setShowPicker}
-        vehicles={vehicles}
-        customers={customers}
         title={t('selectVehicle')}
       />
 

@@ -1,6 +1,6 @@
 'use server'
 
-import { db } from '@/lib/db'
+import { db, type TxClient } from '@/lib/db'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { withAuth } from '@/lib/with-auth'
 import {
@@ -9,19 +9,27 @@ import {
   adjustStockSchema,
 } from '../Schema/inventorySchema'
 import { onInventoryChanged } from '../Lib/onInventoryChanged'
+import { recordAbsoluteStockChange } from '../Lib/reconcileStock'
 import { Prisma } from '@/generated/prisma/client'
 import { z } from 'zod'
 import { releaseFiles, parseStoredFileUrl } from '@/lib/files/manager'
 import { inventoryPartFileUrls } from '@/lib/files/collect'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { normalizeBarcode, withBarcodeConflictMessage } from '../Lib/barcode'
+import { distinctTags, normalizePartTags } from '../Lib/partTags'
+import { partIdsWithTag, partIdsWithTagContaining } from '../Lib/tagSearch.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+
+/** Words of a list search looked at; the rest of a pasted paragraph is ignored. */
+const MAX_SEARCH_WORDS = 8
 
 export async function getInventoryPartsPaginated(params: {
   page?: number
   pageSize?: number
   search?: string
   category?: string
+  /** Restrict to parts carrying this tag, in any case. */
+  tag?: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
   /** Restrict to parts at or below their reorder point. */
@@ -34,23 +42,38 @@ export async function getInventoryPartsPaginated(params: {
       const skip = (page - 1) * pageSize
       const mode = 'insensitive' as Prisma.QueryMode
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const where: any = { organizationId, isArchived: false }
+      const where: Prisma.InventoryPartWhereInput = { organizationId, isArchived: false }
+      const and: Prisma.InventoryPartWhereInput[] = []
 
-      if (params.search) {
-        const q = params.search.trim()
-        where.OR = [
-          { name: { contains: q, mode } },
-          { partNumber: { contains: q, mode } },
-          { barcode: { contains: q, mode } },
-          { description: { contains: q, mode } },
-          { supplier: { contains: q, mode } },
-          { location: { contains: q, mode } },
-        ]
+      // Every word has to match some field or tag, in any order, so "filter
+      // hilux" finds the fuel filter tagged Hilux.
+      const words = (params.search ?? '').trim().split(/\s+/).filter(Boolean)
+      if (words.length > 0) {
+        const searched = words.slice(0, MAX_SEARCH_WORDS)
+        const tagged = await Promise.all(
+          searched.map((word) => partIdsWithTagContaining(organizationId, word))
+        )
+        searched.forEach((word, i) => {
+          and.push({
+            OR: [
+              { name: { contains: word, mode } },
+              { partNumber: { contains: word, mode } },
+              { barcode: { contains: word, mode } },
+              { description: { contains: word, mode } },
+              { supplier: { contains: word, mode } },
+              { location: { contains: word, mode } },
+              { id: { in: tagged[i] } },
+            ],
+          })
+        })
       }
 
       if (params.category && params.category !== 'all') {
         where.category = params.category
+      }
+
+      if (params.tag?.trim()) {
+        and.push({ id: { in: await partIdsWithTag(organizationId, params.tag) } })
       }
 
       if (params.lowStock) {
@@ -73,11 +96,14 @@ export async function getInventoryPartsPaginated(params: {
         FROM "public"."inventory_parts"
         WHERE "organizationId" = ${organizationId}
           AND "isArchived" = false
+          AND "trackStock" = true
           AND COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault}) > 0
           AND "quantity" <= COALESCE(NULLIF("minQuantity", 0), ${lowStockDefault})
       `
-        where.id = { in: lowRows.map((r) => r.id) }
+        and.push({ id: { in: lowRows.map((r) => r.id) } })
       }
+
+      if (and.length > 0) where.AND = and
 
       const dir = params.sortOrder || 'desc'
       const sortableColumns = [
@@ -150,6 +176,8 @@ export async function createInventoryPart(input: unknown) {
         db.inventoryPart.create({
           data: {
             ...rest,
+            // A part that does not track stock has none to start with.
+            quantity: rest.trackStock === false ? 0 : rest.quantity,
             partNumber: rest.partNumber || undefined,
             unit: rest.unit?.trim() || undefined,
             barcode: barcode ?? undefined,
@@ -161,6 +189,7 @@ export async function createInventoryPart(input: unknown) {
             supplierUrl: rest.supplierUrl || undefined,
             imageUrl: gallery?.[0]?.url || undefined,
             location: rest.location || undefined,
+            tags: normalizePartTags(rest.tags ?? []),
             userId,
             organizationId,
           },
@@ -208,9 +237,14 @@ export async function updateInventoryPart(input: unknown) {
       // gallery rows are keyed by the part alone.
       const owned = await db.inventoryPart.findFirst({
         where: { id, organizationId },
-        select: { id: true },
+        select: { id: true, trackStock: true },
       })
       if (!owned) throw new Error('Part not found')
+
+      // Left out (a page opened before the switch existed), the part keeps
+      // what it has.
+      const tracksStock = updateData.trackStock ?? owned.trackStock
+      const turningTrackingOff = owned.trackStock && !tracksStock
 
       // The images the part had before a change to them, let go at the end
       // once nothing uses them (the new gallery keeps the ones it still has).
@@ -249,28 +283,49 @@ export async function updateInventoryPart(input: unknown) {
 
       const nextBarcode =
         updateData.barcode !== undefined ? normalizeBarcode(updateData.barcode) : undefined
+      const changes: Prisma.InventoryPartUpdateManyMutationInput = {
+        ...updateData,
+        // An untracked part holds no stock and is never low, whatever
+        // the form sent. Turned back on, it starts from what is typed.
+        ...(tracksStock ? {} : { quantity: 0, lowStockAlertedAt: null }),
+        partNumber: updateData.partNumber !== undefined ? updateData.partNumber || null : undefined,
+        unit: updateData.unit !== undefined ? updateData.unit.trim() || null : undefined,
+        barcode: nextBarcode,
+        description:
+          updateData.description !== undefined ? updateData.description || null : undefined,
+        category: updateData.category !== undefined ? updateData.category || null : undefined,
+        supplier: updateData.supplier !== undefined ? updateData.supplier || null : undefined,
+        supplierPhone:
+          updateData.supplierPhone !== undefined ? updateData.supplierPhone || null : undefined,
+        supplierEmail:
+          updateData.supplierEmail !== undefined ? updateData.supplierEmail || null : undefined,
+        supplierUrl:
+          updateData.supplierUrl !== undefined ? updateData.supplierUrl || null : undefined,
+        location: updateData.location !== undefined ? updateData.location || null : undefined,
+        tags: updateData.tags !== undefined ? normalizePartTags(updateData.tags) : undefined,
+      }
+      const writePart = (client: Pick<TxClient, 'inventoryPart'>) =>
+        client.inventoryPart.updateMany({ where: { id, organizationId }, data: changes })
+
       const result = await withBarcodeConflictMessage(organizationId, nextBarcode ?? null, () =>
-        db.inventoryPart.updateMany({
-          where: { id, organizationId },
-          data: {
-            ...updateData,
-            partNumber:
-              updateData.partNumber !== undefined ? updateData.partNumber || null : undefined,
-            unit: updateData.unit !== undefined ? updateData.unit.trim() || null : undefined,
-            barcode: nextBarcode,
-            description:
-              updateData.description !== undefined ? updateData.description || null : undefined,
-            category: updateData.category !== undefined ? updateData.category || null : undefined,
-            supplier: updateData.supplier !== undefined ? updateData.supplier || null : undefined,
-            supplierPhone:
-              updateData.supplierPhone !== undefined ? updateData.supplierPhone || null : undefined,
-            supplierEmail:
-              updateData.supplierEmail !== undefined ? updateData.supplierEmail || null : undefined,
-            supplierUrl:
-              updateData.supplierUrl !== undefined ? updateData.supplierUrl || null : undefined,
-            location: updateData.location !== undefined ? updateData.location || null : undefined,
-          },
-        })
+        turningTrackingOff
+          ? // Turning tracking off empties the shelf in the ledger first, while
+            // the part still counts: one entry takes whatever was there (often
+            // a large negative) to zero, so it stops showing in stock reports.
+            db.$transaction(async (tx) => {
+              await recordAbsoluteStockChange(
+                tx,
+                organizationId,
+                id,
+                0,
+                { reason: 'stock_tracking_off', userId },
+                // A part already at zero still gets the entry: the history
+                // is where the day tracking stopped is read from.
+                { recordUnchanged: true }
+              )
+              return writePart(tx)
+            })
+          : writePart(db)
       )
       if (result.count === 0) throw new Error('Part not found')
       await releaseFiles(replacedImages, { organizationId, reason: 'inventory images replaced' })
@@ -359,14 +414,18 @@ export async function adjustInventoryStock(input: unknown) {
         where: { id, organizationId },
       })
       if (!part) throw new Error('Part not found')
+      if (part.trackStock === false) throw new Error('This part does not track stock')
 
       const newQuantity = part.quantity + adjustment
       if (newQuantity < 0) throw new Error('Insufficient stock')
 
-      await db.inventoryPart.updateMany({
-        where: { id, organizationId },
+      // Tracking is checked again in the write itself: switched off between
+      // the read above and here, the part must stay at zero.
+      const written = await db.inventoryPart.updateMany({
+        where: { id, organizationId, trackStock: true },
         data: { quantity: newQuantity },
       })
+      if (written.count === 0) throw new Error('This part does not track stock')
       await onInventoryChanged(organizationId)
       return { quantity: newQuantity }
     },
@@ -397,6 +456,27 @@ export async function getInventoryCategories() {
   )
 }
 
+/**
+ * Every tag the workshop's parts carry, sorted, for the list's tag filter and
+ * the suggestions under the part form's tag field.
+ */
+export async function getInventoryTags() {
+  return withAuth(
+    async ({ organizationId }) => {
+      const rows = await db.inventoryPart.findMany({
+        where: { organizationId, isArchived: false, tags: { isEmpty: false } },
+        select: { tags: true },
+      })
+      return distinctTags(rows.map((row) => row.tags))
+    },
+    {
+      requiredPermissions: [
+        { action: PermissionAction.READ, subject: PermissionSubject.INVENTORY },
+      ],
+    }
+  )
+}
+
 export async function getInventoryPartsList() {
   return withAuth(
     async ({ userId, organizationId }) => {
@@ -415,7 +495,9 @@ export async function getInventoryPartsList() {
           unitCost: true,
           sellPrice: true,
           quantity: true,
+          trackStock: true,
           category: true,
+          tags: true,
           gallery: {
             select: { id: true, url: true, sortOrder: true },
             orderBy: { sortOrder: 'asc' },
@@ -496,7 +578,7 @@ export async function hasAnyReorderPoint() {
       if ((Number(setting?.value) || 0) > 0) return true
 
       const configured = await db.inventoryPart.count({
-        where: { organizationId, isArchived: false, minQuantity: { gt: 0 } },
+        where: { organizationId, isArchived: false, trackStock: true, minQuantity: { gt: 0 } },
       })
       return configured > 0
     },

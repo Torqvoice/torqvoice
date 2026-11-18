@@ -9,7 +9,8 @@ import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
 import { useFormatDate } from '@/lib/use-format-date'
 import { useFormatCurrency } from '@/components/currency-settings-context'
-import { statusColors } from '@/lib/table-utils'
+import { StatusBadge } from '@/components/status-badge'
+import type { StatusKind } from '@/lib/status-colors'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { Button } from '@/components/ui/button'
 import { AskAiSheet } from '@/features/ai/Components/AskAiSheet'
@@ -73,11 +74,24 @@ import { SendSmsDialog } from '@/features/sms/Components/SendSmsDialog'
 import { TelegramQrCode } from '@/features/telegram/Components/TelegramQrCode'
 import { useServiceType } from '@/components/service-type-context'
 import { toast } from 'sonner'
+import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
+import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
+import type { RequestTextParts } from '@/features/portal/Lib/requestText'
 
 interface ServiceRequestItem {
   id: string
   description: string
+  /**
+   * The description taken apart by the page: the quick choice the customer
+   * picked in the portal, and their own words. Without it the description is
+   * shown whole.
+   */
+  words?: RequestTextParts
   preferredDate: Date | null
+  /** "morning" or "afternoon", when the customer said which suits. */
+  preferredTime?: string | null
+  /** Photos and video the customer sent from the portal, as stored file urls. */
+  attachments?: string[]
   status: string
   adminNotes: string | null
   createdAt: Date
@@ -155,11 +169,11 @@ function oneLine(text: string): string {
 
 export function CustomerDetailClient({
   customer,
-  customers = [],
   unitSystem = 'imperial',
   smsEnabled = false,
   smsMessages = [],
   smsNextCursor = null,
+  platformSmsPerDay = null,
   telegramEnabled = false,
   whatsappEnabled = false,
   telegramBotUsername = null,
@@ -173,11 +187,11 @@ export function CustomerDetailClient({
   aiEnabled = false,
 }: {
   customer: CustomerDetail
-  customers?: { id: string; name: string; company: string | null }[]
   unitSystem?: 'metric' | 'imperial'
   smsEnabled?: boolean
   smsMessages?: SmsMessage[]
   smsNextCursor?: string | null
+  platformSmsPerDay?: number | null
   telegramEnabled?: boolean
   whatsappEnabled?: boolean
   telegramBotUsername?: string | null
@@ -200,6 +214,12 @@ export function CustomerDetailClient({
 }) {
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
+  const serviceLabel = useServiceLabels()
+  const tQuoteStatus = useTranslations('quotes.statusLabels')
+  const quoteStatusLabel = useCallback(
+    (status: string) => (tQuoteStatus.has(status) ? tQuoteStatus(status) : status),
+    [tQuoteStatus]
+  )
   const serviceType = useServiceType()
   // A vessel's reading is engine hours, the same number the header calls it.
   const readingUnit = serviceType === 'marine' ? 'hrs' : unitSystem === 'metric' ? 'km' : 'mi'
@@ -563,8 +583,9 @@ export function CustomerDetailClient({
             <VehicleForm
               open={showVehicleForm}
               onOpenChange={setShowVehicleForm}
-              customers={customers}
               defaultCustomerId={customer.id}
+              defaultCustomer={customer}
+              distanceUnit={readingUnit}
             />
             {customer.vehicles.length === 0 ? (
               <Card className="border-dashed">
@@ -659,7 +680,8 @@ export function CustomerDetailClient({
         {activeTab === 'invoices' && canReadInvoices && (
           <DocumentList
             rows={invoiceRows}
-            statusStyles={statusColors}
+            statusKind="workOrder"
+            statusLabel={serviceLabel.status}
             numberLabel={t('documentTable.invoiceNumber')}
             emptyLabel={t('noInvoices')}
             search={search}
@@ -672,7 +694,8 @@ export function CustomerDetailClient({
         {activeTab === 'quotes' && canReadQuotes && (
           <DocumentList
             rows={quoteRows}
-            statusStyles={quoteStatusColors}
+            statusKind="quote"
+            statusLabel={quoteStatusLabel}
             numberLabel={t('documentTable.quoteNumber')}
             emptyLabel={t('noQuotes')}
             search={search}
@@ -691,6 +714,7 @@ export function CustomerDetailClient({
                 customerPhone={customer.phone}
                 initialMessages={smsMessages}
                 initialNextCursor={smsNextCursor}
+                platformSmsPerDay={platformSmsPerDay}
               />
             </CardContent>
           </Card>
@@ -747,18 +771,7 @@ export function CustomerDetailClient({
   )
 }
 
-// Quotes use their own status vocabulary, so they cannot share the work-order
-// palette in table-utils.
-const quoteStatusColors: Record<string, string> = {
-  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
-  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
-  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-}
-
-interface DocumentRow {
+export interface DocumentRow {
   id: string
   href: string
   number: string | null
@@ -769,7 +782,7 @@ interface DocumentRow {
   total: number
 }
 
-type DocumentSortKey = 'number' | 'title' | 'vehicle' | 'status' | 'date' | 'total'
+export type DocumentSortKey = 'number' | 'title' | 'vehicle' | 'status' | 'date' | 'total'
 
 const DOCUMENT_SORT_KEYS: DocumentSortKey[] = [
   'number',
@@ -780,13 +793,81 @@ const DOCUMENT_SORT_KEYS: DocumentSortKey[] = [
   'total',
 ]
 
+/**
+ * The rows a customer's invoice or quote list shows, searched and sorted as the
+ * reader sees them: a status matches and sorts by its label, not its stored value.
+ */
+export function visibleDocuments(
+  rows: DocumentRow[],
+  {
+    search,
+    sortBy,
+    sortOrder,
+    vehicleLabel,
+    statusLabel,
+  }: {
+    search: string
+    sortBy: DocumentSortKey
+    sortOrder: 'asc' | 'desc'
+    vehicleLabel: (v: DocumentRow['vehicle']) => string
+    statusLabel: (status: string) => string
+  }
+): DocumentRow[] {
+  const term = search.trim().toLowerCase()
+  const filtered = term
+    ? rows.filter((row) =>
+        [
+          row.number,
+          row.title,
+          vehicleLabel(row.vehicle),
+          row.vehicle?.licensePlate,
+          row.status,
+          // What the badge says, so searching for the status you see finds it.
+          statusLabel(row.status),
+        ]
+          .filter(Boolean)
+          .some((field) => field!.toLowerCase().includes(term))
+      )
+    : rows
+
+  const dir = sortOrder === 'asc' ? 1 : -1
+  // Sorting a copy: `rows` is derived from props on every render, but
+  // mutating it would still reorder the array the caller just built.
+  return [...filtered].sort((a, b) => {
+    switch (sortBy) {
+      case 'number':
+        // Unnumbered drafts sort to the end either way rather than
+        // bunching at the top under an empty string.
+        if (!a.number || !b.number) return a.number ? -1 : b.number ? 1 : 0
+        return a.number.localeCompare(b.number, undefined, { numeric: true }) * dir
+      case 'title':
+        return a.title.localeCompare(b.title) * dir
+      case 'vehicle': {
+        // Parts-only rows have no vehicle; keep them at the end either way
+        // rather than letting an empty label head the ascending sort.
+        const av = vehicleLabel(a.vehicle)
+        const bv = vehicleLabel(b.vehicle)
+        if (!av || !bv) return av ? -1 : bv ? 1 : 0
+        return av.localeCompare(bv) * dir
+      }
+      case 'status':
+        return statusLabel(a.status).localeCompare(statusLabel(b.status)) * dir
+      case 'total':
+        return (a.total - b.total) * dir
+      default:
+        return (a.date.getTime() - b.date.getTime()) * dir
+    }
+  })
+}
+
 /// Shared list for the customer's invoices and quotes: the two differ only in
 /// which number and date they carry, so the rows are normalised before they
 /// get here. Both lists are loaded whole (one customer's documents, not the
 /// whole org), so search and sort run in memory rather than round-tripping.
 function DocumentList({
   rows,
-  statusStyles,
+  statusKind,
+  statusLabel,
   numberLabel,
   emptyLabel,
   search,
@@ -795,7 +876,10 @@ function DocumentList({
   onQueryChange,
 }: {
   rows: DocumentRow[]
-  statusStyles: Record<string, string>
+  /** Which statuses the rows carry, so each is drawn in that status's own colour. */
+  statusKind: StatusKind
+  /** The status as the reader's language says it: invoices and quotes have their own. */
+  statusLabel: (status: string) => string
   numberLabel: string
   emptyLabel: string
   search: string
@@ -824,45 +908,10 @@ function DocumentList({
     commitNow: handleSearchSubmit,
   } = useDebouncedSearch(search, (term) => onQueryChange({ search: term }))
 
-  const visibleRows = useMemo(() => {
-    const term = search.trim().toLowerCase()
-    const filtered = term
-      ? rows.filter((row) =>
-          [row.number, row.title, vehicleLabel(row.vehicle), row.vehicle?.licensePlate, row.status]
-            .filter(Boolean)
-            .some((field) => field!.toLowerCase().includes(term))
-        )
-      : rows
-
-    const dir = sortOrder === 'asc' ? 1 : -1
-    // Sorting a copy: `rows` is derived from props on every render, but
-    // mutating it would still reorder the array the caller just built.
-    return [...filtered].sort((a, b) => {
-      switch (sortBy) {
-        case 'number':
-          // Unnumbered drafts sort to the end either way rather than
-          // bunching at the top under an empty string.
-          if (!a.number || !b.number) return a.number ? -1 : b.number ? 1 : 0
-          return a.number.localeCompare(b.number, undefined, { numeric: true }) * dir
-        case 'title':
-          return a.title.localeCompare(b.title) * dir
-        case 'vehicle': {
-          // Parts-only rows have no vehicle; keep them at the end either way
-          // rather than letting an empty label head the ascending sort.
-          const av = vehicleLabel(a.vehicle)
-          const bv = vehicleLabel(b.vehicle)
-          if (!av || !bv) return av ? -1 : bv ? 1 : 0
-          return av.localeCompare(bv) * dir
-        }
-        case 'status':
-          return a.status.localeCompare(b.status) * dir
-        case 'total':
-          return (a.total - b.total) * dir
-        default:
-          return (a.date.getTime() - b.date.getTime()) * dir
-      }
-    })
-  }, [rows, search, sortBy, sortOrder, vehicleLabel])
+  const visibleRows = useMemo(
+    () => visibleDocuments(rows, { search, sortBy, sortOrder, vehicleLabel, statusLabel }),
+    [rows, search, sortBy, sortOrder, vehicleLabel, statusLabel]
+  )
 
   const handleSort = (column: DocumentSortKey) => {
     // First click on a new column sorts descending for dates and amounts and
@@ -903,6 +952,7 @@ function DocumentList({
           <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder={t('documentTable.searchPlaceholder')}
+            aria-label={t('documentTable.searchPlaceholder')}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="h-9 pl-9"
@@ -968,9 +1018,9 @@ function DocumentList({
                   <span className="shrink-0 font-semibold">{formatCurrency(row.total)}</span>
                 </div>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                  <Badge variant="outline" className={`text-xs ${statusStyles[row.status] || ''}`}>
-                    {row.status}
-                  </Badge>
+                  <StatusBadge kind={statusKind} status={row.status}>
+                    {statusLabel(row.status)}
+                  </StatusBadge>
                   <span className="font-mono">{formatDate(row.date)}</span>
                   <span className="truncate">{displayVehicle(row.vehicle)}</span>
                 </div>
@@ -1020,12 +1070,9 @@ function DocumentList({
                       {displayVehicle(row.vehicle)}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${statusStyles[row.status] || ''}`}
-                      >
-                        {row.status}
-                      </Badge>
+                      <StatusBadge kind={statusKind} status={row.status}>
+                        {statusLabel(row.status)}
+                      </StatusBadge>
                     </TableCell>
                     <TableCell className="font-mono text-xs">{formatDate(row.date)}</TableCell>
                     <TableCell className="text-right font-semibold">
@@ -1042,7 +1089,8 @@ function DocumentList({
   )
 }
 
-function ServiceRequestCard({
+/** Exported for its test: the days it prints are the workshop's, not the viewer's. */
+export function ServiceRequestCard({
   request,
   smsEnabled,
   customerPhone,
@@ -1056,6 +1104,10 @@ function ServiceRequestCard({
   customerId: string
 }) {
   const t = useTranslations('customers.serviceRequests')
+  // The wished day is stored as midnight on the workshop's clock, so it is
+  // read back on that clock: in the browser's zone it is the day before for
+  // anyone looking from further west.
+  const { formatDate } = useFormatDate()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [notes, setNotes] = useState(request.adminNotes ?? '')
@@ -1124,6 +1176,8 @@ function ServiceRequestCard({
 
   const canSms = smsEnabled && !!customerPhone
   const vehicleDisplay = `${request.vehicle.year} ${request.vehicle.make} ${request.vehicle.model}`
+  // A request from the portal can start with the quick choice the customer picked.
+  const words = request.words ?? { topic: null, body: request.description }
 
   return (
     <>
@@ -1138,19 +1192,32 @@ function ServiceRequestCard({
                   {config.label}
                 </Badge>
               </div>
-              <p className="mt-1 text-sm text-muted-foreground whitespace-pre-wrap">
-                {request.description}
+              {words.topic && (
+                <p data-request-topic className="mt-1 text-sm font-medium">
+                  {words.topic}
+                </p>
+              )}
+              <p
+                className={`text-sm text-muted-foreground whitespace-pre-wrap ${words.topic ? 'mt-0.5' : 'mt-1'}`}
+              >
+                {words.body}
               </p>
               <div className="mt-2 flex gap-3 text-xs text-muted-foreground">
-                <span>
-                  {t('submitted', { date: new Date(request.createdAt).toLocaleDateString() })}
-                </span>
+                <span>{t('submitted', { date: formatDate(new Date(request.createdAt)) })}</span>
                 {request.preferredDate && (
                   <span>
-                    {t('preferred', { date: new Date(request.preferredDate).toLocaleDateString() })}
+                    {t(
+                      request.preferredTime === 'morning'
+                        ? 'preferredMorning'
+                        : request.preferredTime === 'afternoon'
+                          ? 'preferredAfternoon'
+                          : 'preferred',
+                      { date: formatDate(new Date(request.preferredDate)) }
+                    )}
                   </span>
                 )}
               </div>
+              <ServiceRequestFiles urls={request.attachments} />
               {request.adminNotes && !showNotes && (
                 <p className="mt-2 text-xs text-muted-foreground">
                   <span className="font-medium">{t('staffNotes')}</span> {request.adminNotes}

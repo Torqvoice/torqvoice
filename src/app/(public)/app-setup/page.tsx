@@ -1,11 +1,16 @@
+import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 import { AppSetupLanding } from './app-setup-landing'
 
-export const metadata: Metadata = {
-  title: 'Set up Torqvoice Tech',
-  // Nothing here is worth indexing, and the page only means anything to
-  // somebody holding a code that dies in ten minutes.
-  robots: { index: false, follow: false },
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('settings.team')
+  return {
+    // The heading the landing itself shows.
+    title: t('setupPageTitle'),
+    // Nothing here is worth indexing, and the page only means anything to
+    // somebody holding a code that dies in ten minutes.
+    robots: { index: false, follow: false },
+  }
 }
 
 /**

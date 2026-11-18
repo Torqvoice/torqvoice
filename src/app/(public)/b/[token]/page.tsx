@@ -1,9 +1,13 @@
+import { getTranslations } from 'next-intl/server'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { getBookingPage } from '@/features/inspection-reminders/Actions/bookingActions'
 import { BookingClient } from './booking-client'
 
-export const metadata: Metadata = { robots: { index: false, follow: false } }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations('portal.booking')
+  return { title: t('title'), robots: { index: false, follow: false } }
+}
 export const dynamic = 'force-dynamic'
 
 export default async function BookingPage({ params }: { params: Promise<{ token: string }> }) {

@@ -208,6 +208,7 @@ export function mapKjoretoydata(data: Kjoretoydata): VehicleLookupResult {
     fuelType: fuelType(godkjenning),
     transmission: transmission(tekniske?.motorOgDrivverk?.girkassetype),
     engineSize: engineSize(motor?.slagvolum),
+    engineCc: motor?.slagvolum && motor.slagvolum > 0 ? motor.slagvolum : undefined,
     engineCode: motor?.motorKode || undefined,
     vehicleClass:
       godkjenning?.kjoretoyklassifisering?.tekniskKode?.kodeNavn ||

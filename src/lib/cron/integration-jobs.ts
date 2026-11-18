@@ -1,5 +1,6 @@
 import { CronJob } from 'cron'
 import { isDemoMode } from '@/lib/demo'
+import { createLogger } from '@/lib/logger'
 import { createTickSummary } from './tick-summary'
 import {
   cleanupIntegrationHistory,
@@ -7,6 +8,8 @@ import {
   runDueJobs,
   scheduleDueSyncs,
 } from '@/features/integrations/Lib/jobs'
+
+const log = createLogger('cron')
 
 /**
  * Integration job runner, every minute: put back anything a crashed worker
@@ -23,15 +26,15 @@ export function processIntegrationJobs() {
   const job = new CronJob('* * * * *', async () => {
     try {
       const recovered = await recoverStuckJobs()
-      if (recovered > 0) console.warn(`[cron] Recovered ${recovered} stuck integration jobs`)
+      if (recovered > 0) log.warn('Recovered stuck integration jobs', { count: recovered })
       await scheduleDueSyncs()
       summary.add(await runDueJobs(50))
     } catch (err) {
-      console.error('[cron] Integration job runner failed:', err)
+      log.error('Integration job runner failed', { err })
     }
   })
   job.start()
-  console.warn('[cron] Integration job runner started (every minute)')
+  log.info('Integration job runner started (every minute)')
 }
 
 /** Daily at 03:40 UTC: logs older than 30 days, finished jobs older than 7. */
@@ -40,10 +43,10 @@ export function cleanupIntegrationLogs() {
     try {
       const result = await cleanupIntegrationHistory()
       if (result.jobs || result.logs) {
-        console.warn(`[cron] Integration cleanup: ${result.jobs} jobs, ${result.logs} log lines`)
+        log.info('Integration cleanup', { jobs: result.jobs, logLines: result.logs })
       }
     } catch (err) {
-      console.error('[cron] Integration cleanup failed:', err)
+      log.error('Integration cleanup failed', { err })
     }
   })
   job.start()

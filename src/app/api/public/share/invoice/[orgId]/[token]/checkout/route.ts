@@ -10,8 +10,10 @@ import {
 import { writeLog } from '@/features/integrations/Lib/connections'
 import { rateLimit } from '@/lib/rate-limit'
 import { resolvePortalOrg } from '@/lib/portal-slug'
-import { calculateTotals, discountAmountFor } from '@/lib/tax'
+import { refuseClosedShareLink } from '@/lib/share-link-route'
+import { invoiceDisplayTotal } from '@/lib/invoice-display-total'
 import { getFeatures } from '@/lib/features'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 
 const checkoutSchema = z.object({
   provider: z.enum(PAYMENT_CONNECTOR_IDS as [string, ...string[]]),
@@ -32,14 +34,18 @@ export async function POST(
     const resolvedOrg = await resolvePortalOrg(orgParam)
     const orgId = resolvedOrg?.id ?? orgParam
 
+    const closed = await refuseClosedShareLink('invoice', token, orgId)
+    if (closed) return closed
+
     const record = await db.serviceRecord.findUnique({
       where: { publicToken: token },
       include: {
         payments: true,
         partItems: true,
         laborItems: true,
+        customer: { select: { email: true } },
         vehicle: {
-          select: { organizationId: true },
+          select: { organizationId: true, customer: { select: { email: true } } },
         },
       },
     })
@@ -64,24 +70,8 @@ export async function POST(
 
     const { provider, amount } = parsed.data
 
-    // Calculate balance due — mirrors invoice-view.tsx so the server's
-    // notion of total matches what the customer sees on the share page.
-    const partsSubtotal = record.partItems.reduce((sum, p) => sum + p.total, 0)
-    const laborSubtotal = record.laborItems.reduce((sum, l) => sum + l.total, 0)
-    const computedSubtotal = partsSubtotal + laborSubtotal
-    const computedDiscount = discountAmountFor(
-      computedSubtotal,
-      record.discountType,
-      record.discountValue
-    )
-    const { totalAmount: computedTotal } = calculateTotals({
-      subtotal: computedSubtotal,
-      discountAmount: computedDiscount,
-      taxRate: record.taxRate,
-      taxInclusive: record.taxInclusive ?? false,
-    })
-    const displayTotal =
-      record.totalAmount > 0 ? record.totalAmount : computedTotal > 0 ? computedTotal : record.cost
+    // The same total the customer sees on the share page.
+    const displayTotal = invoiceDisplayTotal(record)
     const paidFromPayments = record.payments.reduce((sum, p) => sum + p.amount, 0)
     const totalPaid = record.manuallyPaid ? displayTotal : paidFromPayments
     const balanceDue = displayTotal - totalPaid
@@ -111,6 +101,20 @@ export async function POST(
     const { currencyCode } = await workshopCurrencySettings(orgId)
     const invoiceNumber = record.invoiceNumber || `INV-${record.id.slice(-8).toUpperCase()}`
 
+    // Some vendors will not start a payment without an email. A customer who
+    // has none still gets to pay: the workshop's own address stands in, and
+    // the vendor's receipt goes there.
+    const customerEmail = (record.customer ?? record.vehicle?.customer)?.email?.trim()
+    const payerEmail =
+      customerEmail ||
+      (
+        await db.appSetting.findFirst({
+          where: { organizationId: orgId, key: SETTING_KEYS.WORKSHOP_EMAIL },
+          select: { value: true },
+        })
+      )?.value?.trim() ||
+      null
+
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''
     const invoiceUrl = `${appUrl}/share/invoice/${orgId}/${token}`
 
@@ -124,6 +128,7 @@ export async function POST(
         cancelUrl: invoiceUrl,
         serviceRecordId: record.id,
         orgId,
+        payerEmail,
       })
       return NextResponse.json(result)
     } catch (error) {

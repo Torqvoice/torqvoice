@@ -1,7 +1,8 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { MessageCircle, MessageSquare, Send } from 'lucide-react'
+import { Mail, MessageCircle, MessageSquare, MessagesSquare, Send } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import type { MessagingChannel } from '../Actions/inboxActions'
 
 /**
@@ -27,6 +28,18 @@ const STYLES: Record<MessagingChannel, { label: string; className: string; Icon:
     className: 'bg-blue-500/15 text-blue-700 dark:text-blue-300',
     Icon: Send,
   },
+  email: {
+    label: 'Email',
+    className: 'bg-amber-500/15 text-amber-700 dark:text-amber-300',
+    Icon: Mail,
+  },
+  // The customer portal's chat. Its name is a word, not a brand, so the
+  // badge says it in the reader's language (messaging.portal.badge).
+  portal: {
+    label: 'Portal',
+    className: 'bg-violet-500/15 text-violet-700 dark:text-violet-300',
+    Icon: MessagesSquare,
+  },
 }
 
 export function ChannelBadge({
@@ -38,9 +51,11 @@ export function ChannelBadge({
   className?: string
   withIcon?: boolean
 }) {
+  const t = useTranslations('messaging.portal')
   const style = STYLES[channel]
   if (!style) return null
   const { Icon } = style
+  const label = channel === 'portal' ? t('badge') : style.label
 
   return (
     <span
@@ -51,7 +66,7 @@ export function ChannelBadge({
       )}
     >
       {withIcon && <Icon className="h-3 w-3" />}
-      {style.label}
+      {label}
     </span>
   )
 }

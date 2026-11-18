@@ -196,10 +196,12 @@ export function SignatureCard({ initial }: { initial: string | null }) {
       return
     }
     setBusy(true)
-    const result = await saveMySignature(dataUri)
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await saveMySignature(dataUri).catch(() => null)
     setBusy(false)
-    if (!result.success) {
-      toast.error(result.error || t('signatureSaveFailed'))
+    if (!result?.success) {
+      toast.error(result?.error || t('signatureSaveFailed'))
       return
     }
     setSaved(dataUri)
@@ -209,10 +211,10 @@ export function SignatureCard({ initial }: { initial: string | null }) {
 
   const onRemove = async () => {
     setBusy(true)
-    const result = await removeMySignature()
+    const result = await removeMySignature().catch(() => null)
     setBusy(false)
-    if (!result.success) {
-      toast.error(result.error || t('signatureSaveFailed'))
+    if (!result?.success) {
+      toast.error(result?.error || t('signatureSaveFailed'))
       return
     }
     setSaved(null)

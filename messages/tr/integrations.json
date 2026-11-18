@@ -13,6 +13,8 @@
     "availableTitle": "Kullanılabilir",
     "availableDescription": "Ekleyebileceğiniz hizmetler. Her biri bir kez kurulur ve arka planda çalışır.",
     "allConnected": "Kullanılabilir tüm hizmetler bağlı.",
+    "cloudOnly": "Yalnızca bulut",
+    "cloudOnlyHint": "Torqvoice Cloud'da kullanılabilir",
     "searchPlaceholder": "Entegrasyonlarda ara",
     "noMatches": "\"{query}\" ile eşleşen bir şey yok.",
     "readMore": "Daha fazla bilgi",
@@ -30,6 +32,7 @@
     "automation": "Otomasyon",
     "storage": "Dosyalar",
     "registry": "Araç kayıt sistemi",
+    "repair": "Onarım verileri",
     "other": "Diğer",
     "ai": "Yapay zekâ"
   },
@@ -70,6 +73,16 @@
       "invoices": "Faturalar muhasebeye",
       "customers": "Müşteriler muhasebeye",
       "payments": "Ödemeler iki yönlü"
+    },
+    "backup": {
+      "target": "Yedekleme hedefi"
+    },
+    "repair": {
+      "labor": "İş emirlerinde ve tekliflerde işçilik süreleri",
+      "fluids": "Sıvı türleri ve kapasiteleri"
+    },
+    "diagnostics": {
+      "codes": "Arıza kodu anlamları"
     }
   },
   "statuses": {
@@ -138,13 +151,18 @@
     "inboundUrl": "Gelen webhook URL'si",
     "inboundHintSecret": "Bu URL'yi sağlayıcının gelen mesaj ayarlarına yapıştırın. Atölyenizi tanımlayan bir sır içerdiği için gizli tutun.",
     "inboundHintMeta": "Bu URL'yi, yukarıda girdiğiniz doğrulama tokeniyle birlikte Meta uygulamanızda geri çağırma URL'si olarak yapıştırın ve mesajlara abone olun.",
-    "inboundHintStripe": "Bu URL'yi Stripe panelinde Developers, Webhooks altında checkout.session.completed olayına abone olarak ekleyin. Ardından Stripe'ın gösterdiği imza sırrını buradaki webhook sırrı alanına yapıştırın ki bildirimler doğrulanabilsin.",
+    "inboundHintStripe": "Bu URL'yi Stripe panelinde ekleyin: Workbench'i, ardından Webhooks'u açın, Create an event destination'ı seçin ve checkout.session.completed olayına abone olun. Stripe daha sonra bu uç nokta için bir imza sırrı gösterir; her bildirimin imzasıyla doğrulanması için onu buradaki imza sırrı alanına yapıştırın. O zamana kadar Torqvoice her bildirimi, ödemeyi Stripe'a sorarak doğrular.",
     "inboundHintVipps": "Bu URL'yi Vipps MobilePay portalında geri çağırma URL'si olarak girin. Vipps ayrıca yayımlanmış satış koşulları ister; bunlar Ayarlar, Ödeme altında ayarlanır.",
     "inboundHintPaypal": "Bu URL'yi PayPal geliştirici panelinde Webhooks altında PAYMENT.CAPTURE.COMPLETED olayına abone olarak ekleyin.",
+    "inboundHintPaystack": "Bu URL'yi Paystack panelinde Settings, API Keys & Webhooks altında Webhook URL olarak yapıştırın. Paystack test modu için bir, canlı mod için bir adres tutar; anahtarınızın ait olduğu modda ayarlayın.",
     "copy": "Kopyala",
     "copied": "Kopyalandı",
     "updateKeys": "Anahtarları güncelle",
     "updateKeysHint": "Son kontrol başarısız oldu. Yeniden denemek için anahtarları tekrar girin.",
+    "awaitingKeys": "Bağlandı, ancak hâlâ eksik: {keys}.",
+    "awaitingKeysHint": "Webhook sağlayıcıya zaten yanıt veriyor, bu yüzden şimdi kaydedin. Sağlayıcı bu değerleri verdiğinde buraya ekleyin.",
+    "saveKeys": "Anahtarları kaydet",
+    "keysSaved": "Anahtarlar kaydedildi",
     "inspectionSync": {
       "title": "Muayene eşitleme",
       "vehicles": "Bu atölyede plakalı {count} araç",
@@ -154,11 +172,101 @@
       "never": "Henüz tam tarama yok",
       "inProgress": "Bir tarama sürüyor",
       "off": "Ayarı açıp kaydedin; o zamana kadar tarama hiçbir şeyi kontrol etmez.",
-      "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder."
+      "syncNowHelp": "Şimdi eşitle, saatlik taramayı beklemek yerine hemen bir tarama başlatır. Her seferinde 25 aracı sorgular ve sırası gelen tüm araçlar bitene kadar kendi kendine devam eder. İlk tarama plakası olan her aracı sorgular.",
+      "confirmTitle": "Araçlar şimdi sorgulansın mı?",
+      "confirmDescription": "Plakası olan {total} aracın {count} tanesi şimdi {name} üzerinde, her seferinde 25 araç olmak üzere sorgulanacak ve muayene tarihleri kaydedilecek. Yakın zamanda kontrol edilen araçlar atlanır. {name} sorgu başına ücret alıyorsa bulunan her araç hesabınıza faturalanır.",
+      "confirmLabel": "{count} aracı sorgula",
+      "nothingDue": "Plakası olan tüm araçlar yakın zamanda kontrol edildi, şimdilik sorgulanacak bir şey yok."
     },
     "supersedes": "{next} bağlandığında {current} bağlantısı kesilir. Aynı anda yalnızca biri geçerli olabilir; {next} devreye girdiği anda {current} kullanılmayı bırakır.",
+    "platformHandlesBackupsTitle": "Yedekleme zaten dahil",
+    "platformHandlesBackups": "Torqvoice bu atölyeyi zaten her saat yedekliyor ve geri yükleme noktalarını 30 gün saklıyor. Torqvoice olmadan da okunabilen, size ait bir kopya da istiyorsanız bir bucket bağlayın.",
+    "platformHandlesBackupsLink": "Geri yükleme noktalarını görün",
     "batchRetried": "{count, plural, =0 {Yeniden denenecek bir şey yok} one {# iş yeniden kuyruğa alındı} other {# iş yeniden kuyruğa alındı}}",
-    "advanced": "Gelişmiş"
+    "advanced": "Gelişmiş",
+    "generate": "Oluştur",
+    "show": "Göster",
+    "hide": "Gizle",
+    "generatedPasswordWarning": "Bu parolanın bir kopyasını bu sunucudan uzakta, güvenli bir yerde saklayın. Parola olmadan bu yedekleri kimse açamaz, Torqvoice bile.",
+    "backup": {
+      "title": "Yedekler",
+      "description": "Bu hedefe son başarılı yedeğin ne zaman alındığı, bir sonrakinin ne zaman çalışacağı ve son çalıştırmalar.",
+      "lastGood": "Son başarılı yedek",
+      "added": "{size} eklendi",
+      "never": "Henüz yok",
+      "nextRun": "Sonraki çalıştırma",
+      "notScheduled": "Planlanmadı",
+      "repositorySize": "Hedefte depolanan",
+      "runNow": "Şimdi yedekle",
+      "running": "Yedekleniyor",
+      "runningHint": "Bir yedekleme çalışıyor. Bu sayfa, işlem bitene kadar kendiliğinden güncellenir.",
+      "started": "Yedekleme başlatıldı",
+      "recentTitle": "Son çalıştırmalar",
+      "noRuns": "Henüz hiç yedekleme çalışmadı.",
+      "addedNote": "İlk çalıştırma her şeyi yükler. Sonraki her çalıştırma yalnızca o zamandan beri değişen parçaları ekler, bu yüzden küçüktür. Yine de her yedek eksiksizdir ve tek başına geri yüklenebilir ya da incelenebilir.",
+      "notStarted": "Başlamadı",
+      "filesNewCount": "{count, plural, one {# yeni dosya} other {# yeni dosya}}",
+      "columns": {
+        "status": "Durum",
+        "started": "Başlangıç",
+        "trigger": "Başlatan",
+        "duration": "Süre",
+        "filesNew": "Yeni dosyalar",
+        "bytesAdded": "Eklenen"
+      },
+      "trigger": {
+        "scheduled": "Zamanlama",
+        "manual": "Elle",
+        "restore": "Geri yükleme"
+      },
+      "status": {
+        "queued": "Kuyrukta",
+        "running": "Çalışıyor",
+        "done": "Tamamlandı",
+        "failed": "Başarısız",
+        "skipped": "Atlandı"
+      },
+      "restoring": "Geri yükleniyor",
+      "restoringHint": "Bir geri yükleme çalışıyor: atölyenin verileri yedektekilerle değiştiriliyor. Bu sayfa, işlem bitene kadar kendiliğinden güncellenir. O zamana kadar atölyede çalışmayın.",
+      "explore": "İncele",
+      "restore": {
+        "showAll": "Tüm yedekleri göster",
+        "refresh": "Yenile",
+        "loading": "Hedefteki yedekler okunuyor",
+        "loadFailed": "Yedekler listelenemedi",
+        "empty": "Bu hedefte henüz yedek yok.",
+        "needsOwner": "Burada bir yedeği yalnızca atölyenin sahibi geri yükleyebilir.",
+        "needsAdmin": "Bir yedeği yalnızca bir sahip veya yönetici geri yükleyebilir.",
+        "filesIncluded": "Fotoğraflar ve dosyalar dahil",
+        "filesNotIncluded": "Fotoğraflar ve dosyalar dahil değil",
+        "earlierInstall": "Önceki kurulum",
+        "action": "Geri yükle",
+        "dialogTitle": "{time} tarihli yedek geri yüklensin mi?",
+        "warning": "Geri yükleme <bold>bu atölyede şu anda bulunan her şeyin yerini alır</bold>: müşteriler, araçlar, iş emirleri, faturalar, ayarlar ve yedek içeriyorsa fotoğraflar ile dosyalar. Yedek alındıktan sonra eklenen her şey kaybolur. Bu işlem geri alınamaz.",
+        "secretsNote": "Yedeğin dışarıda bıraktığı gizli anahtarlar, bu kurulumda şu anda bulunan değerlerini korur. Kullanıcı hesaplarına ve parolalara dokunulmaz.",
+        "confirmPrompt": "Onaylamak için atölyenin adını yazın: <bold>{name}</bold>.",
+        "whileRunning": "Geri yükleme arka planda çalışır ve çok sayıda fotoğraf olduğunda birkaç dakika sürer. Sayfa, işlem bitene kadar kendiliğinden güncellenir.",
+        "cancel": "İptal",
+        "confirm": "Bu yedeği geri yükle",
+        "started": "Geri yükleme başlatıldı"
+      }
+    },
+    "lockedBackups": "Atölyenizin size ait depolamaya zamanlanmış, şifreli yedekleri.",
+    "searchOrType": "Ara veya bir ad yaz",
+    "useTyped": "\"{value}\" değerini kullan",
+    "listNeedsKeys": "Listeyi görmek için önce yukarıdaki anahtarları girin",
+    "listEmpty": "Hiçbir şey listelenmedi. Bunun yerine adı yazın.",
+    "testing": "Bağlantı test ediliyor",
+    "testOk": "Bağlantı çalışıyor: bir test nesnesi yazıldı ve yeniden silindi.",
+    "testFailed": "Test başarısız oldu",
+    "testSteps": {
+      "settings": "Sağlayıcı ayarlarını kontrol edin",
+      "list": "Anahtar bucket'ı listeleyemiyor",
+      "write": "Anahtar bucket'a yazamıyor",
+      "delete": "Anahtar bucket'tan silemiyor",
+      "folder": "Klasör oluşturulamıyor veya açılamıyor"
+    },
+    "testHint": "Bağlanmadan önce test etmek için anahtarları ve bucket'ı doldurun. Test küçük bir nesne yazar ve onu siler."
   },
   "activity": {
     "title": "Aktivite",
@@ -181,7 +289,10 @@
     },
     "noFailures": "Hiçbiri başarısız olmadı.",
     "retryFailed": "Başarısızları yeniden dene",
-    "details": "Ayrıntıları göster"
+    "details": "Ayrıntıları göster",
+    "loadingMore": "Daha eski işler yükleniyor",
+    "loadFailed": "Daha eski işler yüklenemedi.",
+    "cleared": "Tamamlanan işler 7 gün sonra silinir."
   },
   "errors": {
     "generic": "Bir şeyler ters gitti",
@@ -195,7 +306,10 @@
     "invalid": "Sağlayıcının yanıtı eksikti. Yeniden deneyin.",
     "state": "Bu oturum açma işleminin süresi doldu veya başka bir oturuma ait. Yeniden başlayın.",
     "exchange": "Sağlayıcı oturum açmayı reddetti. Uygulama kimlik bilgilerini kontrol edip yeniden deneyin.",
-    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin."
+    "identify": "Bağlandı, ancak hesap okunamadı. Yeniden bağlanmayı deneyin.",
+    "backupRunning": "Zaten çalışan bir yedekleme var.",
+    "restoreOwnerOnly": "Torqvoice Cloud'da bir yedeği yalnızca atölyenin sahibi geri yükleyebilir.",
+    "restoreBusy": "Bu sunucuda zaten bir yedekleme veya geri yükleme çalışıyor. İşlem bitince yeniden deneyin."
   },
   "meeting": {
     "join": "Görüntülü görüşmeye katıl",
@@ -226,6 +340,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 Takvimi",
       "description": "Planlanmış iş emirlerini bir Outlook takvimine ekleyin, Microsoft Teams bağlantısı ekleyin ve takvimin meşgul zamanlarını Torqvoice içinde görün.",
       "tenantHelp": "Microsoft Entra'da (App registrations) bir uygulama kaydedin, kişisel ve iş hesaplarına izin verin, aşağıdaki yönlendirme URI'sini Web platformu olarak ekleyin, bir istemci gizli anahtarı oluşturun ve her ikisini buraya yapıştırın.",
       "fields": {
@@ -298,7 +413,10 @@
         "verifyToken": "Webhook doğrulama tokeni",
         "appSecret": "Uygulama sırrı",
         "apiVersion": "Graph API sürümü",
-        "appSecretHelp": "Meta her teslimatı bununla imzalar. Girilene kadar webhook'a gönderilen mesajlar reddedilir; aksi halde URL'yi öğrenen herkes müşterileriniz adına mesaj gönderebilir."
+        "appSecretHelp": "Meta her teslimatı bununla imzalar. Girilene kadar webhook'a gönderilen mesajlar reddedilir; aksi halde URL'yi öğrenen herkes müşterileriniz adına mesaj gönderebilir.",
+        "phoneNumberIdHelp": "WhatsApp Manager'da, gönderim yaptığınız numaranın yanında; telefon numarasının kendisi değildir. Meta bunu yalnızca webhook doğrulandıktan sonra verir; bu yüzden boş bırakın, bağlanın, webhook'u kaydedin ve sonra geri dönüp ekleyin.",
+        "accessTokenHelp": "Kalıcı bir sistem kullanıcısı jetonu. Meta'nın kurulum sırasında gösterdiği jeton 24 saat içinde sona erer. Webhook doğrulandıktan sonra telefon numarası kimliğiyle birlikte ekleyin.",
+        "verifyTokenHelp": "Seçtiğiniz herhangi bir ifade. Webhook'u kaydederken aynısını Meta'ya yapıştırın."
       },
       "settings": {
         "enabled": "Bu kanaldan mesaj gönder",
@@ -417,7 +535,19 @@
       },
       "settings": {
         "syncInspections": "Bu atölyedeki tüm araçların muayene tarihlerini güncel tut",
-        "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki EU-kontroll tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
+        "syncInspectionsHelp": "Saatte bir, kontrolü gelen araçlar plakadan sorgulanır ve sonraki EU-kontroll tarihi kaydedilir; bir aracın ne sıklıkla yeniden kontrol edileceği aşağıda ayarlanır. Yalnızca bu atölyede kayıtlı araçlar gönderilir.",
+        "inspectionRecheck": "Zaten tarihi olan araçları yeniden kontrol et",
+        "inspectionRecheckHelp": "Bir tarih yalnızca muayene geçildiğinde değişir. Aylık, erken yapılan bir muayeneyi en çabuk fark eder; yalnızca son tarihe yakın en az maliyetlidir. Son tarihe yakınken her araç, buradaki seçimden bağımsız olarak haftalık kontrol edilir.",
+        "recheckMonthly": "Her ay",
+        "recheckQuarterly": "Üç ayda bir",
+        "recheckNearDeadline": "Yalnızca son tarihe yakın",
+        "inspectionSoonDays": "Son tarihe yakın demek şu süre içinde",
+        "inspectionSoonDaysHelp": "Bu pencerede bir araç haftalık kontrol edilir, böylece geçilen bir muayene aracı günler içinde hatırlatma listesinden çıkarır. Daha kısa pencere daha az sorgu demektir.",
+        "soon30": "30 gün",
+        "soon60": "60 gün",
+        "soon90": "90 gün",
+        "inspectionOnlyWithCustomer": "Yalnızca müşterisi olan araçlar",
+        "inspectionOnlyWithCustomerHelp": "Kayıtlı müşterisi olmayan araçları atla. Onlar için kimseye hatırlatma gönderilemez, bu yüzden sorgulamak boşa maliyet olur."
       }
     },
     "openapi-automotive": {
@@ -429,8 +559,33 @@
       "settings": {
         "country": "Ülke",
         "countryHelp": "Aranacak sicil. Fransız ve İtalyan plakaları aynı görünür, bu yüzden ülke plakadan okunamaz.",
-        "bikes": "Motosikletleri de sorgula",
-        "bikesHelp": "Bir plaka otomobil değilse motosiklet sicili de sorgulanır. Otomobil tarafında sonuçsuz sorgu ücretsizdir, bu nedenle bir motosiklet bulunmadıkça ek maliyet oluşmaz. Portekiz için kullanılamaz."
+        "cars": "Otomobilleri sorgula",
+        "carsHelp": "Otomobil sicilini sorgular. Yalnızca motosikletle çalışıyorsanız kapatın, böylece sorgu otomobil aramasını atlar ve daha hızlı yanıt verir.",
+        "bikes": "Motosikletleri sorgula",
+        "bikesHelp": "Motosiklet sicilini sorgular. Otomobiller de açıksa yalnızca hiçbir otomobil eşleşmediğinde sorgulanır ve otomobil tarafında sonuçsuz sorgu ücretsizdir. Portekiz için kullanılamaz."
+      }
+    },
+    "checkcardetails": {
+      "description": "Bir aracı İngiliz plakasından veya VIN'inden doldurun: marka, model, yıl, renk, yakıt, motor hacmi ve MOT bitiş tarihi, Check Car Details üzerinden DVLA verileriyle. Otomobiller ve motosikletler aynı sicilden gelir. Hesabınızda UK Vehicle Data açıksa VIN, şanzıman ve ağırlıklar da gelir. Her sorgu atölyenin kendi Check Car Details hesabına faturalanır. Sahip bilgisi döndürülmez.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "api.checkcardetails.co.uk üzerinde bir hesap açın ve API Keys altındaki canlı anahtarı kopyalayın. Vehicle Registration her hesapta vardır. VIN'i de almak için Your Data Points altında UK Vehicle Data yanındaki Request Access'e tıklayın; sorgular açılır açılmaz onu kullanır. Test anahtarı yalnızca A harfi içeren plakaları bulur."
+      },
+      "settings": {
+        "syncInspections": "Bu atölyedeki tüm araçların MOT tarihlerini güncel tut",
+        "syncInspectionsHelp": "Bu açıkken plakası olan her araç bir kez sorgulanır ve MOT tarihi kaydedilir. Sonrasında araçlar aşağıda ayarlandığı gibi yeniden kontrol edilir. Bulunan her araç bir Vehicle Registration sorgusu olarak ücretlendirilir; kayıtta olmayan plakalar ücretsizdir. Yalnızca bu atölyede kayıtlı araçlar gönderilir.",
+        "inspectionRecheck": "Zaten tarihi olan araçları yeniden kontrol et",
+        "inspectionRecheckHelp": "Bir tarih yalnızca muayene geçildiğinde değişir. Aylık, erken yapılan bir muayeneyi en çabuk fark eder; yalnızca son tarihe yakın en az maliyetlidir. Son tarihe yakınken her araç, buradaki seçimden bağımsız olarak haftalık kontrol edilir.",
+        "recheckMonthly": "Her ay",
+        "recheckQuarterly": "Üç ayda bir",
+        "recheckNearDeadline": "Yalnızca son tarihe yakın",
+        "inspectionSoonDays": "Son tarihe yakın demek şu süre içinde",
+        "inspectionSoonDaysHelp": "Bu pencerede bir araç haftalık kontrol edilir, böylece geçilen bir muayene aracı günler içinde hatırlatma listesinden çıkarır. Daha kısa pencere daha az sorgu demektir.",
+        "soon30": "30 gün",
+        "soon60": "60 gün",
+        "soon90": "90 gün",
+        "inspectionOnlyWithCustomer": "Yalnızca müşterisi olan araçlar",
+        "inspectionOnlyWithCustomerHelp": "Kayıtlı müşterisi olmayan araçları atla. Onlar için kimseye hatırlatma gönderilemez, bu yüzden sorgulamak boşa maliyet olur."
       }
     },
     "rdw": {
@@ -441,7 +596,19 @@
       },
       "settings": {
         "syncInspections": "Bu atölyedeki tüm araçların APK tarihlerini güncel tut",
-        "syncInspectionsHelp": "Saatte bir, yakın zamanda kontrol edilmemiş araçlar plakayla sorgulanır ve bir sonraki APK tarihi kaydedilir. Yalnızca bu atölyede kayıtlı araçlar gönderilir. Bir araç ayda bir, süresi iki aydan az kaldığında haftada bir yeniden kontrol edilir."
+        "syncInspectionsHelp": "Saatte bir, kontrolü gelen araçlar plakadan sorgulanır ve sonraki APK tarihi kaydedilir; bir aracın ne sıklıkla yeniden kontrol edileceği aşağıda ayarlanır. Yalnızca bu atölyede kayıtlı araçlar gönderilir.",
+        "inspectionRecheck": "Zaten tarihi olan araçları yeniden kontrol et",
+        "inspectionRecheckHelp": "Bir tarih yalnızca muayene geçildiğinde değişir. Aylık, erken yapılan bir muayeneyi en çabuk fark eder; yalnızca son tarihe yakın en az maliyetlidir. Son tarihe yakınken her araç, buradaki seçimden bağımsız olarak haftalık kontrol edilir.",
+        "recheckMonthly": "Her ay",
+        "recheckQuarterly": "Üç ayda bir",
+        "recheckNearDeadline": "Yalnızca son tarihe yakın",
+        "inspectionSoonDays": "Son tarihe yakın demek şu süre içinde",
+        "inspectionSoonDaysHelp": "Bu pencerede bir araç haftalık kontrol edilir, böylece geçilen bir muayene aracı günler içinde hatırlatma listesinden çıkarır. Daha kısa pencere daha az sorgu demektir.",
+        "soon30": "30 gün",
+        "soon60": "60 gün",
+        "soon90": "90 gün",
+        "inspectionOnlyWithCustomer": "Yalnızca müşterisi olan araçlar",
+        "inspectionOnlyWithCustomerHelp": "Kayıtlı müşterisi olmayan araçları atla. Onlar için kimseye hatırlatma gönderilemez, bu yüzden sorgulamak boşa maliyet olur."
       }
     },
     "regcheck": {
@@ -482,6 +649,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI uyumlu",
       "description": "Servis açıklamaları, geçmiş özetleri, belge okuma ve asistan, OpenAI sohbet API'sini konuşan herhangi bir sunucu tarafından yanıtlanır: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ve benzerleri. Verileriniz kendi donanımınızda kalır.",
       "fields": {
         "baseUrl": "Temel URL",
@@ -501,7 +669,7 @@
         "secretKeyHelp": "Stripe panelinde Developers, API keys altından. Test anahtarları gerçek hiçbir şeyi işlemez; önce onlarla bir ödeme deneyin, sonra canlı anahtarlara geçin.",
         "publishableKey": "Yayımlanabilir anahtar",
         "webhookSecret": "Webhook imza sırrı",
-        "webhookSecretHelp": "Bu sayfadaki bildirim URL'sini webhook olarak eklediğinizde Stripe gösterir. Onunla her bildirim, ödeme kaydedilmeden önce doğrulanır."
+        "webhookSecretHelp": "İsteğe bağlıdır ve bağlandıktan sonra da eklenebilir. Bu sayfadaki bildirim URL'si uç nokta olarak eklendiğinde Stripe bunu Reveal secret altında gösterir. Onunla her bildirim imzasıyla doğrulanır; onsuz Torqvoice bir ödemeyi kaydetmeden önce Stripe'a ödemeyi sorar."
       },
       "settings": {
         "enabled": "Fatura bağlantılarında sun",
@@ -535,6 +703,17 @@
         "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir.",
         "sandbox": "Sandbox modu",
         "sandboxHelp": "PayPal sandbox'ını sandbox uygulama anahtarlarıyla kullanın. Tam bir ödeme geçene kadar açık bırakın, sonra kapatıp canlı uygulamanın anahtarlarını girin."
+      }
+    },
+    "paystack": {
+      "description": "Fatura bağlantısından Paystack ile ödeme, kendi Paystack hesabınıza. Müşteri ülkeye göre kartla, banka havalesiyle veya mobil parayla öder ve fatura kendiliğinden ödendi olarak işaretlenir.",
+      "fields": {
+        "secretKey": "Gizli anahtar",
+        "secretKeyHelp": "Paystack panelinde Settings, API Keys & Webhooks altında. Test anahtarı (sk_test_) gerçek hiçbir şey işlemez, bu yüzden önce onunla bir ödeme deneyin, sonra canlı anahtara geçin."
+      },
+      "settings": {
+        "enabled": "Fatura bağlantılarında sun",
+        "enabledHelp": "Bağlantıyı kesmeden ödeme düğmesini paylaşılan faturalardan bir süreliğine kaldırmak için kapatın. Zaten başlatılmış ödemeler yine kaydedilir."
       }
     },
     "quickbooks": {
@@ -571,6 +750,192 @@
         "manualPaidAsPaymentHelp": "Torqvoice'ta ödeme kaydı olmadan ödendi olarak işaretlenen bir fatura, QuickBooks'ta hâlâ alacak görünen tutar kadar tek bir ödeme alır. Kapalıysa bir ödeme kaydedilene kadar orada açık kalır.",
         "pullPayments": "QuickBooks'ta kaydedilen ödemeleri geri al",
         "pullPaymentsHelp": "Her 30 dakikada bir. QuickBooks'ta bir Torqvoice faturası için alınan ödeme burada faturaya kaydedilir."
+      }
+    },
+    "xero": {
+      "description": "Kesilen faturaları, müşterilerini ve ödemelerini Xero'ya gönderin ve orada kaydedilen ödemeleri geri alın.",
+      "tenantHelp": "developer.xero.com adresinde My Apps altında bir Web app oluşturun. Configuration sayfasında client id'yi kopyalayın, bir secret oluşturun ve aşağıdaki yönlendirme URI'sini ekleyin. Xero'da kaydedilen ödemelerin hemen gelmesi için uygulamanın Webhooks sayfasını açın, Torqvoice adresinizin sonuna /api/webhooks/xero ekleyip bunu adres olarak girin, Invoices ile Payments'ı işaretleyin ve webhook anahtarını aşağıya yazın.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı",
+        "webhookKey": "Webhook anahtarı",
+        "webhookKeyHelp": "İsteğe bağlı. Xero uygulamanızın Webhooks sayfasındaki anahtar. Bununla Xero'da kaydedilen ödemeler buraya hemen gelir; onsuz 30 dakika içinde gelir."
+      },
+      "settings": {
+        "tenantId": "Xero kuruluşu",
+        "tenantIdHelp": "Faturaların yazıldığı kuruluş. Yalnızca bağlanırken izin verdiğiniz kuruluşlar listelenir; başka birine izin vermek için yeniden bağlanın.",
+        "pushInvoices": "Kesilen faturaları Xero'ya gönder",
+        "pushOnComplete": "İş tamamlandı olarak işaretlendiğinde faturaları da gönder",
+        "pushOnCompleteHelp": "Bu olmadan fatura gönderildiğinde, paylaşıldığında veya ödendiğinde aktarılır. Bununla tamamlanan iş hemen aktarılır ve değişirse güncellenir.",
+        "startDate": "Yalnızca şu tarih ve sonrasındaki faturalar",
+        "startDateHelp": "Kesilen her faturayı göndermek için boş bırakın. Eski faturaların iki kez girilmemesi için defterlerinizin Xero'ya taşındığı tarihi kullanın.",
+        "invoiceStatus": "Xero'daki durum",
+        "invoiceStatusHelp": "Onaylanmış faturalar hemen satış sayılır ve ödeme alabilir. Her faturayı önce Xero'da biri kontrol ediyorsa Taslak veya Onay bekliyor seçin; ödemeler o zaman fatura orada onaylandıktan sonra kaydedilir.",
+        "invoiceStatusAuthorised": "Onaylandı",
+        "invoiceStatusSubmitted": "Onay bekliyor",
+        "invoiceStatusDraft": "Taslak",
+        "invoiceNumbers": "Fatura numaraları",
+        "invoiceNumbersHelp": "İki sistemin uyuşması için Torqvoice numarasını koruyun ya da Xero'nun faturayı kendi sırasıyla numaralandırmasına izin verin. Xero numaralandırmasında her faturayı yeniden bulmak için referans olarak Torqvoice fatura numarasını seçin.",
+        "invoiceNumbersTorqvoice": "Torqvoice numarasını kullan",
+        "invoiceNumbersXero": "Xero numaralandırsın",
+        "reference": "Referans",
+        "referenceHelp": "Faturanın Xero'daki Reference alanına yazılan bilgi; faturada ve oradaki listelerle aramalarda görünür.",
+        "referenceVehicle": "Araç ve plaka",
+        "referenceTitle": "İş başlığı",
+        "referenceInvoiceNumber": "Torqvoice fatura numarası",
+        "referenceNone": "Hiçbiri",
+        "includeVehicle": "Aracı faturada belirt",
+        "includeVehicleHelp": "Kalemlerin üzerinde yıl, marka, model, plaka ve kilometreyi içeren bir metin satırı.",
+        "includeNotes": "Müşteri notlarını ekle",
+        "includeNotesHelp": "Faturanın müşteriye yönelik notları, faturada bir metin satırı olarak.",
+        "notesPosition": "Müşteri notlarının konumu",
+        "notesPositionHelp": "Kalemlerin üzerinde seçeneği notları araç satırının hemen arkasına, işçilik ve parçalardan önce koyar. Kalemlerin altında seçeneği onları en sona koyar.",
+        "notesPositionBelow": "Kalemlerin altında",
+        "notesPositionAbove": "Kalemlerin üzerinde",
+        "includePartNumbers": "Parça satırlarında parça numaralarını göster",
+        "includePartNumbersHelp": "Her parça satırının açıklaması parça numarasıyla başlar.",
+        "brandingThemeId": "Marka teması",
+        "brandingThemeIdHelp": "Faturanın kullandığı Xero marka teması (Branding theme); fatura Xero'da görüntülendiğinde veya oradan gönderildiğinde düzenini belirler. Kuruluşun varsayılanı için boş bırakın.",
+        "laborAccount": "İşçilik hesabı",
+        "laborAccountHelp": "İşçilik satırlarının kaydedildiği satış hesabı. Kuruluşun Sales hesabını veya aşağıda seçilen kalemin hesabını kullanmak için boş bırakın.",
+        "partsAccount": "Parça hesabı",
+        "partsAccountHelp": "Parça satırlarının kaydedildiği satış hesabı. Kuruluşun Sales hesabını veya aşağıda seçilen kalemin hesabını kullanmak için boş bırakın.",
+        "shopFeeAccount": "Atölye ücreti hesabı",
+        "shopFeeAccountHelp": "Atölye ücreti satırı buraya kaydedilir. İşçilikle birlikte kaydetmek için boş bırakın.",
+        "laborItem": "İşçilik satırları için kalem",
+        "laborItemHelp": "İsteğe bağlı. Xero'daki kalem raporları için her işçilik satırına eklenen bir Xero kalemi. Yukarıda seçilen hesap yine önceliklidir.",
+        "partsItem": "Parça satırları için kalem",
+        "partsItemHelp": "İsteğe bağlı. Xero'daki kalem raporları için her parça satırına eklenen bir Xero kalemi. Yukarıda seçilen hesap yine önceliklidir.",
+        "matchItemsByPartNumber": "Parçaları parça numarasına göre Xero kalemleriyle eşleştir",
+        "matchItemsByPartNumberHelp": "Numarası Xero'daki bir kalemin koduyla aynı olan parça o kalem olarak satılır; böylece Xero'da takip edilen stok düşer. Takip edilen bir kalemin eldeki miktarı yetmezse Xero faturayı reddeder.",
+        "taxAmounts": "Vergi tutarları",
+        "taxAmountsHelp": "Faturadaki gibi, her satırın vergisini müşterinin aldığı faturadaki haliyle gönderir; böylece iki sistem kuruşuna kadar uyuşur. Xero hesaplasın, Xero'nun her satırın vergi oranını uygulamasına izin verir; toplamlar farklıysa günlük bildirir.",
+        "taxAmountsBilled": "Torqvoice faturasındaki gibi",
+        "taxAmountsXero": "Xero hesaplasın",
+        "taxType": "Vergili satırlar için vergi oranı",
+        "taxTypeHelp": "Torqvoice, yüzdesi her faturayla eşleşen Xero vergi oranını seçer; örneğin GST on Income. Her zaman birini kullanmak için burada seçin.",
+        "zeroTaxType": "Vergisiz satırlar için vergi oranı",
+        "zeroTaxTypeHelp": "Vergisiz satırlar ve vergiden muaf müşteriler için kullanılır. Kuruluşta hangisi varsa GST Free Income, Zero Rated veya No GST kullanmak için boş bırakın.",
+        "tracking1": "İzleme seçeneği",
+        "tracking1Help": "Xero'daki raporlar için her satırı şube veya departman gibi bir izleme (Tracking) seçeneğiyle etiketleyin.",
+        "tracking2": "İkinci izleme seçeneği",
+        "tracking2Help": "Kuruluşta iki izleme kategorisi varsa diğerinden bir seçenek.",
+        "sendFromXero": "Faturayı müşteriye Xero'dan e-postayla gönder",
+        "sendFromXeroHelp": "Xero, faturanın kendi kopyasını Xero'da ayarlanmış çevrimiçi ödeme seçenekleriyle birlikte müşterinin e-postasına gönderir. Torqvoice faturayı zaten gönderiyorsa müşteri iki kez almasın diye bunu kapatın.",
+        "markAsSent": "Faturaları Xero'da gönderildi olarak işaretle",
+        "markAsSentHelp": "Faturayı Torqvoice teslim eder; böylece Xero, birinin oradan göndermesini beklemek yerine onu gönderildi olarak gösterir. Onaylanmış faturalar için geçerlidir.",
+        "attachPdf": "Fatura PDF'ini ekle",
+        "attachPdfHelp": "Müşterinin Torqvoice'tan aldığı fatura, Xero'daki faturaya eklenir.",
+        "updateContacts": "Müşteri bilgilerini Xero'da güncel tut",
+        "updateContactsHelp": "Burada bir müşterinin adında, e-postasında, telefonunda, adresinde veya vergi numarasında yapılan değişiklik Xero'daki kişisine kopyalanır. Kapalıysa kişiler yalnızca oluşturulur, sonra muhasebecinin bıraktığı gibi kalır.",
+        "sameEmail": "Aynı e-postaya sahip müşteriler",
+        "sameEmailHelp": "Birden fazla müşteri aynı e-posta adresini paylaşabilir, örneğin bir aile veya bir şirketin muhasebe kutusu. İlk seçenekte e-postayla bulunan bir Xero kişisi yalnızca adı da müşteriyle eşleştiğinde kullanılır; aksi halde müşteri için yeni bir kişi oluşturulur ve günlük diğerini belirtir, böylece aynı müşteriyse ikisini Xero'da birleştirebilirsiniz.",
+        "sameEmailCreate": "Ad farklıysa yeni kişi oluştur",
+        "sameEmailReuse": "Ad farklı olsa da mevcut kişiyi kullan",
+        "voidOnDelete": "İş burada silindiğinde Xero faturasını iptal et",
+        "voidOnDeleteHelp": "Xero'da ödemesi olan bir fatura asla iptal edilmez; günlük, faturaya dokunulmadığını bildirir.",
+        "pushPayments": "Ödemeleri Xero'ya kaydet",
+        "paymentAccount": "Ödemeleri şuraya yatır",
+        "paymentAccountHelp": "Torqvoice'ta kaydedilen ödemelerin Xero'da yatırıldığı banka hesabı. İlk banka hesabını kullanmak için boş bırakın.",
+        "cashAccount": "Nakit ödemeleri şuraya yatır",
+        "cardAccount": "Kart ödemelerini şuraya yatır",
+        "transferAccount": "Havaleleri şuraya yatır",
+        "onlineAccount": "Çevrimiçi ödemeleri şuraya yatır",
+        "methodAccountHelp": "Yukarıdaki hesabı kullanmak için boş bırakın.",
+        "onlineAccountHelp": "Stripe, PayPal, Vipps ve diğer ödeme entegrasyonları üzerinden alınan ödemeler; genellikle bir ara hesap. Yukarıdaki hesabı kullanmak için boş bırakın.",
+        "manualPaidAsPayment": "Fatura elle ödendi olarak işaretlendiğinde ödeme kaydet",
+        "manualPaidAsPaymentHelp": "Torqvoice'ta ödeme kaydı olmadan ödendi olarak işaretlenen bir fatura, Xero'da hâlâ alacak görünen tutar kadar tek bir ödeme alır. Kapalıysa bir ödeme kaydedilene kadar orada açık kalır.",
+        "pullPayments": "Xero'da kaydedilen ödemeleri geri al",
+        "pullPaymentsHelp": "Xero'da bir Torqvoice faturası için kaydedilen ödeme burada faturaya kaydedilir; webhook ile hemen, aksi halde 30 dakika içinde."
+      }
+    },
+    "zoho-books": {
+      "description": "Kesilen faturaları, müşterilerini ve ödemelerini Zoho Books'a gönderin ve orada kaydedilen ödemeleri geri alın.",
+      "tenantHelp": "Zoho API Console'da (api-console.zoho.com ya da kendi bölgenizin konsolu, örneğin api-console.zoho.eu) bir Server-based Application oluşturun. Aşağıdaki yönlendirme URI'sini ekleyin, client id ile secret'ı kopyalayın ve atölyeler başka bölgelerden giriş yapıyorsa istemcinin Settings sekmesinde \"Use the same OAuth credentials for all data centers\" seçeneğini işaretleyin.",
+      "fields": {
+        "clientId": "İstemci kimliği",
+        "clientSecret": "İstemci gizli anahtarı"
+      },
+      "settings": {
+        "organizationId": "Zoho Books kuruluşu",
+        "organizationIdHelp": "Faturaların yazıldığı kuruluş. Bağlantıyı kuran Zoho kullanıcısının erişebildiği her kuruluş listelenir.",
+        "pushInvoices": "Kesilen faturaları Zoho Books'a gönder",
+        "pushOnComplete": "İş tamamlandı olarak işaretlendiğinde faturaları da gönder",
+        "pushOnCompleteHelp": "Bu olmadan fatura gönderildiğinde, paylaşıldığında veya ödendiğinde aktarılır. Bununla tamamlanan iş hemen aktarılır ve değişirse güncellenir.",
+        "startDate": "Yalnızca şu tarih ve sonrasındaki faturalar",
+        "startDateHelp": "Kesilen her faturayı göndermek için boş bırakın. Eski faturaların iki kez girilmemesi için defterlerinizin Zoho Books'a taşındığı tarihi kullanın.",
+        "invoiceStatus": "Zoho Books'taki durum",
+        "invoiceStatusHelp": "Gönderilmiş faturalar hemen satış sayılır ve ödeme alabilir. Her faturayı önce Zoho Books'ta biri kontrol ediyorsa Taslak seçin; ödemeler o zaman fatura oradan gönderildikten sonra kaydedilir.",
+        "invoiceStatusSent": "Gönderildi",
+        "invoiceStatusDraft": "Taslak",
+        "invoiceNumbers": "Fatura numaraları",
+        "invoiceNumbersHelp": "İki sistemin uyuşması için Torqvoice numarasını koruyun ya da Zoho Books'un faturayı kendi sırasıyla numaralandırmasına izin verin. Zoho numaralandırmasında her faturayı yeniden bulmak için referans olarak Torqvoice fatura numarasını seçin.",
+        "invoiceNumbersTorqvoice": "Torqvoice numarasını kullan",
+        "invoiceNumbersZoho": "Zoho Books numaralandırsın",
+        "reference": "Referans",
+        "referenceHelp": "Faturanın Zoho Books'taki Reference# alanına yazılan bilgi; faturada ve oradaki listelerle aramalarda görünür.",
+        "referenceVehicle": "Araç ve plaka",
+        "referenceTitle": "İş başlığı",
+        "referenceInvoiceNumber": "Torqvoice fatura numarası",
+        "referenceNone": "Hiçbiri",
+        "includeVehicle": "Aracı faturada belirt",
+        "includeVehicleHelp": "Yıl, marka, model, plaka ve kilometre; müşteri notlarıyla birlikte yer alır.",
+        "includeNotes": "Müşteri notlarını ekle",
+        "includeNotesHelp": "Faturanın müşteriye yönelik notları, düz metin olarak.",
+        "notesPosition": "Araç ve notların yeri",
+        "notesPositionHelp": "Customer Notes, Zoho'nun kendi alanıdır ve Zoho faturasında kalemlerin altına basılır. Kalemlerin üzerinde veya altında seçenekleri ise bunları fatura satırları arasında bir metin satırına koyar.",
+        "notesPositionCustomerNotes": "Zoho'nun Customer Notes alanı",
+        "notesPositionBelow": "Kalemlerin altında bir satır",
+        "notesPositionAbove": "Kalemlerin üzerinde bir satır",
+        "includePartNumbers": "Parça satırlarında parça numaralarını göster",
+        "includePartNumbersHelp": "Her parça satırının açıklaması parça numarasıyla başlar.",
+        "templateId": "Fatura şablonu",
+        "templateIdHelp": "Fatura Zoho'da görüntülendiğinde veya oradan gönderildiğinde kullanılan Zoho Books şablonu. Kuruluşun varsayılanı için boş bırakın.",
+        "locationId": "Konum",
+        "locationIdHelp": "Yalnızca Zoho Books'ta konumları açık olan ve her faturanın bir konum gerektirdiği kuruluşlar için. Aksi halde boş bırakın.",
+        "laborAccount": "İşçilik hesabı",
+        "laborAccountHelp": "İşçilik satırlarının kaydedildiği gelir hesabı. Aşağıda seçilen kalemin hesabını veya Zoho'nun Sales hesabını kullanmak için boş bırakın.",
+        "partsAccount": "Parça hesabı",
+        "partsAccountHelp": "Parça satırlarının kaydedildiği gelir hesabı. Aşağıda seçilen kalemin hesabını veya Zoho'nun Sales hesabını kullanmak için boş bırakın.",
+        "shopFeeAccount": "Atölye ücreti hesabı",
+        "shopFeeAccountHelp": "Atölye ücreti satırı buraya kaydedilir. İşçilikle birlikte kaydetmek için boş bırakın.",
+        "laborItem": "İşçilik satırları için kalem",
+        "laborItemHelp": "İsteğe bağlı. Zoho'daki kalem raporları için her işçilik satırına eklenen bir Zoho Books kalemi. Yukarıda seçilen hesap yine önceliklidir.",
+        "partsItem": "Parça satırları için kalem",
+        "partsItemHelp": "İsteğe bağlı. Zoho'daki kalem raporları için her parça satırına eklenen bir Zoho Books kalemi. Yukarıda seçilen hesap yine önceliklidir.",
+        "matchItemsByPartNumber": "Parçaları parça numarasına göre Zoho kalemleriyle eşleştir",
+        "matchItemsByPartNumberHelp": "Numarası Zoho Books'taki bir kalemin SKU'suyla aynı olan parça o kalem olarak satılır; böylece Zoho'da takip edilen stok düşer. Bir şey bulunabilmesi için Zoho Books'ta Settings, Items altında SKU'ları açın.",
+        "taxId": "Vergili satırlar için vergi",
+        "taxIdHelp": "Torqvoice, yüzdesi her faturayla eşleşen Zoho Books vergisini seçer. Birden fazla verginin yüzdesi aynıysa ya da hiçbiri eşleşmiyorsa kullanılacak olanı burada seçin.",
+        "zeroTaxId": "Vergisiz satırlar için vergi",
+        "zeroTaxIdHelp": "Kuruluşta bunlar için %0 bir vergi varsa, vergisiz satırlar ve vergiden muaf müşteriler için kullanılır. Bu satırları vergisiz göndermek için boş bırakın.",
+        "roundingAdjustment": "Toplamı kuruşu kuruşuna eşitle",
+        "roundingAdjustmentHelp": "Zoho Books vergiyi kendisi hesaplar. Toplamı müşterinin aldığı faturadan bir iki kuruş farklı çıkarsa fark Zoho'nun yuvarlama düzeltmesi olarak girilir ve iki sistem uyuşur. Kapalıysa farklılık olduğunda günlük bunu bildirir.",
+        "sendFromZoho": "Faturayı müşteriye Zoho Books'tan e-postayla gönder",
+        "sendFromZohoHelp": "Zoho Books, faturanın kendi kopyasını Zoho'da ayarlanmış çevrimiçi ödeme seçenekleriyle birlikte müşterinin e-postasına gönderir. Torqvoice faturayı zaten gönderiyorsa müşteri iki kez almasın diye bunu kapatın.",
+        "attachPdf": "Fatura PDF'ini ekle",
+        "attachPdfHelp": "Müşterinin Torqvoice'tan aldığı fatura, Zoho Books'taki faturaya eklenir ve değiştiğinde yenisiyle değiştirilir.",
+        "updateContacts": "Müşteri bilgilerini Zoho Books'ta güncel tut",
+        "updateContactsHelp": "Burada bir müşterinin adında, e-postasında, telefonunda veya adresinde yapılan değişiklik Zoho Books'taki kişisine kopyalanır. Kapalıysa kişiler yalnızca oluşturulur, sonra muhasebecinin bıraktığı gibi kalır.",
+        "sameEmail": "Aynı e-postaya sahip müşteriler",
+        "sameEmailHelp": "Birden fazla müşteri aynı e-posta adresini paylaşabilir, örneğin bir aile veya bir şirketin muhasebe kutusu. İlk seçenekte e-postayla bulunan bir Zoho kişisi yalnızca adı da müşteriyle eşleştiğinde kullanılır; aksi halde müşteri için yeni bir kişi oluşturulur ve günlük diğerini belirtir, böylece aynı müşteriyse ikisini Zoho'da birleştirebilirsiniz.",
+        "sameEmailCreate": "Ad farklıysa yeni kişi oluştur",
+        "sameEmailReuse": "Ad farklı olsa da mevcut kişiyi kullan",
+        "voidOnDelete": "İş burada silindiğinde Zoho faturasını iptal et",
+        "voidOnDeleteHelp": "Taslak silinir, gönderilmiş fatura iptal edilir. Zoho Books'ta ödemesi olan bir faturaya asla dokunulmaz; günlük, faturanın olduğu gibi bırakıldığını bildirir.",
+        "pushPayments": "Ödemeleri Zoho Books'a kaydet",
+        "paymentAccount": "Şuraya yatır",
+        "paymentAccountHelp": "Torqvoice'ta kaydedilen ödemelerin Zoho Books'ta yatırıldığı hesap. Undeposited Funds kullanmak için boş bırakın.",
+        "cashAccount": "Nakit ödemeleri şuraya yatır",
+        "cardAccount": "Kart ödemelerini şuraya yatır",
+        "transferAccount": "Havaleleri şuraya yatır",
+        "onlineAccount": "Çevrimiçi ödemeleri şuraya yatır",
+        "methodAccountHelp": "Yukarıdaki hesabı kullanmak için boş bırakın.",
+        "onlineAccountHelp": "Stripe, PayPal, Vipps, Paystack ve diğer ödeme entegrasyonları üzerinden alınan ödemeler; genellikle bir ara hesap. Yukarıdaki hesabı kullanmak için boş bırakın.",
+        "manualPaidAsPayment": "Fatura elle ödendi olarak işaretlendiğinde ödeme kaydet",
+        "manualPaidAsPaymentHelp": "Torqvoice'ta ödeme kaydı olmadan ödendi olarak işaretlenen bir fatura, Zoho Books'ta hâlâ alacak görünen tutar kadar tek bir ödeme alır. Kapalıysa bir ödeme kaydedilene kadar orada açık kalır.",
+        "pullPayments": "Zoho Books'ta kaydedilen ödemeleri geri al",
+        "pullPaymentsHelp": "Zoho Books'ta bir Torqvoice faturası için kaydedilen ödeme 30 dakika içinde burada faturaya kaydedilir, orada silinen bir ödeme de buradan kaldırılır."
       }
     },
     "fiken": {
@@ -620,7 +985,43 @@
         "refreshFleetHelp": "Günde bir kez, son bir haftada yenilenmemiş modeller yeniden çekilir; böylece araç sayfası hiç beklemez ve yeni bir geri çağırma bir hafta içinde görünür. Yalnızca marka, model ve yıl gönderilir."
       }
     },
+    "openlaborproject": {
+      "description": "İş emri veya teklifteki aracın işçilik sürelerini ve sıvı kapasitelerini sorgulayın, bir işin saatlerini tek tıkla işçilik satırı olarak ekleyin. Verilerin çoğu ABD pazarı araçları içindir ve rehber her sorgunun hangi pazar için olduğunu gösterir. Her değer Open Labor Project’in ondan ne kadar emin olduğunu gösterir ve birçoğu yapay zekâ tahminidir; müşteriye teklif vermeden önce kontrol edin. Sorgular atölyenin kendi API anahtarını kullanır. Ücretli bir Open Labor Project planında bir kez sorgulanan araç plan sürdükçe saklanır, böylece yeniden sorgulamak çağrı harcamaz.",
+      "fields": {
+        "apiKey": "API anahtarı",
+        "apiKeyHelp": "openlaborproject.com adresinde Developers bölümünden anahtar isteyin; e-postayla gelir. Ücretsiz anahtarın günde 10 sorgu hakkı vardır ve saatleri her seferinde tek bir iş için gösterir. Builder planı ve üstü limiti artırır ve tüm işlerin saatlerini bir kerede gösterir.",
+        "apiKeyServerHelp": "Bu sunucunun sağladığı anahtarı kullanmak için boş bırakın ya da kendi planınızı kullanmak için openlaborproject.com’dan aldığınız anahtarı yapıştırın."
+      },
+      "settings": {
+        "minConfidence": "Gösterilecek süreler",
+        "minConfidenceHelp": "Kaynağın daha az emin olduğu süreleri dışarıda bırakır. Avrupa markaları için birçok süre yapay zekâ tahminidir, bu yüzden katı bir seçim az iş bırakabilir.",
+        "confidenceAll": "Her güven düzeyi",
+        "confidenceMedium": "Orta ve üstü",
+        "confidenceHigh": "Doğrulanmış ve üstü",
+        "confidenceOem": "Yalnızca OEM",
+        "hoursFrom": "Eklenecek saat",
+        "hoursFromHelp": "İş emrine hangi değerin gireceği: rehber süresi ya da Open Labor Project’in verdiği aralığın üst sınırı (örneğin 1,2 sa yerine 1,6 sa). Üst sınır, uzayan işler için pay bırakır.",
+        "hoursBook": "Rehber süresi",
+        "hoursHigh": "Aralığın üst sınırı",
+        "adjustPercent": "Süreleri ayarla (%)",
+        "adjustPercentHelp": "İş emrine girmeden önce her süreye eklenen bir yüzde: 10, 1,2 sa’yi 1,32 sa yapar, -10 ise 1,08 sa yapar. -50 ile 200 arası.",
+        "rounding": "Saatleri yukarı yuvarla",
+        "roundingHelp": "Her işin saatlerini, varsa ayardan sonra yukarı yuvarlar: 0,25 ile 1,32 sa, 1,5 sa olur. Zaten bir adımın üzerindeki süre olduğu gibi kalır.",
+        "roundNone": "Yuvarlama",
+        "roundTenth": "0,1 saat",
+        "roundQuarter": "0,25 saat",
+        "roundHalf": "0,5 saat",
+        "fluids": "Sıvı bilgilerini göster",
+        "fluidsHelp": "Kapasiteler, özellikler ve değişim aralıklarıyla bir Sıvılar sekmesi ekler. Açmak ayrı bir çağrı harcar.",
+        "units": "Sıvı birimleri",
+        "unitsHelp": "Kapasitelerin ve değişim aralıklarının gösterildiği birimler.",
+        "unitsBoth": "İkisi de",
+        "unitsMetric": "Metrik (L, km)",
+        "unitsUs": "ABD (qt, mi)"
+      }
+    },
     "speech-to-text": {
+      "name": "Konuşmadan metne",
       "description": "İş emrindeki dikte, tarayıcı yerine bir konuşma modeli tarafından yazıya dökülür: çok daha doğrudur, her dilde çalışır ve atölye terimlerini bilir. Yapay zekâ sağlayıcınızdan ayrıdır, o yüzden onu olduğu gibi bırakabilirsiniz. Kendi OpenAI anahtarınızı ya da OpenAI'nin transkripsiyon API'siyle çalışan kendi sunucunuzu kullanır. Kayıt yazıya dökülmek üzere gönderilir ve saklanmaz.",
       "fields": {
         "apiKey": "API anahtarı",
@@ -636,6 +1037,116 @@
         "modeAi": "Her zaman konuşma modeli",
         "modeChoice": "Herkes kendisi seçer: konuşma modeli veya tarayıcı"
       }
+    },
+    "s3": {
+      "name": "Bulut depolama bucket'ı",
+      "description": "Bu atölyenin Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage veya başka bir S3 uyumlu depolamadaki size ait bir bucket'a, seçtiğiniz zamanlamayla şifreli yedekleri. İlk çalıştırmadan sonra yalnızca değişenler yüklenir, bu yüzden saatlik yedekler ucuz kalır.",
+      "fields": {
+        "accessKeyId": "Erişim anahtarı kimliği",
+        "accessKeyIdHelp": "Depolama sağlayıcınızdan, bucket'taki nesneleri listeleme, okuma, yazma ve silme izni olan bir anahtar. Tek başına iptal edilebilmesi için yalnızca Torqvoice'a özel bir anahtar oluşturun.",
+        "secretAccessKey": "Gizli erişim anahtarı",
+        "password": "Yedekleme parolası",
+        "passwordHelp": "Her yedek bu parolayla şifrelenir. Bir parola belirleyin ya da Oluştur'a basın ve bir kopyasını bu sunucudan uzakta saklayın: parola olmadan bu yedekleri kimse açamaz, Torqvoice bile. Zaten Torqvoice yedekleri bulunan bir depolamayı yeniden bağlamak için yedeklerin oluşturulduğu parolayı girin.",
+        "endpoint": "Özel uç nokta",
+        "endpointHelp": "Yalnızca Diğer S3 uyumlu depolama seçeneği için: kendi depolamanızın S3 adresi, örneğin bir MinIO sunucusu, ana bilgisayar adı olarak ve gerekirse bağlantı noktasıyla."
+      },
+      "settings": {
+        "provider": "Sağlayıcı",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Diğer S3 uyumlu depolama",
+        "region": "Bölge",
+        "regionHelp": "Bucket'ın bulunduğu yer. Sağlayıcının listesinden seçin; başka bir depolama için, bir değer bekliyorsa onu yazın. Cloudflare R2 tarafından kullanılmaz.",
+        "accountId": "Cloudflare hesap kimliği",
+        "accountIdHelp": "Cloudflare panonuzun R2 genel bakış sayfasında gösterilen 32 karakterlik kimlik.",
+        "bucket": "Bucket",
+        "bucketHelp": "Anahtar girilir girilmez anahtarın görebildiği bucket'lar listelenir. Anahtar bir bucket'ı kullanabiliyor ama bucket'ları listeleyemiyorsa adını yazın.",
+        "prefix": "Bucket içindeki klasör",
+        "prefixHelp": "Yedekler bu klasörün altında tutulur. Bucket'ı paylaşan her atölye için ayrı bir klasör kullanın.",
+        "frequency": "Sıklık",
+        "frequencyHourly": "Her saat",
+        "frequencyEvery4h": "4 saatte bir",
+        "frequencyDaily": "Her gün",
+        "frequencyWeekly": "Her hafta",
+        "frequencyMonthly": "Her ay",
+        "time": "Saat",
+        "timeHelp": "Atölye saatine göre, HH:MM biçiminde. Günlük, haftalık ve aylık yedeklerde kullanılır.",
+        "weekday": "Haftanın günü",
+        "sunday": "Pazar",
+        "monday": "Pazartesi",
+        "tuesday": "Salı",
+        "wednesday": "Çarşamba",
+        "thursday": "Perşembe",
+        "friday": "Cuma",
+        "saturday": "Cumartesi",
+        "monthDay": "Ayın günü",
+        "monthDayLast": "Son gün",
+        "contents": "İçerik",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir. Bir yedek, atölyenin kayıtlarını ve seçildiğinde dosyalarını içerir. Kullanıcı hesapları ve parolalar yedekte yer almaz: yeni bir sunucuda oturum açar, ekibi davet eder ve verileri o atölyeye geri yüklersiniz.",
+        "contentsData": "Yalnızca veriler",
+        "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
+        "includeFiles": "Fotoğrafları ve dosyaları dahil et",
+        "includeFilesHelp": "Her dosya bir kez yüklenir ve sonraki yedeklerde yeniden kullanılır, bu yüzden ilk çalıştırmadan sonra maliyeti azdır.",
+        "keepHourly": "Saatlik yedekleri sakla",
+        "keepHourlyHelp": "En yeni saatlik yedeklerden kaç tanesinin saklanacağı. Yalnızca her saat ve 4 saatte bir zamanlamalarında önemlidir.",
+        "keepDaily": "Günlük yedekleri sakla",
+        "keepWeekly": "Haftalık yedekleri sakla",
+        "keepMonthly": "Aylık yedekleri sakla",
+        "keepMonthlyHelp": "Her çalıştırmadan sonra eski yedekler silinir ve her türün en yenileri saklanır. O türden hiç saklamamak için sayıyı 0 yapın."
+      }
+    },
+    "local-folder": {
+      "name": "Yerel klasör",
+      "description": "Bu atölyenin, bu sunucudaki bir klasöre şifreli yedekleri: compose dosyasındaki yedek birimi veya oraya bağlanmış bir ağ sürücüsü. Veritabanıyla aynı diskteki bir kopya tek başına güvenli değildir; başka bir yerdeki depolamayla birlikte kullanın.",
+      "fields": {
+        "password": "Yedekleme parolası",
+        "passwordHelp": "Her yedek bu parolayla şifrelenir. Bir parola belirleyin ya da Oluştur'a basın ve bir kopyasını bu sunucudan uzakta saklayın: parola olmadan bu yedekleri kimse açamaz, Torqvoice bile. Zaten Torqvoice yedekleri bulunan bir depolamayı yeniden bağlamak için yedeklerin oluşturulduğu parolayı girin."
+      },
+      "settings": {
+        "folder": "Klasör",
+        "folderHelp": "Sunucunun yedek kök dizini altında bu atölyenin yedeklerini tutan klasör. Bu atölyenin adını taşıyan bir klasör kullanmak için boş bırakın. Yeni bir sunucuda, yedekleri geri almak için önceki kurulumun kullandığı klasör adını yazın.",
+        "frequency": "Sıklık",
+        "frequencyHourly": "Her saat",
+        "frequencyEvery4h": "4 saatte bir",
+        "frequencyDaily": "Her gün",
+        "frequencyWeekly": "Her hafta",
+        "frequencyMonthly": "Her ay",
+        "time": "Saat",
+        "timeHelp": "Atölye saatine göre, HH:MM biçiminde. Günlük, haftalık ve aylık yedeklerde kullanılır.",
+        "weekday": "Haftanın günü",
+        "sunday": "Pazar",
+        "monday": "Pazartesi",
+        "tuesday": "Salı",
+        "wednesday": "Çarşamba",
+        "thursday": "Perşembe",
+        "friday": "Cuma",
+        "saturday": "Cumartesi",
+        "monthDay": "Ayın günü",
+        "monthDayLast": "Son gün",
+        "contents": "İçerik",
+        "contentsHelp": "Gizli anahtarlar, bu atölyenin Torqvoice'a girdiği anahtarlardır: ödeme, yapay zeka ve webhook anahtarları. Her yedek her durumda yedekleme parolasıyla şifrelenir. Bir yedek, atölyenin kayıtlarını ve seçildiğinde dosyalarını içerir. Kullanıcı hesapları ve parolalar yedekte yer almaz: yeni bir sunucuda oturum açar, ekibi davet eder ve verileri o atölyeye geri yüklersiniz.",
+        "contentsData": "Yalnızca veriler",
+        "contentsDataAndSecrets": "Veriler ve gizli anahtarlar",
+        "includeFiles": "Fotoğrafları ve dosyaları dahil et",
+        "includeFilesHelp": "Her dosya bir kez yüklenir ve sonraki yedeklerde yeniden kullanılır, bu yüzden ilk çalıştırmadan sonra maliyeti azdır.",
+        "keepHourly": "Saatlik yedekleri sakla",
+        "keepHourlyHelp": "En yeni saatlik yedeklerden kaç tanesinin saklanacağı. Yalnızca her saat ve 4 saatte bir zamanlamalarında önemlidir.",
+        "keepDaily": "Günlük yedekleri sakla",
+        "keepWeekly": "Haftalık yedekleri sakla",
+        "keepMonthly": "Aylık yedekleri sakla",
+        "keepMonthlyHelp": "Her çalıştırmadan sonra eski yedekler silinir ve her türün en yenileri saklanır. O türden hiç saklamamak için sayıyı 0 yapın."
+      }
+    },
+    "torqvoice-codes": {
+      "description": "Önünüzdeki araçta bir arıza kodunun ne anlama geldiğini kendi dilinizde görün: anlamı, olası nedenleri ve ilgili kodlar. Kodları bir iş emrine yazın veya yapıştırın; anlamı kaydedilmiş gözlemlere dönüşürler, böylece çıktılar ve geçmiş hiçbir zaman bir bağlantıyı beklemez. Torqvoice tarafından işletilir ve tüm bulut planlarına dahildir. Bir sorgu yalnızca marka, model, yıl ve motoru gönderir; asla VIN, plaka veya müşteri bilgisi göndermez.",
+      "fields": {
+        "apiToken": "Erişim anahtarı",
+        "apiTokenHelp": "Torqvoice'un kod hizmeti için size verdiği anahtar."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {
@@ -658,6 +1169,42 @@
     "safety": {
       "refresh": "Geri çağırma verisi yenileme",
       "vehicle": "Yeni araç için geri çağırma kontrolü"
+    },
+    "repair": {
+      "checkPlan": "Saklanan sorguların tutulabileceğini kontrol et"
     }
+  },
+  "backupAlerts": {
+    "destination": "yedekleme hedefi",
+    "failedTitle": "Yedekleme başarısız oldu",
+    "failedMessage": "{name} için yedekleme tamamlanmadı: {reason}",
+    "failedSubject": "{name} için yedekleme başarısız oldu",
+    "failedEmailIntro": "Atölyenizin {name} için zamanlanmış yedeklemesi tamamlanmadı.",
+    "openToRetry": "Çalıştırmayı görmek ve yeniden denemek için Ayarlar, Entegrasyonlar, {name} bölümünü açın.",
+    "overdueTitle": "Yedekleme gecikti",
+    "overdueSince": "{time} tarihinden bu yana {name} için hiçbir yedekleme tamamlanmadı.",
+    "overdueNever": "{name} için henüz hiçbir yedekleme tamamlanmadı.",
+    "overdueSubject": "{name} için yedekleme gecikti",
+    "openToSee": "Neyin ters gittiğini görmek için Ayarlar, Entegrasyonlar, {name} bölümünü açın.",
+    "platformName": "Torqvoice yedekleri",
+    "restoredTitle": "Atölye geri yüklendi",
+    "restoredSubject": "Atölyeniz bir yedekten geri yüklendi",
+    "restoredIntro": "{name}: atölye {time} tarihinde {snapshot} geri yükleme noktasına döndürüldü. O noktadan sonra girilen her şey artık atölyede yok.",
+    "restoredByMember": "Bu geri yüklemeyi atölyenizin bir üyesi istedi.",
+    "restoredBySupport": "Bunu Torqvoice destek ekibi sizin isteğiniz üzerine yaptı. Belirtilen neden: {reason}",
+    "noReason": "belirtilmedi",
+    "restoredUndo": "Önce atölyenin geri yüklemeden hemen önceki hâlinin bir güvenlik kopyası alındı ve 90 gün saklanıyor. Ona geri dönmek için destek ekibiyle iletişime geçin."
+  },
+  "aiErrors": {
+    "modelAccess": "Bu API anahtarının seçilen modele erişimi yok. Ayarlar → Entegrasyonlar bölümünden başka bir model seçin.",
+    "spendLimit": "Bu OpenAI hesabı harcama sınırına ulaştı. Sınırları platform.openai.com adresinden kontrol edin.",
+    "noCredit": "Bu OpenAI hesabında kredi kalmadı. platform.openai.com adresinden ödeme bilgisi ekleyin.",
+    "keyRejected": "Yapay zekâ sağlayıcısı API anahtarını reddetti. Ayarlar → Entegrasyonlar bölümünden kontrol edin.",
+    "noUsableCredit": "Yapay zekâ sağlayıcısı bu API anahtarı için kullanılabilir kredi olmadığını bildiriyor.",
+    "modelUnavailable": "Yapay zekâ sağlayıcısı seçilen modeli sunmuyor. Ayarlar → Entegrasyonlar bölümünden başka bir model seçin.",
+    "imageTooLarge": "Görsel, yapay zekâ sağlayıcısı için çok büyüktü.",
+    "rateLimited": "Yapay zekâ sağlayıcısı bu API anahtarının isteklerini sınırlıyor. Birazdan tekrar deneyin.",
+    "providerDown": "Yapay zekâ sağlayıcısına şu anda ulaşılamıyor. Birazdan tekrar deneyin.",
+    "unexpected": "Yapay zekâ sağlayıcısı beklenmeyen bir yanıt döndürdü."
   }
 }

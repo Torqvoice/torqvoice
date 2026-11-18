@@ -62,19 +62,8 @@ interface Reminder {
   } | null
 }
 
-interface VehicleOption {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customerName: string | null
-  customerId: string | null
-}
-
 interface RemindersPageClientProps {
   reminders: Reminder[]
-  vehicles: VehicleOption[]
   unitSystem: 'metric' | 'imperial'
 }
 
@@ -92,7 +81,7 @@ function getUrgency(r: Reminder): 'overdue' | 'due-soon' | 'normal' {
   return 'normal'
 }
 
-export function RemindersPageClient({ reminders, vehicles, unitSystem }: RemindersPageClientProps) {
+export function RemindersPageClient({ reminders, unitSystem }: RemindersPageClientProps) {
   const t = useTranslations('reminders')
   const tv = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
@@ -329,7 +318,6 @@ export function RemindersPageClient({ reminders, vehicles, unitSystem }: Reminde
       <ReminderFormDialog
         open={showForm}
         onOpenChange={setShowForm}
-        vehicles={vehicles}
         reminder={editingReminder}
         onSaved={() => router.refresh()}
       />

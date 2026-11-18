@@ -271,7 +271,7 @@ describe('InvoiceView', () => {
       }
       renderView(props)
       // Payment provider buttons should not render when balance is zero
-      expect(screen.queryByRole('button', { name: /pay.*card/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /pay with stripe/i })).not.toBeInTheDocument()
     })
 
     it('hides payment provider buttons when balance is zero from payments', () => {
@@ -284,22 +284,36 @@ describe('InvoiceView', () => {
         },
       }
       renderView(props)
-      expect(screen.queryByRole('button', { name: /pay.*card/i })).not.toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /pay with stripe/i })).not.toBeInTheDocument()
     })
 
     it('shows Stripe pay button when stripe provider is enabled', () => {
       renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
-      expect(screen.getByRole('button', { name: /pay.*card/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /pay with stripe/i })).toBeInTheDocument()
     })
 
     it('shows Vipps pay button when vipps provider is enabled', () => {
       renderView({ ...DEFAULT_PROPS, enabledProviders: ['vipps'] })
-      expect(screen.getByRole('button', { name: /pay.*vipps/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /pay with vipps/i })).toBeInTheDocument()
     })
 
     it('shows PayPal pay button when paypal provider is enabled', () => {
       renderView({ ...DEFAULT_PROPS, enabledProviders: ['paypal'] })
-      expect(screen.getByRole('button', { name: /pay.*paypal/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /pay with paypal/i })).toBeInTheDocument()
+    })
+
+    it('shows Paystack pay button when paystack provider is enabled', () => {
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['paystack'] })
+      expect(screen.getByRole('button', { name: /pay with paystack/i })).toBeInTheDocument()
+    })
+
+    it('shows the cards each vendor takes under its button, and none for Vipps', () => {
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe', 'vipps'] })
+      expect(screen.getByTitle('Visa')).toBeInTheDocument()
+      expect(screen.getByTitle('Mastercard')).toBeInTheDocument()
+      expect(screen.getByTitle('American Express')).toBeInTheDocument()
+      // The button still reads as the whole sentence, mark and all.
+      expect(screen.getByRole('button', { name: /pay with vipps/i })).toBeInTheDocument()
     })
 
     it('shows Full amount and Partial payment toggle buttons', () => {
@@ -328,7 +342,7 @@ describe('InvoiceView', () => {
       const input = screen.getByLabelText(/enter amount/i)
       // Use fireEvent for number inputs to avoid userEvent quirks with controlled inputs
       fireEvent.change(input, { target: { value: '0' } })
-      await userEvent.click(screen.getByRole('button', { name: /pay.*card/i }))
+      await userEvent.click(screen.getByRole('button', { name: /pay with stripe/i }))
       await waitFor(() => {
         expect(screen.getByText(/valid amount/i)).toBeInTheDocument()
       })
@@ -346,7 +360,7 @@ describe('InvoiceView', () => {
         assign: vi.fn(),
       })
       renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
-      await userEvent.click(screen.getByRole('button', { name: /pay.*card/i }))
+      await userEvent.click(screen.getByRole('button', { name: /pay with stripe/i }))
 
       await waitFor(() => {
         expect(mockFetch).toHaveBeenCalledWith(
@@ -368,7 +382,7 @@ describe('InvoiceView', () => {
         json: () => Promise.resolve({ error: 'Provider unavailable' }),
       })
       renderView({ ...DEFAULT_PROPS, enabledProviders: ['stripe'] })
-      await userEvent.click(screen.getByRole('button', { name: /pay.*card/i }))
+      await userEvent.click(screen.getByRole('button', { name: /pay with stripe/i }))
 
       await waitFor(() => {
         expect(screen.getByText('Provider unavailable')).toBeInTheDocument()
@@ -422,6 +436,31 @@ describe('InvoiceView', () => {
         expect(body.provider).toBe('vipps')
         expect(body.externalId).toBe('vipps-ref-456')
       })
+    })
+
+    it('verifies a Paystack payment when the customer comes back from Paystack', async () => {
+      // Paystack appends trxref and reference to the return address, which
+      // is the name Vipps uses too; the marker says whose it is.
+      const search = '?paystack=return&trxref=inv-sr-1&reference=inv-sr-1'
+      vi.stubGlobal('location', {
+        search,
+        pathname: '/share/invoice/org-1/tok-xyz',
+        href: `http://localhost/share/invoice/org-1/tok-xyz${search}`,
+      })
+      vi.stubGlobal('history', { replaceState: vi.fn() })
+      mockFetch.mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ verified: true, amount: 200 }),
+      })
+      renderView({ ...DEFAULT_PROPS, enabledProviders: ['paystack', 'vipps'] })
+
+      await waitFor(() => {
+        expect(screen.getByText(/payment received/i)).toBeInTheDocument()
+      })
+      const call = mockFetch.mock.calls.find(
+        (c: unknown[]) => c[0] === '/api/public/share/invoice/org-1/tok-xyz/verify'
+      )
+      expect(JSON.parse(call![1].body)).toEqual({ provider: 'paystack', externalId: 'inv-sr-1' })
     })
 
     it('shows PAID IN FULL when balance is zero', () => {

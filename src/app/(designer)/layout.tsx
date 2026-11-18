@@ -6,6 +6,8 @@ import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permis
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { TypeKeyProvider } from '@/components/type-key-context'
 import { ConfirmProvider } from '@/components/confirm-dialog'
+import { CurrencySettingsProvider } from '@/components/currency-settings-context'
+import { DateSettingsProvider } from '@/components/date-settings-context'
 // The faces the PDFs embed, so the canvas measures what the paper prints.
 import '@/features/invoice-designer/Render/documentFonts.css'
 
@@ -43,10 +45,23 @@ export default async function DesignerLayout({ children }: { children: React.Rea
   return (
     <ServiceTypeProvider serviceType={data.serviceType ?? 'automotive'}>
       <TypeKeyProvider enabled={data.typeKeyEnabled}>
-        <ConfirmProvider>
-          <SaveShortcutListener />
-          <div className="h-screen overflow-hidden bg-[#eceef1] text-[#1a1d21]">{children}</div>
-        </ConfirmProvider>
+        {/* The workshop's money and dates, which the sample sheet is written in. */}
+        <DateSettingsProvider
+          dateFormat={data.dateFormat}
+          timeFormat={data.timeFormat}
+          timezone={data.timezone}
+          weekStartDay={data.weekStartDay}
+        >
+          <CurrencySettingsProvider
+            currencyCode={data.currencyCode}
+            currencyFormat={data.currencyFormat}
+          >
+            <ConfirmProvider>
+              <SaveShortcutListener />
+              <div className="h-screen overflow-hidden bg-[#eceef1] text-[#1a1d21]">{children}</div>
+            </ConfirmProvider>
+          </CurrencySettingsProvider>
+        </DateSettingsProvider>
       </TypeKeyProvider>
     </ServiceTypeProvider>
   )

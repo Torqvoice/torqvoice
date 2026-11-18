@@ -1,10 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// The link is open: whether an expired one is refused is share-link-open's
+// business, and each of these tests is about what happens after that.
+const findSharedDocument = vi.hoisted(() => vi.fn(async () => ({ open: true })))
+vi.mock('@/lib/share-link.server', () => ({ findSharedDocument }))
+
 vi.mock('@/lib/db', () => ({
   db: {
     quote: {
       findFirst: vi.fn(),
-      update: vi.fn(),
+      updateMany: vi.fn(),
     },
   },
 }))
@@ -18,7 +23,7 @@ import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
 
 const mockFindFirst = vi.mocked(db.quote.findFirst)
-const mockUpdate = vi.mocked(db.quote.update)
+const mockUpdate = vi.mocked(db.quote.updateMany)
 const mockNotify = vi.mocked(notify)
 
 const SENT_QUOTE = {
@@ -32,7 +37,8 @@ const SENT_QUOTE = {
 
 beforeEach(() => {
   vi.resetAllMocks()
-  mockUpdate.mockResolvedValue({} as any)
+  mockUpdate.mockResolvedValue({ count: 1 })
+  findSharedDocument.mockResolvedValue({ open: true })
 })
 
 describe('respondToQuote', () => {
@@ -54,6 +60,18 @@ describe('respondToQuote', () => {
       action: 'accepted',
     })
     expect(result).toEqual({ success: false, error: 'Quote not found' })
+  })
+
+  it('refuses an answer through a link that has expired, and changes nothing', async () => {
+    mockFindFirst.mockResolvedValue(SENT_QUOTE as any)
+    findSharedDocument.mockResolvedValue({ open: false })
+    const result = await respondToQuote({
+      quoteId: 'quote-1',
+      publicToken: 'tok-1',
+      action: 'accepted',
+    })
+    expect(result).toEqual({ success: false, error: 'This link has expired' })
+    expect(mockUpdate).not.toHaveBeenCalled()
   })
 
   it('returns error when quote status is already accepted', async () => {
@@ -105,9 +123,33 @@ describe('respondToQuote', () => {
     })
     expect(result).toEqual({ success: true })
     expect(mockUpdate).toHaveBeenCalledWith({
-      where: { id: 'quote-1' },
+      // One statement: the answer is written only while the quote can still take one.
+      where: { id: 'quote-1', organizationId: 'org-1', status: { in: ['draft', 'sent'] } },
       data: { status: 'accepted', customerMessage: null, responseDismissedAt: null },
     })
+  })
+
+  it('leaves a quote alone that the workshop converted while the customer was answering', async () => {
+    // The page read "sent"; by the time the answer is written it is converted.
+    mockFindFirst.mockResolvedValue(SENT_QUOTE as any)
+    mockUpdate.mockResolvedValue({ count: 0 })
+    const result = await respondToQuote({
+      quoteId: 'quote-1',
+      publicToken: 'tok-1',
+      action: 'accepted',
+    })
+    expect(result).toEqual({ success: false, error: 'This quote can no longer be updated' })
+    // The workshop is not told of an answer that did not happen.
+    expect(mockNotify).not.toHaveBeenCalled()
+  })
+
+  it('counts one of two answers sent at the same moment', async () => {
+    mockFindFirst.mockResolvedValue(SENT_QUOTE as any)
+    mockUpdate.mockResolvedValueOnce({ count: 1 }).mockResolvedValueOnce({ count: 0 })
+    const answer = { quoteId: 'quote-1', publicToken: 'tok-1', action: 'accepted' }
+    const results = await Promise.all([respondToQuote(answer), respondToQuote(answer)])
+    expect(results.map((result) => result.success).sort()).toEqual([false, true])
+    expect(mockNotify).toHaveBeenCalledTimes(1)
   })
 
   it('accepts a draft quote', async () => {
@@ -130,7 +172,7 @@ describe('respondToQuote', () => {
     })
     expect(result).toEqual({ success: true })
     expect(mockUpdate).toHaveBeenCalledWith({
-      where: { id: 'quote-1' },
+      where: { id: 'quote-1', organizationId: 'org-1', status: { in: ['draft', 'sent'] } },
       data: {
         status: 'changes_requested',
         customerMessage: 'Please add an extra oil filter',

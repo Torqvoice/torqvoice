@@ -3,11 +3,24 @@
 import { interactiveRow } from '@/lib/interactive-row'
 import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
-import { Clock, GripVertical, Wrench, ClipboardCheck } from 'lucide-react'
+import { Clock, GripVertical, Users, Wrench, ClipboardCheck } from 'lucide-react'
 import type { WorkBoardJob } from '../Actions/boardActions'
 import { getJobDateRange, getDurationMinutes } from '../utils/datetime'
 import { formatDuration } from './DurationSlider'
 import { PromiseOverdueMark } from './PromiseOverdueMark'
+
+/** How many people are on a job besides its technician, on the card itself. */
+export function TeamCount({ count }: { count: number }) {
+  if (count <= 0) return null
+  return (
+    <span
+      className="inline-flex items-center gap-0.5 rounded bg-muted px-1 py-0.5 text-[10px] font-medium tabular-nums"
+      data-testid="job-team-count"
+    >
+      <Users className="h-2.5 w-2.5" />+{count}
+    </span>
+  )
+}
 
 export function BoardJobCard({ job, onClick }: { job: WorkBoardJob; onClick?: () => void }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
@@ -58,7 +71,9 @@ export function BoardJobCard({ job, onClick }: { job: WorkBoardJob; onClick?: ()
             {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
           </p>
         )}
-        <div className="flex items-center gap-1.5">
+        {/* Wraps: a card in a narrow day column would otherwise cut off
+            whichever chip came last. */}
+        <div className="flex flex-wrap items-center gap-1">
           {job.status && (
             <span className="inline-block rounded bg-muted px-1 py-0.5 text-[10px] capitalize">
               {job.status.replace(/_/g, ' ')}
@@ -70,6 +85,7 @@ export function BoardJobCard({ job, onClick }: { job: WorkBoardJob; onClick?: ()
               {formatDuration(durationMins)}
             </span>
           )}
+          <TeamCount count={job.helperIds.length} />
           <PromiseOverdueMark job={job} />
         </div>
       </div>

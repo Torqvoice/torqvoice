@@ -7,17 +7,23 @@ import { toast } from 'sonner'
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { Fingerprint, Loader2, Pencil, Plus, Trash2 } from 'lucide-react'
+import { Fingerprint, Loader2, LogIn, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { showNotice } from '@/components/notice-toast'
+import { isPasskeyPromptClosed, passkeyErrorCode } from '@/lib/passkey-prompt'
+import { signInUrlFor } from '@/lib/signed-out'
+import { describeUserAgent } from '@/lib/user-agent-label'
+
+const SIGN_IN_AGAIN_TOAST_ID = 'passkey-sign-in-again'
 
 interface Passkey {
   id: string
@@ -29,6 +35,8 @@ interface Passkey {
 
 export function PasskeySettings() {
   const t = useTranslations('settings')
+  const tDismiss = useTranslations('common.updateBanner')
+  const tCommon = useTranslations('common')
   const [passkeys, setPasskeys] = useState<Passkey[]>([])
   const [loading, setLoading] = useState(true)
   const [registering, setRegistering] = useState(false)
@@ -37,8 +45,7 @@ export function PasskeySettings() {
   const [renamingPasskey, setRenamingPasskey] = useState<Passkey | null>(null)
   const [newName, setNewName] = useState('')
   const [saving, setSaving] = useState(false)
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [passKeyToDelete, setPassKeyToDelete] = useState<Passkey | null>(null)
+  const confirm = useConfirm()
 
   const fetchPasskeys = async () => {
     try {
@@ -56,13 +63,52 @@ export function PasskeySettings() {
     fetchPasskeys()
   }, [])
 
+  // The sign-in page sends a signed-in visitor straight back, so this session
+  // ends before the tab goes there, set to come back to this page.
+  const signInAgain = async () => {
+    // A sign-out that did not happen would send them to a sign-in page that
+    // sends a signed-in visitor straight back here, with nothing said.
+    let signedOut = true
+    try {
+      const result = await authClient.signOut()
+      if (result?.error) signedOut = false
+    } catch {
+      signedOut = false
+    }
+    if (!signedOut) {
+      toast.error(tCommon('errors.unexpected'))
+      return
+    }
+    window.location.assign(signInUrlFor(window.location.pathname, window.location.search))
+  }
+
   const handleRegister = async () => {
     setRegistering(true)
     try {
-      const result = await authClient.passkey.addPasskey()
+      // Named after the device it is made on, the way the signed-in devices
+      // list names it, so a second passkey is not another "Unnamed passkey".
+      const label = describeUserAgent(navigator.userAgent)
+      const result = await authClient.passkey.addPasskey(
+        label === 'Unknown device' ? undefined : { name: label }
+      )
       if (result?.error) {
-        // User dismissed the passkey prompt — not an error state
-        if ('code' in result.error && result.error.code === 'REGISTRATION_CANCELLED') return
+        if (isPasskeyPromptClosed(result.error)) return
+        const code = passkeyErrorCode(result.error)
+        // A passkey is only added to a session that began recently, and a
+        // session lasts days longer than that. Better Auth's own sentence
+        // ("Session is not fresh") says neither why nor what to do.
+        if (code === 'SESSION_NOT_FRESH') {
+          showNotice({
+            id: SIGN_IN_AGAIN_TOAST_ID,
+            icon: LogIn,
+            title: t('account.passkey.signInAgainTitle'),
+            description: t('account.passkey.signInAgainDescription'),
+            actionLabel: t('account.passkey.signInAgain'),
+            onAction: signInAgain,
+            dismissLabel: tDismiss('dismiss'),
+          })
+          return
+        }
         const msg = typeof result.error.message === 'string' ? result.error.message : ''
         toast.error(msg || t('account.passkey.registerFailed'))
       } else {
@@ -71,12 +117,23 @@ export function PasskeySettings() {
       }
     } catch {
       toast.error(t('account.passkey.registerFailed'))
+    } finally {
+      // Also after the early returns above, or the button would spin for good
+      setRegistering(false)
     }
-    setRegistering(false)
   }
 
-  const handleDelete = async () => {
-    if (!passKeyToDelete) return
+  const handleDelete = async (passKeyToDelete: Passkey) => {
+    const ok = await confirm({
+      title: t('account.passkey.confirmDeleteTitle'),
+      description: t('account.passkey.confirmDelete'),
+      subject: [{ label: passKeyToDelete.name || t('account.passkey.unnamed'), icon: Fingerprint }],
+      confirmLabel: t('account.passkey.delete'),
+      cancelLabel: t('account.passkey.cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     setDeletingId(passKeyToDelete.id)
     try {
       await authClient.passkey.deletePasskey({ id: passKeyToDelete.id })
@@ -86,8 +143,6 @@ export function PasskeySettings() {
       toast.error(t('account.passkey.deleteFailed'))
     }
     setDeletingId(null)
-    setDeleteDialogOpen(false)
-    setPassKeyToDelete(null)
   }
 
   const handleRename = async () => {
@@ -119,7 +174,12 @@ export function PasskeySettings() {
 
   return (
     <>
-      <AppCard icon={Fingerprint} title={t('account.passkey.title')} contentClassName="space-y-4">
+      <AppCard
+        id="account-passkeys"
+        icon={Fingerprint}
+        title={t('account.passkey.title')}
+        contentClassName="space-y-4"
+      >
         <p className="text-sm text-muted-foreground">{t('account.passkey.description')}</p>
 
         {loading ? (
@@ -160,10 +220,7 @@ export function PasskeySettings() {
                     size="icon"
                     className="h-8 w-8 text-destructive hover:text-destructive"
                     disabled={deletingId === pk.id}
-                    onClick={() => {
-                      setPassKeyToDelete(pk)
-                      setDeleteDialogOpen(true)
-                    }}
+                    onClick={() => handleDelete(pk)}
                     aria-label={t('account.passkey.delete')}
                   >
                     {deletingId === pk.id ? (
@@ -179,7 +236,7 @@ export function PasskeySettings() {
         )}
 
         <Separator />
-        <Button onClick={handleRegister} disabled={registering}>
+        <Button id="account-register-passkey" onClick={handleRegister} disabled={registering}>
           {registering ? (
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           ) : (
@@ -191,7 +248,7 @@ export function PasskeySettings() {
 
       {/* Rename Dialog */}
       <Dialog open={renameDialogOpen} onOpenChange={setRenameDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('account.passkey.rename')}</DialogTitle>
           </DialogHeader>
@@ -215,25 +272,6 @@ export function PasskeySettings() {
             <Button onClick={handleRename} disabled={saving || !newName.trim()}>
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {t('account.passkey.save')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('account.passkey.confirmDeleteTitle')}</DialogTitle>
-            <DialogDescription>{t('account.passkey.confirmDelete')}</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
-              {t('account.passkey.cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={deletingId !== null}>
-              {deletingId && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('account.passkey.delete')}
             </Button>
           </DialogFooter>
         </DialogContent>

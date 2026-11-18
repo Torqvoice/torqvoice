@@ -7,6 +7,7 @@ import { canAssignRole } from '../Lib/invitationRules'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { setTechnicianStanding } from '../Lib/technicianStanding'
+import { customRoleName } from '../Lib/customRoleName'
 import {
   ensureTechnicianRole,
   TECHNICIAN_ROLE_NAME,
@@ -29,12 +30,7 @@ export async function assignRole(input: unknown) {
       const decision = canAssignRole({ role: callerRole, isAdmin, userId }, member, data)
       if (!decision.ok) throw new Error(decision.reason)
 
-      if (data.roleId) {
-        const roleExists = await db.role.findFirst({
-          where: { id: data.roleId, organizationId },
-        })
-        if (!roleExists) throw new Error('Role not found')
-      }
+      const roleName = await customRoleName(organizationId, data.roleId)
 
       /**
        * Technician is one answer to one question, not two settings to keep in
@@ -87,12 +83,25 @@ export async function assignRole(input: unknown) {
 
       revalidatePath('/settings/team')
       revalidatePath('/work-board')
-      return { assigned: true, isTechnician: asTechnician, technicianId: technician }
+      return {
+        assigned: true,
+        isTechnician: asTechnician,
+        technicianId: technician,
+        memberId: member.id,
+        roleLabel: byWord ? TECHNICIAN_ROLE_NAME : (roleName ?? data.role ?? member.role),
+      }
     },
     {
       requiredPermissions: [
         { action: PermissionAction.MANAGE, subject: PermissionSubject.SETTINGS },
       ],
+      audit: ({ result }) => ({
+        action: 'team.updateRole',
+        entity: 'OrganizationMember',
+        entityId: result.memberId,
+        details: { key: 'team_updateRole', params: { role: result.roleLabel } },
+        metadata: { memberId: result.memberId, role: result.roleLabel },
+      }),
     }
   )
 }

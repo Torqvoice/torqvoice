@@ -58,7 +58,12 @@
       "everyone": "Todo el trabajo",
       "thisWeek": "Esta semana"
     },
-    "dropNeedsLane": "Agrupa el tablero por técnico o puesto de trabajo antes de soltar un trabajo en él."
+    "dropNeedsLane": "Agrupa el tablero por técnico o puesto de trabajo antes de soltar un trabajo en él.",
+    "load": {
+      "over": "{amount} de más",
+      "spoken": "Programado: {booked} de {capacity}",
+      "spokenOver": "Programado: {booked} de {capacity}, excedido en {amount}"
+    }
   },
   "unassigned": {
     "title": "Trabajos Sin Asignar ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Se gestiona en la página de Equipo, junto con su acceso a la aplicación.",
     "skills": "Habilidades",
     "skillsPlaceholder": "Diagnóstico, certificado en VE",
-    "skillsHint": "Se muestra bajo el nombre donde se reparte el trabajo. Opcional."
+    "skillsHint": "Se muestra bajo el nombre donde se reparte el trabajo. Opcional.",
+    "saveFailed": "No se pudo guardar el técnico. Inténtelo de nuevo.",
+    "deleteFailed": "No se pudo eliminar el técnico. Inténtelo de nuevo."
   },
   "jobDetail": {
     "viewDetails": "Ver Detalles",
@@ -90,7 +97,9 @@
     "endTime": "Hora de fin",
     "failedDuration": "Error al actualizar la duración",
     "failedTimes": "Error al actualizar los horarios",
-    "startTime": "Hora de inicio"
+    "startTime": "Hora de inicio",
+    "alsoOnJob": "También en este trabajo",
+    "failedHelper": "Error al actualizar quién está en el trabajo"
   },
   "presenter": {
     "title": "Tablero de Trabajo",
@@ -160,6 +169,9 @@
     "none": "Nadie todavía",
     "promised": "Prometido",
     "promiseLate": "Retrasado",
-    "promiseOverdue": "Prometido al cliente para un momento ya pasado"
+    "promiseOverdue": "Prometido al cliente para un momento ya pasado",
+    "alsoOnJob": "También en el trabajo",
+    "with": "Con {name}",
+    "helping": "Ayudando"
   }
 }

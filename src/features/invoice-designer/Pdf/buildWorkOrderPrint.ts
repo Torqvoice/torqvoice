@@ -7,10 +7,12 @@ import {
   formatDateTime,
 } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
-import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
+import { documentNumbers, serviceTypeName } from '@/lib/document-numbers'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
+import { descriptionLines } from '@/features/calendar/Lib/appointment'
 import { taxLines } from './taxLines'
+import { printFigures } from './printFigures'
 import {
   getDefaultLayout,
   isCustomFieldId,
@@ -62,6 +64,12 @@ export interface WorkOrderJob {
   /** The status in the reader's words: the workshop's own name for it, or the stage. */
   statusLabel: string
   workBay?: string | null
+  /**
+   * Everybody else on the job with its technician, by name. The sheet is the
+   * workshop's own paper, so it says who is working the job; the invoice the
+   * customer gets keeps to the one technician.
+   */
+  helperNames?: string[]
   promisedAt?: Date | string | null
   /** What the customer came in with, in the order they said it. */
   concerns: { description: string; correction?: string | null }[]
@@ -98,6 +106,8 @@ export interface WorkOrderPrintInput {
   template?: TemplateConfig
   torqvoiceLogoDataUri?: string
   labels?: Record<string, string>
+  /** The document's language, the one its labels are in; numbers are written its way. */
+  locale?: string
 }
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -114,6 +124,21 @@ export function plainTextHtml(text: string | null | undefined): string | undefin
     .split(/\n{2,}/)
     .map((paragraph) => `<p>${escapeText(paragraph).replace(/\n/g, '<br/>')}</p>`)
     .join('')
+}
+
+/**
+ * A job's description as the print takes it: plain text. One booked from the
+ * calendar before the conditions took its place was kept as rich text, and
+ * would print with its tags showing; it prints as its lines instead.
+ */
+export function printedDescription(text: string | null | undefined): string | null | undefined {
+  if (
+    !text ||
+    !/<\/?(p|br|ul|ol|li|h[1-6]|div|blockquote|strong|em|u|s|a|span)\b[^>]*>/i.test(text)
+  ) {
+    return text
+  }
+  return descriptionLines(text).join('\n')
 }
 
 /**
@@ -156,6 +181,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const { workshop, invoiceSettings, template, job } = input
   const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
+  const nums = documentNumbers(input.locale)
   const L = (key: string, fallback: string) => labels[key] || fallback
 
   const layout = resolveLayout(input)
@@ -166,14 +192,21 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
-  const net = (value: number) => netLineTotal(value, taxRate, taxInclusive)
+  // A workshop may print each line with tax in it, the way a consumer
+  // receipt reads: the lines then sum to the subtotal, and the tax row says
+  // how much of that is tax rather than adding it on. Either way a line left
+  // out of the tax prints as entered; see printFigures.
   const linesInclTax = invoiceSettings?.lineItemsInclTax === true && taxRate > 0
-  const gross = (value: number) => (taxInclusive ? value : value * (1 + taxRate / 100))
-  const shown = linesInclTax ? gross : net
+  const figures = printFigures({
+    taxRate,
+    taxInclusive,
+    linesInclTax,
+    parts: data.partItems,
+    labor: data.laborItems,
+  })
+  const shown = figures.shown
 
-  const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
-  const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
-  const computedSubtotal = partsSubtotal + laborSubtotal
+  const computedSubtotal = figures.partsTotal + figures.laborTotal
   const computedDiscount = discountAmountFor(
     computedSubtotal,
     data.discountType,
@@ -184,6 +217,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     discountAmount: computedDiscount,
     taxRate,
     taxInclusive,
+    taxableSubtotal: figures.taxableSubtotal,
   })
   const displayTotal =
     data.totalAmount > 0 ? data.totalAmount : computedTotal > 0 ? computedTotal : data.cost
@@ -201,7 +235,10 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const vehicleName = data.vehicle
     ? `${data.vehicle.year} ${data.vehicle.make} ${data.vehicle.model}`
     : ''
-  const tech = data.technician?.name || data.techName || ''
+  // The technician first, then whoever is on the job with them.
+  const tech = [data.technician?.name || data.techName || '', ...(job.helperNames ?? [])]
+    .filter(Boolean)
+    .join(', ')
   const unit = invoiceSettings?.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')
 
   const fields: Record<string, string> = {
@@ -219,11 +256,13 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       : '',
     mileage: data.mileage
       ? `${fillTemplate(L('mileage', 'Mileage: {mileage}'), {
-          mileage: data.mileage.toLocaleString(),
+          mileage: nums.distance(data.mileage),
         })} ${unit}`
       : '',
     service_title: data.title || '',
-    service_type: data.vehicle ? fillTemplate(L('type', 'Type: {type}'), { type: data.type }) : '',
+    service_type: data.vehicle
+      ? fillTemplate(L('type', 'Type: {type}'), { type: serviceTypeName(data.type, labels) })
+      : '',
     tech_name: tech ? fillTemplate(L('tech', 'Tech: {tech}'), { tech }) : '',
     // The facts of the job, each already worded as its own line.
     status: job.statusLabel
@@ -264,38 +303,42 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const items: DocumentData['items'] = [
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
-      qty: String(l.hours),
+      qty: nums.count(l.hours),
       unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
-      price: money(shown(l.rate)),
-      total: money(shown(l.total)),
+      price: money(shown(l.rate, l.taxable !== false)),
+      total: money(shown(l.total, l.taxable !== false)),
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
-      qty: formatQuantity(p.quantity, p.unit),
+      qty: nums.quantity(p.quantity, p.unit),
       unit: p.unit || '',
       desc: p.name,
       sub: p.partNumber || undefined,
-      price: money(shown(p.unitPrice)),
-      total: money(shown(p.total)),
+      price: money(shown(p.unitPrice, p.taxable !== false)),
+      total: money(shown(p.total, p.taxable !== false)),
     })),
   ]
   const parts: DocumentData['parts'] = data.partItems.map((p) => ({
     ref: p.partNumber || '-',
     desc: p.name,
-    qty: formatQuantity(p.quantity, p.unit),
-    price: money(shown(p.unitPrice)),
-    total: money(shown(p.total)),
+    qty: nums.quantity(p.quantity, p.unit),
+    price: money(shown(p.unitPrice, p.taxable !== false)),
+    total: money(shown(p.total, p.taxable !== false)),
   }))
   const labor: DocumentData['labor'] = data.laborItems.map((l) => {
     const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
-      qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
+      qty: isService
+        ? `${nums.count(l.hours)} ${L('unit', 'unit')}`
+        : `${nums.count(l.hours)} ${L('hrs', 'hrs')}`,
       rate: isService
-        ? money(shown(l.rate))
-        : fillTemplate(L('ratePerHour', '{rate}/hr'), { rate: money(shown(l.rate)) }),
-      total: money(shown(l.total)),
+        ? money(shown(l.rate, l.taxable !== false))
+        : fillTemplate(L('ratePerHour', '{rate}/hr'), {
+            rate: money(shown(l.rate, l.taxable !== false)),
+          }),
+      total: money(shown(l.total, l.taxable !== false)),
     }
   })
 
@@ -309,7 +352,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
         l.pricingType === 'service'
           ? undefined
           : l.hours
-            ? `${l.hours} ${L('hrs', 'hrs')}`
+            ? `${nums.count(l.hours)} ${L('hrs', 'hrs')}`
             : undefined,
     }))
 
@@ -335,12 +378,12 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   const itemsTableVisible = layout.sections.some((s) => s.id === 'items_table' && s.visible)
   const totals: TotalLine[] = []
   if (!itemsTableVisible && data.partItems.length > 0) {
-    totals.push({ label: L('parts', 'Parts'), value: money(shown(partsSubtotal)), kind: 'line' })
+    totals.push({ label: L('parts', 'Parts'), value: money(figures.partsShown), kind: 'line' })
   }
   if (!itemsTableVisible && data.laborItems.length > 0) {
-    totals.push({ label: L('labor', 'Labor'), value: money(shown(laborSubtotal)), kind: 'line' })
+    totals.push({ label: L('labor', 'Labor'), value: money(figures.laborShown), kind: 'line' })
   }
-  const displaySubtotal = shown(data.subtotal)
+  const displaySubtotal = figures.subtotalShown(data.subtotal)
   if (displaySubtotal > 0) {
     totals.push({
       label: linesInclTax
@@ -350,7 +393,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       kind: 'line',
     })
   }
-  const displayDiscount = shown(data.discountAmount ?? 0)
+  const displayDiscount = figures.discountShown(data.discountAmount ?? 0, data.subtotal)
   if (displayDiscount > 0) {
     totals.push({
       label:
@@ -371,6 +414,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       linesInclTax,
       labels,
       money,
+      taxableAmount: figures.taxableAmount(data.subtotal, data.discountAmount ?? 0),
     })
   )
   totals.push({ label: L('total', 'Total'), value: money(displayTotal), kind: 'total' })
@@ -421,6 +465,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     notes: { html: data.invoiceNotes ?? undefined },
     warranty: warrantyForPrint(data, {
       labels,
+      locale: input.locale,
       unitSystem: invoiceSettings?.unitSystem,
       expires: data.warrantyExpiresAt ? day(data.warrantyExpiresAt) : undefined,
     }),
@@ -448,7 +493,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
         description: concern.description,
         detail: concern.correction?.trim() || undefined,
       })),
-      description: { html: plainTextHtml(data.description) },
+      description: { html: plainTextHtml(printedDescription(data.description)) },
       checklist,
       qr: job.qrDataUri
         ? { dataUri: job.qrDataUri, label: L('scanToOpen', 'Scan to open this work order') }

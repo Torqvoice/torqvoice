@@ -1,10 +1,11 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
-import { formatQuantity } from '@/lib/format-quantity'
-import { calculateTotals, netLineTotal, discountAmountFor } from '@/lib/tax'
+import { documentNumbers, serviceTypeName } from '@/lib/document-numbers'
+import { calculateTotals, discountAmountFor } from '@/lib/tax'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { taxLines } from './taxLines'
+import { printFigures } from './printFigures'
 import { LABOR_GROUP, lineGroupsFor, partGroupKey } from './lineGroups'
 import {
   getDefaultInvoiceLayout,
@@ -69,6 +70,8 @@ export interface InvoicePrintInput {
   telegramQrDataUri?: string
   telegramLabel?: string
   labels?: Record<string, string>
+  /** The document's language, the one its labels are in; numbers are written its way. */
+  locale?: string
   /** The car's condition this visit, for a layout with Vehicle Condition on. */
   conditionMap?: VisitConditionMap
   /**
@@ -146,6 +149,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const data = { ...input.data, laborItems: documentLaborLines(input.data.laborItems) }
   const labels = input.labels ?? {}
   const L = (key: string, fallback: string) => labels[key] || fallback
+  const nums = documentNumbers(input.locale)
 
   const layout = resolveLayout(input)
   const doc = layout.document ?? {}
@@ -155,17 +159,21 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const money = (value: number) => formatCurrency(value, cc, cf)
   const taxRate = data.taxRate
   const taxInclusive = data.taxInclusive ?? false
-  const net = (value: number) => netLineTotal(value, taxRate, taxInclusive)
   // A workshop may print each line with tax in it, the way a consumer
   // receipt reads: the lines then sum to the subtotal, and the tax row says
-  // how much of that is tax rather than adding it on.
+  // how much of that is tax rather than adding it on. Either way a line left
+  // out of the tax prints as entered; see printFigures.
   const linesInclTax = invoiceSettings?.lineItemsInclTax === true && taxRate > 0
-  const gross = (value: number) => (taxInclusive ? value : value * (1 + taxRate / 100))
-  const shown = linesInclTax ? gross : net
+  const figures = printFigures({
+    taxRate,
+    taxInclusive,
+    linesInclTax,
+    parts: data.partItems,
+    labor: data.laborItems,
+  })
+  const shown = figures.shown
 
-  const partsSubtotal = data.partItems.reduce((sum, p) => sum + p.total, 0)
-  const laborSubtotal = data.laborItems.reduce((sum, l) => sum + l.total, 0)
-  const computedSubtotal = partsSubtotal + laborSubtotal
+  const computedSubtotal = figures.partsTotal + figures.laborTotal
   const computedDiscount = discountAmountFor(
     computedSubtotal,
     data.discountType,
@@ -176,6 +184,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     discountAmount: computedDiscount,
     taxRate,
     taxInclusive,
+    taxableSubtotal: figures.taxableSubtotal,
   })
   const displayTotal =
     data.totalAmount > 0 ? data.totalAmount : computedTotal > 0 ? computedTotal : data.cost
@@ -229,16 +238,16 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     mileage: data.mileage
       ? `${
           labels.mileage
-            ? fillTemplate(labels.mileage, { mileage: data.mileage.toLocaleString() })
-            : `Mileage: ${data.mileage.toLocaleString()}`
+            ? fillTemplate(labels.mileage, { mileage: nums.distance(data.mileage) })
+            : `Mileage: ${nums.distance(data.mileage)}`
         } ${invoiceSettings?.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')}`
       : '',
     service_title: data.title || '',
     // Counter sales (no vehicle) aren't a service; the default type is noise.
     service_type: data.vehicle
       ? labels.type
-        ? fillTemplate(labels.type, { type: data.type })
-        : `Type: ${data.type}`
+        ? fillTemplate(labels.type, { type: serviceTypeName(data.type, labels) })
+        : `Type: ${serviceTypeName(data.type, labels)}`
       : '',
     tech_name: tech ? (labels.tech ? fillTemplate(labels.tech, { tech }) : `Tech: ${tech}`) : '',
     company_name: shopDisplayName,
@@ -272,21 +281,21 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const items: DocumentData['items'] = [
     ...data.laborItems.map((l, i) => ({
       n: String(i + 1),
-      qty: String(l.hours),
+      qty: nums.count(l.hours),
       unit: l.pricingType === 'service' || isShopFeeLine(l) ? L('unit', 'unit') : L('hrs', 'hrs'),
       desc: l.description,
-      price: money(shown(l.rate)),
-      total: money(shown(l.total)),
+      price: money(shown(l.rate, l.taxable !== false)),
+      total: money(shown(l.total, l.taxable !== false)),
       group: LABOR_GROUP,
     })),
     ...data.partItems.map((p, i) => ({
       n: String(data.laborItems.length + i + 1),
-      qty: formatQuantity(p.quantity, p.unit),
+      qty: nums.quantity(p.quantity, p.unit),
       unit: p.unit || '',
       desc: p.name,
       sub: p.partNumber || undefined,
-      price: money(shown(p.unitPrice)),
-      total: money(shown(p.total)),
+      price: money(shown(p.unitPrice, p.taxable !== false)),
+      total: money(shown(p.total, p.taxable !== false)),
       group: partGroupKey(p.category),
     })),
   ]
@@ -294,9 +303,9 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const parts: DocumentData['parts'] = data.partItems.map((p) => ({
     ref: p.partNumber || '-',
     desc: p.name,
-    qty: formatQuantity(p.quantity, p.unit),
-    price: money(shown(p.unitPrice)),
-    total: money(shown(p.total)),
+    qty: nums.quantity(p.quantity, p.unit),
+    price: money(shown(p.unitPrice, p.taxable !== false)),
+    total: money(shown(p.total, p.taxable !== false)),
     group: partGroupKey(p.category),
   }))
 
@@ -313,13 +322,15 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     const isService = l.pricingType === 'service' || isShopFeeLine(l)
     return {
       desc: l.description,
-      qty: isService ? `${l.hours} ${L('unit', 'unit')}` : `${l.hours} ${L('hrs', 'hrs')}`,
+      qty: isService
+        ? `${nums.count(l.hours)} ${L('unit', 'unit')}`
+        : `${nums.count(l.hours)} ${L('hrs', 'hrs')}`,
       rate: isService
-        ? money(shown(l.rate))
+        ? money(shown(l.rate, l.taxable !== false))
         : labels.ratePerHour
-          ? fillTemplate(labels.ratePerHour, { rate: money(shown(l.rate)) })
-          : `${money(shown(l.rate))}/hr`,
-      total: money(shown(l.total)),
+          ? fillTemplate(labels.ratePerHour, { rate: money(shown(l.rate, l.taxable !== false)) })
+          : `${money(shown(l.rate, l.taxable !== false))}/hr`,
+      total: money(shown(l.total, l.taxable !== false)),
     }
   })
 
@@ -347,12 +358,12 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   const itemsTableVisible = layout.sections.some((s) => s.id === 'items_table' && s.visible)
   const totals: TotalLine[] = []
   if (!itemsTableVisible && data.partItems.length > 0) {
-    totals.push({ label: L('parts', 'Parts'), value: money(shown(partsSubtotal)), kind: 'line' })
+    totals.push({ label: L('parts', 'Parts'), value: money(figures.partsShown), kind: 'line' })
   }
   if (!itemsTableVisible && data.laborItems.length > 0) {
-    totals.push({ label: L('labor', 'Labor'), value: money(shown(laborSubtotal)), kind: 'line' })
+    totals.push({ label: L('labor', 'Labor'), value: money(figures.laborShown), kind: 'line' })
   }
-  const displaySubtotal = shown(data.subtotal)
+  const displaySubtotal = figures.subtotalShown(data.subtotal)
   if (displaySubtotal > 0) {
     totals.push({
       label: linesInclTax
@@ -362,7 +373,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       kind: 'line',
     })
   }
-  const displayDiscount = shown(data.discountAmount ?? 0)
+  const displayDiscount = figures.discountShown(data.discountAmount ?? 0, data.subtotal)
   if (displayDiscount > 0) {
     totals.push({
       label:
@@ -384,6 +395,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       linesInclTax,
       labels,
       money,
+      taxableAmount: figures.taxableAmount(data.subtotal, data.discountAmount ?? 0),
     })
   )
   totals.push({ label: L('total', 'Total'), value: money(displayTotal), kind: 'total' })
@@ -477,6 +489,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     attachedDocuments: attachedDocuments.length ? attachedDocuments : undefined,
     warranty: warrantyForPrint(data, {
       labels,
+      locale: input.locale,
       unitSystem: invoiceSettings?.unitSystem,
       expires: data.warrantyExpiresAt
         ? formatDateForPdf(data.warrantyExpiresAt, df, tz)

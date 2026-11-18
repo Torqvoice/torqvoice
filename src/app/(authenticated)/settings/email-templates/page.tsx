@@ -10,13 +10,23 @@ import {
   listEmailTemplates,
 } from '@/features/email/Actions/emailTemplateActions'
 import type { EmailSampleData } from '@/features/email/Components/EmailThumbnail'
-import { sampleSummaryRows, sampleValuesFor } from '@/features/email/Lib/emailContext'
+import {
+  SAMPLE_FORMAT_KEYS,
+  sampleFormatFrom,
+  sampleSummaryRows,
+  sampleValuesFor,
+} from '@/features/email/Lib/emailContext'
 import { EMAIL_KINDS, type EmailKind } from '@/features/email/Lib/emailKinds'
 import { loadEmailMessages } from '@/features/email/Lib/emailMessages.server'
 import { presetTemplate } from '@/features/email/Lib/emailPresets'
 import type { EmailTemplate } from '@/features/email/Lib/emailTemplate'
 import { FeatureLocked } from '../feature-locked-message'
 import { EmailTemplateGallery } from './email-template-gallery'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('emailTemplates')
+}
 
 /**
  * Every kind of mail with the templates saved for it, resolved on the server
@@ -41,6 +51,7 @@ export default async function EmailTemplatesPage() {
         SETTING_KEYS.WORKSHOP_PHONE,
         SETTING_KEYS.WORKSHOP_EMAIL,
         SETTING_KEYS.WORKSHOP_ADDRESS,
+        ...SAMPLE_FORMAT_KEYS,
       ]),
       db.organization.findUnique({
         where: { id: data.organizationId },
@@ -59,14 +70,16 @@ export default async function EmailTemplatesPage() {
     email: settings[SETTING_KEYS.WORKSHOP_EMAIL],
     address: settings[SETTING_KEYS.WORKSHOP_ADDRESS],
   }
+  // The stand-in amounts and dates, written the way this workshop's mail writes them.
+  const sampleFormat = sampleFormatFrom(settings)
 
   const presets = {} as Record<EmailKind, EmailTemplate>
   const samples = {} as Record<EmailKind, EmailSampleData>
   for (const kind of EMAIL_KINDS) {
     presets[kind] = presetTemplate(kind, messages)
     samples[kind] = {
-      values: sampleValuesFor(kind, workshop),
-      summary: sampleSummaryRows(kind, messages.summary),
+      values: sampleValuesFor(kind, workshop, sampleFormat),
+      summary: sampleSummaryRows(kind, messages.summary, sampleFormat),
     }
   }
 

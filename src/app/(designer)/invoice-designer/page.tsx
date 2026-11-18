@@ -27,6 +27,11 @@ import {
 import { telegramBotLink as botLinkOf } from '@/features/invoices/Lib/telegramQr'
 import { getOrgTelegramBotUsername } from '@/lib/telegram'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('settings.designer', 'eyebrow')
+}
 
 export default async function InvoiceDesignerPage({
   searchParams,
@@ -195,6 +200,8 @@ export default async function InvoiceDesignerPage({
           orgNumberLabel: settings[SETTING_KEYS.ORG_NUMBER_LABEL] || '',
           paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
           logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
+          // Unset prints miles, as the invoices themselves do.
+          unitSystem: settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'metric' : 'imperial',
           signatureUrl,
           taxComponents: readWorkshopTax(settings).components,
         }}

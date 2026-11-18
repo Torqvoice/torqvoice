@@ -1,5 +1,6 @@
 'use client'
 
+import { statusBadgeClass } from '@/lib/status-colors'
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -28,7 +29,7 @@ interface ModernHeroProps {
   status: string
   paymentStatus: string
   warranty: WarrantyFields
-  /** Save, preview, send and the menu: the same cluster the classic header carries. */
+  /** Save, preview, send and the menu. */
   actions: ReactNode
   /** The title as it stands, unsaved edits included, and how to change it. */
   title: string
@@ -257,7 +258,9 @@ export function ModernHero({
                 </h1>
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span
-                    className={cn(pill, 'border-primary bg-primary text-primary-foreground')}
+                    // The status's own colour, the one it has in every list.
+                    className={cn(pill, statusBadgeClass('workOrder', status))}
+                    data-status={status}
                     data-testid="service-status"
                   >
                     {statusMessageKeys[status]
@@ -417,7 +420,7 @@ export function ModernHero({
         <NewInspectionDialog
           open={showStartInspection}
           onOpenChange={setShowStartInspection}
-          preselectedVehicleId={vehicle.id}
+          preselectedVehicle={vehicle}
           serviceRecordId={record.id}
         />
       )}

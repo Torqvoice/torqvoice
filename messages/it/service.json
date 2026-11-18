@@ -35,7 +35,7 @@
     },
     "save": "Salva",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Invia",
     "share": "Condividi",
     "notify": "Notifica",
     "delete": "Elimina",
@@ -92,6 +92,7 @@
       "inspection": "Ispezione"
     },
     "statusOptions": {
+      "scheduled": "Pianificato",
       "pending": "In Sospeso",
       "in_progress": "In Corso",
       "waiting_parts": "In Attesa di Pezzi",
@@ -146,7 +147,8 @@
     "deleteRow": "Elimina riga",
     "outOfStock": "Esaurito",
     "onBackorder": "In arretrato ({count})",
-    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate."
+    "nameMissingHint": "Le righe senza nome del ricambio non vengono salvate.",
+    "fitsVehicleFirst": "I ricambi con tag per {vehicle} compaiono per primi."
   },
   "labor": {
     "title": "Manodopera",
@@ -175,8 +177,88 @@
     "shopFeeHintPercentLabor": "Il contributo officina dalle Impostazioni: {percent} % della manodopera di questo lavoro. Elimina la riga per toglierlo.",
     "shopFeeHintPercentAll": "Il contributo officina dalle Impostazioni: {percent} % di manodopera e ricambi di questo lavoro. Elimina la riga per toglierlo."
   },
+  "laborGuide": {
+    "button": "Tempari",
+    "title": "Tempari",
+    "description": "Tempi di manodopera e fluidi per questo veicolo",
+    "tabLabor": "Tempi di manodopera",
+    "tabFluids": "Fluidi",
+    "engine": "Motore",
+    "categories": "Categorie di lavoro",
+    "allJobs": "Tutti i lavori",
+    "search": "Cerca lavori, ad es. pastiglie freno",
+    "clearSearch": "Cancella ricerca",
+    "jobCount": "{count, plural, one {# lavoro} other {# lavori}}",
+    "noMatch": "Nessun lavoro corrisponde a «{query}»",
+    "noJobs": "Il tempario non elenca lavori per questo motore.",
+    "showAll": "Mostra tutti i lavori",
+    "showHours": "Mostra ore",
+    "show": "Mostra",
+    "lockedValue": "Non mostrato con questa chiave",
+    "hours": "{hours} h",
+    "range": "da {low} a {high} h",
+    "bookTime": "Tempario {hours} h",
+    "add": "Aggiungi come riga di manodopera",
+    "added": "Aggiunto",
+    "addJob": "Aggiungi {job} come riga di manodopera",
+    "addedJob": "{job} è stato aggiunto",
+    "addedCount": "{count, plural, one {# lavoro aggiunto} other {# lavori aggiunti}}",
+    "partsAddedCount": "{count, plural, one {# ricambio aggiunto} other {# ricambi aggiunti}}",
+    "done": "Fatto",
+    "loading": "Ricerca del veicolo",
+    "stillLooking": "Ricerca ancora in corso. Open Labor Project può impiegare fino a mezzo minuto per un veicolo su cui ha pochi dati.",
+    "notFoundTitle": "Non presente nel tempario",
+    "notFound": "Il tempario non ha dati per questo veicolo. Verifica che marca, modello e anno siano scritti come li chiama il costruttore, oppure aggiungi il VIN.",
+    "fluidsNotFoundTitle": "Nessuna specifica dei fluidi per questo veicolo",
+    "fluidsNotFound": "Open Labor Project non ha ancora specifiche dei fluidi per questo veicolo.",
+    "failedTitle": "La ricerca non è andata a buon fine",
+    "failed": "La ricerca non è riuscita",
+    "unlockFailed": "Impossibile ottenere quel valore",
+    "retry": "Riprova",
+    "matchNone": "Nessuno dei motori elencati corrisponde a quello registrato per questo veicolo, quindi questi tempi potrebbero riferirsi a un altro motore. Scegli sopra il motore più simile.",
+    "matchFuel": "Il motore è stato scelto in base al carburante. Verifica che sia quello giusto.",
+    "matchUnknown": "Questo veicolo non ha la cilindrata registrata, quindi verifica che il motore sopra sia quello giusto.",
+    "hiddenByConfidence": "{count, plural, one {# tempo sotto la tua affidabilità minima è nascosto.} other {# tempi sotto la tua affidabilità minima sono nascosti.}}",
+    "changeSettings": "Cambia",
+    "liters": "{value} L",
+    "quarts": "{value} qt",
+    "km": "{value} km",
+    "miles": "{value} mi",
+    "capacity": "Capacità",
+    "drainRefill": "Scarico e riempimento",
+    "interval": "Sostituire ogni",
+    "copySpec": "Copia {spec}",
+    "copied": "Copiato",
+    "noFluids": "Il tempario non elenca fluidi per questo motore.",
+    "addAsPart": "Aggiungi come ricambio",
+    "addFluidAsPart": "Aggiungi {system} come ricambio",
+    "partAdded": "Aggiunto",
+    "fromStock": "Da magazzino",
+    "addWithoutStock": "Aggiungi senza articolo di magazzino",
+    "takesDrainRefill": "Ne servono {amount} a scarico e riempimento",
+    "takesCapacity": "Ne contiene {amount} in tutto",
+    "attribution": "Dati da {source}",
+    "market": "Mercato: {region}",
+    "about": "Quanto è affidabile?",
+    "aboutTitle": "Affidabilità secondo la fonte",
+    "estimateNote": "I valori segnati come Stima sono generati dall'IA e non verificati con i dati del costruttore. Controllali prima di fare un preventivo a un cliente.",
+    "lockedNote": "Questa chiave mostra i valori uno alla volta e ognuno conta come una chiamata. Un piano a pagamento li mostra tutti insieme.",
+    "settings": "Impostazioni del tempario",
+    "confidence": {
+      "oem": "OEM",
+      "oemHelp": "Confrontato con i dati del costruttore",
+      "high": "Verificato",
+      "highHelp": "Verificato dalla fonte",
+      "medium": "Media",
+      "mediumHelp": "La fonte valuta questo valore con affidabilità media",
+      "estimated": "Stima",
+      "estimatedHelp": "Generato dall'IA e non verificato con i dati del costruttore"
+    }
+  },
   "liveLabor": {
     "title": "{count, plural, one {Un tecnico ha aggiunto manodopera a questo lavoro} other {Un tecnico ha aggiunto # righe di manodopera a questo lavoro}}",
+    "titleParts": "{count, plural, one {Un tecnico ha aggiunto un ricambio a questo lavoro} other {Un tecnico ha aggiunto # ricambi a questo lavoro}}",
+    "titleBoth": "Un tecnico ha aggiunto manodopera e ricambi a questo lavoro",
     "body": "Resta fuori dall’elenco mentre modifichi. Verrà salvata comunque al prossimo salvataggio.",
     "show": "Mostra"
   },
@@ -188,13 +270,29 @@
     "subtotalInclTax": "Subtotale (incl. imposta)",
     "discount": "Sconto",
     "discountNone": "Nessuno",
+    "discountOff": "No",
     "discountPercentage": "Percentuale",
     "discountFixed": "Fisso",
     "tax": "Imposta",
     "taxIncluded": "Imposta (incl.)",
+    "taxableAmount": "Imponibile",
     "total": "Totale",
     "inclusiveModeHint": "I prezzi delle righe sono inseriti con imposta inclusa. I totali mostrano la suddivisione netto + imposta.",
     "partsCost": "Costo ricambi (interno)"
+  },
+  "lineTax": {
+    "label": "Imposta su questa riga",
+    "taxedTag": "IMP.",
+    "untaxedTag": "NO IMP.",
+    "taxedHint": "Su questa riga si applica l'imposta. Fai clic per escluderla dall'imposta.",
+    "untaxedHint": "Su questa riga non si applica l'imposta. Fai clic per applicarla."
+  },
+  "taxOffer": {
+    "noTax": "Questo documento è stato creato senza imposta. L'officina ora applica il {rate}%.",
+    "otherRate": "Questo documento è al {current}%. L'officina ora applica il {rate}%.",
+    "apply": "Applica il {rate}% di imposta",
+    "failed": "Impossibile aggiornare l'imposta",
+    "saveFirst": "Salva prima le modifiche, poi applica l'imposta."
   },
   "notes": {
     "title": "Note",
@@ -227,6 +325,7 @@
     "discount": "Sconto",
     "tax": "Imposta ({rate}%)",
     "taxIncluded": "Imposta (incl., {rate}%)",
+    "taxableAmount": "Imponibile",
     "total": "Totale",
     "paid": "Pagato",
     "balanceDue": "Importo Dovuto",
@@ -286,18 +385,8 @@
   "share": {
     "title": "Condividi Fattura",
     "description": "Genera un collegamento pubblico che consente a chiunque di visualizzare e scaricare questa fattura senza accedere.",
-    "notifyTitle": "Notifica {name}",
-    "email": "Email",
-    "noEmail": "(nessun email in archivio)",
-    "sms": "SMS",
-    "noPhone": "(nessun telefono in archivio)",
-    "sendNotification": "Invia Notifica",
     "revokeLink": "Revoca Collegamento",
     "generateLink": "Genera Collegamento Pubblico",
-    "emailSent": "Email inviata",
-    "failedEmail": "Impossibile inviare email",
-    "smsSent": "SMS inviato",
-    "failedSms": "Impossibile inviare SMS",
     "copyLink": "Copia link"
   },
   "sidebar": {
@@ -427,7 +516,13 @@
     "loadOn": "Ore prenotate il {date}",
     "promisedAt": "Promesso al cliente",
     "promisedPlaceholder": "Non ancora promesso",
-    "promisedClear": "Cancella"
+    "promisedClear": "Cancella",
+    "lead": "Responsabile",
+    "alsoOnJob": "Anche su questo lavoro",
+    "helperAdd": "Aggiungi {name} a questo lavoro",
+    "helperRemove": "Togli {name} da questo lavoro",
+    "failedHelper": "Impossibile aggiornare chi lavora a questo lavoro",
+    "clashPeople": "{count, plural, one {{names} è occupato} other {{names} sono occupati}}"
   },
   "notifications": {
     "title": "Notifiche al cliente",
@@ -583,7 +678,6 @@
   "modern": {
     "statusLabel": "Stato dell'ordine di lavoro",
     "back": "Indietro",
-    "backToClassic": "Torna al layout classico",
     "openCustomer": "Apri cliente",
     "serviceHistory": "Storico interventi",
     "changeVehicle": "Cambia veicolo",
@@ -602,13 +696,6 @@
       "paymentTaken": "Pagamento di {amount} registrato",
       "statusSet": "Stato impostato su {status}"
     },
-    "invite": {
-      "title": "La pagina dell'ordine di lavoro è stata rinnovata.",
-      "body": "Un layout più chiaro con gli stessi campi. Puoi tornare indietro in qualsiasi momento.",
-      "try": "Provalo ora",
-      "dismiss": "Non ora",
-      "menu": "Prova il nuovo layout"
-    },
     "promised": "Promesso per il {date}",
     "promisedOverdue": "Promesso per il {date}, in ritardo",
     "opened": "Aperto il {date}",
@@ -617,6 +704,7 @@
     "titleField": "Titolo",
     "media": {
       "tabs": {
+        "all": "Tutti",
         "photos": "Foto",
         "diagnostics": "Diagnosi",
         "dropoff": "Accettazione"
@@ -626,6 +714,7 @@
       "showToCustomer": "Mostra al cliente",
       "hideFromCustomer": "Nascondi al cliente",
       "add": {
+        "all": "Aggiungi file",
         "image": "Aggiungi foto",
         "document": "Aggiungi documenti",
         "diagnostic": "Aggiungi rapporto diagnostico",
@@ -666,6 +755,7 @@
       "customerSince": "Cliente dal"
     },
     "moreStatuses": "Altri stati",
+    "addStatus": "Aggiungi stato",
     "fromInspection": "Dall'ispezione {name}, {date}",
     "fromQuote": "Dal preventivo {ref}",
     "startInspection": "Avvia ispezione"
@@ -730,6 +820,21 @@
         "odometer": "Contachilometri",
         "other": "Danno o altro"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Scatta la foto del veicolo con un telefono",
+      "dialogBody": "Scatta una foto dell’auto da qualsiasi telefono, o scegline una già presente. Diventa la foto in cima alla pagina di questo veicolo.",
+      "step2": "Scatta una foto dell’auto intera, o scegline una dal telefono.",
+      "step3": "Sostituisce la foto nella pagina del veicolo appena arriva.",
+      "scope": "Il link può solo impostare la foto di questo veicolo e smette di funzionare dopo 30 minuti.",
+      "waiting": "In attesa della foto…",
+      "received": "Foto ricevuta",
+      "pageTitle": "Foto del veicolo",
+      "pageBody": "Scatta una foto dell’auto intera. Sostituisce la foto nella pagina del veicolo.",
+      "choosePhoto": "Scegli una foto",
+      "saved": "Salvata. Ora la foto è nella pagina del veicolo. Scattane un’altra per sostituirla.",
+      "invalid": "Inquadra di nuovo il codice sulla pagina del veicolo.",
+      "notAPhoto": "Qui si possono usare solo foto."
     }
   },
   "payCode": {
@@ -750,5 +855,12 @@
   },
   "customStatus": {
     "defaultMessage": "Ciao {customer_name}, un aggiornamento sulla tua {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Le modifiche non sono salvate",
+    "fallbackReason": "Non è stato possibile salvare le ultime modifiche.",
+    "hint": "Resta per correggere, oppure esci e perdi le modifiche fatte dall'ultimo salvataggio.",
+    "stay": "Resta e correggi",
+    "leave": "Esci senza salvare"
   }
 }

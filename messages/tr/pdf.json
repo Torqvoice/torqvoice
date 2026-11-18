@@ -46,6 +46,7 @@
     "tax": "Vergi ({rate}%)",
     "taxIncluded": "KDV dahil (%{rate})",
     "taxIncludedNamed": "{name} dahil (%{rate})",
+    "taxableAmount": "Vergiye tabi tutar",
     "paymentsReceived": "Alınan Ödemeler",
     "paidInFull": "TAMAMEN ÖDENDİ",
     "amountDue": "Ödenecek Tutar",
@@ -114,6 +115,7 @@
     "tax": "Vergi ({rate}%)",
     "taxIncluded": "KDV dahil (%{rate})",
     "taxIncludedNamed": "{name} dahil (%{rate})",
+    "taxableAmount": "Vergiye tabi tutar",
     "validUntil": "Geçerlilik tarihi: {date}",
     "attachedDocuments": "Ekli Belgeler",
     "attached": "{name} (ekli)",
@@ -193,7 +195,18 @@
     "basicNotApplicable": "Uygulanamaz",
     "allResults": "Tüm sonuçlar",
     "signature": "İmza",
-    "sectionColumn": "Bölüm"
+    "sectionColumn": "Bölüm",
+    "checkPass": "Her şey yolunda",
+    "checkPassMinor": "Takip edilmesi gereken birkaç nokta",
+    "checkFail": "Onarım gereken birkaç nokta",
+    "checkFailDangerous": "Acil onarım gereken birkaç nokta",
+    "checkIncomplete": "Tamamlanmadı",
+    "checkDetailPass": "Dikkat gerektiren bir şey yoktu.",
+    "checkDetailPassMinor": "Acil bir şey yok. İşaretli noktaları planlamakta fayda var.",
+    "checkDetailFail": "Bazı noktaların onarılması gerekiyor. Notlar neyin bulunduğunu anlatıyor.",
+    "checkDetailFailDangerous": "Bazı noktalar güvenli değil ve kullanıma devam etmeden önce onarılmalı.",
+    "checkDetailIncomplete": "Bu kontrol hâlâ sürüyor.",
+    "overallCheck": "Özet"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "SERVİS GEÇMİŞİ",
@@ -219,7 +232,11 @@
     "conditionMapArea": "Bölge",
     "conditionMapKind": "Tür",
     "conditionMapSeverity": "Önem",
-    "conditionMapNote": "Not"
+    "conditionMapNote": "Not",
+    "serviceTypeMaintenance": "Bakım",
+    "serviceTypeRepair": "Onarım",
+    "serviceTypeUpgrade": "Yükseltme",
+    "serviceTypeInspection": "Muayene"
   },
   "workOrder": {
     "title": "İŞ EMRİ",

@@ -42,7 +42,11 @@ describe('integration vault', () => {
 
   it('refuses tampered data and a different key', () => {
     const sealed = sealCredentials({ token: 'x' })
-    const tampered = `${sealed.slice(0, -2)}AA`
+    // One character in the middle, always to a different one: the tail can be
+    // padding, or already read "AA", and then nothing was tampered with.
+    const middle = Math.floor(sealed.length / 2)
+    const swapped = sealed[middle] === 'A' ? 'B' : 'A'
+    const tampered = `${sealed.slice(0, middle)}${swapped}${sealed.slice(middle + 1)}`
     expect(() => openCredentials(tampered)).toThrow()
     resetVaultKeyForTests()
     process.env.INTEGRATIONS_ENCRYPTION_KEY = 'b'.repeat(64)

@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Inloggen",
     "save": "Opslaan",
+    "saveChanges": "Wijzigingen opslaan",
     "cancel": "Annuleren",
     "delete": "Verwijderen",
     "submit": "Verzenden",
     "back": "Terug",
     "confirm": "Bevestigen",
-    "saveChanges": "Wijzigingen opslaan",
     "edit": "Bewerken",
     "add": "Toevoegen",
     "gotIt": "Duidelijk"
@@ -54,6 +54,36 @@
     "whatsNew": "Bekijk wat er nieuw is",
     "dismiss": "Sluiten"
   },
+  "whatsNew": {
+    "title": "Wat is er nieuw",
+    "openUnread": "Wat is er nieuw: updates die u nog niet hebt gezien",
+    "description": "De nieuwste toevoegingen, nieuwste eerst.",
+    "unread": "Nieuw sinds uw laatste bezoek",
+    "newCount": "{count} nieuw",
+    "showOlder": "Oudere tonen",
+    "hideTab": "Dit tabblad verbergen",
+    "tabHidden": "Tabblad verborgen. U kunt het weer aanzetten via Instellingen, Over.",
+    "kindNew": "Nieuw",
+    "kindImproved": "Verbeterd",
+    "open": "Openen",
+    "guide": "Lees de handleiding",
+    "video": "Bekijk de video",
+    "version": "Versie {version}",
+    "allReleaseNotes": "Alle release notes",
+    "feedback": {
+      "question": "Was dit nuttig?",
+      "up": "Ja, dit is nuttig",
+      "down": "Nee, niet wat ik verwachtte",
+      "askUp": "Wat vindt u er goed aan? (optioneel)",
+      "askDown": "Wat werkte niet zoals u verwachtte?",
+      "privacyIdentified": "Wordt met uw e-mailadres naar het Torqvoice-team gestuurd, zodat we kunnen reageren.",
+      "privacyAnonymous": "Wordt zonder uw naam of e-mailadres naar het Torqvoice-team gestuurd.",
+      "skip": "Overslaan",
+      "send": "Versturen",
+      "thanks": "Bedankt, uw opmerking is verstuurd.",
+      "failed": "Uw feedback kon niet worden verstuurd. Probeer het zo opnieuw."
+    }
+  },
   "pagination": {
     "showing": "{start}–{end} van {total} weergegeven",
     "perPage": "per pagina",
@@ -76,6 +106,26 @@
     "enterManually": "Handmatig invoeren",
     "enterBarcode": "Barcode invoeren…",
     "scanHint": "Richt uw camera op een barcode of voer hem handmatig in",
+    "submitBarcode": "Ga",
+    "camera": {
+      "tryAgain": "Opnieuw proberen",
+      "denied": {
+        "title": "Toegang tot de camera is geblokkeerd",
+        "body": "Sta de camera toe voor deze site in uw browser, via het camera- of slotpictogram in de adresbalk, en klik daarna op Opnieuw proberen. Of typ de code hieronder."
+      },
+      "insecure": {
+        "title": "De camera heeft HTTPS nodig",
+        "body": "Browsers staan de camera alleen toe via een beveiligde verbinding, en deze pagina draait op HTTP ({host}). Open Torqvoice via HTTPS om te scannen, of typ de code hieronder."
+      },
+      "notFound": {
+        "title": "Geen camera gevonden",
+        "body": "Sluit een camera aan en klik op Opnieuw proberen, of typ de code hieronder."
+      },
+      "failed": {
+        "title": "De camera kon niet starten",
+        "body": "Misschien gebruikt een andere app hem. Sluit die app en klik op Opnieuw proberen, of typ de code hieronder."
+      }
+    },
     "iosInstallHint": "Tik op Deel > Zet op beginscherm",
     "installDescription": "Zet de app op je beginscherm voor snelle toegang",
     "enterFullscreen": "Volledig scherm",
@@ -85,6 +135,8 @@
     "title": "Upgrade om verder te gaan",
     "maxCustomers": "Uw abonnement omvat maximaal {limit} klanten en dat aantal is bereikt. Upgrade om er zoveel toe te voegen als u nodig heeft.",
     "maxUsers": "Uw abonnement omvat {limit, plural, one {één teamlid} other {# teamleden}}. Upgrade om meer mensen uit te nodigen.",
+    "maxPlatformMail": "Uw abonnement verstuurt tot {limit} e-mails per dag vanaf het Torqvoice-adres, en die van vandaag zijn op. Upgrade om er zoveel te versturen als u nodig hebt, of verstuur de rest morgen.",
+    "maxPlatformSms": "Uw abonnement verstuurt tot {limit} sms-berichten per dag vanaf het Torqvoice-nummer, en die van vandaag zijn op. Upgrade voor een hogere limiet, koppel uw eigen sms-provider om zonder limiet te versturen, of verstuur de rest morgen.",
     "generic": "Deze functie is niet inbegrepen in uw huidige abonnement.",
     "featureNotIncluded": "{feature} is niet inbegrepen in uw huidige abonnement.",
     "notNow": "Niet nu"
@@ -109,8 +161,6 @@
     "preview": "Voorbeeld",
     "failed": "Kon het PDF-voorbeeld niet genereren."
   },
-  "attachPdf": "Pdf toevoegen",
-  "attachPdfHint": "Zet dit uit om in plaats daarvan een link te sturen, zodat je ziet wanneer de klant hem opent.",
   "sentCopy": {
     "note": "Verzonden op {date}. Wijzigingen hier komen op de factuur wanneer die opnieuw wordt verzonden.",
     "confirmTitle": "Deze factuur is al verzonden",
@@ -131,5 +181,145 @@
     "retake": "Opnieuw opnemen",
     "use": "Deze video gebruiken",
     "limit": "De opname stopt vanzelf na {minutes} minuten."
+  },
+  "photoCapture": {
+    "title": "Een foto maken",
+    "description": "Met de camera van deze computer of een aangesloten webcam.",
+    "starting": "Camera wordt gestart...",
+    "live": "Cameravoorbeeld",
+    "preview": "De foto die u net hebt gemaakt",
+    "camera": "Camera",
+    "take": "Foto maken",
+    "retake": "Opnieuw maken",
+    "use": "Deze foto gebruiken",
+    "tryAgain": "Opnieuw proberen",
+    "uploadInstead": "Bestand uploaden",
+    "denied": {
+      "title": "Toegang tot de camera is geblokkeerd",
+      "body": "Sta de camera toe voor deze site in uw browser, via het camera- of slotpictogram in de adresbalk, en klik daarna op Opnieuw proberen."
+    },
+    "insecure": {
+      "title": "De camera heeft HTTPS nodig",
+      "body": "Browsers staan de camera alleen toe via een beveiligde verbinding, en deze pagina draait op HTTP ({host}). Open Torqvoice via HTTPS, of upload een bestand."
+    },
+    "notFound": {
+      "title": "Geen camera gevonden",
+      "body": "Sluit een webcam aan en klik op Opnieuw proberen, of upload een bestand."
+    },
+    "failed": {
+      "title": "De camera kon niet starten",
+      "body": "Misschien gebruikt een andere app hem. Sluit die app en klik op Opnieuw proberen."
+    }
+  },
+  "richText": {
+    "openLinkHint": "Houd {key} ingedrukt en klik om te openen",
+    "placeholder": "Schrijf iets...",
+    "toolbar": "Opmaak",
+    "editor": "Tekst",
+    "bold": "Vet",
+    "italic": "Cursief",
+    "underline": "Onderstrepen",
+    "strikethrough": "Doorhalen",
+    "bulletList": "Lijst met opsommingstekens",
+    "numberedList": "Genummerde lijst"
+  },
+  "appUpdated": {
+    "title": "Er is een nieuwe versie beschikbaar",
+    "description": "Laad de pagina opnieuw om de nieuwste updates te krijgen.",
+    "reload": "Opnieuw laden"
+  },
+  "signedOut": {
+    "title": "Je bent afgemeld",
+    "description": "Meld je opnieuw aan om verder te werken. Kopieer eerst wat je aan het typen was.",
+    "signIn": "Aanmelden"
+  },
+  "connectionLost": {
+    "title": "Torqvoice is niet bereikbaar",
+    "description": "Je laatste wijziging is mogelijk niet opgeslagen. Controleer je verbinding en probeer het opnieuw."
+  },
+  "sendDocument": {
+    "titleQuote": "Offerte versturen",
+    "titleInvoice": "Factuur versturen",
+    "titleInspection": "Inspectie versturen",
+    "description": "De klant krijgt een link om het te bekijken en te downloaden.",
+    "email": "E-mail",
+    "emailAddress": "E-mailadres",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Ook de pdf bijvoegen",
+    "sms": "SMS",
+    "smsNumber": "Telefoonnummer voor SMS",
+    "whatsappNumber": "Telefoonnummer voor WhatsApp",
+    "phonePlaceholder": "Telefoonnummer",
+    "message": "Bericht (optioneel, wordt aan de e-mail toegevoegd)",
+    "messagePlaceholder": "Voeg een persoonlijk bericht toe...",
+    "copyLink": "Link kopiëren",
+    "send": "Versturen",
+    "emailSent": "E-mail verzonden",
+    "failedEmail": "E-mail verzenden mislukt",
+    "smsSent": "SMS verzonden",
+    "failedSms": "SMS verzenden mislukt"
+  },
+  "shareLink": {
+    "generateFailed": "Kon de link niet aanmaken. Probeer het opnieuw.",
+    "revokeFailed": "Kon niet bevestigen dat de link is ingetrokken. Hij werkt mogelijk nog voor iedereen die hem heeft.",
+    "channelNotConnected": "Koppel {channel} onder Integraties om op deze manier te verzenden.",
+    "openIntegrations": "Integraties openen",
+    "channelNotInPlan": "{channel} zit niet in je abonnement.",
+    "channelTurnedOff": "Verzenden via {channel} is uitgeschakeld voor deze werkplaats.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp verzonden",
+    "failedWhatsapp": "WhatsApp-bericht verzenden mislukt",
+    "whatsappWindowClosed": "Deze klant heeft je de afgelopen 24 uur niet via WhatsApp geschreven en er is geen goedgekeurde sjabloon ingesteld om hem te bereiken.",
+    "expiry": {
+      "never": "Verloopt nooit",
+      "untilPaid": "Blijft open tot betaling",
+      "expires": "Verloopt op {date}",
+      "expired": "Verlopen op {date}",
+      "change": "Wijzigen",
+      "openAgain": "Opnieuw openen",
+      "reopened": "Link is weer open",
+      "formTitle": "Link verloopt",
+      "choice": {
+        "workshop": "Instelling van de werkplaats",
+        "date": "Op een datum",
+        "never": "Nooit"
+      },
+      "rule": {
+        "never": "Links verlopen nooit",
+        "afterSharing": "{days, plural, one {# dag} other {# dagen}} na verzending",
+        "afterPayment": "{days, plural, one {# dag} other {# dagen}} nadat de factuur is betaald"
+      },
+      "dateHint": "De link werkt de hele dag.",
+      "chooseDate": "Kies een datum",
+      "cancel": "Annuleren",
+      "save": "Opslaan",
+      "saved": "Vervaldatum van de link opgeslagen",
+      "saveFailed": "Kon de vervaldatum van de link niet opslaan. Probeer het opnieuw."
+    }
+  },
+  "searchableSelect": {
+    "choose": "Kiezen...",
+    "search": "Zoeken...",
+    "noMatch": "Niets gevonden"
+  },
+  "a11y": {
+    "skipToContent": "Naar inhoud springen",
+    "mainNavigation": "Hoofdnavigatie",
+    "close": "Sluiten",
+    "breadcrumb": "Kruimelpad",
+    "more": "Meer",
+    "toggleSidebar": "Zijbalk tonen of verbergen",
+    "sidebar": "Zijbalk",
+    "sidebarDescription": "Het hoofdmenu.",
+    "openCalendar": "Kalender openen",
+    "dismiss": "Sluiten",
+    "selectAll": "Alles selecteren",
+    "selectRow": "{name} selecteren"
+  },
+  "confirmDialog": {
+    "title": "Weet u het zeker?",
+    "irreversible": "Dit kan niet ongedaan worden gemaakt.",
+    "andMore": "en {count} meer",
+    "typeToConfirm": "Typ <b>{text}</b> om te bevestigen"
   }
 }

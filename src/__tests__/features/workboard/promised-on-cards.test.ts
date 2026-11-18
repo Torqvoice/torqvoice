@@ -26,6 +26,7 @@ const serviceRecord = {
   endDateTime: new Date('2026-09-20T09:00:00.000Z'),
   promisedAt: PROMISED,
   technicianId: 'tech-1',
+  helpers: [],
   workBayId: null,
   sortOrder: 0,
   vehicle: null,

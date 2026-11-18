@@ -15,10 +15,7 @@ import { readPrismaSchema } from '@/__tests__/stubs/prisma-schema'
  */
 
 const ROOT = process.cwd()
-const importSource = fs.readFileSync(
-  path.join(ROOT, 'src/app/api/protected/backup/import/route.ts'),
-  'utf-8'
-)
+const importSource = fs.readFileSync(path.join(ROOT, 'src/lib/backup/import.ts'), 'utf-8')
 const schema = readPrismaSchema(ROOT)
 
 function scalarColumns(model: string): string[] {
@@ -62,8 +59,8 @@ describe.each([
 describe('the links back to an inspection', () => {
   it('are written after the inspections exist, for jobs and for quotes', () => {
     const inspections = importSource.indexOf('tx.inspection.create(')
-    const jobLink = importSource.indexOf('data: { inspectionId: sr.inspectionId as string }')
-    const quoteLink = importSource.indexOf('data: { inspectionId: q.inspectionId as string }')
+    const jobLink = importSource.indexOf('inspectionId: sr.inspectionId as string')
+    const quoteLink = importSource.indexOf('inspectionId: q.inspectionId as string')
     expect(jobLink).toBeGreaterThan(inspections)
     expect(quoteLink).toBeGreaterThan(inspections)
   })

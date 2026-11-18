@@ -33,6 +33,15 @@ function emittedActions(): string[] {
         for (const m of src.matchAll(/action:\s*['"]([a-zA-Z][\w]*\.[\w.]+)['"]/g)) {
           found.add(m[1])
         }
+        // An action chosen by a condition, `action: unlocked ? 'invoice.unlock'
+        // : 'invoice.relock'`, writes both. The pattern above sees neither, which
+        // is how the unlock and relock entries reached the audit log unlabelled.
+        for (const m of src.matchAll(
+          /action:\s*[^,\n?]+\?\s*['"]([a-zA-Z]\w*\.[\w.]+)['"]\s*:\s*['"]([a-zA-Z]\w*\.[\w.]+)['"]/g
+        )) {
+          found.add(m[1])
+          found.add(m[2])
+        }
       }
     }
   }
@@ -46,6 +55,8 @@ describe('audit action labels', () => {
   it('finds the audit actions the code emits', () => {
     expect(ACTIONS.length).toBeGreaterThan(50)
     expect(ACTIONS).toContain('inspection.create')
+    expect(ACTIONS).toContain('invoice.unlock')
+    expect(ACTIONS).toContain('invoice.relock')
   })
 
   it.each(LOCALES)('%s has a label for every emitted action', (locale) => {

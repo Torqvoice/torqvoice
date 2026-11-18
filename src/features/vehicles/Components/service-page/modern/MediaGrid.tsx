@@ -70,6 +70,26 @@ const KINDS: Record<
   },
 }
 
+/** The union of what the single kinds take, for the grid that shows them all. */
+const ANY_ACCEPT = '.jpg,.jpeg,.png,.webp,.mp4,.webm,.mov,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt'
+
+/** The kind a file is drawn as: its own category, or a document for one this grid does not know. */
+function kindOfFile(file: Attachment): MediaKind {
+  return file.category in KINDS ? (file.category as MediaKind) : 'document'
+}
+
+/**
+ * Where a file added to the grid of everything is filed. A photo is a photo
+ * and a video a video; anything else is a document. A diagnostic report and
+ * a drop-off photo are what somebody says they are, not what the file is, so
+ * those are added from their own tabs.
+ */
+function kindForUpload(file: File): MediaKind {
+  if (KINDS.image.types(file.type)) return 'image'
+  if (KINDS.video.types(file.type)) return 'video'
+  return 'document'
+}
+
 type Result<T = unknown> = { success: boolean; data?: T; error?: string }
 
 /**
@@ -104,13 +124,16 @@ function serviceStore(serviceRecordId: string): MediaStore {
 }
 
 interface MediaGridProps {
-  kind: MediaKind
+  /** One kind of file, or 'all' for every file on the job in one grid. */
+  kind: MediaKind | 'all'
   serviceRecordId: string
   /** Saves somewhere other than the work order's attachments. */
   store?: MediaStore
   files: Attachment[]
   /** The plan's cap for this kind of file; absent means no cap. */
   max?: number
+  /** The caps by kind, for the grid of everything, where one number cannot say it. */
+  caps?: Partial<Record<MediaKind, number>>
   /** Photos can be sent to the customer over WhatsApp when there is one. */
   customerId?: string
 }
@@ -119,7 +142,7 @@ interface MediaGridProps {
  * One kind of file on the job, as tiles: what it is, what it is called, when
  * it arrived, and whether the customer gets to see it. The last tile is the
  * way in, for a click or a drop. The same uploads, limits and actions as the
- * classic page's tabs; only the drawing is new.
+ * old tabs had; only the drawing is new.
  *
  * "Customer can see" is the file's include-on-invoice switch under the name
  * the customer would give it: a marked file is printed on the invoice and
@@ -131,6 +154,7 @@ export function MediaGrid({
   store: customStore,
   files,
   max,
+  caps,
   customerId,
 }: MediaGridProps) {
   const store = customStore ?? serviceStore(serviceRecordId)
@@ -142,6 +166,8 @@ export function MediaGrid({
   const [uploading, setUploading] = useState(false)
   const [dragging, setDragging] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
+  /** Tiles with a change out to the server, which wait for its answer before the next. */
+  const [saving, setSaving] = useState<ReadonlySet<string>>(() => new Set())
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [playing, setPlaying] = useState<Attachment | null>(null)
 
@@ -152,48 +178,66 @@ export function MediaGrid({
     setItems(files)
   }, [savedKey]) // eslint-disable-line react-hooks/exhaustive-deps -- keyed on the ids, not the array's identity
 
-  const config = KINDS[kind]
-  const Icon = config.icon
+  const all = kind === 'all'
+  const kindOf = (file: Attachment): MediaKind => (kind === 'all' ? kindOfFile(file) : kind)
   const atLimit = max !== undefined && items.length >= max
-  const isPhotos = kind === 'image' || kind === 'dropoff'
+  // The carousel pages through the photos only, wherever they sit in the grid.
+  const photos = items.filter((file) => file.fileType.startsWith('image/'))
 
   // A drop-off photo taken from the phone's list carries which shot it is as
   // its description ('front', 'odometer'). That is shown in words, and stays
   // the shot's name until somebody types a caption of their own.
   const captionOf = (file: Attachment) =>
-    kind === 'dropoff' && isDropoffSlot(file.description)
+    kindOf(file) === 'dropoff' && isDropoffSlot(file.description)
       ? t(`photoHandoff.dropoff.slots.${file.description}`)
       : file.description || ''
 
-  const upload = async (list: FileList | File[]) => {
-    let chosen = Array.from(list)
-    const refused = chosen.filter((file) => !config.types(file.type))
+  /** The files of one kind that may go up: the right type, and within the plan's cap. */
+  const admit = (target: MediaKind, candidates: File[], cap: number | undefined): File[] => {
+    let chosen = candidates
+    const refused = chosen.filter((file) => !KINDS[target].types(file.type))
     if (refused.length > 0) {
       toast.error(t('modern.media.wrongType', { names: refused.map((f) => f.name).join(', ') }))
-      chosen = chosen.filter((file) => config.types(file.type))
+      chosen = chosen.filter((file) => KINDS[target].types(file.type))
     }
-    if (max !== undefined) {
-      const room = max - items.length
-      if (room <= 0) {
-        toast.error(t('modern.media.limit', { count: items.length, max }))
-        return
-      }
-      if (chosen.length > room) {
-        toast.warning(
-          t(isPhotos ? 'images.onlyUploading' : 'documents.onlyUploading', {
-            count: room,
-          })
-        )
-        chosen = chosen.slice(0, room)
-      }
+    if (cap === undefined) return chosen
+
+    const held = all ? items.filter((file) => kindOf(file) === target).length : items.length
+    const room = cap - held
+    if (room <= 0) {
+      if (chosen.length > 0) toast.error(t('modern.media.limit', { count: held, max: cap }))
+      return []
     }
+    if (chosen.length > room) {
+      const photo = target === 'image' || target === 'dropoff'
+      toast.warning(t(photo ? 'images.onlyUploading' : 'documents.onlyUploading', { count: room }))
+      chosen = chosen.slice(0, room)
+    }
+    return chosen
+  }
+
+  const upload = async (list: FileList | File[]) => {
+    const picked = Array.from(list)
+    // One kind on its own tab; on the grid of everything each file goes
+    // where its type says.
+    const chosen: { file: File; target: MediaKind }[] =
+      kind === 'all'
+        ? (['image', 'video', 'document'] as const).flatMap((target) =>
+            admit(
+              target,
+              picked.filter((file) => kindForUpload(file) === target),
+              caps?.[target]
+            ).map((file) => ({ file, target }))
+          )
+        : admit(kind, picked, max).map((file) => ({ file, target: kind }))
     if (chosen.length === 0) return
 
     setUploading(true)
     let added = 0
-    for (let file of chosen) {
+    for (const { file: original, target } of chosen) {
+      let file = original
       try {
-        if (isPhotos) file = await compressImage(file)
+        if (target === 'image' || target === 'dropoff') file = await compressImage(file)
         const body = new FormData()
         body.append('file', file)
         const res = await fetch('/api/protected/upload/service-files', { method: 'POST', body })
@@ -208,12 +252,12 @@ export function MediaGrid({
           fileUrl: data.url,
           fileType: data.fileType,
           fileSize: data.fileSize,
-          category: kind,
+          category: target,
           // Shown to the customer unless somebody says otherwise, as the
-          // classic tabs do. For a video that means the shared link, which
+          // old tabs did. For a video that means the shared link, which
           // plays it; the printed invoice has nothing to draw for one.
           // A drop-off photo is the workshop's own record, so it starts hidden.
-          includeInInvoice: kind !== 'dropoff',
+          includeInInvoice: target !== 'dropoff',
         })
         if (result.success && result.data) {
           setItems((prev) => [...prev, result.data as Attachment])
@@ -232,34 +276,64 @@ export function MediaGrid({
     }
   }
 
+  // A change shows on the tile at once and is put back if it does not go
+  // through. The tile takes one change at a time: with a second one out, the
+  // first failing would put back a value the second had already replaced.
+  const markSaving = (id: string, on: boolean) =>
+    setSaving((prev) => {
+      const next = new Set(prev)
+      if (on) next.add(id)
+      else next.delete(id)
+      return next
+    })
+
   const toggleVisible = async (file: Attachment) => {
+    if (saving.has(file.id)) return
     const next = !file.includeInInvoice
     setItems((prev) => prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: next } : f)))
-    const result = await store.update({ id: file.id, includeInInvoice: next })
-    if (!result.success) {
+    markSaving(file.id, true)
+    // A request that never reaches the server throws instead of answering,
+    // so it is caught and put back the way a refusal is.
+    const result = await store.update({ id: file.id, includeInInvoice: next }).catch(() => null)
+    markSaving(file.id, false)
+    if (!result?.success) {
       setItems((prev) =>
-        prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: !next } : f))
+        prev.map((f) => (f.id === file.id ? { ...f, includeInInvoice: file.includeInInvoice } : f))
       )
-      toast.error(result.error || t('images.failedUpdate'))
+      toast.error(result?.error || t('images.failedUpdate'))
     }
   }
 
   const remove = async (file: Attachment) => {
     setBusyId(file.id)
-    const result = await store.remove(file.id)
+    // A request that never reaches the server throws instead of answering;
+    // uncaught, the tile stayed busy until the page was reloaded.
+    const result = await store.remove(file.id).catch(() => null)
     setBusyId(null)
-    if (result.success) {
+    if (result?.success) {
       setItems((prev) => prev.filter((f) => f.id !== file.id))
       router.refresh()
     } else {
-      toast.error(result.error || t('attachments.failedDelete'))
+      toast.error(result?.error || t('attachments.failedDelete'))
     }
   }
 
-  const saveCaption = async (file: Attachment, caption: string) => {
+  const saveCaption = async (file: Attachment, input: HTMLInputElement) => {
+    const caption = input.value.trim()
     if ((file.description ?? '') === caption || captionOf(file) === caption) return
     setItems((prev) => prev.map((f) => (f.id === file.id ? { ...f, description: caption } : f)))
-    await store.update({ id: file.id, description: caption })
+    markSaving(file.id, true)
+    const result = await store.update({ id: file.id, description: caption }).catch(() => null)
+    markSaving(file.id, false)
+    if (!result?.success) {
+      setItems((prev) =>
+        prev.map((f) => (f.id === file.id ? { ...f, description: file.description } : f))
+      )
+      // The field holds what was typed, not what the tile has, so it is put
+      // back by hand.
+      input.value = captionOf(file)
+      toast.error(result?.error || t('images.failedUpdate'))
+    }
   }
 
   const tileAction =
@@ -267,7 +341,9 @@ export function MediaGrid({
 
   return (
     <div className="grid grid-cols-2 gap-3 p-5 pt-4 @xl:grid-cols-3 @3xl:grid-cols-4">
-      {items.map((file, index) => {
+      {items.map((file) => {
+        const config = KINDS[kindOf(file)]
+        const Icon = config.icon
         const isImage = file.fileType.startsWith('image/')
         const isVideo = file.fileType.startsWith('video/')
         return (
@@ -280,7 +356,7 @@ export function MediaGrid({
               {isImage ? (
                 <button
                   type="button"
-                  onClick={() => setCarouselIndex(index)}
+                  onClick={() => setCarouselIndex(photos.indexOf(file))}
                   className="h-full w-full cursor-zoom-in"
                   aria-label={file.description || file.fileName}
                 >
@@ -292,7 +368,7 @@ export function MediaGrid({
                 </button>
               ) : isVideo ? (
                 // The first frame as the tile, and a player a click away:
-                // the classic tab played video on the page, not in a new tab.
+                // the old tab played video on the page, not in a new tab.
                 <button
                   type="button"
                   onClick={() => setPlaying(file)}
@@ -335,6 +411,7 @@ export function MediaGrid({
                 <button
                   type="button"
                   onClick={() => void toggleVisible(file)}
+                  disabled={saving.has(file.id)}
                   aria-pressed={file.includeInInvoice}
                   title={
                     file.includeInInvoice
@@ -381,14 +458,17 @@ export function MediaGrid({
                 defaultValue={captionOf(file)}
                 placeholder={file.fileName}
                 aria-label={t('images.description')}
-                onBlur={(e) => void saveCaption(file, e.target.value.trim())}
+                readOnly={saving.has(file.id)}
+                onBlur={(e) => void saveCaption(file, e.currentTarget)}
                 className="w-full truncate rounded-sm bg-transparent text-[13px] font-medium outline-none placeholder:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               />
               <div className="flex items-center justify-between gap-2">
                 <p className="truncate text-xs text-muted-foreground" suppressHydrationWarning>
                   {/* To the minute for a drop-off photo: when it was taken is
                       the point of it. */}
-                  {kind === 'dropoff' ? formatDateTime(file.createdAt) : formatDate(file.createdAt)}{' '}
+                  {kindOf(file) === 'dropoff'
+                    ? formatDateTime(file.createdAt)
+                    : formatDate(file.createdAt)}{' '}
                   · {formatFileSize(file.fileSize)}
                 </p>
                 {isImage && customerId && !customStore && (
@@ -451,7 +531,7 @@ export function MediaGrid({
         ref={inputRef}
         type="file"
         multiple
-        accept={config.accept}
+        accept={kind === 'all' ? ANY_ACCEPT : KINDS[kind].accept}
         className="hidden"
         onChange={(e) => {
           if (e.target.files?.length) void upload(e.target.files)
@@ -476,9 +556,9 @@ export function MediaGrid({
         </DialogContent>
       </Dialog>
 
-      {isPhotos && (
+      {photos.length > 0 && (
         <ImageCarousel
-          images={items}
+          images={photos}
           currentIndex={carouselIndex}
           onClose={() => setCarouselIndex(null)}
           onChangeIndex={setCarouselIndex}

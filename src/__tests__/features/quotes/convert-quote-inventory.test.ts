@@ -28,6 +28,9 @@ vi.mock('@/lib/invoice-utils', async (importOriginal) => ({
 
 vi.mock('@/lib/db', () => ({
   db: {
+    // Nothing yet in the workshop's number format (src/lib/job-number.ts). A plain
+    // function, so a reset of the mocks cannot blank it.
+    $queryRaw: async () => [],
     user: { findUnique: vi.fn() },
     appSetting: { findMany: vi.fn() },
     quote: { findFirst: vi.fn() },

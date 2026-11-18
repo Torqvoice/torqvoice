@@ -22,6 +22,8 @@ export const SUPPORT_OPEN_EVENT = 'torqvoice:support:open'
 export interface SupportOpenDetail {
   /** Prefills the subject of an empty form; never overwrites what someone typed. */
   subject?: string
+  /** Prefills the message of an empty form the same way, such as the fault code being read. */
+  message?: string
 }
 
 /**

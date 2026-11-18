@@ -4,18 +4,17 @@ import { type ComponentProps, type ComponentType, useMemo, useState, useTransiti
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useFormatDate } from '@/lib/use-format-date'
+import {
+  ConfirmConsequenceList,
+  ConfirmFrame,
+  ConfirmFrameAction,
+  ConfirmFrameCancel,
+  ConfirmFrameText,
+  ConfirmSubjectList,
+  useConfirm,
+} from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,8 +35,10 @@ import {
   Save,
   Settings2,
   Wrench,
+  Send,
   Share2,
   Trash2,
+  TriangleAlert,
   Eye,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
@@ -49,6 +50,8 @@ import {
   createQuoteFromInspection,
 } from '../Actions/inspectionActions'
 import { InspectionShareDialog } from './InspectionShareDialog'
+import { SendDocumentDialog } from '@/features/messaging/Components/SendDocumentDialog'
+import { sendInspectionEmail } from '@/features/email/Actions/emailActions'
 import { InspectionNotesCard } from './InspectionNotesCard'
 import { PdfPreviewDialog } from '@/components/pdf-preview-dialog'
 import { WorkOrderFromInspectionDialog } from './WorkOrderFromInspectionDialog'
@@ -76,7 +79,7 @@ import {
   type SeverityScale,
 } from '../Lib/conditions'
 import { useConditionLabels } from '../Lib/useConditionLabels'
-import { describeBlocker, findCompletionBlockers } from '../Lib/completion'
+import { findCompletionBlockers } from '../Lib/completion'
 
 export interface InspectionData {
   id: string
@@ -267,9 +270,9 @@ export function InspectionPageClient({
   const serviceType = useServiceType()
   const [isPending, startTransition] = useTransition()
   const [showCompleteDialog, setShowCompleteDialog] = useState(false)
-  const [showReopenDialog, setShowReopenDialog] = useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+  const confirm = useConfirm()
   const [showShareDialog, setShowShareDialog] = useState(false)
+  const [showSendDialog, setShowSendDialog] = useState(false)
   const [isCreatingQuote, setIsCreatingQuote] = useState(false)
   const [isCreatingWorkOrder, setIsCreatingWorkOrder] = useState(false)
   const [showWorkOrderDialog, setShowWorkOrderDialog] = useState(false)
@@ -424,50 +427,70 @@ export function InspectionPageClient({
    */
   const handleCreateQuoteFromInspection = async () => {
     setIsCreatingQuote(true)
-    const created = await createQuoteFromInspection(inspection.id)
-    if (created.success && created.data) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const created = await createQuoteFromInspection(inspection.id).catch(() => null)
+    if (created?.success && created.data) {
       router.push(`/quotes/${created.data.id}`)
     } else {
-      toast.error(created.error || t('quoteFailed'))
+      toast.error(created?.error || t('quoteFailed'))
       setIsCreatingQuote(false)
     }
   }
 
   const handleComplete = () => {
     startTransition(async () => {
-      const done = await completeInspection(inspection.id)
-      if (done.success) {
+      const done = await completeInspection(inspection.id).catch(() => null)
+      if (done?.success) {
         toast.success(t('completed'))
         setShowCompleteDialog(false)
-        setShowShareDialog(true)
+        // A finished inspection is usually what the customer is waiting for.
+        setShowSendDialog(true)
         router.refresh()
       } else {
-        toast.error(done.error || t('completeFailed'))
+        toast.error(done?.error || t('completeFailed'))
       }
     })
   }
 
-  const handleReopen = () => {
+  const handleReopen = async () => {
+    const ok = await confirm({
+      title: t('reopenTitle'),
+      description: t('reopenBody'),
+      consequences: inspection.publicToken ? [t('reopenShared')] : undefined,
+      confirmLabel: t('reopen'),
+      cancelLabel: t('cancel'),
+      icon: RotateCcw,
+    })
+    if (!ok) return
     startTransition(async () => {
-      const reopened = await reopenInspection(inspection.id)
-      if (reopened.success) {
+      const reopened = await reopenInspection(inspection.id).catch(() => null)
+      if (reopened?.success) {
         toast.success(t('reopened'))
-        setShowReopenDialog(false)
         router.refresh()
       } else {
-        toast.error(reopened.error || t('reopenFailed'))
+        toast.error(reopened?.error || t('reopenFailed'))
       }
     })
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteBody'),
+      confirmLabel: t('delete'),
+      cancelLabel: t('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     startTransition(async () => {
-      const removed = await deleteInspection(inspection.id)
-      if (removed.success) {
+      const removed = await deleteInspection(inspection.id).catch(() => null)
+      if (removed?.success) {
         toast.success(t('deleted'))
         router.push('/inspections')
       } else {
-        toast.error(removed.error || t('deleteFailed'))
+        toast.error(removed?.error || t('deleteFailed'))
       }
     })
   }
@@ -538,7 +561,7 @@ export function InspectionPageClient({
                 variant="outline"
                 icon={RotateCcw}
                 label={t('reopen')}
-                onClick={() => setShowReopenDialog(true)}
+                onClick={handleReopen}
               />
             ) : (
               <BarButton
@@ -554,6 +577,12 @@ export function InspectionPageClient({
               label={t('preview')}
               onClick={() => setShowPreview(true)}
               data-testid="inspection-preview"
+            />
+            <BarButton
+              variant="outline"
+              icon={Send}
+              label={t('send')}
+              onClick={() => setShowSendDialog(true)}
             />
             <BarButton
               variant="outline"
@@ -588,10 +617,7 @@ export function InspectionPageClient({
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  className="text-destructive"
-                  onClick={() => setShowDeleteDialog(true)}
-                >
+                <DropdownMenuItem className="text-destructive" onClick={handleDelete}>
                   <Trash2 className="mr-2 h-4 w-4" aria-hidden="true" />
                   {t('delete')}
                 </DropdownMenuItem>
@@ -1069,93 +1095,60 @@ export function InspectionPageClient({
       />
 
       {/* Complete confirmation */}
-      <AlertDialog open={showCompleteDialog} onOpenChange={setShowCompleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('completeTitle')}</AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-2">
-                {blockers.length > 0 ? (
-                  <>
-                    <p className="text-destructive font-medium">
-                      {t('completeBlocked', { count: blockers.length })}
-                    </p>
-                    <ul className="list-disc space-y-0.5 pl-5">
-                      {blockers.slice(0, 8).map((blocker) => (
-                        <li key={blocker.id}>
-                          {blocker.label} — {describeBlocker(blocker.reason)}
-                        </li>
-                      ))}
-                    </ul>
-                    {blockers.length > 8 && <p>and {blockers.length - 8} more.</p>}
-                  </>
-                ) : null}
-                <p>{t('completeBody', { result: resultLabel(deriveTestResult(gradedItems)) })}</p>
-                {notInspected > 0 && (
-                  <p className="font-medium text-amber-700 dark:text-amber-400">
-                    {t('completeUngraded', { count: notInspected })}
-                  </p>
-                )}
-                {counts.dangerous > 0 && (
-                  <p className="text-destructive font-medium">
-                    {t('completeDangerous', { count: counts.dangerous })}
-                  </p>
-                )}
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleComplete} disabled={isPending || blockers.length > 0}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              {t('complete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Reopen confirmation */}
-      <AlertDialog open={showReopenDialog} onOpenChange={setShowReopenDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('reopenTitle')}</AlertDialogTitle>
-            <AlertDialogDescription asChild>
-              <div className="space-y-2">
-                <p>{t('reopenBody')}</p>
-                {inspection.publicToken && <p>{t('reopenShared')}</p>}
-              </div>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleReopen} disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              {t('reopen')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Delete confirmation */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('deleteBody')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isPending}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+      <ConfirmFrame
+        open={showCompleteDialog}
+        onDismiss={() => setShowCompleteDialog(false)}
+        title={t('completeTitle')}
+        icon={CheckCircle2}
+        footer={
+          <>
+            <ConfirmFrameCancel>{t('cancel')}</ConfirmFrameCancel>
+            <ConfirmFrameAction
+              onClick={handleComplete}
+              disabled={isPending || blockers.length > 0}
             >
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />}
-              {t('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+              {t('complete')}
+            </ConfirmFrameAction>
+          </>
+        }
+      >
+        <ConfirmFrameText>
+          <p>{t('completeBody', { result: resultLabel(deriveTestResult(gradedItems)) })}</p>
+          {blockers.length > 0 && (
+            <p className="text-destructive font-medium">
+              {t('completeBlocked', { count: blockers.length })}
+            </p>
+          )}
+        </ConfirmFrameText>
+        {/* What stands in the way, named, so the count is not taken on trust. */}
+        <ConfirmSubjectList
+          divided
+          rows={blockers.slice(0, 8).map((blocker) => ({
+            label: blocker.label,
+            detail:
+              blocker.reason === 'missing-grade'
+                ? t('blockerMissingGrade')
+                : t('blockerNeedsPhoto'),
+          }))}
+          more={Math.max(0, blockers.length - 8)}
+        />
+        <ConfirmConsequenceList
+          lines={[
+            ...(notInspected > 0
+              ? [{ text: t('completeUngraded', { count: notInspected }), emphasis: true }]
+              : []),
+            ...(counts.dangerous > 0
+              ? [
+                  {
+                    text: t('completeDangerous', { count: counts.dangerous }),
+                    icon: TriangleAlert,
+                    emphasis: true,
+                  },
+                ]
+              : []),
+          ]}
+        />
+      </ConfirmFrame>
 
       <InspectionShareDialog
         open={showShareDialog}
@@ -1163,9 +1156,28 @@ export function InspectionPageClient({
         inspectionId={inspection.id}
         organizationId={inspection.organizationId}
         publicToken={inspection.publicToken}
+      />
+
+      <SendDocumentDialog
+        open={showSendDialog}
+        onOpenChange={setShowSendDialog}
+        kind="inspection"
+        documentId={inspection.id}
+        shareUrl={
+          inspection.publicToken
+            ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/inspection/${inspection.organizationId}/${inspection.publicToken}`
+            : null
+        }
         customer={inspection.vehicle.customer}
-        smsEnabled={smsEnabled}
-        emailEnabled={emailEnabled}
+        sendEmail={(email, message, attachPdf) =>
+          sendInspectionEmail({
+            inspectionId: inspection.id,
+            recipientEmail: email,
+            message,
+            attachPdf,
+          })
+        }
+        onSent={() => router.refresh()}
       />
 
       <MediaLightbox

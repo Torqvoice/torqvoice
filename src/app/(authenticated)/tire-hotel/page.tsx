@@ -10,6 +10,11 @@ import { totalFree as sumFree } from '@/features/tire-hotel/Lib/capacity'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import { TireHotelClient } from './tire-hotel-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('tireHotel')
+}
 
 export default async function TireHotelPage({
   searchParams,

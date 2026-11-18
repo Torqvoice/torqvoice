@@ -1,19 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useGuardedPush } from '@/hooks/use-guarded-push'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { formatDistanceToNow } from 'date-fns'
 import { Bell, FileText, ClipboardCheck, Receipt, X } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { useNotificationStore } from '../store/notificationStore'
 import {
+  getNotifications,
   markNotificationRead,
   markAllNotificationsRead,
   deleteNotification,
+  deleteAllNotifications,
 } from '../Actions/notificationActions'
 
 const entityIcons: Record<string, typeof FileText> = {
@@ -47,6 +51,7 @@ export function NotificationBell() {
 export function NotificationPanel() {
   const t = useTranslations('notifications')
   const router = useRouter()
+  const go = useGuardedPush()
   const {
     notifications,
     unreadCount,
@@ -55,8 +60,57 @@ export function NotificationPanel() {
     markRead,
     markAllRead,
     removeNotification,
+    restoreNotification,
+    clearAll,
+    setNotifications,
   } = useNotificationStore()
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null)
+  const [pendingClearAll, setPendingClearAll] = useState(false)
+
+  // Changes sent to the server and not yet answered. When they overlap, one
+  // failing cannot be undone by hand: an older failure would undo a newer
+  // success (a clear all, a second mark all read), so the list is read back
+  // from the server once all of them have settled.
+  const inFlight = useRef(0)
+  const overlapped = useRef(false)
+  const resyncNeeded = useRef(false)
+
+  const resync = async () => {
+    const fresh = await getNotifications().catch(() => null)
+    // A change started while this was out has its own answer still coming.
+    if (inFlight.current > 0) return
+    if (fresh?.success && fresh.data) {
+      setNotifications(fresh.data.notifications, fresh.data.unreadCount)
+    }
+  }
+
+  /**
+   * Sends one change. On failure, `rollback` undoes it on screen when it ran
+   * alone; when it overlapped another change, the list is read back instead.
+   * Returns whether the server took it.
+   */
+  const runChange = async (
+    request: () => Promise<{ success: boolean }>,
+    rollback: () => void
+  ): Promise<boolean> => {
+    if (inFlight.current > 0) overlapped.current = true
+    inFlight.current += 1
+    const result = await request().catch(() => ({ success: false }))
+    inFlight.current -= 1
+
+    if (!result.success) {
+      if (overlapped.current) resyncNeeded.current = true
+      else rollback()
+    }
+    if (inFlight.current === 0) {
+      overlapped.current = false
+      if (resyncNeeded.current) {
+        resyncNeeded.current = false
+        await resync()
+      }
+    }
+    return result.success
+  }
 
   const handleClickNotification = (id: string, entityUrl: string, read: boolean) => {
     if (pendingDeleteId) {
@@ -65,7 +119,10 @@ export function NotificationPanel() {
     }
     if (!read) {
       markRead(id)
-      markNotificationRead(id)
+      markNotificationRead(id).catch(() => {
+        // Nobody is waiting on this: it stays unread on the server, and shows
+        // so on the next page load
+      })
     }
     setPanelOpen(false)
     setTimeout(() => {
@@ -75,7 +132,7 @@ export function NotificationPanel() {
       // is about.
       const here = `${window.location.pathname}${window.location.search}`
       if (entityUrl === here) router.refresh()
-      else router.push(entityUrl)
+      else go(entityUrl)
     }, 300)
   }
 
@@ -84,11 +141,21 @@ export function NotificationPanel() {
     setPendingDeleteId(id)
   }
 
-  const handleConfirmDelete = (e: React.MouseEvent, id: string) => {
+  const handleConfirmDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
+    const removed = notifications.find((n) => n.id === id)
     removeNotification(id)
-    deleteNotification(id)
     setPendingDeleteId(null)
+
+    // Still on the server, so it would be back after a reload: put it back
+    // now and say so.
+    const ok = await runChange(
+      () => deleteNotification(id),
+      () => {
+        if (removed) restoreNotification(removed)
+      }
+    )
+    if (!ok) toast.error(t('panel.deleteFailed'))
   }
 
   const handleCancelDelete = (e: React.MouseEvent) => {
@@ -97,8 +164,53 @@ export function NotificationPanel() {
   }
 
   const handleMarkAllRead = async () => {
+    const unreadIds = new Set(notifications.filter((n) => !n.read).map((n) => n.id))
+    const unreadBefore = unreadCount
     markAllRead()
-    markAllNotificationsRead()
+    await runChange(
+      () => markAllNotificationsRead(),
+      () => {
+        // They are still unread on the server, so show them unread again
+        // rather than claim a change that did not happen. Nothing was deleted
+        // meanwhile (that would have overlapped), so every one still counts,
+        // including any pushed off the end of the list by new arrivals.
+        const now = useNotificationStore.getState()
+        setNotifications(
+          now.notifications.map((n) => (unreadIds.has(n.id) ? { ...n, read: false } : n)),
+          now.unreadCount + unreadBefore
+        )
+      }
+    )
+  }
+
+  const handleConfirmClearAll = async () => {
+    // The list can have been emptied one by one while the question was up.
+    if (notifications.length === 0) {
+      setPendingClearAll(false)
+      return
+    }
+    // The newest notification on screen is the cutoff: one that arrives while
+    // the request is in flight was never shown, so it is not cleared.
+    const newest = Math.max(...notifications.map((n) => new Date(n.createdAt).getTime()))
+    const before = new Date(newest).toISOString()
+
+    clearAll()
+    setPendingClearAll(false)
+    setPendingDeleteId(null)
+
+    const ok = await runChange(
+      () => deleteAllNotifications(before),
+      () => {
+        void resync()
+      }
+    )
+    if (ok) {
+      // The dashboard's Recent Notifications card is server-fetched, not read
+      // from the store, so it only empties with a refresh.
+      router.refresh()
+      return
+    }
+    toast.error(t('panel.clearAllFailed'))
   }
 
   return (
@@ -106,12 +218,16 @@ export function NotificationPanel() {
       open={isPanelOpen}
       onOpenChange={(open) => {
         setPanelOpen(open)
-        if (!open) setPendingDeleteId(null)
+        if (!open) {
+          setPendingDeleteId(null)
+          setPendingClearAll(false)
+        }
       }}
     >
-      <SheetContent className="w-[380px] p-0 sm:max-w-[380px]">
+      <SheetContent className="w-[380px] p-0 sm:max-w-[380px]" aria-describedby={undefined}>
         <SheetHeader className="border-b px-4 py-3">
-          <div className="flex items-center justify-between">
+          {/* pr-8 keeps the actions clear of the sheet's own close control. */}
+          <div className="flex items-center justify-between pr-8">
             <div className="flex items-center gap-2">
               <SheetTitle>{t('panel.title')}</SheetTitle>
               {unreadCount > 0 && (
@@ -120,12 +236,50 @@ export function NotificationPanel() {
                 </Badge>
               )}
             </div>
-            {unreadCount > 0 && (
-              <Button variant="ghost" size="sm" className="text-xs" onClick={handleMarkAllRead}>
-                {t('panel.markAllRead')}
-              </Button>
-            )}
+            <div className="flex items-center gap-1">
+              {unreadCount > 0 && (
+                <Button variant="ghost" size="sm" className="text-xs" onClick={handleMarkAllRead}>
+                  {t('panel.markAllRead')}
+                </Button>
+              )}
+              {notifications.length > 0 && !pendingClearAll && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() => setPendingClearAll(true)}
+                >
+                  {t('panel.clearAll')}
+                </Button>
+              )}
+            </div>
           </div>
+          {pendingClearAll && (
+            <div className="mt-2 flex items-center justify-between gap-2">
+              <span id="notifications-clear-all-question" className="text-xs text-muted-foreground">
+                {t('panel.confirmClearAll')}
+              </span>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  aria-describedby="notifications-clear-all-question"
+                  onClick={handleConfirmClearAll}
+                >
+                  {t('panel.delete')}
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-xs"
+                  onClick={() => setPendingClearAll(false)}
+                >
+                  {t('panel.cancel')}
+                </Button>
+              </div>
+            </div>
+          )}
         </SheetHeader>
         <ScrollArea className="h-[calc(100vh-4rem)]">
           {notifications.length === 0 ? (

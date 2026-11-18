@@ -1,11 +1,15 @@
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { safeRedirectPath } from '@/lib/safe-redirect'
-import { auth } from '@/lib/auth'
+import { getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
-import { OnboardingForm } from '@/features/onboarding/Components/OnboardingForm'
+import { SetupWizard } from '@/features/onboarding/Components/setup/SetupWizard'
 import { SingleWorkshopNotice } from '@/features/onboarding/Components/SingleWorkshopNotice'
 import { organizationAllowance } from '@/lib/features'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('onboarding.form', 'title')
+}
 
 export default async function OnboardingPage({
   searchParams,
@@ -14,7 +18,7 @@ export default async function OnboardingPage({
 }) {
   const params = await searchParams
   const redirectTo = params.redirect ? safeRedirectPath(params.redirect) : undefined
-  const session = await auth.api.getSession({ headers: await headers() })
+  const session = await getCachedSession()
 
   if (!session?.user?.id) {
     redirect('/auth/sign-in')
@@ -36,13 +40,15 @@ export default async function OnboardingPage({
   const allowance = await organizationAllowance(session.user.id)
 
   return (
-    <div className="grid-bg flex min-h-screen items-center justify-center p-4">
-      <div className="absolute inset-0 overflow-hidden">
+    <div
+      className={`grid-bg relative flex min-h-screen justify-center px-4 py-8 sm:px-6 sm:py-10 ${allowance.allowed ? 'items-start' : 'items-center'}`}
+    >
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute -bottom-40 -left-40 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
       </div>
       {allowance.allowed ? (
-        <OnboardingForm redirectTo={redirectTo} />
+        <SetupWizard redirectTo={redirectTo} />
       ) : (
         <SingleWorkshopNotice email={session.user.email} />
       )}

@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Padrão da oficina",
     "invoiceDesignHint": "As faturas deste cliente são impressas com este design em vez do padrão da oficina. Uma fatura ainda pode escolher o seu próprio.",
     "reminderOptOut": "Sem lembretes",
-    "reminderOptOutHint": "Não incluir este cliente em lembretes de inspeção ou outras campanhas."
+    "reminderOptOutHint": "Não incluir este cliente em lembretes de inspeção ou outras campanhas.",
+    "bookAppointment": "Agendar horário"
   },
   "serviceRequests": {
     "statusNew": "Novo",
@@ -120,6 +121,12 @@
     "saveNotes": "Salvar Observações",
     "submitted": "Enviado em {date}",
     "preferred": "Preferência: {date}",
+    "preferredMorning": "Preferência: {date}, manhã",
+    "preferredAfternoon": "Preferência: {date}, tarde",
+    "files": "{count, plural, one {# foto ou vídeo do cliente} other {# fotos ou vídeos do cliente}}",
+    "openPhoto": "Abrir foto {number}",
+    "openVideo": "Abrir vídeo {number}",
+    "fileMissing": "A foto {number} não está mais disponível",
     "workOrderCreated": "Ordem de serviço criada",
     "workOrderError": "Falha ao criar ordem de serviço",
     "requestDismissed": "Solicitação dispensada",

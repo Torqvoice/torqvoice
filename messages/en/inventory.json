@@ -14,7 +14,8 @@
     "supplier": "Supplier",
     "location": "Location",
     "low": "Low",
-    "barcode": "Barcode"
+    "barcode": "Barcode",
+    "notTracked": "Not tracked"
   },
   "empty": {
     "noMatch": "No parts match your search.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Apply Markup to All Parts",
-    "multiplierLabel": "Markup Multiplier",
-    "description": "This will set sell price = cost x {multiplier} for all {count} parts.",
-    "percentage": "({percent}% markup)",
+    "intro": "Sets the sell price of your parts to their cost plus a percentage.",
+    "percentLabel": "Markup %",
+    "percentHint": "Enter 30 to add 30% on top of the cost.",
+    "percentInvalid": "The markup must be higher than -100%.",
+    "exampleTitle": "Example",
+    "exampleMarkup": "Markup {percent}%",
     "cancel": "Cancel",
     "apply": "Apply",
     "overrideExisting": "Override existing sell prices",
     "overrideExistingHint": "All parts will be updated, including those with an existing sell price.",
-    "skipExistingHint": "Only parts without a sell price will be updated."
+    "skipExistingHint": "Only parts without a sell price will be updated.",
+    "newPartsNote": "New parts fill in {sellPrice} at this markup when you enter the {unitCost}.",
+    "settingsNote": "{setting} under {settings} > {workshop} is a separate setting, added when parts go on a job."
   },
   "errors": {
-    "multiplierPositive": "Multiplier must be greater than 0",
     "deleteFailed": "Failed to delete part",
     "applyFailed": "Failed to apply markup",
     "saveFailed": "Failed to save part",
@@ -70,16 +75,19 @@
     "currentStock": "Current stock: {quantity}",
     "addedStock": "Added {amount} to stock",
     "customAmount": "Qty...",
-    "scanParts": "Scan Parts"
+    "scanParts": "Scan Parts",
+    "notTracked": "Stock is not tracked for this part"
   },
   "form": {
     "editPart": "Edit Part",
     "addNewPart": "Add New Part",
     "supplierLink": "Supplier Link",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "The supplier link is not a web address. Correct it, or clear it to save without one.",
     "fetch": "Fetch",
-    "fetchFailed": "Fetch Failed",
-    "fetchError": "Could not fetch metadata from URL",
+    "fetchBlocked": "This supplier's site blocks automatic lookup. Fill in the fields yourself. The part and the link still save.",
+    "fetchTimedOut": "The supplier's site took too long to answer. Try again, or fill in the fields yourself. The part and the link still save.",
+    "fetchUnreadable": "Could not read the part details from this link. Fill in the fields yourself. The part and the link still save.",
     "image": "Image",
     "dropOrClick": "Drop image or click",
     "replace": "Replace",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperial",
     "unitCost": "Unit Cost",
     "sellPrice": "Sell Price",
+    "sellPriceMarkupHint": "{sellPrice} fills in at {unitCost} + {percent}%. Type a price to set your own. To change the percentage, use {applyMarkup} on the {inventory} page.",
     "supplier": "Supplier",
     "supplierPlaceholder": "AutoParts Inc.",
     "supplierPhone": "Supplier Phone",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Part description...",
     "cancel": "Cancel",
     "saveChanges": "Save Changes",
-    "addPart": "Add Part"
+    "addPart": "Add Part",
+    "tags": "Tags",
+    "tagsPlaceholder": "Makes, models or anything to find it by",
+    "tagsHint": "Press Enter or a comma after each one. On a job, parts tagged with the vehicle's make or model are listed first.",
+    "tagsHintMarine": "Press Enter or a comma after each one. On a job, parts tagged with the vessel's make or model are listed first.",
+    "removeTag": "Remove {tag}",
+    "tagTooLong": "A tag can be at most {max} characters. Shorten it before saving.",
+    "trackStock": "Track stock",
+    "trackStockHint": "Turn off for fees and consumables you charge but never count.",
+    "trackStockOffNote": "Saving sets the quantity to zero and notes it in the stock history. Jobs no longer change it."
   },
   "openMenu": "Open menu",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Work order deleted",
       "quote_conversion": "Quote converted",
       "manual_adjustment": "Manual adjustment",
-      "bulk_markup": "Bulk markup"
+      "bulk_markup": "Bulk markup",
+      "stock_tracking_off": "Stock tracking turned off"
     },
     "backToInventory": "Inventory",
     "reason": "Reason",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} in stock",
     "outOfStock": "Out of stock",
     "onBackorder": "On backorder ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "All Tags",
+    "filterBy": "Show parts tagged {tag}",
+    "more": "+{count} more"
   }
 }

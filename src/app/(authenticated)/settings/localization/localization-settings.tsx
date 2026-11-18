@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Switch } from '@/components/ui/switch'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
@@ -214,27 +215,27 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
       <ReadOnlyBanner />
 
       {/* Language */}
-      <AppCard icon={Globe} title={t('localization.languageTitle')} contentClassName="space-y-4">
+      <AppCard
+        id="localization-language"
+        icon={Globe}
+        title={t('localization.languageTitle')}
+        contentClassName="space-y-4"
+      >
         <p className="text-sm text-muted-foreground">{t('localization.languageDescription')}</p>
-        <div className="space-y-2">
+        <div id="localization-workshop-language" className="space-y-2">
           <Label>{t('localization.language')}</Label>
-          <Select value={workshopLocale} onValueChange={handleLanguageChange}>
-            <SelectTrigger className="w-64">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {locales.map((loc) => (
-                <SelectItem key={loc} value={loc}>
-                  {localeNames[loc]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <SearchableSelect
+            value={workshopLocale}
+            onValueChange={handleLanguageChange}
+            className="w-64"
+            aria-label={t('localization.language')}
+            options={locales.map((loc) => ({ value: loc, label: localeNames[loc], keywords: loc }))}
+          />
         </div>
 
         <Separator />
 
-        <div className="flex items-center justify-between">
+        <div id="localization-force-customer-locale" className="flex items-center justify-between">
           <div className="pr-4">
             <Label>{t('localization.forceCustomerLocale')}</Label>
             <p className="text-xs text-muted-foreground">
@@ -276,12 +277,17 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
       </AppCard>
 
       {/* Currency */}
-      <AppCard icon={Coins} title={t('currency.title')} contentClassName="space-y-6">
+      <AppCard
+        id="localization-currency"
+        icon={Coins}
+        title={t('currency.title')}
+        contentClassName="space-y-6"
+      >
         <p className="text-sm text-muted-foreground">{t('currency.description')}</p>
 
         <ReadOnlyWrapper>
           <div className="space-y-6">
-            <div className="space-y-2">
+            <div id="localization-currency-code" className="space-y-2">
               <Label>{t('currency.currencyLabel')}</Label>
               <Popover open={currencyOpen} onOpenChange={setCurrencyOpen}>
                 <PopoverTrigger asChild>
@@ -328,7 +334,7 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
               </Popover>
             </div>
 
-            <div className="space-y-2">
+            <div id="localization-currency-format" className="space-y-2">
               <Label>{t('currency.formatTitle')}</Label>
               <Select
                 value={currencyFormat}
@@ -367,7 +373,12 @@ export function LocalizationSettings({ settings }: { settings: Record<string, st
       </AppCard>
 
       {/* Date & Time */}
-      <AppCard icon={Calendar} title={t('appearance.dateTimeTitle')} contentClassName="space-y-6">
+      <AppCard
+        id="localization-date-time"
+        icon={Calendar}
+        title={t('appearance.dateTimeTitle')}
+        contentClassName="space-y-6"
+      >
         <p className="text-sm text-muted-foreground">{t('appearance.dateTimeDescription')}</p>
 
         <ReadOnlyWrapper>

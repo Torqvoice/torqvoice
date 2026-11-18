@@ -75,9 +75,17 @@
         "title": "Kundeportal",
         "description": "Kundeselvbetjeningsportal"
       },
+      "shareLinks": {
+        "title": "Delte lenker",
+        "description": "Utløp og lenker sendt til kunder"
+      },
       "workshop": {
         "title": "Verksted",
         "description": "Tekniker- og arbeidsstandarder"
+      },
+      "openingHours": {
+        "title": "Åpningstider og helligdager",
+        "description": "Tider, helligdager, stengte dager, fravær"
       },
       "laborPresets": {
         "title": "Arbeidspakker",
@@ -107,6 +115,10 @@
         "title": "Utseende",
         "description": "Tema og visning"
       },
+      "shortcuts": {
+        "title": "Hurtigtaster",
+        "description": "Dine egne taster"
+      },
       "data": {
         "title": "Data",
         "description": "Eksporter og importer sikkerhetskopi"
@@ -129,7 +141,7 @@
       },
       "support": {
         "title": "Support",
-        "description": "Kontakt support og styr supportknappen"
+        "description": "Hjelp og supportknappen"
       },
       "tireHotel": {
         "title": "Dekkhotell",
@@ -200,7 +212,7 @@
     "serviceTypeDescription": "Velg typen tjeneste verkstedet ditt tilbyr. Dette endrer feltetiketter i hele applikasjonen.",
     "automotive": "Bil",
     "automotiveDescription": "Biler, lastebiler og andre kjøretøy",
-    "marineService": "Båt",
+    "marineService": "Marine",
     "marineServiceDescription": "Båter, yachter og marine fartøy"
   },
   "account": {
@@ -242,10 +254,20 @@
     "passwordsNoMatch": "Passordene samsvarer ikke",
     "passwordMinLength": "Passordet må være minst 8 tegn",
     "failedChangePassword": "Kunne ikke endre passord",
+    "setPasswordTitle": "Angi passord",
+    "setPasswordDescription": "Denne kontoen logger inn uten passord, for eksempel med Google. Angi et passord for også å kunne logge inn med e-postadressen din og et passord.",
+    "setPassword": "Angi passord",
+    "passwordSet": "Passord angitt. Du kan nå logge inn med e-postadressen din og dette passordet.",
+    "failedSetPassword": "Kunne ikke angi passord",
+    "passwordAlreadySet": "Denne kontoen har allerede et passord. Endre det her i stedet.",
+    "setPasswordFreshHint": "Av sikkerhetshensyn fungerer dette bare innen {minutes} minutter etter at du logget inn. Har det gått lenger tid, blir du bedt om å logge inn på nytt.",
+    "setPasswordSignInAgainHint": "Du logget inn for mer enn {minutes} minutter siden. Logg inn på nytt, og angi passordet med en gang.",
+    "signInAgain": "Logg inn på nytt",
     "twoFactorTitle": "Tofaktorautentisering",
     "twoFactorEnabled": "Tofaktorautentisering er aktivert",
     "twoFactorDisablePrompt": "Skriv inn passordet ditt for å deaktivere tofaktorautentisering.",
     "twoFactorEnablePrompt": "Legg til et ekstra sikkerhetslag på kontoen din ved å aktivere tofaktorautentisering med en autentiseringsapp.",
+    "twoFactorNeedsPassword": "Tofaktorautentisering legger til en kode når du logger inn med passord. Angi et passord først.",
     "password": "Passord",
     "enterPassword": "Skriv inn passordet ditt",
     "disable2FA": "Deaktiver 2FA",
@@ -327,6 +349,9 @@
       "registering": "Registrerer...",
       "registerSuccess": "Passkey registrert",
       "registerFailed": "Kunne ikke registrere passkey",
+      "signInAgainTitle": "Logg inn på nytt for å legge til en passkey",
+      "signInAgainDescription": "For å beskytte kontoen din kan en passkey bare legges til kort tid etter at du har logget inn. Logg inn på nytt, og registrer den deretter.",
+      "signInAgain": "Logg inn på nytt",
       "delete": "Slett",
       "deleteSuccess": "Passkey slettet",
       "deleteFailed": "Kunne ikke slette passkey",
@@ -356,6 +381,8 @@
     "reauthTooManyAttempts": "For mange forsøk. Vent noen minutter og prøv igjen.",
     "reauthSignInAgainAccount": "Logg inn på nytt før du sletter kontoen din.",
     "reauthSignInAgainWorkshop": "Logg inn på nytt før du sletter verkstedet.",
+    "reauthSignInAgainRestore": "Logg inn på nytt før du gjenoppretter verkstedet.",
+    "reauthSignInAgainPassword": "Logg inn på nytt før du angir et passord.",
     "deleteAccountMoved": "Vil du slette kontoen din?",
     "deleteAccountMovedLink": "Det kan du gjøre i datainnstillingene.",
     "signatureTitle": "Signatur",
@@ -554,6 +581,9 @@
     "removeBoardOnlyBody": "{name} vises ikke lenger på arbeidstavlen og kan ikke settes på jobber. Arbeid som allerede er registrert på dem, og timene de har stemplet, blir stående nøyaktig som de er.",
     "removeBoardOnlyDone": "{name} er tatt av tavlen",
     "noRole": "Ingen rolle",
+    "chooseRole": "Velg en rolle",
+    "roleRequired": "Velg en rolle før du inviterer. Uten rolle kan personen logge inn, men ikke åpne noe.",
+    "noRoleInviteWarning": "De kan logge inn, men kan ikke åpne noe før en eier eller administrator gir dem en rolle.",
     "worksOnJobs": "Jobber på biler",
     "createDefaultRoles": "Opprett standardrollene",
     "defaultRolesCreated": "Standardroller opprettet",
@@ -563,7 +593,9 @@
     "revokeTechnicianDone": "{name} er logget ut av appen",
     "noAccessTitle": "Ingen tilgang ennå",
     "noAccessBody": "Kontoen din tilhører {workshop}, men den har ikke fått en rolle ennå, så det er ingenting her du kan åpne. Be en eier eller administrator på verkstedet om å gi deg en.",
-    "setupPageInstall": "Last ned fra Google Play"
+    "setupPageInstall": "Last ned fra Google Play",
+    "setupPageInstallIos": "Last ned fra App Store",
+    "invalidInviteEmail": "Sjekk e-postadressen. Den skal se ut som navn@eksempel.no."
   },
   "invoice": {
     "title": "Faktura og tilbud",
@@ -960,7 +992,7 @@
     "layoutDocInvoice": "Faktura",
     "layoutDocQuote": "Tilbud",
     "smsDefaults": {
-      "invoiceReady": "Fakturaen din er klar. Se den her: {share_link}",
+      "invoiceReady": "Faktura fra {company_name} er klar. Se den her: {share_link}\nMvh {company_name} - {current_user}",
       "quoteReady": "Tilbudet ditt er klart for gjennomgang. Se det her: {share_link}",
       "inspectionReady": "Inspeksjonsrapporten for kjøretøyet ditt er klar. Se den her: {share_link}",
       "statusInProgress": "Arbeidet med kjøretøyet ditt har startet. Vi holder deg oppdatert.",
@@ -998,7 +1030,7 @@
     "paymentTermsPlaceholder": "Netto 14 dager",
     "paymentTermsHint": "Betalingsvilkår vist på fakturaer (f.eks. \"Netto 14 dager\", \"Ved mottak\")",
     "onlinePayments": "Nettbetalinger",
-    "onlinePaymentsDescription": "La kundene betale fakturaer fra lenken du sender dem. Stripe, Vipps og PayPal kobles til under Integrasjoner og kan brukes side om side.",
+    "onlinePaymentsDescription": "La kundene betale fakturaer fra lenken du sender dem. Stripe, Vipps, PayPal og Paystack kobles til under Integrasjoner og kan brukes side om side.",
     "onlinePaymentsHint": "Når en kunde betaler, sier leverandøren fra til Torqvoice og fakturaen merkes betalt av seg selv. Siden til hver leverandør viser varslings-URL-en den trenger.",
     "offered": "På fakturalenker",
     "paused": "Tilkoblet, tilbys ikke",
@@ -1028,6 +1060,13 @@
     "labelPlaceholder": "MVA",
     "splitLabel": "Del avgiften opp i flere satser",
     "splitHint": "For steder som krever mer enn én avgift på samme faktura, som GST og QST i Québec eller CGST og SGST i India. Hver avgift skrives ut som egen linje med eget registreringsnummer, og avgiftsrapporten holder dem adskilt.",
+    "selectiveLabel": "Avgift bare på noe av det som faktureres",
+    "selectiveHint": "For steder der deler er avgiftspliktige og arbeid ikke er det, eller der et gebyr holdes utenfor avgiften. Av betyr avgift på alt.",
+    "appliesTitle": "Beregn avgift på",
+    "appliesParts": "Deler",
+    "appliesLabor": "Arbeid",
+    "appliesShopFee": "Verkstedgebyr",
+    "appliesHint": "Nye linjer starter fra disse svarene, og hver linje kan endres på arbeidsordren eller tilbudet. Arbeidsordrer og tilbud som allerede er skrevet, beholder det de har.",
     "splitIncomplete": "Gi hver avgift et navn og en sats før du lagrer.",
     "presetLabel": "Start fra en mal",
     "presetPlaceholder": "Velg en region",
@@ -1096,8 +1135,8 @@
     "formatCodeLabel": "Kode: {value}"
   },
   "localization": {
-    "languageTitle": "Språk",
-    "languageDescription": "Velg visningsspråk for applikasjonen.",
+    "languageTitle": "Verkstedets språk",
+    "languageDescription": "Fakturaer, tilbud, arbeidsordrer og e-post til kundene dine skrives på dette språket. Vil du bare endre språket du selv ser, bruker du språkvalget i brukermenyen din.",
     "language": "Språk",
     "forceCustomerLocale": "Tving dette språket på kundesider",
     "forceCustomerLocaleHint": "Når aktivert vises kundeportalen og delte fakturaer, tilbud og inspeksjoner på verkstedets språk uavhengig av besøkendes nettleserinnstillinger. Når deaktivert, følger kundesidene besøkendes nettleserspråk.",
@@ -1182,16 +1221,23 @@
     "typeKeyEnabled": "Registrer HSN/TSN på kjøretøy",
     "typeKeyHint": "Legger til produsent- og typenøkkelen fra det tyske vognkortet (felt 2.1 og 2.2) på kjøretøy. Den vises på kjøretøyet, arbeidsordren og alle utskrevne dokumenter, og kjøretøy kan finnes med den i søket. Slås den av, skjules den igjen, og det som er lagt inn beholdes.",
     "unitsTitle": "Enheter",
-    "unitsDescription": "Velg mellom metrisk (km, liter) og imperial (miles, gallons).",
+    "unitsDescription": "Hvordan avstander, væsker og deler skrives i dette verkstedet.",
     "unitSystem": "Enhetssystem",
     "metric": "Metrisk (km, liter)",
     "imperial": "Imperisk (miles, gallon)",
     "distanceLabel": "Avstand",
     "volumeLabel": "Volum",
-    "kilometers": "kilometer (km)",
+    "kilometers": "Kilometer (km)",
     "liters": "liter (L)",
-    "miles": "miles (mi)",
+    "miles": "Miles (mi)",
     "gallons": "gallon (gal)",
+    "measureSystem": "Væsker og deler",
+    "measureMetric": "Liter og kilo",
+    "measureImperial": "Quarts, gallons og pund",
+    "engineSizeUnit": "Motorvolum",
+    "engineSizeLitres": "Liter (1,6 L)",
+    "engineSizeCc": "Kubikkcentimeter (1598 cc)",
+    "engineSizeUnitHint": "Hvordan et skiltoppslag fyller inn motorvolum, og hva det tomme feltet foreslår. Motorvolum som allerede er lagret, blir stående som de er.",
     "defaultStockUnit": "Standard lagerenhet",
     "defaultStockUnitHint": "Fylles ut automatisk for nye lagerdeler. Hver del kan fortsatt ha sin egen enhet.",
     "saveWorkshop": "Lagre verkstedinnstillinger",
@@ -1204,8 +1250,6 @@
     "assignFailed": "Kunne ikke tildele arbeidsordre",
     "noTechnician": "Ingen",
     "weekStartDay": "Ukens startdag",
-    "workDayStart": "Arbeidsdagen starter",
-    "workDayEnd": "Arbeidsdagen slutter",
     "titleTemplateTitle": "Tittel på arbeidsordre",
     "titleTemplateDescription": "Hva en ny arbeidsordre heter før noen skriver inn en tittel. Sett den sammen av taggene under; hver jobb åpnes med taggene fylt ut, og tittelen kan fortsatt endres på jobben.",
     "titleTemplate": "Tittelmal",
@@ -1233,7 +1277,9 @@
       "4": "Torsdag",
       "5": "Fredag",
       "6": "Lørdag"
-    }
+    },
+    "openingHoursMoved": "Åpningstider settes for hver ukedag, sammen med helligdager, stengte dager og fravær.",
+    "openingHoursLink": "Åpne åpningstider og helligdager"
   },
   "maintenance": {
     "title": "Predikert vedlikehold",
@@ -1338,6 +1384,94 @@
       }
     }
   },
+  "shortcuts": {
+    "title": "Hurtigtaster",
+    "description": "Dine egne taster. De følger deg til alle enheter du logger inn på.",
+    "enableLabel": "Bruk hurtigtaster",
+    "enableHint": "Slår alle hurtigtastene på denne siden av eller på.",
+    "singleKeysLabel": "Taster med én bokstav",
+    "singleKeysHint": "Hurtigtaster som bare er én bokstav. Bare kalenderen har dem, for eksempel W for ukevisning. Slå av hvis du bruker stemmestyring eller trykker på dem ved et uhell.",
+    "goToSequencesLabel": "{prefix}, så sidens bokstav, åpner den siden",
+    "goToSequencesHint": "Begge trykkene bruker samme modifikatortast, så ingenting du skriver kan utløse dem: {example} åpner {workOrders}. Bokstavene står under Gå til.",
+    "allTitle": "Alle hurtigtaster",
+    "allHint": "Velg Endre, og trykk deretter tastene du vil bruke. Esc avbryter.",
+    "resetAll": "Tilbakestill alle til standard",
+    "resetAllTitle": "Tilbakestille alle hurtigtaster?",
+    "resetAllDescription": "Hver tast går tilbake til den opprinnelige, og hurtigtaster du har slått av, slås på igjen.",
+    "change": "Endre",
+    "cancel": "Avbryt",
+    "reset": "Tilbakestill",
+    "resetTo": "Tilbake til {keys}",
+    "resetToNone": "Tilbake til ingen tast",
+    "changed": "Endret",
+    "off": "Av",
+    "noKey": "Ingen tast",
+    "or": "eller",
+    "then": "så",
+    "pressKeys": "Trykk de nye tastene…",
+    "recordingFor": "Tar opp ny hurtigtast for {action}. Trykk tastene, eller Esc for å avbryte.",
+    "changeFor": "Endre hurtigtasten for {action}",
+    "resetFor": "Tilbakestill hurtigtasten for {action}",
+    "switchFor": "Hurtigtast for {action}",
+    "clash": "{keys} er allerede brukt av {action}. Bruker du den her, står {action} uten.",
+    "useHere": "Bruk den her",
+    "pickAnother": "Velg en annen",
+    "problems": {
+      "reserved": "{keys} tilhører nettleseren eller systemet og kan ikke brukes.",
+      "taken": "{keys} er låst til en annen snarvei og kan ikke flyttes.",
+      "needsModifier": "Denne hurtigtasten virker på alle sider, så den trenger {mod} eller {alt} sammen med tasten.",
+      "invalid": "Den tasten kan ikke brukes."
+    },
+    "alsoUsedBy": "Også tasten for {action}. Bare én av dem vil virke.",
+    "goToNote": "Søk ({keys}) åpner alle sider, og {prefix} etterfulgt av en bokstav åpner de viktigste. Her kan du gi hvilken som helst side sin egen tast.",
+    "announceSet": "{action} er nå {keys}",
+    "announceReset": "{action} er tilbake til standard",
+    "announceResetAll": "Alle hurtigtaster er tilbake til standard",
+    "phoneNote": "Hurtigtaster krever tastatur. Endringer du gjør her, gjelder også på datamaskinen din.",
+    "saveFailed": "Kunne ikke lagre hurtigtastene dine",
+    "groups": {
+      "general": "Generelt",
+      "create": "Opprett",
+      "goTo": "Gå til",
+      "calendar": "Kalender",
+      "fixed": "Lister og bilder"
+    },
+    "scopes": {
+      "global": "Overalt i appen",
+      "calendar": "Bare i kalenderen"
+    },
+    "actions": {
+      "search": "Søk",
+      "plateLookup": "Skiltoppslag",
+      "save": "Lagre",
+      "sidebar": "Vis eller skjul sidemenyen",
+      "help": "Vis hurtigtaster",
+      "newAppointment": "Ny timeavtale",
+      "newInspection": "Ny inspeksjon",
+      "calendar_day": "Dagsvisning",
+      "calendar_week": "Ukevisning",
+      "calendar_month": "Månedsvisning",
+      "calendar_year": "Årsvisning",
+      "calendar_schedule": "Tidsplanvisning",
+      "calendar_fourDays": "4-dagersvisning",
+      "calendar_today": "Gå til i dag",
+      "calendar_next": "Neste periode",
+      "calendar_previous": "Forrige periode"
+    },
+    "help": {
+      "title": "Hurtigtaster",
+      "description": "Tastene du har nå. Søk åpner alle sider. Endre eller slå av taster i Innstillinger.",
+      "disabledNote": "Hurtigtaster er slått av. Slå dem på i Innstillinger.",
+      "find": "Finn en hurtigtast",
+      "noMatch": "Ingen hurtigtast passer",
+      "customize": "Endre hurtigtaster",
+      "fixedHint": "alltid den samme",
+      "listMove": "Flytt deg i en liste",
+      "listOpen": "Åpne raden",
+      "photos": "Neste eller forrige bilde",
+      "close": "Lukk en dialog eller meny"
+    }
+  },
   "data": {
     "title": "Datahåndtering",
     "description": "Hent inn data fra det gamle systemet ditt, last ned en sikkerhetskopi av alt, eller gjenopprett en.",
@@ -1351,7 +1485,7 @@
     "optCustomers": "Kunder",
     "optCustomersDesc": "Kundeposter og kontaktinformasjon",
     "optVehicles": "Kjøretøy og servicedata",
-    "optVehiclesDesc": "Kjøretøy, notater, drivstofflogger, påminnelser, servicedata",
+    "optVehiclesDesc": "Kjøretøy, notater, drivstofflogger, påminnelser, servicedata, timeavtaler",
     "optQuotes": "Tilbud",
     "optQuotesDesc": "Tilbud med deler og arbeid",
     "optInventory": "Inventar",
@@ -1385,6 +1519,11 @@
     "importComplete": "Import fullført",
     "importCompleteMessage": "Alle data er gjenopprettet fra sikkerhetskopifilen.",
     "importFailed": "Import mislyktes",
+    "restoreRefused": {
+      "busy": "En sikkerhetskopi eller gjenoppretting kjører allerede på denne serveren. Prøv igjen når den er ferdig.",
+      "ownerOnly": "På Torqvoice Cloud kan bare verkstedets eier gjenopprette en sikkerhetskopi.",
+      "foreignIds": "Filen viser til oppføringer som tilhører et annet verksted, så ingenting ble gjenopprettet."
+    },
     "importFromOther": "Importer fra andre tjenester",
     "importFromOtherDescription": "Migrer dataene dine fra en annen plattform. Velg en tjeneste for å komme i gang.",
     "lubelogTitle": "Importer fra LubeLog",
@@ -1436,7 +1575,159 @@
     "sourceBackup": "Torqvoice-sikkerhetskopi",
     "sourceBackupDesc": "En .zip- eller .json-fil lastet ned fra denne siden. Gjenoppretting erstatter alt i dette verkstedet.",
     "restore": "Gjenopprett",
-    "restoreTitle": "Gjenopprett en sikkerhetskopi"
+    "restoreTitle": "Gjenopprett en sikkerhetskopi",
+    "includeSecrets": "Ta med hemmelige nøkler",
+    "includeSecretsHelp": "Hemmelige nøkler, som betalings- og AI-nøkler, utelates med mindre du krysser av her. En gjenoppretting beholder da nøklene denne installasjonen allerede har.",
+    "platformBackups": {
+      "title": "Sikkerhetskopier fra Torqvoice",
+      "description": "Torqvoice tar sikkerhetskopi av dette verkstedet hver time og beholder gjenopprettingspunkter i 30 dager, deretter ukentlige og månedlige.",
+      "runNow": "Ta sikkerhetskopi nå",
+      "started": "Sikkerhetskopiering startet",
+      "lastGood": "Siste vellykkede sikkerhetskopi",
+      "never": "Ingen sikkerhetskopi ennå",
+      "nextRun": "Neste kjøring",
+      "notScheduled": "Ikke planlagt",
+      "repositorySize": "Lagret hos Torqvoice",
+      "running": "Kjører",
+      "restoring": "Gjenoppretter",
+      "queued": "I kø",
+      "queuedAhead": "{count, plural, one {I kø, # foran} other {I kø, # foran}}",
+      "runningHint": "En sikkerhetskopi kjører. Kortet oppdaterer seg selv til den er ferdig.",
+      "restoringHint": "En gjenoppretting kjører: verkstedets data erstattes med gjenopprettingspunktet. Siden oppdaterer seg selv til den er ferdig. Ikke arbeid i verkstedet før da.",
+      "paused": "Planen din inkluderer ikke lenger sikkerhetskopier fra Torqvoice. Kjøringene er stoppet; gjenopprettingspunktene beholdes til {date} og slettes deretter.",
+      "upsell": "Tilgjengelig med Pro: sikkerhetskopier hver time fra Torqvoice, med gjenopprettingspunkter du kan gå tilbake til.",
+      "planLink": "Se planer",
+      "example": "Eksempel",
+      "pointsEmpty": "Den første sikkerhetskopien har ikke kjørt ennå.",
+      "needsOwner": "Bare verkstedets eier kan gjenopprette.",
+      "listTitle": "Sikkerhetskopier",
+      "today": "I dag",
+      "yesterday": "I går",
+      "dayCount": "{count, plural, one {# sikkerhetskopi} other {# sikkerhetskopier}}",
+      "latest": "Nyeste",
+      "loadingMore": "Henter flere sikkerhetskopier …",
+      "endOfList": "{count, plural, one {# sikkerhetskopi totalt} other {# sikkerhetskopier totalt}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Sikkerhetskopi i kø",
+          "running": "Tar sikkerhetskopi",
+          "done": "Sikkerhetskopi tatt",
+          "failed": "Sikkerhetskopien feilet",
+          "skipped": "Sikkerhetskopien ble hoppet over"
+        },
+        "restore": {
+          "queued": "Gjenoppretting til {time} i kø",
+          "running": "Gjenoppretter til {time}",
+          "done": "Gjenopprettet til {time}",
+          "failed": "Gjenoppretting til {time} feilet",
+          "skipped": "Gjenoppretting til {time} ble hoppet over"
+        }
+      },
+      "sizeNote": "Hvert gjenopprettingspunkt er komplett i seg selv; størrelsen er alt det omfatter. Arkivet lagrer hver del bare én gang, og senere kjøringer legger bare til det som er endret. Derfor holder «Lagret hos Torqvoice» seg langt under summen av størrelsene.",
+      "supportReason": "Gjenopprettet av Torqvoice-supporten: {reason}",
+      "kind": {
+        "scheduled": "Planlagt",
+        "manual": "Manuell",
+        "safety": "Kopi før gjenoppretting",
+        "safetyHint": "Tatt rett før en gjenoppretting, så den kan angres"
+      },
+      "explore": "Utforsk",
+      "restore": {
+        "action": "Gjenopprett",
+        "dialogTitle": "Gjenopprette verkstedet til {time}?",
+        "warning": "Gjenopprettingspunktet fra {time} <bold>erstatter alt i dette verkstedet</bold>: kunder, kjøretøy, arbeidsordrer, fakturaer, innstillinger, bilder og filer. Alt som er lagt til siden da, forsvinner.",
+        "safetyNote": "Først tas en kopi av verkstedet slik det er nå, og den beholdes i 90 dager, så gjenopprettingen kan angres fra gjenopprettingspunktene.",
+        "untouched": "Medlemmer, kontoer, abonnementet og integrasjoner røres ikke. Hemmelige nøkler som ikke er i sikkerhetskopien, beholder verdiene de har nå.",
+        "confirmPrompt": "Skriv inn verkstedets navn, <bold>{name}</bold>, for å bekrefte.",
+        "whileRunning": "Gjenopprettingen kjører i bakgrunnen og tar noen minutter når det er mange bilder. Siden oppdaterer seg selv til den er ferdig.",
+        "cancel": "Avbryt",
+        "confirm": "Gjenopprett",
+        "started": "Gjenoppretting startet"
+      }
+    },
+    "restoreExplorer": {
+      "back": "Tilbake til sikkerhetskopiene",
+      "title": "Gjenopprettingspunkt fra {date}",
+      "titleShort": "Gjenopprettingspunkt {id}",
+      "readOnly": "Skrivebeskyttet: ingenting her endrer verkstedet. Visningen lukkes etter 15 minutter uten aktivitet.",
+      "readOnlyBadge": "Skrivebeskyttet",
+      "opening": "Åpner gjenopprettingspunktet",
+      "openingHint": "Sikkerhetskopien dekrypteres her på serveren og holdes i minnet i et kvarter. Ingenting i verkstedet endres.",
+      "openingSteps": {
+        "connecting": "Kobler til sikkerhetskopiarkivet",
+        "locating": "Finner datafilen i øyeblikksbildet",
+        "pulling": "Henter og dekrypterer dataene",
+        "reading": "Leser postene",
+        "indexing": "Indekserer kunder, kjøretøy og arbeidsordrer"
+      },
+      "openingReady": "Klar",
+      "openFailed": "Gjenopprettingspunktet kunne ikke åpnes",
+      "tryAgain": "Prøv igjen",
+      "ownerOnly": "Bare verkstedets eier eller en administrator kan se inn i et gjenopprettingspunkt.",
+      "closed": "Gjenopprettingspunktet ble lukket; åpne det igjen",
+      "openAgain": "Åpne igjen",
+      "datasets": {
+        "customers": "Kunder",
+        "vehicles": "Kjøretøy",
+        "serviceRecords": "Arbeidsordrer",
+        "quotes": "Tilbud",
+        "inventoryParts": "Deler"
+      },
+      "searchPlaceholder": "Søk etter navn, nummer, skilt, VIN, e-post eller telefon",
+      "loading": "Laster…",
+      "loadFailed": "Listen kunne ikke lastes",
+      "empty": "Det finnes ingenting av denne typen i gjenopprettingspunktet.",
+      "noMatches": "Ingen treff på «{query}».",
+      "showing": "{shown} av {total} vist",
+      "loadMore": "Vis flere",
+      "clearSearch": "Tøm søket",
+      "record": {
+        "loading": "Laster posten…",
+        "loadFailed": "Posten kunne ikke lastes",
+        "notFound": "Denne posten finnes ikke i gjenopprettingspunktet.",
+        "fields": "Detaljer",
+        "jumpTo": "Gå til",
+        "previous": "Forrige post",
+        "next": "Neste post",
+        "position": "{index} av {total}",
+        "noColumns": "Ingenting å vise i disse radene.",
+        "yes": "Ja",
+        "no": "Nei"
+      },
+      "sections": {
+        "concerns": "Kundens beskrivelse",
+        "partItems": "Deler",
+        "laborItems": "Arbeid",
+        "attachments": "Bilder og dokumenter",
+        "payments": "Betalinger",
+        "statusReports": "Statusrapporter",
+        "timeEntries": "Tidsoppføringer",
+        "notes": "Notater",
+        "fuelLogs": "Drivstofflogg",
+        "reminders": "Påminnelser",
+        "serviceRequests": "Serviceforespørsler",
+        "inspectionStatus": "EU-kontroll-status",
+        "findings": "Funn",
+        "conditionMarks": "Tilstandsmerker",
+        "aiMessages": "AI-meldinger",
+        "recurringInvoices": "Gjentakende fakturaer",
+        "serviceRecords": "Arbeidsordrer",
+        "movements": "Lagerbevegelser",
+        "gallery": "Galleri"
+      }
+    },
+    "scheduledBackups": {
+      "title": "Planlagte sikkerhetskopier",
+      "description": "Automatiske sikkerhetskopier til lagring du eier selv, etter en tidsplan du velger.",
+      "empty": "Ingen mål for sikkerhetskopier er koblet til ennå.",
+      "setUp": "Sett opp et mål for sikkerhetskopier",
+      "lastGood": "Siste vellykkede sikkerhetskopi: {when}",
+      "noGoodBackup": "Ingen vellykket sikkerhetskopi ennå",
+      "nextRun": "neste kjøring: {when}",
+      "notScheduled": "ikke planlagt",
+      "lastError": "Siste feil: {error}",
+      "extraCopy": "En ekstra kopi i lagring du eier selv, etter en tidsplan du velger, i tillegg til sikkerhetskopiene Torqvoice tar."
+    }
   },
   "license": {
     "title": "White-label-lisens",
@@ -1446,19 +1737,50 @@
     "active": "Aktiv",
     "inactive": "Inaktiv",
     "lastChecked": "Sist sjekket: {date}",
-    "enterLicenseKey": "Skriv inn lisensnøkkel",
+    "enterLicenseKey": "Skriv inn en lisensnøkkel eller et offline-lisenstoken",
     "validate": "Valider",
     "validated": "Lisens validert",
     "invalid": "Ugyldig lisensnøkkel",
+    "offlineInvalid": "Dette er ikke et gyldig offline-lisenstoken for dette verkstedet. Lisensen som er lagret på denne serveren er uendret.",
     "failedValidate": "Kunne ikke validere lisens",
-    "keyHint": "Hver lisensnøkkel er knyttet til denne organisasjonen og kan ikke deles mellom flere organisasjoner.",
+    "keyHint": "Hver lisensnøkkel og hvert offline-lisenstoken er knyttet til denne organisasjonen og kan ikke deles mellom flere organisasjoner.",
     "expired": "Utløpt",
     "unverified": "Ikke bekreftet",
     "expiresOn": "Utløper: {date}",
     "unreachable": "torqvoice.com kunne ikke nås. Lisensen som er lagret på denne serveren er uendret.",
     "unverifiedHint": "Denne serveren har ikke kunnet bekrefte lisensen hos torqvoice.com på {days} dager. Torqvoice-merkingen kommer tilbake etter {max} dager uten en vellykket sjekk.",
     "rejected": "torqvoice.com godtok ikke denne nøkkelen: {reason}",
-    "signedHint": "Valideringen signeres av torqvoice.com og gjentas daglig, så serveren trenger utgående tilgang til torqvoice.com."
+    "signedHint": "Abonnementsnøkler signeres av torqvoice.com og sjekkes på nytt daglig, så serveren trenger utgående tilgang til torqvoice.com. Et offline-lisenstoken verifiseres på denne serveren og trenger ingen tilgang.",
+    "makeItYours": "Gjør den til din",
+    "makeItYoursHint": "Torqvoice-merket er borte. To steg til, så ser appen ut som din.",
+    "linkAppName": "Velg appnavn",
+    "linkAppIcon": "Legg til eget favikon og appikon",
+    "adminOnlyHint": "Bare en superadministrator kan endre appnavn og appikon. Spør den som drifter denne installasjonen.",
+    "makeItYoursLocked": "En white-label-lisens låser opp appnavn og appikon.",
+    "needsLicense": "Krever lisens",
+    "mismatch": "Passer ikke med dette verkstedet",
+    "perpetual": "Evigvarende",
+    "licensedTo": "Lisensiert til {name} ({registrationNumber}), {country}",
+    "perpetualHint": "Denne lisensen verifiseres på denne serveren og trenger aldri å kontakte torqvoice.com.",
+    "perpetualWorkshops": "Gjelder {count, plural, one {# verksted} other {# verksteder}} på denne installasjonen.",
+    "mismatchExplain": "Denne lisensen ble utstedt til organisasjonsnummer {licensed}, men organisasjonsnummeret til dette verkstedet er {current}.",
+    "mismatchExplainNotSet": "Denne lisensen ble utstedt til organisasjonsnummer {licensed}, men dette verkstedet har ikke satt noe organisasjonsnummer.",
+    "openCompanySettings": "Åpne firmainnstillingene",
+    "notSet": "Ikke satt",
+    "offlineActivated": "Offline-lisens aktivert",
+    "offlineTitle": "Offline-lisens",
+    "offlineDescription": "Et engangskjøp som fjerner Torqvoice-merket for dette ene verkstedet og aldri kontakter torqvoice.com.",
+    "offlineBinding": "Lisensen er knyttet til organisasjonsnummeret til bedriften din. Det går fint å gi verkstedet nytt navn, men en ny juridisk enhet trenger en ny lisens.",
+    "offlineOrganizationId": "Organisasjons-ID",
+    "offlineWorkshop": "Verksted",
+    "offlineOrgNumber": "Organisasjonsnummer",
+    "offlineOrgNumberRequired": "Et organisasjonsnummer må være satt før en offline-lisens kan utstedes.",
+    "requestCode": "Lisensforespørselskode",
+    "copyRequestCode": "Kopier",
+    "requestCodeCopied": "Forespørselskoden er kopiert",
+    "requestCodeCopyFailed": "Kunne ikke kopiere forespørselskoden",
+    "offlineOrderHint": "Bestill på torqvoice.com med denne koden.",
+    "orderOffline": "Bestill offline-lisens"
   },
   "about": {
     "title": "Om Torqvoice",
@@ -1466,59 +1788,116 @@
     "version": "Versjon",
     "website": "Nettsted",
     "documentation": "Dokumentasjon",
-    "changelog": "Endringslogg"
+    "changelog": "Endringslogg",
+    "whatsNew": "Hva er nytt",
+    "whatsNewOpen": "Se hva som er nytt",
+    "whatsNewTab": "Vis Hva er nytt-fanen på siden av skjermen",
+    "whatsNewTabHint": "Bare på større skjermer."
   },
   "portal": {
     "title": "Kundeportal",
-    "description": "La kundene dine logge inn og se kjøretøyene, fakturaene, tilbudene og inspeksjonene sine. Kunder kan også sende inn serviceforespørsler.",
-    "enablePortal": "Aktiver kundeportal",
-    "enablePortalHint": "Kunder med en e-postadresse kan logge inn via magisk lenke",
-    "enabled": "Kundeportal aktivert",
-    "disabled": "Kundeportal deaktivert",
-    "failedUpdate": "Kunne ikke oppdatere innstilling",
-    "customSlug": "Egendefinert portal-slug",
-    "save": "Lagre",
-    "slugSaved": "Portal-slug lagret",
-    "slugRemoved": "Portal-slug fjernet",
-    "failedUpdateSlug": "Kunne ikke oppdatere slug",
-    "slugHint": "Små bokstaver, tall, bindestreker og understreker. 3-48 tegn. La stå tom for å bruke standard-URL.",
-    "portalUrl": "Portal-URL",
-    "urlCopied": "Portal-URL kopiert",
-    "shareHint": "Del denne lenken med kundene dine slik at de kan logge inn på portalen sin.",
+    "description": "Kundene logger inn for å følge jobben sin, svare på tilbud, betale fakturaer, bestille time og skrive til deg.",
+    "enablePortal": "Slå på kundeportalen",
+    "enablePortalHint": "Kundene logger inn med en lenke sendt til e-posten eller telefonen sin. Det er ikke noe passord å huske.",
+    "failedUpdate": "Kunne ikke lagre innstillingene",
+    "customSlug": "Portaladresse",
+    "slugHint": "Små bokstaver, tall, bindestreker og understreker, 3 til 48 tegn. La feltet stå tomt for å bruke standardadressen.",
+    "portalUrl": "Lenke til portalen din",
+    "urlCopied": "Lenken er kopiert",
+    "shareHint": "Del denne lenken med kundene dine så de kan logge inn.",
     "serviceRequestAlertsHint": "Serviceforespørsler fra portalen dukker alltid opp i varselbjella. Du kan også få dem på e-post.",
-    "serviceRequestAlertsLink": "Varselinnstillinger →",
+    "serviceRequestAlertsLink": "Varselinnstillinger",
     "descriptionLabel": "Om verkstedet",
     "descriptionPlaceholder": "Fortell kundene litt om verkstedet, tjenestene dere tilbyr og hva som gjør dere unike.",
-    "descriptionHint": "Vises til besøkende øverst på portalsiden.",
-    "hoursLabel": "Åpningstider",
-    "hoursPlaceholder": "Man-fre: 08:00-17:00\nLør: 09:00-13:00\nSøn: Stengt",
-    "hoursHint": "Fritekst. Bruk linjeskift for å liste opp dagene hver for seg.",
-    "contentSaved": "Portalinnhold lagret",
-    "background": {
-      "title": "Portalbakgrunn",
-      "description": "Velg hvordan landingssiden for kundeportalen ser ut.",
-      "typeNone": "Ingen",
-      "typeTemplate": "Mal",
-      "typeImage": "Eget bilde",
-      "chooseTemplate": "Velg en mal",
-      "uploadLabel": "Bakgrunnsbilde",
-      "upload": "Last opp bilde",
-      "replace": "Bytt bilde",
-      "remove": "Fjern",
-      "uploadHint": "JPG, PNG eller WebP. Maks 8 MB. Anbefalt minst 1600x900.",
-      "uploading": "Laster opp bakgrunn...",
-      "uploaded": "Bakgrunn oppdatert",
-      "uploadFailed": "Kunne ikke laste opp bakgrunn",
-      "templateNames": {
-        "default": "Diskret",
-        "sunrise": "Soloppgang",
-        "ocean": "Hav",
-        "forest": "Skog",
-        "slate": "Skifer",
-        "sand": "Sand"
+    "descriptionHint": "Vises på innloggingssiden til portalen din.",
+    "copyUrl": "Kopier lenken"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "mitt-verksted",
+    "slugUnsaved": "Adressen virker når du har lagret.",
+    "slugInvalid": "Bruk 3 til 48 små bokstaver, tall, bindestreker eller understreker. Adressen må begynne og slutte med en bokstav eller et tall.",
+    "slugReserved": "Det ordet er reservert. Velg en annen adresse.",
+    "slugTaken": "Et annet verksted bruker allerede den adressen. Velg en annen.",
+    "hours": {
+      "title": "Åpningstider",
+      "fromCalendar": "Portalen viser åpningstidene og de stengte dagene fra verkstedkalenderen din.",
+      "link": "Innstillinger for åpningstider",
+      "typedNote": "Innloggingssiden viser fortsatt åpningstidene som ble skrevet inn her tidligere, fordi det ikke er satt åpningstider i kalenderen ennå. Sett dem der, så viser portalen dem i stedet.",
+      "typedLabel": "Vises på innloggingssiden i dag"
+    },
+    "look": {
+      "title": "Utseendet på kundeportalen",
+      "description": "Ett valg bestemmer innloggingssiden og alle sidene kundene ser etterpå. Kundene kan ikke endre det."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Lyst og rolig"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Mørk tavle som i depotet"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Avisaktig og stille"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Din farge, stort"
       }
     },
-    "copyUrl": "Kopier portal-URL"
+    "colour": {
+      "title": "Din farge",
+      "description": "Brukes på knapper og fremhevinger i alle temaer.",
+      "swatches": "Foreslåtte farger",
+      "orange": "Oransje",
+      "blue": "Blå",
+      "green": "Grønn",
+      "red": "Rød",
+      "black": "Svart",
+      "hexLabel": "Farge som hex-kode",
+      "invalid": "Det er ikke en farge. Skriv den som en hex-kode, for eksempel #1D4ED8.",
+      "usingTheme": "Bruker fargen som følger med {theme}, {hex}.",
+      "themeColour": "Fargen som følger med {theme}, er {hex}.",
+      "useTheme": "Bruk temaets farge",
+      "sample": "Bestill time",
+      "inkLight": "Tekst på denne fargen vises i hvitt, så den er lett å lese.",
+      "inkDark": "Tekst på denne fargen vises i svart, så den er lett å lese.",
+      "faint": "Denne fargen er svak mot bakgrunnen i {theme}. Lenker og fremhevinger kan bli vanskelige å se."
+    },
+    "cover": {
+      "title": "Forsidebilde og logo",
+      "description": "Vises på innloggingssiden. Logoen hentes fra Firmainnstillinger.",
+      "companyLink": "Firmainnstillinger",
+      "hint": "PNG, JPEG eller WebP, opptil 8 MB.",
+      "none": "Ingen forsidebilde",
+      "alt": "Forsidebildet på innloggingssiden",
+      "upload": "Last opp et bilde",
+      "replace": "Bytt bilde",
+      "remove": "Fjern bildet",
+      "uploading": "Laster opp",
+      "uploadFailed": "Kunne ikke laste opp bildet"
+    },
+    "features": {
+      "title": "Hva kundene får",
+      "description": "Delene av portalen du kan slå av.",
+      "messages": "Meldinger i portalen",
+      "messagesHint": "Kundene skriver til deg fra portalen. Meldingene havner i innboksen under Meldinger.",
+      "tires": "Vis lagrede dekk",
+      "tiresHint": "Kundene ser dekkene du oppbevarer for dem, med mønsterdybde."
+    },
+    "bar": {
+      "label": "Lagre innstillingene for kundeportalen",
+      "unsaved": "Du har endringer som ikke er lagret",
+      "saved": "Alt er lagret",
+      "discard": "Forkast endringer",
+      "save": "Lagre endringer",
+      "open": "Åpne portalen som kunde",
+      "openOff": "Slå på portalen og lagre for å åpne den."
+    },
+    "savedToast": "Innstillingene for kundeportalen er lagret"
   },
   "email": {
     "title": "E-postleverandør",
@@ -1760,13 +2139,13 @@
     "noMembers": "Ingen teammedlemmer funnet",
     "addRecipient": "Legg til mottaker...",
     "searchMembers": "Søk etter medlemmer...",
-    "sendNow": "Send nå",
-    "sentNow": "Rapport sendt",
     "newSchedule": "Ny tidsplan",
     "editSchedule": "Rediger tidsplan",
     "edit": "Rediger",
     "cancel": "Avbryt",
     "sent": "sendt",
+    "sendNow": "Send nå",
+    "sentNow": "Rapport sendt",
     "emptyTitle": "Ingen planlagte rapporter",
     "emptyDescription": "Opprett en tidsplan for å automatisk generere og sende rapporter til teamet ditt.",
     "sectionLabels": {
@@ -2018,6 +2397,10 @@
     "sectionEmptyHint": "Vises, men det er ingenting å skrive ut i den med dagens data.",
     "sectionShownHint": "Vises på arket. Klikk for å skjule den.",
     "sectionHiddenHint": "Skjult fra arket. Klikk for å vise den.",
+    "sectionDragHandle": "Dra for å endre rekkefølge",
+    "sectionDragHandleKeyboard": "Dra, eller bruk piltastene, for å flytte {section}",
+    "fieldDragHandle": "Dra for å endre rekkefølge",
+    "fieldDragHandleKeyboard": "Dra, eller bruk piltastene, for å flytte {field}",
     "railHint": "Dra en seksjon på siden: slipp den mellom blokker for å endre rekkefølge, på et kort for å ligge ved siden av det, eller hvor som helst ellers for å plassere den fritt. Siden gir plass rundt den.",
     "returnToFlow": "Sett {section} tilbake i flyten",
     "saveDialogTitle": "Lagre dette designet",
@@ -2146,7 +2529,7 @@
       "unitSet": "sett",
       "unitEach": "x",
       "findingPads": "Bakre klosser på 15 %",
-      "findingPadsNote": "Skiftes innen 5 000 km",
+      "findingPadsNote": "{unit, select, mi {Skiftes innen 3 000 miles} other {Skiftes innen 5 000 km}}",
       "findingOilWeep": "Liten oljelekkasje ved ventildeksel",
       "notes": "Takk for at du valgte verkstedet vårt. Ta kontakt hvis du har spørsmål.",
       "warranty": "12 måneders garanti på deler og arbeid.",
@@ -2225,6 +2608,7 @@
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene i dette designet er ikke lagret. De går tapt.",
     "leaveConfirm": "Forlat",
+    "leaveCancel": "Fortsett å redigere",
     "boldField": "Fet",
     "deleteDesignDrafts": "{count, plural, one {# fakturautkast} other {# fakturautkast}} som bruker det, går tilbake til standarddesignet.",
     "deleteDesignCustomers": "{count, plural, one {# kunde} other {# kunder}} som er satt til det, går tilbake til standarddesignet.",
@@ -2481,6 +2865,7 @@
     "leaveTitle": "Forlate uten å lagre?",
     "leaveBody": "Endringene dine i denne malen er ikke lagret. De går tapt.",
     "leaveConfirm": "Forlat",
+    "leaveCancel": "Fortsett å redigere",
     "subjectAndTheme": "Emne og tema",
     "settingsSubtitle": "Gjelder hele e-posten",
     "blocksTitle": "Blokker",
@@ -2618,9 +3003,9 @@
       "uploading": "Laster opp…",
       "width": "Logobredde",
       "hint": "Uavhengig av firmalogoen. Den beskjæres og klargjøres for e-post når den lastes opp. PNG, JPEG eller WebP på inntil 4 MB.",
-      "position": "Plassering",
       "tooLarge": "Bildet må være under 4 MB",
-      "uploadFailed": "Kunne ikke laste opp logoen"
+      "uploadFailed": "Kunne ikke laste opp logoen",
+      "position": "Plassering"
     },
     "image": {
       "empty": "Ingen bilde lastet opp. Blokken skriver ikke ut noe før det finnes ett.",
@@ -2733,6 +3118,101 @@
       "square": "Firkant",
       "cross": "Kryss",
       "hex": "Sekskant"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Åpningstider",
+      "switch": "Stengte dager og fravær",
+      "publicHolidays": "Helligdager",
+      "calendars": "Helligdagskalendere",
+      "closedDays": "Stengte dager",
+      "timeOff": "Ferie og fravær"
+    }
+  },
+  "shareLinks": {
+    "save": "Lagre",
+    "saved": "Innstillinger for delte lenker er lagret",
+    "saveFailed": "Kunne ikke lagre innstillingene for delte lenker. Prøv igjen.",
+    "rules": {
+      "title": "Utløp for lenker",
+      "description": "Hvor lenge en lenke du sender til en kunde virker. Siden viser kunden siste dag; etter det ser kunden en side som ber dem kontakte deg.",
+      "kind": {
+        "invoice": "Fakturaer",
+        "quote": "Tilbud",
+        "inspection": "Inspeksjoner"
+      },
+      "mode": {
+        "never": "Utløper aldri",
+        "afterSharing": "Utløper etter sending",
+        "afterPayment": "Utløper etter betaling"
+      },
+      "hint": {
+        "never": "Lenken virker til du fjerner den.",
+        "afterSharing": "Regnes fra dagen lenken sist ble sendt eller delt.",
+        "afterPayment": "Lenken holdes åpen mens fakturaen er ubetalt, slik at kunden kan betale. Dagene telles fra den er betalt i sin helhet."
+      },
+      "days": "dager",
+      "daysLabel": "Dager før lenker til {kind} utløper",
+      "appliesNote": "Disse reglene gjelder også lenker du allerede har sendt. Du kan sette en annen dato på et enkelt dokument, her i listen eller på selve dokumentet."
+    },
+    "list": {
+      "title": "Lenker sendt til kunder",
+      "description": "Alle lenker til fakturaer, tilbud, inspeksjoner og statusrapporter, og når de slutter å virke.",
+      "statusLabel": "Vis lenker",
+      "status": {
+        "active": "Aktive",
+        "expired": "Utløpt",
+        "all": "Alle"
+      },
+      "kindLabel": "Dokumenttype",
+      "kind": {
+        "all": "Alle dokumenter",
+        "invoice": "Fakturaer",
+        "quote": "Tilbud",
+        "inspection": "Inspeksjoner",
+        "statusReport": "Statusrapporter"
+      },
+      "kindOne": {
+        "invoice": "Faktura",
+        "quote": "Tilbud",
+        "inspection": "Inspeksjon",
+        "statusReport": "Statusrapport"
+      },
+      "searchPlaceholder": "Søk etter dokument eller kunde",
+      "columns": {
+        "document": "Dokument",
+        "customer": "Kunde",
+        "shared": "Delt",
+        "views": "Visninger",
+        "expires": "Utløper",
+        "actions": "Handlinger"
+      },
+      "sharedOn": "Delt {date}",
+      "none": "-",
+      "copy": "Kopier lenke",
+      "copyFailed": "Kunne ikke kopiere lenken.",
+      "open": "Åpne dokument",
+      "revoke": "Fjern lenke",
+      "revokeTitle": "Fjerne denne lenken?",
+      "revokeDescription": "Lenken til {document} slutter å virke for alle som har den. Du kan dele dokumentet på nytt for å lage en ny lenke.",
+      "revoked": "Lenken er fjernet",
+      "empty": {
+        "active": "Ingen aktive lenker. En lenke dukker opp her når du sender eller deler et dokument.",
+        "expired": "Ingen utløpte lenker.",
+        "all": "Ingen lenker ennå. En lenke dukker opp her når du sender eller deler et dokument."
+      },
+      "emptyFiltered": "Ingen lenker passer søket ditt.",
+      "loadFailed": "Kunne ikke laste lenkene. Last inn siden på nytt for å prøve igjen.",
+      "selectAll": "Velg alle lenkene på denne siden",
+      "selectRow": "Velg lenken til {document}",
+      "selectedCount": "{count, plural, one {# lenke valgt} other {# lenker valgt}}",
+      "clearSelection": "Nullstill valg",
+      "removeSelected": "Fjern valgte",
+      "bulkRevokeTitle": "Fjerne {count, plural, one {# lenke} other {# lenker}}?",
+      "bulkRevokeDescription": "Disse lenkene slutter å virke for alle som har dem. Du kan dele et dokument på nytt for å lage en ny lenke.",
+      "bulkRevoked": "{count, plural, one {# lenke er fjernet} other {# lenker er fjernet}}",
+      "bulkRevokeFailed": "Kunne ikke fjerne lenkene. Prøv igjen."
     }
   }
 }

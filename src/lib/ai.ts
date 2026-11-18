@@ -2,7 +2,8 @@ import 'server-only'
 import { aiSetup } from '@/features/integrations/Lib/ai'
 import { localeNames, type Locale } from '@/i18n/config'
 import OpenAI from 'openai'
-import { describeAiError } from '@/lib/ai-error'
+import { isAccountLimitError } from '@/lib/ai-error'
+import { aiErrorDescriber } from '@/lib/ai-error-message'
 import { assertAiAllowed } from '@/lib/demo'
 import {
   ANTHROPIC_BASE,
@@ -43,6 +44,61 @@ export async function getAiConfig(organizationId: string): Promise<AiConfig> {
 }
 
 /**
+ * How long one request may go unanswered. Somebody is waiting on every AI
+ * request with a spinner, and the SDK's own default is ten minutes. A
+ * reasoning model writing a long summary answers well inside two; a model
+ * running on the workshop's own hardware may be a lot slower, so a
+ * self-hosted server gets longer. For a streamed answer this is the wait for
+ * the first words, not for the whole reply.
+ */
+export const AI_REQUEST_TIMEOUT_MS = 120_000
+export const SELF_HOSTED_TIMEOUT_MS = 300_000
+
+/** One more try when the provider hiccuped: a 500, an overloaded server. */
+const AI_MAX_RETRIES = 1
+
+/**
+ * The longest pause a provider may ask for before that one retry. The SDK
+ * otherwise sleeps for whatever Retry-After says, minutes if a rate-limited
+ * account is told so, with nothing on screen. A provider that wants a longer
+ * pause gets no retry, and the person hears at once that it is busy.
+ */
+export const MAX_RETRY_AFTER_MS = 5_000
+
+function retryAfterMs(headers: Headers): number | undefined {
+  const ms = Number.parseFloat(headers.get('retry-after-ms') ?? '')
+  if (!Number.isNaN(ms)) return ms
+  const value = headers.get('retry-after')
+  if (!value) return undefined
+  const seconds = Number.parseFloat(value)
+  if (!Number.isNaN(seconds)) return seconds * 1000
+  const at = Date.parse(value)
+  return Number.isNaN(at) ? undefined : at - Date.now()
+}
+
+/**
+ * `fetch` for the SDK, marking a refusal that asks for a long pause as not
+ * worth retrying (the SDK obeys `x-should-retry`). Everything else passes
+ * through untouched.
+ */
+async function fetchWithoutLongWaits(
+  input: string | URL | Request,
+  init?: RequestInit
+): Promise<Response> {
+  const response = await fetch(input, init)
+  if (response.ok) return response
+  const wait = retryAfterMs(response.headers)
+  if (wait === undefined || wait <= MAX_RETRY_AFTER_MS) return response
+  const headers = new Headers(response.headers)
+  headers.set('x-should-retry', 'false')
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  })
+}
+
+/**
  * Every provider gets its address spelled out. Left blank, the SDK would
  * read OPENAI_BASE_URL from the environment on its own, and completions
  * would quietly go somewhere the connector's key check never looked.
@@ -51,8 +107,14 @@ export function createClient(config: AiConfig): OpenAI {
   // The one client every completion and transcription is built from, so the
   // last place a demo request could still reach a vendor.
   assertAiAllowed()
+  const limits = {
+    maxRetries: AI_MAX_RETRIES,
+    timeout: AI_REQUEST_TIMEOUT_MS,
+    fetch: fetchWithoutLongWaits,
+  }
   if (config.provider === 'anthropic') {
     return new OpenAI({
+      ...limits,
       apiKey: config.apiKey,
       baseURL: `${ANTHROPIC_BASE}/`,
       defaultHeaders: {
@@ -62,13 +124,15 @@ export function createClient(config: AiConfig): OpenAI {
   }
   if (config.provider === 'openai-compatible') {
     return new OpenAI({
+      ...limits,
+      timeout: SELF_HOSTED_TIMEOUT_MS,
       // The SDK refuses to start without a key; a server that wants none
       // ignores whatever the header says.
       apiKey: config.apiKey || 'none',
       baseURL: normalizeBaseUrl(config.baseUrl ?? ''),
     })
   }
-  return new OpenAI({ apiKey: config.apiKey, baseURL: OPENAI_BASE })
+  return new OpenAI({ ...limits, apiKey: config.apiKey, baseURL: OPENAI_BASE })
 }
 
 /**
@@ -86,8 +150,26 @@ export function createClient(config: AiConfig): OpenAI {
  */
 const REASONING_HEADROOM = 4000
 
+/**
+ * The o-series and GPT-5 and every later major version (5.6, 6, 6.1, 7, 10 and
+ * on) reason before they answer; GPT-4.x, GPT-4o and GPT-3.5 do not.
+ */
 function isReasoningModel(model: string): boolean {
-  return /^(o\d|gpt-5)/i.test(model)
+  return /^(?:o\d|gpt-(?:[5-9]|[1-9]\d+)(?=[.-]|$))/i.test(model)
+}
+
+/**
+ * The Claude models that still take a temperature: the 3.x line and Claude 4
+ * up to 4.6, with or without a date in the id. Claude 4.7 and every later
+ * model (the 5 family, Fable, whatever comes next) answer a temperature with
+ * a 400, so it is only sent to the models listed here. Those later models
+ * also think before they answer, inside the same token cap, so they get the
+ * same headroom as OpenAI's reasoning models.
+ */
+function isLegacyClaude(model: string): boolean {
+  return /^claude-(?:[23]|instant)|^claude-(?:opus|sonnet|haiku)-4(?:-[0-6])?(?:-\d{8})?$/i.test(
+    model
+  )
 }
 
 export function completionTuning(
@@ -95,6 +177,9 @@ export function completionTuning(
   maxTokens: number,
   temperature?: number
 ): { max_tokens?: number; max_completion_tokens?: number; temperature?: number } {
+  if (config.provider === 'anthropic' && !isLegacyClaude(config.model)) {
+    return { max_tokens: maxTokens + REASONING_HEADROOM }
+  }
   if (config.provider !== 'openai') {
     return { max_tokens: maxTokens, ...(temperature !== undefined && { temperature }) }
   }
@@ -132,7 +217,7 @@ async function chatCompletion(
     return response.choices[0]?.message?.content ?? ''
   } catch (error) {
     console.error('[ai] chat completion failed:', error)
-    throw new Error(describeAiError(error))
+    throw new Error((await aiErrorDescriber())(error))
   }
 }
 
@@ -166,7 +251,7 @@ export async function visionCompletion(
     return response.choices[0]?.message?.content ?? ''
   } catch (error) {
     console.error('[ai] vision completion failed:', error)
-    throw new Error(describeAiError(error))
+    throw new Error((await aiErrorDescriber())(error))
   }
 }
 
@@ -278,15 +363,81 @@ severity is 1-5 based on how widely reported the issue is (5 = extremely common/
   return chatCompletion(organizationId, systemPrompt, userPrompt)
 }
 
-export async function testAiConnection(organizationId: string): Promise<boolean> {
-  const config = await getAiConfig(organizationId)
+/**
+ * The answer budget of a connection test. The reply is never read, so this
+ * is the smallest cap no model turns down: OpenAI's Responses API refuses
+ * one under 16 outright, and a cap of 1 made its GPT-5 models fail other
+ * tools' health checks. `completionTuning` adds the thinking headroom on top
+ * for the models that need it, as it does for a real request. The cap is a
+ * ceiling; the test costs the few tokens of a one-word reply.
+ */
+const PROBE_TOKENS = 16
+
+/**
+ * OpenAI's GPT-5 family answers a cap that ran out before the reply was
+ * whole with a 400 where the other models return a cut-off reply. Either way
+ * the key was accepted, the account could pay and the model ran.
+ */
+function cutOffByTokenCap(error: unknown): boolean {
+  return (
+    error instanceof OpenAI.APIError &&
+    error.status === 400 &&
+    /max_tokens or model output limit was reached/i.test(error.message)
+  )
+}
+
+/** How long a connection test waits on the model before it gives up. */
+const PROBE_TIMEOUT_MS = 30_000
+
+/**
+ * A failure that says nothing about the key: the provider was busy, down or
+ * slow, or never answered. A real rate limit is one of these; an account
+ * that cannot pay is not, though it arrives under the same status.
+ */
+function providerTrouble(error: unknown): boolean {
+  if (!(error instanceof OpenAI.APIError)) return false
+  if (error.status === undefined || error.status >= 500) return true
+  return error.status === 429 && !isAccountLimitError(error)
+}
+
+/**
+ * One tiny completion on the model the workshop chose, for a connector's
+ * connection test. Listing models proves the key exists; only a completion
+ * proves the account has credit and the key may use that model, and without
+ * it a test passed on a connection where every request then failed. It goes
+ * out the way real requests do, and a failure is worded the way theirs is.
+ *
+ * Any reply passes, an empty or cut-off one included: what it says is not
+ * the question. No temperature is sent, because several models refuse one.
+ *
+ * It is asked once and not for long, shorter than a real request: somebody
+ * is watching a spinner on the connection page, and a busy provider is not
+ * worth a second try here. And a failed test switches the connection off, so when
+ * the provider was merely busy the answer is `inconclusive`: the caller
+ * falls back to the check it had before rather than turn off an AI
+ * connection that works.
+ */
+export async function probeAiModel(
+  config: AiConfig
+): Promise<{ ok: boolean; message?: string; inconclusive?: boolean }> {
   const client = createClient(config)
-
-  const response = await client.chat.completions.create({
-    model: config.model,
-    messages: [{ role: 'user', content: 'Say OK' }],
-    ...completionTuning(config, 5),
-  })
-
-  return !!response.choices[0]?.message?.content
+  try {
+    await client.chat.completions.create(
+      {
+        model: config.model,
+        messages: [{ role: 'user', content: 'Reply with OK.' }],
+        ...completionTuning(config, PROBE_TOKENS),
+      },
+      { maxRetries: 0, timeout: PROBE_TIMEOUT_MS }
+    )
+    return { ok: true }
+  } catch (error) {
+    if (cutOffByTokenCap(error)) return { ok: true }
+    console.error('[ai] connection test failed:', error)
+    return {
+      ok: false,
+      message: (await aiErrorDescriber())(error),
+      ...(providerTrouble(error) && { inconclusive: true }),
+    }
+  }
 }

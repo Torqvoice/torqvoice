@@ -67,6 +67,10 @@ const { cancelBooking, confirmBooking, getBookingPage } = await import(
   '@/features/inspection-reminders/Actions/bookingActions'
 )
 
+const { freezeOrganization, unfreezeOrganization, RESTORE_IN_PROGRESS_MESSAGE } = await import(
+  '@/lib/backup/freeze'
+)
+
 const TOKEN = 'abcdefghijklmnopqrstuvwx'
 const future = new Date(Date.now() + 3 * 86_400_000)
 function send(over: Record<string, unknown> = {}) {
@@ -99,6 +103,7 @@ function send(over: Record<string, unknown> = {}) {
 beforeEach(() => {
   vi.clearAllMocks()
   settings.bookingMode = 'direct'
+  settings.timeZone = 'Europe/Oslo'
   appSetting.findUnique.mockResolvedValue(null)
   serviceRecord.create.mockResolvedValue({ id: 'rec-1', vehicleId: 'v-1' })
   serviceRequest.create.mockResolvedValue({ id: 'req-1' })
@@ -146,6 +151,37 @@ describe('booking link', () => {
     expect(confirmation.channel).toBe('sms')
     expect(confirmation.recipient).toBe('+47 90000000')
     expect(confirmation.frequency).toBe('once')
+  })
+
+  it('tells the desk and the customer the booked time on the workshop clock, not the server clock', async () => {
+    const slot = new Date('2026-12-02T07:00:00Z')
+    const format = (timeZone?: string) =>
+      new Intl.DateTimeFormat(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+        timeZone,
+      }).format(slot)
+    // A workshop whose clock reads differently from the machine running the
+    // tests, wherever that is: no two of these agree at this hour, so at
+    // least one is not the host's, and the test never passes by coincidence.
+    const workshopZone = ['Pacific/Auckland', 'America/Los_Angeles', 'Asia/Kolkata'].find(
+      (zone) => format(zone) !== format()
+    ) as string
+    settings.timeZone = workshopZone
+    inspectionReminderSend.findUnique.mockResolvedValue(
+      send({ dueAt: new Date('2026-12-20T00:00:00Z'), expiresAt: new Date('2026-12-30T00:00:00Z') })
+    )
+    vi.setSystemTime(new Date('2026-11-20T00:00:00Z'))
+    try {
+      await confirmBooking({ token: TOKEN, start: slot.toISOString() })
+    } finally {
+      vi.useRealTimers()
+    }
+    const onWorkshopClock = format(workshopZone)
+    expect(format()).not.toBe(onWorkshopClock)
+    const [notice] = notify.mock.calls as unknown as [{ message: string }][]
+    expect(notice[0].message).toContain(onWorkshopClock)
+    expect(scheduledMessage.create.mock.calls[0][0].data.body).toContain(onWorkshopClock)
   })
 
   it('refuses a slot that was taken in the meantime', async () => {
@@ -199,5 +235,32 @@ describe('booking link', () => {
     expect(notify).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'online_booking_cancelled' })
     )
+  })
+
+  it('books and cancels nothing while the workshop is being restored', async () => {
+    freezeOrganization('org-a')
+    try {
+      inspectionReminderSend.findUnique.mockResolvedValue(send())
+      await expect(confirmBooking({ token: TOKEN, start: future.toISOString() })).rejects.toThrow(
+        RESTORE_IN_PROGRESS_MESSAGE
+      )
+      expect(serviceRecord.create).not.toHaveBeenCalled()
+      expect(serviceRequest.create).not.toHaveBeenCalled()
+
+      inspectionReminderSend.findUnique.mockResolvedValue(
+        send({ bookedAt: new Date(), bookedServiceRecordId: 'rec-1' })
+      )
+      serviceRecord.findUnique.mockResolvedValue({
+        startDateTime: future,
+        endDateTime: new Date(future.getTime() + 3_600_000),
+        status: 'scheduled',
+      })
+      await expect(cancelBooking(TOKEN)).rejects.toThrow(RESTORE_IN_PROGRESS_MESSAGE)
+      expect(serviceRecord.deleteMany).not.toHaveBeenCalled()
+      expect(inspectionReminderSend.update).not.toHaveBeenCalled()
+      expect(notify).not.toHaveBeenCalled()
+    } finally {
+      unfreezeOrganization('org-a')
+    }
   })
 })

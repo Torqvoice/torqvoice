@@ -33,7 +33,7 @@ test('a full phone number finds its customer in the global search', async ({ pag
   // the search down with it, the customer whose number it is included.
   await page.goto('/vehicles')
   await settle(page)
-  const input = page.getByPlaceholder('Search by name, plate, phone, VIN, invoice…')
+  const input = page.getByPlaceholder('Search customers, plates, invoices, settings…')
   await expect(async () => {
     await page.keyboard.press('Control+k')
     await expect(input).toBeVisible({ timeout: 2_000 })

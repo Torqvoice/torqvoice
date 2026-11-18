@@ -3,7 +3,9 @@
 import { useTranslations } from 'next-intl'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import type { WorkBoardJob } from '../Actions/boardActions'
-import { bookedMinutesOnDay } from '../utils/layout'
+import { type AwayByLaneDay, type ClosedByDay, laneDayHours } from '../hooks/useBoardCalendar'
+import { jobOverlapsDate } from '../utils/datetime'
+import { bookedMinutesOnDay, dayLoad } from '../utils/layout'
 import type { BoardLane } from '../utils/lanes'
 import { formatDuration } from './DurationSlider'
 
@@ -21,6 +23,9 @@ export function LaneHeaderTooltip({
   days,
   capacityMinutes,
   periodLabel,
+  awayLabel,
+  closedByDay,
+  awayByLaneDay,
   children,
 }: {
   lane: BoardLane
@@ -30,14 +35,25 @@ export function LaneHeaderTooltip({
   capacityMinutes: number
   /** "Tuesday" or "This week", depending on what the header covers. */
   periodLabel: string
+  /** Why the technician is away, when they are. */
+  awayLabel?: string
+  /** The workshop calendar for the days, so the total matches the day figures. */
+  closedByDay?: ClosedByDay
+  awayByLaneDay?: AwayByLaneDay
   children: React.ReactNode
 }) {
   const t = useTranslations('workBoard.lane')
+  const tc = useTranslations('workshopCalendar')
 
-  const booked = days.reduce((sum, day) => sum + bookedMinutesOnDay(jobs, day), 0)
-  const jobCount = jobs.filter((job) => days.some((day) => touchesDay(job, day))).length
-  const pct = capacityMinutes > 0 ? Math.round((booked / capacityMinutes) * 100) : null
-  const free = capacityMinutes - booked
+  const booked = days.reduce(
+    (sum, day) =>
+      sum + bookedMinutesOnDay(jobs, day, laneDayHours(lane, day, closedByDay, awayByLaneDay)),
+    0
+  )
+  // Every job on the days, one that adds no hours on a closed day included.
+  const jobCount = jobs.filter((job) => days.some((day) => jobOverlapsDate(job, day))).length
+  const load = dayLoad(booked, capacityMinutes)
+  const pct = capacityMinutes > 0 ? Math.round(load.pct) : null
 
   return (
     <Tooltip>
@@ -54,8 +70,10 @@ export function LaneHeaderTooltip({
             <>
               <Row label={t('capacity')} value={formatDuration(capacityMinutes)} />
               <Row
-                label={free >= 0 ? t('free') : t('over')}
-                value={formatDuration(Math.abs(free))}
+                label={load.overMinutes > 0 ? t('over') : t('free')}
+                value={formatDuration(
+                  load.overMinutes > 0 ? load.overMinutes : capacityMinutes - booked
+                )}
               />
             </>
           )}
@@ -63,6 +81,9 @@ export function LaneHeaderTooltip({
         </dl>
         {pct !== null && (
           <p className="mt-1 tabular-nums text-background/70">{t('utilisation', { pct })}</p>
+        )}
+        {awayLabel && (
+          <p className="mt-1 font-medium">{tc('board.awayTooltip', { reason: awayLabel })}</p>
         )}
         {lane.isPlaceholder && <p className="mt-1 text-background/70">{t('placeholder')}</p>}
       </TooltipContent>
@@ -84,8 +105,4 @@ function Row({ label, value }: { label: string; value: string }) {
       <dd className="tabular-nums">{value}</dd>
     </div>
   )
-}
-
-function touchesDay(job: WorkBoardJob, day: string): boolean {
-  return bookedMinutesOnDay([job], day) > 0
 }

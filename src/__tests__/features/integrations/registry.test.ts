@@ -19,6 +19,34 @@ const messages = JSON.parse(
   fs.readFileSync(path.join(ROOT, 'messages/en/integrations.json'), 'utf-8')
 )
 
+/** The registry as the cloud instance builds it. */
+async function cloudRegistry() {
+  vi.stubEnv('TORQVOICE_MODE', 'cloud')
+  vi.resetModules()
+  try {
+    return await import('@/integrations/registry')
+  } finally {
+    vi.unstubAllEnvs()
+    vi.resetModules()
+  }
+}
+
+/**
+ * Every connector the app ships, whichever install it exists on: the
+ * self-hosted list plus the cloud-only ones, each with the registry that
+ * can load it.
+ */
+async function everyConnector() {
+  const cloud = await cloudRegistry()
+  const own = listManifests().map((m) => ({ manifest: m, load: () => getConnector(m.id) }))
+  const ids = new Set(own.map((e) => e.manifest.id))
+  const cloudOnly = cloud
+    .listManifests()
+    .filter((m) => !ids.has(m.id))
+    .map((m) => ({ manifest: m, load: () => cloud.getConnector(m.id) }))
+  return [...own, ...cloudOnly]
+}
+
 /**
  * A connector is a manifest plus a server module, and the catalog, the
  * settings page and the translations all read the manifest. These checks
@@ -26,21 +54,19 @@ const messages = JSON.parse(
  * that cannot be opened.
  */
 describe('integration registry', () => {
-  it('lists every connector folder and nothing else', () => {
+  it('lists every connector folder and nothing else', async () => {
     const dir = path.join(ROOT, 'src/integrations')
     const folders = fs
       .readdirSync(dir, { withFileTypes: true })
       .filter((d) => d.isDirectory() && fs.existsSync(path.join(dir, d.name, 'manifest.ts')))
       .map((d) => d.name)
       .sort()
-    const ids = listManifests()
-      .map((m) => m.id)
-      .sort()
+    const ids = (await everyConnector()).map((e) => e.manifest.id).sort()
     expect(ids).toEqual(folders)
   })
 
-  it('has well-formed manifests', () => {
-    for (const m of listManifests()) {
+  it('has well-formed manifests', async () => {
+    for (const { manifest: m } of await everyConnector()) {
       expect(m.id).toMatch(/^[a-z0-9-]+$/)
       expect(fs.existsSync(path.join(ROOT, 'public', m.logo))).toBe(true)
       expect(m.docs.startsWith('/docs/')).toBe(true)
@@ -61,8 +87,8 @@ describe('integration registry', () => {
     }
   })
 
-  it('has English text for every label a manifest points at', () => {
-    for (const m of listManifests()) {
+  it('has English text for every label a manifest points at', async () => {
+    for (const { manifest: m } of await everyConnector()) {
       const block = messages.connectors[m.id]
       expect(block, `${m.id} has no connectors block`).toBeTruthy()
       expect(typeof block.description).toBe('string')
@@ -88,8 +114,8 @@ describe('integration registry', () => {
   })
 
   it('loads a server module whose jobs match the manifest', async () => {
-    for (const m of listManifests()) {
-      const server = await getConnector(m.id)
+    for (const { manifest: m, load } of await everyConnector()) {
+      const server = await load()
       expect(server.manifest.id).toBe(m.id)
       const declared = new Set([
         ...(m.subscriptions ?? []).map((s) => s.job),
@@ -128,17 +154,97 @@ describe('integration registry', () => {
         expect(cloud.getManifest(m.id), m.id).toBeNull()
         await expect(cloud.getConnector(m.id), m.id).rejects.toThrow()
       }
-      expect(cloud.listManifests().length).toBe(listManifests().length - selfHostedOnly.length)
+      const cloudOnly = cloud.listManifests().filter((m) => m.cloudOnly)
+      expect(cloud.listManifests().length).toBe(
+        listManifests().length - selfHostedOnly.length + cloudOnly.length
+      )
     } finally {
       vi.unstubAllEnvs()
       vi.resetModules()
     }
   })
 
+  /**
+   * The mirror: a service Torqvoice runs on its own network exists on the
+   * cloud and nowhere else, so a self-hosted install neither lists it nor
+   * loads it, wherever the id comes from.
+   */
+  it('leaves cloud-only connectors out on a self-hosted install', async () => {
+    expect(listManifests().some((m) => m.cloudOnly)).toBe(false)
+    expect(getManifest('torqvoice-codes')).toBeNull()
+    await expect(getConnector('torqvoice-codes')).rejects.toThrow()
+
+    const cloud = await cloudRegistry()
+    const cloudOnly = cloud.listManifests().filter((m) => m.cloudOnly)
+    expect(cloudOnly.map((m) => m.id)).toContain('torqvoice-codes')
+    expect(cloud.getManifest('torqvoice-codes')?.name).toBe('Torqvoice Codes')
+    expect((await cloud.getConnector('torqvoice-codes')).manifest.id).toBe('torqvoice-codes')
+  })
+
+  it('decides per install which connectors exist', async () => {
+    const { availableOnThisInstall } = await import('@/integrations/registry')
+    const plain = { selfHostedOnly: undefined, cloudOnly: undefined } as never
+    expect(availableOnThisInstall(plain, false)).toBe(true)
+    expect(availableOnThisInstall(plain, true)).toBe(true)
+    expect(availableOnThisInstall({ cloudOnly: true } as never, false)).toBe(false)
+    expect(availableOnThisInstall({ cloudOnly: true } as never, true)).toBe(true)
+    expect(availableOnThisInstall({ selfHostedOnly: true } as never, true)).toBe(false)
+    expect(availableOnThisInstall({ selfHostedOnly: true } as never, false)).toBe(true)
+  })
+
+  it('lets a developer try a cloud-only connector, never in production', async () => {
+    const { availableOnThisInstall, devCloudConnectors } = await import('@/integrations/registry')
+    const codes = { id: 'torqvoice-codes', cloudOnly: true } as never
+    const other = { id: 'some-other', cloudOnly: true } as never
+
+    const dev = devCloudConnectors({
+      NODE_ENV: 'development',
+      TORQVOICE_DEV_CLOUD_CONNECTORS: ' torqvoice-codes , ',
+    })
+    expect(availableOnThisInstall(codes, false, dev)).toBe(true)
+    expect(availableOnThisInstall(other, false, dev)).toBe(false)
+
+    const prod = devCloudConnectors({
+      NODE_ENV: 'production',
+      TORQVOICE_DEV_CLOUD_CONNECTORS: 'torqvoice-codes',
+    })
+    expect(prod.size).toBe(0)
+    expect(availableOnThisInstall(codes, false, prod)).toBe(false)
+
+    expect(devCloudConnectors({ NODE_ENV: 'development' }).size).toBe(0)
+  })
+
+  /**
+   * On the cloud Torqvoice holds the code service key for every workshop, so
+   * there is nothing to type and no key of its own to put in its place. A
+   * self-hosted install, with no key set, would be asked for one.
+   */
+  it('leaves out a key field the server holds for everyone', async () => {
+    const { withServerKeys } = await import('@/integrations/registry')
+    const { manifest } = await import('@/integrations/torqvoice-codes/manifest')
+    const fields = (m: typeof manifest) => (m.auth.type === 'api-key' ? m.auth.fields : [])
+    expect(fields(withServerKeys(manifest, {})).map((f) => [f.key, f.required])).toEqual([
+      ['apiToken', true],
+    ])
+    expect(fields(withServerKeys(manifest, { TORQVOICE_CODES_API_TOKEN: 'tvc_live_x' }))).toEqual(
+      []
+    )
+    expect(fields(withServerKeys(manifest, { TORQVOICE_CODES_API_TOKEN: '  ' }))).toHaveLength(1)
+    expect(manifest.autoConnect).toBe(true)
+  })
+
+  it('shows cloud-only connectors as cards on a self-hosted install only', async () => {
+    const { cloudOnlyElsewhere } = await import('@/integrations/registry')
+    expect(cloudOnlyElsewhere().map((m) => m.id)).toContain('torqvoice-codes')
+    expect(cloudOnlyElsewhere(true)).toEqual([])
+    // Tried on a dev machine through the dev switch, it is a real connector, not a card.
+    expect(cloudOnlyElsewhere(false, (id) => id === 'torqvoice-codes')).toEqual([])
+  })
+
   it('subscribes only to events the webhook dispatcher knows', async () => {
     const { WEBHOOK_EVENTS } = await import('@/features/webhooks/Schema/webhookSchema')
     const known = new Set<string>(WEBHOOK_EVENTS)
-    for (const m of listManifests()) {
+    for (const { manifest: m } of await everyConnector()) {
       for (const s of m.subscriptions ?? [])
         expect(known.has(s.event), `${m.id} subscribes to ${s.event}`).toBe(true)
     }

@@ -1,5 +1,5 @@
 import { type Browser, type BrowserContext, expect, type Page, test } from '@playwright/test'
-import { storedTwoFactorSecret } from '../../support/db'
+import { accountSecurityEntries, storedTwoFactorSecret } from '../../support/db'
 import { fillSettled } from '../../support/hydration'
 import { currentTotpCode } from '../../support/totp'
 
@@ -78,8 +78,13 @@ test.describe('two-factor authentication', () => {
   // render off the cookie cache, but anything sensitive would be refused.
   let owner: BrowserContext
   let page: Page
+  // Each change below leaves a line in the audit log, counted from here. A
+  // second back: the row is stamped by the database's clock, not this one.
+  let since: Date
+  let backupCodes: string[] = []
 
   test.beforeAll(async ({ browser }) => {
+    since = new Date(Date.now() - 1_000)
     owner = await browser.newContext({ storageState: 'e2e/.auth/owner.json' })
     page = await owner.newPage()
   })
@@ -111,8 +116,18 @@ test.describe('two-factor authentication', () => {
     await dialog.locator('[id="2fa-verify-code"]').fill(await currentTotpCode(stored as string))
     await dialog.getByRole('button', { name: 'Verify', exact: true }).click()
 
-    await dialog.getByRole('button', { name: /saved my backup codes/i }).click()
+    // The codes the owner is asked to keep, for the backup-code sign-in below.
+    // Read once they are on screen: the step appears when the code is accepted.
+    const saved = dialog.getByRole('button', { name: /saved my backup codes/i })
+    await expect(saved).toBeVisible()
+    backupCodes = (await dialog.innerText()).match(/\b[A-Za-z0-9]{5}-[A-Za-z0-9]{5}\b/g) ?? []
+    expect(backupCodes.length, 'the dialog shows backup codes to keep').toBeGreaterThan(0)
+
+    await saved.click()
     await expect(page.getByText(/two-factor authentication (is )?enabled/i).first()).toBeVisible()
+    await expect
+      .poll(() => accountSecurityEntries(email, since))
+      .toEqual(['Turned on two-factor sign-in'])
   })
 
   test('signing in now asks for the code before opening anything', async ({ browser }) => {
@@ -132,6 +147,29 @@ test.describe('two-factor authentication', () => {
     await fresh.context().close()
   })
 
+  test('a backup code opens the account in place of the app, and is logged', async ({
+    browser,
+  }) => {
+    const fresh = await signedOut(browser)
+    await signIn(fresh, password)
+    await fresh.waitForURL(/\/auth\/verify-2fa/, { timeout: 30_000 })
+    await fresh.getByRole('button', { name: 'Use a backup code', exact: true }).click()
+
+    // A wrong code opens nothing and is not a sign-in to log.
+    await fresh.locator('#code').fill('wrong-codes')
+    await fresh.getByRole('button', { name: 'Verify', exact: true }).click()
+    await expect(fresh.getByRole('button', { name: 'Verify', exact: true })).toBeEnabled()
+    await expect(fresh).toHaveURL(/\/auth\/verify-2fa/)
+
+    await fresh.locator('#code').fill(backupCodes[0])
+    await fresh.getByRole('button', { name: 'Verify', exact: true }).click()
+    await fresh.waitForURL((url) => !url.pathname.startsWith('/auth'), { timeout: 30_000 })
+    await expect
+      .poll(() => accountSecurityEntries(email, since))
+      .toEqual(['Turned on two-factor sign-in', 'Signed in with a backup code'])
+    await fresh.context().close()
+  })
+
   test('is switched off again with the password', async () => {
     await page.goto('/settings/account')
     await fillSettled(page.locator('[id="2fa-disable-password"]'), password)
@@ -142,5 +180,12 @@ test.describe('two-factor authentication', () => {
       timeout: 15_000,
     })
     expect(await storedTwoFactorSecret(email)).toBeNull()
+    await expect
+      .poll(() => accountSecurityEntries(email, since))
+      .toEqual([
+        'Turned on two-factor sign-in',
+        'Signed in with a backup code',
+        'Turned off two-factor sign-in',
+      ])
   })
 })

@@ -12,6 +12,8 @@
     "payWithCard": "Pagar {amount} con tarjeta",
     "payWithVipps": "Pagar {amount} con Vipps",
     "payWithPaypal": "Pagar {amount} con PayPal",
+    "payWithPaystack": "Pagar {amount} con Paystack",
+    "payWithVendor": "Pagar con <vendor></vendor>",
     "errorInvalidAmount": "Por favor ingrese un monto válido.",
     "errorExceedsBalance": "El monto no puede superar {amount}.",
     "errorVerifyFailed": "No se pudo verificar el pago. Es posible que aún esté procesándose.",
@@ -202,7 +204,21 @@
     "deficienciesFound": "Deficiencias detectadas ({count})",
     "allResults": "Todos los resultados",
     "privacyNotice": "Este informe se lo facilita el taller que realizó la inspección. Cualquier persona con este enlace puede consultarlo, así que le rogamos que no lo reenvíe. Contacte con el taller para retirar el enlace o solicitar la supresión de sus datos.",
-    "inspectionPhotos": "Fotos y documentos"
+    "inspectionPhotos": "Fotos y documentos",
+    "checkResult": {
+      "pass": "Todo en orden",
+      "pass_minor": "Algunos puntos a vigilar",
+      "fail": "Algunos puntos necesitan reparación",
+      "fail_dangerous": "Algunos puntos necesitan reparación urgente",
+      "incomplete": "Sin completar"
+    },
+    "checkResultDetail": {
+      "pass": "No había nada que requiriera atención.",
+      "pass_minor": "Nada urgente. Conviene planificar los puntos marcados.",
+      "fail": "Algunos puntos necesitan reparación. Las notas indican lo que se encontró.",
+      "fail_dangerous": "Algunos puntos no son seguros y deben repararse antes de seguir usándolo.",
+      "incomplete": "Esta revisión aún está en curso."
+    }
   },
   "terms": {
     "title": "Términos de venta",
@@ -234,5 +250,31 @@
     "telegramConnect": "Chatea con nosotros en Telegram",
     "telegramScan": "Escanea este código QR para enviarnos un mensaje en Telegram para actualizaciones y soporte.",
     "downloadCertificate": "Descargar informe de inspección"
+  },
+  "expired": {
+    "pageTitle": "Enlace caducado",
+    "title": "Este enlace ha caducado",
+    "body": {
+      "invoice": "Ponte en contacto con {workshop} para obtener un nuevo enlace a esta factura.",
+      "quote": "Ponte en contacto con {workshop} para obtener un nuevo enlace a este presupuesto.",
+      "inspection": "Ponte en contacto con {workshop} para obtener un nuevo enlace a esta inspección.",
+      "statusReport": "Ponte en contacto con {workshop} para obtener un nuevo enlace a esta actualización."
+    },
+    "bodyNoName": {
+      "invoice": "Ponte en contacto con el taller para obtener un nuevo enlace a esta factura.",
+      "quote": "Ponte en contacto con el taller para obtener un nuevo enlace a este presupuesto.",
+      "inspection": "Ponte en contacto con el taller para obtener un nuevo enlace a esta inspección.",
+      "statusReport": "Ponte en contacto con el taller para obtener un nuevo enlace a esta actualización."
+    }
+  },
+  "gone": {
+    "pageTitle": "El enlace no funciona",
+    "title": "Este enlace ya no funciona",
+    "body": "Puede que se haya eliminado o que la dirección esté incompleta. Ponte en contacto con {workshop} para obtener un nuevo enlace.",
+    "bodyNoName": "Puede que se haya eliminado o que la dirección esté incompleta. Ponte en contacto con el taller para obtener un nuevo enlace."
+  },
+  "openUntil": {
+    "text": "Este enlace funciona hasta el {date}. Después, pide uno nuevo a {workshop}.",
+    "textNoName": "Este enlace funciona hasta el {date}. Después, pide uno nuevo al taller."
   }
 }

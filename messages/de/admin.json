@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Holen Sie Ihren API-Schlüssel von resend.com",
     "postmarkApiKeyHint": "Holen Sie Ihren Server-Token von postmarkapp.com",
     "mailgunApiKeyHint": "Holen Sie Ihren API-Schlüssel von app.mailgun.com",
-    "sendgridApiKeyHint": "Holen Sie Ihren API-Schlüssel von app.sendgrid.com"
+    "sendgridApiKeyHint": "Holen Sie Ihren API-Schlüssel von app.sendgrid.com",
+    "branding": {
+      "title": "App-Branding",
+      "description": "Ändert den Titel im Browser-Tab, das Favicon sowie Namen und Symbol der installierten App auf dieser Installation. Dokumente und der Rest der App bleiben unverändert. Lassen Sie ein Feld leer, um den Standard zu verwenden.",
+      "nameLabel": "App-Name",
+      "nameHint": "Erscheint im Browser-Tab und als Name der installierten App.",
+      "save": "Namen speichern",
+      "saved": "App-Name gespeichert",
+      "saveFailed": "Der App-Name konnte nicht gespeichert werden",
+      "iconLabel": "App-Symbol",
+      "iconHint": "Ein quadratisches Bild mit mindestens 512 × 512 Pixeln. Am besten als PNG.",
+      "iconAlt": "Aktuelles App-Symbol",
+      "upload": "Hochladen",
+      "replace": "Ersetzen",
+      "remove": "Entfernen",
+      "uploaded": "App-Symbol aktualisiert",
+      "uploadFailed": "Das Symbol konnte nicht hochgeladen werden",
+      "removed": "App-Symbol entfernt",
+      "removeFailed": "Das Symbol konnte nicht entfernt werden",
+      "lockedBadge": "Lizenz erforderlich",
+      "lockedHint": "Eine White-Label-Lizenz schaltet App-Namen und App-Symbol frei.",
+      "lockedLink": "Zur Lizenzseite"
+    }
   },
   "common": {
     "openMenu": "Menü öffnen"

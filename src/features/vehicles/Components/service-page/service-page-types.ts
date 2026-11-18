@@ -1,8 +1,8 @@
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { MarkType } from '@/features/condition-map/Lib/markTypes'
 import type { ShopFeeConfig } from '@/features/settings/Lib/shopFee'
+import type { LineTaxSettings } from '@/features/settings/Lib/workshopTax'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
-import type { WorkOrderLayout } from '@/lib/work-order-layout'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import type { JobClock } from '@/features/time-tracking/Actions/timeClockActions'
 import type { ServiceVideoCall } from '@/features/integrations/Actions/integrationActions'
@@ -12,6 +12,7 @@ import type { ServiceDetail } from '../service-detail/types'
 import type { InitialData, InventoryPartOption } from '../service-edit/form-types'
 import type { WarrantyTexts } from '@/lib/warranty'
 import type { LaborPresetOption } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
+import type { FaultCodesJobInfo } from '@/features/fault-codes/Components/FaultCodesOnJob'
 
 export interface BoardTechnicianOption {
   id: string
@@ -69,6 +70,10 @@ export interface ServicePageClientProps {
   defaultLaborRate: number
   /** The workshop's shop fee, for re-pricing a percentage one as lines change. */
   shopFee?: ShopFeeConfig | null
+  /** How the workshop taxes its lines; every line taxed when left out. */
+  lineTax?: LineTaxSettings
+  /** Set when the job could be put on the workshop's tax; see workshopTaxOffer. */
+  taxOffer?: { rate: number; currentRate: number } | null
   initialData: InitialData
   inventoryParts: InventoryPartOption[]
   initialVehicle: {
@@ -125,6 +130,8 @@ export interface ServicePageClientProps {
   onlinePayments?: boolean
   /** The workshop's own statuses, for the menus on the status stepper. */
   workOrderStatuses?: WorkOrderStatusOption[]
+  /** The viewer may change settings, so the status menus offer to add a status. */
+  canAddStatus?: boolean
   /** The work order's video call, and the connected services that could add one. */
   videoCall?: ServiceVideoCall
   /** The workshop's tread limits, so a set checked in here grades correctly. */
@@ -146,6 +153,7 @@ export interface ServicePageClientProps {
     sentVia: string | null
     sentAt: string | null
   }[]
+  /** A section to open or scroll to, from a link's `?tab=` query (see ServiceTab). */
   initialTab?: string
   /** The workshop's saved invoice designs, for the picker on the invoice. */
   designOptions?: { id: string; name: string }[]
@@ -163,7 +171,14 @@ export interface ServicePageClientProps {
     severity: string
     status: string
     notes: string | null
+    faultCode?: string | null
+    faultStatus?: string | null
+    faultModule?: string | null
+    faultMeaning?: string | null
+    faultMeaningSource?: string | null
   }[]
+  /** Fault codes on this job: whether codes can be typed in, and which were read before. */
+  faultCodes?: FaultCodesJobInfo
   openObservations?: {
     id: string
     description: string
@@ -178,11 +193,6 @@ export interface ServicePageClientProps {
     createdAt: string
     toNumber: string
   }[]
-  /**
-   * The layout this browser asked for, read from its cookie on the server so
-   * the first paint is already the right page. Classic unless somebody opted in.
-   */
-  initialLayout?: WorkOrderLayout
 }
 
 export type {
@@ -193,3 +203,10 @@ export type {
   InventoryPartOption,
   LaborPresetOption,
 }
+
+/**
+ * The sections a link may ask for with `?tab=`. The page has no tabs of its
+ * own any more; `details` is the page as it opens, the rest open or scroll
+ * to the files card. Links in notifications and status reports still send them.
+ */
+export type ServiceTab = 'details' | 'images' | 'video' | 'documents' | 'statusReports'

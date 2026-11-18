@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
-import { Check, ChevronDown, Copy } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
+import { CopyValue, useCopy } from '@/components/copy-value'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useDateSettings } from '@/components/date-settings-context'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -77,47 +78,6 @@ const TRANSMISSION_LABELS: Record<string, string> = {
 }
 
 /**
- * Copies one value, and says so for a moment. The VIN is the reason this
- * exists: it used to take a trip to the vehicle page and back.
- */
-function useCopy(value: string) {
-  const [copied, setCopied] = useState(false)
-  useEffect(() => {
-    if (!copied) return
-    const timer = setTimeout(() => setCopied(false), 1500)
-    return () => clearTimeout(timer)
-  }, [copied])
-  const copy = () => {
-    navigator.clipboard
-      ?.writeText(value)
-      .then(() => setCopied(true))
-      .catch(() => undefined)
-  }
-  return { copied, copy }
-}
-
-function CopyValue({ value, label }: { value: string; label: string }) {
-  const t = useTranslations('service.modern.vehicleInfo')
-  const { copied, copy } = useCopy(value)
-  const name = copied ? t('copied') : t('copy', { label })
-  return (
-    <button
-      type="button"
-      onClick={copy}
-      aria-label={name}
-      title={name}
-      className="inline-flex h-6 w-6 shrink-0 cursor-pointer items-center justify-center rounded text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-    >
-      {copied ? (
-        <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-      ) : (
-        <Copy className="h-3.5 w-3.5" aria-hidden="true" />
-      )}
-    </button>
-  )
-}
-
-/**
  * The number plate, drawn as one, and a click copies it. It used to be a
  * second link to the vehicle page, which the name beside it already is; the
  * plate is what gets typed into parts catalogues and registries.
@@ -147,9 +107,9 @@ function CopyPlate({ plate, label }: { plate: string; label: string }) {
 }
 
 /**
- * Who the job is for and what it is on, the first thing on the overhauled
- * page. It stands in for the classic "Customer & Vehicle" panel and carries
- * the same fields that panel owns: the mileage input, the hidden technician
+ * Who the job is for and what it is on, the first thing on the page. It took
+ * over from the "Customer & Vehicle" panel and carries the fields that panel
+ * owned: the mileage input, the hidden technician
  * name and the vehicle picker, each still in the document exactly once.
  *
  * The customer is read here and edited on the customer's own page; a work
@@ -284,9 +244,8 @@ export function JobFactsCard({
           )}
         </div>
 
-        {/* A counter sale has no vehicle and nothing to pick: the classic page
-            shows the picker regardless, and choosing one there turns the sale
-            into a vehicle job, so the way to do that stays. */}
+        {/* A counter sale has no vehicle and nothing to pick, but choosing one
+            turns the sale into a vehicle job, so the picker stays. */}
         <div className="order-3 space-y-2 border-t border-card-edge px-4 py-3 @xl:order-none @xl:border-t-0">
           <div className="flex items-center justify-between gap-2">
             <h3 className="font-display text-sm font-semibold tracking-tight">

@@ -1,0 +1,113 @@
+import { initialCatalogMarkupPercent } from '@/features/inventory/Lib/partPricing'
+import { measureSystemIn } from '@/features/inventory/Lib/units'
+import { resolveCurrencyCode } from '@/lib/currencies'
+import { resolveListSort } from '@/lib/list-sort-preference.server'
+import {
+  getInventoryPartsPaginated,
+  getInventoryCategories,
+  getInventoryTags,
+  hasAnyReorderPoint,
+} from '@/features/inventory/Actions/inventoryActions'
+import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { InventoryClient } from '../inventory-client'
+import { PageHeader } from '@/components/page-header'
+import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('inventory')
+}
+
+export default async function InventoryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    page?: string
+    pageSize?: string
+    search?: string
+    category?: string
+    tag?: string
+    sortBy?: string
+    sortOrder?: string
+    lowStock?: string
+  }>
+}) {
+  const params = await searchParams
+  const sort = await resolveListSort('inventory', params, {
+    sortBy: 'updatedAt',
+    sortOrder: 'desc',
+  })
+  const [result, categoriesResult, tagsResult, settingsResult, reorderResult] = await Promise.all([
+    getInventoryPartsPaginated({
+      page: params.page ? parseInt(params.page) : 1,
+      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+      search: params.search,
+      category: params.category,
+      tag: params.tag,
+      sortBy: sort.sortBy,
+      sortOrder: sort.sortOrder,
+      lowStock: params.lowStock === '1',
+    }),
+    getInventoryCategories(),
+    getInventoryTags(),
+    getDisplaySettings([
+      SETTING_KEYS.CURRENCY_CODE,
+      SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
+      SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
+      SETTING_KEYS.INVENTORY_DEFAULT_UNIT,
+      SETTING_KEYS.UNIT_SYSTEM,
+      SETTING_KEYS.MEASURE_SYSTEM,
+      SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
+    ]),
+    hasAnyReorderPoint(),
+  ])
+
+  if (!result.success || !result.data) {
+    return (
+      <>
+        <PageHeader />
+        <div className="flex h-[50vh] items-center justify-center">
+          <p className="text-muted-foreground">{result.error || 'Failed to load inventory'}</p>
+        </div>
+      </>
+    )
+  }
+
+  const categories = categoriesResult.success && categoriesResult.data ? categoriesResult.data : []
+  const tags = tagsResult.success && tagsResult.data ? tagsResult.data : []
+  const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
+  const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
+  const savedMarkupMultiplier = settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]
+  const markupMultiplier = Number(savedMarkupMultiplier) || 1.0
+  const applyMarkupPercent = initialCatalogMarkupPercent(
+    savedMarkupMultiplier,
+    settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]
+  )
+
+  return (
+    <>
+      <PageHeader />
+      <ListPage>
+        <InventoryClient
+          data={result.data}
+          search={params.search || ''}
+          category={params.category || ''}
+          categories={categories}
+          tag={params.tag || ''}
+          tags={tags}
+          currencyCode={currencyCode}
+          markupMultiplier={markupMultiplier}
+          applyMarkupPercent={applyMarkupPercent}
+          defaultUnit={settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''}
+          unitSystem={measureSystemIn(settings)}
+          sortBy={sort.sortBy || ''}
+          sortOrder={sort.sortOrder}
+          lowStockDefault={Number(settings[SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD]) || 0}
+          lowStockOnly={params.lowStock === '1'}
+          hasAnyReorderPoint={reorderResult.data ?? false}
+        />
+      </ListPage>
+    </>
+  )
+}

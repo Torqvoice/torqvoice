@@ -2,6 +2,11 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { getTaxBackfillCounts } from '@/features/settings/Actions/applyTaxRateToExisting'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { TaxSettings } from './tax-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('tax')
+}
 
 export default async function TaxSettingsPage() {
   const [result, backfillResult] = await Promise.all([
@@ -12,6 +17,10 @@ export default async function TaxSettingsPage() {
       SETTING_KEYS.TAX_LABEL,
       SETTING_KEYS.TAX_MODE,
       SETTING_KEYS.TAX_COMPONENTS,
+      SETTING_KEYS.TAX_SELECTIVE,
+      SETTING_KEYS.TAX_APPLIES_TO_PARTS,
+      SETTING_KEYS.TAX_APPLIES_TO_LABOR,
+      SETTING_KEYS.TAX_APPLIES_TO_SHOP_FEE,
       SETTING_KEYS.INVOICE_LINE_ITEMS_INCL_TAX,
     ]),
     getTaxBackfillCounts(),

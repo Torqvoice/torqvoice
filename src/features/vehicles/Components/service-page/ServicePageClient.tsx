@@ -1,12 +1,18 @@
 'use client'
 
 import { ShopFeeProvider } from '@/features/settings/Components/ShopFeeContext'
+import { LineTaxProvider } from '@/features/settings/Components/LineTaxContext'
+import {
+  useTaxOfferValue,
+  WorkshopTaxOfferProvider,
+} from '@/features/settings/Components/WorkshopTaxOffer'
+import { TAX_APPLIES_TO_ALL } from '@/lib/taxable-lines'
 import { DocumentLockBanner } from '@/components/document-lock-banner'
 import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
 import { InvoiceDesignMenu } from './InvoiceDesignMenu'
 import { PayCodeButton } from './PayCodeButton'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
-import { useState, useCallback, useMemo, useRef, useEffect, type ComponentProps } from 'react'
+import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import {
@@ -14,10 +20,9 @@ import {
   updateServiceStatus,
 } from '@/features/vehicles/Actions/serviceActions'
 import { useConfirm } from '@/components/confirm-dialog'
-import { SendEmailDialog } from '@/features/email/Components/SendEmailDialog'
+import { SendDocumentDialog } from '@/features/messaging/Components/SendDocumentDialog'
 import { useTranslations } from 'next-intl'
 
-import { ServiceDetailContent } from '../service-detail/ServiceDetailContent'
 import { ImageCarousel } from '../service-detail/ImageCarousel'
 import { ShareDialog } from '../service-detail/ShareDialog'
 import { NotifyCustomerDialog } from '@/components/notify-customer-dialog'
@@ -47,27 +52,23 @@ import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templat
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/LaborPresetPickerDialog'
 import type { LaborPresetOption } from './service-page-types'
-import { ServiceImagesManager } from '../service-images-manager'
-import { ServiceVideoManager } from '../service-video-manager'
-import { ServiceDocumentsManager } from '../service-documents-manager'
 import { StatusReportList } from '@/features/status-reports/Components/StatusReportList'
-import { ServiceHeaderActions, UnifiedServiceHeader, type ServiceTab } from './UnifiedServiceHeader'
+import { ServiceHeaderActions } from './ServiceHeaderActions'
 
 import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
-import { DetailsLeftColumn } from './DetailsLeftColumn'
-import { DetailsRightColumn } from './DetailsRightColumn'
 import { ObservationsManager, type ObservationsControls } from './ObservationsManager'
-import type { ServicePageClientProps } from './service-page-types'
+import { FaultCodesJobProvider } from '@/features/fault-codes/Components/FaultCodesOnJob'
+import type { ServicePageClientProps, ServiceTab } from './service-page-types'
 import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
-import { rememberWorkOrderLayout, type WorkOrderLayout } from '@/lib/work-order-layout'
-import { registerAnalyticsProperties, track } from '@/lib/analytics'
-import { TryNewLayoutBanner } from './TryNewLayoutBanner'
+import { track } from '@/lib/analytics'
 import { LaborAddedBanner } from './LaborAddedBanner'
+import { LeaveUnsavedDialog } from './LeaveUnsavedDialog'
 import { useLiveRecord } from '@/features/realtime/hooks'
 import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
 import { ModernDetails } from './modern/ModernDetails'
 import { ModernHero } from './modern/ModernHero'
+import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
@@ -84,12 +85,15 @@ export function ServicePageClient({
   tireHotelEnabled = false,
   onlinePayments = false,
   workOrderStatuses = [],
+  canAddStatus = false,
   videoCall = { link: null, providers: [] },
   tireThresholds,
   defaultTaxRate,
   taxEnabled,
   defaultLaborRate,
   shopFee = null,
+  lineTax = { selective: false, applies: TAX_APPLIES_TO_ALL },
+  taxOffer = null,
   initialData,
   inventoryParts,
   initialVehicle,
@@ -118,6 +122,7 @@ export function ServicePageClient({
   statusReports = [],
   initialTab,
   findings = [],
+  faultCodes = { connected: false, seenBefore: {} },
   openObservations = [],
   notificationHistory = [],
   designOptions = [],
@@ -125,7 +130,6 @@ export function ServicePageClient({
   designPinnedAt = null,
   designFollowsRule = null,
   jobClock = { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' },
-  initialLayout = 'modern',
 }: ServicePageClientProps) {
   const t = useTranslations('service')
   const router = useRouter()
@@ -139,11 +143,7 @@ export function ServicePageClient({
       ? (initialTab as ServiceTab)
       : 'details'
 
-  const [storedTab, setActiveTab] = useState<ServiceTab>(resolvedInitialTab)
-
-  // Classic until somebody asks for the overhauled page; the server already
-  // read this browser's choice, so the first paint is the right one.
-  const [layout, setLayout] = useState<WorkOrderLayout>(initialLayout)
+  const [requestedTab, setRequestedTab] = useState<ServiceTab>(resolvedInitialTab)
 
   // The overhauled page edits the title in its header, outside the form, so
   // the page holds it and the form carries it as a hidden field. It follows
@@ -152,36 +152,21 @@ export function ServicePageClient({
   useEffect(() => {
     setTitle(record.title)
   }, [record.title])
-  const modern = layout === 'modern'
 
-  // One view per work order opened, in the layout it opened in; a switch on
-  // the page is its own event and does not count as a second view. The
-  // layout is also put on every later event from this browser, so any chart
-  // (autocaptured clicks included) can be split by it.
-  const layoutRef = useRef(layout)
-  layoutRef.current = layout
+  // One view per work order opened.
   useEffect(() => {
-    registerAnalyticsProperties({ work_order_layout: layoutRef.current })
-    track('work_order:page_view', { layout: layoutRef.current })
+    track('work_order:page_view')
   }, [record.id])
-  // The overhauled page has no tabs: photos, video, documents and status
-  // reports are all on the job itself. A link to one of the old tabs lands on
-  // the page with that section open or scrolled to.
-  const isFileTab = storedTab === 'images' || storedTab === 'video' || storedTab === 'documents'
-  const activeTab: ServiceTab = modern ? 'details' : storedTab
+  // The page has no tabs: photos, video, documents and status reports are all
+  // on the job itself. A link with `?tab=` lands on the page with that
+  // section open or scrolled to.
+  const isFileTab =
+    requestedTab === 'images' || requestedTab === 'video' || requestedTab === 'documents'
   // A link to this record with another tab (feedback on a status report, say)
   // changes only the query, so the page is not remounted and has to follow it.
   useEffect(() => {
-    setActiveTab(resolvedInitialTab)
+    setRequestedTab(resolvedInitialTab)
   }, [resolvedInitialTab])
-
-  const handleTabChange = useCallback((tab: ServiceTab) => {
-    setActiveTab(tab)
-    const url = new URL(window.location.href)
-    if (tab === 'details') url.searchParams.delete('tab')
-    else url.searchParams.set('tab', tab)
-    window.history.replaceState(null, '', url.pathname + url.search)
-  }, [])
 
   // Date check dialog state
   const [showDateCheck, setShowDateCheck] = useState(false)
@@ -216,6 +201,7 @@ export function ServicePageClient({
     record,
     locked: lockState.locked,
     shopFee,
+    taxApplies: lineTax.applies,
   })
 
   // Anything that happens to this job somewhere else: a technician billing
@@ -282,7 +268,7 @@ export function ServicePageClient({
     [formState, t, defaultMarkupPercent, markupAppliesToInventory]
   )
 
-  useHardwareScanner({ onScan: handleBarcodeScan, enabled: activeTab === 'details' })
+  useHardwareScanner({ onScan: handleBarcodeScan })
 
   // Notify customer
   const statusTemplateKeys: Record<string, string> = {
@@ -354,6 +340,10 @@ export function ServicePageClient({
     const selected = openObservations.filter((o) => selectedIds.includes(o.id))
     if (selected.length === 0) return
     setAddingObservations(true)
+    // The lines go on the work order before anything leaves the vehicle, so
+    // the form counts as changed from the start and no observation is lost:
+    // not when the person leaves while the removals are out, and not when a
+    // removal went through but its answer never arrived.
     const newItems = selected.map((o) => ({
       description: `${o.description}${o.notes ? ` - ${o.notes}` : ''}`,
       hours: 0,
@@ -362,11 +352,33 @@ export function ServicePageClient({
       pricingType: 'hourly' as const,
     }))
     formState.dirtySetLaborItems((prev) => [...newItems, ...prev])
-    // Delete the observations that were added to the work order
-    await Promise.all(selected.map((o) => deleteFinding(o.id)))
-    setAddingObservations(false)
-    toast.success(tf('observationsAdded', { count: selected.length }))
+    // An action that cannot reach the server throws instead of answering.
+    const results = await Promise.all(selected.map((o) => deleteFinding(o.id).catch(() => null)))
+    // A refusal is certain: the vehicle kept the observation, so its line
+    // comes off again. A removal that was never answered may have happened,
+    // so its line stays and the person is told to look at the vehicle.
+    const refused = new Set<object>(
+      newItems.filter((_, i) => {
+        const r = results[i]
+        return r !== null && !r.success
+      })
+    )
+    const unanswered = results.filter((r) => r === null).length
+    if (refused.size > 0) {
+      formState.dirtySetLaborItems((prev) => prev.filter((item) => !refused.has(item)))
+    }
+    const added = selected.length - refused.size
+    if (added > 0) toast.success(tf('observationsAdded', { count: added }))
+    if (refused.size > 0) {
+      const refusal = results.find((r) => r && !r.success)?.error
+      toast.error(
+        tf('observationsAddFailed', { count: refused.size }),
+        refusal ? { description: refusal } : undefined
+      )
+    }
+    if (unanswered > 0) toast.error(tf('observationsMayRemain', { count: unanswered }))
     router.refresh()
+    setAddingObservations(false)
   }
 
   const handleSelectPreset = (preset: LaborPresetOption) => {
@@ -447,27 +459,6 @@ export function ServicePageClient({
     if (formState.hasUnsavedChanges) return actions.saveNow()
   })
 
-  // Both layouts are the same form, but the plain inputs (title, invoice
-  // number, mileage) are remounted by the switch and would come back showing
-  // the saved value. So what has been typed is saved first.
-  const switchLayout = useCallback(
-    async (next: WorkOrderLayout, source: 'banner' | 'menu' | 'footer') => {
-      // Which way people go, and from where, is what decides when the classic
-      // page can be retired: a switch back is the signal that something is
-      // missing from the new one.
-      track('work_order:layout_switch', {
-        from_layout: next === 'modern' ? 'classic' : 'modern',
-        to_layout: next,
-        source,
-      })
-      registerAnalyticsProperties({ work_order_layout: next })
-      if (formState.hasUnsavedChanges) await actions.saveNow()
-      rememberWorkOrderLayout(next)
-      setLayout(next)
-    },
-    [formState.hasUnsavedChanges, actions]
-  )
-
   const previewInvoice = async () => {
     // No expired-dates prompt here: previewing is just looking, and the
     // check still runs on download, email, and share.
@@ -481,8 +472,7 @@ export function ServicePageClient({
     actions.setShowShareDialog(true)
   }
 
-  // The classic page gives status reports a tab; the overhauled one has no
-  // tabs and draws them as a section under the job. Same list either way.
+  // Status reports are a section under the job, outside the form.
   const statusReportList = (
     <StatusReportList
       serviceRecordId={record.id}
@@ -506,8 +496,7 @@ export function ServicePageClient({
     />
   )
 
-  // What can be done with the job as a whole. The classic header and the
-  // overhauled page's own top carry the same cluster, fed from here.
+  // What can be done with the job as a whole, drawn in the header.
   const headerActionProps = {
     meetingUrl: videoCall.link?.url ?? null,
     downloading: actions.downloading,
@@ -537,16 +526,11 @@ export function ServicePageClient({
     designMenu: canChangeIssuedDesign ? (
       <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
     ) : undefined,
-    layout,
-    onSwitchLayout: () => void switchLayout(modern ? 'classic' : 'modern', 'menu'),
   }
 
-  // One set of props for each column, handed to whichever layout is showing:
-  // the classic two columns take them as they are, the overhauled page takes
-  // both and lays the same sections out its own way.
   // The invoice's link as a code for the customer at the desk. One element,
-  // drawn wherever a payment is taken: beside "Record payment" on both
-  // layouts, and on the overhauled page's money bar.
+  // drawn wherever a payment is taken: beside "Record payment" and on the
+  // money bar.
   const payCode = onlinePayments ? (
     <PayCodeButton
       serviceRecordId={record.id}
@@ -557,7 +541,8 @@ export function ServicePageClient({
     />
   ) : null
 
-  const leftColumnProps: ComponentProps<typeof DetailsLeftColumn> = {
+  // The page's body in two halves: the job itself, and the sidebar beside it.
+  const jobProps: WorkOrderJobProps = {
     formState,
     actions,
     record,
@@ -585,7 +570,7 @@ export function ServicePageClient({
     payCode,
   }
 
-  const rightColumnProps: ComponentProps<typeof DetailsRightColumn> = {
+  const sidebarProps: WorkOrderSidebarProps = {
     videoCall,
     smsEnabled,
     emailEnabled,
@@ -609,465 +594,459 @@ export function ServicePageClient({
     designFollowsRule,
   }
 
+  const tTaxOffer = useTranslations('service.taxOffer')
+  const taxOfferValue = useTaxOfferValue({
+    offer: taxOffer,
+    kind: 'workOrder',
+    id: record.id,
+    locked: lockState.locked,
+    finished: formState.status === 'completed',
+    taxRate: formState.taxRate,
+    saveFirst: async () => {
+      if (formState.isDirty()) await formState.saveNow()
+      // The save ends a render before the page hears of it.
+      await new Promise((resolve) => setTimeout(resolve, 0))
+      return !formState.isDirty()
+    },
+    unsavedMessage: tTaxOffer('saveFirst'),
+  })
+
   return (
     <ShopFeeProvider value={shopFee}>
-      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-        {modern ? (
-          <ModernHero
-            record={record}
-            status={formState.status}
-            paymentStatus={formState.paymentStatus}
-            warranty={formState.warranty}
-            actions={
-              <>
-                <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
-                <ServiceHeaderActions showSave {...headerActionProps} />
-              </>
-            }
-            title={title}
-            onTitleChange={(next) => {
-              setTitle(next)
-              // Saved the moment the field is left, on its own, not with the
-              // form's autosave five seconds later: a rename followed by the
-              // back arrow inside those seconds was lost. Only a refused save
-              // marks the form dirty, so the ordinary path can try again.
-              void updateServiceRecordTitle(record.id, next).then((result) => {
-                if (result.success) {
-                  formState.flashSaved()
-                } else {
-                  toast.error(result.error || t('page.failedUpdate'))
-                  formState.markDirty()
-                }
-              })
-            }}
-            type={record.vehicle ? formState.type : undefined}
-            onTypeChange={formState.dirtySetType}
-            locked={lockState.locked}
-          />
-        ) : (
-          <UnifiedServiceHeader
-            presence={<PresenceChips kind="serviceRecord" id={record.id} />}
-            vehicleId={vehicleId}
-            vehicleName={formState.vehicleName}
-            title={record.title}
-            status={formState.status}
-            paymentStatus={formState.paymentStatus}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-            tabCounts={{
-              images: imageAttachmentsForManager.length,
-              video: videoAttachments.length,
-              documents: documentAttachments.length,
-              statusReports: statusReports.length,
-            }}
-            {...headerActionProps}
-          />
-        )}
-
-        {!modern && <TryNewLayoutBanner onTry={() => void switchLayout('modern', 'banner')} />}
-
-        <LaborAddedBanner
-          count={formState.laborAddedElsewhere.length}
-          onShow={formState.applyLaborAddedElsewhere}
-        />
-
-        {(lockState.locked || lockState.unlockedAt) && (
-          <div className="shrink-0 px-4 pt-3">
-            <DocumentLockBanner
-              state={lockState}
-              kind="invoice"
-              canUnlock={canUnlock}
-              onSetUnlocked={(unlocked) => setInvoiceEditUnlocked(record.id, unlocked)}
+      <LineTaxProvider value={{ ...lineTax, untaxedDocument: formState.taxRate <= 0 }}>
+        <WorkshopTaxOfferProvider value={taxOfferValue}>
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+            <ModernHero
+              record={record}
+              status={formState.status}
+              paymentStatus={formState.paymentStatus}
+              warranty={formState.warranty}
+              actions={
+                <>
+                  <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
+                  <ServiceHeaderActions showSave {...headerActionProps} />
+                </>
+              }
+              title={title}
+              onTitleChange={(next) => {
+                setTitle(next)
+                // Saved the moment the field is left, on its own, not with the
+                // form's autosave five seconds later: a rename followed by the
+                // back arrow inside those seconds was lost. Only a refused save
+                // marks the form dirty, so the ordinary path can try again.
+                void updateServiceRecordTitle(record.id, next).then((result) => {
+                  if (result.success) {
+                    formState.flashSaved()
+                  } else {
+                    toast.error(result.error || t('page.failedUpdate'))
+                    formState.markDirty()
+                  }
+                })
+              }}
+              type={record.vehicle ? formState.type : undefined}
+              onTypeChange={formState.dirtySetType}
+              locked={lockState.locked}
             />
-          </div>
-        )}
 
-        {activeTab === 'details' && (
-          <WorkOrderLayoutProvider value={layout}>
-            {modern ? (
-              <ModernDetails
-                {...leftColumnProps}
-                {...rightColumnProps}
-                workOrderStatuses={workOrderStatuses}
-                onNotifyForStatus={handleNotifyForStatus}
-                locked={lockState.locked}
-                lockedLabel={t('invoice.lockedFieldsetLabel')}
-                form={{
-                  id: 'service-record-form',
-                  ref: formState.formRef,
-                  onSubmit: actions.handleSubmit,
-                  onInput: formState.markDirty,
-                }}
-                files={{
-                  images: imageAttachmentsForManager,
-                  dropoff: dropoffAttachments,
-                  conditionMap,
-                  videos: videoAttachments,
-                  documents: documentAttachments,
-                  maxImages: maxImagesPerService,
-                  maxDiagnostics: maxDiagnosticsPerService,
-                  maxDocuments: maxDocumentsPerService,
-                  // A link to one of the classic tabs opens that tab here.
-                  initialTab: isFileTab || storedTab === 'statusReports' ? storedTab : undefined,
-                  statusReports: { count: statusReports.length, list: statusReportList },
-                }}
-                onPreviewInvoice={previewInvoice}
-                onSendToCustomer={shareInvoice}
-                onBackToClassic={() => void switchLayout('classic', 'footer')}
-                title={title}
-                aiTranscription={aiTranscription}
-                dictationMode={dictationMode}
-                onAddFindingForConcern={(concernId) =>
-                  obsControlsRef.current?.onAddFinding(concernId)
-                }
-                scrollToFiles={isFileTab || storedTab === 'statusReports'}
-              />
-            ) : (
-              // noValidate, and the rules checked in handleSubmit instead. An
-              // autosave submits through requestSubmit, which native validation
-              // stops with no message and no request; and the rules that matter
-              // most here — a priced part with no name, labour with hours and no
-              // description — are not ones a `required` attribute can state.
-              <form
-                id="service-record-form"
-                ref={formState.formRef}
-                onSubmit={actions.handleSubmit}
-                onInput={formState.markDirty}
-                className="flex min-h-0 flex-1 flex-col"
-                noValidate
-              >
-                {/* A locked invoice offers no editing at all, rather than letting
-                  someone retype a line and meet the refusal on save. The
-                  fieldset disables every control inside it natively;
-                  display:contents keeps the layout exactly as it was. */}
-                <fieldset
-                  disabled={lockState.locked}
-                  className="contents"
-                  aria-label={lockState.locked ? t('invoice.lockedFieldsetLabel') : undefined}
-                >
-                  <ServiceDetailContent
-                    leftColumn={<DetailsLeftColumn {...leftColumnProps} />}
-                    rightColumn={<DetailsRightColumn {...rightColumnProps} />}
-                  />
-                </fieldset>
-              </form>
+            <LaborAddedBanner
+              count={formState.laborAddedElsewhere.length}
+              parts={formState.partsAddedElsewhere.length}
+              onShow={() => {
+                formState.applyLaborAddedElsewhere()
+                formState.applyPartsAddedElsewhere()
+              }}
+            />
+
+            <LeaveUnsavedDialog
+              open={formState.blockedLeave !== null}
+              reason={formState.blockedLeave?.reason ?? null}
+              onStay={formState.stayOnPage}
+              onLeave={formState.leaveWithoutSaving}
+            />
+
+            {(lockState.locked || lockState.unlockedAt) && (
+              <div className="shrink-0 px-4 pt-3">
+                <DocumentLockBanner
+                  state={lockState}
+                  kind="invoice"
+                  canUnlock={canUnlock}
+                  onSetUnlocked={(unlocked) => setInvoiceEditUnlocked(record.id, unlocked)}
+                />
+              </div>
             )}
-            {vehicleId && (
-              <ObservationsManager
+
+            <WorkOrderLayoutProvider value={true}>
+              <MaybeFaultCodes
+                info={faultCodes}
                 vehicleId={vehicleId}
                 serviceRecordId={record.id}
-                openObservations={openObservations}
-                onAddObservations={handleAddObservationsToWorkOrder}
-                addingObservations={addingObservations}
-                // Saved concerns only: a row still being typed has no id yet, so
-                // there is nothing a finding could point at.
+                locked={lockState.locked}
+                // Saved concerns only, as for findings.
                 concerns={formState.concerns.filter(
                   (c): c is { id: string; description: string; sortOrder: number } =>
                     Boolean(c.id) && Boolean(c.description.trim())
                 )}
-                onControlsReady={(c) => {
-                  obsControlsRef.current = c
-                }}
-              />
-            )}
-          </WorkOrderLayoutProvider>
-        )}
-
-        {activeTab === 'images' && (
-          <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-            <ServiceImagesManager
-              serviceRecordId={record.id}
-              initialImages={imageAttachmentsForManager}
-              maxImages={maxImagesPerService}
-              customerId={customer?.id}
-            />
-          </div>
-        )}
-
-        {activeTab === 'video' && (
-          <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-            <ServiceVideoManager serviceRecordId={record.id} initialVideos={videoAttachments} />
-          </div>
-        )}
-
-        {activeTab === 'documents' && (
-          <div className="flex-1 overflow-y-auto overscroll-contain p-4">
-            <ServiceDocumentsManager
-              serviceRecordId={record.id}
-              initialDocuments={documentAttachments}
-              maxDiagnostics={maxDiagnosticsPerService}
-              maxDocuments={maxDocumentsPerService}
-            />
-          </div>
-        )}
-
-        {activeTab === 'statusReports' && (
-          <div className="flex-1 overflow-y-auto overscroll-contain p-4">{statusReportList}</div>
-        )}
-
-        <InventoryPickerDialog
-          open={formState.showInventoryPicker}
-          onOpenChange={formState.setShowInventoryPicker}
-          inventoryParts={inventoryParts}
-          currencyCode={currencyCode}
-          onSelectPart={(part) => formState.dirtySetPartItems((prev) => [part, ...prev])}
-          defaultMarkupPercent={defaultMarkupPercent}
-          markupAppliesToInventory={markupAppliesToInventory}
-        />
-
-        <LaborPresetPickerDialog
-          open={formState.showPresetPicker}
-          onOpenChange={formState.setShowPresetPicker}
-          laborPresets={laborPresets}
-          onSelectPreset={handleSelectPreset}
-        />
-
-        <BarcodeScannerDialog
-          open={formState.showBarcodeScanner}
-          onOpenChange={formState.setShowBarcodeScanner}
-          onScan={handleBarcodeScan}
-          title={t('parts.scanTitle')}
-        />
-
-        <ImageCarousel
-          images={formState.imageAttachments}
-          currentIndex={actions.carouselIndex}
-          onClose={() => actions.setCarouselIndex(null)}
-          onChangeIndex={actions.setCarouselIndex}
-        />
-
-        <PdfPreviewDialog
-          open={showPdfPreview}
-          onOpenChange={setShowPdfPreview}
-          url={`/api/protected/services/${record.id}/pdf`}
-        />
-
-        <PdfPreviewDialog
-          open={showWorkOrderPreview}
-          onOpenChange={setShowWorkOrderPreview}
-          url={`/api/protected/services/${record.id}/work-order-pdf`}
-        />
-
-        <SendEmailDialog
-          open={actions.showEmailDialog}
-          onOpenChange={actions.setShowEmailDialog}
-          defaultEmail={customer?.email || ''}
-          entityLabel={t('invoice.entityLabel')}
-          onSend={async (email, message, attachPdf) => {
-            const result = await sendInvoiceEmail({
-              serviceRecordId: record.id,
-              recipientEmail: email,
-              message,
-              attachPdf,
-            })
-            // Deliberately not awaited: the email dialog should show "sent" the
-            // moment it is, not sit spinning behind the "mark completed"
-            // confirmation that handleInvoiceSent may raise.
-            if (result.success) void handleInvoiceSent()
-            return result
-          }}
-        />
-
-        <ShareDialog
-          open={actions.showShareDialog}
-          onOpenChange={actions.setShowShareDialog}
-          recordId={record.id}
-          organizationId={organizationId}
-          initialToken={record.publicToken}
-          onSent={handleInvoiceSent}
-          customer={customer}
-          smsEnabled={smsEnabled}
-          emailEnabled={emailEnabled}
-        />
-
-        {customer && (
-          <>
-            <NotifyCustomerDialog
-              open={actions.showPaymentNotifyDialog}
-              onOpenChange={actions.setShowPaymentNotifyDialog}
-              customer={customer}
-              vehicle={record.vehicle}
-              defaultMessage={actions.paymentNotifyMessage}
-              emailSubject={t('invoice.emailSubject')}
-              smsEnabled={smsEnabled}
-              emailEnabled={emailEnabled}
-              relatedEntityType="service-record"
-              relatedEntityId={record.id}
-            />
-            <NotifyCustomerDialog
-              open={showNotifyDialog}
-              onOpenChange={setShowNotifyDialog}
-              customer={customer}
-              vehicle={record.vehicle}
-              defaultMessage={notifyMessage}
-              emailSubject={t('invoice.statusEmailSubject')}
-              smsEnabled={smsEnabled}
-              emailEnabled={emailEnabled}
-              relatedEntityType="service-record"
-              relatedEntityId={record.id}
-            />
-          </>
-        )}
-
-        {/* Expired dates check dialog */}
-        <Dialog
-          open={showDateCheck}
-          onOpenChange={(open) => {
-            if (!open) {
-              dateCheckResolveRef.current?.(false)
-              dateCheckResolveRef.current = null
-              setCustomizingDates(false)
-            }
-            setShowDateCheck(open)
-          }}
-        >
-          <DialogContent className="sm:max-w-sm">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-amber-500" />
-                {t('page.datesExpiredTitle')}
-              </DialogTitle>
-              <DialogDescription>{t('page.datesExpiredDescription')}</DialogDescription>
-            </DialogHeader>
-
-            {!customizingDates ? (
-              <div className="flex flex-col gap-2 pt-2">
-                <Button
-                  disabled={updatingDates}
-                  onClick={async () => {
-                    if (updatingDates) return
-                    const now = new Date(new Date().toISOString().split('T')[0])
-                    const due =
-                      defaultDueDays > 0
-                        ? new Date(now.getTime() + defaultDueDays * 86400000)
-                        : new Date(now.getTime() + 14 * 86400000)
-                    setPendingInvoiceDate(now)
-                    setPendingDueDate(due)
-                    setUpdatingDates(true)
-                    try {
-                      await updateServiceRecord({
-                        id: record.id,
-                        invoiceDate: toISODate(now),
-                        invoiceDueDate: toISODate(due),
-                      })
-                      setShowDateCheck(false)
-                      dateCheckResolveRef.current?.(true)
-                      dateCheckResolveRef.current = null
-                      router.refresh()
-                    } finally {
-                      setUpdatingDates(false)
-                    }
+              >
+                <ModernDetails
+                  {...jobProps}
+                  {...sidebarProps}
+                  workOrderStatuses={workOrderStatuses}
+                  canAddStatus={canAddStatus}
+                  onNotifyForStatus={handleNotifyForStatus}
+                  locked={lockState.locked}
+                  lockedLabel={t('invoice.lockedFieldsetLabel')}
+                  form={{
+                    id: 'service-record-form',
+                    ref: formState.formRef,
+                    onSubmit: actions.handleSubmit,
+                    onInput: formState.markDirty,
                   }}
-                >
-                  {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('page.datesExpiredUseToday')}
-                </Button>
-                <Button
-                  variant="outline"
-                  disabled={updatingDates}
-                  onClick={() => {
-                    setShowDateCheck(false)
-                    dateCheckResolveRef.current?.(true)
-                    dateCheckResolveRef.current = null
+                  files={{
+                    images: imageAttachmentsForManager,
+                    dropoff: dropoffAttachments,
+                    conditionMap,
+                    videos: videoAttachments,
+                    documents: documentAttachments,
+                    maxImages: maxImagesPerService,
+                    maxDiagnostics: maxDiagnosticsPerService,
+                    maxDocuments: maxDocumentsPerService,
+                    // A link with `?tab=` opens that tab here.
+                    initialTab:
+                      isFileTab || requestedTab === 'statusReports' ? requestedTab : undefined,
+                    statusReports: { count: statusReports.length, list: statusReportList },
                   }}
-                >
-                  {t('page.datesExpiredProceed')}
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  disabled={updatingDates}
-                  onClick={() => setCustomizingDates(true)}
-                >
-                  {t('page.datesExpiredCustomize')}
-                </Button>
-              </div>
-            ) : (
+                  onPreviewInvoice={previewInvoice}
+                  onSendToCustomer={shareInvoice}
+                  title={title}
+                  aiTranscription={aiTranscription}
+                  dictationMode={dictationMode}
+                  onAddFindingForConcern={(concernId) =>
+                    obsControlsRef.current?.onAddFinding(concernId)
+                  }
+                  scrollToFiles={isFileTab || requestedTab === 'statusReports'}
+                />
+              </MaybeFaultCodes>
+              {vehicleId && (
+                <ObservationsManager
+                  vehicleId={vehicleId}
+                  serviceRecordId={record.id}
+                  openObservations={openObservations}
+                  onAddObservations={handleAddObservationsToWorkOrder}
+                  addingObservations={addingObservations}
+                  // Saved concerns only: a row still being typed has no id yet, so
+                  // there is nothing a finding could point at.
+                  concerns={formState.concerns.filter(
+                    (c): c is { id: string; description: string; sortOrder: number } =>
+                      Boolean(c.id) && Boolean(c.description.trim())
+                  )}
+                  onControlsReady={(c) => {
+                    obsControlsRef.current = c
+                  }}
+                />
+              )}
+            </WorkOrderLayoutProvider>
+
+            <InventoryPickerDialog
+              open={formState.showInventoryPicker}
+              onOpenChange={formState.setShowInventoryPicker}
+              inventoryParts={inventoryParts}
+              currencyCode={currencyCode}
+              onSelectPart={(part) => formState.dirtySetPartItems((prev) => [part, ...prev])}
+              defaultMarkupPercent={defaultMarkupPercent}
+              markupAppliesToInventory={markupAppliesToInventory}
+              vehicle={record.vehicle}
+            />
+
+            <LaborPresetPickerDialog
+              open={formState.showPresetPicker}
+              onOpenChange={formState.setShowPresetPicker}
+              laborPresets={laborPresets}
+              onSelectPreset={handleSelectPreset}
+            />
+
+            <BarcodeScannerDialog
+              open={formState.showBarcodeScanner}
+              onOpenChange={formState.setShowBarcodeScanner}
+              onScan={handleBarcodeScan}
+              title={t('parts.scanTitle')}
+            />
+
+            <ImageCarousel
+              images={formState.imageAttachments}
+              currentIndex={actions.carouselIndex}
+              onClose={() => actions.setCarouselIndex(null)}
+              onChangeIndex={actions.setCarouselIndex}
+            />
+
+            <PdfPreviewDialog
+              open={showPdfPreview}
+              onOpenChange={setShowPdfPreview}
+              url={`/api/protected/services/${record.id}/pdf`}
+            />
+
+            <PdfPreviewDialog
+              open={showWorkOrderPreview}
+              onOpenChange={setShowWorkOrderPreview}
+              url={`/api/protected/services/${record.id}/work-order-pdf`}
+            />
+
+            <SendDocumentDialog
+              open={actions.showEmailDialog}
+              onOpenChange={actions.setShowEmailDialog}
+              kind="invoice"
+              documentId={record.id}
+              shareUrl={
+                record.publicToken
+                  ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/invoice/${organizationId}/${record.publicToken}`
+                  : null
+              }
+              customer={customer}
+              sendEmail={(email, message, attachPdf) =>
+                sendInvoiceEmail({
+                  serviceRecordId: record.id,
+                  recipientEmail: email,
+                  message,
+                  attachPdf,
+                })
+              }
+              // Deliberately not awaited: the dialog should say "sent" the
+              // moment it is, not sit behind the "mark completed" confirmation
+              // that handleInvoiceSent may raise.
+              onSent={() => void handleInvoiceSent()}
+            />
+
+            <ShareDialog
+              open={actions.showShareDialog}
+              onOpenChange={actions.setShowShareDialog}
+              recordId={record.id}
+              organizationId={organizationId}
+              initialToken={record.publicToken}
+              onSent={handleInvoiceSent}
+            />
+
+            {customer && (
               <>
-                <div className="space-y-3">
-                  <div className="space-y-1">
-                    <Label className="text-xs">{t('basicInfo.invoiceDate')}</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal h-9 text-sm"
-                        >
-                          <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                          <span suppressHydrationWarning>{formatDate(pendingInvoiceDate)}</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={pendingInvoiceDate}
-                          onSelect={(d) => d && setPendingInvoiceDate(d)}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  <div className="space-y-1">
-                    <Label className="text-xs">{t('basicInfo.invoiceDueDate')}</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal h-9 text-sm"
-                        >
-                          <CalendarIcon className="mr-2 h-3.5 w-3.5" />
-                          <span suppressHydrationWarning>{formatDate(pendingDueDate)}</span>
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={pendingDueDate}
-                          onSelect={(d) => d && setPendingDueDate(d)}
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-2 pt-2">
-                  <Button
-                    disabled={updatingDates}
-                    onClick={async () => {
-                      if (updatingDates) return
-                      setUpdatingDates(true)
-                      try {
-                        await updateServiceRecord({
-                          id: record.id,
-                          invoiceDate: toISODate(pendingInvoiceDate),
-                          invoiceDueDate: toISODate(pendingDueDate),
-                        })
-                        setShowDateCheck(false)
-                        setCustomizingDates(false)
-                        dateCheckResolveRef.current?.(true)
-                        dateCheckResolveRef.current = null
-                        router.refresh()
-                      } finally {
-                        setUpdatingDates(false)
-                      }
-                    }}
-                  >
-                    {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t('page.datesExpiredUpdate')}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    disabled={updatingDates}
-                    onClick={() => setCustomizingDates(false)}
-                  >
-                    {t('page.datesExpiredBack')}
-                  </Button>
-                </div>
+                <NotifyCustomerDialog
+                  open={actions.showPaymentNotifyDialog}
+                  onOpenChange={actions.setShowPaymentNotifyDialog}
+                  customer={customer}
+                  vehicle={record.vehicle}
+                  defaultMessage={actions.paymentNotifyMessage}
+                  emailSubject={t('invoice.emailSubject')}
+                  smsEnabled={smsEnabled}
+                  emailEnabled={emailEnabled}
+                  relatedEntityType="service-record"
+                  relatedEntityId={record.id}
+                />
+                <NotifyCustomerDialog
+                  open={showNotifyDialog}
+                  onOpenChange={setShowNotifyDialog}
+                  customer={customer}
+                  vehicle={record.vehicle}
+                  defaultMessage={notifyMessage}
+                  emailSubject={t('invoice.statusEmailSubject')}
+                  smsEnabled={smsEnabled}
+                  emailEnabled={emailEnabled}
+                  relatedEntityType="service-record"
+                  relatedEntityId={record.id}
+                />
               </>
             )}
-          </DialogContent>
-        </Dialog>
-      </div>
+
+            {/* Expired dates check dialog */}
+            <Dialog
+              open={showDateCheck}
+              onOpenChange={(open) => {
+                if (!open) {
+                  dateCheckResolveRef.current?.(false)
+                  dateCheckResolveRef.current = null
+                  setCustomizingDates(false)
+                }
+                setShowDateCheck(open)
+              }}
+            >
+              <DialogContent className="sm:max-w-sm">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <AlertTriangle className="h-5 w-5 text-amber-500" />
+                    {t('page.datesExpiredTitle')}
+                  </DialogTitle>
+                  <DialogDescription>{t('page.datesExpiredDescription')}</DialogDescription>
+                </DialogHeader>
+
+                {!customizingDates ? (
+                  <div className="flex flex-col gap-2 pt-2">
+                    <Button
+                      disabled={updatingDates}
+                      onClick={async () => {
+                        if (updatingDates) return
+                        const now = new Date(new Date().toISOString().split('T')[0])
+                        const due =
+                          defaultDueDays > 0
+                            ? new Date(now.getTime() + defaultDueDays * 86400000)
+                            : new Date(now.getTime() + 14 * 86400000)
+                        setPendingInvoiceDate(now)
+                        setPendingDueDate(due)
+                        setUpdatingDates(true)
+                        try {
+                          await updateServiceRecord({
+                            id: record.id,
+                            invoiceDate: toISODate(now),
+                            invoiceDueDate: toISODate(due),
+                          })
+                          setShowDateCheck(false)
+                          dateCheckResolveRef.current?.(true)
+                          dateCheckResolveRef.current = null
+                          router.refresh()
+                        } finally {
+                          setUpdatingDates(false)
+                        }
+                      }}
+                    >
+                      {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {t('page.datesExpiredUseToday')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      disabled={updatingDates}
+                      onClick={() => {
+                        setShowDateCheck(false)
+                        dateCheckResolveRef.current?.(true)
+                        dateCheckResolveRef.current = null
+                      }}
+                    >
+                      {t('page.datesExpiredProceed')}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      disabled={updatingDates}
+                      onClick={() => setCustomizingDates(true)}
+                    >
+                      {t('page.datesExpiredCustomize')}
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="space-y-3">
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t('basicInfo.invoiceDate')}</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left font-normal h-9 text-sm"
+                            >
+                              <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                              <span suppressHydrationWarning>{formatDate(pendingInvoiceDate)}</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={pendingInvoiceDate}
+                              onSelect={(d) => d && setPendingInvoiceDate(d)}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+
+                      <div className="space-y-1">
+                        <Label className="text-xs">{t('basicInfo.invoiceDueDate')}</Label>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className="w-full justify-start text-left font-normal h-9 text-sm"
+                            >
+                              <CalendarIcon className="mr-2 h-3.5 w-3.5" />
+                              <span suppressHydrationWarning>{formatDate(pendingDueDate)}</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={pendingDueDate}
+                              onSelect={(d) => d && setPendingDueDate(d)}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-2 pt-2">
+                      <Button
+                        disabled={updatingDates}
+                        onClick={async () => {
+                          if (updatingDates) return
+                          setUpdatingDates(true)
+                          try {
+                            await updateServiceRecord({
+                              id: record.id,
+                              invoiceDate: toISODate(pendingInvoiceDate),
+                              invoiceDueDate: toISODate(pendingDueDate),
+                            })
+                            setShowDateCheck(false)
+                            setCustomizingDates(false)
+                            dateCheckResolveRef.current?.(true)
+                            dateCheckResolveRef.current = null
+                            router.refresh()
+                          } finally {
+                            setUpdatingDates(false)
+                          }
+                        }}
+                      >
+                        {updatingDates && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {t('page.datesExpiredUpdate')}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        disabled={updatingDates}
+                        onClick={() => setCustomizingDates(false)}
+                      >
+                        {t('page.datesExpiredBack')}
+                      </Button>
+                    </div>
+                  </>
+                )}
+              </DialogContent>
+            </Dialog>
+          </div>
+        </WorkshopTaxOfferProvider>
+      </LineTaxProvider>
     </ShopFeeProvider>
+  )
+}
+
+/**
+ * The fault code tools exist on a job with a vehicle; a counter sale has no
+ * vehicle to read a code from.
+ */
+function MaybeFaultCodes({
+  info,
+  vehicleId,
+  serviceRecordId,
+  concerns,
+  locked,
+  children,
+}: {
+  info: NonNullable<ServicePageClientProps['faultCodes']>
+  vehicleId: string | null
+  serviceRecordId: string
+  concerns: { id: string; description: string }[]
+  locked: boolean
+  children: ReactNode
+}) {
+  if (!vehicleId) return <>{children}</>
+  return (
+    <FaultCodesJobProvider
+      info={info}
+      vehicleId={vehicleId}
+      serviceRecordId={serviceRecordId}
+      concerns={concerns}
+      locked={locked}
+    >
+      {children}
+    </FaultCodesJobProvider>
   )
 }

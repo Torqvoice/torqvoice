@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { authClient } from '@/lib/auth-client'
+import { safeRedirectPath } from '@/lib/safe-redirect'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -35,7 +36,10 @@ export default function VerifyTwoFactorPage() {
       if (result.error) {
         setError(result.error.message || t('errors.invalidCode'))
       } else {
-        router.push('/')
+        // Back to the page the sign-in was for, such as Settings > Account
+        // when it was a new sign-in to add a passkey.
+        const redirect = new URLSearchParams(window.location.search).get('redirect')
+        router.push(safeRedirectPath(redirect))
         router.refresh()
       }
     } catch {

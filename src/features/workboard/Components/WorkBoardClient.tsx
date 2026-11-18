@@ -44,7 +44,8 @@ import {
   groupJobsByLane,
   isLaneGrouping,
   laneAssignment,
-  laneIdForJob,
+  helpersAfterTechnicianChange,
+  laneIdsForJob,
 } from '../utils/lanes'
 import { Button } from '@/components/ui/button'
 import {
@@ -57,10 +58,20 @@ import {
 import { Users, Wrench, ClipboardCheck, Columns3, Inbox, Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { timeToMinutes } from '../utils/datetime'
+import {
+  boardNow,
+  fromBoardDate,
+  fromBoardSpan,
+  toBoardDate,
+  toBoardJob,
+} from '../utils/board-time'
 import { useDateSettings } from '@/components/date-settings-context'
+import { type ReadBack, useOverlappingSaves } from '@/lib/use-overlapping-saves'
+import { awayKey, useBoardCalendar } from '../hooks/useBoardCalendar'
+import { overlapsSpans } from '@/features/workshop-calendar/Lib/boardDays'
+import { TimeOffDialog } from '@/features/workshop-calendar/Components/TimeOffDialog'
+import { TimeOffManagerDialog } from '@/features/workshop-calendar/Components/TimeOffManagerDialog'
 
 /** Minutes a job gets when it is dropped onto the week with no duration of its own. */
 const DEFAULT_JOB_MINUTES = 60
@@ -99,6 +110,29 @@ function pointerAt(event: DragEndEvent): { x: number; y: number } | null {
     x: activator.clientX + event.delta.x,
     y: activator.clientY + event.delta.y,
   }
+}
+
+type BoardState = ReturnType<typeof useWorkBoardStore.getState>
+
+/**
+ * Reads the board back from the server after overlapping changes partly
+ * failed (see `useOverlappingSaves`).
+ */
+const readBoardBack: ReadBack = async (idle) => {
+  const weekShown = useWorkBoardStore.getState().weekStart
+  const [jobs, pool] = await Promise.all([
+    getBoardJobs(weekShown).catch(() => null),
+    getUnassignedJobs().catch(() => null),
+  ])
+  if (!idle() || !jobs?.success || !jobs.data || !pool?.success || !pool.data) return false
+  const store = useWorkBoardStore.getState()
+  // Another week opened meanwhile was read by its own load.
+  if (store.weekStart === weekShown) store.setJobs(jobs.data as WorkBoardJob[])
+  store.setUnassigned(
+    pool.data.serviceRecords as Parameters<BoardState['setUnassigned']>[0],
+    pool.data.inspections as Parameters<BoardState['setUnassigned']>[1]
+  )
+  return true
 }
 
 /**
@@ -149,9 +183,11 @@ export function WorkBoardClient({
   boardSettings: WorkBoardSettings
 }) {
   const store = useWorkBoardStore()
+  const save = useOverlappingSaves(readBoardBack)
   const t = useTranslations('workBoard.board')
   const tToolbar = useTranslations('workBoard.toolbar')
-  const { timeFormat } = useDateSettings()
+  const tCal = useTranslations('workshopCalendar')
+  const { timeFormat, timezone } = useDateSettings()
   const tUnassigned = useTranslations('workBoard.unassigned')
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -187,7 +223,7 @@ export function WorkBoardClient({
   const [view, setViewState] = useState<BoardView>(
     urlView === 'day' || urlView === 'week' ? urlView : 'week'
   )
-  const [selectedDate, setSelectedDateState] = useState(urlDate || toLocalDateString(new Date()))
+  const [selectedDate, setSelectedDateState] = useState(urlDate || boardNow(timezone).dayKey)
   const [techDialogOpen, setTechDialogOpen] = useState(false)
   const [editingTech, setEditingTech] = useState<Technician | null>(null)
   const [bayDialogOpen, setBayDialogOpen] = useState(false)
@@ -200,19 +236,6 @@ export function WorkBoardClient({
     unassignedJob?: { job: Record<string, unknown>; type: 'serviceRecord' | 'inspection' }
   } | null>(null)
   const [vehiclePickerOpen, setVehiclePickerOpen] = useState(false)
-  const [vehiclePickerVehicles, setVehiclePickerVehicles] = useState<
-    {
-      id: string
-      make: string
-      model: string
-      year: number
-      licensePlate: string | null
-      customer: { id: string; name: string; company: string | null } | null
-    }[]
-  >([])
-  const [vehiclePickerCustomers, setVehiclePickerCustomers] = useState<
-    { id: string; name: string; company: string | null }[]
-  >([])
   const [boardContext, setBoardContext] = useState<Record<string, string>>({})
 
   const weekDropResolver = useRef<
@@ -222,22 +245,22 @@ export function WorkBoardClient({
   const unassignedCount = store.unassignedServiceRecords.length + store.unassignedInspections.length
 
   const weekStart = store.weekStart || initialWeekStart
+
+  // Everything the board draws reads the workshop's wall clock; the store
+  // keeps the real instants. See utils/board-time.ts.
+  const boardJobs = useMemo(
+    () => store.jobs.map((job) => toBoardJob(job, timezone)),
+    [store.jobs, timezone]
+  )
+  /** The job as stored, for anything that reads or writes real instants. */
+  const realJob = useCallback(
+    (job: WorkBoardJob) =>
+      useWorkBoardStore.getState().jobs.find((candidate) => candidate.id === job.id) ?? job,
+    []
+  )
+  const todayStr = boardNow(timezone).dayKey
+
   const allDays = useMemo(() => getWeekDays(weekStart), [weekStart])
-  // Day is the same board with one day's worth of columns, not a different
-  // component. Switching period used to swap in an entirely separate view,
-  // which threw away the grouping, the lane filter, the zoom and the tooltips.
-  const weekDays = useMemo(
-    () => (preferences.showWeekends ? allDays : allDays.filter((d) => !isWeekend(d))),
-    [allDays, preferences.showWeekends]
-  )
-  const days = useMemo(
-    () => (view === 'day' ? [selectedDate] : weekDays),
-    [view, selectedDate, weekDays]
-  )
-  const hiddenDays = useMemo(
-    () => (view === 'day' || preferences.showWeekends ? [] : allDays.filter(isWeekend)),
-    [view, allDays, preferences.showWeekends]
-  )
 
   const lanes = useMemo(
     () =>
@@ -245,13 +268,13 @@ export function WorkBoardClient({
         grouping: preferences.grouping,
         technicians: store.technicians,
         workBays: store.workBays,
-        jobs: store.jobs,
+        jobs: boardJobs,
         labels: {
           unlaned: preferences.grouping === 'bay' ? t('lanes.noBay') : t('lanes.noTechnician'),
           all: t('lanes.everyone'),
         },
       }),
-    [preferences.grouping, store.technicians, store.workBays, store.jobs, t]
+    [preferences.grouping, store.technicians, store.workBays, boardJobs, t]
   )
 
   const visibleLanes = useMemo(
@@ -262,9 +285,82 @@ export function WorkBoardClient({
   /** Lanes carrying work in the week on screen, for the "only these" shortcut. */
   const busyLaneIds = useMemo(() => {
     const ids = new Set<string>()
-    for (const job of store.jobs) ids.add(laneIdForJob(job, preferences.grouping))
+    // A lane with only somebody's second job in it is carrying work too.
+    for (const job of boardJobs)
+      for (const id of laneIdsForJob(job, preferences.grouping)) ids.add(id)
     return lanes.filter((lane) => ids.has(lane.id)).map((lane) => lane.id)
-  }, [store.jobs, lanes, preferences.grouping])
+  }, [boardJobs, lanes, preferences.grouping])
+
+  // The workshop calendar for the week: closed days and, on a board grouped
+  // by technician, who is away. Nothing here stops a drop; it only shows and
+  // warns.
+  const technicianLaneIds = useMemo(
+    () =>
+      preferences.grouping === 'technician'
+        ? lanes.filter((lane) => !lane.isPlaceholder).map((lane) => lane.id)
+        : [],
+    [lanes, preferences.grouping]
+  )
+  const boardCalendar = useBoardCalendar({ days: allDays, technicianLaneIds })
+  // A weekend day the workshop opens on is a working day: the Weekends
+  // switch only hides the ones it is closed on.
+  const openWeekdays = boardCalendar.calendar?.week
+  const isHiddenWeekend = useCallback(
+    (d: string) => isWeekend(d) && !openWeekdays?.[new Date(`${d}T12:00:00Z`).getUTCDay()]?.open,
+    [openWeekdays]
+  )
+
+  // Day is the same board with one day's worth of columns, not a different
+  // component. Switching period used to swap in an entirely separate view,
+  // which threw away the grouping, the lane filter, the zoom and the tooltips.
+  const weekDays = useMemo(
+    () => (preferences.showWeekends ? allDays : allDays.filter((d) => !isHiddenWeekend(d))),
+    [allDays, preferences.showWeekends, isHiddenWeekend]
+  )
+  const days = useMemo(
+    () => (view === 'day' ? [selectedDate] : weekDays),
+    [view, selectedDate, weekDays]
+  )
+  const hiddenDays = useMemo(
+    () => (view === 'day' || preferences.showWeekends ? [] : allDays.filter(isHiddenWeekend)),
+    [view, allDays, preferences.showWeekends, isHiddenWeekend]
+  )
+  const [timeOffOpen, setTimeOffOpen] = useState(false)
+  const [timeOffFor, setTimeOffFor] = useState<string | null>(null)
+  const timeOffTechnicians = useMemo(
+    () => store.technicians.map((tech) => ({ id: tech.id, name: tech.name, color: tech.color })),
+    [store.technicians]
+  )
+
+  /**
+   * After a job lands on the board: say so when the workshop is closed then
+   * or the technician is away. The job stays where it was put. Takes real
+   * instants; the calendar's days and spans are the workshop's wall clock.
+   */
+  const warnAboutCalendar = useCallback(
+    (laneId: string, startAt: Date, endAt: Date) => {
+      const start = toBoardDate(startAt, timezone)
+      const end = toBoardDate(endAt, timezone)
+      const date = toLocalDateString(start)
+      const startMins = start.getHours() * 60 + start.getMinutes()
+      const endMins =
+        toLocalDateString(end) === date ? end.getHours() * 60 + end.getMinutes() : 24 * 60
+      const closed = boardCalendar.closedByDay?.[date]
+      if (closed) {
+        if (closed.names.length > 0 && overlapsSpans(closed.closureSpans, startMins, endMins)) {
+          toast.warning(tCal('board.dropClosed', { name: closed.names.join(', ') }))
+        } else if (closed.allDay) {
+          toast.warning(tCal('board.dropClosedWeekday'))
+        }
+      }
+      const away = boardCalendar.awayByLaneDay?.[awayKey(laneId, date)]
+      if (away && overlapsSpans(away.spans, startMins, endMins)) {
+        const name = store.technicians.find((tech) => tech.id === laneId)?.name ?? ''
+        toast.warning(tCal('board.dropAway', { name, reason: away.label }))
+      }
+    },
+    [boardCalendar.closedByDay, boardCalendar.awayByLaneDay, store.technicians, tCal, timezone]
+  )
 
   /** Every lane the shop has, by id, whichever grouping is on. */
   const owners = useMemo(() => {
@@ -278,11 +374,11 @@ export function WorkBoardClient({
   const jobsByLane = useMemo(
     () =>
       groupJobsByLane(
-        store.jobs,
+        boardJobs,
         preferences.grouping,
         new Set(visibleLanes.filter((lane) => !lane.isPlaceholder).map((lane) => lane.id))
       ),
-    [store.jobs, preferences.grouping, visibleLanes]
+    [boardJobs, preferences.grouping, visibleLanes]
   )
 
   const toggleLane = useCallback(
@@ -367,8 +463,9 @@ export function WorkBoardClient({
     loadWeekData(toLocalDateString(d))
   }
   const handleToday = () => {
-    setSelectedDate(toLocalDateString(new Date()))
-    loadWeekData(getWeekStartDate(new Date(), boardSettings.weekStartDay))
+    const today = boardNow(timezone).dayKey
+    setSelectedDate(today)
+    loadWeekData(getWeekStartDate(new Date(`${today}T12:00:00`), boardSettings.weekStartDay))
   }
   const handlePrevDay = () => {
     const d = new Date(selectedDate + 'T12:00:00')
@@ -389,22 +486,6 @@ export function WorkBoardClient({
 
   const openVehiclePicker = useCallback(async (context: Record<string, string>) => {
     setBoardContext(context)
-    const [vehiclesResult, customersResult] = await Promise.all([getVehicles(), getCustomersList()])
-    setVehiclePickerVehicles(
-      vehiclesResult.success && vehiclesResult.data
-        ? vehiclesResult.data.map((v) => ({
-            id: v.id,
-            make: v.make,
-            model: v.model,
-            year: v.year,
-            licensePlate: v.licensePlate,
-            customer: v.customer,
-          }))
-        : []
-    )
-    setVehiclePickerCustomers(
-      customersResult.success && customersResult.data ? customersResult.data : []
-    )
     setVehiclePickerOpen(true)
   }, [])
 
@@ -424,12 +505,27 @@ export function WorkBoardClient({
     [openVehiclePicker]
   )
 
-  /** Persist a lane and time change made by dragging on the week timeline. */
+  /**
+   * Persist a lane and time change made by dragging on the week timeline.
+   * `start` and `end` are board dates, so they are turned back into real
+   * instants before anything is stored or sent.
+   */
   const handleWeekSchedule = useCallback(
-    async ({ job, laneId, start, end }: WeekScheduleChange) => {
+    async ({ job: drawn, laneId, start: boardStart, end: boardEnd }: WeekScheduleChange) => {
+      const job = realJob(drawn)
+      // A move keeps the job's real length; see fromBoardSpan for why the
+      // two board dates cannot simply be converted on their own.
+      const { start, end } = fromBoardSpan({
+        stored: job,
+        drawn,
+        boardStart,
+        boardEnd,
+        timeZone: timezone,
+      })
       const assignment = laneAssignment(laneId, preferences.grouping)
       const previous = {
         technicianId: job.technicianId,
+        helperIds: job.helperIds,
         workBayId: job.workBayId,
         startDateTime: job.startDateTime,
         endDateTime: job.endDateTime,
@@ -437,26 +533,35 @@ export function WorkBoardClient({
 
       store.optimisticSchedule(job.id, {
         ...assignment,
+        // Dropped into a helper's lane, the two swap; out of every lane, the
+        // helpers go too. Drawn now as the server is about to write it.
+        ...(assignment.technicianId !== undefined
+          ? { helperIds: helpersAfterTechnicianChange(job, assignment.technicianId) }
+          : {}),
         startDateTime: start.toISOString(),
         endDateTime: end.toISOString(),
       })
 
-      const res = await scheduleJob({
-        id: job.id,
-        type: job.type,
-        ...assignment,
-        startDateTime: start,
-        endDateTime: end,
-      })
+      const res = await save(
+        () =>
+          scheduleJob({
+            id: job.id,
+            type: job.type,
+            ...assignment,
+            startDateTime: start,
+            endDateTime: end,
+          }),
+        () => store.optimisticSchedule(job.id, previous)
+      )
 
-      if (!res.success) {
-        store.optimisticSchedule(job.id, previous)
-        toast.error(t('failedMove'), { description: res.error })
-      } else if (res.data) {
-        store.updateJob(res.data as WorkBoardJob)
+      if (!res?.success) {
+        toast.error(t('failedMove'), { description: res?.error })
+      } else {
+        if (res.data) store.updateJob(res.data as WorkBoardJob)
+        warnAboutCalendar(laneId, start, end)
       }
     },
-    [preferences.grouping, store, t]
+    [preferences.grouping, store, save, t, warnAboutCalendar, realJob, timezone]
   )
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -488,13 +593,17 @@ export function WorkBoardClient({
 
     // Drop assigned job onto unassigned panel
     if (overData.unassigned && activeData?.job && activeData.job.type) {
-      const job = activeData.job as WorkBoardJob
+      const job = realJob(activeData.job as WorkBoardJob)
       if (!job.technicianId && !job.workBayId) return
       store.removeJob(job.id)
-      const res = await unassignJob({ id: job.id, type: job.type })
-      if (!res.success) {
-        toast.error(t('failedRemove'), { description: res.error })
-        store.addJob(job)
+      // A request that never reaches the server throws instead of answering;
+      // the job is still assigned, so it goes back on the board.
+      const res = await save(
+        () => unassignJob({ id: job.id, type: job.type }),
+        () => store.addJob(job)
+      )
+      if (!res?.success) {
+        toast.error(t('failedRemove'), { description: res?.error })
       } else {
         const unRes = await getUnassignedJobs()
         if (unRes.success && unRes.data)
@@ -570,18 +679,24 @@ export function WorkBoardClient({
         }
 
         store.removeFromUnassigned(pooled.id, type)
-        const res = await scheduleJob({
-          id: pooled.id,
-          type,
-          ...assignment,
-          startDateTime: start,
-          endDateTime: end,
-        })
-        if (!res.success) {
-          toast.error(t('failedAssign'), { description: res.error })
-          store.addToUnassigned(activeData.job, type)
-        } else if (res.data) {
-          store.addJob(res.data as WorkBoardJob)
+        const startAt = fromBoardDate(start, timezone)
+        const endAt = fromBoardDate(end, timezone)
+        const res = await save(
+          () =>
+            scheduleJob({
+              id: pooled.id,
+              type,
+              ...assignment,
+              startDateTime: startAt,
+              endDateTime: endAt,
+            }),
+          () => store.addToUnassigned(activeData.job, type)
+        )
+        if (!res?.success) {
+          toast.error(t('failedAssign'), { description: res?.error })
+        } else {
+          if (res.data) store.addJob(res.data as WorkBoardJob)
+          warnAboutCalendar(laneId, startAt, endAt)
         }
       }
       return
@@ -590,7 +705,9 @@ export function WorkBoardClient({
     if (!overData.technicianId) return
 
     if (activeData?.job && activeData.job.type) {
+      // Drawn on the board's clock; `stored` is the same job with real instants.
       const job = activeData.job as WorkBoardJob
+      const stored = realJob(job)
       const dropDate = overData.date
       const jobDate = job.startDateTime ? job.startDateTime.split('T')[0] : null
       const sameTech = job.technicianId === overData.technicianId
@@ -600,38 +717,46 @@ export function WorkBoardClient({
 
       // Move to different tech if needed
       if (!sameTech) {
-        store.optimisticMove(job.id, overData.technicianId)
-        const res = await moveJob({
-          id: job.id,
-          technicianId: overData.technicianId,
-          sortOrder: 0,
-          type: job.type,
-        })
-        if (!res.success) {
-          toast.error(t('failedMove'), { description: res.error })
-          store.optimisticMove(job.id, job.technicianId!)
+        const technicianId = overData.technicianId
+        store.optimisticMove(job.id, technicianId)
+        const res = await save(
+          () => moveJob({ id: job.id, technicianId, sortOrder: 0, type: job.type }),
+          // The whole job back as it was, helpers included.
+          () => store.updateJob(stored)
+        )
+        if (!res?.success) {
+          toast.error(t('failedMove'), { description: res?.error })
           return
         } else if (res.data) store.updateJob(res.data as WorkBoardJob)
       }
 
       // Update dates if dropped on a different day
       if (!sameDay && dropDate) {
+        // The time of day from the drawn job, the length from the stored one:
+        // two board dates are a different distance apart when the viewer's
+        // own clocks change between them.
         const oldStart = job.startDateTime ? new Date(job.startDateTime) : null
-        const oldEnd = job.endDateTime ? new Date(job.endDateTime) : null
-        const duration = oldStart && oldEnd ? oldEnd.getTime() - oldStart.getTime() : 60 * 60 * 1000
+        const realStart = stored.startDateTime ? new Date(stored.startDateTime) : null
+        const realEnd = stored.endDateTime ? new Date(stored.endDateTime) : null
+        const duration =
+          realStart && realEnd ? realEnd.getTime() - realStart.getTime() : 60 * 60 * 1000
         const timeOfDay = oldStart
           ? `${String(oldStart.getHours()).padStart(2, '0')}:${String(oldStart.getMinutes()).padStart(2, '0')}`
           : boardSettings.workDayStart
-        const newStart = new Date(dropDate + 'T' + timeOfDay + ':00')
+        const newStart = fromBoardDate(new Date(dropDate + 'T' + timeOfDay + ':00'), timezone)
         const newEnd = new Date(newStart.getTime() + duration)
+        const times = realJob(job)
         store.updateServiceTimes(job.id, newStart.toISOString(), newEnd.toISOString())
-        const timeRes = await updateServiceTimes({
-          id: job.id,
-          startDateTime: newStart,
-          endDateTime: newEnd,
-        })
-        if (!timeRes.success) {
-          toast.error(t('failedMove'), { description: timeRes.error })
+        const timeRes = await save(
+          () => updateServiceTimes({ id: job.id, startDateTime: newStart, endDateTime: newEnd }),
+          () =>
+            store.optimisticSchedule(job.id, {
+              startDateTime: times.startDateTime,
+              endDateTime: times.endDateTime,
+            })
+        )
+        if (!timeRes?.success) {
+          toast.error(t('failedMove'), { description: timeRes?.error })
         }
       }
       return
@@ -642,19 +767,20 @@ export function WorkBoardClient({
       const jobType = activeData.type as 'serviceRecord' | 'inspection'
       // Set default time on the drop target's date (1 hour block at work day start)
       const dropDate = overData.date || selectedDate
-      const startDateTime = new Date(dropDate + 'T' + boardSettings.workDayStart + ':00')
+      const startDateTime = fromBoardDate(
+        new Date(dropDate + 'T' + boardSettings.workDayStart + ':00'),
+        timezone
+      )
       const endDateTime = new Date(startDateTime.getTime() + 60 * 60 * 1000)
+      const technicianId = overData.technicianId
       store.removeFromUnassigned(job.id, jobType)
-      const res = await assignTechnician({
-        id: job.id,
-        technicianId: overData.technicianId,
-        type: jobType,
-        startDateTime,
-        endDateTime,
-      })
-      if (!res.success) {
-        toast.error(t('failedAssign'), { description: res.error })
-        store.addToUnassigned(job, jobType)
+      const res = await save(
+        () =>
+          assignTechnician({ id: job.id, technicianId, type: jobType, startDateTime, endDateTime }),
+        () => store.addToUnassigned(job, jobType)
+      )
+      if (!res?.success) {
+        toast.error(t('failedAssign'), { description: res?.error })
       } else if (res.data) store.addJob(res.data as WorkBoardJob)
     }
   }
@@ -663,10 +789,14 @@ export function WorkBoardClient({
     setPopoverOpen(false)
     setSelectedJob(null)
     store.removeJob(job.id)
-    const res = await unassignJob({ id: job.id, type: job.type })
-    if (!res.success) {
-      toast.error(t('failedRemove'), { description: res.error })
-      store.addJob(job)
+    // As when a job is dragged off the board: one that could not be
+    // unassigned goes back on it.
+    const res = await save(
+      () => unassignJob({ id: job.id, type: job.type }),
+      () => store.addJob(job)
+    )
+    if (!res?.success) {
+      toast.error(t('failedRemove'), { description: res?.error })
     } else {
       const unRes = await getUnassignedJobs()
       if (unRes.success && unRes.data)
@@ -677,10 +807,15 @@ export function WorkBoardClient({
     }
   }
 
-  const handleCardClick = useCallback((job: WorkBoardJob) => {
-    setSelectedJob(job)
-    setPopoverOpen(true)
-  }, [])
+  // The dialog reads and writes real instants, so it gets the stored job, not
+  // the one drawn on the board's clock.
+  const handleCardClick = useCallback(
+    (job: WorkBoardJob) => {
+      setSelectedJob(realJob(job))
+      setPopoverOpen(true)
+    },
+    [realJob]
+  )
 
   const handleLaneClick = useCallback(
     (lane: BoardLane) => {
@@ -739,6 +874,7 @@ export function WorkBoardClient({
       onToday={handleToday}
       onAddTech={openAddTech}
       onAddBay={openAddBay}
+      onTimeOff={boardCalendar.enabled ? () => setTimeOffOpen(true) : undefined}
       onViewChange={setView}
       onGroupingChange={setGrouping}
       onLayoutChange={(layout) => updatePreferences({ layout })}
@@ -812,18 +948,20 @@ export function WorkBoardClient({
               days={days}
               lanes={visibleLanes}
               jobsByLane={jobsByLane}
-              todayStr={toLocalDateString(new Date())}
+              todayStr={todayStr}
               timeFormat={timeFormat}
               lookup={owners}
               onOpenJob={handleCardClick}
               onLaneClick={handleLaneClick}
+              closedByDay={boardCalendar.closedByDay}
+              awayByLaneDay={boardCalendar.awayByLaneDay}
             />
           ) : (
             <WeekTimeline
               days={days}
               hiddenDays={hiddenDays}
               lanes={visibleLanes}
-              jobs={store.jobs}
+              jobs={boardJobs}
               grouping={preferences.grouping}
               zoom={preferences.zoom}
               onZoomChange={(zoom) => updatePreferences({ zoom })}
@@ -838,6 +976,8 @@ export function WorkBoardClient({
               onLaneClick={handleLaneClick}
               onShowHiddenDays={() => updatePreferences({ showWeekends: true })}
               onShowWholeWeek={view === 'week' ? () => setGrouping('none') : undefined}
+              closedByDay={boardCalendar.closedByDay}
+              awayByLaneDay={boardCalendar.awayByLaneDay}
             />
           )}
           <UnassignedJobsPanel />
@@ -853,7 +993,7 @@ export function WorkBoardClient({
             {tUnassigned('title', { count: unassignedCount })}
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="max-h-[80svh]">
+        <DrawerContent className="max-h-[80svh]" aria-describedby={undefined}>
           <DrawerHeader>
             <DrawerTitle>{tUnassigned('title', { count: unassignedCount })}</DrawerTitle>
           </DrawerHeader>
@@ -876,6 +1016,24 @@ export function WorkBoardClient({
         open={techDialogOpen}
         onOpenChange={setTechDialogOpen}
         technician={editingTech}
+        onSetTimeOff={boardCalendar.enabled ? (tech) => setTimeOffFor(tech.id) : undefined}
+      />
+      <TimeOffManagerDialog
+        open={timeOffOpen}
+        onOpenChange={setTimeOffOpen}
+        technicians={timeOffTechnicians}
+        today={todayStr}
+        onChanged={boardCalendar.reload}
+      />
+      <TimeOffDialog
+        open={timeOffFor !== null}
+        onOpenChange={(open) => {
+          if (!open) setTimeOffFor(null)
+        }}
+        technicians={timeOffTechnicians}
+        defaultTechnicianId={timeOffFor ?? undefined}
+        defaultDate={todayStr}
+        onSaved={boardCalendar.reload}
       />
       <WorkBayDialog open={bayDialogOpen} onOpenChange={setBayDialogOpen} workBay={editingBay} />
       <VehiclePickerDialog
@@ -884,8 +1042,6 @@ export function WorkBoardClient({
           setVehiclePickerOpen(open)
           if (!open) setBoardContext({})
         }}
-        vehicles={vehiclePickerVehicles}
-        customers={vehiclePickerCustomers}
         redirectQuery={boardContext}
       />
     </div>

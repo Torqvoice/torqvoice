@@ -29,39 +29,49 @@ model User {
   /// second device does not restart them and a closed tab cannot stop them.
   updateBannerVersion String?
   updateBannerShownAt DateTime?
+  /// When this user last opened the "What's new" panel. Entries published
+  /// after it (and after the account was created) carry the unread dot.
+  whatsNewSeenAt      DateTime?
   /// Per-user dashboard grid layout (card positions/sizes/hidden set).
   /// Null = default layout. Shape validated in dashboardLayoutActions.
   dashboardLayout     Json?
+  /// This person's keyboard shortcuts: only what differs from the defaults
+  /// in features/shortcuts/Lib/registry.ts. Null = every default as shipped.
+  /// Shape validated in features/shortcuts/Schema/preferences.ts.
+  keyboardShortcuts   Json?
 
-  sessions               Session[]
-  devices                UserDevice[]
-  accounts               Account[]
-  pushDevices            PushDevice[]
-  appSetupCodes          TechnicianSetupCode[]
-  vehicles               Vehicle[]
-  customers              Customer[]
-  settings               AppSetting[]
-  inventoryParts         InventoryPart[]
-  quotes                 Quote[]
-  customFieldDefinitions CustomFieldDefinition[]
-  twoFactor              TwoFactor?
-  passkeys               Passkey[]
-  organizationMembers    OrganizationMember[]
-  dashboardWidgets       DashboardWidget[]
-  auditLogs              AuditLog[]
-  openedServiceRecords   ServiceRecord[]         @relation("ServiceRecordCreatedBy")
-  confirmedConcerns      ServiceConcern[]        @relation("ConcernConfirmedBy")
-  recordedConditionMarks ConditionMark[]         @relation("ConditionMarkRecordedBy")
-  resolvedConditionMarks ConditionMark[]         @relation("ConditionMarkResolvedBy")
-  technicians            Technician[]
-  stockMovements         StockMovement[]
-  tireWarehouses         TireWarehouse[]
-  tireSets               TireSet[]
-  tireSetAttachments     TireSetAttachment[]
-  tireMeasurements       TireMeasurement[]
-  tireMovements          TireMovement[]
-  tireTreatments         TireTreatment[]
-  importBatches          ImportBatch[]
+  sessions                 Session[]
+  portalMessages           PortalMessage[]
+  devices                  UserDevice[]
+  accounts                 Account[]
+  pushDevices              PushDevice[]
+  appSetupCodes            TechnicianSetupCode[]
+  vehicles                 Vehicle[]
+  customers                Customer[]
+  settings                 AppSetting[]
+  inventoryParts           InventoryPart[]
+  quotes                   Quote[]
+  customFieldDefinitions   CustomFieldDefinition[]
+  twoFactor                TwoFactor?
+  passkeys                 Passkey[]
+  organizationMembers      OrganizationMember[]
+  dashboardWidgets         DashboardWidget[]
+  auditLogs                AuditLog[]
+  openedServiceRecords     ServiceRecord[]           @relation("ServiceRecordCreatedBy")
+  confirmedConcerns        ServiceConcern[]          @relation("ConcernConfirmedBy")
+  appointmentsCreated      Appointment[]             @relation("AppointmentCreatedBy")
+  appointmentNotifications AppointmentNotification[] @relation("AppointmentNotificationUser")
+  recordedConditionMarks   ConditionMark[]           @relation("ConditionMarkRecordedBy")
+  resolvedConditionMarks   ConditionMark[]           @relation("ConditionMarkResolvedBy")
+  technicians              Technician[]
+  stockMovements           StockMovement[]
+  tireWarehouses           TireWarehouse[]
+  tireSets                 TireSet[]
+  tireSetAttachments       TireSetAttachment[]
+  tireMeasurements         TireMeasurement[]
+  tireMovements            TireMovement[]
+  tireTreatments           TireTreatment[]
+  importBatches            ImportBatch[]
 
   @@map("users")
 }

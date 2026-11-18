@@ -42,12 +42,12 @@ function leftoverTags(...parts: string[]): string[] {
 async function emailInvoice(page: Page, to: string, attachPdf: boolean): Promise<void> {
   await page.goto(jobUrl)
   await expect(async () => {
-    await page.getByRole('button', { name: 'Email', exact: true }).click()
-    await expect(page.locator('#email')).toBeVisible({ timeout: 2_000 })
+    await page.getByRole('button', { name: 'Send', exact: true }).click()
+    await expect(page.locator('#send-email-to')).toBeVisible({ timeout: 2_000 })
   }).toPass({ timeout: 30_000 })
 
-  await page.locator('#email').fill(to)
-  const attach = page.locator('#attach-pdf-send')
+  await page.locator('#send-email-to').fill(to)
+  const attach = page.locator('#send-attach-pdf')
   await expect(attach).toBeVisible()
   // The workshop's default answers this, so it is set rather than clicked.
   if ((await attach.getAttribute('data-state')) !== (attachPdf ? 'checked' : 'unchecked')) {
@@ -55,7 +55,7 @@ async function emailInvoice(page: Page, to: string, attachPdf: boolean): Promise
   }
   await expect(attach).toHaveAttribute('data-state', attachPdf ? 'checked' : 'unchecked')
 
-  await page.getByRole('button', { name: 'Send Email', exact: true }).click()
+  await page.getByRole('dialog').getByRole('button', { name: 'Send', exact: true }).click()
 }
 
 test.beforeAll(async ({ browser }) => {
@@ -177,7 +177,7 @@ test.describe('a message to a customer', () => {
 })
 
 test.describe('a customer asking for a sign-in link', () => {
-  /** The portal switch saves as it is turned, so there is no Save to press. */
+  /** The portal page is one form: the switch is stored when Save is pressed. */
   async function setPortal(page: Page, open: boolean): Promise<void> {
     await page.goto('/settings/customer-portal')
     await settle(page)
@@ -188,6 +188,8 @@ test.describe('a customer asking for a sign-in link', () => {
       await toggle.click()
       await expect(toggle).toHaveAttribute('aria-checked', String(open), { timeout: 3_000 })
     }).toPass({ timeout: 30_000 })
+    await page.getByRole('button', { name: 'Save changes' }).click()
+    await expect(page.getByText('Everything is saved')).toBeVisible({ timeout: 30_000 })
   }
 
   let wasOpen = false

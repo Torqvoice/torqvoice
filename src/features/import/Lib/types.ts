@@ -47,8 +47,9 @@ export function missingRequired(entity: ImportEntity, mapping: ColumnMapping): s
     if (!has('vehicle.year', 'vehicle.description')) missing.push('vehicle.year')
   }
   if (entity === 'services') {
+    // No title column is needed: a job takes its name from the description or
+    // notes, or a stand-in, and the mapping step says when that will happen.
     if (!has('service.date')) missing.push('service.date')
-    if (!has('service.title', 'service.description')) missing.push('service.title')
     if (!has('vehicle.licensePlate', 'vehicle.vin', 'vehicle.make', 'vehicle.description'))
       missing.push('vehicle.licensePlate')
   }

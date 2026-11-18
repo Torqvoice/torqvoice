@@ -150,7 +150,7 @@
       "tableTitle": "Registrado frente a facturado",
       "clocked": "Registrado",
       "billed": "Facturado",
-      "hint": "Las horas registradas vienen del reloj. Las horas facturadas son las líneas de mano de obra de los trabajos asignados al técnico que empezaron en el rango. La eficiencia es facturado entre registrado.",
+      "hint": "Las horas registradas vienen del reloj. Las horas facturadas son las líneas de mano de obra de los trabajos asignados al técnico que empezaron en el rango. Un trabajo con más de una persona reparte sus horas facturadas según el tiempo que cada una registró en él; si alguna no registró tiempo en él, las horas se quedan con el técnico. La eficiencia es facturado entre registrado.",
       "noClock": "Sin registro",
       "jobsClocked": "Trabajos registrados"
     }

@@ -1,3 +1,5 @@
+import { restoringResponse } from '@/lib/backup/freeze-response'
+import { isRestoring } from '@/lib/backup/freeze'
 import { notify } from '@/lib/notify'
 import {
   applyWhatsappStatus,
@@ -47,6 +49,9 @@ export async function POST(request: Request, { params }: RouteParams) {
     return new Response(null, { status: 200 })
   }
   const { adapter, context } = resolved
+
+  // A message or status filed now would be lost under the restore; the provider retries after it.
+  if (isRestoring(organizationId)) return restoringResponse()
 
   try {
     const events = await adapter.receive(request, context)

@@ -140,8 +140,8 @@ describe('every page that asks first', () => {
 
   it('covers the dashboard and the vehicle page', () => {
     expect(pages.map((page) => page.path).sort()).toEqual([
-      'app/(authenticated)/page.tsx',
-      'app/(authenticated)/vehicles/[id]/page.tsx',
+      'app/(authenticated)/(dashboard)/page.tsx',
+      'app/(authenticated)/vehicles/[id]/(detail)/page.tsx',
     ])
   })
 

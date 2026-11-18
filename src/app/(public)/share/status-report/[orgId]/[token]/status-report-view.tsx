@@ -30,6 +30,8 @@ interface StatusReportViewProps {
   primaryColor: string
   token: string
   showBranding: boolean
+  /** The line saying when this link closes. Page chrome, never part of the sheet. */
+  expiryNote?: React.ReactNode
 }
 
 export function StatusReportView({
@@ -43,6 +45,7 @@ export function StatusReportView({
   primaryColor,
   token,
   showBranding,
+  expiryNote,
 }: StatusReportViewProps) {
   const t = useTranslations('statusReport.view')
   const [feedback, setFeedback] = useState('')
@@ -190,6 +193,7 @@ export function StatusReportView({
         {showBranding && (
           <p className="text-center text-xs text-gray-400 py-4">{t('poweredBy')} Torqvoice</p>
         )}
+        {expiryNote}
       </div>
     </div>
   )

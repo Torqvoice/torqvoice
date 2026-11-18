@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select'
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
+import { PartTagChips } from '@/features/inventory/Components/PartTagChips'
 import { STOCK_MOVEMENT_REASONS } from '@/features/inventory/Lib/stockMovementReasons'
 import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts'
 import { useFormatCurrency } from '@/components/currency-settings-context'
@@ -59,6 +60,7 @@ export function PartDetailClient({
   currencyCode,
   markupMultiplier,
   categories,
+  tagSuggestions = [],
   lowStockDefault,
   unitSystem,
 }: {
@@ -72,6 +74,8 @@ export function PartDetailClient({
   currencyCode: string
   markupMultiplier: number
   categories: string[]
+  /** Tags the workshop's parts carry, suggested in the edit form. */
+  tagSuggestions?: string[]
   lowStockDefault: number
   /** workshop.unitSystem, orders unit suggestions in the edit form. */
   unitSystem?: string
@@ -113,6 +117,8 @@ export function PartDetailClient({
         return t('history.reasons.manual_adjustment')
       case 'bulk_markup':
         return t('history.reasons.bulk_markup')
+      case 'stock_tracking_off':
+        return t('history.reasons.stock_tracking_off')
       default:
         // A row written by a newer build may carry a reason this one has no
         // translation for; show the raw value rather than an empty cell.
@@ -134,6 +140,12 @@ export function PartDetailClient({
           <p className="text-sm text-muted-foreground">
             {[part.partNumber, part.category, part.location].filter(Boolean).join(' · ') || '—'}
           </p>
+          <PartTagChips
+            tags={part.tags ?? []}
+            max={12}
+            onPick={(tag) => router.push(`/inventory?tag=${encodeURIComponent(tag)}`)}
+            className="pt-1"
+          />
         </div>
         <Button
           onClick={() => setShowForm(true)}
@@ -151,7 +163,9 @@ export function PartDetailClient({
         <div className="rounded-lg border bg-card px-3 py-2">
           <p className="text-[11px] text-muted-foreground">{t('table.inStock')}</p>
           <p className={`text-lg font-bold ${isLow ? 'text-destructive' : ''}`}>
-            {formatQuantity(part.quantity, part.unit)}
+            {part.trackStock === false
+              ? t('table.notTracked')
+              : formatQuantity(part.quantity, part.unit)}
             {isLow && (
               <Badge variant="destructive" className="ml-2 px-1.5 py-0 text-[10px]">
                 {t('table.low')}
@@ -161,7 +175,9 @@ export function PartDetailClient({
         </div>
         <div className="rounded-lg border bg-card px-3 py-2">
           <p className="text-[11px] text-muted-foreground">{t('form.minQty')}</p>
-          <p className="text-lg font-bold">{formatQuantity(part.minQuantity, part.unit)}</p>
+          <p className="text-lg font-bold">
+            {part.trackStock === false ? '-' : formatQuantity(part.minQuantity, part.unit)}
+          </p>
         </div>
         <div className="rounded-lg border bg-card px-3 py-2">
           <p className="text-[11px] text-muted-foreground">{t('table.unitCost')}</p>
@@ -354,6 +370,7 @@ export function PartDetailClient({
         markupMultiplier={markupMultiplier}
         unitSystem={unitSystem}
         categories={categories}
+        tagSuggestions={tagSuggestions}
       />
     </div>
   )

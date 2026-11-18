@@ -118,7 +118,7 @@ export function ReminderForm({ vehicleId, open, onOpenChange, reminder }: Remind
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{isEdit ? t('editTitle') : t('addTitle')}</DialogTitle>
         </DialogHeader>

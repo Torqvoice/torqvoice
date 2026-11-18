@@ -7,6 +7,9 @@ import { hasAllPermissions, type PermissionInput } from './permissions'
 import { rateLimit } from './rate-limit'
 import { DocumentLockedError } from './document-lock'
 import { sessionOrganizationScope } from './session-scope'
+import { RESTORE_IN_PROGRESS_MESSAGE, isRestoring } from './backup/freeze'
+
+const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS'])
 
 /**
  * Request wrapper for the token-authenticated API the technician app talks to.
@@ -176,6 +179,12 @@ export async function withApiAuth(
         return apiError(403, 'forbidden', 'Your role does not allow this.')
       }
     }
+  }
+
+  // The phone app's writes wait for a restore of the workshop like the web
+  // app's do; reads are fine.
+  if (!SAFE_METHODS.has(request.method) && isRestoring(organizationId)) {
+    return apiError(409, 'conflict', RESTORE_IN_PROGRESS_MESSAGE)
   }
 
   const technicians = await db.technician.findMany({

@@ -2,6 +2,11 @@ import { getSettings } from '@/features/settings/Actions/settingsActions'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { CompanySettings } from './company-settings'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('company')
+}
 
 export default async function CompanySettingsPage() {
   const [result, authContext] = await Promise.all([getSettings(), getAuthContext()])

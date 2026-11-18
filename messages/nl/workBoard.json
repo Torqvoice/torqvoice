@@ -58,7 +58,12 @@
       "everyone": "Al het werk",
       "thisWeek": "Deze week"
     },
-    "dropNeedsLane": "Groepeer het bord op monteur of werkplek voordat je een klus erop sleept."
+    "dropNeedsLane": "Groepeer het bord op monteur of werkplek voordat je een klus erop sleept.",
+    "load": {
+      "over": "{amount} te veel",
+      "spoken": "Ingepland: {booked} van {capacity}",
+      "spokenOver": "Ingepland: {booked} van {capacity}, {amount} te veel"
+    }
   },
   "unassigned": {
     "title": "Niet-toegewezen taken ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Wordt beheerd op de Team-pagina, samen met de app-toegang.",
     "skills": "Vaardigheden",
     "skillsPlaceholder": "Diagnose, EV-gecertificeerd",
-    "skillsHint": "Wordt onder de naam getoond waar werk wordt verdeeld. Optioneel."
+    "skillsHint": "Wordt onder de naam getoond waar werk wordt verdeeld. Optioneel.",
+    "saveFailed": "Kon de technicus niet opslaan. Probeer het opnieuw.",
+    "deleteFailed": "Kon de technicus niet verwijderen. Probeer het opnieuw."
   },
   "jobDetail": {
     "viewDetails": "Details weergeven",
@@ -90,7 +97,9 @@
     "endTime": "Eindtijd",
     "failedDuration": "Kan duur niet bijwerken",
     "failedTimes": "Kan tijden niet bijwerken",
-    "startTime": "Starttijd"
+    "startTime": "Starttijd",
+    "alsoOnJob": "Ook op deze klus",
+    "failedHelper": "Bijwerken wie op de klus staat mislukt"
   },
   "presenter": {
     "title": "Werkbord",
@@ -160,6 +169,9 @@
     "none": "Nog niemand",
     "promised": "Beloofd",
     "promiseLate": "Te laat",
-    "promiseOverdue": "Aan de klant beloofd voor een moment dat al voorbij is"
+    "promiseOverdue": "Aan de klant beloofd voor een moment dat al voorbij is",
+    "alsoOnJob": "Ook op de klus",
+    "with": "Met {name}",
+    "helping": "Helpt mee"
   }
 }

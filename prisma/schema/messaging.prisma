@@ -167,3 +167,133 @@ model ScheduledMessage {
   @@index([status, sendAt])
   @@map("scheduled_messages")
 }
+
+/// One email between a workshop and a customer, in either direction.
+///
+/// Only the cloud instance writes these, and only for a workshop that sends
+/// through the platform's address: its customer mail carries a Reply-To of
+/// `reply-<token>@<reply domain>`, and what comes back to that address is
+/// filed here. A workshop with its own mail vendor gets replies in its own
+/// mailbox, so nothing of its mail is recorded.
+///
+/// `kind` tells a document mail (an invoice, a quote, a scheduled message)
+/// from a message written in the inbox. Document sends are kept so a reply
+/// shows what it answers; a thread is listed only once it holds a message,
+/// so sending invoices does not fill the inbox with one-sided threads.
+model EmailMessage {
+  id        String @id @default(cuid())
+  direction String // "inbound" | "outbound"
+  kind      String @default("message") // "message" | "document"
+
+  /// The customer's address, lower-cased: who wrote in, or who was written to.
+  address  String
+  /// The display name the sender's mail client gave, on inbound rows.
+  fromName String?
+  subject  String?
+  /// Plain text. An HTML-only mail is converted on receipt; HTML is never kept.
+  body     String
+
+  /// RFC 5322 Message-ID without the angle brackets: ours on outbound rows,
+  /// theirs on inbound ones. A reply's In-Reply-To finds the row it answers.
+  messageId         String?
+  inReplyTo         String?
+  /// The receiving service's own id for an inbound mail, which is also the
+  /// stored object's key. Unique, so a redelivered notification files nothing.
+  providerMessageId String? @unique
+  /// What the receiving service's spam filter said: PASS, FAIL or GRAY.
+  spamVerdict       String?
+
+  status       String  @default("received") // queued | sent | failed | received
+  errorMessage String?
+
+  relatedEntityType String?
+  relatedEntityId   String?
+
+  /// When the workshop first opened the thread this arrived in. Null on an
+  /// inbound message nobody has read yet; never set on an outbound row.
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String?
+  customer   Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull)
+
+  attachments EmailAttachment[]
+
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  @@index([organizationId, address, createdAt(sort: Desc)])
+  @@index([organizationId, createdAt(sort: Desc)])
+  @@index([organizationId, readAt])
+  @@index([organizationId, messageId])
+  @@map("email_messages")
+}
+
+/// A file that came with an inbound email, kept as one of the workshop's
+/// uploads (folder `email`) and released through the file manager when the
+/// message goes.
+model EmailAttachment {
+  id          String   @id @default(cuid())
+  /// The name the sender gave it, cleaned for display; the file on disk has
+  /// a generated name.
+  fileName    String
+  contentType String
+  size        Int
+  url         String
+  createdAt   DateTime @default(now())
+
+  messageId String
+  message   EmailMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  @@index([messageId])
+  @@map("email_attachments")
+}
+
+/// One message in the conversation a customer has with the workshop inside
+/// the customer portal. The customer writes from the portal; the workshop
+/// reads and answers in the Messages inbox, as the channel "portal".
+///
+/// One thread per customer: there is no thread row, a thread is every message
+/// of one customer in one workshop, oldest first. Job events (checked in,
+/// quote sent, invoice issued) are drawn into the thread from the records
+/// themselves and are never stored here.
+model PortalMessage {
+  id        String @id @default(cuid())
+  /// "inbound" (written by the customer) | "outbound" (written by the workshop)
+  direction String
+
+  /// The text. Empty when the message is only photos.
+  body String @default("")
+
+  /// Photos and video sent with the message, in order, as stored file urls
+  /// (`/api/protected/files/<org>/portal-uploads/<uuid>.jpg`). A text array
+  /// and not JSON so the file manager (lib/files/references.ts) can read it
+  /// cheaply: it keeps a file for as long as a message mentions it. What kind
+  /// of file each is follows from its extension.
+  attachments String[] @default([])
+
+  /// When the other side first saw it: the workshop for an inbound message
+  /// (opening the thread in the inbox), the customer for an outbound one
+  /// (opening the chat in the portal). Null while it is unread.
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  /// The staff member who wrote an outbound message. Null on inbound ones,
+  /// and on outbound ones whose author has since been removed.
+  authorUserId String?
+  author       User?   @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  /// A customer's thread, newest first, and their unread count.
+  @@index([organizationId, customerId, createdAt(sort: Desc)])
+  /// The workshop's unread count: inbound rows nobody has opened.
+  @@index([organizationId, direction, readAt])
+  @@map("portal_messages")
+}

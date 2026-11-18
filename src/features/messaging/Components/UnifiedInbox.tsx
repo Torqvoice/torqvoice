@@ -1,8 +1,10 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { useNotificationStore } from '@/features/notifications/store/notificationStore'
 import { cn } from '@/lib/utils'
 import {
   ArrowLeft,
@@ -15,6 +17,7 @@ import {
   Search,
   Trash2,
 } from 'lucide-react'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -24,16 +27,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,10 +53,16 @@ import {
   getInboxThreads,
   markThreadRead,
   markThreadUnread,
+  type EmailChannelState,
   type InboxThread,
   type MessagingChannel,
 } from '../Actions/inboxActions'
+import { deleteEmailConversation } from '../Actions/emailThreadActions'
+import { deletePortalConversation } from '../Actions/portalThreadActions'
 import { ChannelBadge, channelLabel } from './ChannelBadge'
+import { EmailConversation } from './EmailConversation'
+import { NewEmailDialog } from './NewEmailDialog'
+import { PortalConversation } from './PortalConversation'
 import { avatarTint, initials } from '../Lib/threadDisplay'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
@@ -90,7 +89,7 @@ export interface InboxFocus {
 }
 
 /** Channels a workshop can start a conversation on. */
-const INITIABLE: MessagingChannel[] = ['sms', 'whatsapp']
+const INITIABLE: MessagingChannel[] = ['sms', 'whatsapp', 'email']
 
 /**
  * Taken from what the actions actually return rather than declared here.
@@ -107,6 +106,7 @@ export function UnifiedInbox({
   threads: initialThreads,
   initialCursor = null,
   channels,
+  emailState,
   onChanged,
   focus = null,
 }: {
@@ -114,12 +114,19 @@ export function UnifiedInbox({
   /** Where the next page starts, or null when the first page is all of it. */
   initialCursor?: string | null
   channels: MessagingChannel[]
+  /**
+   * Where email replies land. With the workshop's own vendor they go to its
+   * own mailbox, so email shows as a channel that is answered elsewhere.
+   */
+  emailState: EmailChannelState
   /** Asks the page to reload its server data after something is sent. */
   onChanged?: () => void
   /** The conversation the address asks for, opened on arrival. */
   focus?: InboxFocus | null
 }) {
   const t = useTranslations('messaging.inbox')
+  const te = useTranslations('messaging.email')
+  const tp = useTranslations('messaging.portal')
   const router = useRouter()
   const [threads, setThreads] = useState(initialThreads)
   const [cursor, setCursor] = useState<string | null>(initialCursor)
@@ -130,8 +137,7 @@ export function UnifiedInbox({
   const [smsData, setSmsData] = useState<SmsConversationData | null>(null)
   const [telegramData, setTelegramData] = useState<TelegramConversationData | null>(null)
 
-  const [deleteTarget, setDeleteTarget] = useState<InboxThread | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const confirm = useConfirm()
   const [showChannelChoice, setShowChannelChoice] = useState(false)
   const [composeChannel, setComposeChannel] = useState<MessagingChannel | null>(null)
 
@@ -139,12 +145,17 @@ export function UnifiedInbox({
   // answer "no results" for a conversation two pages down.
   const runSearch = useCallback(async (term?: string) => {
     setLoadingMore(true)
-    const result = await getInboxThreads({ search: term })
-    if (result.success && result.data) {
-      setThreads(result.data.threads)
-      setCursor(result.data.nextCursor)
+    // A request that never reaches the server throws. The spinner still has
+    // to stop, or loading more stays blocked until the page is reloaded.
+    try {
+      const result = await getInboxThreads({ search: term })
+      if (result.success && result.data) {
+        setThreads(result.data.threads)
+        setCursor(result.data.nextCursor)
+      }
+    } finally {
+      setLoadingMore(false)
     }
-    setLoadingMore(false)
   }, [])
 
   const { value: search, setValue: setSearch } = useDebouncedSearch('', runSearch)
@@ -159,16 +170,19 @@ export function UnifiedInbox({
   const loadMore = useCallback(async () => {
     if (!cursor || loadingMore) return
     setLoadingMore(true)
-    const result = await getInboxThreads({ cursor, search: search.trim() || undefined })
-    if (result.success && result.data) {
-      const page = result.data
-      setThreads((previous) => {
-        const seen = new Set(previous.map((thread) => thread.key))
-        return [...previous, ...page.threads.filter((thread) => !seen.has(thread.key))]
-      })
-      setCursor(page.nextCursor)
+    try {
+      const result = await getInboxThreads({ cursor, search: search.trim() || undefined })
+      if (result.success && result.data) {
+        const page = result.data
+        setThreads((previous) => {
+          const seen = new Set(previous.map((thread) => thread.key))
+          return [...previous, ...page.threads.filter((thread) => !seen.has(thread.key))]
+        })
+        setCursor(page.nextCursor)
+      }
+    } finally {
+      setLoadingMore(false)
     }
-    setLoadingMore(false)
   }, [cursor, loadingMore, search])
 
   // Continuous scroll: the button below stays for keyboards and for the case
@@ -188,6 +202,9 @@ export function UnifiedInbox({
 
   const visibleThreads = threads
 
+  /** Tells the open portal conversation the thread was read again. */
+  const [portalReadSignal, setPortalReadSignal] = useState(0)
+
   /**
    * Opening a thread is reading it. The row loses its marker at once, the
    * server is told, and the layout is refreshed so the sidebar pill follows.
@@ -198,6 +215,13 @@ export function UnifiedInbox({
       setThreads((previous) =>
         previous.map((row) => (row.key === thread.key ? { ...row, unread: 0 } : row))
       )
+      // The portal's chat marks its own: the conversation, once loaded, says
+      // which of the customer's messages it is showing, and only those are
+      // read. The row's marker still goes at once, as for the others.
+      if (thread.channel === 'portal') {
+        setPortalReadSignal((signal) => signal + 1)
+        return
+      }
       const result = await markThreadRead({
         channel: thread.channel,
         customerId: thread.customerId,
@@ -207,6 +231,46 @@ export function UnifiedInbox({
     },
     [router]
   )
+
+  /**
+   * The open thread as the list now has it. The list is replaced whenever
+   * the page's data reloads, and a reply that arrived meanwhile shows there
+   * first: a newer `lastAt` on the open row means the conversation has
+   * something to re-read, and that it has been read by being on screen.
+   */
+  const current = useMemo(
+    () => (selected ? (threads.find((row) => row.key === selected.key) ?? selected) : null),
+    [threads, selected]
+  )
+  const seen = useRef<{ key: string; lastAt: string } | null>(null)
+  useEffect(() => {
+    if (!current) {
+      seen.current = null
+      return
+    }
+    if (seen.current?.key !== current.key) {
+      // Opening it marked it read already.
+      seen.current = { key: current.key, lastAt: current.lastAt }
+      return
+    }
+    if (seen.current.lastAt === current.lastAt) return
+    seen.current = { key: current.key, lastAt: current.lastAt }
+    if (current.unread > 0) void markRead(current)
+  }, [current, markRead])
+
+  // A message arriving on any channel is announced to the workshop's
+  // notification feed over the socket. That is the inbox's cue to reload
+  // its data; the feed's own first fill, of older notifications, is not.
+  const latest = useNotificationStore((state) => state.notifications[0])
+  const mountedAt = useRef(Date.now())
+  const announced = useRef<string | null>(null)
+  useEffect(() => {
+    if (!latest || announced.current === latest.id) return
+    announced.current = latest.id
+    if (!latest.type.endsWith('_inbound')) return
+    if (new Date(latest.createdAt).getTime() < mountedAt.current - 60_000) return
+    onChanged?.()
+  }, [latest, onChanged])
 
   /**
    * The opposite gesture, for "come back to this later". The thread stays
@@ -236,7 +300,10 @@ export function UnifiedInbox({
     [router, t]
   )
 
-  /** SMS and Telegram hand their history over as props, so it loads on select. */
+  /**
+   * SMS and Telegram hand their history over as props, so it loads on select.
+   * WhatsApp and email load their own.
+   */
   const select = useCallback(
     async (thread: InboxThread) => {
       setSelected(thread)
@@ -245,16 +312,24 @@ export function UnifiedInbox({
       void markRead(thread)
       if (!thread.customerId) return
 
+      // The spinner stops even when the request never reaches the server;
+      // the rejection still goes on to the lost-connection notice.
       if (thread.channel === 'sms') {
         setLoadingConversation(true)
-        const result = await getConversation(thread.customerId)
-        if (result.success && result.data) setSmsData(result.data)
-        setLoadingConversation(false)
+        try {
+          const result = await getConversation(thread.customerId)
+          if (result.success && result.data) setSmsData(result.data)
+        } finally {
+          setLoadingConversation(false)
+        }
       } else if (thread.channel === 'telegram') {
         setLoadingConversation(true)
-        const result = await getTelegramConversation(thread.customerId)
-        if (result.success && result.data) setTelegramData(result.data)
-        setLoadingConversation(false)
+        try {
+          const result = await getTelegramConversation(thread.customerId)
+          if (result.success && result.data) setTelegramData(result.data)
+        } finally {
+          setLoadingConversation(false)
+        }
       }
     },
     [markRead]
@@ -288,35 +363,60 @@ export function UnifiedInbox({
   }, [focusKey])
 
   /** Removes our copy of a conversation; the customer's phone keeps theirs. */
-  const confirmDelete = async () => {
-    const thread = deleteTarget
-    if (!thread) return
-    setIsDeleting(true)
+  const handleDelete = async (thread: InboxThread) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      // A portal thread has no copy on the customer's phone: it goes for them too.
+      description:
+        thread.channel === 'portal'
+          ? tp('deleteDescription', { name: thread.name })
+          : t('deleteDescription', { name: thread.name }),
+      confirmLabel: t('delete'),
+      cancelLabel: t('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
 
     // A WhatsApp thread can exist under a bare number, and those are the ones
-    // most worth clearing away: test sends and wrong numbers.
-    const result = !thread.customerId
-      ? await deleteWhatsappConversationByPhone(thread.contact)
-      : thread.channel === 'sms'
-        ? await deleteConversation(thread.customerId)
-        : thread.channel === 'telegram'
-          ? await deleteTelegramConversation(thread.customerId)
-          : await deleteWhatsappConversation(thread.customerId)
+    // most worth clearing away: test sends and wrong numbers. Email threads
+    // are filed by customer or by address, and one action handles both.
+    let result: { success: boolean; error?: string } | null
+    try {
+      result =
+        thread.channel === 'email'
+          ? await deleteEmailConversation({
+              customerId: thread.customerId,
+              contact: thread.contact,
+            })
+          : !thread.customerId
+            ? await deleteWhatsappConversationByPhone(thread.contact)
+            : thread.channel === 'portal'
+              ? await deletePortalConversation(thread.customerId)
+              : thread.channel === 'sms'
+                ? await deleteConversation(thread.customerId)
+                : thread.channel === 'telegram'
+                  ? await deleteTelegramConversation(thread.customerId)
+                  : await deleteWhatsappConversation(thread.customerId)
+    } catch {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      result = null
+    }
 
-    setIsDeleting(false)
-    setDeleteTarget(null)
-
-    if (result.success) {
+    if (result?.success) {
       if (selected?.key === thread.key) setSelected(null)
       onChanged?.()
     } else {
-      toast.error(result.error ?? t('deleteFailed'))
+      toast.error(result?.error ?? t('deleteFailed'))
     }
   }
 
   const startCompose = () => {
     const options = channels.filter((channel) => INITIABLE.includes(channel))
-    if (options.length === 1) {
+    // The dialog is where a workshop on its own email vendor learns why email
+    // is not offered, so it is always shown to them, even with one choice.
+    if (options.length === 1 && emailState !== 'ownVendor') {
       setComposeChannel(options[0])
       return
     }
@@ -325,7 +425,7 @@ export function UnifiedInbox({
 
   const openThreadFor = (
     channel: MessagingChannel,
-    customer: { id: string; name: string; phone?: string | null }
+    customer: { id: string; name: string; phone?: string | null; email?: string | null }
   ) => {
     const existing = threads.find(
       (thread) => thread.channel === channel && thread.customerId === customer.id
@@ -336,7 +436,7 @@ export function UnifiedInbox({
         channel,
         customerId: customer.id,
         name: customer.name,
-        contact: customer.phone ?? '',
+        contact: (channel === 'email' ? customer.email : customer.phone) ?? '',
         lastMessage: '',
         lastDirection: 'outbound',
         lastAt: new Date(0).toISOString(),
@@ -346,6 +446,7 @@ export function UnifiedInbox({
   }
 
   const composeOptions = channels.filter((channel) => INITIABLE.includes(channel))
+  const canCompose = composeOptions.length > 0 || emailState === 'ownVendor'
 
   return (
     <>
@@ -364,7 +465,7 @@ export function UnifiedInbox({
             </div>
             {/* Starting a conversation used to be offered only by the empty
                 state, so it disappeared as soon as there was anything to read. */}
-            {composeOptions.length > 0 && (
+            {canCompose && (
               <Button size="sm" variant="ghost" className="h-7 px-2" onClick={startCompose}>
                 <Plus className="mr-1 h-3.5 w-3.5" />
                 {t('newMessage')}
@@ -389,7 +490,7 @@ export function UnifiedInbox({
               <p className="text-center text-sm text-muted-foreground">
                 {search ? t('noSearchResults') : t('empty')}
               </p>
-              {!search && composeOptions.length > 0 && (
+              {!search && canCompose && (
                 <Button size="sm" variant="outline" className="mt-3" onClick={startCompose}>
                   <Plus className="mr-1 h-3.5 w-3.5" />
                   {t('newMessage')}
@@ -499,7 +600,9 @@ export function UnifiedInbox({
                 </div>
                 <p className="truncate text-xs text-muted-foreground">{selected.contact}</p>
               </div>
-              {(selected.customerId || selected.channel === 'whatsapp') && (
+              {(selected.customerId ||
+                selected.channel === 'whatsapp' ||
+                selected.channel === 'email') && (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
@@ -514,7 +617,7 @@ export function UnifiedInbox({
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-destructive"
-                      onClick={() => setDeleteTarget(selected)}
+                      onClick={() => handleDelete(selected)}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       {t('deleteConversation')}
@@ -540,6 +643,31 @@ export function UnifiedInbox({
                 onSent={onChanged}
                 className="h-auto min-h-0 flex-1"
               />
+            ) : selected.channel === 'email' ? (
+              <EmailConversation
+                key={selected.key}
+                thread={{
+                  key: selected.key,
+                  customerId: selected.customerId,
+                  name: selected.name,
+                  address: selected.contact,
+                }}
+                emailState={emailState}
+                onSent={onChanged}
+                refreshKey={current?.lastAt ?? selected.lastAt}
+                className="h-auto min-h-0 flex-1"
+              />
+            ) : selected.channel === 'portal' && selected.customerId ? (
+              <PortalConversation
+                key={selected.key}
+                customerId={selected.customerId}
+                customerName={selected.name}
+                onSent={onChanged}
+                onRead={() => router.refresh()}
+                readSignal={portalReadSignal}
+                refreshKey={current?.lastAt ?? selected.lastAt}
+                className="h-auto min-h-0 flex-1"
+              />
             ) : selected.channel === 'sms' && smsData && selected.customerId ? (
               <SmsConversation
                 key={selected.key}
@@ -548,6 +676,7 @@ export function UnifiedInbox({
                 customerPhone={smsData.customerPhone}
                 initialMessages={smsData.messages}
                 initialNextCursor={smsData.nextCursor}
+                platformSmsPerDay={smsData.platformSmsPerDay}
                 className="h-auto min-h-0 flex-1"
               />
             ) : selected.channel === 'telegram' && telegramData && selected.customerId ? (
@@ -570,7 +699,7 @@ export function UnifiedInbox({
           <div className="flex flex-1 flex-col items-center justify-center text-muted-foreground">
             <Inbox className="mb-3 h-10 w-10 text-muted-foreground/40" />
             <p className="text-sm">{t('selectConversation')}</p>
-            {composeOptions.length > 0 && (
+            {canCompose && (
               <Button size="sm" variant="outline" className="mt-3" onClick={startCompose}>
                 <Plus className="mr-1 h-3.5 w-3.5" />
                 {t('newMessage')}
@@ -580,7 +709,8 @@ export function UnifiedInbox({
         )}
       </div>
 
-      {/* Which channel, asked only when there is a choice to make */}
+      {/* Which channel, asked when there is a choice to make or when email
+          has to explain that it is answered elsewhere */}
       <Dialog open={showChannelChoice} onOpenChange={setShowChannelChoice}>
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
@@ -603,31 +733,29 @@ export function UnifiedInbox({
                 {channelLabel(channel)}
               </Button>
             ))}
+            {/* Shown, not hidden: a workshop that expects email here should
+                learn why it is missing rather than wonder. */}
+            {emailState === 'ownVendor' && (
+              <div className="space-y-1.5">
+                <Button type="button" variant="outline" className="w-full justify-start" disabled>
+                  <ChannelBadge channel="email" withIcon className="mr-2" />
+                  {channelLabel('email')}
+                </Button>
+                <p className="px-1 text-xs text-muted-foreground">
+                  {te('ownVendorChoice')}
+                  <Link
+                    href="/settings/integrations"
+                    className="ml-1 font-medium text-primary hover:underline"
+                    onClick={() => setShowChannelChoice(false)}
+                  >
+                    {te('ownVendorSettings')}
+                  </Link>
+                </p>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
-
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('deleteDescription', { name: deleteTarget?.name ?? '' })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmDelete}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <NewSmsDialog
         open={composeChannel === 'sms'}
@@ -643,6 +771,12 @@ export function UnifiedInbox({
         open={composeChannel === 'whatsapp'}
         onOpenChange={(open) => !open && setComposeChannel(null)}
         onSelect={(recipient) => openThreadFor('whatsapp', recipient)}
+      />
+
+      <NewEmailDialog
+        open={composeChannel === 'email'}
+        onOpenChange={(open) => !open && setComposeChannel(null)}
+        onSelect={(recipient) => openThreadFor('email', recipient)}
       />
     </>
   )

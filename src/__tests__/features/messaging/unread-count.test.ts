@@ -13,6 +13,8 @@ const { db } = vi.hoisted(() => ({
     smsMessage: { count: vi.fn(async () => 1) },
     telegramMessage: { count: vi.fn(async () => 2) },
     whatsappMessage: { count: vi.fn(async () => 3) },
+    emailMessage: { count: vi.fn(async () => 4) },
+    portalMessage: { count: vi.fn(async () => 5) },
   },
 }))
 vi.mock('@/lib/db', () => ({ db }))
@@ -21,7 +23,21 @@ import { countUnreadMessages } from '@/features/messaging/Lib/unreadCount'
 
 describe('countUnreadMessages', () => {
   it('adds up the channels', async () => {
-    expect(await countUnreadMessages('org_1')).toBe(6)
+    expect(await countUnreadMessages('org_1')).toBe(15)
+  })
+
+  it('counts every email, since unmatched addresses are listed as threads', async () => {
+    await countUnreadMessages('org_1')
+    expect(db.emailMessage.count).toHaveBeenCalledWith({
+      where: { organizationId: 'org_1', direction: 'inbound', readAt: null },
+    })
+  })
+
+  it('counts what customers wrote in the portal and nobody has opened', async () => {
+    await countUnreadMessages('org_1')
+    expect(db.portalMessage.count).toHaveBeenCalledWith({
+      where: { organizationId: 'org_1', direction: 'inbound', readAt: null },
+    })
   })
 
   it('counts only messages that belong to a customer on SMS and Telegram', async () => {

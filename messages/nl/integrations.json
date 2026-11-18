@@ -13,6 +13,8 @@
     "availableTitle": "Beschikbaar",
     "availableDescription": "Diensten die u kunt toevoegen. Elke dienst stelt u één keer in en draait daarna op de achtergrond.",
     "allConnected": "Alle beschikbare diensten zijn verbonden.",
+    "cloudOnly": "Alleen cloud",
+    "cloudOnlyHint": "Beschikbaar in Torqvoice Cloud",
     "searchPlaceholder": "Integraties zoeken",
     "noMatches": "Niets komt overeen met \"{query}\".",
     "readMore": "Meer lezen",
@@ -30,6 +32,7 @@
     "automation": "Automatisering",
     "storage": "Bestanden",
     "registry": "Voertuigregister",
+    "repair": "Reparatiegegevens",
     "other": "Overig",
     "ai": "AI"
   },
@@ -70,6 +73,16 @@
       "invoices": "Facturen naar de boekhouding",
       "customers": "Klanten naar de boekhouding",
       "payments": "Betalingen in beide richtingen"
+    },
+    "backup": {
+      "target": "Back-upbestemming"
+    },
+    "repair": {
+      "labor": "Arbeidstijden op werkorders en offertes",
+      "fluids": "Vloeistofsoorten en inhoud"
+    },
+    "diagnostics": {
+      "codes": "Betekenis van foutcodes"
     }
   },
   "statuses": {
@@ -138,13 +151,18 @@
     "inboundUrl": "Inkomende webhook-URL",
     "inboundHintSecret": "Plak deze URL in de instellingen voor inkomende berichten bij de dienst. Er zit een geheim in dat uw werkplaats identificeert, dus houd hem privé.",
     "inboundHintMeta": "Plak deze URL als callback-URL in uw Meta-app, samen met het verificatietoken dat u hierboven hebt ingevuld, en abonneer u op messages.",
-    "inboundHintStripe": "Voeg deze URL toe in het Stripe-dashboard onder Developers, Webhooks, geabonneerd op checkout.session.completed. Plak daarna het ondertekeningsgeheim dat Stripe toont in het veld webhookgeheim hier, zodat meldingen geverifieerd kunnen worden.",
+    "inboundHintStripe": "Voeg deze URL toe in het Stripe-dashboard: open Workbench, dan Webhooks, kies Create an event destination en abonneer op checkout.session.completed. Stripe toont daarna een ondertekeningsgeheim voor het endpoint; plak het hier in het veld voor het ondertekeningsgeheim, zodat elke melding op zijn handtekening wordt gecontroleerd. Tot die tijd bevestigt Torqvoice elke melding door de checkout bij Stripe op te vragen.",
     "inboundHintVipps": "Vul deze URL in als callback-URL in het Vipps MobilePay-portaal. Vipps vereist ook gepubliceerde verkoopvoorwaarden, die staan onder Instellingen, Betaling.",
     "inboundHintPaypal": "Voeg deze URL toe in het PayPal-ontwikkelaarsdashboard onder Webhooks, geabonneerd op PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Plak deze URL als Webhook URL in het Paystack-dashboard onder Settings, API Keys & Webhooks. Paystack bewaart er één voor de testmodus en één voor de live-modus, dus stel hem in bij de modus waar je sleutel bij hoort.",
     "copy": "Kopiëren",
     "copied": "Gekopieerd",
     "updateKeys": "Sleutels bijwerken",
     "updateKeysHint": "De laatste controle is mislukt. Vul de sleutels opnieuw in om het nog eens te proberen.",
+    "awaitingKeys": "Verbonden, maar wacht nog op {keys}.",
+    "awaitingKeysHint": "De webhook antwoordt de leverancier al, dus registreer hem nu. Vul deze waarden hier in zodra de leverancier ze heeft uitgegeven.",
+    "saveKeys": "Sleutels opslaan",
+    "keysSaved": "Sleutels opgeslagen",
     "inspectionSync": {
       "title": "Keuringssynchronisatie",
       "vehicles": "{count} voertuigen met kenteken in deze werkplaats",
@@ -154,11 +172,101 @@
       "never": "Nog geen volledige ronde",
       "inProgress": "Er loopt een ronde",
       "off": "Zet de instelling aan en sla op; tot die tijd controleert een ronde niets.",
-      "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest."
+      "syncNowHelp": "Nu synchroniseren start meteen een ronde in plaats van op de uurlijkse te wachten. Het zoekt 25 voertuigen tegelijk op en gaat vanzelf door tot alle voertuigen aan de beurt zijn geweest. De eerste ronde zoekt elk voertuig met een kenteken op.",
+      "confirmTitle": "Voertuigen nu opzoeken?",
+      "confirmDescription": "{count} van de {total} voertuigen met een kenteken worden nu opgezocht bij {name}, 25 tegelijk, en hun keuringsdatums opgeslagen. Voertuigen die onlangs zijn gecontroleerd worden overgeslagen. Rekent {name} per opzoeking, dan wordt elk gevonden voertuig aan uw account gefactureerd.",
+      "confirmLabel": "{count} voertuigen opzoeken",
+      "nothingDue": "Alle voertuigen met een kenteken zijn onlangs gecontroleerd, er valt nog niets op te zoeken."
     },
     "supersedes": "Als u {next} verbindt, wordt {current} losgekoppeld. Er kan er maar één tegelijk actief zijn, dus {current} wordt niet meer gebruikt zodra {next} live gaat.",
+    "platformHandlesBackupsTitle": "Back-ups zijn al inbegrepen",
+    "platformHandlesBackups": "Torqvoice maakt al elk uur een back-up van deze werkplaats en bewaart herstelpunten 30 dagen. Koppel een bucket als u ook een kopie wilt die van u is en zonder Torqvoice te lezen is.",
+    "platformHandlesBackupsLink": "Bekijk uw herstelpunten",
     "batchRetried": "{count, plural, =0 {Niets om opnieuw te proberen} one {# taak opnieuw in de wachtrij} other {# taken opnieuw in de wachtrij}}",
-    "advanced": "Geavanceerd"
+    "advanced": "Geavanceerd",
+    "generate": "Genereren",
+    "show": "Tonen",
+    "hide": "Verbergen",
+    "generatedPasswordWarning": "Bewaar een kopie van dit wachtwoord op een veilige plek, niet op deze server. Zonder dit wachtwoord kan niemand deze back-ups openen, ook Torqvoice niet.",
+    "backup": {
+      "title": "Back-ups",
+      "description": "Wanneer deze bestemming voor het laatst een geslaagde back-up kreeg, wanneer de volgende draait en de laatste runs.",
+      "lastGood": "Laatste geslaagde back-up",
+      "added": "{size} toegevoegd",
+      "never": "Nog geen",
+      "nextRun": "Volgende run",
+      "notScheduled": "Niet gepland",
+      "repositorySize": "Opgeslagen op de bestemming",
+      "runNow": "Nu back-up maken",
+      "running": "Back-up bezig",
+      "runningHint": "Er loopt een back-up. Deze pagina werkt zichzelf bij tot hij klaar is.",
+      "started": "Back-up gestart",
+      "recentTitle": "Recente runs",
+      "noRuns": "Er zijn nog geen back-ups gemaakt.",
+      "addedNote": "De eerste run uploadt alles. Elke run daarna voegt alleen de stukken toe die sindsdien zijn veranderd, en is daarom klein. Elke back-up is toch compleet en kan op zichzelf worden hersteld of bekeken.",
+      "notStarted": "Niet gestart",
+      "filesNewCount": "{count, plural, one {# nieuw bestand} other {# nieuwe bestanden}}",
+      "columns": {
+        "status": "Status",
+        "started": "Gestart",
+        "trigger": "Gestart door",
+        "duration": "Duur",
+        "filesNew": "Nieuwe bestanden",
+        "bytesAdded": "Toegevoegd"
+      },
+      "trigger": {
+        "scheduled": "Schema",
+        "manual": "Handmatig",
+        "restore": "Terugzetten"
+      },
+      "status": {
+        "queued": "In de wachtrij",
+        "running": "Bezig",
+        "done": "Klaar",
+        "failed": "Mislukt",
+        "skipped": "Overgeslagen"
+      },
+      "restoring": "Terugzetten bezig",
+      "restoringHint": "Er wordt een back-up teruggezet: de gegevens van de werkplaats worden vervangen door de back-up. Deze pagina werkt zichzelf bij tot het klaar is. Werk tot die tijd niet in de werkplaats.",
+      "explore": "Bekijken",
+      "restore": {
+        "showAll": "Alle back-ups tonen",
+        "refresh": "Vernieuwen",
+        "loading": "De back-ups op de bestemming worden gelezen",
+        "loadFailed": "De back-ups konden niet worden opgehaald",
+        "empty": "Nog geen back-ups op deze bestemming.",
+        "needsOwner": "Alleen de eigenaar van de werkplaats kan hier een back-up terugzetten.",
+        "needsAdmin": "Alleen een eigenaar of beheerder kan een back-up terugzetten.",
+        "filesIncluded": "Foto's en bestanden meegenomen",
+        "filesNotIncluded": "Foto's en bestanden niet meegenomen",
+        "earlierInstall": "Eerdere installatie",
+        "action": "Terugzetten",
+        "dialogTitle": "De back-up van {time} terugzetten?",
+        "warning": "Terugzetten <bold>vervangt alles wat deze werkplaats nu heeft</bold>: klanten, voertuigen, werkorders, facturen, instellingen en, als de back-up ze bevat, foto's en bestanden. Alles wat sinds de back-up is toegevoegd, gaat verloren. Dit kan niet ongedaan worden gemaakt.",
+        "secretsNote": "Geheime sleutels die de back-up heeft weggelaten, houden de waarden die deze installatie nu heeft. Gebruikersaccounts en wachtwoorden blijven ongemoeid.",
+        "confirmPrompt": "Typ de naam van de werkplaats, <bold>{name}</bold>, om te bevestigen.",
+        "whileRunning": "Het terugzetten draait op de achtergrond en duurt een paar minuten als er veel foto's zijn. De pagina werkt zichzelf bij tot het klaar is.",
+        "cancel": "Annuleren",
+        "confirm": "Deze back-up terugzetten",
+        "started": "Terugzetten gestart"
+      }
+    },
+    "lockedBackups": "Geplande, versleutelde back-ups van uw werkplaats naar opslag die van u is.",
+    "searchOrType": "Zoek of typ een naam",
+    "useTyped": "\"{value}\" gebruiken",
+    "listNeedsKeys": "Vul hierboven de sleutels in om de lijst te zien",
+    "listEmpty": "Er is niets opgehaald. Typ in plaats daarvan een naam.",
+    "testing": "Verbinding wordt getest",
+    "testOk": "De verbinding werkt: er is een testobject geschreven en weer verwijderd.",
+    "testFailed": "De test is mislukt",
+    "testSteps": {
+      "settings": "Controleer de instellingen van de aanbieder",
+      "list": "De sleutel kan de bucket niet opsommen",
+      "write": "De sleutel kan niet naar de bucket schrijven",
+      "delete": "De sleutel kan niets uit de bucket verwijderen",
+      "folder": "De map kan niet worden aangemaakt of geopend"
+    },
+    "testHint": "Vul de sleutels en de bucket in om ze te testen voordat u koppelt. De test schrijft één klein object en verwijdert het weer."
   },
   "activity": {
     "title": "Activiteit",
@@ -181,7 +289,10 @@
     },
     "noFailures": "Niets is mislukt.",
     "retryFailed": "Mislukte opnieuw proberen",
-    "details": "Details tonen"
+    "details": "Details tonen",
+    "loadingMore": "Oudere taken laden",
+    "loadFailed": "Oudere taken konden niet worden geladen.",
+    "cleared": "Voltooide taken worden na 7 dagen verwijderd."
   },
   "errors": {
     "generic": "Er is iets misgegaan",
@@ -195,7 +306,10 @@
     "invalid": "Het antwoord van de provider was onvolledig. Probeer het opnieuw.",
     "state": "Deze aanmelding is verlopen of hoort bij een andere sessie. Begin opnieuw.",
     "exchange": "De provider heeft de aanmelding geweigerd. Controleer de app-gegevens en probeer het opnieuw.",
-    "identify": "Gekoppeld, maar het account kon niet worden gelezen. Probeer opnieuw te koppelen."
+    "identify": "Gekoppeld, maar het account kon niet worden gelezen. Probeer opnieuw te koppelen.",
+    "backupRunning": "Er loopt al een back-up.",
+    "restoreOwnerOnly": "In Torqvoice Cloud kan alleen de eigenaar van de werkplaats een back-up terugzetten.",
+    "restoreBusy": "Er loopt al een back-up of herstel op deze server. Probeer het opnieuw als dat klaar is."
   },
   "meeting": {
     "join": "Deelnemen aan videogesprek",
@@ -226,6 +340,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365-agenda",
       "description": "Zet geplande werkorders in een Outlook-agenda, voeg een Microsoft Teams-link toe en bekijk de bezette tijd van de agenda in Torqvoice.",
       "tenantHelp": "Registreer een toepassing in Microsoft Entra (App registrations), sta persoonlijke en werkaccounts toe, voeg de onderstaande redirect-URI toe als Web-platform, maak een clientgeheim aan en plak beide hier.",
       "fields": {
@@ -298,7 +413,10 @@
         "verifyToken": "Verificatietoken voor webhook",
         "appSecret": "App-geheim",
         "apiVersion": "Graph API-versie",
-        "appSecretHelp": "Meta ondertekent er elke levering mee. Zolang het niet is ingevuld, worden berichten die naar de webhook worden gestuurd geweigerd, omdat iedereen die de URL kent anders namens uw klanten berichten zou kunnen plaatsen."
+        "appSecretHelp": "Meta ondertekent er elke levering mee. Zolang het niet is ingevuld, worden berichten die naar de webhook worden gestuurd geweigerd, omdat iedereen die de URL kent anders namens uw klanten berichten zou kunnen plaatsen.",
+        "phoneNumberIdHelp": "Uit WhatsApp Manager, bij het nummer waarvandaan u verzendt; niet het telefoonnummer zelf. Meta geeft het pas uit nadat de webhook is geverifieerd, dus laat het leeg, verbind, registreer de webhook en kom daarna terug om het toe te voegen.",
+        "accessTokenHelp": "Een permanent systeemgebruikerstoken. Het token dat Meta tijdens de installatie toont, verloopt binnen 24 uur. Voeg het samen met de telefoonnummer-ID toe zodra de webhook is geverifieerd.",
+        "verifyTokenHelp": "Een zin naar keuze. Plak dezelfde in Meta bij het registreren van de webhook."
       },
       "settings": {
         "enabled": "Berichten via dit kanaal versturen",
@@ -417,7 +535,19 @@
       },
       "settings": {
         "syncInspections": "Keuringsdatums van alle voertuigen in deze werkplaats bijhouden",
-        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende EU-kontroll-datum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+        "syncInspectionsHelp": "Eens per uur worden voertuigen die aan een controle toe zijn op kenteken opgezocht en wordt de volgende EU-kontroll-datum opgeslagen; hoe vaak een voertuig opnieuw wordt gecontroleerd, stelt u hieronder in. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verzonden.",
+        "inspectionRecheck": "Voertuigen die al een datum hebben opnieuw controleren",
+        "inspectionRecheckHelp": "Een datum verandert alleen als een keuring is gehaald. Maandelijks merkt een vervroegde keuring het snelst; alleen vlak voor de vervaldatum kost het minst. Vlak voor de vervaldatum wordt elk voertuig wekelijks gecontroleerd, wat u hier ook kiest.",
+        "recheckMonthly": "Elke maand",
+        "recheckQuarterly": "Elke drie maanden",
+        "recheckNearDeadline": "Alleen vlak voor de vervaldatum",
+        "inspectionSoonDays": "Vlak voor de vervaldatum betekent binnen",
+        "inspectionSoonDaysHelp": "Binnen dit venster wordt een voertuig wekelijks gecontroleerd, zodat een gehaalde keuring het binnen dagen van de herinneringslijst haalt. Een korter venster betekent minder opzoekingen.",
+        "soon30": "30 dagen",
+        "soon60": "60 dagen",
+        "soon90": "90 dagen",
+        "inspectionOnlyWithCustomer": "Alleen voertuigen met een klant",
+        "inspectionOnlyWithCustomerHelp": "Sla voertuigen zonder vastgelegde klant over. Niemand kan eraan herinnerd worden, dus opzoeken kost voor niets."
       }
     },
     "openapi-automotive": {
@@ -429,8 +559,33 @@
       "settings": {
         "country": "Land",
         "countryHelp": "Het register om in te zoeken. Franse en Italiaanse kentekens zien er hetzelfde uit, dus het land is niet van het kenteken af te lezen.",
-        "bikes": "Ook motorfietsen opzoeken",
-        "bikesHelp": "Als een kenteken geen auto is, wordt ook het motorfietsregister bevraagd. Geen resultaat bij auto's is gratis, dus dit kost niets extra tenzij een motorfiets wordt gevonden. Niet beschikbaar voor Portugal."
+        "cars": "Auto's opzoeken",
+        "carsHelp": "Doorzoek het autoregister. Zet dit uit als u alleen aan motorfietsen werkt, dan slaat de zoekopdracht auto's over en antwoordt sneller.",
+        "bikes": "Motorfietsen opzoeken",
+        "bikesHelp": "Doorzoek het motorfietsregister. Staan auto's ook aan, dan wordt het alleen bevraagd als geen auto overeenkomt, en geen resultaat bij auto's is gratis. Niet beschikbaar voor Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Vul een voertuig in op basis van het Britse kenteken of het VIN: merk, model, bouwjaar, kleur, brandstof, cilinderinhoud en de MOT-vervaldatum, uit DVLA-gegevens via Check Car Details. Auto's en motoren komen uit hetzelfde register. Staat UK Vehicle Data aan voor uw account, dan komen ook het VIN, de transmissie en de gewichten mee. Elke opzoeking wordt gefactureerd aan het eigen Check Car Details-account van de werkplaats. Er worden geen eigenaarsgegevens teruggegeven.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Maak een account aan op api.checkcardetails.co.uk en kopieer de live-sleutel onder API Keys. Vehicle Registration zit in elk account. Wilt u ook het VIN, klik dan op Request Access naast UK Vehicle Data onder Your Data Points; opzoekingen gebruiken het zodra het aanstaat. Een testsleutel vindt alleen kentekens met de letter A erin."
+      },
+      "settings": {
+        "syncInspections": "MOT-datums van alle voertuigen in deze werkplaats actueel houden",
+        "syncInspectionsHelp": "Als dit aanstaat, wordt elk voertuig met een kenteken één keer opgezocht en wordt de MOT-datum opgeslagen. Daarna worden voertuigen opnieuw gecontroleerd zoals hieronder ingesteld. Elk gevonden voertuig wordt gefactureerd als één Vehicle Registration-opzoeking; kentekens die het register niet kent zijn gratis. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verzonden.",
+        "inspectionRecheck": "Voertuigen die al een datum hebben opnieuw controleren",
+        "inspectionRecheckHelp": "Een datum verandert alleen als een keuring is gehaald. Maandelijks merkt een vervroegde keuring het snelst; alleen vlak voor de vervaldatum kost het minst. Vlak voor de vervaldatum wordt elk voertuig wekelijks gecontroleerd, wat u hier ook kiest.",
+        "recheckMonthly": "Elke maand",
+        "recheckQuarterly": "Elke drie maanden",
+        "recheckNearDeadline": "Alleen vlak voor de vervaldatum",
+        "inspectionSoonDays": "Vlak voor de vervaldatum betekent binnen",
+        "inspectionSoonDaysHelp": "Binnen dit venster wordt een voertuig wekelijks gecontroleerd, zodat een gehaalde keuring het binnen dagen van de herinneringslijst haalt. Een korter venster betekent minder opzoekingen.",
+        "soon30": "30 dagen",
+        "soon60": "60 dagen",
+        "soon90": "90 dagen",
+        "inspectionOnlyWithCustomer": "Alleen voertuigen met een klant",
+        "inspectionOnlyWithCustomerHelp": "Sla voertuigen zonder vastgelegde klant over. Niemand kan eraan herinnerd worden, dus opzoeken kost voor niets."
       }
     },
     "rdw": {
@@ -441,7 +596,19 @@
       },
       "settings": {
         "syncInspections": "APK-vervaldatums van alle voertuigen in deze werkplaats bijhouden",
-        "syncInspectionsHelp": "Eén keer per uur worden voertuigen die niet recent zijn gecontroleerd op kenteken opgezocht en wordt de volgende APK-vervaldatum opgeslagen. Alleen voertuigen van deze werkplaats worden verstuurd. Een voertuig wordt maandelijks gecontroleerd, en wekelijks zodra de datum binnen twee maanden valt."
+        "syncInspectionsHelp": "Eens per uur worden voertuigen die aan een controle toe zijn op kenteken opgezocht en wordt de volgende APK-datum opgeslagen; hoe vaak een voertuig opnieuw wordt gecontroleerd, stelt u hieronder in. Alleen voertuigen die in deze werkplaats zijn opgeslagen worden verzonden.",
+        "inspectionRecheck": "Voertuigen die al een datum hebben opnieuw controleren",
+        "inspectionRecheckHelp": "Een datum verandert alleen als een keuring is gehaald. Maandelijks merkt een vervroegde keuring het snelst; alleen vlak voor de vervaldatum kost het minst. Vlak voor de vervaldatum wordt elk voertuig wekelijks gecontroleerd, wat u hier ook kiest.",
+        "recheckMonthly": "Elke maand",
+        "recheckQuarterly": "Elke drie maanden",
+        "recheckNearDeadline": "Alleen vlak voor de vervaldatum",
+        "inspectionSoonDays": "Vlak voor de vervaldatum betekent binnen",
+        "inspectionSoonDaysHelp": "Binnen dit venster wordt een voertuig wekelijks gecontroleerd, zodat een gehaalde keuring het binnen dagen van de herinneringslijst haalt. Een korter venster betekent minder opzoekingen.",
+        "soon30": "30 dagen",
+        "soon60": "60 dagen",
+        "soon90": "90 dagen",
+        "inspectionOnlyWithCustomer": "Alleen voertuigen met een klant",
+        "inspectionOnlyWithCustomerHelp": "Sla voertuigen zonder vastgelegde klant over. Niemand kan eraan herinnerd worden, dus opzoeken kost voor niets."
       }
     },
     "regcheck": {
@@ -482,6 +649,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-compatibel",
       "description": "Servicebeschrijvingen, historieksamenvattingen, documentherkenning en de assistent, beantwoord door elke server die de chat-API van OpenAI spreekt: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM en dergelijke. Uw gegevens blijven op uw eigen hardware.",
       "fields": {
         "baseUrl": "Basis-URL",
@@ -501,7 +669,7 @@
         "secretKeyHelp": "Uit het Stripe-dashboard onder Developers, API keys. Testsleutels verwerken niets echts, dus probeer er eerst een betaling mee en wissel daarna naar live-sleutels.",
         "publishableKey": "Publiceerbare sleutel",
         "webhookSecret": "Ondertekeningsgeheim van webhook",
-        "webhookSecretHelp": "Stripe toont dit zodra je de meldings-URL van deze pagina als webhook toevoegt. Hiermee wordt elke melding geverifieerd voordat een betaling wordt vastgelegd."
+        "webhookSecretHelp": "Optioneel, en ook na het verbinden toe te voegen. Stripe toont het onder Reveal secret zodra de meldings-URL van deze pagina als endpoint is toegevoegd. Hiermee wordt elke melding op zijn handtekening geverifieerd; zonder vraagt Torqvoice de checkout bij Stripe op voordat een betaling wordt geregistreerd."
       },
       "settings": {
         "enabled": "Aanbieden op factuurlinks",
@@ -535,6 +703,17 @@
         "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd.",
         "sandbox": "Sandboxmodus",
         "sandboxHelp": "Gebruik de sandbox van PayPal met de sleutels van de sandbox-app. Laat dit aan tot een volledige betaling is gelukt, zet het dan uit en vul de sleutels van de live-app in."
+      }
+    },
+    "paystack": {
+      "description": "Paystack-betaling vanaf de factuurlink, naar je eigen Paystack-account. De klant betaalt met kaart, bankoverschrijving of mobiel geld, afhankelijk van het land, en de factuur wordt vanzelf als betaald gemarkeerd.",
+      "fields": {
+        "secretKey": "Geheime sleutel",
+        "secretKeyHelp": "In het Paystack-dashboard onder Settings, API Keys & Webhooks. Een testsleutel (sk_test_) verwerkt niets echts, dus probeer daar eerst een betaling mee en stap daarna over op de live-sleutel."
+      },
+      "settings": {
+        "enabled": "Aanbieden op factuurlinks",
+        "enabledHelp": "Zet uit om de betaalknop een tijdje van gedeelde facturen te halen, zonder los te koppelen. Al gestarte betalingen worden nog steeds vastgelegd."
       }
     },
     "quickbooks": {
@@ -571,6 +750,192 @@
         "manualPaidAsPaymentHelp": "Een factuur die in Torqvoice zonder betalingsregistratie als betaald is gemarkeerd, krijgt in QuickBooks één betaling voor wat daar nog openstaat. Uit blijft hij daar open tot er een betaling wordt geregistreerd.",
         "pullPayments": "In QuickBooks geregistreerde betalingen terughalen",
         "pullPaymentsHelp": "Elke 30 minuten. Een betaling die in QuickBooks op een factuur van Torqvoice is ontvangen, wordt hier op de factuur geregistreerd."
+      }
+    },
+    "xero": {
+      "description": "Stuur uitgegeven facturen, hun klanten en hun betalingen naar Xero en haal daar geregistreerde betalingen terug.",
+      "tenantHelp": "Maak een Web app aan op developer.xero.com onder My Apps. Kopieer op de pagina Configuration de client-id, genereer een secret en voeg de redirect-URI hieronder toe. Wil je dat in Xero geregistreerde betalingen direct binnenkomen, open dan de pagina Webhooks van de app, laat die verwijzen naar je Torqvoice-adres gevolgd door /api/webhooks/xero, vink Invoices en Payments aan en vul hieronder de webhooksleutel in.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Clientgeheim",
+        "webhookKey": "Webhooksleutel",
+        "webhookKeyHelp": "Optioneel. De sleutel op de pagina Webhooks van je Xero-app. Hiermee komen in Xero geregistreerde betalingen hier direct binnen; zonder binnen 30 minuten."
+      },
+      "settings": {
+        "tenantId": "Xero-organisatie",
+        "tenantIdHelp": "De organisatie waarin de facturen worden aangemaakt. Alleen de organisaties die je bij het verbinden hebt toegestaan, staan in de lijst; verbind opnieuw om er nog een toe te staan.",
+        "pushInvoices": "Uitgegeven facturen naar Xero sturen",
+        "pushOnComplete": "Facturen ook sturen zodra de klus als voltooid is gemarkeerd",
+        "pushOnCompleteHelp": "Zonder deze optie gaat een factuur over zodra hij is verzonden, gedeeld of betaald. Met deze optie gaat een voltooide klus direct over en wordt hij bijgewerkt als er iets verandert.",
+        "startDate": "Alleen facturen gedateerd op of na",
+        "startDateHelp": "Laat leeg om elke uitgegeven factuur te sturen. Gebruik de datum waarop je boekhouding naar Xero is overgegaan, zodat oudere facturen niet dubbel worden ingevoerd.",
+        "invoiceStatus": "Status in Xero",
+        "invoiceStatusHelp": "Goedgekeurde facturen tellen direct als omzet en kunnen betalingen ontvangen. Kies Concept of Wacht op goedkeuring als iemand elke factuur eerst in Xero controleert; betalingen worden dan geregistreerd zodra de factuur daar is goedgekeurd.",
+        "invoiceStatusAuthorised": "Goedgekeurd",
+        "invoiceStatusSubmitted": "Wacht op goedkeuring",
+        "invoiceStatusDraft": "Concept",
+        "invoiceNumbers": "Factuurnummers",
+        "invoiceNumbersHelp": "Behoud het Torqvoice-nummer zodat beide systemen overeenkomen, of laat Xero de factuur in zijn eigen reeks nummeren. Kies bij nummering door Xero het Torqvoice-factuurnummer als referentie om elke factuur terug te vinden.",
+        "invoiceNumbersTorqvoice": "Het Torqvoice-nummer gebruiken",
+        "invoiceNumbersXero": "Xero laten nummeren",
+        "reference": "Referentie",
+        "referenceHelp": "Wat in het veld Reference van de factuur in Xero komt. Dat staat op de factuur en is daar te zien in lijsten en zoekresultaten.",
+        "referenceVehicle": "Voertuig en kenteken",
+        "referenceTitle": "Titel van de klus",
+        "referenceInvoiceNumber": "Torqvoice-factuurnummer",
+        "referenceNone": "Niets",
+        "includeVehicle": "Het voertuig op de factuur vermelden",
+        "includeVehicleHelp": "Een tekstregel boven de posten met bouwjaar, merk, model, kenteken en kilometerstand.",
+        "includeNotes": "Opmerkingen voor de klant meenemen",
+        "includeNotesHelp": "De opmerkingen voor de klant, als tekstregel op de factuur.",
+        "notesPosition": "Positie van de opmerkingen voor de klant",
+        "notesPositionHelp": "Met Boven de posten komen de opmerkingen direct na de voertuigregel, vóór arbeid en onderdelen. Met Onder de posten komen ze als laatste.",
+        "notesPositionBelow": "Onder de posten",
+        "notesPositionAbove": "Boven de posten",
+        "includePartNumbers": "Onderdeelnummers op onderdelenregels tonen",
+        "includePartNumbersHelp": "De omschrijving van elke onderdelenregel begint met het onderdeelnummer.",
+        "brandingThemeId": "Huisstijlthema",
+        "brandingThemeIdHelp": "Het huisstijlthema (Branding theme) in Xero dat de factuur gebruikt. Het bepaalt de opmaak als de factuur in Xero wordt bekeken of vanuit Xero wordt verzonden. Laat leeg voor de standaard van de organisatie.",
+        "laborAccount": "Rekening voor arbeid",
+        "laborAccountHelp": "De omzetrekening waarop arbeidsregels worden geboekt. Laat leeg om de rekening Sales van de organisatie te gebruiken, of de rekening van het artikel dat hieronder is gekozen.",
+        "partsAccount": "Rekening voor onderdelen",
+        "partsAccountHelp": "De omzetrekening waarop onderdelenregels worden geboekt. Laat leeg om de rekening Sales van de organisatie te gebruiken, of de rekening van het artikel dat hieronder is gekozen.",
+        "shopFeeAccount": "Rekening voor de werkplaatstoeslag",
+        "shopFeeAccountHelp": "Hier komt de regel voor de werkplaatstoeslag. Laat leeg om hem bij arbeid te boeken.",
+        "laborItem": "Artikel voor arbeidsregels",
+        "laborItemHelp": "Optioneel. Een Xero-artikel dat aan elke arbeidsregel wordt gekoppeld, voor artikelrapporten in Xero. De hierboven gekozen rekening gaat nog steeds voor.",
+        "partsItem": "Artikel voor onderdelenregels",
+        "partsItemHelp": "Optioneel. Een Xero-artikel dat aan elke onderdelenregel wordt gekoppeld, voor artikelrapporten in Xero. De hierboven gekozen rekening gaat nog steeds voor.",
+        "matchItemsByPartNumber": "Onderdelen op onderdeelnummer aan Xero-artikelen koppelen",
+        "matchItemsByPartNumberHelp": "Een onderdeel waarvan het nummer ook de code van een artikel in Xero is, wordt als dat artikel verkocht, zodat de voorraad die Xero bijhoudt daalt. Xero weigert de factuur als een voorraadartikel niet genoeg op voorraad heeft.",
+        "taxAmounts": "Belastingbedragen",
+        "taxAmountsHelp": "Zoals gefactureerd stuurt de belasting op elke regel precies zoals die op de factuur van de klant staat, zodat beide systemen tot op de cent overeenkomen. Berekend door Xero laat Xero het percentage van het btw-tarief van elke regel toepassen, en het logboek meldt afwijkende totalen.",
+        "taxAmountsBilled": "Zoals gefactureerd in Torqvoice",
+        "taxAmountsXero": "Berekend door Xero",
+        "taxType": "Btw-tarief voor belaste regels",
+        "taxTypeHelp": "Torqvoice kiest het btw-tarief in Xero waarvan het percentage bij elke factuur past, zoals GST on Income. Kies er hier een om altijd dat tarief te gebruiken.",
+        "zeroTaxType": "Btw-tarief voor regels zonder belasting",
+        "zeroTaxTypeHelp": "Gebruikt voor regels zonder belasting en voor vrijgestelde klanten. Laat leeg om GST Free Income, Zero Rated of No GST te gebruiken, afhankelijk van wat de organisatie heeft.",
+        "tracking1": "Trackingoptie",
+        "tracking1Help": "Label elke regel met een trackingoptie, zoals de vestiging of afdeling, voor rapporten in Xero.",
+        "tracking2": "Tweede trackingoptie",
+        "tracking2Help": "Een optie uit de andere trackingcategorie, als de organisatie er twee heeft.",
+        "sendFromXero": "De factuur vanuit Xero naar de klant e-mailen",
+        "sendFromXeroHelp": "Xero stuurt een eigen exemplaar van de factuur naar het e-mailadres van de klant, met eventuele online betaalopties die in Xero zijn ingesteld. Zet dit uit als Torqvoice de factuur al verstuurt, zodat de klant hem niet twee keer krijgt.",
+        "markAsSent": "Facturen in Xero als verzonden markeren",
+        "markAsSentHelp": "Torqvoice bezorgt de factuur, dus Xero toont hem als verzonden in plaats van te wachten tot iemand hem daar verstuurt. Geldt voor goedgekeurde facturen.",
+        "attachPdf": "Factuur-pdf bijvoegen",
+        "attachPdfHelp": "De factuur die de klant van Torqvoice ontving, wordt bij de factuur in Xero gevoegd.",
+        "updateContacts": "Klantgegevens in Xero actueel houden",
+        "updateContactsHelp": "Wijzigingen die je hier aanbrengt in de naam, het e-mailadres, het telefoonnummer, het adres of het btw-nummer van een klant, worden naar het contact in Xero gekopieerd. Uit worden contacten alleen aangemaakt en daarna gelaten zoals de boekhouder ze heeft.",
+        "sameEmail": "Klanten met hetzelfde e-mailadres",
+        "sameEmailHelp": "Meerdere klanten kunnen een e-mailadres delen, zoals een gezin of de administratiemailbox van een bedrijf. Bij de eerste keuze wordt een contact in Xero dat op e-mail is gevonden alleen gebruikt als ook de naam bij de klant past; anders krijgt de klant een nieuw contact en noemt het logboek het andere, zodat je ze in Xero kunt samenvoegen als het dezelfde klant is.",
+        "sameEmailCreate": "Nieuw contact aanmaken als de naam afwijkt",
+        "sameEmailReuse": "Bestaand contact gebruiken, ook als de naam afwijkt",
+        "voidOnDelete": "De Xero-factuur ongeldig maken als de klus hier wordt verwijderd",
+        "voidOnDeleteHelp": "Een factuur met betalingen in Xero wordt nooit ongeldig gemaakt; het logboek meldt dat hij ongemoeid is gelaten.",
+        "pushPayments": "Betalingen in Xero registreren",
+        "paymentAccount": "Betalingen storten op",
+        "paymentAccountHelp": "De bankrekening in Xero waarop in Torqvoice geregistreerde betalingen worden gezet. Laat leeg om de eerste bankrekening te gebruiken.",
+        "cashAccount": "Contante betalingen storten op",
+        "cardAccount": "Kaartbetalingen storten op",
+        "transferAccount": "Bankoverschrijvingen storten op",
+        "onlineAccount": "Onlinebetalingen storten op",
+        "methodAccountHelp": "Laat leeg om de rekening hierboven te gebruiken.",
+        "onlineAccountHelp": "Betalingen via Stripe, PayPal, Vipps en de andere betaalintegraties, vaak een tussenrekening. Laat leeg om de rekening hierboven te gebruiken.",
+        "manualPaidAsPayment": "Een betaling registreren als een factuur handmatig als betaald wordt gemarkeerd",
+        "manualPaidAsPaymentHelp": "Een factuur die in Torqvoice zonder betalingsregistratie als betaald is gemarkeerd, krijgt in Xero één betaling voor wat daar nog openstaat. Uit blijft hij daar open tot er een betaling wordt geregistreerd.",
+        "pullPayments": "In Xero geregistreerde betalingen terughalen",
+        "pullPaymentsHelp": "Een betaling die in Xero op een factuur van Torqvoice wordt geregistreerd, wordt hier op de factuur vastgelegd, direct met een webhook en anders binnen 30 minuten."
+      }
+    },
+    "zoho-books": {
+      "description": "Stuur uitgegeven facturen, hun klanten en hun betalingen naar Zoho Books en haal daar geregistreerde betalingen terug.",
+      "tenantHelp": "Maak een Server-based Application aan in de Zoho API Console (api-console.zoho.com, of de console van je eigen regio, zoals api-console.zoho.eu). Voeg de redirect-URI hieronder toe, kopieer de client-id en het secret, en vink op het tabblad Settings van de client \"Use the same OAuth credentials for all data centers\" aan als werkplaatsen vanuit andere regio's inloggen.",
+      "fields": {
+        "clientId": "Client-ID",
+        "clientSecret": "Clientgeheim"
+      },
+      "settings": {
+        "organizationId": "Zoho Books-organisatie",
+        "organizationIdHelp": "De organisatie waarin de facturen worden geschreven. Elke organisatie waar de Zoho-gebruiker die de koppeling maakte bij kan, staat in de lijst.",
+        "pushInvoices": "Uitgegeven facturen naar Zoho Books sturen",
+        "pushOnComplete": "Facturen ook sturen zodra de klus als voltooid is gemarkeerd",
+        "pushOnCompleteHelp": "Zonder deze optie gaat een factuur over zodra hij is verzonden, gedeeld of betaald. Met deze optie gaat een voltooide klus direct over en wordt hij bijgewerkt als er iets verandert.",
+        "startDate": "Alleen facturen gedateerd op of na",
+        "startDateHelp": "Laat leeg om elke uitgegeven factuur te sturen. Gebruik de datum waarop je boekhouding naar Zoho Books is overgegaan, zodat oudere facturen niet dubbel worden ingevoerd.",
+        "invoiceStatus": "Status in Zoho Books",
+        "invoiceStatusHelp": "Verzonden facturen tellen direct als omzet en kunnen betalingen ontvangen. Kies Concept als iemand elke factuur eerst in Zoho Books controleert; betalingen worden dan geregistreerd zodra de factuur daar is verzonden.",
+        "invoiceStatusSent": "Verzonden",
+        "invoiceStatusDraft": "Concept",
+        "invoiceNumbers": "Factuurnummers",
+        "invoiceNumbersHelp": "Behoud het Torqvoice-nummer zodat beide systemen overeenkomen, of laat Zoho Books de factuur in zijn eigen reeks nummeren. Kies bij nummering door Zoho het Torqvoice-factuurnummer als referentie om elke factuur terug te vinden.",
+        "invoiceNumbersTorqvoice": "Het Torqvoice-nummer gebruiken",
+        "invoiceNumbersZoho": "Zoho Books laten nummeren",
+        "reference": "Referentie",
+        "referenceHelp": "Wat in het veld Reference# van de factuur in Zoho Books komt. Dat staat op de factuur en is daar te zien in lijsten en zoekresultaten.",
+        "referenceVehicle": "Voertuig en kenteken",
+        "referenceTitle": "Titel van de klus",
+        "referenceInvoiceNumber": "Torqvoice-factuurnummer",
+        "referenceNone": "Niets",
+        "includeVehicle": "Het voertuig op de factuur vermelden",
+        "includeVehicleHelp": "Bouwjaar, merk, model, kenteken en kilometerstand, bij de opmerkingen voor de klant.",
+        "includeNotes": "Opmerkingen voor de klant meenemen",
+        "includeNotesHelp": "De opmerkingen voor de klant, als platte tekst.",
+        "notesPosition": "Waar het voertuig en de opmerkingen komen",
+        "notesPositionHelp": "Customer Notes is het eigen veld van Zoho, dat onder de posten op de factuur van Zoho wordt afgedrukt. Boven of onder de posten zet ze in plaats daarvan in een tekstregel tussen de factuurregels.",
+        "notesPositionCustomerNotes": "Het veld Customer Notes van Zoho",
+        "notesPositionBelow": "Een regel onder de posten",
+        "notesPositionAbove": "Een regel boven de posten",
+        "includePartNumbers": "Onderdeelnummers op onderdelenregels tonen",
+        "includePartNumbersHelp": "De omschrijving van elke onderdelenregel begint met het onderdeelnummer.",
+        "templateId": "Factuursjabloon",
+        "templateIdHelp": "Het sjabloon in Zoho Books dat de factuur gebruikt als hij in Zoho wordt bekeken of vanuit Zoho wordt verzonden. Laat leeg voor de standaard van de organisatie.",
+        "locationId": "Locatie",
+        "locationIdHelp": "Alleen voor organisaties waarbij locaties in Zoho Books zijn ingeschakeld, waar elke factuur er een nodig heeft. Laat anders leeg.",
+        "laborAccount": "Rekening voor arbeid",
+        "laborAccountHelp": "De omzetrekening waarop arbeidsregels worden geboekt. Laat leeg om de rekening van het artikel dat hieronder is gekozen te gebruiken, of de rekening Sales van Zoho.",
+        "partsAccount": "Rekening voor onderdelen",
+        "partsAccountHelp": "De omzetrekening waarop onderdelenregels worden geboekt. Laat leeg om de rekening van het artikel dat hieronder is gekozen te gebruiken, of de rekening Sales van Zoho.",
+        "shopFeeAccount": "Rekening voor de werkplaatstoeslag",
+        "shopFeeAccountHelp": "Hier komt de regel voor de werkplaatstoeslag. Laat leeg om hem bij arbeid te boeken.",
+        "laborItem": "Artikel voor arbeidsregels",
+        "laborItemHelp": "Optioneel. Een Zoho Books-artikel dat aan elke arbeidsregel wordt gekoppeld, voor artikelrapporten in Zoho. De hierboven gekozen rekening gaat nog steeds voor.",
+        "partsItem": "Artikel voor onderdelenregels",
+        "partsItemHelp": "Optioneel. Een Zoho Books-artikel dat aan elke onderdelenregel wordt gekoppeld, voor artikelrapporten in Zoho. De hierboven gekozen rekening gaat nog steeds voor.",
+        "matchItemsByPartNumber": "Onderdelen op onderdeelnummer aan Zoho-artikelen koppelen",
+        "matchItemsByPartNumberHelp": "Een onderdeel waarvan het nummer ook de SKU van een artikel in Zoho Books is, wordt als dat artikel verkocht, zodat de voorraad die Zoho bijhoudt daalt. Zet SKU's aan onder Settings, Items in Zoho Books, anders wordt er niets gevonden.",
+        "taxId": "Btw voor belaste regels",
+        "taxIdHelp": "Torqvoice kiest de btw in Zoho Books waarvan het percentage bij elke factuur past. Kies er hier een voor als meerdere hetzelfde percentage hebben, of geen enkele past.",
+        "zeroTaxId": "Btw voor regels zonder belasting",
+        "zeroTaxIdHelp": "Gebruikt voor regels zonder belasting en voor vrijgestelde klanten, als de organisatie daarvoor een btw van 0% heeft. Laat leeg om die regels zonder btw te sturen.",
+        "roundingAdjustment": "Het totaal op de cent laten kloppen",
+        "roundingAdjustmentHelp": "Zoho Books berekent de btw zelf. Komt het totaal daar een cent of twee anders uit dan de factuur die de klant kreeg, dan gaat het verschil erin als afrondingscorrectie van Zoho, zodat beide systemen overeenkomen. Uit meldt het logboek wanneer ze verschillen.",
+        "sendFromZoho": "De factuur vanuit Zoho Books naar de klant e-mailen",
+        "sendFromZohoHelp": "Zoho Books stuurt een eigen exemplaar van de factuur naar het e-mailadres van de klant, met eventuele online betaalopties die in Zoho zijn ingesteld. Zet dit uit als Torqvoice de factuur al verstuurt, zodat de klant hem niet twee keer krijgt.",
+        "attachPdf": "Factuur-pdf bijvoegen",
+        "attachPdfHelp": "De factuur die de klant van Torqvoice ontving, wordt bij de factuur in Zoho Books gevoegd en vervangen als hij verandert.",
+        "updateContacts": "Klantgegevens in Zoho Books actueel houden",
+        "updateContactsHelp": "Wijzigingen die je hier aanbrengt in de naam, het e-mailadres, het telefoonnummer of het adres van een klant, worden naar het contact in Zoho Books gekopieerd. Uit worden contacten alleen aangemaakt en daarna gelaten zoals de boekhouder ze heeft.",
+        "sameEmail": "Klanten met hetzelfde e-mailadres",
+        "sameEmailHelp": "Meerdere klanten kunnen een e-mailadres delen, zoals een gezin of de administratiemailbox van een bedrijf. Bij de eerste keuze wordt een contact in Zoho dat op e-mail is gevonden alleen gebruikt als ook de naam bij de klant past; anders krijgt de klant een nieuw contact en noemt het logboek het andere, zodat je ze in Zoho kunt samenvoegen als het dezelfde klant is.",
+        "sameEmailCreate": "Nieuw contact aanmaken als de naam afwijkt",
+        "sameEmailReuse": "Bestaand contact gebruiken, ook als de naam afwijkt",
+        "voidOnDelete": "De Zoho-factuur ongeldig maken als de klus hier wordt verwijderd",
+        "voidOnDeleteHelp": "Een concept wordt verwijderd en een verzonden factuur ongeldig gemaakt. Een factuur met betalingen in Zoho Books wordt nooit aangeraakt; het logboek meldt dat hij ongemoeid is gelaten.",
+        "pushPayments": "Betalingen in Zoho Books registreren",
+        "paymentAccount": "Storten op",
+        "paymentAccountHelp": "De rekening in Zoho Books waarop in Torqvoice geregistreerde betalingen worden gestort. Laat leeg om Undeposited Funds te gebruiken.",
+        "cashAccount": "Contante betalingen storten op",
+        "cardAccount": "Kaartbetalingen storten op",
+        "transferAccount": "Bankoverschrijvingen storten op",
+        "onlineAccount": "Onlinebetalingen storten op",
+        "methodAccountHelp": "Laat leeg om de rekening hierboven te gebruiken.",
+        "onlineAccountHelp": "Betalingen via Stripe, PayPal, Vipps, Paystack en de andere betaalintegraties, vaak een tussenrekening. Laat leeg om de rekening hierboven te gebruiken.",
+        "manualPaidAsPayment": "Een betaling registreren als een factuur handmatig als betaald wordt gemarkeerd",
+        "manualPaidAsPaymentHelp": "Een factuur die in Torqvoice zonder betalingsregistratie als betaald is gemarkeerd, krijgt in Zoho Books één betaling voor wat daar nog openstaat. Uit blijft hij daar open tot er een betaling wordt geregistreerd.",
+        "pullPayments": "In Zoho Books geregistreerde betalingen terughalen",
+        "pullPaymentsHelp": "Een betaling die in Zoho Books op een factuur van Torqvoice wordt geregistreerd, wordt hier binnen 30 minuten op de factuur vastgelegd, en een betaling die daar wordt verwijderd, wordt hier weggehaald."
       }
     },
     "fiken": {
@@ -620,7 +985,43 @@
         "refreshFleetHelp": "Eén keer per dag worden modellen die de afgelopen week niet zijn vernieuwd opnieuw opgehaald, zodat de voertuigpagina nooit wacht en een nieuwe terugroepactie binnen een week zichtbaar is. Alleen merk, model en bouwjaar worden verstuurd."
       }
     },
+    "openlaborproject": {
+      "description": "Zoek arbeidstijden en vloeistofinhouden op voor het voertuig van een werkorder of offerte, en voeg de uren van een werkzaamheid met één klik toe als arbeidsregel. De meeste gegevens gelden voor voertuigen voor de Amerikaanse markt, en de gids toont voor welke markt elke opzoeking geldt. Elke waarde toont hoe zeker Open Labor Project ervan is, en veel zijn door AI gemaakte schattingen, dus controleer ze voordat u een klant een offerte geeft. Opzoekingen gebruiken de eigen API-sleutel van de werkplaats. Met een betaald abonnement bij Open Labor Project blijft een eenmaal opgezocht voertuig bewaard zolang het abonnement loopt, zodat opnieuw opzoeken geen aanroep kost.",
+      "fields": {
+        "apiKey": "API-sleutel",
+        "apiKeyHelp": "Vraag een sleutel aan op openlaborproject.com onder Developers; u krijgt hem per e-mail. Een gratis sleutel heeft 10 aanroepen per dag en toont de uren van één klus tegelijk. Vanaf het Builder-abonnement is de limiet hoger en ziet u alle uren in één keer.",
+        "apiKeyServerHelp": "Laat dit leeg om de sleutel van deze server te gebruiken, of plak uw eigen sleutel van openlaborproject.com om uw eigen abonnement te gebruiken."
+      },
+      "settings": {
+        "minConfidence": "Arbeidstijden tonen vanaf",
+        "minConfidenceHelp": "Laat tijden weg waarvan de bron minder zeker is. Veel tijden voor Europese merken zijn AI-schattingen, dus een strenge keuze kan weinig werkzaamheden overlaten.",
+        "confidenceAll": "Elk zekerheidsniveau",
+        "confidenceMedium": "Gemiddeld en hoger",
+        "confidenceHigh": "Geverifieerd en hoger",
+        "confidenceOem": "Alleen OEM",
+        "hoursFrom": "Uren om toe te voegen",
+        "hoursFromHelp": "Welk getal op de werkorder komt: de normtijd, of de bovenkant van het bereik dat Open Labor Project geeft (bijvoorbeeld 1,6 u in plaats van 1,2 u). De bovenkant laat ruimte voor werkzaamheden die uitlopen.",
+        "hoursBook": "Normtijd",
+        "hoursHigh": "Bovenkant van het bereik",
+        "adjustPercent": "Tijden aanpassen met (%)",
+        "adjustPercentHelp": "Een percentage dat bij elke tijd wordt opgeteld voordat die op de werkorder komt: 10 maakt van 1,2 u 1,32 u, -10 maakt er 1,08 u van. Van -50 tot 200.",
+        "rounding": "Uren naar boven afronden op",
+        "roundingHelp": "Rondt de uren van elke werkzaamheid naar boven af, na een eventuele aanpassing: met 0,25 wordt 1,32 u 1,5 u. Een tijd die al op een stap ligt, blijft zoals hij is.",
+        "roundNone": "Niet afronden",
+        "roundTenth": "0,1 uur",
+        "roundQuarter": "0,25 uur",
+        "roundHalf": "0,5 uur",
+        "fluids": "Vloeistofgegevens tonen",
+        "fluidsHelp": "Voegt een tabblad Vloeistoffen toe met inhouden, specificaties en vervangingsintervallen. Openen kost een eigen aanroep.",
+        "units": "Eenheden voor vloeistoffen",
+        "unitsHelp": "De eenheden waarin inhouden en vervangingsintervallen worden getoond.",
+        "unitsBoth": "Beide",
+        "unitsMetric": "Metrisch (L, km)",
+        "unitsUs": "VS (qt, mi)"
+      }
+    },
     "speech-to-text": {
+      "name": "Spraak naar tekst",
       "description": "Dicteren op een werkorder, uitgeschreven door een spraakmodel in plaats van door de browser: veel nauwkeuriger, in elke taal, en het kent de woorden van een werkplaats. Los van uw AI-provider, dus die kunt u laten zoals hij is. Gebruikt uw eigen OpenAI-sleutel, of een eigen server die de transcriptie-API van OpenAI spreekt. De opname wordt alleen verstuurd om uit te schrijven en wordt niet bewaard.",
       "fields": {
         "apiKey": "API-sleutel",
@@ -636,6 +1037,116 @@
         "modeAi": "Altijd het spraakmodel",
         "modeChoice": "Ieder kiest zelf: spraakmodel of browser"
       }
+    },
+    "s3": {
+      "name": "Cloudopslag-bucket",
+      "description": "Versleutelde back-ups van deze werkplaats naar een bucket die van u is, bij Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage of andere S3-compatibele opslag, volgens een schema dat u kiest. Na de eerste run wordt alleen geüpload wat er veranderd is, dus back-ups elk uur blijven goedkoop.",
+      "fields": {
+        "accessKeyId": "Toegangssleutel-ID",
+        "accessKeyIdHelp": "Een sleutel van uw opslagaanbieder met toestemming om objecten in de bucket op te sommen, te lezen, te schrijven en te verwijderen. Maak een sleutel alleen voor Torqvoice, zodat u die los kunt intrekken.",
+        "secretAccessKey": "Geheime toegangssleutel",
+        "password": "Back-upwachtwoord",
+        "passwordHelp": "Elke back-up wordt versleuteld met dit wachtwoord. Verzin er een of klik op Genereren, en bewaar een kopie buiten deze server: zonder dit wachtwoord kan niemand deze back-ups openen, ook Torqvoice niet. Om opslag opnieuw te koppelen die al Torqvoice-back-ups bevat, voert u het wachtwoord in waarmee ze zijn gemaakt.",
+        "endpoint": "Eigen endpoint",
+        "endpointHelp": "Alleen voor de optie Andere S3-compatibele opslag: het S3-adres van uw eigen opslag, zoals een MinIO-server, als hostnaam met eventueel een poort."
+      },
+      "settings": {
+        "provider": "Aanbieder",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Andere S3-compatibele opslag",
+        "region": "Regio",
+        "regionHelp": "Waar de bucket staat. Kies hem uit de lijst van de aanbieder; voor andere opslag typt u wat die verwacht, als die een regio nodig heeft. Niet gebruikt door Cloudflare R2.",
+        "accountId": "Cloudflare-account-ID",
+        "accountIdHelp": "De ID van 32 tekens op de R2-overzichtspagina van uw Cloudflare-dashboard.",
+        "bucket": "Bucket",
+        "bucketHelp": "De lijst komt van de sleutel zodra die is ingevuld. Mag de sleutel één bucket gebruiken maar ze niet opsommen, typ dan zelf de naam.",
+        "prefix": "Map in de bucket",
+        "prefixHelp": "De back-ups staan in deze map. Gebruik een andere map voor elke werkplaats die de bucket deelt.",
+        "frequency": "Hoe vaak",
+        "frequencyHourly": "Elk uur",
+        "frequencyEvery4h": "Elke 4 uur",
+        "frequencyDaily": "Elke dag",
+        "frequencyWeekly": "Elke week",
+        "frequencyMonthly": "Elke maand",
+        "time": "Tijdstip",
+        "timeHelp": "Volgens de klok van de werkplaats, als HH:MM. Gebruikt voor dagelijkse, wekelijkse en maandelijkse back-ups.",
+        "weekday": "Dag van de week",
+        "sunday": "Zondag",
+        "monday": "Maandag",
+        "tuesday": "Dinsdag",
+        "wednesday": "Woensdag",
+        "thursday": "Donderdag",
+        "friday": "Vrijdag",
+        "saturday": "Zaterdag",
+        "monthDay": "Dag van de maand",
+        "monthDayLast": "Laatste dag",
+        "contents": "Inhoud",
+        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord. Een back-up bevat de gegevens van de werkplaats en, als u dat kiest, de bestanden. Gebruikersaccounts en wachtwoorden zitten er niet in: op een nieuwe server meldt u zich aan, nodigt u het team uit en zet u de gegevens terug in die werkplaats.",
+        "contentsData": "Alleen gegevens",
+        "contentsDataAndSecrets": "Gegevens en geheime sleutels",
+        "includeFiles": "Foto's en bestanden meenemen",
+        "includeFilesHelp": "Elk bestand wordt één keer geüpload en door latere back-ups hergebruikt, dus dit kost weinig na de eerste run.",
+        "keepHourly": "Uurlijkse back-ups bewaren",
+        "keepHourlyHelp": "Hoeveel van de recentste uurlijkse back-ups bewaard blijven. Alleen van belang bij een schema van elk uur of elke 4 uur.",
+        "keepDaily": "Dagelijkse back-ups bewaren",
+        "keepWeekly": "Wekelijkse back-ups bewaren",
+        "keepMonthly": "Maandelijkse back-ups bewaren",
+        "keepMonthlyHelp": "Oudere back-ups worden na elke run verwijderd, waarbij de nieuwste van elk soort blijven. Zet een aantal op 0 om van dat soort niets te bewaren."
+      }
+    },
+    "local-folder": {
+      "name": "Lokale map",
+      "description": "Versleutelde back-ups van deze werkplaats naar een map op deze server: het back-upvolume in het compose-bestand, of een netwerkschijf die daar is gekoppeld. Een kopie op dezelfde schijf als de database is op zichzelf niet veilig; combineer die met opslag elders.",
+      "fields": {
+        "password": "Back-upwachtwoord",
+        "passwordHelp": "Elke back-up wordt versleuteld met dit wachtwoord. Verzin er een of klik op Genereren, en bewaar een kopie buiten deze server: zonder dit wachtwoord kan niemand deze back-ups openen, ook Torqvoice niet. Om opslag opnieuw te koppelen die al Torqvoice-back-ups bevat, voert u het wachtwoord in waarmee ze zijn gemaakt."
+      },
+      "settings": {
+        "folder": "Map",
+        "folderHelp": "De map onder de back-uproot van de server waarin de back-ups van deze werkplaats staan. Laat leeg om een map te gebruiken die naar deze werkplaats is genoemd. Typ op een nieuwe server de mapnaam die een eerdere installatie gebruikte om de back-ups terug te krijgen.",
+        "frequency": "Hoe vaak",
+        "frequencyHourly": "Elk uur",
+        "frequencyEvery4h": "Elke 4 uur",
+        "frequencyDaily": "Elke dag",
+        "frequencyWeekly": "Elke week",
+        "frequencyMonthly": "Elke maand",
+        "time": "Tijdstip",
+        "timeHelp": "Volgens de klok van de werkplaats, als HH:MM. Gebruikt voor dagelijkse, wekelijkse en maandelijkse back-ups.",
+        "weekday": "Dag van de week",
+        "sunday": "Zondag",
+        "monday": "Maandag",
+        "tuesday": "Dinsdag",
+        "wednesday": "Woensdag",
+        "thursday": "Donderdag",
+        "friday": "Vrijdag",
+        "saturday": "Zaterdag",
+        "monthDay": "Dag van de maand",
+        "monthDayLast": "Laatste dag",
+        "contents": "Inhoud",
+        "contentsHelp": "Geheime sleutels zijn de sleutels die deze werkplaats in Torqvoice heeft ingevoerd: betaal-, AI- en webhooksleutels. Elke back-up wordt hoe dan ook versleuteld met het back-upwachtwoord. Een back-up bevat de gegevens van de werkplaats en, als u dat kiest, de bestanden. Gebruikersaccounts en wachtwoorden zitten er niet in: op een nieuwe server meldt u zich aan, nodigt u het team uit en zet u de gegevens terug in die werkplaats.",
+        "contentsData": "Alleen gegevens",
+        "contentsDataAndSecrets": "Gegevens en geheime sleutels",
+        "includeFiles": "Foto's en bestanden meenemen",
+        "includeFilesHelp": "Elk bestand wordt één keer geüpload en door latere back-ups hergebruikt, dus dit kost weinig na de eerste run.",
+        "keepHourly": "Uurlijkse back-ups bewaren",
+        "keepHourlyHelp": "Hoeveel van de recentste uurlijkse back-ups bewaard blijven. Alleen van belang bij een schema van elk uur of elke 4 uur.",
+        "keepDaily": "Dagelijkse back-ups bewaren",
+        "keepWeekly": "Wekelijkse back-ups bewaren",
+        "keepMonthly": "Maandelijkse back-ups bewaren",
+        "keepMonthlyHelp": "Oudere back-ups worden na elke run verwijderd, waarbij de nieuwste van elk soort blijven. Zet een aantal op 0 om van dat soort niets te bewaren."
+      }
+    },
+    "torqvoice-codes": {
+      "description": "Zie wat een foutcode betekent bij het voertuig voor u, in uw eigen taal: de betekenis, waarschijnlijke oorzaken en verwante codes. Typ of plak codes in een werkorder en ze worden observaties met de betekenis opgeslagen, zodat afdrukken en historie nooit op een verbinding wachten. Beheerd door Torqvoice en inbegrepen in elk cloudabonnement. Een opzoeking stuurt alleen merk, model, bouwjaar en motor, nooit een VIN, kenteken of klant.",
+      "fields": {
+        "apiToken": "Toegangssleutel",
+        "apiTokenHelp": "De sleutel die Torqvoice u gaf voor de codedienst."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {
@@ -658,6 +1169,42 @@
     "safety": {
       "refresh": "Vernieuwing van terugroepgegevens",
       "vehicle": "Terugroepcontrole voor een nieuw voertuig"
+    },
+    "repair": {
+      "checkPlan": "Controleren of bewaarde opzoekingen mogen blijven"
     }
+  },
+  "backupAlerts": {
+    "destination": "back-upbestemming",
+    "failedTitle": "Back-up mislukt",
+    "failedMessage": "De back-up naar {name} is niet voltooid: {reason}",
+    "failedSubject": "Back-up naar {name} mislukt",
+    "failedEmailIntro": "De geplande back-up van uw werkplaats naar {name} is niet voltooid.",
+    "openToRetry": "Open Instellingen, Integraties, {name} om de run te bekijken en het opnieuw te proberen.",
+    "overdueTitle": "Back-up te laat",
+    "overdueSince": "Sinds {time} is er geen back-up naar {name} voltooid.",
+    "overdueNever": "Er is nog geen back-up naar {name} voltooid.",
+    "overdueSubject": "Back-up naar {name} is te laat",
+    "openToSee": "Open Instellingen, Integraties, {name} om te zien wat er misging.",
+    "platformName": "Back-ups door Torqvoice",
+    "restoredTitle": "Werkplaats teruggezet",
+    "restoredSubject": "Uw werkplaats is teruggezet vanuit een back-up",
+    "restoredIntro": "{name}: de werkplaats is op {time} teruggezet naar herstelpunt {snapshot}. Alles wat na dat punt is ingevoerd, staat niet meer in de werkplaats.",
+    "restoredByMember": "Een lid van uw werkplaats heeft om dit terugzetten gevraagd.",
+    "restoredBySupport": "Torqvoice-support heeft dit op uw verzoek gedaan. Opgegeven reden: {reason}",
+    "noReason": "geen opgegeven",
+    "restoredUndo": "Eerst is een veiligheidskopie gemaakt van de werkplaats zoals die vlak voor het terugzetten was; die wordt 90 dagen bewaard. Neem contact op met support om ernaar terug te gaan."
+  },
+  "aiErrors": {
+    "modelAccess": "Deze API-sleutel heeft geen toegang tot het gekozen model. Kies een ander onder Instellingen → Integraties.",
+    "spendLimit": "Dit OpenAI-account heeft zijn bestedingslimiet bereikt. Controleer de limieten op platform.openai.com.",
+    "noCredit": "Dit OpenAI-account heeft geen tegoed meer. Voeg betaalgegevens toe op platform.openai.com.",
+    "keyRejected": "De AI-aanbieder heeft de API-sleutel geweigerd. Controleer die onder Instellingen → Integraties.",
+    "noUsableCredit": "De AI-aanbieder meldt geen bruikbaar tegoed voor deze API-sleutel.",
+    "modelUnavailable": "De AI-aanbieder biedt het gekozen model niet aan. Kies een ander onder Instellingen → Integraties.",
+    "imageTooLarge": "De afbeelding was te groot voor de AI-aanbieder.",
+    "rateLimited": "De AI-aanbieder beperkt de verzoeken van deze API-sleutel. Probeer het zo meteen opnieuw.",
+    "providerDown": "De AI-aanbieder is op dit moment niet beschikbaar. Probeer het zo meteen opnieuw.",
+    "unexpected": "De AI-aanbieder gaf een onverwacht antwoord."
   }
 }

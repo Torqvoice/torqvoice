@@ -8,7 +8,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts'
 
-import { useState, useCallback, useTransition, useEffect } from 'react'
+import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog'
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
@@ -26,13 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -52,22 +46,16 @@ import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
+import { ApplyMarkupDialog } from '@/features/inventory/Components/ApplyMarkupDialog'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
+import { PartTagChips } from '@/features/inventory/Components/PartTagChips'
+import { markupPercentFromMultiplier } from '@/features/inventory/Lib/partPricing'
+import { sameTag } from '@/features/inventory/Lib/partTags'
+import { cn } from '@/lib/utils'
 import {
   deleteInventoryPart,
   deleteInventoryParts,
-  applyMarkupToAll,
 } from '@/features/inventory/Actions/inventoryActions'
-import { setSetting } from '@/features/settings/Actions/settingsActions'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import {
-  Dialog as MarkupDialog,
-  DialogContent as MarkupDialogContent,
-  DialogHeader as MarkupDialogHeader,
-  DialogTitle as MarkupDialogTitle,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   ArrowDown,
   ArrowUp,
@@ -101,6 +89,7 @@ interface InventoryPart {
   category: string | null
   quantity: number
   minQuantity: number
+  trackStock: boolean
   unit: string | null
   unitCost: number
   sellPrice: number
@@ -117,7 +106,11 @@ interface InventoryPart {
     sortOrder: number
   }[]
   location: string | null
+  tags: string[]
 }
+
+/** The tag filter's "every tag" choice; not a value a tag can collide with. */
+const ALL_TAGS = '__all__'
 
 interface PaginatedData {
   parts: InventoryPart[]
@@ -132,8 +125,11 @@ export function InventoryClient({
   search,
   category,
   categories,
+  tag = '',
+  tags = [],
   currencyCode = DEFAULT_CURRENCY_CODE,
-  markupMultiplier: initialMarkup = 1.0,
+  markupMultiplier = 1.0,
+  applyMarkupPercent = 0,
   defaultUnit = '',
   unitSystem = 'imperial',
   sortBy: initialSortBy = 'updatedAt',
@@ -146,8 +142,15 @@ export function InventoryClient({
   search: string
   category: string
   categories: string[]
+  /** The tag the list is filtered by, or empty. */
+  tag?: string
+  /** Every tag the workshop's parts carry, for the filter and the form. */
+  tags?: string[]
   currencyCode?: string
+  /** The saved catalog markup, as the multiplier a new part's sell price fills in with. */
   markupMultiplier?: number
+  /** The percentage the Apply Markup dialog opens with. */
+  applyMarkupPercent?: number
   /** Unit pre-filled on new parts (inventory.defaultUnit setting). */
   defaultUnit?: string
   /** workshop.unitSystem, orders unit suggestions in the part form. */
@@ -166,15 +169,18 @@ export function InventoryClient({
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const t = useTranslations('inventory')
+  const ta = useTranslations('common.a11y')
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
   useRememberedSort('inventory')
   const [showForm, setShowForm] = useState(false)
   const [editPart, setEditPart] = useState<InventoryPart | null>(null)
   const [showMarkup, setShowMarkup] = useState(false)
-  const [markupValue, setMarkupValue] = useState(String(initialMarkup))
-  const [applyingMarkup, setApplyingMarkup] = useState(false)
-  const [overrideExisting, setOverrideExisting] = useState(false)
+  // What Apply Markup just saved. The page's own copy only arrives with the
+  // refresh that follows, and a part added in between would otherwise fill in
+  // at the markup that was just replaced.
+  const [appliedMultiplier, setAppliedMultiplier] = useState<number | null>(null)
+  const catalogMultiplier = appliedMultiplier ?? markupMultiplier
   const [showScanner, setShowScanner] = useState(false)
   const [galleryImages, setGalleryImages] = useState<string[]>([])
   const [galleryIndex, setGalleryIndex] = useState<number | null>(null)
@@ -190,6 +196,12 @@ export function InventoryClient({
   const [scannedBarcode, setScannedBarcode] = useState('')
   const [showScanActions, setShowScanActions] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  // Selection outlives the page of rows it was made on, so every row shown is
+  // remembered: the delete prompt can still name what is selected elsewhere.
+  const seenRows = useRef(new Map<string, (typeof data.parts)[number]>())
+  useEffect(() => {
+    for (const row of data.parts) seenRows.current.set(row.id, row)
+  }, [data.parts])
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   useEffect(() => {
@@ -229,7 +241,7 @@ export function InventoryClient({
       }
       if (
         !('page' in params) &&
-        ('search' in params || 'category' in params || 'lowStock' in params)
+        ('search' in params || 'category' in params || 'tag' in params || 'lowStock' in params)
       ) {
         newParams.delete('page')
       }
@@ -270,14 +282,17 @@ export function InventoryClient({
       title: t('deletePart.title'),
       description: t('deletePart.description', { name }),
       confirmLabel: t('deletePart.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
-    const result = await deleteInventoryPart(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteInventoryPart(id).catch(() => null)
+    if (result?.success) {
       router.refresh()
     } else {
-      modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
+      modal.open('error', t('errors.error'), result?.error || t('errors.deleteFailed'))
     }
   }
 
@@ -300,48 +315,31 @@ export function InventoryClient({
 
   const handleBulkDelete = async () => {
     if (selected.size === 0) return
+    // Name the first few parts so the count is not taken on trust.
+    const named = Array.from(selected)
+      .map((id) => seenRows.current.get(id))
+      .filter((row) => row !== undefined)
+      .slice(0, 3)
     const ok = await confirm({
       title: t('bulkDelete.title'),
       description: t('bulkDelete.description', { count: selected.size }),
+      subject: named.map((p) => ({ label: p.name, detail: p.partNumber ?? undefined })),
+      subjectMore: selected.size - named.length,
       confirmLabel: t('bulkDelete.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
     setIsBulkDeleting(true)
-    const result = await deleteInventoryParts(Array.from(selected))
-    if (result.success) {
+    const result = await deleteInventoryParts(Array.from(selected)).catch(() => null)
+    if (result?.success) {
       toast.success(t('bulkDelete.success', { count: result.data?.deleted ?? selected.size }))
       setSelected(new Set())
       router.refresh()
     } else {
-      modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
+      modal.open('error', t('errors.error'), result?.error || t('errors.deleteFailed'))
     }
     setIsBulkDeleting(false)
-  }
-
-  const handleApplyMarkup = async () => {
-    const multiplier = Number(markupValue)
-    if (!multiplier || multiplier <= 0) {
-      modal.open('error', t('errors.error'), t('errors.multiplierPositive'))
-      return
-    }
-    setApplyingMarkup(true)
-    try {
-      const [result] = await Promise.all([
-        applyMarkupToAll({ multiplier, overrideExisting }),
-        setSetting(SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER, String(multiplier)),
-      ])
-      if (result.success) {
-        setShowMarkup(false)
-        router.refresh()
-      } else {
-        modal.open('error', t('errors.error'), result.error || t('errors.applyFailed'))
-      }
-    } catch {
-      modal.open('error', t('errors.error'), t('errors.applyFailed'))
-    } finally {
-      setApplyingMarkup(false)
-    }
   }
 
   // An empty Low view is ambiguous on its own: it means either "nothing is
@@ -362,7 +360,7 @@ export function InventoryClient({
         </Link>
       </div>
     )
-  ) : search || category ? (
+  ) : search || category || tag ? (
     t('empty.noMatch')
   ) : (
     <ListEmpty
@@ -377,6 +375,14 @@ export function InventoryClient({
       }
     />
   )
+
+  // The filter is offered once any part has a tag, and kept while one is
+  // applied even if no part carries it any more, so it can be cleared.
+  const selectedTag = tag ? (tags.find((option) => sameTag(option, tag)) ?? tag) : ''
+  const tagOptions = selectedTag && !tags.includes(selectedTag) ? [selectedTag, ...tags] : tags
+  const showTagFilter = tagOptions.length > 0
+  const filterByTag = (picked: string) =>
+    navigate({ tag: sameTag(picked, selectedTag) ? undefined : picked })
 
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
@@ -393,33 +399,53 @@ export function InventoryClient({
             </Button>
           </div>
         ) : (
-          <div className="flex flex-1 items-center gap-2">
-            <form onSubmit={handleSearch} className="relative flex-1 sm:max-w-sm">
+          <div
+            className={cn(
+              'flex flex-1 items-center gap-2',
+              // Two dropdowns and the search do not fit one phone row; the
+              // search takes its own and the filters sit under it.
+              showTagFilter && 'flex-wrap sm:flex-nowrap'
+            )}
+          >
+            <form
+              onSubmit={handleSearch}
+              className={cn(
+                'relative flex-1 sm:max-w-sm',
+                showTagFilter && 'basis-full sm:basis-0'
+              )}
+            >
               <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder={t('searchPlaceholder')}
+                aria-label={t('searchPlaceholder')}
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="h-9 pl-9"
                 {...tableNav.searchInputProps}
               />
             </form>
-            <Select
+            <SearchableSelect
               value={category || 'all'}
               onValueChange={(v) => navigate({ category: v === 'all' ? undefined : v })}
-            >
-              <SelectTrigger className="h-9 w-[120px] shrink-0 sm:w-[150px]">
-                <SelectValue placeholder={t('categoryPlaceholder')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">{t('allCategories')}</SelectItem>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              placeholder={t('categoryPlaceholder')}
+              className="w-[120px] shrink-0 sm:w-[150px]"
+              options={[
+                { value: 'all', label: t('allCategories') },
+                ...categories.map((cat) => ({ value: cat, label: cat })),
+              ]}
+            />
+            {showTagFilter && (
+              <SearchableSelect
+                value={selectedTag || ALL_TAGS}
+                onValueChange={(v) => navigate({ tag: v === ALL_TAGS ? undefined : v })}
+                placeholder={t('tags.filterPlaceholder')}
+                className="w-[120px] shrink-0 sm:w-[150px]"
+                options={[
+                  { value: ALL_TAGS, label: t('tags.all') },
+                  ...tagOptions.map((option) => ({ value: option, label: option })),
+                ]}
+              />
+            )}
             {/* Toggle rather than a third dropdown: low stock is a yes/no lens
                 on the list, and it needs to be reachable from the page itself
                 (the dashboard card links straight here with ?lowStock=1). */}
@@ -500,7 +526,7 @@ export function InventoryClient({
         {data.parts.length === 0 ? (
           <div
             className={
-              search || category || lowStockOnly
+              search || category || tag || lowStockOnly
                 ? 'rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground'
                 : 'rounded-lg border border-dashed'
             }
@@ -518,6 +544,7 @@ export function InventoryClient({
                   className="mt-1 shrink-0"
                   checked={selected.has(part.id)}
                   onCheckedChange={() => toggleSelect(part.id)}
+                  aria-label={ta('selectRow', { name: part.name })}
                 />
                 <button
                   type="button"
@@ -548,7 +575,9 @@ export function InventoryClient({
                       <span className="inline-flex items-center gap-1.5">
                         {t('table.inStock')}:{' '}
                         <span className="font-medium text-foreground">
-                          {formatQuantity(part.quantity, part.unit)}
+                          {part.trackStock
+                            ? formatQuantity(part.quantity, part.unit)
+                            : t('table.notTracked')}
                         </span>
                         {isLow && (
                           <Badge variant="destructive" className="px-1.5 py-0 text-[10px]">
@@ -560,6 +589,13 @@ export function InventoryClient({
                       {part.location && <span className="truncate">{part.location}</span>}
                       {part.supplier && <span className="truncate">{part.supplier}</span>}
                     </div>
+                    {/* Read only: the card is a button, and one cannot hold another. */}
+                    <PartTagChips
+                      tags={part.tags}
+                      max={3}
+                      active={selectedTag || undefined}
+                      className="mt-2"
+                    />
                   </div>
                 </button>
                 <DropdownMenu>
@@ -623,6 +659,7 @@ export function InventoryClient({
                         : false
                   }
                   onCheckedChange={toggleSelectAll}
+                  aria-label={ta('selectAll')}
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
@@ -716,7 +753,7 @@ export function InventoryClient({
                 <TableCell
                   colSpan={11}
                   className={
-                    search || category || lowStockOnly
+                    search || category || tag || lowStockOnly
                       ? 'h-32 text-center text-muted-foreground'
                       : 'p-0'
                   }
@@ -741,6 +778,7 @@ export function InventoryClient({
                           <Checkbox
                             checked={selected.has(part.id)}
                             onCheckedChange={() => toggleSelect(part.id)}
+                            aria-label={ta('selectRow', { name: part.name })}
                           />
                         </TableCell>
                         <TableCell>
@@ -778,7 +816,14 @@ export function InventoryClient({
                                 }}
                               />
                             )}
-                            {part.name}
+                            <div className="min-w-0 space-y-1">
+                              <span>{part.name}</span>
+                              <PartTagChips
+                                tags={part.tags}
+                                active={selectedTag || undefined}
+                                onPick={filterByTag}
+                              />
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="hidden sm:table-cell text-muted-foreground">
@@ -786,7 +831,11 @@ export function InventoryClient({
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <span>{formatQuantity(part.quantity, part.unit)}</span>
+                            {part.trackStock ? (
+                              <span>{formatQuantity(part.quantity, part.unit)}</span>
+                            ) : (
+                              <span className="text-muted-foreground">{t('table.notTracked')}</span>
+                            )}
                             {isLow && (
                               <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
                                 {t('table.low')}
@@ -925,59 +974,33 @@ export function InventoryClient({
           }
         }}
         part={editPart ?? undefined}
-        markupMultiplier={Number(markupValue) || initialMarkup}
+        markupMultiplier={catalogMultiplier}
         defaultUnit={defaultUnit}
         unitSystem={unitSystem}
         initialBarcode={!editPart ? scannedBarcode : undefined}
         categories={categories}
+        tagSuggestions={tags}
         onViewImages={(urls, startIndex) => {
           setGalleryImages(urls)
           setGalleryIndex(startIndex)
         }}
       />
 
-      {/* Bulk Markup Dialog */}
-      <MarkupDialog open={showMarkup} onOpenChange={setShowMarkup}>
-        <MarkupDialogContent className="sm:max-w-sm">
-          <MarkupDialogHeader>
-            <MarkupDialogTitle>{t('markup.title')}</MarkupDialogTitle>
-          </MarkupDialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="markupMultiplier">{t('markup.multiplierLabel')}</Label>
-              <Input
-                id="markupMultiplier"
-                type="number"
-                min="0.01"
-                step="0.01"
-                value={markupValue}
-                onChange={(e) => setMarkupValue(e.target.value)}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('markup.description', { multiplier: markupValue || '?', count: data.total })}
-                {Number(markupValue) > 1 &&
-                  ` ${t('markup.percentage', { percent: Math.round((Number(markupValue) - 1) * 100) })}`}
-              </p>
-            </div>
-            <label className="flex items-center gap-2">
-              <Switch checked={overrideExisting} onCheckedChange={setOverrideExisting} />
-              <span className="text-sm">{t('markup.overrideExisting')}</span>
-            </label>
-            <p className="text-xs text-muted-foreground">
-              {overrideExisting ? t('markup.overrideExistingHint') : t('markup.skipExistingHint')}
-            </p>
-            <div className="flex justify-end gap-2">
-              <Button variant="outline" size="sm" onClick={() => setShowMarkup(false)}>
-                {t('markup.cancel')}
-              </Button>
-              <Button size="sm" onClick={handleApplyMarkup} disabled={applyingMarkup}>
-                {applyingMarkup && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {t('markup.apply')}
-              </Button>
-            </div>
-          </div>
-        </MarkupDialogContent>
-      </MarkupDialog>
+      {/* The form above takes the saved markup, never what is being typed
+          here: a percentage that is cancelled must not price the next part. */}
+      <ApplyMarkupDialog
+        open={showMarkup}
+        onOpenChange={setShowMarkup}
+        initialPercent={
+          appliedMultiplier === null
+            ? applyMarkupPercent
+            : markupPercentFromMultiplier(appliedMultiplier)
+        }
+        onApplied={(multiplier) => {
+          setAppliedMultiplier(multiplier)
+          router.refresh()
+        }}
+      />
 
       <BarcodeScannerDialog
         open={showScanner}
@@ -1007,6 +1030,7 @@ export function InventoryClient({
 
       {galleryIndex !== null && galleryImages.length > 0 && (
         <div
+          data-shortcut-layer
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
           onClick={() => setGalleryIndex(null)}
         >

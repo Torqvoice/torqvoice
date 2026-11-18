@@ -25,6 +25,11 @@ import {
   MAX_TOTAL_ATTACHMENT_BYTES,
 } from '@/features/support/Lib/supportRequest'
 import {
+  clearSupportDraft,
+  readSupportDraft,
+  writeSupportDraft,
+} from '@/features/support/Lib/supportDraft'
+import {
   SUPPORT_OPEN_EVENT,
   SUPPORT_VISIBILITY_EVENT,
   type SupportOpenDetail,
@@ -32,6 +37,7 @@ import {
   setSupportBubbleHidden,
 } from '@/features/support/Lib/supportVisibility'
 import { useDraggablePosition } from '@/features/support/Lib/useDraggablePosition'
+import { useTouchScreen } from '@/features/support/Lib/useTouchScreen'
 
 type Status = 'idle' | 'sending' | 'sent'
 
@@ -60,7 +66,7 @@ function errorKey(code: unknown): string {
     : 'errors.sendFailed'
 }
 
-export function SupportBubble() {
+export function SupportBubble({ userId }: { userId: string }) {
   const t = useTranslations('support')
   const [isOpen, setIsOpen] = useState(false)
   // Assume hidden until localStorage has been read. Rendering the button and
@@ -89,6 +95,13 @@ export function SupportBubble() {
     }
   }, [])
 
+  // On a phone or tablet the floating button sits on top of what is being
+  // tapped, so neither it nor its edge tab is drawn there. Support is still a
+  // tap away in Settings, and the form opens as usual when a page asks for it.
+  // Unknown for the first render: nothing is drawn until it is known, so the
+  // button never shows for a frame on a phone.
+  const touchScreen = useTouchScreen()
+
   /**
    * The panel follows the button. It is right-aligned to the button and opens
    * upward when the button sits low, which is where it usually will after being
@@ -111,24 +124,50 @@ export function SupportBubble() {
 
   const totalBytes = files.reduce((sum, f) => sum + f.size, 0)
 
+  // What was being written when the page was last replaced under the form: a
+  // tab that lost its session comes back from the sign-in page, and a new
+  // build asks for a reload. Read after mount, like the visibility above, so
+  // the server and the first client render agree.
+  const [draftRestored, setDraftRestored] = useState(false)
+  useEffect(() => {
+    const draft = readSupportDraft(userId)
+    if (draft) {
+      setSubject((current) => current || draft.subject)
+      setMessage((current) => current || draft.message)
+    }
+    setDraftRestored(true)
+  }, [userId])
+
+  // Kept whenever the fields change, whether typed or handed over by a page
+  // that opened the form. Not before the stored draft has been read back, or
+  // the empty first render would wipe it.
+  useEffect(() => {
+    if (draftRestored) writeSupportDraft(userId, { subject, message })
+  }, [draftRestored, userId, subject, message])
+
   const reset = useCallback(() => {
     setSubject('')
     setMessage('')
     setFiles([])
     setError(null)
     setStatus('idle')
+    clearSupportDraft()
   }, [])
 
   // The settings page opens the widget for someone who cannot find it, and
-  // other pages open it with a subject already filled in. A subject only
-  // lands on an empty form: someone halfway through describing a problem
-  // does not lose their heading because they clicked another button.
+  // other pages open it with a subject, and sometimes a message, already
+  // filled in. Each only lands on an empty field: someone halfway through
+  // describing a problem does not lose their words because they clicked
+  // another button.
   useEffect(() => {
     const open = (event: Event) => {
-      const subject = (event as CustomEvent<SupportOpenDetail>).detail?.subject
-      if (subject) {
+      const detail = (event as CustomEvent<SupportOpenDetail>).detail
+      const subject = detail?.subject
+      const body = detail?.message
+      if (subject || body) {
         if (status === 'sent') reset()
-        setSubject((current) => current || subject)
+        if (subject) setSubject((current) => current || subject)
+        if (body) setMessage((current) => current || body)
       }
       setIsOpen(true)
     }
@@ -226,6 +265,8 @@ export function SupportBubble() {
         setSubject('')
         setMessage('')
         setFiles([])
+        // Sent, so it must not come back as a draft on the next page load.
+        clearSupportDraft()
       } catch {
         setError(t('errors.sendFailed'))
         setStatus('idle')
@@ -235,12 +276,16 @@ export function SupportBubble() {
   )
 
   // position is null until localStorage and the viewport have been read.
-  if (!position) return null
+  if (!position || touchScreen === null) return null
+
+  // Only the form, and only while it is open. The dismissal below is about
+  // the button, so it has no say here.
+  if (touchScreen && !isOpen) return null
 
   // Dismissed collapses to a tab tucked against the right edge rather than
   // disappearing. Removing the button outright leaves no way back except the
   // settings page, which is not somewhere you look when you want support.
-  if (hidden) {
+  if (hidden && !touchScreen) {
     return (
       <button
         type="button"
@@ -286,25 +331,41 @@ export function SupportBubble() {
 
       {isOpen && (
         <div
-          style={panelStyle}
-          className="fixed z-50 overflow-hidden rounded-xl border bg-popover shadow-2xl ring-1 ring-black/5 dark:ring-white/10"
+          // With no button to follow, the form sits at the top of the screen:
+          // clear of the bottom navigation, and of the on-screen keyboard that
+          // covers the lower half as soon as a field is tapped. Below a
+          // laptop's width it hangs from the left edge: a page that is a few
+          // pixels too wide pushes the right edge, and the close button with
+          // it, off a phone or small tablet.
+          style={touchScreen ? undefined : panelStyle}
+          className={`fixed z-50 overflow-hidden rounded-xl border bg-popover shadow-2xl ring-1 ring-black/5 dark:ring-white/10 ${
+            touchScreen
+              ? 'top-[calc(0.75rem+env(safe-area-inset-top))] left-3 w-[min(380px,calc(100vw-1.5rem))] lg:right-3 lg:left-auto'
+              : ''
+          }`}
         >
-          <div className="flex items-center gap-1 border-b bg-muted/40 py-2 pl-1 pr-2">
+          <div
+            className={`flex items-center gap-1 border-b bg-muted/40 py-2 pr-2 ${
+              touchScreen ? 'pl-3' : 'pl-1'
+            }`}
+          >
             {/* Hidden from assistive tech rather than announced as a button.
                 Dragging is pointer-only, so exposing it as a control would
                 advertise something a keyboard user cannot operate. Nothing is
                 lost: every control in the panel is reachable regardless of
                 where it sits, and the position is only a convenience. */}
-            <span
-              {...dragHandlers}
-              aria-hidden="true"
-              title={t('move')}
-              className={`flex h-7 w-6 shrink-0 touch-none items-center justify-center text-muted-foreground/60 hover:text-muted-foreground ${
-                dragging ? 'cursor-grabbing' : 'cursor-grab'
-              }`}
-            >
-              <GripVertical className="h-4 w-4" />
-            </span>
+            {!touchScreen && (
+              <span
+                {...dragHandlers}
+                aria-hidden="true"
+                title={t('move')}
+                className={`flex h-7 w-6 shrink-0 touch-none items-center justify-center text-muted-foreground/60 hover:text-muted-foreground ${
+                  dragging ? 'cursor-grabbing' : 'cursor-grab'
+                }`}
+              >
+                <GripVertical className="h-4 w-4" />
+              </span>
+            )}
             <Headset className="h-4 w-4 shrink-0 text-primary" strokeWidth={1.75} />
             <span className="flex-1 truncate text-sm font-medium">{t('title')}</span>
             <button
@@ -444,13 +505,16 @@ export function SupportBubble() {
                   {status === 'sending' ? t('sending') : t('send')}
                 </Button>
 
-                <button
-                  type="button"
-                  onClick={handleDismiss}
-                  className="w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground hover:underline"
-                >
-                  {t('hideButton')}
-                </button>
+                {/* There is no button to hide on a phone or tablet. */}
+                {!touchScreen && (
+                  <button
+                    type="button"
+                    onClick={handleDismiss}
+                    className="w-full text-center text-xs text-muted-foreground transition-colors hover:text-foreground hover:underline"
+                  >
+                    {t('hideButton')}
+                  </button>
+                )}
               </form>
             )}
           </div>

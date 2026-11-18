@@ -21,6 +21,7 @@ import { allReferencedSuffixes, FILE_REFERENCES, referencedSuffixes } from '@/li
 const NOT_FILES: Record<string, string> = {
   'AuditLog.metadata': 'history of what happened; never a live use of a file',
   'DashboardWidget.config': 'widget settings',
+  'RepairDataCache.data': 'labor times and fluid specs from a repair data source',
   'DocumentDesign.documentType': 'invoice or quote',
   'DocumentDesign.layout': 'section order and switches; the logo is in `template`',
   'DocumentDesignSnapshot.layout': 'the same, frozen',
@@ -36,6 +37,8 @@ const NOT_FILES: Record<string, string> = {
   'IntegrationLog.details': 'history',
   'InventoryPart.supplierUrl': "the supplier's website",
   'Notification.entityUrl': 'an in-app link to a page',
+  'PlatformBackup.snapshots':
+    'restore points by id, time and size; the files are inside the restic repository',
   'Quote.taxComponents': 'tax lines',
   'RecurringInvoice.taxComponents': 'tax lines',
   'ServiceRecord.taxComponents': 'tax lines',
@@ -43,6 +46,10 @@ const NOT_FILES: Record<string, string> = {
     'frozen issuer and customer details; the issued logo is bytes in DocumentAssetSnapshot. The linked inspection results in it remember where a defect photo was, as a note and not a use: the photo belongs to the inspection, and a print leaves out one that has gone',
   'ServiceRecord.issuedLogoSnapshotId': 'the id of a row holding the logo bytes',
   'ServiceAttachment.fileName': 'a label',
+  'ServiceAttachment.scan':
+    'what a fault code scan read out of the file: codes, VIN, odometer; the file is the row itself',
+  'VehicleFinding.sourceAttachmentId':
+    'the id of the diagnostic report a fault code was read from; the file is that row’s fileUrl',
   'ServiceAttachment.fileType': 'a MIME type',
   'QuoteAttachment.fileName': 'a label',
   'QuoteAttachment.fileType': 'a MIME type',
@@ -54,8 +61,10 @@ const NOT_FILES: Record<string, string> = {
   'StatusReport.videoFileName': 'a label',
   'WhatsappMessage.mediaFilename': 'a label',
   'WhatsappMessage.mediaType': 'image, document, video…',
+  'EmailAttachment.fileName': 'a label',
   'User.image': 'an avatar URL from a sign-in provider; never an upload',
   'User.dashboardLayout': 'dashboard layout',
+  'User.keyboardShortcuts': 'keyboard shortcut choices',
   'VehicleInspectionStatus.extras': 'what a vehicle registry returned',
   'VehicleSafetyReport.data': 'what a vehicle registry returned',
   'Webhook.url': 'an outbound endpoint',

@@ -258,6 +258,24 @@ describe('InspectionView', () => {
       expect(screen.queryByText('Minor defect')).not.toBeInTheDocument()
     })
 
+    it('gives a test verdict on the EU scale', () => {
+      render(<InspectionView {...DEFAULT_PROPS} />)
+      expect(screen.getByRole('heading', { name: 'Fail — major defects' })).toBeInTheDocument()
+    })
+
+    it("sums up a workshop's own check without a test verdict", () => {
+      const props = {
+        ...DEFAULT_PROPS,
+        inspection: {
+          ...BASE_INSPECTION,
+          template: { name: 'Standard multi-point inspection', severityScale: 'basic' },
+        },
+      }
+      render(<InspectionView {...props} />)
+      expect(screen.getByRole('heading', { name: 'Some items need work' })).toBeInTheDocument()
+      expect(screen.queryByText(/the vehicle fails/i)).not.toBeInTheDocument()
+    })
+
     it('renders item notes when present', () => {
       render(<InspectionView {...DEFAULT_PROPS} />)
       // Once in the deficiencies summary and once in the full results.

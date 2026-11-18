@@ -13,11 +13,19 @@ const STATUS_COLUMNS = [
   { key: 'completed', i18nKey: 'completed', color: 'bg-emerald-500' },
 ] as const
 
-function KanbanCard({ job }: { job: WorkBoardJob }) {
+function KanbanCard({ job, withLabel }: { job: WorkBoardJob; withLabel?: string | null }) {
   const isServiceRecord = job.type === 'serviceRecord'
 
   return (
-    <div className="rounded-lg border bg-card p-2.5 shadow-sm">
+    <div
+      className={
+        // In the row of somebody helping on it, the job is an outline.
+        withLabel
+          ? 'rounded-lg border border-dashed border-foreground/40 bg-background/80 p-2.5'
+          : 'rounded-lg border bg-card p-2.5 shadow-sm'
+      }
+      data-testid={withLabel ? 'job-shadow' : undefined}
+    >
       <div className="flex items-center gap-1.5">
         {isServiceRecord ? (
           <Wrench className="h-4 w-4 shrink-0 text-blue-500" />
@@ -31,6 +39,9 @@ function KanbanCard({ job }: { job: WorkBoardJob }) {
           {job.vehicle.year} {job.vehicle.make} {job.vehicle.model}
           {job.vehicle.licensePlate ? ` · ${job.vehicle.licensePlate}` : ''}
         </p>
+      )}
+      {withLabel && (
+        <p className="mt-1 truncate text-xs font-medium text-muted-foreground">{withLabel}</p>
       )}
     </div>
   )
@@ -46,7 +57,9 @@ export function PresenterKanbanView({
   assignments: WorkBoardJob[]
 }) {
   const t = useTranslations('workBoard.presenter')
+  const tJob = useTranslations('workBoard.job')
   const dayAssignments = assignments.filter((a) => jobOverlapsDate(a, date))
+  const nameOf = new Map(technicians.map((tech) => [tech.id, tech.name]))
 
   if (technicians.length === 0) {
     return (
@@ -81,7 +94,11 @@ export function PresenterKanbanView({
         })}
 
         {technicians.map((tech) => {
-          const techJobs = dayAssignments.filter((a) => a.technicianId === tech.id)
+          // Their own jobs and the ones they are helping on: both are what
+          // this person is doing today.
+          const techJobs = dayAssignments.filter(
+            (a) => a.technicianId === tech.id || a.helperIds.includes(tech.id)
+          )
           return (
             <div key={tech.id} className="contents">
               <div className="flex items-center gap-2 border-b p-2">
@@ -108,9 +125,23 @@ export function PresenterKanbanView({
                     key={`${tech.id}-${col.key}`}
                     className="space-y-1.5 overflow-y-auto border-b border-l p-1.5"
                   >
-                    {cellJobs.map((job) => (
-                      <KanbanCard key={job.id} job={job} />
-                    ))}
+                    {cellJobs.map((job) => {
+                      const helping = job.technicianId !== tech.id
+                      const leadName = job.technicianId ? nameOf.get(job.technicianId) : null
+                      return (
+                        <KanbanCard
+                          key={job.id}
+                          job={job}
+                          withLabel={
+                            helping
+                              ? leadName
+                                ? tJob('with', { name: leadName })
+                                : tJob('helping')
+                              : null
+                          }
+                        />
+                      )
+                    })}
                   </div>
                 )
               })}

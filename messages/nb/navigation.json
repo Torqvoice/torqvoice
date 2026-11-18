@@ -42,6 +42,7 @@
     "warranty": "Garanti",
     "workshop": "Verksted",
     "appearance": "Utseende",
+    "shortcuts": "Hurtigtaster",
     "email": "E-post",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Dekksett",
     "tireForecast": "Neste sesong",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "EU-kontroll-påminnelser"
+    "inspectionReminders": "EU-kontroll-påminnelser",
+    "faultCodes": "Feilkoder",
+    "faultCode": "Feilkode",
+    "calendar": "Kalender",
+    "messages": "Meldinger",
+    "inspections": "Inspeksjoner",
+    "inspectionDetails": "Inspeksjonsdetaljer"
   },
   "search": "Søk...",
-  "shortcut": "Ctrl+K",
   "readMore": "Les mer",
   "newWorkOrder": "Ny arbeidsordre",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Del",
     "inspection": "Inspeksjon",
     "shopActions": "Verkstedet",
-    "person": "Legg til en person"
+    "person": "Legg til en person",
+    "appointment": "Timeavtale"
   },
   "purchaseWhiteLabel": "Kjøp White-Label",
   "licenseExpired": "Lisensen din har utløpt. Funksjoner kan være begrenset.",
@@ -123,6 +130,7 @@
     "cancel": "Avbryt",
     "createCompany": "Opprett firma",
     "theme": "Tema",
+    "keyboardShortcuts": "Hurtigtaster",
     "signOut": "Logg ut",
     "more": "Mer",
     "auditLog": "Aktivitetslogg",
@@ -141,6 +149,7 @@
       "workOrders": "{count} åpne arbeidsordrer",
       "inspections": "{count} pågående inspeksjoner",
       "reminders": "{count} forfalte påminnelser"
-    }
+    },
+    "faultCodes": "Feilkoder"
   }
 }

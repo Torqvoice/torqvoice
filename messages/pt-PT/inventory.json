@@ -14,7 +14,8 @@
     "supplier": "Fornecedor",
     "location": "Localização",
     "low": "Baixo",
-    "barcode": "Código de barras"
+    "barcode": "Código de barras",
+    "notTracked": "Não controlado"
   },
   "empty": {
     "noMatch": "Nenhuma peça corresponde à pesquisa.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Aplicar margem a todas as peças",
-    "multiplierLabel": "Multiplicador de margem",
-    "description": "O preço de venda passará a ser custo x {multiplier} para todas as {count} peças.",
-    "percentage": "({percent}% de margem)",
+    "intro": "Define o preço de venda das peças como o custo mais uma percentagem.",
+    "percentLabel": "Margem %",
+    "percentHint": "Introduza 30 para acrescentar 30% ao custo.",
+    "percentInvalid": "A margem tem de ser superior a -100%.",
+    "exampleTitle": "Exemplo",
+    "exampleMarkup": "Margem {percent}%",
     "cancel": "Cancelar",
     "apply": "Aplicar",
     "overrideExisting": "Substituir os preços de venda existentes",
     "overrideExistingHint": "Todas as peças serão atualizadas, incluindo as que já têm preço de venda.",
-    "skipExistingHint": "Só serão atualizadas as peças sem preço de venda."
+    "skipExistingHint": "Só serão atualizadas as peças sem preço de venda.",
+    "newPartsNote": "Nas peças novas, {sellPrice} é preenchido com esta margem quando introduz {unitCost}.",
+    "settingsNote": "{setting} em {settings} > {workshop} é uma definição separada, aplicada quando as peças são adicionadas a uma ordem de reparação."
   },
   "errors": {
-    "multiplierPositive": "O multiplicador tem de ser superior a 0",
     "deleteFailed": "Não foi possível eliminar a peça",
     "applyFailed": "Não foi possível aplicar a margem",
     "saveFailed": "Não foi possível guardar a peça",
@@ -70,16 +75,19 @@
     "currentStock": "Stock atual: {quantity}",
     "addedStock": "{amount} adicionado(s) ao stock",
     "customAmount": "Qtd...",
-    "scanParts": "Ler peças"
+    "scanParts": "Ler peças",
+    "notTracked": "O stock desta peça não é controlado"
   },
   "form": {
     "editPart": "Editar peça",
     "addNewPart": "Adicionar nova peça",
     "supplierLink": "Link do fornecedor",
     "supplierLinkPlaceholder": "https://fornecedor.pt/produto/...",
+    "supplierLinkInvalid": "O link do fornecedor não é um endereço web. Corrija-o ou apague-o para guardar sem link.",
     "fetch": "Obter",
-    "fetchFailed": "Não foi possível obter",
-    "fetchError": "Não foi possível obter os metadados do URL",
+    "fetchBlocked": "O site deste fornecedor bloqueia a consulta automática. Preencha os campos manualmente. A peça e o link podem ser guardados na mesma.",
+    "fetchTimedOut": "O site do fornecedor demorou demasiado a responder. Tente novamente ou preencha os campos manualmente. A peça e o link podem ser guardados na mesma.",
+    "fetchUnreadable": "Não foi possível ler os dados da peça a partir deste link. Preencha os campos manualmente. A peça e o link podem ser guardados na mesma.",
     "image": "Imagem",
     "dropOrClick": "Largue uma imagem ou clique",
     "replace": "Substituir",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperial",
     "unitCost": "Custo unitário",
     "sellPrice": "Preço de venda",
+    "sellPriceMarkupHint": "{sellPrice} é preenchido com {unitCost} + {percent}%. Introduza um preço para definir o seu. Para alterar a percentagem, use {applyMarkup} na página {inventory}.",
     "supplier": "Fornecedor",
     "supplierPlaceholder": "AutoPeças, Lda.",
     "supplierPhone": "Telefone do fornecedor",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Descrição da peça...",
     "cancel": "Cancelar",
     "saveChanges": "Guardar alterações",
-    "addPart": "Adicionar peça"
+    "addPart": "Adicionar peça",
+    "tags": "Etiquetas",
+    "tagsPlaceholder": "Marcas, modelos ou o que ajudar a encontrá-la",
+    "tagsHint": "Prima Enter ou uma vírgula após cada etiqueta. Numa ordem de reparação, as peças com a marca ou o modelo do veículo aparecem primeiro.",
+    "tagsHintMarine": "Prima Enter ou uma vírgula após cada etiqueta. Numa ordem de reparação, as peças com a marca ou o modelo da embarcação aparecem primeiro.",
+    "removeTag": "Remover {tag}",
+    "tagTooLong": "Uma etiqueta pode ter no máximo {max} caracteres. Encurte-a antes de guardar.",
+    "trackStock": "Controlar stock",
+    "trackStockHint": "Desative para taxas e consumíveis que cobra, mas nunca conta.",
+    "trackStockOffNote": "Ao guardar, a quantidade passa a zero e isso fica registado no histórico de stock. Os trabalhos deixam de a alterar."
   },
   "openMenu": "Abrir menu",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Ordem de serviço eliminada",
       "quote_conversion": "Orçamento convertido",
       "manual_adjustment": "Ajuste manual",
-      "bulk_markup": "Margem em massa"
+      "bulk_markup": "Margem em massa",
+      "stock_tracking_off": "Controlo de stock desativado"
     },
     "backToInventory": "Stock",
     "reason": "Motivo",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} em stock",
     "outOfStock": "Sem stock",
     "onBackorder": "Em encomenda ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Etiqueta",
+    "all": "Todas as etiquetas",
+    "filterBy": "Mostrar peças com a etiqueta {tag}",
+    "more": "+{count} mais"
   }
 }

@@ -22,7 +22,7 @@
     "quote": "Quote",
     "save": "Save",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Send",
     "share": "Share",
     "delete": "Delete",
     "deleteTitle": "Delete Quote",
@@ -115,6 +115,7 @@
     "total": "Total",
     "subtotal": "Parts Subtotal: {amount}",
     "deleteRow": "Delete row",
+    "reorderRow": "Drag to reorder",
     "excludeFromTotal": "Exclude from total",
     "addFromInventory": "From stock",
     "unitCost": "Cost",
@@ -139,6 +140,7 @@
     "hourlyHint": "Hourly: priced by hours worked (hours × rate/hr). Click to switch.",
     "serviceHint": "Service: priced as a flat fee per unit. Click to switch.",
     "deleteRow": "Delete row",
+    "reorderRow": "Drag to reorder",
     "excludeFromTotal": "Exclude from total"
   },
   "notes": {
@@ -192,24 +194,15 @@
     "discountFixed": "Fixed",
     "tax": "Tax",
     "taxIncluded": "Tax (incl.)",
+    "taxableAmount": "Taxable amount",
     "total": "Total",
     "inclusiveModeHint": "Line item prices are entered with tax included. Totals show the net + tax breakdown."
   },
   "shareDialog": {
     "title": "Share Quote",
     "description": "Generate a public link that allows anyone to view and download this quote without signing in.",
-    "notifyTitle": "Notify {name}",
-    "email": "Email",
-    "noEmail": "(no email on file)",
-    "sms": "SMS",
-    "noPhone": "(no phone on file)",
-    "sendNotification": "Send Notification",
     "revokeLink": "Revoke Link",
     "generateLink": "Generate Public Link",
-    "emailSent": "Email sent",
-    "failedEmail": "Failed to send email",
-    "smsSent": "SMS sent",
-    "failedSms": "Failed to send SMS",
     "copyLink": "Copy link"
   },
   "images": {

@@ -12,6 +12,8 @@
     "payWithCard": "Betal {amount} med kort",
     "payWithVipps": "Betal {amount} med Vipps",
     "payWithPaypal": "Betal {amount} med PayPal",
+    "payWithPaystack": "Betal {amount} med Paystack",
+    "payWithVendor": "Betal med <vendor></vendor>",
     "errorInvalidAmount": "Vennligst angi et gyldig beløp.",
     "errorExceedsBalance": "Beløpet kan ikke overstige {amount}.",
     "errorVerifyFailed": "Betalingen kunne ikke verifiseres. Den kan fortsatt behandles.",
@@ -202,7 +204,21 @@
     "deficienciesFound": "Mangler funnet ({count})",
     "allResults": "Alle resultater",
     "privacyNotice": "Denne rapporten deles med deg av verkstedet som utførte kontrollen. Alle som har lenken kan se den, så ikke send den videre. Ta kontakt med verkstedet for å trekke tilbake lenken eller få slettet opplysningene dine.",
-    "inspectionPhotos": "Bilder og dokumenter"
+    "inspectionPhotos": "Bilder og dokumenter",
+    "checkResult": {
+      "pass": "Alt i orden",
+      "pass_minor": "Noen punkter å følge med på",
+      "fail": "Noen punkter må repareres",
+      "fail_dangerous": "Noen punkter må repareres snarest",
+      "incomplete": "Ikke fullført"
+    },
+    "checkResultDetail": {
+      "pass": "Ingenting trengte oppfølging.",
+      "pass_minor": "Ikke noe som haster. Punktene som er merket bør planlegges inn.",
+      "fail": "Noen punkter må repareres. Notatene forteller hva som ble funnet.",
+      "fail_dangerous": "Noen punkter er ikke trygge og bør repareres før videre bruk.",
+      "incomplete": "Denne kontrollen pågår fortsatt."
+    }
   },
   "terms": {
     "title": "Salgsvilkår",
@@ -234,5 +250,31 @@
     "telegramConnect": "Chat med oss på Telegram",
     "telegramScan": "Skann denne QR-koden for å sende oss en melding på Telegram for oppdateringer og støtte.",
     "downloadCertificate": "Last ned kontrollseddel"
+  },
+  "expired": {
+    "pageTitle": "Lenken er utløpt",
+    "title": "Denne lenken er utløpt",
+    "body": {
+      "invoice": "Kontakt {workshop} for å få en ny lenke til denne fakturaen.",
+      "quote": "Kontakt {workshop} for å få en ny lenke til dette tilbudet.",
+      "inspection": "Kontakt {workshop} for å få en ny lenke til denne inspeksjonen.",
+      "statusReport": "Kontakt {workshop} for å få en ny lenke til denne oppdateringen."
+    },
+    "bodyNoName": {
+      "invoice": "Kontakt verkstedet for å få en ny lenke til denne fakturaen.",
+      "quote": "Kontakt verkstedet for å få en ny lenke til dette tilbudet.",
+      "inspection": "Kontakt verkstedet for å få en ny lenke til denne inspeksjonen.",
+      "statusReport": "Kontakt verkstedet for å få en ny lenke til denne oppdateringen."
+    }
+  },
+  "gone": {
+    "pageTitle": "Lenken virker ikke",
+    "title": "Denne lenken virker ikke lenger",
+    "body": "Den kan ha blitt fjernet, eller adressen kan være ufullstendig. Kontakt {workshop} for å få en ny lenke.",
+    "bodyNoName": "Den kan ha blitt fjernet, eller adressen kan være ufullstendig. Kontakt verkstedet for å få en ny lenke."
+  },
+  "openUntil": {
+    "text": "Denne lenken virker til og med {date}. Etter det kan du be {workshop} om en ny.",
+    "textNoName": "Denne lenken virker til og med {date}. Etter det kan du be verkstedet om en ny."
   }
 }

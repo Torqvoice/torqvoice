@@ -150,7 +150,7 @@
       "tableTitle": "Zarejestrowane a zafakturowane",
       "clocked": "Zarejestrowane",
       "billed": "Zafakturowane",
-      "hint": "Godziny zarejestrowane pochodzą z zegara. Godziny zafakturowane to pozycje robocizny w zleceniach przypisanych technikowi, rozpoczętych w zakresie. Efektywność to zafakturowane podzielone przez zarejestrowane.",
+      "hint": "Godziny zarejestrowane pochodzą z zegara. Godziny zafakturowane to pozycje robocizny w zleceniach przypisanych technikowi, rozpoczętych w zakresie. Zlecenie, przy którym pracuje więcej niż jedna osoba, dzieli zafakturowane godziny według czasu zarejestrowanego przez każdą z nich; jeśli któraś nie zarejestrowała na nim czasu, godziny zostają przy techniku. Efektywność to zafakturowane podzielone przez zarejestrowane.",
       "noClock": "Brak czasu",
       "jobsClocked": "Zlecenia z czasem"
     }

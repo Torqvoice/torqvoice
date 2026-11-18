@@ -21,6 +21,7 @@ export type StockMovementReason =
   | 'quote_conversion'
   | 'manual_adjustment'
   | 'bulk_markup'
+  | 'stock_tracking_off'
 
 /**
  * Provenance recorded alongside every movement, so the ledger can answer
@@ -75,6 +76,12 @@ function stockUnits(quantity: number): number {
  * `inventoryPartId` simply matches no rows, records no movement, and is
  * skipped — it can never mutate another tenant's inventory.
  *
+ * A part that does not track stock (`trackStock` false: a fee or consumable
+ * charged on jobs but never counted) is skipped the same way: the UPDATE
+ * matches no row, so its quantity stays put and no ledger row is written.
+ * Every path that uses or returns parts comes through here, which is what
+ * makes this the one place the rule lives.
+ *
  * Stock is allowed to go negative: over-consuming is real information
  * ("you used more than you had on hand") and, crucially, keeps the operation
  * reversible. Clamping at zero would corrupt the count as soon as the part is
@@ -114,11 +121,14 @@ export async function reconcileInventoryForParts(
     const updated = await tx.$queryRaw<{ quantity: number }[]>`
       UPDATE "public"."inventory_parts"
       SET "quantity" = "quantity" - ${decrement}, "updatedAt" = NOW()
-      WHERE "id" = ${inventoryPartId} AND "organizationId" = ${organizationId}
+      WHERE "id" = ${inventoryPartId}
+        AND "organizationId" = ${organizationId}
+        AND "trackStock" = true
       RETURNING "quantity"
     `
 
-    // No row matched — unknown part, or one belonging to another organization.
+    // No row matched — unknown part, one belonging to another organization,
+    // or one that does not track stock.
     if (updated.length === 0) continue
 
     ledgerRows.push({
@@ -152,14 +162,20 @@ export async function reconcileInventoryForParts(
  * RETURNING would always yield 0, since RETURNING evaluates against the updated
  * row.)
  *
- * Returns false when no row matched — unknown part, or wrong organization.
+ * A change that leaves the quantity where it was writes no ledger row, unless
+ * `recordUnchanged` asks for one: an event worth keeping in the history even
+ * when the balance did not move, such as stock tracking being turned off.
+ *
+ * Returns false when no row matched — unknown part, wrong organization, or a
+ * part that does not track stock.
  */
 export async function recordAbsoluteStockChange(
   tx: TxClient,
   organizationId: string,
   inventoryPartId: string,
   newQuantity: number,
-  context: StockMovementContext
+  context: StockMovementContext,
+  options: { recordUnchanged?: boolean } = {}
 ): Promise<boolean> {
   const updated = await tx.$queryRaw<{ quantity: number; delta: number }[]>`
     UPDATE "public"."inventory_parts" AS p
@@ -168,13 +184,14 @@ export async function recordAbsoluteStockChange(
     WHERE p."id" = prev."id"
       AND p."id" = ${inventoryPartId}
       AND p."organizationId" = ${organizationId}
+      AND p."trackStock" = true
     RETURNING p."quantity" AS "quantity", (p."quantity" - prev."quantity") AS "delta"
   `
 
   if (updated.length === 0) return false
 
   const delta = Number(updated[0].delta)
-  if (delta === 0) return true
+  if (delta === 0 && !options.recordUnchanged) return true
 
   await tx.stockMovement.create({
     data: {

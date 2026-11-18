@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Giriş Yap",
     "save": "Kaydet",
+    "saveChanges": "Değişiklikleri Kaydet",
     "cancel": "İptal",
     "delete": "Sil",
     "submit": "Gönder",
     "back": "Geri",
     "confirm": "Onayla",
-    "saveChanges": "Değişiklikleri Kaydet",
     "edit": "Düzenle",
     "add": "Ekle",
     "gotIt": "Anladım"
@@ -54,6 +54,36 @@
     "whatsNew": "Yenilikleri gör",
     "dismiss": "Kapat"
   },
+  "whatsNew": {
+    "title": "Yenilikler",
+    "openUnread": "Yenilikler: henüz görmediğiniz güncellemeler",
+    "description": "En son eklenenler, en yenisi önce.",
+    "unread": "Son ziyaretinizden bu yana yeni",
+    "newCount": "{count} yeni",
+    "showOlder": "Daha eskileri göster",
+    "hideTab": "Bu sekmeyi gizle",
+    "tabHidden": "Sekme gizlendi. Ayarlar, Hakkında bölümünden yeniden açabilirsiniz.",
+    "kindNew": "Yeni",
+    "kindImproved": "İyileştirildi",
+    "open": "Aç",
+    "guide": "Kılavuzu oku",
+    "video": "Videoyu izle",
+    "version": "Sürüm {version}",
+    "allReleaseNotes": "Tüm sürüm notları",
+    "feedback": {
+      "question": "Bu faydalı oldu mu?",
+      "up": "Evet, faydalı",
+      "down": "Hayır, beklediğim gibi değil",
+      "askUp": "Nesini beğendiniz? (isteğe bağlı)",
+      "askDown": "Ne beklediğiniz gibi çalışmadı?",
+      "privacyIdentified": "Size yanıt verebilmemiz için e-posta adresinizle birlikte Torqvoice ekibine gönderilir.",
+      "privacyAnonymous": "Adınız ve e-posta adresiniz olmadan Torqvoice ekibine gönderilir.",
+      "skip": "Atla",
+      "send": "Gönder",
+      "thanks": "Teşekkürler, yorumunuz gönderildi.",
+      "failed": "Geri bildiriminiz gönderilemedi. Birazdan tekrar deneyin."
+    }
+  },
   "pagination": {
     "showing": "{total} kayıttan {start}–{end} gösteriliyor",
     "perPage": "sayfa başına",
@@ -76,6 +106,26 @@
     "enterManually": "Elle gir",
     "enterBarcode": "Barkod girin…",
     "scanHint": "Kamerayı bir barkoda doğrultun ya da elle girin",
+    "submitBarcode": "Git",
+    "camera": {
+      "tryAgain": "Tekrar dene",
+      "denied": {
+        "title": "Kamera erişimi engellendi",
+        "body": "Tarayıcınızda bu site için kameraya izin verin (adres çubuğundaki kamera ya da kilit simgesinden), ardından Tekrar dene'ye basın. Ya da kodu aşağıya yazın."
+      },
+      "insecure": {
+        "title": "Kamera HTTPS gerektirir",
+        "body": "Tarayıcılar kameraya yalnızca güvenli bağlantıda izin verir ve bu sayfa HTTP ({host}) üzerinde. Taramak için Torqvoice'u HTTPS ile açın ya da kodu aşağıya yazın."
+      },
+      "notFound": {
+        "title": "Kamera bulunamadı",
+        "body": "Bir kamera bağlayıp Tekrar dene'ye basın ya da kodu aşağıya yazın."
+      },
+      "failed": {
+        "title": "Kamera başlatılamadı",
+        "body": "Kamerayı başka bir uygulama kullanıyor olabilir. O uygulamayı kapatıp Tekrar dene'ye basın ya da kodu aşağıya yazın."
+      }
+    },
     "iosInstallHint": "Paylaş > Ana Ekrana Ekle'ye dokunun",
     "installDescription": "Hızlı erişim için ana ekranınıza ekleyin",
     "enterFullscreen": "Tam ekran",
@@ -85,6 +135,8 @@
     "title": "Devam etmek için planınızı yükseltin",
     "maxCustomers": "Planınız en fazla {limit} müşteri içeriyor ve bu sayıya ulaştınız. İhtiyacınız kadar müşteri eklemek için planınızı yükseltin.",
     "maxUsers": "Planınız {limit, plural, one {bir ekip üyesi} other {# ekip üyesi}} içeriyor. Daha fazla kişi davet etmek için planınızı yükseltin.",
+    "maxPlatformMail": "Planınız Torqvoice adresinden günde en fazla {limit} e-posta gönderir ve bugünkü hakkınız doldu. İhtiyacınız kadar göndermek için planınızı yükseltin veya kalanları yarın gönderin.",
+    "maxPlatformSms": "Planınız Torqvoice numarasından günde en fazla {limit} SMS gönderir ve bugünkü hakkınız doldu. Daha yüksek bir limit için planınızı yükseltin, sınırsız göndermek için kendi SMS sağlayıcınızı bağlayın veya kalanları yarın gönderin.",
     "generic": "Bu özellik mevcut planınıza dahil değil.",
     "featureNotIncluded": "{feature} mevcut planınıza dahil değil.",
     "notNow": "Şimdi değil"
@@ -109,8 +161,6 @@
     "preview": "Önizleme",
     "failed": "PDF önizlemesi oluşturulamadı."
   },
-  "attachPdf": "PDF ekle",
-  "attachPdfHint": "Bunun yerine bağlantı göndermek için kapatın; böylece müşterinin ne zaman açtığını görürsünüz.",
   "sentCopy": {
     "note": "{date} tarihinde gönderildi. Buradaki değişiklikler fatura yeniden gönderildiğinde faturaya yansır.",
     "confirmTitle": "Bu fatura zaten gönderildi",
@@ -131,5 +181,145 @@
     "retake": "Yeniden kaydet",
     "use": "Bu videoyu kullan",
     "limit": "Kayıt {minutes} dakika sonra kendiliğinden durur."
+  },
+  "photoCapture": {
+    "title": "Kamerayla fotoğraf çek",
+    "description": "Bu bilgisayarın kamerasıyla ya da bağlı bir web kamerasıyla.",
+    "starting": "Kamera başlatılıyor...",
+    "live": "Kamera önizlemesi",
+    "preview": "Az önce çekilen fotoğraf",
+    "camera": "Kamera",
+    "take": "Fotoğraf çek",
+    "retake": "Yeniden çek",
+    "use": "Bu fotoğrafı kullan",
+    "tryAgain": "Tekrar dene",
+    "uploadInstead": "Dosya yükle",
+    "denied": {
+      "title": "Kamera erişimi engellendi",
+      "body": "Tarayıcınızda bu site için kameraya izin verin (adres çubuğundaki kamera ya da kilit simgesinden), ardından Tekrar dene'ye basın."
+    },
+    "insecure": {
+      "title": "Kamera HTTPS gerektirir",
+      "body": "Tarayıcılar kameraya yalnızca güvenli bağlantıda izin verir ve bu sayfa HTTP ({host}) üzerinde. Torqvoice'u HTTPS ile açın ya da bir dosya yükleyin."
+    },
+    "notFound": {
+      "title": "Kamera bulunamadı",
+      "body": "Bir web kamerası bağlayıp Tekrar dene'ye basın ya da bir dosya yükleyin."
+    },
+    "failed": {
+      "title": "Kamera başlatılamadı",
+      "body": "Kamerayı başka bir uygulama kullanıyor olabilir. O uygulamayı kapatıp Tekrar dene'ye basın."
+    }
+  },
+  "richText": {
+    "openLinkHint": "Açmak için {key} tuşunu basılı tutup tıklayın",
+    "placeholder": "Bir şeyler yazın...",
+    "toolbar": "Biçimlendirme",
+    "editor": "Metin",
+    "bold": "Kalın",
+    "italic": "İtalik",
+    "underline": "Altı çizili",
+    "strikethrough": "Üstü çizili",
+    "bulletList": "Madde işaretli liste",
+    "numberedList": "Numaralı liste"
+  },
+  "appUpdated": {
+    "title": "Yeni bir sürüm mevcut",
+    "description": "En son güncellemeleri almak için sayfayı yeniden yükleyin.",
+    "reload": "Yeniden yükle"
+  },
+  "signedOut": {
+    "title": "Oturumunuz kapandı",
+    "description": "Çalışmaya devam etmek için yeniden giriş yapın. Önce yazmakta olduğunuz metni kopyalayın.",
+    "signIn": "Giriş yap"
+  },
+  "connectionLost": {
+    "title": "Torqvoice'a ulaşılamadı",
+    "description": "Son değişikliğiniz kaydedilmemiş olabilir. Bağlantınızı kontrol edip tekrar deneyin."
+  },
+  "sendDocument": {
+    "titleQuote": "Teklif gönder",
+    "titleInvoice": "Fatura gönder",
+    "titleInspection": "Muayene gönder",
+    "description": "Müşteri, görüntülemek ve indirmek için bir bağlantı alır.",
+    "email": "E-posta",
+    "emailAddress": "E-posta adresi",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "PDF'yi de ekle",
+    "sms": "SMS",
+    "smsNumber": "SMS için telefon numarası",
+    "whatsappNumber": "WhatsApp için telefon numarası",
+    "phonePlaceholder": "Telefon numarası",
+    "message": "Mesaj (isteğe bağlı, e-postaya eklenir)",
+    "messagePlaceholder": "Kişisel bir mesaj ekleyin...",
+    "copyLink": "Bağlantıyı kopyala",
+    "send": "Gönder",
+    "emailSent": "E-posta gönderildi",
+    "failedEmail": "E-posta gönderilemedi",
+    "smsSent": "SMS gönderildi",
+    "failedSms": "SMS gönderilemedi"
+  },
+  "shareLink": {
+    "generateFailed": "Bağlantı oluşturulamadı. Tekrar deneyin.",
+    "revokeFailed": "Bağlantının iptali doğrulanamadı. Bağlantıya sahip olan herkes onu hâlâ açabilir.",
+    "channelNotConnected": "Bu yolla göndermek için {channel} hizmetini Entegrasyonlar altında bağlayın.",
+    "openIntegrations": "Entegrasyonları aç",
+    "channelNotInPlan": "{channel} planınıza dahil değil.",
+    "channelTurnedOff": "{channel} ile gönderim bu atölye için kapalıdır.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp gönderildi",
+    "failedWhatsapp": "WhatsApp mesajı gönderilemedi",
+    "whatsappWindowClosed": "Bu müşteri son 24 saat içinde size WhatsApp üzerinden yazmadı ve ona ulaşmak için onaylı bir şablon ayarlanmamış.",
+    "expiry": {
+      "never": "Süresi dolmaz",
+      "untilPaid": "Ödenene kadar açık kalır",
+      "expires": "Son geçerlilik: {date}",
+      "expired": "Süresi doldu: {date}",
+      "change": "Değiştir",
+      "openAgain": "Yeniden aç",
+      "reopened": "Bağlantı yeniden açık",
+      "formTitle": "Bağlantının süresi",
+      "choice": {
+        "workshop": "Atölye ayarı",
+        "date": "Belirli bir tarihte",
+        "never": "Hiçbir zaman"
+      },
+      "rule": {
+        "never": "Bağlantıların süresi dolmaz",
+        "afterSharing": "Gönderildikten {days, plural, one {# gün} other {# gün}} sonra",
+        "afterPayment": "Fatura ödendikten {days, plural, one {# gün} other {# gün}} sonra"
+      },
+      "dateHint": "Bağlantı bu günün sonuna kadar çalışır.",
+      "chooseDate": "Tarih seçin",
+      "cancel": "İptal",
+      "save": "Kaydet",
+      "saved": "Bağlantı süresi kaydedildi",
+      "saveFailed": "Bağlantı süresi kaydedilemedi. Tekrar deneyin."
+    }
+  },
+  "searchableSelect": {
+    "choose": "Seçin...",
+    "search": "Ara...",
+    "noMatch": "Eşleşme yok"
+  },
+  "a11y": {
+    "skipToContent": "İçeriğe atla",
+    "mainNavigation": "Ana gezinme",
+    "close": "Kapat",
+    "breadcrumb": "Gezinti yolu",
+    "more": "Daha fazla",
+    "toggleSidebar": "Kenar çubuğunu göster veya gizle",
+    "sidebar": "Kenar çubuğu",
+    "sidebarDescription": "Ana menü.",
+    "openCalendar": "Takvimi aç",
+    "dismiss": "Kapat",
+    "selectAll": "Tümünü seç",
+    "selectRow": "{name} seç"
+  },
+  "confirmDialog": {
+    "title": "Emin misiniz?",
+    "irreversible": "Bu işlem geri alınamaz.",
+    "andMore": "ve {count} tane daha",
+    "typeToConfirm": "Onaylamak için <b>{text}</b> yazın"
   }
 }

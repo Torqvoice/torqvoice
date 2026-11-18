@@ -274,6 +274,7 @@ export function TeamSettings({
       title: t('team.deleteRole'),
       description: t('team.deleteRoleDescription', { name: role.name }),
       confirmLabel: t('team.deleteRole'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -376,13 +377,23 @@ export function TeamSettings({
     })
     if (!ok) return
 
-    await removeTechnicianAccess({ userId: member.user.id })
-    const result = await setMemberTechnician({ userId: member.user.id, enabled: false })
-    if (result.success) {
+    // Taking the app back is the step that signs the phone out, so a refusal
+    // there stops here rather than reporting them signed out. An action that
+    // cannot reach the server throws instead of answering, so both are
+    // caught and reported the way a refusal is.
+    const revoked = await removeTechnicianAccess({ userId: member.user.id }).catch(() => null)
+    if (!revoked?.success) {
+      modal.open('error', 'Error', revoked?.error || t('team.technicianFailed'))
+      return
+    }
+    const result = await setMemberTechnician({ userId: member.user.id, enabled: false }).catch(
+      () => null
+    )
+    if (result?.success) {
       toast.success(t('team.revokeTechnicianDone', { name: member.user.name || member.user.email }))
       router.refresh()
     } else {
-      modal.open('error', 'Error', result.error || t('team.technicianFailed'))
+      modal.open('error', 'Error', result?.error || t('team.technicianFailed'))
     }
   }
 
@@ -533,6 +544,7 @@ export function TeamSettings({
 
       {/* Members Card */}
       <AppCard
+        id="team-members"
         icon={Users}
         title={
           <>
@@ -548,7 +560,7 @@ export function TeamSettings({
         contentClassName="space-y-4"
         action={
           isAdmin ? (
-            <Button size="sm" onClick={() => setAdding(true)}>
+            <Button id="team-add-person" size="sm" onClick={() => setAdding(true)}>
               <Plus className="mr-1 h-4 w-4" />
               {t('team.addPerson')}
             </Button>
@@ -692,7 +704,7 @@ export function TeamSettings({
             The Add flow creates these, so the page has to show them, or the
             desk adds somebody and watches them vanish. */}
         {standaloneTechnicians.length > 0 && (
-          <div className="space-y-2 border-t pt-4">
+          <div id="team-board-only" className="space-y-2 border-t pt-4">
             <p className="font-medium text-sm">{t('team.boardOnly')}</p>
             <p className="text-muted-foreground text-xs">{t('team.boardOnlyHint')}</p>
             {standaloneTechnicians.map((tech) => (
@@ -738,6 +750,7 @@ export function TeamSettings({
       {/* Pending Invitations Card */}
       {isAdmin && pendingInvitations.length > 0 && (
         <AppCard
+          id="team-invitations"
           icon={Mail}
           title={
             <>
@@ -808,6 +821,7 @@ export function TeamSettings({
       {/* Custom Roles Card */}
       {isAdmin && (
         <AppCard
+          id="team-roles"
           icon={ShieldCheck}
           title={t('team.customRoles')}
           action={
@@ -826,7 +840,12 @@ export function TeamSettings({
                     {t('team.createDefaultRoles')}
                   </Button>
                 )}
-                <Button size="sm" variant="outline" onClick={() => openRoleForm()}>
+                <Button
+                  id="team-new-role"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => openRoleForm()}
+                >
                   <Plus className="mr-1 h-4 w-4" />
                   {t('team.newRole')}
                 </Button>
@@ -1032,7 +1051,7 @@ export function TeamSettings({
       )}
 
       {/* Role Descriptions */}
-      <AppCard title={t('team.builtInRoles')}>
+      <AppCard id="team-built-in-roles" title={t('team.builtInRoles')}>
         <div className="space-y-3 text-sm">
           <div className="flex items-center gap-3">
             <Badge variant="outline" className={`${roleColors.owner}`}>

@@ -2,13 +2,14 @@
 
 import type { CSSProperties, MouseEvent, ReactNode } from 'react'
 import { Check } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
 import { formatClock } from '@/features/workboard/utils/clock'
 import { cn } from '@/lib/utils'
 import { timeToMinutes } from '../Lib/calendar-range'
-import { eventPalette, isEventDone } from './calendar-utils'
+import { eventPalette, isEventDone, openEndedSide } from './calendar-utils'
 import { EventContextMenu } from './EventContextMenu'
-import { useEventPeek } from './EventPeek'
+import { isEditableBooking, useEventPeek } from './EventPeek'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
 /**
@@ -20,7 +21,8 @@ import type { CalendarEvent } from '../Actions/calendarActions'
  * - `row`   a list row for the schedule view and the day sheet
  *
  * Every shape opens the same peek card on click and the same menu on
- * right-click, so nothing here links out.
+ * right-click, so nothing here links out. A double-click opens a booking
+ * that can still be changed in the booking dialog.
  */
 export function EventChip({
   event,
@@ -37,15 +39,37 @@ export function EventChip({
   compact?: boolean
 }) {
   const { timeFormat } = useDateSettings()
-  const { openPeek } = useEventPeek()
+  const { openPeek, editBooking } = useEventPeek()
   const palette = eventPalette(event)
   const done = isEventDone(event)
   const start = event.time ? formatClock(timeToMinutes(event.time), timeFormat) : null
   const end = event.endTime ? formatClock(timeToMinutes(event.endTime), timeFormat) : null
+  const t = useTranslations('calendar.range')
+  const side = openEndedSide(event)
+  const range =
+    side === 'from'
+      ? t('from', { time: start ?? '' })
+      : side === 'until'
+        ? t('until', { time: end ?? '' })
+        : start
+          ? end
+            ? `${start} – ${end}`
+            : start
+          : null
 
   const onClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
+    // The second click of a double-click: the first opened the card, and
+    // this one would close it again.
+    if (e.detail > 1) return
     openPeek(event, e.currentTarget)
+  }
+  // A double-click changes the booking, as in a desktop calendar. It stops
+  // here either way: the day underneath opens day view on a double-click,
+  // and that is for the empty part of a day.
+  const onDoubleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation()
+    if (editBooking && isEditableBooking(event)) editBooking({ mode: 'edit', event })
   }
   // The day underneath has a menu of its own; a right-click on the event
   // must open the event's, not both.
@@ -59,6 +83,7 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         title={label}
         style={style}
@@ -82,6 +107,7 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         title={label}
         style={style}
@@ -104,12 +130,16 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
-        title={end ? `${start} – ${end} ${event.title}` : label}
+        title={range ? `${range} ${event.title}` : event.title}
         style={style}
         className={cn(
           'absolute flex flex-col overflow-hidden rounded-md border px-1.5 py-1 text-left text-xs leading-tight shadow-sm transition-[filter,box-shadow] hover:z-20 hover:shadow-md',
           palette.block,
+          // An edge in the page's own colour, the way Google draws it: blocks
+          // of one colour that overlap stay two blocks instead of one shape.
+          'border-background',
           done && 'opacity-70',
           compact && 'justify-center py-0',
           className
@@ -121,9 +151,13 @@ export function EventChip({
         </span>
         {!compact && (
           <span className="truncate text-[11px] opacity-90">
-            {start}
-            {end ? ` – ${end}` : ''}
-            {event.vehicleLabel ? ` · ${event.vehicleLabel}` : ''}
+            {range}
+            {/* The title already names the car on a job; who it is for says more. */}
+            {event.customerName
+              ? ` · ${event.customerName}`
+              : event.vehicleLabel
+                ? ` · ${event.vehicleLabel}`
+                : ''}
           </span>
         )}
       </button>
@@ -133,6 +167,7 @@ export function EventChip({
       <button
         type="button"
         onClick={onClick}
+        onDoubleClick={onDoubleClick}
         onContextMenu={onContextMenu}
         style={style}
         className={cn(
@@ -140,11 +175,17 @@ export function EventChip({
           className
         )}
       >
-        <span className="w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground">
-          {start ? (end ? `${start} – ${end}` : start) : null}
+        {/* A phone has no room for a time column: the time goes above the title. */}
+        <span className="hidden w-[6.5rem] shrink-0 pt-0.5 text-xs tabular-nums text-muted-foreground sm:block">
+          {range}
         </span>
         <span className={cn('mt-1.5 h-2 w-2 shrink-0 rounded-full', palette.dot)} />
         <span className="min-w-0 flex-1">
+          {range && (
+            <span className="block text-xs tabular-nums text-muted-foreground sm:hidden">
+              {range}
+            </span>
+          )}
           <span className={cn('block truncate font-medium', done && 'line-through opacity-70')}>
             {event.title}
           </span>

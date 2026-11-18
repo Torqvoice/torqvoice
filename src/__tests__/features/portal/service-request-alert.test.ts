@@ -76,6 +76,12 @@ describe('formatPreferredDate', () => {
     expect(formatPreferredDate(new Date('2026-08-10T00:00:00Z'))).toBe('2026-08-10')
   })
 
+  it("names the day the customer picked on the workshop's calendar", () => {
+    // Midnight on 10 August in Auckland is still the 9th in UTC.
+    const picked = new Date('2026-08-09T12:00:00Z')
+    expect(formatPreferredDate(picked, 'Pacific/Auckland')).toBe('2026-08-10')
+  })
+
   it('returns null when there is no usable date', () => {
     expect(formatPreferredDate(null)).toBeNull()
     expect(formatPreferredDate(undefined)).toBeNull()
@@ -100,6 +106,28 @@ describe('buildServiceRequestEmailHtml', () => {
     expect(html).toContain('kari@example.com')
     expect(html).toContain('+47 900 00 000')
     expect(html).toContain('https://app.example.com/customers/c1?tab=requests')
+  })
+
+  it('says photos are attached and where to see them, without sending the files', () => {
+    const html = buildServiceRequestEmailHtml(emailInput({ attachmentCount: 3 }))
+    expect(html).toContain('Attached')
+    expect(html).toContain('3 photos or videos, open the request to see them')
+    // The files stay behind the workshop's sign-in.
+    expect(html).not.toContain('portal-uploads')
+    expect(buildServiceRequestEmailHtml(emailInput({ attachmentCount: 1 }))).toContain(
+      '1 photo or video, open the request to see it'
+    )
+    expect(buildServiceRequestEmailHtml(emailInput())).not.toContain('Attached')
+  })
+
+  it('adds the part of the day to the preferred date', () => {
+    expect(buildServiceRequestEmailHtml(emailInput({ preferredTime: 'morning' }))).toContain(
+      '2026-08-10, morning'
+    )
+    // Only the two parts the form offers are ever printed.
+    expect(
+      buildServiceRequestEmailHtml(emailInput({ preferredTime: '<b>noon</b>' }))
+    ).not.toContain('noon')
   })
 
   it('escapes a description written by a customer', () => {

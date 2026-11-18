@@ -17,12 +17,16 @@ import path from 'node:path'
 import { isDemoMode } from '@/lib/demo'
 import { UPLOAD_CATEGORIES } from '@/lib/upload-url'
 import { uploadsRoot, uploadsRoots } from '@/lib/upload-root'
+import { isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
 import {
   allReferencedSuffixes,
   existingOrganizationIds,
   hasAnyOrganization,
   referencedSuffixes,
 } from './references'
+
+const log = createLogger('files')
 
 /**
  * The one place uploaded files are deleted from disk.
@@ -62,13 +66,19 @@ const FILE_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,200}$/
 const STORED_URL = /^\/api\/(?:protected\/)?files\/([^/]+)\/([^/]+)\/([^/]+)$/
 
 /**
- * Names the upload routes generate: a random UUID and an extension, or a
- * video's `_orig` copy that is only there while it is compressed. The sweep
- * only ever considers these; a file named any other way (an import's, the
- * demo seed's) was put there on purpose by something else.
+ * Names the upload routes and the backup importers generate: a random UUID
+ * and an extension, or a video's `_orig` copy that is only there while it is
+ * compressed. The sweep only ever considers these; a file named any other way
+ * (an older import's, the demo seed's) was put there on purpose by something
+ * else.
  */
 const GENERATED_NAME =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}(?:_orig)?\.[A-Za-z0-9]{1,8}$/
+
+/** Whether the sweep would consider a file of this name. */
+export function isGeneratedName(name: string): boolean {
+  return GENERATED_NAME.test(name)
+}
 
 export interface StoredFile {
   organizationId: string
@@ -199,7 +209,7 @@ export async function releaseFiles(
     inUse = await referencedSuffixes([...candidates.keys()])
   } catch (err) {
     // Unable to tell whether they are in use: keep every one.
-    console.error(`[files] could not check references (${reason}); nothing deleted:`, err)
+    log.error('Could not check references; nothing deleted', { organizationId, reason, err })
     result.skipped.push(...[...candidates.values()].map((c) => c.url))
     return result
   }
@@ -216,18 +226,19 @@ export async function releaseFiles(
       try {
         if (await trashFile(root, target, file, now)) removed = true
       } catch (err) {
-        console.error(`[files] could not delete ${file.suffix} (${reason}):`, err)
+        log.error('Could not delete a file', { organizationId, file: file.suffix, reason, err })
       }
     }
     if (removed) result.removed.push(url)
   }
 
   if (result.removed.length > 0) {
-    console.warn(
-      `[files] ${reason}: moved ${result.removed.length} unused file(s) of ${organizationId} to the trash: ${result.removed
-        .map((url) => parseStoredFileUrl(url)?.suffix)
-        .join(', ')}`
-    )
+    log.info('Moved unused files to the trash', {
+      organizationId,
+      reason,
+      count: result.removed.length,
+      files: result.removed.map((url) => parseStoredFileUrl(url)?.suffix).join(','),
+    })
   }
   return result
 }
@@ -253,7 +264,7 @@ export async function discardUnsavedUpload(
   })
   if (!target) return
   await deleteFile(target).catch((err) =>
-    console.error(`[files] could not discard /${folder}/${name}:`, err)
+    log.error('Could not discard a file', { file: `/${folder}/${name}`, err })
   )
 }
 
@@ -326,8 +337,37 @@ export async function removeOrganizationFiles(
       if (!(await taken(dir))) continue
       await moveInto(dir, path.join(path.resolve(root), TRASH, day, organizationId))
     } catch (err) {
-      console.error(`[files] could not move the uploads of ${organizationId} to the trash:`, err)
+      log.error('Could not move the uploads to the trash', { organizationId, err })
     }
+  }
+}
+
+/**
+ * A file the install itself owns, under `<uploads>/system/<folder>` and
+ * outside every workshop's folder: today only the app icon a white-label
+ * install sets. No workshop row points at it and no export carries it, so
+ * there is nothing to count; a replaced or removed one still goes to the
+ * trash like any other release, filed under `system` where a workshop id
+ * would be, and purgeTrash expires it with the rest.
+ */
+export async function releaseInstallFile(
+  folder: string,
+  name: string,
+  { now = Date.now() }: { now?: number } = {}
+): Promise<boolean> {
+  if (!FILE_NAME.test(name) || name.includes('..')) return false
+  const file: StoredFile = { organizationId: 'system', folder, name, suffix: `/${folder}/${name}` }
+  const root = uploadsRoot()
+  const target = pathUnder(root, file)
+  if (!target) return false
+  // The caller has already saved the change this file belonged to, so a
+  // trash that cannot be written is logged and leaves the file behind for
+  // the sweep, never an error for a setting that is already in place.
+  try {
+    return await trashFile(root, target, file, now)
+  } catch (err) {
+    log.error('Could not release an install file', { file: file.suffix, err })
+    return false
   }
 }
 
@@ -424,7 +464,7 @@ export async function sweepOrphanFiles({
   const result: SweepResult = { checked: 0, removed: 0, skipped: [], deferred: 0 }
   const refuse = (reason: string, err?: unknown) => {
     result.refused = reason
-    console.error(`[files] sweep refused, nothing moved: ${reason}`, ...(err ? [err] : []))
+    log.error('Sweep refused, nothing moved', { reason, err })
     return result
   }
   if (!(await hasAnyOrganization())) return refuse('the database has no workshops')
@@ -450,7 +490,8 @@ export async function sweepOrphanFiles({
       .map((dir) => dir.name)
     const known = await existingOrganizationIds(ids)
 
-    for (const organizationId of ids.filter((id) => known.has(id))) {
+    // A workshop being restored is left out: its rows are being replaced, so its files would look unused.
+    for (const organizationId of ids.filter((id) => known.has(id) && !isRestoring(id))) {
       const tally = perWorkshop.get(organizationId) ?? { checked: 0, unused: [] }
       perWorkshop.set(organizationId, tally)
       for (const folder of FOLDERS) {
@@ -488,7 +529,7 @@ export async function sweepOrphanFiles({
     if (!trustDatabase && checked >= SWEEP_MIN_FOR_SHARE && share > SWEEP_MAX_SHARE) {
       const reason = `${theirs.length} of ${checked} files look unused, more than a sweep should find; check the database, then run with ${SWEEP_TRUST_DATABASE}=1 if they really are`
       result.skipped.push({ organizationId, reason })
-      console.error(`[files] sweep left ${organizationId} alone: ${reason}`)
+      log.error('Sweep left a workshop alone', { organizationId, reason })
       continue
     }
     unused.push(...theirs)
@@ -511,13 +552,14 @@ export async function sweepOrphanFiles({
     if (stillUsed.has(file.suffix)) continue
     if (await trashFile(root, target, file, now).catch(() => false)) {
       result.removed += 1
-      console.warn(
-        `[files] sweep: moved unused ${file.suffix} of ${file.organizationId} to the trash`
-      )
+      log.debug('Sweep moved an unused file to the trash', {
+        organizationId: file.organizationId,
+        file: file.suffix,
+      })
     }
   }
   if (result.deferred > 0) {
-    console.warn(`[files] sweep: ${result.deferred} more unused file(s) left for the next run`)
+    log.info('Sweep left unused files for the next run', { count: result.deferred })
   }
   return result
 }

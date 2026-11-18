@@ -1,4 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+
+// The link is open: whether an expired one is refused is share-link-open's
+// business, and each of these tests is about what happens after that.
+const findSharedDocument = vi.hoisted(() => vi.fn(async () => ({ open: true })))
+vi.mock('@/lib/share-link.server', () => ({ findSharedDocument }))
 
 vi.mock('@/lib/db', () => ({
   db: {
@@ -23,6 +28,11 @@ import {
 } from '@/features/inspections/Actions/quoteRequestActions'
 import { db } from '@/lib/db'
 import { notify } from '@/lib/notify'
+import {
+  RestoreInProgressError,
+  freezeOrganization,
+  unfreezeOrganization,
+} from '@/lib/backup/freeze'
 
 const mockFindInspection = vi.mocked(db.inspection.findFirst)
 const mockFindRequest = vi.mocked(db.inspectionQuoteRequest.findFirst)
@@ -45,8 +55,40 @@ const PENDING_REQUEST = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  findSharedDocument.mockResolvedValue({ open: true })
   mockCreateRequest.mockResolvedValue({} as any)
   mockDeleteRequest.mockResolvedValue({} as any)
+})
+
+afterEach(() => {
+  unfreezeOrganization('org-1')
+})
+
+describe('while the workshop is being restored', () => {
+  it('createQuoteRequest refuses and writes nothing', async () => {
+    freezeOrganization('org-1')
+    mockFindInspection.mockResolvedValue(INSPECTION as any)
+    mockFindRequest.mockResolvedValue(null)
+    await expect(
+      createQuoteRequest({
+        inspectionId: 'insp-1',
+        publicToken: 'pub-tok-1',
+        selectedItemIds: ['item-1'],
+      })
+    ).rejects.toBeInstanceOf(RestoreInProgressError)
+    expect(mockCreateRequest).not.toHaveBeenCalled()
+    expect(mockNotify).not.toHaveBeenCalled()
+  })
+
+  it('cancelQuoteRequest refuses and deletes nothing', async () => {
+    freezeOrganization('org-1')
+    mockFindInspection.mockResolvedValue(INSPECTION as any)
+    mockFindRequest.mockResolvedValue(PENDING_REQUEST as any)
+    await expect(
+      cancelQuoteRequest({ inspectionId: 'insp-1', publicToken: 'pub-tok-1' })
+    ).rejects.toBeInstanceOf(RestoreInProgressError)
+    expect(mockDeleteRequest).not.toHaveBeenCalled()
+  })
 })
 
 describe('createQuoteRequest', () => {

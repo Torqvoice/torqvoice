@@ -12,6 +12,7 @@
   "noChats": "Ingen tidligere samtaler om denne posten",
   "chatsPrivate": "Samtalene dine er private og bare synlige for deg.",
   "deleteChat": "Slett samtale",
+  "deleteChatFailed": "Kunne ikke slette samtalen. Prøv igjen.",
   "error": "Noe gikk galt. Prøv igjen.",
   "disclaimer": "Svarene lages ut fra postene som vises i appen og kan være feil. Sjekk før du handler på dem.",
   "vehicleSuggestion1": "Oppsummer servicehistorikken",

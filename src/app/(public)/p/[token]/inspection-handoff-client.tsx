@@ -146,18 +146,25 @@ export function InspectionHandoffClient({
           if (target) setCounts((prev) => ({ ...prev, [target]: (prev[target] ?? 0) + 1 }))
           return
         }
-        const code = ((await res.json().catch(() => null)) as { code?: string } | null)?.code
+        const answer = (await res.json().catch(() => null)) as {
+          code?: string
+          error?: string
+        } | null
+        const code = answer?.code
         if (code === 'expired' || code === 'invalid') setProblem(code)
         update(item.key, {
           status: 'failed',
+          // A restore of the workshop says so in its own words, to try again later.
           error:
-            code === 'completed'
-              ? tp('completedError')
-              : code === 'limit'
-                ? tp('limitError')
-                : code === 'invalid'
-                  ? tp('invalid')
-                  : t(code && ERROR_KEYS[code] ? ERROR_KEYS[code] : 'errors.failed'),
+            code === 'restoring' && answer?.error
+              ? answer.error
+              : code === 'completed'
+                ? tp('completedError')
+                : code === 'limit'
+                  ? tp('limitError')
+                  : code === 'invalid'
+                    ? tp('invalid')
+                    : t(code && ERROR_KEYS[code] ? ERROR_KEYS[code] : 'errors.failed'),
         })
       } catch {
         update(item.key, { status: 'failed', error: t('errors.failed') })

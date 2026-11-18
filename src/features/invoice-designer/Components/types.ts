@@ -62,6 +62,8 @@ export interface DesignerWorkshop {
   paymentTerms: string
   /** Whether the workshop records the German type key, so the sample car shows one. */
   typeKeyEnabled?: boolean
+  /** How the workshop writes distance; the sample car's mileage uses it, as printed invoices do. */
+  unitSystem?: 'metric' | 'imperial'
   logoUrl: string
   /**
    * The signature of whoever has the designer open, so the Signature section

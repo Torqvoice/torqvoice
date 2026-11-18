@@ -42,6 +42,7 @@
     "warranty": "Gwarancja",
     "workshop": "Warsztat",
     "appearance": "Wygląd",
+    "shortcuts": "Skróty klawiszowe",
     "email": "E-mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Komplet opon",
     "tireForecast": "Następny sezon",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Przypomnienia o przeglądzie"
+    "inspectionReminders": "Przypomnienia o przeglądzie",
+    "faultCodes": "Kody usterek",
+    "faultCode": "Kod usterki",
+    "calendar": "Kalendarz",
+    "messages": "Wiadomości",
+    "inspections": "Przeglądy",
+    "inspectionDetails": "Szczegóły przeglądu"
   },
   "search": "Szukaj...",
-  "shortcut": "Ctrl+K",
   "readMore": "Dowiedz się więcej",
   "newWorkOrder": "Nowe zlecenie",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Część",
     "inspection": "Przegląd",
     "shopActions": "Warsztat",
-    "person": "Dodaj osobę"
+    "person": "Dodaj osobę",
+    "appointment": "Wizyta"
   },
   "purchaseWhiteLabel": "Kup White-Label",
   "licenseExpired": "Twoja licencja wygasła. Funkcje mogą być ograniczone.",
@@ -123,6 +130,7 @@
     "cancel": "Anuluj",
     "createCompany": "Utwórz firmę",
     "theme": "Motyw",
+    "keyboardShortcuts": "Skróty klawiszowe",
     "signOut": "Wyloguj się",
     "more": "Więcej",
     "auditLog": "Dziennik audytu",
@@ -141,6 +149,7 @@
       "workOrders": "{count} otwarte zlecenia",
       "inspections": "{count} przeglądy w toku",
       "reminders": "{count} zaległe przypomnienia"
-    }
+    },
+    "faultCodes": "Kody usterek"
   }
 }

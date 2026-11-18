@@ -17,8 +17,14 @@ import {
   markTypeCatalogue,
 } from '@/features/condition-map/Lib/loadMarks.server'
 import { getLocale } from 'next-intl/server'
+import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { getFeatures } from '@/lib/features'
 import { redirect } from 'next/navigation'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('inspectionDetails')
+}
 
 export default async function InspectionDetailPage({
   params,
@@ -48,6 +54,9 @@ export default async function InspectionDetailPage({
         ? markTypeCatalogue(authContext.organizationId, await getLocale())
         : [],
     ])
+  const emailEnabled = authContext?.organizationId
+    ? await canEmailCustomers(authContext.organizationId)
+    : false
 
   return (
     <>
@@ -57,7 +66,7 @@ export default async function InspectionDetailPage({
           inspection={result.data as InspectionData}
           organizationId={authContext?.organizationId ?? ''}
           smsEnabled={features?.sms ?? false}
-          emailEnabled={features?.smtp ?? false}
+          emailEnabled={emailEnabled}
           telegramEnabled={features?.telegram ?? false}
           statusReports={
             statusReports.success && statusReports.data

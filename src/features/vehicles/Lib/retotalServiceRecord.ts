@@ -2,6 +2,7 @@ import { discountAmountFor } from '@/lib/tax'
 import { db, type TxClient } from '@/lib/db'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { refreshShopFeeLines } from './shopFeeLines'
+import { serviceRecordLineSums } from './lineSums'
 
 /**
  * Re-totals a service record from its line items.
@@ -34,20 +35,17 @@ export async function retotalServiceRecord(
   // A percentage shop fee follows the lines it is a percentage of.
   if (record.organizationId) await refreshShopFeeLines(tx, serviceRecordId, record.organizationId)
 
-  const [parts, labor] = await Promise.all([
-    tx.servicePart.aggregate({ where: { serviceRecordId }, _sum: { total: true } }),
-    tx.serviceLabor.aggregate({ where: { serviceRecordId }, _sum: { total: true } }),
-  ])
-
-  const subtotal = (parts._sum.total || 0) + (labor._sum.total || 0)
+  const sums = await serviceRecordLineSums(tx, serviceRecordId)
+  const subtotal = sums.subtotal
   const discountAmount = discountAmountFor(subtotal, record.discountType, record.discountValue)
 
-  const { taxAmount, totalAmount, taxComponents } = documentTotals({
+  const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
     subtotal,
     discountAmount,
     taxRate: record.taxRate,
     taxInclusive: record.taxInclusive,
     taxComponents: record.taxComponents,
+    taxableSubtotal: sums.taxableSubtotal,
   })
 
   // The discount amount is stored as well as the rule that gave it, so a
@@ -55,6 +53,6 @@ export async function retotalServiceRecord(
   // the editor, never leave the stored amount behind the printed one.
   await tx.serviceRecord.update({
     where: { id: serviceRecordId },
-    data: { subtotal, discountAmount, taxAmount, totalAmount, taxComponents },
+    data: { subtotal, discountAmount, taxAmount, totalAmount, taxComponents, taxableSubtotal },
   })
 }

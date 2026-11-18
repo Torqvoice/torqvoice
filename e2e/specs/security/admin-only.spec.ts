@@ -52,10 +52,11 @@ async function signIn(page: Page, email: string, password: string) {
 
 /**
  * Opens the team page's Add dialog and sends an invitation to `email` as
- * "someone in the office", optionally as an Admin. The dialog is left open so
- * the caller can read what it said.
+ * "someone in the office", as an Admin or with no role. The form sends
+ * nothing until a role is chosen, so one always is. The dialog is left open
+ * so the caller can read what it said.
  */
-async function invite(page: Page, email: string, role?: 'Admin') {
+async function invite(page: Page, email: string, role: 'Admin' | 'No role' = 'No role') {
   await page.goto('/settings/team')
   await settle(page)
   await expect(async () => {
@@ -64,11 +65,9 @@ async function invite(page: Page, email: string, role?: 'Admin') {
   }).toPass({ timeout: 30_000 })
   await page.getByText('Someone in the office').click()
   await page.locator('#member-email').fill(email)
-  if (role) {
-    const dialog = page.getByRole('dialog').filter({ has: page.locator('#member-email') })
-    await dialog.getByRole('combobox').click()
-    await page.getByRole('option', { name: role, exact: true }).click()
-  }
+  const dialog = page.getByRole('dialog').filter({ has: page.locator('#member-email') })
+  await dialog.getByRole('combobox').click()
+  await page.getByRole('option', { name: role, exact: true }).click()
   await page.getByRole('button', { name: 'Invite', exact: true }).click()
 }
 

@@ -189,6 +189,7 @@ const invoice: AccountingInvoice = {
   mileage: 84200,
   notes: null,
   subtotal: 300,
+  taxableSubtotal: null,
   discountType: null,
   discountValue: 0,
   discountAmount: 0,
@@ -207,6 +208,7 @@ const invoice: AccountingInvoice = {
       quantity: 2,
       unitPrice: 100,
       total: 200,
+      taxable: true,
     },
     {
       kind: 'part',
@@ -215,6 +217,7 @@ const invoice: AccountingInvoice = {
       quantity: 1,
       unitPrice: 100,
       total: 100,
+      taxable: true,
     },
   ],
   payments: [],
@@ -747,6 +750,25 @@ describe('Fiken: what stays out', () => {
     loadInvoice.mockResolvedValue({ ...invoice, taxRate: 20, taxAmount: 60, totalAmount: 360 })
     expect((await push(t))?.summary).toBe('invoice INV-1001 not sent, no VAT type for 20%')
     expect(t.logs[0]).toMatchObject({ level: 'warn' })
+    expect(t.calls).toHaveLength(0)
+  })
+
+  it('asks the same about one line left out of the VAT, and does not guess', async () => {
+    // 200 of labor with no VAT beside 100 of parts with it: the labor is a
+    // sale without VAT, and how that is booked is the bookkeeper's call.
+    const t = makeCtx({ answer: emptyCompany() })
+    loadInvoice.mockResolvedValue({
+      ...invoice,
+      taxableSubtotal: 100,
+      taxAmount: 25,
+      totalAmount: 325,
+      lines: [{ ...invoice.lines[0], taxable: false }, invoice.lines[1]],
+    })
+    expect((await push(t))?.summary).toBe(
+      'invoice INV-1001 not sent, VAT type for tax-free sales not chosen'
+    )
+    expect(t.logs[0]).toMatchObject({ level: 'warn' })
+    expect(t.logs[0].message).toContain('some of its lines carry no VAT')
     expect(t.calls).toHaveLength(0)
   })
 

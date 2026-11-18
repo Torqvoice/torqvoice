@@ -3,19 +3,18 @@
 import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { CheckCheck, Eraser, Loader2 } from 'lucide-react'
+import { CheckCheck, Eraser, Loader2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -24,23 +23,27 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
+import { useOverlappingSaves } from '@/lib/use-overlapping-saves'
 import {
   addConditionMark,
   addConditionMarkPhotos,
   carryConditionMarks,
   discardConditionMarkUploads,
+  listVehicleConditionMarks,
   removeConditionMark,
   removeConditionMarkPhoto,
   resolveConditionMark,
   setVehicleBodyType,
   updateConditionMark,
 } from '../Actions/conditionMarkActions'
+import { getBodyDrawing } from '../Drawings'
 import { BODY_TYPES, type BodyType, type View, VIEWS } from '../Lib/drawingTypes'
 import {
   type ConditionMarkData,
   type MarkScope,
   type MarkSeverity,
   bodyTypeFor,
+  isBodyType,
   isDrawnOnSheet,
   isOwnMark,
   numberedMarks,
@@ -51,11 +54,14 @@ import { ImageCarousel } from '@/features/vehicles/Components/service-detail/Ima
 import type { Attachment } from '@/features/vehicles/Components/service-detail/types'
 import { type MarkType, markTypeOf } from '../Lib/markTypes'
 import { MarkEditor } from './MarkEditor'
+import { type PanelSpot, panelSpots, spotKey } from '../Lib/panelSpots'
+import { PanelSelect } from './PanelSelect'
 
 /** Photos saved on a mark per call, the action's own limit. */
 const PHOTOS_PER_SAVE = 10
 /** How a mark shown before its save has answered is told from a saved one. */
 const STAND_IN = 'pending:'
+
 /**
  * The condition map with everything around it: the body type, the view
  * switcher, the drawing, the legend of this sheet's marks, and the marks
@@ -100,10 +106,22 @@ export function ConditionMapCard({
   const [body, setBody] = useState<BodyType>(bodyTypeFor(vehicle, { serviceType }))
   const [focusView, setFocusView] = useState<View | null>(null)
   const [editingId, setEditingId] = useState<string | null>(null)
-  const [clearingId, setClearingId] = useState<string | null>(null)
+  const confirm = useConfirm()
+  /** The Add mark dialog: open, and the panel chosen in it so far. */
+  const [adding, setAdding] = useState(false)
+  const [addSpot, setAddSpot] = useState<PanelSpot | null>(null)
   /** Which of the strip's photos is open full size, if any. */
   const [viewing, setViewing] = useState<number | null>(null)
   const [pending, startTransition] = useTransition()
+  // Overlapping changes that partly went through are read back from the
+  // server. What comes back is put on screen only if nothing was changed
+  // while it was being read; otherwise the hook reads again.
+  const save = useOverlappingSaves(async (idle) => {
+    const result = await listVehicleConditionMarks(vehicle.id).catch(() => null)
+    if (!idle() || !result?.success || !result.data) return false
+    setMarks(result.data)
+    return true
+  })
 
   const { own, previous } = useMemo(() => splitMarks(marks, scope), [marks, scope])
   const numbered = useMemo(() => numberedMarks([...previous, ...own]), [previous, own])
@@ -125,6 +143,7 @@ export function ConditionMapCard({
       y: m.y,
       kind: m.kind,
       severity: m.severity,
+      panel: m.panel,
       number: numberOf.get(m.id) ?? 0,
       previous: !ownIds.has(m.id),
       // A mark still being saved has nothing to move yet.
@@ -150,23 +169,27 @@ export function ConditionMapCard({
   const handleTap = (tap: MapTap) => {
     if (readOnly) return
     startTransition(async () => {
-      const result = await addConditionMark({
-        vehicleId: vehicle.id,
-        // The sheet the mark is drawn on; a linked inspection only lends its marks.
-        ...('inspectionItemId' in scope
-          ? { inspectionId: scope.inspectionId, inspectionItemId: scope.inspectionItemId }
-          : { serviceRecordId: scope.serviceRecordId }),
-        bodyType: body,
-        view: tap.view,
-        panel: tap.panel,
-        x: tap.x,
-        y: tap.y,
-        // The first kind the workshop offers; the editor opens to change it.
-        kind: types.find((type) => !type.hidden)?.key ?? 'dent',
-        severity: 'minor',
-      })
-      if (!result.success || !result.data) {
-        toast.error(result.success ? t('saveFailed') : result.error || t('saveFailed'))
+      // Nothing is drawn until the server answers, so there is nothing to
+      // undo; it still counts as a change for any it overlaps.
+      const result = await save(() =>
+        addConditionMark({
+          vehicleId: vehicle.id,
+          // The sheet the mark is drawn on; a linked inspection only lends its marks.
+          ...('inspectionItemId' in scope
+            ? { inspectionId: scope.inspectionId, inspectionItemId: scope.inspectionItemId }
+            : { serviceRecordId: scope.serviceRecordId }),
+          bodyType: body,
+          view: tap.view,
+          panel: tap.panel,
+          x: tap.x,
+          y: tap.y,
+          // The first kind the workshop offers; the editor opens to change it.
+          kind: types.find((type) => !type.hidden)?.key ?? 'dent',
+          severity: 'minor',
+        })
+      )
+      if (!result?.success || !result.data) {
+        toast.error(result?.success ? t('saveFailed') : result?.error || t('saveFailed'))
         return
       }
       const created = result.data
@@ -180,17 +203,40 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, view: to.view, panel: to.panel, x: to.x, y: to.y })
     startTransition(async () => {
-      const result = await updateConditionMark(id, {
-        view: to.view,
-        panel: to.panel,
-        x: to.x,
-        y: to.y,
-      })
-      if (!result.success) {
-        replace(before)
-        toast.error(result.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => updateConditionMark(id, { view: to.view, panel: to.panel, x: to.x, y: to.y }),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
+  }
+
+  // The panels a mark can be put on without a pointer, with the spot each
+  // one's mark lands on. Adding offers the views on screen; the editor offers
+  // every view of the mark's own drawing.
+  const spots = useMemo(() => panelSpots(getBodyDrawing(body)), [body])
+  const addSpots = useMemo(
+    () => (focusView ? spots.filter((spot) => spot.view === focusView) : spots),
+    [spots, focusView]
+  )
+
+  const openAdd = () => {
+    setAddSpot(null)
+    setAdding(true)
+  }
+
+  const confirmAdd = () => {
+    if (!addSpot) return
+    setAdding(false)
+    handleTap(addSpot)
+  }
+
+  /** The editor's Panel field: the mark goes to the middle of the panel chosen. */
+  const handleMovePanel = (spot: PanelSpot) => {
+    if (!editingId) return
+    // One view on screen and the mark moved to another: follow it there.
+    if (focusView && focusView !== spot.view) setFocusView(spot.view)
+    handleMove(editingId, spot)
   }
 
   const handleChange = (patch: {
@@ -203,11 +249,11 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, ...patch, note: patch.note === undefined ? before.note : patch.note })
     startTransition(async () => {
-      const result = await updateConditionMark(editingId, patch)
-      if (!result.success) {
-        replace(before)
-        toast.error(result.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => updateConditionMark(editingId, patch),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -218,11 +264,14 @@ export function ConditionMapCard({
     const before = marks
     setMarks((prev) => prev.filter((m) => m.id !== id))
     startTransition(async () => {
-      const result = await removeConditionMark(id)
-      if (!result.success) {
-        setMarks(before)
-        toast.error(result.error || t('saveFailed'))
-      }
+      // A request that never reaches the server throws instead of answering.
+      // Uncaught in a transition that is the error page; caught, the mark
+      // comes back like one the server refused to remove.
+      const result = await save(
+        () => removeConditionMark(id),
+        () => setMarks(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -267,27 +316,34 @@ export function ConditionMapCard({
     if (!before) return
     replace({ ...before, imageUrls: before.imageUrls.filter((u) => u !== url) })
     startTransition(async () => {
-      const result = await removeConditionMarkPhoto({ id: editingId, url })
-      if (!result.success) {
-        replace(before)
-        toast.error(result.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => removeConditionMarkPhoto({ id: editingId, url }),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
-  const handleClear = () => {
-    const id = clearingId
-    if (!id) return
-    setClearingId(null)
+  const handleClear = async (id: string) => {
     const before = marks.find((m) => m.id === id)
     if (!before) return
+    const ok = await confirm({
+      title: t('clearRepaired'),
+      description: t('clearBody', {
+        n: numberOf.get(before.id) ?? 0,
+        area: t(`panels.${before.panel}`),
+      }),
+      confirmLabel: t('clearRepaired'),
+      cancelLabel: t('cancel'),
+    })
+    if (!ok) return
     replace({ ...before, resolvedAt: new Date().toISOString() })
     startTransition(async () => {
-      const result = await resolveConditionMark(id, true)
-      if (!result.success) {
-        replace(before)
-        toast.error(result.error || t('saveFailed'))
-      }
+      const result = await save(
+        () => resolveConditionMark(id, true),
+        () => replace(before)
+      )
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -323,10 +379,12 @@ export function ConditionMapCard({
       ...standIns,
     ])
     startTransition(async () => {
-      const result = await carryConditionMarks({ vehicleId: vehicle.id, ...sheet })
-      if (!result.success || !result.data) {
-        setMarks(before)
-        toast.error(result.success ? t('saveFailed') : result.error || t('saveFailed'))
+      const result = await save(
+        () => carryConditionMarks({ vehicleId: vehicle.id, ...sheet }),
+        () => setMarks(before)
+      )
+      if (!result?.success || !result.data) {
+        toast.error(result?.success ? t('saveFailed') : result?.error || t('saveFailed'))
         return
       }
       // What was saved is the answer. A mark not carried was taken by
@@ -344,8 +402,10 @@ export function ConditionMapCard({
     setBody(next as BodyType)
     setFocusView(null)
     startTransition(async () => {
-      const result = await setVehicleBodyType(vehicle.id, next)
-      if (!result.success) toast.error(result.error || t('saveFailed'))
+      // Uncaught in a transition, a dropped connection is the error page. The
+      // drawing stays on the body chosen; the vehicle keeps its saved one.
+      const result = await setVehicleBodyType(vehicle.id, next).catch(() => null)
+      if (!result?.success) toast.error(result?.error || t('saveFailed'))
     })
   }
 
@@ -376,7 +436,6 @@ export function ConditionMapCard({
   }))
 
   const editing = editingId ? (marks.find((m) => m.id === editingId) ?? null) : null
-  const clearing = clearingId ? (marks.find((m) => m.id === clearingId) ?? null) : null
 
   return (
     <div className="space-y-3" data-testid="condition-map">
@@ -391,6 +450,20 @@ export function ConditionMapCard({
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {!readOnly && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs"
+              disabled={pending}
+              onClick={openAdd}
+              data-testid="condition-map-add"
+            >
+              <Plus className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+              {t('addMark')}
+            </Button>
+          )}
           <Select value={body} onValueChange={handleBody} disabled={readOnly}>
             <SelectTrigger className="h-8 w-40 text-xs" aria-label={t('bodyType')}>
               <SelectValue />
@@ -407,7 +480,7 @@ export function ConditionMapCard({
       </div>
 
       {/* One view at a time for a finger; the whole sheet for a desk. */}
-      <div className="flex flex-wrap gap-1" role="tablist" aria-label={t('allViews')}>
+      <div className="flex flex-wrap gap-1" role="group" aria-label={t('allViews')}>
         <ViewTab active={focusView === null} onClick={() => setFocusView(null)}>
           {t('allViews')}
         </ViewTab>
@@ -495,7 +568,7 @@ export function ConditionMapCard({
                       number={numberOf.get(mark.id) ?? 0}
                       previous
                       onOpen={() => setEditingId(mark.id)}
-                      onClear={readOnly ? undefined : () => setClearingId(mark.id)}
+                      onClear={readOnly ? undefined : () => handleClear(mark.id)}
                     />
                   ))}
               </ul>
@@ -559,6 +632,7 @@ export function ConditionMapCard({
             ? {
                 id: editing.id,
                 number: numberOf.get(editing.id) ?? 0,
+                view: editing.view,
                 panel: editing.panel,
                 kind: editing.kind,
                 severity: editing.severity,
@@ -588,6 +662,14 @@ export function ConditionMapCard({
                   : t('readOnlyEarlier')
         }
         busy={pending}
+        spots={
+          editing
+            ? isBodyType(editing.bodyType) && editing.bodyType !== body
+              ? panelSpots(getBodyDrawing(editing.bodyType))
+              : spots
+            : []
+        }
+        onMovePanel={handleMovePanel}
         onChange={handleChange}
         onRemove={handleRemove}
         onAddPhotos={handleAddPhotos}
@@ -595,24 +677,44 @@ export function ConditionMapCard({
         onClose={() => setEditingId(null)}
       />
 
-      <AlertDialog open={clearing !== null} onOpenChange={(open) => !open && setClearingId(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('clearRepaired')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {clearing &&
-                t('clearBody', {
-                  n: numberOf.get(clearing.id) ?? 0,
-                  area: t(`panels.${clearing.panel}`),
-                })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleClear}>{t('clearRepaired')}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog open={adding} onOpenChange={setAdding}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t('addMarkTitle')}</DialogTitle>
+            <DialogDescription>{t('addMarkBody')}</DialogDescription>
+          </DialogHeader>
+          <form
+            className="space-y-4"
+            onSubmit={(event) => {
+              event.preventDefault()
+              confirmAdd()
+            }}
+          >
+            <div className="space-y-1.5">
+              <label
+                htmlFor="condition-map-add-panel"
+                className="text-xs font-medium text-muted-foreground"
+              >
+                {t('panel')}
+              </label>
+              <PanelSelect
+                id="condition-map-add-panel"
+                spots={addSpots}
+                value={addSpot ? spotKey(addSpot) : ''}
+                onChange={setAddSpot}
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setAdding(false)}>
+                {t('cancel')}
+              </Button>
+              <Button type="submit" disabled={!addSpot || pending}>
+                {t('addMark')}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
@@ -629,11 +731,10 @@ function ViewTab({
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={active}
+      aria-pressed={active}
       onClick={onClick}
       className={cn(
-        'h-8 rounded-md border px-2.5 text-xs font-medium transition-colors',
+        'h-8 rounded-md border px-2.5 text-xs font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring',
         active
           ? 'border-primary bg-primary/10 text-foreground'
           : 'border-input bg-background text-muted-foreground hover:bg-muted'

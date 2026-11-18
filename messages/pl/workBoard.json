@@ -58,7 +58,12 @@
       "everyone": "Cała praca",
       "thisWeek": "Ten tydzień"
     },
-    "dropNeedsLane": "Pogrupuj tablicę według mechanika lub stanowiska, zanim przeciągniesz na nią zlecenie."
+    "dropNeedsLane": "Pogrupuj tablicę według mechanika lub stanowiska, zanim przeciągniesz na nią zlecenie.",
+    "load": {
+      "over": "{amount} za dużo",
+      "spoken": "Zaplanowano {booked} z {capacity}",
+      "spokenOver": "Zaplanowano {booked} z {capacity}, przekroczono o {amount}"
+    }
   },
   "unassigned": {
     "title": "Nieprzyzdzielone Zadania ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Zarządzane na stronie Zespół, razem z dostępem do aplikacji.",
     "skills": "Umiejętności",
     "skillsPlaceholder": "Diagnostyka, certyfikat EV",
-    "skillsHint": "Wyświetlane pod nazwiskiem tam, gdzie przydziela się pracę. Opcjonalne."
+    "skillsHint": "Wyświetlane pod nazwiskiem tam, gdzie przydziela się pracę. Opcjonalne.",
+    "saveFailed": "Nie udało się zapisać technika. Spróbuj ponownie.",
+    "deleteFailed": "Nie udało się usunąć technika. Spróbuj ponownie."
   },
   "jobDetail": {
     "viewDetails": "Wyświetl Szczegóły",
@@ -90,7 +97,9 @@
     "endTime": "Czas zakończenia",
     "failedDuration": "Nie udało się zaktualizować czasu trwania",
     "failedTimes": "Nie udało się zaktualizować godzin",
-    "startTime": "Czas rozpoczęcia"
+    "startTime": "Czas rozpoczęcia",
+    "alsoOnJob": "Także przy tym zleceniu",
+    "failedHelper": "Nie udało się zaktualizować osób przy zleceniu"
   },
   "presenter": {
     "title": "Tablica Pracy",
@@ -160,6 +169,9 @@
     "none": "Jeszcze nikt",
     "promised": "Obiecane",
     "promiseLate": "Po terminie",
-    "promiseOverdue": "Obiecane klientowi na termin, który już minął"
+    "promiseOverdue": "Obiecane klientowi na termin, który już minął",
+    "alsoOnJob": "Także przy zleceniu",
+    "with": "Prowadzący: {name}",
+    "helping": "Pomaga"
   }
 }

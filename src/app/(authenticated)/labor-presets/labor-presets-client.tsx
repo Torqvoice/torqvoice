@@ -92,6 +92,7 @@ export function LaborPresetsClient({
     sellPrice: number
     unitCost: number
     quantity: number
+    tags?: string[]
   }[]
 }) {
   const router = useRouter()
@@ -162,13 +163,15 @@ export function LaborPresetsClient({
     )
   }
 
+  // An action that cannot reach the server throws instead of answering, so
+  // both of these catch it and say the same thing a refusal does.
   const handleEdit = async (id: string) => {
-    const result = await getLaborPreset(id)
-    if (result.success && result.data) {
+    const result = await getLaborPreset(id).catch(() => null)
+    if (result?.success && result.data) {
       setEditPreset(result.data)
       setShowForm(true)
     } else {
-      modal.open('error', t('errors.error'), result.error || t('errors.loadFailed'))
+      modal.open('error', t('errors.error'), result?.error || t('errors.loadFailed'))
     }
   }
 
@@ -177,14 +180,15 @@ export function LaborPresetsClient({
       title: t('deletePreset.title'),
       description: t('deletePreset.description', { name }),
       confirmLabel: t('deletePreset.confirm'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
-    const result = await deleteLaborPreset(id)
-    if (result.success) {
+    const result = await deleteLaborPreset(id).catch(() => null)
+    if (result?.success) {
       router.refresh()
     } else {
-      modal.open('error', t('errors.error'), result.error || t('errors.deleteFailed'))
+      modal.open('error', t('errors.error'), result?.error || t('errors.deleteFailed'))
     }
   }
 
@@ -197,6 +201,7 @@ export function LaborPresetsClient({
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('searchPlaceholder')}
+              aria-label={t('searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="h-9 pl-9"

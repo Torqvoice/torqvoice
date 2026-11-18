@@ -3,6 +3,7 @@ import { db } from './db'
 import { sessionOrganizationScope } from './session-scope'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
 
 type AuthResult =
   | { status: 'unauthenticated' }
@@ -19,6 +20,11 @@ type AuthResult =
       lastSeenVersion: string | null
       updateBannerVersion: string | null
       updateBannerShownAt: Date | null
+      /** When the "What's new" panel was last opened, and when the account began. */
+      whatsNewSeenAt: Date | null
+      userCreatedAt: Date | null
+      /** The person's own keyboard shortcuts, as stored; null is every default. */
+      keyboardShortcuts: unknown
       companyLogo: string | undefined
       dateFormat: string | undefined
       timeFormat: string | undefined
@@ -27,6 +33,8 @@ type AuthResult =
       serviceType: string | undefined
       /** Whether vehicles carry the German type key (HSN/TSN). */
       typeKeyEnabled: boolean
+      /** The unit a plate lookup writes engine size in. */
+      engineSizeUnit: EngineSizeUnit
       currencyCode: string | undefined
       currencyFormat: string | undefined
       organizations: { id: string; name: string; role: string }[]
@@ -46,6 +54,9 @@ export async function getLayoutData(): Promise<AuthResult> {
         lastSeenVersion: true,
         updateBannerVersion: true,
         updateBannerShownAt: true,
+        whatsNewSeenAt: true,
+        createdAt: true,
+        keyboardShortcuts: true,
       },
     }),
   ])
@@ -73,6 +84,7 @@ export async function getLayoutData(): Promise<AuthResult> {
                 SETTING_KEYS.WORKBOARD_WEEK_START_DAY,
                 SETTING_KEYS.SERVICE_TYPE,
                 SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
+                SETTING_KEYS.ENGINE_SIZE_UNIT,
                 SETTING_KEYS.CURRENCY_CODE,
                 SETTING_KEYS.CURRENCY_FORMAT,
               ],
@@ -105,6 +117,9 @@ export async function getLayoutData(): Promise<AuthResult> {
     lastSeenVersion: user?.lastSeenVersion ?? null,
     updateBannerVersion: user?.updateBannerVersion ?? null,
     updateBannerShownAt: user?.updateBannerShownAt ?? null,
+    whatsNewSeenAt: user?.whatsNewSeenAt ?? null,
+    userCreatedAt: user?.createdAt ?? null,
+    keyboardShortcuts: user?.keyboardShortcuts ?? null,
     companyLogo: orgMap.get(SETTING_KEYS.COMPANY_LOGO) || undefined,
     dateFormat: orgMap.get(SETTING_KEYS.DATE_FORMAT) || undefined,
     timeFormat: orgMap.get(SETTING_KEYS.TIME_FORMAT) || undefined,
@@ -112,6 +127,7 @@ export async function getLayoutData(): Promise<AuthResult> {
     weekStartDay: parseInt(orgMap.get(SETTING_KEYS.WORKBOARD_WEEK_START_DAY) || '1', 10),
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
     typeKeyEnabled: typeKeyEnabledIn(Object.fromEntries(orgMap)),
+    engineSizeUnit: engineSizeUnitOf(orgMap.get(SETTING_KEYS.ENGINE_SIZE_UNIT)),
     currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
     currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,
     organizations: memberships.map((m) => ({

@@ -14,6 +14,7 @@ import {
   DropdownMenuItem,
 } from '@/components/ui/dropdown-menu'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useFormatDate } from '@/lib/use-format-date'
 import {
   getIssuedDesignState,
   reapplyDesignToInvoice,
@@ -54,6 +55,8 @@ interface InvoiceDesignMenuProps {
  */
 export function InvoiceDesignMenu({ recordId, designFollowsName }: InvoiceDesignMenuProps) {
   const t = useTranslations('service.header')
+  // The workshop's date format and zone, as every other date on the job.
+  const { formatDate } = useFormatDate()
   const router = useRouter()
   const confirm = useConfirm()
   const [state, setState] = useState<DesignState | null>(null)
@@ -129,7 +132,7 @@ export function InvoiceDesignMenu({ recordId, designFollowsName }: InvoiceDesign
           <p className="px-2 py-1.5 text-xs leading-relaxed text-muted-foreground whitespace-normal">
             {state
               ? t('designMenuExplain', {
-                  date: new Date(state.issuedAt).toLocaleDateString(),
+                  date: formatDate(state.issuedAt),
                 })
               : t('designMenuLoading')}
           </p>

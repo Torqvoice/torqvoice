@@ -22,10 +22,13 @@ import {
   Hash,
   Mail,
   MessageSquare,
+  Pencil,
   Send,
   User,
   Wrench,
   X,
+  CalendarOff,
+  UserX,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,8 +36,9 @@ import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import { useDateSettings } from '@/components/date-settings-context'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { formatClock } from '@/features/workboard/utils/clock'
+import { sanitizeHtml } from '@/lib/sanitize-html'
 import { timeToMinutes } from '../Lib/calendar-range'
-import { eventPalette, getEventLink, isEventDone } from './calendar-utils'
+import { eventPalette, getEventLink, isEventDone, openEndedSide } from './calendar-utils'
 import { ExternalEventDialog } from './ExternalEventDialog'
 import type { CalendarEvent } from '../Actions/calendarActions'
 
@@ -47,6 +51,19 @@ import type { CalendarEvent } from '../Actions/calendarActions'
 interface PeekState {
   event: CalendarEvent
   anchor: HTMLElement
+  /**
+   * Beside a chip, below a row: a row in a list runs the full width, so a
+   * card beside it would land on top of the sidebar.
+   */
+  side: 'right' | 'bottom'
+}
+
+/** What the booking dialog opens on: changing a booking, or an appointment becoming a work order. */
+export type BookingEdit = { mode: 'edit' | 'convert'; event: CalendarEvent }
+
+/** A booking the calendar can change: an appointment, or a job whose car has not arrived. */
+export function isEditableBooking(event: Pick<CalendarEvent, 'type' | 'status'>): boolean {
+  return event.type === 'appointment' || (event.type === 'service' && event.status === 'scheduled')
 }
 
 interface PeekApi {
@@ -54,6 +71,16 @@ interface PeekApi {
   closePeek: () => void
   /** Reloads the events after something was deleted or ticked off in place. */
   refresh: () => void
+  /** Opens the booking dialog on an event. Absent where nothing can be booked. */
+  editBooking?: (edit: BookingEdit) => void
+}
+
+/** What the card can do beyond linking out, handed down by the calendar. */
+interface PeekActions {
+  /** Open a technician's leave for editing. Absent when this person may not. */
+  onEditAbsence?: (event: CalendarEvent) => void
+  /** Open the booking dialog on an appointment or a booked job. */
+  onEditBooking?: (edit: BookingEdit) => void
 }
 
 const PeekContext = createContext<PeekApi>({
@@ -69,13 +96,29 @@ export function useEventPeek() {
 export function EventPeekProvider({
   currencyCode,
   onRefresh,
+  onEditAbsence,
+  onEditBooking,
+  showing,
   children,
 }: {
   currencyCode: string
   onRefresh?: () => void
+  onEditAbsence?: PeekActions['onEditAbsence']
+  onEditBooking?: PeekActions['onEditBooking']
+  /**
+   * What the calendar is showing: the view and the day. The card closes when
+   * it changes, because the chip it hangs off is no longer on the screen and
+   * a card with nothing to hang off lands in the corner.
+   */
+  showing?: string
   children: ReactNode
 }) {
   const [peek, setPeek] = useState<PeekState | null>(null)
+  const [shown, setShown] = useState(showing)
+  if (shown !== showing) {
+    setShown(showing)
+    if (peek) setPeek(null)
+  }
   const [external, setExternal] = useState<CalendarEvent | null>(null)
   // Radix measures the anchor through a ref, so the clicked element is handed
   // over as one; a new object each time so the popper re-measures.
@@ -88,8 +131,11 @@ export function EventPeekProvider({
       setExternal(event)
       return
     }
+    const side = anchor.getBoundingClientRect().width > 320 ? 'bottom' : 'right'
     setPeek((current) =>
-      current && current.event === event && current.anchor === anchor ? null : { event, anchor }
+      current && current.event === event && current.anchor === anchor
+        ? null
+        : { event, anchor, side }
     )
   }, [])
   const closePeek = useCallback(() => setPeek(null), [])
@@ -97,7 +143,20 @@ export function EventPeekProvider({
     setPeek(null)
     onRefresh?.()
   }, [onRefresh])
-  const api = useMemo(() => ({ openPeek, closePeek, refresh }), [openPeek, closePeek, refresh])
+  const editBooking = useMemo(
+    () =>
+      onEditBooking
+        ? (edit: BookingEdit) => {
+            setPeek(null)
+            onEditBooking(edit)
+          }
+        : undefined,
+    [onEditBooking]
+  )
+  const api = useMemo(
+    () => ({ openPeek, closePeek, refresh, editBooking }),
+    [openPeek, closePeek, refresh, editBooking]
+  )
 
   return (
     <PeekContext.Provider value={api}>
@@ -105,13 +164,36 @@ export function EventPeekProvider({
       <Popover open={peek !== null} onOpenChange={(open) => !open && setPeek(null)}>
         <PopoverAnchor virtualRef={anchorRef as React.RefObject<HTMLElement>} />
         <PopoverContent
-          side="right"
+          side={peek?.side ?? 'right'}
           align="start"
           collisionPadding={12}
           className="w-[22rem] max-w-[calc(100vw-1.5rem)] p-0 shadow-xl"
           onOpenAutoFocus={(e) => e.preventDefault()}
+          // The chip the card hangs off is not its trigger as far as the
+          // popover knows, so a press on it counts as one outside and would
+          // close the card before the chip's own click is heard. The chip
+          // decides: a click closes the card, a double-click leaves it or
+          // opens the booking.
+          onInteractOutside={(e) => {
+            if (peek?.anchor.contains(e.target as Node)) e.preventDefault()
+          }}
         >
-          {peek && <PeekCard event={peek.event} currencyCode={currencyCode} onClose={closePeek} />}
+          {peek && (
+            <PeekCard
+              event={peek.event}
+              currencyCode={currencyCode}
+              onClose={closePeek}
+              onEditBooking={editBooking}
+              onEditAbsence={
+                onEditAbsence
+                  ? (event) => {
+                      closePeek()
+                      onEditAbsence(event)
+                    }
+                  : undefined
+              }
+            />
+          )}
         </PopoverContent>
       </Popover>
       <ExternalEventDialog event={external} onClose={() => setExternal(null)} />
@@ -129,10 +211,27 @@ function typeIcon(event: CalendarEvent) {
       return FileText
     case 'message':
       return event.channel === 'email' ? Mail : event.channel === 'sms' ? MessageSquare : Send
+    case 'closure':
+      return CalendarOff
+    case 'absence':
+      return UserX
+    case 'appointment':
+      return CalendarClock
     default:
       return CalendarClock
   }
 }
+
+/** What a quote can be, as the quote list names them (`quotes.statusLabels`). */
+const QUOTE_STATUSES = [
+  'draft',
+  'sent',
+  'accepted',
+  'rejected',
+  'expired',
+  'converted',
+  'changes_requested',
+]
 
 function statusKey(event: CalendarEvent): string {
   if (event.type === 'service') {
@@ -153,10 +252,10 @@ function statusKey(event: CalendarEvent): string {
   if (event.type === 'message') {
     return event.status === 'sent' ? 'sent' : event.status === 'failed' ? 'failed' : 'queued'
   }
-  if (event.type === 'quote') {
-    return event.status === 'sent' ? 'sent' : event.status === 'approved' ? 'approved' : 'draft'
-  }
   if (event.type === 'external') return 'busy'
+  if (event.type === 'closure') return 'closed'
+  if (event.type === 'absence') return 'away'
+  if (event.type === 'appointment') return 'booked'
   return event.status === 'completed' ? 'done' : event.status === 'overdue' ? 'overdue' : 'upcoming'
 }
 
@@ -164,24 +263,38 @@ function PeekCard({
   event,
   currencyCode,
   onClose,
+  onEditAbsence,
+  onEditBooking,
 }: {
   event: CalendarEvent
   currencyCode: string
   onClose: () => void
+  onEditAbsence?: PeekActions['onEditAbsence']
+  onEditBooking?: PeekActions['onEditBooking']
 }) {
   const t = useTranslations('calendar')
+  const tc = useTranslations('common')
+  const tq = useTranslations('quotes.statusLabels')
   const format = useDayFormatter()
   const { timeFormat } = useDateSettings()
   const formatCurrency = useFormatCurrency()
   const palette = eventPalette(event)
   const Icon = typeIcon(event)
   const day = new Date(`${event.date}T12:00:00`)
-  const when = event.time
-    ? event.endTime
-      ? `${formatClock(timeToMinutes(event.time), timeFormat)} – ${formatClock(timeToMinutes(event.endTime), timeFormat)}`
-      : formatClock(timeToMinutes(event.time), timeFormat)
-    : t('events.external.allDay')
+  const side = openEndedSide(event)
+  const when = side
+    ? side === 'from'
+      ? t('range.from', { time: formatClock(timeToMinutes(event.time ?? '00:00'), timeFormat) })
+      : t('range.until', {
+          time: formatClock(timeToMinutes(event.endTime ?? '00:00'), timeFormat),
+        })
+    : event.time
+      ? event.endTime
+        ? `${formatClock(timeToMinutes(event.time), timeFormat)} – ${formatClock(timeToMinutes(event.endTime), timeFormat)}`
+        : formatClock(timeToMinutes(event.time), timeFormat)
+      : t('events.external.allDay')
   const done = isEventDone(event)
+  const conditions = event.conditions ?? []
 
   return (
     <div className="overflow-hidden rounded-md">
@@ -220,9 +333,15 @@ function PeekCard({
           <Badge variant="secondary" className={`text-[10px] ${palette.chip}`}>
             {t(`events.type.${event.type}`)}
           </Badge>
-          <Badge variant="outline" className="text-[10px]">
-            {t(`events.status.${statusKey(event)}`)}
-          </Badge>
+          {/* "Closed" and "Leave" already say it all; a second badge repeated them. */}
+          {event.type !== 'closure' && event.type !== 'absence' && (
+            <Badge variant="outline" className="text-[10px]">
+              {/* A quote says what the quote list says: accepted, expired, changes requested. */}
+              {event.type === 'quote'
+                ? tq(QUOTE_STATUSES.includes(event.status) ? event.status : 'draft')
+                : t(`events.status.${statusKey(event)}`)}
+            </Badge>
+          )}
         </div>
 
         <dl className="mt-3 space-y-1.5 text-sm">
@@ -253,19 +372,89 @@ function PeekCard({
               </dd>
             </div>
           )}
+          {(event.notificationCount ?? 0) > 0 && (
+            <div className="flex items-center gap-2">
+              <Bell className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+              <dd className="text-muted-foreground">
+                {t('peek.notifications', { count: event.notificationCount ?? 0 })}
+              </dd>
+            </div>
+          )}
         </dl>
 
-        <div className="mt-4 flex items-center justify-end gap-2">
-          <Button asChild size="sm">
-            <Link href={getEventLink(event)}>
-              {t(`peek.open.${event.type}`)}
-              {event.type === 'external' ? (
-                <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
-              ) : (
-                <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+        {/* What it is about, under the divider: an appointment's description,
+            a job's conditions. A job from before the conditions were the one
+            copy can still carry a description, which is shown after them. */}
+        {(conditions.length > 0 || event.description) && (
+          <div className="mt-3 max-h-40 space-y-2 overflow-y-auto border-t pt-3 text-sm">
+            {conditions.length === 1 && <p className="break-words">{conditions[0]}</p>}
+            {conditions.length > 1 && (
+              <ul aria-label={t('appointment.work')} className="list-disc space-y-0.5 pl-5">
+                {conditions.map((line, i) => (
+                  // Plain lines with no id; the order is what they are.
+                  <li key={i} className="break-words">
+                    {line}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {event.description && (
+              <div
+                className="notes-content"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(event.description) }}
+              />
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+          {event.type === 'absence' && onEditAbsence && (
+            <Button size="sm" variant="outline" onClick={() => onEditAbsence(event)}>
+              <Pencil className="mr-1.5 h-3.5 w-3.5" />
+              {tc('buttons.edit')}
+            </Button>
+          )}
+          {event.type === 'appointment' ? (
+            onEditBooking && (
+              <>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onEditBooking({ mode: 'convert', event })}
+                >
+                  <Wrench className="mr-1.5 h-3.5 w-3.5" />
+                  {t('peek.makeWorkOrder')}
+                </Button>
+                <Button size="sm" onClick={() => onEditBooking({ mode: 'edit', event })}>
+                  <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                  {tc('buttons.edit')}
+                </Button>
+              </>
+            )
+          ) : (
+            <>
+              {onEditBooking && isEditableBooking(event) && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => onEditBooking({ mode: 'edit', event })}
+                >
+                  <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                  {tc('buttons.edit')}
+                </Button>
               )}
-            </Link>
-          </Button>
+              <Button asChild size="sm">
+                <Link href={getEventLink(event)}>
+                  {t(`peek.open.${event.type}`)}
+                  {event.type === 'external' ? (
+                    <ExternalLink className="ml-1.5 h-3.5 w-3.5" />
+                  ) : (
+                    <ArrowUpRight className="ml-1.5 h-3.5 w-3.5" />
+                  )}
+                </Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </div>

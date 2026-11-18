@@ -16,7 +16,11 @@ export interface InventoryPartOption {
   unitCost: number
   sellPrice: number
   quantity: number
+  /** False for a fee or consumable that is charged but never counted. */
+  trackStock?: boolean
   category: string | null
+  /** The part's tags; makes and models in them rank it for the job's vehicle. */
+  tags?: string[]
 }
 
 export interface InitialData {

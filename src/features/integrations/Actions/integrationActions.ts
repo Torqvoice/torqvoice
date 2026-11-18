@@ -1,5 +1,7 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { randomUUID } from 'node:crypto'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
@@ -9,7 +11,13 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { FeatureGatedError, getFeatures, isCloudMode } from '@/lib/features'
 import { demoGuard } from '@/lib/demo'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getManifest, listManifests } from '@/integrations/registry'
+import {
+  cloudOnlyElsewhere,
+  getConnector,
+  getManifest,
+  listManifests,
+} from '@/integrations/registry'
+import { conditionMet } from '../Lib/conditions'
 import { invoicesForBackfill } from '../Lib/accounting-sync'
 import { clearPulledEvents } from '../Lib/calendar-sync'
 import {
@@ -28,14 +36,20 @@ import {
 import { enqueueJob, runJob } from '../Lib/jobs'
 import { oauthSpec, platformClient, redirectUriFor } from '../Lib/oauth'
 import { describeSettingChanges } from '../Lib/setting-changes'
+import { Prisma } from '@/generated/prisma/client'
 import type {
+  PreviewTestResult,
   ActivityBatch,
+  ActivityCursor,
   ActivityItem,
   ActivityJob,
+  ActivityPage,
   ConnectionStatus,
   ConnectorManifest,
   SettingOption,
 } from '../Lib/types'
+import type { BackupOverview } from '../Lib/backup-types'
+import { BACKUP_CAPABILITY, backupOverview, canRestoreBackups } from '../Lib/backup'
 import { messagingProvider, providersForChannel } from '@/integrations/messaging/catalog'
 import {
   type InboundWebhook,
@@ -55,6 +69,7 @@ import {
   paymentWebhook,
 } from '../Lib/payments'
 import { anyConnectorAllowed, connectorAllowed } from '../Lib/plan'
+import { autoConnectAll, markAutoConnectOptOut } from '../Lib/auto-connect'
 
 /**
  * The inbound URL for a messaging connection, from its sealed secret, or the
@@ -76,6 +91,23 @@ function inboundFor(
     )
   } catch {
     return null
+  }
+}
+
+/**
+ * The keys a connection still waits for: the ones its manifest lets wait
+ * until the vendor issues them, with nothing stored under them yet. A row
+ * whose credentials cannot be opened waits for nothing it can be told about.
+ */
+function awaitingKeysFor(manifest: ConnectorManifest, sealed: string | null): string[] {
+  if (manifest.auth.type === 'oauth2') return []
+  const later = manifest.auth.fields.filter((f) => f.deferrable)
+  if (later.length === 0) return []
+  try {
+    const stored = openCredentials(sealed)
+    return later.filter((f) => !String(stored[f.key] ?? '').trim()).map((f) => f.key)
+  } catch {
+    return []
   }
 }
 
@@ -158,6 +190,11 @@ export interface CatalogEntry {
   featured: boolean
   /** False when the plan does not include this connector; the card says PRO and connect refuses. */
   enabled: boolean
+  /**
+   * A connector that exists on the cloud only, listed on a self-hosted
+   * install so it can be seen. Not in the registry here: no page, no connect.
+   */
+  cloudOnly: boolean
 }
 
 function manifestForClient(m: ConnectorManifest): ConnectorManifest {
@@ -189,7 +226,12 @@ export async function getIntegrationCatalog() {
       // their own. Adopting here as well as on first use means a workshop
       // that had them switched on opens this page and finds them already
       // connected.
-      await Promise.all([adoptLegacyAi(organizationId), adoptLegacyPayments(organizationId)])
+      // A service that is on for every workshop is connected here too.
+      await Promise.all([
+        adoptLegacyAi(organizationId),
+        adoptLegacyPayments(organizationId),
+        autoConnectAll(organizationId),
+      ])
       const [features, connections, countrySetting] = await Promise.all([
         getFeatures(organizationId),
         db.integrationConnection.findMany({
@@ -221,8 +263,23 @@ export async function getIntegrationCatalog() {
           featured:
             manifest.countries === 'global' ||
             (country ? manifest.countries.includes(country) : false),
+          cloudOnly: false,
         }
       })
+      // A self-hosted install sees the cloud's own services too, greyed out,
+      // so a workshop knows they exist. Nothing behind the card can be opened.
+      for (const manifest of cloudOnlyElsewhere()) {
+        entries.push({
+          manifest: manifestForClient(manifest),
+          enabled: false,
+          status: null,
+          externalAccountName: null,
+          lastError: null,
+          platformApp: false,
+          featured: false,
+          cloudOnly: true,
+        })
+      }
       return {
         entries,
         enabled: anyConnectorAllowed(features),
@@ -254,12 +311,20 @@ export interface ConnectionView {
   webhookUrl: string | null
   /** For registries that can keep inspection dates fresh: what a pass covers. Null otherwise. */
   inspectionSync: InspectionSyncOverview | null
+  /** For backup destinations: last and next runs. Null for every other connector. */
+  backup: BackupOverview | null
   /**
    * Where a messaging vendor must deliver inbound messages, built from the
    * connection's own secret. Null for vendors that register it themselves
    * or have nothing inbound.
    */
   inbound: InboundWebhook | null
+  /**
+   * Keys the vendor issues only after the connection is live, still not
+   * entered. The connection stands, the webhook answers, and nothing can be
+   * sent until these are in; the page says so and asks for them.
+   */
+  awaitingKeys: string[]
   /**
    * The vendor connecting this one would stand down, when only one at a time
    * is allowed: the other AI provider, or the vendor already sending on this
@@ -303,16 +368,17 @@ async function supersededVendor(
     orderBy: { updatedAt: 'desc' },
     select: { connectorId: true },
   })
+  const ti = await getTranslations('integrations')
   for (const row of rows) {
     const manifest = getManifest(row.connectorId)
-    if (manifest) return { connectorId: manifest.id, name: manifest.name }
+    if (manifest) return { connectorId: manifest.id, name: connectorName(ti, manifest) }
   }
   return null
 }
 
 export async function getIntegrationConnection(connectorId: string) {
   return withAuth(
-    async ({ organizationId }): Promise<ConnectionView> => {
+    async ({ organizationId, userId, isAdmin }): Promise<ConnectionView> => {
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
       // Opening a vendor's page directly, without passing the catalog, still
@@ -334,6 +400,7 @@ export async function getIntegrationConnection(connectorId: string) {
         const creds = openCredentials(row.credentials)
         tenantClientId = typeof creds.clientId === 'string' ? creds.clientId : null
       }
+      const awaitingKeys = row ? awaitingKeysFor(manifest, row.credentials) : []
       const appUrl = (process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')
       return {
         manifest: manifestForClient(manifest),
@@ -360,18 +427,35 @@ export async function getIntegrationConnection(connectorId: string) {
         webhookUrl:
           row && appUrl ? `${appUrl}/api/integrations/${connectorId}/${row.id}/webhook` : null,
         inbound: row ? inboundFor(row, configuredAppUrl()) : null,
+        awaitingKeys,
         supersedes,
         redirectUri: redirectUriFor(configuredAppUrl(), connectorId),
         inspectionSync:
           row && manifest.capabilities.includes(INSPECTION_CAPABILITY)
             ? await inspectionSyncOverview(
                 organizationId,
-                (row.state as Record<string, unknown>) ?? {}
+                (row.state as Record<string, unknown>) ?? {},
+                effectiveSettings(connectorId, (row.settings as Record<string, unknown>) ?? {})
+              )
+            : null,
+        backup:
+          row && manifest.capabilities.includes(BACKUP_CAPABILITY)
+            ? await backupOverview(
+                {
+                  id: row.id,
+                  organizationId,
+                  settings: effectiveSettings(
+                    connectorId,
+                    (row.settings as Record<string, unknown>) ?? {}
+                  ),
+                  state: (row.state as Record<string, unknown>) ?? {},
+                },
+                { canRestore: await canRestoreBackups({ userId, organizationId, isAdmin }) }
               )
             : null,
       }
     },
-    { requiredPermissions: READ_PERMISSION }
+    { requiredPermissions: READ_PERMISSION, allowDuringRestore: true }
   )
 }
 
@@ -406,8 +490,41 @@ export async function saveIntegrationCredentials(
 
       const fields =
         manifest.auth.type === 'oauth2' ? (manifest.auth.tenantFields ?? []) : manifest.auth.fields
+      const existing = await db.integrationConnection.findUnique({
+        where: { organizationId_connectorId: { organizationId, connectorId } },
+      })
+      const previous = openCredentials(existing?.credentials)
+      // A live connection keeps its working keys when new ones fail their
+      // check: the row is put back as it was, sealed credentials and
+      // settings alike, and stays active, so a mistyped late key never takes
+      // a running webhook down with it. Anything not live goes to error as
+      // before, which is what the page's "Update keys" path reads.
+      const live =
+        existing?.status === 'active'
+          ? { id: existing.id, credentials: existing.credentials, settings: existing.settings }
+          : null
+      const refuse = async (connectionId: string, message: string): Promise<never> => {
+        if (live) {
+          await db.integrationConnection.update({
+            where: { id: live.id },
+            data: { credentials: live.credentials, settings: (live.settings ?? {}) as object },
+          })
+          await writeLog(live.id, 'warn', `New keys refused, the stored ones stay: ${message}`)
+        } else {
+          await setConnectionStatus(connectionId, 'error', message)
+        }
+        throw new Error(message)
+      }
+      // A key that is only asked for under one provider choice is only
+      // required there; the choice is in the settings typed on the same page.
+      const chosen = { ...(rawSettings === undefined ? {} : settings) }
       for (const f of fields) {
-        if (f.required && !input[f.key]?.trim()) throw new Error(`${f.key} is required`)
+        if (!f.required || !conditionMet(f.showWhen, chosen)) continue
+        if (input[f.key]?.trim()) continue
+        // A form that adds the keys a vendor issued late sends only those;
+        // the ones already stored and left out of it stay as they are.
+        if (!(f.key in input) && previous[f.key]) continue
+        throw new Error(`${f.key} is required`)
       }
       const allowed = new Set(fields.map((f) => f.key))
       const clean: Record<string, string> = {}
@@ -418,11 +535,6 @@ export async function saveIntegrationCredentials(
         if (v.trim()) clean[k] = v.trim()
         else cleared.add(k)
       }
-
-      const existing = await db.integrationConnection.findUnique({
-        where: { organizationId_connectorId: { organizationId, connectorId } },
-      })
-      const previous = openCredentials(existing?.credentials)
       for (const k of cleared) delete previous[k]
       // Nothing is live until the keys have been checked: the row keeps the
       // status it had, and a brand-new one starts pending, so a send that
@@ -447,14 +559,7 @@ export async function saveIntegrationCredentials(
       if (manifest.auth.type !== 'oauth2') {
         const { ctx, server } = await loadConnection(connection.id)
         const result = await server.test(ctx)
-        if (!result.ok) {
-          await setConnectionStatus(
-            connection.id,
-            'error',
-            result.message ?? 'Connection test failed'
-          )
-          throw new Error(result.message ?? 'Connection test failed')
-        }
+        if (!result.ok) await refuse(connection.id, result.message ?? 'Connection test failed')
         // Who the account is, when the vendor will say. Not being able to
         // ask is no reason to refuse keys that just passed their check.
         if (server.identify) {
@@ -478,9 +583,10 @@ export async function saveIntegrationCredentials(
             const outcome = await server.onConnect(ctx)
             if (outcome?.settings) await mergeSettings(connection.id, outcome.settings)
           } catch (err) {
-            const message = err instanceof Error ? err.message : 'Connection setup failed'
-            await setConnectionStatus(connection.id, 'error', message)
-            throw new Error(message)
+            await refuse(
+              connection.id,
+              err instanceof Error ? err.message : 'Connection setup failed'
+            )
           }
         }
         await activateConnection(connection.id, organizationId, connectorId, userId)
@@ -496,7 +602,7 @@ export async function saveIntegrationCredentials(
         entityId: result.id,
         details: {
           key: 'integration_connect',
-          params: { name: getManifest(connectorId)?.name ?? connectorId },
+          params: { name: getManifest(connectorId)?.name ?? connectorId, connectorId },
         },
       }),
     }
@@ -539,15 +645,89 @@ export async function getIntegrationRemoteOptions(connectorId: string, source: s
       await requireConnectorPlan(organizationId, connectorId)
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
-        select: { id: true, status: true },
+        select: { id: true, status: true, credentials: true },
       })
       if (!row || row.status === 'pending' || row.status === 'disconnected') return []
+      // An OAuth sign-in that never finished, such as one the vendor refused,
+      // leaves no tokens. Asking the vendor would only fail; the list stays
+      // empty until the workshop connects, and the page says why.
+      const manifest = getManifest(connectorId)
+      if (manifest && oauthSpec(manifest)) {
+        const tokens = openCredentials(row.credentials)
+        if (!tokens.accessToken && !tokens.refreshToken) return []
+      }
       const { ctx, server } = await loadConnection(row.id)
       const provider = server.remoteOptions?.[source]
       if (!provider) return []
       return provider(ctx)
     },
     { requiredPermissions: READ_PERMISSION }
+  )
+}
+
+/**
+ * A remote-select's list from keys and settings typed on the connect page,
+ * before anything is saved: the buckets a storage key can see, for instance.
+ * The typed values go to the vendor and nowhere else; a key that cannot list
+ * gives an empty list, and the form takes a typed name instead.
+ */
+export async function previewIntegrationRemoteOptions(
+  connectorId: string,
+  source: string,
+  rawCredentials: unknown,
+  rawSettings: unknown
+) {
+  return withAuth(
+    async ({ organizationId }): Promise<SettingOption[]> => {
+      await requireConnectorPlan(organizationId, connectorId)
+      const manifest = getManifest(connectorId)
+      if (!manifest) throw new Error('Unknown integration')
+      const field = manifest.settings.find(
+        (f) => f.type === 'remote-select' && f.source === source && f.preview
+      )
+      if (!field?.preview) return []
+      const credentials = credentialsSchema.parse(rawCredentials)
+      const settings = cleanSettings(manifest, rawSettings)
+      // Only what the field says it depends on goes to the vendor.
+      const picked = {
+        credentials: Object.fromEntries(
+          field.preview.credentials.map((k) => [k, credentials[k] ?? ''])
+        ),
+        settings: Object.fromEntries(field.preview.settings.map((k) => [k, settings[k] ?? ''])),
+      }
+      const server = await getConnector(connectorId)
+      const provider = server.previewOptions?.[source]
+      if (!provider) return []
+      return provider(picked)
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
+  )
+}
+
+/**
+ * A check of keys and settings typed on the connect page, before anything is
+ * saved: can they reach the destination and write to it. The typed values go
+ * to the vendor and nowhere else, and nothing of them is kept.
+ */
+export async function previewIntegrationTest(
+  connectorId: string,
+  rawCredentials: unknown,
+  rawSettings: unknown
+) {
+  return withAuth(
+    async ({ organizationId }): Promise<PreviewTestResult> => {
+      demoGuard()
+      await requireConnectorPlan(organizationId, connectorId)
+      const manifest = getManifest(connectorId)
+      if (!manifest?.testBeforeConnect) throw new Error('Unknown integration')
+      const credentials = credentialsSchema.parse(rawCredentials)
+      const settings = cleanSettings(manifest, rawSettings)
+      const server = await getConnector(connectorId)
+      if (!server.previewTest)
+        throw new Error('This integration cannot be tested before connecting')
+      return server.previewTest({ credentials, settings, organizationId })
+    },
+    { requiredPermissions: SETTINGS_PERMISSION }
   )
 }
 
@@ -765,6 +945,8 @@ export async function disconnectIntegration(connectorId: string) {
       const provider = messagingProvider(connectorId)
       if (provider) await markChannelAdopted(organizationId, provider.channel, userId)
       if (isPaymentConnector(connectorId)) await markPaymentsAdopted(organizationId, userId)
+      // A service that is on for every workshop stays off once turned off.
+      await markAutoConnectOptOut(organizationId, connectorId, userId)
       // Tokens go; links and logs go with the row so nothing dangles.
       await db.integrationConnection.delete({ where: { id: row.id } })
       await clearPulledEvents(row.id)
@@ -781,7 +963,7 @@ export async function disconnectIntegration(connectorId: string) {
         entityId: result.id,
         details: {
           key: 'integration_disconnect',
-          params: { name: getManifest(connectorId)?.name ?? connectorId },
+          params: { name: getManifest(connectorId)?.name ?? connectorId, connectorId },
         },
       }),
     }
@@ -832,21 +1014,39 @@ interface JobGroup {
   dead: number
 }
 
+const ACTIVITY_PAGE_SIZE = 20
+
+const activityCursorSchema = z
+  .object({ at: z.string().datetime(), key: z.string().min(1).max(200) })
+  .nullable()
+
 /**
- * The last twenty things that happened on a connection, where a backfill
+ * Twenty things that happened on a connection, newest first, where a backfill
  * counts as one thing however many jobs it queued. Each batch carries its
  * counts by status and the jobs that failed, since those are the ones with
- * a Retry button.
+ * a Retry button. Without a cursor it is the newest twenty and the latest log
+ * lines; with one, the twenty before the line the cursor names, which is how
+ * the card loads more as it is scrolled.
  */
-export async function getIntegrationActivity(connectorId: string) {
+export async function getIntegrationActivity(
+  connectorId: string,
+  rawBefore: ActivityCursor | null = null
+) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId }): Promise<ActivityPage> => {
+      const before = activityCursorSchema.parse(rawBefore)
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
         select: { id: true },
       })
-      if (!row) return { items: [] as ActivityItem[], logs: [] }
-      const [groups, logs] = await Promise.all([
+      if (!row) return { items: [], logs: [], nextCursor: null }
+      // createdAt is a timestamp without a zone that holds UTC. Casting the
+      // cursor's ISO string drops its Z, so both compare as UTC wall clock.
+      const older = before
+        ? Prisma.sql`HAVING (min("createdAt"), coalesce(payload->>'batchId', id))
+                       < (${before.at}::timestamp(3), ${before.key}::text)`
+        : Prisma.empty
+      const [rows, logs] = await Promise.all([
         db.$queryRaw<JobGroup[]>`
           SELECT coalesce(payload->>'batchId', id) AS "groupKey",
                  payload->>'batchId' AS "batchId",
@@ -860,15 +1060,25 @@ export async function getIntegrationActivity(connectorId: string) {
           FROM "public"."integration_jobs"
           WHERE "connectionId" = ${row.id}
           GROUP BY 1, 2, 3
-          ORDER BY 4 DESC
-          LIMIT 20`,
-        db.integrationLog.findMany({
-          where: { connectionId: row.id },
-          orderBy: { createdAt: 'desc' },
-          take: 50,
-          select: { id: true, level: true, message: true, details: true, createdAt: true },
-        }),
+          ${older}
+          ORDER BY 4 DESC, 1 DESC
+          LIMIT ${ACTIVITY_PAGE_SIZE + 1}`,
+        before
+          ? []
+          : db.integrationLog.findMany({
+              where: { connectionId: row.id },
+              orderBy: { createdAt: 'desc' },
+              take: 50,
+              select: { id: true, level: true, message: true, details: true, createdAt: true },
+            }),
       ])
+      // One past the page says whether there is anything older.
+      const groups = rows.slice(0, ACTIVITY_PAGE_SIZE)
+      const last = groups.at(-1)
+      const nextCursor =
+        rows.length > ACTIVITY_PAGE_SIZE && last
+          ? { at: last.createdAt.toISOString(), key: last.groupKey }
+          : null
       const singleIds = groups.filter((g) => !g.batchId).map((g) => g.groupKey)
       const batchIds = groups.flatMap((g) => (g.batchId ? [g.batchId] : []))
       const [singles, failures] = await Promise.all([
@@ -924,6 +1134,7 @@ export async function getIntegrationActivity(connectorId: string) {
       return {
         items,
         logs: logs.map((l) => ({ ...l, createdAt: l.createdAt.toISOString() })),
+        nextCursor,
       }
     },
     { requiredPermissions: READ_PERMISSION }
@@ -1052,12 +1263,17 @@ export async function getServiceVideoCall(serviceRecordId: string) {
         }
         break
       }
+      const ti = await getTranslations('integrations')
       const providers = connections
         .map((c) => getManifest(c.connectorId))
         .filter((m): m is ConnectorManifest & { meetingProvider: string } =>
           Boolean(m?.meetingProvider)
         )
-        .map((m) => ({ connectorId: m.id, name: m.name, provider: m.meetingProvider }))
+        .map((m) => ({
+          connectorId: m.id,
+          name: connectorName(ti, m),
+          provider: m.meetingProvider,
+        }))
       return { link, providers }
     },
     { requiredPermissions: SERVICE_READ_PERMISSION }

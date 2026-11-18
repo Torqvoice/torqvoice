@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { notify } from '@/lib/notify'
 import { revalidateLicense } from '@/lib/license/revalidate'
+import { createLogger } from '@/lib/logger'
 import {
   LICENSE_TOKEN_MAX_AGE_DAYS,
   LICENSE_TOKEN_WARN_AGE_DAYS,
@@ -20,6 +21,9 @@ const EXPIRY_WARNING_DAYS = 14
 export async function revalidateOrganizationLicense(organizationId: string, licenseKey: string) {
   const { verification } = await revalidateLicense(organizationId, licenseKey)
   const { status, daysUntilExpiry, ageDays } = verification
+  // A perpetual token was not refreshed (revalidateLicense leaves it alone)
+  // and has no clock to warn about: no term, and its age means nothing.
+  if (verification.kind === 'perpetual') return
 
   if (
     status === 'valid' &&
@@ -74,7 +78,7 @@ async function emailOwner(organizationId: string, subject: string, html: string)
     const from = await getOrgFromAddress(organizationId)
     await sendOrgMail(organizationId, { from, to: owner.user.email, subject, html })
   } catch (error) {
-    console.warn(`[cron] Failed to send license email for org ${organizationId}:`, error)
+    createLogger('cron').error('Could not send the licence email', { organizationId, err: error })
   }
 }
 
@@ -162,7 +166,10 @@ async function revalidateAll(orgs: KeyedOrg[]) {
     try {
       await revalidateOrganizationLicense(org.organizationId, org.key)
     } catch (error) {
-      console.error(`[cron] Failed to revalidate license for org ${org.organizationId}:`, error)
+      createLogger('cron').error('Licence revalidation failed', {
+        organizationId: org.organizationId,
+        err: error,
+      })
     }
   }
 }
@@ -182,14 +189,18 @@ export async function refreshLicensesMissingTokens() {
       select: { organizationId: true, value: true },
     })
     const tokenByOrg = new Map(tokens.map((t) => [t.organizationId, t.value]))
-    const needing = orgs.filter(
-      (o) =>
-        verifyLicenseToken(tokenByOrg.get(o.organizationId), o.organizationId).status !== 'valid'
-    )
+    const needing = orgs.filter((o) => {
+      const verification = verifyLicenseToken(tokenByOrg.get(o.organizationId), o.organizationId)
+      // A perpetual token has nothing to fetch, and refreshing a leftover key
+      // would put a subscription token over it. Storing one drops the key, so
+      // this only guards a database edited by hand.
+      if (verification.kind === 'perpetual') return false
+      return verification.status !== 'valid'
+    })
     if (needing.length === 0) return
     await revalidateAll(needing)
   } catch (error) {
-    console.error('[license] Boot-time licence refresh failed:', error)
+    createLogger('license').error('Boot-time licence refresh failed', { err: error })
   }
 }
 
@@ -199,7 +210,7 @@ export function checkLicenses() {
     try {
       await revalidateAll(await orgsWithKeys())
     } catch (error) {
-      console.error('[cron] License revalidation failed:', error)
+      createLogger('cron').error('Licence revalidation failed', { err: error })
     }
   })
 

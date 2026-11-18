@@ -20,11 +20,14 @@ export const OTHER_PARTS_GROUP = 'other'
 export const LABOR_GROUP = 'labor'
 
 interface GroupInput {
-  parts: { category?: string | null; total: number; excluded?: boolean }[]
-  labor: { total: number; excluded?: boolean }[]
+  parts: { category?: string | null; total: number; excluded?: boolean; taxable?: boolean | null }[]
+  labor: { total: number; excluded?: boolean; taxable?: boolean | null }[]
   labels: Record<string, string>
-  /** A line total as the sheet shows it, before and after tax alike. */
-  shown: (amount: number) => number
+  /**
+   * A line total as the sheet shows it, before and after tax alike. A line
+   * left out of the tax is shown as entered, so the caller is told which.
+   */
+  shown: (amount: number, taxable?: boolean) => number
   money: (amount: number) => string
 }
 
@@ -43,9 +46,17 @@ export function lineGroupsFor(input: GroupInput): LineGroup[] | undefined {
   const L = (key: string, fallback: string) => labels[key] || fallback
   if (!input.parts.some((part) => part.category?.trim())) return undefined
 
-  const subtotalOf = (lines: { total: number; excluded?: boolean }[]) =>
-    money(shown(lines.reduce((sum, line) => (line.excluded ? sum : sum + line.total), 0)))
-  const group = (key: string, title: string, lines: { total: number; excluded?: boolean }[]) => ({
+  type Line = { total: number; excluded?: boolean; taxable?: boolean | null }
+  // Each line converted on its own and then added, since a group can hold
+  // taxed and untaxed lines side by side.
+  const subtotalOf = (lines: Line[]) =>
+    money(
+      lines.reduce(
+        (sum, line) => (line.excluded ? sum : sum + shown(line.total, line.taxable !== false)),
+        0
+      )
+    )
+  const group = (key: string, title: string, lines: Line[]) => ({
     key,
     title,
     subtotalLabel: fill(L('groupSubtotal', '{group} subtotal'), { group: title }),

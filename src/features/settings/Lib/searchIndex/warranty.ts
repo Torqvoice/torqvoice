@@ -1,0 +1,82 @@
+import type { SettingsEntry } from './types'
+
+/** Warranty. One card in three parts: included, not included, and where it applies. */
+export const warrantyEntries: SettingsEntry[] = [
+  {
+    id: 'warranty.defaultStatus',
+    page: 'warranty',
+    title: 'warranty.defaultStatus',
+    anchor: 'warranty-default-status',
+    keywords: ['default warranty', 'warranty included', 'no warranty', 'guarantee'],
+  },
+  {
+    id: 'warranty.included',
+    page: 'warranty',
+    title: 'warranty.includedTitle',
+    description: 'warranty.includedHint',
+    anchor: 'warranty-included',
+    keywords: ['warranty included', 'warranty period', 'guarantee terms', 'garanti'],
+  },
+  {
+    id: 'warranty.months',
+    page: 'warranty',
+    title: 'warranty.months',
+    anchor: 'warrantyDefaultMonths',
+    keywords: ['warranty months', 'warranty duration', 'warranty length', 'guarantee period'],
+  },
+  {
+    id: 'warranty.mileage',
+    page: 'warranty',
+    title: 'warranty.mileage',
+    values: { unit: 'km / mi' },
+    description: 'warranty.mileageHint',
+    anchor: 'warrantyDefaultMileage',
+    keywords: ['warranty mileage', 'distance limit', 'km limit', 'miles limit'],
+  },
+  {
+    id: 'warranty.terms',
+    page: 'warranty',
+    title: 'warranty.terms',
+    description: 'warranty.termsHint',
+    anchor: 'warrantyDefaultTerms',
+    keywords: ['warranty terms', 'warranty text', 'guarantee text', 'warranty conditions'],
+  },
+  {
+    id: 'warranty.notIncluded',
+    page: 'warranty',
+    title: 'warranty.notIncludedTitle',
+    description: 'warranty.notIncludedHint',
+    anchor: 'warranty-not-included',
+    keywords: ['no warranty', 'without warranty', 'disclaimer', 'customer supplied parts'],
+  },
+  {
+    id: 'warranty.notIncludedText',
+    page: 'warranty',
+    title: 'warranty.notIncludedText',
+    anchor: 'warrantyNotIncludedText',
+    keywords: ['no warranty statement', 'disclaimer text', 'statutory rights'],
+  },
+  {
+    id: 'warranty.applyTo',
+    page: 'warranty',
+    title: 'warranty.applyTitle',
+    anchor: 'warranty-apply-to',
+    keywords: ['warranty on quotes', 'warranty on work orders', 'apply warranty'],
+  },
+  {
+    id: 'warranty.applyToQuotes',
+    page: 'warranty',
+    title: 'warranty.applyToQuotes',
+    description: 'warranty.applyToQuotesHint',
+    anchor: 'warrantyApplyToQuotes',
+    keywords: ['warranty on quotes', 'quote warranty', 'estimate warranty'],
+  },
+  {
+    id: 'warranty.applyToWorkOrders',
+    page: 'warranty',
+    title: 'warranty.applyToWorkOrders',
+    description: 'warranty.applyToWorkOrdersHint',
+    anchor: 'warrantyApplyToWorkOrders',
+    keywords: ['warranty on work orders', 'warranty on invoices', 'invoice warranty'],
+  },
+]

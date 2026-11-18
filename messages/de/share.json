@@ -12,6 +12,8 @@
     "payWithCard": "{amount} mit Karte bezahlen",
     "payWithVipps": "{amount} mit Vipps bezahlen",
     "payWithPaypal": "{amount} mit PayPal bezahlen",
+    "payWithPaystack": "{amount} mit Paystack bezahlen",
+    "payWithVendor": "Bezahlen mit <vendor></vendor>",
     "errorInvalidAmount": "Bitte geben Sie einen gültigen Betrag ein.",
     "errorExceedsBalance": "Betrag darf {amount} nicht überschreiten.",
     "errorVerifyFailed": "Zahlung konnte nicht verifiziert werden. Sie wird möglicherweise noch verarbeitet.",
@@ -202,7 +204,21 @@
     "deficienciesFound": "Festgestellte Mängel ({count})",
     "allResults": "Alle Ergebnisse",
     "privacyNotice": "Dieser Bericht wird Ihnen von der Werkstatt bereitgestellt, die die Prüfung durchgeführt hat. Er ist für jeden mit diesem Link abrufbar — bitte leiten Sie ihn nicht weiter. Wenden Sie sich an die Werkstatt, um den Link zurückzuziehen oder Ihre Daten löschen zu lassen.",
-    "inspectionPhotos": "Fotos und Dokumente"
+    "inspectionPhotos": "Fotos und Dokumente",
+    "checkResult": {
+      "pass": "Alle Punkte in Ordnung",
+      "pass_minor": "Einige Punkte im Auge behalten",
+      "fail": "Einige Punkte müssen repariert werden",
+      "fail_dangerous": "Einige Punkte müssen dringend repariert werden",
+      "incomplete": "Nicht abgeschlossen"
+    },
+    "checkResultDetail": {
+      "pass": "Nichts musste beanstandet werden.",
+      "pass_minor": "Nichts Dringendes. Die markierten Punkte sollten Sie einplanen.",
+      "fail": "Einige Punkte müssen repariert werden. Die Notizen beschreiben, was gefunden wurde.",
+      "fail_dangerous": "Einige Punkte sind nicht sicher und sollten vor der weiteren Nutzung repariert werden.",
+      "incomplete": "Diese Prüfung läuft noch."
+    }
   },
   "terms": {
     "title": "Verkaufsbedingungen",
@@ -234,5 +250,31 @@
     "telegramConnect": "Chatten Sie mit uns auf Telegram",
     "telegramScan": "Scannen Sie diesen QR-Code, um uns auf Telegram für Updates und Support zu kontaktieren.",
     "downloadCertificate": "Prüfbericht herunterladen"
+  },
+  "expired": {
+    "pageTitle": "Link abgelaufen",
+    "title": "Dieser Link ist abgelaufen",
+    "body": {
+      "invoice": "Wenden Sie sich an {workshop}, um einen neuen Link zu dieser Rechnung zu erhalten.",
+      "quote": "Wenden Sie sich an {workshop}, um einen neuen Link zu diesem Angebot zu erhalten.",
+      "inspection": "Wenden Sie sich an {workshop}, um einen neuen Link zu dieser Inspektion zu erhalten.",
+      "statusReport": "Wenden Sie sich an {workshop}, um einen neuen Link zu diesem Update zu erhalten."
+    },
+    "bodyNoName": {
+      "invoice": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu dieser Rechnung zu erhalten.",
+      "quote": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu diesem Angebot zu erhalten.",
+      "inspection": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu dieser Inspektion zu erhalten.",
+      "statusReport": "Wenden Sie sich an die Werkstatt, um einen neuen Link zu diesem Update zu erhalten."
+    }
+  },
+  "gone": {
+    "pageTitle": "Link funktioniert nicht",
+    "title": "Dieser Link funktioniert nicht mehr",
+    "body": "Möglicherweise wurde er entfernt oder die Adresse ist unvollständig. Wenden Sie sich an {workshop}, um einen neuen Link zu erhalten.",
+    "bodyNoName": "Möglicherweise wurde er entfernt oder die Adresse ist unvollständig. Wenden Sie sich an die Werkstatt, um einen neuen Link zu erhalten."
+  },
+  "openUntil": {
+    "text": "Dieser Link funktioniert bis einschließlich {date}. Wenden Sie sich danach an {workshop}, um einen neuen zu erhalten.",
+    "textNoName": "Dieser Link funktioniert bis einschließlich {date}. Wenden Sie sich danach an die Werkstatt, um einen neuen zu erhalten."
   }
 }

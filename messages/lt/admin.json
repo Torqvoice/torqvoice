@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Gaukite API raktą iš resend.com",
     "postmarkApiKeyHint": "Gaukite serverio žetoną iš postmarkapp.com",
     "mailgunApiKeyHint": "Gaukite API raktą iš app.mailgun.com",
-    "sendgridApiKeyHint": "Gaukite API raktą iš app.sendgrid.com"
+    "sendgridApiKeyHint": "Gaukite API raktą iš app.sendgrid.com",
+    "branding": {
+      "title": "Programėlės prekės ženklas",
+      "description": "Pakeičia naršyklės skirtuko pavadinimą, svetainės piktogramą ir įdiegtos programėlės pavadinimą bei piktogramą šiame diegime. Dokumentai ir likusi programėlės dalis nesikeičia. Palikite lauką tuščią, jei norite numatytosios reikšmės.",
+      "nameLabel": "Programėlės pavadinimas",
+      "nameHint": "Rodomas naršyklės skirtuke ir kaip įdiegtos programėlės pavadinimas.",
+      "save": "Išsaugoti pavadinimą",
+      "saved": "Programėlės pavadinimas išsaugotas",
+      "saveFailed": "Nepavyko išsaugoti programėlės pavadinimo",
+      "iconLabel": "Programėlės piktograma",
+      "iconHint": "Kvadratinis vaizdas, ne mažesnis nei 512 × 512 pikselių. Geriausia PNG formatu.",
+      "iconAlt": "Dabartinė programėlės piktograma",
+      "upload": "Įkelti",
+      "replace": "Pakeisti",
+      "remove": "Pašalinti",
+      "uploaded": "Programėlės piktograma atnaujinta",
+      "uploadFailed": "Nepavyko įkelti piktogramos",
+      "removed": "Programėlės piktograma pašalinta",
+      "removeFailed": "Nepavyko pašalinti piktogramos",
+      "lockedBadge": "Reikia licencijos",
+      "lockedHint": "White-label licencija atrakina programos pavadinimą ir piktogramą.",
+      "lockedLink": "Atidaryti licencijos puslapį"
+    }
   },
   "common": {
     "openMenu": "Atidaryti meniu"

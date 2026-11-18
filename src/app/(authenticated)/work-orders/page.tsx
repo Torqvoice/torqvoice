@@ -1,18 +1,23 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
+import { resolveListStatus } from '@/lib/list-status-preference.server'
 import { resolveListColumns } from '@/lib/list-columns.server'
 import { WORK_ORDER_COLUMNS } from '@/lib/list-columns'
 import { getTranslations } from 'next-intl/server'
 import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { canEmailCustomers } from '@/features/email/Lib/emailAllowance'
 import { getFeatures } from '@/lib/features'
 import { WorkOrdersClient } from './work-orders-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('workOrders')
+}
 
 export default async function WorkOrdersPage({
   searchParams,
@@ -34,23 +39,23 @@ export default async function WorkOrdersPage({
     sortOrder: 'desc',
   })
   const columns = await resolveListColumns('workOrders', WORK_ORDER_COLUMNS)
-  const [result, settingsResult, vehiclesResult, customersResult, authCtx] = await Promise.all([
+  const status = await resolveListStatus('workOrders', params.status)
+  const [result, settingsResult, authCtx] = await Promise.all([
     getWorkOrders({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
-      status: params.status,
+      status,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
       due: params.due,
     }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
-    getVehicles(),
-    getCustomersList(),
     getAuthContext(),
   ])
 
   const features = authCtx ? await getFeatures(authCtx.organizationId) : null
+  const emailEnabled = authCtx ? await canEmailCustomers(authCtx.organizationId) : false
 
   if (!result.success || !result.data) {
     return (
@@ -67,18 +72,6 @@ export default async function WorkOrdersPage({
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const currencyCode = resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])
-  const vehicles =
-    vehiclesResult.success && vehiclesResult.data
-      ? vehiclesResult.data.map((v) => ({
-          id: v.id,
-          make: v.make,
-          model: v.model,
-          year: v.year,
-          licensePlate: v.licensePlate,
-          customer: v.customer,
-        }))
-      : []
-  const customers = customersResult.success && customersResult.data ? customersResult.data : []
 
   return (
     <>
@@ -86,17 +79,15 @@ export default async function WorkOrdersPage({
       <ListPage>
         <WorkOrdersClient
           data={result.data}
-          vehicles={vehicles}
-          customers={customers}
           currencyCode={currencyCode}
           search={params.search || ''}
-          statusFilter={params.status || 'all'}
+          statusFilter={status}
           dueFilter={params.due === 'today' ? 'today' : ''}
           columns={columns}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
           smsEnabled={features?.sms ?? false}
-          emailEnabled={features?.smtp ?? false}
+          emailEnabled={emailEnabled}
         />
       </ListPage>
     </>

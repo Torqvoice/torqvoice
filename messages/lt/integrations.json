@@ -13,6 +13,8 @@
     "availableTitle": "Galima pridėti",
     "availableDescription": "Paslaugos, kurias galite pridėti. Kiekviena nustatoma vieną kartą ir veikia fone.",
     "allConnected": "Visos galimos paslaugos prijungtos.",
+    "cloudOnly": "Tik debesyje",
+    "cloudOnlyHint": "Galima naudoti Torqvoice Cloud",
     "searchPlaceholder": "Ieškoti integracijų",
     "noMatches": "Nieko nerasta pagal „{query}“.",
     "readMore": "Skaityti daugiau",
@@ -30,6 +32,7 @@
     "automation": "Automatizavimas",
     "storage": "Failai",
     "registry": "Transporto priemonių registras",
+    "repair": "Remonto duomenys",
     "other": "Kita",
     "ai": "DI"
   },
@@ -70,6 +73,16 @@
       "invoices": "Sąskaitos į apskaitą",
       "customers": "Klientai į apskaitą",
       "payments": "Mokėjimai abiem kryptimis"
+    },
+    "backup": {
+      "target": "Atsarginių kopijų paskirties vieta"
+    },
+    "repair": {
+      "labor": "Darbo laiko normos užsakymuose ir pasiūlymuose",
+      "fluids": "Skysčių tipai ir talpos"
+    },
+    "diagnostics": {
+      "codes": "Gedimų kodų reikšmės"
     }
   },
   "statuses": {
@@ -138,13 +151,18 @@
     "inboundUrl": "Gaunamųjų žinučių webhook URL",
     "inboundHintSecret": "Įklijuokite šį URL tiekėjo gaunamųjų žinučių nustatymuose. Jame yra paslaptis, identifikuojanti jūsų dirbtuves, todėl niekam jo nerodykite.",
     "inboundHintMeta": "Įklijuokite šį URL kaip atgalinio iškvietimo URL savo Meta programoje kartu su aukščiau įvestu patvirtinimo žetonu ir užsiprenumeruokite žinutes (messages).",
-    "inboundHintStripe": "Pridėkite šį URL Stripe valdymo skydelyje, skiltyje Developers, Webhooks, prenumeruodami checkout.session.completed. Tada įklijuokite Stripe rodomą parašo paslaptį į webhook paslapties lauką čia, kad pranešimus būtų galima patikrinti.",
+    "inboundHintStripe": "Pridėkite šį URL Stripe valdymo skydelyje: atidarykite Workbench, tada Webhooks, pasirinkite Create an event destination ir prenumeruokite checkout.session.completed. Tada Stripe parodys šio galinio taško parašo paslaptį; įklijuokite ją čia į parašo paslapties lauką, kad kiekvienas pranešimas būtų tikrinamas pagal parašą. Iki tol Torqvoice patvirtina kiekvieną pranešimą užklausdamas Stripe apie patį atsiskaitymą.",
     "inboundHintVipps": "Įveskite šį URL kaip atgalinio iškvietimo URL Vipps MobilePay portale. Vipps taip pat reikalauja paskelbtų pardavimo sąlygų, kurios nustatomos skiltyje Nustatymai, Mokėjimas.",
     "inboundHintPaypal": "Pridėkite šį URL PayPal kūrėjų skydelyje, skiltyje Webhooks, prenumeruodami PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Įklijuokite šį URL kaip Webhook URL Paystack skydelyje, skiltyje Settings, API Keys & Webhooks. Paystack saugo vieną bandomajam režimui ir vieną tikrajam, todėl nustatykite jį tame režime, kuriam priklauso jūsų raktas.",
     "copy": "Kopijuoti",
     "copied": "Nukopijuota",
     "updateKeys": "Atnaujinti raktus",
     "updateKeysHint": "Paskutinė patikra nepavyko. Įveskite raktus dar kartą ir bandykite iš naujo.",
+    "awaitingKeys": "Prijungta, bet dar trūksta: {keys}.",
+    "awaitingKeysHint": "Webhook jau atsako tiekėjui, todėl užregistruokite jį dabar. Įveskite šias reikšmes čia, kai tik tiekėjas jas išduos.",
+    "saveKeys": "Išsaugoti raktus",
+    "keysSaved": "Raktai išsaugoti",
     "inspectionSync": {
       "title": "Apžiūrų sinchronizavimas",
       "vehicles": "{count} transporto priemonės su numeriu šiose dirbtuvėse",
@@ -154,11 +172,101 @@
       "never": "Pilno perėjimo dar nebuvo",
       "inProgress": "Perėjimas vyksta",
       "off": "Įjunkite nustatymą ir išsaugokite; iki tol perėjimas nieko netikrina.",
-      "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas."
+      "syncNowHelp": "„Sinchronizuoti dabar“ iš karto pradeda perėjimą, nelaukdamas valandinio. Tikrinama po 25 transporto priemones ir tęsiama savaime, kol apdorojamos visos, kurioms atėjo laikas. Pirmas perėjimas patikrina kiekvieną transporto priemonę su numeriu.",
+      "confirmTitle": "Tikrinti transporto priemones dabar?",
+      "confirmDescription": "{count} iš {total} transporto priemonių su numeriu dabar bus patikrinta {name}, po 25, ir išsaugotos jų apžiūros datos. Neseniai tikrintos praleidžiamos. Jei {name} ima mokestį už paiešką, kiekviena rasta transporto priemonė apmokestinama jūsų paskyroje.",
+      "confirmLabel": "Tikrinti {count} transporto priemones",
+      "nothingDue": "Visos transporto priemonės su numeriu neseniai patikrintos, todėl kol kas nėra ką tikrinti."
     },
     "supersedes": "Prijungus {next}, {current} bus atjungtas. Vienu metu gali veikti tik vienas, todėl {current} nustos būti naudojamas, kai tik {next} pradės veikti.",
+    "platformHandlesBackupsTitle": "Atsarginės kopijos jau įtrauktos",
+    "platformHandlesBackups": "Torqvoice jau kas valandą kuria šios dirbtuvės atsargines kopijas ir 30 dienų saugo atkūrimo taškus. Prijunkite talpyklą, jei taip pat norite jums priklausančios kopijos, kurią galima perskaityti be Torqvoice.",
+    "platformHandlesBackupsLink": "Peržiūrėti atkūrimo taškus",
     "batchRetried": "{count, plural, =0 {Nėra ko kartoti} one {# užduotis vėl eilėje} few {# užduotys vėl eilėje} many {# užduoties vėl eilėje} other {# užduočių vėl eilėje}}",
-    "advanced": "Išplėstiniai"
+    "advanced": "Išplėstiniai",
+    "generate": "Generuoti",
+    "show": "Rodyti",
+    "hide": "Slėpti",
+    "generatedPasswordWarning": "Laikykite šio slaptažodžio kopiją saugioje vietoje, ne šiame serveryje. Be jo niekas negali atidaryti šių atsarginių kopijų, net ir „Torqvoice“.",
+    "backup": {
+      "title": "Atsarginės kopijos",
+      "description": "Kada ši paskirties vieta paskutinį kartą gavo sėkmingą atsarginę kopiją, kada vyks kita ir paskutiniai vykdymai.",
+      "lastGood": "Paskutinė sėkminga atsarginė kopija",
+      "added": "Pridėta {size}",
+      "never": "Kol kas nėra",
+      "nextRun": "Kitas vykdymas",
+      "notScheduled": "Nesuplanuota",
+      "repositorySize": "Saugoma paskirties vietoje",
+      "runNow": "Kurti atsarginę kopiją dabar",
+      "running": "Kuriama atsarginė kopija",
+      "runningHint": "Kuriama atsarginė kopija. Šis puslapis atsinaujina pats, kol ji bus baigta.",
+      "started": "Atsarginės kopijos kūrimas pradėtas",
+      "recentTitle": "Paskutiniai vykdymai",
+      "noRuns": "Atsarginės kopijos dar nebuvo kuriamos.",
+      "addedNote": "Pirmasis paleidimas įkelia viską. Kiekvienas vėlesnis prideda tik nuo to laiko pasikeitusias dalis, todėl yra mažas. Kiekviena atsarginė kopija vis tiek yra pilna ir gali būti atkurta ar peržiūrėta atskirai.",
+      "notStarted": "Nepradėta",
+      "filesNewCount": "{count, plural, one {# naujas failas} few {# nauji failai} many {# naujo failo} other {# naujų failų}}",
+      "columns": {
+        "status": "Būsena",
+        "started": "Pradėta",
+        "trigger": "Kas pradėjo",
+        "duration": "Trukmė",
+        "filesNew": "Nauji failai",
+        "bytesAdded": "Pridėta"
+      },
+      "trigger": {
+        "scheduled": "Pagal grafiką",
+        "manual": "Rankiniu būdu",
+        "restore": "Atkūrimas"
+      },
+      "status": {
+        "queued": "Eilėje",
+        "running": "Vykdoma",
+        "done": "Atlikta",
+        "failed": "Nepavyko",
+        "skipped": "Praleista"
+      },
+      "restoring": "Atkuriama",
+      "restoringHint": "Vykdomas atkūrimas: dirbtuvės duomenys keičiami atsarginės kopijos duomenimis. Šis puslapis atsinaujina pats, kol jis bus baigtas. Iki tol nieko nekeiskite dirbtuvėje.",
+      "explore": "Peržiūrėti",
+      "restore": {
+        "showAll": "Rodyti visas atsargines kopijas",
+        "refresh": "Atnaujinti",
+        "loading": "Skaitomos atsarginės kopijos paskirties vietoje",
+        "loadFailed": "Nepavyko gauti atsarginių kopijų sąrašo",
+        "empty": "Šioje paskirties vietoje dar nėra atsarginių kopijų.",
+        "needsOwner": "Čia atkurti atsarginę kopiją gali tik dirbtuvės savininkas.",
+        "needsAdmin": "Atkurti atsarginę kopiją gali tik savininkas arba administratorius.",
+        "filesIncluded": "Nuotraukos ir failai įtraukti",
+        "filesNotIncluded": "Nuotraukos ir failai neįtraukti",
+        "earlierInstall": "Ankstesnis diegimas",
+        "action": "Atkurti",
+        "dialogTitle": "Atkurti atsarginę kopiją, sukurtą {time}?",
+        "warning": "Atkūrimas <bold>pakeičia viską, ką ši dirbtuvė turi dabar</bold>: klientus, transporto priemones, darbus, sąskaitas, nustatymus ir, jei atsarginėje kopijoje jų yra, nuotraukas bei failus. Viskas, kas pridėta po atsarginės kopijos sukūrimo, dings. Šio veiksmo atšaukti negalima.",
+        "secretsNote": "Slaptieji raktai, kurių atsarginė kopija neapėmė, išlaiko reikšmes, kurias šis diegimas turi dabar. Naudotojų paskyros ir slaptažodžiai nekeičiami.",
+        "confirmPrompt": "Norėdami patvirtinti, įveskite dirbtuvės pavadinimą <bold>{name}</bold>.",
+        "whileRunning": "Atkūrimas vykdomas fone ir, kai nuotraukų daug, užtrunka kelias minutes. Puslapis atsinaujina pats, kol jis bus baigtas.",
+        "cancel": "Atšaukti",
+        "confirm": "Atkurti šią atsarginę kopiją",
+        "started": "Atkūrimas pradėtas"
+      }
+    },
+    "lockedBackups": "Suplanuotos, šifruotos jūsų dirbtuvės atsarginės kopijos į jums priklausančią saugyklą.",
+    "searchOrType": "Ieškoti arba įvesti pavadinimą",
+    "useTyped": "Naudoti „{value}“",
+    "listNeedsKeys": "Įveskite raktus aukščiau, kad pamatytumėte sąrašą",
+    "listEmpty": "Sąrašas tuščias. Įveskite pavadinimą ranka.",
+    "testing": "Tikrinamas ryšys",
+    "testOk": "Ryšys veikia: bandomasis objektas buvo įrašytas ir vėl ištrintas.",
+    "testFailed": "Patikra nepavyko",
+    "testSteps": {
+      "settings": "Patikrinkite teikėjo nustatymus",
+      "list": "Raktas negali išvardyti talpyklos turinio",
+      "write": "Raktas negali rašyti į talpyklą",
+      "delete": "Raktas negali trinti iš talpyklos",
+      "folder": "Nepavyksta sukurti ar atverti aplanko"
+    },
+    "testHint": "Užpildykite raktus ir talpyklą, kad galėtumėte juos patikrinti prieš prijungiant. Patikra įrašo vieną nedidelį objektą ir jį ištrina."
   },
   "activity": {
     "title": "Veikla",
@@ -181,7 +289,10 @@
     },
     "noFailures": "Niekas nenutrūko.",
     "retryFailed": "Kartoti nepavykusias",
-    "details": "Rodyti detales"
+    "details": "Rodyti detales",
+    "loadingMore": "Įkeliamos senesnės užduotys",
+    "loadFailed": "Nepavyko įkelti senesnių užduočių.",
+    "cleared": "Baigtos užduotys ištrinamos po 7 dienų."
   },
   "errors": {
     "generic": "Kažkas nepavyko",
@@ -195,7 +306,10 @@
     "invalid": "Tiekėjo atsakymas buvo neišsamus. Bandykite dar kartą.",
     "state": "Šis prisijungimas baigė galioti arba priklauso kitai sesijai. Pradėkite iš naujo.",
     "exchange": "Tiekėjas atmetė prisijungimą. Patikrinkite programos prisijungimo duomenis ir bandykite dar kartą.",
-    "identify": "Prijungta, bet paskyros nuskaityti nepavyko. Pabandykite prijungti iš naujo."
+    "identify": "Prijungta, bet paskyros nuskaityti nepavyko. Pabandykite prijungti iš naujo.",
+    "backupRunning": "Atsarginė kopija jau kuriama.",
+    "restoreOwnerOnly": "Torqvoice Cloud atsarginę kopiją atkurti gali tik dirbtuvės savininkas.",
+    "restoreBusy": "Šiame serveryje jau vykdomas atsarginės kopijos kūrimas arba atkūrimas. Bandykite dar kartą, kai jis bus baigtas."
   },
   "meeting": {
     "join": "Prisijungti prie vaizdo skambučio",
@@ -226,6 +340,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 kalendorius",
       "description": "Įtraukite suplanuotus darbo užsakymus į Outlook kalendorių, pridėkite Microsoft Teams nuorodą ir matykite kalendoriaus užimtą laiką Torqvoice.",
       "tenantHelp": "Užregistruokite programą Microsoft Entra (App registrations), leiskite asmenines ir darbo paskyras, pridėkite žemiau nurodytą nukreipimo URI kaip Web platformą, sukurkite kliento slaptažodį ir įklijuokite abu čia.",
       "fields": {
@@ -298,7 +413,10 @@
         "verifyToken": "Webhook patvirtinimo žetonas",
         "appSecret": "Programos paslaptis",
         "apiVersion": "Graph API versija",
-        "appSecretHelp": "Meta ja pasirašo kiekvieną pristatymą. Kol ji neįvesta, į webhook siunčiamos žinutės atmetamos, nes kitaip bet kas, sužinojęs URL, galėtų rašyti jūsų klientų vardu."
+        "appSecretHelp": "Meta ja pasirašo kiekvieną pristatymą. Kol ji neįvesta, į webhook siunčiamos žinutės atmetamos, nes kitaip bet kas, sužinojęs URL, galėtų rašyti jūsų klientų vardu.",
+        "phoneNumberIdHelp": "Iš WhatsApp Manager, prie numerio, iš kurio siunčiate; tai ne pats telefono numeris. Meta jį išduoda tik patikrinusi webhook, todėl palikite lauką tuščią, prijunkite, užregistruokite webhook ir grįžę jį įveskite.",
+        "accessTokenHelp": "Nuolatinis sistemos naudotojo prieigos raktas. Tas, kurį Meta rodo sąrankos metu, nustoja galioti per 24 valandas. Įveskite jį kartu su telefono numerio ID, kai webhook bus patikrintas.",
+        "verifyTokenHelp": "Bet kokia jūsų pasirinkta frazė. Įklijuokite tą pačią Meta sistemoje registruodami webhook."
       },
       "settings": {
         "enabled": "Siųsti žinutes šiuo kanalu",
@@ -417,7 +535,19 @@
       },
       "settings": {
         "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių apžiūros terminus",
-        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita EU-kontroll data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+        "syncInspectionsHelp": "Kartą per valandą tikrintinos transporto priemonės ieškomos pagal numerį ir išsaugoma kita EU-kontroll data; kaip dažnai transporto priemonė tikrinama iš naujo, nustatoma žemiau. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės.",
+        "inspectionRecheck": "Iš naujo tikrinti transporto priemones, kurios jau turi datą",
+        "inspectionRecheckHelp": "Data keičiasi tik tada, kai apžiūra praeinama. Kas mėnesį greičiausiai pastebi anksčiau atliktą apžiūrą; tik artėjant terminui kainuoja mažiausiai. Artėjant terminui kiekviena transporto priemonė tikrinama kas savaitę, nepriklausomai nuo šio pasirinkimo.",
+        "recheckMonthly": "Kas mėnesį",
+        "recheckQuarterly": "Kas tris mėnesius",
+        "recheckNearDeadline": "Tik artėjant terminui",
+        "inspectionSoonDays": "Artėjant terminui reiškia per",
+        "inspectionSoonDaysHelp": "Šiame lange transporto priemonė tikrinama kas savaitę, todėl praeita apžiūra per kelias dienas pašalina ją iš priminimų sąrašo. Trumpesnis langas reiškia mažiau užklausų.",
+        "soon30": "30 dienų",
+        "soon60": "60 dienų",
+        "soon90": "90 dienų",
+        "inspectionOnlyWithCustomer": "Tik transporto priemonės su klientu",
+        "inspectionOnlyWithCustomerHelp": "Praleisti transporto priemones be įrašyto kliento. Niekam negalima apie jas priminti, todėl jų paieška kainuoja be reikalo."
       }
     },
     "openapi-automotive": {
@@ -429,8 +559,33 @@
       "settings": {
         "country": "Šalis",
         "countryHelp": "Registras, kuriame ieškoti. Prancūziški ir itališki numeriai atrodo vienodai, todėl šalies negalima nustatyti iš numerio.",
-        "bikes": "Ieškoti ir motociklų",
-        "bikesHelp": "Kai numeris nėra automobilio, papildomai užklausiamas motociklų registras. Nerastas automobilis nekainuoja, todėl papildomų išlaidų nėra, nebent randamas motociklas. Portugalijai neprieinama."
+        "cars": "Ieškoti automobilių",
+        "carsHelp": "Užklausiamas automobilių registras. Išjunkite, jei dirbate tik su motociklais: paieška praleis automobilius ir atsakys greičiau.",
+        "bikes": "Ieškoti motociklų",
+        "bikesHelp": "Užklausiamas motociklų registras. Jei įjungti ir automobiliai, jis užklausiamas tik neradus automobilio, o nerastas automobilis nekainuoja. Portugalijai neprieinama."
+      }
+    },
+    "checkcardetails": {
+      "description": "Užpildykite transporto priemonę pagal jos britišką numerį arba VIN: markė, modelis, metai, spalva, kuras, variklio tūris ir MOT termino data, iš DVLA duomenų per Check Car Details. Automobiliai ir motociklai gaunami iš to paties registro. Jei jūsų paskyroje įjungta UK Vehicle Data, gaunami ir VIN, pavarų dėžė bei svoriai. Kiekviena paieška apmokestinama pačių dirbtuvių Check Car Details paskyroje. Savininko duomenys negrąžinami.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Susikurkite paskyrą api.checkcardetails.co.uk ir skiltyje API Keys nukopijuokite tikrąjį raktą. Vehicle Registration įtraukta į kiekvieną paskyrą. Kad gautumėte ir VIN, skiltyje Your Data Points prie UK Vehicle Data spustelėkite Request Access; paieškos ją naudoja vos tik ji įjungiama. Bandomasis raktas randa tik numerius, kuriuose yra raidė A."
+      },
+      "settings": {
+        "syncInspections": "Atnaujinti MOT datas visoms šių dirbtuvių transporto priemonėms",
+        "syncInspectionsHelp": "Kai tai įjungta, kiekviena transporto priemonė su numeriu ieškoma vieną kartą ir išsaugoma jos MOT data. Vėliau transporto priemonės tikrinamos iš naujo taip, kaip nustatyta žemiau. Už kiekvieną rastą transporto priemonę mokama kaip už vieną Vehicle Registration užklausą; registrui nežinomi numeriai nemokami. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės.",
+        "inspectionRecheck": "Iš naujo tikrinti transporto priemones, kurios jau turi datą",
+        "inspectionRecheckHelp": "Data keičiasi tik tada, kai apžiūra praeinama. Kas mėnesį greičiausiai pastebi anksčiau atliktą apžiūrą; tik artėjant terminui kainuoja mažiausiai. Artėjant terminui kiekviena transporto priemonė tikrinama kas savaitę, nepriklausomai nuo šio pasirinkimo.",
+        "recheckMonthly": "Kas mėnesį",
+        "recheckQuarterly": "Kas tris mėnesius",
+        "recheckNearDeadline": "Tik artėjant terminui",
+        "inspectionSoonDays": "Artėjant terminui reiškia per",
+        "inspectionSoonDaysHelp": "Šiame lange transporto priemonė tikrinama kas savaitę, todėl praeita apžiūra per kelias dienas pašalina ją iš priminimų sąrašo. Trumpesnis langas reiškia mažiau užklausų.",
+        "soon30": "30 dienų",
+        "soon60": "60 dienų",
+        "soon90": "90 dienų",
+        "inspectionOnlyWithCustomer": "Tik transporto priemonės su klientu",
+        "inspectionOnlyWithCustomerHelp": "Praleisti transporto priemones be įrašyto kliento. Niekam negalima apie jas priminti, todėl jų paieška kainuoja be reikalo."
       }
     },
     "rdw": {
@@ -441,7 +596,19 @@
       },
       "settings": {
         "syncInspections": "Atnaujinti visų šių dirbtuvių transporto priemonių APK datas",
-        "syncInspectionsHelp": "Kartą per valandą neseniai netikrintos transporto priemonės ieškomos pagal numerį ir išsaugoma kita APK data. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės. Tikrinama kas mėnesį, o kai iki termino lieka mažiau nei du mėnesiai, kas savaitę."
+        "syncInspectionsHelp": "Kartą per valandą tikrintinos transporto priemonės ieškomos pagal numerį ir išsaugoma kita APK data; kaip dažnai transporto priemonė tikrinama iš naujo, nustatoma žemiau. Siunčiamos tik šiose dirbtuvėse saugomos transporto priemonės.",
+        "inspectionRecheck": "Iš naujo tikrinti transporto priemones, kurios jau turi datą",
+        "inspectionRecheckHelp": "Data keičiasi tik tada, kai apžiūra praeinama. Kas mėnesį greičiausiai pastebi anksčiau atliktą apžiūrą; tik artėjant terminui kainuoja mažiausiai. Artėjant terminui kiekviena transporto priemonė tikrinama kas savaitę, nepriklausomai nuo šio pasirinkimo.",
+        "recheckMonthly": "Kas mėnesį",
+        "recheckQuarterly": "Kas tris mėnesius",
+        "recheckNearDeadline": "Tik artėjant terminui",
+        "inspectionSoonDays": "Artėjant terminui reiškia per",
+        "inspectionSoonDaysHelp": "Šiame lange transporto priemonė tikrinama kas savaitę, todėl praeita apžiūra per kelias dienas pašalina ją iš priminimų sąrašo. Trumpesnis langas reiškia mažiau užklausų.",
+        "soon30": "30 dienų",
+        "soon60": "60 dienų",
+        "soon90": "90 dienų",
+        "inspectionOnlyWithCustomer": "Tik transporto priemonės su klientu",
+        "inspectionOnlyWithCustomerHelp": "Praleisti transporto priemones be įrašyto kliento. Niekam negalima apie jas priminti, todėl jų paieška kainuoja be reikalo."
       }
     },
     "regcheck": {
@@ -482,6 +649,7 @@
       }
     },
     "openai-compatible": {
+      "name": "Suderinamas su OpenAI",
       "description": "Paslaugų aprašymai, istorijos santraukos, dokumentų nuskaitymas ir asistentas, kuriuos atsako bet kuris serveris, kalbantis OpenAI pokalbių API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM ir panašūs. Jūsų duomenys lieka jūsų pačių įrangoje.",
       "fields": {
         "baseUrl": "Bazinis URL",
@@ -501,7 +669,7 @@
         "secretKeyHelp": "Iš Stripe valdymo skydelio, Developers, API keys. Bandomieji raktai nieko tikro neapdoroja, todėl pirmiausia išbandykite mokėjimą su jais, o paskui pereikite prie tikrų raktų.",
         "publishableKey": "Viešasis raktas",
         "webhookSecret": "Webhook parašo paslaptis",
-        "webhookSecretHelp": "Stripe ją parodo, kai šio puslapio pranešimų URL pridedate kaip webhook. Su ja kiekvienas pranešimas patikrinamas prieš užregistruojant mokėjimą."
+        "webhookSecretHelp": "Neprivaloma, galima pridėti ir po prijungimo. Stripe ją rodo skiltyje Reveal secret, kai šio puslapio pranešimų URL pridedamas kaip galinis taškas. Su ja kiekvienas pranešimas tikrinamas pagal parašą; be jos Torqvoice prieš užregistruodamas mokėjimą užklausia Stripe apie atsiskaitymą."
       },
       "settings": {
         "enabled": "Siūlyti sąskaitų nuorodose",
@@ -535,6 +703,17 @@
         "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami.",
         "sandbox": "Smėlio dėžės režimas",
         "sandboxHelp": "Naudoti PayPal smėlio dėžę su smėlio dėžės programėlės raktais. Palikite įjungtą, kol pavyks visas mokėjimas, tada išjunkite ir įveskite tikros programėlės raktus."
+      }
+    },
+    "paystack": {
+      "description": "Paystack apmokėjimas iš sąskaitos nuorodos į jūsų pačių Paystack paskyrą. Klientas moka kortele, banko pavedimu arba mobiliaisiais pinigais, priklausomai nuo šalies, o sąskaita pati pažymima kaip apmokėta.",
+      "fields": {
+        "secretKey": "Slaptasis raktas",
+        "secretKeyHelp": "Paystack skydelyje, skiltyje Settings, API Keys & Webhooks. Bandomasis raktas (sk_test_) neapdoroja nieko tikro, todėl pirmiausia išbandykite mokėjimą su juo, o tada pakeiskite į tikrąjį raktą."
+      },
+      "settings": {
+        "enabled": "Siūlyti sąskaitų nuorodose",
+        "enabledHelp": "Išjunkite, kad kuriam laikui pašalintumėte mokėjimo mygtuką iš bendrinamų sąskaitų neatjungdami. Jau pradėti mokėjimai vis tiek užregistruojami."
       }
     },
     "quickbooks": {
@@ -571,6 +750,192 @@
         "manualPaidAsPaymentHelp": "Torqvoice be mokėjimo įrašo kaip apmokėta pažymėta sąskaita QuickBooks gauna vieną mokėjimą likusiai ten rodomai sumai. Išjungus ji ten lieka atvira, kol užregistruojamas mokėjimas.",
         "pullPayments": "Parsisiųsti QuickBooks užregistruotus mokėjimus",
         "pullPaymentsHelp": "Kas 30 minučių. QuickBooks gautas mokėjimas už Torqvoice sąskaitą užregistruojamas čia prie sąskaitos."
+      }
+    },
+    "xero": {
+      "description": "Siųskite išrašytas sąskaitas, jų klientus ir mokėjimus į Xero ir parsisiųskite ten užregistruotus mokėjimus.",
+      "tenantHelp": "Sukurkite Web app tipo programą developer.xero.com skiltyje My Apps. Jos puslapyje Configuration nukopijuokite kliento ID, sugeneruokite kliento slaptažodį ir įveskite žemiau esantį peradresavimo URI. Kad Xero užregistruoti mokėjimai atkeliautų iš karto, atidarykite programos puslapį Webhooks, kaip URL nurodykite savo Torqvoice adresą su /api/webhooks/xero gale, pažymėkite Invoices ir Payments ir žemiau įveskite webhook raktą.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis",
+        "webhookKey": "Webhook raktas",
+        "webhookKeyHelp": "Neprivaloma. Raktas jūsų Xero programos puslapyje Webhooks. Su juo Xero užregistruoti mokėjimai čia atkeliauja iš karto; be jo per 30 minučių."
+      },
+      "settings": {
+        "tenantId": "Xero organizacija",
+        "tenantIdHelp": "Organizacija, į kurią rašomos sąskaitos. Rodomos tik organizacijos, kurias leidote jungdamiesi; norėdami leisti kitą, prijunkite iš naujo.",
+        "pushInvoices": "Siųsti išrašytas sąskaitas į Xero",
+        "pushOnComplete": "Siųsti sąskaitas ir tada, kai darbas pažymimas kaip užbaigtas",
+        "pushOnCompleteHelp": "Be šio nustatymo sąskaita perduodama, kai ji išsiunčiama, pasidalinama ar apmokama. Su juo užbaigtas darbas perduodamas iš karto ir atnaujinamas, jei pasikeičia.",
+        "startDate": "Tik sąskaitos, datuotos nuo",
+        "startDateHelp": "Palikite tuščią, kad būtų siunčiamos visos išrašytos sąskaitos. Naudokite datą, kada apskaita perkelta į Xero, kad senesnės sąskaitos nebūtų įvestos dukart.",
+        "invoiceStatus": "Būsena Xero sistemoje",
+        "invoiceStatusHelp": "Patvirtintos sąskaitos iš karto laikomos pardavimais ir gali priimti mokėjimus. Pasirinkite Juodraštis arba Laukia patvirtinimo, jei kas nors pirmiausia patikrina kiekvieną sąskaitą Xero sistemoje; tada mokėjimai užregistruojami, kai sąskaita ten patvirtinama.",
+        "invoiceStatusAuthorised": "Patvirtinta",
+        "invoiceStatusSubmitted": "Laukia patvirtinimo",
+        "invoiceStatusDraft": "Juodraštis",
+        "invoiceNumbers": "Sąskaitų numeriai",
+        "invoiceNumbersHelp": "Palikite Torqvoice numerį, kad abi sistemos sutaptų, arba leiskite Xero sunumeruoti sąskaitą pagal savo seką. Jei numeruoja Xero, kaip nuorodą pasirinkite Torqvoice sąskaitos numerį, kad kiekvieną sąskaitą galėtumėte vėl rasti.",
+        "invoiceNumbersTorqvoice": "Naudoti Torqvoice numerį",
+        "invoiceNumbersXero": "Leisti numeruoti Xero",
+        "reference": "Nuoroda",
+        "referenceHelp": "Kas įrašoma į sąskaitos lauką Nuoroda (Reference) Xero sistemoje. Jis rodomas sąskaitoje ir Xero sąrašuose bei paieškose.",
+        "referenceVehicle": "Transporto priemonė ir valstybinis numeris",
+        "referenceTitle": "Darbo pavadinimas",
+        "referenceInvoiceNumber": "Torqvoice sąskaitos numeris",
+        "referenceNone": "Nieko",
+        "includeVehicle": "Nurodyti transporto priemonę sąskaitoje",
+        "includeVehicleHelp": "Teksto eilutė virš pozicijų su metais, marke, modeliu, numeriu ir rida.",
+        "includeNotes": "Įtraukti pastabas klientui",
+        "includeNotesHelp": "Sąskaitos pastabos klientui kaip teksto eilutė sąskaitoje.",
+        "notesPosition": "Pastabų klientui vieta",
+        "notesPositionHelp": "Pasirinkus Virš pozicijų, pastabos dedamos iškart po transporto priemonės eilutės, prieš darbus ir dalis. Pasirinkus Po pozicijomis, jos dedamos paskutinės.",
+        "notesPositionBelow": "Po pozicijomis",
+        "notesPositionAbove": "Virš pozicijų",
+        "includePartNumbers": "Rodyti dalių numerius dalių eilutėse",
+        "includePartNumbersHelp": "Kiekvienos dalies eilutės aprašymas prasideda dalies numeriu.",
+        "brandingThemeId": "Firminio stiliaus tema",
+        "brandingThemeIdHelp": "Xero firminio stiliaus tema (Branding theme), kurią naudoja sąskaita. Ji lemia sąskaitos išdėstymą, kai ji peržiūrima ar siunčiama iš Xero. Palikite tuščią, kad būtų naudojama organizacijos numatytoji tema.",
+        "laborAccount": "Sąskaita darbui",
+        "laborAccountHelp": "Pajamų sąskaita, į kurią apskaitomos darbo eilutės. Palikite tuščią, kad būtų naudojama organizacijos sąskaita Sales arba žemiau pasirinktos prekės sąskaita.",
+        "partsAccount": "Sąskaita dalims",
+        "partsAccountHelp": "Pajamų sąskaita, į kurią apskaitomos dalių eilutės. Palikite tuščią, kad būtų naudojama organizacijos sąskaita Sales arba žemiau pasirinktos prekės sąskaita.",
+        "shopFeeAccount": "Sąskaita dirbtuvių mokesčiui",
+        "shopFeeAccountHelp": "Čia apskaitoma dirbtuvių mokesčio eilutė. Palikite tuščią, kad ji būtų apskaitoma kartu su darbu.",
+        "laborItem": "Prekė darbo eilutėms",
+        "laborItemHelp": "Neprivaloma. Xero prekė, kuria pažymima kiekviena darbo eilutė, prekių ataskaitoms Xero sistemoje. Aukščiau pasirinkta sąskaita vis tiek turi pirmenybę.",
+        "partsItem": "Prekė dalių eilutėms",
+        "partsItemHelp": "Neprivaloma. Xero prekė, kuria pažymima kiekviena dalių eilutė, prekių ataskaitoms Xero sistemoje. Aukščiau pasirinkta sąskaita vis tiek turi pirmenybę.",
+        "matchItemsByPartNumber": "Susieti dalis su Xero prekėmis pagal dalies numerį",
+        "matchItemsByPartNumberHelp": "Dalis, kurios numeris sutampa su Xero prekės kodu, parduodama kaip ta prekė, todėl Xero sekamas likutis sumažėja. Xero atmeta sąskaitą, kai sekamos prekės likučio nepakanka.",
+        "taxAmounts": "Mokesčių sumos",
+        "taxAmountsHelp": "Kaip sąskaitoje siunčia kiekvienos eilutės mokestį tiksliai tokį, koks nurodytas kliento gautoje sąskaitoje, todėl abi sistemos sutampa iki cento. Apskaičiuoja Xero leidžia Xero taikyti kiekvienos eilutės mokesčio tarifo procentą, o žurnalas praneša, kai sumos skiriasi.",
+        "taxAmountsBilled": "Kaip sąskaitoje Torqvoice",
+        "taxAmountsXero": "Apskaičiuoja Xero",
+        "taxType": "Mokesčio tarifas apmokestinamoms eilutėms",
+        "taxTypeHelp": "Torqvoice parenka Xero mokesčio tarifą, kurio procentas sutampa su kiekviena sąskaita, pavyzdžiui, GST on Income. Pasirinkite tarifą čia, kad visada būtų naudojamas jis.",
+        "zeroTaxType": "Mokesčio tarifas eilutėms be mokesčio",
+        "zeroTaxTypeHelp": "Naudojamas eilutėms be mokesčio ir nuo mokesčio atleistiems klientams. Palikite tuščią, kad būtų naudojamas GST Free Income, Zero Rated arba No GST, priklausomai nuo to, kurį turi organizacija.",
+        "tracking1": "Sekimo parinktis",
+        "tracking1Help": "Pažymėkite kiekvieną eilutę sekimo parinktimi, pavyzdžiui, filialu ar skyriumi, ataskaitoms Xero sistemoje.",
+        "tracking2": "Antra sekimo parinktis",
+        "tracking2Help": "Parinktis iš kitos sekimo kategorijos, jei organizacija turi dvi.",
+        "sendFromXero": "Siųsti sąskaitą klientui el. paštu iš Xero",
+        "sendFromXeroHelp": "Xero išsiunčia savo sąskaitos kopiją kliento el. pašto adresu su Xero nustatytomis internetinio mokėjimo galimybėmis. Išjunkite, jei sąskaitą jau siunčia Torqvoice, kad klientas negautų jos dukart.",
+        "markAsSent": "Pažymėti sąskaitas kaip išsiųstas Xero sistemoje",
+        "markAsSentHelp": "Sąskaitą pristato Torqvoice, todėl Xero rodo ją kaip išsiųstą ir nelaukia, kol kas nors ją išsiųs iš ten. Taikoma patvirtintoms sąskaitoms.",
+        "attachPdf": "Pridėti sąskaitos PDF",
+        "attachPdfHelp": "Kliento iš Torqvoice gauta sąskaita pridedama prie sąskaitos Xero sistemoje.",
+        "updateContacts": "Atnaujinti klientų duomenis Xero sistemoje",
+        "updateContactsHelp": "Čia pakeisti kliento vardas, el. paštas, telefonas, adresas ar PVM kodas nukopijuojami į jo kontaktą Xero sistemoje. Išjungus kontaktai tik sukuriami ir paliekami tokie, kokius juos tvarko buhalteris.",
+        "sameEmail": "Klientai su tuo pačiu el. paštu",
+        "sameEmailHelp": "Keli klientai gali naudoti tą patį el. pašto adresą, pavyzdžiui, šeima ar įmonės buhalterijos pašto dėžutė. Pasirinkus pirmą variantą, pagal el. paštą rastas Xero kontaktas naudojamas tik tada, kai ir jo vardas sutampa su kliento; kitu atveju klientui sukuriamas naujas kontaktas, o žurnale nurodomas kitas, kad galėtumėte juos sujungti Xero sistemoje, jei tai tas pats klientas.",
+        "sameEmailCreate": "Sukurti naują kontaktą, jei vardas skiriasi",
+        "sameEmailReuse": "Naudoti esamą kontaktą, net jei vardas skiriasi",
+        "voidOnDelete": "Anuliuoti Xero sąskaitą, kai darbas čia ištrinamas",
+        "voidOnDeleteHelp": "Sąskaita, kuriai Xero sistemoje yra mokėjimų, niekada neanuliuojama; žurnale nurodoma, kad ji palikta nepakeista.",
+        "pushPayments": "Registruoti mokėjimus Xero",
+        "paymentAccount": "Mokėjimus įnešti į",
+        "paymentAccountHelp": "Xero banko sąskaita, į kurią įnešami Torqvoice užregistruoti mokėjimai. Palikite tuščią, kad būtų naudojama pirmoji banko sąskaita.",
+        "cashAccount": "Grynųjų pinigų mokėjimus įnešti į",
+        "cardAccount": "Mokėjimus kortele įnešti į",
+        "transferAccount": "Banko pavedimus įnešti į",
+        "onlineAccount": "Internetinius mokėjimus įnešti į",
+        "methodAccountHelp": "Palikite tuščią, kad būtų naudojama aukščiau nurodyta sąskaita.",
+        "onlineAccountHelp": "Mokėjimai, gauti per Stripe, PayPal, Vipps ir kitas mokėjimų integracijas, dažnai į tarpinę sąskaitą. Palikite tuščią, kad būtų naudojama aukščiau nurodyta sąskaita.",
+        "manualPaidAsPayment": "Registruoti mokėjimą, kai sąskaita ranka pažymima kaip apmokėta",
+        "manualPaidAsPaymentHelp": "Torqvoice be mokėjimo įrašo kaip apmokėta pažymėta sąskaita Xero gauna vieną mokėjimą likusiai ten rodomai sumai. Išjungus ji ten lieka atvira, kol užregistruojamas mokėjimas.",
+        "pullPayments": "Parsisiųsti Xero užregistruotus mokėjimus",
+        "pullPaymentsHelp": "Xero užregistruotas mokėjimas už Torqvoice sąskaitą užregistruojamas čia prie sąskaitos: iš karto, jei nustatytas webhook, kitaip per 30 minučių."
+      }
+    },
+    "zoho-books": {
+      "description": "Siųskite išrašytas sąskaitas, jų klientus ir mokėjimus į Zoho Books ir parsisiųskite ten užregistruotus mokėjimus.",
+      "tenantHelp": "Sukurkite Server-based Application tipo programą Zoho API Console (api-console.zoho.com arba jūsų regiono konsolėje, pavyzdžiui, api-console.zoho.eu). Įveskite žemiau esantį peradresavimo URI, nukopijuokite kliento ID ir slaptažodį, o kliento skirtuke Settings pažymėkite \"Use the same OAuth credentials for all data centers\", jei dirbtuvės jungiasi iš kitų regionų.",
+      "fields": {
+        "clientId": "Kliento ID",
+        "clientSecret": "Kliento slaptažodis"
+      },
+      "settings": {
+        "organizationId": "Zoho Books organizacija",
+        "organizationIdHelp": "Organizacija, į kurią rašomos sąskaitos. Rodomos visos organizacijos, kurias gali pasiekti prisijungęs Zoho naudotojas.",
+        "pushInvoices": "Siųsti išrašytas sąskaitas į Zoho Books",
+        "pushOnComplete": "Siųsti sąskaitas ir tada, kai darbas pažymimas kaip užbaigtas",
+        "pushOnCompleteHelp": "Be šio nustatymo sąskaita perduodama, kai ji išsiunčiama, pasidalinama ar apmokama. Su juo užbaigtas darbas perduodamas iš karto ir atnaujinamas, jei pasikeičia.",
+        "startDate": "Tik sąskaitos, datuotos nuo",
+        "startDateHelp": "Palikite tuščią, kad būtų siunčiamos visos išrašytos sąskaitos. Naudokite datą, kada apskaita perkelta į Zoho Books, kad senesnės sąskaitos nebūtų įvestos dukart.",
+        "invoiceStatus": "Būsena Zoho Books sistemoje",
+        "invoiceStatusHelp": "Išsiųstos sąskaitos iš karto laikomos pardavimais ir gali priimti mokėjimus. Pasirinkite Juodraštis, jei kas nors pirmiausia patikrina kiekvieną sąskaitą Zoho Books sistemoje; tada mokėjimai užregistruojami, kai sąskaita iš ten išsiunčiama.",
+        "invoiceStatusSent": "Išsiųsta",
+        "invoiceStatusDraft": "Juodraštis",
+        "invoiceNumbers": "Sąskaitų numeriai",
+        "invoiceNumbersHelp": "Palikite Torqvoice numerį, kad abi sistemos sutaptų, arba leiskite Zoho Books sunumeruoti sąskaitą pagal savo seką. Jei numeruoja Zoho, kaip nuorodą pasirinkite Torqvoice sąskaitos numerį, kad kiekvieną sąskaitą galėtumėte vėl rasti.",
+        "invoiceNumbersTorqvoice": "Naudoti Torqvoice numerį",
+        "invoiceNumbersZoho": "Leisti numeruoti Zoho Books",
+        "reference": "Nuoroda",
+        "referenceHelp": "Kas įrašoma į sąskaitos lauką Reference# Zoho Books sistemoje. Jis rodomas sąskaitoje ir Zoho sąrašuose bei paieškose.",
+        "referenceVehicle": "Transporto priemonė ir valstybinis numeris",
+        "referenceTitle": "Darbo pavadinimas",
+        "referenceInvoiceNumber": "Torqvoice sąskaitos numeris",
+        "referenceNone": "Nieko",
+        "includeVehicle": "Nurodyti transporto priemonę sąskaitoje",
+        "includeVehicleHelp": "Metai, markė, modelis, numeris ir rida, pateikiami kartu su pastabomis klientui.",
+        "includeNotes": "Įtraukti pastabas klientui",
+        "includeNotesHelp": "Sąskaitos pastabos klientui kaip paprastas tekstas.",
+        "notesPosition": "Kur dedama transporto priemonė ir pastabos",
+        "notesPositionHelp": "Customer Notes yra paties Zoho laukas, spausdinamas po pozicijomis Zoho sąskaitoje. Pasirinkus Virš pozicijų arba Po pozicijomis, jie dedami į teksto eilutę tarp sąskaitos eilučių.",
+        "notesPositionCustomerNotes": "Zoho laukas Customer Notes",
+        "notesPositionBelow": "Eilutė po pozicijomis",
+        "notesPositionAbove": "Eilutė virš pozicijų",
+        "includePartNumbers": "Rodyti dalių numerius dalių eilutėse",
+        "includePartNumbersHelp": "Kiekvienos dalies eilutės aprašymas prasideda dalies numeriu.",
+        "templateId": "Sąskaitos šablonas",
+        "templateIdHelp": "Zoho Books šablonas, kurį sąskaita naudoja, kai ji peržiūrima ar siunčiama iš Zoho. Palikite tuščią, kad būtų naudojamas organizacijos numatytasis šablonas.",
+        "locationId": "Vieta",
+        "locationIdHelp": "Tik organizacijoms, kurių Zoho Books įjungtos vietos ir kiekvienai sąskaitai jos reikia. Kitu atveju palikite tuščią.",
+        "laborAccount": "Sąskaita darbui",
+        "laborAccountHelp": "Pajamų sąskaita, į kurią apskaitomos darbo eilutės. Palikite tuščią, kad būtų naudojama žemiau pasirinktos prekės sąskaita arba Zoho sąskaita Sales.",
+        "partsAccount": "Sąskaita dalims",
+        "partsAccountHelp": "Pajamų sąskaita, į kurią apskaitomos dalių eilutės. Palikite tuščią, kad būtų naudojama žemiau pasirinktos prekės sąskaita arba Zoho sąskaita Sales.",
+        "shopFeeAccount": "Sąskaita dirbtuvių mokesčiui",
+        "shopFeeAccountHelp": "Čia apskaitoma dirbtuvių mokesčio eilutė. Palikite tuščią, kad ji būtų apskaitoma kartu su darbu.",
+        "laborItem": "Prekė darbo eilutėms",
+        "laborItemHelp": "Neprivaloma. Zoho Books prekė, kuria pažymima kiekviena darbo eilutė, prekių ataskaitoms Zoho sistemoje. Aukščiau pasirinkta sąskaita vis tiek turi pirmenybę.",
+        "partsItem": "Prekė dalių eilutėms",
+        "partsItemHelp": "Neprivaloma. Zoho Books prekė, kuria pažymima kiekviena dalių eilutė, prekių ataskaitoms Zoho sistemoje. Aukščiau pasirinkta sąskaita vis tiek turi pirmenybę.",
+        "matchItemsByPartNumber": "Susieti dalis su Zoho prekėmis pagal dalies numerį",
+        "matchItemsByPartNumberHelp": "Dalis, kurios numeris sutampa su Zoho Books prekės SKU, parduodama kaip ta prekė, todėl Zoho sekamas likutis sumažėja. Kad būtų kas nors rasta, Zoho Books skiltyje Settings, Items įjunkite SKU.",
+        "taxId": "Mokestis apmokestinamoms eilutėms",
+        "taxIdHelp": "Torqvoice parenka Zoho Books mokestį, kurio procentas sutampa su kiekviena sąskaita. Pasirinkite mokestį čia tam atvejui, kai keli turi tą patį procentą arba nė vienas nesutampa.",
+        "zeroTaxId": "Mokestis eilutėms be mokesčio",
+        "zeroTaxIdHelp": "Naudojamas eilutėms be mokesčio ir nuo mokesčio atleistiems klientams, kai organizacija turi tam 0 % mokestį. Palikite tuščią, kad šios eilutės būtų siunčiamos be mokesčio.",
+        "roundingAdjustment": "Suderinti sumą iki cento",
+        "roundingAdjustmentHelp": "Zoho Books mokestį apskaičiuoja pats. Kai jo suma vienu ar dviem centais skiriasi nuo kliento gautos sąskaitos, skirtumas įrašomas kaip Zoho apvalinimo korekcija, todėl abi sistemos sutampa. Išjungus žurnalas praneša, kai sumos skiriasi.",
+        "sendFromZoho": "Siųsti sąskaitą klientui el. paštu iš Zoho Books",
+        "sendFromZohoHelp": "Zoho Books išsiunčia savo sąskaitos kopiją kliento el. pašto adresu su Zoho nustatytomis internetinio mokėjimo galimybėmis. Išjunkite, jei sąskaitą jau siunčia Torqvoice, kad klientas negautų jos dukart.",
+        "attachPdf": "Pridėti sąskaitos PDF",
+        "attachPdfHelp": "Kliento iš Torqvoice gauta sąskaita pridedama prie sąskaitos Zoho Books sistemoje ir pakeičiama, kai ji pasikeičia.",
+        "updateContacts": "Atnaujinti klientų duomenis Zoho Books sistemoje",
+        "updateContactsHelp": "Čia pakeisti kliento vardas, el. paštas, telefonas ar adresas nukopijuojami į jo kontaktą Zoho Books sistemoje. Išjungus kontaktai tik sukuriami ir paliekami tokie, kokius juos tvarko buhalteris.",
+        "sameEmail": "Klientai su tuo pačiu el. paštu",
+        "sameEmailHelp": "Keli klientai gali naudoti tą patį el. pašto adresą, pavyzdžiui, šeima ar įmonės buhalterijos pašto dėžutė. Pasirinkus pirmą variantą, pagal el. paštą rastas Zoho kontaktas naudojamas tik tada, kai ir jo vardas sutampa su kliento; kitu atveju klientui sukuriamas naujas kontaktas, o žurnale nurodomas kitas, kad galėtumėte juos sujungti Zoho sistemoje, jei tai tas pats klientas.",
+        "sameEmailCreate": "Sukurti naują kontaktą, jei vardas skiriasi",
+        "sameEmailReuse": "Naudoti esamą kontaktą, net jei vardas skiriasi",
+        "voidOnDelete": "Anuliuoti Zoho sąskaitą, kai darbas čia ištrinamas",
+        "voidOnDeleteHelp": "Juodraštis ištrinamas, o išsiųsta sąskaita anuliuojama. Sąskaita, kuriai Zoho Books sistemoje yra mokėjimų, niekada neliečiama; žurnale nurodoma, kad ji palikta nepakeista.",
+        "pushPayments": "Registruoti mokėjimus Zoho Books",
+        "paymentAccount": "Įnešti į",
+        "paymentAccountHelp": "Zoho Books sąskaita, į kurią įnešami Torqvoice užregistruoti mokėjimai. Palikite tuščią, kad būtų naudojama Undeposited Funds.",
+        "cashAccount": "Grynųjų pinigų mokėjimus įnešti į",
+        "cardAccount": "Mokėjimus kortele įnešti į",
+        "transferAccount": "Banko pavedimus įnešti į",
+        "onlineAccount": "Internetinius mokėjimus įnešti į",
+        "methodAccountHelp": "Palikite tuščią, kad būtų naudojama aukščiau nurodyta sąskaita.",
+        "onlineAccountHelp": "Mokėjimai, gauti per Stripe, PayPal, Vipps, Paystack ir kitas mokėjimų integracijas, dažnai į tarpinę sąskaitą. Palikite tuščią, kad būtų naudojama aukščiau nurodyta sąskaita.",
+        "manualPaidAsPayment": "Registruoti mokėjimą, kai sąskaita ranka pažymima kaip apmokėta",
+        "manualPaidAsPaymentHelp": "Torqvoice be mokėjimo įrašo kaip apmokėta pažymėta sąskaita Zoho Books gauna vieną mokėjimą likusiai ten rodomai sumai. Išjungus ji ten lieka atvira, kol užregistruojamas mokėjimas.",
+        "pullPayments": "Parsisiųsti Zoho Books užregistruotus mokėjimus",
+        "pullPaymentsHelp": "Zoho Books užregistruotas mokėjimas už Torqvoice sąskaitą per 30 minučių užregistruojamas čia prie sąskaitos, o ten ištrintas mokėjimas čia pašalinamas."
       }
     },
     "fiken": {
@@ -620,7 +985,43 @@
         "refreshFleetHelp": "Kartą per dieną modeliai, neatnaujinti per pastarąją savaitę, užklausiami iš naujo, kad transporto priemonės puslapiui niekada nereikėtų laukti, o naujas atšaukimas pasirodytų per savaitę. Siunčiami tik markė, modelis ir metai."
       }
     },
+    "openlaborproject": {
+      "description": "Peržiūrėkite darbo laiko normas ir skysčių talpas užsakymo ar pasiūlymo transporto priemonei ir vienu paspaudimu pridėkite darbo valandas kaip darbo eilutę. Dauguma duomenų skirti JAV rinkos transporto priemonėms, o normos rodo, kuriai rinkai taikoma kiekviena užklausa. Kiekviena reikšmė rodo, kiek Open Labor Project ja tikras, o daugelis yra DI įverčiai, todėl patikrinkite juos prieš pateikdami pasiūlymą klientui. Užklausoms naudojamas paties serviso API raktas. Turint mokamą Open Labor Project planą, kartą surasta transporto priemonė saugoma tol, kol galioja planas, todėl pakartotinė paieška nekainuoja užklausos.",
+      "fields": {
+        "apiKey": "API raktas",
+        "apiKeyHelp": "Raktą užsisakykite openlaborproject.com skiltyje Developers; jis atsiunčiamas el. paštu. Nemokamas raktas turi 10 užklausų per dieną ir rodo valandas po vieną darbą. Nuo Builder plano limitas didesnis, o visų darbų valandos rodomos iš karto.",
+        "apiKeyServerHelp": "Palikite tuščią, kad naudotumėte šio serverio suteikiamą raktą, arba įklijuokite savo raktą iš openlaborproject.com, kad naudotumėte savo planą."
+      },
+      "settings": {
+        "minConfidence": "Rodyti normas nuo",
+        "minConfidenceHelp": "Praleidžia laikus, kuriais šaltinis mažiau tikras. Daugelis Europos markių laikų yra DI įverčiai, todėl griežtas pasirinkimas gali palikti mažai darbų.",
+        "confidenceAll": "Bet koks patikimumas",
+        "confidenceMedium": "Vidutinis ir aukštesnis",
+        "confidenceHigh": "Patikrinta ir aukštesnis",
+        "confidenceOem": "Tik OEM",
+        "hoursFrom": "Pridedamos valandos",
+        "hoursFromHelp": "Kuri reikšmė patenka į užsakymą: normos laikas ar viršutinė Open Labor Project nurodyto intervalo riba (pavyzdžiui, 1,6 val. vietoj 1,2 val.). Viršutinė riba palieka atsargą darbams, kurie užtrunka ilgiau.",
+        "hoursBook": "Normos laikas",
+        "hoursHigh": "Viršutinė intervalo riba",
+        "adjustPercent": "Koreguoti laikus (%)",
+        "adjustPercentHelp": "Procentas, pridedamas prie kiekvieno laiko prieš jam patenkant į užsakymą: 10 paverčia 1,2 val. į 1,32 val., -10 į 1,08 val. Nuo -50 iki 200.",
+        "rounding": "Apvalinti valandas aukštyn iki",
+        "roundingHelp": "Po korekcijos apvalina kiekvieno darbo valandas aukštyn: su 0,25 iš 1,32 val. gaunama 1,5 val. Laikas, kuris jau yra ant žingsnio, nesikeičia.",
+        "roundNone": "Neapvalinti",
+        "roundTenth": "0,1 val.",
+        "roundQuarter": "0,25 val.",
+        "roundHalf": "0,5 val.",
+        "fluids": "Rodyti skysčių duomenis",
+        "fluidsHelp": "Prideda skirtuką Skysčiai su talpomis, specifikacijomis ir keitimo intervalais. Jo atidarymas naudoja atskirą užklausą.",
+        "units": "Skysčių vienetai",
+        "unitsHelp": "Vienetai, kuriais rodomos talpos ir keitimo intervalai.",
+        "unitsBoth": "Abu",
+        "unitsMetric": "Metriniai (L, km)",
+        "unitsUs": "JAV (qt, mi)"
+      }
+    },
     "speech-to-text": {
+      "name": "Kalba į tekstą",
       "description": "Diktavimas darbo užsakyme, kurį užrašo kalbos modelis, o ne naršyklė: daug tiksliau, bet kuria kalba, ir jis žino dirbtuvių žodžius. Atskirta nuo jūsų DI paslaugų teikėjo, todėl jį galite palikti tokį, koks yra. Naudojamas jūsų pačių OpenAI raktas arba jūsų serveris, kalbantis OpenAI transkripcijos API. Įrašas siunčiamas užrašyti ir nesaugomas.",
       "fields": {
         "apiKey": "API raktas",
@@ -636,6 +1037,116 @@
         "modeAi": "Visada kalbos modelis",
         "modeChoice": "Kiekvienas renkasi: kalbos modelis ar naršyklė"
       }
+    },
+    "s3": {
+      "name": "Debesų saugyklos bucket'as",
+      "description": "Šifruotos šios dirbtuvės atsarginės kopijos į jums priklausančią talpyklą (bucket) Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage ar bet kurioje kitoje su S3 suderinamoje saugykloje pagal jūsų pasirinktą grafiką. Po pirmojo vykdymo įkeliama tik tai, kas pasikeitė, todėl kas valandą daromos kopijos išlieka pigios.",
+      "fields": {
+        "accessKeyId": "Prieigos rakto ID",
+        "accessKeyIdHelp": "Jūsų saugyklos teikėjo raktas su leidimu išvardyti, skaityti, rašyti ir trinti objektus talpykloje. Sukurkite atskirą raktą tik „Torqvoice“, kad jį būtų galima atšaukti atskirai.",
+        "secretAccessKey": "Slaptasis prieigos raktas",
+        "password": "Atsarginių kopijų slaptažodis",
+        "passwordHelp": "Kiekviena atsarginė kopija šifruojama šiuo slaptažodžiu. Sugalvokite jį arba spustelėkite Generuoti ir laikykite kopiją ne šiame serveryje: be jo niekas negali atidaryti šių atsarginių kopijų, net ir „Torqvoice“. Norėdami vėl prijungti saugyklą, kurioje jau yra „Torqvoice“ atsarginių kopijų, įveskite slaptažodį, kuriuo jos buvo sukurtos.",
+        "endpoint": "Pasirinktinis galinis taškas",
+        "endpointHelp": "Tik parinkčiai Kita su S3 suderinama saugykla: jūsų pačių saugyklos S3 adresas, pavyzdžiui, MinIO serverio, kaip pagrindinio kompiuterio vardas, jei reikia, su prievadu."
+      },
+      "settings": {
+        "provider": "Teikėjas",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Kita su S3 suderinama saugykla",
+        "region": "Regionas",
+        "regionHelp": "Kur yra talpykla. Pasirinkite iš teikėjo sąrašo; kitai saugyklai įveskite reikšmę, kurios ji tikisi, jei jos reikia. Cloudflare R2 jo nenaudoja.",
+        "accountId": "Cloudflare paskyros ID",
+        "accountIdHelp": "32 simbolių ID, rodomas jūsų Cloudflare valdymo skydelio R2 apžvalgos puslapyje.",
+        "bucket": "Talpykla (bucket)",
+        "bucketHelp": "Talpyklų sąrašas parodomas vos įvedus raktą. Jei raktas gali naudoti vieną talpyklą, bet negali gauti jų sąrašo, įveskite jos pavadinimą.",
+        "prefix": "Aplankas talpykloje",
+        "prefixHelp": "Atsarginės kopijos laikomos šiame aplanke. Kiekvienai dirbtuvei, kuri naudoja tą pačią talpyklą, naudokite atskirą aplanką.",
+        "frequency": "Kaip dažnai",
+        "frequencyHourly": "Kas valandą",
+        "frequencyEvery4h": "Kas 4 valandas",
+        "frequencyDaily": "Kasdien",
+        "frequencyWeekly": "Kas savaitę",
+        "frequencyMonthly": "Kas mėnesį",
+        "time": "Paros laikas",
+        "timeHelp": "Pagal dirbtuvės laikrodį, formatu HH:MM. Naudojama kasdienėms, savaitinėms ir mėnesinėms atsarginėms kopijoms.",
+        "weekday": "Savaitės diena",
+        "sunday": "Sekmadienis",
+        "monday": "Pirmadienis",
+        "tuesday": "Antradienis",
+        "wednesday": "Trečiadienis",
+        "thursday": "Ketvirtadienis",
+        "friday": "Penktadienis",
+        "saturday": "Šeštadienis",
+        "monthDay": "Mėnesio diena",
+        "monthDayLast": "Paskutinė diena",
+        "contents": "Turinys",
+        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu. Atsarginėje kopijoje yra dirbtuvės įrašai ir, jei pasirinkta, jos failai. Naudotojų paskyrų ir slaptažodžių joje nėra: naujame serveryje prisijungiate, pakviečiate komandą ir atkuriate duomenis į tą dirbtuvę.",
+        "contentsData": "Tik duomenys",
+        "contentsDataAndSecrets": "Duomenys ir slaptieji raktai",
+        "includeFiles": "Įtraukti nuotraukas ir failus",
+        "includeFilesHelp": "Kiekvienas failas įkeliamas vieną kartą ir pakartotinai naudojamas vėlesnėse atsarginėse kopijose, todėl po pirmojo vykdymo tai kainuoja nedaug.",
+        "keepHourly": "Laikyti valandines atsargines kopijas",
+        "keepHourlyHelp": "Kiek naujausių valandinių atsarginių kopijų laikyti. Svarbu tik kas valandą ir kas 4 valandas vykdomiems grafikams.",
+        "keepDaily": "Laikyti dienines atsargines kopijas",
+        "keepWeekly": "Laikyti savaitines atsargines kopijas",
+        "keepMonthly": "Laikyti mėnesines atsargines kopijas",
+        "keepMonthlyHelp": "Po kiekvieno vykdymo senesnės atsarginės kopijos pašalinamos, paliekant naujausias kiekvienos rūšies. Nustatykite skaičių 0, kad tos rūšies nebūtų laikoma nė vienos."
+      }
+    },
+    "local-folder": {
+      "name": "Vietinis aplankas",
+      "description": "Šifruotos šios dirbtuvės atsarginės kopijos į aplanką šiame serveryje: atsarginių kopijų tomą compose faile arba ten prijungtą tinklo diską. Kopija tame pačiame diske kaip duomenų bazė viena pati nėra saugi; derinkite ją su saugykla kitoje vietoje.",
+      "fields": {
+        "password": "Atsarginių kopijų slaptažodis",
+        "passwordHelp": "Kiekviena atsarginė kopija šifruojama šiuo slaptažodžiu. Sugalvokite jį arba spustelėkite Generuoti ir laikykite kopiją ne šiame serveryje: be jo niekas negali atidaryti šių atsarginių kopijų, net ir „Torqvoice“. Norėdami vėl prijungti saugyklą, kurioje jau yra „Torqvoice“ atsarginių kopijų, įveskite slaptažodį, kuriuo jos buvo sukurtos."
+      },
+      "settings": {
+        "folder": "Aplankas",
+        "folderHelp": "Aplankas serverio atsarginių kopijų šakniniame kataloge, kuriame laikomos šios dirbtuvės atsarginės kopijos. Palikite tuščią, kad būtų naudojamas aplankas, pavadintas pagal šią dirbtuvę. Naujame serveryje įveskite ankstesnio diegimo naudoto aplanko pavadinimą, kad atgautumėte jo atsargines kopijas.",
+        "frequency": "Kaip dažnai",
+        "frequencyHourly": "Kas valandą",
+        "frequencyEvery4h": "Kas 4 valandas",
+        "frequencyDaily": "Kasdien",
+        "frequencyWeekly": "Kas savaitę",
+        "frequencyMonthly": "Kas mėnesį",
+        "time": "Paros laikas",
+        "timeHelp": "Pagal dirbtuvės laikrodį, formatu HH:MM. Naudojama kasdienėms, savaitinėms ir mėnesinėms atsarginėms kopijoms.",
+        "weekday": "Savaitės diena",
+        "sunday": "Sekmadienis",
+        "monday": "Pirmadienis",
+        "tuesday": "Antradienis",
+        "wednesday": "Trečiadienis",
+        "thursday": "Ketvirtadienis",
+        "friday": "Penktadienis",
+        "saturday": "Šeštadienis",
+        "monthDay": "Mėnesio diena",
+        "monthDayLast": "Paskutinė diena",
+        "contents": "Turinys",
+        "contentsHelp": "Slaptieji raktai yra tie, kuriuos ši dirbtuvė įvedė į „Torqvoice“: mokėjimų, DI ir webhook raktai. Bet kuriuo atveju kiekviena atsarginė kopija šifruojama atsarginių kopijų slaptažodžiu. Atsarginėje kopijoje yra dirbtuvės įrašai ir, jei pasirinkta, jos failai. Naudotojų paskyrų ir slaptažodžių joje nėra: naujame serveryje prisijungiate, pakviečiate komandą ir atkuriate duomenis į tą dirbtuvę.",
+        "contentsData": "Tik duomenys",
+        "contentsDataAndSecrets": "Duomenys ir slaptieji raktai",
+        "includeFiles": "Įtraukti nuotraukas ir failus",
+        "includeFilesHelp": "Kiekvienas failas įkeliamas vieną kartą ir pakartotinai naudojamas vėlesnėse atsarginėse kopijose, todėl po pirmojo vykdymo tai kainuoja nedaug.",
+        "keepHourly": "Laikyti valandines atsargines kopijas",
+        "keepHourlyHelp": "Kiek naujausių valandinių atsarginių kopijų laikyti. Svarbu tik kas valandą ir kas 4 valandas vykdomiems grafikams.",
+        "keepDaily": "Laikyti dienines atsargines kopijas",
+        "keepWeekly": "Laikyti savaitines atsargines kopijas",
+        "keepMonthly": "Laikyti mėnesines atsargines kopijas",
+        "keepMonthlyHelp": "Po kiekvieno vykdymo senesnės atsarginės kopijos pašalinamos, paliekant naujausias kiekvienos rūšies. Nustatykite skaičių 0, kad tos rūšies nebūtų laikoma nė vienos."
+      }
+    },
+    "torqvoice-codes": {
+      "description": "Matykite, ką gedimo kodas reiškia prieš jus esančiam automobiliui, jūsų kalba: reikšmę, tikėtinas priežastis ir susijusius kodus. Įveskite arba įklijuokite kodus darbo užsakyme, ir jie taps pastebėjimais su išsaugota reikšme, todėl spaudiniai ir istorija niekada nelaukia ryšio. Teikia Torqvoice, įtraukta į kiekvieną debesies planą. Užklausoje siunčiama tik markė, modelis, metai ir variklis, niekada VIN, numeris ar klientas.",
+      "fields": {
+        "apiToken": "Prieigos raktas",
+        "apiTokenHelp": "Raktas, kurį Torqvoice jums suteikė kodų paslaugai."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {
@@ -658,6 +1169,42 @@
     "safety": {
       "refresh": "Atšaukimų duomenų atnaujinimas",
       "vehicle": "Naujos transporto priemonės atšaukimų patikra"
+    },
+    "repair": {
+      "checkPlan": "Patikrinti, ar išsaugotas užklausas galima laikyti"
     }
+  },
+  "backupAlerts": {
+    "destination": "atsarginių kopijų paskirties vieta",
+    "failedTitle": "Atsarginė kopija nepavyko",
+    "failedMessage": "Atsarginė kopija į {name} nebaigta: {reason}",
+    "failedSubject": "Atsarginė kopija į {name} nepavyko",
+    "failedEmailIntro": "Suplanuota jūsų dirbtuvės atsarginė kopija į {name} nebuvo baigta.",
+    "openToRetry": "Atidarykite Nustatymai, Integracijos, {name}, kad pamatytumėte vykdymą ir bandytumėte dar kartą.",
+    "overdueTitle": "Atsarginė kopija vėluoja",
+    "overdueSince": "Nuo {time} nebaigta nė viena atsarginė kopija į {name}.",
+    "overdueNever": "Dar nebaigta nė viena atsarginė kopija į {name}.",
+    "overdueSubject": "Atsarginė kopija į {name} vėluoja",
+    "openToSee": "Atidarykite Nustatymai, Integracijos, {name}, kad pamatytumėte, kas nepavyko.",
+    "platformName": "Torqvoice atsarginės kopijos",
+    "restoredTitle": "Dirbtuvė atkurta",
+    "restoredSubject": "Jūsų dirbtuvė atkurta iš atsarginės kopijos",
+    "restoredIntro": "{name}: {time} dirbtuvė grąžinta į atkūrimo tašką {snapshot}. Viso, kas įvesta po šio taško, dirbtuvėje nebėra.",
+    "restoredByMember": "Šio atkūrimo paprašė jūsų dirbtuvės narys.",
+    "restoredBySupport": "Torqvoice pagalbos komanda tai atliko jūsų prašymu. Nurodyta priežastis: {reason}",
+    "noReason": "nenurodyta",
+    "restoredUndo": "Prieš atkuriant buvo sukurta dirbtuvės apsauginė kopija, kokia ji buvo prieš pat atkūrimą; ji saugoma 90 dienų. Norėdami prie jos grįžti, susisiekite su pagalbos komanda."
+  },
+  "aiErrors": {
+    "modelAccess": "Šis API raktas neturi prieigos prie pasirinkto modelio. Pasirinkite kitą skiltyje Nustatymai → Integracijos.",
+    "spendLimit": "Ši OpenAI paskyra pasiekė išlaidų limitą. Patikrinkite limitus platform.openai.com.",
+    "noCredit": "Šioje OpenAI paskyroje nebeliko kredito. Pridėkite mokėjimo būdą platform.openai.com.",
+    "keyRejected": "DI paslaugų teikėjas atmetė API raktą. Patikrinkite jį skiltyje Nustatymai → Integracijos.",
+    "noUsableCredit": "DI paslaugų teikėjas praneša, kad šiam API raktui nėra naudojamo kredito.",
+    "modelUnavailable": "DI paslaugų teikėjas nesiūlo pasirinkto modelio. Pasirinkite kitą skiltyje Nustatymai → Integracijos.",
+    "imageTooLarge": "Vaizdas buvo per didelis DI paslaugų teikėjui.",
+    "rateLimited": "DI paslaugų teikėjas riboja šio API rakto užklausas. Netrukus bandykite dar kartą.",
+    "providerDown": "DI paslaugų teikėjas šiuo metu nepasiekiamas. Netrukus bandykite dar kartą.",
+    "unexpected": "DI paslaugų teikėjas grąžino netikėtą atsakymą."
   }
 }

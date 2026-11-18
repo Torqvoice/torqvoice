@@ -5,7 +5,7 @@ import { dictationAccess } from '@/features/ai/Lib/dictationAccess'
 import { rateLimit } from '@/lib/rate-limit'
 import { createClient } from '@/lib/ai'
 import { speechSetup } from '@/features/integrations/Lib/speech'
-import { describeAiError } from '@/lib/ai-error'
+import { aiErrorDescriber } from '@/lib/ai-error-message'
 import { DEMO_AI_DISABLED_MESSAGE, isDemoMode } from '@/lib/demo'
 import {
   MAX_TRANSCRIPTION_BYTES,
@@ -96,6 +96,6 @@ export async function POST(request: NextRequest) {
     })
     return NextResponse.json({ text: result.text.trim() })
   } catch (err) {
-    return json(502, describeAiError(err))
+    return json(502, (await aiErrorDescriber())(err))
   }
 }

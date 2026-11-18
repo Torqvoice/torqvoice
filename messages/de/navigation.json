@@ -42,6 +42,7 @@
     "warranty": "Garantie",
     "workshop": "Werkstatt",
     "appearance": "Erscheinungsbild",
+    "shortcuts": "Tastenkürzel",
     "email": "E-Mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Reifensatz",
     "tireForecast": "Nächste Saison",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "HU-Erinnerungen"
+    "inspectionReminders": "HU-Erinnerungen",
+    "faultCodes": "Fehlercodes",
+    "faultCode": "Fehlercode",
+    "calendar": "Kalender",
+    "messages": "Nachrichten",
+    "inspections": "Inspektionen",
+    "inspectionDetails": "Inspektionsdetails"
   },
   "search": "Suchen...",
-  "shortcut": "Ctrl+K",
   "readMore": "Mehr erfahren",
   "newWorkOrder": "Neuer Arbeitsauftrag",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Ersatzteil",
     "inspection": "Inspektion",
     "shopActions": "Werkstatt",
-    "person": "Person hinzufügen"
+    "person": "Person hinzufügen",
+    "appointment": "Termin"
   },
   "purchaseWhiteLabel": "White-Label erwerben",
   "licenseExpired": "Ihre Lizenz ist abgelaufen. Funktionen können eingeschränkt sein.",
@@ -123,6 +130,7 @@
     "cancel": "Abbrechen",
     "createCompany": "Unternehmen erstellen",
     "theme": "Design",
+    "keyboardShortcuts": "Tastenkürzel",
     "signOut": "Abmelden",
     "more": "Mehr",
     "auditLog": "Aktivitätsprotokoll",
@@ -141,6 +149,7 @@
       "workOrders": "{count} offene Arbeitsaufträge",
       "inspections": "{count} laufende Inspektionen",
       "reminders": "{count} fällige Erinnerungen"
-    }
+    },
+    "faultCodes": "Fehlercodes"
   }
 }

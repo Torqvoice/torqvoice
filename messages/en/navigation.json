@@ -42,6 +42,7 @@
     "warranty": "Warranty",
     "workshop": "Workshop",
     "appearance": "Appearance",
+    "shortcuts": "Keyboard shortcuts",
     "email": "Email",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Tire Set",
     "tireForecast": "Next season",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Inspection reminders"
+    "inspectionReminders": "Inspection reminders",
+    "faultCodes": "Fault codes",
+    "faultCode": "Fault code",
+    "calendar": "Calendar",
+    "messages": "Messages",
+    "inspections": "Inspections",
+    "inspectionDetails": "Inspection Details"
   },
   "search": "Search...",
-  "shortcut": "Ctrl+K",
   "readMore": "Read more",
   "newWorkOrder": "New Work Order",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Part",
     "inspection": "Inspection",
     "shopActions": "Shop actions",
-    "person": "Add a person"
+    "person": "Add a person",
+    "appointment": "Appointment"
   },
   "purchaseWhiteLabel": "Purchase White-Label",
   "licenseExpired": "Your license has expired. Features may be limited.",
@@ -123,6 +130,7 @@
     "cancel": "Cancel",
     "createCompany": "Create Company",
     "theme": "Theme",
+    "keyboardShortcuts": "Keyboard shortcuts",
     "signOut": "Sign Out",
     "more": "More",
     "auditLog": "Audit Log",
@@ -141,6 +149,7 @@
       "workOrders": "{count} open work orders",
       "inspections": "{count} inspections in progress",
       "reminders": "{count} reminders due"
-    }
+    },
+    "faultCodes": "Fault codes"
   }
 }

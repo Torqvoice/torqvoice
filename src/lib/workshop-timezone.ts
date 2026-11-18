@@ -1,6 +1,8 @@
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { db } from '@/lib/db'
-import { safeTimeZone } from '@/lib/timezone'
+import { resolveWorkshopTimeZone } from '@/lib/timezone'
+
+export { resolveWorkshopTimeZone }
 
 /**
  * The zone server code reads workshop times in.
@@ -10,13 +12,6 @@ import { safeTimeZone } from '@/lib/timezone'
  * so a workshop that never chose a zone still gets the right one here rather
  * than UTC. An explicit choice always wins.
  */
-export function resolveWorkshopTimeZone(
-  explicit: string | null | undefined,
-  detected: string | null | undefined
-): string {
-  return safeTimeZone(explicit?.trim() || detected?.trim() || null)
-}
-
 export async function workshopTimeZone(organizationId: string): Promise<string> {
   const rows = await db.appSetting.findMany({
     where: { organizationId, key: { in: [SETTING_KEYS.TIMEZONE, SETTING_KEYS.TIMEZONE_DETECTED] } },

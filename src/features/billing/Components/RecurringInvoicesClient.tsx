@@ -16,7 +16,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
 import { Label } from '@/components/ui/label'
@@ -28,6 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -40,6 +48,7 @@ import { TableCellLink } from '@/components/table-cell-link'
 import { Car, Loader2, Plus, Pause, Play, Trash2, User, Zap, X } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { calculateTotals } from '@/lib/tax'
+import { recurringTaxableSubtotal, TAX_APPLIES_TO_ALL, type TaxApplies } from '@/lib/taxable-lines'
 import {
   createRecurringInvoice,
   toggleRecurringInvoice,
@@ -69,6 +78,8 @@ interface TemplateLabor {
   description: string
   hours: number
   rate: number
+  /** A shop fee is a labor row told apart by this, and is taxed by its own rule. */
+  pricingType?: string | null
 }
 
 interface RecurringInvoice {
@@ -102,6 +113,12 @@ interface RecurringInvoicesClientProps {
   invoices: RecurringInvoice[]
   vehicles: Vehicle[]
   currencyCode: string
+  /**
+   * Which kinds of line the workshop taxes. A template's lines carry no
+   * choice of their own, so the total shown is what the next invoice will
+   * come to under today's rule.
+   */
+  taxApplies?: TaxApplies
 }
 
 const SERVICE_TYPES = [
@@ -128,6 +145,7 @@ export default function RecurringInvoicesClient({
   invoices,
   vehicles,
   currencyCode,
+  taxApplies = TAX_APPLIES_TO_ALL,
 }: RecurringInvoicesClientProps) {
   const formatCurrency = useFormatCurrency()
   const router = useRouter()
@@ -185,6 +203,8 @@ export default function RecurringInvoicesClient({
     }
 
     startTransition(async () => {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       const result = await createRecurringInvoice({
         title: title.trim(),
         description: description.trim() || undefined,
@@ -212,51 +232,51 @@ export default function RecurringInvoicesClient({
             hours: l.hours,
             rate: l.rate,
           })),
-      })
+      }).catch(() => null)
 
-      if (result.success) {
+      if (result?.success) {
         toast.success(t('recurring.created'))
         setShowCreate(false)
         resetForm()
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedCreate'))
+        toast.error(result?.error || t('recurring.failedCreate'))
       }
     })
   }
 
   const handleToggle = (id: string) => {
     startTransition(async () => {
-      const result = await toggleRecurringInvoice(id)
-      if (result.success) {
+      const result = await toggleRecurringInvoice(id).catch(() => null)
+      if (result?.success) {
         toast.success(t('recurring.statusUpdated'))
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedUpdate'))
+        toast.error(result?.error || t('recurring.failedUpdate'))
       }
     })
   }
 
   const handleDelete = (id: string) => {
     startTransition(async () => {
-      const result = await deleteRecurringInvoice(id)
-      if (result.success) {
+      const result = await deleteRecurringInvoice(id).catch(() => null)
+      if (result?.success) {
         toast.success(t('recurring.deleted'))
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedDelete'))
+        toast.error(result?.error || t('recurring.failedDelete'))
       }
     })
   }
 
   const handleProcessNow = () => {
     startTransition(async () => {
-      const result = await processRecurringInvoices()
-      if (result.success && result.data) {
+      const result = await processRecurringInvoices().catch(() => null)
+      if (result?.success && result.data) {
         toast.success(t('recurring.processed', { count: result.data.processed }))
         router.refresh()
       } else {
-        toast.error(result.error || t('recurring.failedProcess'))
+        toast.error(result?.error || t('recurring.failedProcess'))
       }
     })
   }
@@ -351,6 +371,8 @@ export default function RecurringInvoicesClient({
                   discountAmount: 0,
                   taxRate: inv.taxRate,
                   taxInclusive: inv.taxInclusive,
+                  // The same rule the generated invoice is totalled by.
+                  taxableSubtotal: recurringTaxableSubtotal(inv, taxApplies),
                 })
                 return (
                   <div key={inv.id} className="rounded-lg border bg-card p-3">
@@ -434,6 +456,8 @@ export default function RecurringInvoicesClient({
                       discountAmount: 0,
                       taxRate: inv.taxRate,
                       taxInclusive: inv.taxInclusive,
+                      // The same rule the generated invoice is totalled by.
+                      taxableSubtotal: recurringTaxableSubtotal(inv, taxApplies),
                     })
 
                     return (
@@ -550,11 +574,11 @@ export default function RecurringInvoicesClient({
 
       {/* Create dialog */}
       <Dialog open={showCreate} onOpenChange={setShowCreate}>
-        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-h-[85vh] sm:max-w-2xl" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{t('recurring.dialogTitle')}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <DialogBody className="space-y-4">
             {/* Basic info */}
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
@@ -567,19 +591,15 @@ export default function RecurringInvoicesClient({
               </div>
               <div className="space-y-1.5">
                 <Label>{t('recurring.vehicleLabel')}</Label>
-                <Select value={vehicleId} onValueChange={setVehicleId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={t('recurring.selectVehicle')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {vehicles.map((v) => (
-                      <SelectItem key={v.id} value={v.id}>
-                        {v.year} {v.make} {v.model}
-                        {v.customer ? ` (${v.customer.name})` : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect
+                  value={vehicleId}
+                  onValueChange={setVehicleId}
+                  placeholder={t('recurring.selectVehicle')}
+                  options={vehicles.map((v) => ({
+                    value: v.id,
+                    label: `${v.year} ${v.make} ${v.model}${v.customer ? ` (${v.customer.name})` : ''}`,
+                  }))}
+                />
               </div>
             </div>
 
@@ -791,22 +811,22 @@ export default function RecurringInvoicesClient({
             </Card>
 
             {/* Actions */}
-            <div className="flex justify-end gap-2 pt-2">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setShowCreate(false)
-                  resetForm()
-                }}
-              >
-                {t('recurring.cancel')}
-              </Button>
-              <Button data-save-shortcut onClick={handleCreate} disabled={isPending}>
-                {isPending && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
-                {t('recurring.create')}
-              </Button>
-            </div>
-          </div>
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowCreate(false)
+                resetForm()
+              }}
+            >
+              {t('recurring.cancel')}
+            </Button>
+            <Button data-save-shortcut onClick={handleCreate} disabled={isPending}>
+              {isPending && <Loader2 className="h-4 w-4 animate-spin mr-1.5" />}
+              {t('recurring.create')}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

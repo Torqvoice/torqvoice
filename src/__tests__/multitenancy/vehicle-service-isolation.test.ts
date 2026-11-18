@@ -49,6 +49,7 @@ vi.mock('@/lib/db', () => ({
     quote: { findMany: vi.fn().mockResolvedValue([]) },
     serviceRecord: {
       findFirst: vi.fn(),
+      findMany: vi.fn(),
       delete: vi.fn(),
     },
     serviceAttachment: {
@@ -139,6 +140,7 @@ describe('getVehicle — cross-org isolation', () => {
   it("returns vehicle data for a vehicle that belongs to the caller's org", async () => {
     setupOrgAOwner()
     vi.mocked(db.vehicle.findFirst).mockResolvedValue(ORG_A_VEHICLE as any)
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([])
 
     const result = await getVehicle('veh-a')
 
@@ -149,12 +151,19 @@ describe('getVehicle — cross-org isolation', () => {
   it("db query always scopes vehicles to the caller's organizationId", async () => {
     setupOrgAOwner()
     vi.mocked(db.vehicle.findFirst).mockResolvedValue(ORG_A_VEHICLE as any)
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([])
 
     await getVehicle('veh-a')
 
     expect(vi.mocked(db.vehicle.findFirst)).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({ organizationId: ORG_A }),
+      })
+    )
+    // The lifetime total reads the vehicle's work orders, scoped the same way.
+    expect(vi.mocked(db.serviceRecord.findMany)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({ vehicle: { organizationId: ORG_A } }),
       })
     )
   })

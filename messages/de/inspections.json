@@ -53,6 +53,7 @@
     "statusCompleted": "Abgeschlossen",
     "complete": "Abschließen",
     "reopen": "Wieder öffnen",
+    "send": "Senden",
     "share": "Teilen",
     "save": "Speichern",
     "saving": "Speichert…",
@@ -94,6 +95,8 @@
     "completeTitle": "Diese Inspektion abschließen?",
     "completeBody": "Die Prüfpunkte werden mit dem Abschluss gesperrt, und das Ergebnis lautet dann „{result}“.",
     "completeBlocked": "{count} Prüfung(en), die die Checkliste als Pflicht markiert, sind noch offen.",
+    "blockerMissingGrade": "muss bewertet werden",
+    "blockerNeedsPhoto": "braucht ein Foto des Mangels",
     "completeUngraded": "{count} Prüfpunkt(e) wurden nicht bewertet.",
     "completeDangerous": "{count} gefährliche(r) Mangel erfasst. Das Fahrzeug darf nicht am öffentlichen Verkehr teilnehmen.",
     "reopenTitle": "Diese Inspektion wieder öffnen?",
@@ -459,7 +462,9 @@
     "copyLink": "Link kopieren",
     "copied": "Link in die Zwischenablage kopiert",
     "generated": "Freigabelink erstellt",
-    "revoked": "Freigabelink zurückgezogen"
+    "revoked": "Freigabelink zurückgezogen",
+    "revokeLink": "Link widerrufen",
+    "generateLink": "Öffentlichen Link erstellen"
   },
   "phone": {
     "pageTitle": "Fotos zur Prüfung",
@@ -494,5 +499,19 @@
     "photos": "Fotos",
     "documents": "Dokumente",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Alle Punkte in Ordnung",
+    "pass_minor": "Einige Punkte im Auge behalten",
+    "fail": "Einige Punkte müssen repariert werden",
+    "fail_dangerous": "Einige Punkte müssen dringend repariert werden",
+    "incomplete": "Nicht abgeschlossen",
+    "detail": {
+      "pass": "Nichts musste beanstandet werden.",
+      "pass_minor": "Nichts Dringendes. Die markierten Punkte sollten Sie einplanen.",
+      "fail": "Einige Punkte müssen repariert werden. Die Notizen beschreiben, was gefunden wurde.",
+      "fail_dangerous": "Einige Punkte sind nicht sicher und sollten vor der weiteren Nutzung repariert werden.",
+      "incomplete": "Diese Prüfung läuft noch."
+    }
   }
 }

@@ -58,7 +58,12 @@
       "everyone": "Tüm işler",
       "thisWeek": "Bu hafta"
     },
-    "dropNeedsLane": "Bir işi panoya bırakmadan önce panoyu teknisyene veya çalışma alanına göre gruplayın."
+    "dropNeedsLane": "Bir işi panoya bırakmadan önce panoyu teknisyene veya çalışma alanına göre gruplayın.",
+    "load": {
+      "over": "{amount} fazla",
+      "spoken": "Planlanan: {booked} / {capacity}",
+      "spokenOver": "Planlanan: {booked} / {capacity}, {amount} aşım"
+    }
   },
   "unassigned": {
     "title": "Atanmamış İşler ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Uygulama erişimiyle birlikte Ekip sayfasından yönetilir.",
     "skills": "Uzmanlıklar",
     "skillsPlaceholder": "Arıza tespiti, elektrikli araç sertifikalı",
-    "skillsHint": "İşlerin dağıtıldığı yerde adın altında gösterilir. İsteğe bağlı."
+    "skillsHint": "İşlerin dağıtıldığı yerde adın altında gösterilir. İsteğe bağlı.",
+    "saveFailed": "Teknisyen kaydedilemedi. Tekrar deneyin.",
+    "deleteFailed": "Teknisyen silinemedi. Tekrar deneyin."
   },
   "jobDetail": {
     "viewDetails": "Ayrıntıları Görüntüle",
@@ -90,7 +97,9 @@
     "endTime": "Bitiş Zamanı",
     "failedDuration": "Süre güncellenemedi",
     "failedTimes": "Zamanlar güncellenemedi",
-    "startTime": "Başlangıç Zamanı"
+    "startTime": "Başlangıç Zamanı",
+    "alsoOnJob": "Bu işte de çalışıyor",
+    "failedHelper": "İşteki kişiler güncellenemedi"
   },
   "presenter": {
     "title": "İş Panosu",
@@ -160,6 +169,9 @@
     "none": "Henüz kimse",
     "promised": "Söz verilen",
     "promiseLate": "Gecikti",
-    "promiseOverdue": "Müşteriye geçmiş bir zaman için söz verildi"
+    "promiseOverdue": "Müşteriye geçmiş bir zaman için söz verildi",
+    "alsoOnJob": "Bu işte de",
+    "with": "{name} ile",
+    "helping": "Yardım ediyor"
   }
 }

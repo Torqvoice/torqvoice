@@ -14,7 +14,8 @@
     "supplier": "Lieferant",
     "location": "Lagerort",
     "low": "Niedrig",
-    "barcode": "Barcode"
+    "barcode": "Barcode",
+    "notTracked": "Nicht erfasst"
   },
   "empty": {
     "noMatch": "Keine Teile entsprechen Ihrer Suche.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Aufschlag auf alle Teile anwenden",
-    "multiplierLabel": "Aufschlagsfaktor",
-    "description": "Der Verkaufspreis wird auf Kosten x {multiplier} für alle {count} Teile gesetzt.",
-    "percentage": "({percent}% Aufschlag)",
+    "intro": "Setzt den Verkaufspreis der Teile auf die Kosten plus einen Prozentsatz.",
+    "percentLabel": "Aufschlag %",
+    "percentHint": "30 eingeben, um 30% auf die Kosten aufzuschlagen.",
+    "percentInvalid": "Der Aufschlag muss größer als -100% sein.",
+    "exampleTitle": "Beispiel",
+    "exampleMarkup": "Aufschlag {percent}%",
     "cancel": "Abbrechen",
     "apply": "Anwenden",
     "overrideExisting": "Bestehende Verkaufspreise überschreiben",
     "overrideExistingHint": "Alle Teile werden aktualisiert, auch solche mit einem bestehenden Verkaufspreis.",
-    "skipExistingHint": "Nur Teile ohne Verkaufspreis werden aktualisiert."
+    "skipExistingHint": "Nur Teile ohne Verkaufspreis werden aktualisiert.",
+    "newPartsNote": "Bei neuen Teilen wird {sellPrice} mit diesem Aufschlag ausgefüllt, sobald {unitCost} eingegeben wird.",
+    "settingsNote": "{setting} unter {settings} > {workshop} ist eine separate Einstellung. Sie gilt, wenn Teile in einen Auftrag kommen."
   },
   "errors": {
-    "multiplierPositive": "Der Multiplikator muss größer als 0 sein",
     "deleteFailed": "Teil konnte nicht gelöscht werden",
     "applyFailed": "Aufschlag konnte nicht angewendet werden",
     "saveFailed": "Teil konnte nicht gespeichert werden",
@@ -70,16 +75,19 @@
     "currentStock": "Aktueller Bestand: {quantity}",
     "addedStock": "{amount} zum Bestand hinzugefügt",
     "customAmount": "Menge...",
-    "scanParts": "Teile scannen"
+    "scanParts": "Teile scannen",
+    "notTracked": "Für dieses Teil wird kein Bestand geführt"
   },
   "form": {
     "editPart": "Teil bearbeiten",
     "addNewPart": "Neues Teil hinzufügen",
     "supplierLink": "Lieferantenlink",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "Der Lieferantenlink ist keine Webadresse. Korrigieren Sie ihn oder leeren Sie das Feld, um ohne Link zu speichern.",
     "fetch": "Abrufen",
-    "fetchFailed": "Abruf fehlgeschlagen",
-    "fetchError": "Metadaten konnten nicht von der URL abgerufen werden",
+    "fetchBlocked": "Die Website dieses Lieferanten blockiert den automatischen Abruf. Felder bitte selbst ausfüllen. Teil und Link lassen sich trotzdem speichern.",
+    "fetchTimedOut": "Die Website des Lieferanten hat zu lange für eine Antwort gebraucht. Erneut versuchen oder die Felder selbst ausfüllen. Teil und Link lassen sich trotzdem speichern.",
+    "fetchUnreadable": "Die Teiledaten konnten über diesen Link nicht gelesen werden. Felder bitte selbst ausfüllen. Teil und Link lassen sich trotzdem speichern.",
     "image": "Bild",
     "dropOrClick": "Bild ablegen oder klicken",
     "replace": "Ersetzen",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperial",
     "unitCost": "Stückkosten",
     "sellPrice": "Verkaufspreis",
+    "sellPriceMarkupHint": "{sellPrice} wird mit {unitCost} + {percent}% ausgefüllt. Für einen eigenen Preis einfach einen Betrag eingeben. Der Prozentsatz lässt sich mit {applyMarkup} auf der Seite {inventory} ändern.",
     "supplier": "Lieferant",
     "supplierPlaceholder": "AutoParts GmbH",
     "supplierPhone": "Lieferanten-Telefon",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Teilebeschreibung...",
     "cancel": "Abbrechen",
     "saveChanges": "Änderungen speichern",
-    "addPart": "Teil hinzufügen"
+    "addPart": "Teil hinzufügen",
+    "tags": "Tags",
+    "tagsPlaceholder": "Marken, Modelle oder andere Suchbegriffe",
+    "tagsHint": "Nach jedem Tag Enter oder ein Komma drücken. In einem Auftrag stehen Teile mit der Marke oder dem Modell des Fahrzeugs ganz oben.",
+    "tagsHintMarine": "Nach jedem Tag Enter oder ein Komma drücken. In einem Auftrag stehen Teile mit der Marke oder dem Modell des Bootes ganz oben.",
+    "removeTag": "{tag} entfernen",
+    "tagTooLong": "Ein Tag darf höchstens {max} Zeichen lang sein. Bitte vor dem Speichern kürzen.",
+    "trackStock": "Bestand führen",
+    "trackStockHint": "Ausschalten für Gebühren und Verbrauchsmaterial, das Sie berechnen, aber nie zählen.",
+    "trackStockOffNote": "Beim Speichern wird die Menge auf null gesetzt und im Bestandsverlauf vermerkt. Aufträge ändern sie nicht mehr."
   },
   "openMenu": "Menü öffnen",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Auftrag gelöscht",
       "quote_conversion": "Angebot umgewandelt",
       "manual_adjustment": "Manuelle Anpassung",
-      "bulk_markup": "Massenaufschlag"
+      "bulk_markup": "Massenaufschlag",
+      "stock_tracking_off": "Bestandsführung ausgeschaltet"
     },
     "backToInventory": "Lager",
     "reason": "Grund",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} auf Lager",
     "outOfStock": "Nicht auf Lager",
     "onBackorder": "Im Rückstand ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Alle Tags",
+    "filterBy": "Teile mit dem Tag {tag} anzeigen",
+    "more": "+{count} weitere"
   }
 }

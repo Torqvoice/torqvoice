@@ -2,6 +2,11 @@ import { getAuditLogsPaginated } from '@/features/audit/Actions/auditActions'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import { AuditLogClient } from './audit-log-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('auditLog')
+}
 
 export default async function AuditLogPage({
   searchParams,

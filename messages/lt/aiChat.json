@@ -12,6 +12,7 @@
   "noChats": "Ankstesnių pokalbių apie šį įrašą nėra",
   "chatsPrivate": "Jūsų pokalbiai yra privatūs ir matomi tik jums.",
   "deleteChat": "Ištrinti pokalbį",
+  "deleteChatFailed": "Nepavyko ištrinti pokalbio. Bandykite dar kartą.",
   "error": "Kažkas nepavyko. Bandykite dar kartą.",
   "disclaimer": "Atsakymai kuriami pagal programoje rodomus įrašus ir gali būti klaidingi. Patikrinkite prieš imdamiesi veiksmų.",
   "vehicleSuggestion1": "Apibendrink aptarnavimo istoriją",

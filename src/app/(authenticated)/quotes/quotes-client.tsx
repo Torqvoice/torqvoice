@@ -2,6 +2,7 @@
 
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -18,6 +19,7 @@ import {
 } from '@/features/quotes/Lib/quoteStatus'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -80,25 +82,17 @@ interface PaginatedData {
   statusCounts: Record<string, number>
 }
 
-const statusTabs = [
-  { key: 'all', titleKey: 'list.statusAll' },
-  { key: 'attention', titleKey: 'list.statusAttention' },
-  { key: 'draft', titleKey: 'list.statusDraft' },
-  { key: 'sent', titleKey: 'list.statusSent' },
-  { key: 'accepted', titleKey: 'list.statusAccepted' },
-  { key: 'rejected', titleKey: 'list.statusRejected' },
-  { key: 'converted', titleKey: 'list.statusConverted' },
-] as const
-
-const statusColors: Record<string, string> = {
-  draft: 'bg-gray-500/10 text-gray-500 border-gray-500/20',
-  sent: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  rejected: 'bg-red-500/10 text-red-500 border-red-500/20',
-  expired: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-  converted: 'bg-purple-500/10 text-purple-500 border-purple-500/20',
-  changes_requested: 'bg-orange-500/10 text-orange-600 border-orange-500/20',
+const statusTitleKeys: Record<ListStatus<'quotes'>, string> = {
+  all: 'list.statusAll',
+  attention: 'list.statusAttention',
+  draft: 'list.statusDraft',
+  sent: 'list.statusSent',
+  accepted: 'list.statusAccepted',
+  rejected: 'list.statusRejected',
+  converted: 'list.statusConverted',
 }
+
+const statusTabs = LIST_STATUS_TABS.quotes.map((key) => ({ key, titleKey: statusTitleKeys[key] }))
 
 export function QuotesClient({
   data,
@@ -222,7 +216,12 @@ export function QuotesClient({
               variant={isActive ? 'default' : 'outline'}
               size="sm"
               className="h-9 shrink-0 sm:h-8"
-              onClick={() => navigate({ status: tab.key === 'all' ? undefined : tab.key })}
+              aria-pressed={isActive}
+              onClick={() => {
+                rememberListStatus('quotes', tab.key)
+                // "all" stays in the URL: a bare path means the remembered tab.
+                navigate({ status: tab.key })
+              }}
             >
               {t(tab.titleKey)}
               {count !== undefined && (
@@ -241,6 +240,7 @@ export function QuotesClient({
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('list.searchPlaceholder')}
+              aria-label={t('list.searchPlaceholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="h-9 pl-9"
@@ -300,9 +300,9 @@ export function QuotesClient({
                   </div>
                 )}
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
-                  <Badge variant="outline" className={`text-xs ${statusColors[q.status] || ''}`}>
+                  <StatusBadge kind="quote" status={q.status}>
                     {quoteStatusLabel(q.status, tStatus)}
-                  </Badge>
+                  </StatusBadge>
                   {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
                   <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
                 </div>
@@ -432,14 +432,15 @@ export function QuotesClient({
                         )}
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant="outline"
+                        <StatusBadge
                           // Wraps rather than spilling into the date column
                           // when a language's word is wider than the cell.
-                          className={`max-w-full whitespace-normal text-center text-xs leading-tight ${statusColors[q.status] || ''}`}
+                          kind="quote"
+                          status={q.status}
+                          className="max-w-full whitespace-normal text-center leading-tight"
                         >
                           {quoteStatusLabel(q.status, tStatus)}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell className="font-mono text-xs">
                         {formatDate(new Date(q.createdAt))}

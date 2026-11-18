@@ -58,7 +58,12 @@
       "everyone": "Visi darbai",
       "thisWeek": "Ši savaitė"
     },
-    "dropNeedsLane": "Prieš vilkdami darbą, sugrupuokite lentą pagal meistrą arba darbo vietą."
+    "dropNeedsLane": "Prieš vilkdami darbą, sugrupuokite lentą pagal meistrą arba darbo vietą.",
+    "load": {
+      "over": "{amount} per daug",
+      "spoken": "Suplanuota {booked} iš {capacity}",
+      "spokenOver": "Suplanuota {booked} iš {capacity}, viršyta {amount}"
+    }
   },
   "unassigned": {
     "title": "Nepriskirti darbai ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Valdoma Komandos puslapyje kartu su prieiga prie programėlės.",
     "skills": "Įgūdžiai",
     "skillsPlaceholder": "Diagnostika, elektromobilių sertifikatas",
-    "skillsHint": "Rodoma po vardu ten, kur skirstomi darbai. Neprivaloma."
+    "skillsHint": "Rodoma po vardu ten, kur skirstomi darbai. Neprivaloma.",
+    "saveFailed": "Nepavyko išsaugoti techniko. Bandykite dar kartą.",
+    "deleteFailed": "Nepavyko ištrinti techniko. Bandykite dar kartą."
   },
   "jobDetail": {
     "viewDetails": "Peržiūrėti informaciją",
@@ -90,7 +97,9 @@
     "endTime": "Pabaigos laikas",
     "failedDuration": "Nepavyko atnaujinti trukmės",
     "failedTimes": "Nepavyko atnaujinti laikų",
-    "endBeforeStart": "Pabaigos laikas turi būti po pradžios laiko"
+    "endBeforeStart": "Pabaigos laikas turi būti po pradžios laiko",
+    "alsoOnJob": "Taip pat dirba prie šio darbo",
+    "failedHelper": "Nepavyko atnaujinti, kas dirba prie darbo"
   },
   "presenter": {
     "title": "Darbų lenta",
@@ -160,6 +169,9 @@
     "none": "Kol kas niekas",
     "promised": "Pažadėta",
     "promiseLate": "Vėluoja",
-    "promiseOverdue": "Klientui pažadėta jau praėjusiam laikui"
+    "promiseOverdue": "Klientui pažadėta jau praėjusiam laikui",
+    "alsoOnJob": "Taip pat prie darbo",
+    "with": "Vadovas: {name}",
+    "helping": "Padeda"
   }
 }

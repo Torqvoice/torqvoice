@@ -58,7 +58,12 @@
       "everyone": "Alt arbeid",
       "thisWeek": "Denne uken"
     },
-    "dropNeedsLane": "Grupper tavlen etter mekaniker eller arbeidsplass før du slipper en jobb på den."
+    "dropNeedsLane": "Grupper tavlen etter mekaniker eller arbeidsplass før du slipper en jobb på den.",
+    "load": {
+      "over": "{amount} for mye",
+      "spoken": "Booket: {booked} av {capacity}",
+      "spokenOver": "Booket: {booked} av {capacity}, overbooket med {amount}"
+    }
   },
   "unassigned": {
     "title": "Utildelte jobber ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Styres fra Team-siden, sammen med apptilgangen.",
     "skills": "Kompetanse",
     "skillsPlaceholder": "Diagnostikk, elbilsertifisert",
-    "skillsHint": "Vises under navnet der jobbene fordeles. Valgfritt."
+    "skillsHint": "Vises under navnet der jobbene fordeles. Valgfritt.",
+    "saveFailed": "Kunne ikke lagre teknikeren. Prøv igjen.",
+    "deleteFailed": "Kunne ikke slette teknikeren. Prøv igjen."
   },
   "jobDetail": {
     "viewDetails": "Vis detaljer",
@@ -90,7 +97,9 @@
     "endTime": "Sluttid",
     "failedDuration": "Kunne ikke oppdatere varighet",
     "failedTimes": "Kunne ikke oppdatere tider",
-    "endBeforeStart": "Sluttid må være etter starttid"
+    "endBeforeStart": "Sluttid må være etter starttid",
+    "alsoOnJob": "Også på denne jobben",
+    "failedHelper": "Kunne ikke oppdatere hvem som er på jobben"
   },
   "presenter": {
     "title": "Arbeidstavle",
@@ -160,6 +169,9 @@
     "none": "Ingen ennå",
     "promised": "Lovet",
     "promiseLate": "Forsinket",
-    "promiseOverdue": "Lovet kunden tidligere enn nå"
+    "promiseOverdue": "Lovet kunden tidligere enn nå",
+    "alsoOnJob": "Også på jobben",
+    "with": "Med {name}",
+    "helping": "Hjelper til"
   }
 }

@@ -6,6 +6,11 @@ import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { SubscriptionSettings } from '@/features/subscription/Components/subscription-settings'
 import { countCustomersTowardLimit } from '@/lib/customer-limit'
 import { fetchBillingPrices, isTorqvoiceComBillingConfigured } from '@/lib/torqvoice-com'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('subscription')
+}
 
 export default async function SubscriptionPage({
   searchParams,

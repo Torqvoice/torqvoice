@@ -50,7 +50,11 @@
     "chooseAnother": "Başka bir dosya seç",
     "missingRequired": "Hâlâ gerekli: {fields}",
     "dryRunHint": "Deneme çalıştırması, hiçbir şey yazmadan her satırı mevcut verilerinizle karşılaştırır.",
-    "runDryRun": "Deneme çalıştırması yap"
+    "runDryRun": "Deneme çalıştırması yap",
+    "usedBy": "{column} tarafından kullanılıyor",
+    "searchFields": "Alan ara...",
+    "fieldFor": "{column} için alan",
+    "noJobText": "Başlık, açıklama veya notlarla eşlenmiş bir sütun yok, bu yüzden her iş geçici bir ad alacak. Dosyada varsa, yapılan işi anlatan sütunu eşleyin."
   },
   "options": {
     "dateFormat": "Tarih biçimi",
@@ -66,7 +70,9 @@
     "duplicates": "Bir satır mevcut bir kayıtla eşleştiğinde",
     "duplicatesUpdate": "Mevcut kaydı güncelle",
     "duplicatesSkip": "Satırı atla",
-    "duplicatesCreate": "Yine de yeni bir kayıt oluştur"
+    "duplicatesCreate": "Yine de yeni bir kayıt oluştur",
+    "dateReadsAs": "\"{value}\" şöyle okunuyor: {date}",
+    "dateUnreadable": "\"{value}\" tarih olarak okunamıyor"
   },
   "summary": {
     "create": "Oluşturulacak",
@@ -114,7 +120,11 @@
     "next": "Sonraki",
     "backToMapping": "Eşlemeye dön",
     "import": "{count, plural, one {# satırı} other {# satırı}} içe aktar",
-    "nothingWrittenYet": "Henüz hiçbir şey yazılmadı. İçe aktarma daha sonra Ayarlar → Veri bölümünden geri alınabilir."
+    "nothingWrittenYet": "Henüz hiçbir şey yazılmadı. İçe aktarma daha sonra Ayarlar → Veri bölümünden geri alınabilir.",
+    "issuesTitle": "Bazı satırlar neden içe aktarılamıyor",
+    "issueCount": "{count, plural, one {# satır} other {# satır}}, ilki {row}. satırda",
+    "issuesHint": "Genellikle bir sütun yanlış alanla eşlenmiştir ya da dosyadaki hücreler boştur. Değiştirmek için eşlemeye dönün veya geri kalanını içe aktarıp bunları sonra ekleyin.",
+    "showIssueRows": "Bu satırları göster"
   },
   "importing": {
     "title": "İçe aktarılıyor...",
@@ -212,7 +222,9 @@
     "invalid_date": "{field} \"{value}\" okunamadı ve dışarıda bırakıldı",
     "invalid_number": "{field} \"{value}\" bir sayı değil ve dışarıda bırakıldı",
     "duplicate_invoice_number": "{value} fatura numarası zaten mevcut",
-    "write_failed": "Yazılamadı: {value}"
+    "write_failed": "Yazılamadı: {value}",
+    "invalid_mileage": "{field} \"{value}\" gerçek bir okuma olamayacak kadar yüksek ve dışarıda bırakıldı",
+    "service_title_placeholder": "Başlık veya açıklama yok, bu yüzden adı \"{value}\" olacak"
   },
   "errors": {
     "uploadFailed": "Dosya okunamadı",
@@ -227,5 +239,8 @@
     "customers": "Müşterileri içe aktar",
     "vehicles": "Araçları içe aktar",
     "services": "Servis geçmişini içe aktar"
+  },
+  "placeholders": {
+    "serviceTitle": "İçe aktarılan servis"
   }
 }

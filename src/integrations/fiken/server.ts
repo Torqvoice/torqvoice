@@ -623,10 +623,16 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   // right is the bookkeeper's call, not a guess made here.
   const zeroVatType: ZeroVatType | null =
     settings.zeroVatType ?? (company.vatRegistered ? null : 'NONE')
-  if (!taxable && !zeroVatType) {
+  // The same goes for a line left out of the VAT on an invoice that carries
+  // it: that line is a sale without VAT too, and is booked under the same
+  // choice.
+  const hasUntaxedLine = inv.lines.some((line) => !line.taxable && toCents(line.total) !== 0)
+  if ((!taxable || hasUntaxedLine) && !zeroVatType) {
     await ctx.log(
       'warn',
-      `Invoice ${inv.invoiceNumber} was not sent: it carries no VAT. Choose the VAT type for invoices without VAT in the integration settings.`
+      taxable
+        ? `Invoice ${inv.invoiceNumber} was not sent: some of its lines carry no VAT. Choose the VAT type for invoices without VAT in the integration settings.`
+        : `Invoice ${inv.invoiceNumber} was not sent: it carries no VAT. Choose the VAT type for invoices without VAT in the integration settings.`
     )
     return {
       summary: `invoice ${inv.invoiceNumber} not sent, VAT type for tax-free sales not chosen`,

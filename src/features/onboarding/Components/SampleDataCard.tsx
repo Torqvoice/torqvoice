@@ -30,13 +30,16 @@ export function SampleDataCard() {
     })
     if (!ok) return
     setRemoving(true)
-    const result = await removeSampleData()
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is, and the button comes
+    // back to be pressed again.
+    const result = await removeSampleData().catch(() => null)
     setRemoving(false)
-    if (result.success) {
+    if (result?.success) {
       toast.success(t('removed'))
       router.refresh()
     } else {
-      toast.error(result.error || t('removeFailed'))
+      toast.error(result?.error || t('removeFailed'))
     }
   }
 

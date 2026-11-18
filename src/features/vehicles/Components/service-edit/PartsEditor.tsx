@@ -4,10 +4,11 @@ import { useRef, useCallback, useState, useEffect, useId, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { GripVertical, Package, Percent, Plus, ScanBarcode, Trash2 } from 'lucide-react'
+import { Package, Percent, Plus, ScanBarcode, Trash2 } from 'lucide-react'
 import { IconActionButton } from '@/components/icon-action-button'
 import { FieldRow } from '@/components/line-item-field'
 import { cn } from '@/lib/utils'
+import { LineDragHandle } from '@/components/line-drag-handle'
 import { AppCard } from '@/components/app-card'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { useFormatCurrency } from '@/components/currency-settings-context'
@@ -15,6 +16,9 @@ import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import { partRowHasContent } from '@/features/vehicles/Lib/validateServiceForm'
 import { emptyPart } from './form-types'
+import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
+import { useLineTax } from '@/features/settings/Components/LineTaxContext'
+import { partTaxable } from '@/lib/taxable-lines'
 import {
   DndContext,
   closestCenter,
@@ -71,6 +75,7 @@ function SortablePartRow({
   index,
   updatePart,
   onDelete,
+  onToggleTax,
   currencyCode,
   t,
   dragEnabled,
@@ -92,6 +97,8 @@ function SortablePartRow({
     options?: { commit?: boolean }
   ) => void
   onDelete: () => void
+  /** Flips whether the job's tax is charged on this line. */
+  onToggleTax: () => void
   currencyCode: string
   inventoryParts: PartSuggestion[]
   onSelectSuggestion: (index: number, part: PartSuggestion) => void
@@ -115,6 +122,7 @@ function SortablePartRow({
   // Same rule the save refuses on, so the red border and the refusal can
   // never disagree about which rows are a problem.
   const nameMissing = partRowHasContent(part) && !part.name.trim()
+  const { applies } = useLineTax()
 
   return (
     <div
@@ -128,13 +136,7 @@ function SortablePartRow({
         isDragging && dragEnabled && 'z-10 opacity-75'
       )}
     >
-      <button
-        type="button"
-        className="flex h-9 w-6 cursor-grab items-center justify-center text-muted-foreground hover:text-foreground active:cursor-grabbing"
-        {...(dragEnabled ? { ...attributes, ...listeners } : {})}
-      >
-        <GripVertical className="h-4 w-4" />
-      </button>
+      <LineDragHandle {...(dragEnabled ? { ...attributes, ...listeners } : {})} />
       <div className="flex min-w-0 flex-col gap-2 @2xl:contents">
         <FieldRow label={t('partNumber')}>
           <div className="flex w-full flex-col gap-1">
@@ -159,33 +161,36 @@ function SortablePartRow({
         {/* The name identifies the row, so it leads the stacked card even
             though the part number comes first in the desktop grid */}
         <FieldRow label={t('name')} className="order-first @2xl:order-none">
-          <div className="relative w-full">
-            <Textarea
-              placeholder={t('namePlaceholder')}
-              value={part.name}
-              onChange={(e) => updatePart(index, 'name', e.target.value)}
-              rows={1}
-              aria-invalid={nameMissing}
-              className={cn(
-                'min-h-9 w-full resize-none',
-                nameMissing && 'border-destructive focus-visible:ring-destructive'
-              )}
-            />
-            <PartNameSuggestions
-              query={part.name}
-              parts={inventoryParts}
-              disabled={!!part.inventoryPartId}
-              currencyCode={currencyCode}
-              defaultMarkupPercent={defaultMarkupPercent}
-              markupAppliesToInventory={markupAppliesToInventory}
-              onSelect={(picked) => onSelectSuggestion(index, picked)}
-            />
+          <div className="flex w-full items-start gap-2 self-start">
+            <div className="relative min-w-0 flex-1">
+              <Textarea
+                placeholder={t('namePlaceholder')}
+                value={part.name}
+                onChange={(e) => updatePart(index, 'name', e.target.value)}
+                rows={1}
+                aria-invalid={nameMissing}
+                className={cn(
+                  'min-h-9 w-full resize-none',
+                  nameMissing && 'border-destructive focus-visible:ring-destructive'
+                )}
+              />
+              <PartNameSuggestions
+                query={part.name}
+                parts={inventoryParts}
+                disabled={!!part.inventoryPartId}
+                currencyCode={currencyCode}
+                defaultMarkupPercent={defaultMarkupPercent}
+                markupAppliesToInventory={markupAppliesToInventory}
+                onSelect={(picked) => onSelectSuggestion(index, picked)}
+              />
+            </div>
+            <LineTaxToggle taxable={partTaxable(part, applies)} onToggle={onToggleTax} />
           </div>
         </FieldRow>
         <FieldRow label={t('qty')}>
           {/* The unit is a property of the stocked part, snapshotted at pick
               time, so it renders as a suffix rather than an editable field. */}
-          <div className="relative w-full">
+          <div className="relative w-full self-start">
             <Input
               type="number"
               min="0"
@@ -216,7 +221,7 @@ function SortablePartRow({
           />
         </FieldRow>
         <FieldRow label={t('markupPercent')} hint={t('markupPercentHint')}>
-          <div className="relative w-full">
+          <div className="relative w-full self-start">
             <Input
               type="number"
               min="0"
@@ -367,6 +372,20 @@ export function PartsEditor({
     setPartItems((prev) => [...prev, emptyPart(defaultMarkupPercent)])
   }, [setPartItems, defaultMarkupPercent])
 
+  // A line that has not chosen follows the workshop's rule for parts, so the
+  // flip starts from what the line is taken as now.
+  const { applies: taxApplies } = useLineTax()
+  const togglePartTax = useCallback(
+    (index: number) => {
+      setPartItems((prev) =>
+        prev.map((row, j) =>
+          j === index ? { ...row, taxable: !partTaxable(row, taxApplies) } : row
+        )
+      )
+    },
+    [setPartItems, taxApplies]
+  )
+
   const deletePart = useCallback(
     (index: number) => {
       keysRef.current = keysRef.current.filter((_, j) => j !== index)
@@ -453,6 +472,7 @@ export function PartsEditor({
                     index={i}
                     updatePart={updatePart}
                     onDelete={() => deletePart(i)}
+                    onToggleTax={() => togglePartTax(i)}
                     currencyCode={currencyCode}
                     t={t}
                     dragEnabled
@@ -474,6 +494,7 @@ export function PartsEditor({
                 index={i}
                 updatePart={updatePart}
                 onDelete={() => deletePart(i)}
+                onToggleTax={() => togglePartTax(i)}
                 currencyCode={currencyCode}
                 t={t}
                 dragEnabled={false}

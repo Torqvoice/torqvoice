@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
-import { Bell, ExternalLink, FileText, Send, Wrench } from 'lucide-react'
+import { Bell, CalendarPlus, ExternalLink, FileText, Send, UserX, Wrench } from 'lucide-react'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -26,9 +26,13 @@ import type { CalendarEvent } from '../Actions/calendarActions'
 export interface DayActions {
   /** `time` is HH:MM when the click landed on a time slot. */
   onNewWorkOrder: (dateStr: string, time?: string) => void
+  /** Book a car or customer in without opening a work order. */
+  onBookAppointment: (dateStr: string, time?: string) => void
   onNewReminder: (dateStr: string, time?: string) => void
   onNewQuote: (dateStr: string, time?: string) => void
   onScheduleMessage: (dateStr: string, time?: string) => void
+  /** Set a technician on leave from this day. Absent when this person may not. */
+  onTimeOff?: (dateStr: string) => void
 }
 
 /** How many of the day's events the right-click menu lists before it stops */
@@ -62,6 +66,7 @@ export function DayContextMenu({
   children: ReactNode
 }) {
   const t = useTranslations('calendar')
+  const tTimeOff = useTranslations('workshopCalendar.timeOff')
   const { formatDate } = useFormatDate()
   const { timeFormat } = useDateSettings()
   const { openPeek } = useEventPeek()
@@ -82,6 +87,14 @@ export function DayContextMenu({
               })
             : t('contextMenu.newWorkOrder')}
         </ContextMenuItem>
+        <ContextMenuItem onClick={() => actions.onBookAppointment(dateStr, time ?? undefined)}>
+          <CalendarPlus className="mr-2 h-4 w-4" />
+          {time
+            ? t('contextMenu.bookAppointmentAt', {
+                time: formatClock(timeToMinutes(time), timeFormat),
+              })
+            : t('contextMenu.bookAppointment')}
+        </ContextMenuItem>
         <ContextMenuItem onClick={() => actions.onNewReminder(dateStr, time ?? undefined)}>
           <Bell className="mr-2 h-4 w-4" />
           {t('contextMenu.newReminder')}
@@ -94,6 +107,15 @@ export function DayContextMenu({
           <Send className="mr-2 h-4 w-4" />
           {t('contextMenu.scheduleMessage')}
         </ContextMenuItem>
+        {actions.onTimeOff && (
+          <>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={() => actions.onTimeOff?.(dateStr)}>
+              <UserX className="mr-2 h-4 w-4" />
+              {tTimeOff('add')}
+            </ContextMenuItem>
+          </>
+        )}
         {events.length > 0 && (
           <>
             <ContextMenuSeparator />

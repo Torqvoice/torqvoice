@@ -85,6 +85,38 @@ describe('mapping suggestion', () => {
     expect(decimalSeparator).toBe(',')
   })
 
+  it('maps an Australian workshop export with times on its dates', () => {
+    const { mapping, dateFormat } = suggestMapping(
+      ['Job No', 'Job Date', 'Rego', 'Job Description', 'Kms', 'Total Inc GST', 'Total Ex GST'],
+      [
+        ['10442', '2014-12-10 0:0:0', '143CF2', 'Service\nReplace pads', '184500', '412.50', '375'],
+        ['10443', '2014-12-12 0:0:0', 'ZOV432', 'Rego check', '921300', '88.00', '80'],
+      ],
+      'services'
+    )
+    expect(mapping).toEqual({
+      '0': 'service.invoiceNumber',
+      '1': 'service.date',
+      '2': 'vehicle.licensePlate',
+      '3': 'service.description',
+      '4': 'service.mileage',
+      '5': 'service.total',
+    })
+    expect(dateFormat).toBe('YMD')
+  })
+
+  it('recognises a date column by its values when the time is not padded', () => {
+    const { mapping } = suggestMapping(
+      ['Column A', 'Column B'],
+      [
+        ['10/12/2014 0:0:0', 'Oil change'],
+        ['25/12/2014 9:5:0', 'Brakes'],
+      ],
+      'services'
+    )
+    expect(mapping['0']).toBe('service.date')
+  })
+
   it('falls back to the values when the header says nothing', () => {
     const { mapping, source } = suggestMapping(
       ['Column A', 'Column B', 'Column C', 'Column D'],

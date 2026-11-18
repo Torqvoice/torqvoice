@@ -1,4 +1,4 @@
-import type { IncomingMessage } from 'node:http'
+import type { NextRequest } from 'next/server'
 import type WebSocket from 'ws'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
@@ -51,7 +51,7 @@ notificationBus.on('notification', (event: { organizationId: string }) => {
   ring(event.organizationId, 'notification')
 })
 
-export function UPGRADE(ws: WebSocket, _server: unknown, request: IncomingMessage) {
+export function UPGRADE(ws: WebSocket, _server: unknown, request: NextRequest) {
   const client = ws as TechSocket
   client.isAlive = true
   ;(async () => {
@@ -59,8 +59,9 @@ export function UPGRADE(ws: WebSocket, _server: unknown, request: IncomingMessag
       // The token rides in the WebSocket subprotocol rather than the query
       // string. A URL is written to proxy and server logs in full, so a token
       // there ends up on disk in half a dozen places nobody is guarding.
-      const offered = request.headers['sec-websocket-protocol']
-      const encoded = (Array.isArray(offered) ? offered.join(',') : (offered ?? ''))
+      // next-ws hands over a NextRequest, so the headers are Fetch Headers.
+      const offered = request.headers.get('sec-websocket-protocol') ?? ''
+      const encoded = offered
         .split(',')
         .map((p) => p.trim())
         .find((p) => p.startsWith('bearer.'))
@@ -102,7 +103,7 @@ export function UPGRADE(ws: WebSocket, _server: unknown, request: IncomingMessag
       // Without this a technician who works for two workshops subscribed to
       // whichever membership came back first, so they were told about changes
       // in one shop while using the app against the other.
-      const wantedOrg = (Array.isArray(offered) ? offered.join(',') : (offered ?? ''))
+      const wantedOrg = offered
         .split(',')
         .map((p) => p.trim())
         .find((p) => p.startsWith('org.'))

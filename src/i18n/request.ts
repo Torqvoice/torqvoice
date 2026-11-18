@@ -7,11 +7,12 @@ import {
   resolveCustomerLocale,
 } from './locale-from-request'
 import { resolvePortalOrg } from '@/lib/portal-slug'
+import { requestPathname } from '@/lib/request-path'
 
 export default getRequestConfig(async () => {
   const headerStore = await headers()
   const acceptLanguage = headerStore.get('accept-language')
-  const pathname = headerStore.get('x-pathname')
+  const pathname = requestPathname(headerStore)
 
   let locale: Locale
 
@@ -70,6 +71,7 @@ export default getRequestConfig(async () => {
   const support = (await import(`../../messages/${locale}/support.json`)).default
   const inspections = (await import(`../../messages/${locale}/inspections.json`)).default
   const conditionMap = (await import(`../../messages/${locale}/conditionMap.json`)).default
+  const workshopCalendar = (await import(`../../messages/${locale}/workshopCalendar.json`)).default
   const onboarding = (await import(`../../messages/${locale}/onboarding.json`)).default
   const tireHotel = (await import(`../../messages/${locale}/tireHotel.json`)).default
   const search = (await import(`../../messages/${locale}/search.json`)).default
@@ -80,6 +82,7 @@ export default getRequestConfig(async () => {
   const timeTracking = (await import(`../../messages/${locale}/timeTracking.json`)).default
   const email = (await import(`../../messages/${locale}/email.json`)).default
   const realtime = (await import(`../../messages/${locale}/realtime.json`)).default
+  const faultCodes = (await import(`../../messages/${locale}/faultCodes.json`)).default
 
   return {
     locale,
@@ -119,6 +122,7 @@ export default getRequestConfig(async () => {
       support,
       inspections,
       conditionMap,
+      workshopCalendar,
       onboarding,
       tireHotel,
       search,
@@ -129,6 +133,7 @@ export default getRequestConfig(async () => {
       timeTracking,
       email,
       realtime,
+      faultCodes,
     },
   }
 })

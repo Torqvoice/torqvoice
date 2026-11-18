@@ -1,10 +1,19 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
-import { calculateTotals, discountAmountFor } from '@/lib/tax'
+import { calculateTotals, discountAmountFor, storedTaxableSubtotal } from '@/lib/tax'
+import {
+  TAX_APPLIES_TO_ALL,
+  type TaxApplies,
+  type TaxableShare,
+  taxableLaborTotal,
+  taxablePartsTotal,
+} from '@/lib/taxable-lines'
 import { normalizeWarranty, type WarrantyFields } from '@/lib/warranty'
 import { useDeferredCommit } from '@/hooks/use-deferred-commit'
+import { useSaveBeforeLeaving } from '@/hooks/use-save-before-leaving'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
 import { addedLaborLines } from '@/features/vehicles/Lib/laborLines'
+import { addedPartLines } from '@/features/vehicles/Lib/partLines'
 import {
   recalculateShopFeeLines,
   shopFeeLinesLast,
@@ -22,6 +31,7 @@ export function useServiceFormState({
   record,
   locked = false,
   shopFee = null,
+  taxApplies = TAX_APPLIES_TO_ALL,
 }: {
   vehicleId: string | null
   initialData: InitialData
@@ -32,6 +42,8 @@ export function useServiceFormState({
   shopFee?: ShopFeeConfig | null
   /** A locked invoice refuses saves, so it must not queue one. */
   locked?: boolean
+  /** What a line that has not chosen is taxed as: the workshop's rule for its kind. */
+  taxApplies?: TaxApplies
 }) {
   // Form state
   const [loading, setLoading] = useState(false)
@@ -61,6 +73,10 @@ export function useServiceFormState({
 
   // Autosave state
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  // The same, readable from callbacks and the link handler without waiting
+  // for a render.
+  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
+  hasUnsavedChangesRef.current = hasUnsavedChanges
   const [showSaved, setShowSaved] = useState(false)
   const formRef = useRef<HTMLFormElement>(null)
   const autosaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -77,10 +93,20 @@ export function useServiceFormState({
     savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
   }, [])
 
+  /**
+   * Counts edits. A save notes the count it started from and clears the
+   * unsaved flag only if nothing was edited while it ran (markSaved): a note
+   * typed during an autosave used to read as saved, and a link waiting on that
+   * autosave left without it.
+   */
+  const editRevisionRef = useRef(0)
+
   const markDirty = useCallback(() => {
     // A locked invoice cannot be saved, so nothing may queue an autosave that
     // the server will only refuse five seconds later.
     if (lockedRef.current) return
+    editRevisionRef.current += 1
+    hasUnsavedChangesRef.current = true
     setHasUnsavedChanges(true)
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
@@ -89,6 +115,24 @@ export function useServiceFormState({
       }
     }, 5000)
   }, [])
+
+  /**
+   * A save that started at `revision` went through. Edits made while it ran
+   * keep the page unsaved and queue a save of their own.
+   */
+  const markSaved = useCallback(
+    (revision: number) => {
+      if (editRevisionRef.current === revision) {
+        // The ref at once: a link waiting on this save reads it before the
+        // page has rendered again.
+        hasUnsavedChangesRef.current = false
+        setHasUnsavedChanges(false)
+        return
+      }
+      markDirty()
+    },
+    [markDirty]
+  )
 
   // When the lock engages mid-session — the invoice was just sent, or an
   // admin re-locked it — any save already queued can only be refused, and
@@ -100,8 +144,6 @@ export function useServiceFormState({
   // this a concern typed in this session went back without an id on the next
   // save, was taken for a new one, and the saved row was deleted with every
   // finding that pointed at it.
-  const hasUnsavedChangesRef = useRef(hasUnsavedChanges)
-  hasUnsavedChangesRef.current = hasUnsavedChanges
   const savedConcernsKey = JSON.stringify(initialData.concerns ?? [])
   useEffect(() => {
     const saved: ConcernRow[] = JSON.parse(savedConcernsKey)
@@ -152,6 +194,26 @@ export function useServiceFormState({
     if (added.length > 0) setLaborAddedElsewhere((current) => [...current, ...added])
   }, [savedLaborKey])
 
+  // Parts the same way: a technician scanning a part onto the job from the
+  // app. The list used to be read once when the page opened, so the part never
+  // showed, and the desk's next save, which replaces every part line, deleted
+  // it and put its stock back.
+  const [partsAddedElsewhere, setPartsAddedElsewhere] = useState<ServicePartInput[]>([])
+  const savedPartsKey = JSON.stringify(initialData.partItems ?? [])
+  const syncedPartsRef = useRef<ServicePartInput[]>(initialData.partItems ?? [])
+  useEffect(() => {
+    const saved: ServicePartInput[] = JSON.parse(savedPartsKey)
+    const previous = syncedPartsRef.current
+    syncedPartsRef.current = saved
+    if (!hasUnsavedChangesRef.current) {
+      setPartItems(saved)
+      setPartsAddedElsewhere([])
+      return
+    }
+    const added = addedPartLines(previous, saved)
+    if (added.length > 0) setPartsAddedElsewhere((current) => [...current, ...added])
+  }, [savedPartsKey])
+
   useEffect(() => {
     if (!locked) return
     if (autosaveTimer.current) {
@@ -164,6 +226,9 @@ export function useServiceFormState({
   useEffect(() => {
     if (!hasUnsavedChanges) return
     const handler = (e: BeforeUnloadEvent) => {
+      // Read live: "Leave without saving" drops the edits and goes in the
+      // same moment, before this listener is taken down.
+      if (!hasUnsavedChangesRef.current) return
       e.preventDefault()
     }
     window.addEventListener('beforeunload', handler)
@@ -184,49 +249,36 @@ export function useServiceFormState({
   }
 
   /**
-   * Leaving the page by a link saves first.
-   *
-   * The autosave waits five seconds after the last edit, and the beforeunload
-   * warning only covers leaving the site: a title retyped and then the back
-   * arrow pressed within those seconds went nowhere, and in-app navigation
-   * raised no warning about it. So a click on any link to another page of
-   * the app is held until the pending save has run, and the same click is
-   * then let through; a save the rules refuse has already said why, and the
-   * edit stays on screen to be fixed.
+   * Leaving the page by a link saves first (useSaveBeforeLeaving). A save the
+   * rules refuse, such as a required custom field left empty, holds the link
+   * and asks: stay and fix it, or leave without the unsaved changes.
    */
-  const saveNowRef = useRef(saveNow)
-  saveNowRef.current = saveNow
-  const releasedLink = useRef<HTMLAnchorElement | null>(null)
-  useEffect(() => {
-    if (!hasUnsavedChanges) return
-    const handler = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0) return
-      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
-      const anchor = (event.target as Element | null)?.closest?.('a[href]')
-      if (!(anchor instanceof HTMLAnchorElement)) return
-      // The click this handler released after saving: let it through.
-      if (releasedLink.current === anchor) {
-        releasedLink.current = null
-        return
+  /**
+   * Why the last save was refused, written by the save itself. The link
+   * guard reads it once the save has settled, and shows it in the dialog.
+   */
+  const lastSaveErrorRef = useRef<string | null>(null)
+  /**
+   * True while a link waits on its save. A refusal then goes into the leave
+   * dialog rather than a toast or an error box on top of it.
+   */
+  const leavingRef = useRef(false)
+  const { blockedLeave, stayOnPage, leaveWithoutSaving } = useSaveBeforeLeaving({
+    active: hasUnsavedChanges,
+    isDirty: () => hasUnsavedChangesRef.current,
+    isSaving: () => isSavingRef.current,
+    save: saveNow,
+    lastErrorRef: lastSaveErrorRef,
+    leavingRef,
+    discard: () => {
+      if (autosaveTimer.current) {
+        clearTimeout(autosaveTimer.current)
+        autosaveTimer.current = null
       }
-      if (anchor.target && anchor.target !== '_self') return
-      if (anchor.hasAttribute('download')) return
-      const destination = new URL(anchor.href, window.location.href)
-      if (destination.origin !== window.location.origin) return
-      const here = `${window.location.pathname}${window.location.search}`
-      if (`${destination.pathname}${destination.search}` === here) return
-
-      event.preventDefault()
-      event.stopPropagation()
-      void saveNowRef.current().then(() => {
-        if (hasUnsavedChangesRef.current) return
-        releasedLink.current = anchor
-        anchor.click()
-      })
-    }
-    document.addEventListener('click', handler, true)
-    return () => document.removeEventListener('click', handler, true)
-  }, [hasUnsavedChanges])
+      hasUnsavedChangesRef.current = false
+      setHasUnsavedChanges(false)
+    },
+  })
 
   // Custom fields save callback ref
   const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
@@ -250,8 +302,19 @@ export function useServiceFormState({
     [markDirty]
   )
 
-  // Computed totals
-  const partsSubtotal = partItems.reduce((sum, p) => sum + p.total, 0)
+  /**
+   * What a save has to write: the lists on screen plus anything added
+   * elsewhere that has not been shown yet. A save replaces every part and
+   * labour line of the job, so a line left out of these is a line deleted.
+   * The shop fee goes last, under the work it is charged on.
+   */
+  const partItemsForSave = [...partItems, ...partsAddedElsewhere]
+  const laborItemsForSave = shopFeeLinesLast([...laborItems, ...laborAddedElsewhere])
+
+  // Computed totals. They count the lines waiting behind the banner too: those
+  // are on the job already, and a save sends them, so the money it sends has
+  // to include them or the invoice is saved short.
+  const partsSubtotal = partItemsForSave.reduce((sum, p) => sum + p.total, 0)
 
   // A percentage shop fee follows the lines it is a percentage of. Returns the
   // same array when the fee is already right, so this settles after one pass.
@@ -268,24 +331,40 @@ export function useServiceFormState({
 
   // Internal-only: what the parts cost the workshop before markup. Shown in
   // the totals card for the mechanic, never on the PDF or share views.
-  const partsCostSubtotal = partItems.reduce(
+  const partsCostSubtotal = partItemsForSave.reduce(
     (sum, p) => sum + (Number(p.unitCost) || 0) * (Number(p.quantity) || 0),
     0
   )
-  const laborSubtotal = laborItems.reduce((sum, l) => sum + l.total, 0)
+  const laborSubtotal = laborItemsForSave.reduce((sum, l) => sum + l.total, 0)
   const subtotal = partsSubtotal + laborSubtotal
   const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
+  // The tax is charged on the taxable lines alone. A line says whether it
+  // is taxed, and one that has not been asked follows the workshop's rule
+  // for its kind; the server settles it the same way when the job is saved.
+  const taxableParts = taxablePartsTotal(partItemsForSave, taxApplies)
+  const taxableLabor = taxableLaborTotal(laborItemsForSave, taxApplies)
+  const taxableSubtotal = storedTaxableSubtotal(subtotal, taxableParts + taxableLabor)
   const {
     taxAmount,
     totalAmount,
     components: taxComponents,
+    taxableAmount,
   } = calculateTotals({
     subtotal,
     discountAmount,
     taxRate,
     taxInclusive,
     components: taxComponentDefinitions,
+    taxableSubtotal,
   })
+  /**
+   * How much of each figure is taxed, for the totals card; null while every
+   * line is taxed, which leaves the card showing what it always has.
+   */
+  const taxableShare: TaxableShare | null =
+    taxableSubtotal === null
+      ? null
+      : { parts: taxableParts, labor: taxableLabor, subtotal: taxableSubtotal, taxableAmount }
 
   const [localManuallyPaid, setLocalManuallyPaid] = useState(record.manuallyPaid)
   const displayTotal = totalAmount > 0 ? totalAmount : record.cost
@@ -400,15 +479,30 @@ export function useServiceFormState({
     setLaborAddedElsewhere([])
   }, [laborAddedElsewhere, dirtySetLaborItems])
 
-  const clearLaborAddedElsewhere = useCallback(() => setLaborAddedElsewhere([]), [])
-
   /**
-   * What a save has to write: the list on screen plus anything added
-   * elsewhere that has not been shown yet. A save replaces every labour line
-   * of the job, so a line left out of this is a line deleted. The shop fee
-   * goes last, under the work it is charged on.
+   * After a save has written them: they are ordinary saved lines now, so they
+   * go into the list. Dropping them instead lost them, because the re-read
+   * that follows a save can read exactly as it did before and so never brings
+   * them back, and the next save then deleted them. Only the lines that save
+   * sent are moved; one that arrived while it ran keeps waiting.
    */
-  const laborItemsForSave = shopFeeLinesLast([...laborItems, ...laborAddedElsewhere])
+  const commitLaborAddedElsewhere = useCallback(() => {
+    if (laborAddedElsewhere.length === 0) return
+    setLaborItems((prev) => shopFeeLinesLast([...prev, ...laborAddedElsewhere]))
+    setLaborAddedElsewhere((current) => current.slice(laborAddedElsewhere.length))
+  }, [laborAddedElsewhere])
+
+  const applyPartsAddedElsewhere = useCallback(() => {
+    if (partsAddedElsewhere.length === 0) return
+    dirtySetPartItems((prev) => [...prev, ...partsAddedElsewhere])
+    setPartsAddedElsewhere([])
+  }, [partsAddedElsewhere, dirtySetPartItems])
+
+  const commitPartsAddedElsewhere = useCallback(() => {
+    if (partsAddedElsewhere.length === 0) return
+    setPartItems((prev) => [...prev, ...partsAddedElsewhere])
+    setPartsAddedElsewhere((current) => current.slice(partsAddedElsewhere.length))
+  }, [partsAddedElsewhere])
 
   const dirtySetDiscountType = useCallback(
     (v: string) => {
@@ -461,6 +555,12 @@ export function useServiceFormState({
   )
 
   return {
+    /** A link the save refused to let through, waiting on the person: stay or leave. */
+    blockedLeave,
+    stayOnPage,
+    leaveWithoutSaving,
+    lastSaveErrorRef,
+    leavingRef,
     // State
     loading,
     setLoading,
@@ -492,7 +592,15 @@ export function useServiceFormState({
     isSavingRef,
     flashSaved,
     markDirty,
+    markSaved,
+    editRevisionRef,
     saveNow,
+    /**
+     * Whether edits are still unsaved, read at the moment of the call. For
+     * code that awaits saveNow and has to know whether the save went
+     * through: a save the rules refuse resolves too, and leaves this true.
+     */
+    isDirty: () => hasUnsavedChangesRef.current,
     // Notes
     notesRef,
     handleNotesChange,
@@ -507,6 +615,7 @@ export function useServiceFormState({
     discountAmount,
     taxAmount,
     totalAmount,
+    taxableShare,
     displayTotal,
     totalPaid,
     balanceDue,
@@ -525,8 +634,13 @@ export function useServiceFormState({
     applyLaborAddedElsewhere,
     /** The list a save must write: what is on screen, plus those. */
     laborItemsForSave,
-    /** After a save has written them: they are ordinary saved lines now. */
-    clearLaborAddedElsewhere,
+    /** After a save has written them: they join the list as ordinary saved lines. */
+    commitLaborAddedElsewhere,
+    /** The same four for parts. */
+    partsAddedElsewhere,
+    applyPartsAddedElsewhere,
+    partItemsForSave,
+    commitPartsAddedElsewhere,
     dirtySetDiscountType,
     dirtySetDiscountValue,
     dirtySetTaxRate,

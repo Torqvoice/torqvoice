@@ -18,8 +18,9 @@
  *   be, which is what a plate, a VIN or a part number read off a screen across
  *   a workshop needs. Latin only: Russian falls back to the system's face.
  *
- * A new set is a line here, a block in globals.css, its fonts in the root
- * layout, its id in that layout's pre-paint script, and its name in
+ * A new set is a line here, a block in globals.css, its Fontsource packages
+ * imported in the root layout, its variables (and fallback faces) in
+ * fonts.css, its id in that layout's pre-paint script, and its name in
  * settings.appearance.fonts.
  */
 

@@ -18,6 +18,12 @@ interface QuoteNotesEditorProps {
   onDescriptionChange: (v: string) => void
   notes: string
   onNotesChange: (v: string) => void
+  /**
+   * A locked quote refuses edits. The fieldset around this turns off inputs
+   * and buttons but not a contenteditable, so the editor has to be told, or
+   * text typed into a locked quote looks accepted and is never saved.
+   */
+  locked?: boolean
   t: (key: string) => string
 }
 
@@ -28,11 +34,15 @@ export const QuoteNotesEditor = memo(function QuoteNotesEditor({
   onDescriptionChange,
   notes,
   onNotesChange,
+  locked = false,
   t,
 }: QuoteNotesEditorProps) {
   return (
-    <div className="rounded-lg border p-3 space-y-3">
-      <div className="flex items-center justify-between">
+    // The panel is the field: its header, then the editor to the panel's
+    // edges, then one line saying who reads the note. It used to be a frame
+    // around a second, smaller bordered box.
+    <div className="overflow-hidden rounded-lg border">
+      <div className="flex items-center justify-between px-3 py-2">
         <h3 className="flex items-center gap-2 text-sm font-semibold">
           <FileText className="h-3.5 w-3.5" />
           {t('notes.title')}
@@ -50,26 +60,31 @@ export const QuoteNotesEditor = memo(function QuoteNotesEditor({
           </SelectContent>
         </Select>
       </div>
-      {noteType === 'public' && (
-        <div className="space-y-1">
+      <div className="border-t">
+        {noteType === 'public' && (
           <RichTextEditor
+            variant="flush"
+            gutter="panel"
+            editable={!locked}
             content={description}
             onChange={onDescriptionChange}
             placeholder={t('notes.publicPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">{t('notes.publicHelper')}</p>
-        </div>
-      )}
-      {noteType === 'internal' && (
-        <div className="space-y-1">
+        )}
+        {noteType === 'internal' && (
           <RichTextEditor
+            variant="flush"
+            gutter="panel"
+            editable={!locked}
             content={notes}
             onChange={onNotesChange}
             placeholder={t('notes.internalPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">{t('notes.internalHelper')}</p>
-        </div>
-      )}
+        )}
+      </div>
+      <p className="border-t bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+        {noteType === 'public' ? t('notes.publicHelper') : t('notes.internalHelper')}
+      </p>
     </div>
   )
 })

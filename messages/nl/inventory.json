@@ -14,7 +14,8 @@
     "supplier": "Leverancier",
     "location": "Locatie",
     "low": "Laag",
-    "barcode": "Barcode"
+    "barcode": "Barcode",
+    "notTracked": "Niet bijgehouden"
   },
   "empty": {
     "noMatch": "Geen onderdelen gevonden voor uw zoekopdracht.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Opslag toepassen op alle onderdelen",
-    "multiplierLabel": "Opslagfactor",
-    "description": "De verkoopprijs wordt ingesteld op kostprijs x {multiplier} voor alle {count} onderdelen.",
-    "percentage": "({percent}% opslag)",
+    "intro": "Stelt de verkoopprijs van onderdelen in op de kostprijs plus een percentage.",
+    "percentLabel": "Opslag %",
+    "percentHint": "Vul 30 in om 30% bovenop de kostprijs te rekenen.",
+    "percentInvalid": "De opslag moet hoger zijn dan -100%.",
+    "exampleTitle": "Voorbeeld",
+    "exampleMarkup": "Opslag {percent}%",
     "cancel": "Annuleren",
     "apply": "Toepassen",
     "overrideExisting": "Bestaande verkoopprijzen overschrijven",
     "overrideExistingHint": "Alle onderdelen worden bijgewerkt, inclusief die met een bestaande verkoopprijs.",
-    "skipExistingHint": "Alleen onderdelen zonder verkoopprijs worden bijgewerkt."
+    "skipExistingHint": "Alleen onderdelen zonder verkoopprijs worden bijgewerkt.",
+    "newPartsNote": "Bij nieuwe onderdelen wordt {sellPrice} met deze opslag ingevuld zodra {unitCost} wordt ingevuld.",
+    "settingsNote": "{setting} onder {settings} > {workshop} is een aparte instelling, die geldt wanneer onderdelen op een werkorder komen."
   },
   "errors": {
-    "multiplierPositive": "De vermenigvuldiger moet groter zijn dan 0",
     "deleteFailed": "Kan onderdeel niet verwijderen",
     "applyFailed": "Kan opslag niet toepassen",
     "saveFailed": "Kan onderdeel niet opslaan",
@@ -70,16 +75,19 @@
     "currentStock": "Huidige voorraad: {quantity}",
     "addedStock": "{amount} toegevoegd aan voorraad",
     "customAmount": "Aantal...",
-    "scanParts": "Onderdelen scannen"
+    "scanParts": "Onderdelen scannen",
+    "notTracked": "Voorraad wordt niet bijgehouden voor dit onderdeel"
   },
   "form": {
     "editPart": "Onderdeel bewerken",
     "addNewPart": "Nieuw onderdeel toevoegen",
     "supplierLink": "Leverancierslink",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "De leverancierslink is geen webadres. Verbeter hem, of maak het veld leeg om zonder link op te slaan.",
     "fetch": "Ophalen",
-    "fetchFailed": "Ophalen mislukt",
-    "fetchError": "Kan metadata niet ophalen van URL",
+    "fetchBlocked": "De website van deze leverancier blokkeert het automatisch ophalen van gegevens. Vul de velden zelf in. Het onderdeel en de link kun je gewoon opslaan.",
+    "fetchTimedOut": "De website van de leverancier reageerde niet op tijd. Probeer het opnieuw of vul de velden zelf in. Het onderdeel en de link kun je gewoon opslaan.",
+    "fetchUnreadable": "De gegevens van het onderdeel konden niet via deze link worden gelezen. Vul de velden zelf in. Het onderdeel en de link kun je gewoon opslaan.",
     "image": "Afbeelding",
     "dropOrClick": "Sleep afbeelding of klik",
     "replace": "Vervangen",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperiaal",
     "unitCost": "Kostprijs",
     "sellPrice": "Verkoopprijs",
+    "sellPriceMarkupHint": "{sellPrice} wordt ingevuld als {unitCost} + {percent}%. Vul een prijs in om een eigen prijs te gebruiken. Wijzig het percentage met {applyMarkup} op de pagina {inventory}.",
     "supplier": "Leverancier",
     "supplierPlaceholder": "AutoParts B.V.",
     "supplierPhone": "Telefoon leverancier",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Beschrijving van het onderdeel...",
     "cancel": "Annuleren",
     "saveChanges": "Wijzigingen opslaan",
-    "addPart": "Onderdeel toevoegen"
+    "addPart": "Onderdeel toevoegen",
+    "tags": "Tags",
+    "tagsPlaceholder": "Merken, modellen of iets anders om het op te vinden",
+    "tagsHint": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het voertuig bovenaan.",
+    "tagsHintMarine": "Druk na elke tag op Enter of een komma. Bij een werkorder staan onderdelen met het merk of model van het vaartuig bovenaan.",
+    "removeTag": "{tag} verwijderen",
+    "tagTooLong": "Een tag mag maximaal {max} tekens lang zijn. Maak hem korter voordat je opslaat.",
+    "trackStock": "Voorraad bijhouden",
+    "trackStockHint": "Zet uit voor toeslagen en verbruiksmaterialen die je rekent maar nooit telt.",
+    "trackStockOffNote": "Bij opslaan gaat de hoeveelheid naar nul en wordt dit genoteerd in de voorraadgeschiedenis. Klussen wijzigen deze niet meer."
   },
   "openMenu": "Menu openen",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Werkorder verwijderd",
       "quote_conversion": "Offerte omgezet",
       "manual_adjustment": "Handmatige aanpassing",
-      "bulk_markup": "Bulkopslag"
+      "bulk_markup": "Bulkopslag",
+      "stock_tracking_off": "Voorraad bijhouden uitgezet"
     },
     "backToInventory": "Voorraad",
     "reason": "Reden",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} in voorraad",
     "outOfStock": "Niet op voorraad",
     "onBackorder": "In nabestelling ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Alle tags",
+    "filterBy": "Onderdelen met tag {tag} tonen",
+    "more": "+{count} meer"
   }
 }

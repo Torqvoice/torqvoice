@@ -61,7 +61,7 @@ beforeEach(() => {
 
 describe('payment catalog', () => {
   it('declares a vendor for every id the old enabled list could hold, in the order the buttons had', () => {
-    expect(PAYMENT_VENDORS.map((v) => v.id)).toEqual(['stripe', 'vipps', 'paypal'])
+    expect(PAYMENT_VENDORS.map((v) => v.id)).toEqual(['stripe', 'vipps', 'paypal', 'paystack'])
   })
 
   it('names every old row it needs to read, once', () => {
@@ -84,6 +84,10 @@ describe('payment catalog', () => {
     expect(paymentWebhook('paypal', 'https://shop.example')?.url).toBe(
       'https://shop.example/api/webhooks/paypal'
     )
+    expect(paymentWebhook('paystack', 'https://shop.example')).toEqual({
+      url: 'https://shop.example/api/webhooks/paystack',
+      note: 'inboundHintPaystack',
+    })
     expect(paymentWebhook('zoom', 'https://shop.example')).toBeNull()
     expect(paymentWebhook('stripe', '')).toBeNull()
   })
@@ -316,7 +320,7 @@ describe('plan gates', () => {
     const { PLAN_FEATURES } = await import('@/lib/features')
     const { getManifest } = await import('@/integrations/registry')
 
-    for (const id of ['stripe', 'vipps', 'paypal']) {
+    for (const id of ['stripe', 'vipps', 'paypal', 'paystack']) {
       const manifest = getManifest(id)
       expect(manifest?.plan).toBe('payments')
       expect(manifest?.category).toBe('payments')

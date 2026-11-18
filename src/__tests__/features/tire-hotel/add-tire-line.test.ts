@@ -44,7 +44,13 @@ function makeTx(balance = 12) {
   })
 
   // A stand-in for Prisma's client, narrowed at the call site.
-  const tx = { servicePart: { create }, stockMovement: { createMany }, $queryRaw }
+  const tx = {
+    servicePart: { create },
+    stockMovement: { createMany },
+    $queryRaw,
+    // The workshop's tax rule for parts is read before the line is written.
+    appSetting: { findMany: vi.fn().mockResolvedValue([]) },
+  }
   return { tx, create, createMany, updates }
 }
 

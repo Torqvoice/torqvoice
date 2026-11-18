@@ -1,12 +1,14 @@
 'use client'
 
 import { useRef, useState } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { UnitCombobox } from '@/features/inventory/Components/UnitCombobox'
 import { AppCard } from '@/components/app-card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Switch } from '@/components/ui/switch'
@@ -20,18 +22,10 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { toast } from 'sonner'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
+import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
+import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { assignTechToUnassignedWorkOrders } from '@/features/workboard/Actions/technicianActions'
 import {
@@ -94,18 +88,19 @@ export function WorkshopSettings({
   const [creatingTech, setCreatingTech] = useState(false)
   const [showNewInput, setShowNewInput] = useState(false)
   const [newTechName, setNewTechName] = useState('')
-  const [showAssignDialog, setShowAssignDialog] = useState(false)
-  const [pendingTechId, setPendingTechId] = useState<string | null>(null)
-  const [assigning, setAssigning] = useState(false)
+  const confirm = useConfirm()
   const [defaultLaborRate, setDefaultLaborRate] = useState(
     settings[SETTING_KEYS.DEFAULT_LABOR_RATE] || ''
   )
   const [unitSystem, setUnitSystem] = useState(settings[SETTING_KEYS.UNIT_SYSTEM] || 'imperial')
+  const [measureSystem, setMeasureSystem] = useState<'metric' | 'imperial'>(
+    measureSystemIn(settings)
+  )
+  const [engineSizeUnit, setEngineSizeUnit] = useState<EngineSizeUnit>(
+    engineSizeUnitOf(settings[SETTING_KEYS.ENGINE_SIZE_UNIT])
+  )
   const [defaultUnit, setDefaultUnit] = useState(
     settings[SETTING_KEYS.INVENTORY_DEFAULT_UNIT] || ''
-  )
-  const [workDayStart, setWorkDayStart] = useState(
-    settings[SETTING_KEYS.WORKBOARD_WORK_DAY_START] || '07:00'
   )
   // Unset means the default; a template saved empty means the plain name,
   // so the two are kept apart here rather than folded into one falsy value.
@@ -132,9 +127,6 @@ export function WorkshopSettings({
   }
   const titlePreview = resolveWorkOrderTitle(titleTemplate, SAMPLE_WORK_ORDER_TITLE_VALUES)
   const unknownTitleTags = unknownTokensIn(titleTemplate)
-  const [workDayEnd, setWorkDayEnd] = useState(
-    settings[SETTING_KEYS.WORKBOARD_WORK_DAY_END] || '15:00'
-  )
   const [defaultMarkupPercent, setDefaultMarkupPercent] = useState(
     settings[SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT] || '0'
   )
@@ -150,19 +142,22 @@ export function WorkshopSettings({
   const handleTechSelect = (techId: string) => {
     setDefaultTechnicianId(techId)
     setTechOpen(false)
-    if (techId) {
-      setPendingTechId(techId)
-      setShowAssignDialog(true)
-    }
+    if (techId) handleAssignUnassigned(techId)
   }
 
-  const handleAssignUnassigned = async () => {
-    if (!pendingTechId) return
-    setAssigning(true)
-    const result = await assignTechToUnassignedWorkOrders(pendingTechId)
-    setAssigning(false)
-    setShowAssignDialog(false)
-    setPendingTechId(null)
+  const handleAssignUnassigned = async (techId: string) => {
+    const ok = await confirm({
+      title: t('workshop.assignDialogTitle'),
+      description: t('workshop.assignDialogDescription', {
+        name: technicians.find((tech) => tech.id === techId)?.name || '',
+      }),
+      confirmLabel: t('workshop.assignDialogConfirm'),
+      cancelLabel: t('workshop.assignDialogSkip'),
+      // It rewrites every unassigned work order, so Enter must not do it.
+      defaultFocus: 'cancel',
+    })
+    if (!ok) return
+    const result = await assignTechToUnassignedWorkOrders(techId)
     if (result.success && result.data) {
       toast.success(t('workshop.assignedUnassigned', { count: result.data.updated }))
     } else {
@@ -198,9 +193,9 @@ export function WorkshopSettings({
       [SETTING_KEYS.DEFAULT_TECHNICIAN]: selectedTechName,
       [SETTING_KEYS.DEFAULT_LABOR_RATE]: defaultLaborRate,
       [SETTING_KEYS.UNIT_SYSTEM]: unitSystem,
+      [SETTING_KEYS.MEASURE_SYSTEM]: measureSystem,
+      [SETTING_KEYS.ENGINE_SIZE_UNIT]: engineSizeUnit,
       [SETTING_KEYS.INVENTORY_DEFAULT_UNIT]: defaultUnit.trim(),
-      [SETTING_KEYS.WORKBOARD_WORK_DAY_START]: workDayStart,
-      [SETTING_KEYS.WORKBOARD_WORK_DAY_END]: workDayEnd,
       [SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE]: titleTemplate.trim(),
       [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
       [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
@@ -215,12 +210,19 @@ export function WorkshopSettings({
     <div className="space-y-6">
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
-        <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
-        <AppCard icon={Wrench} title={t('workshop.title')} contentClassName="space-y-6">
+        <div id="workshop-service-type">
+          <ServiceTypeSelector serviceType={serviceType} onServiceTypeChange={setServiceType} />
+        </div>
+        <AppCard
+          id="workshop-defaults"
+          icon={Wrench}
+          title={t('workshop.title')}
+          contentClassName="space-y-6"
+        >
           <p className="text-sm text-muted-foreground">{t('workshop.description')}</p>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div id="workshop-default-technician" className="space-y-2">
               <Label>{t('workshop.defaultTechnician')}</Label>
               <Popover open={techOpen} onOpenChange={setTechOpen} modal={true}>
                 <PopoverTrigger asChild>
@@ -355,33 +357,21 @@ export function WorkshopSettings({
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="workDayStart">{t('workshop.workDayStart')}</Label>
-              <Input
-                id="workDayStart"
-                type="time"
-                value={workDayStart}
-                onChange={(e) => setWorkDayStart(e.target.value)}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="workDayEnd">{t('workshop.workDayEnd')}</Label>
-              <Input
-                id="workDayEnd"
-                type="time"
-                value={workDayEnd}
-                onChange={(e) => setWorkDayEnd(e.target.value)}
-              />
-            </div>
-          </div>
+          {/* Hours are set per weekday on their own page now, beside the
+              holidays and time off that shorten them. */}
+          <p className="text-sm text-muted-foreground">
+            {t('workshop.openingHoursMoved')}{' '}
+            <Link href="/settings/opening-hours" className="underline underline-offset-4">
+              {t('workshop.openingHoursLink')}
+            </Link>
+          </p>
 
           <Separator />
 
           {/* What a job is called before anybody types a title. Resolved on
               the server when the draft is made, so the preview here uses
               sample values; the rules are in workOrderTitle.ts. */}
-          <div className="space-y-4">
+          <div id="workshop-title-template" className="space-y-4">
             <div className="flex flex-row items-center gap-3">
               <Tag className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-semibold">{t('workshop.titleTemplateTitle')}</h3>
@@ -433,7 +423,7 @@ export function WorkshopSettings({
           {/* Pricing, not paperwork: the markup decides what a part costs the
               customer, which is settled here on the job, long before an
               invoice exists. */}
-          <div className="space-y-4">
+          <div id="workshop-parts-markup" className="space-y-4">
             <div className="flex flex-row items-center gap-3">
               <Percent className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-semibold">{t('workshop.partsMarkupTitle')}</h3>
@@ -504,51 +494,64 @@ export function WorkshopSettings({
 
           <Separator />
 
-          <div className="space-y-4">
+          <div id="workshop-units" className="space-y-4">
             <div className="flex flex-row items-center gap-3">
               <Ruler className="h-5 w-5 text-muted-foreground" />
               <h3 className="text-lg font-semibold">{t('workshop.unitsTitle')}</h3>
             </div>
             <p className="text-sm text-muted-foreground">{t('workshop.unitsDescription')}</p>
 
-            <div className="space-y-2">
-              <Label htmlFor="unitSystem">{t('workshop.unitSystem')}</Label>
-              <Select value={unitSystem} onValueChange={setUnitSystem}>
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="metric">{t('workshop.metric')}</SelectItem>
-                  <SelectItem value="imperial">{t('workshop.imperial')}</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div id="workshop-unit-system" className="space-y-2">
+                <Label htmlFor="unitSystem">{t('workshop.distanceLabel')}</Label>
+                <Select value={unitSystem} onValueChange={setUnitSystem}>
+                  <SelectTrigger id="unitSystem" className="w-full sm:w-56">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">{t('workshop.kilometers')}</SelectItem>
+                    <SelectItem value="imperial">{t('workshop.miles')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="measureSystem">{t('workshop.measureSystem')}</Label>
+                <Select
+                  value={measureSystem}
+                  onValueChange={(value) =>
+                    setMeasureSystem(value === 'metric' ? 'metric' : 'imperial')
+                  }
+                >
+                  <SelectTrigger id="measureSystem" className="w-full sm:w-56">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="metric">{t('workshop.measureMetric')}</SelectItem>
+                    <SelectItem value="imperial">{t('workshop.measureImperial')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div className="rounded-lg border p-3 text-sm text-muted-foreground">
-              {unitSystem === 'metric' ? (
-                <div className="space-y-1">
-                  <p>
-                    {t('workshop.distanceLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.kilometers')}</span>
-                  </p>
-                  <p>
-                    {t('workshop.volumeLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.liters')}</span>
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-1">
-                  <p>
-                    {t('workshop.distanceLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.miles')}</span>
-                  </p>
-                  <p>
-                    {t('workshop.volumeLabel')}:{' '}
-                    <span className="font-medium text-foreground">{t('workshop.gallons')}</span>
-                  </p>
-                </div>
-              )}
-            </div>
+            {/* A marine workshop's engine field holds a model and power, not a displacement. */}
+            {serviceType !== 'marine' && (
+              <div className="space-y-2">
+                <Label htmlFor="engineSizeUnit">{t('workshop.engineSizeUnit')}</Label>
+                <Select
+                  value={engineSizeUnit}
+                  onValueChange={(value) => setEngineSizeUnit(engineSizeUnitOf(value))}
+                >
+                  <SelectTrigger id="engineSizeUnit" className="w-48">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="litres">{t('workshop.engineSizeLitres')}</SelectItem>
+                    <SelectItem value="cc">{t('workshop.engineSizeCc')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground">{t('workshop.engineSizeUnitHint')}</p>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="defaultUnit">{t('workshop.defaultStockUnit')}</Label>
@@ -559,7 +562,7 @@ export function WorkshopSettings({
                 className="w-48"
                 value={defaultUnit}
                 onChange={setDefaultUnit}
-                unitSystem={unitSystem}
+                unitSystem={measureSystem}
               />
               <p className="text-sm text-muted-foreground">{t('workshop.defaultStockUnitHint')}</p>
             </div>
@@ -580,32 +583,6 @@ export function WorkshopSettings({
           </SaveButton>
         </AppCard>
       </ReadOnlyWrapper>
-
-      <AlertDialog
-        open={showAssignDialog}
-        onOpenChange={(open) => {
-          if (!open) setPendingTechId(null)
-          setShowAssignDialog(open)
-        }}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('workshop.assignDialogTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('workshop.assignDialogDescription', {
-                name: technicians.find((tech) => tech.id === pendingTechId)?.name || '',
-              })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('workshop.assignDialogSkip')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleAssignUnassigned} disabled={assigning}>
-              {assigning && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('workshop.assignDialogConfirm')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

@@ -13,6 +13,8 @@
     "availableTitle": "Tilgjengelig",
     "availableDescription": "Tjenester du kan legge til. Hver settes opp én gang og kjører i bakgrunnen.",
     "allConnected": "Alle tilgjengelige tjenester er tilkoblet.",
+    "cloudOnly": "Kun i skyen",
+    "cloudOnlyHint": "Tilgjengelig i Torqvoice Cloud",
     "searchPlaceholder": "Søk i integrasjoner",
     "noMatches": "Ingenting passer med «{query}».",
     "readMore": "Les mer",
@@ -30,6 +32,7 @@
     "automation": "Automatisering",
     "storage": "Filer",
     "registry": "Kjøretøyregister",
+    "repair": "Verkstedsdata",
     "other": "Annet",
     "ai": "KI"
   },
@@ -70,6 +73,16 @@
       "invoices": "Fakturaer til regnskapet",
       "customers": "Kunder til regnskapet",
       "payments": "Betalinger begge veier"
+    },
+    "backup": {
+      "target": "Mål for sikkerhetskopier"
+    },
+    "repair": {
+      "labor": "Normtider på arbeidsordrer og tilbud",
+      "fluids": "Væsketyper og mengder"
+    },
+    "diagnostics": {
+      "codes": "Betydning av feilkoder"
     }
   },
   "statuses": {
@@ -138,13 +151,18 @@
     "inboundUrl": "Webhook-URL for innkommende meldinger",
     "inboundHintSecret": "Lim inn denne URL-en i leverandørens innstillinger for innkommende meldinger. Den inneholder en hemmelighet som identifiserer verkstedet ditt, så hold den for deg selv.",
     "inboundHintMeta": "Lim inn denne URL-en som callback-URL i Meta-appen din, sammen med verifiseringstokenet du la inn ovenfor, og abonner på messages.",
-    "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet under Developers, Webhooks, abonnert på checkout.session.completed. Lim deretter signeringshemmeligheten Stripe viser inn i feltet for webhook-hemmelighet her, slik at varslene kan verifiseres.",
+    "inboundHintStripe": "Legg inn denne URL-en i Stripe-dashbordet: åpne Workbench, deretter Webhooks, velg Create an event destination og abonner på checkout.session.completed. Stripe viser så en signeringshemmelighet for endepunktet; lim den inn i feltet for signeringshemmelighet her, slik at hvert varsel kontrolleres mot signaturen sin. Inntil da bekrefter Torqvoice hvert varsel ved å spørre Stripe om selve betalingen.",
     "inboundHintVipps": "Legg inn denne URL-en som callback-URL i Vipps MobilePay-portalen. Vipps krever også publiserte salgsvilkår, som settes under Innstillinger, Betaling.",
     "inboundHintPaypal": "Legg inn denne URL-en i PayPal-utviklerdashbordet under Webhooks, abonnert på PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Lim inn denne URL-en som Webhook URL i Paystack-dashbordet under Settings, API Keys & Webhooks. Paystack har én for testmodus og én for live-modus, så legg den inn i den modusen nøkkelen din hører til.",
     "copy": "Kopier",
     "copied": "Kopiert",
     "updateKeys": "Oppdater nøklene",
     "updateKeysHint": "Siste sjekk mislyktes. Skriv inn nøklene på nytt for å prøve igjen.",
+    "awaitingKeys": "Tilkoblet, men venter fortsatt på {keys}.",
+    "awaitingKeysHint": "Webhooken svarer leverandøren allerede, så registrer den nå. Legg inn disse verdiene her når leverandøren har utstedt dem.",
+    "saveKeys": "Lagre nøkler",
+    "keysSaved": "Nøklene er lagret",
     "inspectionSync": {
       "title": "Synkronisering av EU-kontroll",
       "vehicles": "{count} kjøretøy med skilt i dette verkstedet",
@@ -154,11 +172,101 @@
       "never": "Ingen fullstendig gjennomgang ennå",
       "inProgress": "En gjennomgang pågår",
       "off": "Slå på innstillingen og lagre; før det sjekker en gjennomgang ingenting.",
-      "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige."
+      "syncNowHelp": "Synkroniser nå starter en gjennomgang med en gang i stedet for å vente på den timevise. Den slår opp 25 kjøretøy om gangen og fortsetter av seg selv til alle med forfalt sjekk er ferdige. Første gjennomgang slår opp alle kjøretøy med skilt.",
+      "confirmTitle": "Slå opp kjøretøy nå?",
+      "confirmDescription": "{count} av de {total} kjøretøyene med skilt slås opp i {name} nå, 25 om gangen, og kontrollfristene lagres. Kjøretøy som er sjekket nylig hoppes over. Tar {name} betalt per oppslag, faktureres hvert kjøretøy som blir funnet til kontoen din.",
+      "confirmLabel": "Slå opp {count} kjøretøy",
+      "nothingDue": "Alle kjøretøy med skilt er sjekket nylig, så det er ingenting å slå opp ennå."
     },
     "supersedes": "Å koble til {next} kobler fra {current}. Bare én kan være i bruk om gangen, så {current} tas ut av bruk i det {next} settes i gang.",
+    "platformHandlesBackupsTitle": "Sikkerhetskopi er allerede inkludert",
+    "platformHandlesBackups": "Torqvoice tar allerede sikkerhetskopi av dette verkstedet hver time og beholder gjenopprettingspunkter i 30 dager. Koble til en bøtte hvis du også vil ha en kopi du eier selv, som kan leses uten Torqvoice.",
+    "platformHandlesBackupsLink": "Se gjenopprettingspunktene",
     "batchRetried": "{count, plural, =0 {Ingenting å prøve på nytt} one {# jobb lagt i kø igjen} other {# jobber lagt i kø igjen}}",
-    "advanced": "Avansert"
+    "advanced": "Avansert",
+    "generate": "Generer",
+    "show": "Vis",
+    "hide": "Skjul",
+    "generatedPasswordWarning": "Ta vare på en kopi av dette passordet et trygt sted, utenfor denne serveren. Uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice.",
+    "backup": {
+      "title": "Sikkerhetskopier",
+      "description": "Når dette målet sist fikk en vellykket sikkerhetskopi, når neste kjører, og de siste kjøringene.",
+      "lastGood": "Siste vellykkede sikkerhetskopi",
+      "added": "{size} lagt til",
+      "never": "Ingen ennå",
+      "nextRun": "Neste kjøring",
+      "notScheduled": "Ikke planlagt",
+      "repositorySize": "Lagret på målet",
+      "runNow": "Ta sikkerhetskopi nå",
+      "running": "Tar sikkerhetskopi",
+      "runningHint": "En sikkerhetskopi kjører. Siden oppdaterer seg selv til den er ferdig.",
+      "started": "Sikkerhetskopiering startet",
+      "recentTitle": "Siste kjøringer",
+      "noRuns": "Ingen sikkerhetskopier har kjørt ennå.",
+      "addedNote": "Den første kjøringen laster opp alt. Hver kjøring etterpå legger bare til delene som er endret siden, og er derfor liten. Hver sikkerhetskopi er likevel komplett og kan gjenopprettes eller utforskes for seg.",
+      "notStarted": "Ikke startet",
+      "filesNewCount": "{count, plural, one {# ny fil} other {# nye filer}}",
+      "columns": {
+        "status": "Status",
+        "started": "Startet",
+        "trigger": "Startet av",
+        "duration": "Varighet",
+        "filesNew": "Nye filer",
+        "bytesAdded": "Lagt til"
+      },
+      "trigger": {
+        "scheduled": "Tidsplan",
+        "manual": "Manuelt",
+        "restore": "Gjenoppretting"
+      },
+      "status": {
+        "queued": "I kø",
+        "running": "Kjører",
+        "done": "Ferdig",
+        "failed": "Feilet",
+        "skipped": "Hoppet over"
+      },
+      "restoring": "Gjenoppretter",
+      "restoringHint": "En gjenoppretting kjører: verkstedets data erstattes med sikkerhetskopien. Siden oppdaterer seg selv til den er ferdig. Ikke arbeid i verkstedet før da.",
+      "explore": "Utforsk",
+      "restore": {
+        "showAll": "Vis alle sikkerhetskopier",
+        "refresh": "Oppdater",
+        "loading": "Leser sikkerhetskopiene på målet",
+        "loadFailed": "Sikkerhetskopiene kunne ikke listes opp",
+        "empty": "Ingen sikkerhetskopier på dette målet ennå.",
+        "needsOwner": "Bare verkstedets eier kan gjenopprette en sikkerhetskopi her.",
+        "needsAdmin": "Bare en eier eller administrator kan gjenopprette en sikkerhetskopi.",
+        "filesIncluded": "Bilder og filer er tatt med",
+        "filesNotIncluded": "Bilder og filer er ikke tatt med",
+        "earlierInstall": "Tidligere installasjon",
+        "action": "Gjenopprett",
+        "dialogTitle": "Gjenopprette sikkerhetskopien fra {time}?",
+        "warning": "Gjenoppretting <bold>erstatter alt dette verkstedet har nå</bold>: kunder, kjøretøy, arbeidsordrer, fakturaer, innstillinger og, når sikkerhetskopien inneholder dem, bilder og filer. Alt som er lagt til etter at sikkerhetskopien ble tatt, forsvinner. Dette kan ikke angres.",
+        "secretsNote": "Hemmelige nøkler som sikkerhetskopien utelot, beholder verdiene denne installasjonen har nå. Brukerkontoer og passord røres ikke.",
+        "confirmPrompt": "Skriv inn verkstedets navn, <bold>{name}</bold>, for å bekrefte.",
+        "whileRunning": "Gjenopprettingen kjører i bakgrunnen og tar noen minutter når det er mange bilder. Siden oppdaterer seg selv til den er ferdig.",
+        "cancel": "Avbryt",
+        "confirm": "Gjenopprett denne sikkerhetskopien",
+        "started": "Gjenoppretting startet"
+      }
+    },
+    "lockedBackups": "Planlagte, krypterte sikkerhetskopier av verkstedet ditt til lagring du eier selv.",
+    "searchOrType": "Søk eller skriv et navn",
+    "useTyped": "Bruk «{value}»",
+    "listNeedsKeys": "Skriv inn nøklene ovenfor for å se listen",
+    "listEmpty": "Ingenting ble listet opp. Skriv inn et navn i stedet.",
+    "testing": "Tester tilkoblingen",
+    "testOk": "Tilkoblingen fungerer: et testobjekt ble skrevet og fjernet igjen.",
+    "testFailed": "Testen feilet",
+    "testSteps": {
+      "settings": "Sjekk innstillingene hos leverandøren",
+      "list": "Nøkkelen kan ikke liste bøtta",
+      "write": "Nøkkelen kan ikke skrive til bøtta",
+      "delete": "Nøkkelen kan ikke slette fra bøtta",
+      "folder": "Mappen kan ikke opprettes eller åpnes"
+    },
+    "testHint": "Fyll inn nøklene og bøtta for å teste dem før du kobler til. Testen skriver ett lite objekt og fjerner det igjen."
   },
   "activity": {
     "title": "Aktivitet",
@@ -181,7 +289,10 @@
     },
     "noFailures": "Ingenting mislyktes.",
     "retryFailed": "Prøv mislykkede på nytt",
-    "details": "Vis detaljer"
+    "details": "Vis detaljer",
+    "loadingMore": "Laster eldre jobber",
+    "loadFailed": "Eldre jobber kunne ikke lastes.",
+    "cleared": "Fullførte jobber slettes etter 7 dager."
   },
   "errors": {
     "generic": "Noe gikk galt",
@@ -195,7 +306,10 @@
     "invalid": "Svaret fra leverandøren var ufullstendig. Prøv igjen.",
     "state": "Denne påloggingen har utløpt eller tilhører en annen økt. Start på nytt.",
     "exchange": "Leverandøren avviste påloggingen. Sjekk app-legitimasjonen og prøv igjen.",
-    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt."
+    "identify": "Tilkoblet, men kontoen kunne ikke leses. Prøv å koble til på nytt.",
+    "backupRunning": "En sikkerhetskopi kjører allerede.",
+    "restoreOwnerOnly": "På Torqvoice Cloud kan bare verkstedets eier gjenopprette en sikkerhetskopi.",
+    "restoreBusy": "En sikkerhetskopi eller gjenoppretting kjører allerede på denne serveren. Prøv igjen når den er ferdig."
   },
   "meeting": {
     "join": "Bli med i videosamtale",
@@ -226,6 +340,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365-kalender",
       "description": "Legg planlagte arbeidsordre i en Outlook-kalender, legg til en Microsoft Teams-lenke og se kalenderens opptatte tid i Torqvoice.",
       "tenantHelp": "Registrer en applikasjon i Microsoft Entra (App registrations), tillat både personlige kontoer og jobbkontoer, legg til omdirigerings-URI-en nedenfor som en Web-plattform, opprett en klienthemmelighet og lim inn begge her.",
       "fields": {
@@ -298,7 +413,10 @@
         "verifyToken": "Verifiseringstoken for webhook",
         "appSecret": "Apphemmelighet",
         "apiVersion": "Graph API-versjon",
-        "appSecretHelp": "Meta signerer hver levering med den. Inntil den er lagt inn, avvises meldinger som sendes til webhooken, siden alle som får tak i URL-en ellers kunne sendt meldinger i kundenes navn."
+        "appSecretHelp": "Meta signerer hver levering med den. Inntil den er lagt inn, avvises meldinger som sendes til webhooken, siden alle som får tak i URL-en ellers kunne sendt meldinger i kundenes navn.",
+        "phoneNumberIdHelp": "Fra WhatsApp Manager, på nummeret du sender fra; ikke selve telefonnummeret. Meta utsteder den først etter at webhooken er verifisert, så la feltet stå tomt, koble til, registrer webhooken, og kom tilbake og legg den inn.",
+        "accessTokenHelp": "Et permanent systembruker-token. Det Meta viser under oppsettet utløper innen 24 timer. Legg det inn sammen med telefonnummer-ID-en når webhooken er verifisert.",
+        "verifyTokenHelp": "En setning du velger selv. Lim inn den samme hos Meta når du registrerer webhooken."
       },
       "settings": {
         "enabled": "Send meldinger på denne kanalen",
@@ -417,7 +535,19 @@
       },
       "settings": {
         "syncInspections": "Hold EU-kontrollfristen oppdatert for alle kjøretøy i dette verkstedet",
-        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste EU-kontroll lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
+        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som skal sjekkes opp på skiltnummer, og neste EU-kontroll-frist lagres; hvor ofte et kjøretøy sjekkes på nytt, velger du under. Bare kjøretøy lagret i dette verkstedet sendes.",
+        "inspectionRecheck": "Sjekk kjøretøy som allerede har en frist på nytt",
+        "inspectionRecheckHelp": "En frist endres bare når en kontroll er godkjent. Månedlig fanger opp en tidlig kontroll raskest; bare nær fristen koster minst. Nær fristen sjekkes hvert kjøretøy ukentlig, uansett hva du velger her.",
+        "recheckMonthly": "Hver måned",
+        "recheckQuarterly": "Hver tredje måned",
+        "recheckNearDeadline": "Bare nær fristen",
+        "inspectionSoonDays": "Nær fristen betyr innen",
+        "inspectionSoonDaysHelp": "Innenfor dette vinduet sjekkes et kjøretøy ukentlig, så en godkjent kontroll tar det ut av purrelisten innen få dager. Et kortere vindu gir færre oppslag.",
+        "soon30": "30 dager",
+        "soon60": "60 dager",
+        "soon90": "90 dager",
+        "inspectionOnlyWithCustomer": "Bare kjøretøy med kunde",
+        "inspectionOnlyWithCustomerHelp": "Hopp over kjøretøy uten registrert kunde. Ingen kan purres på dem, så oppslaget koster til ingen nytte."
       }
     },
     "openapi-automotive": {
@@ -429,8 +559,33 @@
       "settings": {
         "country": "Land",
         "countryHelp": "Registeret som skal søkes i. Franske og italienske skilt ser like ut, så landet kan ikke leses av skiltet.",
-        "bikes": "Slå også opp motorsykler",
-        "bikesHelp": "Når et skilt ikke er en bil, spørres motorsykkelregisteret også. Et bomskudd på bilsiden er gratis, så dette koster ikke noe ekstra med mindre en motorsykkel blir funnet. Ikke tilgjengelig for Portugal."
+        "cars": "Slå opp biler",
+        "carsHelp": "Søk i bilregisteret. Slå av dette hvis dere bare jobber med motorsykler, så hopper oppslaget over bilsøket og svarer raskere.",
+        "bikes": "Slå opp motorsykler",
+        "bikesHelp": "Søk i motorsykkelregisteret. Når biler også er på, spørres det bare når ingen bil passer, og et bomskudd på bilsiden er gratis. Ikke tilgjengelig for Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Fyll ut et kjøretøy fra britisk skilt eller VIN: merke, modell, år, farge, drivstoff, motorvolum og MOT-fristen, fra DVLA-data via Check Car Details. Biler og motorsykler kommer fra samme register. Med UK Vehicle Data slått på for kontoen din kommer også VIN, girkasse og vekter. Hvert oppslag faktureres verkstedets egen Check Car Details-konto. Ingen eierdata returneres.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Opprett en konto på api.checkcardetails.co.uk og kopier produksjonsnøkkelen under API Keys. Vehicle Registration følger med alle kontoer. For å få VIN også, klikk Request Access ved UK Vehicle Data under Your Data Points; oppslagene bruker det så snart det er slått på. En testnøkkel finner bare skilt som inneholder bokstaven A."
+      },
+      "settings": {
+        "syncInspections": "Hold MOT-fristen oppdatert for alle kjøretøy i dette verkstedet",
+        "syncInspectionsHelp": "Når dette er på, slås hvert kjøretøy med skiltnummer opp én gang, og MOT-fristen lagres. Deretter sjekkes kjøretøy på nytt slik det er valgt under. Hvert kjøretøy som blir funnet, faktureres som ett Vehicle Registration-oppslag; skilt registeret ikke kjenner, er gratis. Bare kjøretøy lagret i dette verkstedet sendes.",
+        "inspectionRecheck": "Sjekk kjøretøy som allerede har en frist på nytt",
+        "inspectionRecheckHelp": "En frist endres bare når en kontroll er godkjent. Månedlig fanger opp en tidlig kontroll raskest; bare nær fristen koster minst. Nær fristen sjekkes hvert kjøretøy ukentlig, uansett hva du velger her.",
+        "recheckMonthly": "Hver måned",
+        "recheckQuarterly": "Hver tredje måned",
+        "recheckNearDeadline": "Bare nær fristen",
+        "inspectionSoonDays": "Nær fristen betyr innen",
+        "inspectionSoonDaysHelp": "Innenfor dette vinduet sjekkes et kjøretøy ukentlig, så en godkjent kontroll tar det ut av purrelisten innen få dager. Et kortere vindu gir færre oppslag.",
+        "soon30": "30 dager",
+        "soon60": "60 dager",
+        "soon90": "90 dager",
+        "inspectionOnlyWithCustomer": "Bare kjøretøy med kunde",
+        "inspectionOnlyWithCustomerHelp": "Hopp over kjøretøy uten registrert kunde. Ingen kan purres på dem, så oppslaget koster til ingen nytte."
       }
     },
     "rdw": {
@@ -441,7 +596,19 @@
       },
       "settings": {
         "syncInspections": "Hold APK-fristen oppdatert for alle kjøretøy i dette verkstedet",
-        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som ikke er sjekket nylig opp på skilt, og fristen for neste APK lagres. Bare kjøretøy lagret i dette verkstedet sendes. Et kjøretøy sjekkes månedlig, og ukentlig når fristen er under to måneder unna."
+        "syncInspectionsHelp": "Én gang i timen slås kjøretøy som skal sjekkes opp på skiltnummer, og neste APK-frist lagres; hvor ofte et kjøretøy sjekkes på nytt, velger du under. Bare kjøretøy lagret i dette verkstedet sendes.",
+        "inspectionRecheck": "Sjekk kjøretøy som allerede har en frist på nytt",
+        "inspectionRecheckHelp": "En frist endres bare når en kontroll er godkjent. Månedlig fanger opp en tidlig kontroll raskest; bare nær fristen koster minst. Nær fristen sjekkes hvert kjøretøy ukentlig, uansett hva du velger her.",
+        "recheckMonthly": "Hver måned",
+        "recheckQuarterly": "Hver tredje måned",
+        "recheckNearDeadline": "Bare nær fristen",
+        "inspectionSoonDays": "Nær fristen betyr innen",
+        "inspectionSoonDaysHelp": "Innenfor dette vinduet sjekkes et kjøretøy ukentlig, så en godkjent kontroll tar det ut av purrelisten innen få dager. Et kortere vindu gir færre oppslag.",
+        "soon30": "30 dager",
+        "soon60": "60 dager",
+        "soon90": "90 dager",
+        "inspectionOnlyWithCustomer": "Bare kjøretøy med kunde",
+        "inspectionOnlyWithCustomerHelp": "Hopp over kjøretøy uten registrert kunde. Ingen kan purres på dem, så oppslaget koster til ingen nytte."
       }
     },
     "regcheck": {
@@ -482,6 +649,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-kompatibel",
       "description": "Servicebeskrivelser, historikksammendrag, dokumentlesing og assistenten, besvart av en hvilken som helst server som snakker OpenAIs chat-API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM og lignende. Dataene dine blir på din egen maskinvare.",
       "fields": {
         "baseUrl": "Base-URL",
@@ -501,7 +669,7 @@
         "secretKeyHelp": "Fra Stripe-dashbordet under Developers, API keys. Testnøkler behandler ingenting ekte, så prøv en betaling med dem først og bytt til live-nøkler etterpå.",
         "publishableKey": "Publiserbar nøkkel",
         "webhookSecret": "Signeringshemmelighet for webhook",
-        "webhookSecretHelp": "Vises av Stripe når du legger inn varslings-URL-en fra denne siden som webhook. Med den verifiseres hvert varsel før en betaling registreres."
+        "webhookSecretHelp": "Valgfri, og kan legges inn etter tilkobling. Stripe viser den under Reveal secret når varslings-URL-en fra denne siden er lagt inn som endepunkt. Med den verifiseres hvert varsel mot signaturen sin; uten den spør Torqvoice Stripe om betalingen før den registreres."
       },
       "settings": {
         "enabled": "Tilby på fakturalenker",
@@ -535,6 +703,17 @@
         "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt.",
         "sandbox": "Sandkassemodus",
         "sandboxHelp": "Bruk PayPal sin sandkasse med sandkasse-appens nøkler. La den stå på til en hel betaling har gått gjennom, slå den så av og legg inn live-appens nøkler."
+      }
+    },
+    "paystack": {
+      "description": "Paystack-betaling fra fakturalenken, til din egen Paystack-konto. Kunden betaler med kort, bankoverføring eller mobilpenger, avhengig av land, og fakturaen merkes som betalt av seg selv.",
+      "fields": {
+        "secretKey": "Hemmelig nøkkel",
+        "secretKeyHelp": "Fra Paystack-dashbordet under Settings, API Keys & Webhooks. En testnøkkel (sk_test_) behandler ingenting ekte, så prøv en betaling med den først og bytt til live-nøkkelen etterpå."
+      },
+      "settings": {
+        "enabled": "Tilby på fakturalenker",
+        "enabledHelp": "Slå av for å ta betalingsknappen bort fra delte fakturaer en stund, uten å koble fra. Betalinger som allerede er startet, registreres fortsatt."
       }
     },
     "quickbooks": {
@@ -571,6 +750,192 @@
         "manualPaidAsPaymentHelp": "En faktura markert som betalt i Torqvoice uten betalingsføring får én betaling i QuickBooks for det den fortsatt viser som skyldig der. Avslått blir den stående åpen der til en betaling registreres.",
         "pullPayments": "Hent tilbake betalinger registrert i QuickBooks",
         "pullPaymentsHelp": "Hvert 30. minutt. En betaling mottatt i QuickBooks mot en faktura fra Torqvoice registreres her på fakturaen."
+      }
+    },
+    "xero": {
+      "description": "Send utstedte fakturaer, kundene deres og betalingene deres til Xero, og hent tilbake betalinger registrert der.",
+      "tenantHelp": "Opprett en Web app på developer.xero.com under My Apps. På Configuration-siden kopierer du klient-ID-en, genererer en klienthemmelighet og legger inn omdirigerings-URI-en nedenfor. Skal betalinger registrert i Xero komme hit med en gang, åpner du Webhooks-siden til appen, legger inn Torqvoice-adressen din etterfulgt av /api/webhooks/xero som URL, krysser av for Invoices og Payments og legger inn webhook-nøkkelen nedenfor.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet",
+        "webhookKey": "Webhook-nøkkel",
+        "webhookKeyHelp": "Valgfri. Nøkkelen på Webhooks-siden til Xero-appen din. Med den kommer betalinger registrert i Xero hit med en gang; uten den innen 30 minutter."
+      },
+      "settings": {
+        "tenantId": "Xero-organisasjon",
+        "tenantIdHelp": "Organisasjonen fakturaene skal føres i. Bare organisasjonene du ga tilgang til da du koblet til, vises her; koble til på nytt for å gi tilgang til en annen.",
+        "pushInvoices": "Send utstedte fakturaer til Xero",
+        "pushOnComplete": "Send også fakturaer når jobben markeres som fullført",
+        "pushOnCompleteHelp": "Uten dette går en faktura over når den er sendt, delt eller betalt. Med det går en fullført jobb over med en gang og oppdateres om den endres.",
+        "startDate": "Bare fakturaer datert fra og med",
+        "startDateHelp": "La stå tomt for å sende alle utstedte fakturaer. Bruk datoen regnskapet flyttet til Xero, så eldre fakturaer ikke føres to ganger.",
+        "invoiceStatus": "Status i Xero",
+        "invoiceStatusHelp": "Godkjente fakturaer regnes som salg med en gang og kan ta imot betalinger. Velg Utkast eller Venter på godkjenning hvis noen kontrollerer hver faktura i Xero først; betalinger registreres da når fakturaen er godkjent der.",
+        "invoiceStatusAuthorised": "Godkjent",
+        "invoiceStatusSubmitted": "Venter på godkjenning",
+        "invoiceStatusDraft": "Utkast",
+        "invoiceNumbers": "Fakturanumre",
+        "invoiceNumbersHelp": "Behold nummeret fra Torqvoice så begge systemer stemmer, eller la Xero nummerere fakturaen i sin egen nummerserie. Med nummerering i Xero velger du fakturanummeret fra Torqvoice som referanse, så du finner igjen hver faktura.",
+        "invoiceNumbersTorqvoice": "Bruk nummeret fra Torqvoice",
+        "invoiceNumbersXero": "La Xero nummerere dem",
+        "reference": "Referanse",
+        "referenceHelp": "Det som legges i referansefeltet (Reference) på fakturaen i Xero. Det vises på fakturaen og i lister og søk der.",
+        "referenceVehicle": "Kjøretøy og registreringsnummer",
+        "referenceTitle": "Jobbtittel",
+        "referenceInvoiceNumber": "Fakturanummer fra Torqvoice",
+        "referenceNone": "Ingenting",
+        "includeVehicle": "Oppgi kjøretøyet på fakturaen",
+        "includeVehicleHelp": "En tekstlinje over postene med årsmodell, merke, modell, skilt og kilometerstand.",
+        "includeNotes": "Ta med notatene til kunden",
+        "includeNotesHelp": "Fakturaens notater til kunden, som en tekstlinje på fakturaen.",
+        "notesPosition": "Plassering av notatene til kunden",
+        "notesPositionHelp": "Med Over postene kommer notatene rett etter kjøretøylinjen, før arbeid og deler. Med Under postene kommer de sist.",
+        "notesPositionBelow": "Under postene",
+        "notesPositionAbove": "Over postene",
+        "includePartNumbers": "Vis delenummer på delelinjer",
+        "includePartNumbersHelp": "Beskrivelsen på hver delelinje starter med delenummeret.",
+        "brandingThemeId": "Fakturamal",
+        "brandingThemeIdHelp": "Malen i Xero (Branding theme) som fakturaen bruker. Den bestemmer oppsettet når fakturaen vises eller sendes fra Xero. La stå tomt for å bruke organisasjonens standardmal.",
+        "laborAccount": "Konto for arbeid",
+        "laborAccountHelp": "Inntektskontoen arbeidslinjene bokføres på. La stå tom for å bruke organisasjonens Sales-konto, eller kontoen til varen som er valgt nedenfor.",
+        "partsAccount": "Konto for deler",
+        "partsAccountHelp": "Inntektskontoen delelinjene bokføres på. La stå tom for å bruke organisasjonens Sales-konto, eller kontoen til varen som er valgt nedenfor.",
+        "shopFeeAccount": "Konto for verkstedgebyret",
+        "shopFeeAccountHelp": "Linjen for verkstedgebyret bokføres her. La stå tom for å bokføre den sammen med arbeid.",
+        "laborItem": "Vare for arbeidslinjer",
+        "laborItemHelp": "Valgfri. En vare i Xero som hver arbeidslinje merkes med, for varerapporter i Xero. Kontoen som er valgt ovenfor, går likevel foran.",
+        "partsItem": "Vare for delelinjer",
+        "partsItemHelp": "Valgfri. En vare i Xero som hver delelinje merkes med, for varerapporter i Xero. Kontoen som er valgt ovenfor, går likevel foran.",
+        "matchItemsByPartNumber": "Koble deler til Xero-varer via delenummer",
+        "matchItemsByPartNumberHelp": "En del med samme nummer som varekoden til en vare i Xero selges som den varen, så lagerbeholdningen i Xero går ned. Xero avviser fakturaen når en lagerført vare ikke har nok på lager.",
+        "taxAmounts": "Avgiftsbeløp",
+        "taxAmountsHelp": "Som fakturert sender avgiften på hver linje nøyaktig slik den står på fakturaen kunden fikk, så begge systemer stemmer på øret. Beregnet av Xero lar Xero bruke prosenten i avgiftssatsen på hver linje, og loggen sier fra når totalene er ulike.",
+        "taxAmountsBilled": "Som fakturert i Torqvoice",
+        "taxAmountsXero": "Beregnet av Xero",
+        "taxType": "Avgiftssats for avgiftspliktige linjer",
+        "taxTypeHelp": "Torqvoice velger avgiftssatsen i Xero med samme prosent som hver faktura, for eksempel GST on Income. Velg en her for å alltid bruke den i stedet.",
+        "zeroTaxType": "Avgiftssats for avgiftsfrie linjer",
+        "zeroTaxTypeHelp": "Brukes for linjer uten avgift og for kunder som er fritatt. La stå tomt for å bruke GST Free Income, Zero Rated eller No GST, avhengig av hva organisasjonen har.",
+        "tracking1": "Sporingsvalg",
+        "tracking1Help": "Merk hver linje med et sporingsvalg, for eksempel avdeling eller filial, for rapporter i Xero.",
+        "tracking2": "Sporingsvalg 2",
+        "tracking2Help": "Et valg fra den andre sporingskategorien, hvis organisasjonen har to.",
+        "sendFromXero": "Send fakturaen til kunden på e-post fra Xero",
+        "sendFromXeroHelp": "Xero sender sin egen kopi av fakturaen til kundens e-post, med eventuelle nettbetalingsvalg som er satt opp i Xero. Slå dette av hvis Torqvoice allerede sender fakturaen, så kunden ikke får den to ganger.",
+        "markAsSent": "Merk fakturaer som sendt i Xero",
+        "markAsSentHelp": "Torqvoice leverer fakturaen, så Xero viser den som sendt i stedet for å vente på at noen sender den derfra. Gjelder godkjente fakturaer.",
+        "attachPdf": "Legg ved faktura-PDF-en",
+        "attachPdfHelp": "Fakturaen kunden fikk fra Torqvoice, legges ved fakturaen i Xero.",
+        "updateContacts": "Hold kundeopplysningene oppdatert i Xero",
+        "updateContactsHelp": "Endrer du navn, e-post, telefon, adresse eller organisasjonsnummer på en kunde her, kopieres det til kontakten i Xero. Avslått blir kontakter bare opprettet, og deretter står de slik regnskapsføreren har dem.",
+        "sameEmail": "Kunder med samme e-post",
+        "sameEmailHelp": "Flere kunder kan dele en e-postadresse, for eksempel en familie eller regnskapsadressen til et firma. Med det første valget brukes en kontakt i Xero funnet via e-post bare når også navnet stemmer med kunden; ellers får kunden en ny kontakt, og loggen nevner den andre, så du kan slå dem sammen i Xero hvis det er samme kunde.",
+        "sameEmailCreate": "Opprett ny kontakt når navnet er forskjellig",
+        "sameEmailReuse": "Bruk den eksisterende kontakten selv om navnet er forskjellig",
+        "voidOnDelete": "Annuller Xero-fakturaen når jobben slettes her",
+        "voidOnDeleteHelp": "En faktura med betalinger i Xero annulleres aldri; loggen viser at den ble stående urørt.",
+        "pushPayments": "Registrer betalinger i Xero",
+        "paymentAccount": "Sett betalinger inn på",
+        "paymentAccountHelp": "Bankkontoen i Xero som betalinger registrert i Torqvoice settes inn på. La stå tom for å bruke den første bankkontoen.",
+        "cashAccount": "Kontantbetalinger inn på",
+        "cardAccount": "Kortbetalinger inn på",
+        "transferAccount": "Bankoverføringer inn på",
+        "onlineAccount": "Nettbetalinger inn på",
+        "methodAccountHelp": "La stå tom for å bruke kontoen ovenfor.",
+        "onlineAccountHelp": "Betalinger tatt imot gjennom Stripe, PayPal, Vipps og de andre betalingsintegrasjonene, ofte en mellomregningskonto. La stå tom for å bruke kontoen ovenfor.",
+        "manualPaidAsPayment": "Registrer en betaling når en faktura markeres som betalt for hånd",
+        "manualPaidAsPaymentHelp": "En faktura markert som betalt i Torqvoice uten betalingsføring får én betaling i Xero for det den fortsatt viser som skyldig der. Avslått blir den stående åpen der til en betaling registreres.",
+        "pullPayments": "Hent tilbake betalinger registrert i Xero",
+        "pullPaymentsHelp": "En betaling registrert i Xero mot en faktura fra Torqvoice registreres her på fakturaen: med en gang hvis webhooken er satt opp, ellers innen 30 minutter."
+      }
+    },
+    "zoho-books": {
+      "description": "Send utstedte fakturaer, kundene deres og betalingene deres til Zoho Books, og hent tilbake betalinger registrert der.",
+      "tenantHelp": "Opprett en Server-based Application i Zoho API Console (api-console.zoho.com, eller konsollen for din egen region, for eksempel api-console.zoho.eu). Legg inn omdirigerings-URI-en nedenfor, kopier klient-ID-en og klienthemmeligheten, og kryss av for \"Use the same OAuth credentials for all data centers\" på Settings-fanen til klienten hvis verksteder logger inn fra andre regioner.",
+      "fields": {
+        "clientId": "Klient-ID",
+        "clientSecret": "Klienthemmelighet"
+      },
+      "settings": {
+        "organizationId": "Zoho Books-organisasjon",
+        "organizationIdHelp": "Organisasjonen fakturaene skal føres i. Alle organisasjoner som Zoho-brukeren som koblet til har tilgang til, vises her.",
+        "pushInvoices": "Send utstedte fakturaer til Zoho Books",
+        "pushOnComplete": "Send også fakturaer når jobben markeres som fullført",
+        "pushOnCompleteHelp": "Uten dette går en faktura over når den er sendt, delt eller betalt. Med det går en fullført jobb over med en gang og oppdateres om den endres.",
+        "startDate": "Bare fakturaer datert fra og med",
+        "startDateHelp": "La stå tomt for å sende alle utstedte fakturaer. Bruk datoen regnskapet flyttet til Zoho Books, så eldre fakturaer ikke føres to ganger.",
+        "invoiceStatus": "Status i Zoho Books",
+        "invoiceStatusHelp": "Sendte fakturaer regnes som salg med en gang og kan ta imot betalinger. Velg Utkast hvis noen kontrollerer hver faktura i Zoho Books først; betalinger registreres da når fakturaen er sendt derfra.",
+        "invoiceStatusSent": "Sendt",
+        "invoiceStatusDraft": "Utkast",
+        "invoiceNumbers": "Fakturanumre",
+        "invoiceNumbersHelp": "Behold nummeret fra Torqvoice så begge systemer stemmer, eller la Zoho Books nummerere fakturaen i sin egen nummerserie. Med nummerering i Zoho velger du fakturanummeret fra Torqvoice som referanse, så du finner igjen hver faktura.",
+        "invoiceNumbersTorqvoice": "Bruk nummeret fra Torqvoice",
+        "invoiceNumbersZoho": "La Zoho Books nummerere dem",
+        "reference": "Referanse",
+        "referenceHelp": "Det som legges i feltet Reference# på fakturaen i Zoho Books. Det vises på fakturaen og i lister og søk der.",
+        "referenceVehicle": "Kjøretøy og registreringsnummer",
+        "referenceTitle": "Jobbtittel",
+        "referenceInvoiceNumber": "Fakturanummer fra Torqvoice",
+        "referenceNone": "Ingenting",
+        "includeVehicle": "Oppgi kjøretøyet på fakturaen",
+        "includeVehicleHelp": "Årsmodell, merke, modell, skilt og kilometerstand, plassert sammen med notatene til kunden.",
+        "includeNotes": "Ta med notatene til kunden",
+        "includeNotesHelp": "Fakturaens notater til kunden, som ren tekst.",
+        "notesPosition": "Hvor kjøretøyet og notatene står",
+        "notesPositionHelp": "Customer Notes er Zohos eget felt, som skrives ut under postene på fakturaen fra Zoho. Over eller under postene legger dem i stedet i en tekstlinje blant fakturalinjene.",
+        "notesPositionCustomerNotes": "Zohos felt Customer Notes",
+        "notesPositionBelow": "En linje under postene",
+        "notesPositionAbove": "En linje over postene",
+        "includePartNumbers": "Vis delenummer på delelinjer",
+        "includePartNumbersHelp": "Beskrivelsen på hver delelinje starter med delenummeret.",
+        "templateId": "Fakturamal",
+        "templateIdHelp": "Malen i Zoho Books som fakturaen bruker når den vises eller sendes fra Zoho. La stå tomt for å bruke organisasjonens standardmal.",
+        "locationId": "Lokasjon",
+        "locationIdHelp": "Bare for organisasjoner som har slått på lokasjoner i Zoho Books, der hver faktura må ha en. La stå tomt ellers.",
+        "laborAccount": "Konto for arbeid",
+        "laborAccountHelp": "Inntektskontoen arbeidslinjene bokføres på. La stå tom for å bruke kontoen til varen som er valgt nedenfor, eller Sales-kontoen i Zoho.",
+        "partsAccount": "Konto for deler",
+        "partsAccountHelp": "Inntektskontoen delelinjene bokføres på. La stå tom for å bruke kontoen til varen som er valgt nedenfor, eller Sales-kontoen i Zoho.",
+        "shopFeeAccount": "Konto for verkstedgebyret",
+        "shopFeeAccountHelp": "Linjen for verkstedgebyret bokføres her. La stå tom for å bokføre den sammen med arbeid.",
+        "laborItem": "Vare for arbeidslinjer",
+        "laborItemHelp": "Valgfri. En vare i Zoho Books som hver arbeidslinje merkes med, for varerapporter i Zoho. Kontoen som er valgt ovenfor, går likevel foran.",
+        "partsItem": "Vare for delelinjer",
+        "partsItemHelp": "Valgfri. En vare i Zoho Books som hver delelinje merkes med, for varerapporter i Zoho. Kontoen som er valgt ovenfor, går likevel foran.",
+        "matchItemsByPartNumber": "Koble deler til Zoho-varer via delenummer",
+        "matchItemsByPartNumberHelp": "En del med samme nummer som SKU-en til en vare i Zoho Books selges som den varen, så lagerbeholdningen i Zoho går ned. Slå på SKU under Settings, Items i Zoho Books, ellers finner den ingenting.",
+        "taxId": "Avgift for avgiftspliktige linjer",
+        "taxIdHelp": "Torqvoice velger avgiften i Zoho Books med samme prosent som hver faktura. Velg en her for når flere har samme prosent, eller ingen passer.",
+        "zeroTaxId": "Avgift for avgiftsfrie linjer",
+        "zeroTaxIdHelp": "Brukes for linjer uten avgift og for kunder som er fritatt, når organisasjonen har en avgift på 0 % for dem. La stå tomt for å sende de linjene uten avgift.",
+        "roundingAdjustment": "La totalen stemme på øret",
+        "roundingAdjustmentHelp": "Zoho Books regner ut avgiften selv. Når totalen der havner et øre eller to unna fakturaen kunden fikk, føres differansen som avrundingsjustering i Zoho, så begge systemer stemmer. Avslått sier loggen fra når de er ulike.",
+        "sendFromZoho": "Send fakturaen til kunden på e-post fra Zoho Books",
+        "sendFromZohoHelp": "Zoho Books sender sin egen kopi av fakturaen til kundens e-post, med eventuelle nettbetalingsvalg som er satt opp i Zoho. Slå dette av hvis Torqvoice allerede sender fakturaen, så kunden ikke får den to ganger.",
+        "attachPdf": "Legg ved faktura-PDF-en",
+        "attachPdfHelp": "Fakturaen kunden fikk fra Torqvoice, legges ved fakturaen i Zoho Books og byttes ut når den endres.",
+        "updateContacts": "Hold kundeopplysningene oppdatert i Zoho Books",
+        "updateContactsHelp": "Endrer du navn, e-post, telefon eller adresse på en kunde her, kopieres det til kontakten i Zoho Books. Avslått blir kontakter bare opprettet, og deretter står de slik regnskapsføreren har dem.",
+        "sameEmail": "Kunder med samme e-post",
+        "sameEmailHelp": "Flere kunder kan dele en e-postadresse, for eksempel en familie eller regnskapsadressen til et firma. Med det første valget brukes en kontakt i Zoho funnet via e-post bare når også navnet stemmer med kunden; ellers får kunden en ny kontakt, og loggen nevner den andre, så du kan slå dem sammen i Zoho hvis det er samme kunde.",
+        "sameEmailCreate": "Opprett ny kontakt når navnet er forskjellig",
+        "sameEmailReuse": "Bruk den eksisterende kontakten selv om navnet er forskjellig",
+        "voidOnDelete": "Annuller Zoho-fakturaen når jobben slettes her",
+        "voidOnDeleteHelp": "Et utkast slettes og en sendt faktura annulleres. En faktura med betalinger i Zoho Books røres aldri; loggen viser at den ble stående urørt.",
+        "pushPayments": "Registrer betalinger i Zoho Books",
+        "paymentAccount": "Sett inn på",
+        "paymentAccountHelp": "Kontoen i Zoho Books som betalinger registrert i Torqvoice settes inn på. La stå tom for å bruke Undeposited Funds.",
+        "cashAccount": "Kontantbetalinger inn på",
+        "cardAccount": "Kortbetalinger inn på",
+        "transferAccount": "Bankoverføringer inn på",
+        "onlineAccount": "Nettbetalinger inn på",
+        "methodAccountHelp": "La stå tom for å bruke kontoen ovenfor.",
+        "onlineAccountHelp": "Betalinger tatt imot gjennom Stripe, PayPal, Vipps, Paystack og de andre betalingsintegrasjonene, ofte en mellomregningskonto. La stå tom for å bruke kontoen ovenfor.",
+        "manualPaidAsPayment": "Registrer en betaling når en faktura markeres som betalt for hånd",
+        "manualPaidAsPaymentHelp": "En faktura markert som betalt i Torqvoice uten betalingsføring får én betaling i Zoho Books for det den fortsatt viser som skyldig der. Avslått blir den stående åpen der til en betaling registreres.",
+        "pullPayments": "Hent tilbake betalinger registrert i Zoho Books",
+        "pullPaymentsHelp": "En betaling registrert i Zoho Books mot en faktura fra Torqvoice registreres her på fakturaen innen 30 minutter, og en betaling som slettes der, fjernes her."
       }
     },
     "fiken": {
@@ -620,7 +985,43 @@
         "refreshFleetHelp": "En gang om dagen hentes modeller som ikke er oppdatert siste uke på nytt, så kjøretøysiden aldri venter og en ny tilbakekalling vises innen en uke. Bare merke, modell og år sendes."
       }
     },
+    "openlaborproject": {
+      "description": "Slå opp normtider og væskemengder for kjøretøyet på en arbeidsordre eller et tilbud, og legg til en jobbs timer som en arbeidslinje med ett klikk. Det meste av dataene gjelder kjøretøy for det amerikanske markedet, og guiden viser hvilket marked hvert oppslag gjelder. Hver verdi viser hvor sikker Open Labor Project er, og mange er anslag laget med KI, så sjekk dem før du gir kunden et tilbud. Oppslag bruker verkstedets egen API-nøkkel. Med et betalt abonnement hos Open Labor Project lagres et kjøretøy som er slått opp så lenge abonnementet varer, så et nytt oppslag koster ikke et kall.",
+      "fields": {
+        "apiKey": "API-nøkkel",
+        "apiKeyHelp": "Be om en nøkkel på openlaborproject.com under Developers; den kommer på e-post. En gratis nøkkel har 10 kall per dag og viser timer for én jobb om gangen. Builder-abonnementet og oppover gir høyere grense og viser timene for alle jobber på en gang.",
+        "apiKeyServerHelp": "La feltet stå tomt for å bruke nøkkelen denne serveren har, eller lim inn din egen nøkkel fra openlaborproject.com for å bruke ditt eget abonnement."
+      },
+      "settings": {
+        "minConfidence": "Vis normtider fra",
+        "minConfidenceHelp": "Utelat tider kilden er mindre sikker på. Mange tider for europeiske merker er anslag laget med KI, så et strengt valg kan gi få jobber.",
+        "confidenceAll": "Alle sikkerhetsnivåer",
+        "confidenceMedium": "Middels og høyere",
+        "confidenceHigh": "Bekreftet og høyere",
+        "confidenceOem": "Bare OEM",
+        "hoursFrom": "Timer som legges til",
+        "hoursFromHelp": "Hvilket tall som havner på arbeidsordren: normtiden, eller toppen av intervallet Open Labor Project oppgir (for eksempel 1,6 t i stedet for 1,2 t). Toppen av intervallet gir rom for jobber som tar lengre tid.",
+        "hoursBook": "Normtid",
+        "hoursHigh": "Toppen av intervallet",
+        "adjustPercent": "Juster tidene med (%)",
+        "adjustPercentHelp": "En prosent som legges til hver tid før den havner på arbeidsordren: 10 gjør 1,2 t til 1,32 t, -10 gjør den til 1,08 t. Fra -50 til 200.",
+        "rounding": "Rund timer opp til",
+        "roundingHelp": "Runder hver jobbs timer opp etter en eventuell justering: med 0,25 blir 1,32 t til 1,5 t. En tid som allerede ligger på et steg, blir stående.",
+        "roundNone": "Ikke rund av",
+        "roundTenth": "0,1 time",
+        "roundQuarter": "0,25 time",
+        "roundHalf": "0,5 time",
+        "fluids": "Vis væskespesifikasjoner",
+        "fluidsHelp": "Legger til en Væsker-fane med mengder, spesifikasjoner og byttintervaller. Å åpne den bruker et eget kall.",
+        "units": "Enheter for væsker",
+        "unitsHelp": "Enhetene mengder og byttintervaller vises i.",
+        "unitsBoth": "Begge",
+        "unitsMetric": "Metrisk (L, km)",
+        "unitsUs": "Amerikansk (qt, mi)"
+      }
+    },
     "speech-to-text": {
+      "name": "Tale til tekst",
       "description": "Diktering på en arbeidsordre, skrevet ned av en talemodell i stedet for nettleseren: langt mer nøyaktig, alle språk, og den kan verkstedets ord. Atskilt fra AI-leverandøren din, så den kan du beholde som den er. Bruker din egen OpenAI-nøkkel, eller en egen server som snakker OpenAIs API for transkribering. Opptaket sendes for å skrives ned og lagres ikke.",
       "fields": {
         "apiKey": "API-nøkkel",
@@ -636,6 +1037,116 @@
         "modeAi": "Alltid talemodellen",
         "modeChoice": "Hver person velger: talemodell eller nettleser"
       }
+    },
+    "s3": {
+      "name": "Bucket i skyen",
+      "description": "Krypterte sikkerhetskopier av dette verkstedet til en bøtte du eier hos Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage eller annen S3-kompatibel lagring, etter en tidsplan du velger. Etter første kjøring lastes bare det som er endret opp, så sikkerhetskopier hver time forblir billige.",
+      "fields": {
+        "accessKeyId": "Tilgangsnøkkel-ID",
+        "accessKeyIdHelp": "En nøkkel fra lagringsleverandøren din med tillatelse til å liste, lese, skrive og slette objekter i bøtta. Lag en egen nøkkel bare for Torqvoice, så den kan trekkes tilbake for seg selv.",
+        "secretAccessKey": "Hemmelig tilgangsnøkkel",
+        "password": "Passord for sikkerhetskopier",
+        "passwordHelp": "Hver sikkerhetskopi krypteres med dette passordet. Finn på et eller trykk Generer, og ta vare på en kopi utenfor denne serveren: uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice. For å koble til igjen lagring som allerede har sikkerhetskopier fra Torqvoice, skriv inn passordet de ble laget med.",
+        "endpoint": "Egendefinert endepunkt",
+        "endpointHelp": "Bare for valget Annen S3-kompatibel lagring: S3-adressen til din egen lagring, for eksempel en MinIO-server, som vertsnavn med port om nødvendig."
+      },
+      "settings": {
+        "provider": "Leverandør",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Annen S3-kompatibel lagring",
+        "region": "Region",
+        "regionHelp": "Hvor bøtta ligger. Velg den fra leverandørens liste; for annen lagring skriver du inn det lagringen forventer, hvis den trenger en region. Brukes ikke av Cloudflare R2.",
+        "accountId": "Cloudflare-konto-ID",
+        "accountIdHelp": "ID-en på 32 tegn som vises på R2-oversiktssiden i Cloudflare-dashbordet ditt.",
+        "bucket": "Bøtte",
+        "bucketHelp": "Listen hentes med nøkkelen så snart den er skrevet inn. Kan nøkkelen bruke én bøtte, men ikke liste dem, skriver du inn navnet selv.",
+        "prefix": "Mappe i bøtta",
+        "prefixHelp": "Sikkerhetskopiene ligger under denne mappen. Bruk en egen mappe for hvert verksted som deler bøtta.",
+        "frequency": "Hvor ofte",
+        "frequencyHourly": "Hver time",
+        "frequencyEvery4h": "Hver 4. time",
+        "frequencyDaily": "Hver dag",
+        "frequencyWeekly": "Hver uke",
+        "frequencyMonthly": "Hver måned",
+        "time": "Klokkeslett",
+        "timeHelp": "Etter verkstedets klokke, som HH:MM. Brukes av daglige, ukentlige og månedlige sikkerhetskopier.",
+        "weekday": "Ukedag",
+        "sunday": "Søndag",
+        "monday": "Mandag",
+        "tuesday": "Tirsdag",
+        "wednesday": "Onsdag",
+        "thursday": "Torsdag",
+        "friday": "Fredag",
+        "saturday": "Lørdag",
+        "monthDay": "Dag i måneden",
+        "monthDayLast": "Siste dag",
+        "contents": "Innhold",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier. En sikkerhetskopi inneholder verkstedets data og, hvis du velger det, filene. Brukerkontoer og passord er ikke med: på en ny server logger du inn, inviterer teamet og gjenoppretter dataene i det verkstedet.",
+        "contentsData": "Bare data",
+        "contentsDataAndSecrets": "Data og hemmelige nøkler",
+        "includeFiles": "Ta med bilder og filer",
+        "includeFilesHelp": "Hver fil lastes opp én gang og gjenbrukes av senere sikkerhetskopier, så dette koster lite etter første kjøring.",
+        "keepHourly": "Behold timesvise sikkerhetskopier",
+        "keepHourlyHelp": "Hvor mange av de nyeste timesvise sikkerhetskopiene som beholdes. Gjelder bare for tidsplanene hver time og hver 4. time.",
+        "keepDaily": "Behold daglige sikkerhetskopier",
+        "keepWeekly": "Behold ukentlige sikkerhetskopier",
+        "keepMonthly": "Behold månedlige sikkerhetskopier",
+        "keepMonthlyHelp": "Eldre sikkerhetskopier fjernes etter hver kjøring, og de nyeste av hver type beholdes. Sett et tall til 0 for ikke å beholde noen av den typen."
+      }
+    },
+    "local-folder": {
+      "name": "Lokal mappe",
+      "description": "Krypterte sikkerhetskopier av dette verkstedet til en mappe på denne serveren: volumet for sikkerhetskopier i compose-filen, eller en nettverksdisk montert der. En kopi på samme disk som databasen er ikke trygg alene; kombiner den med lagring et annet sted.",
+      "fields": {
+        "password": "Passord for sikkerhetskopier",
+        "passwordHelp": "Hver sikkerhetskopi krypteres med dette passordet. Finn på et eller trykk Generer, og ta vare på en kopi utenfor denne serveren: uten det kan ingen åpne disse sikkerhetskopiene, heller ikke Torqvoice. For å koble til igjen lagring som allerede har sikkerhetskopier fra Torqvoice, skriv inn passordet de ble laget med."
+      },
+      "settings": {
+        "folder": "Mappe",
+        "folderHelp": "Mappen under serverens sikkerhetskopirot som holder dette verkstedets sikkerhetskopier. La feltet stå tomt for å bruke en mappe oppkalt etter dette verkstedet. På en ny server skriver du inn mappenavnet en tidligere installasjon brukte, for å få tilbake sikkerhetskopiene.",
+        "frequency": "Hvor ofte",
+        "frequencyHourly": "Hver time",
+        "frequencyEvery4h": "Hver 4. time",
+        "frequencyDaily": "Hver dag",
+        "frequencyWeekly": "Hver uke",
+        "frequencyMonthly": "Hver måned",
+        "time": "Klokkeslett",
+        "timeHelp": "Etter verkstedets klokke, som HH:MM. Brukes av daglige, ukentlige og månedlige sikkerhetskopier.",
+        "weekday": "Ukedag",
+        "sunday": "Søndag",
+        "monday": "Mandag",
+        "tuesday": "Tirsdag",
+        "wednesday": "Onsdag",
+        "thursday": "Torsdag",
+        "friday": "Fredag",
+        "saturday": "Lørdag",
+        "monthDay": "Dag i måneden",
+        "monthDayLast": "Siste dag",
+        "contents": "Innhold",
+        "contentsHelp": "Hemmelige nøkler er de dette verkstedet har skrevet inn i Torqvoice: nøkler for betaling, AI og webhooks. Hver sikkerhetskopi krypteres uansett med passordet for sikkerhetskopier. En sikkerhetskopi inneholder verkstedets data og, hvis du velger det, filene. Brukerkontoer og passord er ikke med: på en ny server logger du inn, inviterer teamet og gjenoppretter dataene i det verkstedet.",
+        "contentsData": "Bare data",
+        "contentsDataAndSecrets": "Data og hemmelige nøkler",
+        "includeFiles": "Ta med bilder og filer",
+        "includeFilesHelp": "Hver fil lastes opp én gang og gjenbrukes av senere sikkerhetskopier, så dette koster lite etter første kjøring.",
+        "keepHourly": "Behold timesvise sikkerhetskopier",
+        "keepHourlyHelp": "Hvor mange av de nyeste timesvise sikkerhetskopiene som beholdes. Gjelder bare for tidsplanene hver time og hver 4. time.",
+        "keepDaily": "Behold daglige sikkerhetskopier",
+        "keepWeekly": "Behold ukentlige sikkerhetskopier",
+        "keepMonthly": "Behold månedlige sikkerhetskopier",
+        "keepMonthlyHelp": "Eldre sikkerhetskopier fjernes etter hver kjøring, og de nyeste av hver type beholdes. Sett et tall til 0 for ikke å beholde noen av den typen."
+      }
+    },
+    "torqvoice-codes": {
+      "description": "Se hva en feilkode betyr på kjøretøyet foran deg, på ditt eget språk: betydningen, sannsynlige årsaker og relaterte koder. Skriv eller lim inn koder på en arbeidsordre, så blir de observasjoner med betydningen lagret, slik at utskrifter og historikk aldri venter på en tilkobling. Driftes av Torqvoice og inkludert i alle skyabonnementer. Et oppslag sender bare merke, modell, år og motor, aldri VIN, registreringsnummer eller kunde.",
+      "fields": {
+        "apiToken": "Tilgangsnøkkel",
+        "apiTokenHelp": "Nøkkelen Torqvoice ga deg for kodetjenesten."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {
@@ -658,6 +1169,42 @@
     "safety": {
       "refresh": "Oppdatering av tilbakekallingsdata",
       "vehicle": "Tilbakekallingssjekk for nytt kjøretøy"
+    },
+    "repair": {
+      "checkPlan": "Sjekk at lagrede oppslag kan beholdes"
     }
+  },
+  "backupAlerts": {
+    "destination": "mål for sikkerhetskopier",
+    "failedTitle": "Sikkerhetskopiering mislyktes",
+    "failedMessage": "Sikkerhetskopien til {name} ble ikke fullført: {reason}",
+    "failedSubject": "Sikkerhetskopiering til {name} mislyktes",
+    "failedEmailIntro": "Den planlagte sikkerhetskopien av verkstedet ditt til {name} ble ikke fullført.",
+    "openToRetry": "Åpne Innstillinger, Integrasjoner, {name} for å se kjøringen og prøve igjen.",
+    "overdueTitle": "Sikkerhetskopi forsinket",
+    "overdueSince": "Ingen sikkerhetskopi til {name} er fullført siden {time}.",
+    "overdueNever": "Ingen sikkerhetskopi til {name} er fullført ennå.",
+    "overdueSubject": "Sikkerhetskopi til {name} er forsinket",
+    "openToSee": "Åpne Innstillinger, Integrasjoner, {name} for å se hva som gikk galt.",
+    "platformName": "Sikkerhetskopier fra Torqvoice",
+    "restoredTitle": "Verkstedet er gjenopprettet",
+    "restoredSubject": "Verkstedet ditt ble gjenopprettet fra en sikkerhetskopi",
+    "restoredIntro": "{name}: verkstedet ble satt tilbake til gjenopprettingspunkt {snapshot} {time}. Alt som ble lagt inn etter det punktet, finnes ikke lenger i verkstedet.",
+    "restoredByMember": "Et medlem av verkstedet ditt ba om denne gjenopprettingen.",
+    "restoredBySupport": "Torqvoice-supporten gjorde dette etter forespørsel fra deg. Oppgitt grunn: {reason}",
+    "noReason": "ingen oppgitt",
+    "restoredUndo": "Først ble det tatt en kopi av verkstedet slik det var rett før gjenopprettingen, og den beholdes i 90 dager. Kontakt supporten for å gå tilbake til den."
+  },
+  "aiErrors": {
+    "modelAccess": "Denne API-nøkkelen har ikke tilgang til den valgte modellen. Velg en annen under Innstillinger → Integrasjoner.",
+    "spendLimit": "Denne OpenAI-kontoen har nådd forbruksgrensen sin. Sjekk grensene på platform.openai.com.",
+    "noCredit": "Denne OpenAI-kontoen har ikke mer kreditt. Legg til betaling på platform.openai.com.",
+    "keyRejected": "AI-leverandøren avviste API-nøkkelen. Sjekk den under Innstillinger → Integrasjoner.",
+    "noUsableCredit": "AI-leverandøren melder at denne API-nøkkelen ikke har kreditt som kan brukes.",
+    "modelUnavailable": "AI-leverandøren tilbyr ikke den valgte modellen. Velg en annen under Innstillinger → Integrasjoner.",
+    "imageTooLarge": "Bildet var for stort for AI-leverandøren.",
+    "rateLimited": "AI-leverandøren begrenser forespørslene fra denne API-nøkkelen. Prøv igjen om litt.",
+    "providerDown": "AI-leverandøren er utilgjengelig akkurat nå. Prøv igjen om litt.",
+    "unexpected": "AI-leverandøren ga et uventet svar."
   }
 }

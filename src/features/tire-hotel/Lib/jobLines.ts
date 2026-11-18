@@ -1,6 +1,7 @@
 import { db, type TxClient } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { invoiceLineWords, treatmentNames } from './serverMessages'
 import { billableTreatments, parseTreatmentPrices } from './treatments'
 
@@ -17,6 +18,11 @@ export type TireJobLine = {
   rate: number
   total: number
   pricingType: 'service'
+  /**
+   * Whether the job's tax is charged on the line. Storage and prep are
+   * services, so they follow the workshop's rule for labor (Settings, Tax).
+   */
+  taxable: boolean
 }
 
 /**
@@ -27,6 +33,7 @@ export type TireJobLine = {
  * billed, which is the moment somebody is looking at the account anyway.
  */
 export async function storageLine(
+  organizationId: string,
   set: { size: string | null; quantity: number },
   data: { storageAmount?: number; storageFrom?: Date; storageTo?: Date }
 ): Promise<TireJobLine> {
@@ -48,6 +55,7 @@ export async function storageLine(
     rate: amount,
     total: amount,
     pricingType: 'service' as const,
+    taxable: (await loadTaxApplies(organizationId)).labor,
   }
 }
 
@@ -84,6 +92,7 @@ export async function treatmentLines(
   const names = await treatmentNames()
   const billable = await billablePrep(organizationId, treatments)
   const wanted = only ? new Set(only) : null
+  const taxable = (await loadTaxApplies(organizationId)).labor
 
   return billable
     .filter((line) => !wanted || wanted.has(line.type))
@@ -95,6 +104,7 @@ export async function treatmentLines(
       rate: line.price,
       total: line.price,
       pricingType: 'service' as const,
+      taxable,
     }))
 }
 
@@ -129,7 +139,10 @@ export async function checkInJobLines(
     : []
   if (billing.storageAmount !== undefined) {
     lines.push(
-      await storageLine(set, { storageAmount: billing.storageAmount, storageFrom: new Date() })
+      await storageLine(organizationId, set, {
+        storageAmount: billing.storageAmount,
+        storageFrom: new Date(),
+      })
     )
   }
   return lines

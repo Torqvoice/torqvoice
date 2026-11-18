@@ -53,6 +53,7 @@
     "statusCompleted": "Afgerond",
     "complete": "Afronden",
     "reopen": "Heropenen",
+    "send": "Versturen",
     "share": "Delen",
     "save": "Opslaan",
     "saving": "Opslaan…",
@@ -94,6 +95,8 @@
     "completeTitle": "Deze inspectie afronden?",
     "completeBody": "De punten worden bij afronding vergrendeld en de uitkomst wordt “{result}”.",
     "completeBlocked": "{count} controle(s) die de checklist als verplicht markeert, staan nog open.",
+    "blockerMissingGrade": "moet beoordeeld worden",
+    "blockerNeedsPhoto": "foto van het gebrek nodig",
     "completeUngraded": "{count} punt(en) zijn niet beoordeeld.",
     "completeDangerous": "{count} gevaarlijk(e) gebrek(en) vastgelegd. Het voertuig mag niet de openbare weg op.",
     "reopenTitle": "Deze inspectie heropenen?",
@@ -459,7 +462,9 @@
     "copyLink": "Link kopiëren",
     "copied": "Link gekopieerd naar klembord",
     "generated": "Deellink aangemaakt",
-    "revoked": "Deellink ingetrokken"
+    "revoked": "Deellink ingetrokken",
+    "revokeLink": "Link intrekken",
+    "generateLink": "Openbare link genereren"
   },
   "phone": {
     "pageTitle": "Foto's bij de keuring",
@@ -494,5 +499,19 @@
     "photos": "Foto's",
     "documents": "Documenten",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Alles in orde",
+    "pass_minor": "Enkele punten om in de gaten te houden",
+    "fail": "Enkele punten moeten worden gerepareerd",
+    "fail_dangerous": "Enkele punten moeten dringend worden gerepareerd",
+    "incomplete": "Niet voltooid",
+    "detail": {
+      "pass": "Er hoefde niets te gebeuren.",
+      "pass_minor": "Niets dringends. De gemarkeerde punten zijn het inplannen waard.",
+      "fail": "Enkele punten moeten worden gerepareerd. De notities zeggen wat er is gevonden.",
+      "fail_dangerous": "Enkele punten zijn niet veilig en moeten worden gerepareerd voor verder gebruik.",
+      "incomplete": "Deze controle is nog bezig."
+    }
   }
 }

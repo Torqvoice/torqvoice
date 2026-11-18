@@ -3,7 +3,10 @@
  * Single-line base64 SPKI DER. The private halves never leave torqvoice.com.
  *
  * More than one entry is only ever for rotation: add the new key here and
- * ship it, then switch the signer, then drop the old key a release later.
+ * ship it, then switch the signer. A key is NEVER removed once it has signed
+ * a perpetual (`tvp1`) licence: those tokens are bought once and verified
+ * offline for the life of the install, so dropping their key would silently
+ * take a paid licence away.
  *
  * This is deliberately a constant and not an environment variable. An env
  * override would let an operator point the app at a key they hold, which is

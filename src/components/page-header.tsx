@@ -21,9 +21,14 @@ import { useShowWhiteLabelCta } from '@/components/white-label-cta-context'
 import { useLicenseExpiry } from '@/components/license-expiry-context'
 import { BANNER_PRIORITY, useBannerSlot } from '@/components/banner-slot'
 import { QuickCreateMenu } from '@/components/quick-create-menu'
+import { openSearch } from '@/features/search/Lib/open'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
+import { useShortcutKey } from '@/features/shortcuts/Components/ShortcutsProvider'
 import { DocsLink } from '@/components/docs-link'
 import { RunningClockPill } from '@/features/time-tracking/Components/RunningClockPill'
 import { useServiceType } from '@/components/service-type-context'
+import { SETTINGS_PAGES } from '@/features/settings/Lib/settingsPages'
+import { cn } from '@/lib/utils'
 
 function SearchTrigger() {
   const t = useTranslations('navigation')
@@ -31,15 +36,11 @@ function SearchTrigger() {
     <button
       type="button"
       className="hidden h-8 w-56 cursor-pointer items-center gap-2 rounded-md border bg-muted/50 px-3 text-sm text-muted-foreground transition-colors hover:bg-muted sm:flex"
-      onClick={() => {
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }))
-      }}
+      onClick={openSearch}
     >
       <Search className="h-3.5 w-3.5" />
       <span className="flex-1 text-left">{t('search')}</span>
-      <kbd className="rounded border bg-background px-1.5 py-0.5 text-[10px] font-medium">
-        {t('shortcut')}
-      </kbd>
+      <ShortcutKeys id="general.search" />
     </button>
   )
 }
@@ -52,6 +53,7 @@ function SearchTrigger() {
 function PlateTrigger() {
   const t = useTranslations('vehicles.plateLookup')
   const { available } = usePlateLookupAccess()
+  const shortcut = useShortcutKey('general.plateLookup')
   if (!available) return null
   return (
     <button
@@ -59,7 +61,7 @@ function PlateTrigger() {
       className="group flex h-8 cursor-pointer items-center gap-2 rounded-md border bg-muted/50 px-2.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
       onClick={() => openPlateLookup()}
       aria-label={t('open')}
-      title={`${t('open')} (${t('shortcut')})`}
+      title={shortcut ? `${t('open')} (${shortcut.text})` : t('open')}
     >
       <span
         aria-hidden
@@ -73,7 +75,8 @@ function PlateTrigger() {
   )
 }
 
-type BreadcrumbSegment = { key: string; href?: string }
+/** `label` is already words, for a crumb named somewhere else than the breadcrumb keys. */
+type BreadcrumbSegment = { key: string; href?: string; label?: string }
 
 /**
  * Pages that have a documentation page of their own, so the header can offer a
@@ -130,6 +133,7 @@ const docsMap: Record<string, string> = {
   '/tire-hotel/storage': '/docs/features/tire-hotel',
   '/tire-hotel/forecast': '/docs/features/tire-hotel',
   '/settings/tire-hotel': '/docs/features/tire-hotel',
+  '/settings/opening-hours': '/docs/configuration/opening-hours',
 }
 
 const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
@@ -140,8 +144,14 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/quotes': [{ key: 'quotes', href: '/quotes' }, { key: 'allQuotes' }],
   '/billing': [{ key: 'billing', href: '/billing' }, { key: 'billingHistory' }],
   '/inventory': [{ key: 'inventory', href: '/inventory' }, { key: 'allParts' }],
-  '/reports': [{ key: 'reports', href: '/reports' }, { key: 'reports' }],
+  '/reports': [{ key: 'reports' }],
   '/timesheets': [{ key: 'timesheets' }],
+  '/calendar': [{ key: 'calendar' }],
+  '/messages': [{ key: 'messages' }],
+  '/inspections': [{ key: 'inspections' }],
+  '/labor-presets': [{ key: 'laborPresets' }],
+  '/telegram': [{ key: 'telegram' }],
+  '/whatsapp': [{ key: 'whatsapp' }],
   '/reminders': [{ key: 'reminders', href: '/reminders' }, { key: 'allReminders' }],
   '/work-board': [{ key: 'workBoard' }],
   '/work-board/presenter': [{ key: 'workBoard', href: '/work-board' }, { key: 'presenter' }],
@@ -161,6 +171,7 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/settings/warranty': [{ key: 'settings', href: '/settings' }, { key: 'warranty' }],
   '/settings/workshop': [{ key: 'settings', href: '/settings' }, { key: 'workshop' }],
   '/settings/appearance': [{ key: 'settings', href: '/settings' }, { key: 'appearance' }],
+  '/settings/shortcuts': [{ key: 'settings', href: '/settings' }, { key: 'shortcuts' }],
   '/settings/email': [{ key: 'settings', href: '/settings' }, { key: 'email' }],
   '/settings/sms': [{ key: 'settings', href: '/settings' }, { key: 'sms' }],
   '/settings/about': [{ key: 'settings', href: '/settings' }, { key: 'about' }],
@@ -180,11 +191,30 @@ const breadcrumbMap: Record<string, BreadcrumbSegment[]> = {
   '/ai': [{ key: 'aiAssistant' }],
   '/audit-log': [{ key: 'auditLog' }],
   '/observations': [{ key: 'observations' }],
+  '/fault-codes': [{ key: 'faultCodes' }],
   '/tire-hotel': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'allTireSets' }],
   '/tire-hotel/storage': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireStorage' }],
   '/tire-hotel/forecast': [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireForecast' }],
   '/settings/tire-hotel': [{ key: 'settings', href: '/settings' }, { key: 'tireHotel' }],
 }
+
+/**
+ * Pages that print a heading of their own (the vehicle's name, the settings
+ * title). Everywhere else the last crumb is the only name the page has on
+ * screen, so it is the page's h1: a screen reader's "jump to the heading"
+ * then lands on it, and the page has one.
+ */
+const OWN_HEADING: RegExp[] = [
+  /^\/(settings|admin)(\/|$)/,
+  /^\/vehicles\/(?!inspection-reminders)[^/]+/,
+  /^\/customers\/[^/]+/,
+  /^\/inventory\/[^/]+/,
+  /^\/tire-hotel\/(?!storage$)[^/]+/,
+  /^\/fault-codes$/,
+  /^\/quotes\/[^/]+/,
+  /^\/inspections\/[^/]+/,
+  /^\/sales\/[^/]+/,
+]
 
 /** A marine workshop services vessels, so its vehicle crumbs say so. */
 const marineBreadcrumbKeys: Record<string, string> = {
@@ -193,7 +223,16 @@ const marineBreadcrumbKeys: Record<string, string> = {
   vehicleDetails: 'vesselDetails',
 }
 
-export function PageHeader() {
+export function PageHeader({
+  ownHeading,
+}: {
+  /**
+   * Says whether the page prints its own h1, for a route that does on one
+   * render and not on another (a fault code that was found, and one that was
+   * not). Left out, the route decides (OWN_HEADING).
+   */
+  ownHeading?: boolean
+} = {}) {
   const pathname = usePathname()
   const showWhiteLabelCta = useShowWhiteLabelCta()
   const { daysUntilExpiry, unverifiedDaysLeft, dismissed, dismiss } = useLicenseExpiry()
@@ -209,8 +248,12 @@ export function PageHeader() {
   )
   const t = useTranslations('navigation.breadcrumbs')
   const tn = useTranslations('navigation')
+  const ta = useTranslations('common.a11y')
   const isMarine = useServiceType() === 'marine'
   const crumb = (key: string) => t(isMarine ? (marineBreadcrumbKeys[key] ?? key) : key)
+  const tSettings = useTranslations('settings')
+  const tBilling = useTranslations('billing')
+  const label = (segment: BreadcrumbSegment) => segment.label ?? crumb(segment.key)
 
   // A set's own page is still the tire hotel, and somebody reading a set is
   // as likely to want the manual as somebody reading the list.
@@ -226,8 +269,12 @@ export function PageHeader() {
   let segments = breadcrumbMap[pathname]
 
   if (!segments) {
+    // /fault-codes/[code] and a make's own code, /fault-codes/oem/[make]/[code]
+    if (/^\/fault-codes\/([^/]+|oem\/[^/]+\/[^/]+)$/.test(pathname)) {
+      segments = [{ key: 'faultCodes', href: '/fault-codes' }, { key: 'faultCode' }]
+    }
     // /tire-hotel/[id]
-    if (/^\/tire-hotel\/[^/]+$/.test(pathname)) {
+    else if (/^\/tire-hotel\/[^/]+$/.test(pathname)) {
       segments = [{ key: 'tireHotel', href: '/tire-hotel' }, { key: 'tireSetDetails' }]
     }
     // /quotes/[id]/edit
@@ -242,6 +289,21 @@ export function PageHeader() {
     // /quotes/[id]
     else if (/^\/quotes\/[^/]+$/.test(pathname)) {
       segments = [{ key: 'quotes', href: '/quotes' }, { key: 'quoteDetails' }]
+    }
+    // /billing/recurring, named as the page names itself
+    else if (pathname === '/billing/recurring') {
+      segments = [
+        { key: 'billing', href: '/billing' },
+        { key: 'recurring', label: tBilling('recurring.title') },
+      ]
+    }
+    // /vehicles/inspection-reminders/[id], one campaign of the reminders
+    else if (/^\/vehicles\/inspection-reminders\/[^/]+$/.test(pathname)) {
+      segments = [
+        { key: 'vehicles', href: '/vehicles' },
+        { key: 'inspectionReminders', href: '/vehicles/inspection-reminders' },
+        { key: 'inspectionReminders' },
+      ]
     }
     // /vehicles/[id]/service/new
     else if (/^\/vehicles\/[^/]+\/service\/new$/.test(pathname)) {
@@ -263,17 +325,38 @@ export function PageHeader() {
     // /customers/[id]
     else if (pathname.startsWith('/customers/')) {
       segments = [{ key: 'customers', href: '/customers' }, { key: 'customerDetails' }]
+    }
+    // /inspections/[id]
+    else if (/^\/inspections\/[^/]+$/.test(pathname)) {
+      segments = [{ key: 'inspections', href: '/inspections' }, { key: 'inspectionDetails' }]
+    }
+    // /sales/[serviceId], a counter sale: a work order without a vehicle
+    else if (/^\/sales\/[^/]+$/.test(pathname)) {
+      segments = [{ key: 'workOrders', href: '/work-orders' }, { key: 'serviceDetails' }]
+    }
+    // A settings page the map above does not list: named as the settings
+    // menu names it, so a new page never reads "Home".
+    else if (pathname.startsWith('/settings/')) {
+      const page = SETTINGS_PAGES.find((p) => p.href === pathname)
+      segments = page
+        ? [
+            { key: 'settings', href: '/settings' },
+            { key: page.key, label: tSettings(`nav.items.${page.key}.title`) },
+          ]
+        : [{ key: 'settings', href: '/settings' }]
     } else {
       segments = [{ key: 'home' }]
     }
   }
+
+  const ownsHeading = ownHeading ?? OWN_HEADING.some((pattern) => pattern.test(pathname))
 
   return (
     <>
       <header className="sticky top-0 z-10 flex h-16 shrink-0 items-center gap-2 bg-background px-4">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 data-[orientation=vertical]:h-4" />
-        <Breadcrumb>
+        <Breadcrumb aria-label={ta('breadcrumb')}>
           <BreadcrumbList>
             {segments.map((segment, i) => {
               const isLast = i === segments.length - 1
@@ -282,11 +365,24 @@ export function PageHeader() {
                   <BreadcrumbItem key={i}>
                     {/* A trail of one is not a trail. Pages that sit at the
                         top level get their crumb styled as the page title. */}
-                    <BreadcrumbPage
-                      className={segments.length === 1 ? 'text-base font-semibold' : undefined}
-                    >
-                      {crumb(segment.key)}
-                    </BreadcrumbPage>
+                    {ownsHeading ? (
+                      <BreadcrumbPage
+                        className={segments.length === 1 ? 'text-base font-semibold' : undefined}
+                      >
+                        {label(segment)}
+                      </BreadcrumbPage>
+                    ) : (
+                      <h1
+                        data-slot="breadcrumb-page"
+                        aria-current="page"
+                        className={cn(
+                          'text-foreground font-normal',
+                          segments.length === 1 && 'text-base font-semibold'
+                        )}
+                      >
+                        {label(segment)}
+                      </h1>
+                    )}
                   </BreadcrumbItem>
                 )
               }
@@ -294,9 +390,9 @@ export function PageHeader() {
                 <Fragment key={i}>
                   <BreadcrumbItem className="hidden md:block">
                     {segment.href ? (
-                      <BreadcrumbLink href={segment.href}>{crumb(segment.key)}</BreadcrumbLink>
+                      <BreadcrumbLink href={segment.href}>{label(segment)}</BreadcrumbLink>
                     ) : (
-                      <BreadcrumbPage>{crumb(segment.key)}</BreadcrumbPage>
+                      <BreadcrumbPage>{label(segment)}</BreadcrumbPage>
                     )}
                   </BreadcrumbItem>
                   <BreadcrumbSeparator className="hidden md:block" />
@@ -364,7 +460,12 @@ export function PageHeader() {
             <Link href="/settings/license" className="font-medium underline hover:no-underline">
               {tn('licenseRenew')}
             </Link>
-            <button type="button" onClick={dismiss} className="p-0.5 rounded hover:bg-black/10">
+            <button
+              type="button"
+              onClick={dismiss}
+              aria-label={ta('dismiss')}
+              className="p-0.5 rounded hover:bg-black/10"
+            >
               <X className="h-3.5 w-3.5" />
             </button>
           </div>

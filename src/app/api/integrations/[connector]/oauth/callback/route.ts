@@ -7,6 +7,7 @@ import {
   appUrl,
   loadConnection,
   setConnectionStatus,
+  writeLog,
 } from '@/features/integrations/Lib/connections'
 import {
   exchangeCode,
@@ -57,6 +58,19 @@ export async function GET(
   const client = resolveClient(spec, previous as unknown as Record<string, unknown>)
   if (!client) return fail('no-client')
 
+  // What the vendor tells us only here, such as which company was chosen,
+  // goes into the sealed credentials, next to the tokens, so identify and
+  // every job after it can read it and it never sits in the database in the
+  // clear: Intuit's rules put the realm id under the same encryption as the
+  // refresh token. A token refresh spreads the previous credentials, so it
+  // survives those. Zoho names its regional sign-in server here, which the
+  // code exchange itself must go to.
+  const extra: Record<string, string> = {}
+  for (const name of spec.callbackParams ?? []) {
+    const value = params.get(name)
+    if (value) extra[name] = value
+  }
+
   let credentials: OAuthCredentials
   try {
     credentials = await exchangeCode({
@@ -67,29 +81,24 @@ export async function GET(
       codeVerifier: previous.codeVerifier,
       state,
       previous,
+      callbackExtras: extra,
     })
   } catch (err) {
+    // The vendor's own words, such as invalid_client for a wrong secret, are
+    // the only clue to what is misconfigured. The browser only gets a code,
+    // so they go to the server log and the connection's activity log as well.
+    const reason = err instanceof Error ? err.message : 'Token exchange failed'
+    console.error(`[integrations] ${connector} refused the sign-in: ${reason}`)
     await db.integrationConnection.update({
       where: { id: connection.id },
       data: {
         oauthState: null,
         status: connection.status === 'active' ? 'active' : 'error',
-        lastError: err instanceof Error ? err.message : 'Token exchange failed',
+        lastError: reason,
       },
     })
+    await writeLog(connection.id, 'error', 'The provider refused the sign-in', { error: reason })
     return fail('exchange')
-  }
-
-  // What the vendor tells us only here, such as which company was chosen,
-  // goes into the sealed credentials, next to the tokens, so identify and
-  // every job after it can read it and it never sits in the database in the
-  // clear: Intuit's rules put the realm id under the same encryption as the
-  // refresh token. A token refresh spreads the previous credentials, so it
-  // survives those.
-  const extra: Record<string, string> = {}
-  for (const name of spec.callbackParams ?? []) {
-    const value = params.get(name)
-    if (value) extra[name] = value
   }
 
   await db.integrationConnection.update({
@@ -125,13 +134,43 @@ export async function GET(
     return fail('identify')
   }
 
+  // Settings the vendor already knows, such as the one organisation that was
+  // allowed, so the form does not ask for them. A failure here leaves them
+  // for the workshop to choose; the connection itself is good.
+  try {
+    const { ctx: connectorCtx, server } = await loadConnection(connection.id)
+    const outcome = server.onConnect ? await server.onConnect(connectorCtx) : undefined
+    if (outcome?.settings) {
+      const row = await db.integrationConnection.findUnique({
+        where: { id: connection.id },
+        select: { settings: true },
+      })
+      await db.integrationConnection.update({
+        where: { id: connection.id },
+        data: {
+          settings: {
+            ...((row?.settings as Record<string, unknown> | null) ?? {}),
+            ...outcome.settings,
+          } as object,
+        },
+      })
+    }
+  } catch (err) {
+    await writeLog(connection.id, 'warn', 'Connection setup could not finish on its own', {
+      error: err instanceof Error ? err.message : String(err),
+    })
+  }
+
   await logAudit(
     { userId: ctx.userId, organizationId: ctx.organizationId },
     {
       action: 'integration.connect',
       entity: 'IntegrationConnection',
       entityId: connection.id,
-      details: { key: 'integration_connect', params: { name: manifest.name } },
+      details: {
+        key: 'integration_connect',
+        params: { name: manifest.name, connectorId: manifest.id },
+      },
     }
   )
 

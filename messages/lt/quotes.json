@@ -22,7 +22,7 @@
     "quote": "Pasiūlymas",
     "save": "Išsaugoti",
     "pdf": "PDF",
-    "email": "El. paštas",
+    "send": "Siųsti",
     "share": "Dalintis",
     "delete": "Ištrinti",
     "deleteTitle": "Ištrinti pasiūlymą",
@@ -115,6 +115,7 @@
     "total": "Suma",
     "subtotal": "Dalių tarpinė suma: {amount}",
     "deleteRow": "Ištrinti eilutę",
+    "reorderRow": "Vilkite, kad pakeistumėte tvarką",
     "excludeFromTotal": "Neįskaičiuoti į sumą",
     "addFromInventory": "Iš sandėlio",
     "unitCost": "Savikaina",
@@ -139,6 +140,7 @@
     "hourlyHint": "Valandinis: skaičiuojama pagal darbo valandas (valandos × įkainis/val.). Spustelėkite, kad pakeistumėte.",
     "serviceHint": "Paslauga: apmokestinama fiksuota suma už vienetą. Spustelėkite, kad pakeistumėte.",
     "deleteRow": "Ištrinti eilutę",
+    "reorderRow": "Vilkite, kad pakeistumėte tvarką",
     "excludeFromTotal": "Neįskaičiuoti į sumą"
   },
   "notes": {
@@ -192,24 +194,15 @@
     "discountFixed": "Fiksuota",
     "tax": "Mokestis",
     "taxIncluded": "Mokestis (įsk.)",
+    "taxableAmount": "Apmokestinama suma",
     "total": "Iš viso",
     "inclusiveModeHint": "Eilučių kainos įvedamos su mokesčiu. Sumos rodo paskirstymą be mokesčio + mokestis."
   },
   "shareDialog": {
     "title": "Dalintis pasiūlymu",
     "description": "Sugeneruokite viešą nuorodą, leidžiančią bet kam peržiūrėti ir atsisiųsti šį pasiūlymą be prisijungimo.",
-    "notifyTitle": "Pranešti {name}",
-    "email": "El. paštas",
-    "noEmail": "(nėra el. pašto)",
-    "sms": "SMS",
-    "noPhone": "(nėra telefono)",
-    "sendNotification": "Siųsti pranešimą",
     "revokeLink": "Atšaukti nuorodą",
     "generateLink": "Generuoti viešą nuorodą",
-    "emailSent": "Laiškas išsiųstas",
-    "failedEmail": "Nepavyko išsiųsti laiško",
-    "smsSent": "SMS išsiųsta",
-    "failedSms": "Nepavyko išsiųsti SMS",
     "copyLink": "Kopijuoti nuorodą"
   },
   "images": {

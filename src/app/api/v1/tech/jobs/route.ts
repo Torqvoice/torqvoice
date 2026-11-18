@@ -2,6 +2,9 @@ import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry } from '@/features/time-tracking/Lib/timeEntries'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
+import { onJobWhere } from '@/features/workboard/Lib/jobTeam'
 
 /** Statuses that mean "this is on my plate right now". */
 const ACTIVE_STATUSES = ['in-progress', 'pending', 'waiting-parts']
@@ -10,7 +13,8 @@ const ACTIVE_STATUSES = ['in-progress', 'pending', 'waiting-parts']
  * The technician's own job list, which is the app's home screen.
  *
  * Scoped to their technician rows, never to a client-supplied id: the app
- * cannot ask for somebody else's work by changing a parameter. Counts are
+ * cannot ask for somebody else's work by changing a parameter. Their own
+ * work is every job they are on, as its technician or helping on it. Counts are
  * included so the list can show what a job already has without a request per
  * row, which matters on a phone holding twenty of them.
  */
@@ -18,11 +22,26 @@ export async function GET(request: Request) {
   return withApiAuth(
     request,
     async (ctx) => {
+      // A booking (an online one, or one the desk made ahead) is `scheduled`
+      // until work starts. From its day on it is the car arriving, the one a
+      // technician checks in, so it is on the list; a booking for next week
+      // is not yet.
+      const timeZone = await workshopTimeZone(ctx.organizationId)
+      const endOfToday = addZonedDays(startOfZonedDay(new Date(), timeZone), 1, timeZone)
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId: ctx.organizationId,
-          status: { in: ACTIVE_STATUSES },
-          technicianId: { in: ctx.technicianIds },
+          AND: [
+            // Theirs, or one they are helping on: a helper has the job on
+            // their list exactly as its technician does.
+            onJobWhere(ctx.technicianIds),
+            {
+              OR: [
+                { status: { in: ACTIVE_STATUSES } },
+                { status: 'scheduled', startDateTime: { lt: endOfToday } },
+              ],
+            },
+          ],
         },
         select: {
           id: true,

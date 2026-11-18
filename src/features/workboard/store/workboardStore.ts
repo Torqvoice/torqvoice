@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import type { WorkBay, WorkBoardJob } from '../Actions/boardActions'
+import { helpersAfterTechnicianChange } from '../utils/lanes'
 
 type UnassignedServiceRecord = {
   id: string
@@ -88,7 +89,10 @@ type WorkBoardState = {
   optimisticSchedule: (
     jobId: string,
     patch: Partial<
-      Pick<WorkBoardJob, 'technicianId' | 'workBayId' | 'startDateTime' | 'endDateTime'>
+      Pick<
+        WorkBoardJob,
+        'technicianId' | 'helperIds' | 'workBayId' | 'startDateTime' | 'endDateTime'
+      >
     >
   ) => void
 }
@@ -165,7 +169,16 @@ export const useWorkBoardStore = create<WorkBoardState>((set) => ({
 
   optimisticMove: (jobId, newTechId) =>
     set((s) => ({
-      jobs: s.jobs.map((j) => (j.id === jobId ? { ...j, technicianId: newTechId } : j)),
+      jobs: s.jobs.map((j) =>
+        j.id === jobId
+          ? {
+              ...j,
+              technicianId: newTechId,
+              // A helper taking the job over swaps with whoever had it.
+              helperIds: helpersAfterTechnicianChange(j, newTechId),
+            }
+          : j
+      ),
     })),
 
   optimisticSchedule: (jobId, patch) =>

@@ -153,5 +153,13 @@
   },
   "manageKinds": "Arten verwalten",
   "photosHeading": "Fotos",
-  "previousShort": "früher"
+  "previousShort": "früher",
+  "addMark": "Markierung hinzufügen",
+  "addMarkTitle": "Eine Markierung hinzufügen",
+  "addMarkBody": "Wählen Sie das Teil, an dem der Schaden ist. Die Markierung wird in seine Mitte gesetzt, und Sie können sie danach verschieben.",
+  "panel": "Teil",
+  "choosePanel": "Teil wählen",
+  "panelInView": "{panel} ({view})",
+  "panelHint": "Verschiebt die Markierung in die Mitte des gewählten Teils.",
+  "markKeysHint": "Enter öffnet die Markierung. Die Pfeiltasten verschieben sie, mit Umschalt weiter."
 }

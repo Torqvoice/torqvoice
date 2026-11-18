@@ -35,7 +35,7 @@
     },
     "save": "Opslaan",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Versturen",
     "share": "Delen",
     "notify": "Melden",
     "delete": "Verwijderen",
@@ -92,6 +92,7 @@
       "inspection": "Inspectie"
     },
     "statusOptions": {
+      "scheduled": "Ingepland",
       "pending": "In afwachting",
       "in_progress": "In uitvoering",
       "waiting_parts": "Wacht op onderdelen",
@@ -146,7 +147,8 @@
     "deleteRow": "Rij verwijderen",
     "outOfStock": "Niet op voorraad",
     "onBackorder": "In nabestelling ({count})",
-    "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen."
+    "nameMissingHint": "Rijen zonder onderdeelnaam worden niet opgeslagen.",
+    "fitsVehicleFirst": "Onderdelen met tags voor {vehicle} staan bovenaan."
   },
   "labor": {
     "title": "Arbeidskosten",
@@ -175,8 +177,88 @@
     "shopFeeHintPercentLabor": "De werkplaatstoeslag uit Instellingen: {percent} % van de arbeid op deze klus. Verwijder de regel om hem weg te laten.",
     "shopFeeHintPercentAll": "De werkplaatstoeslag uit Instellingen: {percent} % van de arbeid en onderdelen op deze klus. Verwijder de regel om hem weg te laten."
   },
+  "laborGuide": {
+    "button": "Arbeidstijden",
+    "title": "Arbeidstijden",
+    "description": "Standaardtijden en vloeistoffen voor dit voertuig",
+    "tabLabor": "Arbeidstijden",
+    "tabFluids": "Vloeistoffen",
+    "engine": "Motor",
+    "categories": "Categorieën",
+    "allJobs": "Alle werkzaamheden",
+    "search": "Zoek werkzaamheden, bijvoorbeeld remblokken",
+    "clearSearch": "Zoekopdracht wissen",
+    "jobCount": "{count, plural, one {# werkzaamheid} other {# werkzaamheden}}",
+    "noMatch": "Geen werkzaamheden passen bij ‘{query}’",
+    "noJobs": "De gids noemt geen werkzaamheden voor deze motor.",
+    "showAll": "Alle werkzaamheden tonen",
+    "showHours": "Uren tonen",
+    "show": "Tonen",
+    "lockedValue": "Niet zichtbaar met deze sleutel",
+    "hours": "{hours} u",
+    "range": "{low} tot {high} u",
+    "bookTime": "Normtijd {hours} u",
+    "add": "Toevoegen als arbeidsregel",
+    "added": "Toegevoegd",
+    "addJob": "{job} toevoegen als arbeidsregel",
+    "addedJob": "{job} is toegevoegd",
+    "addedCount": "{count, plural, one {# werkzaamheid toegevoegd} other {# werkzaamheden toegevoegd}}",
+    "partsAddedCount": "{count, plural, one {# onderdeel toegevoegd} other {# onderdelen toegevoegd}}",
+    "done": "Klaar",
+    "loading": "Voertuig opzoeken",
+    "stillLooking": "Nog aan het zoeken. Open Labor Project kan tot een halve minuut nodig hebben voor een voertuig waarover het weinig gegevens heeft.",
+    "notFoundTitle": "Niet in de gids",
+    "notFound": "De tijdengids heeft geen gegevens voor dit voertuig. Controleer of merk, model en bouwjaar geschreven zijn zoals de fabrikant ze noemt, of voeg het VIN toe.",
+    "fluidsNotFoundTitle": "Geen vloeistofgegevens voor dit voertuig",
+    "fluidsNotFound": "Open Labor Project heeft nog geen vloeistofgegevens voor dit voertuig.",
+    "failedTitle": "Het opzoeken is niet gelukt",
+    "failed": "Het opzoeken is mislukt",
+    "unlockFailed": "Die waarde kon niet worden opgehaald",
+    "retry": "Opnieuw proberen",
+    "matchNone": "Geen van de vermelde motoren past bij de motor die voor dit voertuig is vastgelegd, dus deze tijden kunnen voor een andere motor gelden. Kies hierboven de motor die het dichtst in de buurt komt.",
+    "matchFuel": "De motor is gekozen op brandstofsoort. Controleer of het de juiste is.",
+    "matchUnknown": "Voor dit voertuig is geen cilinderinhoud vastgelegd, dus controleer of de motor hierboven de juiste is.",
+    "hiddenByConfidence": "{count, plural, one {# tijd onder uw minimale zekerheid is verborgen.} other {# tijden onder uw minimale zekerheid zijn verborgen.}}",
+    "changeSettings": "Wijzigen",
+    "liters": "{value} L",
+    "quarts": "{value} qt",
+    "km": "{value} km",
+    "miles": "{value} mi",
+    "capacity": "Inhoud",
+    "drainRefill": "Aftappen en vullen",
+    "interval": "Vervangen elke",
+    "copySpec": "{spec} kopiëren",
+    "copied": "Gekopieerd",
+    "noFluids": "De gids noemt geen vloeistoffen voor deze motor.",
+    "addAsPart": "Toevoegen als onderdeel",
+    "addFluidAsPart": "{system} toevoegen als onderdeel",
+    "partAdded": "Toegevoegd",
+    "fromStock": "Uit voorraad",
+    "addWithoutStock": "Toevoegen zonder voorraadartikel",
+    "takesDrainRefill": "Neemt {amount} bij aftappen en bijvullen",
+    "takesCapacity": "Neemt {amount} in totaal",
+    "attribution": "Gegevens van {source}",
+    "market": "Markt: {region}",
+    "about": "Hoe zeker is dit?",
+    "aboutTitle": "Hoe zeker de bron is",
+    "estimateNote": "Waarden met Schatting zijn door AI gemaakt en niet gecontroleerd aan de gegevens van de fabrikant. Controleer ze voordat u een klant een offerte geeft.",
+    "lockedNote": "Deze sleutel toont waarden één voor één, en elke waarde telt als een aanroep. Een betaald abonnement toont ze allemaal tegelijk.",
+    "settings": "Instellingen voor arbeidstijden",
+    "confidence": {
+      "oem": "OEM",
+      "oemHelp": "Vergeleken met de gegevens van de fabrikant",
+      "high": "Geverifieerd",
+      "highHelp": "Geverifieerd door de bron",
+      "medium": "Gemiddeld",
+      "mediumHelp": "De bron geeft deze waarde gemiddelde zekerheid",
+      "estimated": "Schatting",
+      "estimatedHelp": "Door AI gemaakt en niet gecontroleerd aan de gegevens van de fabrikant"
+    }
+  },
   "liveLabor": {
     "title": "{count, plural, one {Een monteur heeft arbeid aan deze order toegevoegd} other {Een monteur heeft # arbeidsregels aan deze order toegevoegd}}",
+    "titleParts": "{count, plural, one {Een monteur heeft een onderdeel aan deze order toegevoegd} other {Een monteur heeft # onderdelen aan deze order toegevoegd}}",
+    "titleBoth": "Een monteur heeft arbeid en onderdelen aan deze order toegevoegd",
     "body": "Die blijft buiten de lijst terwijl je bewerkt. Bij je volgende keer opslaan gaat die sowieso mee.",
     "show": "Tonen"
   },
@@ -188,13 +270,29 @@
     "subtotalInclTax": "Subtotaal (incl. btw)",
     "discount": "Korting",
     "discountNone": "Geen",
+    "discountOff": "Uit",
     "discountPercentage": "Percentage",
     "discountFixed": "Vast",
     "tax": "Belasting",
     "taxIncluded": "Belasting (incl.)",
+    "taxableAmount": "Belastbaar bedrag",
     "total": "Totaal",
     "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting.",
     "partsCost": "Onderdelenkosten (intern)"
+  },
+  "lineTax": {
+    "label": "Belasting op deze regel",
+    "taxedTag": "BEL.",
+    "untaxedTag": "GEEN BEL.",
+    "taxedHint": "Over deze regel wordt belasting berekend. Klik om de regel buiten de belasting te houden.",
+    "untaxedHint": "Over deze regel wordt geen belasting berekend. Klik om de regel te belasten."
+  },
+  "taxOffer": {
+    "noTax": "Dit is zonder belasting aangemaakt. De werkplaats rekent nu {rate}%.",
+    "otherRate": "Dit staat op {current}%. De werkplaats rekent nu {rate}%.",
+    "apply": "{rate}% belasting toepassen",
+    "failed": "De belasting kon niet worden bijgewerkt",
+    "saveFirst": "Sla eerst je wijzigingen op en pas daarna de belasting toe."
   },
   "notes": {
     "title": "Opmerkingen",
@@ -227,6 +325,7 @@
     "discount": "Korting",
     "tax": "Belasting ({rate}%)",
     "taxIncluded": "Btw (incl., {rate}%)",
+    "taxableAmount": "Belastbaar bedrag",
     "total": "Totaal",
     "paid": "Betaald",
     "balanceDue": "Verschuldigd bedrag",
@@ -286,18 +385,8 @@
   "share": {
     "title": "Factuur delen",
     "description": "Genereer een openbare koppeling waarmee iedereen deze factuur kan bekijken en downloaden zonder in te loggen.",
-    "notifyTitle": "Stuur bericht naar {name}",
-    "email": "E-mail",
-    "noEmail": "(geen e-mailadres op bestand)",
-    "sms": "SMS",
-    "noPhone": "(geen telefoonnummer op bestand)",
-    "sendNotification": "Melding verzenden",
     "revokeLink": "Koppeling intrekken",
     "generateLink": "Openbare koppeling genereren",
-    "emailSent": "E-mail verzonden",
-    "failedEmail": "E-mail verzenden mislukt",
-    "smsSent": "SMS verzonden",
-    "failedSms": "SMS verzenden mislukt",
     "copyLink": "Link kopiëren"
   },
   "sidebar": {
@@ -427,7 +516,13 @@
     "loadOn": "Geboekte uren op {date}",
     "promisedAt": "Toegezegd aan klant",
     "promisedPlaceholder": "Nog niet toegezegd",
-    "promisedClear": "Wissen"
+    "promisedClear": "Wissen",
+    "lead": "Leiding",
+    "alsoOnJob": "Ook op deze klus",
+    "helperAdd": "{name} aan deze klus toevoegen",
+    "helperRemove": "{name} van deze klus halen",
+    "failedHelper": "Bijwerken wie op de klus staat mislukt",
+    "clashPeople": "{count, plural, one {{names} is bezet} other {{names} zijn bezet}}"
   },
   "notifications": {
     "title": "Klantmeldingen",
@@ -583,7 +678,6 @@
   "modern": {
     "statusLabel": "Status van de werkorder",
     "back": "Terug",
-    "backToClassic": "Terug naar de klassieke indeling",
     "openCustomer": "Klant openen",
     "serviceHistory": "Servicegeschiedenis",
     "changeVehicle": "Voertuig wijzigen",
@@ -602,13 +696,6 @@
       "paymentTaken": "Betaling van {amount} geregistreerd",
       "statusSet": "Status gezet op {status}"
     },
-    "invite": {
-      "title": "De werkorderpagina is vernieuwd.",
-      "body": "Een overzichtelijkere indeling met dezelfde velden. U kunt altijd terugschakelen.",
-      "try": "Nu proberen",
-      "dismiss": "Niet nu",
-      "menu": "Nieuwe indeling proberen"
-    },
     "promised": "Toegezegd voor {date}",
     "promisedOverdue": "Toegezegd voor {date}, te laat",
     "opened": "Geopend op {date}",
@@ -617,6 +704,7 @@
     "titleField": "Titel",
     "media": {
       "tabs": {
+        "all": "Alles",
         "photos": "Foto's",
         "diagnostics": "Diagnose",
         "dropoff": "Inname"
@@ -626,6 +714,7 @@
       "showToCustomer": "Aan de klant tonen",
       "hideFromCustomer": "Voor de klant verbergen",
       "add": {
+        "all": "Bestanden toevoegen",
         "image": "Foto's toevoegen",
         "document": "Documenten toevoegen",
         "diagnostic": "Diagnostisch verslag toevoegen",
@@ -666,6 +755,7 @@
       "customerSince": "Klant sinds"
     },
     "moreStatuses": "Meer statussen",
+    "addStatus": "Status toevoegen",
     "fromInspection": "Uit inspectie {name}, {date}",
     "fromQuote": "Uit offerte {ref}",
     "startInspection": "Inspectie starten"
@@ -730,6 +820,21 @@
         "odometer": "Kilometerstand",
         "other": "Schade of anders"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Voertuigfoto maken met een telefoon",
+      "dialogBody": "Maak een foto van de auto op elke telefoon, of kies er een die er al op staat. Die wordt de foto bovenaan de voertuigpagina.",
+      "step2": "Maak een foto van de hele auto, of kies er een van de telefoon.",
+      "step3": "Hij vervangt de foto op de voertuigpagina zodra hij binnenkomt.",
+      "scope": "De link kan alleen de foto van dit voertuig instellen en werkt na 30 minuten niet meer.",
+      "waiting": "Wachten op de foto…",
+      "received": "Foto ontvangen",
+      "pageTitle": "Foto van het voertuig",
+      "pageBody": "Maak een foto van de hele auto. Hij vervangt de foto op de voertuigpagina.",
+      "choosePhoto": "Foto kiezen",
+      "saved": "Opgeslagen. De foto staat nu op de voertuigpagina. Maak een nieuwe om hem te vervangen.",
+      "invalid": "Scan de code op de voertuigpagina opnieuw.",
+      "notAPhoto": "Hier kunnen alleen foto’s worden gebruikt."
     }
   },
   "payCode": {
@@ -750,5 +855,12 @@
   },
   "customStatus": {
     "defaultMessage": "Hallo {customer_name}, een update over uw {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Je wijzigingen zijn niet opgeslagen",
+    "fallbackReason": "De laatste wijzigingen konden niet worden opgeslagen.",
+    "hint": "Blijf om het te herstellen, of ga weg en verlies de wijzigingen sinds de laatste keer opslaan.",
+    "stay": "Blijven en herstellen",
+    "leave": "Weggaan zonder opslaan"
   }
 }

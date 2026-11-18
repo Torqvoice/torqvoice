@@ -26,5 +26,53 @@
     "markUnread": "Mark as unread",
     "nothingToMarkUnread": "The customer has not written in this conversation yet.",
     "markUnreadFailed": "Could not mark the conversation as unread."
+  },
+  "email": {
+    "badge": "Email",
+    "empty": "No messages in this conversation yet.",
+    "placeholder": "Write a reply…",
+    "subjectPlaceholder": "Subject",
+    "send": "Send",
+    "sendHint": "Enter sends, Shift+Enter starts a new line",
+    "sendFailed": "Could not send the email",
+    "sentDocument": "Sent: {subject}",
+    "showQuoted": "Show quoted text",
+    "hideQuoted": "Hide quoted text",
+    "spamFlag": "The mail filter flagged this message as possible spam.",
+    "unknownSender": "This address belongs to no customer yet. Add them as a customer to reply.",
+    "ownVendorChoice": "You send email through your own vendor, so replies go to that address.",
+    "ownVendorSettings": "Email settings",
+    "ownVendorThread": "You send email through your own vendor, so replies to this customer go to your own mailbox.",
+    "replyFromMailApp": "Reply from your mail app",
+    "attachment": "Attachment",
+    "compose": {
+      "title": "New email",
+      "searchPlaceholder": "Search customers",
+      "noMatches": "No customers match your search.",
+      "noRecipients": "No customers with an email address yet."
+    }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} has not written in the portal yet.",
+    "placeholder": "Write to {name} in the portal",
+    "send": "Send message",
+    "sendFailed": "Could not send the message",
+    "sendHint": "Enter sends, Shift+Enter starts a new line. {name} sees it the next time they open the portal.",
+    "loadOlder": "Load older messages",
+    "loadFailed": "Could not load the conversation.",
+    "tryAgain": "Try again",
+    "addPhoto": "Add a photo",
+    "removePhoto": "Remove {name}",
+    "uploadFailed": "The photo could not be added. Photos up to {size} MB work.",
+    "tooManyPhotos": "A message takes up to {count} photos.",
+    "photoFrom": "Photo from {name}",
+    "videoFrom": "Video from {name}",
+    "openFile": "Open file",
+    "you": "You",
+    "seen": "Seen",
+    "off": "Messages in the customer portal are turned off, so this conversation can be read but not answered.",
+    "offSettings": "Customer portal settings",
+    "deleteDescription": "Removes the whole conversation with {name}, for them too: it disappears from their portal."
   }
 }

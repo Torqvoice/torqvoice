@@ -26,5 +26,53 @@
     "markUnread": "Merk som ulest",
     "nothingToMarkUnread": "Kunden har ikke skrevet i denne samtalen ennå.",
     "markUnreadFailed": "Kunne ikke merke samtalen som ulest."
+  },
+  "email": {
+    "badge": "E-post",
+    "empty": "Ingen meldinger i denne samtalen ennå.",
+    "placeholder": "Skriv et svar",
+    "subjectPlaceholder": "Emne",
+    "send": "Send",
+    "sendHint": "Enter sender, Shift+Enter gir ny linje",
+    "sendFailed": "Kunne ikke sende e-posten",
+    "sentDocument": "Sendt: {subject}",
+    "showQuoted": "Vis sitert tekst",
+    "hideQuoted": "Skjul sitert tekst",
+    "spamFlag": "E-postfilteret merket denne meldingen som mulig spam.",
+    "unknownSender": "Denne adressen tilhører ingen kunde ennå. Legg dem til som kunde for å svare.",
+    "ownVendorChoice": "Du sender e-post gjennom din egen leverandør, så svarene går til den adressen.",
+    "ownVendorSettings": "E-postinnstillinger",
+    "ownVendorThread": "Du sender e-post gjennom din egen leverandør, så svar fra denne kunden går til din egen innboks.",
+    "replyFromMailApp": "Svar fra e-postappen din",
+    "attachment": "Vedlegg",
+    "compose": {
+      "title": "Ny e-post",
+      "searchPlaceholder": "Søk etter kunder",
+      "noMatches": "Ingen kunder passer søket.",
+      "noRecipients": "Ingen kunder med e-postadresse ennå."
+    }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} har ikke skrevet i portalen ennå.",
+    "placeholder": "Skriv til {name} i portalen",
+    "send": "Send melding",
+    "sendFailed": "Kunne ikke sende meldingen",
+    "sendHint": "Enter sender, Shift+Enter gir ny linje. {name} ser meldingen neste gang portalen åpnes.",
+    "loadOlder": "Last inn eldre meldinger",
+    "loadFailed": "Kunne ikke laste inn samtalen.",
+    "tryAgain": "Prøv igjen",
+    "addPhoto": "Legg til et bilde",
+    "removePhoto": "Fjern {name}",
+    "uploadFailed": "Bildet kunne ikke legges til. Bilder kan være opptil {size} MB.",
+    "tooManyPhotos": "En melding kan ha opptil {count} bilder.",
+    "photoFrom": "Bilde fra {name}",
+    "videoFrom": "Video fra {name}",
+    "openFile": "Åpne fil",
+    "you": "Du",
+    "seen": "Sett",
+    "off": "Meldinger i kundeportalen er slått av, så denne samtalen kan leses, men ikke besvares.",
+    "offSettings": "Innstillinger for kundeportalen",
+    "deleteDescription": "Fjerner hele samtalen med {name}, også for kunden: den forsvinner fra portalen deres."
   }
 }

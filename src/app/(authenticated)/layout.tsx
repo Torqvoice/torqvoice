@@ -1,4 +1,6 @@
 import { redirect } from 'next/navigation'
+import { getLocale, getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { NoAccess } from './no-access'
 import { AppSidebar } from '@/components/app-sidebar'
 import { FeatureHintProvider } from '@/components/feature-hint'
@@ -18,13 +20,19 @@ import { BroadcastLive } from '@/components/broadcast-live'
 import { CurrencySettingsProvider } from '@/components/currency-settings-context'
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { ConnectionWatcher } from '@/components/connection-watcher'
 import { OnlineTracker } from '@/components/online-tracker'
+import { UpdateWatcher } from '@/components/update-watcher'
+import { buildVersion } from '@/lib/build-version.server'
+import { redirectToSignIn } from '@/lib/sign-in-redirect.server'
 import { InstallBanner } from '@/components/pwa-install-prompt'
+import { getAppBranding } from '@/lib/branding'
 import { MobileBottomNav } from '@/components/mobile-bottom-nav'
 import { SupportBubble } from '@/features/support/Components/SupportBubble'
 import { isSupportEnabled } from '@/lib/support'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { TypeKeyProvider } from '@/components/type-key-context'
+import { EngineSizeUnitProvider } from '@/components/engine-size-context'
 import { LicenseExpiryProvider } from '@/components/license-expiry-context'
 import {
   LICENSE_TOKEN_MAX_AGE_DAYS,
@@ -35,11 +43,15 @@ import { db } from '@/lib/db'
 import { isDemoMode } from '@/lib/demo'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { findLookupConnection } from '@/features/integrations/Lib/vehicle-lookup'
+import { faultCodesConnected } from '@/features/fault-codes/Lib/service.server'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { WORKSHOP_CHAT_ENABLED } from '@/features/ai/constants'
-import { getManifest } from '@/integrations/registry'
+import { getManifest, listManifests } from '@/integrations/registry'
+import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
 import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
+import { BookingAccessProvider } from '@/components/booking-launcher'
+import { BookingHost } from '@/features/calendar/Components/BookingHost'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { countUnreadMessages } from '@/features/messaging/Lib/unreadCount'
 import { addZonedDays, safeTimeZone, startOfZonedDay } from '@/lib/timezone'
@@ -47,6 +59,14 @@ import { technicianIdsForUser } from '@/features/time-tracking/Lib/timeEntries'
 import { TimeClockProvider } from '@/features/time-tracking/Components/TimeClockProvider'
 import { RealtimeProvider } from '@/features/realtime/RealtimeProvider'
 import { SaveShortcutListener } from '@/components/save-shortcut-listener'
+import { ShortcutsProvider } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { SidebarShortcut } from '@/features/shortcuts/Components/SidebarShortcut'
+import { AnalyticsIdentity } from '@/components/analytics-identity'
+import { WhatsNewProvider } from '@/features/whats-new/Components/WhatsNewProvider'
+import { getWhatsNewFeed } from '@/features/whats-new/Lib/feed.server'
+import { WHATS_NEW_PAGE_SIZE } from '@/features/whats-new/Lib/paging'
+import { selectEntries, unreadIds } from '@/features/whats-new/Lib/select'
+import { isWhatsNewTabHidden, WHATS_NEW_TAB_COOKIE } from '@/features/whats-new/Lib/tabPreference'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const data = await getLayoutData()
@@ -56,7 +76,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // dashboard grid).
   const sidebarOpen = (await cookies()).get('sidebar_state')?.value !== 'false'
 
-  if (data.status === 'unauthenticated') redirect('/auth/sign-in')
+  if (data.status === 'unauthenticated') return redirectToSignIn()
   if (data.status === 'no-organization') redirect('/onboarding')
 
   // Check email verification requirement (super admins bypass this)
@@ -71,6 +91,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   const features = await getFeatures(data.organizationId)
+  const appBranding = await getAppBranding()
   const showWhiteLabelCta = !isCloudMode() && !features.brandingRemoved && !isDemoMode
   // Cloud only, and off until a platform admin turns it on. Resolved here so
   // the widget's code never reaches a self-hosted install's page.
@@ -117,6 +138,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   let hasAnyAccess = true
   /** Whether the plate lookup may offer to add a vehicle it did not find. */
   let canCreateVehicles = true
+  /** Whether a vehicle found or added anywhere may be booked in from there. */
+  let canBook = true
+  /** Whether a booking may offer to add the customer it is for. */
+  let canAddCustomer = true
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
@@ -137,6 +162,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
        */
       visibleSubjects = []
       canCreateVehicles = false
+      canBook = false
+      canAddCustomer = false
       hasAnyAccess = false
     } else {
       const userPermissions = membership?.customRole?.permissions ?? []
@@ -150,6 +177,14 @@ export default async function DashboardLayout({ children }: { children: React.Re
         action: PermissionAction.CREATE,
         subject: PermissionSubject.VEHICLES,
       })
+      canBook = hasPermission(userPermissions, {
+        action: PermissionAction.CREATE,
+        subject: PermissionSubject.SERVICES,
+      })
+      canAddCustomer = hasPermission(userPermissions, {
+        action: PermissionAction.CREATE,
+        subject: PermissionSubject.CUSTOMERS,
+      })
       // A role that grants nothing readable. Every page behind the nav would
       // answer "Your role does not allow this", so say it once instead.
       hasAnyAccess = visibleSubjects.length > 0
@@ -160,6 +195,26 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const org = data.organizations.find((o) => o.id === data.organizationId)
     return <NoAccess organizationName={org?.name ?? ''} />
   }
+
+  // The highlights written on torqvoice.com, narrowed to what this person can
+  // actually open. Torqvoice Cloud only: a self-hosted install is the
+  // workshop's own, and news from us has no place appearing inside it.
+  const appVersion = process.env.APP_VERSION || 'development'
+  const releaseNotesUrl =
+    process.env.RELEASE_NOTES_URL || 'https://github.com/Torqvoice/torqvoice/releases'
+  const whatsNewHidden = !isCloudMode()
+  const whatsNewEntries = whatsNewHidden
+    ? []
+    : selectEntries(await getWhatsNewFeed(await getLocale()), {
+        appVersion,
+        cloud: isCloudMode(),
+        visibleSubjects,
+      })
+  const whatsNewTabHidden = isWhatsNewTabHidden((await cookies()).get(WHATS_NEW_TAB_COOKIE)?.value)
+  const whatsNewUnread = unreadIds(whatsNewEntries, {
+    seenAt: data.whatsNewSeenAt,
+    accountCreatedAt: data.userCreatedAt,
+  })
 
   // Live work for the sidebar pills. Each is a count of things still in hand,
   // never a running total, so the numbers stay small enough to mean
@@ -228,9 +283,27 @@ export default async function DashboardLayout({ children }: { children: React.Re
       ? await findLookupConnection(data.organizationId)
       : null
   const plateLookupAvailable = lookupConnection !== null
-  const plateLookupRegistry = lookupConnection
-    ? (getManifest(lookupConnection.connectorId)?.name ?? null)
-    : null
+
+  // The palette's fault code groups and the fault code page, once the code
+  // service is connected. Off on a self-hosted install, where it does not exist.
+  const faultCodesEnabled =
+    visibleSubjects.includes(PermissionSubject.VEHICLES) &&
+    (await faultCodesConnected(data.organizationId))
+
+  // What the search palette can reach without asking the server: which
+  // settings pages exist on this install, and the connectors the catalog
+  // offers, trimmed to a name and a logo.
+  const cloudLinked = await isCloudLinked()
+  const ti = await getTranslations('integrations')
+  const ta = await getTranslations('common.a11y')
+  const searchConnectors = listManifests().map((m) => ({
+    id: m.id,
+    name: connectorName(ti, m),
+    category: m.category,
+    logo: m.logo,
+  }))
+  const plateLookupManifest = lookupConnection ? getManifest(lookupConnection.connectorId) : null
+  const plateLookupRegistry = plateLookupManifest ? connectorName(ti, plateLookupManifest) : null
 
   // Licence notices for admins and owners. Both clocks come off the signed
   // token: the term itself, and how long since torqvoice.com last confirmed
@@ -242,135 +315,215 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const licenceSettings = await db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,
-        key: { in: ['license.token', 'license.key', 'license.expiryDismissed'] },
+        key: {
+          in: ['license.token', 'license.key', 'license.expiryDismissed', 'invoice.orgNumber'],
+        },
       },
       select: { key: true, value: true },
     })
     const licenceMap = new Map(licenceSettings.map((s) => [s.key, s.value]))
     licenseExpiryDismissed = licenceMap.get('license.expiryDismissed') === 'true'
-    const verification = verifyLicenseToken(licenceMap.get('license.token'), data.organizationId)
-    if (verification.status === 'valid') {
-      daysUntilExpiry = verification.daysUntilExpiry
-      if (verification.ageDays !== null && verification.ageDays >= LICENSE_TOKEN_WARN_AGE_DAYS) {
-        unverifiedDaysLeft = Math.max(0, LICENSE_TOKEN_MAX_AGE_DAYS - verification.ageDays)
+    const verification = verifyLicenseToken(licenceMap.get('license.token'), data.organizationId, {
+      registrationNumber: licenceMap.get('invoice.orgNumber'),
+    })
+    // A perpetual licence has no term and no refresh, so neither notice
+    // applies to it. A registration number mismatch is explained on the
+    // License page, where the number can be compared and fixed.
+    if (verification.kind !== 'perpetual') {
+      if (verification.status === 'valid') {
+        daysUntilExpiry = verification.daysUntilExpiry
+        if (verification.ageDays !== null && verification.ageDays >= LICENSE_TOKEN_WARN_AGE_DAYS) {
+          unverifiedDaysLeft = Math.max(0, LICENSE_TOKEN_MAX_AGE_DAYS - verification.ageDays)
+        }
+      } else if (verification.status === 'stale') {
+        unverifiedDaysLeft = 0
+      } else if (verification.status === 'expired') {
+        daysUntilExpiry = verification.daysUntilExpiry
       }
-    } else if (verification.status === 'stale') {
-      unverifiedDaysLeft = 0
-    } else if (verification.status === 'expired') {
-      daysUntilExpiry = verification.daysUntilExpiry
     }
   }
 
   return (
     <ServiceTypeProvider serviceType={data.serviceType}>
       <TypeKeyProvider enabled={data.typeKeyEnabled}>
-        <LicenseExpiryProvider
-          daysUntilExpiry={daysUntilExpiry}
-          unverifiedDaysLeft={unverifiedDaysLeft}
-          dismissed={licenseExpiryDismissed}
-        >
-          <WhiteLabelCtaProvider show={showWhiteLabelCta}>
-            {/* Accent line along the very top of the viewport — the card hairline at
+        <EngineSizeUnitProvider unit={data.engineSizeUnit}>
+          <LicenseExpiryProvider
+            daysUntilExpiry={daysUntilExpiry}
+            unverifiedDaysLeft={unverifiedDaysLeft}
+            dismissed={licenseExpiryDismissed}
+          >
+            <WhiteLabelCtaProvider show={showWhiteLabelCta}>
+              <WhatsNewProvider
+                // The first page only; the panel asks for older ones as it is scrolled.
+                entries={whatsNewEntries.slice(0, WHATS_NEW_PAGE_SIZE)}
+                hasMore={whatsNewEntries.length > WHATS_NEW_PAGE_SIZE}
+                unreadIds={whatsNewUnread}
+                initialTabHidden={whatsNewTabHidden}
+                timeZone={safeTimeZone(data.timezone)}
+                appVersion={appVersion}
+                releaseNotesUrl={releaseNotesUrl}
+                feedback={isDemoMode ? null : isCloudMode() ? 'identified' : 'anonymous'}
+              >
+                {/* One listener for every keyboard shortcut, with this person's
+                    own keys. Told what the search palette is told, so a page
+                    their role cannot open has no shortcut either. */}
+                <ShortcutsProvider
+                  initialPrefs={data.keyboardShortcuts}
+                  plateLookupAvailable={plateLookupAvailable}
+                  bookingAvailable={canBook}
+                  commands={{
+                    visibleSubjects,
+                    features,
+                    tireHotelEnabled,
+                    aiEnabled,
+                    isAdminOrOwner: isOwnerOrAdmin,
+                    faultCodesEnabled,
+                  }}
+                >
+                  {/* Accent line along the very top of the viewport — the card hairline at
         page scale: primary on the left, gone by the far edge. Marks where the
         app begins against the browser chrome. */}
-            <div
-              aria-hidden
-              className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
-            />
-            {/* Watches for a notice posted while this page is already open. Here
+                  <div
+                    aria-hidden
+                    className="pointer-events-none fixed inset-x-0 top-0 z-50 h-px bg-linear-to-r from-primary via-primary/35 to-transparent"
+                  />
+                  {/* For somebody on a keyboard: the first Tab offers a way past
+                    the sidebar's twenty links. Invisible until it has focus. */}
+                  <a
+                    href="#main-content"
+                    className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-background focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-foreground focus:shadow-md focus:outline-2 focus:outline-offset-2 focus:outline-foreground"
+                  >
+                    {ta('skipToContent')}
+                  </a>
+                  {/* Watches for a notice posted while this page is already open. Here
               rather than beside the banner because the socket authenticates on
               the session cookie, which the sign-in page does not have. */}
-            <BroadcastLive />
-            {/* The demo banner already occupies the header, and demo image tags
+                  <BroadcastLive />
+                  {/* The demo banner already occupies the header, and demo image tags
         (demo-abc1234) are not versions a visitor should be notified about. */}
-            {!isDemoMode && (
-              <UpdateBanner
-                currentVersion={process.env.APP_VERSION || 'development'}
-                lastSeenVersion={data.lastSeenVersion}
-                shownVersion={data.updateBannerVersion}
-                shownAt={data.updateBannerShownAt?.toISOString() ?? null}
-                releaseNotesUrl={
-                  process.env.RELEASE_NOTES_URL || 'https://github.com/Torqvoice/torqvoice/releases'
-                }
-              />
-            )}
-            <SidebarProvider
-              defaultOpen={sidebarOpen}
-              style={
-                {
-                  '--sidebar-width': '19rem',
-                } as React.CSSProperties
-              }
-            >
-              <DateSettingsProvider
-                dateFormat={data.dateFormat}
-                timeFormat={data.timeFormat}
-                timezone={data.timezone}
-                weekStartDay={data.weekStartDay}
-              >
-                <CurrencySettingsProvider
-                  currencyCode={data.currencyCode}
-                  currencyFormat={data.currencyFormat}
-                >
-                  <ConfirmProvider>
-                    <PlateLookupProvider
-                      value={{
-                        available: plateLookupAvailable,
-                        canCreate: canCreateVehicles,
-                        registryName: plateLookupRegistry,
-                      }}
+                  {!isDemoMode && (
+                    <UpdateBanner
+                      currentVersion={appVersion}
+                      lastSeenVersion={data.lastSeenVersion}
+                      shownVersion={data.updateBannerVersion}
+                      shownAt={data.updateBannerShownAt?.toISOString() ?? null}
+                      releaseNotesUrl={releaseNotesUrl}
+                    />
+                  )}
+                  <SidebarProvider
+                    defaultOpen={sidebarOpen}
+                    style={
+                      {
+                        '--sidebar-width': '19rem',
+                      } as React.CSSProperties
+                    }
+                  >
+                    <DateSettingsProvider
+                      dateFormat={data.dateFormat}
+                      timeFormat={data.timeFormat}
+                      timezone={data.timezone}
+                      weekStartDay={data.weekStartDay}
                     >
-                      <FeatureHintProvider
-                        initialSeen={seenHints}
-                        pending={[...pendingHints, ...announcements]}
+                      <CurrencySettingsProvider
+                        currencyCode={data.currencyCode}
+                        currencyFormat={data.currencyFormat}
                       >
-                        {/* One socket for the whole app: record changes, who
+                        <ConfirmProvider>
+                          <BookingAccessProvider value={{ canBook, canAddCustomer }}>
+                            <PlateLookupProvider
+                              value={{
+                                available: plateLookupAvailable,
+                                canCreate: canCreateVehicles,
+                                registryName: plateLookupRegistry,
+                              }}
+                            >
+                              <FeatureHintProvider
+                                initialSeen={seenHints}
+                                pending={[...pendingHints, ...announcements]}
+                              >
+                                {/* One socket for the whole app: record changes, who
                           else is on a record, and the older workshop-wide
                           channels the remaining pages still read. */}
-                        <RealtimeProvider>
-                          <TimeClockProvider technicianIds={technicianIds}>
-                            <SaveShortcutListener />
-                            <AppSidebar
-                              companyLogo={data.companyLogo}
-                              organizations={data.organizations}
-                              activeOrgId={data.organizationId}
-                              isSuperAdmin={data.isSuperAdmin}
-                              features={features}
-                              tireHotelEnabled={tireHotelEnabled}
-                              aiEnabled={aiEnabled}
-                              visibleSubjects={visibleSubjects}
-                              announcement={announcements[0] ?? null}
-                              isAdminOrOwner={isOwnerOrAdmin}
-                              counts={sidebarCounts}
-                              isTechnician={technicianIds.length > 0}
-                            />
-                            <SidebarInset>
-                              {/* A flex column with a real height, so the `flex-1` every
+                                <RealtimeProvider>
+                                  <TimeClockProvider technicianIds={technicianIds}>
+                                    <SaveShortcutListener />
+                                    <SidebarShortcut />
+                                    <AnalyticsIdentity
+                                      userId={data.userId}
+                                      organizationId={data.organizationId}
+                                    />
+                                    <AppSidebar
+                                      companyLogo={data.companyLogo}
+                                      organizations={data.organizations}
+                                      activeOrgId={data.organizationId}
+                                      isSuperAdmin={data.isSuperAdmin}
+                                      features={features}
+                                      tireHotelEnabled={tireHotelEnabled}
+                                      aiEnabled={aiEnabled}
+                                      faultCodesEnabled={faultCodesEnabled}
+                                      visibleSubjects={visibleSubjects}
+                                      announcement={announcements[0] ?? null}
+                                      isAdminOrOwner={isOwnerOrAdmin}
+                                      counts={sidebarCounts}
+                                      isTechnician={technicianIds.length > 0}
+                                      supportEnabled={supportEnabled}
+                                    />
+                                    <SidebarInset
+                                      id="main-content"
+                                      tabIndex={-1}
+                                      className="outline-none"
+                                    >
+                                      {/* A flex column with a real height, so the `flex-1` every
                           page already writes on its wrapper actually resolves.
                           Without it a page that wants to fill the window (the
                           work board's week timeline) stopped at its content and
                           left the rest of the screen blank. */}
-                              <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
-                                {children}
-                              </div>
-                            </SidebarInset>
-                            <SearchCommand />
-                            <PlateLookupCommand />
-                            {isOwnerOrAdmin && <NotificationInitializer />}
-                            <OnlineTracker />
-                            <InstallBanner />
-                          </TimeClockProvider>
-                        </RealtimeProvider>
-                      </FeatureHintProvider>
-                    </PlateLookupProvider>
-                  </ConfirmProvider>
-                </CurrencySettingsProvider>
-              </DateSettingsProvider>
-            </SidebarProvider>
-            <MobileBottomNav isSuperAdmin={data.isSuperAdmin} tireHotelEnabled={tireHotelEnabled} />
-            {supportEnabled && <SupportBubble />}
-          </WhiteLabelCtaProvider>
-        </LicenseExpiryProvider>
+                                      <div className="flex min-h-0 flex-1 flex-col pb-14 md:pb-0">
+                                        {children}
+                                      </div>
+                                    </SidebarInset>
+                                    <SearchCommand
+                                      visibleSubjects={visibleSubjects}
+                                      features={features}
+                                      tireHotelEnabled={tireHotelEnabled}
+                                      aiEnabled={aiEnabled}
+                                      isAdminOrOwner={isOwnerOrAdmin}
+                                      isCloud={cloudLinked}
+                                      supportEnabled={supportEnabled}
+                                      isMarine={data.serviceType === 'marine'}
+                                      connectors={searchConnectors}
+                                      faultCodesEnabled={faultCodesEnabled}
+                                    />
+                                    <PlateLookupCommand />
+                                    <BookingHost />
+                                    {isOwnerOrAdmin && <NotificationInitializer />}
+                                    <OnlineTracker />
+                                    <ConnectionWatcher />
+                                    <UpdateWatcher version={buildVersion()} />
+                                    <InstallBanner
+                                      appName={appBranding.name}
+                                      iconUrl={appBranding.iconUrl}
+                                    />
+                                  </TimeClockProvider>
+                                </RealtimeProvider>
+                              </FeatureHintProvider>
+                            </PlateLookupProvider>
+                          </BookingAccessProvider>
+                        </ConfirmProvider>
+                      </CurrencySettingsProvider>
+                    </DateSettingsProvider>
+                  </SidebarProvider>
+                  <MobileBottomNav
+                    isSuperAdmin={data.isSuperAdmin}
+                    tireHotelEnabled={tireHotelEnabled}
+                    supportEnabled={supportEnabled}
+                  />
+                  {supportEnabled && <SupportBubble userId={data.userId} />}
+                </ShortcutsProvider>
+              </WhatsNewProvider>
+            </WhiteLabelCtaProvider>
+          </LicenseExpiryProvider>
+        </EngineSizeUnitProvider>
       </TypeKeyProvider>
     </ServiceTypeProvider>
   )

@@ -27,7 +27,7 @@ export async function sendInvitation(input: unknown) {
       })
       if (!membership) throw new Error("You don't belong to an organization")
 
-      await createAndSendInvitation({
+      const { roleLabel } = await createAndSendInvitation({
         organizationId,
         organizationName: membership.organization.name,
         invitedById: userId,
@@ -37,7 +37,7 @@ export async function sendInvitation(input: unknown) {
       })
 
       revalidatePath('/settings/team')
-      return { invited: true, pending: true, email: data.email, role: data.role }
+      return { invited: true, pending: true, email: data.email, role: data.role, roleLabel }
     },
     {
       requiredPermissions: [
@@ -46,7 +46,10 @@ export async function sendInvitation(input: unknown) {
       audit: ({ result }) => ({
         action: 'team.sendInvitation',
         entity: 'TeamInvitation',
-        details: { key: 'team_sendInvitation', params: { email: result.email, role: result.role } },
+        details: {
+          key: 'team_sendInvitation',
+          params: { email: result.email, role: result.roleLabel },
+        },
         metadata: { email: result.email, role: result.role },
       }),
     }

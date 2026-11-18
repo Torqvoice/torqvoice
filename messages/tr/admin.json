@@ -114,7 +114,29 @@
     "resendApiKeyHint": "API anahtarınızı resend.com adresinden alın",
     "postmarkApiKeyHint": "Server Token'ınızı postmarkapp.com adresinden alın",
     "mailgunApiKeyHint": "API anahtarınızı app.mailgun.com adresinden alın",
-    "sendgridApiKeyHint": "API anahtarınızı app.sendgrid.com adresinden alın"
+    "sendgridApiKeyHint": "API anahtarınızı app.sendgrid.com adresinden alın",
+    "branding": {
+      "title": "Uygulama markası",
+      "description": "Bu kurulumda tarayıcı sekmesi başlığını, site simgesini ve yüklü uygulamanın adını ve simgesini değiştirir. Belgeler ve uygulamanın geri kalanı etkilenmez. Varsayılanı kullanmak için alanı boş bırakın.",
+      "nameLabel": "Uygulama adı",
+      "nameHint": "Tarayıcı sekmesinde ve yüklü uygulamanın adı olarak görünür.",
+      "save": "Adı kaydet",
+      "saved": "Uygulama adı kaydedildi",
+      "saveFailed": "Uygulama adı kaydedilemedi",
+      "iconLabel": "Uygulama simgesi",
+      "iconHint": "En az 512 × 512 piksel boyutunda kare bir görsel. En iyi sonuç için PNG.",
+      "iconAlt": "Geçerli uygulama simgesi",
+      "upload": "Yükle",
+      "replace": "Değiştir",
+      "remove": "Kaldır",
+      "uploaded": "Uygulama simgesi güncellendi",
+      "uploadFailed": "Simge yüklenemedi",
+      "removed": "Uygulama simgesi kaldırıldı",
+      "removeFailed": "Simge kaldırılamadı",
+      "lockedBadge": "Lisans gerekir",
+      "lockedHint": "White-label lisansı uygulama adını ve simgesini açar.",
+      "lockedLink": "Lisans sayfasını aç"
+    }
   },
   "common": {
     "openMenu": "Menüyü aç"

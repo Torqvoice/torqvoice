@@ -17,33 +17,32 @@ export const BACKUP_ZIP_LIMITS: ZipLimits = {
   maxTotalBytes: 2 * 1024 * 1024 * 1024,
 }
 
-/** The declared sizes of a zip's entries, as JSZip exposes them. */
+/** The declared size of one zip entry, from the archive's table of contents. */
 export interface ZipEntryLike {
+  name: string
   dir: boolean
-  _data?: { uncompressedSize?: number }
+  uncompressedSize: number
 }
 
 export function assertZipWithinLimits(
-  entries: Record<string, ZipEntryLike>,
+  entries: readonly ZipEntryLike[],
   limits: ZipLimits = BACKUP_ZIP_LIMITS
 ): { entries: number; totalBytes: number } {
-  const names = Object.keys(entries)
-  if (names.length > limits.maxEntries) {
-    throw new Error(`The archive has too many entries (${names.length})`)
+  if (entries.length > limits.maxEntries) {
+    throw new Error(`The archive has too many entries (${entries.length})`)
   }
   let totalBytes = 0
-  for (const name of names) {
-    const entry = entries[name]
+  for (const entry of entries) {
     if (entry.dir) continue
-    const size = entry._data?.uncompressedSize ?? 0
+    const size = entry.uncompressedSize
     if (!Number.isFinite(size) || size < 0)
-      throw new Error(`The archive entry ${name} has an invalid size`)
+      throw new Error(`The archive entry ${entry.name} has an invalid size`)
     totalBytes += size
     if (totalBytes > limits.maxTotalBytes) {
       throw new Error('The archive is too large to restore')
     }
   }
-  return { entries: names.length, totalBytes }
+  return { entries: entries.length, totalBytes }
 }
 
 /** Refuses a request body that is too large before it is read. */

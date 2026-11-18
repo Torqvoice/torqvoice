@@ -49,6 +49,12 @@ test('an invited colleague signs up straight into the workshop', async ({ page, 
   await ownerPage.getByRole('button', { name: 'Add', exact: true }).click()
   await ownerPage.getByText('Someone in the office').click()
   await ownerPage.locator('#member-email').fill(invitee)
+  // The form will not send an invitation with no role chosen. This spec is
+  // about the sign-up, so the colleague gets the one choice every workshop
+  // has, whatever roles it has made.
+  const dialog = ownerPage.getByRole('dialog').filter({ has: ownerPage.locator('#member-email') })
+  await dialog.getByRole('combobox').click()
+  await ownerPage.getByRole('option', { name: 'No role', exact: true }).click()
   await ownerPage.getByRole('button', { name: 'Invite', exact: true }).click()
   await expect(ownerPage.getByText(invitee).first()).toBeVisible()
   await owner.close()

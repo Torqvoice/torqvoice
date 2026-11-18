@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef } from 'react'
-import { ChevronDown, ChevronUp, ClipboardCheck, Wrench } from 'lucide-react'
+import { ChevronDown, ChevronUp, ClipboardCheck, Users, Wrench } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import type { WorkBoardJob } from '../../Actions/boardActions'
 import { type ClockFormat, formatClockRange } from '../../utils/clock'
@@ -32,6 +33,8 @@ export function WeekJobBlock({
   laneColor,
   owner,
   technician,
+  helperNames = [],
+  shadow = false,
   bayName,
   onOpen,
   onDragHandle,
@@ -46,11 +49,28 @@ export function WeekJobBlock({
   owner?: { name: string; color: string } | null
   /** Named in the tooltip whatever the columns are grouped by. */
   technician?: { name: string; color: string } | null
+  /** Everybody else on the job with that technician. */
+  helperNames?: string[]
+  /**
+   * The job as it sits in a helper's day: the same work, in the same hours,
+   * but somebody else's to move. Drawn as an outline that opens the job and
+   * cannot be dragged, so the one card that reschedules the job stays the
+   * technician's.
+   */
+  shadow?: boolean
   bayName?: string | null
   onOpen: (job: WorkBoardJob) => void
   onDragHandle: (event: React.PointerEvent, job: WorkBoardJob, mode: WeekDragMode) => void
 }) {
+  const t = useTranslations('workBoard.job')
   const { job, column, columns, continuesBefore, continuesAfter } = positioned
+  // A shadow is looked at, never picked up.
+  const fixed = readOnly || shadow
+  const withLabel = shadow
+    ? technician
+      ? t('with', { name: technician.name })
+      : t('helping')
+    : null
   const width = 100 / columns
   const durationMinutes = positioned.endMins - positioned.startMins
   const isServiceRecord = job.type === 'serviceRecord'
@@ -62,7 +82,7 @@ export function WeekJobBlock({
   const pressOrigin = useRef<{ x: number; y: number } | null>(null)
 
   const pressStart = (event: React.PointerEvent) => {
-    if (readOnly) return
+    if (fixed) return
     pressOrigin.current = { x: event.clientX, y: event.clientY }
     // A job carried in from another day is only a view of work that starts
     // elsewhere; moving it from here would silently reschedule that day too.
@@ -76,6 +96,7 @@ export function WeekJobBlock({
       timeFormat={timeFormat}
       ownerName={technician?.name}
       ownerColor={technician?.color}
+      helperNames={helperNames}
       bayName={bayName}
     >
       <div
@@ -83,17 +104,25 @@ export function WeekJobBlock({
         tabIndex={0}
         // The board pans when the background is dragged; a job owns its own drag.
         data-pan-ignore
-        aria-label={`${timeLabel} ${job.title}`}
+        aria-label={[timeLabel, job.title, withLabel].filter(Boolean).join(' ')}
+        data-testid={shadow ? 'job-shadow' : undefined}
         className={cn(
-          'group absolute overflow-hidden rounded-md border border-black/10 px-1.5 py-0.5 text-[11px] leading-tight shadow-sm select-none',
+          // A container, so what the block says can depend on how wide it
+          // came out: fifteen technicians across a week leaves a sliver.
+          'group @container absolute overflow-hidden rounded-md border px-1.5 py-0.5 text-[11px] leading-tight select-none',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-          statusBlockColor(job.status),
+          // An outline in the page's own colours, where the job itself is a
+          // solid block in its status colour: the eye reads the solid one as
+          // the job and the outline as its echo.
+          shadow
+            ? 'border-dashed border-foreground/40 bg-background/80 text-foreground'
+            : cn('border-black/10 shadow-sm', statusBlockColor(job.status)),
           continuesBefore && 'rounded-t-none border-t-dashed',
           continuesAfter && 'rounded-b-none border-b-dashed',
           isDragging ? 'z-20 opacity-90 ring-2 ring-primary' : 'z-10',
           readOnly
             ? 'cursor-default'
-            : continuesBefore
+            : shadow || continuesBefore
               ? 'cursor-pointer'
               : 'cursor-grab active:cursor-grabbing'
         )}
@@ -103,7 +132,11 @@ export function WeekJobBlock({
           minHeight: MIN_BLOCK_HEIGHT,
           left: `calc(${column * width}% + 1px)`,
           width: `calc(${width}% - 2px)`,
-          borderLeft: `3px solid ${owner?.color ?? laneColor}`,
+          // A shadow wears the technician's colour, not the lane's: the
+          // stripe says whose job this is, in the day of somebody helping.
+          borderLeft: shadow
+            ? `3px dashed ${technician?.color ?? laneColor}`
+            : `3px solid ${owner?.color ?? laneColor}`,
           touchAction: 'none',
         }}
         onPointerDown={pressStart}
@@ -125,7 +158,7 @@ export function WeekJobBlock({
           }
         }}
       >
-        {!continuesBefore && !readOnly && (
+        {!continuesBefore && !fixed && (
           <div
             aria-hidden
             className="absolute inset-x-0 top-0 z-20 h-1.5 cursor-ns-resize opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/15"
@@ -146,6 +179,8 @@ export function WeekJobBlock({
           <div className="pointer-events-none flex items-start gap-1">
             {continuesBefore ? (
               <ChevronUp className="mt-px h-3 w-3 shrink-0 opacity-70" />
+            ) : shadow ? (
+              <Users className="mt-px h-3 w-3 shrink-0 opacity-80" />
             ) : isServiceRecord ? (
               <Wrench className="mt-px h-3 w-3 shrink-0 opacity-80" />
             ) : (
@@ -154,9 +189,24 @@ export function WeekJobBlock({
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1">
                 <span className="truncate font-medium">{job.title}</span>
+                {/* More than one person on it, said on the job's own block:
+                    grouped by bay or not at all, nothing else on the board
+                    would. The tooltip names them. Left out on a block too
+                    narrow to hold it beside any of the title. */}
+                {!shadow && helperNames.length > 0 && (
+                  <span
+                    className="hidden shrink-0 rounded-sm bg-black/15 px-1 text-[10px] font-semibold tabular-nums @[5rem]:inline"
+                    data-testid="job-team-count"
+                  >
+                    +{helperNames.length}
+                  </span>
+                )}
                 <PromiseOverdueMark job={job} compact className="shrink-0 px-0.5 py-0" />
               </div>
-              {owner && <div className="truncate font-medium opacity-90">{owner.name}</div>}
+              {withLabel && <div className="truncate font-medium opacity-90">{withLabel}</div>}
+              {owner && !shadow && (
+                <div className="truncate font-medium opacity-90">{owner.name}</div>
+              )}
               {durationMinutes >= VEHICLE_FROM_MINUTES && vehicleLabel && (
                 <div className="truncate opacity-80">{vehicleLabel}</div>
               )}
@@ -168,7 +218,7 @@ export function WeekJobBlock({
           </div>
         )}
 
-        {!continuesAfter && !readOnly && (
+        {!continuesAfter && !fixed && (
           <div
             aria-hidden
             className="absolute inset-x-0 bottom-0 z-20 h-1.5 cursor-ns-resize opacity-0 transition-opacity group-hover:opacity-100 hover:bg-black/15"

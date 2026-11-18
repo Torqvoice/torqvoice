@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react'
 import { Button } from '@/components/ui/button'
 import {
   Command,
@@ -32,9 +32,22 @@ interface VehicleComboboxProps {
   onChange: (id: string, vehicle: VehicleOption | null) => void
   initialVehicle?: VehicleOption | null
   placeholder?: string
+  /** What the search box says; the placeholder when left out */
+  searchPlaceholder?: string
   noneLabel?: string
+  /** Off where a vehicle is required, so "none" is not offered */
+  allowNone?: boolean
+  /** What the list says when nothing matches */
+  emptyLabel?: string
   /** When set, only this customer's vehicles are offered */
   customerId?: string
+  /**
+   * Shown under the list, e.g. a way to add a vehicle; `close` shuts the
+   * list, and `search` is what was typed, for a form that starts from it
+   */
+  footer?: (close: () => void, search: string) => ReactNode
+  /** Shown but not changeable here */
+  disabled?: boolean
 }
 
 function formatVehicle(v: VehicleOption) {
@@ -46,8 +59,13 @@ export function VehicleCombobox({
   onChange,
   initialVehicle,
   placeholder = 'Select vehicle...',
+  searchPlaceholder,
   noneLabel = 'None',
+  allowNone = true,
+  emptyLabel = 'No vehicles found.',
   customerId,
+  footer,
+  disabled = false,
 }: VehicleComboboxProps) {
   const [open, setOpen] = useState(false)
   const [search, setSearch] = useState('')
@@ -161,34 +179,48 @@ export function VehicleCombobox({
   }, [hasMore, search, options.length, loadOptions])
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    // modal: the list portals out of any dialog this sits in, and the dialog's
+    // scroll lock swallowed wheel events over it, so a list longer than the
+    // popover could not be scrolled. As in CustomerCombobox.
+    <Popover open={open} onOpenChange={setOpen} modal>
       <PopoverTrigger asChild>
-        <Button variant="outline" role="combobox" className="w-full justify-between font-normal">
+        <Button
+          variant="outline"
+          role="combobox"
+          disabled={disabled}
+          className="w-full justify-between font-normal"
+        >
           <span className="truncate">{selected ? formatVehicle(selected) : placeholder}</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">
+      <PopoverContent className="w-(--radix-popover-trigger-width) min-w-64 p-0">
         <Command shouldFilter={false}>
-          <CommandInput placeholder={placeholder} value={search} onValueChange={setSearch} />
+          <CommandInput
+            placeholder={searchPlaceholder ?? placeholder}
+            value={search}
+            onValueChange={setSearch}
+          />
           <CommandList ref={listRef} onScroll={handleScroll}>
             {searching && options.length === 0 && (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               </div>
             )}
-            <CommandEmpty>No vehicles found.</CommandEmpty>
+            <CommandEmpty>{emptyLabel}</CommandEmpty>
             <CommandGroup>
-              <CommandItem
-                onSelect={() => {
-                  onChange('', null)
-                  setSelected(null)
-                  setOpen(false)
-                }}
-              >
-                <Check className={cn('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
-                {noneLabel}
-              </CommandItem>
+              {allowNone && (
+                <CommandItem
+                  onSelect={() => {
+                    onChange('', null)
+                    setSelected(null)
+                    setOpen(false)
+                  }}
+                >
+                  <Check className={cn('mr-2 h-4 w-4', !value ? 'opacity-100' : 'opacity-0')} />
+                  {noneLabel}
+                </CommandItem>
+              )}
               {options.map((v) => (
                 <CommandItem
                   key={v.id}
@@ -221,6 +253,7 @@ export function VehicleCombobox({
               </div>
             )}
           </CommandList>
+          {footer?.(() => setOpen(false), search)}
         </Command>
       </PopoverContent>
     </Popover>

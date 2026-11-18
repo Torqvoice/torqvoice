@@ -1,11 +1,12 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
 import {
   ArrowRight,
   Building2,
+  CalendarPlus,
   Car,
   Check,
   Copy,
@@ -15,17 +16,20 @@ import {
   ShieldCheck,
   ShieldOff,
   User,
+  Wrench,
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog'
 import { PLATE_LOOKUP_EVENT, usePlateLookupAccess } from '@/components/plate-lookup-context'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
+import { openBooking, useBookingAccess } from '@/components/booking-launcher'
 import type { VehicleLookup } from '@/features/integrations/Actions/vehicleLookupActions'
 import { cn } from '@/lib/utils'
 import { type PlateLookup, lookupPlate } from '../Actions/plateLookupActions'
 import { compactPlate, looksLikePlate } from '../Lib/plate'
 import { VehicleForm } from './VehicleForm'
+import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
 
 /**
  * The header's plate lookup: one field, one answer sheet.
@@ -34,7 +38,10 @@ import { VehicleForm } from './VehicleForm'
  * (the vehicle, its owner, its history) beside what the registry publishes
  * (identity, engine, dates, tyres). A vehicle the workshop has not seen gets
  * an "Add vehicle" that opens the ordinary form with the registry's answer
- * already typed in.
+ * already typed in, and comes back here once saved.
+ *
+ * A vehicle on file is never the end of the errand: it can be booked onto the
+ * calendar or given a work order from the sheet, with nothing to search again.
  *
  * Opened from the header button, from Ctrl+Shift+L, or by any code that
  * dispatches the plate-lookup event, optionally with a plate to search.
@@ -72,8 +79,9 @@ export function PlateLookupCommand() {
   const t = useTranslations('vehicles.plateLookup')
   const tf = useTranslations('vehicles.form')
   const format = useFormatter()
-  const router = useRouter()
+  const go = useGuardedPush()
   const { available, canCreate, registryName } = usePlateLookupAccess()
+  const { canBook } = useBookingAccess()
 
   const [open, setOpen] = useState(false)
   const [plate, setPlate] = useState('')
@@ -84,9 +92,6 @@ export function PlateLookupCommand() {
   const [copied, setCopied] = useState(false)
   const [formOpen, setFormOpen] = useState(false)
   const [formLookup, setFormLookup] = useState<VehicleLookup | null>(null)
-  const [customers, setCustomers] = useState<
-    { id: string; name: string; company: string | null }[]
-  >([])
   const inputRef = useRef<HTMLInputElement>(null)
   const requestRef = useRef(0)
 
@@ -121,7 +126,9 @@ export function PlateLookupCommand() {
     [t]
   )
 
-  // Open on the header button, the shortcut, or a request carrying a plate.
+  useShortcut('general.plateLookup', () => setOpen((prev) => !prev), available)
+
+  // Open on the header button or a request carrying a plate.
   useEffect(() => {
     if (!available) return
     const onEvent = (e: Event) => {
@@ -132,18 +139,8 @@ export function PlateLookupCommand() {
         void run(detail.plate)
       }
     }
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'l') {
-        e.preventDefault()
-        setOpen((prev) => !prev)
-      }
-    }
     document.addEventListener(PLATE_LOOKUP_EVENT, onEvent)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener(PLATE_LOOKUP_EVENT, onEvent)
-      document.removeEventListener('keydown', onKey)
-    }
+    return () => document.removeEventListener(PLATE_LOOKUP_EVENT, onEvent)
   }, [available, run])
 
   useEffect(() => {
@@ -167,7 +164,30 @@ export function PlateLookupCommand() {
 
   const openVehicle = (id: string) => {
     handleOpenChange(false)
-    router.push(`/vehicles/${id}`)
+    go(`/vehicles/${id}`)
+  }
+
+  const bookVehicle = (v: NonNullable<PlateLookup['vehicle']>) => {
+    handleOpenChange(false)
+    openBooking({
+      vehicle: {
+        id: v.id,
+        make: v.make,
+        model: v.model,
+        year: v.year,
+        licensePlate: v.licensePlate,
+        customerId: v.customer?.id ?? null,
+        customer: v.customer ? { id: v.customer.id, name: v.customer.name } : null,
+      },
+      customer: v.customer
+        ? { id: v.customer.id, name: v.customer.name, company: v.customer.company }
+        : null,
+    })
+  }
+
+  const newWorkOrder = (id: string) => {
+    handleOpenChange(false)
+    go(`/vehicles/${id}/service/new`)
   }
 
   const addVehicle = async () => {
@@ -176,10 +196,8 @@ export function PlateLookupCommand() {
     setFormLookup(
       registry
         ? { ...registry, licensePlate: registry.licensePlate ?? result.plate }
-        : { licensePlate: result.plate, source: '' }
+        : { licensePlate: result.plate, source: '', connectorId: '' }
     )
-    const list = await getCustomersList()
-    setCustomers(list.success && list.data ? list.data : [])
     setOpen(false)
     setFormOpen(true)
   }
@@ -270,7 +288,9 @@ export function PlateLookupCommand() {
     <>
       <Dialog open={open} onOpenChange={handleOpenChange}>
         <DialogContent
-          className="gap-0 overflow-hidden p-0 sm:max-w-2xl"
+          // One column that cannot grow past the dialog: on a phone the sheet
+          // used to be as wide as its longest line and ran off both edges.
+          className="grid-cols-[minmax(0,1fr)] gap-0 overflow-hidden p-0 sm:max-w-2xl"
           showCloseButton={false}
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
@@ -386,13 +406,13 @@ export function PlateLookupCommand() {
 
             {phase === 'loading' && (
               <div className="space-y-4 px-5 py-6" aria-busy>
-                <div className="h-7 w-2/3 animate-pulse rounded bg-muted" />
-                <div className="h-4 w-1/3 animate-pulse rounded bg-muted" />
+                <div className="h-7 w-2/3 skeleton rounded" />
+                <div className="h-4 w-1/3 skeleton rounded" />
                 <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
                   {Array.from({ length: 6 }, (_, i) => (
                     <div key={i} className="space-y-1.5">
-                      <div className="h-3 w-16 animate-pulse rounded bg-muted" />
-                      <div className="h-4 w-24 animate-pulse rounded bg-muted" />
+                      <div className="h-3 w-16 skeleton rounded" />
+                      <div className="h-4 w-24 skeleton rounded" />
                     </div>
                   ))}
                 </div>
@@ -472,46 +492,72 @@ export function PlateLookupCommand() {
 
                 {/* The workshop's half: the car is yours, or it could be. */}
                 {vehicle ? (
-                  <div className="flex flex-wrap items-center gap-4 px-5 py-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary/10 text-primary">
-                      {vehicle.imageUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={vehicle.imageUrl} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        <Car className="h-5 w-5" />
+                  <div className="space-y-3 px-5 py-3">
+                    <div className="flex flex-wrap items-center gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary/10 text-primary">
+                        {vehicle.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={vehicle.imageUrl}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <Car className="h-5 w-5" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium">
+                          {vehicle.isArchived ? t('inWorkshopArchived') : t('inWorkshop')}
+                        </p>
+                        <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
+                          {vehicle.customer ? (
+                            <span className="inline-flex items-center gap-1">
+                              {vehicle.customer.company ? (
+                                <Building2 className="h-3 w-3" />
+                              ) : (
+                                <User className="h-3 w-3" />
+                              )}
+                              {vehicle.customer.name}
+                              {vehicle.customer.company ? ` (${vehicle.customer.company})` : ''}
+                            </span>
+                          ) : (
+                            <span>{t('noOwner')}</span>
+                          )}
+                          {vehicle.mileage > 0 && (
+                            <span>· {t('mileage', { km: format.number(vehicle.mileage) })}</span>
+                          )}
+                          <span>· {t('services', { count: vehicle.serviceCount })}</span>
+                          {vehicle.lastServiceAt && (
+                            <span>· {t('lastService', { date: date(vehicle.lastServiceAt) })}</span>
+                          )}
+                        </p>
+                      </div>
+                      {!(canBook && !vehicle.isArchived) && (
+                        <Button size="sm" onClick={() => openVehicle(vehicle.id)}>
+                          {t('openVehicle')}
+                          <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                        </Button>
                       )}
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium">
-                        {vehicle.isArchived ? t('inWorkshopArchived') : t('inWorkshop')}
-                      </p>
-                      <p className="flex flex-wrap items-center gap-x-2 text-xs text-muted-foreground">
-                        {vehicle.customer ? (
-                          <span className="inline-flex items-center gap-1">
-                            {vehicle.customer.company ? (
-                              <Building2 className="h-3 w-3" />
-                            ) : (
-                              <User className="h-3 w-3" />
-                            )}
-                            {vehicle.customer.name}
-                            {vehicle.customer.company ? ` (${vehicle.customer.company})` : ''}
-                          </span>
-                        ) : (
-                          <span>{t('noOwner')}</span>
-                        )}
-                        {vehicle.mileage > 0 && (
-                          <span>· {t('mileage', { km: format.number(vehicle.mileage) })}</span>
-                        )}
-                        <span>· {t('services', { count: vehicle.serviceCount })}</span>
-                        {vehicle.lastServiceAt && (
-                          <span>· {t('lastService', { date: date(vehicle.lastServiceAt) })}</span>
-                        )}
-                      </p>
-                    </div>
-                    <Button size="sm" onClick={() => openVehicle(vehicle.id)}>
-                      {t('openVehicle')}
-                      <ArrowRight className="ml-1 h-3.5 w-3.5" />
-                    </Button>
+                    {/* What the desk does next with a car it has on file, in
+                        one row: book it, start on it, or read its record. */}
+                    {canBook && !vehicle.isArchived && (
+                      <div className="grid gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                        <Button onClick={() => bookVehicle(vehicle)}>
+                          <CalendarPlus className="mr-1.5 h-4 w-4" />
+                          {t('bookAppointment')}
+                        </Button>
+                        <Button variant="outline" onClick={() => newWorkOrder(vehicle.id)}>
+                          <Wrench className="mr-1.5 h-4 w-4" />
+                          {t('newWorkOrder')}
+                        </Button>
+                        <Button variant="ghost" onClick={() => openVehicle(vehicle.id)}>
+                          {t('openVehicle')}
+                          <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   (registry || canCreate) && (
@@ -616,7 +662,7 @@ export function PlateLookupCommand() {
               </kbd>
               <span className="ml-1.5">{t('hintClose')}</span>
             </span>
-            <span className="ml-auto hidden sm:inline">{t('shortcut')}</span>
+            <ShortcutKeys id="general.plateLookup" className="ml-auto" />
           </div>
         </DialogContent>
       </Dialog>
@@ -627,8 +673,39 @@ export function PlateLookupCommand() {
           setFormOpen(next)
           if (!next) setFormLookup(null)
         }}
-        customers={customers}
         initialLookup={formLookup}
+        // Saved, the sheet opens again on the same answer, now a vehicle of
+        // the workshop's with its next steps beside it. Nothing is asked of
+        // the registry a second time: some charge for every question.
+        onCreated={(created) => {
+          if (!result) {
+            go(`/vehicles/${created.id}`)
+            return
+          }
+          setResult({
+            ...result,
+            vehicle: {
+              id: created.id,
+              make: created.make,
+              model: created.model,
+              year: created.year,
+              licensePlate: created.licensePlate,
+              vin: null,
+              color: null,
+              mileage: 0,
+              imageUrl: null,
+              isArchived: false,
+              customer: created.customer
+                ? { ...created.customer, company: null, phone: null }
+                : null,
+              inspectionDueAt: null,
+              serviceCount: 0,
+              lastServiceAt: null,
+            },
+          })
+          setPhase('done')
+          setOpen(true)
+        }}
       />
     </>
   )

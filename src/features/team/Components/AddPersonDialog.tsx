@@ -12,6 +12,7 @@ import {
   Mail,
   UserCheck,
   Wrench,
+  Zap,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
@@ -46,6 +47,19 @@ import { CountryPicker } from './CountryPicker'
 import { useTechnicianConnected } from '@/features/team/hooks/useTechnicianConnected'
 import { type IssuedCode, SetupCodeHandoff } from './SetupCodeHandoff'
 import { handleGated } from '@/components/upgrade-gate'
+import { getMemberSeats } from '@/features/team/Actions/getMemberSeats'
+import type { MemberSeats } from '@/features/team/Lib/memberSeats'
+import { inviteMemberSchema } from '@/features/team/Schema/teamSchema'
+
+/**
+ * The same address rule the invite action applies. The browser's own
+ * `type="email"` check is looser: it lets `name@gmail` through, the server
+ * then refused it with a raw English validation line, and Invite looked
+ * like it did nothing.
+ */
+function isInviteEmail(value: string): boolean {
+  return inviteMemberSchema.shape.email.safeParse(value.trim()).success
+}
 
 /**
  * Adding somebody to the workshop, whoever they are.
@@ -121,6 +135,7 @@ export function AddPersonDialog({
   onChanged: () => void
 }) {
   const t = useTranslations('settings')
+  const tUpgrade = useTranslations('common.upgrade')
   const locale = useLocale()
   /**
    * The country, held as a region code rather than a dial code.
@@ -149,6 +164,28 @@ export function AddPersonDialog({
       cancelled = true
     }
   }, [open, fetched, dialCodeProp, rolesProp])
+
+  /**
+   * Seats on the plan, asked every time the dialog opens since a member may
+   * have joined or left since the last time. Until the answer arrives the
+   * office choice works as before and the server still has the last word.
+   */
+  const [seats, setSeats] = useState<MemberSeats | null>(null)
+  useEffect(() => {
+    if (!open) return
+    // The dialog stays mounted while closed, so forget the last answer: a
+    // seat freed since then must not stay locked while this one is pending,
+    // or for the whole opening if the request fails
+    setSeats(null)
+    let cancelled = false
+    getMemberSeats().then((result) => {
+      if (!cancelled && result.success && result.data) setSeats(result.data)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [open])
+  const officeSeatsFull = seats?.full === true
 
   const dialCode = dialCodeProp ?? fetched?.dialCode ?? ''
   const router = useRouter()
@@ -189,7 +226,11 @@ export function AddPersonDialog({
 
   // Team member
   const [email, setEmail] = useState('')
-  const [roleValue, setRoleValue] = useState('member')
+  // Nothing chosen until the person inviting chooses. The box used to start
+  // on "No role", and an invitation sent without touching it made an account
+  // that signs in to the No access screen while the workshop believes it has
+  // a new colleague. "No role" is still there, as a choice made on purpose.
+  const [roleValue, setRoleValue] = useState('')
 
   const reset = useCallback(() => {
     setKind(null)
@@ -203,13 +244,16 @@ export function AddPersonDialog({
     setScanned(false)
     setEmail('')
     setColor(BOARD_COLOURS[0])
-    setRoleValue('member')
+    setRoleValue('')
   }, [])
 
   const close = useCallback(() => {
     // A code left on an unattended screen stops working when the desk walks
-    // away from it.
-    if (created && step === 'handoff') void revokeAppSetupCode({ userId: created.userId })
+    // away from it. Quietly: nobody asked for it, and a code it misses
+    // expires on its own.
+    if (created && step === 'handoff') {
+      void revokeAppSetupCode({ userId: created.userId }).catch(() => null)
+    }
     onOpenChange(false)
     // After the animation, so it does not visibly rewind on the way out.
     setTimeout(reset, 200)
@@ -271,6 +315,14 @@ export function AddPersonDialog({
     async (e: React.FormEvent) => {
       e.preventDefault()
       if (busy || !email.trim()) return
+      if (!isInviteEmail(email)) {
+        setError(t('team.invalidInviteEmail'))
+        return
+      }
+      if (!roleValue) {
+        setError(t('team.roleRequired'))
+        return
+      }
       setBusy(true)
       setError(null)
 
@@ -400,11 +452,22 @@ export function AddPersonDialog({
               hint={t('team.choiceTechnicianHint')}
               onClick={() => choose('technician')}
             />
+            {/* A full plan says so here, before an address is typed. The
+                upgrade dialog it opens is the one Invite would have shown. */}
             <ChoiceButton
               icon={<Mail className="h-5 w-5" />}
               title={t('team.choiceMember')}
-              hint={t('team.choiceMemberHint')}
-              onClick={() => choose('member')}
+              hint={
+                officeSeatsFull && seats
+                  ? tUpgrade('maxUsers', { limit: seats.limit })
+                  : t('team.choiceMemberHint')
+              }
+              locked={officeSeatsFull}
+              onClick={() =>
+                officeSeatsFull && seats
+                  ? handleGated({ gated: { feature: 'maxUsers', limit: seats.limit } })
+                  : choose('member')
+              }
             />
             <ChoiceButton
               icon={<CalendarClock className="h-5 w-5" />}
@@ -547,7 +610,10 @@ export function AddPersonDialog({
         )}
 
         {step === 'details' && kind === 'member' && (
-          <form onSubmit={addMember} className="space-y-4">
+          // noValidate: the address is checked by isInviteEmail, which says
+          // what is wrong in the workshop's language, instead of a browser
+          // bubble that follows a looser rule than the server
+          <form onSubmit={addMember} noValidate className="space-y-4">
             <StepIntro title={t('team.memberDetailsTitle')} blurb={t('team.memberDetailsBlurb')} />
             <div className="space-y-2">
               <Label htmlFor="member-email">{t('team.inviteByEmail')}</Label>
@@ -555,17 +621,37 @@ export function AddPersonDialog({
                 id="member-email"
                 type="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  if (error) setError(null)
+                }}
+                aria-invalid={error === t('team.invalidInviteEmail') || undefined}
+                aria-describedby={
+                  error && error !== t('team.roleRequired') ? 'member-invite-error' : undefined
+                }
                 placeholder={t('team.inviteEmailPlaceholder')}
                 autoComplete="off"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label>{t('team.role')}</Label>
-              <Select value={roleValue} onValueChange={setRoleValue}>
-                <SelectTrigger>
-                  <SelectValue />
+              <Label htmlFor="member-role">{t('team.role')}</Label>
+              <Select
+                value={roleValue}
+                onValueChange={(value) => {
+                  setRoleValue(value)
+                  if (error) setError(null)
+                }}
+              >
+                <SelectTrigger
+                  id="member-role"
+                  className="w-full"
+                  aria-invalid={error === t('team.roleRequired') || undefined}
+                  aria-describedby={
+                    error === t('team.roleRequired') ? 'member-invite-error' : undefined
+                  }
+                >
+                  <SelectValue placeholder={t('team.chooseRole')} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="admin">{t('team.admin')}</SelectItem>
@@ -594,12 +680,16 @@ export function AddPersonDialog({
                     disabled={busy}
                     onClick={async () => {
                       setBusy(true)
-                      const result = await createDefaultRoles()
+                      // A dropped connection throws instead of answering, so
+                      // it is caught and reported the way a refusal is.
+                      const result = await createDefaultRoles().catch(() => null)
                       setBusy(false)
-                      if (result.success) {
+                      if (result?.success) {
                         toast.success(t('team.defaultRolesCreated'))
                         onChanged?.()
                         router.refresh()
+                      } else {
+                        toast.error(result?.error || t('team.failedSaveRole'))
                       }
                     }}
                   >
@@ -608,11 +698,22 @@ export function AddPersonDialog({
                 </div>
               )}
               {/* Which of the two they should pick, in one line, without the
-                  word "permissions". */}
-              <p className="text-muted-foreground text-xs">{t('team.roleHint')}</p>
+                  word "permissions". Someone who picks "No role" is told what
+                  the invited person will meet, since that is the one choice
+                  that leaves them waiting. */}
+              <p className="text-muted-foreground text-xs">
+                {roleValue === 'none' ? t('team.noRoleInviteWarning') : t('team.roleHint')}
+              </p>
             </div>
 
-            {error && <p className="text-destructive text-sm">{error}</p>}
+            {/* Announced, and tied to the address field, because with the
+                browser's own check turned off this is the only explanation
+                of why Invite stopped */}
+            {error && (
+              <p id="member-invite-error" role="alert" className="text-destructive text-sm">
+                {error}
+              </p>
+            )}
 
             <Footer
               backLabel={t('team.stepBack')}
@@ -737,23 +838,28 @@ function ChoiceButton({
   title,
   hint,
   onClick,
+  locked = false,
 }: {
   icon: React.ReactNode
   title: string
   hint: string
   onClick: () => void
+  /** The plan has no room for this answer: marked, and the click offers the upgrade. */
+  locked?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
+      data-locked={locked || undefined}
       className="flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-colors hover:border-primary/50 hover:bg-accent"
     >
       <span className="mt-0.5 text-primary">{icon}</span>
-      <span className="space-y-0.5">
+      <span className="flex-1 space-y-0.5">
         <span className="block font-medium text-sm">{title}</span>
         <span className="block text-muted-foreground text-xs">{hint}</span>
       </span>
+      {locked && <Zap className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />}
     </button>
   )
 }

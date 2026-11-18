@@ -31,6 +31,7 @@ export async function lookupPartByBarcode(barcode: string) {
           unitCost: true,
           sellPrice: true,
           quantity: true,
+          trackStock: true,
           category: true,
         },
       })

@@ -7,6 +7,8 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getOrgSmsProvider } from '@/lib/sms'
 import { getOrgTelegramBotToken } from '@/lib/telegram'
 import { isWhatsappConfigured } from '@/lib/whatsapp'
+import { isPortalChatOpen } from '@/features/portal/Lib/chat.server'
+import { type EmailChannelState, emailChannelState } from '../Lib/emailChannel.server'
 import { mergeChannelPages } from '../Lib/mergeChannelPages'
 
 /**
@@ -20,9 +22,15 @@ import { mergeChannelPages } from '../Lib/mergeChannelPages'
  * Threads stay per channel rather than per customer: the same person written
  * to on SMS and on WhatsApp has two histories, on two transports, and pretending
  * otherwise would put replies on the wrong one.
+ *
+ * The customer portal's chat is the fifth channel, "portal": one thread per
+ * customer, written by them in the portal and answered here. It needs no
+ * provider, so it is a channel whenever the portal is on and the workshop
+ * has not turned its messages off; what was written stays listed after that.
  */
 
-export type MessagingChannel = 'sms' | 'whatsapp' | 'telegram'
+export type MessagingChannel = 'sms' | 'whatsapp' | 'telegram' | 'email' | 'portal'
+export type { EmailChannelState }
 
 export interface InboxThread {
   /** Stable across renders: channel plus whoever the thread belongs to. */
@@ -30,7 +38,7 @@ export interface InboxThread {
   channel: MessagingChannel
   customerId: string | null
   name: string
-  /** Phone number or chat id, shown under the name. */
+  /** Phone number, chat id or email address, shown under the name. */
   contact: string
   lastMessage: string
   lastDirection: string
@@ -49,6 +57,12 @@ export interface InboxPage {
   nextCursor: string | null
   /** Channels the workshop can actually send on, for the composer. */
   channels: MessagingChannel[]
+  /**
+   * The email channel's standing, beyond whether it is in `channels`: a
+   * workshop with its own mail vendor sees it listed but disabled, with the
+   * reason, rather than finding it missing.
+   */
+  emailState: EmailChannelState
 }
 
 const DEFAULT_PAGE_SIZE = 30
@@ -122,16 +136,22 @@ export async function getInboxThreads(query: InboxQuery = {}) {
       const pattern = term ? `%${term}%` : null
 
       const features = await getFeatures(organizationId)
-      const [smsProvider, whatsappReady, telegramToken] = await Promise.all([
-        features.sms ? getOrgSmsProvider(organizationId).catch(() => null) : null,
-        features.whatsapp ? isWhatsappConfigured(organizationId).catch(() => false) : false,
-        features.telegram ? getOrgTelegramBotToken(organizationId).catch(() => null) : null,
-      ])
+      const [smsProvider, whatsappReady, telegramToken, emailState, portalOpen] = await Promise.all(
+        [
+          features.sms ? getOrgSmsProvider(organizationId).catch(() => null) : null,
+          features.whatsapp ? isWhatsappConfigured(organizationId).catch(() => false) : false,
+          features.telegram ? getOrgTelegramBotToken(organizationId).catch(() => null) : null,
+          emailChannelState(organizationId).catch((): EmailChannelState => 'off'),
+          isPortalChatOpen(organizationId).catch(() => false),
+        ]
+      )
 
       const channels: MessagingChannel[] = []
       if (smsProvider) channels.push('sms')
       if (whatsappReady) channels.push('whatsapp')
       if (telegramToken) channels.push('telegram')
+      if (emailState === 'active') channels.push('email')
+      if (portalOpen) channels.push('portal')
 
       // DISTINCT ON gives the newest message per thread in one pass, which the
       // (organizationId, customerId, createdAt DESC) indexes already order for.
@@ -141,9 +161,19 @@ export async function getInboxThreads(query: InboxQuery = {}) {
       // Unread is counted per thread in its own small query rather than
       // folded into the DISTINCT ON, which only ever sees one row per thread.
       // Unread rows are few, so the whole workshop is counted at once.
-      const [smsRows, telegramRows, whatsappRows, smsUnread, telegramUnread, whatsappUnread] =
-        await Promise.all([
-          db.$queryRaw<ThreadRow[]>`
+      const [
+        smsRows,
+        telegramRows,
+        whatsappRows,
+        emailRows,
+        portalRows,
+        smsUnread,
+        telegramUnread,
+        whatsappUnread,
+        emailUnread,
+        portalUnread,
+      ] = await Promise.all([
+        db.$queryRaw<ThreadRow[]>`
           SELECT * FROM (
             SELECT DISTINCT ON (m."customerId")
               m."customerId" AS identity,
@@ -166,7 +196,7 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           ORDER BY t."createdAt" DESC
           LIMIT ${limit}
         `,
-          db.$queryRaw<ThreadRow[]>`
+        db.$queryRaw<ThreadRow[]>`
           SELECT * FROM (
             SELECT DISTINCT ON (m."customerId")
               m."customerId" AS identity,
@@ -189,10 +219,10 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           ORDER BY t."createdAt" DESC
           LIMIT ${limit}
         `,
-          // WhatsApp threads can belong to a number we never matched to a
-          // customer, so they group by customer when there is one and by the
-          // number itself when there is not.
-          db.$queryRaw<ThreadRow[]>`
+        // WhatsApp threads can belong to a number we never matched to a
+        // customer, so they group by customer when there is one and by the
+        // number itself when there is not.
+        db.$queryRaw<ThreadRow[]>`
           SELECT * FROM (
             SELECT DISTINCT ON (COALESCE(m."customerId", CASE WHEN m."direction" = 'inbound' THEN m."fromNumber" ELSE m."toNumber" END))
               COALESCE(m."customerId", CASE WHEN m."direction" = 'inbound' THEN m."fromNumber" ELSE m."toNumber" END) AS identity,
@@ -216,39 +246,115 @@ export async function getInboxThreads(query: InboxQuery = {}) {
           ORDER BY t."createdAt" DESC
           LIMIT ${limit}
         `,
-          db.$queryRaw<UnreadRow[]>`
+        // Email threads group by customer, or by the address when the
+        // sender matched nobody, like WhatsApp. Only threads with a message
+        // in them are listed: a document mail (an invoice, a reminder) is
+        // kept for context and surfaces once the customer answers, so an
+        // invoice run does not fill the inbox with one-sided threads.
+        db.$queryRaw<ThreadRow[]>`
+          SELECT * FROM (
+            SELECT DISTINCT ON (COALESCE(m."customerId", m."address"))
+              COALESCE(m."customerId", m."address") AS identity,
+              m."customerId" AS "customerId",
+              COALESCE(c."name", m."fromName") AS name,
+              m."address" AS contact,
+              CASE WHEN m."kind" = 'document' THEN m."subject" ELSE COALESCE(NULLIF(m."body", ''), m."subject") END AS body,
+              m."direction" AS direction,
+              m."createdAt" AS "createdAt"
+            FROM "public"."email_messages" m
+            LEFT JOIN "public"."customers" c ON c."id" = m."customerId"
+            WHERE m."organizationId" = ${organizationId}
+              AND EXISTS (
+                SELECT 1 FROM "public"."email_messages" x
+                WHERE x."organizationId" = m."organizationId"
+                  AND COALESCE(x."customerId", x."address") = COALESCE(m."customerId", m."address")
+                  AND x."kind" = 'message'
+              )
+            ORDER BY COALESCE(m."customerId", m."address"), m."createdAt" DESC
+          ) t
+          WHERE (${cursor}::timestamptz IS NULL OR t."createdAt" < ${cursor}::timestamptz)
+            AND (
+              ${pattern}::text IS NULL
+              OR t.name ILIKE ${pattern} OR t.contact ILIKE ${pattern} OR t.body ILIKE ${pattern}
+            )
+          ORDER BY t."createdAt" DESC
+          LIMIT ${limit}
+        `,
+        // The portal's chat: always a customer's, one thread each. A message
+        // that is only photos has no text, so it is listed as what it is.
+        db.$queryRaw<ThreadRow[]>`
+          SELECT * FROM (
+            SELECT DISTINCT ON (m."customerId")
+              m."customerId" AS identity,
+              m."customerId" AS "customerId",
+              c."name" AS name,
+              COALESCE(NULLIF(c."email", ''), c."phone") AS contact,
+              m."body" AS body,
+              CASE WHEN cardinality(m."attachments") > 0 THEN 'photo' END AS "mediaType",
+              m."direction" AS direction,
+              m."createdAt" AS "createdAt"
+            FROM "public"."portal_messages" m
+            JOIN "public"."customers" c ON c."id" = m."customerId"
+            WHERE m."organizationId" = ${organizationId}
+            ORDER BY m."customerId", m."createdAt" DESC
+          ) t
+          WHERE (${cursor}::timestamptz IS NULL OR t."createdAt" < ${cursor}::timestamptz)
+            AND (
+              ${pattern}::text IS NULL
+              OR t.name ILIKE ${pattern} OR t.contact ILIKE ${pattern} OR t.body ILIKE ${pattern}
+            )
+          ORDER BY t."createdAt" DESC
+          LIMIT ${limit}
+        `,
+        db.$queryRaw<UnreadRow[]>`
           SELECT "customerId" AS identity, COUNT(*)::int AS unread
           FROM "public"."sms_messages"
           WHERE "organizationId" = ${organizationId}
             AND "direction" = 'inbound' AND "readAt" IS NULL AND "customerId" IS NOT NULL
           GROUP BY "customerId"
         `,
-          db.$queryRaw<UnreadRow[]>`
+        db.$queryRaw<UnreadRow[]>`
           SELECT "customerId" AS identity, COUNT(*)::int AS unread
           FROM "public"."telegram_messages"
           WHERE "organizationId" = ${organizationId}
             AND "direction" = 'inbound' AND "readAt" IS NULL AND "customerId" IS NOT NULL
           GROUP BY "customerId"
         `,
-          db.$queryRaw<UnreadRow[]>`
+        db.$queryRaw<UnreadRow[]>`
           SELECT COALESCE("customerId", "fromNumber") AS identity, COUNT(*)::int AS unread
           FROM "public"."whatsapp_messages"
           WHERE "organizationId" = ${organizationId}
             AND "direction" = 'inbound' AND "readAt" IS NULL
           GROUP BY COALESCE("customerId", "fromNumber")
         `,
-        ])
+        db.$queryRaw<UnreadRow[]>`
+          SELECT COALESCE("customerId", "address") AS identity, COUNT(*)::int AS unread
+          FROM "public"."email_messages"
+          WHERE "organizationId" = ${organizationId}
+            AND "direction" = 'inbound' AND "readAt" IS NULL
+          GROUP BY COALESCE("customerId", "address")
+        `,
+        db.$queryRaw<UnreadRow[]>`
+          SELECT "customerId" AS identity, COUNT(*)::int AS unread
+          FROM "public"."portal_messages"
+          WHERE "organizationId" = ${organizationId}
+            AND "direction" = 'inbound' AND "readAt" IS NULL
+          GROUP BY "customerId"
+        `,
+      ])
 
       const { threads, nextCursor } = mergeChannelPages(
         [
           smsRows.map((row) => toThread('sms', row, byIdentity(smsUnread))),
           telegramRows.map((row) => toThread('telegram', row, byIdentity(telegramUnread))),
           whatsappRows.map((row) => toThread('whatsapp', row, byIdentity(whatsappUnread))),
+          emailRows.map((row) => toThread('email', row, byIdentity(emailUnread))),
+          portalRows.map((row) => toThread('portal', row, byIdentity(portalUnread))),
         ],
         limit
       )
 
-      return { threads, nextCursor, channels }
+      return { threads, nextCursor, channels, emailState }
     },
     {
       requiredPermissions: [
@@ -259,7 +365,8 @@ export async function getInboxThreads(query: InboxQuery = {}) {
 }
 
 /**
- * Marks everything inbound in one thread as read.
+ * Marks everything inbound in one thread as read. Not the portal's chat,
+ * which marks the messages on screen by id.
  *
  * Called when the thread is opened. Reading a conversation is what the
  * customers permission already grants, so no extra permission is asked for.
@@ -287,7 +394,24 @@ export async function markThreadRead(thread: {
         return { marked: result.count }
       }
 
+      if (thread.channel === 'email') {
+        const result = await db.emailMessage.updateMany({
+          where: thread.customerId
+            ? { ...unread, customerId: thread.customerId }
+            : { ...unread, customerId: null, address: thread.contact.toLowerCase() },
+          data: { readAt: now },
+        })
+        return { marked: result.count }
+      }
+
       if (!thread.customerId) return { marked: 0 }
+
+      // The portal's chat is not marked from here. Its messages are read by
+      // id, the ones the open conversation actually shows
+      // (portalThreadActions.markPortalMessagesSeen), because the customer
+      // reads "Seen" under what they wrote: a message that arrived after the
+      // thread was listed must not be stamped before anyone saw it.
+      if (thread.channel === 'portal') return { marked: 0 }
 
       const result =
         thread.channel === 'sms'
@@ -339,7 +463,29 @@ export async function markThreadUnread(thread: {
         return { marked: 1 }
       }
 
+      if (thread.channel === 'email') {
+        const latest = await db.emailMessage.findFirst({
+          where: thread.customerId
+            ? { ...inbound, customerId: thread.customerId }
+            : { ...inbound, customerId: null, address: thread.contact.toLowerCase() },
+          ...newest,
+        })
+        if (!latest) return { marked: 0 }
+        await db.emailMessage.update({ where: { id: latest.id }, data: { readAt: null } })
+        return { marked: 1 }
+      }
+
       if (!thread.customerId) return { marked: 0 }
+
+      if (thread.channel === 'portal') {
+        const latest = await db.portalMessage.findFirst({
+          where: { ...inbound, customerId: thread.customerId },
+          ...newest,
+        })
+        if (!latest) return { marked: 0 }
+        await db.portalMessage.update({ where: { id: latest.id }, data: { readAt: null } })
+        return { marked: 1 }
+      }
 
       if (thread.channel === 'sms') {
         const latest = await db.smsMessage.findFirst({

@@ -35,7 +35,7 @@
     },
     "save": "Guardar",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Enviar",
     "share": "Partilhar",
     "notify": "Notificar",
     "delete": "Eliminar",
@@ -92,6 +92,7 @@
       "inspection": "Inspeção"
     },
     "statusOptions": {
+      "scheduled": "Agendado",
       "pending": "Pendente",
       "in_progress": "Em curso",
       "waiting_parts": "A aguardar peças",
@@ -146,7 +147,8 @@
     "deleteRow": "Eliminar linha",
     "outOfStock": "Sem stock",
     "onBackorder": "Em encomenda ({count})",
-    "nameMissingHint": "As linhas sem nome da peça não são guardadas."
+    "nameMissingHint": "As linhas sem nome da peça não são guardadas.",
+    "fitsVehicleFirst": "As peças com etiquetas de {vehicle} aparecem primeiro."
   },
   "labor": {
     "title": "Mão de obra e serviços",
@@ -175,8 +177,88 @@
     "shopFeeHintPercentLabor": "A taxa de oficina das Definições: {percent} % da mão de obra deste trabalho. Elimine a linha para a retirar.",
     "shopFeeHintPercentAll": "A taxa de oficina das Definições: {percent} % da mão de obra e das peças deste trabalho. Elimine a linha para a retirar."
   },
+  "laborGuide": {
+    "button": "Tabela de tempos",
+    "title": "Tabela de tempos",
+    "description": "Tempos de mão de obra e fluidos deste veículo",
+    "tabLabor": "Tempos de mão de obra",
+    "tabFluids": "Fluidos",
+    "engine": "Motor",
+    "categories": "Categorias de trabalho",
+    "allJobs": "Todos os trabalhos",
+    "search": "Procurar trabalhos, como pastilhas de travão",
+    "clearSearch": "Limpar pesquisa",
+    "jobCount": "{count, plural, one {# trabalho} other {# trabalhos}}",
+    "noMatch": "Nenhum trabalho corresponde a «{query}»",
+    "noJobs": "A tabela não lista trabalhos para este motor.",
+    "showAll": "Mostrar todos os trabalhos",
+    "showHours": "Ver horas",
+    "show": "Ver",
+    "lockedValue": "Não apresentado com esta chave",
+    "hours": "{hours} h",
+    "range": "{low} a {high} h",
+    "bookTime": "Tabela {hours} h",
+    "add": "Adicionar como linha de mão de obra",
+    "added": "Adicionado",
+    "addJob": "Adicionar {job} como linha de mão de obra",
+    "addedJob": "{job} foi adicionado",
+    "addedCount": "{count, plural, one {# trabalho adicionado} other {# trabalhos adicionados}}",
+    "partsAddedCount": "{count, plural, one {# peça adicionada} other {# peças adicionadas}}",
+    "done": "Concluir",
+    "loading": "A procurar o veículo",
+    "stillLooking": "Ainda a pesquisar. A Open Labor Project pode demorar até meio minuto para um veículo sobre o qual tem poucos dados.",
+    "notFoundTitle": "Não consta da tabela",
+    "notFound": "A tabela de tempos não tem dados para este veículo. Verifique se a marca, o modelo e o ano estão escritos como o fabricante os designa, ou adicione o VIN.",
+    "fluidsNotFoundTitle": "Sem especificações de fluidos para este veículo",
+    "fluidsNotFound": "A Open Labor Project ainda não tem especificações de fluidos para este veículo.",
+    "failedTitle": "A pesquisa não foi concluída",
+    "failed": "A pesquisa falhou",
+    "unlockFailed": "Não foi possível obter esse valor",
+    "retry": "Tentar novamente",
+    "matchNone": "Nenhum dos motores listados corresponde ao registado para este veículo, por isso estes tempos podem ser de outro motor. Escolha acima o motor mais próximo.",
+    "matchFuel": "O motor foi escolhido pelo tipo de combustível. Verifique se é o correto.",
+    "matchUnknown": "Este veículo não tem cilindrada registada, por isso verifique se o motor acima é o correto.",
+    "hiddenByConfidence": "{count, plural, one {# tempo abaixo da sua confiança mínima está oculto.} other {# tempos abaixo da sua confiança mínima estão ocultos.}}",
+    "changeSettings": "Alterar",
+    "liters": "{value} L",
+    "quarts": "{value} qt",
+    "km": "{value} km",
+    "miles": "{value} mi",
+    "capacity": "Capacidade",
+    "drainRefill": "Escoamento e enchimento",
+    "interval": "Substituir a cada",
+    "copySpec": "Copiar {spec}",
+    "copied": "Copiado",
+    "noFluids": "A tabela não lista fluidos para este motor.",
+    "addAsPart": "Adicionar como peça",
+    "addFluidAsPart": "Adicionar {system} como peça",
+    "partAdded": "Adicionado",
+    "fromStock": "Do stock",
+    "addWithoutStock": "Adicionar sem artigo do stock",
+    "takesDrainRefill": "Leva {amount} ao drenar e reabastecer",
+    "takesCapacity": "Leva {amount} no total",
+    "attribution": "Dados de {source}",
+    "market": "Mercado: {region}",
+    "about": "Qual a fiabilidade?",
+    "aboutTitle": "Fiabilidade segundo a fonte",
+    "estimateNote": "Os valores marcados como Estimativa são gerados por IA e não foram verificados com os dados do fabricante. Verifique-os antes de orçamentar a um cliente.",
+    "lockedNote": "Esta chave mostra os valores um de cada vez, e cada um conta como um pedido. Um plano pago mostra-os todos de uma vez.",
+    "settings": "Definições da tabela de tempos",
+    "confidence": {
+      "oem": "OEM",
+      "oemHelp": "Comparado com os dados do fabricante",
+      "high": "Verificado",
+      "highHelp": "Verificado pela fonte",
+      "medium": "Média",
+      "mediumHelp": "A fonte classifica este valor com confiança média",
+      "estimated": "Estimativa",
+      "estimatedHelp": "Gerado por IA e não verificado com os dados do fabricante"
+    }
+  },
   "liveLabor": {
     "title": "{count, plural, one {Um técnico adicionou mão de obra a esta folha de obra} other {Um técnico adicionou # linhas de mão de obra a esta folha de obra}}",
+    "titleParts": "{count, plural, one {Um técnico adicionou uma peça a esta folha de obra} other {Um técnico adicionou # peças a esta folha de obra}}",
+    "titleBoth": "Um técnico adicionou mão de obra e peças a esta folha de obra",
     "body": "Fica fora da lista enquanto edita. A próxima gravação inclui-a de qualquer forma.",
     "show": "Mostrar"
   },
@@ -188,13 +270,29 @@
     "subtotalInclTax": "Subtotal (com IVA)",
     "discount": "Desconto",
     "discountNone": "Nenhum",
+    "discountOff": "Não",
     "discountPercentage": "Percentagem",
     "discountFixed": "Fixo",
     "tax": "IVA",
     "taxIncluded": "IVA (incl.)",
+    "taxableAmount": "Valor tributável",
     "total": "Total",
     "inclusiveModeHint": "Os preços das linhas são introduzidos com IVA incluído. Os totais mostram a divisão entre valor líquido e IVA.",
     "partsCost": "Custo das peças (interno)"
+  },
+  "lineTax": {
+    "label": "Imposto nesta linha",
+    "taxedTag": "IMP.",
+    "untaxedTag": "SEM IMP.",
+    "taxedHint": "Esta linha tem imposto. Clique para a deixar fora do imposto.",
+    "untaxedHint": "Esta linha não tem imposto. Clique para o aplicar."
+  },
+  "taxOffer": {
+    "noTax": "Isto foi criado sem imposto. A oficina cobra agora {rate}%.",
+    "otherRate": "Isto está a {current}%. A oficina cobra agora {rate}%.",
+    "apply": "Aplicar {rate}% de imposto",
+    "failed": "Não foi possível atualizar o imposto",
+    "saveFirst": "Guarde primeiro as alterações e depois aplique o imposto."
   },
   "notes": {
     "title": "Notas",
@@ -227,6 +325,7 @@
     "discount": "Desconto",
     "tax": "IVA ({rate}%)",
     "taxIncluded": "IVA (incl., {rate}%)",
+    "taxableAmount": "Valor tributável",
     "total": "Total",
     "paid": "Pago",
     "balanceDue": "Valor em dívida",
@@ -286,18 +385,8 @@
   "share": {
     "title": "Partilhar fatura",
     "description": "Gere um link público que permite a qualquer pessoa ver e transferir esta fatura sem iniciar sessão.",
-    "notifyTitle": "Notificar {name}",
-    "email": "E-mail",
-    "noEmail": "(sem e-mail registado)",
-    "sms": "SMS",
-    "noPhone": "(sem telefone registado)",
-    "sendNotification": "Enviar notificação",
     "revokeLink": "Revogar link",
     "generateLink": "Gerar link público",
-    "emailSent": "E-mail enviado",
-    "failedEmail": "Não foi possível enviar o e-mail",
-    "smsSent": "SMS enviado",
-    "failedSms": "Não foi possível enviar o SMS",
     "copyLink": "Copiar link"
   },
   "sidebar": {
@@ -427,7 +516,13 @@
     "loadOn": "Horas marcadas a {date}",
     "promisedAt": "Prometido ao cliente",
     "promisedPlaceholder": "Ainda não prometido",
-    "promisedClear": "Limpar"
+    "promisedClear": "Limpar",
+    "lead": "Responsável",
+    "alsoOnJob": "Também neste trabalho",
+    "helperAdd": "Adicionar {name} a este trabalho",
+    "helperRemove": "Retirar {name} deste trabalho",
+    "failedHelper": "Não foi possível atualizar quem está no trabalho",
+    "clashPeople": "{count, plural, one {{names} está ocupado} other {{names} estão ocupados}}"
   },
   "notifications": {
     "title": "Notificações ao cliente",
@@ -583,7 +678,6 @@
   "modern": {
     "statusLabel": "Estado da ordem de serviço",
     "back": "Voltar",
-    "backToClassic": "Voltar ao layout clássico",
     "openCustomer": "Abrir cliente",
     "serviceHistory": "Histórico de serviços",
     "changeVehicle": "Mudar de viatura",
@@ -602,13 +696,6 @@
       "paymentTaken": "Pagamento de {amount} registado",
       "statusSet": "Estado alterado para {status}"
     },
-    "invite": {
-      "title": "A página da ordem de serviço foi renovada.",
-      "body": "Um layout mais claro com os mesmos campos. Pode voltar ao anterior a qualquer momento.",
-      "try": "Experimentar agora",
-      "dismiss": "Agora não",
-      "menu": "Experimentar o novo layout"
-    },
     "promised": "Prometida para {date}",
     "promisedOverdue": "Prometida para {date}, em atraso",
     "opened": "Aberta a {date}",
@@ -617,6 +704,7 @@
     "titleField": "Título",
     "media": {
       "tabs": {
+        "all": "Tudo",
         "photos": "Fotografias",
         "diagnostics": "Diagnóstico",
         "dropoff": "Receção"
@@ -626,6 +714,7 @@
       "showToCustomer": "Mostrar ao cliente",
       "hideFromCustomer": "Ocultar do cliente",
       "add": {
+        "all": "Adicionar ficheiros",
         "image": "Adicionar fotografias",
         "document": "Adicionar documentos",
         "diagnostic": "Adicionar relatório de diagnóstico",
@@ -666,6 +755,7 @@
       "customerSince": "Cliente desde"
     },
     "moreStatuses": "Mais estados",
+    "addStatus": "Adicionar estado",
     "fromInspection": "Da inspeção {name}, {date}",
     "fromQuote": "Do orçamento {ref}",
     "startInspection": "Iniciar inspeção"
@@ -730,6 +820,21 @@
         "odometer": "Conta-quilómetros",
         "other": "Dano ou outro"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Tirar a fotografia da viatura com um telemóvel",
+      "dialogBody": "Tire uma fotografia da viatura em qualquer telemóvel, ou escolha uma que já lá esteja. Passa a ser a fotografia no topo da página desta viatura.",
+      "step2": "Tire uma fotografia da viatura inteira, ou escolha uma do telemóvel.",
+      "step3": "Substitui a fotografia na página da viatura assim que chega.",
+      "scope": "A ligação só pode definir a fotografia desta viatura e deixa de funcionar ao fim de 30 minutos.",
+      "waiting": "À espera da fotografia…",
+      "received": "Fotografia recebida",
+      "pageTitle": "Fotografia da viatura",
+      "pageBody": "Tire uma fotografia da viatura inteira. Substitui a fotografia na página da viatura.",
+      "choosePhoto": "Escolher uma fotografia",
+      "saved": "Guardada. A fotografia já está na página da viatura. Tire outra para a substituir.",
+      "invalid": "Leia novamente o código na página da viatura.",
+      "notAPhoto": "Aqui só é possível usar fotografias."
     }
   },
   "payCode": {
@@ -750,5 +855,12 @@
   },
   "customStatus": {
     "defaultMessage": "Olá {customer_name}, uma atualização sobre a sua {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "As suas alterações não foram guardadas",
+    "fallbackReason": "Não foi possível guardar as últimas alterações.",
+    "hint": "Fique para corrigir ou saia e perca as alterações feitas desde a última gravação.",
+    "stay": "Ficar e corrigir",
+    "leave": "Sair sem guardar"
   }
 }

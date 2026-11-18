@@ -154,6 +154,30 @@ export type ServerMessage =
 
 export const REALTIME_PATH = '/api/protected/ws'
 
+/* ---------------------------------------------------- the customer portal -- */
+
+/**
+ * The hint on a change of a customer that is their portal thread: a message
+ * written, read or deleted, or the chat switched on or off.
+ */
+export const PORTAL_THREAD_HINT = 'portal'
+
+/**
+ * Where a signed-in customer's browser listens. Under /portal and not /api:
+ * the customer's session cookie is scoped to that path.
+ */
+export function portalRealtimePath(orgParam: string): string {
+  return `/portal/${encodeURIComponent(orgParam)}/ws`
+}
+
+/**
+ * Everything the server ever says on a customer's socket. Deliberately
+ * nothing but "you are connected" and "your thread changed": no ids, no
+ * text. The browser answers by reading its own thread through the same
+ * action a page load uses, where the session decides what it may see.
+ */
+export type PortalServerMessage = { t: 'ready' } | { t: 'thread' } | { t: 'pong' }
+
 /** How often a browser says it is still there, and when the server gives up. */
 export const PRESENCE_HEARTBEAT_MS = 20_000
 export const PRESENCE_TTL_MS = 55_000

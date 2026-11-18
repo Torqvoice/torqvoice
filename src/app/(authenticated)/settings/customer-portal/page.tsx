@@ -1,15 +1,18 @@
-import { getLayoutData } from '@/lib/get-layout-data'
-import { getFeatures, isCloudMode } from '@/lib/features'
-import { FeatureLocked } from '../feature-locked-message'
-import { CustomerPortalSettings } from '@/features/portal/Components/CustomerPortalSettings'
 import { redirect } from 'next/navigation'
-import { db } from '@/lib/db'
+import { CustomerPortalSettings } from '@/features/portal/Components/CustomerPortalSettings'
+import { normalizeAccent, resolvePortalTheme } from '@/features/portal/Lib/theme'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import {
-  isValidPortalBackgroundType,
-  type PortalBackgroundType,
-} from '@/features/portal/portal-backgrounds'
+import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getAppBaseUrl } from '@/lib/app-url'
+import { db } from '@/lib/db'
+import { getFeatures, isCloudMode } from '@/lib/features'
+import { getLayoutData } from '@/lib/get-layout-data'
+import { FeatureLocked } from '../feature-locked-message'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('customerPortal')
+}
 
 export default async function CustomerPortalSettingsPage() {
   const data = await getLayoutData()
@@ -21,7 +24,7 @@ export default async function CustomerPortalSettingsPage() {
 
   const locked = !features.customerPortal
 
-  const [settings, org] = await Promise.all([
+  const [settings, org, tireHotel] = await Promise.all([
     db.appSetting.findMany({
       where: {
         organizationId: data.organizationId,
@@ -30,9 +33,12 @@ export default async function CustomerPortalSettingsPage() {
             SETTING_KEYS.PORTAL_ENABLED,
             SETTING_KEYS.PORTAL_DESCRIPTION,
             SETTING_KEYS.PORTAL_HOURS,
-            SETTING_KEYS.PORTAL_BACKGROUND_TYPE,
-            SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE,
-            SETTING_KEYS.PORTAL_BACKGROUND_IMAGE,
+            SETTING_KEYS.PORTAL_THEME,
+            SETTING_KEYS.PORTAL_ACCENT,
+            SETTING_KEYS.PORTAL_COVER,
+            SETTING_KEYS.PORTAL_MESSAGES,
+            SETTING_KEYS.PORTAL_SHOW_TIRES,
+            SETTING_KEYS.OPENING_HOURS,
           ],
         },
       },
@@ -42,28 +48,35 @@ export default async function CustomerPortalSettingsPage() {
       where: { id: data.organizationId },
       select: { portalSlug: true },
     }),
+    isTireHotelEnabled(data.organizationId).catch(() => false),
   ])
 
-  const settingMap = new Map(settings.map((s) => [s.key, s.value]))
+  const value = (key: string) => settings.find((s) => s.key === key)?.value ?? ''
 
-  const appUrl = getAppBaseUrl()
-
-  const rawBgType = settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_TYPE)
-  const backgroundType: PortalBackgroundType = isValidPortalBackgroundType(rawBgType)
-    ? rawBgType
-    : 'none'
+  // The portal reads its hours from the workshop calendar. Hours typed on the
+  // old version of this page still show on the sign-in page for a workshop
+  // that never set its calendar (features/portal/Lib/openingHours.server.ts),
+  // so the page says so instead of hiding a text nobody can find.
+  const typedHours = value(SETTING_KEYS.PORTAL_HOURS).trim()
+  const calendarHoursSet = value(SETTING_KEYS.OPENING_HOURS).trim() !== ''
 
   const content = (
     <CustomerPortalSettings
-      enabled={settingMap.get(SETTING_KEYS.PORTAL_ENABLED) === 'true'}
       orgId={data.organizationId}
-      portalSlug={org?.portalSlug ?? null}
-      appUrl={appUrl}
-      description={settingMap.get(SETTING_KEYS.PORTAL_DESCRIPTION) ?? ''}
-      hours={settingMap.get(SETTING_KEYS.PORTAL_HOURS) ?? ''}
-      backgroundType={backgroundType}
-      backgroundTemplate={settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_TEMPLATE) ?? ''}
-      backgroundImage={settingMap.get(SETTING_KEYS.PORTAL_BACKGROUND_IMAGE) ?? ''}
+      appUrl={getAppBaseUrl()}
+      tireHotel={tireHotel}
+      typedHours={typedHours && !calendarHoursSet ? typedHours : null}
+      initial={{
+        enabled: value(SETTING_KEYS.PORTAL_ENABLED) === 'true',
+        slug: org?.portalSlug ?? '',
+        description: value(SETTING_KEYS.PORTAL_DESCRIPTION),
+        // Daylight for a workshop that never chose.
+        theme: resolvePortalTheme(value(SETTING_KEYS.PORTAL_THEME)),
+        accent: normalizeAccent(value(SETTING_KEYS.PORTAL_ACCENT)) ?? '',
+        cover: value(SETTING_KEYS.PORTAL_COVER).trim(),
+        messages: value(SETTING_KEYS.PORTAL_MESSAGES) !== 'false',
+        showTires: value(SETTING_KEYS.PORTAL_SHOW_TIRES) !== 'false',
+      }}
     />
   )
 

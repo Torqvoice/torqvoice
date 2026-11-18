@@ -106,6 +106,7 @@
     "deleteBody": "{duration} su {job} di {technician} verranno rimossi dal foglio ore. L'operazione non può essere annullata.",
     "deleteConfirm": "Elimina",
     "deleted": "Voce eliminata",
+    "deleteFailed": "Impossibile eliminare la voce",
     "stoppedByManager": "Timer fermato a {minutes}",
     "csv": {
       "technician": "Tecnico",

@@ -4,7 +4,7 @@
  * A whole week of work is too much to read job by job, so colour carries the
  * status: the eye should find every job still waiting for parts without
  * reading a single label. The hues match the status badges used in the tables
- * (`src/lib/table-utils.ts`), at a fill strong enough to read as a solid block.
+ * (`src/lib/status-colors.ts`, where a test holds the two to the same hues), at a fill strong enough to read as a solid block.
  */
 
 const STATUS_BLOCK_COLORS: Record<string, string> = {

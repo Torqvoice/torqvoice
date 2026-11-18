@@ -93,7 +93,32 @@ const EGRESS_PATHS: Array<{ file: string; stoppedBy: RegExp }> = [
     file: 'src/app/api/protected/subscription/upgrade-preview/route.ts',
     stoppedBy: /if \(isDemoMode\)/,
   },
+  // A holiday calendar linked by its address: like fetch-metadata, it fetches
+  // whatever URL a visitor types. It goes out through node's http modules
+  // rather than fetch, so the sweep below would not have found it.
+  {
+    file: 'src/features/workshop-calendar/Lib/icsFetch.server.ts',
+    stoppedBy: /if \(isDemoMode\) throw/,
+  },
 ]
+
+/**
+ * Requests the demo is allowed to make: each goes to one fixed public host,
+ * carries nothing of a workshop's and no credential, and costs nobody
+ * anything. A fetch only belongs here when all three hold.
+ */
+const HARMLESS_ON_DEMO = new Set(
+  [
+    // The What's new feed from torqvoice.com: sends the language, gets the
+    // public release notes. Feedback on an entry is a separate, guarded action.
+    'src/features/whats-new/Lib/feed.server.ts',
+    // Public holidays from Nager.Date: sends a country code and a year, no key.
+    'src/features/workshop-calendar/Lib/holidaySync.server.ts',
+    // Amazon SNS's own signing certificate and subscription confirmation,
+    // fetched only from sns.<region>.amazonaws.com to verify an inbound post.
+    'src/app/api/webhooks/email/ses/route.ts',
+  ].map((file) => file.split(path.posix.sep).join(path.sep))
+)
 
 describe('demo mode', () => {
   it('refuses every action that reaches a customer', () => {
@@ -124,7 +149,7 @@ describe('demo mode', () => {
     // finding one that nobody has classified is worth failing over. Payment
     // providers are exempt: their credentials cannot be set on the demo, so
     // there is no configured client for anything to call.
-    const searchRoots = ['src/lib', 'src/app/api', 'src/features', 'src/integrations']
+    const searchRoots = ['src/lib', 'src/app', 'src/features', 'src/integrations']
     // The directory names are anchored to a path separator on both sides:
     // unanchored, `hooks/` also matches `webhooks/` and quietly exempts the
     // one tree in here that talks to a URL somebody else chose.
@@ -152,11 +177,12 @@ describe('demo mode', () => {
     // Guarded by demoGuard() in the action that calls them, or by isDemoMode
     // in the cron that does.
     const guardedByCaller =
-      /aiSettingsActions\.ts$|validateLicense\.ts$|cron[/\\]check-licenses\.ts$/
+      /aiSettingsActions\.ts$|validateLicense\.ts$|cron[/\\]check-licenses\.ts$|sendWhatsNewFeedback\.ts$/
 
     const unclassified = files.filter((file) => {
       if (
         known.has(file) ||
+        HARMLESS_ON_DEMO.has(file) ||
         reachedViaTransport.test(file) ||
         reachedViaConnection.test(file) ||
         guardedByCaller.test(file)

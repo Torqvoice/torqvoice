@@ -1067,6 +1067,47 @@ export async function jobAssignment(serviceRecordId: string): Promise<JobAssignm
   })
 }
 
+/** Everybody on a job beside its technician, as technician ids, sorted. */
+export async function jobHelperIds(serviceRecordId: string): Promise<string[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{ technicianId: string }>(
+      `select "technicianId" from service_record_helpers
+        where "serviceRecordId" = $1 order by "technicianId"`,
+      [serviceRecordId]
+    )
+    return result.rows.map((row) => row.technicianId)
+  })
+}
+
+/**
+ * When a job is booked to start. The column has no zone and holds UTC, which
+ * pg would read in the test process's zone, so it is read as UTC text.
+ */
+export async function jobStart(serviceRecordId: string): Promise<Date | null> {
+  return withDb(async (db) => {
+    const result = await db.query<{ start: string | null }>(
+      `select to_char("startDateTime", 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') as start
+         from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    const start = result.rows[0]?.start
+    return start ? new Date(start) : null
+  })
+}
+
+/** A workshop's technician by name, for one the desk made through the page. */
+export async function technicianIdNamed(organizationId: string, name: string): Promise<string> {
+  return withDb(async (db) => {
+    const result = await db.query<{ id: string }>(
+      `select id from technicians where "organizationId" = $1 and name = $2 limit 1`,
+      [organizationId, name]
+    )
+    const id = result.rows[0]?.id
+    if (!id) throw new Error(`no technician named ${name}`)
+    return id
+  })
+}
+
 /** How many jobs a vehicle has, before and after an attempt to add one. */
 export async function jobCount(vehicleId: string): Promise<number> {
   return withDb(async (db) => {
@@ -1108,6 +1149,22 @@ export async function sessionCountFor(email: string): Promise<number> {
       [email]
     )
     return Number(result.rows[0].n)
+  })
+}
+
+/**
+ * Makes every open sign-in of a person look `minutes` old, the way a tab left
+ * open ages. What the app asks of a sign-in that is no longer recent cannot
+ * be waited for in a test.
+ */
+export async function ageSessionsOf(email: string, minutes: number): Promise<void> {
+  await withDb(async (db) => {
+    await db.query(
+      `update sessions s set "createdAt" = now() - make_interval(mins => $2::int)
+         from users u
+        where u.id = s."userId" and lower(u.email) = lower($1)`,
+      [email, minutes]
+    )
   })
 }
 
@@ -1487,6 +1544,30 @@ export async function permissionDenialsFor(email: string, since: Date): Promise<
          join users u on u.id = a."userId"
         where lower(u.email) = lower($1)
           and a.action = 'auth.permissionDenied'
+          and a.timestamp >= $2
+        order by a.timestamp`,
+      [email, since]
+    )
+    return result.rows.map((row) => row.message)
+  })
+}
+
+/**
+ * What the audit log says about one person's sign-in security since a moment:
+ * two-factor sign-in turned on or off, a backup code used, a passkey added or
+ * removed. Read as the English line the log shows.
+ *
+ * The writes are fire-and-forget, so poll this rather than read it once.
+ */
+export async function accountSecurityEntries(email: string, since: Date): Promise<string[]> {
+  return withDb(async (db) => {
+    const result = await db.query<{ message: string }>(
+      `select coalesce(a.message, a.action) as message
+         from audit_logs a
+         join users u on u.id = a."userId"
+        where lower(u.email) = lower($1)
+          and a.action in ('auth.twoFactorEnabled', 'auth.twoFactorDisabled', 'auth.backupCodeUsed',
+                           'auth.passkeyAdded', 'auth.passkeyRemoved')
           and a.timestamp >= $2
         order by a.timestamp`,
       [email, since]
@@ -2065,5 +2146,55 @@ export async function quoteConversion(
     const row = result.rows[0]
     if (!row) throw new Error(`no quote ${quoteId}`)
     return row
+  })
+}
+
+/** A technician's time off as stored, soonest first. */
+export async function absencesOf(
+  technicianId: string
+): Promise<{ startDate: string; endDate: string; reason: string; startTime: string | null }[]> {
+  return withDb(async (db) => {
+    const result = await db.query(
+      `select to_char("startDate", 'YYYY-MM-DD') as "startDate",
+              to_char("endDate", 'YYYY-MM-DD') as "endDate", reason, "startTime"
+         from technician_absences where "technicianId" = $1 order by "startDate"`,
+      [technicianId]
+    )
+    return result.rows
+  })
+}
+
+/** The workshop's own closed days with this name, as stored. */
+export async function closuresNamed(
+  name: string
+): Promise<{ startDate: string; endDate: string; repeatsYearly: boolean }[]> {
+  return withDb(async (db) => {
+    const result = await db.query(
+      `select to_char("startDate", 'YYYY-MM-DD') as "startDate",
+              to_char("endDate", 'YYYY-MM-DD') as "endDate", "repeatsYearly"
+         from workshop_closures where name = $1`,
+      [name]
+    )
+    return result.rows
+  })
+}
+
+export async function deleteClosuresNamed(name: string): Promise<void> {
+  await withDb((db) => db.query(`delete from workshop_closures where name = $1`, [name]))
+}
+
+/**
+ * Sets a person's own keyboard shortcut choices (users."keyboardShortcuts"),
+ * or clears them with null. The settings page writes the same column.
+ */
+export async function setKeyboardShortcuts(
+  email: string,
+  prefs: Record<string, unknown> | null
+): Promise<void> {
+  await withDb(async (db) => {
+    await db.query(
+      `update users set "keyboardShortcuts" = $2::jsonb where lower(email) = lower($1)`,
+      [email, prefs === null ? null : JSON.stringify(prefs)]
+    )
   })
 }

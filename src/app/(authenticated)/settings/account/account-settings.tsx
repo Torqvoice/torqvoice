@@ -36,6 +36,13 @@ import {
 import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
 import { QRCodeSVG } from 'qrcode.react'
 import { requestEmailChange } from '@/features/settings/Actions/accountActions'
+import { setAccountPassword } from '@/features/settings/Actions/setAccountPassword'
+import {
+  ACCOUNT_HAS_PASSWORD,
+  PASSWORD_MIN_LENGTH,
+} from '@/features/settings/Schema/accountPassword'
+import { REAUTH_FRESH_SESSION_MINUTES, reauthErrorMessageKey } from '@/lib/reauth'
+import { signInUrlFor } from '@/lib/signed-out'
 import { useCooldown } from '@/hooks/use-cooldown'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -44,6 +51,7 @@ export function AccountSettings({
   twoFactorEnabled: initialTwoFactorEnabled,
   emailVerified: initialEmailVerified,
   emailVerificationRequired,
+  hasPassword: initialHasPassword,
   devices,
   demoMode = false,
   signature,
@@ -51,6 +59,12 @@ export function AccountSettings({
   twoFactorEnabled: boolean
   emailVerified: boolean
   emailVerificationRequired: boolean
+  /**
+   * False for an account that signed up with Google or Microsoft and never
+   * chose a password. It gets "set a password" instead of "change password",
+   * which would have no current password to check.
+   */
+  hasPassword: boolean
   devices: SignedInDevice[]
   /** The shared demo account: other visitors' sessions are hidden. */
   demoMode?: boolean
@@ -60,6 +74,7 @@ export function AccountSettings({
   const { data: session } = useSession()
   const router = useRouter()
   const t = useTranslations('settings')
+  const tCommon = useTranslations('common')
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
 
@@ -77,6 +92,10 @@ export function AccountSettings({
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [savingPassword, setSavingPassword] = useState(false)
+  const [hasPassword, setHasPassword] = useState(initialHasPassword)
+  /** The server wants a newer sign-in before it will set a first password. */
+  const [signInAgainNeeded, setSignInAgainNeeded] = useState(false)
+  const [leavingToSignIn, setLeavingToSignIn] = useState(false)
 
   // 2FA state
   const [twoFactorPassword, setTwoFactorPassword] = useState('')
@@ -99,13 +118,21 @@ export function AccountSettings({
     }
     setEnabling2FA(true)
     try {
-      const result = await authClient.twoFactor.enable({ password: twoFactorPassword })
+      // An authenticator app (TOTP). Better Auth 1.7 also enrols one-time
+      // codes by email, and only the TOTP answer carries the QR code and the
+      // backup codes.
+      const result = await authClient.twoFactor.enable({
+        password: twoFactorPassword,
+        method: 'totp',
+      })
       if (result.error) {
         toast.error(result.error.message || t('account.failedEnable2FA'))
-      } else {
-        setTotpURI(result.data?.totpURI || '')
-        setBackupCodes(result.data?.backupCodes || [])
+      } else if (result.data?.method === 'totp') {
+        setTotpURI(result.data.totpURI)
+        setBackupCodes(result.data.backupCodes)
         setSetupStep('qr')
+      } else {
+        toast.error(t('account.failedEnable2FA'))
       }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t('account.failedEnable2FA'))
@@ -253,6 +280,63 @@ export function AccountSettings({
     setSavingPassword(false)
   }
 
+  const handleSetPassword = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error(t('account.passwordsNoMatch'))
+      return
+    }
+    if (newPassword.length < PASSWORD_MIN_LENGTH) {
+      toast.error(t('account.passwordMinLength'))
+      return
+    }
+    setSavingPassword(true)
+    try {
+      const result = await setAccountPassword({ newPassword })
+      if (result.success) {
+        toast.success(t('account.passwordSet'))
+        setHasPassword(true)
+        setSignInAgainNeeded(false)
+        setNewPassword('')
+        setConfirmPassword('')
+        router.refresh()
+      } else if (reauthErrorMessageKey(result.error) === 'account.reauthSignInAgainPassword') {
+        // Said in the card, with the way to do it, rather than in a toast
+        // that is gone before the person has read what to do next.
+        setSignInAgainNeeded(true)
+      } else if (result.error === ACCOUNT_HAS_PASSWORD) {
+        toast.info(t('account.passwordAlreadySet'))
+        setHasPassword(true)
+        setNewPassword('')
+        setConfirmPassword('')
+      } else {
+        toast.error(t('account.failedSetPassword'))
+      }
+    } catch {
+      toast.error(t('account.failedSetPassword'))
+    }
+    setSavingPassword(false)
+  }
+
+  // The sign-in page sends anyone with a session straight on, so signing in
+  // again means signing out first. It comes back here afterwards.
+  const handleSignInAgain = async () => {
+    setLeavingToSignIn(true)
+    let signedOut = true
+    try {
+      const result = await authClient.signOut()
+      if (result?.error) signedOut = false
+    } catch {
+      signedOut = false
+    }
+    if (!signedOut) {
+      // Without a sign-out the sign-in page would bounce straight back here.
+      setLeavingToSignIn(false)
+      toast.error(tCommon('errors.unexpected'))
+      return
+    }
+    window.location.assign(signInUrlFor('/settings/account'))
+  }
+
   // const initials = session?.user?.name
   //   ? session.user.name
   //       .split(' ')
@@ -282,7 +366,12 @@ export function AccountSettings({
       </Card> */}
 
       {/* Update Name */}
-      <AppCard icon={User} title={t('account.profileTitle')} contentClassName="space-y-4">
+      <AppCard
+        id="account-profile"
+        icon={User}
+        title={t('account.profileTitle')}
+        contentClassName="space-y-4"
+      >
         <p className="text-sm text-muted-foreground">{t('account.profileDescription')}</p>
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
@@ -357,30 +446,43 @@ export function AccountSettings({
         </div>
       </AppCard>
 
-      <SignatureCard initial={signature} />
+      <div id="account-signature">
+        <SignatureCard initial={signature} />
+      </div>
 
-      {/* Change Password */}
+      {/* Change the password, or set the first one. An account that signed up
+          with Google has none, and asking it for a current password is a
+          question with no right answer. */}
       <AppCard
+        id="account-password"
         icon={KeyRound}
-        title={t('account.changePasswordTitle')}
+        title={hasPassword ? t('account.changePasswordTitle') : t('account.setPasswordTitle')}
         contentClassName="space-y-4"
       >
-        <p className="text-sm text-muted-foreground">{t('account.changePasswordDescription')}</p>
+        <p className="text-sm text-muted-foreground">
+          {hasPassword
+            ? t('account.changePasswordDescription')
+            : t('account.setPasswordDescription')}
+        </p>
         <div className="grid gap-4 sm:grid-cols-1 max-w-sm">
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">{t('account.currentPassword')}</Label>
-            <Input
-              id="currentPassword"
-              type="password"
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-            />
-          </div>
+          {hasPassword && (
+            <div className="space-y-2">
+              <Label htmlFor="currentPassword">{t('account.currentPassword')}</Label>
+              <Input
+                id="currentPassword"
+                type="password"
+                autoComplete="current-password"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+              />
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="newPassword">{t('account.newPassword')}</Label>
             <Input
               id="newPassword"
               type="password"
+              autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
             />
@@ -390,25 +492,53 @@ export function AccountSettings({
             <Input
               id="confirmPassword"
               type="password"
+              autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
           </div>
         </div>
+        {!hasPassword &&
+          (signInAgainNeeded ? (
+            <div role="alert" className="max-w-xl space-y-3 rounded-lg border p-4">
+              <p className="text-sm font-medium">{t('account.reauthSignInAgainPassword')}</p>
+              <p className="text-sm text-muted-foreground">
+                {t('account.setPasswordSignInAgainHint', {
+                  minutes: REAUTH_FRESH_SESSION_MINUTES,
+                })}
+              </p>
+              <Button variant="outline" onClick={handleSignInAgain} disabled={leavingToSignIn}>
+                {leavingToSignIn && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {t('account.signInAgain')}
+              </Button>
+            </div>
+          ) : (
+            <p className="max-w-xl text-xs text-muted-foreground">
+              {t('account.setPasswordFreshHint', { minutes: REAUTH_FRESH_SESSION_MINUTES })}
+            </p>
+          ))}
         <Separator />
         <div className="flex items-center gap-3">
-          <Button onClick={handleChangePassword} disabled={savingPassword}>
+          <Button
+            onClick={hasPassword ? handleChangePassword : handleSetPassword}
+            disabled={savingPassword}
+          >
             {savingPassword ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
               <KeyRound className="mr-2 h-4 w-4" />
             )}
-            {t('account.changePassword')}
+            {hasPassword ? t('account.changePassword') : t('account.setPassword')}
           </Button>
         </div>
       </AppCard>
       {/* Two-Factor Authentication */}
-      <AppCard icon={Shield} title={t('account.twoFactorTitle')} contentClassName="space-y-4">
+      <AppCard
+        id="account-two-factor"
+        icon={Shield}
+        title={t('account.twoFactorTitle')}
+        contentClassName="space-y-4"
+      >
         {twoFactorEnabled ? (
           <>
             <div className="flex items-center gap-2 rounded-lg bg-emerald-500/10 px-4 py-3">
@@ -441,8 +571,14 @@ export function AccountSettings({
         ) : (
           <>
             <p className="text-sm text-muted-foreground">{t('account.twoFactorEnablePrompt')}</p>
+            {/* Turning it on asks for the account's password, and an account
+                that signed up with Google has none: the dialog used to take
+                them as far as a password field they could not fill in. */}
+            {!hasPassword && (
+              <p className="text-sm text-muted-foreground">{t('account.twoFactorNeedsPassword')}</p>
+            )}
             <Separator />
-            <Button onClick={handleOpenSetupDialog}>
+            <Button onClick={handleOpenSetupDialog} disabled={!hasPassword}>
               <Shield className="mr-2 h-4 w-4" />
               {t('account.enable2FA')}
             </Button>
@@ -486,7 +622,7 @@ export function AccountSettings({
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setDialogOpen(false)}>
-                  Cancel
+                  {t('account.cancel')}
                 </Button>
                 <Button onClick={handleEnable2FA} disabled={enabling2FA}>
                   {enabling2FA && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

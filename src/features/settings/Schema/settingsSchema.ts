@@ -20,6 +20,21 @@ export const SETTING_KEYS = {
   TAX_MODE: 'workshop.taxMode',
   /** JSON array of tax components; see src/lib/tax-components.ts. */
   TAX_COMPONENTS: 'workshop.taxComponents',
+  /**
+   * `true` when the workshop taxes only some of what it charges. Off, every
+   * line is taxed and nothing about it shows in the editors, which is how
+   * every workshop starts and how most stay.
+   */
+  TAX_SELECTIVE: 'workshop.taxSelective',
+  /**
+   * Which kinds of charge the tax is put on, read only while TAX_SELECTIVE
+   * is on. Each is on unless it holds `false`. The default for a new line
+   * of that kind; the line then keeps its own answer. See
+   * src/lib/taxable-lines.ts.
+   */
+  TAX_APPLIES_TO_PARTS: 'workshop.taxAppliesToParts',
+  TAX_APPLIES_TO_LABOR: 'workshop.taxAppliesToLabor',
+  TAX_APPLIES_TO_SHOP_FEE: 'workshop.taxAppliesToShopFee',
   ORG_NUMBER_LABEL: 'workshop.orgNumberLabel',
   INVOICE_PREFIX: 'workshop.invoicePrefix',
   INVOICE_START_NUMBER: 'workshop.invoiceStartNumber',
@@ -52,7 +67,16 @@ export const SETTING_KEYS = {
   INVOICE_LOCK_TRIGGER: 'invoice.lockTrigger',
   QUOTE_LOCK_ENABLED: 'quote.lockEnabled',
   QUOTE_LOCK_TRIGGER: 'quote.lockTrigger',
+  /** 'metric' (km) | 'imperial' (miles): distance, as mileage and intervals are written. */
   UNIT_SYSTEM: 'workshop.unitSystem',
+  /**
+   * 'metric' (litres, kilograms) | 'imperial' (quarts, gallons, pounds): fluids
+   * and parts. Unset follows UNIT_SYSTEM, which is how every workshop worked
+   * before the two were separate; a British shop is miles with litres.
+   */
+  MEASURE_SYSTEM: 'workshop.measureSystem',
+  /** 'litres' | 'cc': how a plate lookup writes engine size. Unset means litres. */
+  ENGINE_SIZE_UNIT: 'workshop.engineSizeUnit',
   DEFAULT_TECHNICIAN: 'workshop.defaultTechnician',
   DEFAULT_TECHNICIAN_ID: 'workshop.defaultTechnicianId',
   DEFAULT_LABOR_RATE: 'workshop.defaultLaborRate',
@@ -194,6 +218,19 @@ export const SETTING_KEYS = {
   PORTAL_ENABLED: 'portal.enabled',
   PORTAL_DESCRIPTION: 'portal.description',
   PORTAL_HOURS: 'portal.hours',
+  /// How the portal looks: daylight (the default), garage, print or colour.
+  /// The workshop picks it; a customer never does. See
+  /// src/features/portal/Lib/theme.ts.
+  PORTAL_THEME: 'portal.theme',
+  /// The workshop's own colour as "#RRGGBB". Unset uses the theme's default.
+  PORTAL_ACCENT: 'portal.accent',
+  /// The stored file url of the cover photo on the portal's sign-in page.
+  PORTAL_COVER: 'portal.cover',
+  /// 'false' turns the chat with the workshop off; anything else leaves it on.
+  PORTAL_MESSAGES: 'portal.messages',
+  /// 'false' hides stored tyres from customers; anything else shows them when
+  /// the workshop runs a tyre hotel.
+  PORTAL_SHOW_TIRES: 'portal.showTires',
   /// Off by default. Every service request already raises an in-app
   /// notification; this adds email on top, and stays opt-in because a workshop
   /// with no mail provider configured would otherwise generate failed sends.
@@ -201,12 +238,28 @@ export const SETTING_KEYS = {
   /// Optional free-text list of addresses. Empty means the alert goes to every
   /// owner and admin in the organization.
   SERVICE_REQUEST_ALERTS_RECIPIENTS: 'portal.serviceRequestAlerts.recipients',
-  PORTAL_BACKGROUND_TYPE: 'portal.background.type',
-  PORTAL_BACKGROUND_TEMPLATE: 'portal.background.template',
-  PORTAL_BACKGROUND_IMAGE: 'portal.background.image',
   WORKBOARD_WEEK_START_DAY: 'workboard.weekStartDay',
   WORKBOARD_WORK_DAY_START: 'workboard.workDayStart',
   WORKBOARD_WORK_DAY_END: 'workboard.workDayEnd',
+  /// JSON: seven days, Sunday first, each `{ open, start, end }`. Missing means
+  /// the work day above on weekdays, which is how every workshop started.
+  OPENING_HOURS: 'workshop.openingHours',
+  /// "false" turns closed days, public holidays and time off off everywhere.
+  /// Unset or anything else is on.
+  CLOSURES_ENABLED: 'workshop.closuresEnabled',
+  /// ISO 3166-1 alpha-2 code whose public holidays close the workshop; empty
+  /// means none.
+  HOLIDAY_COUNTRY: 'holidays.country',
+  /// JSON array of ISO 3166-2 codes ("AU-QLD") whose regional holidays count.
+  HOLIDAY_REGIONS: 'holidays.regions',
+  /// JSON object: holiday name to true (closed) or false (open), overriding
+  /// the default that public holidays close and other days do not.
+  HOLIDAY_CHOICES: 'holidays.choices',
+  /// JSON: the country's holidays by year as last fetched from Nager.Date.
+  /// Written by the sync, never by the settings form.
+  HOLIDAY_CACHE: 'holidays.cache',
+  /// JSON array of holiday calendars (.ics) with their events and choices.
+  HOLIDAY_FEEDS: 'holidays.feeds',
   INVOICE_LAYOUT_CONFIG: 'invoice.layoutConfig',
   QUOTE_LAYOUT_CONFIG: 'quote.layoutConfig',
   CERTIFICATE_LAYOUT_CONFIG: 'certificate.layoutConfig',
@@ -273,6 +326,17 @@ export const SETTING_KEYS = {
   /// quote only. Unset means on.
   WARRANTY_APPLY_TO_QUOTES: 'warranty.applyToQuotes',
   WARRANTY_APPLY_TO_WORK_ORDERS: 'warranty.applyToWorkOrders',
+  /// When a share link stops working, per kind of document: 'never',
+  /// 'afterSharing', and for invoices also 'afterPayment'. Unset means the
+  /// default: 30 days after payment for invoices, 30 days after sending for
+  /// the rest. The days go with either counting mode. See
+  /// src/lib/share-expiry.ts.
+  SHARE_INVOICE_EXPIRY: 'shareLinks.invoiceExpiry',
+  SHARE_INVOICE_EXPIRY_DAYS: 'shareLinks.invoiceExpiryDays',
+  SHARE_QUOTE_EXPIRY: 'shareLinks.quoteExpiry',
+  SHARE_QUOTE_EXPIRY_DAYS: 'shareLinks.quoteExpiryDays',
+  SHARE_INSPECTION_EXPIRY: 'shareLinks.inspectionExpiry',
+  SHARE_INSPECTION_EXPIRY_DAYS: 'shareLinks.inspectionExpiryDays',
 } as const
 
 export type SettingKey = (typeof SETTING_KEYS)[keyof typeof SETTING_KEYS]

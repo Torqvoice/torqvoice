@@ -15,7 +15,7 @@ export function InstallSettingsClient() {
 
   return (
     <div className="space-y-6">
-      <AppCard icon={Download} title={t('title')} contentClassName="space-y-4">
+      <AppCard id="install-app" icon={Download} title={t('title')} contentClassName="space-y-4">
         <div className="flex items-start gap-3">
           <Image
             src="/icons/icon-192.png"
@@ -55,7 +55,7 @@ export function InstallSettingsClient() {
         {dismissed && !installed && (
           <>
             <Separator />
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div id="install-banner" className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm text-muted-foreground">{t('bannerHidden')}</p>
               <Button variant="outline" size="sm" onClick={restore}>
                 {t('showBanner')}

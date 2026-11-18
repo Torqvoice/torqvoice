@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Domyślny warsztatu",
     "invoiceDesignHint": "Faktury dla tego klienta są drukowane z tym projektem zamiast domyślnego projektu warsztatu. Faktura nadal może wybrać własny.",
     "reminderOptOut": "Bez przypomnień",
-    "reminderOptOutHint": "Nie uwzględniaj tego klienta w przypomnieniach o przeglądzie ani innych kampaniach."
+    "reminderOptOutHint": "Nie uwzględniaj tego klienta w przypomnieniach o przeglądzie ani innych kampaniach.",
+    "bookAppointment": "Umów wizytę"
   },
   "serviceRequests": {
     "statusNew": "Nowe",
@@ -120,6 +121,12 @@
     "saveNotes": "Zapisz notatki",
     "submitted": "Wysłano {date}",
     "preferred": "Preferowany termin: {date}",
+    "preferredMorning": "Preferowany termin: {date}, rano",
+    "preferredAfternoon": "Preferowany termin: {date}, po południu",
+    "files": "{count, plural, one {# zdjęcie lub film od klienta} few {# zdjęcia lub filmy od klienta} many {# zdjęć lub filmów od klienta} other {# zdjęcia lub filmu od klienta}}",
+    "openPhoto": "Otwórz zdjęcie {number}",
+    "openVideo": "Otwórz film {number}",
+    "fileMissing": "Zdjęcie {number} nie jest już dostępne",
     "workOrderCreated": "Zlecenie pracy utworzone",
     "workOrderError": "Nie udało się utworzyć zlecenia pracy",
     "requestDismissed": "Zlecenie odrzucone",

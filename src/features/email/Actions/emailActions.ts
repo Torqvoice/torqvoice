@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
-import { requireFeature } from '@/lib/features'
+import { requireEmailSending, withPlatformMailAllowance } from '@/features/email/Lib/emailAllowance'
 import { demoGuard } from '@/lib/demo'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { assembleInvoicePrint, invoiceNumberOf } from '@/features/invoices/Lib/assembleInvoicePrint'
@@ -15,9 +15,9 @@ import {
   buildCustomerCertificatePdf,
   linkedCertificateAttachment,
 } from '@/features/inspections/Pdf/customerCertificatePdf'
-import { resolveCustomerLocale } from '@/i18n/locale-from-request'
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAppBaseUrl } from '@/lib/app-url'
-import { randomUUID } from 'crypto'
+import { ensureShareToken, renewShareLink } from '@/lib/share-token.server'
 import { resolveAttachPdf } from '@/features/email/Lib/documentEmail'
 import type { VehicleContext } from '@/features/email/Lib/emailContext'
 import { sendTemplatedMail } from '@/features/email/Lib/sendTemplatedMail'
@@ -92,21 +92,21 @@ export async function sendQuoteEmail(input: {
   quoteId: string
   recipientEmail: string
   message?: string
-  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  /** Attach the PDF as well as the link. Unset follows the setting. */
   attachPdf?: boolean
 }) {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      const sendingMode = await requireEmailSending(organizationId)
 
       const { quoteId, recipientEmail, message } = input
 
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },
         include: {
-          partItems: true,
-          laborItems: true,
+          partItems: { orderBy: { sortOrder: 'asc' } },
+          laborItems: { orderBy: { sortOrder: 'asc' } },
           customer: {
             select: { name: true, email: true, phone: true, address: true, company: true },
           },
@@ -124,7 +124,7 @@ export async function sendQuoteEmail(input: {
       const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
       // One language for the PDF's labels and the mail around it.
-      const locale = await resolveCustomerLocale(organizationId, null)
+      const locale = await resolveDocumentLocale(organizationId)
       // The mail's own summary of the document quotes a figure, so it needs
       // the same currency the sheet prints in.
       const currencyCode = resolveCurrencyCode(settings['workshop.currencyCode'])
@@ -147,42 +147,47 @@ export async function sendQuoteEmail(input: {
         : null
       const quoteNum = quote.quoteNumber || `QT-${quote.id.slice(-8).toUpperCase()}`
 
-      // The quote mail carried no link at all before, which left a link-only
-      // send with nothing in it. One is minted for a quote never shared.
-      const token = quote.publicToken ?? (attachPdf ? null : randomUUID())
-      if (token && token !== quote.publicToken) {
-        await db.quote.update({
-          where: { id: quoteId },
-          data: { publicToken: token, sharedAt: new Date() },
-        })
-      }
+      // The link always goes with the mail, with or without the PDF: it is
+      // where the customer accepts the quote and where the workshop sees it
+      // was opened. One is minted for a quote never shared.
+      const token = await ensureShareToken('quote', quoteId, organizationId)
       const publicLink = token ? `${getAppBaseUrl()}/share/quote/${organizationId}/${token}` : null
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'quote_sent',
-        to: recipientEmail,
-        attached: attachPdf,
-        attachments: pdfBuffer
-          ? [
-              { filename: `${quoteNum}.pdf`, content: pdfBuffer },
-              ...(certificate ? [certificate] : []),
-            ]
-          : undefined,
-        context: {
-          customerName: quote.customer?.name,
-          vehicle: quote.vehicle,
-          currentUser: await senderName(userId),
-          message,
-          document: {
-            number: quoteNum,
-            title: quote.title,
-            total: quote.totalAmount,
-            currencyCode,
-            currencyFormat,
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'quote_sent',
+          to: recipientEmail,
+          attached: attachPdf,
+          attachments: pdfBuffer
+            ? [
+                { filename: `${quoteNum}.pdf`, content: pdfBuffer },
+                ...(certificate ? [certificate] : []),
+              ]
+            : undefined,
+          context: {
+            customerName: quote.customer?.name,
+            vehicle: quote.vehicle,
+            currentUser: await senderName(userId),
+            message,
+            document: {
+              number: quoteNum,
+              title: quote.title,
+              total: quote.totalAmount,
+              currencyCode,
+              currencyFormat,
+            },
+            shareLink: publicLink,
           },
-          shareLink: publicLink,
-        },
-      })
+          thread: {
+            customerId: quote.customerId,
+            kind: 'document',
+            relatedEntityType: 'quote',
+            relatedEntityId: quoteId,
+          },
+        })
+      )
+      // The mail is on its way: the link in it counts from now.
+      if (token) await renewShareLink('quote', quoteId, organizationId)
 
       // Stamps sentAt and moves a draft to "sent" (accepted and converted
       // quotes keep their status).
@@ -220,7 +225,7 @@ export async function sendNotificationEmail(input: {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      const sendingMode = await requireEmailSending(organizationId)
 
       const settings = await getWorkshopSettings(organizationId)
       if (settings['workshop.emailEnabled'] === 'false') {
@@ -236,17 +241,20 @@ export async function sendNotificationEmail(input: {
       })
       if (!customer) throw new Error('The recipient is not a customer of this workshop')
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'message',
-        to,
-        subject: input.subject,
-        context: {
-          message: input.body,
-          customerName: input.customerName,
-          vehicle: input.vehicle,
-          currentUser: await senderName(userId),
-        },
-      })
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'message',
+          to,
+          subject: input.subject,
+          context: {
+            message: input.body,
+            customerName: input.customerName,
+            vehicle: input.vehicle,
+            currentUser: await senderName(userId),
+          },
+          thread: { customerId: customer.id, kind: 'message' },
+        })
+      )
 
       return { sent: true }
     },
@@ -262,19 +270,26 @@ export async function sendInvoiceEmail(input: {
   serviceRecordId: string
   recipientEmail: string
   message?: string
-  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  /** Attach the PDF as well as the link. Unset follows the setting. */
   attachPdf?: boolean
 }) {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      const sendingMode = await requireEmailSending(organizationId)
 
       const { serviceRecordId, recipientEmail, message } = input
 
       const owned = await db.serviceRecord.findFirst({
         where: { id: serviceRecordId, organizationId },
-        select: { id: true, publicToken: true },
+        select: {
+          id: true,
+          publicToken: true,
+          customerId: true,
+          // A record on a vehicle carries no customer of its own; the
+          // vehicle's is who the invoice goes to.
+          vehicle: { select: { customerId: true } },
+        },
       })
       if (!owned) throw new Error('Service record not found')
 
@@ -292,7 +307,7 @@ export async function sendInvoiceEmail(input: {
       const { record } = assembly
 
       // One language for the PDF's labels and the mail around it.
-      const locale = await resolveCustomerLocale(organizationId, null)
+      const locale = await resolveDocumentLocale(organizationId)
 
       let pdfBuffer: Buffer | null = null
       if (attachPdf) {
@@ -308,48 +323,54 @@ export async function sendInvoiceEmail(input: {
         : null
       const invoiceNum = invoiceNumberOf(record)
 
-      // Without the PDF the link is the whole mail, so one is minted here for
-      // a document that has never been shared. sharedAt goes with it, the way
-      // the share dialog sets it; sentAt is markInvoiceSent's job below.
-      const token = owned.publicToken ?? (attachPdf ? null : randomUUID())
-      if (token && token !== owned.publicToken) {
-        await db.serviceRecord.update({
-          where: { id: serviceRecordId },
-          data: { publicToken: token, sharedAt: new Date() },
-        })
-      }
+      // The link always goes with the mail, with or without the PDF: it is
+      // where the customer pays and where the workshop sees it was opened.
+      // One is minted here for a document that has never been shared.
+      // sharedAt goes with it, the way the share dialog sets it; sentAt is
+      // markInvoiceSent's job below.
+      const token = await ensureShareToken('invoice', serviceRecordId, organizationId)
       const publicLink = token
         ? `${getAppBaseUrl()}/share/invoice/${organizationId}/${token}`
         : null
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'invoice_sent',
-        to: recipientEmail,
-        locale,
-        attached: attachPdf,
-        attachments: pdfBuffer
-          ? [
-              { filename: `${invoiceNum}.pdf`, content: pdfBuffer },
-              ...(certificate ? [certificate] : []),
-            ]
-          : undefined,
-        context: {
-          customerName: assembly.data.customer?.name ?? assembly.data.vehicle?.customer?.name,
-          vehicle: assembly.data.vehicle,
-          currentUser: await senderName(userId),
-          message,
-          document: {
-            number: invoiceNum,
-            title: record.title,
-            total: record.totalAmount > 0 ? record.totalAmount : record.cost,
-            paid: assembly.paymentSummary?.totalPaid,
-            dueDate: record.invoiceDueDate,
-            currencyCode: assembly.invoiceSettings.currencyCode,
-            currencyFormat: assembly.invoiceSettings.currencyFormat,
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'invoice_sent',
+          to: recipientEmail,
+          locale,
+          attached: attachPdf,
+          attachments: pdfBuffer
+            ? [
+                { filename: `${invoiceNum}.pdf`, content: pdfBuffer },
+                ...(certificate ? [certificate] : []),
+              ]
+            : undefined,
+          context: {
+            customerName: assembly.data.customer?.name ?? assembly.data.vehicle?.customer?.name,
+            vehicle: assembly.data.vehicle,
+            currentUser: await senderName(userId),
+            message,
+            document: {
+              number: invoiceNum,
+              title: record.title,
+              total: record.totalAmount > 0 ? record.totalAmount : record.cost,
+              paid: assembly.paymentSummary?.totalPaid,
+              dueDate: record.invoiceDueDate,
+              currencyCode: assembly.invoiceSettings.currencyCode,
+              currencyFormat: assembly.invoiceSettings.currencyFormat,
+            },
+            shareLink: publicLink,
           },
-          shareLink: publicLink,
-        },
-      })
+          thread: {
+            customerId: owned.customerId ?? owned.vehicle?.customerId ?? null,
+            kind: 'document',
+            relatedEntityType: 'service_record',
+            relatedEntityId: serviceRecordId,
+          },
+        })
+      )
+      // The mail is on its way: the link in it counts from now.
+      if (token) await renewShareLink('invoice', serviceRecordId, organizationId)
 
       await markInvoiceSent(serviceRecordId, organizationId, { alreadyIssued: true })
 
@@ -377,13 +398,13 @@ export async function sendInspectionEmail(input: {
   inspectionId: string
   recipientEmail: string
   message?: string
-  /** Send the PDF, or the share link instead. Unset follows the setting. */
+  /** Attach the PDF as well as the link. Unset follows the setting. */
   attachPdf?: boolean
 }) {
   return withAuth(
     async ({ organizationId, userId }) => {
       demoGuard()
-      await requireFeature(organizationId, 'smtp')
+      const sendingMode = await requireEmailSending(organizationId)
 
       const { inspectionId, recipientEmail, message } = input
 
@@ -402,6 +423,7 @@ export async function sendInspectionEmail(input: {
               hsn: true,
               tsn: true,
               mileage: true,
+              customerId: true,
               customer: { select: { name: true, email: true, phone: true } },
             },
           },
@@ -416,7 +438,7 @@ export async function sendInspectionEmail(input: {
       const attachPdf = resolveAttachPdf(settings, input.attachPdf)
 
       // One language for the certificate's labels and the mail around it.
-      const locale = await resolveCustomerLocale(organizationId, null)
+      const locale = await resolveDocumentLocale(organizationId)
 
       const vehicleName = `${inspection.vehicle.year} ${inspection.vehicle.make} ${inspection.vehicle.model}`
       const fileName = `Inspection-${vehicleName}.pdf`
@@ -435,33 +457,37 @@ export async function sendInspectionEmail(input: {
         pdfBuffer = Buffer.from(certificate.body)
       }
 
-      // Without the PDF the link is the whole mail, so one is minted for an
-      // inspection that has never been shared.
-      const token = inspection.publicToken ?? (attachPdf ? null : randomUUID())
-      if (token && token !== inspection.publicToken) {
-        await db.inspection.update({
-          where: { id: inspectionId },
-          data: { publicToken: token },
-        })
-      }
+      // The link always goes with the mail, with or without the PDF. One is
+      // minted for an inspection that has never been shared.
+      const token = await ensureShareToken('inspection', inspectionId, organizationId)
       const publicLink = token
         ? `${getAppBaseUrl()}/share/inspection/${organizationId}/${token}`
         : null
 
-      await sendTemplatedMail(organizationId, {
-        kind: 'inspection_sent',
-        to: recipientEmail,
-        locale,
-        attached: attachPdf,
-        attachments: pdfBuffer ? [{ filename: fileName, content: pdfBuffer }] : undefined,
-        context: {
-          customerName: inspection.vehicle.customer?.name,
-          vehicle: inspection.vehicle,
-          currentUser: await senderName(userId),
-          message,
-          shareLink: publicLink,
-        },
-      })
+      await withPlatformMailAllowance(organizationId, sendingMode, async () =>
+        sendTemplatedMail(organizationId, {
+          kind: 'inspection_sent',
+          to: recipientEmail,
+          locale,
+          attached: attachPdf,
+          attachments: pdfBuffer ? [{ filename: fileName, content: pdfBuffer }] : undefined,
+          context: {
+            customerName: inspection.vehicle.customer?.name,
+            vehicle: inspection.vehicle,
+            currentUser: await senderName(userId),
+            message,
+            shareLink: publicLink,
+          },
+          thread: {
+            customerId: inspection.vehicle.customerId,
+            kind: 'document',
+            relatedEntityType: 'inspection',
+            relatedEntityId: inspectionId,
+          },
+        })
+      )
+      // The mail is on its way: the link in it counts from now.
+      if (token) await renewShareLink('inspection', inspectionId, organizationId)
 
       return { sent: true, inspectionId, recipientEmail }
     },

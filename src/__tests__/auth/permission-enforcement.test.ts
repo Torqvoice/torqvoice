@@ -62,6 +62,10 @@ vi.mock('@/lib/features', () => ({
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
+    // Actions write their audit line without waiting for it. Without this the
+    // write failed and logged after the file had finished, which vitest
+    // reports as an unhandled error once the worker has closed.
+    auditLog: { create: vi.fn().mockResolvedValue({}) },
     vehicle: {
       findMany: vi.fn(),
       findFirst: vi.fn(),

@@ -45,6 +45,7 @@ export function QuotePDF({
   pdfAttachmentNames = [],
   customFields = [],
   labels = {},
+  locale,
   layoutConfig,
   lineItemsInclTax,
   conditionMap,
@@ -67,6 +68,8 @@ export function QuotePDF({
   pdfAttachmentNames?: string[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
+  /** The document's language; numbers are written its way. */
+  locale?: string
   lineItemsInclTax?: boolean
   layoutConfig?: InvoiceLayoutConfig
   conditionMap?: VisitConditionMap
@@ -90,6 +93,7 @@ export function QuotePDF({
     otherAttachmentNames: otherAttachments.map((att) => att.fileName),
     customFields,
     labels,
+    locale,
     layoutConfig,
     conditionMap,
     inspectionResults,

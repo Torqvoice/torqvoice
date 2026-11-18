@@ -7,6 +7,7 @@
  * that the ledger arrived at the same total.
  */
 
+import { taxDisplay } from '@/lib/tax'
 import { createHash } from 'node:crypto'
 import type {
   AccountingCustomer,
@@ -321,12 +322,27 @@ function itemLine(
  */
 export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<string, unknown> {
   const taxable = inv.taxRate > 0 && !o.taxExempt
-  const taxCode = taxable ? o.taxCodeId : o.zeroTaxCodeId
   const serviceDate = zonedDayKey(inv.serviceDate, o.timezone)
   // A US company has no tax-inclusive mode: QuickBooks adds tax on top of
   // the lines whatever they say. Gross prices go over as net so the total,
   // with the billed tax on top, is the gross the customer saw.
   const netFactor = !o.globalTax && inv.taxInclusive && taxable ? 1 / (1 + inv.taxRate / 100) : 1
+  // A line left out of the tax goes under the code that says so, the way
+  // QuickBooks itself expects a parts-only sales tax to be booked, and it
+  // holds no tax to take out of its price.
+  const codeFor = (line: AccountingInvoice['lines'][number]) =>
+    taxable && line.taxable ? o.taxCodeId : o.zeroTaxCodeId
+  const factorFor = (line: AccountingInvoice['lines'][number]) => (line.taxable ? netFactor : 1)
+  // The discount is shared over taxed and untaxed lines in proportion, so
+  // taken net it shrinks by as much as the subtotal as a whole does.
+  const netDiscount =
+    netFactor === 1
+      ? inv.discountAmount
+      : taxDisplay({ taxRate: inv.taxRate, taxInclusive: true }).discount(
+          inv.discountAmount,
+          inv.subtotal,
+          inv.taxableSubtotal
+        )
   const lines: QboLine[] = []
   const vehicle = o.includeVehicle ? vehicleDescription(inv) : null
   if (vehicle) {
@@ -339,13 +355,13 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
   for (const line of inv.lines) {
     const itemId = line.kind === 'labor' ? o.laborItemId : o.partsItemId
     if (!itemId) continue
-    lines.push(itemLine(line, itemId, taxCode, serviceDate, netFactor))
+    lines.push(itemLine(line, itemId, codeFor(line), serviceDate, factorFor(line)))
   }
   if (inv.discountAmount > 0) {
     const percent = inv.discountType === 'percentage' && inv.discountValue > 0
     lines.push({
       DetailType: 'DiscountLineDetail',
-      Amount: round2(inv.discountAmount * netFactor),
+      Amount: round2(netDiscount),
       DiscountLineDetail: percent
         ? { PercentBased: true, DiscountPercent: inv.discountValue }
         : { PercentBased: false },

@@ -42,6 +42,7 @@
     "warranty": "Garantie",
     "workshop": "Atelier",
     "appearance": "Apparence",
+    "shortcuts": "Raccourcis clavier",
     "email": "E-mail",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Jeu de pneus",
     "tireForecast": "La saison prochaine",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Rappels de contrôle"
+    "inspectionReminders": "Rappels de contrôle",
+    "faultCodes": "Codes défaut",
+    "faultCode": "Code défaut",
+    "calendar": "Calendrier",
+    "messages": "Messages",
+    "inspections": "Inspections",
+    "inspectionDetails": "Détails de l’inspection"
   },
   "search": "Rechercher…",
-  "shortcut": "Ctrl+K",
   "readMore": "En savoir plus",
   "newWorkOrder": "Nouvel ordre de travail",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Pièce",
     "inspection": "Inspection",
     "shopActions": "Atelier",
-    "person": "Ajouter une personne"
+    "person": "Ajouter une personne",
+    "appointment": "Rendez-vous"
   },
   "purchaseWhiteLabel": "Acheter la marque blanche",
   "licenseExpired": "Votre licence a expiré. Les fonctionnalités peuvent être limitées.",
@@ -123,6 +130,7 @@
     "cancel": "Annuler",
     "createCompany": "Créer l'entreprise",
     "theme": "Thème",
+    "keyboardShortcuts": "Raccourcis clavier",
     "signOut": "Se déconnecter",
     "more": "Plus",
     "auditLog": "Journal d'audit",
@@ -141,6 +149,7 @@
       "workOrders": "{count} ordres de travail ouverts",
       "inspections": "{count} inspections en cours",
       "reminders": "{count} rappels à échéance"
-    }
+    },
+    "faultCodes": "Codes défaut"
   }
 }

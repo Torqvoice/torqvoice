@@ -53,6 +53,61 @@ export function laneIdForJob(
   return known && !known.has(id) ? UNLANED : id
 }
 
+/**
+ * Whether a job is in this lane because the lane's technician is helping on
+ * it, rather than because it is theirs.
+ *
+ * Only a board grouped by technician has such lanes. Grouped by bay, or not
+ * at all, a job sits in one place and says who is on it on its own card.
+ */
+export function isHelperLane(job: WorkBoardJob, laneId: string, grouping: LaneGrouping): boolean {
+  return grouping === 'technician' && job.technicianId !== laneId && job.helperIds.includes(laneId)
+}
+
+/**
+ * Every lane a job is drawn in: its own first, then, on a board grouped by
+ * technician, the lane of each person helping on it. The board plans a
+ * person's day, so a job two people are on is in both their days.
+ *
+ * A helper the board is not showing (made inactive since) has no lane to be
+ * in and is left out, rather than bucketed under an id nothing renders.
+ */
+export function laneIdsForJob(
+  job: WorkBoardJob,
+  grouping: LaneGrouping,
+  known?: ReadonlySet<string>
+): string[] {
+  const own = laneIdForJob(job, grouping, known)
+  if (grouping !== 'technician' || job.helperIds.length === 0) return [own]
+  const ids = [own]
+  for (const helperId of job.helperIds) {
+    // Never twice in one lane: mid-drag a job can name a helper as its
+    // technician before the server has swapped the two.
+    if (helperId === job.technicianId || ids.includes(helperId)) continue
+    if (known && !known.has(helperId)) continue
+    ids.push(helperId)
+  }
+  return ids
+}
+
+/**
+ * Who is helping once a job's technician changes, for drawing a drag before
+ * the server answers. The same three rules the server applies when it writes
+ * the change (Lib/jobTeam.ts `settleHelpers`), and a test holds the two
+ * together: unassigned, the helpers go; a helper taking over swaps with the
+ * technician; somebody new leaves the helpers as they were.
+ */
+export function helpersAfterTechnicianChange(
+  job: Pick<WorkBoardJob, 'technicianId' | 'helperIds'>,
+  nextId: string | null
+): string[] {
+  if (nextId === job.technicianId) return job.helperIds
+  if (!nextId) return []
+  if (!job.helperIds.includes(nextId)) return job.helperIds
+  const rest = job.helperIds.filter((id) => id !== nextId)
+  return job.technicianId ? [...rest, job.technicianId] : rest
+}
+
 /** The field a drop into a lane writes, ready to spread into `scheduleJob`. */
 export function laneAssignment(
   laneId: string,
@@ -127,7 +182,13 @@ export function buildLanes({
   return lanes
 }
 
-/** Jobs bucketed by lane id, so a lane column never scans the whole week. */
+/**
+ * Jobs bucketed by lane id, so a lane column never scans the whole week.
+ *
+ * A job with helpers is in more than one bucket on a board grouped by
+ * technician: its own lane, and each helper's. `isHelperLane` tells a lane
+ * which of its jobs are which.
+ */
 export function groupJobsByLane(
   jobs: WorkBoardJob[],
   grouping: LaneGrouping,
@@ -135,10 +196,11 @@ export function groupJobsByLane(
 ): Map<string, WorkBoardJob[]> {
   const map = new Map<string, WorkBoardJob[]>()
   for (const job of jobs) {
-    const laneId = laneIdForJob(job, grouping, known)
-    const bucket = map.get(laneId)
-    if (bucket) bucket.push(job)
-    else map.set(laneId, [job])
+    for (const laneId of laneIdsForJob(job, grouping, known)) {
+      const bucket = map.get(laneId)
+      if (bucket) bucket.push(job)
+      else map.set(laneId, [job])
+    }
   }
   return map
 }

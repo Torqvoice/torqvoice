@@ -14,4 +14,5 @@ export {
   updateInspectionTimes,
 } from './scheduling'
 export { getServiceRecordTechnician } from './queries'
+export { addJobHelper, removeJobHelper } from './helpers'
 export { checkSlotAvailability, findNextSlot, getTechnicianDayLoad } from './availability'

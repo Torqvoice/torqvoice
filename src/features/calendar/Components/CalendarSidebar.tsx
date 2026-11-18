@@ -9,14 +9,53 @@ import type { CalendarEventType } from '../Actions/calendarActions'
 
 export type TypeFilters = Record<CalendarEventType, boolean>
 
-const FILTER_ORDER: CalendarEventType[] = ['service', 'reminder', 'quote', 'message', 'external']
+const FILTER_ORDER: CalendarEventType[] = [
+  'service',
+  'appointment',
+  'reminder',
+  'quote',
+  'message',
+  'closure',
+  'absence',
+  'external',
+]
 
-const FILTER_LABEL: Record<CalendarEventType, string> = {
+/**
+ * The ticks the list shows for what this person has hidden. A kind not in
+ * the stored list is shown, and stored names the calendar does not know
+ * are passed over.
+ */
+export function typeFiltersFrom(hiddenTypes: readonly string[]): TypeFilters {
+  const hidden = new Set(hiddenTypes)
+  return Object.fromEntries(FILTER_ORDER.map((type) => [type, !hidden.has(type)])) as TypeFilters
+}
+
+/** Listed only when there is something of the kind in view, or it is hidden. */
+const ONLY_WHEN_PRESENT: CalendarEventType[] = ['external', 'closure', 'absence']
+
+/**
+ * The kinds the list offers, in order. A hidden kind is always listed, so a
+ * choice remembered from another visit can be undone.
+ */
+export function listedTypes(
+  counts: Record<CalendarEventType, number>,
+  filters: TypeFilters
+): CalendarEventType[] {
+  return FILTER_ORDER.filter(
+    (type) => !ONLY_WHEN_PRESENT.includes(type) || counts[type] > 0 || !filters[type]
+  )
+}
+
+/** The key under `calendar.filters` that names a kind. */
+export const FILTER_LABEL: Record<CalendarEventType, string> = {
   service: 'services',
   reminder: 'reminders',
   quote: 'quotes',
   message: 'messages',
   external: 'external',
+  closure: 'closures',
+  absence: 'absences',
+  appointment: 'appointments',
 }
 
 interface CalendarSidebarProps {
@@ -73,8 +112,7 @@ export function CalendarSidebar({
           </span>
         </div>
         <ul className="space-y-0.5">
-          {FILTER_ORDER.map((type) => {
-            if (type === 'external' && counts.external === 0) return null
+          {listedTypes(counts, filters).map((type) => {
             const palette = typePalette(type)
             return (
               <li key={type}>

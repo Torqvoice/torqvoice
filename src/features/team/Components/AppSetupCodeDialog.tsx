@@ -67,8 +67,8 @@ export function AppSetupCodeDialog({
   const close = useCallback(() => {
     // Not awaited: the dialog should shut the moment it is asked to, and the
     // revoke is the server's problem. Belt and braces anyway, since the code
-    // expires on its own.
-    if (userId) void revokeAppSetupCode({ userId })
+    // expires on its own, so a revoke that fails is not worth a word.
+    if (userId) void revokeAppSetupCode({ userId }).catch(() => null)
     onClose()
   }, [userId, onClose])
 

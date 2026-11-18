@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Atölye varsayılanı",
     "invoiceDesignHint": "Bu müşterinin faturaları atölye varsayılanı yerine bu tasarımla yazdırılır. Bir fatura yine de kendi tasarımını seçebilir.",
     "reminderOptOut": "Hatırlatma yok",
-    "reminderOptOutHint": "Bu müşteriyi muayene hatırlatmalarına veya diğer kampanyalara dahil etme."
+    "reminderOptOutHint": "Bu müşteriyi muayene hatırlatmalarına veya diğer kampanyalara dahil etme.",
+    "bookAppointment": "Randevu oluştur"
   },
   "serviceRequests": {
     "statusNew": "Yeni",
@@ -120,6 +121,12 @@
     "saveNotes": "Notları Kaydet",
     "submitted": "{date} tarihinde gönderildi",
     "preferred": "Tercih edilen: {date}",
+    "preferredMorning": "Tercih edilen: {date}, sabah",
+    "preferredAfternoon": "Tercih edilen: {date}, öğleden sonra",
+    "files": "{count, plural, one {Müşteriden # fotoğraf veya video} other {Müşteriden # fotoğraf veya video}}",
+    "openPhoto": "{number}. fotoğrafı aç",
+    "openVideo": "{number}. videoyu aç",
+    "fileMissing": "{number}. fotoğraf artık mevcut değil",
     "workOrderCreated": "İş emri oluşturuldu",
     "workOrderError": "İş emri oluşturulamadı",
     "requestDismissed": "Talep reddedildi",

@@ -69,7 +69,7 @@ export function NoteForm({ vehicleId, open, onOpenChange, note }: NoteFormProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-3xl">
+      <DialogContent className="sm:max-w-3xl" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{isEditing ? t('editTitle') : t('addTitle')}</DialogTitle>
         </DialogHeader>

@@ -10,6 +10,7 @@ import {
   roundMoney,
 } from '@/features/inventory/Lib/partPricing'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
  * Books a part onto a job from the bay.
@@ -42,7 +43,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
         where: {
           id,
           organizationId: ctx.organizationId,
-          ...(ctx.isAdmin ? {} : { technicianId: { in: ctx.technicianIds } }),
+          ...jobScopeFor(ctx),
         },
         select: { id: true },
       })

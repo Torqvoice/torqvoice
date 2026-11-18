@@ -53,6 +53,7 @@
     "statusCompleted": "Completed",
     "complete": "Complete",
     "reopen": "Reopen",
+    "send": "Send",
     "share": "Share",
     "save": "Save",
     "saving": "Saving…",
@@ -94,6 +95,8 @@
     "completeTitle": "Complete this inspection?",
     "completeBody": "The checks are locked once the inspection is completed, and the result becomes \"{result}\".",
     "completeBlocked": "{count} check(s) the checklist marks as mandatory are outstanding.",
+    "blockerMissingGrade": "must be graded",
+    "blockerNeedsPhoto": "needs a photo of the defect",
     "completeUngraded": "{count} check(s) have not been graded.",
     "completeDangerous": "{count} dangerous defect(s) recorded. The vehicle must not be used on the public road.",
     "reopenTitle": "Reopen this inspection?",
@@ -459,7 +462,9 @@
     "copyLink": "Copy link",
     "copied": "Link copied to clipboard",
     "generated": "Share link generated",
-    "revoked": "Share link revoked"
+    "revoked": "Share link revoked",
+    "revokeLink": "Revoke Link",
+    "generateLink": "Generate Public Link"
   },
   "phone": {
     "pageTitle": "Inspection photos",
@@ -494,5 +499,19 @@
     "photos": "Photos",
     "documents": "Documents",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "All checks passed",
+    "pass_minor": "Some items to keep an eye on",
+    "fail": "Some items need work",
+    "fail_dangerous": "Some items need urgent work",
+    "incomplete": "Not completed",
+    "detail": {
+      "pass": "Nothing needed attention.",
+      "pass_minor": "Nothing urgent. The items marked for attention are worth planning for.",
+      "fail": "Some items need repairing. The notes say what was found.",
+      "fail_dangerous": "Some items are unsafe and should be repaired before further use.",
+      "incomplete": "This check is still in progress."
+    }
   }
 }

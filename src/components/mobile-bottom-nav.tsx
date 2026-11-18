@@ -15,6 +15,7 @@ import {
   Columns3,
   Disc3,
   FileText,
+  Headset,
   History,
   Layers,
   Loader2,
@@ -47,6 +48,7 @@ import {
   getInventoryPart,
 } from '@/features/inventory/Actions/inventoryActions'
 import { Separator } from '@/components/ui/separator'
+import { openSupport } from '@/features/support/Lib/supportVisibility'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -90,9 +92,11 @@ const allDrawerItems = [
 export function MobileBottomNav({
   isSuperAdmin,
   tireHotelEnabled,
+  supportEnabled,
 }: {
   isSuperAdmin?: boolean
   tireHotelEnabled?: boolean
+  supportEnabled?: boolean
 }) {
   const pathname = usePathname()
   const isMarine = useServiceType() === 'marine'
@@ -103,6 +107,8 @@ export function MobileBottomNav({
   const router = useRouter()
   const t = useTranslations('navigation.sidebar')
   const tScan = useTranslations('inventory.barcodeScan')
+  const tSupport = useTranslations('support')
+  const ta = useTranslations('common.a11y')
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [scannerOpen, setScannerOpen] = useState(false)
   const [scannedPart, setScannedPart] = useState<{
@@ -111,6 +117,7 @@ export function MobileBottomNav({
     partNumber: string | null
     barcode: string | null
     quantity: number
+    trackStock?: boolean
     category: string | null
   } | null>(null)
   const [scannedBarcode, setScannedBarcode] = useState('')
@@ -139,7 +146,10 @@ export function MobileBottomNav({
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden">
+      <nav
+        aria-label={ta('mainNavigation')}
+        className="fixed bottom-0 left-0 right-0 z-50 border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden"
+      >
         <div className="grid grid-cols-5">
           {visiblePrimaryItems.map(({ href, icon: Icon, labelKey }) => {
             const isActive = pathname === href || pathname.startsWith(`${href}/`)
@@ -147,9 +157,12 @@ export function MobileBottomNav({
               <Link
                 key={href}
                 href={href}
+                aria-current={isActive ? 'page' : undefined}
                 className={cn(
                   'flex flex-col items-center gap-0.5 py-2 text-[10px]',
-                  isActive ? 'text-primary' : 'text-muted-foreground'
+                  // Weight as well as colour, so the current tab does not
+                  // depend on telling amber from grey.
+                  isActive ? 'font-semibold text-primary' : 'text-muted-foreground'
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -266,6 +279,24 @@ export function MobileBottomNav({
                 <Settings className="h-5 w-5" />
                 <span>{t('settings')}</span>
               </Link>
+              {/* A phone has no floating support button, and the settings
+                  page that opens the form turns away a role without settings
+                  access. This is the way in for everyone. */}
+              {supportEnabled && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDrawerOpen(false)
+                    // After the drawer has let go of the page, or it takes
+                    // the focus back from the form.
+                    setTimeout(() => openSupport(), 200)
+                  }}
+                  className="flex flex-col items-center gap-1.5 rounded-lg py-3 text-center text-xs text-muted-foreground transition-colors hover:bg-accent"
+                >
+                  <Headset className="h-5 w-5" />
+                  <span>{tSupport('open')}</span>
+                </button>
+              )}
               {isSuperAdmin && (
                 <Link
                   href="/admin"
@@ -323,11 +354,19 @@ export function MobileBottomNav({
                   </div>
                 </div>
                 <div className="text-right text-sm text-muted-foreground shrink-0">
-                  {tScan('currentStock', { quantity: scannedPart.quantity })}
+                  {scannedPart.trackStock === false
+                    ? tScan('notTracked')
+                    : tScan('currentStock', { quantity: scannedPart.quantity })}
                 </div>
               </div>
 
-              <div className="flex items-center justify-center gap-4 py-6">
+              <div
+                className={
+                  scannedPart.trackStock === false
+                    ? 'hidden'
+                    : 'flex items-center justify-center gap-4 py-6'
+                }
+              >
                 <Button
                   variant="outline"
                   size="icon"
@@ -366,7 +405,7 @@ export function MobileBottomNav({
               <div className="flex gap-2">
                 <Button
                   size="lg"
-                  className="flex-1"
+                  className={scannedPart.trackStock === false ? 'hidden' : 'flex-1'}
                   onClick={async () => {
                     setAddingStock(true)
                     const result = await adjustInventoryStock({
@@ -392,6 +431,7 @@ export function MobileBottomNav({
                 <Button
                   size="lg"
                   variant="outline"
+                  className={scannedPart.trackStock === false ? 'flex-1' : undefined}
                   onClick={async () => {
                     const result = await getInventoryPart(scannedPart.id)
                     if (result.success && result.data) {

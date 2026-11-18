@@ -3,17 +3,8 @@
 import { useState, useEffect, useCallback, useTransition, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Loader2 } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
+import { useConfirm } from '@/components/confirm-dialog'
 import { toast } from 'sonner'
 import { getTelegramConversation, deleteTelegramConversation } from '../Actions/telegramActions'
 import { getRecentTelegramThreads } from '../Actions/telegramThreadActions'
@@ -75,8 +66,7 @@ export function TelegramMessagesClient({
   } | null>(null)
   const [loadingConversation, setLoadingConversation] = useState(false)
   const [isLoadingMore, startLoadMore] = useTransition()
-  const [deleteTarget, setDeleteTarget] = useState<TelegramThread | null>(null)
-  const [isDeleting, setIsDeleting] = useState(false)
+  const confirm = useConfirm()
 
   const normalizeMessages = (msgs: TelegramMessage[]) =>
     msgs.map((m) => ({
@@ -85,20 +75,33 @@ export function TelegramMessagesClient({
         typeof m.createdAt === 'string' ? m.createdAt : new Date(m.createdAt).toISOString(),
     }))
 
+  // The customer whose thread was asked for last; an answer for anyone else
+  // arrived too late and is dropped.
+  const requestedCustomer = useRef<string | null>(null)
   const loadConversation = useCallback(
     async (cid: string) => {
+      requestedCustomer.current = cid
       setLoadingConversation(true)
-      const result = await getTelegramConversation(cid)
-      if (result.success && result.data) {
-        const thread = threads.find((th) => th.customerId === cid)
-        setConversation({
-          messages: normalizeMessages(result.data.messages),
-          nextCursor: result.data.nextCursor,
-          customerName: thread?.customerName || '',
-          telegramChatId: thread?.telegramChatId || null,
-        })
+      // The previous customer's thread goes first. Left on screen while this
+      // one fails to load, it would sit under the new customer's name with a
+      // composer that replies to them.
+      setConversation(null)
+      // The spinner stops even when the request never reaches the server;
+      // the rejection still goes on to the lost-connection notice.
+      try {
+        const result = await getTelegramConversation(cid)
+        if (requestedCustomer.current === cid && result.success && result.data) {
+          const thread = threads.find((th) => th.customerId === cid)
+          setConversation({
+            messages: normalizeMessages(result.data.messages),
+            nextCursor: result.data.nextCursor,
+            customerName: thread?.customerName || '',
+            telegramChatId: thread?.telegramChatId || null,
+          })
+        }
+      } finally {
+        if (requestedCustomer.current === cid) setLoadingConversation(false)
       }
-      setLoadingConversation(false)
     },
     [threads]
   )
@@ -125,6 +128,7 @@ export function TelegramMessagesClient({
   }
 
   const handleBack = () => {
+    requestedCustomer.current = null
     setSelectedCustomerId(null)
     setConversation(null)
     updateUrl('customerId', null)
@@ -132,8 +136,10 @@ export function TelegramMessagesClient({
 
   const handleLoadMore = () => {
     startLoadMore(async () => {
-      const result = await getRecentTelegramThreads(threads.length, PAGE_SIZE)
-      if (result.success && result.data) {
+      // Caught: thrown inside a transition it would take the page down. The
+      // button is ready to try again.
+      const result = await getRecentTelegramThreads(threads.length, PAGE_SIZE).catch(() => null)
+      if (result?.success && result.data) {
         setThreads((prev) => [...prev, ...result.data!.threads])
         setHasMore(result.data.hasMore)
       }
@@ -148,11 +154,20 @@ export function TelegramMessagesClient({
     }
   }, [threads.length])
 
-  const handleDeleteConversation = async () => {
-    if (!deleteTarget) return
-    setIsDeleting(true)
-    const result = await deleteTelegramConversation(deleteTarget.customerId)
-    if (result.success) {
+  const handleDeleteConversation = async (deleteTarget: TelegramThread) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription', { name: deleteTarget.customerName }),
+      confirmLabel: tc('delete'),
+      cancelLabel: tc('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteTelegramConversation(deleteTarget.customerId).catch(() => null)
+    if (result?.success) {
       toast.success(t('deleted'))
       setThreads((prev) => prev.filter((th) => th.customerId !== deleteTarget.customerId))
       if (selectedCustomerId === deleteTarget.customerId) {
@@ -161,10 +176,8 @@ export function TelegramMessagesClient({
         updateUrl('customerId', null)
       }
     } else {
-      toast.error(result.error || t('deleteError'))
+      toast.error(result?.error || t('deleteError'))
     }
-    setIsDeleting(false)
-    setDeleteTarget(null)
   }
 
   useEffect(() => {
@@ -198,30 +211,9 @@ export function TelegramMessagesClient({
         loadingConversation={loadingConversation}
         threads={threads}
         onBack={handleBack}
-        onDeleteThread={setDeleteTarget}
+        onDeleteThread={handleDeleteConversation}
         t={t}
       />
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>
-              {t('deleteDescription', { name: deleteTarget?.customerName ?? '' })}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting}>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConversation}
-              disabled={isDeleting}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

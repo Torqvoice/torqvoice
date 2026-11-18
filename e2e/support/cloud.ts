@@ -1,5 +1,5 @@
 import { type BrowserContext, expect, type Page } from '@playwright/test'
-import { settle } from './hydration'
+import { fillSettled, settle } from './hydration'
 
 /**
  * Driving the app in cloud mode, as a stranger arrives at it.
@@ -72,6 +72,27 @@ export async function routeGoogleToStandin(context: BrowserContext): Promise<voi
   })
 }
 
+/**
+ * Presses "Continue with Google" on the page that is open and picks an
+ * account in the stand-in's chooser.
+ */
+export async function chooseGoogleAccount(page: Page, email: string): Promise<void> {
+  await settle(page)
+  await expect(async () => {
+    await page.getByRole('button', { name: 'Continue with Google' }).click()
+    await expect(page.getByRole('heading', { name: 'Choose an account' })).toBeVisible({
+      timeout: 5_000,
+    })
+  }).toPass({ timeout: 30_000 })
+  await page.getByRole('button', { name: email, exact: true }).click()
+}
+
+/** Opens `from`, presses "Continue with Google" and picks an account in the chooser. */
+export async function continueWithGoogle(page: Page, from: string, email: string): Promise<void> {
+  await page.goto(from)
+  await chooseGoogleAccount(page, email)
+}
+
 /** Signs up with a password on the cloud sign-up page, landing in onboarding. */
 export async function signUpWithPassword(
   page: Page,
@@ -102,14 +123,19 @@ export async function signInWithPassword(
   await page.waitForURL((url) => !/^\/(auth|onboarding)/.test(url.pathname), { timeout: 30_000 })
 }
 
-/** Names the workshop and finishes onboarding, with or without the sample data. */
+/**
+ * Names the workshop and finishes onboarding on the suggested settings, with
+ * or without the sample data: the guided setup's "skip to Ready" path.
+ */
 export async function completeOnboarding(
   page: Page,
   workshopName: string,
   { sampleData }: { sampleData: boolean }
 ): Promise<void> {
   await settle(page)
-  await page.locator('#workshopName').fill(workshopName)
+  await fillSettled(page.locator('#workshopName'), workshopName)
+  await page.getByRole('button', { name: 'Use the suggestions and skip to Ready' }).click()
+  await expect(page.getByRole('button', { name: 'Create workshop' })).toBeVisible()
   const sample = page.locator('#loadSampleData')
   const checked =
     (await sample.getAttribute('aria-checked')) === 'true' ||

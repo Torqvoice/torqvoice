@@ -114,7 +114,29 @@
     "resendApiKeyHint": "Hent API-nøkkelen din fra resend.com",
     "postmarkApiKeyHint": "Hent din Server Token fra postmarkapp.com",
     "mailgunApiKeyHint": "Hent API-nøkkelen din fra app.mailgun.com",
-    "sendgridApiKeyHint": "Hent API-nøkkelen din fra app.sendgrid.com"
+    "sendgridApiKeyHint": "Hent API-nøkkelen din fra app.sendgrid.com",
+    "branding": {
+      "title": "Appens merkevare",
+      "description": "Endrer tittelen i nettleserfanen, favikonet og navnet og ikonet til den installerte appen på denne installasjonen. Dokumenter og resten av appen påvirkes ikke. La et felt stå tomt for å bruke standarden.",
+      "nameLabel": "Appnavn",
+      "nameHint": "Vises i nettleserfanen og som navnet på den installerte appen.",
+      "save": "Lagre navn",
+      "saved": "Appnavnet er lagret",
+      "saveFailed": "Kunne ikke lagre appnavnet",
+      "iconLabel": "Appikon",
+      "iconHint": "Et kvadratisk bilde på minst 512 × 512 piksler. PNG fungerer best.",
+      "iconAlt": "Gjeldende appikon",
+      "upload": "Last opp",
+      "replace": "Bytt ut",
+      "remove": "Fjern",
+      "uploaded": "Appikonet er oppdatert",
+      "uploadFailed": "Kunne ikke laste opp ikonet",
+      "removed": "Appikonet er fjernet",
+      "removeFailed": "Kunne ikke fjerne ikonet",
+      "lockedBadge": "Krever lisens",
+      "lockedHint": "En white-label-lisens låser opp appnavn og appikon.",
+      "lockedLink": "Åpne lisenssiden"
+    }
   },
   "common": {
     "openMenu": "Åpne meny"

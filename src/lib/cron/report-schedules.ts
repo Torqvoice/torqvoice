@@ -8,7 +8,7 @@ import React from 'react'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { netLineTotal } from '@/lib/tax'
+import { earnedLineTotal, taxedNetAmountOf } from '@/lib/tax'
 import { TaxByRateTable } from '@/features/reports/Lib/taxByRate'
 import {
   addZonedDays,
@@ -21,6 +21,11 @@ import {
 import { shiftWorkshopTime, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { isRestoring } from '@/lib/backup/freeze'
+import { createLogger } from '@/lib/logger'
+import { createTickSummary } from './tick-summary'
+
+const log = createLogger('cron')
 
 // --------------- date helpers ---------------
 // All in the workshop's zone: the server runs in UTC and its clock says
@@ -125,10 +130,12 @@ async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: str
       type: true,
       taxRate: true,
       taxInclusive: true,
+      subtotal: true,
+      discountAmount: true,
       manuallyPaid: true,
       payments: { select: { amount: true } },
-      partItems: { select: { unitCost: true, quantity: true, total: true } },
-      laborItems: { select: { total: true } },
+      partItems: { select: { unitCost: true, quantity: true, total: true, taxable: true } },
+      laborItems: { select: { total: true, taxable: true } },
     },
     orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
   })
@@ -156,13 +163,10 @@ async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: str
     const total = r.totalAmount > 0 ? r.totalAmount : r.cost
     const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
     const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
-    // Net (pre-tax) parts/labor so profit math works in both tax modes.
-    const partsRevenue = r.partItems.reduce(
-      (s, p) => s + netLineTotal(p.total, r.taxRate, r.taxInclusive),
-      0
-    )
+    // Net (pre-tax) parts/labor, after the job's discount, so profit math works in both tax modes.
+    const partsRevenue = r.partItems.reduce((s, p) => s + earnedLineTotal(p.total, r, p.taxable), 0)
     const laborRevenue = r.laborItems.reduce(
-      (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
+      (s, l) => s + earnedLineTotal(l.total, r, l.taxable),
       0
     )
     const _d = r.startDateTime ?? r.serviceDate
@@ -329,13 +333,16 @@ async function fetchParts(orgId: string, start: Date, end: Date) {
       partNumber: true,
       quantity: true,
       total: true,
+      taxable: true,
       unitCost: true,
-      serviceRecord: { select: { taxRate: true, taxInclusive: true } },
+      serviceRecord: {
+        select: { taxRate: true, taxInclusive: true, subtotal: true, discountAmount: true },
+      },
     },
   })
   const partWithNet = parts.map((p) => ({
     ...p,
-    netTotal: netLineTotal(p.total, p.serviceRecord.taxRate, p.serviceRecord.taxInclusive),
+    netTotal: earnedLineTotal(p.total, p.serviceRecord, p.taxable),
   }))
   const byPart: Record<
     string,
@@ -502,7 +509,8 @@ async function fetchRetention(orgId: string, start: Date, end: Date) {
 
 async function fetchInventory(orgId: string) {
   const parts = await db.inventoryPart.findMany({
-    where: { organizationId: orgId, isArchived: false },
+    // Stock on hand only: parts that do not track stock are left out.
+    where: { organizationId: orgId, isArchived: false, trackStock: true },
     select: {
       id: true,
       name: true,
@@ -614,6 +622,7 @@ async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string)
       serviceDate: true,
       startDateTime: true,
       subtotal: true,
+      taxableSubtotal: true,
       taxRate: true,
       taxAmount: true,
       taxInclusive: true,
@@ -635,7 +644,7 @@ async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string)
     const _d = r.startDateTime ?? r.serviceDate
     const month = workshopMonthKey(_d, timeZone)
     // Net taxable base = totalAmount - taxAmount, valid for both modes.
-    const taxableBase = Math.max(0, r.totalAmount - r.taxAmount)
+    const taxableBase = taxedNetAmountOf(r)
     if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 }
     monthly[month].taxCollected += r.taxAmount
     monthly[month].invoiceCount += 1
@@ -777,7 +786,11 @@ export async function processOneSchedule(
         ],
       })
     } catch (emailErr) {
-      console.error(`[cron] Failed to email report to ${recipient.email}:`, emailErr)
+      log.error('Could not email a scheduled report', {
+        organizationId: schedule.organizationId,
+        scheduleId: schedule.id,
+        err: emailErr,
+      })
     }
   }
 
@@ -795,15 +808,19 @@ export async function processOneSchedule(
     },
   })
 
-  console.warn(
-    `[cron] Report schedule ${schedule.id} processed, sent to ${recipients.length} recipients`
-  )
+  log.debug('Report schedule processed', {
+    organizationId: schedule.organizationId,
+    scheduleId: schedule.id,
+    recipients: recipients.length,
+  })
 }
 
 // --------------- main cron ---------------
 
 export function processReportSchedules() {
+  const summary = createTickSummary('Report schedules processed')
   const job = new CronJob('0 * * * *', async () => {
+    let processed = 0
     const dueSchedules = await db.reportSchedule.findMany({
       where: { isActive: true, nextRunDate: { lte: new Date() } },
     })
@@ -811,6 +828,8 @@ export function processReportSchedules() {
     const zones = new Map<string, string>()
 
     for (const schedule of dueSchedules) {
+      // A workshop halfway through a restore would report on half its rows; the next hourly run sends it.
+      if (isRestoring(schedule.organizationId)) continue
       try {
         let timeZone = zones.get(schedule.organizationId)
         if (!timeZone) {
@@ -818,12 +837,18 @@ export function processReportSchedules() {
           zones.set(schedule.organizationId, timeZone)
         }
         await processOneSchedule(schedule, timeZone)
+        processed++
       } catch (err) {
-        console.error(`[cron] Failed to process report schedule ${schedule.id}:`, err)
+        log.error('Report schedule failed', {
+          organizationId: schedule.organizationId,
+          scheduleId: schedule.id,
+          err,
+        })
       }
     }
+    summary.add(processed)
   })
 
   job.start()
-  console.warn('[cron] Report schedule processor started (hourly)')
+  log.info('Report schedule processor started (hourly)')
 }

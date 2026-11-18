@@ -22,7 +22,7 @@
     "quote": "Orçamento",
     "save": "Salvar",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Enviar",
     "share": "Compartilhar",
     "delete": "Excluir",
     "deleteTitle": "Excluir orçamento",
@@ -115,6 +115,7 @@
     "total": "Total",
     "subtotal": "Subtotal de peças: {amount}",
     "deleteRow": "Excluir linha",
+    "reorderRow": "Arraste para reordenar",
     "excludeFromTotal": "Não somar ao total",
     "addFromInventory": "Do estoque",
     "unitCost": "Custo",
@@ -139,6 +140,7 @@
     "hourlyHint": "Por hora: calculado pelas horas trabalhadas (horas × taxa/h). Clique para alterar.",
     "serviceHint": "Serviço: cobrado como valor fixo por unidade. Clique para alterar.",
     "deleteRow": "Excluir linha",
+    "reorderRow": "Arraste para reordenar",
     "excludeFromTotal": "Não somar ao total"
   },
   "notes": {
@@ -192,24 +194,15 @@
     "discountFixed": "Fixo",
     "tax": "Imposto",
     "taxIncluded": "Imposto (incl.)",
+    "taxableAmount": "Base tributável",
     "total": "Total",
     "inclusiveModeHint": "Os preços das linhas são inseridos com imposto incluído. Os totais mostram a divisão líquido + imposto."
   },
   "shareDialog": {
     "title": "Compartilhar orçamento",
     "description": "Gere um link público que permite a qualquer pessoa visualizar e baixar este orçamento sem fazer login.",
-    "notifyTitle": "Notificar {name}",
-    "email": "E-mail",
-    "noEmail": "(sem e-mail cadastrado)",
-    "sms": "SMS",
-    "noPhone": "(sem telefone cadastrado)",
-    "sendNotification": "Enviar notificação",
     "revokeLink": "Revogar link",
     "generateLink": "Gerar link público",
-    "emailSent": "E-mail enviado",
-    "failedEmail": "Falha ao enviar o e-mail",
-    "smsSent": "SMS enviado",
-    "failedSms": "Falha ao enviar o SMS",
     "copyLink": "Copiar link"
   },
   "images": {

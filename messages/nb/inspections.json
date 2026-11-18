@@ -53,6 +53,7 @@
     "statusCompleted": "Fullført",
     "complete": "Fullfør",
     "reopen": "Gjenåpne",
+    "send": "Send",
     "share": "Del",
     "save": "Lagre",
     "saving": "Lagrer…",
@@ -94,6 +95,8 @@
     "completeTitle": "Fullføre denne inspeksjonen?",
     "completeBody": "Punktene låses når inspeksjonen fullføres, og resultatet blir «{result}».",
     "completeBlocked": "{count} kontroll(er) som sjekklisten merker som obligatoriske gjenstår.",
+    "blockerMissingGrade": "må vurderes",
+    "blockerNeedsPhoto": "trenger bilde av mangelen",
     "completeUngraded": "{count} punkt(er) er ikke vurdert.",
     "completeDangerous": "{count} farlig(e) mangel(er) registrert. Kjøretøyet skal ikke brukes på offentlig vei.",
     "reopenTitle": "Gjenåpne denne inspeksjonen?",
@@ -459,7 +462,9 @@
     "copyLink": "Kopier lenke",
     "copied": "Lenken er kopiert",
     "generated": "Delingslenke opprettet",
-    "revoked": "Delingslenke trukket tilbake"
+    "revoked": "Delingslenke trukket tilbake",
+    "revokeLink": "Tilbakekall lenke",
+    "generateLink": "Generer offentlig lenke"
   },
   "phone": {
     "pageTitle": "Bilder til kontrollen",
@@ -494,5 +499,19 @@
     "photos": "Bilder",
     "documents": "Dokumenter",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Alt i orden",
+    "pass_minor": "Noen punkter å følge med på",
+    "fail": "Noen punkter må repareres",
+    "fail_dangerous": "Noen punkter må repareres snarest",
+    "incomplete": "Ikke fullført",
+    "detail": {
+      "pass": "Ingenting trengte oppfølging.",
+      "pass_minor": "Ikke noe som haster. Punktene som er merket bør planlegges inn.",
+      "fail": "Noen punkter må repareres. Notatene forteller hva som ble funnet.",
+      "fail_dangerous": "Noen punkter er ikke trygge og bør repareres før videre bruk.",
+      "incomplete": "Denne kontrollen pågår fortsatt."
+    }
   }
 }

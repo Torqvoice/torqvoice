@@ -35,7 +35,7 @@
     },
     "save": "Enregistrer",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Envoyer",
     "share": "Partager",
     "notify": "Notifier",
     "delete": "Supprimer",
@@ -92,6 +92,7 @@
       "inspection": "Inspection"
     },
     "statusOptions": {
+      "scheduled": "Planifié",
       "pending": "En Attente",
       "in_progress": "En Cours",
       "waiting_parts": "En Attente de Pièces",
@@ -146,7 +147,8 @@
     "deleteRow": "Supprimer la ligne",
     "outOfStock": "En rupture de stock",
     "onBackorder": "En réapprovisionnement ({count})",
-    "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées."
+    "nameMissingHint": "Les lignes sans nom de pièce ne sont pas enregistrées.",
+    "fitsVehicleFirst": "Les pièces étiquetées pour {vehicle} apparaissent en premier."
   },
   "labor": {
     "title": "Main-d'œuvre",
@@ -175,8 +177,88 @@
     "shopFeeHintPercentLabor": "Les frais d'atelier des Paramètres : {percent} % de la main-d'œuvre de cette intervention. Supprimez la ligne pour les retirer.",
     "shopFeeHintPercentAll": "Les frais d'atelier des Paramètres : {percent} % de la main-d'œuvre et des pièces de cette intervention. Supprimez la ligne pour les retirer."
   },
+  "laborGuide": {
+    "button": "Barème de temps",
+    "title": "Barème de temps",
+    "description": "Temps de main-d'œuvre et fluides de ce véhicule",
+    "tabLabor": "Temps de main-d'œuvre",
+    "tabFluids": "Fluides",
+    "engine": "Moteur",
+    "categories": "Catégories d’opérations",
+    "allJobs": "Toutes les opérations",
+    "search": "Rechercher une opération, par ex. plaquettes de frein",
+    "clearSearch": "Effacer la recherche",
+    "jobCount": "{count, plural, one {# opération} other {# opérations}}",
+    "noMatch": "Aucune opération ne correspond à « {query} »",
+    "noJobs": "Le barème ne liste aucune opération pour ce moteur.",
+    "showAll": "Afficher toutes les opérations",
+    "showHours": "Voir les heures",
+    "show": "Voir",
+    "lockedValue": "Non affiché avec cette clé",
+    "hours": "{hours} h",
+    "range": "{low} à {high} h",
+    "bookTime": "Barème {hours} h",
+    "add": "Ajouter comme ligne de main-d’œuvre",
+    "added": "Ajouté",
+    "addJob": "Ajouter {job} comme ligne de main-d'œuvre",
+    "addedJob": "{job} est ajouté",
+    "addedCount": "{count, plural, one {# opération ajoutée} other {# opérations ajoutées}}",
+    "partsAddedCount": "{count, plural, one {# pièce ajoutée} other {# pièces ajoutées}}",
+    "done": "Terminé",
+    "loading": "Recherche du véhicule",
+    "stillLooking": "Recherche en cours. Open Labor Project peut mettre jusqu’à une demi-minute pour un véhicule sur lequel il a peu de données.",
+    "notFoundTitle": "Absent du barème",
+    "notFound": "Le barème n’a aucune donnée pour ce véhicule. Vérifiez que la marque, le modèle et l’année sont écrits comme le constructeur les nomme, ou ajoutez le VIN.",
+    "fluidsNotFoundTitle": "Aucun fluide pour ce véhicule",
+    "fluidsNotFound": "Open Labor Project n’a pas encore de données de fluides pour ce véhicule.",
+    "failedTitle": "La recherche n’a pas abouti",
+    "failed": "La recherche a échoué",
+    "unlockFailed": "Impossible d'obtenir cette valeur",
+    "retry": "Réessayer",
+    "matchNone": "Aucun des moteurs listés ne correspond à celui enregistré pour ce véhicule : ces temps peuvent concerner un autre moteur. Choisissez ci-dessus le moteur le plus proche.",
+    "matchFuel": "Le moteur a été choisi d’après le carburant. Vérifiez que c’est le bon.",
+    "matchUnknown": "Aucune cylindrée n’est enregistrée pour ce véhicule : vérifiez que le moteur ci-dessus est le bon.",
+    "hiddenByConfidence": "{count, plural, one {# temps sous votre confiance minimale est masqué.} other {# temps sous votre confiance minimale sont masqués.}}",
+    "changeSettings": "Modifier",
+    "liters": "{value} L",
+    "quarts": "{value} qt",
+    "km": "{value} km",
+    "miles": "{value} mi",
+    "capacity": "Capacité",
+    "drainRefill": "Vidange et remplissage",
+    "interval": "Remplacer tous les",
+    "copySpec": "Copier {spec}",
+    "copied": "Copié",
+    "noFluids": "Le barème ne liste aucun fluide pour ce moteur.",
+    "addAsPart": "Ajouter comme pièce",
+    "addFluidAsPart": "Ajouter {system} comme pièce",
+    "partAdded": "Ajouté",
+    "fromStock": "En stock",
+    "addWithoutStock": "Ajouter sans article du stock",
+    "takesDrainRefill": "Prend {amount} à la vidange",
+    "takesCapacity": "Prend {amount} au total",
+    "attribution": "Données de {source}",
+    "market": "Marché : {region}",
+    "about": "Quelle fiabilité ?",
+    "aboutTitle": "Fiabilité selon la source",
+    "estimateNote": "Les valeurs marquées Estimation sont générées par IA et ne sont pas vérifiées par rapport aux données du constructeur. Vérifiez-les avant de faire un devis à un client.",
+    "lockedNote": "Cette clé affiche les valeurs une par une, et chacune compte comme un appel. Une offre payante les affiche toutes en une fois.",
+    "settings": "Réglages du barème de temps",
+    "confidence": {
+      "oem": "OEM",
+      "oemHelp": "Rapproché des données du constructeur",
+      "high": "Vérifié",
+      "highHelp": "Vérifié par la source",
+      "medium": "Moyenne",
+      "mediumHelp": "La source attribue une confiance moyenne à cette valeur",
+      "estimated": "Estimation",
+      "estimatedHelp": "Généré par IA et non vérifié par rapport aux données du constructeur"
+    }
+  },
   "liveLabor": {
     "title": "{count, plural, one {Un technicien a ajouté de la main-d’œuvre à cette intervention} other {Un technicien a ajouté # lignes de main-d’œuvre à cette intervention}}",
+    "titleParts": "{count, plural, one {Un technicien a ajouté une pièce à cette intervention} other {Un technicien a ajouté # pièces à cette intervention}}",
+    "titleBoth": "Un technicien a ajouté de la main-d’œuvre et des pièces à cette intervention",
     "body": "Elle reste hors de la liste pendant votre saisie. Votre prochain enregistrement l’inclura de toute façon.",
     "show": "Afficher"
   },
@@ -188,13 +270,29 @@
     "subtotalInclTax": "Sous-total (TTC)",
     "discount": "Remise",
     "discountNone": "Aucune",
+    "discountOff": "Non",
     "discountPercentage": "Pourcentage",
     "discountFixed": "Fixe",
     "tax": "Taxe",
     "taxIncluded": "Taxe (incl.)",
+    "taxableAmount": "Montant taxable",
     "total": "Total",
     "inclusiveModeHint": "Les prix de ligne sont saisis taxe incluse. Les totaux affichent la répartition net + taxe.",
     "partsCost": "Coût des pièces (interne)"
+  },
+  "lineTax": {
+    "label": "Taxe sur cette ligne",
+    "taxedTag": "TAXE",
+    "untaxedTag": "SANS TAXE",
+    "taxedHint": "Cette ligne est taxée. Cliquez pour l'exclure de la taxe.",
+    "untaxedHint": "Cette ligne n'est pas taxée. Cliquez pour la taxer."
+  },
+  "taxOffer": {
+    "noTax": "Ce document a été créé sans taxe. L'atelier applique maintenant {rate} %.",
+    "otherRate": "Ce document est à {current} %. L'atelier applique maintenant {rate} %.",
+    "apply": "Appliquer {rate} % de taxe",
+    "failed": "Impossible de mettre à jour la taxe",
+    "saveFirst": "Enregistrez d'abord vos modifications, puis appliquez la taxe."
   },
   "notes": {
     "title": "Notes",
@@ -227,6 +325,7 @@
     "discount": "Remise",
     "tax": "Taxe ({rate}%)",
     "taxIncluded": "Taxe (incl., {rate}%)",
+    "taxableAmount": "Montant taxable",
     "total": "Total",
     "paid": "Payé",
     "balanceDue": "Solde Dû",
@@ -286,18 +385,8 @@
   "share": {
     "title": "Partager la Facture",
     "description": "Générer un lien public qui permet à n'importe qui de consulter et télécharger cette facture sans se connecter.",
-    "notifyTitle": "Notifier {name}",
-    "email": "Email",
-    "noEmail": "(pas d'email en dossier)",
-    "sms": "SMS",
-    "noPhone": "(pas de numéro en dossier)",
-    "sendNotification": "Envoyer une Notification",
     "revokeLink": "Révoquer le Lien",
     "generateLink": "Générer un Lien Public",
-    "emailSent": "Email envoyé",
-    "failedEmail": "Impossible d'envoyer l'email",
-    "smsSent": "SMS envoyé",
-    "failedSms": "Impossible d'envoyer le SMS",
     "copyLink": "Copier le lien"
   },
   "sidebar": {
@@ -427,7 +516,13 @@
     "loadOn": "Heures réservées le {date}",
     "promisedAt": "Promis au client",
     "promisedPlaceholder": "Pas encore promis",
-    "promisedClear": "Effacer"
+    "promisedClear": "Effacer",
+    "lead": "Responsable",
+    "alsoOnJob": "Aussi sur ce travail",
+    "helperAdd": "Ajouter {name} à ce travail",
+    "helperRemove": "Retirer {name} de ce travail",
+    "failedHelper": "Échec de la mise à jour des intervenants",
+    "clashPeople": "{count, plural, one {{names} est occupé} other {{names} sont occupés}}"
   },
   "notifications": {
     "title": "Notifications client",
@@ -583,7 +678,6 @@
   "modern": {
     "statusLabel": "Statut de l'ordre de travail",
     "back": "Retour",
-    "backToClassic": "Revenir à la présentation classique",
     "openCustomer": "Ouvrir le client",
     "serviceHistory": "Historique des services",
     "changeVehicle": "Changer de véhicule",
@@ -602,13 +696,6 @@
       "paymentTaken": "Paiement de {amount} enregistré",
       "statusSet": "Statut passé à {status}"
     },
-    "invite": {
-      "title": "La page de l'ordre de travail a été refaite.",
-      "body": "Une présentation plus claire, avec les mêmes champs. Vous pouvez revenir à l'ancienne à tout moment.",
-      "try": "Essayer maintenant",
-      "dismiss": "Plus tard",
-      "menu": "Essayer la nouvelle présentation"
-    },
     "promised": "Promis pour le {date}",
     "promisedOverdue": "Promis pour le {date}, en retard",
     "opened": "Ouvert le {date}",
@@ -617,6 +704,7 @@
     "titleField": "Titre",
     "media": {
       "tabs": {
+        "all": "Tout",
         "photos": "Photos",
         "diagnostics": "Diagnostics",
         "dropoff": "Réception"
@@ -626,6 +714,7 @@
       "showToCustomer": "Montrer au client",
       "hideFromCustomer": "Masquer au client",
       "add": {
+        "all": "Ajouter des fichiers",
         "image": "Ajouter des photos",
         "document": "Ajouter des documents",
         "diagnostic": "Ajouter un rapport de diagnostic",
@@ -666,6 +755,7 @@
       "customerSince": "Client depuis"
     },
     "moreStatuses": "Autres statuts",
+    "addStatus": "Ajouter un statut",
     "fromInspection": "Issu de l'inspection {name}, {date}",
     "fromQuote": "Issu du devis {ref}",
     "startInspection": "Commencer l'inspection"
@@ -730,6 +820,21 @@
         "odometer": "Compteur",
         "other": "Dégât ou autre"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Prendre la photo du véhicule avec un téléphone",
+      "dialogBody": "Prenez une photo du véhicule sur n’importe quel téléphone, ou choisissez-en une déjà présente. Elle devient la photo en haut de la page de ce véhicule.",
+      "step2": "Prenez une photo du véhicule en entier, ou choisissez-en une sur le téléphone.",
+      "step3": "Elle remplace la photo sur la page du véhicule dès son arrivée.",
+      "scope": "Le lien peut uniquement définir la photo de ce véhicule et cesse de fonctionner après 30 minutes.",
+      "waiting": "En attente de la photo…",
+      "received": "Photo reçue",
+      "pageTitle": "Photo du véhicule",
+      "pageBody": "Prenez une photo du véhicule en entier. Elle remplace la photo sur la page du véhicule.",
+      "choosePhoto": "Choisir une photo",
+      "saved": "Enregistrée. La photo est maintenant sur la page du véhicule. Prenez-en une autre pour la remplacer.",
+      "invalid": "Scannez de nouveau le code sur la page du véhicule.",
+      "notAPhoto": "Seules les photos peuvent être utilisées ici."
     }
   },
   "payCode": {
@@ -750,5 +855,12 @@
   },
   "customStatus": {
     "defaultMessage": "Bonjour {customer_name}, des nouvelles de votre {vehicle} : {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Vos modifications ne sont pas enregistrées",
+    "fallbackReason": "Les dernières modifications n'ont pas pu être enregistrées.",
+    "hint": "Restez pour corriger, ou partez et perdez les modifications faites depuis le dernier enregistrement.",
+    "stay": "Rester et corriger",
+    "leave": "Quitter sans enregistrer"
   }
 }

@@ -14,7 +14,8 @@
     "supplier": "Leverandør",
     "location": "Plassering",
     "low": "Lav",
-    "barcode": "Strekkode"
+    "barcode": "Strekkode",
+    "notTracked": "Føres ikke"
   },
   "empty": {
     "noMatch": "Ingen deler samsvarer med søket ditt.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Bruk påslag på alle deler",
-    "multiplierLabel": "Påslagsmultiplikator",
-    "description": "Dette setter salgspris = kostnad x {multiplier} for alle {count} deler.",
-    "percentage": "({percent}% påslag)",
+    "intro": "Setter salgsprisen på delene til kostnad pluss en prosent.",
+    "percentLabel": "Påslag %",
+    "percentHint": "Skriv 30 for å legge 30% på kostnaden.",
+    "percentInvalid": "Påslaget må være høyere enn -100%.",
+    "exampleTitle": "Eksempel",
+    "exampleMarkup": "Påslag {percent}%",
     "cancel": "Avbryt",
     "apply": "Bruk",
     "overrideExisting": "Overskriv eksisterende salgspriser",
     "overrideExistingHint": "Alle deler vil bli oppdatert, inkludert de med eksisterende salgspris.",
-    "skipExistingHint": "Kun deler uten salgspris vil bli oppdatert."
+    "skipExistingHint": "Kun deler uten salgspris vil bli oppdatert.",
+    "newPartsNote": "Nye deler får {sellPrice} fylt ut med dette påslaget når du skriver inn {unitCost}.",
+    "settingsNote": "{setting} under {settings} > {workshop} er en egen innstilling, som brukes når deler legges på en arbeidsordre."
   },
   "errors": {
-    "multiplierPositive": "Multiplikatoren må være større enn 0",
     "deleteFailed": "Kunne ikke slette delen",
     "applyFailed": "Kunne ikke bruke påslaget",
     "saveFailed": "Kunne ikke lagre delen",
@@ -70,16 +75,19 @@
     "currentStock": "Nåværende beholdning: {quantity}",
     "addedStock": "{amount} lagt til på lager",
     "customAmount": "Antall...",
-    "scanParts": "Skann deler"
+    "scanParts": "Skann deler",
+    "notTracked": "Lager føres ikke for denne delen"
   },
   "form": {
     "editPart": "Rediger del",
     "addNewPart": "Legg til ny del",
     "supplierLink": "Leverandørlenke",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "Leverandørlenken er ikke en nettadresse. Rett den, eller tøm feltet for å lagre uten lenke.",
     "fetch": "Hent",
-    "fetchFailed": "Henting mislyktes",
-    "fetchError": "Kunne ikke hente metadata fra URL",
+    "fetchBlocked": "Nettsiden til denne leverandøren blokkerer automatisk oppslag. Fyll inn feltene selv. Delen og lenken kan fortsatt lagres.",
+    "fetchTimedOut": "Nettsiden til leverandøren brukte for lang tid på å svare. Prøv igjen, eller fyll inn feltene selv. Delen og lenken kan fortsatt lagres.",
+    "fetchUnreadable": "Kunne ikke lese opplysningene om delen fra denne lenken. Fyll inn feltene selv. Delen og lenken kan fortsatt lagres.",
     "image": "Bilde",
     "dropOrClick": "Slipp bilde eller klikk",
     "replace": "Erstatt",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperisk",
     "unitCost": "Enhetskostnad",
     "sellPrice": "Salgspris",
+    "sellPriceMarkupHint": "{sellPrice} fylles ut med {unitCost} + {percent}%. Skriv inn en pris for å sette din egen. Endre prosenten med {applyMarkup} på siden {inventory}.",
     "supplier": "Leverandør",
     "supplierPlaceholder": "AutoParts AS",
     "supplierPhone": "Leverandørtelefon",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Delbeskrivelse...",
     "cancel": "Avbryt",
     "saveChanges": "Lagre endringer",
-    "addPart": "Legg til del"
+    "addPart": "Legg til del",
+    "tags": "Stikkord",
+    "tagsPlaceholder": "Merker, modeller eller annet du vil finne den på",
+    "tagsHint": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med kjøretøyets merke eller modell først.",
+    "tagsHintMarine": "Trykk Enter eller komma etter hvert stikkord. På en arbeidsordre vises deler med båtens merke eller modell først.",
+    "removeTag": "Fjern {tag}",
+    "tagTooLong": "Et stikkord kan være på høyst {max} tegn. Gjør det kortere før du lagrer.",
+    "trackStock": "Før lager",
+    "trackStockHint": "Slå av for gebyrer og forbruksmateriell du tar betalt for, men aldri teller.",
+    "trackStockOffNote": "Når du lagrer, settes antallet til null og det noteres i lagerhistorikken. Jobber endrer det ikke lenger."
   },
   "openMenu": "Åpne meny",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Arbeidsordre slettet",
       "quote_conversion": "Tilbud konvertert",
       "manual_adjustment": "Manuell justering",
-      "bulk_markup": "Masse-påslag"
+      "bulk_markup": "Masse-påslag",
+      "stock_tracking_off": "Lagerføring slått av"
     },
     "backToInventory": "Lager",
     "reason": "Årsak",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} på lager",
     "outOfStock": "Utsolgt",
     "onBackorder": "På restordre ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Stikkord",
+    "all": "Alle stikkord",
+    "filterBy": "Vis deler med stikkordet {tag}",
+    "more": "+{count} til"
   }
 }

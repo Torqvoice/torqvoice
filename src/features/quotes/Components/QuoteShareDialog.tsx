@@ -4,20 +4,13 @@ import { useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Check, Copy, Link2, Loader2, Mail, MessageSquare } from 'lucide-react'
+import { Check, Copy, Link2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import {
   generateQuotePublicLink,
   revokeQuotePublicLink,
 } from '@/features/quotes/Actions/quoteShareActions'
-import { sendQuoteEmail } from '@/features/email/Actions/emailActions'
-import { sendSmsToCustomer, getSmsTemplates } from '@/features/sms/Actions/smsActions'
-import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
-import { AttachPdfOption, useAttachPdf } from '@/features/email/Components/AttachPdfOption'
 
 interface QuoteShareDialogProps {
   open: boolean
@@ -27,14 +20,6 @@ interface QuoteShareDialogProps {
   initialToken: string | null
   /** Called once the quote has actually gone to the customer. */
   onSent?: () => void
-  customer?: {
-    id: string
-    name: string
-    email: string | null
-    phone: string | null
-  } | null
-  smsEnabled?: boolean
-  emailEnabled?: boolean
 }
 
 export function QuoteShareDialog({
@@ -44,41 +29,47 @@ export function QuoteShareDialog({
   organizationId,
   initialToken,
   onSent,
-  customer,
-  smsEnabled = false,
-  emailEnabled = false,
 }: QuoteShareDialogProps) {
   const [publicToken, setPublicToken] = useState<string | null>(initialToken)
   const [generatingLink, setGeneratingLink] = useState(false)
+  const [revoking, setRevoking] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [notifyEmail, setNotifyEmail] = useState(false)
-  const [attachPdf, setAttachPdf] = useAttachPdf(open)
-  const [notifySms, setNotifySms] = useState(false)
-  const [sending, setSending] = useState(false)
   const t = useTranslations('quotes')
-
-  const hasEmail = !!customer?.email
-  const hasPhone = !!customer?.phone
+  const tc = useTranslations('common')
 
   const publicUrl =
     publicToken && organizationId
       ? `${typeof window !== 'undefined' ? window.location.origin : ''}/share/quote/${organizationId}/${publicToken}`
       : null
 
+  // An action that cannot reach the server throws instead of answering, so
+  // both of these catch it and say the same thing a refusal does.
   const handleGenerate = async () => {
     setGeneratingLink(true)
-    const result = await generateQuotePublicLink(quoteId)
-    if (result.success && result.data) {
+    const result = await generateQuotePublicLink(quoteId).catch(() => null)
+    if (result?.success && result.data) {
       setPublicToken(result.data.token)
       // Handing over a link is a way of sending the quote.
       onSent?.()
+    } else {
+      toast.error(tc('shareLink.generateFailed'))
     }
     setGeneratingLink(false)
   }
 
+  // The link stays on screen until the server has revoked it: clearing it on
+  // a refusal would tell the workshop it is gone while the customer's copy
+  // still opens the quote.
   const handleRevoke = async () => {
-    await revokeQuotePublicLink(quoteId)
-    setPublicToken(null)
+    if (revoking) return
+    setRevoking(true)
+    const result = await revokeQuotePublicLink(quoteId).catch(() => null)
+    if (result?.success) {
+      setPublicToken(null)
+    } else {
+      toast.error(tc('shareLink.revokeFailed'))
+    }
+    setRevoking(false)
   }
 
   const handleCopy = () => {
@@ -89,71 +80,9 @@ export function QuoteShareDialog({
     }
   }
 
-  const handleNotify = async () => {
-    if (!publicUrl || !customer) return
-    setSending(true)
-
-    const results: string[] = []
-    let failed = false
-
-    if (notifyEmail && hasEmail) {
-      const res = await sendQuoteEmail({
-        quoteId,
-        recipientEmail: customer.email!,
-        attachPdf,
-      })
-      if (res.success) {
-        results.push(t('shareDialog.emailSent'))
-        setNotifyEmail(false)
-      } else {
-        failed = true
-        toast.error(res.error || t('shareDialog.failedEmail'))
-      }
-    }
-
-    if (notifySms && hasPhone) {
-      const tplResult = await getSmsTemplates()
-      const tplData = tplResult.success && tplResult.data ? tplResult.data : null
-      const tpl =
-        tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY] ||
-        SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]
-      const body = interpolateSmsTemplate(tpl || '', {
-        share_link: publicUrl,
-        customer_name: customer.name,
-        company_name: tplData?.companyName || '',
-        current_user: tplData?.currentUser || '',
-      })
-      const res = await sendSmsToCustomer({
-        customerId: customer.id,
-        body,
-        relatedEntityType: 'quote',
-        relatedEntityId: quoteId,
-      })
-      if (res.success) {
-        results.push(t('shareDialog.smsSent'))
-        setNotifySms(false)
-      } else {
-        failed = true
-        toast.error(res.error || t('shareDialog.failedSms'))
-      }
-    }
-
-    if (results.length > 0) {
-      toast.success(results.join(' & '))
-      // Either channel re-issues the quote, and the lock may have engaged.
-      onSent?.()
-    }
-    setSending(false)
-    // Done once everything ticked has gone. A channel that failed stays ticked
-    // and the dialog stays open, so it can be tried again.
-    if (results.length > 0 && !failed) onOpenChange(false)
-  }
-
-  const canNotify = publicUrl && customer && (notifyEmail || notifySms)
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Link2 className="h-5 w-5" />
@@ -180,80 +109,14 @@ export function QuoteShareDialog({
                 </Button>
               </div>
 
-              {/* Notify customer */}
-              {customer && (emailEnabled || smsEnabled) && (
-                <div className="space-y-3 rounded-lg border p-3">
-                  <p className="text-sm font-medium">
-                    {t('shareDialog.notifyTitle', { name: customer.name })}
-                  </p>
-                  <div className="space-y-2">
-                    {emailEnabled && (
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id="notify-email-quote"
-                          checked={notifyEmail}
-                          onCheckedChange={(v) => setNotifyEmail(v === true)}
-                          disabled={!hasEmail}
-                        />
-                        <Label
-                          htmlFor="notify-email-quote"
-                          className={`flex items-center gap-1.5 text-sm ${!hasEmail ? 'text-muted-foreground/50' : ''}`}
-                        >
-                          <Mail className="h-3.5 w-3.5" />
-                          {t('shareDialog.email')}
-                          {!hasEmail && <span className="text-xs">{t('shareDialog.noEmail')}</span>}
-                        </Label>
-                      </div>
-                    )}
-                    {emailEnabled && (
-                      <div className="pl-6">
-                        <AttachPdfOption
-                          id="attach-pdf-quote"
-                          checked={attachPdf}
-                          onCheckedChange={setAttachPdf}
-                          disabled={!notifyEmail || !hasEmail}
-                        />
-                      </div>
-                    )}
-                    {smsEnabled && (
-                      <div className="flex items-center gap-2">
-                        <Checkbox
-                          id="notify-sms-quote"
-                          checked={notifySms}
-                          onCheckedChange={(v) => setNotifySms(v === true)}
-                          disabled={!hasPhone}
-                        />
-                        <Label
-                          htmlFor="notify-sms-quote"
-                          className={`flex items-center gap-1.5 text-sm ${!hasPhone ? 'text-muted-foreground/50' : ''}`}
-                        >
-                          <MessageSquare className="h-3.5 w-3.5" />
-                          {t('shareDialog.sms')}
-                          {!hasPhone && <span className="text-xs">{t('shareDialog.noPhone')}</span>}
-                        </Label>
-                      </div>
-                    )}
-                  </div>
-                  {/* Always here, disabled until a channel is ticked: it used to
-                      appear on the first tick and shove the dialog around. */}
-                  <Button
-                    size="sm"
-                    onClick={handleNotify}
-                    disabled={sending || !canNotify}
-                    className="w-full"
-                  >
-                    {sending && <Loader2 className="mr-2 h-3.5 w-3.5 animate-spin" />}
-                    {t('shareDialog.sendNotification')}
-                  </Button>
-                </div>
-              )}
-
               <Button
                 variant="ghost"
                 size="sm"
                 className="text-destructive hover:text-destructive"
                 onClick={handleRevoke}
+                disabled={revoking}
               >
+                {revoking && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {t('shareDialog.revokeLink')}
               </Button>
             </>

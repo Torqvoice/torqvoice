@@ -23,6 +23,7 @@ import { loadBookingContext } from '@/features/workboard/Lib/bookings'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { atZonedTime, startOfZonedDay, zonedParts } from '@/lib/timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { clearNextNumberSetting, JOB_NUMBER_SETTING_KEYS, nextJobNumber } from '@/lib/job-number'
 import {
   resolveWorkOrderTitle,
   workOrderTitleTemplateFrom,
@@ -54,6 +55,21 @@ export async function createDraftRecord(
     /** Bay the job was booked into, when it was created from the work board. */
     workBayId?: string
     /**
+     * The day the job is wanted, when a day was asked for but no time: a
+     * customer's preferred date on a portal request. The first free slot is
+     * looked for from that day on, rather than from now. A day already past is
+     * ignored. Passing the day itself as startDateTime booked the job at
+     * midnight.
+     */
+    bookFrom?: Date
+    /**
+     * Whether this is work on a car, which takes the shop fee and the
+     * workshop's warranty. Follows the vehicle when left out: a job without
+     * one is a sale over the counter. Set for an appointment booked for a
+     * customer whose car is not on file yet; the car is added when it arrives.
+     */
+    shopWork?: boolean
+    /**
      * The transaction the record is written in, when the caller has more to
      * write that must land with it or not at all. Reads stay on the pool.
      */
@@ -67,8 +83,7 @@ export async function createDraftRecord(
         organizationId,
         key: {
           in: [
-            'workshop.invoicePrefix',
-            'workshop.invoiceStartNumber',
+            ...JOB_NUMBER_SETTING_KEYS,
             'workshop.defaultTechnician',
             'workshop.defaultTechnicianId',
             SETTING_KEYS.WORK_ORDER_TITLE_TEMPLATE,
@@ -142,39 +157,19 @@ export async function createDraftRecord(
     }
   }
 
-  const rawPrefix = settingsMap['workshop.invoicePrefix'] ?? '{year}-'
   const now = new Date()
   const today = zonedParts(now, timeZone)
-  const prefix = rawPrefix
-    .replace('{year}', String(today.year))
-    .replace('{month}', String(today.month).padStart(2, '0'))
-
-  const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
-  const lastRecord = await db.serviceRecord.findFirst({
-    where: { organizationId },
-    orderBy: { createdAt: 'desc' },
-    select: { invoiceNumber: true },
+  const { invoiceNumber, usesNextNumberSetting } = await nextJobNumber({
+    organizationId,
+    settings: settingsMap,
+    timeZone,
+    now,
   })
-  let nextNum = startNumber || 1001
-  if (lastRecord?.invoiceNumber) {
-    const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-    if (match) {
-      const lastNum = parseInt(match[1], 10) + 1
-      nextNum = Math.max(nextNum, lastNum)
-    }
-  }
-  const invoiceNumber = `${prefix}${nextNum}`
-
-  if (startNumber && nextNum === startNumber) {
-    await writer.appSetting.updateMany({
-      where: { organizationId, key: 'workshop.invoiceStartNumber' },
-      data: { value: '' },
-    })
-  }
 
   // The workshop's default tax, components included when it splits its tax.
   // Tax-exempt customers always get a 0% rate regardless of org default.
-  const taxFields = taxFieldsForNewDocument(readWorkshopTax(settingsMap), {
+  const workshopTax = readWorkshopTax(settingsMap)
+  const taxFields = taxFieldsForNewDocument(workshopTax, {
     customerExempt: opts.customerExempt,
   })
 
@@ -193,19 +188,23 @@ export async function createDraftRecord(
   // A parts sale over the counter holds no bay and no technician, so there is
   // no slot to find and nothing to search past. Only work on a vehicle is
   // scheduled around what the shop already has booked.
-  const isShopWork = !!opts.vehicleId
+  const isShopWork = opts.shopWork ?? !!opts.vehicleId
   if (opts.startDateTime || !isShopWork) {
     defaultStart =
       opts.startDateTime ??
       atZonedTime(now, settingsMap['workboard.workDayStart'] || '07:00', timeZone)
   } else {
-    const { bookings, hours } = await loadBookingContext(organizationId, now)
+    const from = opts.bookFrom && opts.bookFrom.getTime() > now.getTime() ? opts.bookFrom : now
+    const { bookings, hours } = await loadBookingContext(organizationId, from)
     const slot = nextAvailableSlot({
-      from: now,
+      from,
       durationMinutes: DEFAULT_JOB_MINUTES,
       bookings,
       hours,
-      technicianId: opts.technicianId,
+      // Whoever the job will be assigned to, the default technician included:
+      // searching only for one passed in let a default technician's day be
+      // double-booked.
+      technicianId: resolvedTechId || undefined,
       workBayId: opts.workBayId,
     })
     if (slot) {
@@ -214,7 +213,7 @@ export async function createDraftRecord(
     } else {
       // Booked solid for weeks. Falling back to opening time keeps the job on
       // the board rather than refusing to create it over a scheduling detail.
-      defaultStart = atZonedTime(now, hours.start || '07:00', timeZone)
+      defaultStart = atZonedTime(from, hours.start || '07:00', timeZone)
     }
   }
   // serviceDate should be date-only (start of the workshop's day)
@@ -244,7 +243,9 @@ export async function createDraftRecord(
   // The workshop's shop fee, on work done to a vehicle. A counter sale is
   // parts over the desk and uses none of the supplies the fee pays for.
   const shopFee = isShopWork ? shopFeeFor(readShopFee(settingsMap), 'workOrder') : null
-  const feeLine = shopFee ? newShopFeeLine(shopFee) : null
+  const feeLine = shopFee
+    ? newShopFeeLine(shopFee, { labor: 0, parts: 0 }, workshopTax.applies.shopFee)
+    : null
   const feeTotals =
     feeLine && feeLine.total > 0
       ? {
@@ -255,11 +256,13 @@ export async function createDraftRecord(
             taxRate: taxFields.taxRate,
             taxInclusive: taxFields.taxInclusive,
             taxComponents: taxFields.taxComponents,
+            // The fee is the job's only line so far.
+            taxableSubtotal: feeLine.taxable ? null : 0,
           }),
         }
       : null
 
-  return writer.serviceRecord.create({
+  const created = await writer.serviceRecord.create({
     data: {
       organizationId,
       createdById: userId,
@@ -284,6 +287,9 @@ export async function createDraftRecord(
       endDateTime: defaultEnd ?? new Date(defaultStart.getTime() + 3600000),
     },
   })
+  // Spent only once the job is written, and in its transaction when it has one.
+  if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, opts.tx)
+  return created
 }
 
 /** The car and the customer a job is for, as far as the title template cares. */

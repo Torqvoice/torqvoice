@@ -1,7 +1,7 @@
 'use client'
 
 import { SectionFrame } from '@/components/section-frame'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { useRouter } from 'next/navigation'
 import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/command'
 import {
   AlertTriangle,
+  CalendarOff,
   Check,
   ChevronsUpDown,
   Clock,
@@ -38,10 +39,12 @@ import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { useDateSettings } from '@/components/date-settings-context'
 import {
+  addJobHelper,
   assignTechnician,
   checkSlotAvailability,
   findNextSlot,
   getTechnicianDayLoad,
+  removeJobHelper,
   scheduleJob,
   setPromisedTime,
   updateServiceTimes,
@@ -49,6 +52,7 @@ import {
 import { createTechnician } from '@/features/workboard/Actions/technicianActions'
 import { cn } from '@/lib/utils'
 import Link from 'next/link'
+import { awayEdges } from '@/features/workshop-calendar/Lib/format'
 
 const HOUR_PRESETS = [1, 2, 4, 5, 7]
 
@@ -102,6 +106,8 @@ interface ScheduleTimesSectionProps {
   initialStartDateTime?: string | null
   initialEndDateTime?: string | null
   initialTechnicianId?: string | null
+  /** Everybody else on the job with that technician, as technician ids. */
+  initialHelperIds?: string[]
   initialWorkBayId?: string | null
   /** When the customer was told the vehicle would be ready, ISO. */
   initialPromisedAt?: string | null
@@ -116,17 +122,30 @@ export function ScheduleTimesSection({
   initialStartDateTime,
   initialEndDateTime,
   initialTechnicianId,
+  initialHelperIds,
   initialWorkBayId,
   initialPromisedAt,
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
+  const tCal = useTranslations('workshopCalendar')
   const router = useRouter()
   const modern = useModernWorkOrder()
   // Booked times belong to the workshop's clock, not to the clock of whoever
   // happens to be looking at them.
   const { timezone } = useDateSettings()
   const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
+  // Who else is on the job. Only ever beside a technician: a job with nobody
+  // leading it has no helpers either.
+  const [helperIds, setHelperIds] = useState<string[]>(initialHelperIds ?? [])
+  // What the server says now, when the page reads the job again: the board,
+  // or somebody at another desk, may have changed who is on it. Keyed on the
+  // ids themselves, because the array is a new one on every render.
+  const helperKey = (initialHelperIds ?? []).join(',')
+  useEffect(() => {
+    setSelectedTechId(initialTechnicianId || '')
+    setHelperIds(helperKey ? helperKey.split(',') : [])
+  }, [initialTechnicianId, helperKey])
   const [selectedBayId, setSelectedBayId] = useState(initialWorkBayId || NO_BAY)
   const [techOpen, setTechOpen] = useState(false)
   const [technicians, setTechnicians] = useState<Technician[]>(initialTechnicians)
@@ -143,20 +162,27 @@ export function ScheduleTimesSection({
   // somebody to change something first.
   useEffect(() => {
     if (!initialStartDateTime || !initialEndDateTime) return
-    if (!initialTechnicianId && !initialWorkBayId) return
     void checkSlotAvailability({
       start: new Date(initialStartDateTime).toISOString(),
       end: new Date(initialEndDateTime).toISOString(),
       technicianId: initialTechnicianId || null,
+      helperIds: helperKey ? helperKey.split(',') : [],
       workBayId: initialWorkBayId || null,
       excludeId: serviceRecordId,
     }).then((res) => {
-      if (res.success && res.data) setConflicts(res.data.conflicts)
+      if (res.success && res.data) {
+        setConflicts(res.data.conflicts)
+        setClosed({
+          names: res.data.closures?.map((c) => c.name) ?? [],
+          weekday: !!res.data.closedWeekday,
+        })
+      }
     })
   }, [
     initialStartDateTime,
     initialEndDateTime,
     initialTechnicianId,
+    helperKey,
     initialWorkBayId,
     serviceRecordId,
   ])
@@ -192,28 +218,52 @@ export function ScheduleTimesSection({
   const [conflicts, setConflicts] = useState<
     {
       id: string
+      /** `absence` is the technician's time off rather than other work. */
+      kind?: string
       label: string
       start: string
       end: string
       onTechnician: boolean
       onBay: boolean
+      /** Who on this job is double-booked, as technician ids. */
+      people?: string[]
     }[]
   >([])
+  /** The workshop's own closures the booking falls in, whoever it is for. */
+  const [closed, setClosed] = useState<{ names: string[]; weekday: boolean }>({
+    names: [],
+    weekday: false,
+  })
   const [checking, setChecking] = useState(false)
   const [finding, setFinding] = useState(false)
 
   // How full each technician's day is, on the day this job is booked. Only
   // the overhauled page draws it, so only that page asks.
   const [dayLoad, setDayLoad] = useState<Record<string, number>>({})
+  // Who is away that day, so the list can say so beside their name.
+  const [dayAway, setDayAway] = useState<
+    Record<string, { reason: string; allDay: boolean; from: string | null; until: string | null }>
+  >({})
   const loadDay = startDateTime ? startDateTime.toISOString() : null
+  // Read through a ref: a save calls this from a closure made before the
+  // date changed, and asking about that old day afterwards drew the old day's
+  // load (and nobody away) under the new date.
+  const loadDayRef = useRef(loadDay)
+  loadDayRef.current = loadDay
   const refreshDayLoad = useCallback(async () => {
-    if (!modern || !loadDay) return
-    const res = await getTechnicianDayLoad({ day: loadDay })
-    if (res.success && res.data) setDayLoad(res.data.minutes)
-  }, [modern, loadDay])
+    const day = loadDayRef.current
+    if (!modern || !day) return
+    const res = await getTechnicianDayLoad({ day })
+    // A newer day was asked for while this one was on its way.
+    if (day !== loadDayRef.current) return
+    if (res.success && res.data) {
+      setDayLoad(res.data.minutes)
+      setDayAway(res.data.away ?? {})
+    }
+  }, [modern])
   useEffect(() => {
     void refreshDayLoad()
-  }, [refreshDayLoad])
+  }, [refreshDayLoad, loadDay])
 
   const bayId = selectedBayId === NO_BAY ? null : selectedBayId
 
@@ -224,9 +274,16 @@ export function ScheduleTimesSection({
    * purpose, and refusing the booking outright would make the board lie about
    * what the day actually looks like. Saying so plainly is the useful part.
    */
-  const checkSlot = async (start: Date, end: Date, techId: string, bay: string | null) => {
-    if ((!techId && !bay) || end <= start) {
+  const checkSlot = async (
+    start: Date,
+    end: Date,
+    techId: string,
+    bay: string | null,
+    helpers: string[] = helperIds
+  ) => {
+    if (end <= start) {
       setConflicts([])
+      setClosed({ names: [], weekday: false })
       return
     }
     setChecking(true)
@@ -234,11 +291,17 @@ export function ScheduleTimesSection({
       start: start.toISOString(),
       end: end.toISOString(),
       technicianId: techId || null,
+      // The slot has to suit everybody on the job, not only its technician.
+      helperIds: helpers,
       workBayId: bay,
       excludeId: serviceRecordId,
     })
     setChecking(false)
     setConflicts(res.success && res.data ? res.data.conflicts : [])
+    setClosed({
+      names: res.success && res.data ? (res.data.closures?.map((c) => c.name) ?? []) : [],
+      weekday: res.success && res.data ? !!res.data.closedWeekday : false,
+    })
   }
 
   /** Move the booking to the first slot that fits, inside working hours. */
@@ -251,6 +314,7 @@ export function ScheduleTimesSection({
     const res = await findNextSlot({
       durationMinutes: minutes,
       technicianId: selectedTechId || null,
+      helperIds,
       workBayId: bayId,
       excludeId: serviceRecordId,
       from: new Date().toISOString(),
@@ -298,7 +362,18 @@ export function ScheduleTimesSection({
   }
 
   const handleTechSelect = async (techId: string) => {
+    const previousTech = selectedTechId
+    const previousHelpers = helperIds
     setSelectedTechId(techId)
+    // A helper who takes the job over swaps places with whoever had it, so
+    // the same people are still on it. Drawn at once, then settled below by
+    // what the server actually wrote.
+    if (previousHelpers.includes(techId)) {
+      setHelperIds([
+        ...previousHelpers.filter((id) => id !== techId),
+        ...(previousTech ? [previousTech] : []),
+      ])
+    }
     setTechOpen(false)
     const res = await assignTechnician({
       id: serviceRecordId,
@@ -306,14 +381,44 @@ export function ScheduleTimesSection({
       type: 'serviceRecord',
     })
     if (res.success) {
+      const helpers = res.data?.helperIds ?? []
+      setHelperIds(helpers)
       onSaved?.()
       void refreshDayLoad()
-      if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, techId, bayId)
+      if (startDateTime && endDateTime)
+        void checkSlot(startDateTime, endDateTime, techId, bayId, helpers)
     } else {
       // A role that may not change the work board is told so, and who can
       // change that, rather than that "it failed" with nothing to act on.
       toast.error(res.forbidden ? t('assignNotAllowed') : t('failedAssign'))
-      setSelectedTechId(initialTechnicianId || '')
+      setSelectedTechId(previousTech)
+      setHelperIds(previousHelpers)
+    }
+  }
+
+  /**
+   * Put somebody on the job beside its technician, or take them off it. An
+   * apprentice working with whoever is teaching them, a second pair of hands
+   * on a big job: the work is in their day and on their phone as well.
+   */
+  const toggleHelper = async (techId: string) => {
+    const previous = helperIds
+    const helping = previous.includes(techId)
+    setHelperIds(helping ? previous.filter((id) => id !== techId) : [...previous, techId])
+    const res = await (helping ? removeJobHelper : addJobHelper)({
+      id: serviceRecordId,
+      technicianId: techId,
+    })
+    if (res.success && res.data) {
+      const helpers = res.data.helperIds
+      setHelperIds(helpers)
+      onSaved?.()
+      void refreshDayLoad()
+      if (startDateTime && endDateTime)
+        void checkSlot(startDateTime, endDateTime, selectedTechId, bayId, helpers)
+    } else {
+      toast.error(res.forbidden ? t('assignNotAllowed') : t('failedHelper'))
+      setHelperIds(previous)
     }
   }
 
@@ -323,7 +428,10 @@ export function ScheduleTimesSection({
    */
   const handleTechClear = async () => {
     const previous = selectedTechId
+    const previousHelpers = helperIds
     setSelectedTechId('')
+    // Nobody's name on the job means nobody: the helpers go with the technician.
+    setHelperIds([])
     setTechOpen(false)
     const res = await scheduleJob({
       id: serviceRecordId,
@@ -333,10 +441,11 @@ export function ScheduleTimesSection({
     if (res.success) {
       onSaved?.()
       void refreshDayLoad()
-      if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, '', bayId)
+      if (startDateTime && endDateTime) void checkSlot(startDateTime, endDateTime, '', bayId, [])
     } else {
       toast.error(res.error || t('failedUpdate'))
       setSelectedTechId(previous)
+      setHelperIds(previousHelpers)
     }
   }
 
@@ -396,6 +505,12 @@ export function ScheduleTimesSection({
   }
 
   const selectedTechName = technicians.find((t) => t.id === selectedTechId)?.name
+  const techNameOf = (id: string) => technicians.find((t) => t.id === id)?.name
+  /** Who a clash is about, by name, once the job is more than one person. */
+  const clashNames = (people: string[] | undefined) =>
+    helperIds.length > 0
+      ? (people ?? []).map(techNameOf).filter((name): name is string => !!name)
+      : []
 
   // Platform users that already have a linked technician
   const linkedUserIds = new Set(technicians.filter((t) => t.userId).map((t) => t.userId!))
@@ -552,59 +667,145 @@ export function ScheduleTimesSection({
           <div role="radiogroup" aria-label={t('technician')} className="space-y-1.5">
             {technicians.map((tech) => {
               const selected = tech.id === selectedTechId
+              const helping = !selected && helperIds.includes(tech.id)
               const capacity = tech.dailyCapacity || DEFAULT_DAILY_CAPACITY
               const booked = dayLoad[tech.id] ?? 0
               const full = booked >= capacity
+              const away = dayAway[tech.id]
+              const awayReason = away
+                ? tCal.has(`reasons.${away.reason}`)
+                  ? tCal(`reasons.${away.reason}`)
+                  : away.reason
+                : null
               return (
-                <button
+                // The row is two controls side by side: the name chooses the
+                // job's technician, as it always did, and the mark at the end
+                // puts this person on the job as well. A button cannot hold
+                // another button, so the row itself is only the frame.
+                <div
                   key={tech.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  onClick={() => {
-                    if (!selected) void handleTechSelect(tech.id)
-                  }}
+                  data-testid={`tech-row-${tech.id}`}
                   className={cn(
-                    'grid w-full cursor-pointer grid-cols-[2.25rem_minmax(0,1fr)_5.5rem] items-center gap-3 rounded-lg border px-2.5 py-2 text-left transition-colors disabled:cursor-default',
+                    'flex items-stretch rounded-lg border transition-colors',
                     selected
                       ? 'border-primary bg-primary/10'
-                      : 'border-card-edge hover:border-primary/40 hover:bg-muted/50'
+                      : helping
+                        ? 'border-primary/50 bg-primary/5'
+                        : 'border-card-edge hover:border-primary/40 hover:bg-muted/50'
                   )}
                 >
-                  <span
-                    className={cn(
-                      'flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold',
-                      selected ? 'bg-primary text-primary-foreground' : 'bg-muted'
-                    )}
+                  <button
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => {
+                      if (!selected) void handleTechSelect(tech.id)
+                    }}
+                    // The load column is narrower than it was before a row
+                    // could also carry the mark at its end: the card is a
+                    // sidebar, and the width that mark takes has to come from
+                    // somewhere other than the person's name.
+                    className="grid min-w-0 flex-1 cursor-pointer grid-cols-[2.25rem_minmax(0,1fr)_4rem] items-center gap-2.5 rounded-lg py-2 pr-2 pl-2.5 text-left disabled:cursor-default"
                   >
-                    {initialsOf(tech.name)}
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-semibold">{tech.name}</span>
-                    <span className="block truncate text-xs text-muted-foreground">
-                      {tech.skills ||
-                        (full
-                          ? t('loadFull')
-                          : t('loadFree', { hours: hoursOf(capacity - booked) }))}
+                    <span
+                      className={cn(
+                        'flex h-9 w-9 items-center justify-center rounded-full text-xs font-semibold',
+                        selected
+                          ? 'bg-primary text-primary-foreground'
+                          : helping
+                            ? 'bg-primary/20 text-primary'
+                            : 'bg-muted'
+                      )}
+                    >
+                      {initialsOf(tech.name)}
                     </span>
-                  </span>
-                  <span className="flex flex-col gap-1">
-                    <span className="text-right text-xs tabular-nums text-muted-foreground">
-                      {t('loadOf', { booked: hoursOf(booked), capacity: hoursOf(capacity) })}
-                    </span>
-                    <span className="block h-1.5 overflow-hidden rounded-full bg-muted">
-                      <span
-                        className={cn(
-                          'block h-full rounded-full',
-                          full ? 'bg-destructive' : 'bg-foreground/50'
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-semibold" title={tech.name}>
+                        {tech.name}
+                      </span>
+                      <span className="flex min-w-0 items-center gap-1.5">
+                        {/* On the line under the name, so the name keeps its
+                            width. Only worth saying once there is somebody
+                            to lead. */}
+                        {selected && helperIds.length > 0 && (
+                          <span className="shrink-0 rounded bg-primary/15 px-1.5 py-px text-[10px] font-semibold text-primary">
+                            {t('lead')}
+                          </span>
                         )}
-                        style={{
-                          width: `${Math.min(100, Math.round((booked / capacity) * 100))}%`,
-                        }}
-                      />
+                        {helping && !away ? (
+                          <span
+                            className="min-w-0 truncate text-xs font-medium text-primary"
+                            title={t('alsoOnJob')}
+                          >
+                            {t('alsoOnJob')}
+                          </span>
+                        ) : away ? (
+                          <span
+                            className="min-w-0 truncate text-xs font-medium text-amber-700 dark:text-amber-400"
+                            data-testid="tech-away"
+                          >
+                            {/* On the job and away that day is the thing to
+                              notice, so the row says both. */}
+                            {helping && `${t('alsoOnJob')} · `}
+                            {away.allDay
+                              ? tCal('schedule.away', { reason: awayReason ?? '' })
+                              : `${tCal('schedule.away', { reason: awayReason ?? '' })} · ${[away.from, away.until].filter(Boolean).join('-')}`}
+                          </span>
+                        ) : (
+                          <span className="min-w-0 truncate text-xs text-muted-foreground">
+                            {tech.skills ||
+                              (full
+                                ? t('loadFull')
+                                : t('loadFree', { hours: hoursOf(capacity - booked) }))}
+                          </span>
+                        )}
+                      </span>
                     </span>
-                  </span>
-                </button>
+                    <span className="flex flex-col gap-1">
+                      <span className="text-right text-xs tabular-nums text-muted-foreground">
+                        {t('loadOf', { booked: hoursOf(booked), capacity: hoursOf(capacity) })}
+                      </span>
+                      <span className="block h-1.5 overflow-hidden rounded-full bg-muted">
+                        <span
+                          className={cn(
+                            'block h-full rounded-full',
+                            full ? 'bg-destructive' : 'bg-foreground/50'
+                          )}
+                          style={{
+                            width: `${Math.min(100, Math.round((booked / capacity) * 100))}%`,
+                          }}
+                        />
+                      </span>
+                    </span>
+                  </button>
+                  {/* Somebody has to have the job before anybody can help on
+                    it, and the technician is on it already. */}
+                  {selectedTechId && !selected && (
+                    <button
+                      type="button"
+                      aria-pressed={helping}
+                      aria-label={
+                        helping
+                          ? t('helperRemove', { name: tech.name })
+                          : t('helperAdd', { name: tech.name })
+                      }
+                      title={
+                        helping
+                          ? t('helperRemove', { name: tech.name })
+                          : t('helperAdd', { name: tech.name })
+                      }
+                      onClick={() => void toggleHelper(tech.id)}
+                      className={cn(
+                        'flex w-8 shrink-0 cursor-pointer items-center justify-center rounded-r-lg border-l transition-colors',
+                        helping
+                          ? 'border-primary/30 text-primary hover:bg-primary/10'
+                          : 'border-card-edge text-muted-foreground hover:bg-muted hover:text-foreground'
+                      )}
+                    >
+                      {helping ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                    </button>
+                  )}
+                </div>
               )
             })}
           </div>
@@ -671,6 +872,40 @@ export function ScheduleTimesSection({
             </PopoverTrigger>
             {techPickerContent}
           </Popover>
+          {/* Who else is on the job, once somebody has it. */}
+          {selectedTechId && technicians.some((tech) => tech.id !== selectedTechId) && (
+            <div className="space-y-1 pt-1">
+              <span className="text-xs font-medium text-muted-foreground">{t('alsoOnJob')}</span>
+              <div className="flex flex-wrap gap-1">
+                {technicians
+                  .filter((tech) => tech.id !== selectedTechId)
+                  .map((tech) => {
+                    const helping = helperIds.includes(tech.id)
+                    return (
+                      <button
+                        key={tech.id}
+                        type="button"
+                        aria-pressed={helping}
+                        title={
+                          helping
+                            ? t('helperRemove', { name: tech.name })
+                            : t('helperAdd', { name: tech.name })
+                        }
+                        onClick={() => void toggleHelper(tech.id)}
+                        className={cn(
+                          'cursor-pointer rounded-md border px-2.5 py-1 text-xs font-medium transition-colors',
+                          helping
+                            ? 'border-primary bg-primary text-primary-foreground'
+                            : 'border-border bg-background text-foreground hover:bg-muted'
+                        )}
+                      >
+                        {tech.name}
+                      </button>
+                    )
+                  })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -769,13 +1004,38 @@ export function ScheduleTimesSection({
           </div>
         </div>
 
+        {(closed.names.length > 0 || closed.weekday) && (
+          <div
+            className="rounded-md border border-amber-300 bg-amber-50 p-2.5 dark:border-amber-900/60 dark:bg-amber-950/40"
+            data-testid="schedule-closed"
+          >
+            <div className="flex items-start gap-2">
+              <CalendarOff className="mt-px h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-500" />
+              <div className="min-w-0 flex-1 space-y-1">
+                <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
+                  {closed.names.length > 0
+                    ? tCal('schedule.closed', { names: closed.names.join(', ') })
+                    : tCal('schedule.closedWeekday')}
+                </p>
+                <p className="text-[11px] text-amber-700 dark:text-amber-400">
+                  {tCal('schedule.bookedAnyway')}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {conflicts.length > 0 && (
           <div className="rounded-md border border-amber-300 bg-amber-50 p-2.5 dark:border-amber-900/60 dark:bg-amber-950/40">
             <div className="flex items-start gap-2">
               <AlertTriangle className="mt-px h-3.5 w-3.5 shrink-0 text-amber-600 dark:text-amber-500" />
               <div className="min-w-0 flex-1 space-y-1">
                 <p className="text-xs font-semibold text-amber-900 dark:text-amber-200">
-                  {t('slotTaken', { count: conflicts.length })}
+                  {conflicts.every((c) => c.kind === 'absence')
+                    ? helperIds.length > 0
+                      ? tCal('schedule.awayHeadingTeam')
+                      : tCal('schedule.awayHeading')
+                    : t('slotTaken', { count: conflicts.length })}
                 </p>
                 <ul className="space-y-0.5">
                   {conflicts.slice(0, 3).map((c) => (
@@ -783,26 +1043,51 @@ export function ScheduleTimesSection({
                       key={c.id}
                       className="text-[11px] leading-snug text-amber-800 dark:text-amber-300"
                     >
-                      {c.label || t('anotherJob')} ·{' '}
-                      {new Date(c.start).toLocaleString(undefined, {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZone: timezone || undefined,
-                      })}
-                      {' – '}
-                      {new Date(c.end).toLocaleTimeString(undefined, {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        timeZone: timezone || undefined,
-                      })}
-                      {' · '}
-                      {c.onTechnician && c.onBay
-                        ? t('clashBoth')
-                        : c.onTechnician
-                          ? t('clashTechnician')
-                          : t('clashBay')}
+                      {c.kind === 'absence' ? (
+                        // Time off is days, not a slot: say which days, and
+                        // the clock only where it starts or ends in a day.
+                        <>
+                          {/* With more than one person on the job, whose
+                              time off it is has to be said. */}
+                          {clashNames(c.people).length > 0 &&
+                            `${clashNames(c.people).join(', ')}: `}
+                          {tCal('schedule.awayConflict', {
+                            reason: tCal.has(`reasons.${c.label}`)
+                              ? tCal(`reasons.${c.label}`)
+                              : c.label,
+                          })}
+                          {' · '}
+                          {awayWhen(c.start, c.end, timezone)}
+                        </>
+                      ) : (
+                        <>
+                          {c.label || t('anotherJob')} ·{' '}
+                          {new Date(c.start).toLocaleString(undefined, {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZone: timezone || undefined,
+                          })}
+                          {' – '}
+                          {new Date(c.end).toLocaleTimeString(undefined, {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            timeZone: timezone || undefined,
+                          })}
+                          {' · '}
+                          {c.onTechnician && c.onBay
+                            ? t('clashBoth')
+                            : c.onTechnician
+                              ? clashNames(c.people).length > 0
+                                ? t('clashPeople', {
+                                    count: clashNames(c.people).length,
+                                    names: clashNames(c.people).join(', '),
+                                  })
+                                : t('clashTechnician')
+                              : t('clashBay')}
+                        </>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -864,4 +1149,27 @@ export function ScheduleTimesSection({
       </div>
     </SectionFrame>
   )
+}
+
+/**
+ * When a technician is away, as days: "16 Nov – 17 Nov", or with a clock
+ * only where the time off starts or ends inside a day. The end of a stretch
+ * is the midnight after its last day, which reads as that last day.
+ */
+function awayWhen(startIso: string, endIso: string, timeZone: string | null | undefined): string {
+  const zone = timeZone || undefined
+  const { start, end, startClock, endClock } = awayEdges(startIso, endIso, zone)
+  const day = (at: Date) =>
+    at.toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: zone })
+  const dayAndClock = (at: Date) =>
+    at.toLocaleString(undefined, {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: zone,
+    })
+  const from = startClock ? dayAndClock(start) : day(start)
+  const to = endClock ? dayAndClock(end) : day(end)
+  return from === to ? from : `${from} – ${to}`
 }

@@ -78,7 +78,8 @@ export function buildAuthorizeUrl(input: {
   url.searchParams.set('client_id', input.client.clientId)
   url.searchParams.set('redirect_uri', input.redirectUri)
   // A vendor without scopes, such as Fiken, gets no empty scope parameter.
-  if (input.spec.scopes.length > 0) url.searchParams.set('scope', input.spec.scopes.join(' '))
+  if (input.spec.scopes.length > 0)
+    url.searchParams.set('scope', input.spec.scopes.join(input.spec.scopeSeparator ?? ' '))
   url.searchParams.set('state', input.state)
   for (const [k, v] of Object.entries(input.spec.authorizeParams ?? {})) url.searchParams.set(k, v)
   if (input.codeVerifier) {
@@ -94,14 +95,41 @@ interface TokenResponse {
   expires_in?: number | string
   token_type?: string
   scope?: string
+  /** Zoho: the API host for the account's region, such as https://www.zohoapis.eu. */
+  api_domain?: string
   error?: string
   error_description?: string
+}
+
+/**
+ * Where token requests go for this connection: the regional server the
+ * callback named when the vendor has one per region and the host is one it
+ * owns, otherwise the manifest's token URL. An unknown host is refused
+ * rather than skipped, so a tampered callback cannot send the client
+ * secret anywhere, and cannot quietly fall back to the wrong region either.
+ */
+export function tokenUrlFor(spec: OAuth2Spec, credentials: Record<string, unknown> = {}): string {
+  const regional = spec.regionalTokenServer
+  if (!regional) return spec.tokenUrl
+  const named = credentials[regional.param]
+  if (typeof named !== 'string' || !named) return spec.tokenUrl
+  let url: URL
+  try {
+    url = new URL(named)
+  } catch {
+    throw new Error(`The sign-in server ${named} is not a valid address`)
+  }
+  if (url.protocol !== 'https:' || !regional.allowedHosts.includes(url.hostname)) {
+    throw new Error(`The sign-in server ${url.hostname} is not one of the provider's own`)
+  }
+  return `https://${url.hostname}${regional.path}`
 }
 
 async function tokenRequest(
   spec: OAuth2Spec,
   client: OAuthClient,
-  params: Record<string, string>
+  params: Record<string, string>,
+  tokenUrl: string = spec.tokenUrl
 ): Promise<TokenResponse> {
   assertConnectorAllowed()
   const headers: Record<string, string> = {
@@ -116,7 +144,7 @@ async function tokenRequest(
     form.client_id = client.clientId
     form.client_secret = client.clientSecret
   }
-  const res = await fetch(spec.tokenUrl, {
+  const res = await fetch(tokenUrl, {
     method: 'POST',
     headers,
     body: new URLSearchParams(form).toString(),
@@ -145,7 +173,9 @@ function toCredentials(body: TokenResponse, previous: OAuthCredentials): OAuthCr
       Number.isFinite(expiresIn) && expiresIn > 0 ? Date.now() + expiresIn * 1000 : undefined,
     tokenType: body.token_type ?? previous.tokenType,
     scope: body.scope ?? previous.scope,
-    codeVerifier: undefined,
+    ...((body.api_domain ?? previous.apiDomain) && {
+      apiDomain: body.api_domain ?? previous.apiDomain,
+    }),
   }
 }
 
@@ -158,15 +188,32 @@ export async function exchangeCode(input: {
   /** The state the callback carried, for vendors that want it again here. */
   state?: string
   previous?: OAuthCredentials
+  /** The extra parameters the callback carried (callbackParams), which may name the token server. */
+  callbackExtras?: Record<string, string>
 }): Promise<OAuthCredentials> {
-  const body = await tokenRequest(input.spec, input.client, {
-    grant_type: 'authorization_code',
-    code: input.code,
-    redirect_uri: input.redirectUri,
-    ...(input.codeVerifier && { code_verifier: input.codeVerifier }),
-    ...(input.spec.stateOnExchange && input.state && { state: input.state }),
+  const body = await tokenRequest(
+    input.spec,
+    input.client,
+    {
+      grant_type: 'authorization_code',
+      code: input.code,
+      redirect_uri: input.redirectUri,
+      ...(input.codeVerifier && { code_verifier: input.codeVerifier }),
+      ...(input.spec.stateOnExchange && input.state && { state: input.state }),
+    },
+    tokenUrlFor(input.spec, input.callbackExtras)
+  )
+  // A new consent starts its own tokens: a refresh token kept from the one
+  // it replaces may belong to another app or account, so it is not carried.
+  // The PKCE verifier is spent here and only here; a refresh while a
+  // reconnect is pending keeps it, or the callback could not finish.
+  return toCredentials(body, {
+    ...(input.previous ?? {}),
+    accessToken: '',
+    refreshToken: undefined,
+    expiresAt: undefined,
+    codeVerifier: undefined,
   })
-  return toCredentials(body, input.previous ?? { accessToken: '' })
 }
 
 export async function refreshToken(input: {
@@ -176,10 +223,15 @@ export async function refreshToken(input: {
 }): Promise<OAuthCredentials> {
   if (!input.credentials.refreshToken)
     throw new Error('No refresh token; reconnect the integration')
-  const body = await tokenRequest(input.spec, input.client, {
-    grant_type: 'refresh_token',
-    refresh_token: input.credentials.refreshToken,
-  })
+  const body = await tokenRequest(
+    input.spec,
+    input.client,
+    {
+      grant_type: 'refresh_token',
+      refresh_token: input.credentials.refreshToken,
+    },
+    tokenUrlFor(input.spec, input.credentials as unknown as Record<string, unknown>)
+  )
   return toCredentials(body, input.credentials)
 }
 

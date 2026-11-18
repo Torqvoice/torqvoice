@@ -1,4 +1,4 @@
-import type { IncomingMessage } from 'node:http'
+import type { NextRequest } from 'next/server'
 import type WebSocket from 'ws'
 import { cookies } from 'next/headers'
 import { resolveMembership } from '@/lib/cached-session'
@@ -182,7 +182,7 @@ const PING_EVERY_MS = 30_000
 /** Every tenth ping, ask whether this session and this membership still exist. */
 const RECHECK_EVERY_PINGS = 10
 
-export function UPGRADE(ws: WebSocket, _server: unknown, _request: IncomingMessage) {
+export function UPGRADE(ws: WebSocket, _server: unknown, _request: NextRequest) {
   const client = ws as TaggedWebSocket
   client.isAlive = true
 

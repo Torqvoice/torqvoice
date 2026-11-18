@@ -14,7 +14,8 @@
     "supplier": "Fornecedor",
     "location": "Localização",
     "low": "Baixo",
-    "barcode": "Código de barras"
+    "barcode": "Código de barras",
+    "notTracked": "Não controlado"
   },
   "empty": {
     "noMatch": "Nenhuma peça corresponde à sua busca.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Aplicar margem a todas as peças",
-    "multiplierLabel": "Multiplicador de margem",
-    "description": "Isso definirá o preço de venda = custo x {multiplier} para todas as {count} peças.",
-    "percentage": "({percent}% de margem)",
+    "intro": "Define o preço de venda das peças como o custo mais uma porcentagem.",
+    "percentLabel": "Margem %",
+    "percentHint": "Digite 30 para adicionar 30% sobre o custo.",
+    "percentInvalid": "A margem deve ser maior que -100%.",
+    "exampleTitle": "Exemplo",
+    "exampleMarkup": "Margem {percent}%",
     "cancel": "Cancelar",
     "apply": "Aplicar",
     "overrideExisting": "Substituir preços de venda existentes",
     "overrideExistingHint": "Todas as peças serão atualizadas, incluindo aquelas com preço de venda existente.",
-    "skipExistingHint": "Apenas peças sem preço de venda serão atualizadas."
+    "skipExistingHint": "Apenas peças sem preço de venda serão atualizadas.",
+    "newPartsNote": "Em peças novas, {sellPrice} é preenchido com esta margem quando você informa {unitCost}.",
+    "settingsNote": "{setting} em {settings} > {workshop} é uma configuração separada, aplicada quando as peças entram em uma ordem de serviço."
   },
   "errors": {
-    "multiplierPositive": "O multiplicador deve ser maior que 0",
     "deleteFailed": "Não foi possível excluir a peça",
     "applyFailed": "Não foi possível aplicar a margem",
     "saveFailed": "Não foi possível salvar a peça",
@@ -70,16 +75,19 @@
     "currentStock": "Estoque atual: {quantity}",
     "addedStock": "{amount} adicionados ao estoque",
     "customAmount": "Qtd...",
-    "scanParts": "Escanear peças"
+    "scanParts": "Escanear peças",
+    "notTracked": "O estoque desta peça não é controlado"
   },
   "form": {
     "editPart": "Editar peça",
     "addNewPart": "Adicionar nova peça",
     "supplierLink": "Link do fornecedor",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "O link do fornecedor não é um endereço da web. Corrija-o ou apague-o para salvar sem link.",
     "fetch": "Buscar",
-    "fetchFailed": "Falha ao buscar",
-    "fetchError": "Não foi possível buscar os metadados da URL",
+    "fetchBlocked": "O site deste fornecedor bloqueia a consulta automática. Preencha os campos manualmente. A peça e o link ainda podem ser salvos.",
+    "fetchTimedOut": "O site do fornecedor demorou demais para responder. Tente novamente ou preencha os campos manualmente. A peça e o link ainda podem ser salvos.",
+    "fetchUnreadable": "Não foi possível ler os dados da peça a partir deste link. Preencha os campos manualmente. A peça e o link ainda podem ser salvos.",
     "image": "Imagem",
     "dropOrClick": "Arraste uma imagem ou clique",
     "replace": "Substituir",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperial",
     "unitCost": "Custo unitário",
     "sellPrice": "Preço de venda",
+    "sellPriceMarkupHint": "{sellPrice} é preenchido com {unitCost} + {percent}%. Digite um preço para definir o seu. Para mudar a porcentagem, use {applyMarkup} na página {inventory}.",
     "supplier": "Fornecedor",
     "supplierPlaceholder": "AutoParts Ltda.",
     "supplierPhone": "Telefone do fornecedor",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Descrição da peça...",
     "cancel": "Cancelar",
     "saveChanges": "Salvar alterações",
-    "addPart": "Adicionar peça"
+    "addPart": "Adicionar peça",
+    "tags": "Tags",
+    "tagsPlaceholder": "Marcas, modelos ou o que ajudar a encontrá-la",
+    "tagsHint": "Pressione Enter ou vírgula após cada tag. Em uma ordem de serviço, as peças com a marca ou o modelo do veículo aparecem primeiro.",
+    "tagsHintMarine": "Pressione Enter ou vírgula após cada tag. Em uma ordem de serviço, as peças com a marca ou o modelo da embarcação aparecem primeiro.",
+    "removeTag": "Remover {tag}",
+    "tagTooLong": "Uma tag pode ter no máximo {max} caracteres. Encurte-a antes de salvar.",
+    "trackStock": "Controlar estoque",
+    "trackStockHint": "Desative para taxas e consumíveis que você cobra, mas nunca conta.",
+    "trackStockOffNote": "Ao salvar, a quantidade vai para zero e isso fica anotado no histórico de estoque. Os serviços não a alteram mais."
   },
   "openMenu": "Abrir menu",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Ordem excluída",
       "quote_conversion": "Orçamento convertido",
       "manual_adjustment": "Ajuste manual",
-      "bulk_markup": "Margem em massa"
+      "bulk_markup": "Margem em massa",
+      "stock_tracking_off": "Controle de estoque desativado"
     },
     "backToInventory": "Estoque",
     "reason": "Motivo",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} em estoque",
     "outOfStock": "Fora de estoque",
     "onBackorder": "Sob encomenda ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Todas as tags",
+    "filterBy": "Mostrar peças com a tag {tag}",
+    "more": "+{count} mais"
   }
 }

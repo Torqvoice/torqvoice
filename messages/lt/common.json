@@ -54,6 +54,36 @@
     "whatsNew": "Žiūrėti naujienas",
     "dismiss": "Uždaryti"
   },
+  "whatsNew": {
+    "title": "Naujienos",
+    "openUnread": "Naujienos: atnaujinimai, kurių dar nematėte",
+    "description": "Naujausi papildymai, nuo naujausių.",
+    "unread": "Nauja nuo paskutinio apsilankymo",
+    "newCount": "Naujų: {count}",
+    "showOlder": "Rodyti senesnius",
+    "hideTab": "Slėpti šį skirtuką",
+    "tabHidden": "Skirtukas paslėptas. Vėl įjungti galite skiltyje Nustatymai, Apie.",
+    "kindNew": "Nauja",
+    "kindImproved": "Patobulinta",
+    "open": "Atidaryti",
+    "guide": "Skaityti vadovą",
+    "video": "Žiūrėti vaizdo įrašą",
+    "version": "Versija {version}",
+    "allReleaseNotes": "Visos versijų pastabos",
+    "feedback": {
+      "question": "Ar tai naudinga?",
+      "up": "Taip, tai naudinga",
+      "down": "Ne, ne to tikėjausi",
+      "askUp": "Kas jums patinka? (neprivaloma)",
+      "askDown": "Kas veikė ne taip, kaip tikėjotės?",
+      "privacyIdentified": "Siunčiama Torqvoice komandai su jūsų el. pašto adresu, kad galėtume atsakyti.",
+      "privacyAnonymous": "Siunčiama Torqvoice komandai be jūsų vardo ir el. pašto adreso.",
+      "skip": "Praleisti",
+      "send": "Siųsti",
+      "thanks": "Ačiū, jūsų komentaras išsiųstas.",
+      "failed": "Nepavyko išsiųsti jūsų atsiliepimo. Po akimirkos bandykite dar kartą."
+    }
+  },
   "pagination": {
     "showing": "Rodoma {start}–{end} iš {total}",
     "perPage": "puslapyje",
@@ -76,6 +106,26 @@
     "enterManually": "Įvesti ranka",
     "enterBarcode": "Įveskite brūkšninį kodą…",
     "scanHint": "Nukreipkite kamerą į brūkšninį kodą arba įveskite jį ranka",
+    "submitBarcode": "Gerai",
+    "camera": {
+      "tryAgain": "Bandyti dar kartą",
+      "denied": {
+        "title": "Prieiga prie kameros užblokuota",
+        "body": "Leiskite naudoti kamerą šiai svetainei naršyklėje, paspaudę kameros arba spynos piktogramą adreso juostoje, tada spauskite Bandyti dar kartą. Arba įveskite kodą žemiau."
+      },
+      "insecure": {
+        "title": "Kamerai reikia HTTPS",
+        "body": "Naršyklės leidžia naudoti kamerą tik saugiu ryšiu, o šis puslapis atidarytas per HTTP ({host}). Atidarykite Torqvoice per HTTPS, kad galėtumėte skenuoti, arba įveskite kodą žemiau."
+      },
+      "notFound": {
+        "title": "Kamera nerasta",
+        "body": "Prijunkite kamerą ir spauskite Bandyti dar kartą arba įveskite kodą žemiau."
+      },
+      "failed": {
+        "title": "Nepavyko įjungti kameros",
+        "body": "Galbūt ją naudoja kita programa. Uždarykite ją ir spauskite Bandyti dar kartą arba įveskite kodą žemiau."
+      }
+    },
     "iosInstallHint": "Palieskite Bendrinti > Įtraukti į pradžios ekraną",
     "installDescription": "Įtraukite į pradžios ekraną, kad pasiektumėte greičiau",
     "enterFullscreen": "Visas ekranas",
@@ -85,6 +135,8 @@
     "title": "Atnaujinkite planą, kad tęstumėte",
     "maxCustomers": "Jūsų planas apima iki {limit} klientų, ir šis skaičius pasiektas. Atnaujinkite planą, kad pridėtumėte tiek, kiek reikia.",
     "maxUsers": "Jūsų planas apima {limit, plural, one {# komandos narį} few {# komandos narius} many {# komandos nario} other {# komandos narių}}. Atnaujinkite planą, kad pakviestumėte daugiau žmonių.",
+    "maxPlatformMail": "Jūsų planas leidžia išsiųsti iki {limit} el. laiškų per dieną iš Torqvoice adreso, o šiandienos limitas išnaudotas. Atnaujinkite planą, kad galėtumėte siųsti kiek reikia, arba išsiųskite likusius rytoj.",
+    "maxPlatformSms": "Jūsų planas leidžia išsiųsti iki {limit} SMS žinučių per dieną iš Torqvoice numerio, o šiandienos limitas išnaudotas. Atnaujinkite planą, kad gautumėte didesnį limitą, prijunkite savo SMS tiekėją, kad siųstumėte be limito, arba išsiųskite likusias rytoj.",
     "generic": "Ši funkcija neįtraukta į jūsų dabartinį planą.",
     "featureNotIncluded": "{feature} neįtraukta į jūsų dabartinį planą.",
     "notNow": "Ne dabar"
@@ -109,8 +161,6 @@
     "preview": "Peržiūra",
     "failed": "Nepavyko sugeneruoti PDF peržiūros."
   },
-  "attachPdf": "Pridėti PDF",
-  "attachPdfHint": "Išjunkite, kad būtų siunčiama nuoroda, tada matysite, kada klientas ją atidarė.",
   "sentCopy": {
     "note": "Išsiųsta {date}. Čia atlikti pakeitimai pateks į sąskaitą, kai ji bus išsiųsta dar kartą.",
     "confirmTitle": "Ši sąskaita jau išsiųsta",
@@ -131,5 +181,145 @@
     "retake": "Įrašyti iš naujo",
     "use": "Naudoti šį įrašą",
     "limit": "Įrašymas sustoja savaime po {minutes} min."
+  },
+  "photoCapture": {
+    "title": "Padaryti nuotrauką",
+    "description": "Šio kompiuterio kamera arba prijungta internetine kamera.",
+    "starting": "Paleidžiama kamera...",
+    "live": "Kameros vaizdas",
+    "preview": "Ką tik padaryta nuotrauka",
+    "camera": "Kamera",
+    "take": "Fotografuoti",
+    "retake": "Fotografuoti iš naujo",
+    "use": "Naudoti šią nuotrauką",
+    "tryAgain": "Bandyti dar kartą",
+    "uploadInstead": "Įkelti failą",
+    "denied": {
+      "title": "Prieiga prie kameros užblokuota",
+      "body": "Leiskite naudoti kamerą šiai svetainei naršyklėje, paspaudę kameros arba spynos piktogramą adreso juostoje, tada spauskite Bandyti dar kartą."
+    },
+    "insecure": {
+      "title": "Kamerai reikia HTTPS",
+      "body": "Naršyklės leidžia naudoti kamerą tik saugiu ryšiu, o šis puslapis atidarytas per HTTP ({host}). Atidarykite Torqvoice per HTTPS arba įkelkite failą."
+    },
+    "notFound": {
+      "title": "Kamera nerasta",
+      "body": "Prijunkite internetinę kamerą ir spauskite Bandyti dar kartą arba įkelkite failą."
+    },
+    "failed": {
+      "title": "Nepavyko įjungti kameros",
+      "body": "Galbūt ją naudoja kita programa. Uždarykite ją ir spauskite Bandyti dar kartą."
+    }
+  },
+  "richText": {
+    "openLinkHint": "Laikykite {key} ir spustelėkite, kad atidarytumėte",
+    "placeholder": "Parašykite ką nors...",
+    "toolbar": "Formatavimas",
+    "editor": "Tekstas",
+    "bold": "Pusjuodis",
+    "italic": "Kursyvas",
+    "underline": "Pabrauktas",
+    "strikethrough": "Perbrauktas",
+    "bulletList": "Sąrašas su ženkleliais",
+    "numberedList": "Numeruotas sąrašas"
+  },
+  "appUpdated": {
+    "title": "Yra nauja versija",
+    "description": "Perkraukite puslapį, kad gautumėte naujausius atnaujinimus.",
+    "reload": "Perkrauti"
+  },
+  "signedOut": {
+    "title": "Sesija baigėsi",
+    "description": "Prisijunkite iš naujo, kad galėtumėte tęsti darbą. Pirmiausia nukopijuokite tai, ką rašėte.",
+    "signIn": "Prisijungti"
+  },
+  "connectionLost": {
+    "title": "Nepavyko pasiekti Torqvoice",
+    "description": "Paskutinis pakeitimas galėjo būti neišsaugotas. Patikrinkite ryšį ir bandykite dar kartą."
+  },
+  "sendDocument": {
+    "titleQuote": "Siųsti pasiūlymą",
+    "titleInvoice": "Siųsti sąskaitą",
+    "titleInspection": "Siųsti apžiūrą",
+    "description": "Klientas gauna nuorodą, kurią atidaręs gali peržiūrėti ir atsisiųsti dokumentą.",
+    "email": "El. paštas",
+    "emailAddress": "El. pašto adresas",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Taip pat pridėti PDF",
+    "sms": "SMS",
+    "smsNumber": "Telefono numeris SMS žinutei",
+    "whatsappNumber": "Telefono numeris WhatsApp",
+    "phonePlaceholder": "Telefono numeris",
+    "message": "Žinutė (neprivaloma, pridedama prie laiško)",
+    "messagePlaceholder": "Pridėkite asmeninę žinutę...",
+    "copyLink": "Kopijuoti nuorodą",
+    "send": "Siųsti",
+    "emailSent": "Laiškas išsiųstas",
+    "failedEmail": "Nepavyko išsiųsti laiško",
+    "smsSent": "SMS išsiųsta",
+    "failedSms": "Nepavyko išsiųsti SMS"
+  },
+  "shareLink": {
+    "generateFailed": "Nepavyko sukurti nuorodos. Bandykite dar kartą.",
+    "revokeFailed": "Nepavyko patvirtinti, kad nuoroda atšaukta. Ji vis dar gali veikti visiems, kurie ją turi.",
+    "channelNotConnected": "Prijunkite {channel} skiltyje Integracijos, kad galėtumėte siųsti šiuo būdu.",
+    "openIntegrations": "Atidaryti Integracijas",
+    "channelNotInPlan": "{channel} neįtrauktas į jūsų planą.",
+    "channelTurnedOff": "Siuntimas per {channel} šiose dirbtuvėse yra išjungtas.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp išsiųsta",
+    "failedWhatsapp": "Nepavyko išsiųsti WhatsApp žinutės",
+    "whatsappWindowClosed": "Šis klientas per pastarąsias 24 valandas jums nerašė per WhatsApp, o patvirtinto šablono jam pasiekti nesukurta.",
+    "expiry": {
+      "never": "Galioja neribotai",
+      "untilPaid": "Galioja, kol bus apmokėta",
+      "expires": "Galioja iki {date}",
+      "expired": "Nebegalioja nuo {date}",
+      "change": "Keisti",
+      "openAgain": "Atverti iš naujo",
+      "reopened": "Nuoroda vėl galioja",
+      "formTitle": "Nuorodos galiojimas",
+      "choice": {
+        "workshop": "Dirbtuvių nustatymas",
+        "date": "Iki datos",
+        "never": "Neribotai"
+      },
+      "rule": {
+        "never": "Nuorodos galioja neribotai",
+        "afterSharing": "{days, plural, one {# diena} few {# dienos} many {# dienos} other {# dienų}} po išsiuntimo",
+        "afterPayment": "{days, plural, one {# diena} few {# dienos} many {# dienos} other {# dienų}} po sąskaitos apmokėjimo"
+      },
+      "dateHint": "Nuoroda veikia visą tą dieną.",
+      "chooseDate": "Pasirinkite datą",
+      "cancel": "Atšaukti",
+      "save": "Įrašyti",
+      "saved": "Nuorodos galiojimas įrašytas",
+      "saveFailed": "Nepavyko įrašyti nuorodos galiojimo. Bandykite dar kartą."
+    }
+  },
+  "searchableSelect": {
+    "choose": "Pasirinkite...",
+    "search": "Ieškoti...",
+    "noMatch": "Nieko nerasta"
+  },
+  "a11y": {
+    "skipToContent": "Pereiti prie turinio",
+    "mainNavigation": "Pagrindinė navigacija",
+    "close": "Uždaryti",
+    "breadcrumb": "Naršymo kelias",
+    "more": "Daugiau",
+    "toggleSidebar": "Rodyti arba slėpti šoninę juostą",
+    "sidebar": "Šoninė juosta",
+    "sidebarDescription": "Pagrindinis meniu.",
+    "openCalendar": "Atidaryti kalendorių",
+    "dismiss": "Uždaryti",
+    "selectAll": "Pasirinkti visus",
+    "selectRow": "Pasirinkti: {name}"
+  },
+  "confirmDialog": {
+    "title": "Ar tikrai?",
+    "irreversible": "Šio veiksmo negalima atšaukti.",
+    "andMore": "ir dar {count}",
+    "typeToConfirm": "Įveskite <b>{text}</b>, kad patvirtintumėte"
   }
 }

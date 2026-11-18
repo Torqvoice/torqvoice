@@ -670,7 +670,7 @@ export async function executeTool(
 export const DB_SCHEMA = `
 PostgreSQL database schema (use these exact table/column names in queries):
 
-vehicles (id, make, model, year, vin, "licensePlate", color, mileage, "fuelType", transmission, "engineSize", "purchaseDate", "purchasePrice", "isArchived", "createdAt", "updatedAt", "customerId")
+vehicles (id, make, model, year, vin, "licensePlate", color, mileage, "fuelType", transmission, "engineSize", "purchaseDate", "purchasePrice", "isArchived", "createdAt", "updatedAt", "customerId") -- "licensePlate" is stored in upper case with the spaces and hyphens as typed; match it with ILIKE
 
 service_records (id, title, description, type, status, cost, mileage, "serviceDate", "startDateTime", "endDateTime", "shopName", "techName", parts, "laborHours", "diagnosticNotes", "invoiceNotes", subtotal, "taxRate", "taxAmount", "totalAmount", "invoiceNumber", "discountType", "discountValue", "discountAmount", "manuallyPaid", "createdAt", "updatedAt", "vehicleId", "customerId", "technicianId", "sortOrder") -- "vehicleId" is NULL for parts-only counter sales; those link "customerId" directly
 
@@ -690,7 +690,7 @@ quote_parts (id, "partNumber", name, quantity, unit, category, "unitPrice", tota
 
 quote_labor (id, description, hours, rate, total, excluded, "quoteId")
 
-inventory_parts (id, "partNumber", name, description, category, quantity, "minQuantity", unit, "unitCost", "sellPrice", supplier, "supplierPhone", "supplierEmail", "supplierUrl", location, "isArchived", "createdAt", "updatedAt")
+inventory_parts (id, "partNumber", name, description, category, quantity, "minQuantity", "trackStock", unit, "unitCost", "sellPrice", supplier, "supplierPhone", "supplierEmail", "supplierUrl", location, "isArchived", tags, "createdAt", "updatedAt") -- "trackStock" false is a fee or consumable that is charged but never counted: leave it out of stock levels, low stock and stock value; tags is text[]: the makes and models a part fits, or any label; match with array_to_string(tags, ',') ILIKE '%hilux%'
 
 notes (id, title, content, "isPinned", "createdAt", "updatedAt", "vehicleId")
 

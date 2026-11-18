@@ -141,6 +141,7 @@ describe('openapi automotive mapper', () => {
       fuelType: 'gasoline',
       transmission: 'manual',
       engineSize: '1.6 L',
+      engineCc: 1598,
       vehicleClass: 'BERLINE',
       firstRegistered: '2008-10-22',
     })
@@ -157,6 +158,7 @@ describe('openapi automotive mapper', () => {
       fuelType: 'diesel',
       transmission: 'automatic',
       engineSize: '3.0 L',
+      engineCc: 2987,
       engineCode: 'B630WM',
       vehicleClass: 'SUV',
     })
@@ -278,6 +280,7 @@ describe('openapi automotive sandbox contract', () => {
       fuelType: 'diesel',
       transmission: 'manual',
       engineSize: '1.5 L',
+      engineCc: 1461,
       vehicleClass: 'MONOSPACE COMPACT',
       firstRegistered: '2016-06-24',
     })
@@ -307,6 +310,7 @@ describe('openapi automotive sandbox contract', () => {
       licensePlate: 'FS918BG',
       fuelType: 'diesel',
       engineSize: '1.6 L',
+      engineCc: 1560,
     })
   })
 
@@ -321,6 +325,7 @@ describe('openapi automotive sandbox contract', () => {
       fuelType: 'diesel',
       transmission: 'automatic',
       engineSize: '3.0 L',
+      engineCc: 2987,
       engineCode: 'B630WM',
       vehicleClass: 'SUV',
     })
@@ -337,6 +342,7 @@ describe('openapi automotive sandbox contract', () => {
       licensePlate: '5428GXS',
       fuelType: 'diesel',
       engineSize: '1.5 L',
+      engineCc: 1461,
       firstRegistered: '2010-07-06',
     })
   })
@@ -420,6 +426,50 @@ describe('openapi automotive connector', () => {
     const pt = context(answer, { country: 'PT', bikes: true })
     expect(await connector.lookupVehicle?.(pt.ctx, { plate: '9027QL' })).toBeNull()
     expect(pt.fetch).toHaveBeenCalledTimes(1)
+  })
+
+  it('skips the car search when cars are off', async () => {
+    const bike: AutomotiveRecord = {
+      CarMake: 'TRIUMPH',
+      CarModel: 'BONNEVILLE',
+      FuelType: 'PETROL',
+    }
+    const answer = async (url: string) =>
+      url.includes('UK-bike')
+        ? envelope(bike)
+        : Response.json({ data: [], success: true, message: 'car not found' }, { status: 404 })
+    const bikesOnly = context(answer, { country: 'GB', cars: false, bikes: true })
+    const found = await connector.lookupVehicle?.(bikesOnly.ctx, { plate: 'AB12 CDE' })
+    expect(found?.model).toBe('BONNEVILLE')
+    expect(bikesOnly.fetch.mock.calls.map((c) => c[0])).toEqual([
+      'https://automotive.openapi.com/UK-bike/AB12CDE',
+    ])
+    // A connection saved before the car switch existed still searches cars.
+    const saved = context(answer, { country: 'GB', bikes: true })
+    await connector.lookupVehicle?.(saved.ctx, { plate: 'AB12CDE' })
+    expect(saved.fetch.mock.calls.map((c) => c[0])).toEqual([
+      'https://automotive.openapi.com/UK-car/AB12CDE',
+      'https://automotive.openapi.com/UK-bike/AB12CDE',
+    ])
+  })
+
+  it('refuses to look up with both cars and motorcycles off', async () => {
+    const { ctx, fetch } = context(async () => envelope(FRANCE), {
+      country: 'GB',
+      cars: false,
+      bikes: false,
+    })
+    await expect(connector.lookupVehicle?.(ctx, { plate: 'AB12CDE' })).rejects.toThrow(
+      /turn on cars or motorcycles/
+    )
+    expect(fetch).not.toHaveBeenCalled()
+    const test = await connector.test(ctx)
+    expect(test.ok).toBe(false)
+    // Portugal has no motorcycle registry, so cars off leaves nothing to search.
+    const pt = context(async () => envelope(FRANCE), { country: 'PT', cars: false, bikes: true })
+    await expect(connector.lookupVehicle?.(pt.ctx, { plate: '9027QL' })).rejects.toThrow(
+      /turn on cars/
+    )
   })
 
   it('polls the status endpoint while the vendor is still fetching', async () => {

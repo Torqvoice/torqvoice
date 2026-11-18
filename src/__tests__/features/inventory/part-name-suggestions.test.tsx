@@ -227,6 +227,33 @@ describe('PartNameSuggestions', () => {
     expect(onSelect).toHaveBeenCalledWith(expect.objectContaining({ id: 'p3' }))
   })
 
+  it('also offers a part by its tag, after any name or number match', () => {
+    const parts: PartSuggestion[] = [
+      {
+        id: 't1',
+        name: 'Fuel filter',
+        partNumber: 'FF-23',
+        unitCost: 9,
+        sellPrice: 22,
+        quantity: 2,
+        tags: ['Toyota', 'Hilux 2015-2020'],
+      },
+      {
+        id: 't2',
+        name: 'Hilux wiper blade',
+        partNumber: 'WB-1',
+        unitCost: 5,
+        sellPrice: 15,
+        quantity: 6,
+      },
+    ]
+    setup('hilux', { parts })
+    const rows = shown()
+    expect(rows).toHaveLength(2)
+    expect(rows[0]).toContain('Hilux wiper blade')
+    expect(rows[1]).toContain('Fuel filter')
+  })
+
   it('renders nothing when the inventory is empty', () => {
     render(<PartNameSuggestions query="brake" parts={[]} onSelect={vi.fn()} />)
     expect(shown()).toHaveLength(0)

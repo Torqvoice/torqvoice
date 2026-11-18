@@ -1,0 +1,194 @@
+{
+  "data": {
+    "make": "Ford",
+    "model": "F-150",
+    "engines": [
+      {
+        "vehicleId": "7a71f97c-489e-4af0-8c8f-de81d0247928",
+        "engine": "2.7L V6 EcoBoost",
+        "engineSlug": "2.7l-v6-ecoboost",
+        "drivetrain": "rwd",
+        "yearRange": "2018-2018",
+        "laborTimes": [
+          {
+            "job": "100K Service",
+            "jobSlug": "100k-service",
+            "category": "maintenance",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Alternator",
+            "jobSlug": "alternator",
+            "category": "electrical",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Brake Pads and Rotors - Front",
+            "jobSlug": "brake-pads-rotors-front",
+            "category": "brakes",
+            "hours": 2.1,
+            "lowRange": 1.7,
+            "highRange": 2.5,
+            "confidence": "high"
+          },
+          {
+            "job": "Water Pump",
+            "jobSlug": "water-pump",
+            "category": "cooling",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          }
+        ],
+        "engineCode": null,
+        "generation": {
+          "label": "13th gen",
+          "chassisCode": "P552",
+          "yearStart": 2015,
+          "yearEnd": 2020
+        }
+      },
+      {
+        "vehicleId": "0b125774-e115-4844-b2ca-20eb74bcc6fb",
+        "engine": "3.0L V6 Power Stroke Diesel",
+        "engineSlug": "3.0l-v6-diesel",
+        "drivetrain": "rwd",
+        "yearRange": "2018-2018",
+        "laborTimes": [
+          {
+            "job": "100K Service",
+            "jobSlug": "100k-service",
+            "category": "maintenance",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Alternator",
+            "jobSlug": "alternator",
+            "category": "electrical",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Brake Pads and Rotors - Front",
+            "jobSlug": "brake-pads-rotors-front",
+            "category": "brakes",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Water Pump",
+            "jobSlug": "water-pump",
+            "category": "cooling",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          }
+        ],
+        "engineCode": null,
+        "generation": {
+          "label": "13th gen",
+          "chassisCode": "P552",
+          "yearStart": 2015,
+          "yearEnd": 2020
+        }
+      },
+      {
+        "vehicleId": "92a92bb0-7293-4783-97e9-743c15473972",
+        "engine": "5.0L V8 Coyote",
+        "engineSlug": "5.0l-v8-coyote",
+        "drivetrain": "4wd",
+        "yearRange": "2018-2018",
+        "laborTimes": [
+          {
+            "job": "100K Service",
+            "jobSlug": "100k-service",
+            "category": "maintenance",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Alternator",
+            "jobSlug": "alternator",
+            "category": "electrical",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Brake Pads and Rotors - Front",
+            "jobSlug": "brake-pads-rotors-front",
+            "category": "brakes",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          },
+          {
+            "job": "Water Pump",
+            "jobSlug": "water-pump",
+            "category": "cooling",
+            "hours": null,
+            "lowRange": null,
+            "highRange": null,
+            "confidence": null,
+            "locked": true
+          }
+        ],
+        "engineCode": null,
+        "generation": {
+          "label": "13th gen",
+          "chassisCode": "P552",
+          "yearStart": 2015,
+          "yearEnd": 2020
+        }
+      }
+    ]
+  },
+  "meta": {
+    "engineCount": 10,
+    "totalJobs": 4817,
+    "region": "US",
+    "confidenceCounts": {
+      "estimated": 3922,
+      "oem_matched": 20,
+      "high": 257,
+      "medium": 628
+    },
+    "dataQualityNote": "3922 of 4827 labor times served are unverified (AI-derived book times, not matched against an OEM or Mitchell/Motor guide for this exact vehicle). Check each row's confidence, or pass min_confidence=high to receive only verified data.",
+    "timestamp": "2026-11-02T20:10:38.503Z",
+    "freeTier": {
+      "locked": 4816,
+      "hoursLocked": 4816,
+      "vehicle": "2018 Ford F-150"
+    }
+  },
+  "error": null
+}

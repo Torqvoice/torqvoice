@@ -199,3 +199,156 @@ export function verifyInspectionHandoffToken(
   if (e * 1000 <= now) return { ok: false, reason: 'expired' }
   return { ok: true, handoff: { organizationId: o, inspectionId: i, userId: u, expiresAt: e } }
 }
+
+/**
+ * The same kind of code for a fix being written for the code service: the
+ * phone adds photos to that draft, and the share dialog on the computer
+ * shows them as they land. The draft lives only on this server, and only
+ * until the fix is shared (see features/fault-codes/Lib/fixDrafts.server.ts).
+ */
+const FIX_PREFIX = 'fx1'
+
+export interface FixHandoff {
+  organizationId: string
+  /** The fault code the fix is for, for the phone's wording. */
+  code: string
+  /** The draft the photos go into: a random id the dialog made. */
+  draftId: string
+  /** Who showed the code. */
+  userId: string
+  /** Unix seconds. */
+  expiresAt: number
+  /**
+   * What the photos are for: a fix (up to four photos of what fixed it) or a waveform (one
+   * photo of the scope screen). A code made before waveforms is for a fix.
+   */
+  purpose: 'fix' | 'waveform'
+}
+
+export function isFixHandoffToken(token: string): boolean {
+  return token.startsWith(`${FIX_PREFIX}.`)
+}
+
+export function createFixHandoffToken(
+  handoff: Omit<FixHandoff, 'expiresAt' | 'purpose'> & { purpose?: FixHandoff['purpose'] },
+  now = Date.now()
+): { token: string; expiresAt: Date } {
+  const expiresAt = Math.floor(now / 1000) + PHOTO_HANDOFF_TTL_SECONDS
+  const body = Buffer.from(
+    JSON.stringify({
+      o: handoff.organizationId,
+      c: handoff.code,
+      d: handoff.draftId,
+      u: handoff.userId,
+      e: expiresAt,
+      ...(handoff.purpose === 'waveform' ? { p: 'w' } : {}),
+    })
+  ).toString('base64url')
+  return {
+    token: `${FIX_PREFIX}.${body}.${sign(body, FIX_PREFIX)}`,
+    expiresAt: new Date(expiresAt * 1000),
+  }
+}
+
+export type FixHandoffCheck =
+  | { ok: true; handoff: FixHandoff }
+  | { ok: false; reason: 'invalid' | 'expired' }
+
+export function verifyFixHandoffToken(token: string, now = Date.now()): FixHandoffCheck {
+  const body = signedBody(token, FIX_PREFIX)
+  if (!body) return { ok: false, reason: 'invalid' }
+  let payload: { o?: unknown; c?: unknown; d?: unknown; u?: unknown; e?: unknown; p?: unknown }
+  try {
+    payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+  } catch {
+    return { ok: false, reason: 'invalid' }
+  }
+  const { o, c, d, u, e, p } = payload
+  if (
+    typeof o !== 'string' ||
+    typeof c !== 'string' ||
+    typeof d !== 'string' ||
+    typeof u !== 'string' ||
+    typeof e !== 'number'
+  ) {
+    return { ok: false, reason: 'invalid' }
+  }
+  if (e * 1000 <= now) return { ok: false, reason: 'expired' }
+  return {
+    ok: true,
+    handoff: {
+      organizationId: o,
+      code: c,
+      draftId: d,
+      userId: u,
+      expiresAt: e,
+      purpose: p === 'w' ? 'waveform' : 'fix',
+    },
+  }
+}
+
+/**
+ * The same kind of code for a vehicle's own photo, the picture at the top of
+ * its page. The phone takes or chooses one photo and it replaces the one on
+ * the vehicle. It can do nothing else: no job, no history, no customer.
+ */
+const VEHICLE_PREFIX = 'vh1'
+
+export interface VehicleHandoff {
+  organizationId: string
+  vehicleId: string
+  /** Who showed the code. */
+  userId: string
+  /** Unix seconds. */
+  expiresAt: number
+}
+
+export function isVehicleHandoffToken(token: string): boolean {
+  return token.startsWith(`${VEHICLE_PREFIX}.`)
+}
+
+export function createVehicleHandoffToken(
+  handoff: Omit<VehicleHandoff, 'expiresAt'>,
+  now = Date.now()
+): { token: string; expiresAt: Date } {
+  const expiresAt = Math.floor(now / 1000) + PHOTO_HANDOFF_TTL_SECONDS
+  const body = Buffer.from(
+    JSON.stringify({
+      o: handoff.organizationId,
+      v: handoff.vehicleId,
+      u: handoff.userId,
+      e: expiresAt,
+    })
+  ).toString('base64url')
+  return {
+    token: `${VEHICLE_PREFIX}.${body}.${sign(body, VEHICLE_PREFIX)}`,
+    expiresAt: new Date(expiresAt * 1000),
+  }
+}
+
+export type VehicleHandoffCheck =
+  | { ok: true; handoff: VehicleHandoff }
+  | { ok: false; reason: 'invalid' | 'expired' }
+
+export function verifyVehicleHandoffToken(token: string, now = Date.now()): VehicleHandoffCheck {
+  const body = signedBody(token, VEHICLE_PREFIX)
+  if (!body) return { ok: false, reason: 'invalid' }
+
+  let payload: { o?: unknown; v?: unknown; u?: unknown; e?: unknown }
+  try {
+    payload = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'))
+  } catch {
+    return { ok: false, reason: 'invalid' }
+  }
+  const { o, v, u, e } = payload
+  if (
+    typeof o !== 'string' ||
+    typeof v !== 'string' ||
+    typeof u !== 'string' ||
+    typeof e !== 'number'
+  ) {
+    return { ok: false, reason: 'invalid' }
+  }
+  if (e * 1000 <= now) return { ok: false, reason: 'expired' }
+  return { ok: true, handoff: { organizationId: o, vehicleId: v, userId: u, expiresAt: e } }
+}

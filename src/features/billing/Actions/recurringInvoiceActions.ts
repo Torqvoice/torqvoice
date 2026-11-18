@@ -2,6 +2,7 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
 import {
@@ -10,7 +11,12 @@ import {
   type CreateRecurringInvoiceInput,
   type UpdateRecurringInvoiceInput,
 } from '../Schema/recurringInvoiceSchema'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import {
+  clearNextNumberSetting,
+  type JobNumber,
+  JOB_NUMBER_SETTING_KEYS,
+  nextJobNumber,
+} from '@/lib/job-number'
 import {
   documentTotals,
   readWorkshopTax,
@@ -18,7 +24,8 @@ import {
   WORKSHOP_TAX_SETTING_KEYS,
 } from '@/features/settings/Lib/workshopTax'
 import { lineTotal } from '@/features/inventory/Lib/partPricing'
-import { calculateNextRunDate } from '@/lib/cron/recurring-invoices'
+import { calculateNextRunDate, recurringTaxableSubtotal } from '@/lib/cron/recurring-invoices'
+import { laborTaxable } from '@/lib/taxable-lines'
 import { endOfWorkshopDay, toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 
@@ -274,36 +281,14 @@ export async function toggleRecurringInvoice(id: string) {
   )
 }
 
-async function generateInvoiceNumber(organizationId: string): Promise<string> {
+/** The next job number in the workshop's format; see src/lib/job-number.ts. */
+async function generateInvoiceNumber(organizationId: string, timeZone: string): Promise<JobNumber> {
   const settings = await db.appSetting.findMany({
-    where: {
-      organizationId,
-      key: { in: ['workshop.invoicePrefix', 'workshop.invoiceStartNumber'] },
-    },
+    where: { organizationId, key: { in: [...JOB_NUMBER_SETTING_KEYS] } },
   })
-
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
-
-  const prefix = resolveInvoicePrefix(settingsMap['workshop.invoicePrefix'] ?? '{year}-')
-  const startNumber = parseInt(settingsMap['workshop.invoiceStartNumber'] || '0', 10)
-
-  const lastRecord = await db.serviceRecord.findFirst({
-    where: { organizationId },
-    orderBy: { createdAt: 'desc' },
-    select: { invoiceNumber: true },
-  })
-
-  let nextNum = startNumber || 1001
-  if (lastRecord?.invoiceNumber) {
-    const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-    if (match) {
-      const lastNum = parseInt(match[1], 10) + 1
-      nextNum = Math.max(nextNum, lastNum)
-    }
-  }
-
-  return `${prefix}${nextNum}`
+  return nextJobNumber({ organizationId, settings: settingsMap, timeZone })
 }
 
 export async function processRecurringInvoices() {
@@ -326,20 +311,27 @@ export async function processRecurringInvoices() {
       })
 
       const results: { id: string; serviceRecordId: string }[] = []
+      const taxApplies = await loadTaxApplies(organizationId)
 
       for (const ri of dueInvoices) {
-        const invoiceNumber = await generateInvoiceNumber(organizationId)
+        const { invoiceNumber, usesNextNumberSetting } = await generateInvoiceNumber(
+          organizationId,
+          timeZone
+        )
 
         // Calculate totals
         const partsSubtotal = ri.templateParts.reduce((s, p) => s + p.quantity * p.unitPrice, 0)
         const laborSubtotal = ri.templateLabor.reduce((s, l) => s + l.hours * l.rate, 0)
         const subtotal = ri.cost + partsSubtotal + laborSubtotal
-        const { taxAmount, totalAmount, taxComponents } = documentTotals({
+        // A template's lines carry no tax choice of their own, so each
+        // invoice it generates follows the workshop's rule on the day.
+        const { taxAmount, totalAmount, taxComponents, taxableSubtotal } = documentTotals({
           subtotal,
           discountAmount: 0,
           taxRate: ri.taxRate,
           taxInclusive: ri.taxInclusive,
           taxComponents: ri.taxComponents,
+          taxableSubtotal: recurringTaxableSubtotal(ri, taxApplies),
         })
 
         const serviceRecord = await db.$transaction(async (tx) => {
@@ -358,6 +350,7 @@ export async function processRecurringInvoices() {
               taxRate: ri.taxRate,
               taxInclusive: ri.taxInclusive,
               taxComponents,
+              taxableSubtotal,
               taxAmount,
               totalAmount,
               invoiceNumber,
@@ -369,6 +362,7 @@ export async function processRecurringInvoices() {
                   quantity: p.quantity,
                   unitPrice: p.unitPrice,
                   total: lineTotal(p.quantity, p.unitPrice),
+                  taxable: taxApplies.parts,
                 })),
               },
               laborItems: {
@@ -377,10 +371,17 @@ export async function processRecurringInvoices() {
                   hours: l.hours,
                   rate: l.rate,
                   total: l.hours * l.rate,
+                  // The kind goes with the line, as the hourly run copies it,
+                  // so a shop fee stays a shop fee and is taxed as one.
+                  pricingType: l.pricingType || 'hourly',
+                  taxable: laborTaxable(l, taxApplies),
                 })),
               },
             },
           })
+
+          // Spent only once the job is written, in the same transaction.
+          if (usesNextNumberSetting) await clearNextNumberSetting(organizationId, tx)
 
           // Update recurring invoice
           const nextRunDate = calculateNextRunDate(ri.nextRunDate, ri.frequency, timeZone)

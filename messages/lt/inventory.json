@@ -14,7 +14,8 @@
     "supplier": "Tiekėjas",
     "location": "Vieta",
     "low": "Mažas",
-    "barcode": "Brūkšninis kodas"
+    "barcode": "Brūkšninis kodas",
+    "notTracked": "Nesekama"
   },
   "empty": {
     "noMatch": "Nėra dalių, atitinkančių paiešką.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Taikyti antkainį visoms dalims",
-    "multiplierLabel": "Antkainio koeficientas",
-    "description": "Bus nustatyta pardavimo kaina = savikaina × {multiplier} visoms {count} dalims.",
-    "percentage": "({percent}% antkainis)",
+    "intro": "Nustato dalių pardavimo kainą kaip savikainą plius procentą.",
+    "percentLabel": "Antkainis %",
+    "percentHint": "Įveskite 30, kad prie savikainos pridėtumėte 30%.",
+    "percentInvalid": "Antkainis turi būti didesnis nei -100%.",
+    "exampleTitle": "Pavyzdys",
+    "exampleMarkup": "Antkainis {percent}%",
     "cancel": "Atšaukti",
     "apply": "Taikyti",
     "overrideExisting": "Perrašyti esamas pardavimo kainas",
     "overrideExistingHint": "Visos dalys bus atnaujintos, įskaitant tas, kurios jau turi pardavimo kainą.",
-    "skipExistingHint": "Bus atnaujintos tik dalys be pardavimo kainos."
+    "skipExistingHint": "Bus atnaujintos tik dalys be pardavimo kainos.",
+    "newPartsNote": "Naujoms dalims laukas „{sellPrice}“ užpildomas su šiuo antkainiu, kai įvedate lauką „{unitCost}“.",
+    "settingsNote": "„{setting}“ skiltyje {settings} > {workshop} yra atskiras nustatymas, taikomas, kai dalys pridedamos prie darbo."
   },
   "errors": {
-    "multiplierPositive": "Koeficientas turi būti didesnis nei 0",
     "deleteFailed": "Nepavyko ištrinti dalies",
     "applyFailed": "Nepavyko taikyti antkainio",
     "saveFailed": "Nepavyko išsaugoti dalies",
@@ -70,16 +75,19 @@
     "currentStock": "Dabartinės atsargos: {quantity}",
     "addedStock": "Pridėta {amount} prie atsargų",
     "customAmount": "Kiekis...",
-    "scanParts": "Nuskaityti dalis"
+    "scanParts": "Nuskaityti dalis",
+    "notTracked": "Šios dalies atsargos nesekamos"
   },
   "form": {
     "editPart": "Redaguoti dalį",
     "addNewPart": "Pridėti naują dalį",
     "supplierLink": "Tiekėjo nuoroda",
     "supplierLinkPlaceholder": "https://tiekėjas.lt/produktas/...",
+    "supplierLinkInvalid": "Tiekėjo nuoroda nėra interneto adresas. Pataisykite ją arba ištrinkite, kad išsaugotumėte be nuorodos.",
     "fetch": "Gauti",
-    "fetchFailed": "Gavimas nepavyko",
-    "fetchError": "Nepavyko gauti metaduomenų iš URL",
+    "fetchBlocked": "Šio tiekėjo svetainė blokuoja automatinę paiešką. Užpildykite laukus patys. Dalį ir nuorodą vis tiek galima išsaugoti.",
+    "fetchTimedOut": "Tiekėjo svetainė per ilgai neatsakė. Bandykite dar kartą arba užpildykite laukus patys. Dalį ir nuorodą vis tiek galima išsaugoti.",
+    "fetchUnreadable": "Nepavyko nuskaityti dalies duomenų iš šios nuorodos. Užpildykite laukus patys. Dalį ir nuorodą vis tiek galima išsaugoti.",
     "image": "Vaizdas",
     "dropOrClick": "Nuvilkite vaizdą arba spustelėkite",
     "replace": "Pakeisti",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperiniai",
     "unitCost": "Vnt. savikaina",
     "sellPrice": "Pardavimo kaina",
+    "sellPriceMarkupHint": "Laukas „{sellPrice}“ užpildomas kaip „{unitCost}“ + {percent}%. Įveskite kainą, jei norite nustatyti savo. Procentą pakeisite mygtuku „{applyMarkup}“ puslapyje „{inventory}“.",
     "supplier": "Tiekėjas",
     "supplierPlaceholder": "AutoDalys UAB",
     "supplierPhone": "Tiekėjo telefonas",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Dalies aprašymas...",
     "cancel": "Atšaukti",
     "saveChanges": "Išsaugoti pakeitimus",
-    "addPart": "Pridėti dalį"
+    "addPart": "Pridėti dalį",
+    "tags": "Žymos",
+    "tagsPlaceholder": "Markės, modeliai ar kita, pagal ką ją rasti",
+    "tagsHint": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos transporto priemonės marke ar modeliu.",
+    "tagsHintMarine": "Po kiekvienos žymos paspauskite Enter arba kablelį. Darbe pirmiausia rodomos dalys, pažymėtos laivo marke ar modeliu.",
+    "removeTag": "Pašalinti {tag}",
+    "tagTooLong": "Žyma gali būti ne ilgesnė nei {max} simbolių. Sutrumpinkite ją prieš išsaugodami.",
+    "trackStock": "Sekti atsargas",
+    "trackStockHint": "Išjunkite mokesčiams ir eksploatacinėms medžiagoms, kurias apmokestinate, bet niekada neskaičiuojate.",
+    "trackStockOffNote": "Išsaugojus kiekis nustatomas į nulį ir tai įrašoma atsargų istorijoje. Darbai jo nebekeičia."
   },
   "openMenu": "Atidaryti meniu",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Užsakymas ištrintas",
       "quote_conversion": "Pasiūlymas konvertuotas",
       "manual_adjustment": "Rankinis koregavimas",
-      "bulk_markup": "Masinis antkainis"
+      "bulk_markup": "Masinis antkainis",
+      "stock_tracking_off": "Atsargų sekimas išjungtas"
     },
     "backToInventory": "Sandėlis",
     "reason": "Priežastis",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} sandėlyje",
     "outOfStock": "Nėra sandėlyje",
     "onBackorder": "Užsakoma ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Žyma",
+    "all": "Visos žymos",
+    "filterBy": "Rodyti dalis su žyma {tag}",
+    "more": "dar {count}"
   }
 }

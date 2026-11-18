@@ -1,19 +1,30 @@
-import { PortalShell } from '@/features/portal/Components/PortalShell'
-import { getPortalInspections } from '@/features/portal/Actions/portalActions'
-import { Badge } from '@/components/ui/badge'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
-import { ClipboardCheck } from 'lucide-react'
-import Link from 'next/link'
+import { ChevronRight } from 'lucide-react'
 import { getTranslations } from 'next-intl/server'
+import { getPortalInspections } from '@/features/portal/Actions/portalActions'
+import {
+  PortalCard,
+  PortalCardList,
+  PortalLoadFailed,
+  PortalPageHead,
+  PortalStatus,
+  PortalStretchLink,
+  PortalTable,
+  PortalTd,
+  PortalTh,
+  PortalTr,
+} from '@/features/portal/Components/Detail/PortalPageParts'
+import { PortalDocumentsTabs } from '@/features/portal/Components/PortalDocumentsTabs'
+import { PortalShell } from '@/features/portal/Components/PortalShell'
+import { PortalEmptyState, PortalPanel, PortalPlate } from '@/features/portal/Components/Ui'
+import { portalConditionSummary } from '@/features/portal/Lib/inspectionSummary'
+import { portalFormat } from '@/features/portal/Lib/portalFormat'
+import { portalStatusLabel } from '@/features/portal/Lib/statusLabels'
 import { resolvePortalOrg } from '@/lib/portal-slug'
-import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { titleFrom } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return titleFrom('portal.inspections', 'title')
+}
 
 export default async function PortalInspectionsPage({
   params,
@@ -21,180 +32,125 @@ export default async function PortalInspectionsPage({
   params: Promise<{ orgId: string }>
 }) {
   const { orgId } = await params
-  // Dates on the portal are the workshop's calendar days, not the server's.
   const org = await resolvePortalOrg(orgId)
-  const timeZone = org ? await workshopTimeZone(org.id) : 'UTC'
-  const t = await getTranslations('portal.inspections')
-  const result = await getPortalInspections()
+  // No such workshop: the shell says so.
+  if (!org) return <PortalShell orgId={orgId}>{null}</PortalShell>
+
+  const [t, tStatus, fmt, result] = await Promise.all([
+    getTranslations('portal.inspections'),
+    getTranslations('portal.status'),
+    portalFormat(org.id),
+    getPortalInspections(),
+  ])
 
   if (!result.success || !result.data) {
     return (
       <PortalShell orgId={orgId}>
-        <p className="text-muted-foreground">{t('failedToLoad')}</p>
+        <PortalDocumentsTabs orgId={orgId} active="inspections" />
+        <PortalPageHead title={t('title')} />
+        <PortalLoadFailed>{t('failedToLoad')}</PortalLoadFailed>
       </PortalShell>
     )
   }
 
-  const inspections = result.data
+  const rows = result.data.map((insp) => ({
+    insp,
+    date: fmt.day(new Date(insp.completedAt ?? insp.createdAt).toISOString()),
+    summary: portalConditionSummary(insp.items),
+    // A shared report opens as shared; one without a link opens in the portal.
+    href: insp.publicToken
+      ? `/share/inspection/${orgId}/${insp.publicToken}`
+      : `/portal/${orgId}/inspections/${insp.id}`,
+  }))
+
+  const summaryLine = (summary: (typeof rows)[number]['summary']) =>
+    summary.map((c) => (
+      <span key={c.key} className={c.className}>
+        {t(c.key, { count: c.count })}
+      </span>
+    ))
 
   return (
     <PortalShell orgId={orgId}>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">{t('title')}</h1>
-          <p className="text-muted-foreground">{t('description')}</p>
-        </div>
+      <PortalDocumentsTabs orgId={orgId} active="inspections" />
+      <PortalPageHead title={t('title')} description={t('description')} />
 
-        {inspections.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-center">
-            <ClipboardCheck className="h-12 w-12 text-muted-foreground/30" />
-            <p className="mt-4 text-muted-foreground">{t('noInspections')}</p>
-          </div>
-        ) : (
-          <>
-            {/* Card list (phones + small tablets) */}
-            <div className="space-y-2 md:hidden">
-              {inspections.map((insp) => {
-                const conditions = insp.items.reduce(
-                  (acc, item) => {
-                    acc[item.condition] = (acc[item.condition] || 0) + 1
-                    return acc
-                  },
-                  {} as Record<string, number>
-                )
+      {rows.length === 0 ? (
+        <PortalPanel>
+          <PortalEmptyState center title={t('noInspections')}>
+            {t('noInspectionsHint')}
+          </PortalEmptyState>
+        </PortalPanel>
+      ) : (
+        <>
+          {/* Cards on a phone: the whole card is the link. */}
+          <PortalCardList>
+            {rows.map(({ insp, date, summary, href }) => (
+              <PortalCard key={insp.id}>
+                <div className="flex items-start justify-between gap-3">
+                  <PortalStretchLink href={href} className="min-w-0 flex-1 break-words text-[17px]">
+                    {insp.template.name}
+                  </PortalStretchLink>
+                  <PortalStatus kind="inspection" status={insp.status} className="shrink-0">
+                    {portalStatusLabel('inspection', insp.status, tStatus)}
+                  </PortalStatus>
+                </div>
+                <p className="p-muted mt-1.5 break-words text-sm">
+                  {insp.vehicle.make} {insp.vehicle.model}
+                  {insp.vehicle.licensePlate && ` (${insp.vehicle.licensePlate})`}
+                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-sm">
+                  {summaryLine(summary)}
+                  <span className="p-muted">{date}</span>
+                </div>
+              </PortalCard>
+            ))}
+          </PortalCardList>
 
-                return (
-                  <div key={insp.id} className="rounded-lg border bg-card p-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <span className="min-w-0 flex-1 truncate font-medium">
-                        {insp.vehicle.make} {insp.vehicle.model}
-                        {insp.vehicle.licensePlate && (
-                          <span className="ml-1 text-xs text-muted-foreground">
-                            ({insp.vehicle.licensePlate})
-                          </span>
-                        )}
-                      </span>
-                      <Badge
-                        variant={insp.status === 'completed' ? 'default' : 'secondary'}
-                        className="shrink-0"
-                      >
-                        {insp.status.replace('_', ' ')}
-                      </Badge>
-                    </div>
-                    <p className="truncate text-xs text-muted-foreground">{insp.template.name}</p>
-                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                      {conditions.good && (
-                        <span className="text-green-600">
-                          {t('good', { count: conditions.good })}
-                        </span>
+          {/* A table on a desk: the row is the link. */}
+          <PortalTable>
+            <thead>
+              <tr>
+                <PortalTh>{t('template')}</PortalTh>
+                <PortalTh>{t('vehicle')}</PortalTh>
+                <PortalTh>{t('status')}</PortalTh>
+                <PortalTh>{t('date')}</PortalTh>
+                <PortalTh>{t('summary')}</PortalTh>
+                <PortalTh className="w-12" />
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map(({ insp, date, summary, href }) => (
+                <PortalTr key={insp.id}>
+                  <PortalTd>
+                    <PortalStretchLink href={href}>{insp.template.name}</PortalStretchLink>
+                  </PortalTd>
+                  <PortalTd>
+                    <span className="flex flex-wrap items-center gap-2">
+                      {insp.vehicle.make} {insp.vehicle.model}
+                      {insp.vehicle.licensePlate && (
+                        <PortalPlate>{insp.vehicle.licensePlate}</PortalPlate>
                       )}
-                      {conditions.fair && (
-                        <span className="text-yellow-600">
-                          {t('fair', { count: conditions.fair })}
-                        </span>
-                      )}
-                      {conditions.poor && (
-                        <span className="text-red-600">
-                          {t('poor', { count: conditions.poor })}
-                        </span>
-                      )}
-                      <span className="text-muted-foreground">
-                        {new Date(insp.createdAt).toLocaleDateString(undefined, { timeZone })}
-                      </span>
-                    </div>
-                    {insp.publicToken && (
-                      <Link
-                        href={`/share/inspection/${orgId}/${insp.publicToken}`}
-                        className="mt-3 inline-block text-sm text-primary hover:underline"
-                      >
-                        {t('view')}
-                      </Link>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-
-            {/* Table (md and up) */}
-            <div className="hidden rounded-lg border md:block">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>{t('vehicle')}</TableHead>
-                    <TableHead>{t('template')}</TableHead>
-                    <TableHead>{t('status')}</TableHead>
-                    <TableHead>{t('date')}</TableHead>
-                    <TableHead>{t('summary')}</TableHead>
-                    <TableHead />
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {inspections.map((insp) => {
-                    const conditions = insp.items.reduce(
-                      (acc, item) => {
-                        acc[item.condition] = (acc[item.condition] || 0) + 1
-                        return acc
-                      },
-                      {} as Record<string, number>
-                    )
-
-                    return (
-                      <TableRow key={insp.id}>
-                        <TableCell>
-                          {insp.vehicle.make} {insp.vehicle.model}
-                          {insp.vehicle.licensePlate && (
-                            <span className="ml-1 text-xs text-muted-foreground">
-                              ({insp.vehicle.licensePlate})
-                            </span>
-                          )}
-                        </TableCell>
-                        <TableCell>{insp.template.name}</TableCell>
-                        <TableCell>
-                          <Badge variant={insp.status === 'completed' ? 'default' : 'secondary'}>
-                            {insp.status.replace('_', ' ')}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {new Date(insp.createdAt).toLocaleDateString(undefined, { timeZone })}
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex gap-2 text-xs">
-                            {conditions.good && (
-                              <span className="text-green-600">
-                                {t('good', { count: conditions.good })}
-                              </span>
-                            )}
-                            {conditions.fair && (
-                              <span className="text-yellow-600">
-                                {t('fair', { count: conditions.fair })}
-                              </span>
-                            )}
-                            {conditions.poor && (
-                              <span className="text-red-600">
-                                {t('poor', { count: conditions.poor })}
-                              </span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {insp.publicToken && (
-                            <Link
-                              href={`/share/inspection/${orgId}/${insp.publicToken}`}
-                              className="text-sm text-primary hover:underline"
-                            >
-                              {t('view')}
-                            </Link>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-            </div>
-          </>
-        )}
-      </div>
+                    </span>
+                  </PortalTd>
+                  <PortalTd>
+                    <PortalStatus kind="inspection" status={insp.status}>
+                      {portalStatusLabel('inspection', insp.status, tStatus)}
+                    </PortalStatus>
+                  </PortalTd>
+                  <PortalTd muted>{date}</PortalTd>
+                  <PortalTd>
+                    <div className="flex flex-wrap gap-x-3 text-sm">{summaryLine(summary)}</div>
+                  </PortalTd>
+                  <PortalTd>
+                    <ChevronRight className="p-muted h-[18px] w-[18px]" aria-hidden />
+                  </PortalTd>
+                </PortalTr>
+              ))}
+            </tbody>
+          </PortalTable>
+        </>
+      )}
     </PortalShell>
   )
 }

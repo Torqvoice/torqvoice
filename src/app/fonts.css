@@ -1,0 +1,97 @@
+/* The app's typefaces, and the variables globals.css and the font sets read.
+
+   The files come from npm (Fontsource, the Google Fonts files repackaged),
+   imported in the root layout. They used to come from next/font/google, which
+   downloads every face from Google during the build: a build whose download
+   failed, failed outright, and in CI that was a red e2e shard every few days.
+   Now they arrive with npm ci and the build never leaves the machine. The
+   browser still fetches only the subsets a page needs, and a face only once
+   some text is set in it, so the sets nobody chose cost nothing.
+
+   The fallback faces are the ones next/font generated: a local Arial resized
+   to each face's metrics, so text does not jump when the face arrives.
+   Atkinson had none, its metrics not being in Next's table, so it names a
+   system face instead. */
+
+@font-face {
+  font-family: "Geist Fallback";
+  src: local("Arial");
+  ascent-override: 95.94%;
+  descent-override: 28.16%;
+  line-gap-override: 0%;
+  size-adjust: 104.76%;
+}
+@font-face {
+  font-family: "Geist Mono Fallback";
+  src: local("Arial");
+  ascent-override: 74.67%;
+  descent-override: 21.92%;
+  line-gap-override: 0%;
+  size-adjust: 134.59%;
+}
+@font-face {
+  font-family: "IBM Plex Sans Fallback";
+  src: local("Arial");
+  ascent-override: 101.32%;
+  descent-override: 27.18%;
+  line-gap-override: 0%;
+  size-adjust: 101.17%;
+}
+@font-face {
+  font-family: "IBM Plex Mono Fallback";
+  src: local("Arial");
+  ascent-override: 76.16%;
+  descent-override: 20.43%;
+  line-gap-override: 0%;
+  size-adjust: 134.59%;
+}
+@font-face {
+  font-family: "Barlow Condensed Fallback";
+  src: local("Arial");
+  ascent-override: 130.73%;
+  descent-override: 26.15%;
+  line-gap-override: 0%;
+  size-adjust: 76.49%;
+}
+@font-face {
+  font-family: "Inter Fallback";
+  src: local("Arial");
+  ascent-override: 90.44%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+  size-adjust: 107.12%;
+}
+@font-face {
+  font-family: "Inter Tight Fallback";
+  src: local("Arial");
+  ascent-override: 100.51%;
+  descent-override: 25.03%;
+  line-gap-override: 0%;
+  size-adjust: 96.39%;
+}
+@font-face {
+  font-family: "JetBrains Mono Fallback";
+  src: local("Arial");
+  ascent-override: 75.79%;
+  descent-override: 22.29%;
+  line-gap-override: 0%;
+  size-adjust: 134.59%;
+}
+
+/* Geist is declared under *-base: globals.css points --font-geist-sans at it,
+   or at another face when a font set is chosen (see src/lib/font-sets.ts). */
+:root {
+  --font-geist-sans-base: "Geist Variable", "Geist Fallback";
+  --font-geist-mono-base: "Geist Mono Variable", "Geist Mono Fallback";
+  /* The "workshop" set. */
+  --font-plex-sans: "IBM Plex Sans Variable", "IBM Plex Sans Fallback";
+  --font-plex-mono: "IBM Plex Mono", "IBM Plex Mono Fallback";
+  --font-barlow-condensed: "Barlow Condensed", "Barlow Condensed Fallback";
+  /* The "precise" set. */
+  --font-inter: "Inter Variable", "Inter Fallback";
+  --font-inter-tight: "Inter Tight Variable", "Inter Tight Fallback";
+  --font-jetbrains-mono: "JetBrains Mono Variable", "JetBrains Mono Fallback";
+  /* The "legible" set. Latin only: the family has no Cyrillic. */
+  --font-atkinson: "Atkinson Hyperlegible Next Variable", system-ui, sans-serif;
+  --font-atkinson-mono: "Atkinson Hyperlegible Mono Variable", ui-monospace, monospace;
+}

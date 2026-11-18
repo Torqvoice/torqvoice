@@ -1,5 +1,6 @@
 'use client'
 
+import { handleGated } from '@/components/upgrade-gate'
 import { useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -15,6 +16,7 @@ import {
   XCircle,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -23,16 +25,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import {
@@ -80,7 +72,7 @@ export function ScheduledMessageList({
   const [filter, setFilter] = useState<StatusFilter>('upcoming')
   const [editing, setEditing] = useState<ScheduledMessageListItem | undefined>()
   const [showDialog, setShowDialog] = useState(false)
-  const [deleteTarget, setDeleteTarget] = useState<ScheduledMessageListItem | null>(null)
+  const confirm = useConfirm()
   const [busyId, setBusyId] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
@@ -100,42 +92,52 @@ export function ScheduledMessageList({
     [messages]
   )
 
+  // An action that cannot reach the server throws instead of answering, so
+  // each one is caught and reported the way a refusal is, and the row's
+  // buttons are free again.
   const handleSendNow = async (message: ScheduledMessageListItem) => {
     setBusyId(message.id)
-    const result = await sendScheduledMessageNow(message.id)
-    if (result.success) {
+    const result = await sendScheduledMessageNow(message.id).catch(() => null)
+    if (result?.success) {
       toast.success(t('sentNow'))
       onChanged()
-    } else {
-      toast.error(result.error || t('sendError'))
+    } else if (!result || !handleGated(result)) {
+      toast.error(result?.error || t('sendError'))
     }
     setBusyId(null)
   }
 
   const handleCancel = async (message: ScheduledMessageListItem) => {
     setBusyId(message.id)
-    const result = await cancelScheduledMessage(message.id)
-    if (result.success) {
+    const result = await cancelScheduledMessage(message.id).catch(() => null)
+    if (result?.success) {
       toast.success(t('cancelled'))
       onChanged()
     } else {
-      toast.error(result.error || t('cancelError'))
+      toast.error(result?.error || t('cancelError'))
     }
     setBusyId(null)
   }
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return
-    setBusyId(deleteTarget.id)
-    const result = await deleteScheduledMessage(deleteTarget.id)
-    if (result.success) {
+  const handleDelete = async (message: ScheduledMessageListItem) => {
+    const ok = await confirm({
+      title: t('deleteTitle'),
+      description: t('deleteDescription'),
+      confirmLabel: tc('delete'),
+      cancelLabel: tc('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
+    setBusyId(message.id)
+    const result = await deleteScheduledMessage(message.id).catch(() => null)
+    if (result?.success) {
       toast.success(t('deleted'))
       onChanged()
     } else {
-      toast.error(result.error || t('deleteError'))
+      toast.error(result?.error || t('deleteError'))
     }
     setBusyId(null)
-    setDeleteTarget(null)
   }
 
   return (
@@ -270,7 +272,7 @@ export function ScheduledMessageList({
                       )}
                       <DropdownMenuItem
                         className="text-destructive"
-                        onClick={() => setDeleteTarget(message)}
+                        onClick={() => handleDelete(message)}
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         {tc('delete')}
@@ -294,24 +296,6 @@ export function ScheduledMessageList({
         message={editing}
         onSaved={onChanged}
       />
-
-      <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('deleteTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('deleteDescription')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{tc('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              {tc('delete')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   )
 }

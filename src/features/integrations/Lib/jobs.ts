@@ -13,6 +13,7 @@
  */
 
 import { db } from '@/lib/db'
+import { frozenOrganizationIds, isRestoring } from '@/lib/backup/freeze'
 import { getManifest } from '@/integrations/registry'
 import { getFeatures } from '@/lib/features'
 import { connectorAllowed } from './plan'
@@ -203,13 +204,22 @@ export async function recoverStuckJobs(): Promise<number> {
 }
 
 export async function runDueJobs(limit = 50): Promise<number> {
+  // A workshop being restored keeps its jobs queued; they are left out of the
+  // batch so they cannot fill it and hold up every other workshop's.
+  const frozen = frozenOrganizationIds()
   const due = await db.integrationJob.findMany({
-    where: { status: 'queued', runAfter: { lte: new Date() } },
+    where: {
+      status: 'queued',
+      runAfter: { lte: new Date() },
+      ...(frozen.length ? { organizationId: { notIn: frozen } } : {}),
+    },
     orderBy: { runAfter: 'asc' },
     take: limit,
-    select: { id: true },
+    select: { id: true, organizationId: true },
   })
   for (const job of due) {
+    // A restore that started after the query: left queued, it runs on a tick after.
+    if (isRestoring(job.organizationId)) continue
     try {
       await runJob(job.id)
     } catch (err) {
@@ -231,6 +241,8 @@ export async function scheduleDueSyncs(): Promise<number> {
   })
   let queued = 0
   for (const c of connections) {
+    // Nothing is queued for a workshop that is being restored; the next tick catches up.
+    if (isRestoring(c.organizationId)) continue
     const manifest = getManifest(c.connectorId)
     if (!manifest?.schedules?.length) continue
     if (!connectorAllowed(manifest, await getFeatures(c.organizationId))) continue

@@ -8,6 +8,8 @@ const { db, tx } = vi.hoisted(() => {
   const tx = {
     serviceRecord: { update: vi.fn() },
     serviceLabor: { createMany: vi.fn() },
+    // The workshop's tax rule for labor; none set, so the lines are taxed.
+    appSetting: { findMany: vi.fn(async () => []) },
     inspection: { create: vi.fn() },
     inspectionItem: { createMany: vi.fn() },
   }

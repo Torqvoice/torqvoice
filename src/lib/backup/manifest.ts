@@ -120,12 +120,38 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   { model: 'ServiceConcern', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
   { model: 'StatusReport', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
   { model: 'TimeEntry', option: 'vehicles', nestedUnder: 'ServiceRecord', restore: 'replace' },
+  // Who is on a job besides its technician goes and comes back with the job.
+  {
+    model: 'ServiceRecordHelper',
+    option: 'vehicles',
+    nestedUnder: 'ServiceRecord',
+    restore: 'replace',
+  },
   {
     model: 'Reminder',
     key: 'orgReminders',
     option: 'vehicles',
     restore: 'replace',
     clearOrder: 52,
+  },
+  // The calendar's appointments and the alerts set on them and on booked
+  // jobs ride with the jobs. Clearing service records deletes every alert on
+  // a job and clearing vehicles unlinks every appointment, so on any other
+  // checkbox a restore of the jobs would lose them with no way back. Alerts
+  // clear before the appointments and jobs they point at.
+  {
+    model: 'Appointment',
+    key: 'appointments',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 42,
+  },
+  {
+    model: 'AppointmentNotification',
+    key: 'appointmentNotifications',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 41,
   },
   { model: 'Quote', key: 'quotes', option: 'quotes', restore: 'replace', clearOrder: 40 },
   {
@@ -141,6 +167,13 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     option: 'technicians',
     restore: 'replace',
     clearOrder: 71,
+  },
+  // Time off belongs to its technician and goes and comes back with them.
+  {
+    model: 'TechnicianAbsence',
+    option: 'technicians',
+    nestedUnder: 'Technician',
+    restore: 'replace',
   },
   {
     model: 'InspectionTemplate',
@@ -183,6 +216,29 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     option: 'smsMessages',
     restore: 'replace',
     clearOrder: 12,
+  },
+  // Mail to and from customers is part of the same conversation history as
+  // the other channels, so it rides the same checkbox.
+  {
+    model: 'EmailMessage',
+    key: 'emailMessages',
+    option: 'smsMessages',
+    restore: 'replace',
+    clearOrder: 14,
+  },
+  {
+    model: 'EmailAttachment',
+    option: 'smsMessages',
+    nestedUnder: 'EmailMessage',
+    restore: 'replace',
+  },
+  // The chat in the customer portal: one more channel of the same history.
+  {
+    model: 'PortalMessage',
+    key: 'portalMessages',
+    option: 'smsMessages',
+    restore: 'replace',
+    clearOrder: 15,
   },
   {
     model: 'ScheduledMessage',
@@ -239,6 +295,13 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   {
     model: 'ConditionMarkType',
     key: 'conditionMarkTypes',
+    option: 'workshopConfig',
+    restore: 'replace',
+    clearOrder: 85,
+  },
+  {
+    model: 'WorkshopClosure',
+    key: 'workshopClosures',
     option: 'workshopConfig',
     restore: 'replace',
     clearOrder: 85,
@@ -356,6 +419,10 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
  */
 export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   AiChat: 'Assistant conversation history, not a workshop record.',
+  BackupRun:
+    'History of scheduled backup runs to a connected destination; it hangs off the connection, which a backup does not carry.',
+  PlatformBackup:
+    'Where the cloud instance stands with the backups it runs for the workshop; it describes the repository the backup is in, so it cannot be inside it.',
   AiChatMessage:
     'The turns of that history; reached through the vehicle or customer the chat was about.',
   CustomerMagicLink: 'Single-use portal login link, expires within the hour.',
@@ -372,7 +439,15 @@ export const EXCLUDED_MODELS: Readonly<Record<string, string>> = {
   IntegrationLink:
     'Remote ids in a connected system, only valid for the connection that created them.',
   IntegrationLog: 'Connector activity log, rewritten every time a job runs.',
+  RepairDataCache:
+    "Labor times and fluid specs kept from a repair data source while the workshop's key is on a paid plan. They belong to the connection, which a backup does not carry, and may only be kept while that plan lasts; the guide fetches them again when needed.",
   OrganizationMember: 'Membership of user accounts; people are restored by inviting them.',
+  MemberSignature:
+    "A member's own signature, which belongs to the membership a backup does not carry. What an issued document was signed with is in the backup, as a frozen copy on the document; the member draws a new one after joining again.",
+  PlatformMailUsage:
+    "Today's count of mail sent through the platform address, for the daily cap; it starts again every day.",
+  PlatformSmsUsage:
+    "Today's count of texts sent through the platform's SMS account, for the daily cap; it starts again every day.",
   PushDevice:
     'Push token bound to one phone and one user account, and a backup carries neither. The app registers a new one on next launch.',
   Session:
@@ -401,6 +476,10 @@ export const UPLOAD_CATEGORIES: readonly string[] = [
   'quotes',
   'tire-hotel',
   'portal',
+  'email',
+  'fix-drafts',
+  // What customers send from the portal: chat photos, booking photos and video.
+  'portal-uploads',
 ]
 
 /** Entities written at the top level of the backup, with their key. */

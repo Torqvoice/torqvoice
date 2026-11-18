@@ -106,6 +106,7 @@
     "deleteBody": "{technician} tarafından {job} işindeki {duration} zaman çizelgesinden kaldırılacak. Bu geri alınamaz.",
     "deleteConfirm": "Sil",
     "deleted": "Kayıt silindi",
+    "deleteFailed": "Kayıt silinemedi",
     "stoppedByManager": "Sayaç {minutes} sürede durduruldu",
     "csv": {
       "technician": "Teknisyen",

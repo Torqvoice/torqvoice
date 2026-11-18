@@ -105,7 +105,7 @@ export function WarrantySettings({ settings }: { settings: Record<string, string
 
           <Separator />
 
-          <div className="space-y-4">
+          <div id="warranty-included" className="space-y-4">
             <div className="space-y-0.5">
               <h3 className="text-sm font-semibold">{t('includedTitle')}</h3>
               <p className="text-xs text-muted-foreground">{t('includedHint')}</p>
@@ -150,7 +150,7 @@ export function WarrantySettings({ settings }: { settings: Record<string, string
 
           <Separator />
 
-          <div className="space-y-4">
+          <div id="warranty-not-included" className="space-y-4">
             <div className="space-y-0.5">
               <h3 className="text-sm font-semibold">{t('notIncludedTitle')}</h3>
               <p className="text-xs text-muted-foreground">{t('notIncludedHint')}</p>
@@ -170,7 +170,7 @@ export function WarrantySettings({ settings }: { settings: Record<string, string
 
           <Separator />
 
-          <div className="space-y-4">
+          <div id="warranty-apply-to" className="space-y-4">
             <h3 className="text-sm font-semibold">{t('applyTitle')}</h3>
             <div className="flex items-center justify-between gap-4">
               <div className="space-y-0.5">

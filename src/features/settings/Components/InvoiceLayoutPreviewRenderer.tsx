@@ -2,7 +2,7 @@
 
 import { DEFAULT_CURRENCY_CODE, DEFAULT_CURRENCY_FORMAT } from '@/lib/currencies'
 import { useMemo, useState, useEffect } from 'react'
-import { useMessages, useTranslations } from 'next-intl'
+import { useLocale, useMessages, useTranslations } from 'next-intl'
 import { PDFViewer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts.client'
 import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
@@ -246,6 +246,8 @@ export function InvoiceLayoutPreviewRenderer({
   logoUrl,
   workshop,
 }: InvoiceLayoutPreviewProps) {
+  // The sample prints in the reader's language, like its labels.
+  const locale = useLocale()
   const messages = useMessages()
   const t = useTranslations('settings')
   const serviceType = useServiceType()
@@ -349,6 +351,7 @@ export function InvoiceLayoutPreviewRenderer({
             template={templateConfig}
             customFields={dummyCf}
             labels={labels}
+            locale={locale}
             layoutConfig={config}
           />
         ) : (
@@ -361,6 +364,7 @@ export function InvoiceLayoutPreviewRenderer({
             telegramQrDataUri={telegramQrDataUri}
             telegramLabel={labels.telegramConnect || 'Chat with us on Telegram'}
             labels={labels}
+            locale={locale}
           />
         )}
       </PDFViewer>

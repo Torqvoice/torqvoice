@@ -106,6 +106,7 @@
     "deleteBody": "{duration} по заказу {job} ({technician}) будет удалено из табеля. Это нельзя отменить.",
     "deleteConfirm": "Удалить",
     "deleted": "Запись удалена",
+    "deleteFailed": "Не удалось удалить запись",
     "stoppedByManager": "Таймер остановлен на {minutes}",
     "csv": {
       "technician": "Техник",

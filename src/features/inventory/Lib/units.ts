@@ -10,6 +10,21 @@
  * quart bottle).
  */
 
+/**
+ * The system fluids and parts are measured in. Its own setting since
+ * distance and volume were split, so a British workshop can drive in miles
+ * and pour in litres; a workshop that never chose follows its distance
+ * setting, as before the split. Unset everywhere is imperial, the app's
+ * long-standing default.
+ */
+export function measureSystemIn(
+  settings: Record<string, string | undefined>
+): 'metric' | 'imperial' {
+  const own = settings['workshop.measureSystem']
+  if (own === 'metric' || own === 'imperial') return own
+  return settings['workshop.unitSystem'] === 'metric' ? 'metric' : 'imperial'
+}
+
 export const METRIC_MEASUREMENT_UNITS = ['l', 'ml', 'kg', 'g', 'm', 'cm'] as const
 
 export const IMPERIAL_MEASUREMENT_UNITS = ['qt', 'gal', 'fl oz', 'lb', 'oz', 'ft', 'in'] as const
@@ -19,7 +34,7 @@ export const IMPERIAL_MEASUREMENT_UNITS = ['qt', 'gal', 'fl oz', 'lb', 'oz', 'ft
  *
  * @param localizedCountUnits comma-separated count units from the locale
  *   (`inventory.form.unitSuggestions`, e.g. "Stk,Satz")
- * @param unitSystem the workshop's `workshop.unitSystem` setting;
+ * @param unitSystem the workshop's measure system (see measureSystemIn);
  *   anything other than "imperial" is treated as metric
  */
 export function unitSuggestions(localizedCountUnits: string, unitSystem?: string): string[] {

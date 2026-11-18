@@ -22,7 +22,7 @@
     "quote": "Offerte",
     "save": "Opslaan",
     "pdf": "PDF",
-    "email": "E-mail",
+    "send": "Versturen",
     "share": "Delen",
     "delete": "Verwijderen",
     "deleteTitle": "Offerte verwijderen",
@@ -115,6 +115,7 @@
     "total": "Totaal",
     "subtotal": "Subtotaal onderdelen: {amount}",
     "deleteRow": "Rij verwijderen",
+    "reorderRow": "Sleep om te herschikken",
     "excludeFromTotal": "Buiten het totaal houden",
     "addFromInventory": "Uit voorraad",
     "unitCost": "Inkoop",
@@ -139,6 +140,7 @@
     "hourlyHint": "Per uur: berekend op gewerkte uren (uren × tarief/uur). Klik om te wisselen.",
     "serviceHint": "Service: berekend als vast bedrag per eenheid. Klik om te wisselen.",
     "deleteRow": "Rij verwijderen",
+    "reorderRow": "Sleep om te herschikken",
     "excludeFromTotal": "Buiten het totaal houden"
   },
   "notes": {
@@ -192,24 +194,15 @@
     "discountFixed": "Vast bedrag",
     "tax": "Btw",
     "taxIncluded": "Btw (incl.)",
+    "taxableAmount": "Belastbaar bedrag",
     "total": "Totaal",
     "inclusiveModeHint": "Regelprijzen worden inclusief belasting ingevoerd. De totalen tonen de uitsplitsing netto + belasting."
   },
   "shareDialog": {
     "title": "Offerte delen",
     "description": "Genereer een openbare link waarmee iedereen deze offerte kan bekijken en downloaden zonder in te loggen.",
-    "notifyTitle": "{name} op de hoogte stellen",
-    "email": "E-mail",
-    "noEmail": "(geen e-mail geregistreerd)",
-    "sms": "SMS",
-    "noPhone": "(geen telefoonnummer geregistreerd)",
-    "sendNotification": "Melding verzenden",
     "revokeLink": "Link intrekken",
     "generateLink": "Openbare link genereren",
-    "emailSent": "E-mail verzonden",
-    "failedEmail": "E-mail verzenden mislukt",
-    "smsSent": "SMS verzonden",
-    "failedSms": "SMS verzenden mislukt",
     "copyLink": "Link kopiëren"
   },
   "images": {

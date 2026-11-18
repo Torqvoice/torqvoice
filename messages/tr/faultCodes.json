@@ -1,0 +1,598 @@
+{
+  "title": "Arıza kodları",
+  "notAvailable": "Şu anda kullanılamıyor",
+  "noMeaning": "Henüz kod listemizde yok",
+  "manufacturerUnknown": "Üreticiye özel kod: anlamı markaya göre değişir.",
+  "chip": {
+    "open": "{code} kodunu aç"
+  },
+  "source": {
+    "generic": "Genel",
+    "manufacturer": "Üretici",
+    "report": "Tarama raporundan",
+    "machineTranslated": "Makine çevirisi"
+  },
+  "status": {
+    "stored": "Kayıtlı",
+    "pending": "Beklemede",
+    "permanent": "Kalıcı",
+    "history": "Geçmiş"
+  },
+  "flags": {
+    "warningLight": "Uyarı lambası",
+    "emissions": "Emisyon",
+    "driveCycle": "Sürüş döngüsü gerekir",
+    "limpMode": "Acil durum modu"
+  },
+  "sections": {
+    "how_it_works": "Nasıl çalışır",
+    "meaning": "Kodun anlamı",
+    "causes": "Tipik nedenler",
+    "manufacturer": "Üretici bilgileri",
+    "related": "Diğer kodlarla birlikte",
+    "diagnosis": "Teşhis ipucu",
+    "common_issues": "Sık görülen sorunlar",
+    "resolution": "Çözüm",
+    "advisory": "Tavsiye",
+    "other": "Bilmekte yarar var"
+  },
+  "detail": {
+    "whatItMeans": "Ne anlama geliyor",
+    "likelyCauses": "Olası nedenler",
+    "relatedCodes": "İlgili kodlar",
+    "inYourWorkshop": "Atölyenizde",
+    "noJobs": "Atölyenizde henüz hiçbir işte okunmadı.",
+    "resolved": "Çözüldü",
+    "notConnected": "Kodların ne anlama geldiğini görmek için Torqvoice Codes bağlantısını kurun.",
+    "connect": "Bağla",
+    "serviceDown": "Anlam şu anda kullanılamıyor. İşleriniz aşağıda.",
+    "pendingCheck": "Metin kontrol edilene kadar yalnızca başlık gösterilir.",
+    "showMore": "Daha fazla göster",
+    "showLess": "Daha az göster",
+    "likelihood": {
+      "high": "Yüksek",
+      "medium": "Orta",
+      "low": "Düşük"
+    },
+    "mostLikelyFirst": "En olası olanlar önce"
+  },
+  "report": {
+    "button": "Sorun bildir",
+    "title": "{code} kodunun anlamında yanlış olan ne?",
+    "reasons": {
+      "wrong_for_vehicle": "Bu araç için yanlış",
+      "wrong_for_vehicleMarine": "Bu tekne için yanlış",
+      "text_mismatch": "Metin koda uymuyor",
+      "wrong_position": "Yanlış taraf veya konum",
+      "bad_translation": "Kötü çeviri",
+      "other": "Diğer"
+    },
+    "note": "Not (isteğe bağlı)",
+    "notePlaceholder": "Ne buldunuz",
+    "send": "Gönder",
+    "thanks": "Teşekkürler, kontrol edeceğiz",
+    "failed": "Bildirim şu anda gönderilemedi. Birazdan tekrar deneyin.",
+    "reportedByYou": "Sizin tarafınızdan bildirildi",
+    "outcome": {
+      "fixed": "Bildiriminizden sonra güncellendi",
+      "no_change": "Kontrol edildi, değişiklik yok",
+      "duplicate": "Zaten bildirildi"
+    }
+  },
+  "share": {
+    "title": "Çözümünüzü paylaşın",
+    "description": "Diğer atölyelere {code} kodunu neyin çözdüğünü anlatın. Her çözümü, başkaları görmeden önce Torqvoice'tan bir kişi kontrol eder.",
+    "yourFixes": "{code} için çözümleriniz",
+    "whatFixedIt": "Sorunu ne çözdü",
+    "placeholder": "Şanzımanın arkasındaki arka oksijen sensörü soketinde sürtünmüş kablo. Onarıldı, test sürüşünden sonra kod silindi.",
+    "placeholderMarine": "Trim sensörü soketinde paslanmış pinler. Temizlendi ve yalıtıldı, deniz testinden sonra kod silindi.",
+    "photos": "Fotoğraflar (isteğe bağlı)",
+    "photosHint": "En fazla {max} fotoğraf. Yüzleri, plakaları ve müşteri bilgilerini kadrajın dışında tutun.",
+    "photosHintMarine": "En fazla {max} fotoğraf. Yüzleri, tekne sicil numaralarını ve müşteri bilgilerini kadrajın dışında tutun.",
+    "addPhotos": "Fotoğraf ekle",
+    "removePhoto": "{n}. fotoğrafı kaldır",
+    "tooManyPhotos": "En fazla {max} fotoğraf",
+    "notAPhoto": "{name} bir fotoğraf değil",
+    "photoTooBig": "{name} 15 MB'tan büyük",
+    "vehicle": "Araç",
+    "vehicleMarine": "Tekne",
+    "vehicleOptional": "Araç (isteğe bağlı)",
+    "vehicleOptionalMarine": "Tekne (isteğe bağlı)",
+    "make": "Marka",
+    "model": "Model",
+    "year": "Yıl",
+    "vehicleHint": "Yalnızca marka, model, yıl ve motor paylaşılır; plaka, şasi numarası (VIN), müşteri veya atölyenizin adı asla paylaşılmaz.",
+    "meaning": "Anlam",
+    "meaningHint": "Bu kod diğer kontrol ünitelerinde başka bir anlama gelir. Çözümünüz yalnızca bu anlam için paylaşılır.",
+    "vehicleHintMarine": "Yalnızca marka, model, yıl ve motor paylaşılır; sicil numarası, gövde numarası, müşteri veya atölyenizin adı asla paylaşılmaz.",
+    "send": "Çözümü paylaş",
+    "sent": "Teşekkürler. Çözümünüz inceleme bekliyor.",
+    "shareAnother": "Başka bir çözüm paylaş",
+    "cancel": "İptal",
+    "sentOn": "Gönderildi: {date}",
+    "reason": "Neden: {reason}",
+    "withdraw": "Geri çek",
+    "withdrawTitle": "Bu çözüm geri çekilsin mi?",
+    "withdrawConfirm": "Fotoğraflarıyla birlikte silinir ve başka hiçbir atölye onu görmez.",
+    "withdrawn": "Çözüm geri çekildi",
+    "withdrawFailed": "Çözüm şu anda geri çekilemedi. Birazdan tekrar deneyin.",
+    "unavailable": "Çözüm paylaşımı şu anda kullanılamıyor.",
+    "status": {
+      "pending": "İnceleme bekliyor",
+      "published": "Yayınlandı",
+      "rejected": "Yayınlanmadı"
+    },
+    "errors": {
+      "failed": "Çözümünüz şu anda gönderilemedi. Birazdan tekrar deneyin.",
+      "photo": "Fotoğraflardan biri okunamadı. Başka bir fotoğraf deneyin.",
+      "too_large": "Fotoğraflar çok büyük. Daha az veya daha küçük fotoğraf deneyin.",
+      "paused": "Çözüm paylaşımı şu anda duraklatıldı. Daha sonra tekrar deneyin.",
+      "demo": "Çözüm paylaşımı demoda kapalı."
+    },
+    "invite": "{code} sorununu çözdünüz mü? Diğer servislere neyin işe yaradığını anlatın.",
+    "inviteHint": "Kendi sözlerinizle, varsa birkaç fotoğrafla. Torqvoice’ta bir kişi, diğer servisler görmeden önce her çözümü kontrol eder.",
+    "start": "Çözümünüzü paylaşın",
+    "dialogTitle": "{code} için çözümünüzü paylaşın",
+    "dialogDescription": "Diğer servisler, Torqvoice’ta bir kişi kontrol ettikten sonra görür.",
+    "characters": "{count} / {max}",
+    "writingHint": "Sorun neydi, nasıl buldunuz ve ne çözdü? Parça numaraları ve ölçüm değerleri başkalarına en çok yardımcı olur.",
+    "dropHere": "ya da buraya bırakın",
+    "tooManyPhotosRemove": "Bir çözümde en fazla {max} fotoğraf olabilir. Paylaşmak için bazılarını kaldırın.",
+    "phone": {
+      "button": "Telefondan ekle",
+      "hide": "Telefon kodunu gizle",
+      "title": "Telefonunuzla fotoğraf çekin",
+      "body": "Kodu telefonunuzun kamerasıyla tarayın. Çektiğiniz fotoğraflar geldikçe burada görünür.",
+      "failed": "Telefon kodu oluşturulamadı. Bunu kapatıp tekrar deneyin.",
+      "expires": "Kod {time} saatine kadar geçerli",
+      "copy": "Bağlantıyı kopyala",
+      "copied": "Kopyalandı",
+      "received": "{count, plural, one {# fotoğraf} other {# fotoğraf}} telefondan",
+      "badge": "Telefon"
+    },
+    "editedNote": "İnceleme sırasında düzenlendi"
+  },
+  "fixes": {
+    "title": "Diğer atölyelerin çözümleri",
+    "empty": "Henüz başka hiçbir atölye {code} için bir çözüm paylaşmadı.",
+    "unavailable": "Diğer atölyelerin çözümleri şu anda kullanılamıyor.",
+    "sharedOn": "Paylaşıldı: {date}",
+    "unknownVehicle": "Araç belirtilmemiş",
+    "unknownVehicleMarine": "Tekne belirtilmemiş",
+    "writtenIn": "Dil: {language}",
+    "photo": "Fotoğraf {n} / {count}",
+    "openPhoto": "{n}. fotoğrafı aç"
+  },
+  "sheet": {
+    "description": "Bu kodun anlamı, olası nedenleri ve atölyenizde bu kodun okunduğu işler.",
+    "loadFailed": "Bu kod açılamadı.",
+    "loading": "Yükleniyor…",
+    "openPage": "Kod sayfasını aç"
+  },
+  "entry": {
+    "button": "Arıza kodu ekle",
+    "title": "Arıza kodu ekle",
+    "description": "Arıza tespit cihazındaki kodları yazın veya yapıştırın. Her biri, anlamı kaydedilmiş olarak bu işte bir gözlem olur.",
+    "placeholder": "P0420, P0171",
+    "empty": "Yazdığınız veya yapıştırdığınız kodlar burada görünür.",
+    "found": "Bulunan kodlar",
+    "remove": "{code} kodunu kaldır",
+    "concern": "Yanıtladığı madde",
+    "concernNone": "Madde yok",
+    "cancel": "İptal",
+    "add": "{count, plural, =0 {Kod ekle} one {# kod ekle} other {# kod ekle}}",
+    "added": "{count, plural, one {# arıza kodu eklendi} other {# arıza kodu eklendi}}",
+    "skipped": "{count, plural, one {# kod bu işte zaten vardı} other {# kod bu işte zaten vardı}}",
+    "failed": "Kodlar eklenemedi",
+    "descriptionOem": "Arıza tespit cihazındaki kodları yazın veya yapıştırın: P0420 gibi OBD kodları ya da 2A82 gibi BMW kodları. Her biri bu işte, anlamı kaydedilmiş bir gözlem olur.",
+    "placeholderOem": "P0420, 2A82 kayıtlı"
+  },
+  "finding": {
+    "seenBefore": "Görüldü: {date}",
+    "seenBeforeTitle": "Bu araçta daha önce okundu, son olarak {date}",
+    "seenBeforeTitleMarine": "Bu teknede daha önce okundu, son olarak {date}",
+    "updatedMeaning": "Güncel anlam",
+    "updatedMeaningTitle": "Anlam artık şöyle: {meaning}. Kullanmak için dokunun.",
+    "taken": "Anlam güncellendi",
+    "takeFailed": "Anlam güncellenemedi",
+    "noMeaningSaved": "Henüz kayıtlı anlam yok"
+  },
+  "page": {
+    "title": "Arıza kodları",
+    "intro": "Bir kod arayın veya anlamlarda fakir bank 1 gibi kelimeler arayın.",
+    "lookupLabel": "Kod veya kelimeler",
+    "lookupPlaceholder": "P0420 veya fakir bank 1",
+    "lookup": "Ara",
+    "cloudOnly": "Arıza kodlarının anlamları, Torqvoice Cloud'un bir parçası olan Torqvoice Codes'tan gelir. Atölyenizin okuduğu kodlar her durumda burada listelenir.",
+    "results": "\"{query}\" ile eşleşen kodlar",
+    "noResults": "\"{query}\" ile eşleşen kod yok",
+    "recent": "Atölyenizde son okunanlar",
+    "noRecent": "Henüz hiçbir işte arıza kodu yok.",
+    "readTimes": "{count, plural, one {Bir kez okundu, {date}} other {# kez okundu, son {date}}}",
+    "notACode": "\"{text}\" bir arıza kodu değil",
+    "notACodeHint": "Arıza kodu bir harf ve dört karakterden oluşur, örneğin P0420 veya U0100.",
+    "recentLookups": "Son aramalarınız",
+    "recentLookupsEmpty": "Açtığınız kodlar ve aradığınız kelimeler bu cihazda burada görünür.",
+    "clearRecent": "Temizle",
+    "tryExamples": "Deneyin",
+    "exampleWords": "fakir bank 1",
+    "searching": "Aranıyor"
+  },
+  "search": {
+    "group": "Arıza kodları",
+    "jobsWith": "{code} olan işler",
+    "searchFor": "Arıza kodlarında \"{query}\" ara"
+  },
+  "notice": {
+    "title": "Arıza kodları yeni",
+    "body": "Standart OBD-II kodları burada. Markaların kendi kodlarını eklemek için çalışıyoruz ve sürekli yeni kodlar ekleniyor. Bir markanın kodlarını nerede bulacağınızı biliyor musunuz? “Gelişmemize yardım edin” ile bize bildirin.",
+    "bodyBmw": "Standart OBD-II kodları ve MINI ile Rolls-Royce'un da paylaştığı BMW'ye özel kodlar burada. Daha fazla marka eklemek için çalışıyoruz ve sürekli yeni kodlar ekleniyor. Bir markanın kodlarını nerede bulacağınızı biliyor musunuz? “Gelişmemize yardım edin” ile bize bildirin.",
+    "bodyMakes": "Standart OBD-II kodları ve şu markaların kendi kodları burada: {makes}. Daha fazla marka eklemek için çalışıyoruz ve sürekli yeni kodlar ekleniyor. Bir markanın kodlarını nerede bulacağınızı biliyor musunuz? “Gelişmemize yardım edin” ile bize bildirin."
+  },
+  "support": {
+    "button": "Destekle iletişime geç",
+    "subject": "Arıza kodu {code}",
+    "subjectGeneral": "Arıza kodları",
+    "message": "Arıza kodu {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Güç aktarma",
+    "B": "Gövde",
+    "C": "Şasi",
+    "U": "Ağ"
+  },
+  "phone": {
+    "title": "Bir çözüm için fotoğraflar",
+    "forCode": "bilgisayarda yazdığınız çözüm için",
+    "intro": "Kodu çözen şeyin en fazla {max} fotoğrafını çekin veya seçin. Bilgisayardaki çözümde görünürler.",
+    "take": "Fotoğraf çek",
+    "choose": "Fotoğraf seç",
+    "added": "{max} fotoğraftan {count} tanesi eklendi",
+    "full": "Bir çözümde en fazla {max} fotoğraf olabilir.",
+    "notAPhoto": "Bu dosya bir fotoğraf değil.",
+    "failed": "Fotoğraf eklenemedi. Tekrar deneyin.",
+    "done": "Bitirdiğinizde bilgisayara dönün ve çözümü paylaşın.",
+    "privacy": "Yüzleri, plakaları ve müşteri bilgilerini fotoğrafın dışında tutun.",
+    "expired": "Bu kodun süresi doldu. Bilgisayarda yeni bir kod gösterin.",
+    "invalid": "Bu kod çalışmıyor. Bilgisayarda yeni bir kod gösterin.",
+    "waveform": {
+      "title": "Osiloskop ekranının fotoğrafı",
+      "forCode": "bilgisayarda paylaştığınız dalga formu için",
+      "intro": "Osiloskop ekranının bir fotoğrafını çekin veya seçin. Bilgisayarda görünür.",
+      "full": "Bir dalga formunda bir fotoğraf olur. Yenisini çekmek için bilgisayarda kaldırın.",
+      "done": "Bilgisayara dönün ve dalga formunu paylaşın.",
+      "added": "Fotoğraf eklendi"
+    }
+  },
+  "oem": {
+    "badge": "{make} kodu",
+    "summary": "{count, plural, one {# anlam} other {# anlam}}. Bir BMW kodu her kontrol ünitesinde farklı bir anlama gelebilir.",
+    "matches": "Bu araca uyuyor",
+    "noMatch": "Bu anlamların hiçbiri bu aracın motoru için listelenmemiş. Cihazınızın kodu hangi kontrol ünitesinden okuduğunu kontrol edin.",
+    "inEnglish": "{make} İngilizce metni: {text}",
+    "bmwText": "{make} metni: {text}",
+    "units": "Kontrol üniteleri",
+    "moreUnits": "+{count} daha",
+    "otherChassis": "Diğer şasiler",
+    "years": "{from}–{to}",
+    "yearsFrom": "{from} yılından beri",
+    "source": "Anlamlar BMW’nin kendi teşhis metinlerinden gelir, çoğu Almanca.",
+    "notServed": "{make} kodları henüz kullanılamıyor.",
+    "notFound": "{code} {make} verilerinde yok.",
+    "whereUsed": "{make} nerede kullanıyor",
+    "models": "Modeller",
+    "engineList": "Motorlar",
+    "fewerUnits": "Daha az göster",
+    "fitsThisCar": "Bu araç",
+    "meanings": "Anlamlar",
+    "otherMeanings": "ve {count} anlam daha"
+  },
+  "research": {
+    "inviteTitle": "Çevrimiçi çözüm ara",
+    "invite": "{code} için üretici belgelerini, servis bültenlerini ve atölye forumlarını tarıyoruz. Yalnızca kaynaklı ve somut bir yanıt saklanır ve Torqvoice'tan bir kişi onu kontrol eder.",
+    "button": "Çözüm ara",
+    "working": "{code} araştırılıyor",
+    "steps": {
+      "bulletins": "Üretici belgeleri ve servis bültenleri taranıyor",
+      "forums": "Onaylanmış çözümler için atölye forumları okunuyor",
+      "agree": "Kaynakların örtüştüğü kontrol ediliyor",
+      "writing": "Adımlar yazılıyor"
+    },
+    "workingHint": "Bu bir iki dakika sürer. Bulunanlar tüm atölyeler için kodda kalır.",
+    "runningTitle": "Şu anda araştırılıyor",
+    "runningHint": "Başka bir atölye az önce istedi. Bir dakika sonra yeniden bakın.",
+    "checkAgain": "Yeniden bak",
+    "title": "Araştırılmış çözüm",
+    "pending": "Bir kişinin kontrolünü bekliyor",
+    "published": "Torqvoice tarafından kontrol edildi",
+    "pendingHint": "Aşağıdaki kaynaklardan yapay zekâ tarafından bulundu. Parça değiştirmeden önce araç üzerinde kontrol edin.",
+    "sources": "Kaynaklar",
+    "helpfulQuestion": "Bu sorunu çözdü mü?",
+    "helpfulYes": "Evet, çözdü",
+    "helpfulNo": "Hayır, çözmedi",
+    "thanks": "Teşekkürler, not edildi",
+    "missedTitle": "Çevrimiçi güvenilir bir çözüm bulunamadı",
+    "missed": "{code} hakkında somut bir şey çıkmadı, bu yüzden hiçbir şey kaydedilmedi. Atölyelerin bu koda ihtiyaç duyduğunu not ettik.",
+    "searchedOn": "{date} tarihinde arandı",
+    "shareInstead": "Çözümünüzü paylaşın",
+    "errors": {
+      "busy": "Bu kod şu anda araştırılıyor. Bir dakika sonra yeniden bakın.",
+      "limited": "Atölyeniz bugünkü araştırma hakkını kullandı. Yarın yeniden deneyin.",
+      "failed": "Araştırma şu anda yapılamadı. Daha sonra yeniden deneyin."
+    }
+  },
+  "waveforms": {
+    "title": "Dalga formları",
+    "description": "Diğer servislerin osiloskop kayıtları, sağlam ve arızalı, kendi ölçümünüzle karşılaştırmak için.",
+    "share": "Dalga formu paylaş",
+    "unavailable": "Dalga formları şu anda kullanılamıyor.",
+    "empty": "{code} için henüz dalga formu yok",
+    "emptyHint": "Sağlam bir kaydınız var mı? Paylaşın, bu kodu kovalayan bir sonraki teknisyenin karşılaştıracak bir şeyi olsun.",
+    "filter": {
+      "label": "Göster",
+      "all": "Tümü",
+      "good": "Sağlam",
+      "faulty": "Arızalı"
+    },
+    "unknownVehicle": "Araç belirtilmedi",
+    "unknownVehicleMarine": "Tekne belirtilmedi",
+    "status": {
+      "pending": "İnceleme bekliyor",
+      "published": "Yayında",
+      "rejected": "Yayınlanmadı"
+    },
+    "hasRecording": "İndirilecek PicoScope dosyası",
+    "hasCsv": "İndirilecek CSV dışa aktarımı",
+    "kind": {
+      "good": "Sağlam",
+      "faulty": "Arızalı"
+    },
+    "condition": {
+      "key_on": "Kontak açık, motor kapalı",
+      "cranking": "Marş",
+      "idle": "Rölanti",
+      "rpm_2500": "2500 dev/dak",
+      "driving": "Sürüş sırasında",
+      "drivingMarine": "Seyir sırasında",
+      "under_load": "Yük altında"
+    },
+    "chart": {
+      "label": "{channels} dalga formu, {span} boyunca",
+      "perDivision": "{value}/böl.",
+      "noSample": "örnek yok",
+      "between": "{lo} ile {hi} arası"
+    },
+    "view": {
+      "label": "Göster",
+      "trace": "Dalga formu",
+      "picture": "Ekran fotoğrafı"
+    },
+    "sharedOn": "{date} tarihinde paylaşıldı",
+    "reason": "Neden: {reason}",
+    "compare": {
+      "label": "Şununla karşılaştır",
+      "none": "Hiçbiri",
+      "close": "Karşılaştırmayı kapat"
+    },
+    "note": "Notlar",
+    "writtenIn": "Dili: {language}",
+    "files": {
+      "title": "Dosyalar",
+      "psdata": "PicoScope kaydı",
+      "csv": "CSV dışa aktarımı",
+      "pssettings": "Osiloskop ayarları",
+      "openHint": "Yakınlaştırmak, ölçmek ve her kanalı görmek için kaydı PicoScope'ta açın."
+    },
+    "nothingToDraw": "Yalnızca kayıt paylaşıldı. PicoScope'ta açmak için indirin.",
+    "openPicture": "Fotoğrafı tam boyutta aç",
+    "close": "Kapat",
+    "withdraw": "Geri çek",
+    "withdrawTitle": "Bu dalga formu geri çekilsin mi?",
+    "withdrawConfirm": "Dosyalarıyla birlikte silinir ve başka hiçbir servis onu görmez.",
+    "withdrawn": "Dalga formu geri çekildi",
+    "withdrawFailed": "Dalga formu şu anda geri çekilemedi. Biraz sonra tekrar deneyin.",
+    "shareDialog": {
+      "title": "{code} için dalga formu paylaş",
+      "description": "Torqvoice'tan biri kontrol ettikten sonra diğer servisler görür.",
+      "meaningHint": "Bu kod başka kontrol ünitelerinde başka bir anlama gelir. Dalga formunuz yalnızca bu anlam için paylaşılır.",
+      "kind": "Ne gösteriyor?",
+      "kindHint": {
+        "good": "Sağlam bir araçta nasıl görünür",
+        "goodMarine": "Sağlam bir motorda nasıl görünür",
+        "faulty": "Arızayla nasıl görünüyordu",
+        "faultyMarine": "Arızayla nasıl görünüyordu"
+      },
+      "measured": "Neyi ölçtünüz?",
+      "measuredPlaceholder": "Krank sensörü ve emme eksantrik mili",
+      "measurements": {
+        "crank": "Krank sensörü",
+        "camCrank": "Eksantrik ve krank mili",
+        "injector": "Enjektör",
+        "ignition": "Ateşleme bobini",
+        "compression": "Göreli kompresyon",
+        "lambda": "Lambda sensörü",
+        "maf": "Hava akış metre",
+        "alternator": "Alternatör dalgalanması",
+        "canBus": "CAN hattı",
+        "fuelPump": "Yakıt pompası akımı"
+      },
+      "condition": "Motor nasıl çalışıyordu? (isteğe bağlı)",
+      "files": "Dosyalar",
+      "filesHint": "Biri yeterli. PicoScope dosyasını diğerleri PicoScope'ta açar; CSV dışa aktarımı veya fotoğrafı burada görür.",
+      "phone": {
+        "button": "Telefondan fotoğraf",
+        "title": "Osiloskop ekranının fotoğrafını çekin",
+        "body": "Kodu telefonunuzun kamerasıyla tarayın ve ekranın bir fotoğrafını çekin. Gelir gelmez burada görünür.",
+        "received": "Telefonunuzdan fotoğraf geldi"
+      },
+      "drop": "PicoScope dosyanızı buraya bırakın veya seçmek için tıklayın",
+      "dropMore": "Başka dosya ekle",
+      "dropTypes": ".psdata, .pssettings, bir CSV dışa aktarımı veya ekran fotoğrafı",
+      "role": {
+        "psdata": "PicoScope kaydı",
+        "csv": "CSV dışa aktarımı",
+        "image": "Ekran fotoğrafı",
+        "pssettings": "Osiloskop ayarları"
+      },
+      "csvNotScope": "Bu bir osiloskop dışa aktarımı değil. PicoScope'tan CSV olarak yeniden kaydedin.",
+      "remove": "{name} kaldır",
+      "fromPhone": "Telefonunuzdan",
+      "previewHint": "Diğer servisler bunu böyle görecek.",
+      "csvTip": "İpucu: bir CSV dışa aktarımı da ekleyin, böylece diğerleri dalga formunu PicoScope'u açmadan burada görür. PicoScope'ta Farklı kaydet'i seçip CSV'yi seçin.",
+      "note": "Notlar (isteğe bağlı)",
+      "notePlaceholder": "Nereden ölçtüğünüz, kullandığınız ölçek ve nelere bakılacağı. Örneğin: sensör soketinde 2 numaralı pin arkadan ölçüldü, eksik diş boşluğu her turda bir kez görünüyor.",
+      "notePlaceholderMarine": "Nereden ölçtüğünüz, kullandığınız ölçek ve nelere bakılacağı.",
+      "sending": "Gönderiliyor %{percent}",
+      "send": "Dalga formunu paylaş",
+      "sent": "Teşekkürler. Dalga formunuz inceleme bekliyor.",
+      "missing": {
+        "kind": "Sağlam veya arızalı seçin",
+        "title": "Neyi ölçtüğünüzü yazın",
+        "file": "Bir dosya veya fotoğraf ekleyin",
+        "csv": "Osiloskop dışa aktarımı olmayan CSV'yi kaldırın"
+      },
+      "notAScopeFile": "{name} bir PicoScope dosyası, CSV dışa aktarımı veya fotoğraf değil",
+      "fileTooBig": "{name}, {size} boyutundan büyük",
+      "errors": {
+        "failed": "Dalga formunuz şu anda gönderilemedi. Biraz sonra tekrar deneyin.",
+        "photo": "Fotoğraf okunamadı. Başka birini deneyin.",
+        "csv": "CSV bir osiloskop dışa aktarımı değil. PicoScope'tan CSV olarak yeniden kaydedin.",
+        "too_large": "Dosyalar çok büyük.",
+        "no_file": "Kaydı, bir CSV dışa aktarımını veya bir fotoğraf ekleyin.",
+        "paused": "Dalga formu paylaşımı şu anda duraklatıldı. Daha sonra tekrar deneyin.",
+        "demo": "Demoda dalga formu paylaşımı kapalı."
+      }
+    }
+  },
+  "improve": {
+    "button": "Gelişmemize yardım edin",
+    "title": "Arıza kodlarını geliştirmemize yardım edin",
+    "description": "Bir markanın kendi kodlarını nerede yayınladığını biliyor musunuz, bir hata mı gördünüz ya da bir fikriniz mi var? Bize yazın. Doğrudan Torqvoice ekibine gider.",
+    "topic": "Konu nedir? (isteğe bağlı)",
+    "topics": {
+      "makes": "Eksik kodlar",
+      "wrong": "Bir şey yanlış",
+      "source": "İyi bir kaynak veya bağlantı",
+      "idea": "Bir fikir"
+    },
+    "message": "Mesajınız",
+    "placeholders": {
+      "makes": "Nerede bulunduğu, örneğin markanın kod listesine bir bağlantı, ve hangi modelleri kapsadığı.",
+      "wrong": "Hangi kod, ne yazıyor ve ne yazmalı. Bulduğunuz yere bir bağlantı yardımcı olur.",
+      "source": "Bağlantıyı yapıştırın ve içinde ne olduğunu yazın.",
+      "idea": "Arıza kodlarını servisinizde daha faydalı ne yapardı? Bağlantılar memnuniyetle karşılanır."
+    },
+    "links": "Mesajınızdaki bağlantılar",
+    "about": "{code} hakkında",
+    "leaveOut": "Çıkar",
+    "replyHint": "Hesabınızdaki e-posta adresine yanıt veririz.",
+    "cancel": "İptal",
+    "send": "Gönder",
+    "sent": "Teşekkürler. Mesajınız Torqvoice ekibine gidiyor.",
+    "errors": {
+      "failed": "Mesajınız şu anda gönderilemedi. Biraz sonra tekrar deneyin.",
+      "limited": "Zaten birkaç mesaj gönderdiniz. Bir saat sonra tekrar deneyin."
+    }
+  },
+  "import": {
+    "button": "İçe aktar",
+    "title": "Arıza kodlarını içe aktar",
+    "description": "Bir markanın kendi kodlarını veya elimizdeki kodlar hakkında daha fazlasını ekleyin. Hiçbir servis görmeden önce Torqvoice'tan biri her kodu kontrol eder.",
+    "yours": "İçe aktarımlarınız",
+    "codes": "{count, plural, one {# kod} other {# kod}}",
+    "status": {
+      "published": "{count} yayında",
+      "pending": "{count} bekliyor",
+      "rejected": "{count} yayınlanmadı"
+    },
+    "examples": {
+      "title": "Bir örnekle başlayın",
+      "sheet": "Örnek tablo",
+      "sheetHint": "Excel, her kod için bir satır",
+      "json": "Örnek JSON",
+      "jsonHint": "Her alan adlandırılmış",
+      "columns": "Sütun adlarını koruyun: Code, Title, Description, Common issues, How to fix, Good to know ve Causes. Yalnızca Code ve Title gerekir. Her nedeni ayrı satıra yazın; biliyorsanız sonuna (high), (medium) veya (low) ekleyin.",
+      "csv": "CSV olarak indir"
+    },
+    "make": "Marka",
+    "pickMake": "Bir marka seçin",
+    "language": "Metnin dili",
+    "source": "Nereden geldiği (isteğe bağlı)",
+    "sourcePlaceholder": "Bağlantı veya kitap",
+    "checking": "Kodlarınız okunuyor ve kontrol ediliyor",
+    "removeFile": "Dosyayı kaldır",
+    "drop": "Dosyanızı buraya bırakın veya seçmek için tıklayın",
+    "dropTypes": ".xlsx, .csv veya .json, en fazla 2.000 kod",
+    "fileProblems": {
+      "unreadable": "Dosya okunamadı. .xlsx, .csv veya .json olarak yeniden kaydedin.",
+      "empty": "Dosyada kod yok.",
+      "no_code_column": "Code sütunu bulunamadı. Örnek tabloyla başlayın.",
+      "too_many": "Dosya çok büyük: en fazla 2.000 kod ve 5 MB. Parçalara bölün.",
+      "format": "Bu dosya türü desteklenmiyor. .xlsx, .csv veya .json kullanın.",
+      "legacy_xls": "Eski .xls dosyaları desteklenmiyor. Excel'de .xlsx olarak kaydedin."
+    },
+    "counts": {
+      "new": "{count} yeni",
+      "change": "{count} bizimkini tamamlıyor",
+      "problem": "{count} düzeltilmeli",
+      "same": "{count} zaten aynı"
+    },
+    "rows": "Dosyadaki kodlar",
+    "row": "Satır {n}",
+    "more": "ve {count} tane daha",
+    "problemsLeftOut": "Düzeltilmesi gereken kodlar dışarıda bırakılır. Dosyada düzeltip yeniden bırakın veya geri kalanını şimdi gönderin.",
+    "rights": "Bunu paylaşabilirim. Ücretli veya korumalı bir kaynaktan kopyalanmadı.",
+    "missing": {
+      "make": "Önce markayı seçin",
+      "file": "Dosyanızı ekleyin",
+      "nothing": "Dosyadaki hiçbir şey elimizdekini tamamlamıyor",
+      "rights": "Göndermek için kutuyu işaretleyin"
+    },
+    "reviewHint": "Bir kişi kontrol etmeden hiçbir şey yayınlanmaz.",
+    "cancel": "İptal",
+    "send": "{count, plural, one {# kodu incelemeye gönder} other {# kodu incelemeye gönder}}",
+    "sendNone": "İncelemeye gönder",
+    "sent": "{count, plural, one {Gönderildi. # kod inceleme bekliyor.} other {Gönderildi. # kod inceleme bekliyor.}}",
+    "errors": {
+      "failed": "Dosyanız şu anda kontrol edilemedi veya gönderilemedi. Biraz sonra tekrar deneyin.",
+      "paused": "Kod gönderimi şu anda duraklatıldı. Daha sonra tekrar deneyin.",
+      "nothing": "Dosyadaki hiçbir şey elimizdekini tamamlamıyor.",
+      "demo": "Demoda kod içe aktarma kapalı.",
+      "rights": "Bunu paylaşabileceğinizi belirtmek için kutuyu işaretleyin.",
+      "too_large": "Dosya çok büyük: en fazla 2.000 kod ve 5 MB."
+    },
+    "problems": {
+      "code": "{make} tarafından kullanılan bir kod değil",
+      "duplicate": "Aynı kod dosyada iki kez",
+      "title": "Bir başlık gerekiyor",
+      "empty": "Hiçbir şey yazılmamış",
+      "too_long": "Çok uzun: başlık en fazla 200 karakter, her metin en fazla 4.000",
+      "likelihood": "Olasılık low, medium veya high olmalı",
+      "meanings": "{make} bu kodu birden fazla şey için kullanıyor. Bunun yerine kodun sayfasında paylaşın."
+    },
+    "state": {
+      "new": "Yeni",
+      "change": "Ekler: {what}"
+    },
+    "fields": {
+      "title": "başlık",
+      "description": "anlamı",
+      "common_issues": "sık sorunlar",
+      "resolution": "nasıl giderilir",
+      "advisory": "bilmekte yarar var",
+      "causes": "nedenler"
+    },
+    "addsCauses": "{count, plural, one {# neden} other {# neden}}",
+    "searchMake": "Marka ara",
+    "noMake": "Marka bulunamadı",
+    "useMake": "{name} kullan",
+    "groups": {
+      "cars": "Otomobiller ve hafif ticariler",
+      "marine": "Tekneler ve motorlar"
+    }
+  },
+  "makeCodes": {
+    "heading": "{code} için kendi anlamı olan markalar",
+    "thisCar": "Bu aracın markası"
+  }
+}

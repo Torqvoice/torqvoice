@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Défaut de l'atelier",
     "invoiceDesignHint": "Les factures de ce client sont imprimées avec ce design au lieu du défaut de l'atelier. Une facture peut toujours choisir le sien.",
     "reminderOptOut": "Pas de rappels",
-    "reminderOptOutHint": "Ne pas inclure ce client dans les rappels de contrôle ni les autres campagnes."
+    "reminderOptOutHint": "Ne pas inclure ce client dans les rappels de contrôle ni les autres campagnes.",
+    "bookAppointment": "Prendre rendez-vous"
   },
   "serviceRequests": {
     "statusNew": "Nouveau",
@@ -120,6 +121,12 @@
     "saveNotes": "Enregistrer les notes",
     "submitted": "Soumis le {date}",
     "preferred": "Préféré : {date}",
+    "preferredMorning": "Préféré : {date}, le matin",
+    "preferredAfternoon": "Préféré : {date}, l'après-midi",
+    "files": "{count, plural, one {# photo ou vidéo du client} other {# photos ou vidéos du client}}",
+    "openPhoto": "Ouvrir la photo {number}",
+    "openVideo": "Ouvrir la vidéo {number}",
+    "fileMissing": "La photo {number} n'est plus disponible",
     "workOrderCreated": "Ordre de travail créé",
     "workOrderError": "Échec de la création de l'ordre de travail",
     "requestDismissed": "Demande rejetée",

@@ -8,8 +8,16 @@ import { Layers, Plus, Trash2, Wrench } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { QuoteLaborInput } from './quote-page-types'
+import { SortableQuoteLines } from './SortableQuoteLines'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/ShopFeeTag'
+import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
+import { useLineTax } from '@/features/settings/Components/LineTaxContext'
+import { laborTaxable } from '@/lib/taxable-lines'
+import { LaborGuideButton } from '@/features/vehicles/Components/labor-guide/LaborGuideButton'
+import type { LaborGuideJob } from '@/features/vehicles/Components/labor-guide/LaborGuideDialog'
+import type { LaborGuideStock } from '@/features/vehicles/Components/labor-guide/FluidPartButton'
+import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
 
 const QuoteLaborRow = memo(function QuoteLaborRow({
   labor,
@@ -47,6 +55,7 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   const isFee = isShopFeeLine(labor)
   const feeLocked = useShopFeeLocked()
   const formatCurrency = useFormatCurrency()
+  const { applies } = useLineTax()
   return (
     <div
       className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${labor.excluded ? 'line-through opacity-50' : ''}`}
@@ -97,6 +106,11 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
         {formatCurrency(labor.total, currencyCode)}
       </div>
       <div className="flex items-center gap-1">
+        <LineTaxToggle
+          className="h-7 self-center"
+          taxable={laborTaxable(labor, applies)}
+          onToggle={() => onUpdate(index, 'taxable', !laborTaxable(labor, applies))}
+        />
         <input
           type="checkbox"
           checked={labor.excluded ?? false}
@@ -132,10 +146,19 @@ interface QuoteLaborEditorProps {
   laborSubtotal: number
   onUpdate: (index: number, field: keyof QuoteLaborInput, value: string | number | boolean) => void
   onDelete: (index: number) => void
+  /** Moves the line at `from` to `to`, as the workshop dragged it. */
+  onMove: (from: number, to: number) => void
   onAdd: () => void
   onAddService?: () => void
   hasPresets?: boolean
   onOpenPresets?: () => void
+  /** The quote's vehicle, for the labor guide; none until one is picked. */
+  vehicleId?: string | null
+  onAddGuideJob?: (job: LaborGuideJob) => void
+  /** Adds a fluid from the labor guide to the quote's parts. */
+  onAddGuidePart?: (line: FluidPartLine) => void
+  /** The workshop's stock, for the labor guide to match fluids against. */
+  guideStock?: LaborGuideStock
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: (key: string, values?: any) => string
 }
@@ -147,10 +170,15 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
   laborSubtotal,
   onUpdate,
   onDelete,
+  onMove,
   onAdd,
   onAddService,
   hasPresets,
   onOpenPresets,
+  vehicleId,
+  onAddGuideJob,
+  onAddGuidePart,
+  guideStock,
   t,
 }: QuoteLaborEditorProps) {
   const formatCurrency = useFormatCurrency()
@@ -166,6 +194,15 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
                 {t('labor.fromPresets')}
               </Button>
             )}
+            {vehicleId && onAddGuideJob && (
+              <LaborGuideButton
+                vehicleId={vehicleId}
+                onAdd={onAddGuideJob}
+                onAddPart={onAddGuidePart}
+                stock={guideStock}
+                labelled
+              />
+            )}
             <Button type="button" variant="outline" size="sm" onClick={onAdd}>
               <Plus className="mr-1 h-3.5 w-3.5" /> {t('labor.addLabor')}
             </Button>
@@ -178,32 +215,40 @@ export const QuoteLaborEditor = memo(function QuoteLaborEditor({
         </div>
         {laborItems.length > 0 && (
           <>
-            <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 text-xs font-medium text-muted-foreground sm:grid">
+            {/* Indented past the drag grip each line starts with. */}
+            <div className="hidden grid-cols-[2fr_1fr_1fr_1fr_auto] gap-2 pl-7 text-xs font-medium text-muted-foreground sm:grid">
               <span>{t('labor.description')}</span>
               <span>{t('labor.qtyOrHours')}</span>
               <span>{t('labor.rate', { currency: cs })}</span>
               <span>{t('labor.total')}</span>
               <span />
             </div>
-            {laborItems.map((labor, i) => (
-              <QuoteLaborRow
-                key={i}
-                labor={labor}
-                index={i}
-                currencyCode={currencyCode}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
-                tDescriptionPlaceholder={t('labor.descriptionPlaceholder')}
-                tHourlyTag={t('labor.hourlyTag')}
-                tServiceTag={t('labor.serviceTag')}
-                tHourlyHint={t('labor.hourlyHint')}
-                tServiceHint={t('labor.serviceHint')}
-                tQty={t('labor.qty')}
-                tHours={t('labor.hours')}
-                tDeleteRow={t('labor.deleteRow')}
-                tExcludeFromTotal={t('labor.excludeFromTotal')}
-              />
-            ))}
+            <SortableQuoteLines
+              count={laborItems.length}
+              keyPrefix="labor"
+              handleLabel={t('labor.reorderRow')}
+              onMove={onMove}
+              onDelete={onDelete}
+              isPinned={(i) => isShopFeeLine(laborItems[i])}
+              renderLine={(i, deleteLine) => (
+                <QuoteLaborRow
+                  labor={laborItems[i]}
+                  index={i}
+                  currencyCode={currencyCode}
+                  onUpdate={onUpdate}
+                  onDelete={deleteLine}
+                  tDescriptionPlaceholder={t('labor.descriptionPlaceholder')}
+                  tHourlyTag={t('labor.hourlyTag')}
+                  tServiceTag={t('labor.serviceTag')}
+                  tHourlyHint={t('labor.hourlyHint')}
+                  tServiceHint={t('labor.serviceHint')}
+                  tQty={t('labor.qty')}
+                  tHours={t('labor.hours')}
+                  tDeleteRow={t('labor.deleteRow')}
+                  tExcludeFromTotal={t('labor.excludeFromTotal')}
+                />
+              )}
+            />
             <button
               type="button"
               className="flex w-full items-center justify-center rounded-md border border-dashed border-muted-foreground/25 py-1.5 text-muted-foreground transition-colors hover:border-muted-foreground/50 hover:text-foreground"

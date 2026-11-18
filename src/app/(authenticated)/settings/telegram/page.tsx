@@ -1,4 +1,9 @@
 import { redirect } from 'next/navigation'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('telegram')
+}
 
 /**
  * Kept as a redirect: the channel is an integration now, but docs,

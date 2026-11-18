@@ -1,14 +1,20 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest'
+import type { ReactElement } from 'react'
+import { ConfirmProvider } from '@/components/confirm-dialog'
+import { render as renderBare, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 // Mock lucide-react icons
-vi.mock('lucide-react', () => ({
+vi.mock('lucide-react', async (importOriginal) => ({
+  // The confirm dialog draws its own icons; the page's are stubbed below.
+  ...(await importOriginal<typeof import('lucide-react')>()),
   Fingerprint: () => <svg data-testid="icon-fingerprint" />,
   Loader2: () => <svg data-testid="icon-loader" />,
+  LogIn: () => <svg data-testid="icon-log-in" />,
   Pencil: () => <svg data-testid="icon-pencil" />,
   Plus: () => <svg data-testid="icon-plus" />,
   Trash2: () => <svg data-testid="icon-trash" />,
+  X: () => <svg data-testid="icon-x" />,
 }))
 
 // Mock UI components (pass-through)
@@ -72,20 +78,34 @@ vi.mock('@/components/ui/separator', () => ({
 // Mock sonner
 const mockToastError = vi.fn()
 const mockToastSuccess = vi.fn()
+const mockToastCustom = vi.fn()
 vi.mock('sonner', () => ({
   toast: {
     error: (...args: unknown[]) => mockToastError(...args),
     success: (...args: unknown[]) => mockToastSuccess(...args),
+    custom: (...args: unknown[]) => mockToastCustom(...args),
+    dismiss: vi.fn(),
   },
 }))
+
+/** Puts the notice the toaster was handed on screen, the way sonner would. */
+function showToastedNotice() {
+  const [draw, options] = mockToastCustom.mock.calls[0] as [
+    (toastId: string) => React.ReactElement,
+    { id: string },
+  ]
+  render(draw(options.id))
+}
 
 // Mock authClient.passkey
 const mockListUserPasskeys = vi.fn()
 const mockAddPasskey = vi.fn()
 const mockDeletePasskey = vi.fn()
 const mockUpdatePasskey = vi.fn()
+const mockSignOut = vi.fn()
 vi.mock('@/lib/auth-client', () => ({
   authClient: {
+    signOut: (...args: unknown[]) => mockSignOut(...args),
     passkey: {
       listUserPasskeys: (...args: unknown[]) => mockListUserPasskeys(...args),
       addPasskey: (...args: unknown[]) => mockAddPasskey(...args),
@@ -96,6 +116,10 @@ vi.mock('@/lib/auth-client', () => ({
 }))
 
 import { PasskeySettings } from '@/features/settings/Components/passkey-settings'
+
+// The screen asks its questions through the shared confirm dialog, so every
+// render sits inside its provider, as the app's layout does.
+const render = (ui: ReactElement) => renderBare(ui, { wrapper: ConfirmProvider })
 
 const MOCK_PASSKEY = {
   id: 'pk_1',
@@ -115,6 +139,10 @@ const MOCK_PASSKEY_SINGLE = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+})
+
+afterEach(() => {
+  vi.unstubAllGlobals()
 })
 
 describe('PasskeySettings', () => {
@@ -175,6 +203,25 @@ describe('PasskeySettings', () => {
       expect(mockToastSuccess).toHaveBeenCalledWith('Passkey registered successfully')
     })
 
+    it('names the new passkey after the device it is made on', async () => {
+      mockListUserPasskeys.mockResolvedValue({ data: [] })
+      mockAddPasskey.mockResolvedValue({})
+      const ua = vi
+        .spyOn(navigator, 'userAgent', 'get')
+        .mockReturnValue(
+          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/141.0.0.0 Safari/537.36'
+        )
+      render(<PasskeySettings />)
+      await waitFor(() => {
+        expect(screen.getByText(/register passkey/i)).toBeInTheDocument()
+      })
+      await userEvent.click(screen.getByText(/register passkey/i))
+      await waitFor(() => {
+        expect(mockAddPasskey).toHaveBeenCalledWith({ name: 'Chrome on Mac' })
+      })
+      ua.mockRestore()
+    })
+
     it('shows error toast when registration fails', async () => {
       mockListUserPasskeys.mockResolvedValue({ data: [] })
       mockAddPasskey.mockRejectedValue(new Error('WebAuthn not supported'))
@@ -208,6 +255,126 @@ describe('PasskeySettings', () => {
         expect(mockToastError).toHaveBeenCalledWith('Browser not supported')
       })
     })
+
+    it('stays on the page and says so when signing out for a new sign-in fails', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', {
+        ...window.location,
+        pathname: '/settings/account',
+        search: '',
+        assign,
+      })
+      mockListUserPasskeys.mockResolvedValue({ data: [] })
+      mockAddPasskey.mockResolvedValue({
+        data: null,
+        error: { code: 'SESSION_NOT_FRESH', message: 'Session is not fresh', status: 403 },
+      })
+      // Still signed in: the sign-in page would only send them straight back
+      mockSignOut.mockResolvedValue({ data: null, error: { message: 'Server error', status: 500 } })
+
+      render(<PasskeySettings />)
+      await userEvent.click(await screen.findByRole('button', { name: /register passkey/i }))
+      await waitFor(() => {
+        expect(mockToastCustom).toHaveBeenCalledTimes(1)
+      })
+      showToastedNotice()
+      await userEvent.click(screen.getByRole('button', { name: 'Sign in again' }))
+
+      await waitFor(() => {
+        expect(mockToastError).toHaveBeenCalledWith(
+          'An unexpected error occurred. Please try again.'
+        )
+      })
+      expect(assign).not.toHaveBeenCalled()
+    })
+
+    it('asks for a new sign-in, and offers it, when the sign-in is too old to add a passkey', async () => {
+      const assign = vi.fn()
+      vi.stubGlobal('location', {
+        ...window.location,
+        pathname: '/settings/account',
+        search: '',
+        assign,
+      })
+      mockListUserPasskeys.mockResolvedValue({ data: [] })
+      // What Better Auth answers once the session is older than its fresh age
+      mockAddPasskey.mockResolvedValue({
+        data: null,
+        error: {
+          code: 'SESSION_NOT_FRESH',
+          message: 'Session is not fresh',
+          status: 403,
+          statusText: 'Forbidden',
+        },
+      })
+
+      render(<PasskeySettings />)
+      await userEvent.click(await screen.findByRole('button', { name: /register passkey/i }))
+
+      await waitFor(() => {
+        expect(mockToastCustom).toHaveBeenCalledTimes(1)
+      })
+      showToastedNotice()
+      expect(screen.getByRole('status')).toHaveTextContent('Sign in again to add a passkey')
+      expect(screen.queryByText(/session is not fresh/i)).not.toBeInTheDocument()
+      expect(mockToastError).not.toHaveBeenCalled()
+      // Nothing happens to the session until the person asks for it
+      expect(mockSignOut).not.toHaveBeenCalled()
+      expect(screen.getByRole('button', { name: /register passkey/i })).toBeEnabled()
+
+      await userEvent.click(screen.getByRole('button', { name: 'Sign in again' }))
+
+      await waitFor(() => {
+        expect(assign).toHaveBeenCalledWith('/auth/sign-in?redirect=%2Fsettings%2Faccount')
+      })
+      // The sign-in page sends a signed-in visitor straight back, so the old
+      // session has to be over before the tab gets there
+      expect(mockSignOut).toHaveBeenCalledTimes(1)
+      expect(mockSignOut.mock.invocationCallOrder[0]).toBeLessThan(
+        assign.mock.invocationCallOrder[0]
+      )
+    })
+
+    // What the passkey client really hands back, see @better-auth/passkey's client
+    it.each([
+      {
+        how: 'dismissed or left to time out',
+        code: 'ERROR_PASSTHROUGH_SEE_CAUSE_PROPERTY',
+        message:
+          'The operation either timed out or was not allowed. See: https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.',
+      },
+      {
+        how: 'replaced by another prompt',
+        code: 'ERROR_CEREMONY_ABORTED',
+        message: 'Registration cancelled',
+      },
+    ])('says nothing and can be tried again when the browser prompt was $how', async ({
+      code,
+      message,
+    }) => {
+      mockListUserPasskeys.mockResolvedValue({ data: [] })
+      mockAddPasskey.mockResolvedValue({
+        data: null,
+        error: { code, message, status: 400, statusText: 'BAD_REQUEST' },
+      })
+
+      render(<PasskeySettings />)
+      await userEvent.click(await screen.findByRole('button', { name: /register passkey/i }))
+      await waitFor(() => {
+        expect(mockAddPasskey).toHaveBeenCalledTimes(1)
+      })
+
+      // Back to a button that can be pressed, not a spinner that never stops
+      const button = await screen.findByRole('button', { name: /register passkey/i })
+      expect(button).toBeEnabled()
+      expect(mockToastError).not.toHaveBeenCalled()
+      expect(mockToastCustom).not.toHaveBeenCalled()
+
+      await userEvent.click(button)
+      await waitFor(() => {
+        expect(mockAddPasskey).toHaveBeenCalledTimes(2)
+      })
+    })
   })
 
   describe('delete passkey', () => {
@@ -232,11 +399,13 @@ describe('PasskeySettings', () => {
       })
 
       // Click the "Delete" button in dialog
-      const deleteButtons = screen.getAllByText('Delete')
-      const confirmButton = deleteButtons.find(
-        (btn) => btn.closest("[data-testid='dialog']") !== null
-      )
-      await userEvent.click(confirmButton!)
+      // The question names the passkey it is about to remove.
+      const question = screen.getByRole('alertdialog')
+      expect(within(question).getByText('MacBook Pro')).toBeInTheDocument()
+      // The Button stub above wraps the real action in a second button; the
+      // inner one is the one that answers.
+      const answers = within(question).getAllByRole('button', { name: 'Delete' })
+      await userEvent.click(answers[answers.length - 1])
 
       await waitFor(() => {
         expect(mockDeletePasskey).toHaveBeenCalledWith({ id: 'pk_1' })
@@ -262,11 +431,13 @@ describe('PasskeySettings', () => {
         ).toBeInTheDocument()
       })
 
-      const deleteButtons = screen.getAllByText('Delete')
-      const confirmButton = deleteButtons.find(
-        (btn) => btn.closest("[data-testid='dialog']") !== null
-      )
-      await userEvent.click(confirmButton!)
+      // The question names the passkey it is about to remove.
+      const question = screen.getByRole('alertdialog')
+      expect(within(question).getByText('MacBook Pro')).toBeInTheDocument()
+      // The Button stub above wraps the real action in a second button; the
+      // inner one is the one that answers.
+      const answers = within(question).getAllByRole('button', { name: 'Delete' })
+      await userEvent.click(answers[answers.length - 1])
 
       await waitFor(() => {
         expect(mockToastError).toHaveBeenCalledWith('Failed to delete passkey')

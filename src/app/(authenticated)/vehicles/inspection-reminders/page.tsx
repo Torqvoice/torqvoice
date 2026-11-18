@@ -1,6 +1,11 @@
 import { PageHeader } from '@/components/page-header'
 import { previewInspectionReminders } from '@/features/inspection-reminders/Actions/inspectionReminderActions'
 import { RemindersWizard } from './reminders-wizard'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('inspectionReminders')
+}
 
 export default async function InspectionRemindersPage({
   searchParams,

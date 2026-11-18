@@ -1,12 +1,14 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Eye, EyeOff, Trash2 } from 'lucide-react'
+import { Eye, EyeOff, PenLine, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
 import { withOrgNumberLabel } from '../Lib/labelOverrides'
+import { RAIL_FOCUS, railArrow } from './railKeys'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useFormatDate } from '@/lib/use-format-date'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
 import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
@@ -56,6 +58,7 @@ import { SpecCanvas } from '../Render/SpecCanvas'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
+import { useSampleFormat } from './useSampleFormat'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { specForPreset } from './presetSpec'
 import { themeOf } from './designTheme'
@@ -125,6 +128,7 @@ export function InvoiceDesigner({
   const typeKeyEnabled = useTypeKeyEnabled()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
+  const { formatDate } = useFormatDate()
   const messages = useMessages() as {
     pdf?: Record<string, Record<string, string>>
   }
@@ -346,9 +350,17 @@ export function InvoiceDesigner({
   }, [telegramOn, telegramBotLink])
 
   /** What a workshop's own sheet says, with the sample standing in for a job. */
+  const sampleFormat = useSampleFormat()
   const data: DocumentData = useMemo(
     () => ({
-      ...buildSampleData({ ...workshop, typeKeyEnabled }, customFields, t, printLabels, docType),
+      ...buildSampleData(
+        { ...workshop, typeKeyEnabled },
+        customFields,
+        t,
+        printLabels,
+        docType,
+        sampleFormat
+      ),
       telegramQr:
         telegramOn && telegramQrDataUri
           ? { dataUri: telegramQrDataUri, label: L('telegramConnect', 'Chat with us on Telegram') }
@@ -361,6 +373,7 @@ export function InvoiceDesigner({
       t,
       printLabels,
       docType,
+      sampleFormat,
       telegramOn,
       telegramQrDataUri,
       L,
@@ -442,6 +455,7 @@ export function InvoiceDesigner({
           .filter(Boolean)
           .join(' '),
         confirmLabel: t('delete'),
+        icon: Trash2,
         destructive: true,
       })
       if (!ok) return false
@@ -650,6 +664,9 @@ export function InvoiceDesigner({
         title: t('leaveTitle'),
         description: t('leaveBody'),
         confirmLabel: t('leaveConfirm'),
+        cancelLabel: t('leaveCancel'),
+        icon: PenLine,
+        defaultFocus: 'cancel',
       })
       if (!go) return
     }
@@ -816,7 +833,7 @@ export function InvoiceDesigner({
                         <SpecThumbnail spec={specForDesign(design)} />
                         <div className="mt-2.5 truncate text-sm font-semibold">{design.name}</div>
                         <div className="text-xs leading-snug text-[#71767e]">
-                          {t('savedOn', { date: new Date(design.savedAt).toLocaleDateString() })}
+                          {t('savedOn', { date: formatDate(design.savedAt) })}
                           {design.autoRule && ` · ${t(`autoRule.${design.autoRule}`)}`}
                         </div>
                       </button>
@@ -857,7 +874,12 @@ export function InvoiceDesigner({
                     {tPreset.has(`${preset.id}.name`) ? tPreset(`${preset.id}.name`) : preset.id}
                   </div>
                   <div className="text-xs leading-snug text-[#71767e]">
-                    {t(`headerStyle.${preset.template.headerStyle}.desc`)}
+                    {/* The template's own words, as the Templates settings page
+                        describes it. Its header style's line was shared by two
+                        templates each, so different sheets read the same. */}
+                    {tPreset.has(`${preset.id}.description`)
+                      ? tPreset(`${preset.id}.description`)
+                      : t(`headerStyle.${preset.template.headerStyle}.desc`)}
                   </div>
                 </button>
               )
@@ -869,6 +891,11 @@ export function InvoiceDesigner({
   }
 
   const rail = [...layout.sections].sort((a, b) => a.order - b.order)
+  /** The keyboard's reorder: one step up or down the rail from where the section is. */
+  const stepSection = (index: number, direction: -1 | 1) => {
+    const over = rail[index + direction]
+    if (over) moveSection(rail[index].id, over.id)
+  }
   /** Sections that actually drew something with the sample data. */
   const renderedIds = new Set(spec.blocks.map((b) => b.id))
 
@@ -1035,7 +1062,8 @@ export function InvoiceDesigner({
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="flex w-full items-center gap-2 rounded-[7px] py-2 pl-2 pr-2 text-left hover:bg-[#f4f5f7]"
+              aria-current={selected === null ? 'true' : undefined}
+              className={`flex w-full items-center gap-2 rounded-[7px] py-2 pl-2 pr-2 text-left hover:bg-[#f4f5f7] ${RAIL_FOCUS}`}
               style={{ background: selected === null ? '#eef2ff' : undefined }}
             >
               <span className="text-[13px]">🎨</span>
@@ -1046,7 +1074,10 @@ export function InvoiceDesigner({
             {t('sections')}
           </div>
           <div className="flex flex-1 flex-col gap-[3px] overflow-y-auto px-2 pb-3.5">
-            {rail.map((section) => (
+            {rail.map((section, index) => (
+              // The row is not itself a control: the name selects, the grip
+              // moves, the eye shows or hides, each a button of its own. A
+              // click anywhere else on the row still selects, for a mouse.
               <div
                 key={section.id}
                 data-testid={`rail-${section.id}`}
@@ -1059,14 +1090,43 @@ export function InvoiceDesigner({
                   if (dragged && dragged !== section.id) moveSection(dragged, section.id)
                 }}
                 onClick={() => setSelected(section.id)}
-                className="flex cursor-pointer items-center gap-2 rounded-[7px] py-2 pl-1.5 pr-2 hover:bg-[#f4f5f7]"
+                onKeyDown={(e) => {
+                  // Alt with an arrow moves the section from anywhere in its row.
+                  const direction = railArrow(e, true)
+                  if (!direction) return
+                  e.preventDefault()
+                  stepSection(index, direction)
+                }}
+                className="flex cursor-pointer items-center gap-2 rounded-[7px] py-0.5 pl-1 pr-2 hover:bg-[#f4f5f7]"
                 style={{
                   background: selected === section.id ? '#eef2ff' : undefined,
                   opacity: section.visible ? 1 : 0.45,
                 }}
               >
-                <span className="cursor-grab text-[13px] tracking-tighter text-[#b3b7bd]">⠿</span>
-                <span className="flex-1 truncate text-[13.5px]">{sectionName(section.id)}</span>
+                <button
+                  type="button"
+                  aria-label={t('sectionDragHandleKeyboard', { section: sectionName(section.id) })}
+                  title={t('sectionDragHandle')}
+                  onKeyDown={(e) => {
+                    // The grip needs no Alt: arrows are all it answers to.
+                    const direction = railArrow(e, false)
+                    if (!direction) return
+                    e.preventDefault()
+                    e.stopPropagation()
+                    stepSection(index, direction)
+                  }}
+                  className={`cursor-grab rounded px-0.5 py-1 text-[13px] tracking-tighter text-[#b3b7bd] ${RAIL_FOCUS}`}
+                >
+                  ⠿
+                </button>
+                <button
+                  type="button"
+                  aria-current={selected === section.id ? 'true' : undefined}
+                  onClick={() => setSelected(section.id)}
+                  className={`min-w-0 flex-1 truncate rounded py-1.5 text-left text-[13.5px] ${RAIL_FOCUS}`}
+                >
+                  {sectionName(section.id)}
+                </button>
                 {section.column && (
                   <span
                     data-testid={`rail-column-${section.id}`}
@@ -1094,7 +1154,7 @@ export function InvoiceDesigner({
                     e.stopPropagation()
                     patchSection(section.id, { visible: !section.visible })
                   }}
-                  className="px-0.5"
+                  className={`rounded px-0.5 ${RAIL_FOCUS}`}
                   style={{ color: section.visible ? '#5b6068' : '#c9ccd1' }}
                   title={section.visible ? t('sectionShownHint') : t('sectionHiddenHint')}
                 >

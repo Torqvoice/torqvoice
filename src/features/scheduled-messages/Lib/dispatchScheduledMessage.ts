@@ -47,6 +47,14 @@ export async function dispatchScheduledMessage(message: DispatchableMessage): Pr
         to,
         subject: message.subject?.trim() || undefined,
         context: { message: message.body, customerName: customer?.name },
+        // Kept for context, not listed: a reminder campaign mails many
+        // customers at once, and the inbox should show the ones who answer.
+        thread: {
+          customerId: customer?.id,
+          kind: 'document',
+          relatedEntityType: 'ScheduledMessage',
+          relatedEntityId: message.id,
+        },
       })
       return
     }
@@ -84,6 +92,12 @@ export async function dispatchScheduledMessage(message: DispatchableMessage): Pr
           data: { status: 'sent', providerMsgId: result?.providerMsgId ?? null },
         })
       } catch (error) {
+        // The plan saying no: nothing was attempted, so no failed text is
+        // left in the customer's thread. The reminder itself keeps the reason.
+        if (error instanceof Error && error.name === 'FeatureGatedError') {
+          await db.smsMessage.delete({ where: { id: logged.id } }).catch(() => null)
+          throw error
+        }
         const errorMessage = error instanceof Error ? error.message : 'Unknown error'
         await db.smsMessage.update({
           where: { id: logged.id },

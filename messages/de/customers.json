@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Werkstatt-Standard",
     "invoiceDesignHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Eine Rechnung kann trotzdem ein eigenes wählen.",
     "reminderOptOut": "Keine Erinnerungen",
-    "reminderOptOutHint": "Diesen Kunden nicht in HU-Erinnerungen oder andere Kampagnen aufnehmen."
+    "reminderOptOutHint": "Diesen Kunden nicht in HU-Erinnerungen oder andere Kampagnen aufnehmen.",
+    "bookAppointment": "Termin buchen"
   },
   "serviceRequests": {
     "statusNew": "Neu",
@@ -120,6 +121,12 @@
     "saveNotes": "Notizen speichern",
     "submitted": "Eingereicht am {date}",
     "preferred": "Gewünscht: {date}",
+    "preferredMorning": "Gewünscht: {date}, vormittags",
+    "preferredAfternoon": "Gewünscht: {date}, nachmittags",
+    "files": "{count, plural, one {# Foto oder Video vom Kunden} other {# Fotos oder Videos vom Kunden}}",
+    "openPhoto": "Foto {number} öffnen",
+    "openVideo": "Video {number} öffnen",
+    "fileMissing": "Foto {number} ist nicht mehr verfügbar",
     "workOrderCreated": "Arbeitsauftrag erstellt",
     "workOrderError": "Arbeitsauftrag konnte nicht erstellt werden",
     "requestDismissed": "Anfrage abgelehnt",

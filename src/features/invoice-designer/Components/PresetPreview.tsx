@@ -11,6 +11,7 @@ import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
 import type { TaxComponentDefinition } from '@/lib/tax'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
 import { buildSampleData, type PrintLabels } from './sample'
+import { useSampleFormat } from './useSampleFormat'
 import { specForDesign, specForPreset } from './presetSpec'
 import type { DocumentType, SavedDesign } from './types'
 
@@ -28,6 +29,8 @@ interface PreviewWorkshop {
   slogan?: string
   /** The workshop's split tax, so a card shows its GST and QST lines. */
   taxComponents?: TaxComponentDefinition[] | null
+  /** How the workshop writes distance, for the sample car's mileage. */
+  unitSystem?: 'metric' | 'imperial'
 }
 
 /** The sample document on this workshop's own details, for a card's picture. */
@@ -35,6 +38,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
   const t = useTranslations('settings.designer')
   const typeKeyEnabled = useTypeKeyEnabled()
   const messages = useMessages() as { pdf?: Record<string, Record<string, string>> }
+  const sampleFormat = useSampleFormat()
 
   return useMemo(() => {
     const pdf = messages.pdf ?? {}
@@ -58,13 +62,15 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         typeKeyEnabled,
         logoUrl: logoUrl ?? '',
         taxComponents: workshop?.taxComponents ?? null,
+        unitSystem: workshop?.unitSystem,
       },
       [],
       t,
       labels,
-      docType
+      docType,
+      sampleFormat
     )
-  }, [docType, workshop, logoUrl, t, messages, typeKeyEnabled])
+  }, [docType, workshop, logoUrl, t, messages, typeKeyEnabled, sampleFormat])
 }
 
 export function PresetPreview({

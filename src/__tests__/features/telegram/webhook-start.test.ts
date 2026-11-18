@@ -27,8 +27,13 @@ vi.mock('@/lib/telegram', async (importOriginal) => ({
   sendTelegramMessage,
 }))
 vi.mock('@/lib/notify', () => ({ notify }))
+vi.mock('@/lib/backup/freeze', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/lib/backup/freeze')>()),
+  isRestoring: vi.fn(() => false),
+}))
 
 import { POST } from '@/app/api/webhooks/telegram/[organizationId]/route'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { BARE_START_REPLY } from '@/lib/telegram'
 
 const ORG = 'org_1'
@@ -51,6 +56,7 @@ const params = Promise.resolve({ organizationId: ORG })
 describe('the Telegram webhook', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(isRestoring).mockReturnValue(false)
     db.telegramMessage.create.mockResolvedValue({ id: 'msg_1' })
     db.telegramMessage.updateMany.mockResolvedValue({ count: 0 })
   })
@@ -142,5 +148,22 @@ describe('the Telegram webhook', () => {
     const response = await POST(request, { params })
     expect(response.status).toBe(200)
     expect(db.telegramMessage.create).not.toHaveBeenCalled()
+  })
+
+  it('asks Telegram to come back later while the workshop is being restored', async () => {
+    vi.mocked(isRestoring).mockReturnValue(true)
+    db.customer.findFirst.mockResolvedValue({ id: 'cust_42', name: 'Jane Cooper' })
+
+    for (const text of ['/start cust_42', 'Is the car ready?']) {
+      const response = await POST(update(text), { params })
+      expect(response.status).toBe(503)
+      expect(response.headers.get('Retry-After')).toBe('300')
+      expect(await response.json()).toEqual({ error: RESTORE_IN_PROGRESS_MESSAGE })
+    }
+    expect(isRestoring).toHaveBeenCalledWith(ORG)
+    expect(db.customer.update).not.toHaveBeenCalled()
+    expect(db.telegramMessage.updateMany).not.toHaveBeenCalled()
+    expect(db.telegramMessage.create).not.toHaveBeenCalled()
+    expect(notify).not.toHaveBeenCalled()
   })
 })

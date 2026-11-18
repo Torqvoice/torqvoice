@@ -6,7 +6,8 @@ import { DocsLink } from '@/components/docs-link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2 } from 'lucide-react'
+import { Loader2, UserX, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import {
   createTechnician,
   updateTechnician,
@@ -36,10 +37,13 @@ export function TechnicianDialog({
   open,
   onOpenChange,
   technician,
+  onSetTimeOff,
 }: {
   open: boolean
   onOpenChange: (open: boolean) => void
   technician?: Technician | null
+  /** Set this technician on leave; left out when time off is switched off. */
+  onSetTimeOff?: (technician: Technician) => void
 }) {
   const [name, setName] = useState('')
   const [color, setColor] = useState(PRESET_COLORS[0])
@@ -54,6 +58,7 @@ export function TechnicianDialog({
   const confirm = useConfirm()
   const t = useTranslations('workBoard.technician')
   const tc = useTranslations('common.buttons')
+  const tw = useTranslations('workshopCalendar')
 
   useEffect(() => {
     if (open) {
@@ -80,6 +85,9 @@ export function TechnicianDialog({
     if (!name.trim()) return
     setLoading(true)
 
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is, and the dialog stays
+    // open with what was typed.
     if (technician) {
       const res = await updateTechnician({
         id: technician.id,
@@ -87,8 +95,8 @@ export function TechnicianDialog({
         color,
         skills: skills.trim() || null,
         userId: userId && userId !== 'none' ? userId : null,
-      })
-      if (res.success) {
+      }).catch(() => null)
+      if (res?.success) {
         // Update store
         const store = useWorkBoardStore.getState()
         store.setTechnicians(
@@ -105,6 +113,8 @@ export function TechnicianDialog({
           )
         )
         onOpenChange(false)
+      } else {
+        toast.error(res?.error || t('saveFailed'))
       }
     } else {
       const res = await createTechnician({
@@ -112,10 +122,12 @@ export function TechnicianDialog({
         color,
         skills: skills.trim() || undefined,
         userId: userId && userId !== 'none' ? userId : undefined,
-      })
-      if (res.success && res.data) {
+      }).catch(() => null)
+      if (res?.success && res.data) {
         addTechnician(res.data as Technician)
         onOpenChange(false)
+      } else {
+        toast.error(res?.error || t('saveFailed'))
       }
     }
 
@@ -126,7 +138,7 @@ export function TechnicianDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>{technician ? t('editTitle') : t('addTitle')}</DialogTitle>
           <DocsLink
@@ -192,6 +204,21 @@ export function TechnicianDialog({
             <p className="text-muted-foreground text-xs">{t('standaloneOnly')}</p>
           )}
 
+          {technician && onSetTimeOff && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={() => {
+                onOpenChange(false)
+                onSetTimeOff(technician)
+              }}
+            >
+              <UserX className="mr-2 h-4 w-4" />
+              {tw('timeOff.setForTechnician', { name: technician.name })}
+            </Button>
+          )}
+
           <div className="flex justify-between gap-2">
             {technician ? (
               <Button
@@ -203,14 +230,19 @@ export function TechnicianDialog({
                     title: t('deleteTitle'),
                     description: t('deleteDescription', { name: technician.name }),
                     confirmLabel: tc('delete'),
+                    icon: Trash2,
                     destructive: true,
                   })
                   if (!ok) return
                   setDeleting(true)
-                  const res = await deleteTechnician(technician.id)
-                  if (res.success) {
+                  // Caught for the same reason as a save: a dropped
+                  // connection throws instead of answering.
+                  const res = await deleteTechnician(technician.id).catch(() => null)
+                  if (res?.success) {
                     useWorkBoardStore.getState().removeTechnician(technician.id)
                     onOpenChange(false)
+                  } else {
+                    toast.error(res?.error || t('deleteFailed'))
                   }
                   setDeleting(false)
                 }}

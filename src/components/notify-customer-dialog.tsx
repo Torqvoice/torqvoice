@@ -1,5 +1,6 @@
 'use client'
 
+import { handleGated } from '@/components/upgrade-gate'
 import { useState, useEffect } from 'react'
 import {
   Dialog,
@@ -87,6 +88,9 @@ export function NotifyCustomerDialog({
     setSending(true)
 
     const results: string[] = []
+    // Set when the plan refused the text: the upgrade prompt is up, and the
+    // dialog stays open behind it so the message is still there to send.
+    let smsGated = false
 
     if (sendSms && hasPhone) {
       const res = await sendSmsToCustomer({
@@ -96,6 +100,7 @@ export function NotifyCustomerDialog({
         relatedEntityId,
       })
       if (res.success) results.push(t('smsSent'))
+      else if (handleGated(res)) smsGated = true
       else toast.error(res.error || t('failedSms'))
     }
 
@@ -115,8 +120,11 @@ export function NotifyCustomerDialog({
             }
           : null,
       })
-      if (res.success) results.push(t('emailSent'))
-      else toast.error(res.error || t('failedEmail'))
+      if (res.success) {
+        results.push(t('emailSent'))
+        // Gone already, so trying the text again does not mail it twice.
+        if (smsGated) setSendEmail(false)
+      } else if (!handleGated(res)) toast.error(res.error || t('failedEmail'))
     }
 
     if (results.length > 0) {
@@ -124,7 +132,7 @@ export function NotifyCustomerDialog({
     }
 
     setSending(false)
-    onOpenChange(false)
+    if (!smsGated) onOpenChange(false)
   }
 
   const canSend = (sendSms || sendEmail) && message.trim()

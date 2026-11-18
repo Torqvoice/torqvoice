@@ -235,11 +235,25 @@ const WHATSAPP: MessagingProvider[] = [
     countries: 'global',
     capabilities: ['whatsapp.send', 'whatsapp.receive'],
     credentials: [
+      // Meta issues the phone number ID only after it has verified the
+      // webhook, and the webhook only answers once the connection is live.
+      // So both of these may wait: the verify token and app secret are
+      // enough to connect and get the callback URL, and the number and
+      // token come back here once Meta has handed them out.
       text('phoneNumberId', whatsappCredentialKey('meta', 'phoneNumberId'), {
         placeholder: '123456789012345',
+        required: false,
+        deferrable: true,
+        help: 'phoneNumberIdHelp',
       }),
-      secret('accessToken', whatsappCredentialKey('meta', 'accessToken')),
-      text('verifyToken', whatsappCredentialKey('meta', 'verifyToken')),
+      secret('accessToken', whatsappCredentialKey('meta', 'accessToken'), {
+        required: false,
+        deferrable: true,
+        help: 'accessTokenHelp',
+      }),
+      text('verifyToken', whatsappCredentialKey('meta', 'verifyToken'), {
+        help: 'verifyTokenHelp',
+      }),
       // Required on the form: without it nothing Meta posts can be verified,
       // so the webhook refuses every delivery. The adapter itself still sends
       // without one, for a connection made before the form asked.

@@ -58,7 +58,12 @@
       "everyone": "Todo o trabalho",
       "thisWeek": "Esta semana"
     },
-    "dropNeedsLane": "Agrupe o quadro por técnico ou baia antes de soltar um serviço nele."
+    "dropNeedsLane": "Agrupe o quadro por técnico ou baia antes de soltar um serviço nele.",
+    "load": {
+      "over": "{amount} a mais",
+      "spoken": "Agendado: {booked} de {capacity}",
+      "spokenOver": "Agendado: {booked} de {capacity}, excedido em {amount}"
+    }
   },
   "unassigned": {
     "title": "Trabalhos Não Atribuídos ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Gerenciado na página Equipe, junto com o acesso ao aplicativo.",
     "skills": "Habilidades",
     "skillsPlaceholder": "Diagnóstico, certificado em veículos elétricos",
-    "skillsHint": "Aparece abaixo do nome onde o trabalho é distribuído. Opcional."
+    "skillsHint": "Aparece abaixo do nome onde o trabalho é distribuído. Opcional.",
+    "saveFailed": "Não foi possível salvar o técnico. Tente novamente.",
+    "deleteFailed": "Não foi possível excluir o técnico. Tente novamente."
   },
   "jobDetail": {
     "viewDetails": "Ver Detalhes",
@@ -90,7 +97,9 @@
     "endTime": "Horário de término",
     "failedDuration": "Falha ao atualizar a duração",
     "failedTimes": "Falha ao atualizar os horários",
-    "startTime": "Horário de início"
+    "startTime": "Horário de início",
+    "alsoOnJob": "Também neste serviço",
+    "failedHelper": "Falha ao atualizar quem está no serviço"
   },
   "presenter": {
     "title": "Quadro de Trabalho",
@@ -160,6 +169,9 @@
     "none": "Ainda ninguém",
     "promised": "Prometido",
     "promiseLate": "Atrasado",
-    "promiseOverdue": "Prometido ao cliente para um momento que já passou"
+    "promiseOverdue": "Prometido ao cliente para um momento que já passou",
+    "alsoOnJob": "Também no serviço",
+    "with": "Com {name}",
+    "helping": "Ajudando"
   }
 }

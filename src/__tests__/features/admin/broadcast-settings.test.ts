@@ -30,6 +30,17 @@ vi.mock('@/lib/demo', () => ({
   demoGuard: () => undefined,
 }))
 
+// Browser branding is gated on a licensed self-hosted install.
+const features = { cloud: false, licensed: true }
+vi.mock('@/lib/features', () => ({
+  isCloudMode: () => features.cloud,
+  installHasLicense: async () => features.licensed,
+}))
+const invalidateAppBranding = vi.fn()
+vi.mock('@/lib/branding', () => ({
+  invalidateAppBranding: () => invalidateAppBranding(),
+}))
+
 const { setSystemSettings } = await import('@/features/admin/Actions/setSystemSettings')
 
 /** The key/value pairs the action actually wrote. */
@@ -44,6 +55,9 @@ function written() {
 
 beforeEach(() => {
   upsert.mockClear()
+  invalidateAppBranding.mockClear()
+  features.cloud = false
+  features.licensed = true
 })
 
 describe('posting a notice', () => {
@@ -93,6 +107,42 @@ describe('posting a notice', () => {
 
   it('refuses a key it does not know', async () => {
     await setSystemSettings({ 'something.invented': 'x' })
+    expect(written()).toEqual({})
+  })
+})
+
+describe('browser branding', () => {
+  it('trims and caps the app name', async () => {
+    await setSystemSettings({ 'branding.appName': `  ${'y'.repeat(90)}  ` })
+    expect(written()['branding.appName']).toBe('y'.repeat(40))
+  })
+
+  it('clears the branding cache after saving a branding key', async () => {
+    await setSystemSettings({ 'branding.appName': 'Bilverksted' })
+    expect(invalidateAppBranding).toHaveBeenCalledTimes(1)
+  })
+
+  it('leaves the branding cache alone for other settings', async () => {
+    await setSystemSettings({ 'smtp.host': 'mail.example.com' })
+    expect(invalidateAppBranding).not.toHaveBeenCalled()
+  })
+
+  it('refuses branding keys in cloud mode', async () => {
+    // The card is hidden there, but a client can still post the key.
+    features.cloud = true
+    const result = await setSystemSettings({ 'branding.appName': 'Not TorqVoice' })
+    expect(result.success).toBe(false)
+    expect(written()).toEqual({})
+    expect(invalidateAppBranding).not.toHaveBeenCalled()
+  })
+
+  it('refuses branding keys without a white-label licence', async () => {
+    features.licensed = false
+    const result = await setSystemSettings({
+      'branding.appIcon': 'icon.png',
+      'smtp.host': 'mail.example.com',
+    })
+    expect(result.success).toBe(false)
     expect(written()).toEqual({})
   })
 })

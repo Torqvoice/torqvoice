@@ -7,7 +7,11 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { isTireHotelEnabled } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
 import { searchWordsOf, typeKeySearchTerms } from '@/features/vehicles/Lib/typeKey'
+import { partIdsWithTagContaining } from '@/features/inventory/Lib/tagSearch.server'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
+import { accessFor } from '@/lib/viewer-access'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { listAppointments } from '@/features/calendar/Lib/appointmentList.server'
 
 export async function getRecentCustomers() {
   return withAuth(
@@ -36,7 +40,8 @@ export async function getRecentCustomers() {
 
 export async function globalSearch(query: string) {
   return withAuth(
-    async ({ organizationId }) => {
+    async (ctx) => {
+      const { organizationId } = ctx
       if (!query || query.trim().length < 2) {
         return {
           vehicles: [],
@@ -47,6 +52,7 @@ export async function globalSearch(query: string) {
           reminders: [],
           inspections: [],
           tireSets: [],
+          appointments: [],
         }
       }
 
@@ -90,116 +96,99 @@ export async function globalSearch(query: string) {
       // Only searched when the module is on, so a shop without it pays nothing.
       const tireHotelOn = await isTireHotelEnabled(organizationId)
 
-      const [vehicles, customers, services, parts, quotes, reminders, inspections, tireSets] =
-        await Promise.all([
-          db.vehicle.findMany({
-            where: vehicleWhere,
-            select: {
-              id: true,
-              make: true,
-              model: true,
-              year: true,
-              licensePlate: true,
-              hsn: true,
-              tsn: true,
-            },
-            take: 10,
-          }),
-          (async () => {
-            // For phone-like queries, use raw SQL to strip formatting before matching
-            if (isPhoneLike) {
-              const phoneCustomers = await db.$queryRaw<
-                {
-                  id: string
-                  name: string
-                  email: string | null
-                  phone: string | null
-                  company: string | null
-                }[]
-              >`
+      // Appointments live on the calendar, and seeing the calendar is reading
+      // jobs: a role that cannot open it is not shown them here either.
+      const appointmentsOn = (await accessFor(ctx)).reads(PermissionSubject.SERVICES)
+
+      const [
+        vehicles,
+        customers,
+        services,
+        parts,
+        quotes,
+        reminders,
+        inspections,
+        tireSets,
+        appointments,
+      ] = await Promise.all([
+        db.vehicle.findMany({
+          where: vehicleWhere,
+          select: {
+            id: true,
+            make: true,
+            model: true,
+            year: true,
+            licensePlate: true,
+            hsn: true,
+            tsn: true,
+          },
+          take: 10,
+        }),
+        (async () => {
+          // For phone-like queries, use raw SQL to strip formatting before matching
+          if (isPhoneLike) {
+            const phoneCustomers = await db.$queryRaw<
+              {
+                id: string
+                name: string
+                email: string | null
+                phone: string | null
+                company: string | null
+              }[]
+            >`
             SELECT id, name, email, phone, company
             FROM "public"."customers"
             WHERE "organizationId" = ${organizationId}
               AND REGEXP_REPLACE(phone, '[^0-9]', '', 'g') LIKE ${'%' + digitsOnly + '%'}
             LIMIT 10
           `
-              // Fetch vehicles for matched customers
-              const customerIds = phoneCustomers.map((c) => c.id)
-              const customerVehicles =
-                customerIds.length > 0
-                  ? await db.vehicle.findMany({
-                      where: { customerId: { in: customerIds }, isArchived: false },
-                      select: {
-                        id: true,
-                        make: true,
-                        model: true,
-                        year: true,
-                        licensePlate: true,
-                        customerId: true,
-                      },
-                      take: 25,
-                      orderBy: { updatedAt: 'desc' },
-                    })
-                  : []
-              return phoneCustomers.map((c) => ({
-                ...c,
-                vehicles: customerVehicles
-                  .filter((v) => v.customerId === c.id)
-                  .slice(0, 5)
-                  .map(({ customerId: _, ...v }) => v),
-              }))
-            }
-            // Standard text search
-            return db.customer.findMany({
-              where: {
-                organizationId,
-                AND: words.map((word) => ({
-                  OR: [
-                    { name: { contains: word, mode } },
-                    { email: { contains: word, mode } },
-                    { phone: { contains: word, mode } },
-                    { company: { contains: word, mode } },
-                  ],
-                })),
-              },
-              select: {
-                id: true,
-                name: true,
-                email: true,
-                phone: true,
-                company: true,
-                vehicles: {
-                  where: { isArchived: false },
-                  select: {
-                    id: true,
-                    make: true,
-                    model: true,
-                    year: true,
-                    licensePlate: true,
-                  },
-                  take: 5,
-                  orderBy: { updatedAt: 'desc' },
-                },
-              },
-              take: 10,
-            })
-          })(),
-          db.serviceRecord.findMany({
+            // Fetch vehicles for matched customers
+            const customerIds = phoneCustomers.map((c) => c.id)
+            const customerVehicles =
+              customerIds.length > 0
+                ? await db.vehicle.findMany({
+                    where: { customerId: { in: customerIds }, isArchived: false },
+                    select: {
+                      id: true,
+                      make: true,
+                      model: true,
+                      year: true,
+                      licensePlate: true,
+                      customerId: true,
+                    },
+                    take: 25,
+                    orderBy: { updatedAt: 'desc' },
+                  })
+                : []
+            return phoneCustomers.map((c) => ({
+              ...c,
+              vehicles: customerVehicles
+                .filter((v) => v.customerId === c.id)
+                .slice(0, 5)
+                .map(({ customerId: _, ...v }) => v),
+            }))
+          }
+          // Standard text search
+          return db.customer.findMany({
             where: {
               organizationId,
               AND: words.map((word) => ({
                 OR: [
-                  { title: { contains: word, mode } },
-                  { invoiceNumber: { contains: word, mode } },
-                  { techName: { contains: word, mode } },
+                  { name: { contains: word, mode } },
+                  { email: { contains: word, mode } },
+                  { phone: { contains: word, mode } },
+                  { company: { contains: word, mode } },
                 ],
               })),
             },
             select: {
               id: true,
-              title: true,
-              invoiceNumber: true,
-              vehicle: {
+              name: true,
+              email: true,
+              phone: true,
+              company: true,
+              vehicles: {
+                where: { isArchived: false },
                 select: {
                   id: true,
                   make: true,
@@ -207,19 +196,59 @@ export async function globalSearch(query: string) {
                   year: true,
                   licensePlate: true,
                 },
+                take: 5,
+                orderBy: { updatedAt: 'desc' },
               },
             },
             take: 10,
-          }),
-          db.inventoryPart.findMany({
+          })
+        })(),
+        db.serviceRecord.findMany({
+          where: {
+            organizationId,
+            AND: words.map((word) => ({
+              OR: [
+                { title: { contains: word, mode } },
+                { invoiceNumber: { contains: word, mode } },
+                { techName: { contains: word, mode } },
+              ],
+            })),
+          },
+          select: {
+            id: true,
+            title: true,
+            invoiceNumber: true,
+            vehicle: {
+              select: {
+                id: true,
+                make: true,
+                model: true,
+                year: true,
+                licensePlate: true,
+              },
+            },
+          },
+          take: 10,
+        }),
+        (async () => {
+          // Tags are a text array Prisma cannot search by "contains", so the
+          // parts a word finds in a tag are looked up first, per word, for
+          // the first few words of a query.
+          const tagged = await Promise.all(
+            words.map((word, i) =>
+              i < 8 ? partIdsWithTagContaining(organizationId, word) : Promise.resolve([])
+            )
+          )
+          return db.inventoryPart.findMany({
             where: {
               organizationId,
               isArchived: false,
-              AND: words.map((word) => ({
+              AND: words.map((word, i) => ({
                 OR: [
                   { name: { contains: word, mode } },
                   { partNumber: { contains: word, mode } },
                   { supplier: { contains: word, mode } },
+                  { id: { in: tagged[i] } },
                 ],
               })),
             },
@@ -228,104 +257,151 @@ export async function globalSearch(query: string) {
               name: true,
               partNumber: true,
               quantity: true,
+              trackStock: true,
               unit: true,
             },
             take: 10,
-          }),
-          db.quote.findMany({
-            where: {
-              organizationId,
-              AND: words.map((word) => ({
-                OR: [
-                  { title: { contains: word, mode } },
-                  { quoteNumber: { contains: word, mode } },
-                  { customer: { name: { contains: word, mode } } },
-                ],
-              })),
-            },
-            select: {
-              id: true,
-              title: true,
-              quoteNumber: true,
-              status: true,
-            },
-            take: 10,
-          }),
-          db.reminder.findMany({
-            where: {
-              organizationId,
-              AND: words.map((word) => ({
-                OR: [
-                  { title: { contains: word, mode } },
-                  { description: { contains: word, mode } },
-                  { vehicle: { make: { contains: word, mode } } },
-                  { vehicle: { model: { contains: word, mode } } },
-                  { vehicle: { licensePlate: { contains: word, mode } } },
-                  ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
-                  { customer: { name: { contains: word, mode } } },
-                ],
-              })),
-            },
-            select: {
-              id: true,
-              title: true,
-              dueDate: true,
-              isCompleted: true,
-              customer: { select: { id: true, name: true } },
-              vehicle: {
-                select: {
-                  id: true,
-                  make: true,
-                  model: true,
-                  year: true,
-                  licensePlate: true,
-                },
+          })
+        })(),
+        db.quote.findMany({
+          where: {
+            organizationId,
+            AND: words.map((word) => ({
+              OR: [
+                { title: { contains: word, mode } },
+                { quoteNumber: { contains: word, mode } },
+                { customer: { name: { contains: word, mode } } },
+              ],
+            })),
+          },
+          select: {
+            id: true,
+            title: true,
+            quoteNumber: true,
+            status: true,
+          },
+          take: 10,
+        }),
+        db.reminder.findMany({
+          where: {
+            organizationId,
+            AND: words.map((word) => ({
+              OR: [
+                { title: { contains: word, mode } },
+                { description: { contains: word, mode } },
+                { vehicle: { make: { contains: word, mode } } },
+                { vehicle: { model: { contains: word, mode } } },
+                { vehicle: { licensePlate: { contains: word, mode } } },
+                ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
+                { customer: { name: { contains: word, mode } } },
+              ],
+            })),
+          },
+          select: {
+            id: true,
+            title: true,
+            dueDate: true,
+            isCompleted: true,
+            customer: { select: { id: true, name: true } },
+            vehicle: {
+              select: {
+                id: true,
+                make: true,
+                model: true,
+                year: true,
+                licensePlate: true,
               },
             },
-            take: 10,
-          }),
-          db.inspection.findMany({
-            where: {
-              organizationId,
-              AND: words.map((word) => ({
-                OR: [
-                  { template: { name: { contains: word, mode } } },
-                  { notes: { contains: word, mode } },
-                  { vehicle: { make: { contains: word, mode } } },
-                  { vehicle: { model: { contains: word, mode } } },
-                  { vehicle: { licensePlate: { contains: word, mode } } },
-                  ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
-                ],
-              })),
-            },
-            select: {
-              id: true,
-              status: true,
-              createdAt: true,
-              template: { select: { name: true } },
-              vehicle: {
-                select: {
-                  id: true,
-                  make: true,
-                  model: true,
-                  year: true,
-                  licensePlate: true,
-                },
+          },
+          take: 10,
+        }),
+        db.inspection.findMany({
+          where: {
+            organizationId,
+            AND: words.map((word) => ({
+              OR: [
+                { template: { name: { contains: word, mode } } },
+                { notes: { contains: word, mode } },
+                { vehicle: { make: { contains: word, mode } } },
+                { vehicle: { model: { contains: word, mode } } },
+                { vehicle: { licensePlate: { contains: word, mode } } },
+                ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
+              ],
+            })),
+          },
+          select: {
+            id: true,
+            status: true,
+            createdAt: true,
+            template: { select: { name: true } },
+            vehicle: {
+              select: {
+                id: true,
+                make: true,
+                model: true,
+                year: true,
+                licensePlate: true,
               },
             },
-            take: 10,
-          }),
-          tireHotelOn
-            ? db.tireSet.findMany({
-                where: {
+          },
+          take: 10,
+        }),
+        tireHotelOn
+          ? db.tireSet.findMany({
+              where: {
+                organizationId,
+                AND: words.map((word) => ({
+                  OR: [
+                    { reference: { contains: word, mode } },
+                    { brand: { contains: word, mode } },
+                    { size: { contains: word, mode } },
+                    { location: { code: { contains: word, mode } } },
+                    { customer: { name: { contains: word, mode } } },
+                    { vehicle: { make: { contains: word, mode } } },
+                    { vehicle: { model: { contains: word, mode } } },
+                    { vehicle: { licensePlate: { contains: word, mode } } },
+                    ...typeKeyMatch(word).map((vehicle) => ({ vehicle })),
+                  ],
+                })),
+              },
+              select: {
+                id: true,
+                reference: true,
+                season: true,
+                size: true,
+                quantity: true,
+                status: true,
+                location: { select: { code: true } },
+                customer: { select: { id: true, name: true } },
+                vehicle: {
+                  select: {
+                    id: true,
+                    make: true,
+                    model: true,
+                    year: true,
+                    licensePlate: true,
+                  },
+                },
+              },
+              // Stored sets first: a released set is history, and the desk is
+              // almost always asking about something still on a shelf.
+              orderBy: [{ status: 'asc' }, { updatedAt: 'desc' }],
+              take: 10,
+            })
+          : Promise.resolve([]),
+        // The phone rings and somebody asks "when am I booked?": found by
+        // what it is, who it is with or the car, the coming ones first.
+        appointmentsOn
+          ? (async () =>
+              listAppointments(
+                {
                   organizationId,
                   AND: words.map((word) => ({
                     OR: [
-                      { reference: { contains: word, mode } },
-                      { brand: { contains: word, mode } },
-                      { size: { contains: word, mode } },
-                      { location: { code: { contains: word, mode } } },
+                      { title: { contains: word, mode } },
+                      { description: { contains: word, mode } },
                       { customer: { name: { contains: word, mode } } },
+                      { vehicle: { customer: { name: { contains: word, mode } } } },
                       { vehicle: { make: { contains: word, mode } } },
                       { vehicle: { model: { contains: word, mode } } },
                       { vehicle: { licensePlate: { contains: word, mode } } },
@@ -333,34 +409,22 @@ export async function globalSearch(query: string) {
                     ],
                   })),
                 },
-                select: {
-                  id: true,
-                  reference: true,
-                  season: true,
-                  size: true,
-                  quantity: true,
-                  status: true,
-                  location: { select: { code: true } },
-                  customer: { select: { id: true, name: true } },
-                  vehicle: {
-                    select: {
-                      id: true,
-                      make: true,
-                      model: true,
-                      year: true,
-                      licensePlate: true,
-                    },
-                  },
-                },
-                // Stored sets first: a released set is history, and the desk is
-                // almost always asking about something still on a shelf.
-                orderBy: [{ status: 'asc' }, { updatedAt: 'desc' }],
-                take: 10,
-              })
-            : Promise.resolve([]),
-        ])
+                { timeZone: await workshopTimeZone(organizationId), upcoming: 6, past: 4 }
+              ))()
+          : Promise.resolve([]),
+      ])
 
-      return { vehicles, customers, services, parts, quotes, reminders, inspections, tireSets }
+      return {
+        vehicles,
+        customers,
+        services,
+        parts,
+        quotes,
+        reminders,
+        inspections,
+        tireSets,
+        appointments,
+      }
     },
     {
       requiredPermissions: [

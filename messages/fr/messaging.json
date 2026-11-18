@@ -26,5 +26,53 @@
     "markUnread": "Marquer comme non lu",
     "nothingToMarkUnread": "Le client n'a pas encore écrit dans cette conversation.",
     "markUnreadFailed": "Impossible de marquer la conversation comme non lue."
+  },
+  "email": {
+    "badge": "E-mail",
+    "empty": "Aucun message dans cette conversation pour l'instant.",
+    "placeholder": "Écrire une réponse",
+    "subjectPlaceholder": "Objet",
+    "send": "Envoyer",
+    "sendHint": "Entrée envoie, Maj+Entrée ajoute une ligne",
+    "sendFailed": "Impossible d'envoyer l'e-mail",
+    "sentDocument": "Envoyé : {subject}",
+    "showQuoted": "Afficher le texte cité",
+    "hideQuoted": "Masquer le texte cité",
+    "spamFlag": "Le filtre de messagerie a signalé ce message comme spam possible.",
+    "unknownSender": "Cette adresse n'appartient encore à aucun client. Ajoutez-le comme client pour répondre.",
+    "ownVendorChoice": "Vous envoyez vos e-mails via votre propre fournisseur, les réponses arrivent donc à cette adresse.",
+    "ownVendorSettings": "Paramètres e-mail",
+    "ownVendorThread": "Vous envoyez vos e-mails via votre propre fournisseur, les réponses de ce client arrivent donc dans votre propre boîte mail.",
+    "replyFromMailApp": "Répondre depuis votre messagerie",
+    "attachment": "Pièce jointe",
+    "compose": {
+      "title": "Nouvel e-mail",
+      "searchPlaceholder": "Rechercher des clients",
+      "noMatches": "Aucun client ne correspond à votre recherche.",
+      "noRecipients": "Aucun client avec une adresse e-mail pour l'instant."
+    }
+  },
+  "portal": {
+    "badge": "Portail",
+    "empty": "{name} n'a pas encore écrit dans le portail.",
+    "placeholder": "Écrire à {name} dans le portail",
+    "send": "Envoyer le message",
+    "sendFailed": "Impossible d'envoyer le message",
+    "sendHint": "Entrée envoie, Maj+Entrée passe à la ligne. {name} le verra à sa prochaine visite sur le portail.",
+    "loadOlder": "Charger les messages précédents",
+    "loadFailed": "Impossible de charger la conversation.",
+    "tryAgain": "Réessayer",
+    "addPhoto": "Ajouter une photo",
+    "removePhoto": "Retirer {name}",
+    "uploadFailed": "La photo n'a pas pu être ajoutée. Les photos jusqu'à {size} Mo sont acceptées.",
+    "tooManyPhotos": "Un message peut contenir jusqu'à {count} photos.",
+    "photoFrom": "Photo de {name}",
+    "videoFrom": "Vidéo de {name}",
+    "openFile": "Ouvrir le fichier",
+    "you": "Vous",
+    "seen": "Vu",
+    "off": "Les messages du portail client sont désactivés : cette conversation peut être lue, mais pas recevoir de réponse.",
+    "offSettings": "Paramètres du portail client",
+    "deleteDescription": "Supprime toute la conversation avec {name}, pour cette personne aussi : elle disparaît de son portail."
   }
 }

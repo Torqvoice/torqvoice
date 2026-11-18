@@ -1,0 +1,1545 @@
+/* The customer portal's four themes and the few classes its shared parts use.
+
+   A theme is a block of variables on `[data-portal-theme='…']`. Every portal
+   page sits inside one `.portal-root` (Components/PortalRoot.tsx), which also
+   sets the workshop's own colour inline as `--p-accent` and the ink on it as
+   `--p-on-accent`; a theme's block only says what those are when the element
+   carries neither. Anything drawn outside that element (a dialog or menu that
+   a library moves to <body>) wraps its content in `PortalScope`, which carries
+   the same attribute and colours.
+
+   Nothing here uses the app's own tokens (`--background`, `--primary`): the
+   portal is the workshop's page and has no dark-mode switch. A theme decides
+   its own light or dark.
+
+   The classes are in the `components` layer, so a Tailwind utility on the
+   same element (`px-6`, `w-full`) still wins. The layer order is restated
+   first in case this sheet is ever read before the app's own.
+
+   Sections: 1 fonts · 2 themes · 3 root · 4 type · 5 buttons · 6 panels ·
+   7 fields · 8 small parts · 9 rows · 10 chat. A theme agent edits only its
+   own block in section 2. */
+
+@layer theme, base, components, utilities;
+
+@layer components {
+  /* ── 1. Fonts ───────────────────────────────────────────────────────────
+     The files come from npm (Fontsource), imported in the portal layout, the
+     way the app's own faces are. A browser fetches a face only when some text
+     is set in it, so a workshop on Daylight never downloads Newsreader. */
+  [data-portal-theme] {
+    --portal-font-archivo: "Archivo Variable", "Inter Variable", system-ui, sans-serif;
+    --portal-font-inter: "Inter Variable", "Inter Fallback", system-ui, sans-serif;
+    --portal-font-barlow-condensed:
+      "Barlow Condensed", "Barlow Condensed Fallback", "Arial Narrow", sans-serif;
+    --portal-font-barlow: "Barlow", system-ui, sans-serif;
+    --portal-font-newsreader: "Newsreader Variable", Georgia, "Times New Roman", serif;
+    --portal-font-instrument-sans: "Instrument Sans Variable", system-ui, sans-serif;
+    --portal-font-jakarta: "Plus Jakarta Sans Variable", system-ui, sans-serif;
+  }
+
+  /* ── 2. Themes ──────────────────────────────────────────────────────────
+     Daylight is also what any `[data-portal-theme]` gets before its own block
+     applies, so an unknown theme id still draws a finished page. */
+
+  /* Daylight: light and calm, the car in a dark band. Archivo + Inter. */
+  [data-portal-theme] {
+    color-scheme: light;
+    --p-accent: #c2410c;
+    --p-on-accent: #ffffff;
+
+    --p-bg: #f2f3ef;
+    --p-surface: #ffffff;
+    --p-soft: #e9ebe5;
+    --p-ink: #14181b;
+    --p-muted: #56606a;
+    --p-line: #daddd6;
+    /* The edge of an input: 3:1 against the surface, so the box is findable. */
+    --p-line-strong: #878e84;
+
+    /* The filled, non-accent button ("Pay now"). */
+    --p-strong: #14181b;
+    --p-on-strong: #ffffff;
+
+    /* The band the car in the workshop sits in. */
+    --p-hero-bg: #14181b;
+    --p-hero-ink: #ffffff;
+    --p-hero-muted: #b9c1c8;
+    --p-hero-btn: #ffffff;
+    --p-hero-btn-ink: #14181b;
+    --p-bar-on: color-mix(in srgb, var(--p-accent) 58%, #ffffff);
+    --p-bar-off: #3b434a;
+
+    /* The chat. */
+    --p-thread: #f7f8f5;
+    --p-bubble-them: #e9ebe5;
+    --p-bubble-them-ink: #14181b;
+    --p-bubble-me: #14181b;
+    --p-bubble-me-ink: #ffffff;
+    --p-photo: #d5d9d1;
+
+    --p-open: #15803d;
+    --p-danger: #b42318;
+    --p-danger-soft: #fdecea;
+    --p-focus: #14181b;
+
+    --p-radius: 20px;
+    --p-radius-control: 999px;
+    --p-radius-field: 14px;
+    --p-radius-badge: 999px;
+    --p-radius-bubble: 18px;
+
+    --p-font-display: var(--portal-font-archivo);
+    --p-font-body: var(--portal-font-inter);
+    --p-display-weight: 700;
+    --p-display-tracking: -0.02em;
+    --p-display-transform: none;
+    --p-label-tracking: 0.08em;
+    --p-label-transform: uppercase;
+    --p-btn-font: var(--p-font-body);
+    --p-btn-weight: 600;
+    --p-btn-tracking: 0;
+    --p-btn-transform: none;
+
+    /* How tall the theme's chrome is: its header, and the phone's bottom
+       navigation (without the safe area). A page that fills the screen, like
+       the chat, subtracts them. A theme whose chrome is another height says
+       so in its own block, and again from 1024 px where the desk bar takes
+       over (see the media rule after the themes). */
+    --p-chrome-top: 60px;
+    --p-chrome-bottom: 76px;
+  }
+
+  /* Garage: dark pit board, one hazard colour. Barlow Condensed + Barlow.
+     A near-black ground cut by thin rules; the colour is only ever a fill
+     ("now", a primary action) or a small mark, never words on the ground. */
+  [data-portal-theme="garage"] {
+    color-scheme: dark;
+    --p-accent: #ffd60a;
+    --p-on-accent: #0c0d0e;
+
+    --p-bg: #0c0d0e;
+    --p-surface: #15171a;
+    --p-soft: #25292e;
+    --p-ink: #f4f2ec;
+    --p-muted: #a9aeb5;
+    --p-line: #2e3238;
+    --p-line-strong: #6b727b;
+
+    --p-strong: #f4f2ec;
+    --p-on-strong: #0c0d0e;
+
+    --p-hero-bg: #15171a;
+    --p-hero-ink: #f4f2ec;
+    --p-hero-muted: #a9aeb5;
+    --p-hero-btn: var(--p-accent);
+    --p-hero-btn-ink: var(--p-on-accent);
+    --p-bar-on: var(--p-accent);
+    --p-bar-off: #2e3238;
+
+    /* The chat is one lighter column from top to bottom; bubbles sit on it. */
+    --p-thread: #15171a;
+    --p-bubble-them: #25292e;
+    --p-bubble-them-ink: #f4f2ec;
+    --p-bubble-me: var(--p-accent);
+    --p-bubble-me-ink: var(--p-on-accent);
+    --p-photo: #1d2024;
+    /* Garage only: the quieter lower deck of the home board (tyres, cars, next visit). */
+    --p-garage-deck: #111315;
+
+    --p-open: #5bd68a;
+    --p-danger: #ff8a80;
+    --p-danger-soft: #3a1a17;
+    --p-focus: #f4f2ec;
+
+    --p-radius: 2px;
+    --p-radius-control: 2px;
+    --p-radius-field: 2px;
+    --p-radius-badge: 2px;
+    --p-radius-bubble: 2px;
+
+    --p-font-display: var(--portal-font-barlow-condensed);
+    --p-font-body: var(--portal-font-barlow);
+    --p-display-weight: 700;
+    --p-display-tracking: 0.01em;
+    --p-display-transform: uppercase;
+    --p-label-tracking: 0.12em;
+    --p-label-transform: uppercase;
+    --p-btn-font: var(--portal-font-barlow-condensed);
+    --p-btn-weight: 700;
+    --p-btn-tracking: 0.08em;
+    --p-btn-transform: uppercase;
+  }
+  /* Garage's chrome: a 56 px rail and 72 px tabs on a phone, and from 1100 px
+     (not 1024: the board needs the room beside the chat) a 64 px rail and no
+     tabs. The attribute is named twice so these outrank the shared 1024 px
+     rule below, which would otherwise win between 1024 and 1100 px. */
+  [data-portal-theme="garage"][data-portal-theme] {
+    --p-chrome-top: 56px;
+    --p-chrome-bottom: 72px;
+  }
+  @media (min-width: 1100px) {
+    [data-portal-theme="garage"][data-portal-theme] {
+      --p-chrome-top: 64px;
+      --p-chrome-bottom: 0px;
+    }
+  }
+  /* Garage sets its small type in the condensed face, a size up (it runs
+     narrow), and nothing on the board is round. */
+  [data-portal-theme="garage"] .p-label {
+    font-family: var(--p-font-display);
+    font-size: 15px;
+  }
+  [data-portal-theme="garage"] .p-btn {
+    font-size: 17px;
+  }
+  [data-portal-theme="garage"] .p-btn--lg {
+    font-size: 19px;
+  }
+  [data-portal-theme="garage"] .p-iconbtn {
+    font-family: var(--p-font-display);
+    font-size: 17px;
+    letter-spacing: 0.06em;
+  }
+  [data-portal-theme="garage"] .p-dot,
+  [data-portal-theme="garage"] .p-count {
+    border-radius: 0;
+  }
+  [data-portal-theme="garage"] .p-plate {
+    border-radius: 0;
+    border-color: var(--p-line-strong);
+    color: var(--p-ink);
+    font-family: var(--p-font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+
+  /* Print: editorial, serif, ruled columns. Newsreader + Instrument Sans. */
+  [data-portal-theme="print"] {
+    color-scheme: light;
+    --p-accent: #0f4c3a;
+    --p-on-accent: #ffffff;
+
+    --p-bg: #ffffff;
+    --p-surface: #ffffff;
+    --p-soft: #f1f4f6;
+    --p-ink: #0e1216;
+    --p-muted: #55606b;
+    --p-line: #d3d9df;
+    /* The mock draws an input and an outline button with the ink itself. */
+    --p-line-strong: #0e1216;
+
+    --p-strong: #0e1216;
+    --p-on-strong: #ffffff;
+
+    --p-hero-bg: #f1f4f6;
+    --p-hero-ink: #0e1216;
+    --p-hero-muted: #55606b;
+    --p-hero-btn: #0e1216;
+    --p-hero-btn-ink: #ffffff;
+    --p-bar-on: var(--p-accent);
+    --p-bar-off: #d3d9df;
+
+    --p-thread: #ffffff;
+    --p-bubble-them: #f1f4f6;
+    --p-bubble-them-ink: #0e1216;
+    --p-bubble-me: var(--p-accent);
+    --p-bubble-me-ink: var(--p-on-accent);
+    --p-photo: #e3e8ec;
+
+    --p-open: #0f6b3f;
+    --p-danger: #a61b1b;
+    --p-danger-soft: #fbeaea;
+    --p-focus: #0e1216;
+
+    --p-radius: 2px;
+    --p-radius-control: 2px;
+    --p-radius-field: 0px;
+    --p-radius-badge: 2px;
+    --p-radius-bubble: 2px;
+
+    --p-font-display: var(--portal-font-newsreader);
+    --p-font-body: var(--portal-font-instrument-sans);
+    --p-display-weight: 500;
+    --p-display-tracking: -0.01em;
+    --p-display-transform: none;
+    --p-label-tracking: 0.1em;
+    --p-label-transform: uppercase;
+    --p-btn-font: var(--p-font-body);
+    --p-btn-weight: 600;
+    --p-btn-tracking: 0;
+    --p-btn-transform: none;
+
+    /* The masthead is 56 px over its rule on a phone and 72 px on a desk (the
+       shared rule from 1024 px already says 72 and no tabs); the tabs are 72. */
+    --p-chrome-top: 56px;
+    --p-chrome-bottom: 72px;
+  }
+
+  /* Colour: the workshop's own colour floods the page. Plus Jakarta Sans.
+     The tints are mixed from the accent, so a workshop in red gets a red
+     page, not a blue one with red buttons. The accent may be any colour,
+     light or dark: nothing below assumes it is the blue of the mock. */
+  [data-portal-theme="colour"] {
+    color-scheme: light;
+    --p-accent: #1d4ed8;
+    --p-on-accent: #ffffff;
+
+    --p-bg: color-mix(in srgb, var(--p-accent) 12%, #ffffff);
+    --p-surface: #ffffff;
+    --p-soft: color-mix(in srgb, var(--p-accent) 7%, #ffffff);
+    /* The ink carries the accent's hue. Mixed with black it is only as dark
+       as the accent allows; where the browser can, the rule after this block
+       sets it to a fixed darkness instead, so a yellow workshop reads too. */
+    --p-ink: color-mix(in srgb, var(--p-accent) 30%, #000000);
+    --p-muted: color-mix(in srgb, var(--p-ink) 74%, #ffffff);
+    --p-line: color-mix(in srgb, var(--p-accent) 16%, #ffffff);
+    --p-line-strong: color-mix(in srgb, var(--p-ink) 52%, #ffffff);
+
+    --p-strong: var(--p-ink);
+    --p-on-strong: #ffffff;
+
+    /* The colour field. Words straight on it are always the full
+       `--p-on-accent`: a softer tone there would fall under 4.5:1 for a
+       mid-tone accent, so the band's muted is the same ink. */
+    --p-hero-bg: var(--p-accent);
+    --p-hero-ink: var(--p-on-accent);
+    --p-hero-muted: var(--p-on-accent);
+    --p-hero-btn: var(--p-on-accent);
+    --p-hero-btn-ink: var(--p-accent);
+    --p-bar-on: var(--p-on-accent);
+    --p-bar-off: color-mix(in srgb, var(--p-on-accent) 30%, var(--p-accent));
+
+    /* Colour's own. The field and its ink under names that do not change
+       where a part swaps `--p-accent` and `--p-on-accent` (the header and
+       the field do, so an accent button there is the ink on the colour). */
+    --pc-field: var(--p-accent);
+    --pc-on-field: var(--p-on-accent);
+    /* The opposite of the ink on the accent: black for a dark accent. The
+       rule after this block makes it near-white for a light one. */
+    --pc-shade: #000000;
+    /* The deeper tone on the field (the step tracker, the active place, the
+       cards of the sign-in page): the accent pushed away from its ink, so
+       `--p-on-accent` on it always reads better than on the accent itself. */
+    --pc-deep: color-mix(in srgb, var(--p-accent) 80%, var(--pc-shade));
+    /* Quieter words on the deep tone only; 4.5:1 there for any accent. */
+    --pc-soft-on-deep: color-mix(in srgb, var(--p-on-accent) 84%, var(--p-accent));
+    /* The edge of a deep shape: next to nothing on the blue, but it keeps the
+       shape there for a black or a white accent, whose deep tone is itself. */
+    --pc-deep-edge: color-mix(in srgb, var(--p-on-accent) 16%, var(--pc-deep));
+    /* A hairline and an empty ring on the deep tone. */
+    --pc-deep-line: color-mix(in srgb, var(--p-on-accent) 28%, var(--pc-deep));
+    --pc-ring: color-mix(in srgb, var(--p-on-accent) 60%, var(--p-accent));
+    /* The mark of the current place on the white tab bar. */
+    --pc-tint: color-mix(in srgb, var(--p-accent) 18%, #ffffff);
+    /* The warm highlight for what waits on the customer: a quote to answer,
+       a due date, an unread message. Never the workshop's colour. */
+    --pc-highlight: #ffc93c;
+    --pc-on-highlight: color-mix(in srgb, var(--p-ink) 88%, #000000);
+    --pc-highlight-muted: color-mix(in srgb, var(--pc-on-highlight) 86%, var(--pc-highlight));
+
+    --p-thread: #ffffff;
+    --p-bubble-them: var(--p-soft);
+    --p-bubble-them-ink: var(--p-ink);
+    --p-bubble-me: var(--p-accent);
+    --p-bubble-me-ink: var(--p-on-accent);
+    --p-photo: color-mix(in srgb, var(--p-accent) 15%, #ffffff);
+
+    --p-open: #15803d;
+    --p-danger: #b42318;
+    --p-danger-soft: #fdecea;
+    --p-focus: var(--p-ink);
+
+    --p-radius: 28px;
+    --p-radius-control: 16px;
+    --p-radius-field: 16px;
+    --p-radius-badge: 12px;
+    --p-radius-bubble: 20px;
+
+    --p-font-display: var(--portal-font-jakarta);
+    --p-font-body: var(--portal-font-jakarta);
+    --p-display-weight: 800;
+    --p-display-tracking: -0.02em;
+    --p-display-transform: none;
+    --p-label-tracking: 0;
+    --p-label-transform: none;
+    --p-btn-font: var(--p-font-body);
+    --p-btn-weight: 800;
+    --p-btn-tracking: 0;
+    --p-btn-transform: none;
+  }
+  /* Colour, where the browser can take a colour apart: the ink keeps the
+     accent's hue at one fixed darkness, and the shade is the true opposite
+     of the ink on the accent. Without this the block above still stands. */
+  @supports (color: oklch(from white l c h)) {
+    [data-portal-theme="colour"] {
+      --p-ink: oklch(from var(--p-accent) 0.25 min(c, 0.1) h);
+      --pc-shade: rgb(from var(--p-on-accent) calc(255 - r) calc(255 - g) calc(255 - b));
+    }
+  }
+
+  /* From 1024 px the desk bar replaces the phone's: taller header, no tabs. */
+  @media (min-width: 1024px) {
+    [data-portal-theme] {
+      --p-chrome-top: 72px;
+      --p-chrome-bottom: 0px;
+    }
+  }
+
+  /* ── 3. Root ───────────────────────────────────────────────────────────── */
+  .portal-root {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: var(--p-bg);
+    color: var(--p-ink);
+    font-family: var(--p-font-body);
+    font-size: 16px;
+    line-height: 1.5;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    /* A word too long for its line (an address, a part number) breaks rather
+       than run out of its box. `break-word`, not `anywhere`: with `anywhere`
+       a box may be sized as if every letter could stand alone, so a heading
+       or a label beside something wide was squeezed to one letter a line. */
+    overflow-wrap: break-word;
+  }
+  /* The same colours and type for content a library draws outside the root. */
+  .portal-scope {
+    color: var(--p-ink);
+    font-family: var(--p-font-body);
+  }
+  /* The page behind the root, where a phone shows it on overscroll. */
+  body:has(.portal-root[data-portal-theme="daylight"]) {
+    background: #f2f3ef;
+  }
+  body:has(.portal-root[data-portal-theme="garage"]) {
+    background: #0c0d0e;
+  }
+  body:has(.portal-root[data-portal-theme="print"]) {
+    background: #ffffff;
+  }
+
+  /* The one container of the portal: the header's bar, the home and every
+     inner page share its left and right edges, so they line up at any width.
+     `.p-shell` is the edges alone (a maximum width, centred, and the
+     gutters); `.p-page` is the same edges plus the space above and below an
+     ordinary page. A page that wants a narrower measure for its text sets a
+     max-width on its own content, inside, aligned left: never on the box. */
+  .p-shell,
+  .p-page {
+    width: 100%;
+    max-width: 1760px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .p-page {
+    padding-top: 20px;
+    padding-bottom: 32px;
+  }
+  @media (min-width: 640px) {
+    .p-shell,
+    .p-page {
+      padding-left: 24px;
+      padding-right: 24px;
+    }
+    .p-page {
+      padding-top: 28px;
+      padding-bottom: 40px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .p-shell,
+    .p-page {
+      padding-left: 40px;
+      padding-right: 40px;
+    }
+    .p-page {
+      padding-top: 32px;
+      padding-bottom: 48px;
+    }
+  }
+
+  /* Borders inside the portal are the theme's line unless a class says more:
+     the app's base rule would give them its own border colour. */
+  .portal-root *,
+  .portal-scope * {
+    border-color: var(--p-line);
+  }
+
+  /* One focus ring everywhere: the theme's ink, offset so it clears a fill. */
+  .portal-root :focus-visible,
+  .portal-scope :focus-visible {
+    outline: 2px solid var(--p-focus);
+    outline-offset: 2px;
+  }
+
+  /* ── 4. Type ───────────────────────────────────────────────────────────── */
+  /* A heading in the theme's display face. Size comes from the place. */
+  .p-display {
+    font-family: var(--p-font-display);
+    font-weight: var(--p-display-weight);
+    letter-spacing: var(--p-display-tracking);
+    text-transform: var(--p-display-transform);
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+  /* The small capital line above a block: "NEEDS YOUR ANSWER". */
+  .p-label {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 600;
+    letter-spacing: var(--p-label-tracking);
+    text-transform: var(--p-label-transform);
+    color: var(--p-muted);
+  }
+  .p-muted {
+    color: var(--p-muted);
+  }
+  .p-ink {
+    color: var(--p-ink);
+  }
+  /* A text link: the ink, underlined. Never the accent, which a workshop may
+     set to a colour too light to read. */
+  .p-link {
+    color: var(--p-ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 3px;
+    border-radius: 4px;
+  }
+  .p-link:hover {
+    text-decoration-thickness: 2.5px;
+  }
+  /* A text link that is the only thing on its line gets a full touch target. */
+  .p-link--block {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* ── 5. Buttons ────────────────────────────────────────────────────────── */
+  .p-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 46px;
+    max-width: 100%;
+    padding: 6px 22px;
+    border: 1px solid transparent;
+    border-radius: var(--p-radius-control);
+    font-family: var(--p-btn-font);
+    font-size: 15px;
+    line-height: 1.2;
+    font-weight: var(--p-btn-weight);
+    letter-spacing: var(--p-btn-tracking);
+    text-transform: var(--p-btn-transform);
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      filter 120ms ease,
+      background-color 120ms ease;
+  }
+  .p-btn:hover {
+    filter: brightness(0.93);
+  }
+  .p-btn:active {
+    filter: brightness(0.86);
+  }
+  .p-btn:disabled,
+  .p-btn[aria-disabled="true"] {
+    opacity: 0.55;
+    cursor: not-allowed;
+    filter: none;
+  }
+  .p-btn--accent {
+    background: var(--p-accent);
+    color: var(--p-on-accent);
+  }
+  .p-btn--strong {
+    background: var(--p-strong);
+    color: var(--p-on-strong);
+  }
+  .p-btn--outline {
+    background: var(--p-surface);
+    color: var(--p-ink);
+    border-color: var(--p-line-strong);
+  }
+  .p-btn--ghost {
+    background: transparent;
+    color: var(--p-ink);
+  }
+  .p-btn--ghost:hover {
+    background: var(--p-soft);
+    filter: none;
+  }
+  /* The button inside the hero band. */
+  .p-btn--hero {
+    background: var(--p-hero-btn);
+    color: var(--p-hero-btn-ink);
+  }
+  .p-btn--lg {
+    min-height: 56px;
+    padding: 8px 28px;
+    font-size: 17px;
+  }
+  .p-btn--block {
+    display: flex;
+    width: 100%;
+  }
+
+  /* A round button holding one icon. Always has an aria-label. */
+  .p-iconbtn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-radius-control);
+    background: var(--p-surface);
+    color: var(--p-ink);
+    font-family: var(--p-font-body);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .p-iconbtn:hover {
+    background: var(--p-soft);
+  }
+  .p-iconbtn--accent {
+    border-color: transparent;
+    background: var(--p-accent);
+    color: var(--p-on-accent);
+  }
+  .p-iconbtn--accent:hover {
+    background: var(--p-accent);
+    filter: brightness(0.93);
+  }
+  .p-iconbtn--ghost {
+    border-color: transparent;
+    background: transparent;
+  }
+  .p-iconbtn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  /* ── 6. Panels ─────────────────────────────────────────────────────────── */
+  .p-panel {
+    min-width: 0;
+    background: var(--p-surface);
+    border: 1px solid var(--p-line);
+    border-radius: var(--p-radius);
+    padding: 16px;
+  }
+  @media (min-width: 640px) {
+    .p-panel {
+      padding: 24px;
+    }
+  }
+  .p-panel--flush {
+    padding: 0;
+    overflow: hidden;
+  }
+  .p-panel--soft {
+    background: var(--p-soft);
+    border-color: transparent;
+  }
+  .p-panel--plain {
+    background: transparent;
+    border-color: transparent;
+    border-radius: 0;
+    padding: 0;
+  }
+  /* The band. Inside it the ordinary names mean the band's own colours, so a
+     label, a link or a focus ring placed there is right without knowing. */
+  .p-panel--hero {
+    background: var(--p-hero-bg);
+    border-color: transparent;
+    color: var(--p-hero-ink);
+    --p-ink: var(--p-hero-ink);
+    --p-muted: var(--p-hero-muted);
+    --p-line: var(--p-bar-off);
+    --p-focus: var(--p-hero-ink);
+  }
+
+  /* ── 7. Fields ─────────────────────────────────────────────────────────── */
+  .p-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+  }
+  .p-field__label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--p-ink);
+  }
+  .p-field__hint {
+    font-size: 13px;
+    color: var(--p-muted);
+  }
+  .p-field__error {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--p-danger);
+  }
+  .p-input {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    min-height: 48px;
+    padding: 0 16px;
+    border: 1.5px solid var(--p-line-strong);
+    border-radius: var(--p-radius-field);
+    background: var(--p-surface);
+    color: var(--p-ink);
+    font-family: var(--p-font-body);
+    /* 16px keeps a phone from zooming into the field. */
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  .p-input::placeholder {
+    color: var(--p-muted);
+    opacity: 1;
+  }
+  .p-input:focus-visible {
+    border-color: var(--p-ink);
+    outline-offset: 1px;
+  }
+  .p-input[aria-invalid="true"] {
+    border-color: var(--p-danger);
+  }
+  .p-input:disabled {
+    background: var(--p-soft);
+    color: var(--p-muted);
+  }
+  .p-input--lg {
+    min-height: 56px;
+    padding: 0 18px;
+    font-size: 17px;
+  }
+  textarea.p-input {
+    min-height: 120px;
+    padding: 12px 16px;
+    resize: vertical;
+  }
+  /* A field with something fixed in front of it: "+47 | 912 34 567". */
+  .p-input-group {
+    display: flex;
+    align-items: stretch;
+    min-height: 48px;
+    border: 1.5px solid var(--p-line-strong);
+    border-radius: var(--p-radius-field);
+    background: var(--p-surface);
+    overflow: hidden;
+  }
+  .p-input-group:focus-within {
+    border-color: var(--p-ink);
+    outline: 2px solid var(--p-focus);
+    outline-offset: 1px;
+  }
+  .p-input-group--lg {
+    min-height: 56px;
+  }
+  .p-input-group__prefix {
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    border-right: 1.5px solid var(--p-line);
+    color: var(--p-muted);
+    font-size: 16px;
+    user-select: none;
+  }
+  .p-input-group .p-input {
+    border: 0;
+    border-radius: 0;
+    min-height: 0;
+    outline: none;
+    background: transparent;
+  }
+
+  /* Two or three choices side by side, one pressed: Email | SMS. */
+  .p-segmented {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 4px;
+    padding: 4px;
+    border-radius: var(--p-radius-control);
+    background: var(--p-soft);
+    border: 1px solid var(--p-line);
+  }
+  .p-segmented > button {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: var(--p-radius-control);
+    background: transparent;
+    color: var(--p-muted);
+    font-family: var(--p-btn-font);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: var(--p-btn-tracking);
+    text-transform: var(--p-btn-transform);
+    cursor: pointer;
+  }
+  .p-segmented > button[aria-pressed="true"],
+  .p-segmented > button[aria-selected="true"] {
+    background: var(--p-surface);
+    color: var(--p-ink);
+    box-shadow: 0 0 0 1px var(--p-line);
+  }
+
+  /* ── 8. Small parts ────────────────────────────────────────────────────── */
+  .p-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    padding: 4px 10px;
+    border: 1px solid transparent;
+    border-radius: var(--p-radius-badge);
+    background: var(--p-soft);
+    color: var(--p-ink);
+    font-size: 13px;
+    line-height: 1.3;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .p-badge--accent {
+    background: var(--p-accent);
+    color: var(--p-on-accent);
+  }
+  .p-badge--outline {
+    background: transparent;
+    border-color: var(--p-line-strong);
+  }
+  .p-badge--danger {
+    background: var(--p-danger-soft);
+    color: var(--p-danger);
+  }
+  /* The count on a tab or an icon: "1". */
+  .p-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--p-accent);
+    color: var(--p-on-accent);
+    font-family: var(--p-font-body);
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+  /* A licence plate, set like one. */
+  .p-plate {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid var(--p-muted);
+    border-radius: 4px;
+    color: var(--p-muted);
+    font-size: 12px;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  /* The dot before "Open until 17:00". */
+  .p-dot {
+    display: inline-block;
+    flex-shrink: 0;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--p-muted);
+  }
+  .p-dot--open {
+    background: var(--p-open);
+  }
+  .p-dot--accent {
+    background: var(--p-accent);
+  }
+  /* Something went wrong, or something to know, in a box. */
+  .p-notice {
+    padding: 12px 16px;
+    border: 1px solid var(--p-line-strong);
+    border-radius: var(--p-radius-field);
+    background: var(--p-soft);
+    color: var(--p-ink);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .p-notice--danger {
+    border-color: var(--p-danger);
+    background: var(--p-danger-soft);
+    color: var(--p-danger);
+  }
+  /* The three steps of a job: a bar and a word each. */
+  .p-steps {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .p-step {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    font-size: 13px;
+    line-height: 1.3;
+    color: var(--p-muted);
+  }
+  .p-step::before {
+    content: "";
+    height: 6px;
+    border-radius: min(3px, var(--p-radius));
+    background: var(--p-bar-off);
+  }
+  .p-step[data-state="done"]::before,
+  .p-step[data-state="now"]::before {
+    background: var(--p-bar-on);
+  }
+  .p-step[data-state="now"] {
+    color: var(--p-ink);
+    font-weight: 600;
+  }
+  /* A quiet block where content is still loading. */
+  .p-skeleton {
+    border-radius: min(8px, var(--p-radius));
+    background: var(--p-soft);
+    animation: p-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes p-pulse {
+    50% {
+      opacity: 0.55;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .p-skeleton {
+      animation: none;
+    }
+  }
+  /* A menu that drops from a button, drawn in place (never moved to <body>). */
+  .p-menu {
+    position: absolute;
+    z-index: 50;
+    top: calc(100% + 8px);
+    right: 0;
+    width: max-content;
+    min-width: 220px;
+    max-width: min(320px, calc(100vw - 32px));
+    padding: 6px;
+    border: 1px solid var(--p-line);
+    border-radius: min(16px, max(var(--p-radius), 2px));
+    background: var(--p-surface);
+    color: var(--p-ink);
+    box-shadow: 0 12px 32px rgb(0 0 0 / 0.16);
+  }
+  .p-menu__item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 0;
+    border-radius: min(10px, max(var(--p-radius), 2px));
+    background: transparent;
+    color: var(--p-ink);
+    font-family: var(--p-font-body);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .p-menu__item:hover {
+    background: var(--p-soft);
+  }
+
+  /* ── 9. Rows and empty states ──────────────────────────────────────────── */
+  /* One line of a list that goes somewhere: a car, an invoice. */
+  .p-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 60px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--p-line);
+    color: var(--p-ink);
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  .p-row:last-child {
+    border-bottom: 0;
+  }
+  /* A row that is a link inside a list item: the item decides the rule. */
+  li:not(:last-child) > .p-row {
+    border-bottom: 1px solid var(--p-line);
+  }
+  .p-row__body {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+  .p-row__title {
+    font-size: 16px;
+    line-height: 1.35;
+    font-weight: 600;
+  }
+  .p-row__meta {
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--p-muted);
+  }
+  .p-row__chevron {
+    flex-shrink: 0;
+    color: var(--p-muted);
+  }
+  a.p-row:hover .p-row__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .p-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .p-empty--center {
+    align-items: center;
+    padding: 32px 16px;
+    text-align: center;
+  }
+  .p-empty__title {
+    font-family: var(--p-font-display);
+    font-weight: var(--p-display-weight);
+    letter-spacing: var(--p-display-tracking);
+    text-transform: var(--p-display-transform);
+    font-size: 20px;
+    line-height: 1.2;
+  }
+  .p-empty__body {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--p-muted);
+    max-width: 46ch;
+  }
+  .p-empty__action {
+    margin-top: 10px;
+  }
+
+  /* ── 10. Chat ──────────────────────────────────────────────────────────
+     The thread and its bubbles. Owned by the chat (Components/Chat/). Every
+     colour is a theme variable, so the chat is right in a dark theme too. */
+  .p-chat {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    height: 100%;
+    background: var(--p-surface);
+    color: var(--p-ink);
+    font-family: var(--p-font-body);
+  }
+  .p-chat__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 60px;
+    padding: 8px 12px 8px 16px;
+    border-bottom: 1px solid var(--p-line);
+  }
+  .p-chat__thread {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    padding: 14px 14px 16px;
+    background: var(--p-thread);
+  }
+  /* A short thread sits at the bottom, as in any chat. */
+  .p-chat__list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: auto;
+  }
+  .p-chat__day {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0 4px;
+    color: var(--p-muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .p-chat__day::before,
+  .p-chat__day::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--p-line);
+  }
+  /* Something that happened, as one quiet line across the column: an icon,
+     what it was, and the time at the right. */
+  .p-chat__event {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 36px;
+    padding: 6px 10px;
+    border: 1px solid var(--p-line);
+    border-radius: min(var(--p-radius-field), 12px);
+    background: var(--p-surface);
+    color: var(--p-muted);
+    font-size: 13px;
+    line-height: 1.35;
+    text-align: left;
+  }
+  .p-chat__event time {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .p-chat__event--link {
+    color: var(--p-ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .p-chat__event--link:hover {
+    background: var(--p-soft);
+  }
+  /* Several of one kind on one day, folded into one line that opens. */
+  .p-chat__group > summary {
+    list-style: none;
+  }
+  .p-chat__group > summary::-webkit-details-marker {
+    display: none;
+  }
+  .p-chat__group[open] .p-chat__groupmark {
+    transform: rotate(180deg);
+  }
+  .p-chat__groupbody {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+    padding-left: 12px;
+    border-left: 2px solid var(--p-line);
+  }
+  .p-bubble {
+    max-width: min(440px, 88%);
+    padding: 9px 13px;
+    border-radius: var(--p-radius-bubble);
+    font-size: 15px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .p-bubble:empty {
+    display: none;
+  }
+  .p-bubble--them {
+    align-self: flex-start;
+    border-bottom-left-radius: min(4px, var(--p-radius-bubble));
+    background: var(--p-bubble-them);
+    color: var(--p-bubble-them-ink);
+  }
+  .p-bubble--me {
+    align-self: flex-end;
+    border-bottom-right-radius: min(4px, var(--p-radius-bubble));
+    background: var(--p-bubble-me);
+    color: var(--p-bubble-me-ink);
+  }
+  .p-bubble[data-state="sending"] {
+    opacity: 0.72;
+  }
+  .p-bubble[data-state="failed"] {
+    outline: 2px solid var(--p-danger);
+    outline-offset: 1px;
+  }
+  .p-chat__meta {
+    margin-bottom: 6px;
+    padding: 0 6px;
+    color: var(--p-muted);
+    font-size: 12px;
+  }
+  .p-chat__meta--me {
+    align-self: flex-end;
+  }
+  .p-chat__failed {
+    align-self: flex-end;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+    max-width: 84%;
+    margin-bottom: 6px;
+    padding: 0 6px;
+    color: var(--p-danger);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-align: right;
+  }
+  /* A small underlined action inside the thread: try again, show earlier. */
+  .p-chat__textbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    min-height: 32px;
+    padding: 4px 6px;
+    border: 0;
+    background: none;
+    color: var(--p-ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .p-chat__textbtn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  /* Photos and video in a bubble: one large, or a grid of two across. */
+  .p-chat__photos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3px;
+    width: min(240px, 60vw);
+    max-width: 100%;
+    margin: -4px -8px 0;
+    overflow: hidden;
+    border-radius: calc(var(--p-radius-bubble) - 5px);
+  }
+  .p-chat__photos:not(:last-child) {
+    margin-bottom: 7px;
+  }
+  .p-chat__photos:not([data-count="1"]) {
+    grid-template-columns: 1fr 1fr;
+  }
+  .p-chat__photo {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 0;
+    background: var(--p-photo);
+    cursor: zoom-in;
+    overflow: hidden;
+  }
+  .p-chat__photos[data-count="1"] .p-chat__photo {
+    aspect-ratio: 4 / 3;
+  }
+  .p-chat__photos[data-count="3"] .p-chat__photo:first-child {
+    grid-column: span 2;
+    aspect-ratio: 2 / 1;
+  }
+  .p-chat__photo img,
+  .p-chat__photo video {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .p-chat__photo:focus-visible {
+    outline-offset: -3px;
+  }
+  .p-chat__play {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgb(0 0 0 / 0.28);
+    color: #fff;
+  }
+  .p-chat__file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  /* An update, a quote, an invoice: from the workshop, so on its side. */
+  .p-chat__card {
+    width: 100%;
+    margin: 2px 0;
+    padding: 12px;
+    border: 1px solid var(--p-line-strong);
+    border-radius: min(var(--p-radius-bubble), 16px);
+    background: var(--p-surface);
+    color: var(--p-ink);
+  }
+  .p-chat__card[data-tone="danger"] {
+    border-color: var(--p-danger);
+  }
+  .p-chat__card[data-tone="danger"] .p-chat__cardhead {
+    color: var(--p-danger);
+  }
+  .p-chat__cardhead {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--p-muted);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .p-chat__cardtitle {
+    margin-top: 6px;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.3;
+    overflow-wrap: anywhere;
+  }
+  .p-chat__cardfacts {
+    margin-top: 2px;
+    color: var(--p-muted);
+    font-size: 13.5px;
+  }
+
+  /* "New message", while the customer is reading further up. */
+  .p-chat__jump {
+    position: absolute;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 36px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: var(--p-radius-control);
+    background: var(--p-strong);
+    color: var(--p-on-strong);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 0.22);
+    cursor: pointer;
+  }
+
+  /* Before the first message. */
+  .p-chat__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    padding: 16px 8px;
+    max-width: 320px;
+    text-align: center;
+  }
+  .p-chat__emptymark {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 14px;
+    border-radius: var(--p-radius-control);
+    background: var(--p-bubble-them);
+    color: var(--p-bubble-them-ink);
+  }
+  .p-chat__emptytitle {
+    font-family: var(--p-font-display);
+    font-size: 18px;
+    font-weight: var(--p-display-weight);
+    letter-spacing: var(--p-display-tracking);
+    text-transform: var(--p-display-transform);
+    line-height: 1.2;
+  }
+  .p-chat__emptybody {
+    margin-top: 6px;
+    color: var(--p-muted);
+    font-size: 14px;
+    line-height: 1.45;
+  }
+  .p-chat__suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .p-chat__suggestion {
+    min-height: 38px;
+    padding: 6px 14px;
+    border: 1px solid var(--p-line-strong);
+    border-radius: var(--p-radius-control);
+    background: var(--p-surface);
+    color: var(--p-ink);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .p-chat__suggestion:hover {
+    background: var(--p-soft);
+  }
+
+  /* Writing. */
+  .p-chat__composer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px 12px;
+    border-top: 1px solid var(--p-line);
+    background: var(--p-surface);
+  }
+  /* Send is the chat's main action. With nothing to send it is still
+     plainly a button, in the ink on the quiet fill; with text or a photo it
+     takes the workshop's colour. Never the washed-out look of "disabled". */
+  .p-chat__send:disabled {
+    opacity: 1;
+    border-color: var(--p-line-strong);
+    background: var(--p-soft);
+    color: var(--p-ink);
+    cursor: default;
+  }
+  .p-chat__send:disabled:hover {
+    background: var(--p-soft);
+  }
+  /* The field sits on the surface in every theme, so its placeholder is the
+     muted ink (4.5:1 there, dark themes included) and its focus ring the
+     theme's own, drawn outside the border where nothing clips it. */
+  textarea.p-chat__input::placeholder {
+    color: var(--p-muted);
+    opacity: 1;
+  }
+  textarea.p-chat__input:focus-visible {
+    border-color: var(--p-ink);
+    outline: 2px solid var(--p-focus);
+    outline-offset: 2px;
+  }
+  textarea.p-chat__input {
+    flex: 1;
+    min-height: 44px;
+    max-height: 132px;
+    padding: 9px 16px;
+    /* A pill while it is one line would clip a tall field's corners. */
+    border-radius: min(var(--p-radius-control), 22px);
+    resize: none;
+    overflow-y: auto;
+  }
+  .p-chat__tray {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .p-chat__thumb {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    border-radius: min(var(--p-radius-field), 12px);
+    background: var(--p-photo);
+    overflow: hidden;
+  }
+  .p-chat__thumb img,
+  .p-chat__thumb video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .p-chat__thumbwait {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: rgb(0 0 0 / 0.42);
+    color: #fff;
+  }
+  .p-chat__thumbremove {
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(0 0 0 / 0.66);
+    color: #fff;
+    cursor: pointer;
+  }
+  /* A 24 px mark with a 44 px reach for a thumb. */
+  .p-chat__thumbremove::after {
+    content: "";
+    position: absolute;
+    inset: -10px;
+  }
+  .p-chat__problem {
+    color: var(--p-danger);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .p-chat__off {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px 16px;
+    padding: 14px 16px;
+    border-top: 1px solid var(--p-line);
+    background: var(--p-soft);
+    color: var(--p-muted);
+    font-size: 13.5px;
+    line-height: 1.4;
+  }
+
+  /* A photo, large. A native dialog, drawn over the page by the browser. */
+  .p-chat__viewer {
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    margin: 0;
+    padding: max(12px, env(safe-area-inset-top)) 12px max(12px, env(safe-area-inset-bottom));
+    border: 0;
+    background: rgb(0 0 0 / 0.9);
+    color: #fff;
+  }
+  .p-chat__viewer[open] {
+    display: grid;
+    place-items: center;
+  }
+  .p-chat__viewer::backdrop {
+    background: rgb(0 0 0 / 0.6);
+  }
+  .p-chat__viewer img,
+  .p-chat__viewer video {
+    max-width: 100%;
+    max-height: calc(100dvh - 24px);
+    border-radius: 6px;
+    object-fit: contain;
+  }
+  .p-chat__viewerclose {
+    position: absolute;
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    z-index: 1;
+  }
+}

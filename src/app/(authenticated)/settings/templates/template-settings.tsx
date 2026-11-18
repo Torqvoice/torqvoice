@@ -80,6 +80,7 @@ interface WorkshopPreviewInfo {
   email?: string
   slogan?: string
   taxComponents?: TaxComponentDefinition[] | null
+  unitSystem?: 'metric' | 'imperial'
 }
 
 const fontMap: Record<string, string> = {
@@ -227,7 +228,12 @@ function TemplateTab({
   }
 
   return (
-    <AppCard icon={Palette} title={t('templates.presets')} contentClassName="space-y-4">
+    <AppCard
+      id="templates-designs"
+      icon={Palette}
+      title={t('templates.presets')}
+      contentClassName="space-y-4"
+    >
       <p className="text-sm text-muted-foreground">{t('templates.designerIntro')}</p>
 
       {/* The workshop's own saved designs, above the built-in starting
@@ -351,7 +357,10 @@ function TemplateTab({
         })}
       </div>
 
-      <div className="flex items-center justify-between gap-4 border-t pt-4">
+      <div
+        id="templates-open-designer"
+        className="flex items-center justify-between gap-4 border-t pt-4"
+      >
         <p className="text-xs text-muted-foreground">{t('templates.designerHint')}</p>
         <Button asChild variant="outline">
           <Link href={`/invoice-designer?doc=${documentType}`}>
@@ -431,20 +440,24 @@ const smsTemplateFields = [
 function SmsTemplateTab({
   values,
   setValues,
+  defaults,
 }: {
   values: Record<string, string>
   setValues: (v: Record<string, string>) => void
+  /** The defaults in the workshop's language, the ones a text falls back to when sent. */
+  defaults: Record<string, string>
 }) {
   const t = useTranslations('settings')
   const handleReset = (key: string) => {
     const field = smsTemplateFields.find((f) => f.key === key)
-    const defaultVal = field ? t.raw(`templates.smsDefaults.${field.defaultKey}`) : ''
+    const defaultVal =
+      defaults[key] ?? (field ? t.raw(`templates.smsDefaults.${field.defaultKey}`) : '')
     setValues({ ...values, [key]: defaultVal })
   }
 
   return (
     <div className="space-y-4">
-      <AppCard icon={MessageSquare} title={t('templates.smsTemplates')}>
+      <AppCard id="templates-sms" icon={MessageSquare} title={t('templates.smsTemplates')}>
         <p className="mb-4 text-sm text-muted-foreground">
           {t.rich('templates.smsTemplatesDescription', {
             code: (chunks) => (
@@ -545,6 +558,7 @@ export function TemplateSettings({
   checklistLanguage = null,
   smsEnabled = false,
   initialSmsTemplates = {},
+  smsDefaults = {},
   logoUrl,
   workshop,
   invoiceLayoutConfig,
@@ -560,6 +574,8 @@ export function TemplateSettings({
   checklistLanguage?: string | null
   smsEnabled?: boolean
   initialSmsTemplates?: Record<string, string>
+  /** Reset restores these, in the workshop's language rather than the viewer's. */
+  smsDefaults?: Record<string, string>
   logoUrl?: string
   workshop?: WorkshopPreviewInfo
   invoiceLayoutConfig?: InvoiceLayoutConfig
@@ -652,7 +668,7 @@ export function TemplateSettings({
       {/* Two levels: what kind of template, then which document. The page
           holds three different editors, and the four printed documents are
           only one of them. */}
-      <div className="space-y-3">
+      <div id="templates-tabs" className="space-y-3">
         <div
           role="tablist"
           aria-label={t('templates.title')}
@@ -776,7 +792,7 @@ export function TemplateSettings({
       ) : tab === 'sms' ? (
         <>
           <ReadOnlyWrapper>
-            <SmsTemplateTab values={smsValues} setValues={setSmsValues} />
+            <SmsTemplateTab values={smsValues} setValues={setSmsValues} defaults={smsDefaults} />
           </ReadOnlyWrapper>
           <SaveButton>
             <div className="flex justify-end">

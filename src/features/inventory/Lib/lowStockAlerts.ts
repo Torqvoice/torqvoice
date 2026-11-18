@@ -22,6 +22,8 @@ export interface LowStockCandidate {
   minQuantity: number
   unit: string | null
   lowStockAlertedAt: Date | null
+  /** Absent means tracked. A part that does not track stock is never low. */
+  trackStock?: boolean
 }
 
 export interface LowStockDecision {
@@ -52,11 +54,14 @@ export function effectiveThreshold(part: { minQuantity: number }, defaultThresho
  * This is the single definition of "low" — the alert engine, the dashboard
  * count, the list badge and the inventory filter all resolve through it (or
  * through SQL mirroring it), so the numbers can never disagree.
+ *
+ * A part that does not track stock (a fee, consumables) is never low.
  */
 export function isLow(
-  part: { quantity: number; minQuantity: number },
+  part: { quantity: number; minQuantity: number; trackStock?: boolean },
   defaultThreshold = 0
 ): boolean {
+  if (part.trackStock === false) return false
   const threshold = effectiveThreshold(part, defaultThreshold)
   return threshold > 0 && part.quantity <= threshold
 }

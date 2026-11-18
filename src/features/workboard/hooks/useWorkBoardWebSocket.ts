@@ -65,13 +65,16 @@ export function useWorkBoardWebSocket() {
         case 'technician_updated':
         case 'technician_removed':
           // Reload full technician list for updates/removals
-          import('../Actions/technicianActions').then(({ getTechnicians }) => {
-            getTechnicians().then((res) => {
+          import('../Actions/technicianActions')
+            .then(({ getTechnicians }) => getTechnicians())
+            .then((res) => {
               if (res.success && res.data) {
                 store.setTechnicians(res.data as Parameters<typeof store.setTechnicians>[0])
               }
             })
-          })
+            .catch(() => {
+              // Offline for a moment: the board keeps the list it has
+            })
           break
 
         case 'service_times_updated': {

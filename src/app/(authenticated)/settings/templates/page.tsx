@@ -10,12 +10,18 @@ import { getChecklistLanguage, getTemplates } from '@/features/inspections/Actio
 import { listMarkTypes } from '@/features/condition-map/Actions/markTypeActions'
 import { db } from '@/lib/db'
 import { getTranslations } from 'next-intl/server'
+import { smsTemplateDefaults } from '@/features/sms/Lib/smsTemplateDefaults.server'
 import {
   getInvoiceLayoutConfig,
   getQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import type { SavedDesign } from '@/features/invoice-designer/Components/types'
 import { listDocumentDesigns } from '@/features/invoice-designer/Actions/documentDesignActions'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('templates')
+}
 export default async function TemplatePage() {
   const data = await getLayoutData()
 
@@ -123,20 +129,15 @@ export default async function TemplatePage() {
     slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN],
     // Its own taxes too: a split-tax workshop's cards show its GST and QST lines.
     taxComponents: readWorkshopTax(settings).components,
+    // Its distance unit, so the sample car's mileage reads the way its invoices do.
+    unitSystem: (settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'metric' : 'imperial') as
+      | 'metric'
+      | 'imperial',
   }
 
-  const smsDefaultMap: Record<string, string> = {
-    [SETTING_KEYS.SMS_TEMPLATE_INVOICE_READY]: t.raw('templates.smsDefaults.invoiceReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_QUOTE_READY]: t.raw('templates.smsDefaults.quoteReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_INSPECTION_READY]: t.raw('templates.smsDefaults.inspectionReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_IN_PROGRESS]: t.raw('templates.smsDefaults.statusInProgress'),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_WAITING_PARTS]: t.raw(
-      'templates.smsDefaults.statusWaitingParts'
-    ),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_READY]: t.raw('templates.smsDefaults.statusReady'),
-    [SETTING_KEYS.SMS_TEMPLATE_STATUS_COMPLETED]: t.raw('templates.smsDefaults.statusCompleted'),
-    [SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED]: t.raw('templates.smsDefaults.paymentReceived'),
-  }
+  // The same defaults a text falls back to when it is sent: the workshop's
+  // language, not whoever is looking at this page.
+  const smsDefaultMap = await smsTemplateDefaults(data.organizationId)
 
   const smsTemplates: Record<string, string> = {}
   for (const key of Object.keys(smsDefaultMap)) {
@@ -172,6 +173,7 @@ export default async function TemplatePage() {
       checklistLanguage={checklistLanguage.success ? (checklistLanguage.data ?? null) : null}
       smsEnabled={features.sms ?? false}
       initialSmsTemplates={smsTemplates}
+      smsDefaults={smsDefaultMap}
       logoUrl={settings[SETTING_KEYS.COMPANY_LOGO] || undefined}
       workshop={workshop}
       savedDesigns={savedDesigns}

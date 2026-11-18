@@ -150,7 +150,7 @@
       "tableTitle": "Užregistruota prieš apmokestinta",
       "clocked": "Užregistruota",
       "billed": "Apmokestinta",
-      "hint": "Užregistruotos valandos ateina iš laikmačio. Apmokestintos valandos yra technikui priskirtų darbų, prasidėjusių laikotarpyje, darbo eilutės. Efektyvumas yra apmokestinta padalinta iš užregistruotos.",
+      "hint": "Užregistruotos valandos ateina iš laikmačio. Apmokestintos valandos yra technikui priskirtų darbų, prasidėjusių laikotarpyje, darbo eilutės. Kai prie darbo dirba daugiau nei vienas žmogus, apmokestintos valandos padalijamos pagal laiką, kurį kiekvienas užregistravo prie jo; jei kuris nors neužregistravo laiko, valandos lieka technikui. Efektyvumas yra apmokestinta padalinta iš užregistruotos.",
       "noClock": "Nėra laiko",
       "jobsClocked": "Užregistruoti darbai"
     }

@@ -3,6 +3,7 @@ import { vi } from 'vitest'
 import fs from 'fs'
 import path from 'path'
 import { IntlMessageFormat } from 'intl-messageformat'
+import { Fragment, type ReactNode, createElement } from 'react'
 
 // ---------------------------------------------------------------------------
 // Load all English translation files so the next-intl mock resolves keys to
@@ -49,6 +50,21 @@ function interpolate(tpl: string, values?: Record<string, unknown>): string {
   )
 }
 
+// An audited action fans out to webhooks and connected integrations without
+// waiting (logAudit in src/lib/audit.ts, and issueInvoice). In a test that
+// work can outlive the file: on a busy runner the lazy import lands after the
+// environment is torn down, its error is logged into a worker already
+// closing, and the whole run fails with "EnvironmentTeardownError: Closing
+// rpc while onUserConsoleLog was pending" though every test passed. No unit
+// test is about the fan-out by way of an action; one that is mocks these
+// modules itself, which replaces the stubs here.
+vi.mock('@/features/webhooks/Lib/dispatcher', () => ({
+  dispatchWebhookEvent: vi.fn(async () => undefined),
+}))
+vi.mock('@/features/integrations/Lib/events', () => ({
+  notifyIntegrations: vi.fn(async () => undefined),
+}))
+
 // Mock next-intl globally so components using useTranslations can render in tests.
 vi.mock('next-intl', () => ({
   useTranslations: (namespace: string) => {
@@ -57,9 +73,11 @@ vi.mock('next-intl', () => ({
     const file = parts[0]
     const sub = parts.slice(1).join('.')
 
+    // A namespace can reach any depth, such as "service.laborGuide.confidence".
     let messages: unknown = allMessages[file]
-    if (sub && messages && typeof messages === 'object') {
-      messages = (messages as Record<string, unknown>)[sub]
+    for (const seg of sub ? sub.split('.') : []) {
+      if (!messages || typeof messages !== 'object') break
+      messages = (messages as Record<string, unknown>)[seg]
     }
 
     const t = (key: string, values?: Record<string, unknown>) => {
@@ -72,13 +90,48 @@ vi.mock('next-intl', () => ({
     t.raw = (key: string) => resolve(messages, key) ?? key
     t.rich = (key: string, values?: Record<string, unknown>) => {
       const tpl = resolve(messages, key)
-      return tpl ? interpolate(tpl, values) : key
+      if (!tpl) return key
+      const text = interpolate(tpl, values)
+      // Tags whose value is a function render through it, as in next-intl:
+      // "Pay with <vendor></vendor>" puts the vendor's mark where the tag is.
+      const parts: unknown[] = []
+      let last = 0
+      for (const m of text.matchAll(/<(\w+)>(.*?)<\/\1>/g)) {
+        const render = values?.[m[1]]
+        if (typeof render !== 'function') continue
+        parts.push(text.slice(last, m.index), render(m[2]))
+        last = (m.index ?? 0) + m[0].length
+      }
+      if (parts.length === 0) return text
+      parts.push(text.slice(last))
+      return createElement(Fragment, null, ...(parts as ReactNode[]))
     }
     t.markup = (key: string) => resolve(messages, key) ?? key
     t.has = (key: string) => resolve(messages, key) !== undefined
     return t
   },
   useLocale: () => 'en',
+  useFormatter: () => ({
+    number: (value: number, options?: Intl.NumberFormatOptions) =>
+      new Intl.NumberFormat('en', options).format(value),
+    dateTime: (value: Date | number, options?: Intl.DateTimeFormatOptions) =>
+      new Intl.DateTimeFormat('en', options).format(value),
+    // The largest whole unit, the way next-intl picks one: "32 minutes ago".
+    relativeTime: (value: Date | number, now: Date | number = Date.now()) => {
+      const seconds = Math.round((Number(value) - Number(now)) / 1000)
+      const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' })
+      const units: [Intl.RelativeTimeFormatUnit, number][] = [
+        ['day', 86_400],
+        ['hour', 3_600],
+        ['minute', 60],
+      ]
+      for (const [unit, size] of units) {
+        if (Math.abs(seconds) >= size) return rtf.format(Math.round(seconds / size), unit)
+      }
+      return rtf.format(seconds, 'second')
+    },
+  }),
   useMessages: () => ({}),
+  useNow: () => new Date(),
   NextIntlClientProvider: ({ children }: { children: React.ReactNode }) => children,
 }))

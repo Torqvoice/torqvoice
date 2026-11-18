@@ -26,5 +26,53 @@
     "markUnread": "Oznacz jako nieprzeczytane",
     "nothingToMarkUnread": "Klient jeszcze nic nie napisał w tej rozmowie.",
     "markUnreadFailed": "Nie udało się oznaczyć rozmowy jako nieprzeczytanej."
+  },
+  "email": {
+    "badge": "E-mail",
+    "empty": "W tej rozmowie nie ma jeszcze wiadomości.",
+    "placeholder": "Napisz odpowiedź",
+    "subjectPlaceholder": "Temat",
+    "send": "Wyślij",
+    "sendHint": "Enter wysyła, Shift+Enter dodaje nową linię",
+    "sendFailed": "Nie udało się wysłać e-maila",
+    "sentDocument": "Wysłano: {subject}",
+    "showQuoted": "Pokaż cytowany tekst",
+    "hideQuoted": "Ukryj cytowany tekst",
+    "spamFlag": "Filtr poczty oznaczył tę wiadomość jako możliwy spam.",
+    "unknownSender": "Ten adres nie należy jeszcze do żadnego klienta. Dodaj go jako klienta, aby odpowiedzieć.",
+    "ownVendorChoice": "Wysyłasz e-maile przez własnego dostawcę, więc odpowiedzi trafiają na ten adres.",
+    "ownVendorSettings": "Ustawienia e-mail",
+    "ownVendorThread": "Wysyłasz e-maile przez własnego dostawcę, więc odpowiedzi tego klienta trafiają do Twojej skrzynki.",
+    "replyFromMailApp": "Odpowiedz w swojej aplikacji pocztowej",
+    "attachment": "Załącznik",
+    "compose": {
+      "title": "Nowy e-mail",
+      "searchPlaceholder": "Szukaj klientów",
+      "noMatches": "Żaden klient nie pasuje do wyszukiwania.",
+      "noRecipients": "Brak klientów z adresem e-mail."
+    }
+  },
+  "portal": {
+    "badge": "Portal",
+    "empty": "{name} nie napisał jeszcze nic w portalu.",
+    "placeholder": "Napisz do {name} w portalu",
+    "send": "Wyślij wiadomość",
+    "sendFailed": "Nie udało się wysłać wiadomości",
+    "sendHint": "Enter wysyła, Shift+Enter zaczyna nową linię. {name} zobaczy ją przy następnym otwarciu portalu.",
+    "loadOlder": "Wczytaj starsze wiadomości",
+    "loadFailed": "Nie udało się wczytać rozmowy.",
+    "tryAgain": "Spróbuj ponownie",
+    "addPhoto": "Dodaj zdjęcie",
+    "removePhoto": "Usuń {name}",
+    "uploadFailed": "Nie udało się dodać zdjęcia. Zdjęcia mogą mieć do {size} MB.",
+    "tooManyPhotos": "Wiadomość mieści do {count} zdjęć.",
+    "photoFrom": "Zdjęcie od {name}",
+    "videoFrom": "Wideo od {name}",
+    "openFile": "Otwórz plik",
+    "you": "Ty",
+    "seen": "Przeczytano",
+    "off": "Wiadomości w portalu klienta są wyłączone, więc tę rozmowę można czytać, ale nie można na nią odpowiadać.",
+    "offSettings": "Ustawienia portalu klienta",
+    "deleteDescription": "Usuwa całą rozmowę z {name}, także u klienta: znika ona z jego portalu."
   }
 }

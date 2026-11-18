@@ -21,7 +21,7 @@
       "title": "The job needs a title before it can be saved.",
       "negative": "Quantities, hours, prices and costs cannot be negative.",
       "partName": "Every priced part needs a name.",
-      "laborDescription": "Every labour line with hours or a rate needs a description.",
+      "laborDescription": "Every labor line with hours or a rate needs a description.",
       "concernCondition": "A concern with a cause, correction or confirmation needs its condition filled in."
     }
   },
@@ -35,7 +35,7 @@
     },
     "save": "Save",
     "pdf": "PDF",
-    "email": "Email",
+    "send": "Send",
     "share": "Share",
     "notify": "Notify",
     "delete": "Delete",
@@ -92,6 +92,7 @@
       "inspection": "Inspection"
     },
     "statusOptions": {
+      "scheduled": "Scheduled",
       "pending": "Pending",
       "in_progress": "In Progress",
       "waiting_parts": "Waiting Parts",
@@ -146,7 +147,8 @@
     "deleteRow": "Delete row",
     "outOfStock": "Out of stock",
     "onBackorder": "On backorder ({count})",
-    "nameMissingHint": "Rows without a part name are not saved."
+    "nameMissingHint": "Rows without a part name are not saved.",
+    "fitsVehicleFirst": "Parts tagged for {vehicle} are listed first."
   },
   "labor": {
     "title": "Labor & Services",
@@ -175,8 +177,88 @@
     "shopFeeHintPercentLabor": "The shop fee from Settings: {percent} % of the labor on this job. Delete the line to leave it off.",
     "shopFeeHintPercentAll": "The shop fee from Settings: {percent} % of the labor and parts on this job. Delete the line to leave it off."
   },
+  "laborGuide": {
+    "button": "Labor guide",
+    "title": "Labor guide",
+    "description": "Book times and fluids for this vehicle",
+    "tabLabor": "Labor times",
+    "tabFluids": "Fluids",
+    "engine": "Engine",
+    "categories": "Job categories",
+    "allJobs": "All jobs",
+    "search": "Search jobs, such as brake pads",
+    "clearSearch": "Clear search",
+    "jobCount": "{count, plural, one {# job} other {# jobs}}",
+    "noMatch": "No jobs match “{query}”",
+    "noJobs": "The guide lists no jobs for this engine.",
+    "showAll": "Show all jobs",
+    "showHours": "Show hours",
+    "show": "Show",
+    "lockedValue": "Not shown on this key",
+    "hours": "{hours} h",
+    "range": "{low} to {high} h",
+    "bookTime": "Book {hours} h",
+    "add": "Add as labor line",
+    "added": "Added",
+    "addJob": "Add {job} as a labor line",
+    "addedJob": "{job} is added",
+    "addedCount": "{count, plural, one {# job added} other {# jobs added}}",
+    "partsAddedCount": "{count, plural, one {# part added} other {# parts added}}",
+    "done": "Done",
+    "loading": "Looking up the vehicle",
+    "stillLooking": "Still looking. Open Labor Project can take up to half a minute for a vehicle it has little data on.",
+    "notFoundTitle": "Not in the guide",
+    "notFound": "The guide has nothing for this vehicle. Check that the make, model and year are written the way the maker names them, or add the VIN.",
+    "fluidsNotFoundTitle": "No fluid specs for this vehicle",
+    "fluidsNotFound": "Open Labor Project has no fluid specs for this vehicle yet.",
+    "failedTitle": "The lookup did not go through",
+    "failed": "The lookup failed",
+    "unlockFailed": "Could not get that value",
+    "retry": "Try again",
+    "matchNone": "None of the engines listed matches the one on file for this vehicle, so these times may be for a different engine. Choose the closest engine above.",
+    "matchFuel": "The engine was picked by fuel type. Check that it is the right one.",
+    "matchUnknown": "This vehicle has no engine size on file, so check that the engine above is the right one.",
+    "hiddenByConfidence": "{count, plural, one {# time below your minimum confidence is hidden.} other {# times below your minimum confidence are hidden.}}",
+    "changeSettings": "Change",
+    "liters": "{value} L",
+    "quarts": "{value} qt",
+    "km": "{value} km",
+    "miles": "{value} mi",
+    "capacity": "Capacity",
+    "drainRefill": "Drain and refill",
+    "interval": "Change every",
+    "copySpec": "Copy {spec}",
+    "copied": "Copied",
+    "noFluids": "The guide lists no fluids for this engine.",
+    "addAsPart": "Add as part",
+    "addFluidAsPart": "Add {system} as a part",
+    "partAdded": "Added",
+    "fromStock": "From stock",
+    "addWithoutStock": "Add without a stock item",
+    "takesDrainRefill": "Takes {amount} at a drain and refill",
+    "takesCapacity": "Takes {amount} in all",
+    "attribution": "Data from {source}",
+    "market": "{region} market",
+    "about": "How sure is this?",
+    "aboutTitle": "How sure the source is",
+    "estimateNote": "Values marked Estimate are AI-derived and not checked against a maker's guide. Check them before you quote a customer.",
+    "lockedNote": "This key shows values one at a time, and each one counts as a call. A paid plan shows them all at once.",
+    "settings": "Labor guide settings",
+    "confidence": {
+      "oem": "OEM",
+      "oemHelp": "Matched against the maker's own data",
+      "high": "Verified",
+      "highHelp": "Verified by the source",
+      "medium": "Medium",
+      "mediumHelp": "The source rates this value as medium confidence",
+      "estimated": "Estimate",
+      "estimatedHelp": "AI-derived and not checked against a maker's guide"
+    }
+  },
   "liveLabor": {
     "title": "{count, plural, one {A technician added labor to this job} other {A technician added # labor lines to this job}}",
+    "titleParts": "{count, plural, one {A technician added a part to this job} other {A technician added # parts to this job}}",
+    "titleBoth": "A technician added labor and parts to this job",
     "body": "It stays out of the list while you are editing. Your next save includes it either way.",
     "show": "Show it"
   },
@@ -188,13 +270,29 @@
     "subtotalInclTax": "Subtotal (incl. tax)",
     "discount": "Discount",
     "discountNone": "None",
+    "discountOff": "Off",
     "discountPercentage": "Percentage",
     "discountFixed": "Fixed",
     "tax": "Tax",
     "taxIncluded": "Tax (incl.)",
+    "taxableAmount": "Taxable amount",
     "total": "Total",
     "inclusiveModeHint": "Line item prices are entered with tax included. Totals show the net + tax breakdown.",
     "partsCost": "Parts cost (internal)"
+  },
+  "lineTax": {
+    "label": "Tax on this line",
+    "taxedTag": "TAX",
+    "untaxedTag": "NO TAX",
+    "taxedHint": "Tax is charged on this line. Click to leave it out of the tax.",
+    "untaxedHint": "No tax is charged on this line. Click to tax it."
+  },
+  "taxOffer": {
+    "noTax": "This was created without tax. The workshop now charges {rate}%.",
+    "otherRate": "This is at {current}%. The workshop now charges {rate}%.",
+    "apply": "Apply {rate}% tax",
+    "failed": "Could not update the tax",
+    "saveFirst": "Save your changes first, then apply the tax."
   },
   "notes": {
     "title": "Notes",
@@ -227,6 +325,7 @@
     "discount": "Discount",
     "tax": "Tax ({rate}%)",
     "taxIncluded": "Tax (incl., {rate}%)",
+    "taxableAmount": "Taxable amount",
     "total": "Total",
     "paid": "Paid",
     "balanceDue": "Balance Due",
@@ -286,18 +385,8 @@
   "share": {
     "title": "Share Invoice",
     "description": "Generate a public link that allows anyone to view and download this invoice without signing in.",
-    "notifyTitle": "Notify {name}",
-    "email": "Email",
-    "noEmail": "(no email on file)",
-    "sms": "SMS",
-    "noPhone": "(no phone on file)",
-    "sendNotification": "Send Notification",
     "revokeLink": "Revoke Link",
     "generateLink": "Generate Public Link",
-    "emailSent": "Email sent",
-    "failedEmail": "Failed to send email",
-    "smsSent": "SMS sent",
-    "failedSms": "Failed to send SMS",
     "copyLink": "Copy link"
   },
   "sidebar": {
@@ -427,7 +516,13 @@
     "loadOn": "Booked hours on {date}",
     "promisedAt": "Promised to customer",
     "promisedPlaceholder": "Not promised yet",
-    "promisedClear": "Clear"
+    "promisedClear": "Clear",
+    "lead": "Lead",
+    "alsoOnJob": "Also on this job",
+    "helperAdd": "Add {name} to this job",
+    "helperRemove": "Take {name} off this job",
+    "failedHelper": "Failed to update who is on the job",
+    "clashPeople": "{count, plural, one {{names} is busy} other {{names} are busy}}"
   },
   "notifications": {
     "title": "Customer Notifications",
@@ -583,7 +678,6 @@
   "modern": {
     "statusLabel": "Work order status",
     "back": "Back",
-    "backToClassic": "Back to the classic layout",
     "openCustomer": "Open customer",
     "serviceHistory": "Service history",
     "changeVehicle": "Change vehicle",
@@ -602,13 +696,6 @@
       "paymentTaken": "Payment of {amount} recorded",
       "statusSet": "Status set to {status}"
     },
-    "invite": {
-      "title": "The work order page has been overhauled.",
-      "body": "A clearer layout with the same fields. You can switch back at any time.",
-      "try": "Try it now",
-      "dismiss": "Not now",
-      "menu": "Try the new layout"
-    },
     "promised": "Promised {date}",
     "promisedOverdue": "Promised {date}, overdue",
     "opened": "Opened {date}",
@@ -617,6 +704,7 @@
     "titleField": "Title",
     "media": {
       "tabs": {
+        "all": "All",
         "photos": "Photos",
         "diagnostics": "Diagnostics",
         "dropoff": "Drop-off"
@@ -626,6 +714,7 @@
       "showToCustomer": "Show to the customer",
       "hideFromCustomer": "Hide from the customer",
       "add": {
+        "all": "Add files",
         "image": "Add photos",
         "document": "Add documents",
         "diagnostic": "Add diagnostic report",
@@ -666,6 +755,7 @@
       "customerSince": "Customer since"
     },
     "moreStatuses": "More statuses",
+    "addStatus": "Add status",
     "fromInspection": "From inspection {name}, {date}",
     "fromQuote": "From quote {ref}",
     "startInspection": "Start inspection"
@@ -730,6 +820,21 @@
         "odometer": "Odometer",
         "other": "Damage or other"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Take the vehicle's photo with a phone",
+      "dialogBody": "Take a photo of the car on any phone, or choose one already on it. It becomes the photo at the top of this vehicle's page.",
+      "step2": "Take a photo of the whole car, or choose one from the phone.",
+      "step3": "It replaces the photo on the vehicle's page as soon as it arrives.",
+      "scope": "The link can only set this vehicle's photo, and stops working after 30 minutes.",
+      "waiting": "Waiting for the photo…",
+      "received": "Photo received",
+      "pageTitle": "Photo of the vehicle",
+      "pageBody": "Take a photo of the whole car. It replaces the photo on the vehicle's page.",
+      "choosePhoto": "Choose a photo",
+      "saved": "Saved. The photo is on the vehicle's page now. Take another to replace it.",
+      "invalid": "Scan the code on the vehicle's page again.",
+      "notAPhoto": "Only photos can be used here."
     }
   },
   "payCode": {
@@ -750,5 +855,12 @@
   },
   "customStatus": {
     "defaultMessage": "Hi {customer_name}, an update on your {vehicle}: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Your changes are not saved",
+    "fallbackReason": "The latest changes could not be saved.",
+    "hint": "Stay to fix it, or leave and lose the changes made since the last save.",
+    "stay": "Stay and fix",
+    "leave": "Leave without saving"
   }
 }

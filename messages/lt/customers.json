@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Dirbtuvės numatytasis",
     "invoiceDesignHint": "Šio kliento sąskaitos spausdinamos šiuo dizainu vietoj dirbtuvės numatytojo. Sąskaita vis tiek gali pasirinkti savo.",
     "reminderOptOut": "Be priminimų",
-    "reminderOptOutHint": "Neįtraukti šio kliento į apžiūros priminimus ar kitas kampanijas."
+    "reminderOptOutHint": "Neįtraukti šio kliento į apžiūros priminimus ar kitas kampanijas.",
+    "bookAppointment": "Užregistruoti vizitą"
   },
   "serviceRequests": {
     "statusNew": "Nauja",
@@ -120,6 +121,12 @@
     "saveNotes": "Išsaugoti pastabas",
     "submitted": "Pateikta {date}",
     "preferred": "Pageidaujama: {date}",
+    "preferredMorning": "Pageidaujama: {date}, rytą",
+    "preferredAfternoon": "Pageidaujama: {date}, po pietų",
+    "files": "{count, plural, one {# kliento nuotrauka ar vaizdo įrašas} few {# kliento nuotraukos ar vaizdo įrašai} many {# kliento nuotraukos ar vaizdo įrašo} other {# kliento nuotraukų ar vaizdo įrašų}}",
+    "openPhoto": "Atidaryti nuotrauką {number}",
+    "openVideo": "Atidaryti vaizdo įrašą {number}",
+    "fileMissing": "Nuotrauka {number} nebepasiekiama",
     "workOrderCreated": "Darbo užsakymas sukurtas",
     "workOrderError": "Nepavyko sukurti darbo užsakymo",
     "requestDismissed": "Užklausa atmesta",

@@ -2,6 +2,10 @@
   "panel": {
     "title": "Meldingen",
     "markAllRead": "Alles als gelezen markeren",
+    "clearAll": "Alles wissen",
+    "confirmClearAll": "Alle meldingen verwijderen?",
+    "clearAllFailed": "Meldingen konden niet worden gewist",
+    "deleteFailed": "Melding kon niet worden verwijderd",
     "empty": "Nog geen meldingen",
     "confirmDelete": "Weet je het zeker?",
     "delete": "Verwijderen",

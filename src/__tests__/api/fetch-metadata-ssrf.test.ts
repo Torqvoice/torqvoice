@@ -63,7 +63,7 @@ describe('POST /api/protected/fetch-metadata — SSRF guard', () => {
     mockCheck.mockResolvedValue({ ok: false, reason: 'private_ip' })
     const r = await POST(req('http://169.254.169.254/latest/meta-data/'))
     expect(r.status).toBe(400)
-    expect(await r.json()).toEqual({ error: 'This URL is not allowed.' })
+    expect(await r.json()).toEqual({ code: 'not_allowed', error: 'This URL is not allowed.' })
     expect(mockCheck).toHaveBeenCalledWith('http://169.254.169.254/latest/meta-data/')
     expect(mockFetch).not.toHaveBeenCalled()
   })
@@ -116,6 +116,60 @@ describe('POST /api/protected/fetch-metadata — SSRF guard', () => {
     mockFetch.mockImplementation(async () => res(302, { location: `https://hop.example/${n++}` }))
     const r = await POST(req('http://start.example'))
     expect(r.status).toBe(422)
-    expect(await r.json()).toEqual({ error: 'Too many redirects' })
+    expect(await r.json()).toEqual({ code: 'too_many_redirects', error: 'Too many redirects' })
+  })
+})
+
+/**
+ * The part form shows its own translated note for a lookup that found nothing,
+ * so every failure carries a code it can tell apart; the English `error` is
+ * only there for other callers. A supplier behind a bot check is the one the
+ * form treats differently: it stops offering Fetch for that link.
+ */
+describe('POST /api/protected/fetch-metadata, why a lookup found nothing', () => {
+  beforeEach(() => {
+    mockCheck.mockResolvedValue({ ok: true })
+  })
+
+  it.each([
+    ['a Cloudflare challenge', res(403, { 'cf-mitigated': 'challenge' })],
+    ['a 503 challenge page', res(503, { 'cf-mitigated': 'challenge', server: 'cloudflare' })],
+    ['a 403 served by Cloudflare', res(403, { server: 'cloudflare' })],
+  ])('answers bot_protected for %s', async (_what, response) => {
+    mockFetch.mockResolvedValue(response)
+    const r = await POST(req('https://supplier.example/parts/1'))
+    expect(r.status).toBe(422)
+    expect(await r.json()).toEqual({
+      code: 'bot_protected',
+      error: 'This site has bot protection. Please fill in the fields manually.',
+    })
+  })
+
+  it('answers http_error when the site itself refuses, with no bot check involved', async () => {
+    mockFetch.mockResolvedValue(res(403, { server: 'nginx' }))
+    const r = await POST(req('https://supplier.example/parts/1'))
+    expect(r.status).toBe(422)
+    expect(await r.json()).toEqual({ code: 'http_error', error: 'Failed to fetch URL (403)' })
+  })
+
+  it('answers not_html for a link to something other than a page', async () => {
+    mockFetch.mockResolvedValue(res(200, { 'content-type': 'application/pdf' }))
+    const r = await POST(req('https://supplier.example/datasheet.pdf'))
+    expect(r.status).toBe(422)
+    expect(await r.json()).toEqual({ code: 'not_html', error: 'URL does not return HTML content' })
+  })
+
+  it('answers timeout when the site takes too long', async () => {
+    mockFetch.mockRejectedValue(Object.assign(new Error('aborted'), { name: 'AbortError' }))
+    const r = await POST(req('https://supplier.example/parts/1'))
+    expect(r.status).toBe(422)
+    expect(await r.json()).toEqual({ code: 'timeout', error: 'Request timed out' })
+  })
+
+  it('answers fetch_failed when the site cannot be reached at all', async () => {
+    mockFetch.mockRejectedValue(new TypeError('fetch failed'))
+    const r = await POST(req('https://supplier.example/parts/1'))
+    expect(r.status).toBe(422)
+    expect(await r.json()).toEqual({ code: 'fetch_failed', error: 'Failed to fetch metadata' })
   })
 })

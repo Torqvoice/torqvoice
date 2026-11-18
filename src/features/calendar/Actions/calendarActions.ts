@@ -1,13 +1,31 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { connectorName } from '@/features/integrations/Lib/display-name'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getManifest } from '@/integrations/registry'
+import { accessFor } from '@/lib/viewer-access'
+import { sanitizeHtml } from '@/lib/sanitize-html'
+import { descriptionLines } from '../Lib/appointment'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
+import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
+import { type ClosedPeriod, eachDay } from '@/features/workshop-calendar/Lib/calendar'
 
-export type CalendarEventType = 'service' | 'reminder' | 'quote' | 'message' | 'external'
+export type CalendarEventType =
+  | 'service'
+  | 'reminder'
+  | 'quote'
+  | 'message'
+  | 'external'
+  /** A day the workshop is closed: a public holiday, a holiday calendar, its own closure. */
+  | 'closure'
+  /** A technician on leave or out of office. */
+  | 'absence'
+  /** An appointment with no job behind it: a talk, a test drive, a visit. */
+  | 'appointment'
 
 export type CalendarEvent = {
   id: string
@@ -25,6 +43,15 @@ export type CalendarEvent = {
   customerName: string | null
   invoiceNumber: string | null
   amount: number | null
+  /**
+   * What it is about, as cleaned rich text. An appointment's description; on
+   * a job only what an older booking still carries beside its conditions.
+   */
+  description?: string | null
+  /** Only on jobs: the conditions, the one copy of what the job is about. */
+  conditions?: string[]
+  /** Appointments and booked jobs: how many notifications go out before it. */
+  notificationCount?: number
   /** Only on external events: whether it fills the day, where it came from. */
   allDay?: boolean
   source?: string | null
@@ -49,7 +76,8 @@ function toTimeStr(date: Date, timeZone: string): string {
  */
 export async function getCalendarEvents(params: { start: string; end: string }) {
   return withAuth(
-    async ({ organizationId }) => {
+    async (ctx) => {
+      const { organizationId } = ctx
       const timeZone = await workshopTimeZone(organizationId)
       const startKey = parseDayKey(params.start)
       const endKey = parseDayKey(params.end)
@@ -65,130 +93,255 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
       )
       const inRange = { gte: start, lt: endExclusive }
 
-      const [services, reminders, quotes, scheduledMessages, external] = await Promise.all([
-        db.serviceRecord.findMany({
-          where: {
-            organizationId,
-            OR: [
-              { startDateTime: inRange },
-              // A job entered with only a service date, never put on the
-              // board, still belongs on its day.
-              { startDateTime: null, serviceDate: inRange },
-            ],
-          },
-          select: {
-            id: true,
-            title: true,
-            serviceDate: true,
-            startDateTime: true,
-            endDateTime: true,
-            status: true,
-            invoiceNumber: true,
-            totalAmount: true,
-            cost: true,
-            vehicleId: true,
-            customer: { select: { name: true } },
-            vehicle: {
-              select: {
-                make: true,
-                model: true,
-                year: true,
-                customer: { select: { name: true } },
+      // Seeing the calendar is reading jobs. What else it lists is somebody
+      // else's record and follows that record's own read: a role without
+      // quotes sees no quote totals here, one without customers no messages
+      // to them. Closed days, time off and connected calendars are the
+      // workshop's day, which everyone who plans it needs.
+      const access = await accessFor(ctx)
+      const sees = {
+        reminders: access.reads(PermissionSubject.VEHICLES),
+        quotes: access.reads(PermissionSubject.QUOTES),
+        messages: access.reads(PermissionSubject.CUSTOMERS),
+      }
+
+      const [services, reminders, quotes, scheduledMessages, external, appointments] =
+        await Promise.all([
+          db.serviceRecord.findMany({
+            where: {
+              organizationId,
+              OR: [
+                { startDateTime: inRange },
+                // A job entered with only a service date, never put on the
+                // board, still belongs on its day.
+                { startDateTime: null, serviceDate: inRange },
+              ],
+            },
+            select: {
+              id: true,
+              title: true,
+              serviceDate: true,
+              startDateTime: true,
+              endDateTime: true,
+              status: true,
+              invoiceNumber: true,
+              totalAmount: true,
+              cost: true,
+              vehicleId: true,
+              description: true,
+              concerns: { orderBy: { sortOrder: 'asc' }, select: { description: true } },
+              _count: { select: { appointmentNotifications: true } },
+              customer: { select: { name: true } },
+              vehicle: {
+                select: {
+                  make: true,
+                  model: true,
+                  year: true,
+                  customer: { select: { name: true } },
+                },
               },
             },
-          },
-          orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
-        }),
-        db.reminder.findMany({
-          where: {
-            organizationId,
-            dueDate: inRange,
-          },
-          select: {
-            id: true,
-            title: true,
-            dueDate: true,
-            hasDueTime: true,
-            isCompleted: true,
-            vehicleId: true,
-            customer: { select: { name: true } },
-            vehicle: {
-              select: {
-                make: true,
-                model: true,
-                year: true,
-                customer: { select: { name: true } },
-              },
+            orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
+          }),
+          sees.reminders
+            ? db.reminder.findMany({
+                where: {
+                  organizationId,
+                  dueDate: inRange,
+                },
+                select: {
+                  id: true,
+                  title: true,
+                  dueDate: true,
+                  hasDueTime: true,
+                  isCompleted: true,
+                  vehicleId: true,
+                  customer: { select: { name: true } },
+                  vehicle: {
+                    select: {
+                      make: true,
+                      model: true,
+                      year: true,
+                      customer: { select: { name: true } },
+                    },
+                  },
+                },
+                orderBy: { dueDate: 'asc' },
+              })
+            : [],
+          sees.quotes
+            ? db.quote.findMany({
+                where: {
+                  organizationId,
+                  validUntil: inRange,
+                  status: { notIn: ['converted', 'rejected'] },
+                },
+                select: {
+                  id: true,
+                  title: true,
+                  quoteNumber: true,
+                  validUntil: true,
+                  status: true,
+                  totalAmount: true,
+                  vehicleId: true,
+                  vehicle: {
+                    select: {
+                      make: true,
+                      model: true,
+                      year: true,
+                      customer: { select: { name: true } },
+                    },
+                  },
+                  customer: { select: { name: true } },
+                },
+                orderBy: { validUntil: 'asc' },
+              })
+            : [],
+          sees.messages
+            ? db.scheduledMessage.findMany({
+                where: {
+                  organizationId,
+                  status: { not: 'cancelled' },
+                  sendAt: inRange,
+                },
+                select: {
+                  id: true,
+                  channel: true,
+                  subject: true,
+                  body: true,
+                  recipient: true,
+                  status: true,
+                  sendAt: true,
+                  vehicleId: true,
+                  customer: { select: { name: true } },
+                  vehicle: { select: { make: true, model: true, year: true } },
+                },
+                orderBy: { sendAt: 'asc' },
+              })
+            : [],
+          // Busy time pulled from connected calendars; read-only on this side.
+          db.externalCalendarEvent.findMany({
+            where: { organizationId, startAt: { lt: endExclusive }, endAt: { gt: start } },
+            select: {
+              id: true,
+              title: true,
+              startAt: true,
+              endAt: true,
+              allDay: true,
+              remoteUrl: true,
+              connection: { select: { connectorId: true } },
             },
-          },
-          orderBy: { dueDate: 'asc' },
-        }),
-        db.quote.findMany({
-          where: {
-            organizationId,
-            validUntil: inRange,
-            status: { notIn: ['converted', 'rejected'] },
-          },
-          select: {
-            id: true,
-            title: true,
-            quoteNumber: true,
-            validUntil: true,
-            status: true,
-            totalAmount: true,
-            vehicleId: true,
-            vehicle: {
-              select: {
-                make: true,
-                model: true,
-                year: true,
-                customer: { select: { name: true } },
+            orderBy: { startAt: 'asc' },
+          }),
+          db.appointment.findMany({
+            where: { organizationId, startAt: inRange },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              startAt: true,
+              endAt: true,
+              vehicleId: true,
+              customer: { select: { name: true } },
+              vehicle: {
+                select: {
+                  make: true,
+                  model: true,
+                  year: true,
+                  customer: { select: { name: true } },
+                },
               },
+              _count: { select: { notifications: true } },
             },
-            customer: { select: { name: true } },
-          },
-          orderBy: { validUntil: 'asc' },
-        }),
-        db.scheduledMessage.findMany({
-          where: {
-            organizationId,
-            status: { not: 'cancelled' },
-            sendAt: inRange,
-          },
-          select: {
-            id: true,
-            channel: true,
-            subject: true,
-            body: true,
-            recipient: true,
-            status: true,
-            sendAt: true,
-            vehicleId: true,
-            customer: { select: { name: true } },
-            vehicle: { select: { make: true, model: true, year: true } },
-          },
-          orderBy: { sendAt: 'asc' },
-        }),
-        // Busy time pulled from connected calendars; read-only on this side.
-        db.externalCalendarEvent.findMany({
-          where: { organizationId, startAt: { lt: endExclusive }, endAt: { gt: start } },
-          select: {
-            id: true,
-            title: true,
-            startAt: true,
-            endAt: true,
-            allDay: true,
-            remoteUrl: true,
-            connection: { select: { connectorId: true } },
-          },
-          orderBy: { startAt: 'asc' },
-        }),
-      ])
+            orderBy: { startAt: 'asc' },
+          }),
+        ])
 
       const now = new Date()
       const vehicleLabel = (v: { year: number; make: string; model: string } | null) =>
         v ? `${v.year} ${v.make} ${v.model}` : ''
 
+      // Closed days and time off, one all-day (or part-day) entry per day.
+      const { calendar } = await loadWorkshopCalendar(organizationId, {
+        from: params.start,
+        to: params.end,
+      })
+      const tc = await getTranslations('workshopCalendar')
+      const technicianNames = calendar.absences.length
+        ? new Map(
+            (
+              await db.technician.findMany({
+                where: {
+                  organizationId,
+                  id: { in: [...new Set(calendar.absences.map((a) => a.technicianId))] },
+                },
+                select: { id: true, name: true },
+              })
+            ).map((tech) => [tech.id, tech.name])
+          )
+        : new Map<string, string>()
+      const dayEntries = (
+        stretch: Pick<ClosedPeriod, 'startDate' | 'endDate' | 'startTime' | 'endTime'>,
+        make: (day: string, time: string | null, endTime: string | null) => CalendarEvent
+      ) => {
+        const first = stretch.startDate < params.start ? params.start : stretch.startDate
+        const last = stretch.endDate > params.end ? params.end : stretch.endDate
+        if (first > last) return []
+        return eachDay(first, last).map((day) => {
+          const time = day === stretch.startDate ? (stretch.startTime ?? null) : null
+          const until = day === stretch.endDate ? (stretch.endTime ?? null) : null
+          // Part of a day is a timed block; a whole day stays an all-day item.
+          return time || until
+            ? make(day, time ?? '00:00', until ?? '23:59')
+            : make(day, null, null)
+        })
+      }
+      const blank = {
+        vehicleId: null,
+        vehicleLabel: '',
+        customerName: null,
+        invoiceNumber: null,
+        amount: null,
+      }
+      // A holiday listed by two sources is one entry a day.
+      const seenClosure = new Set<string>()
+      const closureEvents: CalendarEvent[] = calendar.closures.flatMap((c, i) =>
+        dayEntries(c, (day, time, endTime) => ({
+          ...blank,
+          id: `closure:${i}:${day}`,
+          title: c.name,
+          date: day,
+          time,
+          endTime,
+          type: 'closure',
+          status: 'closed',
+          allDay: time === null,
+          source: c.source,
+        })).filter((event) => {
+          const id = `${event.date}|${event.title.toLocaleLowerCase()}|${event.time ?? ''}`
+          if (seenClosure.has(id)) return false
+          seenClosure.add(id)
+          return true
+        })
+      )
+      const absenceEvents: CalendarEvent[] = calendar.absences.flatMap((a) =>
+        dayEntries(a, (day, time, endTime) => ({
+          ...blank,
+          id: `absence:${a.id}:${day}`,
+          title: tc('calendar.absenceTitle', {
+            name: technicianNames.get(a.technicianId) ?? '',
+            reason: tc.has(`reasons.${a.reason}`) ? tc(`reasons.${a.reason}`) : a.reason,
+          }),
+          date: day,
+          time,
+          endTime,
+          type: 'absence',
+          status: 'away',
+          allDay: time === null,
+        }))
+      )
+
+      const ti = await getTranslations('integrations')
       const externalEvents: CalendarEvent[] = []
       for (const e of external) {
         // One entry per day the event covers, capped so a year-long block
@@ -196,7 +349,8 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
         // falls on, so an event ending at midnight stops the day before.
         const firstKey = zonedDayKey(e.startAt, timeZone)
         const lastKey = zonedDayKey(new Date(e.endAt.getTime() - 1), timeZone)
-        const source = getManifest(e.connection.connectorId)?.name ?? null
+        const sourceManifest = getManifest(e.connection.connectorId)
+        const source = sourceManifest ? connectorName(ti, sourceManifest) : null
         let day = e.startAt
         for (let n = 0; n < 31; n++) {
           const key = zonedDayKey(day, timeZone)
@@ -227,6 +381,8 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
       }
 
       const events: CalendarEvent[] = [
+        ...closureEvents,
+        ...absenceEvents,
         ...externalEvents,
         ...services.map((s) => {
           const startsAt = s.startDateTime
@@ -239,6 +395,14 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
                 ? toTimeStr(s.endDateTime, timeZone)
                 : '23:59'
               : null
+          // A job booked with nothing to say has its title as its one
+          // condition, which the card already shows as the title.
+          const conditions = s.concerns
+            .map((c) => c.description.trim())
+            .filter((line, i, all) => line && !(all.length === 1 && line === s.title.trim()))
+          // A description from before the conditions were the one copy is
+          // still shown, unless it only repeats them.
+          const legacy = descriptionLines(s.description).some((line) => !conditions.includes(line))
           return {
             id: s.id,
             title: s.title,
@@ -252,6 +416,33 @@ export async function getCalendarEvents(params: { start: string; end: string }) 
             customerName: (s.customer ?? s.vehicle?.customer)?.name ?? null,
             invoiceNumber: s.invoiceNumber,
             amount: s.totalAmount > 0 ? s.totalAmount : s.cost > 0 ? s.cost : null,
+            conditions,
+            description: legacy && s.description ? sanitizeHtml(s.description) : null,
+            notificationCount: s._count.appointmentNotifications,
+          }
+        }),
+        ...appointments.map((a) => {
+          const date = zonedDayKey(a.startAt, timeZone)
+          return {
+            id: a.id,
+            title: a.title,
+            date,
+            time: toTimeStr(a.startAt, timeZone),
+            endTime:
+              a.endAt > a.startAt
+                ? zonedDayKey(a.endAt, timeZone) === date
+                  ? toTimeStr(a.endAt, timeZone)
+                  : '23:59'
+                : null,
+            type: 'appointment' as const,
+            status: 'booked',
+            vehicleId: a.vehicleId,
+            vehicleLabel: vehicleLabel(a.vehicle),
+            customerName: (a.customer ?? a.vehicle?.customer)?.name ?? null,
+            invoiceNumber: null,
+            amount: null,
+            description: a.description ? sanitizeHtml(a.description) : null,
+            notificationCount: a._count.notifications,
           }
         }),
         ...reminders

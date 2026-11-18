@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { restoringResponse } from '@/lib/backup/freeze-response'
+import { isRestoring } from '@/lib/backup/freeze'
 import { BARE_START_REPLY, getOrgTelegramWebhookSecret, sendTelegramMessage } from '@/lib/telegram'
 import { notify } from '@/lib/notify'
 import { safeEqual } from '@/lib/webhook-signatures'
@@ -43,6 +45,9 @@ export async function POST(
     if (!secret || !safeEqual(secret, secretHeader)) {
       return NextResponse.json({ ok: true })
     }
+
+    // A link or a message filed now would be lost under the restore; Telegram retries after it.
+    if (isRestoring(organizationId)) return restoringResponse()
 
     // Parse the Telegram Update
     const update = (await request.json()) as TelegramUpdate

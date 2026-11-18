@@ -53,6 +53,7 @@
     "statusCompleted": "Baigta",
     "complete": "Užbaigti",
     "reopen": "Atverti iš naujo",
+    "send": "Siųsti",
     "share": "Bendrinti",
     "save": "Įrašyti",
     "saving": "Įrašoma…",
@@ -94,6 +95,8 @@
     "completeTitle": "Užbaigti šią apžiūrą?",
     "completeBody": "Užbaigus punktai užrakinami, o rezultatas tampa „{result}“.",
     "completeBlocked": "{count} patikrinimas (-ai), kuriuos kontrolinis sąrašas žymi privalomais, dar neatlikti.",
+    "blockerMissingGrade": "turi būti įvertinta",
+    "blockerNeedsPhoto": "reikia defekto nuotraukos",
     "completeUngraded": "{count} punktas (-ai) neįvertinti.",
     "completeDangerous": "Užfiksuota pavojingų trūkumų: {count}. Transporto priemone važiuoti viešaisiais keliais draudžiama.",
     "reopenTitle": "Atverti šią apžiūrą iš naujo?",
@@ -459,7 +462,9 @@
     "copyLink": "Kopijuoti nuorodą",
     "copied": "Nuoroda nukopijuota į iškarpinę",
     "generated": "Bendrinimo nuoroda sukurta",
-    "revoked": "Bendrinimo nuoroda atšaukta"
+    "revoked": "Bendrinimo nuoroda atšaukta",
+    "revokeLink": "Atšaukti nuorodą",
+    "generateLink": "Generuoti viešą nuorodą"
   },
   "phone": {
     "pageTitle": "Apžiūros nuotraukos",
@@ -494,5 +499,19 @@
     "photos": "Nuotraukos",
     "documents": "Dokumentai",
     "video": "Vaizdo įrašai"
+  },
+  "checkResults": {
+    "pass": "Viskas tvarkoje",
+    "pass_minor": "Keli punktai, kuriuos verta stebėti",
+    "fail": "Kelis punktus reikia sutaisyti",
+    "fail_dangerous": "Kelis punktus reikia skubiai sutaisyti",
+    "incomplete": "Nebaigta",
+    "detail": {
+      "pass": "Nieko nereikėjo taisyti.",
+      "pass_minor": "Nieko skubaus. Pažymėtus punktus verta suplanuoti.",
+      "fail": "Kai kuriuos punktus reikia sutaisyti. Pastabose nurodyta, kas rasta.",
+      "fail_dangerous": "Kai kurie punktai nesaugūs, juos reikia sutaisyti prieš toliau naudojant.",
+      "incomplete": "Ši patikra dar vyksta."
+    }
   }
 }

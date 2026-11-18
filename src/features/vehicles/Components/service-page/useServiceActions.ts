@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -57,7 +58,9 @@ export function useServiceActions({
     partItems,
     laborItems,
     laborItemsForSave,
-    clearLaborAddedElsewhere,
+    commitLaborAddedElsewhere,
+    partItemsForSave,
+    commitPartsAddedElsewhere,
     subtotal,
     taxRate,
     taxInclusive,
@@ -75,25 +78,46 @@ export function useServiceActions({
     notesRef,
     initialData,
     customFieldsSaveRef,
+    lastSaveErrorRef,
+    leavingRef,
+    editRevisionRef,
+    markSaved,
   } = formState
+
+  /**
+   * A save the rules refused. The reason is kept for the leave dialog; when a
+   * link is waiting on this save, the dialog says it instead of a toast.
+   */
+  const refuse = (message: string, show: () => void = () => toast.error(message)) => {
+    lastSaveErrorRef.current = message
+    if (!leavingRef.current) show()
+  }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    // Running from here: the custom fields go to the server before the rest,
+    // and a link waiting on this save has to wait for that part too.
+    isSavingRef.current = true
+    // What this save covers. An edit made while it runs is newer, and keeps
+    // the page unsaved once it lands.
+    const revision = editRevisionRef.current
 
     // Validate and save custom fields before saving
     if (customFieldsSaveRef.current) {
       try {
         const { valid } = await customFieldsSaveRef.current()
         if (!valid) {
-          toast.error(t('page.customFieldsInvalid'))
+          isSavingRef.current = false
+          refuse(t('page.customFieldsInvalid'))
           return
         }
       } catch (err) {
         console.error('Custom fields save error:', err)
-        toast.error(t('page.customFieldsSaveFailed'))
+        isSavingRef.current = false
+        refuse(t('page.customFieldsSaveFailed'))
         return
       }
     }
@@ -122,11 +146,11 @@ export function useServiceActions({
       concerns,
     })
     if (problem) {
-      toast.error(t(`page.problems.${problem}`))
+      isSavingRef.current = false
+      refuse(t(`page.problems.${problem}`))
       return
     }
 
-    isSavingRef.current = true
     setLoading(true)
 
     // A field the layout does not render at all is left alone; an emptied one
@@ -178,7 +202,10 @@ export function useServiceActions({
           confirmation: c.confirmation ?? null,
           confirmed: c.confirmed ?? false,
         })),
-      partItems: partItems.filter((p) => p.name),
+      // Parts and labour a technician added while this page was open go with
+      // the save even if the offer to show them was never taken: this action
+      // replaces every line, so one left out of the payload is deleted.
+      partItems: partItemsForSave.filter((p) => p.name),
       // A line a technician added while this page was open goes with the save
       // even if the offer to show it was never taken: this action replaces
       // every labour line, so one left out of the payload is deleted.
@@ -199,11 +226,22 @@ export function useServiceActions({
       warrantyNotes: warranty.warrantyNotes ?? '',
     }
 
-    const result = await updateServiceRecord(payload)
+    let result: Awaited<ReturnType<typeof updateServiceRecord>>
+    try {
+      result = await updateServiceRecord(payload)
+    } catch (err) {
+      // The request never came back (the connection dropped). Saving has to
+      // end here, or the next save, and a link waiting on this one, waits
+      // forever.
+      isSavingRef.current = false
+      setLoading(false)
+      throw err
+    }
 
     if (result.success) {
-      clearLaborAddedElsewhere()
-      setHasUnsavedChanges(false)
+      commitLaborAddedElsewhere()
+      commitPartsAddedElsewhere()
+      markSaved(revision)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {
         router.push(`/vehicles/${selectedVehicleId}/service/${initialData.id}`)
@@ -211,7 +249,8 @@ export function useServiceActions({
         router.refresh()
       }
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('page.failedUpdate'))
+      const message = result.error || t('page.failedUpdate')
+      refuse(message, () => modal.open('error', tc('errors.error'), message))
     }
 
     isSavingRef.current = false
@@ -223,6 +262,7 @@ export function useServiceActions({
       title: t('page.deleteTitle'),
       description: t('page.deleteDescription'),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -230,14 +270,17 @@ export function useServiceActions({
     // longer exists, so cancel it and block further saves before deleting.
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     isSavingRef.current = true
-    const result = await deleteServiceRecord(record.id)
-    if (result.success) {
+    // A request that never reaches the server throws instead of answering.
+    // Uncaught, saving stayed blocked on a job that still exists, and every
+    // later edit on the page was lost without a word.
+    const result = await deleteServiceRecord(record.id).catch(() => null)
+    if (result?.success) {
       setHasUnsavedChanges(false)
       router.push(vehicleId ? `/vehicles/${vehicleId}` : '/work-orders')
       router.refresh()
     } else {
       isSavingRef.current = false
-      modal.open('error', tc('errors.error'), result.error || t('page.failedDelete'))
+      modal.open('error', tc('errors.error'), result?.error || t('page.failedDelete'))
     }
   }
 
@@ -266,24 +309,30 @@ export function useServiceActions({
       title: t('attachments.deleteTitle'),
       description: t('attachments.deleteDescription'),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
     setDeletingAttachment(id)
-    const result = await deleteServiceAttachment(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, here
+    // and in the payment handlers below, so it is caught and reported the way
+    // a refusal is, and the button it disabled works again.
+    const result = await deleteServiceAttachment(id).catch(() => null)
+    if (result?.success) {
       toast.success(t('attachments.deleted'))
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('attachments.failedDelete'))
+      modal.open('error', tc('errors.error'), result?.error || t('attachments.failedDelete'))
     }
     setDeletingAttachment(null)
   }
 
   const buildPaymentNotifyMessage = async (amount: string) => {
     const invoiceNum = record.invoiceNumber || `#${record.id.slice(-8).toUpperCase()}`
-    const tplResult = await getSmsTemplates()
-    const tplData = tplResult.success && tplResult.data ? tplResult.data : null
+    // Templates that cannot be read fall back to the default wording: the
+    // payment is already recorded by the time this runs.
+    const tplResult = await getSmsTemplates().catch(() => null)
+    const tplData = tplResult?.success && tplResult.data ? tplResult.data : null
     const tpl =
       tplData?.templates[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] ||
       SMS_TEMPLATE_DEFAULTS[SETTING_KEYS.SMS_TEMPLATE_PAYMENT_RECEIVED] ||
@@ -307,9 +356,9 @@ export function useServiceActions({
     note?: string
   }) => {
     setPaymentLoading(true)
-    const result = await createPayment({ serviceRecordId: record.id, ...data })
+    const result = await createPayment({ serviceRecordId: record.id, ...data }).catch(() => null)
     setPaymentLoading(false)
-    if (result.success) {
+    if (result?.success) {
       toast.success(t('payments.recorded'))
       router.refresh()
       if (record.customer ?? record.vehicle?.customer) {
@@ -317,15 +366,15 @@ export function useServiceActions({
       }
       return true
     }
-    modal.open('error', tc('errors.error'), result.error || t('payments.failedRecord'))
+    modal.open('error', tc('errors.error'), result?.error || t('payments.failedRecord'))
     return false
   }
 
   const handleTogglePaid = async () => {
     setPaymentLoading(true)
-    const result = await toggleManuallyPaid(record.id)
+    const result = await toggleManuallyPaid(record.id).catch(() => null)
     setPaymentLoading(false)
-    if (result.success) {
+    if (result?.success) {
       formState.setLocalManuallyPaid(!!result.data?.manuallyPaid)
       toast.success(
         result.data?.manuallyPaid ? t('payments.markedPaid') : t('payments.markedUnpaid')
@@ -335,7 +384,7 @@ export function useServiceActions({
         await buildPaymentNotifyMessage('')
       }
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('payments.failedStatus'))
+      modal.open('error', tc('errors.error'), result?.error || t('payments.failedStatus'))
     }
   }
 
@@ -344,16 +393,17 @@ export function useServiceActions({
       title: t('payments.deleteTitle'),
       description: t('payments.deleteDescription'),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
     setDeletingPayment(id)
-    const result = await deletePayment(id)
-    if (result.success) {
+    const result = await deletePayment(id).catch(() => null)
+    if (result?.success) {
       toast.success(t('payments.deleted'))
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('payments.failedDelete'))
+      modal.open('error', tc('errors.error'), result?.error || t('payments.failedDelete'))
     }
     setDeletingPayment(null)
   }

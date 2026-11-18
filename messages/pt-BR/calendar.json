@@ -68,15 +68,23 @@
       "reminder": "Abrir lembrete",
       "quote": "Abrir orçamento",
       "message": "Abrir mensagens",
-      "external": "Abrir"
-    }
+      "external": "Abrir",
+      "closure": "Abrir horário de funcionamento",
+      "absence": "Abrir o quadro de trabalho",
+      "appointment": "Abrir calendário"
+    },
+    "makeWorkOrder": "Criar ordem de serviço",
+    "notifications": "{count, plural, one {# notificação} other {# notificações}}"
   },
   "filters": {
     "services": "Ordens de serviço",
     "reminders": "Lembretes",
     "quotes": "Orçamentos",
     "messages": "Mensagens",
-    "external": "Calendários conectados"
+    "external": "Calendários conectados",
+    "closures": "Dias fechados",
+    "absences": "Ausências",
+    "appointments": "Agendamentos"
   },
   "selectVehicle": "Selecionar veículo para ordem de serviço",
   "dateChoice": {
@@ -90,6 +98,8 @@
   "contextMenu": {
     "newWorkOrder": "Nova ordem de serviço",
     "newWorkOrderAt": "Nova ordem de serviço às {time}",
+    "bookAppointment": "Agendar horário",
+    "bookAppointmentAt": "Agendar horário às {time}",
     "newReminder": "Novo lembrete",
     "newQuote": "Novo orçamento",
     "openEvent": "Abrir ({count})",
@@ -106,7 +116,11 @@
     "deleteMessageConfirm": "Excluir a mensagem agendada \"{title}\"? Ela não será enviada.",
     "deleted": "Excluído",
     "updated": "Atualizado",
-    "failed": "Não foi possível concluir. Tente novamente."
+    "failed": "Não foi possível concluir. Tente novamente.",
+    "edit": "Editar",
+    "makeWorkOrder": "Transformar em ordem de serviço",
+    "deleteAppointment": "Excluir agendamento",
+    "deleteAppointmentConfirm": "Excluir o agendamento \"{title}\"? As notificações dele não serão enviadas."
   },
   "events": {
     "status": {
@@ -123,14 +137,20 @@
       "upcoming": "Próximo",
       "failed": "Falhou",
       "queued": "Na fila",
-      "busy": "Ocupado"
+      "busy": "Ocupado",
+      "closed": "Fechado",
+      "away": "Ausente",
+      "booked": "Reservado"
     },
     "type": {
       "service": "Ordem de serviço",
       "reminder": "Lembrete",
       "quote": "Orçamento",
       "message": "Mensagem",
-      "external": "Calendário conectado"
+      "external": "Calendário conectado",
+      "closure": "Fechado",
+      "absence": "Ausência",
+      "appointment": "Agendamento"
     },
     "noEvents": "Sem eventos",
     "selectDay": "Selecione um dia com eventos ou crie uma nova ordem de serviço.",
@@ -145,5 +165,127 @@
     }
   },
   "previousMonth": "Mês anterior",
-  "nextMonth": "Próximo mês"
+  "nextMonth": "Próximo mês",
+  "range": {
+    "from": "A partir das {time}",
+    "until": "Até às {time}"
+  },
+  "timeOffMissing": "Essa ausência foi alterada ou removida nesse meio tempo.",
+  "appointment": {
+    "title": "Agendar horário",
+    "description": "Descrição",
+    "descriptionMarine": "Coloque um barco ou um cliente no calendário com o que precisa ser feito e quanto tempo deve levar. Não é preciso preencher uma ordem de serviço agora: ela é aberta quando o barco chegar.",
+    "customer": "Cliente",
+    "selectCustomer": "Selecionar cliente",
+    "searchCustomer": "Buscar clientes",
+    "noCustomers": "Nenhum cliente encontrado.",
+    "vehicle": "Veículo",
+    "vehicleMarine": "Barco",
+    "selectVehicle": "Selecionar veículo",
+    "selectVehicleMarine": "Selecionar barco",
+    "searchVehicle": "Buscar por placa, marca ou modelo",
+    "searchVehicleMarine": "Buscar por número de registro, marca ou modelo",
+    "noVehicles": "Nenhum veículo encontrado.",
+    "noVehiclesMarine": "Nenhum barco encontrado.",
+    "none": "Nenhum",
+    "optional": "Opcional",
+    "whoHint": "Um cliente, um carro ou os dois. Ainda não cadastrado? Adicione com Novo.",
+    "whoHintMarine": "Um cliente, um barco ou os dois. Ainda não cadastrado? Adicione com Novo.",
+    "work": "Serviço necessário",
+    "workPlaceholder": "Freios dianteiros chiando\nTroca de óleo",
+    "workPlaceholderMarine": "Motor superaquece em alta velocidade\nRevisão anual",
+    "workHint": "Uma coisa por linha. Cada linha aparece na ordem de serviço em \"Serviço solicitado\".",
+    "date": "Data",
+    "time": "Hora de início",
+    "hours": "Horas estimadas",
+    "submit": "Agendar horário",
+    "booked": "Horário agendado",
+    "bookedNobodyFree": "Horário agendado, mas não há baia nem técnico livre a essa hora. Confira o quadro de trabalho.",
+    "failed": "Não foi possível agendar o horário",
+    "editTitle": "Editar agendamento",
+    "convertTitle": "Transformar em ordem de serviço",
+    "dialogDescription": "Coloque um agendamento ou uma ordem de serviço no calendário, com quem é e as notificações antes dele.",
+    "titleLabel": "Título",
+    "titlePlaceholder": "Adicionar título",
+    "kind": {
+      "appointment": "Agendamento",
+      "workOrder": "Ordem de serviço",
+      "appointmentHint": "Só no calendário. Transforme em ordem de serviço quando o carro chegar.",
+      "appointmentHintMarine": "Só no calendário. Transforme em ordem de serviço quando o barco chegar.",
+      "workOrderHint": "Reserva uma baia ou um técnico, recebe um número de ordem e aparece no quadro de trabalho."
+    },
+    "when": "Quando",
+    "start": "Início",
+    "end": "Fim",
+    "durationHours": "{count, plural, one {# hora} other {# horas}}",
+    "durationMinutes": "{count, plural, one {# minuto} other {# minutos}}",
+    "endAfterStart": "O fim precisa ser depois do início e, no máximo, uma semana depois.",
+    "missing": {
+      "title": "Adicione um título primeiro.",
+      "times": "Defina um fim pelo menos 5 minutos depois do início e, no máximo, uma semana depois.",
+      "who": "Escolha primeiro um cliente ou um veículo.",
+      "whoMarine": "Escolha primeiro um cliente ou um barco.",
+      "notifications": "Confira primeiro os tempos das notificações.",
+      "customerNotice": "Escolha um cliente ou remova a notificação ao cliente."
+    },
+    "appointmentWhoHint": "Escolha um cliente para poder avisá-lo antes do agendamento.",
+    "appointmentWhoHintMarine": "Escolha um cliente para poder avisá-lo antes do agendamento.",
+    "whoLocked": "Altere o carro ou o cliente na ordem de serviço.",
+    "whoLockedMarine": "Altere o barco ou o cliente na ordem de serviço.",
+    "workHintTitle": "Uma coisa por linha. Cada linha vira um relato no serviço. Se ficar vazio, vale o título.",
+    "workLocked": "Há trabalho registrado nestes relatos. Altere-os na ordem de serviço.",
+    "concernLabel": "Relato {number}",
+    "removeConcern": "Remover relato",
+    "addConcern": "Digite um relato e pressione Enter",
+    "addConcernMarine": "Digite um relato e pressione Enter",
+    "workEmptyHint": "Se ficar vazio, o título vira o relato do serviço.",
+    "endsAnotherDay": "Termina em outro dia",
+    "video": "Videochamada",
+    "addMeeting": "Adicionar reunião do {name}",
+    "meetingAdded": "Uma reunião do {name} será adicionada ao salvar.",
+    "removeMeeting": "Não adicionar a reunião",
+    "joinMeeting": "Entrar na videochamada",
+    "meetingFailed": "O agendamento foi salvo, mas não foi possível adicionar a reunião. {error}",
+    "notifications": "Notificações",
+    "addNotification": "Adicionar notificação",
+    "removeNotification": "Remover notificação",
+    "channelLabel": "Como",
+    "amountLabel": "Quantos",
+    "unitLabel": "Minutos, horas, dias ou semanas antes",
+    "at": "às",
+    "atLabel": "Horário",
+    "channel": {
+      "toWorkshop": "Para a oficina",
+      "toCustomer": "Para o cliente",
+      "inApp": "No app",
+      "email": "E-mail para mim",
+      "customerSms": "SMS para o cliente",
+      "customerEmail": "E-mail para o cliente"
+    },
+    "unit": {
+      "minutes": "{count, plural, one {minuto antes} other {minutos antes}}",
+      "hours": "{count, plural, one {hora antes} other {horas antes}}",
+      "days": "{count, plural, one {dia antes} other {dias antes}}",
+      "weeks": "{count, plural, one {semana antes} other {semanas antes}}"
+    },
+    "customerChannelNeedsCustomer": "Escolha um cliente para notificá-lo.",
+    "descriptionPlaceholder": "Adicionar descrição",
+    "convertSubmit": "Criar ordem de serviço",
+    "saved": "Agendamento salvo",
+    "new": "Novo",
+    "newCustomer": "Novo cliente",
+    "newCustomerNamed": "Novo cliente “{name}”",
+    "newVehicle": "Novo veículo",
+    "newVehicleMarine": "Novo barco",
+    "newVehicleNamed": "Novo veículo com placa {plate}",
+    "newVehicleNamedMarine": "Novo barco com registro {plate}",
+    "openCalendar": "Abrir calendário"
+  },
+  "notify": {
+    "inAppTitle": "Em breve: {title}",
+    "emailSubject": "Em breve: {title}, {when}",
+    "emailFooter": "Você configurou esta notificação no calendário da oficina no Torqvoice.",
+    "customerSubject": "Seu horário em {workshop}",
+    "customerBody": "Olá, {name}! Passando para lembrar do seu horário em {workshop}: {when}. Até lá!"
+  }
 }

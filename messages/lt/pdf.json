@@ -47,6 +47,7 @@
     "tax": "Mokestis ({rate}%)",
     "taxIncluded": "Su mokesčiu ({rate}%)",
     "taxIncludedNamed": "Su {name} ({rate}%)",
+    "taxableAmount": "Apmokestinama suma",
     "paymentsReceived": "Gauti mokėjimai",
     "paidInFull": "PILNAI APMOKĖTA",
     "amountDue": "Mokėtina suma",
@@ -115,6 +116,7 @@
     "tax": "Mokestis ({rate}%)",
     "taxIncluded": "Su mokesčiu ({rate}%)",
     "taxIncludedNamed": "Su {name} ({rate}%)",
+    "taxableAmount": "Apmokestinama suma",
     "validUntil": "Galioja iki: {date}",
     "attachedDocuments": "Pridėti dokumentai",
     "attached": "{name} (pridėtas)",
@@ -193,7 +195,18 @@
     "basicNotApplicable": "Netaikoma",
     "allResults": "Visi rezultatai",
     "signature": "Parašas",
-    "sectionColumn": "Skyrius"
+    "sectionColumn": "Skyrius",
+    "checkPass": "Viskas tvarkoje",
+    "checkPassMinor": "Keli punktai, kuriuos verta stebėti",
+    "checkFail": "Kelis punktus reikia sutaisyti",
+    "checkFailDangerous": "Kelis punktus reikia skubiai sutaisyti",
+    "checkIncomplete": "Nebaigta",
+    "checkDetailPass": "Nieko nereikėjo taisyti.",
+    "checkDetailPassMinor": "Nieko skubaus. Pažymėtus punktus verta suplanuoti.",
+    "checkDetailFail": "Kai kuriuos punktus reikia sutaisyti. Pastabose nurodyta, kas rasta.",
+    "checkDetailFailDangerous": "Kai kurie punktai nesaugūs, juos reikia sutaisyti prieš toliau naudojant.",
+    "checkDetailIncomplete": "Ši patikra dar vyksta.",
+    "overallCheck": "Santrauka"
   },
   "serviceHistory": {
     "serviceHistoryTitle": "PASLAUGŲ ISTORIJA",
@@ -219,7 +232,11 @@
     "conditionMapArea": "Vieta",
     "conditionMapKind": "Tipas",
     "conditionMapSeverity": "Sunkumas",
-    "conditionMapNote": "Pastaba"
+    "conditionMapNote": "Pastaba",
+    "serviceTypeMaintenance": "Priežiūra",
+    "serviceTypeRepair": "Remontas",
+    "serviceTypeUpgrade": "Pagerinimas",
+    "serviceTypeInspection": "Apžiūra"
   },
   "workOrder": {
     "title": "DARBO UŽSAKYMAS",

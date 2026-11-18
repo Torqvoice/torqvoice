@@ -1,9 +1,15 @@
 import { resolveListSort } from '@/lib/list-sort-preference.server'
+import { resolveListStatus } from '@/lib/list-status-preference.server'
 import { getInspectionsPaginated } from '@/features/inspections/Actions/inspectionActions'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { InspectionsClient } from './inspections-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('inspections')
+}
 
 export default async function InspectionsPage({
   searchParams,
@@ -22,12 +28,13 @@ export default async function InspectionsPage({
     sortBy: undefined,
     sortOrder: 'desc',
   })
+  const status = await resolveListStatus('inspections', params.status)
   const [result, templatesResult] = await Promise.all([
     getInspectionsPaginated({
       page: params.page ? parseInt(params.page) : 1,
       pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
       search: params.search,
-      status: params.status || 'all',
+      status,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
     }),
@@ -55,7 +62,7 @@ export default async function InspectionsPage({
           data={result.data}
           templates={templates}
           search={params.search || ''}
-          statusFilter={params.status || 'all'}
+          statusFilter={status}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
         />

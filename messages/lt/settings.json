@@ -75,9 +75,17 @@
         "title": "Kliento portalas",
         "description": "Kliento savitarnos portalas"
       },
+      "shareLinks": {
+        "title": "Bendrinimo nuorodos",
+        "description": "Nuorodų galiojimas ir klientams išsiųstos nuorodos"
+      },
       "workshop": {
         "title": "Dirbtuvės",
         "description": "Techniko ir darbų numatytosios reikšmės"
+      },
+      "openingHours": {
+        "title": "Darbo laikas ir šventės",
+        "description": "Valandos, šventinės dienos, nedarbo dienos, atostogos"
       },
       "laborPresets": {
         "title": "Darbų šablonai",
@@ -107,6 +115,10 @@
         "title": "Išvaizda",
         "description": "Tema ir atvaizdavimas"
       },
+      "shortcuts": {
+        "title": "Spartieji klavišai",
+        "description": "Jūsų pačių klavišai"
+      },
       "data": {
         "title": "Duomenys",
         "description": "Eksportas ir importas atsarginei kopijai"
@@ -129,7 +141,7 @@
       },
       "support": {
         "title": "Pagalba",
-        "description": "Susisiekti su pagalba ir tvarkyti mygtuką"
+        "description": "Pagalba ir pagalbos mygtukas"
       },
       "tireHotel": {
         "title": "Padangų viešbutis",
@@ -242,10 +254,20 @@
     "passwordsNoMatch": "Slaptažodžiai nesutampa",
     "passwordMinLength": "Slaptažodis turi būti bent 8 simbolių",
     "failedChangePassword": "Nepavyko pakeisti slaptažodžio",
+    "setPasswordTitle": "Nustatyti slaptažodį",
+    "setPasswordDescription": "Ši paskyra prisijungia be slaptažodžio, pavyzdžiui, per Google. Nustatykite slaptažodį, kad galėtumėte prisijungti ir el. pašto adresu bei slaptažodžiu.",
+    "setPassword": "Nustatyti slaptažodį",
+    "passwordSet": "Slaptažodis nustatytas. Dabar galite prisijungti el. pašto adresu ir šiuo slaptažodžiu.",
+    "failedSetPassword": "Nepavyko nustatyti slaptažodžio",
+    "passwordAlreadySet": "Ši paskyra jau turi slaptažodį. Pakeiskite jį čia.",
+    "setPasswordFreshHint": "Saugumo sumetimais tai veikia tik per {minutes} min. nuo prisijungimo. Jei praėjo daugiau laiko, jūsų bus paprašyta prisijungti iš naujo.",
+    "setPasswordSignInAgainHint": "Prisijungėte daugiau nei prieš {minutes} min. Prisijunkite iš naujo ir iškart nustatykite slaptažodį.",
+    "signInAgain": "Prisijungti iš naujo",
     "twoFactorTitle": "Dviejų veiksnių autentifikavimas",
     "twoFactorEnabled": "Dviejų veiksnių autentifikavimas įjungtas",
     "twoFactorDisablePrompt": "Įveskite slaptažodį, kad išjungtumėte dviejų veiksnių autentifikavimą.",
     "twoFactorEnablePrompt": "Pridėkite papildomą saugumo lygmenį savo paskyrai, įjungdami dviejų veiksnių autentifikavimą su autentifikavimo programėle.",
+    "twoFactorNeedsPassword": "Dviejų veiksnių autentifikavimas prie prisijungimo slaptažodžiu prideda kodą. Pirmiausia nustatykite slaptažodį.",
     "password": "Slaptažodis",
     "enterPassword": "Įveskite slaptažodį",
     "disable2FA": "Išjungti 2FA",
@@ -327,6 +349,9 @@
       "registering": "Registruojama...",
       "registerSuccess": "Prieigos raktas sėkmingai užregistruotas",
       "registerFailed": "Nepavyko užregistruoti prieigos rakto",
+      "signInAgainTitle": "Prisijunkite iš naujo, kad pridėtumėte prieigos raktą",
+      "signInAgainDescription": "Kad jūsų paskyra būtų saugi, prieigos raktą galima pridėti tik netrukus po prisijungimo. Prisijunkite iš naujo ir tada jį užregistruokite.",
+      "signInAgain": "Prisijungti iš naujo",
       "delete": "Ištrinti",
       "deleteSuccess": "Prieigos raktas ištrintas",
       "deleteFailed": "Nepavyko ištrinti prieigos rakto",
@@ -356,6 +381,8 @@
     "reauthTooManyAttempts": "Per daug bandymų. Palaukite kelias minutes ir bandykite dar kartą.",
     "reauthSignInAgainAccount": "Prieš ištrindami paskyrą, prisijunkite iš naujo.",
     "reauthSignInAgainWorkshop": "Prieš ištrindami dirbtuves, prisijunkite iš naujo.",
+    "reauthSignInAgainRestore": "Prieš atkurdami dirbtuvę, prisijunkite iš naujo.",
+    "reauthSignInAgainPassword": "Prieš nustatydami slaptažodį, prisijunkite iš naujo.",
     "deleteAccountMoved": "Norite ištrinti savo paskyrą?",
     "deleteAccountMovedLink": "Tai galite padaryti duomenų nustatymuose.",
     "signatureTitle": "Parašas",
@@ -554,6 +581,9 @@
     "removeBoardOnlyBody": "{name} nebesirodo darbų lentoje ir jo nebegalima priskirti darbams. Jau užfiksuotas darbas ir pažymėtos valandos lieka lygiai tokie patys.",
     "removeBoardOnlyDone": "{name} pašalintas iš lentos",
     "noRole": "Nėra rolės",
+    "chooseRole": "Pasirinkite rolę",
+    "roleRequired": "Prieš kviesdami pasirinkite rolę. Be rolės žmogus gali prisijungti, bet nieko negali atidaryti.",
+    "noRoleInviteWarning": "Gali prisijungti, bet nieko negalės atidaryti, kol savininkas arba administratorius nesuteiks rolės.",
     "worksOnJobs": "Dirba su automobiliais",
     "createDefaultRoles": "Sukurti standartines roles",
     "defaultRolesCreated": "Standartinės rolės sukurtos",
@@ -563,7 +593,9 @@
     "revokeTechnicianDone": "{name} atjungtas nuo programėlės",
     "noAccessTitle": "Prieigos kol kas nėra",
     "noAccessBody": "Jūsų paskyra priklauso {workshop}, bet jai dar nesuteikta rolė, todėl čia nėra ką atidaryti. Paprašykite dirbtuvių savininko arba administratoriaus suteikti jums rolę.",
-    "setupPageInstall": "Atsisiųsti iš „Google Play“"
+    "setupPageInstall": "Atsisiųsti iš „Google Play“",
+    "setupPageInstallIos": "Atsisiųsti iš „App Store“",
+    "invalidInviteEmail": "Patikrinkite el. pašto adresą. Jis turėtų atrodyti taip: vardas@pavyzdys.lt."
   },
   "invoice": {
     "title": "Sąskaitos ir pasiūlymai",
@@ -960,7 +992,7 @@
     "layoutDocInvoice": "Sąskaita",
     "layoutDocQuote": "Pasiūlymas",
     "smsDefaults": {
-      "invoiceReady": "Jūsų sąskaita paruošta. Peržiūrėkite čia: {share_link}",
+      "invoiceReady": "Sąskaita iš {company_name} paruošta. Peržiūrėkite čia: {share_link}\nPagarbiai {company_name} - {current_user}",
       "quoteReady": "Jūsų pasiūlymas paruoštas peržiūrai. Peržiūrėkite čia: {share_link}",
       "inspectionReady": "Jūsų transporto priemonės apžiūros ataskaita paruošta. Peržiūrėkite čia: {share_link}",
       "statusInProgress": "Darbas su jūsų transporto priemone pradėtas. Informuosime apie eigą.",
@@ -998,7 +1030,7 @@
     "paymentTermsPlaceholder": "Per 14 dienų",
     "paymentTermsHint": "Mokėjimo sąlygų tekstas, rodomas sąskaitose (pvz., \"Per 14 dienų\", \"Gavus sąskaitą\")",
     "onlinePayments": "Mokėjimai internetu",
-    "onlinePaymentsDescription": "Leiskite klientams apmokėti sąskaitas iš nuorodos, kurią jiems siunčiate. Stripe, Vipps ir PayPal prijungiami skiltyje Integracijos ir gali veikti kartu.",
+    "onlinePaymentsDescription": "Leiskite klientams apmokėti sąskaitas iš nuorodos, kurią jiems siunčiate. Stripe, Vipps, PayPal ir Paystack prijungiami skiltyje Integracijos ir gali veikti kartu.",
     "onlinePaymentsHint": "Kai klientas sumoka, tiekėjas praneša Torqvoice ir sąskaita pati pažymima kaip apmokėta. Kiekvieno tiekėjo puslapyje rodomas jam reikalingas pranešimų URL.",
     "offered": "Sąskaitų nuorodose",
     "paused": "Prijungta, nesiūloma",
@@ -1028,6 +1060,13 @@
     "labelPlaceholder": "PVM",
     "splitLabel": "Padalyti mokestį į kelis tarifus",
     "splitHint": "Vietovėms, kuriose toje pačioje sąskaitoje taikomas daugiau nei vienas mokestis, pvz. GST ir QST Kvebeke arba CGST ir SGST Indijoje. Kiekvienas mokestis spausdinamas atskira eilute su savo registracijos numeriu, o mokesčių ataskaitoje jie rodomi atskirai.",
+    "selectiveLabel": "Apmokestinti tik dalį sumų",
+    "selectiveHint": "Vietoms, kur apmokestinamos dalys, bet ne darbai, arba kur kuris nors mokestis lieka neapmokestintas. Išjungus mokestis taikomas viskam.",
+    "appliesTitle": "Taikyti mokestį",
+    "appliesParts": "Dalims",
+    "appliesLabor": "Darbams",
+    "appliesShopFee": "Dirbtuvių mokesčiui",
+    "appliesHint": "Naujos eilutės pradedamos nuo šių atsakymų, o bet kurią eilutę galima pakeisti darbo užsakyme ar pasiūlyme. Jau parašyti užsakymai ir pasiūlymai išlieka tokie, kokie yra.",
     "splitIncomplete": "Prieš išsaugodami kiekvienam mokesčiui nurodykite pavadinimą ir tarifą.",
     "presetLabel": "Pradėti nuo šablono",
     "presetPlaceholder": "Pasirinkite regioną",
@@ -1096,8 +1135,8 @@
     "formatCodeLabel": "Kodas: {value}"
   },
   "localization": {
-    "languageTitle": "Kalba",
-    "languageDescription": "Pasirinkite programos rodymo kalbą.",
+    "languageTitle": "Dirbtuvių kalba",
+    "languageDescription": "Sąskaitos, pasiūlymai, darbo užsakymai ir el. laiškai klientams rašomi šia kalba. Norėdami pakeisti tik jums rodomą kalbą, naudokite kalbos pasirinkimą savo naudotojo meniu.",
     "language": "Kalba",
     "forceCustomerLocale": "Priverstinai naudoti šią kalbą klientams matomuose puslapiuose",
     "forceCustomerLocaleHint": "Kai įjungta, klientų portalas ir bendrinos sąskaitos, pasiūlymai bei apžiūros rodomi jūsų dirbtuvių kalba, nepriklausomai nuo lankytojo naršyklės nustatymų. Kai išjungta, klientams skirti puslapiai naudoja lankytojo naršyklės kalbą.",
@@ -1182,16 +1221,23 @@
     "typeKeyEnabled": "Registruoti HSN/TSN transporto priemonėms",
     "typeKeyHint": "Prideda transporto priemonėms gamintojo ir tipo kodą iš Vokietijos registracijos liudijimo (2.1 ir 2.2 laukeliai). Jis rodomas prie transporto priemonės, darbo užsakyme ir visuose spausdinamuose dokumentuose, o paieška pagal jį randa transporto priemones. Išjungus jis vėl paslepiamas, o įvestos reikšmės išsaugomos.",
     "unitsTitle": "Vienetai",
-    "unitsDescription": "Pasirinkite tarp metrinės (km, litrai) ir imperinės (mylios, galonai) sistemos.",
+    "unitsDescription": "Kaip šiose dirbtuvėse rašomi atstumai, skysčiai ir dalys.",
     "unitSystem": "Vienetų sistema",
     "metric": "Metrinė (km, litrai)",
     "imperial": "Imperinė (mylios, galonai)",
     "distanceLabel": "Atstumas",
     "volumeLabel": "Tūris",
-    "kilometers": "kilometrai (km)",
+    "kilometers": "Kilometrai (km)",
     "liters": "litrai (l)",
-    "miles": "mylios (mi)",
+    "miles": "Mylios (mi)",
     "gallons": "galonai (gal)",
+    "measureSystem": "Skysčiai ir dalys",
+    "measureMetric": "Litrai ir kilogramai",
+    "measureImperial": "Kvortos, galonai ir svarai",
+    "engineSizeUnit": "Variklio tūris",
+    "engineSizeLitres": "Litrai (1,6 L)",
+    "engineSizeCc": "Kubiniai centimetrai (1598 cc)",
+    "engineSizeUnitHint": "Kaip numerio paieška įrašo variklio tūrį ir ką siūlo tuščias laukas. Jau išsaugotos reikšmės nekeičiamos.",
     "defaultStockUnit": "Numatytasis sandėlio vienetas",
     "defaultStockUnitHint": "Automatiškai įrašomas naujoms sandėlio dalims. Kiekviena dalis vis tiek gali turėti savo vienetą.",
     "saveWorkshop": "Išsaugoti dirbtuvių nustatymus",
@@ -1204,8 +1250,6 @@
     "assignFailed": "Nepavyko priskirti darbo užsakymų",
     "noTechnician": "Nėra",
     "weekStartDay": "Savaitės pradžios diena",
-    "workDayStart": "Darbo dienos pradžia",
-    "workDayEnd": "Darbo dienos pabaiga",
     "titleTemplateTitle": "Darbo užsakymo pavadinimas",
     "titleTemplateDescription": "Kaip vadinamas naujas darbo užsakymas, kol niekas neįrašė pavadinimo. Sudarykite jį iš žymų žemiau; kiekvienas darbas atsidaro su užpildytomis žymomis, o pavadinimą vis dar galima keisti pačiame darbe.",
     "titleTemplate": "Pavadinimo šablonas",
@@ -1233,7 +1277,9 @@
       "4": "Ketvirtadienis",
       "5": "Penktadienis",
       "6": "Šeštadienis"
-    }
+    },
+    "openingHoursMoved": "Darbo laikas nustatomas kiekvienai savaitės dienai, kartu su šventinėmis dienomis, nedarbo dienomis ir atostogomis.",
+    "openingHoursLink": "Atidaryti darbo laiką ir šventes"
   },
   "maintenance": {
     "title": "Numatoma priežiūra",
@@ -1338,6 +1384,94 @@
       }
     }
   },
+  "shortcuts": {
+    "title": "Spartieji klavišai",
+    "description": "Jūsų pačių klavišai. Jie veikia kiekviename įrenginyje, kuriame prisijungiate.",
+    "enableLabel": "Naudoti sparčiuosius klavišus",
+    "enableHint": "Įjungia arba išjungia visus šiame puslapyje esančius sparčiuosius klavišus.",
+    "singleKeysLabel": "Vienos raidės klavišai",
+    "singleKeysHint": "Spartieji klavišai iš vienos raidės. Jie yra tik kalendoriuje, pvz., W savaitės rodiniui. Išjunkite, jei naudojate valdymą balsu arba paspaudžiate juos netyčia.",
+    "goToSequencesLabel": "{prefix}, tada puslapio raidė, atidaro tą puslapį",
+    "goToSequencesHint": "Abu paspaudimai naudoja tą patį modifikavimo klavišą, todėl joks jūsų rašomas tekstas jų nesuaktyvins: {example} atidaro „{workOrders}“. Raidės išvardytos skiltyje „Eiti į“.",
+    "allTitle": "Visi spartieji klavišai",
+    "allHint": "Pasirinkite Keisti, tada paspauskite norimus klavišus. Esc atšaukia.",
+    "resetAll": "Atstatyti visus į numatytuosius",
+    "resetAllTitle": "Atstatyti visus sparčiuosius klavišus?",
+    "resetAllDescription": "Kiekvienas klavišas grąžinamas į pradinį, o išjungti spartieji klavišai vėl įjungiami.",
+    "change": "Keisti",
+    "cancel": "Atšaukti",
+    "reset": "Atstatyti",
+    "resetTo": "Grąžinti {keys}",
+    "resetToNone": "Grąžinti be klavišo",
+    "changed": "Pakeista",
+    "off": "Išjungta",
+    "noKey": "Be klavišo",
+    "or": "arba",
+    "then": "tada",
+    "pressKeys": "Paspauskite naujus klavišus…",
+    "recordingFor": "Įrašomas naujas spartusis klavišas veiksmui {action}. Paspauskite klavišus arba Escape, kad atšauktumėte.",
+    "changeFor": "Keisti veiksmo {action} spartųjį klavišą",
+    "resetFor": "Atstatyti veiksmo {action} spartųjį klavišą",
+    "switchFor": "Veiksmo {action} spartusis klavišas",
+    "clash": "{keys} jau priskirtas veiksmui {action}. Jei naudosite jį čia, tas veiksmas liks be jo.",
+    "useHere": "Naudoti čia",
+    "pickAnother": "Pasirinkti kitą",
+    "problems": {
+      "reserved": "{keys} naudoja naršyklė arba sistema, todėl jo priskirti negalima.",
+      "taken": "{keys} yra pastoviai priskirtas kitam sparčiajam klavišui ir jo perkelti negalima.",
+      "needsModifier": "Šis spartusis klavišas veikia visuose puslapiuose, todėl kartu su klavišu reikia {mod} arba {alt}.",
+      "invalid": "Šio klavišo naudoti negalima."
+    },
+    "alsoUsedBy": "Tai taip pat veiksmo {action} klavišas. Veiks tik vienas iš jų.",
+    "goToNote": "Ieškoti ({keys}) atidaro bet kurį puslapį, o {prefix} ir raidė atidaro pagrindinius. Čia bet kuriam puslapiui galite priskirti savo klavišą.",
+    "announceSet": "{action}: dabar {keys}",
+    "announceReset": "{action}: grąžintas numatytasis",
+    "announceResetAll": "Visi spartieji klavišai grąžinti į numatytuosius",
+    "phoneNote": "Sparčiesiems klavišams reikia klaviatūros. Čia atlikti pakeitimai galioja ir jūsų kompiuteryje.",
+    "saveFailed": "Nepavyko išsaugoti sparčiųjų klavišų",
+    "groups": {
+      "general": "Bendra",
+      "create": "Kurti",
+      "goTo": "Eiti į",
+      "calendar": "Kalendorius",
+      "fixed": "Sąrašai ir nuotraukos"
+    },
+    "scopes": {
+      "global": "Bet kur programoje",
+      "calendar": "Tik kalendoriuje"
+    },
+    "actions": {
+      "search": "Ieškoti",
+      "plateLookup": "Numerio paieška",
+      "save": "Išsaugoti",
+      "sidebar": "Rodyti arba slėpti šoninę juostą",
+      "help": "Rodyti sparčiuosius klavišus",
+      "newAppointment": "Naujas vizitas",
+      "newInspection": "Nauja apžiūra",
+      "calendar_day": "Dienos rodinys",
+      "calendar_week": "Savaitės rodinys",
+      "calendar_month": "Mėnesio rodinys",
+      "calendar_year": "Metų rodinys",
+      "calendar_schedule": "Tvarkaraščio rodinys",
+      "calendar_fourDays": "4 dienų rodinys",
+      "calendar_today": "Eiti į šiandieną",
+      "calendar_next": "Kitas laikotarpis",
+      "calendar_previous": "Ankstesnis laikotarpis"
+    },
+    "help": {
+      "title": "Spartieji klavišai",
+      "description": "Dabartiniai jūsų klavišai. Ieškoti atidaro bet kurį puslapį. Pakeisti ar išjungti klavišus galite Nustatymuose.",
+      "disabledNote": "Spartieji klavišai išjungti. Įjunkite juos Nustatymuose.",
+      "find": "Ieškoti sparčiojo klavišo",
+      "noMatch": "Atitinkančių sparčiųjų klavišų nėra",
+      "customize": "Keisti sparčiuosius klavišus",
+      "fixedHint": "visada toks pat",
+      "listMove": "Judėti sąraše",
+      "listOpen": "Atidaryti eilutę",
+      "photos": "Kita arba ankstesnė nuotrauka",
+      "close": "Uždaryti langą arba meniu"
+    }
+  },
   "data": {
     "title": "Duomenų valdymas",
     "description": "Perkelkite duomenis iš senos sistemos, atsisiųskite visko atsarginę kopiją arba ją atkurkite.",
@@ -1351,7 +1485,7 @@
     "optCustomers": "Klientai",
     "optCustomersDesc": "Klientų įrašai ir kontaktinė informacija",
     "optVehicles": "Transporto priemonės ir paslaugų įrašai",
-    "optVehiclesDesc": "Transporto priemonės, pastabos, degalų žurnalai, priminimai, paslaugų įrašai",
+    "optVehiclesDesc": "Transporto priemonės, pastabos, degalų žurnalai, priminimai, paslaugų įrašai, vizitai",
     "optQuotes": "Pasiūlymai",
     "optQuotesDesc": "Pasiūlymai su dalimis ir darbais",
     "optInventory": "Inventorius",
@@ -1385,6 +1519,11 @@
     "importComplete": "Importas baigtas",
     "importCompleteMessage": "Visi duomenys atkurti iš atsarginės kopijos failo.",
     "importFailed": "Importas nepavyko",
+    "restoreRefused": {
+      "busy": "Šiame serveryje jau vykdomas atsarginės kopijos kūrimas arba atkūrimas. Bandykite dar kartą, kai jis bus baigtas.",
+      "ownerOnly": "Torqvoice Cloud atsarginę kopiją atkurti gali tik dirbtuvės savininkas.",
+      "foreignIds": "Faile nurodyti įrašai, priklausantys kitai dirbtuvei, todėl niekas nebuvo atkurta."
+    },
     "importFromOther": "Importuoti iš kitų paslaugų",
     "importFromOtherDescription": "Perkelkite duomenis iš kitos platformos. Pasirinkite paslaugą, kad pradėtumėte.",
     "lubelogTitle": "Importuoti iš LubeLog",
@@ -1436,7 +1575,159 @@
     "sourceBackup": "„Torqvoice“ atsarginė kopija",
     "sourceBackupDesc": ".zip arba .json failas, atsisiųstas iš šio puslapio. Atkūrimas pakeičia viską šiose dirbtuvėse.",
     "restore": "Atkurti",
-    "restoreTitle": "Atkurti atsarginę kopiją"
+    "restoreTitle": "Atkurti atsarginę kopiją",
+    "includeSecrets": "Įtraukti slaptuosius raktus",
+    "includeSecretsHelp": "Slaptieji raktai, pavyzdžiui, mokėjimų ir DI raktai, neįtraukiami, nebent pažymėsite šią parinktį. Tada atkuriant išlaikomi raktai, kuriuos ši įdiegtis jau turi.",
+    "platformBackups": {
+      "title": "Torqvoice atsarginės kopijos",
+      "description": "Torqvoice kas valandą kuria šios dirbtuvės atsarginę kopiją ir 30 dienų saugo atkūrimo taškus, vėliau – savaitinius ir mėnesinius.",
+      "runNow": "Kurti atsarginę kopiją dabar",
+      "started": "Atsarginės kopijos kūrimas pradėtas",
+      "lastGood": "Paskutinė sėkminga atsarginė kopija",
+      "never": "Atsarginės kopijos dar nėra",
+      "nextRun": "Kitas vykdymas",
+      "notScheduled": "Nesuplanuota",
+      "repositorySize": "Saugo Torqvoice",
+      "running": "Vykdoma",
+      "restoring": "Atkuriama",
+      "queued": "Eilėje",
+      "queuedAhead": "{count, plural, one {Eilėje, prieš ją # užduotis} few {Eilėje, prieš ją # užduotys} many {Eilėje, prieš ją # užduoties} other {Eilėje, prieš ją # užduočių}}",
+      "runningHint": "Kuriama atsarginė kopija. Ši kortelė atsinaujina pati, kol ji bus baigta.",
+      "restoringHint": "Vykdomas atkūrimas: dirbtuvės duomenys keičiami atkūrimo taško duomenimis. Šis puslapis atsinaujina pats, kol jis bus baigtas. Iki tol nedirbkite dirbtuvėje.",
+      "paused": "Jūsų plane nebėra Torqvoice atsarginių kopijų. Vykdymai sustabdyti; atkūrimo taškai saugomi iki {date}, o tada ištrinami.",
+      "upsell": "Prieinama su Pro planu: Torqvoice kas valandą kuriamos atsarginės kopijos su atkūrimo taškais, į kuriuos galite grįžti.",
+      "planLink": "Peržiūrėti planus",
+      "example": "Pavyzdys",
+      "pointsEmpty": "Pirmoji atsarginė kopija dar nesukurta.",
+      "needsOwner": "Atkurti gali tik dirbtuvės savininkas.",
+      "listTitle": "Atsarginės kopijos",
+      "today": "Šiandien",
+      "yesterday": "Vakar",
+      "dayCount": "{count, plural, one {# kopija} few {# kopijos} many {# kopijos} other {# kopijų}}",
+      "latest": "Naujausia",
+      "loadingMore": "Įkeliama daugiau kopijų…",
+      "endOfList": "{count, plural, one {Iš viso # kopija} few {Iš viso # kopijos} many {Iš viso # kopijos} other {Iš viso # kopijų}}",
+      "runTitle": {
+        "backup": {
+          "queued": "Atsarginė kopija eilėje",
+          "running": "Kuriama atsarginė kopija",
+          "done": "Atsarginė kopija sukurta",
+          "failed": "Nepavyko sukurti atsarginės kopijos",
+          "skipped": "Atsarginė kopija praleista"
+        },
+        "restore": {
+          "queued": "Atkūrimas į būseną {time} eilėje",
+          "running": "Atkuriama į būseną {time}",
+          "done": "Atkurta į būseną {time}",
+          "failed": "Nepavyko atkurti į būseną {time}",
+          "skipped": "Atkūrimas į būseną {time} praleistas"
+        }
+      },
+      "sizeNote": "Kiekvienas atkūrimo taškas yra pilnas pats savaime; jo dydis – viskas, ką jis apima. Saugykla kiekvieną dalį laiko tik kartą, o vėlesni paleidimai prideda tik tai, kas pasikeitė, todėl „Saugo Torqvoice“ lieka gerokai mažesnis už dydžių sumą.",
+      "supportReason": "Atkūrė Torqvoice pagalbos komanda: {reason}",
+      "kind": {
+        "scheduled": "Suplanuota",
+        "manual": "Rankinė",
+        "safety": "Apsauginė kopija",
+        "safetyHint": "Sukurta prieš pat atkūrimą, kad jį būtų galima atšaukti"
+      },
+      "explore": "Peržiūrėti",
+      "restore": {
+        "action": "Atkurti",
+        "dialogTitle": "Atkurti dirbtuvės būseną, buvusią {time}?",
+        "warning": "{time} sukurtas atkūrimo taškas <bold>pakeičia viską šioje dirbtuvėje</bold>: klientus, transporto priemones, darbus, sąskaitas, nustatymus, nuotraukas ir failus. Viskas, kas pridėta nuo tada, dings.",
+        "safetyNote": "Pirmiausia sukuriama dabartinės dirbtuvės būsenos apsauginė kopija, kuri saugoma 90 dienų, todėl atkūrimą galima atšaukti iš atkūrimo taškų.",
+        "untouched": "Nariai, paskyros, prenumerata ir integracijos nekeičiami. Slaptieji raktai, kurių nėra atsarginėje kopijoje, išlaiko dabartines reikšmes.",
+        "confirmPrompt": "Norėdami patvirtinti, įveskite dirbtuvės pavadinimą <bold>{name}</bold>.",
+        "whileRunning": "Atkūrimas vykdomas fone ir, kai nuotraukų daug, užtrunka kelias minutes. Puslapis atsinaujina pats, kol jis bus baigtas.",
+        "cancel": "Atšaukti",
+        "confirm": "Atkurti",
+        "started": "Atkūrimas pradėtas"
+      }
+    },
+    "restoreExplorer": {
+      "back": "Atgal į atsargines kopijas",
+      "title": "Atkūrimo taškas, sukurtas {date}",
+      "titleShort": "Atkūrimo taškas {id}",
+      "readOnly": "Tik skaityti: niekas čia nekeičia dirbtuvės. Vaizdas užsidaro po 15 minučių neveiklumo.",
+      "readOnlyBadge": "Tik skaitymui",
+      "opening": "Atidaromas atkūrimo taškas",
+      "openingHint": "Atsarginė kopija iššifruojama čia, serveryje, ir ketvirtį valandos laikoma atmintyje. Dirbtuvėje niekas nesikeičia.",
+      "openingSteps": {
+        "connecting": "Jungiamasi prie atsarginių kopijų saugyklos",
+        "locating": "Ieškoma duomenų failo momentinėje kopijoje",
+        "pulling": "Duomenys atsiunčiami ir iššifruojami",
+        "reading": "Skaitomi įrašai",
+        "indexing": "Indeksuojami klientai, transporto priemonės ir darbo užsakymai"
+      },
+      "openingReady": "Paruošta",
+      "openFailed": "Nepavyko atverti atkūrimo taško",
+      "tryAgain": "Bandyti dar kartą",
+      "ownerOnly": "Atkūrimo taško turinį gali peržiūrėti tik dirbtuvės savininkas arba administratorius.",
+      "closed": "Atkūrimo taškas uždarytas; atverkite jį iš naujo",
+      "openAgain": "Atverti iš naujo",
+      "datasets": {
+        "customers": "Klientai",
+        "vehicles": "Transporto priemonės",
+        "serviceRecords": "Darbo užsakymai",
+        "quotes": "Pasiūlymai",
+        "inventoryParts": "Dalys"
+      },
+      "searchPlaceholder": "Ieškoti pagal vardą, numerį, valst. numerį, VIN, el. paštą ar telefoną",
+      "loading": "Įkeliama…",
+      "loadFailed": "Nepavyko įkelti šio sąrašo",
+      "empty": "Atkūrimo taške nieko tokio nėra.",
+      "noMatches": "Nieko nerasta pagal „{query}“.",
+      "showing": "Rodoma {shown} iš {total}",
+      "loadMore": "Rodyti daugiau",
+      "clearSearch": "Išvalyti paiešką",
+      "record": {
+        "loading": "Įkeliamas įrašas…",
+        "loadFailed": "Nepavyko įkelti įrašo",
+        "notFound": "Šio įrašo atkūrimo taške nėra.",
+        "fields": "Informacija",
+        "jumpTo": "Pereiti į",
+        "previous": "Ankstesnis įrašas",
+        "next": "Kitas įrašas",
+        "position": "{index} iš {total}",
+        "noColumns": "Šiose eilutėse nėra ką rodyti.",
+        "yes": "Taip",
+        "no": "Ne"
+      },
+      "sections": {
+        "concerns": "Kliento pranešimai",
+        "partItems": "Dalys",
+        "laborItems": "Darbai",
+        "attachments": "Nuotraukos ir dokumentai",
+        "payments": "Mokėjimai",
+        "statusReports": "Būsenos ataskaitos",
+        "timeEntries": "Laiko įrašai",
+        "notes": "Pastabos",
+        "fuelLogs": "Degalų įrašai",
+        "reminders": "Priminimai",
+        "serviceRequests": "Paslaugų užklausos",
+        "inspectionStatus": "Apžiūros būsena",
+        "findings": "Pastebėjimai",
+        "conditionMarks": "Būklės žymos",
+        "aiMessages": "DI žinutės",
+        "recurringInvoices": "Periodinės sąskaitos",
+        "serviceRecords": "Darbo užsakymai",
+        "movements": "Atsargų judėjimas",
+        "gallery": "Galerija"
+      }
+    },
+    "scheduledBackups": {
+      "title": "Suplanuotos atsarginės kopijos",
+      "description": "Automatinės atsarginės kopijos į jums priklausančią saugyklą pagal jūsų pasirinktą grafiką.",
+      "empty": "Dar neprijungta jokia atsarginių kopijų paskirties vieta.",
+      "setUp": "Nustatyti atsarginių kopijų paskirties vietą",
+      "lastGood": "Paskutinė sėkminga atsarginė kopija: {when}",
+      "noGoodBackup": "Dar nėra sėkmingos atsarginės kopijos",
+      "nextRun": "kitas vykdymas: {when}",
+      "notScheduled": "nesuplanuota",
+      "lastError": "Paskutinė klaida: {error}",
+      "extraCopy": "Papildoma kopija jums priklausančioje saugykloje pagal jūsų pasirinktą grafiką, be Torqvoice kuriamų atsarginių kopijų."
+    }
   },
   "license": {
     "title": "\"White-Label\" licencija",
@@ -1446,19 +1737,50 @@
     "active": "Aktyvi",
     "inactive": "Neaktyvi",
     "lastChecked": "Paskutinis tikrinimas: {date}",
-    "enterLicenseKey": "Įveskite licencijos raktą",
+    "enterLicenseKey": "Įveskite licencijos raktą arba neprisijungusios licencijos žetoną",
     "validate": "Patvirtinti",
     "validated": "Licencija sėkmingai patvirtinta",
     "invalid": "Neteisingas licencijos raktas",
+    "offlineInvalid": "Tai nėra galiojantis šių dirbtuvių licencijos neprisijungus žetonas. Šiame serveryje išsaugota licencija nepakeista.",
     "failedValidate": "Nepavyko patvirtinti licencijos",
-    "keyHint": "Kiekvienas licencijos raktas susietas su šia organizacija ir negali būti naudojamas keliose organizacijose.",
+    "keyHint": "Kiekvienas licencijos raktas ar neprisijungusios licencijos žetonas susietas su šia organizacija ir negali būti naudojamas keliose organizacijose.",
     "expired": "Pasibaigusi",
     "unverified": "Nepatikrinta",
     "expiresOn": "Galioja iki: {date}",
     "unreachable": "Nepavyko pasiekti torqvoice.com. Šiame serveryje saugoma licencija nepakito.",
     "unverifiedHint": "Šis serveris jau {days} d. negali patvirtinti licencijos su torqvoice.com. Po {max} d. be sėkmingo patikrinimo Torqvoice prekės ženklas grįžta.",
     "rejected": "torqvoice.com nepriėmė šio rakto: {reason}",
-    "signedHint": "Patikrinimą pasirašo torqvoice.com ir jis kartojamas kasdien, todėl serveriui reikia išeinančio ryšio su torqvoice.com."
+    "signedHint": "Prenumeratos raktus pasirašo torqvoice.com ir jie tikrinami kasdien, todėl serveriui reikia išeinančio ryšio su torqvoice.com. Neprisijungusios licencijos žetonas tikrinamas šiame serveryje, ir ryšio jam nereikia.",
+    "makeItYours": "Padarykite savo",
+    "makeItYoursHint": "Torqvoice ženklo nebėra. Dar du žingsniai, ir programa atrodys kaip jūsų.",
+    "linkAppName": "Nustatyti programos pavadinimą",
+    "linkAppIcon": "Pridėti savo favicon ir programos piktogramą",
+    "adminOnlyHint": "Programos pavadinimą ir piktogramą gali keisti tik super administratorius. Kreipkitės į šios instaliacijos valdytoją.",
+    "makeItYoursLocked": "White-label licencija atrakina programos pavadinimą ir piktogramą.",
+    "needsLicense": "Reikia licencijos",
+    "mismatch": "Neatitinka šių dirbtuvių",
+    "perpetual": "Neterminuota",
+    "licensedTo": "Licencijos turėtojas: {name} ({registrationNumber}), {country}",
+    "perpetualHint": "Ši licencija tikrinama šiame serveryje ir niekada nesusisiekia su torqvoice.com.",
+    "perpetualWorkshops": "Galioja {count, plural, one {# dirbtuvėms} few {# dirbtuvėms} many {# dirbtuvių} other {# dirbtuvių}} šioje instaliacijoje.",
+    "mismatchExplain": "Ši licencija išduota įmonės kodui {licensed}, tačiau šių dirbtuvių įmonės kodas yra {current}.",
+    "mismatchExplainNotSet": "Ši licencija išduota įmonės kodui {licensed}, tačiau šioms dirbtuvėms įmonės kodas nenustatytas.",
+    "openCompanySettings": "Atidaryti įmonės nustatymus",
+    "notSet": "Nenustatyta",
+    "offlineActivated": "Neprisijungusi licencija aktyvuota",
+    "offlineTitle": "Neprisijungusi licencija",
+    "offlineDescription": "Vienkartinis pirkinys, kuris pašalina Torqvoice ženklą šioms vienoms dirbtuvėms ir niekada nesusisiekia su torqvoice.com.",
+    "offlineBinding": "Licencija susieta su jūsų įmonės kodu. Dirbtuvių pavadinimą keisti galima, tačiau naujam juridiniam asmeniui reikia naujos licencijos.",
+    "offlineOrganizationId": "Organizacijos ID",
+    "offlineWorkshop": "Dirbtuvės",
+    "offlineOrgNumber": "Įmonės kodas",
+    "offlineOrgNumberRequired": "Kad būtų galima išduoti neprisijungusią licenciją, reikia nurodyti įmonės kodą.",
+    "requestCode": "Licencijos užklausos kodas",
+    "copyRequestCode": "Kopijuoti",
+    "requestCodeCopied": "Užklausos kodas nukopijuotas",
+    "requestCodeCopyFailed": "Nepavyko nukopijuoti užklausos kodo",
+    "offlineOrderHint": "Užsisakykite torqvoice.com svetainėje naudodami šį kodą.",
+    "orderOffline": "Užsakyti neprisijungusią licenciją"
   },
   "about": {
     "title": "Apie Torqvoice",
@@ -1466,59 +1788,116 @@
     "version": "Versija",
     "website": "Svetainė",
     "documentation": "Dokumentacija",
-    "changelog": "Pakeitimų žurnalas"
+    "changelog": "Pakeitimų žurnalas",
+    "whatsNew": "Naujienos",
+    "whatsNewOpen": "Žiūrėti naujienas",
+    "whatsNewTab": "Rodyti skirtuką Naujienos ekrano šone",
+    "whatsNewTabHint": "Tik didesniuose ekranuose."
   },
   "portal": {
     "title": "Kliento portalas",
-    "description": "Leiskite klientams prisijungti ir peržiūrėti savo transporto priemones, sąskaitas, pasiūlymus ir apžiūras. Klientai taip pat gali pateikti paslaugų užklausas.",
+    "description": "Jūsų klientai prisijungia, kad sektų savo užsakymą, atsakytų į pasiūlymus, apmokėtų sąskaitas, užsiregistruotų vizitui ir rašytų jums.",
     "enablePortal": "Įjungti kliento portalą",
-    "enablePortalHint": "Klientai su el. pašto adresu gali prisijungti per stebuklingo laiško nuorodą",
-    "enabled": "Kliento portalas įjungtas",
-    "disabled": "Kliento portalas išjungtas",
-    "failedUpdate": "Nepavyko atnaujinti nustatymo",
-    "customSlug": "Pasirinktinis portalo URL",
-    "save": "Išsaugoti",
-    "slugSaved": "Portalo URL išsaugotas",
-    "slugRemoved": "Portalo URL pašalintas",
-    "failedUpdateSlug": "Nepavyko atnaujinti URL",
-    "slugHint": "Mažosios raidės, skaičiai, brūkšneliai ir pabraukimai. 3–48 simboliai. Palikite tuščią, kad naudotumėte numatytąjį URL.",
-    "portalUrl": "Portalo URL",
-    "urlCopied": "Portalo URL nukopijuotas",
-    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti prie savo portalo.",
+    "enablePortalHint": "Klientai prisijungia per nuorodą, atsiųstą el. paštu ar į telefoną. Slaptažodžio prisiminti nereikia.",
+    "failedUpdate": "Nepavyko išsaugoti nustatymų",
+    "customSlug": "Portalo adresas",
+    "slugHint": "Mažosios raidės, skaičiai, brūkšneliai ir pabraukimai, nuo 3 iki 48 simbolių. Palikite tuščią, kad būtų naudojamas numatytasis adresas.",
+    "portalUrl": "Nuoroda į jūsų portalą",
+    "urlCopied": "Nuoroda nukopijuota",
+    "shareHint": "Pasidalinkite šia nuoroda su klientais, kad jie galėtų prisijungti.",
     "serviceRequestAlertsHint": "Serviso užklausos iš portalo visada rodomos pranešimų varpelyje. Jas taip pat galite gauti el. paštu.",
-    "serviceRequestAlertsLink": "Pranešimų nustatymai →",
+    "serviceRequestAlertsLink": "Pranešimų nustatymai",
     "descriptionLabel": "Apie jūsų dirbtuves",
     "descriptionPlaceholder": "Papasakokite klientams apie savo dirbtuves, siūlomas paslaugas ir kuo esate unikalūs.",
-    "descriptionHint": "Rodoma lankytojams jūsų portalo pradžios puslapio viršuje.",
-    "hoursLabel": "Darbo laikas",
-    "hoursPlaceholder": "Pir-Pen: 8:00-17:00\nŠeš: 9:00-13:00\nSek: Uždaryta",
-    "hoursHint": "Laisvas tekstas. Naudokite naujas eilutes, kad nurodytumėte kiekvieną dieną atskirai.",
-    "contentSaved": "Portalo turinys išsaugotas",
-    "background": {
-      "title": "Portalo fonas",
-      "description": "Pasirinkite, kaip atrodo klientų portalo pradžios puslapis.",
-      "typeNone": "Joks",
-      "typeTemplate": "Šablonas",
-      "typeImage": "Pasirinktinė nuotrauka",
-      "chooseTemplate": "Pasirinkite šabloną",
-      "uploadLabel": "Fono nuotrauka",
-      "upload": "Įkelti nuotrauką",
-      "replace": "Pakeisti nuotrauką",
-      "remove": "Pašalinti",
-      "uploadHint": "JPG, PNG arba WebP. Iki 8 MB. Rekomenduojama bent 1600×900.",
-      "uploading": "Įkeliamas fonas…",
-      "uploaded": "Fonas atnaujintas",
-      "uploadFailed": "Nepavyko įkelti fono",
-      "templateNames": {
-        "default": "Subtilus",
-        "sunrise": "Saulėtekis",
-        "ocean": "Vandenynas",
-        "forest": "Miškas",
-        "slate": "Skalūnas",
-        "sand": "Smėlis"
+    "descriptionHint": "Rodoma jūsų portalo prisijungimo puslapyje.",
+    "copyUrl": "Kopijuoti nuorodą"
+  },
+  "customerPortal": {
+    "slugPlaceholder": "mano-dirbtuves",
+    "slugUnsaved": "Šis adresas veiks, kai išsaugosite.",
+    "slugInvalid": "Naudokite nuo 3 iki 48 mažųjų raidžių, skaičių, brūkšnelių ar pabraukimų; pradžioje ir pabaigoje turi būti raidė arba skaičius.",
+    "slugReserved": "Šis žodis rezervuotas. Pasirinkite kitą adresą.",
+    "slugTaken": "Šį adresą jau naudoja kitos dirbtuvės. Pasirinkite kitą.",
+    "hours": {
+      "title": "Darbo laikas",
+      "fromCalendar": "Portale rodomas darbo laikas ir nedarbo dienos iš jūsų dirbtuvių kalendoriaus.",
+      "link": "Darbo laiko nustatymai",
+      "typedNote": "Prisijungimo puslapyje vis dar rodomas anksčiau čia įvestas darbo laikas, nes kalendoriuje darbo laikas dar nenustatytas. Nustatykite jį ten, ir portalas rodys jį.",
+      "typedLabel": "Šiuo metu rodoma prisijungimo puslapyje"
+    },
+    "look": {
+      "title": "Kliento portalo išvaizda",
+      "description": "Vienas pasirinkimas nustato prisijungimo puslapį ir visus puslapius, kuriuos klientai mato po jo. Klientai jo pakeisti negali."
+    },
+    "theme": {
+      "legend": "Tema",
+      "daylight": {
+        "name": "Daylight",
+        "tagline": "Šviesi ir rami"
+      },
+      "garage": {
+        "name": "Garage",
+        "tagline": "Tamsi boksų lenta"
+      },
+      "print": {
+        "name": "Print",
+        "tagline": "Kaip laikraštis, santūri"
+      },
+      "colour": {
+        "name": "Colour",
+        "tagline": "Jūsų spalva, ryškiai"
       }
     },
-    "copyUrl": "Kopijuoti portalo URL"
+    "colour": {
+      "title": "Jūsų spalva",
+      "description": "Naudojama mygtukams ir paryškinimams kiekvienoje temoje.",
+      "swatches": "Siūlomos spalvos",
+      "orange": "Oranžinė",
+      "blue": "Mėlyna",
+      "green": "Žalia",
+      "red": "Raudona",
+      "black": "Juoda",
+      "hexLabel": "Spalva hex kodu",
+      "invalid": "Tai ne spalva. Įrašykite ją hex kodu, pvz., #1D4ED8.",
+      "usingTheme": "Naudojama temos {theme} spalva, {hex}.",
+      "themeColour": "Temos {theme} spalva yra {hex}.",
+      "useTheme": "Naudoti temos spalvą",
+      "sample": "Užsiregistruoti vizitui",
+      "inkLight": "Tekstas ant šios spalvos rodomas baltas, kad būtų įskaitomas.",
+      "inkDark": "Tekstas ant šios spalvos rodomas juodas, kad būtų įskaitomas.",
+      "faint": "Ši spalva blankiai išsiskiria temos {theme} fone. Nuorodos ir paryškinimai gali būti sunkiai matomi."
+    },
+    "cover": {
+      "title": "Viršelio nuotrauka ir logotipas",
+      "description": "Rodoma prisijungimo puslapyje. Logotipas imamas iš įmonės nustatymų.",
+      "companyLink": "Įmonės nustatymai",
+      "hint": "PNG, JPEG arba WebP, iki 8 MB.",
+      "none": "Viršelio nuotraukos nėra",
+      "alt": "Viršelio nuotrauka prisijungimo puslapyje",
+      "upload": "Įkelti nuotrauką",
+      "replace": "Pakeisti nuotrauką",
+      "remove": "Pašalinti nuotrauką",
+      "uploading": "Įkeliama",
+      "uploadFailed": "Nepavyko įkelti nuotraukos"
+    },
+    "features": {
+      "title": "Ką gauna klientai",
+      "description": "Portalo dalys, kurias galite išjungti.",
+      "messages": "Žinutės portale",
+      "messagesHint": "Klientai jums rašo iš portalo. Jų žinutės patenka į jūsų Žinučių dėžutę.",
+      "tires": "Rodyti saugomas padangas",
+      "tiresHint": "Klientai mato padangas, kurias jiems saugote, su protektoriaus gyliu."
+    },
+    "bar": {
+      "label": "Išsaugoti kliento portalo nustatymus",
+      "unsaved": "Turite neišsaugotų pakeitimų",
+      "saved": "Viskas išsaugota",
+      "discard": "Atmesti pakeitimus",
+      "save": "Išsaugoti pakeitimus",
+      "open": "Atidaryti portalą kaip klientas",
+      "openOff": "Įjunkite portalą ir išsaugokite, kad galėtumėte jį atidaryti."
+    },
+    "savedToast": "Kliento portalo nustatymai išsaugoti"
   },
   "email": {
     "title": "El. pašto tiekėjas",
@@ -2018,6 +2397,10 @@
     "sectionEmptyHint": "Rodoma, bet su dabartiniais duomenimis joje nėra ko spausdinti.",
     "sectionShownHint": "Matoma lape. Spustelėkite, kad paslėptumėte.",
     "sectionHiddenHint": "Paslėpta lape. Spustelėkite, kad parodytumėte.",
+    "sectionDragHandle": "Tempkite, kad pertvarkytumėte",
+    "sectionDragHandleKeyboard": "Tempkite arba naudokite rodyklių klavišus, kad perkeltumėte: {section}",
+    "fieldDragHandle": "Tempkite, kad pertvarkytumėte",
+    "fieldDragHandleKeyboard": "Tempkite arba naudokite rodyklių klavišus, kad perkeltumėte: {field}",
     "railHint": "Vilkite sekciją ant puslapio: paleiskite tarp blokų, kad pakeistumėte eiliškumą, ant kortelės, kad atsidurtų šalia jos, arba bet kur kitur, kad padėtumėte laisvai. Puslapis paliks vietos aplink ją.",
     "returnToFlow": "Grąžinti {section} į srautą",
     "saveDialogTitle": "Išsaugoti šį dizainą",
@@ -2146,7 +2529,7 @@
       "unitSet": "kompl.",
       "unitEach": "x",
       "findingPads": "Galinės kaladėlės 15 %",
-      "findingPadsNote": "Pakeisti per 5 000 km",
+      "findingPadsNote": "{unit, select, mi {Pakeisti per 3 000 mylių} other {Pakeisti per 5 000 km}}",
       "findingOilWeep": "Nedidelis alyvos sunkimasis ties vožtuvų dangteliu",
       "notes": "Ačiū, kad pasirinkote mūsų servisą. Kilus klausimų, susisiekite su mumis.",
       "warranty": "12 mėnesių garantija dalims ir darbui.",
@@ -2225,6 +2608,7 @@
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Šio dizaino pakeitimai neišsaugoti ir bus prarasti.",
     "leaveConfirm": "Išeiti",
+    "leaveCancel": "Toliau redaguoti",
     "boldField": "Paryškinta",
     "deleteDesignDrafts": "{count, plural, one {# sąskaitos juodraštis} few {# sąskaitų juodraščiai} other {# sąskaitų juodraščių}}, kurie jį naudoja, grįš prie numatytojo dizaino.",
     "deleteDesignCustomers": "{count, plural, one {# klientas} few {# klientai} other {# klientų}}, kuriems jis priskirtas, grįš prie numatytojo dizaino.",
@@ -2481,6 +2865,7 @@
     "leaveTitle": "Išeiti neišsaugojus?",
     "leaveBody": "Jūsų šio šablono pakeitimai neišsaugoti. Jie bus prarasti.",
     "leaveConfirm": "Išeiti",
+    "leaveCancel": "Toliau redaguoti",
     "subjectAndTheme": "Tema ir dizainas",
     "settingsSubtitle": "Taikoma visam laiškui",
     "blocksTitle": "Blokai",
@@ -2618,9 +3003,9 @@
       "uploading": "Įkeliama…",
       "width": "Logotipo plotis",
       "hint": "Atskiras nuo įmonės logotipo. Įkeliant jis apkarpomas ir paruošiamas el. laiškui. PNG, JPEG arba WebP iki 4 MB.",
-      "position": "Padėtis",
       "tooLarge": "Paveikslėlis turi būti mažesnis nei 4 MB",
-      "uploadFailed": "Nepavyko įkelti logotipo"
+      "uploadFailed": "Nepavyko įkelti logotipo",
+      "position": "Padėtis"
     },
     "image": {
       "empty": "Paveikslėlis neįkeltas. Blokas nieko nespausdina, kol jo nėra.",
@@ -2733,6 +3118,101 @@
       "square": "Kvadratas",
       "cross": "Kryžius",
       "hex": "Šešiakampis"
+    }
+  },
+  "openingHours": {
+    "search": {
+      "hours": "Darbo laikas",
+      "switch": "Nedarbo dienos ir nebuvimas darbe",
+      "publicHolidays": "Šventinės dienos",
+      "calendars": "Švenčių kalendoriai",
+      "closedDays": "Nedarbo dienos",
+      "timeOff": "Atostogos ir nebuvimas"
+    }
+  },
+  "shareLinks": {
+    "save": "Įrašyti",
+    "saved": "Bendrinimo nuorodų nustatymai įrašyti",
+    "saveFailed": "Nepavyko įrašyti bendrinimo nuorodų nustatymų. Bandykite dar kartą.",
+    "rules": {
+      "title": "Nuorodų galiojimas",
+      "description": "Kiek laiko veikia klientui išsiųsta nuoroda. Puslapyje klientui nurodoma paskutinė diena; vėliau jis mato puslapį, kuriame prašoma susisiekti su jumis.",
+      "kind": {
+        "invoice": "Sąskaitos",
+        "quote": "Pasiūlymai",
+        "inspection": "Apžiūros"
+      },
+      "mode": {
+        "never": "Galioja neribotai",
+        "afterSharing": "Nebegalioja po išsiuntimo",
+        "afterPayment": "Nebegalioja po apmokėjimo"
+      },
+      "hint": {
+        "never": "Nuoroda veikia, kol ją pašalinsite.",
+        "afterSharing": "Skaičiuojama nuo dienos, kai nuoroda paskutinį kartą išsiųsta ar bendrinta.",
+        "afterPayment": "Kol sąskaita neapmokėta, nuoroda galioja, kad klientas galėtų sumokėti. Dienos skaičiuojamos nuo visiško apmokėjimo."
+      },
+      "days": "d.",
+      "daysLabel": "Dienos, po kurių nuorodos į {kind} nebegalioja",
+      "appliesNote": "Šios taisyklės taikomos ir jau išsiųstoms nuorodoms. Bet kuriam atskiram dokumentui galite nustatyti kitą datą čia, sąraše, arba pačiame dokumente."
+    },
+    "list": {
+      "title": "Klientams išsiųstos nuorodos",
+      "description": "Visos nuorodos į sąskaitas, pasiūlymus, apžiūras ar būsenos ataskaitas ir kada jos nustoja veikti.",
+      "statusLabel": "Rodyti nuorodas",
+      "status": {
+        "active": "Galiojančios",
+        "expired": "Nebegaliojančios",
+        "all": "Visos"
+      },
+      "kindLabel": "Dokumento tipas",
+      "kind": {
+        "all": "Visi dokumentai",
+        "invoice": "Sąskaitos",
+        "quote": "Pasiūlymai",
+        "inspection": "Apžiūros",
+        "statusReport": "Būsenos ataskaitos"
+      },
+      "kindOne": {
+        "invoice": "Sąskaita",
+        "quote": "Pasiūlymas",
+        "inspection": "Apžiūra",
+        "statusReport": "Būsenos ataskaita"
+      },
+      "searchPlaceholder": "Ieškoti dokumento ar kliento",
+      "columns": {
+        "document": "Dokumentas",
+        "customer": "Klientas",
+        "shared": "Bendrinta",
+        "views": "Peržiūros",
+        "expires": "Galioja iki",
+        "actions": "Veiksmai"
+      },
+      "sharedOn": "Bendrinta {date}",
+      "none": "-",
+      "copy": "Kopijuoti nuorodą",
+      "copyFailed": "Nepavyko nukopijuoti nuorodos.",
+      "open": "Atidaryti dokumentą",
+      "revoke": "Pašalinti nuorodą",
+      "revokeTitle": "Pašalinti šią nuorodą?",
+      "revokeDescription": "Nuoroda į {document} nustos veikti visiems, kurie ją turi. Norėdami sukurti naują nuorodą, galite dokumentą bendrinti dar kartą.",
+      "revoked": "Nuoroda pašalinta",
+      "empty": {
+        "active": "Galiojančių nuorodų nėra. Nuoroda čia atsiranda, kai išsiunčiate ar bendrinate dokumentą.",
+        "expired": "Nebegaliojančių nuorodų nėra.",
+        "all": "Nuorodų dar nėra. Nuoroda čia atsiranda, kai išsiunčiate ar bendrinate dokumentą."
+      },
+      "emptyFiltered": "Paieškos atitinkančių nuorodų nėra.",
+      "loadFailed": "Nepavyko įkelti nuorodų. Įkelkite puslapį iš naujo ir bandykite dar kartą.",
+      "selectAll": "Pasirinkti visas šio puslapio nuorodas",
+      "selectRow": "Pasirinkti nuorodą į {document}",
+      "selectedCount": "{count, plural, one {Pasirinkta # nuoroda} few {Pasirinktos # nuorodos} many {Pasirinkta # nuorodos} other {Pasirinkta # nuorodų}}",
+      "clearSelection": "Išvalyti pasirinkimą",
+      "removeSelected": "Pašalinti pasirinktas",
+      "bulkRevokeTitle": "Pašalinti {count, plural, one {# nuorodą} few {# nuorodas} many {# nuorodos} other {# nuorodų}}?",
+      "bulkRevokeDescription": "Šios nuorodos nustos veikti visiems, kurie jas turi. Norėdami sukurti naują nuorodą, galite dokumentą bendrinti dar kartą.",
+      "bulkRevoked": "{count, plural, one {Pašalinta # nuoroda} few {Pašalintos # nuorodos} many {Pašalinta # nuorodos} other {Pašalinta # nuorodų}}",
+      "bulkRevokeFailed": "Nepavyko pašalinti nuorodų. Bandykite dar kartą."
     }
   }
 }

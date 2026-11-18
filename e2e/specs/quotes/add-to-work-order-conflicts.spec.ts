@@ -290,7 +290,9 @@ test.describe('nothing to decide', () => {
       Tax: '$258.00',
       Total: '$1,290.00',
     })
-    await expect(totalsRow(page, 'Discount').getByRole('combobox')).toContainText('Fixed')
+    await expect(
+      totalsRow(page, 'Discount').getByRole('radio', { name: 'Fixed', exact: true })
+    ).toBeChecked()
     await expect(totalsRow(page, 'Discount').locator('input[type="number"]')).toHaveValue('68')
     await expectQuotePartArrived(page, scenario)
 
@@ -344,7 +346,9 @@ test.describe('a percentage discount on the job and a discount on the quote', ()
       Tax: '$248.00',
       Total: '$1,240.00',
     })
-    await expect(totalsRow(page, 'Discount').getByRole('combobox')).toContainText('Fixed')
+    await expect(
+      totalsRow(page, 'Discount').getByRole('radio', { name: 'Fixed', exact: true })
+    ).toBeChecked()
     await expect(totalsRow(page, 'Discount').locator('input[type="number"]')).toHaveValue('108')
     await expectQuotePartArrived(page, scenario)
 
@@ -378,7 +382,9 @@ test.describe('a percentage discount on the job and a discount on the quote', ()
       Tax: '$247.50',
       Total: '$1,237.50',
     })
-    await expect(totalsRow(page, 'Discount').getByRole('combobox')).toContainText('Percentage')
+    await expect(
+      totalsRow(page, 'Discount').getByRole('radio', { name: 'Percentage', exact: true })
+    ).toBeChecked()
     await expect(totalsRow(page, 'Discount').locator('input[type="number"]')).toHaveValue('10')
     await expectQuotePartArrived(page, scenario)
 

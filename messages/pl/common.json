@@ -3,12 +3,12 @@
   "buttons": {
     "signIn": "Zaloguj się",
     "save": "Zapisz",
+    "saveChanges": "Zapisz zmiany",
     "cancel": "Anuluj",
     "delete": "Usuń",
     "submit": "Wyślij",
     "back": "Wstecz",
     "confirm": "Potwierdź",
-    "saveChanges": "Zapisz zmiany",
     "edit": "Edytuj",
     "add": "Dodaj",
     "gotIt": "Rozumiem"
@@ -54,6 +54,36 @@
     "whatsNew": "Zobacz nowości",
     "dismiss": "Zamknij"
   },
+  "whatsNew": {
+    "title": "Nowości",
+    "openUnread": "Nowości: aktualizacje, których jeszcze nie znasz",
+    "description": "Ostatnie zmiany, od najnowszych.",
+    "unread": "Nowe od Twojej ostatniej wizyty",
+    "newCount": "{count, plural, one {# nowość} few {# nowości} many {# nowości} other {# nowości}}",
+    "showOlder": "Pokaż starsze",
+    "hideTab": "Ukryj tę kartę",
+    "tabHidden": "Karta ukryta. Możesz ją ponownie włączyć w sekcji Ustawienia, Informacje.",
+    "kindNew": "Nowość",
+    "kindImproved": "Ulepszone",
+    "open": "Otwórz",
+    "guide": "Przeczytaj przewodnik",
+    "video": "Obejrzyj film",
+    "version": "Wersja {version}",
+    "allReleaseNotes": "Wszystkie informacje o wydaniach",
+    "feedback": {
+      "question": "Czy to było przydatne?",
+      "up": "Tak, to jest przydatne",
+      "down": "Nie, to nie to, czego oczekiwałem",
+      "askUp": "Co Ci się w tym podoba? (opcjonalnie)",
+      "askDown": "Co nie zadziałało zgodnie z oczekiwaniami?",
+      "privacyIdentified": "Wysyłane do zespołu Torqvoice z Twoim adresem e-mail, abyśmy mogli odpowiedzieć.",
+      "privacyAnonymous": "Wysyłane do zespołu Torqvoice bez Twojego imienia i adresu e-mail.",
+      "skip": "Pomiń",
+      "send": "Wyślij",
+      "thanks": "Dziękujemy, Twój komentarz został wysłany.",
+      "failed": "Nie udało się wysłać opinii. Spróbuj ponownie za chwilę."
+    }
+  },
   "pagination": {
     "showing": "Wyświetlane {start}–{end} z {total}",
     "perPage": "na stronę",
@@ -76,6 +106,26 @@
     "enterManually": "Wprowadź ręcznie",
     "enterBarcode": "Wprowadź kod kreskowy…",
     "scanHint": "Skieruj aparat na kod kreskowy albo wprowadź go ręcznie",
+    "submitBarcode": "OK",
+    "camera": {
+      "tryAgain": "Spróbuj ponownie",
+      "denied": {
+        "title": "Dostęp do aparatu jest zablokowany",
+        "body": "Zezwól tej stronie na użycie aparatu w przeglądarce, ikoną aparatu lub kłódki na pasku adresu, a potem kliknij Spróbuj ponownie. Albo wpisz kod poniżej."
+      },
+      "insecure": {
+        "title": "Aparat wymaga HTTPS",
+        "body": "Przeglądarki pozwalają używać aparatu tylko przy bezpiecznym połączeniu, a ta strona działa przez HTTP ({host}). Otwórz Torqvoice przez HTTPS, żeby skanować, albo wpisz kod poniżej."
+      },
+      "notFound": {
+        "title": "Nie znaleziono aparatu",
+        "body": "Podłącz aparat i kliknij Spróbuj ponownie albo wpisz kod poniżej."
+      },
+      "failed": {
+        "title": "Nie udało się uruchomić aparatu",
+        "body": "Być może używa go inna aplikacja. Zamknij ją i kliknij Spróbuj ponownie albo wpisz kod poniżej."
+      }
+    },
     "iosInstallHint": "Dotknij Udostępnij > Do ekranu początkowego",
     "installDescription": "Dodaj do ekranu głównego, aby mieć szybki dostęp",
     "enterFullscreen": "Pełny ekran",
@@ -85,6 +135,8 @@
     "title": "Zmień plan, aby kontynuować",
     "maxCustomers": "Twój plan obejmuje do {limit} klientów i ta liczba została osiągnięta. Zmień plan, aby dodać tylu, ilu potrzebujesz.",
     "maxUsers": "Twój plan obejmuje {limit, plural, one {jednego członka zespołu} few {# członków zespołu} many {# członków zespołu} other {# członka zespołu}}. Zmień plan, aby zaprosić więcej osób.",
+    "maxPlatformMail": "Twój plan wysyła do {limit} e-maili dziennie z adresu Torqvoice, a dzisiejszy limit został wykorzystany. Przejdź na wyższy plan, aby wysyłać bez ograniczeń, lub wyślij resztę jutro.",
+    "maxPlatformSms": "Twój plan wysyła do {limit} SMS-ów dziennie z numeru Torqvoice, a dzisiejszy limit został wykorzystany. Przejdź na wyższy plan, aby zwiększyć limit, podłącz własnego dostawcę SMS, aby wysyłać bez ograniczeń, lub wyślij resztę jutro.",
     "generic": "Ta funkcja nie jest dostępna w Twoim obecnym planie.",
     "featureNotIncluded": "{feature} nie jest dostępne w Twoim obecnym planie.",
     "notNow": "Nie teraz"
@@ -109,8 +161,6 @@
     "preview": "Podgląd",
     "failed": "Nie udało się wygenerować podglądu PDF."
   },
-  "attachPdf": "Dołącz PDF",
-  "attachPdfHint": "Wyłącz, aby wysłać zamiast tego link i widzieć, kiedy klient go otworzy.",
   "sentCopy": {
     "note": "Wysłano {date}. Zmiany wprowadzone tutaj trafią na fakturę, gdy zostanie wysłana ponownie.",
     "confirmTitle": "Ta faktura została już wysłana",
@@ -131,5 +181,145 @@
     "retake": "Nagraj ponownie",
     "use": "Użyj tego nagrania",
     "limit": "Nagrywanie zatrzyma się samo po {minutes} min."
+  },
+  "photoCapture": {
+    "title": "Zdjęcie z kamery",
+    "description": "Kamerą tego komputera lub podłączoną kamerą internetową.",
+    "starting": "Uruchamianie kamery...",
+    "live": "Podgląd z kamery",
+    "preview": "Właśnie zrobione zdjęcie",
+    "camera": "Kamera",
+    "take": "Zrób zdjęcie",
+    "retake": "Zrób ponownie",
+    "use": "Użyj tego zdjęcia",
+    "tryAgain": "Spróbuj ponownie",
+    "uploadInstead": "Prześlij plik",
+    "denied": {
+      "title": "Dostęp do kamery jest zablokowany",
+      "body": "Zezwól tej stronie na użycie kamery w przeglądarce, ikoną kamery lub kłódki na pasku adresu, a potem kliknij Spróbuj ponownie."
+    },
+    "insecure": {
+      "title": "Kamera wymaga HTTPS",
+      "body": "Przeglądarki pozwalają używać kamery tylko przy bezpiecznym połączeniu, a ta strona działa przez HTTP ({host}). Otwórz Torqvoice przez HTTPS albo prześlij plik."
+    },
+    "notFound": {
+      "title": "Nie znaleziono kamery",
+      "body": "Podłącz kamerę internetową i kliknij Spróbuj ponownie albo prześlij plik."
+    },
+    "failed": {
+      "title": "Nie udało się uruchomić kamery",
+      "body": "Być może używa jej inna aplikacja. Zamknij ją i kliknij Spróbuj ponownie."
+    }
+  },
+  "richText": {
+    "openLinkHint": "Przytrzymaj {key} i kliknij, aby otworzyć",
+    "placeholder": "Napisz coś...",
+    "toolbar": "Formatowanie",
+    "editor": "Tekst",
+    "bold": "Pogrubienie",
+    "italic": "Kursywa",
+    "underline": "Podkreślenie",
+    "strikethrough": "Przekreślenie",
+    "bulletList": "Lista punktowana",
+    "numberedList": "Lista numerowana"
+  },
+  "appUpdated": {
+    "title": "Dostępna jest nowa wersja",
+    "description": "Odśwież stronę, aby pobrać najnowsze aktualizacje.",
+    "reload": "Odśwież"
+  },
+  "signedOut": {
+    "title": "Sesja wygasła",
+    "description": "Zaloguj się ponownie, aby kontynuować pracę. Najpierw skopiuj wpisany tekst.",
+    "signIn": "Zaloguj się"
+  },
+  "connectionLost": {
+    "title": "Nie można połączyć się z Torqvoice",
+    "description": "Ostatnia zmiana mogła nie zostać zapisana. Sprawdź połączenie i spróbuj ponownie."
+  },
+  "sendDocument": {
+    "titleQuote": "Wyślij wycenę",
+    "titleInvoice": "Wyślij fakturę",
+    "titleInspection": "Wyślij inspekcję",
+    "description": "Klient otrzyma link, aby go wyświetlić i pobrać.",
+    "email": "Email",
+    "emailAddress": "Adres email",
+    "emailPlaceholder": "customer@example.com",
+    "attachPdf": "Dołącz również plik PDF",
+    "sms": "SMS",
+    "smsNumber": "Numer telefonu do SMS",
+    "whatsappNumber": "Numer telefonu do WhatsApp",
+    "phonePlaceholder": "Numer telefonu",
+    "message": "Wiadomość (opcjonalnie, dodawana do emaila)",
+    "messagePlaceholder": "Dodaj osobistą wiadomość...",
+    "copyLink": "Kopiuj link",
+    "send": "Wyślij",
+    "emailSent": "Email wysłany",
+    "failedEmail": "Nie udało się wysłać email",
+    "smsSent": "SMS wysłany",
+    "failedSms": "Nie udało się wysłać SMS"
+  },
+  "shareLink": {
+    "generateFailed": "Nie udało się utworzyć linku. Spróbuj ponownie.",
+    "revokeFailed": "Nie udało się potwierdzić unieważnienia linku. Może nadal działać dla każdego, kto go ma.",
+    "channelNotConnected": "Podłącz {channel} w Integracjach, aby wysyłać w ten sposób.",
+    "openIntegrations": "Otwórz Integracje",
+    "channelNotInPlan": "{channel} nie jest objęty Twoim planem.",
+    "channelTurnedOff": "Wysyłanie przez {channel} jest wyłączone w tym warsztacie.",
+    "whatsapp": "WhatsApp",
+    "whatsappSent": "WhatsApp wysłany",
+    "failedWhatsapp": "Nie udało się wysłać wiadomości WhatsApp",
+    "whatsappWindowClosed": "Ten klient nie napisał do Ciebie na WhatsAppie w ciągu ostatnich 24 godzin, a nie skonfigurowano zatwierdzonego szablonu, aby się z nim skontaktować.",
+    "expiry": {
+      "never": "Nigdy nie wygasa",
+      "untilPaid": "Aktywny do opłacenia",
+      "expires": "Wygasa {date}",
+      "expired": "Wygasł {date}",
+      "change": "Zmień",
+      "openAgain": "Otwórz ponownie",
+      "reopened": "Link znów jest aktywny",
+      "formTitle": "Wygaśnięcie linku",
+      "choice": {
+        "workshop": "Ustawienie warsztatu",
+        "date": "W wybranym dniu",
+        "never": "Nigdy"
+      },
+      "rule": {
+        "never": "Linki nigdy nie wygasają",
+        "afterSharing": "{days, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} po wysłaniu",
+        "afterPayment": "{days, plural, one {# dzień} few {# dni} many {# dni} other {# dnia}} po opłaceniu faktury"
+      },
+      "dateHint": "Link działa przez cały ten dzień.",
+      "chooseDate": "Wybierz datę",
+      "cancel": "Anuluj",
+      "save": "Zapisz",
+      "saved": "Zapisano wygaśnięcie linku",
+      "saveFailed": "Nie udało się zapisać wygaśnięcia linku. Spróbuj ponownie."
+    }
+  },
+  "searchableSelect": {
+    "choose": "Wybierz...",
+    "search": "Szukaj...",
+    "noMatch": "Brak wyników"
+  },
+  "a11y": {
+    "skipToContent": "Przejdź do treści",
+    "mainNavigation": "Nawigacja główna",
+    "close": "Zamknij",
+    "breadcrumb": "Ścieżka nawigacji",
+    "more": "Więcej",
+    "toggleSidebar": "Pokaż lub ukryj panel boczny",
+    "sidebar": "Panel boczny",
+    "sidebarDescription": "Menu główne.",
+    "openCalendar": "Otwórz kalendarz",
+    "dismiss": "Zamknij",
+    "selectAll": "Zaznacz wszystko",
+    "selectRow": "Zaznacz: {name}"
+  },
+  "confirmDialog": {
+    "title": "Czy na pewno?",
+    "irreversible": "Tej operacji nie można cofnąć.",
+    "andMore": "i jeszcze {count}",
+    "typeToConfirm": "Wpisz <b>{text}</b>, aby potwierdzić"
   }
 }

@@ -15,6 +15,7 @@ import {
   memberSignatureDataUri,
 } from '@/features/signatures/Lib/memberSignature.server'
 import { liveCertificateDesign } from '../Pdf/certificateDesign'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { defectLineText, defectsWorstFirst } from '../Lib/conversion'
@@ -796,13 +797,16 @@ export async function createWorkOrderFromInspection(
             mileage: inspection.mileage,
           },
         })
-        // Hours start at zero: the workshop prices the job as it works.
+        // Hours start at zero: the workshop prices the job as it works. The
+        // lines are labor, taxed or not as the workshop taxes labor.
+        const laborTaxable = (await loadTaxApplies(organizationId, tx)).labor
         await tx.serviceLabor.createMany({
           data: [inspection.template.name, ...defects.map(defectLineText)].map((description) => ({
             description,
             hours: 0,
             rate: laborRate,
             total: 0,
+            taxable: laborTaxable,
             serviceRecordId: draft.id,
           })),
         })
@@ -1007,12 +1011,14 @@ export async function linkWorkOrderToInspection(
           ...defects.map(defectLineText),
         ]
         if (lines.length > 0) {
+          const laborTaxable = (await loadTaxApplies(organizationId, tx)).labor
           await tx.serviceLabor.createMany({
             data: lines.map((description) => ({
               description,
               hours: 0,
               rate: laborRate,
               total: 0,
+              taxable: laborTaxable,
               serviceRecordId: job.id,
             })),
           })

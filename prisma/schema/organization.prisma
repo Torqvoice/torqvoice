@@ -32,17 +32,23 @@ model DashboardWidget {
 }
 
 model Organization {
-  id         String   @id @default(cuid())
-  name       String
-  portalSlug String?  @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id             String   @id @default(cuid())
+  name           String
+  portalSlug     String?  @unique
+  /// The secret in this workshop's reply address (`reply-<token>@…`) on the
+  /// cloud instance. Minted by the first customer mail that needs one; never
+  /// the organization id, which anyone could guess.
+  replyMailToken String?  @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   members                     OrganizationMember[]
   roles                       Role[]
   vehicles                    Vehicle[]
   serviceRecords              ServiceRecord[]
   reminders                   Reminder[]
+  appointments                Appointment[]
+  appointmentNotifications    AppointmentNotification[]
   customers                   Customer[]
   quotes                      Quote[]
   inventoryParts              InventoryPart[]
@@ -58,6 +64,8 @@ model Organization {
   smsMessages                 SmsMessage[]
   telegramMessages            TelegramMessage[]
   whatsappMessages            WhatsappMessage[]
+  portalMessages              PortalMessage[]
+  emailMessages               EmailMessage[]
   technicians                 Technician[]
   workBays                    WorkBay[]
   timeEntries                 TimeEntry[]
@@ -87,6 +95,11 @@ model Organization {
   documentDesigns             DocumentDesign[]
   documentDesignSnapshots     DocumentDesignSnapshot[]
   documentAssetSnapshots      DocumentAssetSnapshot[]
+  backupRuns                  BackupRun[]
+  workshopClosures            WorkshopClosure[]
+  technicianAbsences          TechnicianAbsence[]
+  serviceRecordHelpers        ServiceRecordHelper[]
+  platformBackup              PlatformBackup?
 
   @@map("organizations")
 }
@@ -187,4 +200,32 @@ model TeamInvitation {
   @@unique([email, organizationId])
   @@index([token])
   @@map("team_invitations")
+}
+
+/// Customer mail a workshop sent through the platform's own address in one
+/// day, for the daily cap on plans without custom email
+/// (src/features/email/Lib/emailAllowance.ts). In the database rather than in
+/// memory, so a restart or a second server does not hand out a fresh allowance.
+/// A slot is taken just before a mail goes out and given back if it fails.
+model PlatformMailUsage {
+  organizationId String
+  /// The UTC day, YYYY-MM-DD
+  day            String
+  count          Int    @default(0)
+
+  @@id([organizationId, day])
+  @@map("platform_mail_usage")
+}
+
+/// How many texts a workshop has sent through the platform's SMS account on
+/// one day. Same shape and the same reason as the mail table above: the count
+/// has to survive a restart, and a slot is given back when a send fails.
+model PlatformSmsUsage {
+  organizationId String
+  /// The UTC day, YYYY-MM-DD
+  day            String
+  count          Int    @default(0)
+
+  @@id([organizationId, day])
+  @@map("platform_sms_usage")
 }

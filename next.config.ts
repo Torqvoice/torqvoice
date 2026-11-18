@@ -5,6 +5,10 @@ const withNextIntl = createNextIntlPlugin()
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Only for the image build that uploads them to PostHog error tracking and
+  // deletes them again (scripts/upload-source-maps.sh). Every other build,
+  // self-hosted ones included, makes none.
+  productionBrowserSourceMaps: process.env.BROWSER_SOURCE_MAPS === 'true',
   images: {
     remotePatterns: [],
   },

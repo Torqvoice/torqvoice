@@ -150,7 +150,7 @@
       "tableTitle": "Registrato contro fatturato",
       "clocked": "Registrato",
       "billed": "Fatturato",
-      "hint": "Le ore registrate vengono dal timer. Le ore fatturate sono le righe di manodopera dei lavori assegnati al tecnico iniziati nell'intervallo. L'efficienza è fatturato diviso registrato.",
+      "hint": "Le ore registrate vengono dal timer. Le ore fatturate sono le righe di manodopera dei lavori assegnati al tecnico iniziati nell'intervallo. Un lavoro con più persone divide le ore fatturate in base al tempo registrato da ciascuna; se qualcuna non ha registrato tempo su di esso, le ore restano al tecnico. L'efficienza è fatturato diviso registrato.",
       "noClock": "Nessun tempo",
       "jobsClocked": "Lavori registrati"
     }

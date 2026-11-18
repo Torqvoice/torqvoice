@@ -106,7 +106,11 @@ describe('lookupPlate', () => {
       serviceCount: 3,
       lastServiceAt: '2026-05-02T09:00:00.000Z',
     })
-    expect(data?.registry).toMatchObject({ make: 'Toyota', source: 'RDW Open Data' })
+    expect(data?.registry).toMatchObject({
+      make: 'Toyota',
+      source: 'RDW Open Data',
+      connectorId: 'rdw',
+    })
     expect(askRegistry).toHaveBeenCalledWith('conn1', { plate: 'SK209X' })
     // The compacted plate, not the typed one, is what the SQL compares against.
     const sql = vi.mocked(db.$queryRaw).mock.calls[0]

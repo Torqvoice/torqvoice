@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { paypalApiBase, stripeClient } from '@/lib/payment-providers/vendor-hosts'
+import { paypalApiBase, paystackApiBase, stripeClient } from '@/lib/payment-providers/vendor-hosts'
 
 /**
  * Where a server sends a workshop's payment keys.
@@ -13,6 +13,7 @@ import { paypalApiBase, stripeClient } from '@/lib/payment-providers/vendor-host
 const ORIGINAL = {
   stripe: process.env.STRIPE_API_BASE_URL,
   paypal: process.env.PAYPAL_API_BASE_URL,
+  paystack: process.env.PAYSTACK_API_BASE_URL,
 }
 
 afterEach(() => {
@@ -20,6 +21,8 @@ afterEach(() => {
   else process.env.STRIPE_API_BASE_URL = ORIGINAL.stripe
   if (ORIGINAL.paypal === undefined) delete process.env.PAYPAL_API_BASE_URL
   else process.env.PAYPAL_API_BASE_URL = ORIGINAL.paypal
+  if (ORIGINAL.paystack === undefined) delete process.env.PAYSTACK_API_BASE_URL
+  else process.env.PAYSTACK_API_BASE_URL = ORIGINAL.paystack
 })
 
 /** The host and port a Stripe client was configured with. */
@@ -45,6 +48,11 @@ describe('with nothing set, as in production', () => {
     expect(paypalApiBase(true)).toBe('https://api-m.sandbox.paypal.com')
   })
 
+  it('talks to Paystack itself', () => {
+    delete process.env.PAYSTACK_API_BASE_URL
+    expect(paystackApiBase()).toBe('https://api.paystack.co')
+  })
+
   it('treats a blank variable as nothing set', () => {
     process.env.STRIPE_API_BASE_URL = '   '
     process.env.PAYPAL_API_BASE_URL = ''
@@ -61,6 +69,11 @@ describe('with a stand-in configured', () => {
       port: '8026',
       protocol: 'http',
     })
+  })
+
+  it('sends Paystack calls to it', () => {
+    process.env.PAYSTACK_API_BASE_URL = 'http://127.0.0.1:8026/'
+    expect(paystackApiBase()).toBe('http://127.0.0.1:8026')
   })
 
   it('sends PayPal calls to it whichever mode the workshop picked', () => {

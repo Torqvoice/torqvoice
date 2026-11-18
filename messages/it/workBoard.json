@@ -58,7 +58,12 @@
       "everyone": "Tutto il lavoro",
       "thisWeek": "Questa settimana"
     },
-    "dropNeedsLane": "Raggruppa la lavagna per tecnico o postazione prima di trascinarci un lavoro."
+    "dropNeedsLane": "Raggruppa la lavagna per tecnico o postazione prima di trascinarci un lavoro.",
+    "load": {
+      "over": "{amount} in più",
+      "spoken": "Pianificato: {booked} su {capacity}",
+      "spokenOver": "Pianificato: {booked} su {capacity}, eccedenza di {amount}"
+    }
   },
   "unassigned": {
     "title": "Lavori Non Assegnati ({count})",
@@ -81,7 +86,9 @@
     "linkedManagedOnTeam": "Gestito dalla pagina Team, insieme all'accesso all'app.",
     "skills": "Competenze",
     "skillsPlaceholder": "Diagnosi, certificato veicoli elettrici",
-    "skillsHint": "Mostrato sotto il nome dove si assegnano i lavori. Facoltativo."
+    "skillsHint": "Mostrato sotto il nome dove si assegnano i lavori. Facoltativo.",
+    "saveFailed": "Impossibile salvare il tecnico. Riprova.",
+    "deleteFailed": "Impossibile eliminare il tecnico. Riprova."
   },
   "jobDetail": {
     "viewDetails": "Visualizza Dettagli",
@@ -90,7 +97,9 @@
     "endTime": "Ora di fine",
     "failedDuration": "Impossibile aggiornare la durata",
     "failedTimes": "Impossibile aggiornare gli orari",
-    "startTime": "Ora di inizio"
+    "startTime": "Ora di inizio",
+    "alsoOnJob": "Anche su questo lavoro",
+    "failedHelper": "Impossibile aggiornare chi lavora a questo lavoro"
   },
   "presenter": {
     "title": "Lavagna di Lavoro",
@@ -160,6 +169,9 @@
     "none": "Ancora nessuno",
     "promised": "Promesso",
     "promiseLate": "In ritardo",
-    "promiseOverdue": "Promesso al cliente per un momento già passato"
+    "promiseOverdue": "Promesso al cliente per un momento già passato",
+    "alsoOnJob": "Anche sul lavoro",
+    "with": "Con {name}",
+    "helping": "In aiuto"
   }
 }

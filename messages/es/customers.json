@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Predeterminado del taller",
     "invoiceDesignHint": "Las facturas de este cliente se imprimen con este diseño en lugar del predeterminado del taller. Una factura puede elegir el suyo.",
     "reminderOptOut": "Sin recordatorios",
-    "reminderOptOutHint": "No incluir a este cliente en recordatorios de inspección ni otras campañas."
+    "reminderOptOutHint": "No incluir a este cliente en recordatorios de inspección ni otras campañas.",
+    "bookAppointment": "Reservar cita"
   },
   "serviceRequests": {
     "statusNew": "Nuevo",
@@ -120,6 +121,12 @@
     "saveNotes": "Guardar Notas",
     "submitted": "Enviado {date}",
     "preferred": "Preferido: {date}",
+    "preferredMorning": "Preferido: {date}, por la mañana",
+    "preferredAfternoon": "Preferido: {date}, por la tarde",
+    "files": "{count, plural, one {# foto o vídeo del cliente} other {# fotos o vídeos del cliente}}",
+    "openPhoto": "Abrir la foto {number}",
+    "openVideo": "Abrir el vídeo {number}",
+    "fileMissing": "La foto {number} ya no está disponible",
     "workOrderCreated": "Orden de trabajo creada",
     "workOrderError": "Error al crear la orden de trabajo",
     "requestDismissed": "Solicitud descartada",

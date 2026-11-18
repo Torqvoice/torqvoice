@@ -138,7 +138,29 @@
     "resendApiKeyHint": "Get your API key from resend.com",
     "postmarkApiKeyHint": "Get your Server Token from postmarkapp.com",
     "mailgunApiKeyHint": "Get your API key from app.mailgun.com",
-    "sendgridApiKeyHint": "Get your API key from app.sendgrid.com"
+    "sendgridApiKeyHint": "Get your API key from app.sendgrid.com",
+    "branding": {
+      "title": "App branding",
+      "description": "Changes the browser tab title, the favicon and the installed app's name and icon on this install. Documents and the rest of the app are not affected. Leave a field empty to use the default.",
+      "nameLabel": "App name",
+      "nameHint": "Shown in the browser tab and as the name of the installed app.",
+      "save": "Save name",
+      "saved": "App name saved",
+      "saveFailed": "Could not save the app name",
+      "iconLabel": "App icon",
+      "iconHint": "A square image, at least 512 by 512 pixels. PNG works best.",
+      "iconAlt": "Current app icon",
+      "upload": "Upload",
+      "replace": "Replace",
+      "remove": "Remove",
+      "uploaded": "App icon updated",
+      "uploadFailed": "Could not upload the icon",
+      "removed": "App icon removed",
+      "removeFailed": "Could not remove the icon",
+      "lockedBadge": "Needs a licence",
+      "lockedHint": "A white-label licence unlocks the app name and icon.",
+      "lockedLink": "Open the License page"
+    }
   },
   "common": {
     "openMenu": "Open menu"

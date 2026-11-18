@@ -40,7 +40,6 @@ export function useHardwareScanner({ onScan, enabled = true }: UseHardwareScanne
       const now = Date.now()
 
       if (e.key === 'Enter') {
-        e.preventDefault()
         const buffer = bufferRef.current
         const timestamps = timestampsRef.current
 
@@ -53,6 +52,11 @@ export function useHardwareScanner({ onScan, enabled = true }: UseHardwareScanne
           const avgGap = totalGap / (timestamps.length - 1)
 
           if (avgGap < 80) {
+            // Only the Enter that ends a scan is ours to swallow. Cancelling
+            // every Enter took the key away from whoever works by keyboard:
+            // no button on the page answered it and no dropdown could be
+            // chosen from with it.
+            e.preventDefault()
             cooldownRef.current = true
             onScan(buffer)
             setTimeout(() => {

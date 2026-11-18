@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "По умолчанию для мастерской",
     "invoiceDesignHint": "Счета этого клиента печатаются с этим дизайном вместо дизайна мастерской по умолчанию. Счёт по-прежнему может выбрать свой.",
     "reminderOptOut": "Без напоминаний",
-    "reminderOptOutHint": "Не включать этого клиента в напоминания о техосмотре и другие рассылки."
+    "reminderOptOutHint": "Не включать этого клиента в напоминания о техосмотре и другие рассылки.",
+    "bookAppointment": "Создать запись"
   },
   "serviceRequests": {
     "statusNew": "Новая",
@@ -120,6 +121,12 @@
     "saveNotes": "Сохранить заметки",
     "submitted": "Отправлено {date}",
     "preferred": "Предпочтительно: {date}",
+    "preferredMorning": "Предпочтительно: {date}, утром",
+    "preferredAfternoon": "Предпочтительно: {date}, днём",
+    "files": "{count, plural, one {# фото или видео от клиента} few {# фото или видео от клиента} many {# фото или видео от клиента} other {# фото или видео от клиента}}",
+    "openPhoto": "Открыть фото {number}",
+    "openVideo": "Открыть видео {number}",
+    "fileMissing": "Фото {number} больше недоступно",
     "workOrderCreated": "Заказ-наряд создан",
     "workOrderError": "Не удалось создать заказ-наряд",
     "requestDismissed": "Заявка отклонена",

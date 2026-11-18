@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -129,7 +130,10 @@ export function WebhooksSettings({ webhooks }: Props) {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div
+        id="webhooks-header"
+        className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"
+      >
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{t('title')}</h1>
           <p className="mt-1 max-w-2xl text-sm text-muted-foreground">{t('subtitle')}</p>
@@ -143,7 +147,7 @@ export function WebhooksSettings({ webhooks }: Props) {
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as 'webhooks' | 'reference')}>
-        <TabsList>
+        <TabsList id="webhooks-tabs">
           <TabsTrigger value="webhooks">
             <WebhookIcon className="mr-2 h-4 w-4" />
             {t('tabWebhooks')}
@@ -250,8 +254,7 @@ function WebhookRow({
 }) {
   const t = useTranslations('settings.webhooks')
   const [isPending, startTransition] = useTransition()
-  const [confirmDelete, setConfirmDelete] = useState(false)
-  const [confirmRotate, setConfirmRotate] = useState(false)
+  const confirm = useConfirm()
   const [rotated, setRotated] = useState<string | null>(null)
   const [urlCopied, setUrlCopied] = useState(false)
 
@@ -263,48 +266,67 @@ function WebhookRow({
 
   const handleToggle = () =>
     startTransition(async () => {
-      const r = await toggleWebhook(webhook.id)
-      if (r.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const r = await toggleWebhook(webhook.id).catch(() => null)
+      if (r?.success) {
         toast.success(r.data?.isActive ? t('resumed') : t('paused'))
         onRefresh()
       } else {
-        toast.error(r.error || t('toggleFailed'))
+        toast.error(r?.error || t('toggleFailed'))
       }
     })
 
   const handleTest = () =>
     startTransition(async () => {
-      const r = await sendTestWebhook(webhook.id)
-      if (r.success) {
+      const r = await sendTestWebhook(webhook.id).catch(() => null)
+      if (r?.success) {
         toast.success(t('testSent'))
         onRefresh()
       } else {
-        toast.error(r.error || t('testFailed'))
+        toast.error(r?.error || t('testFailed'))
       }
     })
 
-  const handleDelete = () =>
+  const handleDelete = async () => {
+    const ok = await confirm({
+      title: t('confirmDeleteTitle'),
+      description: t('confirmDeleteDescription', { name: webhook.name }),
+      confirmLabel: t('delete'),
+      cancelLabel: t('cancel'),
+      icon: Trash2,
+      destructive: true,
+    })
+    if (!ok) return
     startTransition(async () => {
-      const r = await deleteWebhook(webhook.id)
-      if (r.success) {
+      const r = await deleteWebhook(webhook.id).catch(() => null)
+      if (r?.success) {
         toast.success(t('deleted'))
-        setConfirmDelete(false)
         onRefresh()
       } else {
-        toast.error(r.error || t('deleteFailed'))
+        toast.error(r?.error || t('deleteFailed'))
       }
     })
+  }
 
-  const handleRotate = () =>
+  const handleRotate = async () => {
+    const ok = await confirm({
+      title: t('confirmRotateTitle'),
+      description: t('confirmRotateDescription'),
+      confirmLabel: t('rotate'),
+      cancelLabel: t('cancel'),
+      icon: RefreshCw,
+    })
+    if (!ok) return
     startTransition(async () => {
-      const r = await rotateWebhookSecret(webhook.id)
-      if (r.success && r.data) {
+      const r = await rotateWebhookSecret(webhook.id).catch(() => null)
+      if (r?.success && r.data) {
         setRotated(r.data.secret)
-        setConfirmRotate(false)
       } else {
-        toast.error(r.error || t('rotateFailed'))
+        toast.error(r?.error || t('rotateFailed'))
       }
     })
+  }
 
   const status = webhook.autoDisabled
     ? 'auto_disabled'
@@ -443,7 +465,7 @@ function WebhookRow({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setConfirmRotate(true)}
+                  onClick={handleRotate}
                   disabled={isPending}
                   title={t('rotateSecret')}
                 >
@@ -452,7 +474,7 @@ function WebhookRow({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setConfirmDelete(true)}
+                  onClick={handleDelete}
                   disabled={isPending}
                   className="text-red-600 hover:text-red-700"
                 >
@@ -464,71 +486,31 @@ function WebhookRow({
         </div>
       </CardContent>
 
-      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('confirmDeleteTitle')}</DialogTitle>
-            <DialogDescription>
-              {t('confirmDeleteDescription', { name: webhook.name })}
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(false)} disabled={isPending}>
-              {t('cancel')}
-            </Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={isPending}>
-              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              {t('delete')}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
+      {/* The new secret, shown once after the rotation was confirmed. */}
       <Dialog
-        open={confirmRotate || !!rotated}
+        open={!!rotated}
         onOpenChange={(open) => {
-          if (!open) {
-            setConfirmRotate(false)
-            if (rotated) {
-              setRotated(null)
-              onRefresh()
-            }
+          if (!open && rotated) {
+            setRotated(null)
+            onRefresh()
           }
         }}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{rotated ? t('secretRotated') : t('confirmRotateTitle')}</DialogTitle>
-            <DialogDescription>
-              {rotated ? t('secretRotatedDescription') : t('confirmRotateDescription')}
-            </DialogDescription>
+            <DialogTitle>{t('secretRotated')}</DialogTitle>
+            <DialogDescription>{t('secretRotatedDescription')}</DialogDescription>
           </DialogHeader>
           {rotated && <SecretBlock value={rotated} />}
           <DialogFooter>
-            {rotated ? (
-              <Button
-                onClick={() => {
-                  setRotated(null)
-                  onRefresh()
-                }}
-              >
-                {t('done')}
-              </Button>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  onClick={() => setConfirmRotate(false)}
-                  disabled={isPending}
-                >
-                  {t('cancel')}
-                </Button>
-                <Button onClick={handleRotate} disabled={isPending}>
-                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {t('rotate')}
-                </Button>
-              </>
-            )}
+            <Button
+              onClick={() => {
+                setRotated(null)
+                onRefresh()
+              }}
+            >
+              {t('done')}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -588,21 +570,23 @@ function WebhookFormDialog({
         description: description.trim() || null,
         events: finalEvents,
       }
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       if (editing) {
-        const r = await updateWebhook({ ...payload, id: editing.id })
-        if (r.success) {
+        const r = await updateWebhook({ ...payload, id: editing.id }).catch(() => null)
+        if (r?.success) {
           toast.success(t('updated'))
           onUpdated()
         } else {
-          toast.error(r.error || t('saveFailed'))
+          toast.error(r?.error || t('saveFailed'))
         }
       } else {
-        const r = await createWebhook(payload)
-        if (r.success && r.data) {
+        const r = await createWebhook(payload).catch(() => null)
+        if (r?.success && r.data) {
           toast.success(t('created'))
           onCreated({ name: r.data.name, secret: r.data.secret })
         } else {
-          toast.error(r.error || t('saveFailed'))
+          toast.error(r?.error || t('saveFailed'))
         }
       }
     })
@@ -810,12 +794,14 @@ function DeliveriesSheet({ webhook, onClose }: { webhook: Webhook; onClose: () =
 
   const handleRetry = (id: string) =>
     startTransition(async () => {
-      const r = await retryWebhookDelivery(id)
-      if (r.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const r = await retryWebhookDelivery(id).catch(() => null)
+      if (r?.success) {
         toast.success(t('retryQueued'))
         load()
       } else {
-        toast.error(r.error || t('retryFailed'))
+        toast.error(r?.error || t('retryFailed'))
       }
     })
 
@@ -1168,7 +1154,7 @@ function EventsReference() {
 function SignatureHelpCard() {
   const t = useTranslations('settings.webhooks')
   return (
-    <Card>
+    <Card id="webhooks-signatures">
       <CardContent className="space-y-3 p-4 text-sm">
         <h2 className="font-semibold">{t('helpTitle')}</h2>
         <p className="text-muted-foreground">{t('helpIntro')}</p>

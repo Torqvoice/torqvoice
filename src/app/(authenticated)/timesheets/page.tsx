@@ -5,6 +5,11 @@ import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { getTimesheet } from '@/features/time-tracking/Actions/timesheetActions'
 import TimesheetsClient from './timesheets-client'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('timesheets')
+}
 
 /**
  * Who worked when: every technician's clocked time, by day, for a window.

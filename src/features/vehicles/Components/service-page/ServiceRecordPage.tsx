@@ -1,3 +1,4 @@
+import { workshopTaxOffer } from '@/features/settings/Lib/workshopTaxOffer'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
@@ -10,6 +11,7 @@ import {
   SHOP_FEE_SETTING_KEYS,
   shopFeeLinesLast,
 } from '@/features/settings/Lib/shopFee'
+import { readLineTaxSettings, TAX_APPLIES_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import {
   readWarrantyDefaults,
   WARRANTY_SETTING_KEYS,
@@ -33,6 +35,8 @@ import { configuredDictation } from '@/features/integrations/Lib/speech'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getStatusReportsForService } from '@/features/status-reports/Actions/getStatusReportsForService'
 import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
+import { faultCodesConnected, seenBefore } from '@/features/fault-codes/Lib/service.server'
+import { oemSourceFor } from '@/features/fault-codes/Lib/codes'
 import { db } from '@/lib/db'
 import {
   loadVehicleConditionMarks,
@@ -40,6 +44,7 @@ import {
 } from '@/features/condition-map/Lib/loadMarks.server'
 import { invoiceDesignPrintsConditionMap } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
+import { canEditSettings } from '@/lib/settings-access'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
@@ -49,7 +54,6 @@ import { PageHeader } from '@/components/page-header'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { addZonedDays, zonedDayKey } from '@/lib/timezone'
-import { resolveWorkOrderLayout } from '@/lib/work-order-layout.server'
 
 /**
  * Shared server component behind both service-record routes:
@@ -78,7 +82,6 @@ export async function ServiceRecordPage({
     videoCallResult,
     designOptionsResult,
     jobClockResult,
-    initialLayout,
     workOrderStatusesResult,
   ] = await Promise.all([
     getServiceRecord(serviceId),
@@ -87,6 +90,7 @@ export async function ServiceRecordPage({
       SETTING_KEYS.UNIT_SYSTEM,
       SETTING_KEYS.DEFAULT_TAX_RATE,
       SETTING_KEYS.TAX_ENABLED,
+      ...TAX_APPLIES_SETTING_KEYS,
       SETTING_KEYS.DEFAULT_LABOR_RATE,
       SETTING_KEYS.INVOICE_DUE_DAYS,
       SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
@@ -107,7 +111,6 @@ export async function ServiceRecordPage({
     getServiceVideoCall(serviceId),
     listDesignOptions('invoice'),
     getJobClock(serviceId),
-    resolveWorkOrderLayout(),
     listWorkOrderStatuses(),
   ])
 
@@ -133,6 +136,11 @@ export async function ServiceRecordPage({
   const defaultTaxRate = taxEnabled ? Number(settings[SETTING_KEYS.DEFAULT_TAX_RATE]) || 0 : 0
   const defaultLaborRate = Number(settings[SETTING_KEYS.DEFAULT_LABOR_RATE]) || 0
   const shopFee = readShopFee(settings)
+  const lineTax = readLineTaxSettings(settings)
+  // Whether this job was created under another tax than the workshop charges now.
+  const taxOffer = authContext?.organizationId
+    ? await workshopTaxOffer(authContext.organizationId, 'workOrder', serviceId)
+    : null
   const defaultDueDays = Number(settings[SETTING_KEYS.INVOICE_DUE_DAYS]) || 0
   const { defaultMarkupPercent, markupAppliesToInventory } = readPartsPricingSettings(settings, {
     defaultMarkupPercent: SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
@@ -175,6 +183,9 @@ export async function ServiceRecordPage({
   // Fetch team members and features
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const orgId = membership?.organizationId
+  // Whether the status menus offer the way to add a status. Somebody who
+  // cannot change settings is better off not seeing a link that turns them away.
+  const canAddStatus = await canEditSettings(session?.user?.id ?? '', membership?.role)
 
   const [currentUser, features, aiProvider, dictation, tireHotel] = await Promise.all([
     session?.user?.id
@@ -286,6 +297,10 @@ export async function ServiceRecordPage({
       // deducting the right stock. Without this, a saved edit sends unlinked
       // parts and inventory reconciliation restocks the "removed" part.
       inventoryPartId: p.inventoryPartId ?? undefined,
+      // Whether the line is taxed is the line's own. Left out here, a save
+      // would send the line back without it and the server would put the
+      // workshop's default over whatever had been chosen.
+      taxable: p.taxable,
     })),
     laborItems: shopFeeLinesLast(record.laborItems).map((l) => ({
       description: l.description,
@@ -293,6 +308,7 @@ export async function ServiceRecordPage({
       rate: l.rate,
       total: l.total,
       pricingType: (l.pricingType as 'hourly' | 'service' | 'shopFee') || 'hourly',
+      taxable: l.taxable,
     })),
     attachments: [],
     subtotal: record.subtotal,
@@ -383,6 +399,20 @@ export async function ServiceRecordPage({
           ),
         }
       : undefined
+  // Fault codes on this job: whether the code service is there to type codes
+  // into, and when each code on the job was read on this vehicle before.
+  const jobFindings = findingsResult.success && findingsResult.data ? findingsResult.data : []
+  const jobCodes = [
+    ...new Set(jobFindings.map((f) => f.faultCode).filter((c): c is string => Boolean(c))),
+  ]
+  const faultCodes =
+    vehicleId && organizationId
+      ? {
+          connected: await faultCodesConnected(organizationId),
+          seenBefore: await seenBefore(organizationId, vehicleId, serviceId, jobCodes),
+          oemSource: oemSourceFor(record.vehicle?.make),
+        }
+      : { connected: false, seenBefore: {} }
   const openObservations = vehicleId
     ? await db.vehicleFinding.findMany({
         where: { vehicleId, status: { not: 'resolved' } },
@@ -413,6 +443,8 @@ export async function ServiceRecordPage({
         taxEnabled={taxEnabled}
         defaultLaborRate={defaultLaborRate}
         shopFee={shopFee}
+        lineTax={lineTax}
+        taxOffer={taxOffer}
         initialData={initialData}
         inventoryParts={inventoryParts}
         laborPresets={laborPresets}
@@ -437,6 +469,7 @@ export async function ServiceRecordPage({
         dictationMode={dictation.mode}
         tireHotelEnabled={tireHotel.enabled}
         onlinePayments={onlinePayments}
+        canAddStatus={canAddStatus}
         workOrderStatuses={
           workOrderStatusesResult.success && workOrderStatusesResult.data
             ? workOrderStatusesResult.data
@@ -460,7 +493,8 @@ export async function ServiceRecordPage({
           feedbackAt: r.feedbackAt?.toISOString() || null,
           sentAt: r.sentAt?.toISOString() || null,
         }))}
-        findings={findingsResult.success && findingsResult.data ? findingsResult.data : []}
+        findings={jobFindings}
+        faultCodes={faultCodes}
         openObservations={openObservations}
         notificationHistory={notificationHistory.map((n) => ({
           ...n,
@@ -475,7 +509,6 @@ export async function ServiceRecordPage({
             : { entries: [], viewerTechnicianIds: [], canEdit: false, timeZone: 'UTC' }
         }
         designPinnedAt={designPinnedAt}
-        initialLayout={initialLayout}
       />
     </div>
   )

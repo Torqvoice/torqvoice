@@ -1,5 +1,6 @@
 import type { TxClient } from '@/lib/db'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
+import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 
 export type TireLineInput = {
   serviceRecordId: string
@@ -54,6 +55,8 @@ export async function addTireLineToRecord(
       unitCost: line.unitCost,
       total: Math.round(line.unitPrice * line.quantity * 100) / 100,
       inventoryPartId: line.inventoryPartId,
+      // Tires are a part, taxed as the workshop taxes parts.
+      taxable: (await loadTaxApplies(organizationId, tx)).parts,
     },
   })
 

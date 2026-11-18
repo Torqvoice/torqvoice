@@ -1,0 +1,598 @@
+{
+  "title": "Feilkoder",
+  "notAvailable": "Ikke tilgjengelig akkurat nå",
+  "noMeaning": "Ikke i kodelisten vår ennå",
+  "manufacturerUnknown": "Produsentspesifikk kode: betydningen avhenger av merket.",
+  "chip": {
+    "open": "Åpne {code}"
+  },
+  "source": {
+    "generic": "Generell",
+    "manufacturer": "Produsent",
+    "report": "Fra skannerrapporten",
+    "machineTranslated": "Maskinoversatt"
+  },
+  "status": {
+    "stored": "Lagret",
+    "pending": "Ventende",
+    "permanent": "Permanent",
+    "history": "Historikk"
+  },
+  "flags": {
+    "warningLight": "Varsellampe",
+    "emissions": "Utslipp",
+    "driveCycle": "Krever kjøresyklus",
+    "limpMode": "Nødmodus"
+  },
+  "sections": {
+    "how_it_works": "Slik virker det",
+    "meaning": "Hva koden betyr",
+    "causes": "Vanlige årsaker",
+    "manufacturer": "Fra produsentene",
+    "related": "Sammen med andre koder",
+    "diagnosis": "Diagnosetips",
+    "common_issues": "Vanlige problemer",
+    "resolution": "Løsning",
+    "advisory": "Råd",
+    "other": "Greit å vite"
+  },
+  "detail": {
+    "whatItMeans": "Hva den betyr",
+    "likelyCauses": "Sannsynlige årsaker",
+    "relatedCodes": "Relaterte koder",
+    "inYourWorkshop": "I ditt verksted",
+    "noJobs": "Ikke lest ut på noen jobb i verkstedet ditt ennå.",
+    "resolved": "Løst",
+    "notConnected": "Koble til Torqvoice Codes for å se hva kodene betyr.",
+    "connect": "Koble til",
+    "serviceDown": "Betydningen er ikke tilgjengelig akkurat nå. Jobbene dine står under.",
+    "pendingCheck": "Bare tittelen vises til teksten er sjekket.",
+    "showMore": "Vis mer",
+    "showLess": "Vis mindre",
+    "likelihood": {
+      "high": "Høy",
+      "medium": "Middels",
+      "low": "Lav"
+    },
+    "mostLikelyFirst": "Mest sannsynlig først"
+  },
+  "report": {
+    "button": "Meld fra om feil",
+    "title": "Hva er galt med betydningen av {code}?",
+    "reasons": {
+      "wrong_for_vehicle": "Feil for denne bilen",
+      "wrong_for_vehicleMarine": "Feil for dette fartøyet",
+      "text_mismatch": "Teksten passer ikke til koden",
+      "wrong_position": "Feil side eller posisjon",
+      "bad_translation": "Dårlig oversettelse",
+      "other": "Annet"
+    },
+    "note": "Notat (valgfritt)",
+    "notePlaceholder": "Hva du fant",
+    "send": "Send",
+    "thanks": "Takk, vi sjekker det",
+    "failed": "Meldingen kunne ikke sendes akkurat nå. Prøv igjen om litt.",
+    "reportedByYou": "Meldt av deg",
+    "outcome": {
+      "fixed": "Oppdatert etter meldingen din",
+      "no_change": "Sjekket, ingen endring",
+      "duplicate": "Allerede meldt"
+    }
+  },
+  "share": {
+    "title": "Del løsningen din",
+    "description": "Fortell andre verksteder hva som løste {code}. En person hos Torqvoice sjekker hver løsning før andre ser den.",
+    "yourFixes": "Dine løsninger for {code}",
+    "whatFixedIt": "Hva løste det",
+    "placeholder": "Gnagd ledning ved pluggen til den bakre lambdasonden bak girkassen. Reparert, koden forsvant etter prøvekjøring.",
+    "placeholderMarine": "Korroderte pinner i pluggen til trimsensoren. Rengjort og tettet, koden forsvant etter en prøvetur på sjøen.",
+    "photos": "Bilder (valgfritt)",
+    "photosHint": "Opptil {max} bilder. Hold ansikter, skilt og kundeopplysninger utenfor bildet.",
+    "photosHintMarine": "Opptil {max} bilder. Hold ansikter, registreringsnumre og kundeopplysninger utenfor bildet.",
+    "addPhotos": "Legg til bilder",
+    "removePhoto": "Fjern bilde {n}",
+    "tooManyPhotos": "Høyst {max} bilder",
+    "notAPhoto": "{name} er ikke et bilde",
+    "photoTooBig": "{name} er større enn 15 MB",
+    "vehicle": "Kjøretøy",
+    "vehicleMarine": "Fartøy",
+    "vehicleOptional": "Kjøretøy (valgfritt)",
+    "vehicleOptionalMarine": "Fartøy (valgfritt)",
+    "make": "Merke",
+    "model": "Modell",
+    "year": "År",
+    "vehicleHint": "Bare merke, modell, år og motor deles, aldri skiltnummer, VIN, kunde eller navnet på verkstedet ditt.",
+    "meaning": "Betydning",
+    "meaningHint": "Denne koden betyr noe annet i andre styreenheter. Løsningen din deles bare for denne betydningen.",
+    "vehicleHintMarine": "Bare merke, modell, år og motor deles, aldri registreringsnummer, skrognummer, kunde eller navnet på verkstedet ditt.",
+    "send": "Del løsning",
+    "sent": "Takk. Løsningen din venter på gjennomgang.",
+    "shareAnother": "Del en løsning til",
+    "cancel": "Avbryt",
+    "sentOn": "Sendt {date}",
+    "reason": "Grunn: {reason}",
+    "withdraw": "Trekk tilbake",
+    "withdrawTitle": "Trekke tilbake denne løsningen?",
+    "withdrawConfirm": "Den slettes med bildene, og ingen andre verksteder får se den.",
+    "withdrawn": "Løsningen er trukket tilbake",
+    "withdrawFailed": "Løsningen kunne ikke trekkes tilbake akkurat nå. Prøv igjen om litt.",
+    "unavailable": "Deling av løsninger er ikke tilgjengelig akkurat nå.",
+    "status": {
+      "pending": "Venter på gjennomgang",
+      "published": "Publisert",
+      "rejected": "Ikke publisert"
+    },
+    "errors": {
+      "failed": "Løsningen din kunne ikke sendes akkurat nå. Prøv igjen om litt.",
+      "photo": "Ett av bildene kunne ikke leses. Prøv et annet.",
+      "too_large": "Bildene er for store. Prøv færre eller mindre bilder.",
+      "paused": "Deling av løsninger er satt på pause akkurat nå. Prøv igjen senere.",
+      "demo": "Deling av løsninger er slått av i demoen."
+    },
+    "invite": "Fikset {code}? Fortell andre verksteder hva som virket.",
+    "inviteHint": "Med dine egne ord, gjerne med noen bilder. En person hos Torqvoice sjekker hver løsning før andre verksteder ser den.",
+    "start": "Del løsningen din",
+    "dialogTitle": "Del løsningen din for {code}",
+    "dialogDescription": "Andre verksteder ser den når en person hos Torqvoice har sjekket den.",
+    "characters": "{count} / {max}",
+    "writingHint": "Hva som var galt, hvordan du fant det og hva som løste det. Delenumre og måleverdier hjelper andre mest.",
+    "dropHere": "eller slipp dem her",
+    "tooManyPhotosRemove": "En løsning kan ha maks {max} bilder. Fjern noen for å dele den.",
+    "phone": {
+      "button": "Legg til fra mobil",
+      "hide": "Skjul mobilkoden",
+      "title": "Ta bilder med mobilen",
+      "body": "Skann koden med mobilkameraet. Bildene du tar dukker opp her etter hvert som de kommer.",
+      "failed": "Mobilkoden kunne ikke lages. Lukk dette og prøv igjen.",
+      "expires": "Koden virker til {time}",
+      "copy": "Kopier lenke",
+      "copied": "Kopiert",
+      "received": "{count, plural, one {# bilde} other {# bilder}} fra mobilen",
+      "badge": "Mobil"
+    },
+    "editedNote": "Redigert under gjennomgang"
+  },
+  "fixes": {
+    "title": "Løsninger fra andre verksteder",
+    "empty": "Ingen andre verksteder har delt en løsning for {code} ennå.",
+    "unavailable": "Løsninger fra andre verksteder er ikke tilgjengelige akkurat nå.",
+    "sharedOn": "Delt {date}",
+    "unknownVehicle": "Kjøretøy ikke oppgitt",
+    "unknownVehicleMarine": "Fartøy ikke oppgitt",
+    "writtenIn": "Skrevet på {language}",
+    "photo": "Bilde {n} av {count}",
+    "openPhoto": "Åpne bilde {n}"
+  },
+  "sheet": {
+    "description": "Betydningen, sannsynlige årsaker og verkstedets jobber med denne koden.",
+    "loadFailed": "Kunne ikke åpne denne koden.",
+    "loading": "Laster…",
+    "openPage": "Åpne kodesiden"
+  },
+  "entry": {
+    "button": "Legg til feilkoder",
+    "title": "Legg til feilkoder",
+    "description": "Skriv eller lim inn koder fra skanneren. Hver kode blir en observasjon på denne jobben, med betydningen lagret.",
+    "placeholder": "P0420, P0171",
+    "empty": "Koder du skriver eller limer inn, vises her.",
+    "found": "Koder funnet",
+    "remove": "Fjern {code}",
+    "concern": "Svarer på punkt",
+    "concernNone": "Ingen punkt",
+    "cancel": "Avbryt",
+    "add": "{count, plural, =0 {Legg til koder} one {Legg til # kode} other {Legg til # koder}}",
+    "added": "{count, plural, one {# feilkode lagt til} other {# feilkoder lagt til}}",
+    "skipped": "{count, plural, one {# kode var allerede på denne jobben} other {# koder var allerede på denne jobben}}",
+    "failed": "Kunne ikke legge til kodene",
+    "descriptionOem": "Skriv eller lim inn koder fra skanneren, OBD-koder som P0420 eller BMW-koder som 2A82. Hver kode blir en observasjon på denne jobben, med betydningen lagret.",
+    "placeholderOem": "P0420, 2A82 lagret"
+  },
+  "finding": {
+    "seenBefore": "Sett {date}",
+    "seenBeforeTitle": "Lest ut på denne bilen før, sist {date}",
+    "seenBeforeTitleMarine": "Lest ut på dette fartøyet før, sist {date}",
+    "updatedMeaning": "Ny betydning",
+    "updatedMeaningTitle": "Betydningen er nå: {meaning}. Trykk for å bruke den.",
+    "taken": "Betydningen er oppdatert",
+    "takeFailed": "Kunne ikke oppdatere betydningen",
+    "noMeaningSaved": "Ingen betydning lagret ennå"
+  },
+  "page": {
+    "title": "Feilkoder",
+    "intro": "Slå opp en kode, eller søk i betydningene etter ord som mager bank 1.",
+    "lookupLabel": "Kode eller ord",
+    "lookupPlaceholder": "P0420 eller mager bank 1",
+    "lookup": "Slå opp",
+    "cloudOnly": "Betydningene av feilkodene kommer fra Torqvoice Codes, som er en del av Torqvoice Cloud. Koder verkstedet ditt har lest ut, står her uansett.",
+    "results": "Koder som passer til «{query}»",
+    "noResults": "Ingen kode passer til «{query}»",
+    "recent": "Lest ut nylig i verkstedet ditt",
+    "noRecent": "Ingen feilkoder på noen jobb ennå.",
+    "readTimes": "{count, plural, one {Lest ut én gang, {date}} other {Lest ut # ganger, sist {date}}}",
+    "notACode": "«{text}» er ikke en feilkode",
+    "notACodeHint": "En feilkode er en bokstav og fire tegn, som P0420 eller U0100.",
+    "recentLookups": "Dine siste oppslag",
+    "recentLookupsEmpty": "Koder du åpner og ord du søker etter vises her, på denne enheten.",
+    "clearRecent": "Tøm",
+    "tryExamples": "Prøv",
+    "exampleWords": "mager bank 1",
+    "searching": "Søker"
+  },
+  "search": {
+    "group": "Feilkoder",
+    "jobsWith": "Jobber med {code}",
+    "searchFor": "Søk i feilkoder etter «{query}»"
+  },
+  "notice": {
+    "title": "Feilkoder er nytt",
+    "body": "Dette dekker standard OBD-II-koder. Vi jobber med å legge til produsentenes egne koder, og nye koder kommer hele tiden. Vet du hvor man finner et merkes koder? Si fra via «Hjelp oss å bli bedre».",
+    "bodyBmw": "Dette dekker standard OBD-II-koder og BMWs egne koder, som MINI og Rolls-Royce deler. Vi jobber med å legge til flere merker, og nye koder kommer hele tiden. Vet du hvor man finner et merkes koder? Si fra via «Hjelp oss å bli bedre».",
+    "bodyMakes": "Dette dekker standard OBD-II-koder og egne koder fra {makes}. Vi jobber med å legge til flere merker, og nye koder kommer hele tiden. Vet du hvor man finner et merkes koder? Si fra via «Hjelp oss å bli bedre»."
+  },
+  "support": {
+    "button": "Kontakt support",
+    "subject": "Feilkode {code}",
+    "subjectGeneral": "Feilkoder",
+    "message": "Feilkode {code}: {title}\n\n"
+  },
+  "systems": {
+    "P": "Drivverk",
+    "B": "Karosseri",
+    "C": "Understell",
+    "U": "Nettverk"
+  },
+  "phone": {
+    "title": "Bilder til en løsning",
+    "forCode": "til løsningen du skriver på datamaskinen",
+    "intro": "Ta eller velg opptil {max} bilder av det som løste koden. De dukker opp i løsningen på datamaskinen.",
+    "take": "Ta bilde",
+    "choose": "Velg bilder",
+    "added": "{count} av {max} bilder lagt til",
+    "full": "En løsning kan ha maks {max} bilder.",
+    "notAPhoto": "Den filen er ikke et bilde.",
+    "failed": "Bildet kunne ikke legges til. Prøv igjen.",
+    "done": "Når du er ferdig, gå tilbake til datamaskinen og del løsningen.",
+    "privacy": "Hold ansikter, skilt og kundeopplysninger utenfor bildet.",
+    "expired": "Denne koden har gått ut. Vis en ny på datamaskinen.",
+    "invalid": "Denne koden virker ikke. Vis en ny på datamaskinen.",
+    "waveform": {
+      "title": "Bilde av oscilloskopskjermen",
+      "forCode": "til målekurven du deler på datamaskinen",
+      "intro": "Ta eller velg ett bilde av oscilloskopskjermen. Det dukker opp på datamaskinen.",
+      "full": "En målekurve har ett bilde. Fjern det på datamaskinen for å ta et nytt.",
+      "done": "Gå tilbake til datamaskinen og del målekurven.",
+      "added": "Bildet er lagt til"
+    }
+  },
+  "oem": {
+    "badge": "{make}-kode",
+    "summary": "{count, plural, one {# betydning} other {# betydninger}}. En BMW-kode kan bety noe annet i hver styreenhet.",
+    "matches": "Passer denne bilen",
+    "noMatch": "Ingen av disse betydningene er oppført for motoren i denne bilen. Sjekk hvilken styreenhet skanneren leste koden fra.",
+    "inEnglish": "{make}s engelske tekst: {text}",
+    "bmwText": "{make}s tekst: {text}",
+    "units": "Styreenheter",
+    "moreUnits": "+{count} til",
+    "otherChassis": "Andre karosserier",
+    "years": "{from} til {to}",
+    "yearsFrom": "fra {from}",
+    "source": "Betydningene kommer fra BMWs egne diagnosetekster, de fleste på tysk.",
+    "notServed": "{make}-koder er ikke tilgjengelige ennå.",
+    "notFound": "{code} finnes ikke i {make}s data.",
+    "whereUsed": "Hvor {make} bruker den",
+    "models": "Modeller",
+    "engineList": "Motorer",
+    "fewerUnits": "Vis færre",
+    "fitsThisCar": "Denne bilen",
+    "meanings": "Betydninger",
+    "otherMeanings": "og {count, plural, one {# annen betydning} other {# andre betydninger}}"
+  },
+  "research": {
+    "inviteTitle": "Finn en løsning på nett",
+    "invite": "Vi søker etter {code} i produsentdokumentasjon, servicemeldinger og verkstedforum. Bare et konkret svar med kilder lagres, og en person hos Torqvoice sjekker det.",
+    "button": "Finn en løsning",
+    "working": "Undersøker {code}",
+    "steps": {
+      "bulletins": "Søker i produsentdokumentasjon og servicemeldinger",
+      "forums": "Leser verkstedforum for bekreftede løsninger",
+      "agree": "Sjekker at kildene stemmer overens",
+      "writing": "Skriver opp stegene"
+    },
+    "workingHint": "Dette tar et minutt eller to. Det som blir funnet, blir liggende på koden for alle verksteder.",
+    "runningTitle": "Undersøkes akkurat nå",
+    "runningHint": "Et annet verksted spurte nettopp. Sjekk igjen om et minutt.",
+    "checkAgain": "Sjekk igjen",
+    "title": "Funnet løsning",
+    "pending": "Venter på at en person sjekker den",
+    "published": "Sjekket av Torqvoice",
+    "pendingHint": "Funnet av KI fra kildene under. Sjekk mot bilen før du bytter deler.",
+    "sources": "Kilder",
+    "helpfulQuestion": "Løste dette det?",
+    "helpfulYes": "Ja, det løste det",
+    "helpfulNo": "Nei, det gjorde det ikke",
+    "thanks": "Takk, notert",
+    "missedTitle": "Fant ingen pålitelig løsning på nett",
+    "missed": "Ingenting konkret om {code} dukket opp, så ingenting ble lagret. Vi har notert at verksteder trenger denne koden.",
+    "searchedOn": "Søkt {date}",
+    "shareInstead": "Del løsningen din",
+    "errors": {
+      "busy": "Denne koden undersøkes akkurat nå. Sjekk igjen om et minutt.",
+      "limited": "Verkstedet ditt har brukt dagens søk. Prøv igjen i morgen.",
+      "failed": "Søket kunne ikke kjøres nå. Prøv igjen senere."
+    }
+  },
+  "waveforms": {
+    "title": "Målekurver",
+    "description": "Oscilloskopopptak fra andre verksteder, gode og feilaktige, å holde opp mot det du måler.",
+    "share": "Del en målekurve",
+    "unavailable": "Målekurver er ikke tilgjengelige akkurat nå.",
+    "empty": "Ingen målekurver for {code} ennå",
+    "emptyHint": "Har du et opptak av en god kurve? Del det, så har neste tekniker som jakter denne koden noe å sammenligne med.",
+    "filter": {
+      "label": "Vis",
+      "all": "Alle",
+      "good": "God kurve",
+      "faulty": "Feil"
+    },
+    "unknownVehicle": "Kjøretøy ikke oppgitt",
+    "unknownVehicleMarine": "Båt ikke oppgitt",
+    "status": {
+      "pending": "Venter på gjennomgang",
+      "published": "Publisert",
+      "rejected": "Ikke publisert"
+    },
+    "hasRecording": "PicoScope-fil å laste ned",
+    "hasCsv": "CSV-eksport å laste ned",
+    "kind": {
+      "good": "God kurve",
+      "faulty": "Feil"
+    },
+    "condition": {
+      "key_on": "Tenning på, motor av",
+      "cranking": "Starting",
+      "idle": "Tomgang",
+      "rpm_2500": "2500 o/min",
+      "driving": "Under kjøring",
+      "drivingMarine": "Under fart",
+      "under_load": "Under belastning"
+    },
+    "chart": {
+      "label": "Målekurve av {channels} over {span}",
+      "perDivision": "{value}/rute",
+      "noSample": "ingen måling",
+      "between": "{lo} til {hi}"
+    },
+    "view": {
+      "label": "Vis",
+      "trace": "Målekurve",
+      "picture": "Bilde av skjermen"
+    },
+    "sharedOn": "Delt {date}",
+    "reason": "Begrunnelse: {reason}",
+    "compare": {
+      "label": "Sammenlign med",
+      "none": "Ingenting",
+      "close": "Slutt å sammenligne"
+    },
+    "note": "Merknader",
+    "writtenIn": "Skrevet på {language}",
+    "files": {
+      "title": "Filer",
+      "psdata": "PicoScope-opptak",
+      "csv": "CSV-eksport",
+      "pssettings": "Oscilloskopinnstillinger",
+      "openHint": "Åpne opptaket i PicoScope for å zoome, måle og se alle kanalene."
+    },
+    "nothingToDraw": "Bare opptaket ble delt. Last det ned og åpne det i PicoScope.",
+    "openPicture": "Åpne bildet i full størrelse",
+    "close": "Lukk",
+    "withdraw": "Trekk tilbake",
+    "withdrawTitle": "Trekke tilbake denne målekurven?",
+    "withdrawConfirm": "Den slettes med filene sine, og ingen andre verksteder ser den.",
+    "withdrawn": "Målekurven er trukket tilbake",
+    "withdrawFailed": "Målekurven kunne ikke trekkes tilbake akkurat nå. Prøv igjen om litt.",
+    "shareDialog": {
+      "title": "Del en målekurve for {code}",
+      "description": "Andre verksteder ser den når en person i Torqvoice har sjekket den.",
+      "meaningHint": "Denne koden betyr noe annet i andre styreenheter. Målekurven din deles bare for denne betydningen.",
+      "kind": "Hva viser den?",
+      "kindHint": {
+        "good": "Slik ser det ut på en bil uten feil",
+        "goodMarine": "Slik ser det ut på en motor uten feil",
+        "faulty": "Slik så det ut med feilen",
+        "faultyMarine": "Slik så det ut med feilen"
+      },
+      "measured": "Hva målte du?",
+      "measuredPlaceholder": "Veivakselsensor og innsugskamaksel",
+      "measurements": {
+        "crank": "Veivakselsensor",
+        "camCrank": "Kamaksel og veivaksel",
+        "injector": "Innsprøytningsventil",
+        "ignition": "Tennspole",
+        "compression": "Relativ kompresjon",
+        "lambda": "Lambdasonde",
+        "maf": "Luftmassemåler",
+        "alternator": "Rippel fra dynamo",
+        "canBus": "CAN-buss",
+        "fuelPump": "Strøm til drivstoffpumpe"
+      },
+      "condition": "Hvordan gikk motoren? (valgfritt)",
+      "files": "Filer",
+      "filesHint": "Én holder. PicoScope-filen lar andre åpne den i PicoScope; en CSV-eksport eller et bilde lar dem se den rett her.",
+      "phone": {
+        "button": "Bilde fra mobilen",
+        "title": "Ta et bilde av oscilloskopskjermen",
+        "body": "Skann koden med kameraet på mobilen og ta ett bilde av skjermen. Det dukker opp her når det kommer.",
+        "received": "Bildet fra mobilen din har kommet"
+      },
+      "drop": "Slipp PicoScope-filen her, eller klikk for å velge",
+      "dropMore": "Legg til en fil til",
+      "dropTypes": ".psdata, .pssettings, en CSV-eksport eller et bilde av skjermen",
+      "role": {
+        "psdata": "PicoScope-opptak",
+        "csv": "CSV-eksport",
+        "image": "Bilde av skjermen",
+        "pssettings": "Oscilloskopinnstillinger"
+      },
+      "csvNotScope": "Dette er ikke en eksport fra et oscilloskop. Lagre den på nytt fra PicoScope som CSV.",
+      "remove": "Fjern {name}",
+      "fromPhone": "Fra mobilen din",
+      "previewHint": "Slik ser andre verksteder den.",
+      "csvTip": "Tips: legg også ved en CSV-eksport, så kan andre se kurven her uten å åpne PicoScope. I PicoScope velger du Lagre som og CSV.",
+      "note": "Merknader (valgfritt)",
+      "notePlaceholder": "Hvor du målte, hvilket område du brukte og hva man skal se etter. For eksempel: bakmålt pinne 2 i sensorpluggen, hullet for de manglende tennene vises én gang per omdreining.",
+      "notePlaceholderMarine": "Hvor du målte, hvilket område du brukte og hva man skal se etter.",
+      "sending": "Sender {percent} %",
+      "send": "Del målekurve",
+      "sent": "Takk. Målekurven din venter på gjennomgang.",
+      "missing": {
+        "kind": "Velg god kurve eller feil",
+        "title": "Skriv hva du målte",
+        "file": "Legg til en fil eller et bilde",
+        "csv": "Fjern CSV-filen som ikke er en oscilloskopeksport"
+      },
+      "notAScopeFile": "{name} er verken en PicoScope-fil, en CSV-eksport eller et bilde",
+      "fileTooBig": "{name} er større enn {size}",
+      "errors": {
+        "failed": "Målekurven din kunne ikke sendes akkurat nå. Prøv igjen om litt.",
+        "photo": "Bildet kunne ikke leses. Prøv et annet.",
+        "csv": "CSV-filen er ikke en eksport fra et oscilloskop. Lagre den på nytt fra PicoScope som CSV.",
+        "too_large": "Filene er for store.",
+        "no_file": "Legg til opptaket, en CSV-eksport eller et bilde.",
+        "paused": "Deling av målekurver er satt på pause akkurat nå. Prøv igjen senere.",
+        "demo": "Deling av målekurver er slått av i demoen."
+      }
+    }
+  },
+  "improve": {
+    "button": "Hjelp oss å bli bedre",
+    "title": "Hjelp oss å gjøre feilkodene bedre",
+    "description": "Vet du hvor et bilmerke publiserer sine egne koder, har du sett en feil, eller har du en idé? Si fra. Det går rett til Torqvoice-teamet.",
+    "topic": "Hva gjelder det? (valgfritt)",
+    "topics": {
+      "makes": "Koder vi mangler",
+      "wrong": "Noe er feil",
+      "source": "En god kilde eller lenke",
+      "idea": "En idé"
+    },
+    "message": "Meldingen din",
+    "placeholders": {
+      "makes": "Hvor de finnes, for eksempel en lenke til merkets kodeliste, og hvilke modeller den gjelder.",
+      "wrong": "Hvilken kode, hva det står og hva det burde stå. En lenke til hvor du fant det hjelper.",
+      "source": "Lim inn lenken og skriv hva den inneholder.",
+      "idea": "Hva ville gjort feilkodene mer nyttige på verkstedet ditt? Lenker er velkomne."
+    },
+    "links": "Lenker i meldingen din",
+    "about": "Om {code}",
+    "leaveOut": "Ta bort",
+    "replyHint": "Vi svarer til e-posten på kontoen din.",
+    "cancel": "Avbryt",
+    "send": "Send",
+    "sent": "Takk. Meldingen din er på vei til Torqvoice-teamet.",
+    "errors": {
+      "failed": "Meldingen din kunne ikke sendes akkurat nå. Prøv igjen om litt.",
+      "limited": "Du har allerede sendt noen meldinger. Prøv igjen om en time."
+    }
+  },
+  "import": {
+    "button": "Importer",
+    "title": "Importer feilkoder",
+    "description": "Legg til et merkes egne koder, eller mer om koder vi har. En person i Torqvoice sjekker hver kode før noe verksted ser den.",
+    "yours": "Dine importer",
+    "codes": "{count, plural, one {# kode} other {# koder}}",
+    "status": {
+      "published": "{count} publisert",
+      "pending": "{count} venter",
+      "rejected": "{count} ikke publisert"
+    },
+    "examples": {
+      "title": "Start med et eksempel",
+      "sheet": "Eksempelregneark",
+      "sheetHint": "Excel, én rad per kode",
+      "json": "Eksempel-JSON",
+      "jsonHint": "Hvert felt navngitt",
+      "columns": "Behold kolonnenavnene: Code, Title, Description, Common issues, How to fix, Good to know og Causes. Bare Code og Title trengs. Skriv hver årsak på egen linje, med (high), (medium) eller (low) etter hvis du vet det.",
+      "csv": "Last det ned som CSV"
+    },
+    "make": "Merke",
+    "pickMake": "Velg et merke",
+    "language": "Språket i teksten",
+    "source": "Hvor det kommer fra (valgfritt)",
+    "sourcePlaceholder": "Lenke eller bok",
+    "checking": "Leser og sjekker kodene dine",
+    "removeFile": "Fjern filen",
+    "drop": "Slipp filen her, eller klikk for å velge",
+    "dropTypes": ".xlsx, .csv eller .json, opptil 2 000 koder",
+    "fileProblems": {
+      "unreadable": "Filen kunne ikke leses. Lagre den på nytt som .xlsx, .csv eller .json.",
+      "empty": "Filen har ingen koder.",
+      "no_code_column": "Fant ingen Code-kolonne. Start med eksempelregnearket.",
+      "too_many": "Filen er for stor: høyst 2 000 koder og 5 MB. Del den opp.",
+      "format": "Denne filtypen støttes ikke. Bruk .xlsx, .csv eller .json.",
+      "legacy_xls": "Gamle .xls-filer støttes ikke. Lagre den som .xlsx i Excel."
+    },
+    "counts": {
+      "new": "{count} nye",
+      "change": "{count} utfyller våre",
+      "problem": "{count} må rettes",
+      "same": "{count} er allerede like"
+    },
+    "rows": "Koder i filen",
+    "row": "Rad {n}",
+    "more": "og {count} til",
+    "problemsLeftOut": "Koder som må rettes, utelates. Rett dem i filen og slipp den inn igjen, eller send resten nå.",
+    "rights": "Jeg har lov til å dele dette. Det er ikke kopiert fra en betalt eller beskyttet kilde.",
+    "missing": {
+      "make": "Velg merket først",
+      "file": "Legg til filen din",
+      "nothing": "Ingenting i filen utfyller det vi har",
+      "rights": "Huk av i boksen for å sende"
+    },
+    "reviewHint": "Ingenting publiseres før en person har sjekket det.",
+    "cancel": "Avbryt",
+    "send": "{count, plural, one {Send # kode til gjennomgang} other {Send # koder til gjennomgang}}",
+    "sendNone": "Send til gjennomgang",
+    "sent": "{count, plural, one {Sendt. # kode venter på gjennomgang.} other {Sendt. # koder venter på gjennomgang.}}",
+    "errors": {
+      "failed": "Filen kunne ikke sjekkes eller sendes akkurat nå. Prøv igjen om litt.",
+      "paused": "Sending av koder er satt på pause akkurat nå. Prøv igjen senere.",
+      "nothing": "Ingenting i filen utfyller det vi har.",
+      "demo": "Import av koder er slått av i demoen.",
+      "rights": "Huk av for at du har lov til å dele dette.",
+      "too_large": "Filen er for stor: høyst 2 000 koder og 5 MB."
+    },
+    "problems": {
+      "code": "Ikke en kode {make} bruker",
+      "duplicate": "Samme kode to ganger i filen",
+      "title": "Trenger en tittel",
+      "empty": "Ingenting skrevet",
+      "too_long": "For lang: en tittel opptil 200 tegn, hver tekst opptil 4 000",
+      "likelihood": "Sannsynligheten må være low, medium eller high",
+      "meanings": "{make} bruker denne koden til mer enn én ting. Del det heller på kodens side."
+    },
+    "state": {
+      "new": "Ny",
+      "change": "Legger til {what}"
+    },
+    "fields": {
+      "title": "tittel",
+      "description": "hva den betyr",
+      "common_issues": "vanlige problemer",
+      "resolution": "hvordan fikse",
+      "advisory": "greit å vite",
+      "causes": "årsaker"
+    },
+    "addsCauses": "{count, plural, one {# årsak} other {# årsaker}}",
+    "searchMake": "Søk etter merke",
+    "noMake": "Fant ingen merker",
+    "useMake": "Bruk {name}",
+    "groups": {
+      "cars": "Biler og varebiler",
+      "marine": "Båter og motorer"
+    }
+  },
+  "makeCodes": {
+    "heading": "Merker med egen betydning for {code}",
+    "thisCar": "Bilens merke"
+  }
+}

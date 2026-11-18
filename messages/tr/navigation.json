@@ -42,6 +42,7 @@
     "warranty": "Garanti",
     "workshop": "Atölye",
     "appearance": "Görünüm",
+    "shortcuts": "Klavye kısayolları",
     "email": "E-posta",
     "sms": "SMS",
     "telegram": "Telegram",
@@ -65,10 +66,15 @@
     "tireSetDetails": "Lastik takımı",
     "tireForecast": "Gelecek sezon",
     "whatsapp": "WhatsApp",
-    "inspectionReminders": "Muayene hatırlatmaları"
+    "inspectionReminders": "Muayene hatırlatmaları",
+    "faultCodes": "Arıza kodları",
+    "faultCode": "Arıza kodu",
+    "calendar": "Takvim",
+    "messages": "Mesajlar",
+    "inspections": "Muayeneler",
+    "inspectionDetails": "Muayene Detayları"
   },
   "search": "Ara...",
-  "shortcut": "Ctrl+K",
   "readMore": "Daha fazla bilgi",
   "newWorkOrder": "Yeni İş Emri",
   "quickCreate": {
@@ -80,7 +86,8 @@
     "part": "Parça",
     "inspection": "Muayene",
     "shopActions": "Servis",
-    "person": "Kişi ekle"
+    "person": "Kişi ekle",
+    "appointment": "Randevu"
   },
   "purchaseWhiteLabel": "Beyaz Etiket Satın Al",
   "licenseExpired": "Lisansınız sona erdi. Özellikler sınırlı olabilir.",
@@ -123,6 +130,7 @@
     "cancel": "İptal",
     "createCompany": "Şirket Oluştur",
     "theme": "Tema",
+    "keyboardShortcuts": "Klavye kısayolları",
     "signOut": "Çıkış Yap",
     "more": "Diğer",
     "auditLog": "Denetim günlüğü",
@@ -141,6 +149,7 @@
       "workOrders": "{count} açık iş emri",
       "inspections": "{count} devam eden muayene",
       "reminders": "{count} vadesi gelen hatırlatma"
-    }
+    },
+    "faultCodes": "Arıza kodları"
   }
 }

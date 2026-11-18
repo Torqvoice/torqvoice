@@ -35,7 +35,7 @@
     },
     "save": "Kaydet",
     "pdf": "PDF",
-    "email": "E-posta",
+    "send": "Gönder",
     "share": "Paylaş",
     "notify": "Bildir",
     "delete": "Sil",
@@ -92,6 +92,7 @@
       "inspection": "Muayene"
     },
     "statusOptions": {
+      "scheduled": "Planlandı",
       "pending": "Beklemede",
       "in_progress": "Devam Ediyor",
       "waiting_parts": "Parça Bekleniyor",
@@ -146,7 +147,8 @@
     "deleteRow": "Satırı sil",
     "outOfStock": "Stokta yok",
     "onBackorder": "Ön siparişte ({count})",
-    "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez."
+    "nameMissingHint": "Parça adı olmayan satırlar kaydedilmez.",
+    "fitsVehicleFirst": "{vehicle} için etiketlenmiş parçalar önce listelenir."
   },
   "labor": {
     "title": "İşçilik",
@@ -175,8 +177,88 @@
     "shopFeeHintPercentLabor": "Ayarlar'daki atölye ücreti: bu işteki işçiliğin % {percent} kadarı. Kaldırmak için satırı silin.",
     "shopFeeHintPercentAll": "Ayarlar'daki atölye ücreti: bu işteki işçilik ve parçaların % {percent} kadarı. Kaldırmak için satırı silin."
   },
+  "laborGuide": {
+    "button": "İşçilik süreleri",
+    "title": "İşçilik süreleri",
+    "description": "Bu araç için işçilik süreleri ve sıvılar",
+    "tabLabor": "İşçilik süreleri",
+    "tabFluids": "Sıvılar",
+    "engine": "Motor",
+    "categories": "İş kategorileri",
+    "allJobs": "Tüm işler",
+    "search": "İş ara, örneğin fren balatası",
+    "clearSearch": "Aramayı temizle",
+    "jobCount": "{count, plural, one {# iş} other {# iş}}",
+    "noMatch": "“{query}” ile eşleşen iş yok",
+    "noJobs": "Rehberde bu motor için iş yok.",
+    "showAll": "Tüm işleri göster",
+    "showHours": "Saatleri göster",
+    "show": "Göster",
+    "lockedValue": "Bu anahtarla gösterilmiyor",
+    "hours": "{hours} sa",
+    "range": "{low} ile {high} sa arası",
+    "bookTime": "Rehber süresi {hours} sa",
+    "add": "İşçilik satırı olarak ekle",
+    "added": "Eklendi",
+    "addJob": "{job} işini işçilik satırı olarak ekle",
+    "addedJob": "{job} eklendi",
+    "addedCount": "{count, plural, one {# iş eklendi} other {# iş eklendi}}",
+    "partsAddedCount": "{count, plural, one {# parça eklendi} other {# parça eklendi}}",
+    "done": "Bitti",
+    "loading": "Araç aranıyor",
+    "stillLooking": "Hâlâ aranıyor. Az veri bulunan bir araç için Open Labor Project’in yanıtı yarım dakikayı bulabilir.",
+    "notFoundTitle": "Rehberde yok",
+    "notFound": "İşçilik rehberinde bu araç için veri yok. Marka, model ve yılın üreticinin adlandırdığı şekilde yazıldığını kontrol edin veya VIN ekleyin.",
+    "fluidsNotFoundTitle": "Bu araç için sıvı bilgisi yok",
+    "fluidsNotFound": "Open Labor Project’te bu araç için henüz sıvı bilgisi yok.",
+    "failedTitle": "Sorgu tamamlanamadı",
+    "failed": "Sorgu başarısız oldu",
+    "unlockFailed": "Bu değer alınamadı",
+    "retry": "Tekrar dene",
+    "matchNone": "Listelenen motorların hiçbiri bu araç için kayıtlı motorla eşleşmiyor, bu yüzden süreler başka bir motora ait olabilir. Yukarıdan en yakın motoru seçin.",
+    "matchFuel": "Motor yakıt türüne göre seçildi. Doğru motor olduğunu kontrol edin.",
+    "matchUnknown": "Bu araç için motor hacmi kayıtlı değil, bu yüzden yukarıdaki motorun doğru olduğunu kontrol edin.",
+    "hiddenByConfidence": "{count, plural, one {Asgari güveninizin altındaki # süre gizlendi.} other {Asgari güveninizin altındaki # süre gizlendi.}}",
+    "changeSettings": "Değiştir",
+    "liters": "{value} L",
+    "quarts": "{value} qt",
+    "km": "{value} km",
+    "miles": "{value} mi",
+    "capacity": "Kapasite",
+    "drainRefill": "Boşaltma ve doldurma",
+    "interval": "Değişim aralığı",
+    "copySpec": "{spec} kopyala",
+    "copied": "Kopyalandı",
+    "noFluids": "Rehberde bu motor için sıvı yok.",
+    "addAsPart": "Parça olarak ekle",
+    "addFluidAsPart": "{system} parça olarak ekle",
+    "partAdded": "Eklendi",
+    "fromStock": "Stoktan",
+    "addWithoutStock": "Stok kalemi olmadan ekle",
+    "takesDrainRefill": "Boşaltıp doldurmada {amount} alır",
+    "takesCapacity": "Toplam {amount} alır",
+    "attribution": "Veriler: {source}",
+    "market": "Pazar: {region}",
+    "about": "Ne kadar güvenilir?",
+    "aboutTitle": "Kaynağa göre güvenilirlik",
+    "estimateNote": "Tahmin olarak işaretlenen değerler yapay zekâ ile üretilmiştir ve üretici verileriyle karşılaştırılmamıştır. Müşteriye fiyat vermeden önce kontrol edin.",
+    "lockedNote": "Bu anahtar değerleri tek tek gösterir ve her biri bir sorgu sayılır. Ücretli bir plan hepsini aynı anda gösterir.",
+    "settings": "İşçilik süreleri ayarları",
+    "confidence": {
+      "oem": "OEM",
+      "oemHelp": "Üreticinin kendi verileriyle karşılaştırıldı",
+      "high": "Doğrulandı",
+      "highHelp": "Kaynak tarafından doğrulandı",
+      "medium": "Orta",
+      "mediumHelp": "Kaynak bu değerin güvenilirliğini orta olarak değerlendiriyor",
+      "estimated": "Tahmin",
+      "estimatedHelp": "Yapay zekâ ile üretildi, üretici verileriyle karşılaştırılmadı"
+    }
+  },
   "liveLabor": {
     "title": "{count, plural, one {Bir teknisyen bu işe işçilik ekledi} other {Bir teknisyen bu işe # işçilik satırı ekledi}}",
+    "titleParts": "{count, plural, one {Bir teknisyen bu işe bir parça ekledi} other {Bir teknisyen bu işe # parça ekledi}}",
+    "titleBoth": "Bir teknisyen bu işe işçilik ve parça ekledi",
     "body": "Siz düzenlerken listeye eklenmez. Bir sonraki kaydetmede yine de kaydedilir.",
     "show": "Göster"
   },
@@ -188,13 +270,29 @@
     "subtotalInclTax": "Ara Toplam (KDV dahil)",
     "discount": "İndirim",
     "discountNone": "Yok",
+    "discountOff": "Yok",
     "discountPercentage": "Yüzde",
     "discountFixed": "Sabit",
     "tax": "Vergi",
     "taxIncluded": "Vergi (dahil)",
+    "taxableAmount": "Vergiye tabi tutar",
     "total": "Toplam",
     "inclusiveModeHint": "Satır fiyatları KDV dahil girilir. Toplamlar net + vergi dağılımını gösterir.",
     "partsCost": "Parça maliyeti (dahili)"
+  },
+  "lineTax": {
+    "label": "Bu satırda vergi",
+    "taxedTag": "VERGİ",
+    "untaxedTag": "VERGİSİZ",
+    "taxedHint": "Bu satıra vergi uygulanıyor. Vergi dışında bırakmak için tıklayın.",
+    "untaxedHint": "Bu satıra vergi uygulanmıyor. Vergilendirmek için tıklayın."
+  },
+  "taxOffer": {
+    "noTax": "Bu, vergisiz oluşturuldu. Atölye artık %{rate} uyguluyor.",
+    "otherRate": "Bu, %{current} oranında. Atölye artık %{rate} uyguluyor.",
+    "apply": "%{rate} vergi uygula",
+    "failed": "Vergi güncellenemedi",
+    "saveFirst": "Önce değişikliklerinizi kaydedin, sonra vergiyi uygulayın."
   },
   "notes": {
     "title": "Notlar",
@@ -227,6 +325,7 @@
     "discount": "İndirim",
     "tax": "Vergi ({rate}%)",
     "taxIncluded": "Vergi (dahil, %{rate})",
+    "taxableAmount": "Vergiye tabi tutar",
     "total": "Toplam",
     "paid": "Ödendi",
     "balanceDue": "Kalan Bakiye",
@@ -286,18 +385,8 @@
   "share": {
     "title": "Faturayı Paylaş",
     "description": "Herkesin oturum açmadan bu faturayı görüntülemesine ve indirmesine izin veren herkese açık bir bağlantı oluştur.",
-    "notifyTitle": "{name} Bilgilendir",
-    "email": "E-posta",
-    "noEmail": "(dosyada e-posta yok)",
-    "sms": "SMS",
-    "noPhone": "(dosyada telefon yok)",
-    "sendNotification": "Bildirim Gönder",
     "revokeLink": "Bağlantıyı İptal Et",
     "generateLink": "Herkese Açık Bağlantı Oluştur",
-    "emailSent": "E-posta gönderildi",
-    "failedEmail": "E-posta gönderilemedi",
-    "smsSent": "SMS gönderildi",
-    "failedSms": "SMS gönderilemedi",
     "copyLink": "Bağlantıyı kopyala"
   },
   "sidebar": {
@@ -427,7 +516,13 @@
     "loadOn": "{date} tarihindeki dolu saatler",
     "promisedAt": "Müşteriye söz verilen zaman",
     "promisedPlaceholder": "Henüz söz verilmedi",
-    "promisedClear": "Temizle"
+    "promisedClear": "Temizle",
+    "lead": "Sorumlu",
+    "alsoOnJob": "Bu işte de çalışıyor",
+    "helperAdd": "Bu işe ekle: {name}",
+    "helperRemove": "Bu işten çıkar: {name}",
+    "failedHelper": "İşteki kişiler güncellenemedi",
+    "clashPeople": "{count, plural, one {{names} meşgul} other {{names} meşgul}}"
   },
   "notifications": {
     "title": "Müşteri bildirimleri",
@@ -583,7 +678,6 @@
   "modern": {
     "statusLabel": "İş emri durumu",
     "back": "Geri",
-    "backToClassic": "Klasik düzene dön",
     "openCustomer": "Müşteriyi aç",
     "serviceHistory": "Servis geçmişi",
     "changeVehicle": "Aracı değiştir",
@@ -602,13 +696,6 @@
       "paymentTaken": "{amount} tutarında ödeme kaydedildi",
       "statusSet": "Durum {status} olarak ayarlandı"
     },
-    "invite": {
-      "title": "İş emri sayfası yenilendi.",
-      "body": "Aynı alanlarla daha net bir düzen. İstediğiniz zaman eskisine dönebilirsiniz.",
-      "try": "Şimdi dene",
-      "dismiss": "Şimdi değil",
-      "menu": "Yeni düzeni dene"
-    },
     "promised": "{date} için söz verildi",
     "promisedOverdue": "{date} için söz verildi, gecikti",
     "opened": "{date} tarihinde açıldı",
@@ -617,6 +704,7 @@
     "titleField": "Başlık",
     "media": {
       "tabs": {
+        "all": "Tümü",
         "photos": "Fotoğraflar",
         "diagnostics": "Tanı",
         "dropoff": "Teslim alma"
@@ -626,6 +714,7 @@
       "showToCustomer": "Müşteriye göster",
       "hideFromCustomer": "Müşteriden gizle",
       "add": {
+        "all": "Dosya ekle",
         "image": "Fotoğraf ekle",
         "document": "Belge ekle",
         "diagnostic": "Tanı raporu ekle",
@@ -666,6 +755,7 @@
       "customerSince": "Müşteri olma tarihi"
     },
     "moreStatuses": "Diğer durumlar",
+    "addStatus": "Durum ekle",
     "fromInspection": "{name} muayenesinden, {date}",
     "fromQuote": "{ref} teklifinden",
     "startInspection": "Muayeneyi başlat"
@@ -730,6 +820,21 @@
         "odometer": "Kilometre sayacı",
         "other": "Hasar veya diğer"
       }
+    },
+    "vehicle": {
+      "dialogTitle": "Aracın fotoğrafını telefonla çekin",
+      "dialogBody": "Herhangi bir telefonla aracın fotoğrafını çekin veya telefonda zaten olan birini seçin. Bu fotoğraf, bu aracın sayfasının en üstünde görünür.",
+      "step2": "Aracın tamamının fotoğrafını çekin veya telefondan bir fotoğraf seçin.",
+      "step3": "Gelir gelmez araç sayfasındaki fotoğrafın yerini alır.",
+      "scope": "Bağlantı yalnızca bu aracın fotoğrafını ayarlayabilir ve 30 dakika sonra çalışmaz.",
+      "waiting": "Fotoğraf bekleniyor…",
+      "received": "Fotoğraf alındı",
+      "pageTitle": "Aracın fotoğrafı",
+      "pageBody": "Aracın tamamının fotoğrafını çekin. Araç sayfasındaki fotoğrafın yerini alır.",
+      "choosePhoto": "Fotoğraf seç",
+      "saved": "Kaydedildi. Fotoğraf artık araç sayfasında. Değiştirmek için yenisini çekin.",
+      "invalid": "Araç sayfasındaki kodu yeniden tarayın.",
+      "notAPhoto": "Burada yalnızca fotoğraf kullanılabilir."
     }
   },
   "payCode": {
@@ -750,5 +855,12 @@
   },
   "customStatus": {
     "defaultMessage": "Merhaba {customer_name}, {vehicle} aracınızla ilgili bir güncelleme: {status}. {company_name}"
+  },
+  "leaveUnsaved": {
+    "title": "Değişiklikleriniz kaydedilmedi",
+    "fallbackReason": "Son değişiklikler kaydedilemedi.",
+    "hint": "Düzeltmek için kalın ya da çıkın ve son kayıttan bu yana yapılan değişiklikleri kaybedin.",
+    "stay": "Kal ve düzelt",
+    "leave": "Kaydetmeden çık"
   }
 }

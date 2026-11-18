@@ -149,7 +149,12 @@ describe('calculateTotals with components', () => {
       taxRate: 25,
       taxInclusive: false,
     })
-    expect(plain).toEqual({ taxAmount: 225, totalAmount: 1125, components: null })
+    expect(plain).toEqual({
+      taxAmount: 225,
+      totalAmount: 1125,
+      components: null,
+      taxableAmount: 900,
+    })
     const empty = calculateTotals({
       subtotal: 900,
       discountAmount: 0,
@@ -245,6 +250,7 @@ describe('workshop tax settings', () => {
       rate: 0,
       inclusive: false,
       components: null,
+      applies: { parts: true, labor: true, shopFee: true },
     })
   })
 
@@ -267,6 +273,7 @@ describe('workshop tax settings', () => {
       taxRate: 14.975,
       taxInclusive: false,
       taxComponents: fields.taxComponents,
+      taxableSubtotal: null,
     })
     expect(totals.taxAmount).toBe(134.78)
     expect(totals.totalAmount).toBe(1034.78)
@@ -283,7 +290,13 @@ describe('workshop tax settings', () => {
       taxRate: 25,
       taxInclusive: false,
       taxComponents: null,
+      taxableSubtotal: null,
     })
-    expect(totals).toEqual({ taxAmount: 225, totalAmount: 1125, taxComponents: undefined })
+    expect(totals).toEqual({
+      taxAmount: 225,
+      totalAmount: 1125,
+      taxComponents: undefined,
+      taxableSubtotal: null,
+    })
   })
 })

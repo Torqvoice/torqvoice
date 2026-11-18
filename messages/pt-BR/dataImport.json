@@ -50,7 +50,11 @@
     "chooseAnother": "Escolher outro arquivo",
     "missingRequired": "Ainda falta: {fields}",
     "dryRunHint": "A simulação verifica cada linha em relação aos seus dados existentes sem gravar nada.",
-    "runDryRun": "Executar simulação"
+    "runDryRun": "Executar simulação",
+    "usedBy": "Em uso por {column}",
+    "searchFields": "Buscar campos...",
+    "fieldFor": "Campo para {column}",
+    "noJobText": "Nenhuma coluna está mapeada para título, descrição ou notas, então cada serviço receberá um nome provisório. Mapeie a coluna que descreve o que foi feito, se o arquivo tiver uma."
   },
   "options": {
     "dateFormat": "Formato de data",
@@ -66,7 +70,9 @@
     "duplicates": "Quando uma linha corresponder a um registro existente",
     "duplicatesUpdate": "Atualizar o registro existente",
     "duplicatesSkip": "Pular a linha",
-    "duplicatesCreate": "Criar um novo registro mesmo assim"
+    "duplicatesCreate": "Criar um novo registro mesmo assim",
+    "dateReadsAs": "\"{value}\" é lido como {date}",
+    "dateUnreadable": "\"{value}\" não pode ser lido como data"
   },
   "summary": {
     "create": "Serão criados",
@@ -114,7 +120,11 @@
     "next": "Próximo",
     "backToMapping": "Voltar ao mapeamento",
     "import": "Importar {count, plural, one {# linha} other {# linhas}}",
-    "nothingWrittenYet": "Nada foi gravado ainda. A importação pode ser desfeita depois em Configurações → Dados."
+    "nothingWrittenYet": "Nada foi gravado ainda. A importação pode ser desfeita depois em Configurações → Dados.",
+    "issuesTitle": "Por que algumas linhas não podem ser importadas",
+    "issueCount": "{count, plural, one {# linha} other {# linhas}}, a primeira na linha {row}",
+    "issuesHint": "Geralmente é uma coluna mapeada para o campo errado ou células vazias no arquivo. Volte ao mapeamento para alterar, ou importe o restante e adicione estas depois.",
+    "showIssueRows": "Mostrar estas linhas"
   },
   "importing": {
     "title": "Importando...",
@@ -212,7 +222,9 @@
     "invalid_date": "Não foi possível ler {field} \"{value}\" e o valor foi deixado de fora",
     "invalid_number": "{field} \"{value}\" não é um número e foi deixado de fora",
     "duplicate_invoice_number": "O número de fatura {value} já existe",
-    "write_failed": "Não foi possível gravar: {value}"
+    "write_failed": "Não foi possível gravar: {value}",
+    "invalid_mileage": "{field} \"{value}\" é alto demais para ser uma leitura real e foi deixado de fora",
+    "service_title_placeholder": "Sem título nem descrição, então será chamado \"{value}\""
   },
   "errors": {
     "uploadFailed": "Não foi possível ler o arquivo",
@@ -227,5 +239,8 @@
     "customers": "Importar clientes",
     "vehicles": "Importar veículos",
     "services": "Importar histórico de serviços"
+  },
+  "placeholders": {
+    "serviceTitle": "Serviço importado"
   }
 }

@@ -53,6 +53,7 @@
     "statusCompleted": "Tamamlandı",
     "complete": "Tamamla",
     "reopen": "Yeniden aç",
+    "send": "Gönder",
     "share": "Paylaş",
     "save": "Kaydet",
     "saving": "Kaydediliyor…",
@@ -94,6 +95,8 @@
     "completeTitle": "Bu muayene tamamlansın mı?",
     "completeBody": "Tamamlandığında maddeler kilitlenir ve sonuç “{result}” olur.",
     "completeBlocked": "Kontrol listesinin zorunlu olarak işaretlediği {count} kontrol henüz yapılmadı.",
+    "blockerMissingGrade": "değerlendirilmeli",
+    "blockerNeedsPhoto": "kusurun fotoğrafı gerekli",
     "completeUngraded": "{count} madde değerlendirilmedi.",
     "completeDangerous": "{count} tehlikeli kusur kaydedildi. Araç karayolunda kullanılmamalıdır.",
     "reopenTitle": "Bu muayene yeniden açılsın mı?",
@@ -459,7 +462,9 @@
     "copyLink": "Bağlantıyı kopyala",
     "copied": "Bağlantı panoya kopyalandı",
     "generated": "Paylaşım bağlantısı oluşturuldu",
-    "revoked": "Paylaşım bağlantısı geri alındı"
+    "revoked": "Paylaşım bağlantısı geri alındı",
+    "revokeLink": "Bağlantıyı İptal Et",
+    "generateLink": "Herkese Açık Bağlantı Oluştur"
   },
   "phone": {
     "pageTitle": "Muayene fotoğrafları",
@@ -494,5 +499,19 @@
     "photos": "Fotoğraflar",
     "documents": "Belgeler",
     "video": "Video"
+  },
+  "checkResults": {
+    "pass": "Her şey yolunda",
+    "pass_minor": "Takip edilmesi gereken birkaç nokta",
+    "fail": "Onarım gereken birkaç nokta",
+    "fail_dangerous": "Acil onarım gereken birkaç nokta",
+    "incomplete": "Tamamlanmadı",
+    "detail": {
+      "pass": "Dikkat gerektiren bir şey yoktu.",
+      "pass_minor": "Acil bir şey yok. İşaretli noktaları planlamakta fayda var.",
+      "fail": "Bazı noktaların onarılması gerekiyor. Notlar neyin bulunduğunu anlatıyor.",
+      "fail_dangerous": "Bazı noktalar güvenli değil ve kullanıma devam etmeden önce onarılmalı.",
+      "incomplete": "Bu kontrol hâlâ sürüyor."
+    }
   }
 }

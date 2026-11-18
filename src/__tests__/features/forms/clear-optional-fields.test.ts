@@ -25,6 +25,9 @@ vi.mock('@/lib/features', () => ({
   FeatureGatedError: class FeatureGatedError extends Error {},
 }))
 vi.mock('@/lib/whatsapp', () => ({ claimWhatsappMessagesForCustomer: vi.fn() }))
+vi.mock('@/features/messaging/Lib/emailClaim.server', () => ({
+  claimEmailMessagesForCustomer: vi.fn(),
+}))
 vi.mock('@/lib/notification-bus', () => ({ notificationBus: { emit: vi.fn() } }))
 vi.mock('@/lib/document-lock.server', () => ({
   assertQuoteEditable: vi.fn().mockResolvedValue(undefined),

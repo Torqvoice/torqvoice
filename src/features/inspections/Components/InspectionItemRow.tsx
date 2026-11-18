@@ -1,26 +1,11 @@
 'use client'
 
 import { useEffect, useId, useRef, useState, useTransition } from 'react'
+import { useConfirm } from '@/components/confirm-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import {
   Ban,
   Camera,
@@ -273,7 +258,7 @@ export function InspectionItemRow({
   }, [serverPhotos]) // eslint-disable-line react-hooks/exhaustive-deps -- follows the server's list only
   const [showNotes, setShowNotes] = useState(!!item.notes)
   const [notesRequired, setNotesRequired] = useState(false)
-  const [showClearDialog, setShowClearDialog] = useState(false)
+  const confirm = useConfirm()
   const [isSaving, startSaving] = useTransition()
   const [isUploading, setIsUploading] = useState(false)
 
@@ -322,12 +307,28 @@ export function InspectionItemRow({
     })
   }
 
+  const clearAfterConfirm = async () => {
+    const ok = await confirm({
+      title: t('clearTitle'),
+      description: t('clearBody', { name: item.name }),
+      confirmLabel: t('clear'),
+      cancelLabel: t('cancel'),
+      destructive: true,
+    })
+    if (!ok) return
+    setCondition('not_inspected')
+    setNotesRequired(false)
+    setShowNotes(false)
+    setNotes('')
+    save({ condition: 'not_inspected', notes: '' })
+  }
+
   const applyCondition = (next: Condition, { focusNotes = true } = {}) => {
     if (isCompleted) return
 
     // Clearing a graded defect throws away its notes, so confirm first.
     if (next === 'not_inspected' && isDefect(condition) && notes.trim()) {
-      setShowClearDialog(true)
+      clearAfterConfirm()
       return
     }
 
@@ -431,13 +432,15 @@ export function InspectionItemRow({
     const url = imageUrls[index]
     if (!url) return
     setImageUrls((prev) => prev.filter((u) => u !== url))
-    const result = await removeInspectionItemMedia({ itemId: item.id, url })
-    if (result.success && result.data) {
+    // A request that never reaches the server throws instead of answering;
+    // the photo is still there, so it comes back like one the server refused.
+    const result = await removeInspectionItemMedia({ itemId: item.id, url }).catch(() => null)
+    if (result?.success && result.data) {
       setImageUrls(result.data)
       onChanged(item.id, { condition, photoCount: result.data.length })
     } else {
       setImageUrls((prev) => (prev.includes(url) ? prev : [...prev, url]))
-      toast.error(result.error || t('saveFailed'))
+      toast.error(result?.error || t('saveFailed'))
     }
   }
 
@@ -640,25 +643,19 @@ export function InspectionItemRow({
           <label htmlFor={`${fieldId}-choice`} className="text-muted-foreground text-xs">
             {t('answer')}
           </label>
-          <Select
-            value={textValue || undefined}
+          <SearchableSelect
+            id={`${fieldId}-choice`}
+            size="sm"
+            value={textValue}
             disabled={isCompleted}
             onValueChange={(v) => {
               setTextValue(v)
               save({ textValue: v })
             }}
-          >
-            <SelectTrigger id={`${fieldId}-choice`} className="h-8 w-full text-sm sm:w-56">
-              <SelectValue placeholder={t('selectAnswer')} />
-            </SelectTrigger>
-            <SelectContent>
-              {item.choices?.map((choice) => (
-                <SelectItem key={choice} value={choice}>
-                  {choice}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            placeholder={t('selectAnswer')}
+            className="w-full sm:w-56"
+            options={(item.choices ?? []).map((choice) => ({ value: choice, label: choice }))}
+          />
         </div>
       )}
 
@@ -762,31 +759,6 @@ export function InspectionItemRow({
           ))}
         </ul>
       )}
-
-      <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('clearTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('clearBody', { name: item.name })}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => {
-                setCondition('not_inspected')
-                setNotesRequired(false)
-                setShowNotes(false)
-                setNotes('')
-                setShowClearDialog(false)
-                save({ condition: 'not_inspected', notes: '' })
-              }}
-            >
-              {t('clear')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </li>
   )
 }

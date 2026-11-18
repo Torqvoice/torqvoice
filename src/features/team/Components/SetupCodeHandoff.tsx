@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { QRCodeSVG } from 'qrcode.react'
-import { PLAY_STORE_URL } from '@/lib/app-links'
+import { APP_STORE_URL, PLAY_STORE_URL } from '@/lib/app-links'
 import { Check, Copy, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
@@ -87,8 +87,7 @@ export function SetupCodeHandoff({
                     the first step carries the link rather than leaving
                     somebody to search the store on a stranger's phone. */}
                 {i === 0 && (
-                  <>
-                    {' '}
+                  <span className="mt-1 flex flex-wrap gap-x-4 gap-y-1">
                     <a
                       href={PLAY_STORE_URL}
                       target="_blank"
@@ -97,7 +96,15 @@ export function SetupCodeHandoff({
                     >
                       {t('team.setupPageInstall')}
                     </a>
-                  </>
+                    <a
+                      href={APP_STORE_URL}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="underline underline-offset-4"
+                    >
+                      {t('team.setupPageInstallIos')}
+                    </a>
+                  </span>
                 )}
               </span>
             </li>

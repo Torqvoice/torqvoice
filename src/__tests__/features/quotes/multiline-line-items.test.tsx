@@ -38,6 +38,7 @@ describe('quote line items take more than one line', () => {
         partsSubtotal={100}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
+        onMove={vi.fn()}
         onAdd={vi.fn()}
         t={t}
       />
@@ -59,6 +60,7 @@ describe('quote line items take more than one line', () => {
         laborSubtotal={1600}
         onUpdate={vi.fn()}
         onDelete={vi.fn()}
+        onMove={vi.fn()}
         onAdd={vi.fn()}
         t={t}
       />

@@ -31,14 +31,14 @@ export async function GET(_request: Request, { params }: { params: Promise<{ org
     where: {
       organizationId_key: {
         organizationId: orgId,
-        key: SETTING_KEYS.PORTAL_BACKGROUND_IMAGE,
+        key: SETTING_KEYS.PORTAL_COVER,
       },
     },
     select: { value: true },
   })
 
   if (!setting?.value) {
-    return NextResponse.json({ error: 'No background' }, { status: 404 })
+    return NextResponse.json({ error: 'No cover photo' }, { status: 404 })
   }
 
   const urlParts = setting.value.split('/')

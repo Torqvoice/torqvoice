@@ -1,4 +1,4 @@
-FROM node:22-alpine AS base
+FROM node:22.23.4-alpine AS base
 RUN apk add --no-cache libc6-compat openssl postgresql-client bash ffmpeg
 
 # Install dependencies only when needed
@@ -8,10 +8,7 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
 COPY prisma.config.ts ./prisma.config.ts
-# npm ci runs the prepare script, which patches next-ws and then applies our
-# own follow-up patch from scripts/. The source tree is not copied until the
-# builder stage, so that one file has to come along here.
-COPY scripts/patch-next-ws-first-upgrade.mjs ./scripts/
+# npm ci runs the prepare script, which patches next for next-ws.
 RUN npm ci
 
 # Rebuild the source code only when needed
@@ -25,7 +22,46 @@ RUN npx prisma generate
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN npm run build
+# Browser source maps for PostHog error tracking, so an exception on Torqvoice
+# Cloud names the file and line it came from instead of a minified chunk. The
+# image workflows set this to "on" only when they hold the upload key; any other
+# build (a fork, a self-hosted build, a plain docker build) leaves it off and
+# makes no maps. A change here is a new cache key, so a build made without maps
+# is never reused for an upload.
+ARG POSTHOG_SOURCEMAPS=off
+
+# Server action IDs are hashed from this key, the action's file path and its
+# name. Without one, Next makes a random key for every build, so each release
+# gives every action a new ID and a tab opened before the deploy fails its next
+# save. The same key on every build keeps the IDs, and those tabs keep working.
+# Optional: without the secret the build makes its own key, as before. Next
+# writes the key into the build output, so it is not secret once built; never
+# reuse the key a deployment sets at run time (NEXT_SERVER_ACTIONS_ENCRYPTION_KEY).
+#
+# A secret is left out of the build cache, so a new key on unchanged source
+# would reuse the last build and keep its old IDs. The image workflows pass a
+# fingerprint of the key here, and a new fingerprint means a fresh build.
+ARG NEXT_ACTIONS_FINGERPRINT=none
+RUN --mount=type=secret,id=next_actions_key \
+    if [ -s /run/secrets/next_actions_key ]; then \
+      export NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$(cat /run/secrets/next_actions_key)"; \
+    fi && \
+    if [ "$POSTHOG_SOURCEMAPS" = "on" ]; then export BROWSER_SOURCE_MAPS=true; fi && \
+    npm run build
+
+# Upload those maps, filed under this image's version, and delete them again,
+# since self-hosted installs run this same image. A failed upload is logged and
+# the build goes on; a map that could not be deleted fails it. See the script.
+ARG APP_VERSION=development
+ARG POSTHOG_CLI_HOST
+ARG POSTHOG_CLI_PROJECT_ID
+# The image workflows give this a new value on every run, rerun included. The
+# upload step then runs again rather than reusing a cached result, so a failed
+# upload, or one made with a key since replaced, is retried. It comes after the
+# build, so the Next build itself stays cached.
+ARG POSTHOG_UPLOAD_ATTEMPT=none
+RUN --mount=type=secret,id=posthog_cli_api_key \
+    sh scripts/upload-source-maps.sh
 
 # What the container runs beside the server: the Prisma CLI for the migrations
 # at start, and tsx with a full Prisma client for the demo seed. Installed in
@@ -37,6 +73,25 @@ FROM base AS tools
 WORKDIR /tools
 RUN npm install --no-save --no-audit --no-fund \
       prisma@7.6.0 @prisma/client@7.6.0 @prisma/adapter-pg@7.6.0 pg dotenv tsx
+
+# restic, for the scheduled backups a workshop sends to its own storage. The
+# release binary is fetched for the platform being built and checked against a
+# pinned SHA-256, so a changed or tampered download fails the build instead of
+# ending up in the image. Bumping the version means bumping both sums with it.
+FROM base AS restic
+ARG TARGETARCH
+ARG RESTIC_VERSION=0.19.1
+RUN set -e; \
+    case "$TARGETARCH" in \
+      amd64) sum=f415415624dcc452f2a02b8c33641791a8c6d6d3b65bbb3543fcf9a25151585c ;; \
+      arm64) sum=a5f64aaab53d51e311fa3829124c5b703f2d14cf187d8640b6be3b2b49376465 ;; \
+      *) echo "no pinned restic checksum for TARGETARCH '${TARGETARCH}'"; exit 1 ;; \
+    esac; \
+    wget -q -O /restic.bz2 \
+      "https://github.com/restic/restic/releases/download/v${RESTIC_VERSION}/restic_${RESTIC_VERSION}_linux_${TARGETARCH}.bz2"; \
+    echo "$sum  /restic.bz2" | sha256sum -c -; \
+    bunzip2 /restic.bz2; \
+    chmod 755 /restic
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -64,8 +119,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./src/generated
 
 # The server runs on the node_modules Next traced for it. That is exactly what
-# the build ran with: next carrying the next-ws patch and the first-upgrade fix
-# the prepare script applied in the deps stage, and sharp with the binary for
+# the build ran with: next carrying the next-ws patch the prepare script
+# applied in the deps stage, and sharp with the binary for
 # this image's platform. Nothing is installed over it, so none of that has to
 # be patched or resolved a second time here.
 #
@@ -85,18 +140,28 @@ COPY --from=builder --chown=nextjs:nodejs /app/src/generated ./tools/src/generat
 # patch, with next-ws waiting for the lazily loaded route module; a native
 # module that cannot be loaded throws while its route is being evaluated,
 # which reaches the browser as an empty HTTP 500 with nothing to explain it.
-COPY --from=builder --chown=nextjs:nodejs /app/scripts/patch-next-ws-first-upgrade.mjs ./scripts/patch-next-ws-first-upgrade.mjs
 RUN grep -qs "next-ws" node_modules/next/dist/server/next-server.js \
       || { echo "the traced next is missing the next-ws patch"; exit 1; }
-RUN node scripts/patch-next-ws-first-upgrade.mjs
+# next-ws 2.2.19 waits for the route module itself (ensureUserland); before
+# that, scripts/ carried a patch for it, and an older next-ws must not slip back in.
+RUN grep -qs "ensureUserland" node_modules/next-ws/dist/server/index.cjs \
+      || { echo "the traced next-ws does not wait for the lazily loaded route module"; exit 1; }
 RUN node -e "require('sharp'); console.log('sharp loads')"
 
 # Copy init script
 COPY --chown=nextjs:nodejs init-db.sh ./init-db.sh
 RUN chmod +x ./init-db.sh
 
-# Create uploads directories
-RUN mkdir -p /app/data/uploads && chown -R nextjs:nodejs /app/data
+# restic runs as a child of the server for scheduled backups. Run it once here
+# so a binary that cannot start on this platform fails the build, not the
+# first backup a workshop relies on.
+COPY --from=restic /restic /usr/local/bin/restic
+RUN restic version
+
+# Create the data directories: uploads, the local backup repositories (the
+# compose file mounts a volume there) and restic's cache
+RUN mkdir -p /app/data/uploads /app/data/backups /app/data/restic-cache \
+      && chown -R nextjs:nodejs /app/data
 
 USER nextjs
 
@@ -104,6 +169,14 @@ EXPOSE 3000
 
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+# Healthy means the server can do its job: the database answers within three
+# seconds, uploads can be written and the background jobs are still firing
+# (src/lib/health.ts). The deploy workflows wait for it. The start period
+# covers the migrations init-db.sh runs before the server is up. busybox wget
+# exits 1 on a 503, and -Y off keeps a proxy set for the app out of the probe.
+HEALTHCHECK --interval=15s --timeout=5s --start-period=60s --retries=3 \
+    CMD wget -q -Y off -T 4 -O /dev/null "http://127.0.0.1:${PORT:-3000}/api/v1/health" || exit 1
 
 ENTRYPOINT ["./init-db.sh"]
 CMD ["node", "server.js"]

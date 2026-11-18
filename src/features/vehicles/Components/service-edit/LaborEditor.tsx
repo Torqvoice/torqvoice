@@ -2,14 +2,18 @@
 
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/ShopFeeTag'
+import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
+import { useLineTax } from '@/features/settings/Components/LineTaxContext'
+import { laborTaxable } from '@/lib/taxable-lines'
 import { useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { AlertTriangle, Eye, GripVertical, Layers, Plus, Trash2, Wrench } from 'lucide-react'
+import { AlertTriangle, Eye, Layers, Plus, ScanLine, Trash2, Wrench } from 'lucide-react'
 import { IconActionButton } from '@/components/icon-action-button'
 import { FieldRow } from '@/components/line-item-field'
 import { cn } from '@/lib/utils'
+import { LineDragHandle } from '@/components/line-drag-handle'
 import { AppCard } from '@/components/app-card'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import {
@@ -24,6 +28,11 @@ import { useFormatCurrency, useCurrencySettings } from '@/components/currency-se
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import { makeEmptyLabor, makeEmptyService } from './form-types'
+import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
+import type { LaborGuideStock } from '../labor-guide/FluidPartButton'
+import { LaborGuideButton } from '../labor-guide/LaborGuideButton'
+import { useFaultCodesOnJob } from '@/features/fault-codes/Components/FaultCodesOnJob'
+import type { LaborGuideJob } from '../labor-guide/LaborGuideDialog'
 import {
   DndContext,
   closestCenter,
@@ -54,6 +63,14 @@ interface LaborEditorProps {
   onAddFinding?: () => void
   openObservationsCount?: number
   onShowExistingObservations?: () => void
+  /** The job's vehicle, for the labor guide. Counter sales have none and get no guide. */
+  vehicleId?: string | null
+  /** "2018 Ford F-150", shown in the labor guide. */
+  vehicleLabel?: string
+  /** Adds a fluid from the labor guide to the job's parts. */
+  onAddGuidePart?: (line: FluidPartLine) => void
+  /** The workshop's stock, for the labor guide to match fluids against. */
+  guideStock?: LaborGuideStock
 }
 
 function SortableLaborRow({
@@ -62,6 +79,7 @@ function SortableLaborRow({
   index,
   updateLabor,
   onDelete,
+  onToggleTax,
   currencyCode,
   rateLabel,
   t,
@@ -72,6 +90,8 @@ function SortableLaborRow({
   index: number
   updateLabor: (index: number, field: keyof ServiceLaborInput, value: string | number) => void
   onDelete: () => void
+  /** Flips whether the job's tax is charged on this line. */
+  onToggleTax: () => void
   currencyCode: string
   /** Pre-formatted "Rate (kr/hr)" header, which needs the currency symbol. */
   rateLabel: string
@@ -97,6 +117,7 @@ function SortableLaborRow({
   const isService = labor.pricingType === 'service'
   const isFee = isShopFeeLine(labor)
   const feeLocked = useShopFeeLocked()
+  const { applies } = useLineTax()
 
   return (
     <div
@@ -110,13 +131,7 @@ function SortableLaborRow({
         isDragging && dragEnabled && 'z-10 opacity-75'
       )}
     >
-      <button
-        type="button"
-        className="flex h-9 w-6 cursor-grab items-center justify-center text-muted-foreground hover:text-foreground active:cursor-grabbing"
-        {...(dragEnabled ? { ...attributes, ...listeners } : {})}
-      >
-        <GripVertical className="h-4 w-4" />
-      </button>
+      <LineDragHandle {...(dragEnabled ? { ...attributes, ...listeners } : {})} />
       <div className="flex min-w-0 flex-col gap-2 @2xl:contents">
         <div className="flex gap-2">
           <Textarea
@@ -148,6 +163,7 @@ function SortableLaborRow({
               {isService ? t('serviceTag') : t('hourlyTag')}
             </button>
           )}
+          <LineTaxToggle taxable={laborTaxable(labor, applies)} onToggle={onToggleTax} />
         </div>
         <FieldRow label={isService || isFee ? t('qty') : t('hours')}>
           <Input
@@ -205,8 +221,14 @@ export function LaborEditor({
   onAddFinding,
   openObservationsCount = 0,
   onShowExistingObservations,
+  vehicleId,
+  vehicleLabel,
+  onAddGuidePart,
+  guideStock,
 }: LaborEditorProps) {
   const t = useTranslations('service.labor')
+  const tFault = useTranslations('faultCodes.entry')
+  const faultCodes = useFaultCodesOnJob()
   const modern = useModernWorkOrder()
   const formatCurrency = useFormatCurrency()
   const { currencyFormat } = useCurrencySettings()
@@ -260,11 +282,44 @@ export function LaborEditor({
     setLaborItems((prev) => [...prev, makeEmptyLabor(defaultLaborRate)])
   }, [setLaborItems, defaultLaborRate])
 
+  // A job from the labor guide: its name and book hours at the workshop's
+  // rate, on top like every other line added from the toolbar.
+  const addGuideJob = useCallback(
+    (job: LaborGuideJob) => {
+      const key = `labor-${keyCounterRef.current++}`
+      keysRef.current = [key, ...keysRef.current]
+      setLaborItems((prev) => [
+        {
+          ...makeEmptyLabor(defaultLaborRate),
+          description: job.description,
+          hours: job.hours,
+          total: job.hours * defaultLaborRate,
+        },
+        ...prev,
+      ])
+    },
+    [setLaborItems, defaultLaborRate]
+  )
+
   const addServiceAtEnd = useCallback(() => {
     const key = `labor-${keyCounterRef.current++}`
     keysRef.current = [...keysRef.current, key]
     setLaborItems((prev) => [...prev, makeEmptyService()])
   }, [setLaborItems])
+
+  // A line that has not chosen follows the workshop's rule for its kind, so
+  // the flip starts from what the line is taken as now.
+  const { applies: taxApplies } = useLineTax()
+  const toggleLaborTax = useCallback(
+    (index: number) => {
+      setLaborItems((prev) =>
+        prev.map((row, j) =>
+          j === index ? { ...row, taxable: !laborTaxable(row, taxApplies) } : row
+        )
+      )
+    },
+    [setLaborItems, taxApplies]
+  )
 
   const deleteLabor = useCallback(
     (index: number) => {
@@ -278,6 +333,15 @@ export function LaborEditor({
     <div className="flex flex-wrap gap-1.5">
       {hasPresets && onOpenPresets && (
         <IconActionButton label={t('fromPresets')} icon={Layers} onClick={onOpenPresets} />
+      )}
+      {vehicleId && (
+        <LaborGuideButton
+          vehicleId={vehicleId}
+          vehicleLabel={vehicleLabel}
+          onAdd={addGuideJob}
+          onAddPart={onAddGuidePart}
+          stock={guideStock}
+        />
       )}
       <IconActionButton label={t('addLabor')} icon={Plus} onClick={addLaborAtStart} />
       <IconActionButton label={t('addService')} icon={Wrench} onClick={addServiceAtStart} />
@@ -324,6 +388,13 @@ export function LaborEditor({
       ) : onAddFinding ? (
         <IconActionButton label={t('addFinding')} icon={AlertTriangle} onClick={onAddFinding} />
       ) : null}
+      {faultCodes?.connected && (
+        <IconActionButton
+          label={tFault('button')}
+          icon={ScanLine}
+          onClick={() => faultCodes.openEntry()}
+        />
+      )}
     </div>
   )
 
@@ -354,6 +425,7 @@ export function LaborEditor({
                     index={i}
                     updateLabor={updateLabor}
                     onDelete={() => deleteLabor(i)}
+                    onToggleTax={() => toggleLaborTax(i)}
                     currencyCode={currencyCode}
                     rateLabel={t('rate', { currency: cs })}
                     t={t}
@@ -371,6 +443,7 @@ export function LaborEditor({
                 index={i}
                 updateLabor={updateLabor}
                 onDelete={() => deleteLabor(i)}
+                onToggleTax={() => toggleLaborTax(i)}
                 currencyCode={currencyCode}
                 rateLabel={t('rate', { currency: cs })}
                 t={t}

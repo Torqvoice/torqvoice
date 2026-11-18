@@ -5,13 +5,13 @@ import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+  ConfirmConsequenceList,
+  ConfirmFrame,
+  ConfirmFrameAction,
+  ConfirmFrameCancel,
+  ConfirmFrameText,
+} from '@/components/confirm-dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Button } from '@/components/ui/button'
 import { Eye, FileText, Loader2, Lock, Sparkles } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
@@ -124,47 +124,42 @@ export function NotesSection({
   const internalHasContent = hasContent(internalNotes)
 
   const aiDialog = (
-    <AlertDialog open={showDialog} onOpenChange={setShowDialog}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4" />
-            {t('aiDialogTitle')}
-          </AlertDialogTitle>
-          <AlertDialogDescription>{t('aiDialogDescription')}</AlertDialogDescription>
-        </AlertDialogHeader>
-        {notesHaveContent && (
-          <p className="text-sm text-amber-600 dark:text-amber-400">
-            {t('aiOverwriteDescription')}
-          </p>
-        )}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="dont-show-again"
-            checked={dontShowAgain}
-            onChange={(e) => setDontShowAgain(e.target.checked)}
-            className="h-4 w-4 rounded border-gray-300"
-          />
-          <label htmlFor="dont-show-again" className="text-sm text-muted-foreground">
-            {t('aiDontShowAgain')}
-          </label>
-        </div>
-        <AlertDialogFooter>
-          <Button variant="outline" onClick={() => setShowDialog(false)}>
-            {t('aiOverwriteCancel')}
-          </Button>
+    <ConfirmFrame
+      open={showDialog}
+      onDismiss={() => setShowDialog(false)}
+      title={t('aiDialogTitle')}
+      icon={Sparkles}
+      footer={
+        <>
+          <ConfirmFrameCancel>{t('aiOverwriteCancel')}</ConfirmFrameCancel>
           {notesHaveContent && (
-            <Button variant="outline" onClick={() => handleGenerate('append')}>
+            <ConfirmFrameAction variant="outline" onClick={() => handleGenerate('append')}>
               {t('aiOverwriteAppend')}
-            </Button>
+            </ConfirmFrameAction>
           )}
-          <Button onClick={() => handleGenerate('replace')}>
+          <ConfirmFrameAction onClick={() => handleGenerate('replace')}>
             {notesHaveContent ? t('aiOverwriteReplace') : t('aiGenerate')}
-          </Button>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+          </ConfirmFrameAction>
+        </>
+      }
+    >
+      <ConfirmFrameText className={notesHaveContent ? 'pb-1' : undefined}>
+        <p>{t('aiDialogDescription')}</p>
+      </ConfirmFrameText>
+      {notesHaveContent && (
+        <ConfirmConsequenceList lines={[{ text: t('aiOverwriteDescription'), emphasis: true }]} />
+      )}
+      <div className="border-card-edge/45 flex items-center gap-2.5 border-t px-5 py-3">
+        <Checkbox
+          id="dont-show-again"
+          checked={dontShowAgain}
+          onCheckedChange={(checked) => setDontShowAgain(checked === true)}
+        />
+        <label htmlFor="dont-show-again" className="text-muted-foreground text-[13px]">
+          {t('aiDontShowAgain')}
+        </label>
+      </div>
+    </ConfirmFrame>
   )
 
   const isLocked = (target: 'public' | 'internal') =>
@@ -200,8 +195,12 @@ export function NotesSection({
             description={t('internalHelper')}
             action={aiButton('internal')}
             className="border-amber-500/30 bg-amber-500/5 hover:border-amber-500/40"
+            // The editor fills the card to its edges: the card is the field,
+            // where it used to be a frame around a second, smaller box.
+            contentClassName="p-0"
           >
             <RichTextEditor
+              variant="flush"
               content={internalNotes}
               onChange={handleInternalChange}
               editable={!internalLocked}
@@ -215,8 +214,10 @@ export function NotesSection({
             title={t('publicTitle')}
             description={t('publicHelper')}
             action={aiButton('public')}
+            contentClassName="p-0"
           >
             <RichTextEditor
+              variant="flush"
               content={publicNotes}
               onChange={handlePublicChange}
               editable={!publicLocked}
@@ -230,14 +231,16 @@ export function NotesSection({
   }
 
   return (
-    <div className="rounded-lg border p-3 space-y-3">
-      <h3 className="flex items-center gap-2 text-sm font-semibold">
+    // The panel is the field, as on the quote: header, tabs, then the editor
+    // to the panel's edges and one line saying who reads the note.
+    <div className="overflow-hidden rounded-lg border">
+      <h3 className="flex items-center gap-2 px-3 pt-3 text-sm font-semibold">
         <FileText className="h-3.5 w-3.5" />
         {t('title')}
       </h3>
 
       <Tabs value={noteType} onValueChange={(v) => setNoteType(v as 'public' | 'internal')}>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 px-3 py-2">
           <TabsList className="h-8">
             <TabsTrigger value="public" className="text-xs">
               {t('public')}
@@ -271,24 +274,32 @@ export function NotesSection({
           )}
         </div>
 
-        <TabsContent value="public" className="space-y-1">
+        <TabsContent value="public" className="mt-0 border-t">
           <RichTextEditor
+            variant="flush"
+            gutter="panel"
             content={publicNotes}
             onChange={handlePublicChange}
             editable={!publicLocked}
             placeholder={t('publicPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">{t('publicHelper')}</p>
+          <p className="border-t bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+            {t('publicHelper')}
+          </p>
         </TabsContent>
 
-        <TabsContent value="internal" className="space-y-1">
+        <TabsContent value="internal" className="mt-0 border-t">
           <RichTextEditor
+            variant="flush"
+            gutter="panel"
             content={internalNotes}
             onChange={handleInternalChange}
             editable={!internalLocked}
             placeholder={t('internalPlaceholder')}
           />
-          <p className="text-xs text-muted-foreground">{t('internalHelper')}</p>
+          <p className="border-t bg-muted/30 px-3 py-1.5 text-xs text-muted-foreground">
+            {t('internalHelper')}
+          </p>
         </TabsContent>
       </Tabs>
 

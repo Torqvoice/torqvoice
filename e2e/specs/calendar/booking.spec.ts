@@ -119,6 +119,9 @@ test.describe('booking a job from the calendar', () => {
     // It asks which vehicle before it can make anything.
     const picker = page.getByRole('dialog', { name: /select vehicle for work order/i })
     await expect(picker).toBeVisible({ timeout: 30_000 })
+    // The picker opens on the most recently updated vehicles and searches the
+    // rest, so the seeded Camry is asked for by name.
+    await picker.getByPlaceholder('Search vehicles...').fill('Camry')
     await picker.getByText(/Camry/i).first().click()
 
     await page.waitForURL(

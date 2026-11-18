@@ -77,6 +77,11 @@ describe('import normalisation', () => {
     expect(iso(parseDate('20240315'))).toBe('2024-03-15')
     expect(iso(parseDate('15.03.2024'))).toBe('2024-03-15')
     expect(iso(parseDate('15/03/2024 09:00'))).toBe('2024-03-15')
+    expect(iso(parseDate('2014-12-10 0:0:0'))).toBe('2014-12-10')
+    expect(iso(parseDate('10/12/2014 0:0'))).toBe('2014-12-10')
+    expect(iso(parseDate('12/10/2014 12:00:00 AM', 'MDY'))).toBe('2014-12-10')
+    expect(iso(parseDate('10/12/2014 2:15 p.m.'))).toBe('2014-12-10')
+    expect(iso(parseDate('2024-03-15T14:30:00.000+02:00'))).toBe('2024-03-15')
     expect(iso(parseDate('03/15/2024'))).toBe('2024-03-15')
     expect(iso(parseDate('15 Mar 2024'))).toBe('2024-03-15')
     expect(iso(parseDate('Mar 15, 2024'))).toBe('2024-03-15')
@@ -85,6 +90,22 @@ describe('import normalisation', () => {
     expect(iso(parseDate(45366))).toBe('2024-03-15')
     expect(iso(parseDate('45366'))).toBe('2024-03-15')
     expect(iso(parseDate(new Date(Date.UTC(2024, 2, 15))))).toBe('2024-03-15')
+  })
+
+  it('reads dates written with month names, weekdays and ordinals', () => {
+    expect(iso(parseDate('10-Dec-2014'))).toBe('2014-12-10')
+    expect(iso(parseDate('10-Dec-14'))).toBe('2014-12-10')
+    expect(iso(parseDate('Dec 10th, 2014'))).toBe('2014-12-10')
+    expect(iso(parseDate('Wednesday, 10 December 2014'))).toBe('2014-12-10')
+    expect(iso(parseDate('Wed Dec 10 2014 00:00:00 GMT+1100 (AEDT)'))).toBe('2014-12-10')
+    expect(iso(parseDate('Mon, 10/12/2014'))).toBe('2014-12-10')
+    expect(iso(parseDate('10 de diciembre de 2014'))).toBe('2014-12-10')
+    expect(iso(parseDate('10. desember 2014'))).toBe('2014-12-10')
+    expect(iso(parseDate('10 maart 2014'))).toBe('2014-03-10')
+    expect(iso(parseDate('10 augusti 2014'))).toBe('2014-08-10')
+    // A month and a year name no day.
+    expect(parseDate('Dec 2014')).toBeNull()
+    expect(parseDate('March 2024')).toBeNull()
   })
 
   it('uses the chosen format for ambiguous dates and rejects impossible ones', () => {
@@ -101,6 +122,8 @@ describe('import normalisation', () => {
     expect(detectDateFormat(['03/04/2024', '15/03/2024', '01/01/2024'])).toBe('DMY')
     expect(detectDateFormat(['03/04/2024', '03/15/2024'])).toBe('MDY')
     expect(detectDateFormat(['2024-03-15', '2024-04-01'])).toBe('YMD')
+    expect(detectDateFormat(['2014-12-10 0:0:0', '2014-12-25 0:0:0'])).toBe('YMD')
+    expect(detectDateFormat(['10/12/2014 0:0:0', '25/12/2014 0:0:0'])).toBe('DMY')
     expect(detectDateFormat(['03/04/2024', '05/06/2024'])).toBe('auto')
   })
 

@@ -1,5 +1,6 @@
 'use client'
 
+import { statusBadgeClass } from '@/lib/status-colors'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { AppCard } from '@/components/app-card'
@@ -27,20 +28,6 @@ export type TireJobs = {
     serviceDate: Date
     vehicleId: string | null
   }[]
-}
-
-const QUOTE_TOKENS: Record<string, string> = {
-  draft: 'bg-muted text-muted-foreground border-border',
-  sent: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-  accepted: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-  declined: 'bg-red-500/10 text-red-600 border-red-500/20',
-  expired: 'bg-muted text-muted-foreground border-border',
-}
-
-const JOB_TOKENS: Record<string, string> = {
-  pending: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-  in_progress: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-  completed: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
 }
 
 /**
@@ -119,7 +106,7 @@ export function TireJobsCard({
               </span>
               <Badge
                 variant="outline"
-                className={cn('shrink-0 text-[10px]', QUOTE_TOKENS[quote.status] ?? '')}
+                className={cn('shrink-0 text-[10px]', statusBadgeClass('quote', quote.status))}
               >
                 {/* Converted beats the stored status: once it is a job, that
                     is the more useful thing to know about it. */}
@@ -152,7 +139,7 @@ export function TireJobsCard({
               </span>
               <Badge
                 variant="outline"
-                className={cn('shrink-0 text-[10px]', JOB_TOKENS[order.status] ?? '')}
+                className={cn('shrink-0 text-[10px]', statusBadgeClass('workOrder', order.status))}
               >
                 {order.status}
               </Badge>

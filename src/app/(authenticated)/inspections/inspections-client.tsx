@@ -1,6 +1,7 @@
 'use client'
 
 import { useRememberedSort } from '@/hooks/use-remembered-sort'
+import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/list-status-preference'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -9,6 +10,7 @@ import { useState, useCallback, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -78,16 +80,16 @@ interface TemplateOption {
   isDefault: boolean
 }
 
-const statusTabs = [
-  { key: 'all', labelKey: 'tabAll' },
-  { key: 'in_progress', labelKey: 'tabInProgress' },
-  { key: 'completed', labelKey: 'tabCompleted' },
-] as const
-
-const statusColors: Record<string, string> = {
-  in_progress: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
-  completed: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+const statusLabelKeys: Record<ListStatus<'inspections'>, string> = {
+  all: 'tabAll',
+  in_progress: 'tabInProgress',
+  completed: 'tabCompleted',
 }
+
+const statusTabs = LIST_STATUS_TABS.inspections.map((key) => ({
+  key,
+  labelKey: statusLabelKeys[key],
+}))
 
 /**
  * The rail is a breakdown of the grades given, not a completion meter: a full
@@ -273,7 +275,12 @@ export function InspectionsClient({
               variant={isActive ? 'default' : 'outline'}
               size="sm"
               className="h-9 shrink-0 sm:h-8"
-              onClick={() => navigate({ status: tab.key === 'all' ? undefined : tab.key })}
+              aria-pressed={isActive}
+              onClick={() => {
+                rememberListStatus('inspections', tab.key)
+                // "all" stays in the URL: a bare path means the remembered tab.
+                navigate({ status: tab.key })
+              }}
             >
               {t(tab.labelKey)}
               {count !== undefined && (
@@ -292,6 +299,7 @@ export function InspectionsClient({
             <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder={t('search')}
+              aria-label={t('search')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="h-9 pl-9"
@@ -327,12 +335,9 @@ export function InspectionsClient({
                   <span className="min-w-0 flex-1 truncate font-medium">
                     {insp.vehicle.year} {insp.vehicle.make} {insp.vehicle.model}
                   </span>
-                  <Badge
-                    variant="outline"
-                    className={`shrink-0 text-xs ${statusColors[insp.status] || ''}`}
-                  >
+                  <StatusBadge kind="inspection" status={insp.status} className="shrink-0">
                     {insp.status === 'in_progress' ? t('statusInProgress') : t('statusCompleted')}
-                  </Badge>
+                  </StatusBadge>
                 </div>
                 <p className="truncate text-xs text-muted-foreground">
                   {insp.vehicle.licensePlate && (
@@ -450,14 +455,11 @@ export function InspectionsClient({
                         />
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={`text-xs ${statusColors[insp.status] || ''}`}
-                        >
+                        <StatusBadge kind="inspection" status={insp.status}>
                           {insp.status === 'in_progress'
                             ? t('statusInProgress')
                             : t('statusCompleted')}
-                        </Badge>
+                        </StatusBadge>
                       </TableCell>
                       <TableCell className="font-mono text-xs">
                         {formatDate(new Date(insp.createdAt))}

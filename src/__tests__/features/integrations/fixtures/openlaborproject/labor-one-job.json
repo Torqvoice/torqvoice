@@ -1,0 +1,41 @@
+{
+  "data": {
+    "vehicle": {
+      "vehicleId": "fd9074f5-8d5a-4c74-ad53-d036536690ff",
+      "make": "Ford",
+      "model": "F-150",
+      "yearRange": "2018-2018",
+      "engine": "5.0L V8 Coyote",
+      "engineSlug": "5.0l-v8-coyote",
+      "engineCode": null,
+      "drivetrain": "rwd",
+      "generation": {
+        "label": "13th gen",
+        "chassisCode": "P552",
+        "yearStart": 2015,
+        "yearEnd": 2020
+      }
+    },
+    "laborTimes": [
+      {
+        "id": "c9838a3b-bae1-4b0a-8735-81e56e5ce5de",
+        "job": "Water Pump",
+        "jobSlug": "water-pump",
+        "category": "cooling",
+        "hours": 2.8,
+        "lowRange": 2.5,
+        "highRange": 2.8,
+        "confidence": "medium",
+        "updatedAt": "2026-10-31T16:57:56.668Z"
+      }
+    ]
+  },
+  "meta": {
+    "count": 1,
+    "confidenceCounts": {
+      "medium": 1
+    },
+    "timestamp": "2026-11-02T20:15:35.235Z"
+  },
+  "error": null
+}

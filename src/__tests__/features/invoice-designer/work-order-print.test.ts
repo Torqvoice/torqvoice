@@ -77,6 +77,7 @@ const job = () => ({
   orderNumber: '2026-0042',
   statusLabel: 'Waiting for approval',
   workBay: 'Bay 2',
+  helperNames: [] as string[],
   promisedAt: new Date('2026-09-25T16:00:00Z'),
   concerns: [
     { description: 'Grinding when braking', correction: 'Pads and discs replaced' },
@@ -159,6 +160,19 @@ describe('the work order sheet', () => {
     expect(all).toContain('Total')
     expect(all).not.toMatch(/PAID|Amount Due|Bank/)
     expect(blockOf(spec, 'bank_account')).toBeNull()
+  })
+
+  it('names everybody on the job, the technician first', () => {
+    // The sheet is the workshop's own paper: an apprentice or a second pair
+    // of hands working the job with its technician is on it by name.
+    const shown = getDefaultLayout('work_order')
+    shown.sections = shown.sections.map((s) =>
+      s.id === 'job_details' ? { ...s, visible: true } : s
+    )
+    const lines = texts({
+      blocks: [{ content: blockOf(print(shown, { helperNames: ['Sam', 'Jo'] }), 'job_details') }],
+    })
+    expect(lines).toContain('Technician: Kari, Sam, Jo')
   })
 
   it('words the job: status, technician, scheduled and promised, with the bay a switch', () => {

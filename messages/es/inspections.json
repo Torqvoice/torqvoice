@@ -53,6 +53,7 @@
     "statusCompleted": "Cerrada",
     "complete": "Cerrar",
     "reopen": "Reabrir",
+    "send": "Enviar",
     "share": "Compartir",
     "save": "Guardar",
     "saving": "Guardando…",
@@ -94,6 +95,8 @@
     "completeTitle": "¿Cerrar esta inspección?",
     "completeBody": "Los puntos quedan bloqueados al cerrar, y el resultado pasa a ser «{result}».",
     "completeBlocked": "{count} comprobación(es) que la lista marca como obligatorias siguen pendientes.",
+    "blockerMissingGrade": "debe calificarse",
+    "blockerNeedsPhoto": "necesita una foto del defecto",
     "completeUngraded": "{count} punto(s) no se han calificado.",
     "completeDangerous": "{count} deficiencia(s) peligrosa(s) registrada(s). El vehículo no debe circular por la vía pública.",
     "reopenTitle": "¿Reabrir esta inspección?",
@@ -459,7 +462,9 @@
     "copyLink": "Copiar enlace",
     "copied": "Enlace copiado al portapapeles",
     "generated": "Enlace de compartición creado",
-    "revoked": "Enlace de compartición revocado"
+    "revoked": "Enlace de compartición revocado",
+    "revokeLink": "Revocar enlace",
+    "generateLink": "Generar enlace público"
   },
   "phone": {
     "pageTitle": "Fotos de la inspección",
@@ -494,5 +499,19 @@
     "photos": "Fotos",
     "documents": "Documentos",
     "video": "Vídeo"
+  },
+  "checkResults": {
+    "pass": "Todo en orden",
+    "pass_minor": "Algunos puntos a vigilar",
+    "fail": "Algunos puntos necesitan reparación",
+    "fail_dangerous": "Algunos puntos necesitan reparación urgente",
+    "incomplete": "Sin completar",
+    "detail": {
+      "pass": "No había nada que requiriera atención.",
+      "pass_minor": "Nada urgente. Conviene planificar los puntos marcados.",
+      "fail": "Algunos puntos necesitan reparación. Las notas indican lo que se encontró.",
+      "fail_dangerous": "Algunos puntos no son seguros y deben repararse antes de seguir usándolo.",
+      "incomplete": "Esta revisión aún está en curso."
+    }
   }
 }

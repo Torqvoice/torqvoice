@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from 'next/server'
 import { getLocale } from 'next-intl/server'
 import type OpenAI from 'openai'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { getCachedMembership } from '@/lib/cached-session'
 import {
   hasAllPermissions,
@@ -13,7 +14,7 @@ import {
 import { getFeatures } from '@/lib/features'
 import { db } from '@/lib/db'
 import { completionTuning, createClient, getAiConfig } from '@/lib/ai'
-import { describeAiError } from '@/lib/ai-error'
+import { aiErrorDescriber } from '@/lib/ai-error-message'
 import { DEMO_AI_DISABLED_MESSAGE, isDemoMode } from '@/lib/demo'
 import { localeNames, type Locale } from '@/i18n/config'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -56,6 +57,8 @@ export async function POST(request: NextRequest) {
 
   const ctx = await getAuthContext()
   if (!ctx) return json(401, 'Unauthorized')
+  // The finished answer is saved as a chat; not while a restore replaces the workshop.
+  if (isRestoring(ctx.organizationId)) return json(409, RESTORE_IN_PROGRESS_MESSAGE)
   const { organizationId, userId } = ctx
 
   let body: unknown
@@ -168,6 +171,8 @@ export async function POST(request: NextRequest) {
     { role: 'user', content: message },
   ]
 
+  // Fetched now: the stream below can fail after this request has returned.
+  const describeAiError = await aiErrorDescriber()
   const client = createClient(config)
   let stream: AsyncIterable<OpenAI.ChatCompletionChunk>
   try {

@@ -123,7 +123,7 @@ export async function legacyPaymentSetups(
 
     const credentials: Record<string, string> = {}
     for (const field of vendor.credentials) {
-      const value = values.get(field.legacy)?.trim()
+      const value = field.legacy ? values.get(field.legacy)?.trim() : undefined
       if (value) credentials[field.key] = value
     }
     if (vendor.credentials.some((f) => f.required && !credentials[f.key])) continue

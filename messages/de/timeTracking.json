@@ -106,6 +106,7 @@
     "deleteBody": "{duration} für {job} von {technician} wird aus dem Stundenzettel entfernt. Das kann nicht rückgängig gemacht werden.",
     "deleteConfirm": "Löschen",
     "deleted": "Eintrag gelöscht",
+    "deleteFailed": "Eintrag konnte nicht gelöscht werden",
     "stoppedByManager": "Uhr bei {minutes} gestoppt",
     "csv": {
       "technician": "Techniker",

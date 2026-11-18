@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Standaard van de werkplaats",
     "invoiceDesignHint": "Facturen voor deze klant worden met dit ontwerp afgedrukt in plaats van de standaard van de werkplaats. Een factuur kan nog steeds een eigen ontwerp kiezen.",
     "reminderOptOut": "Geen herinneringen",
-    "reminderOptOutHint": "Deze klant niet opnemen in keuringsherinneringen of andere campagnes."
+    "reminderOptOutHint": "Deze klant niet opnemen in keuringsherinneringen of andere campagnes.",
+    "bookAppointment": "Afspraak inplannen"
   },
   "serviceRequests": {
     "statusNew": "Nieuw",
@@ -120,6 +121,12 @@
     "saveNotes": "Opmerkingen opslaan",
     "submitted": "Ingediend {date}",
     "preferred": "Voorkeur: {date}",
+    "preferredMorning": "Voorkeur: {date}, ochtend",
+    "preferredAfternoon": "Voorkeur: {date}, middag",
+    "files": "{count, plural, one {# foto of video van de klant} other {# foto's of video's van de klant}}",
+    "openPhoto": "Foto {number} openen",
+    "openVideo": "Video {number} openen",
+    "fileMissing": "Foto {number} is niet meer beschikbaar",
     "workOrderCreated": "Werkorder aangemaakt",
     "workOrderError": "Aanmaken van werkorder mislukt",
     "requestDismissed": "Aanvraag afgewezen",

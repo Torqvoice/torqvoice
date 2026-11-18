@@ -50,7 +50,11 @@
     "chooseAnother": "Pasirinkti kitą failą",
     "missingRequired": "Dar reikia: {fields}",
     "dryRunHint": "Bandomasis importas patikrina kiekvieną eilutę pagal esamus duomenis nieko neįrašydamas.",
-    "runDryRun": "Paleisti bandomąjį importą"
+    "runDryRun": "Paleisti bandomąjį importą",
+    "usedBy": "Naudoja {column}",
+    "searchFields": "Ieškoti laukų...",
+    "fieldFor": "Laukas stulpeliui {column}",
+    "noJobText": "Nė vienas stulpelis nesusietas su pavadinimu, aprašymu ar pastabomis, todėl kiekvienas darbas gaus laikiną pavadinimą. Susiekite stulpelį, kuriame aprašyta, kas atlikta, jei faile toks yra."
   },
   "options": {
     "dateFormat": "Datos formatas",
@@ -66,7 +70,9 @@
     "duplicates": "Kai eilutė atitinka esamą įrašą",
     "duplicatesUpdate": "Atnaujinti esamą įrašą",
     "duplicatesSkip": "Praleisti eilutę",
-    "duplicatesCreate": "Vis tiek sukurti naują įrašą"
+    "duplicatesCreate": "Vis tiek sukurti naują įrašą",
+    "dateReadsAs": "\"{value}\" nuskaitoma kaip {date}",
+    "dateUnreadable": "\"{value}\" negalima nuskaityti kaip datos"
   },
   "summary": {
     "create": "Bus sukurta",
@@ -114,7 +120,11 @@
     "next": "Kitas",
     "backToMapping": "Grįžti prie susiejimo",
     "import": "Importuoti {count, plural, one {# eilutę} few {# eilutes} many {# eilutės} other {# eilučių}}",
-    "nothingWrittenYet": "Kol kas niekas neįrašyta. Importą vėliau galima atšaukti skiltyje Nustatymai → Duomenys."
+    "nothingWrittenYet": "Kol kas niekas neįrašyta. Importą vėliau galima atšaukti skiltyje Nustatymai → Duomenys.",
+    "issuesTitle": "Kodėl kai kurių eilučių negalima importuoti",
+    "issueCount": "{count, plural, one {# eilutė} few {# eilutės} other {# eilučių}}, pirmoji {row} eilutėje",
+    "issuesHint": "Dažniausiai stulpelis susietas su netinkamu lauku arba failo langeliai tušti. Grįžkite prie susiejimo ir pakeiskite, arba importuokite likusias ir šias pridėkite vėliau.",
+    "showIssueRows": "Rodyti šias eilutes"
   },
   "importing": {
     "title": "Importuojama...",
@@ -212,7 +222,9 @@
     "invalid_date": "{field} \"{value}\" nepavyko nuskaityti ir buvo praleista",
     "invalid_number": "{field} \"{value}\" nėra skaičius ir buvo praleista",
     "duplicate_invoice_number": "Sąskaitos numeris {value} jau egzistuoja",
-    "write_failed": "Nepavyko įrašyti: {value}"
+    "write_failed": "Nepavyko įrašyti: {value}",
+    "invalid_mileage": "{field} \"{value}\" per didelė, kad būtų tikras rodmuo, ir buvo praleista",
+    "service_title_placeholder": "Nėra pavadinimo ar aprašymo, todėl jis bus pavadintas \"{value}\""
   },
   "errors": {
     "uploadFailed": "Nepavyko nuskaityti failo",
@@ -227,5 +239,8 @@
     "customers": "Importuoti klientus",
     "vehicles": "Importuoti transporto priemones",
     "services": "Importuoti paslaugų istoriją"
+  },
+  "placeholders": {
+    "serviceTitle": "Importuotas darbas"
   }
 }

@@ -12,6 +12,8 @@
     "payWithCard": "Pagar {amount} com Cartão",
     "payWithVipps": "Pagar {amount} com Vipps",
     "payWithPaypal": "Pagar {amount} com PayPal",
+    "payWithPaystack": "Pagar {amount} com Paystack",
+    "payWithVendor": "Pagar com <vendor></vendor>",
     "errorInvalidAmount": "Introduza um valor válido.",
     "errorExceedsBalance": "O valor não pode ser superior a {amount}.",
     "errorVerifyFailed": "Não foi possível confirmar o pagamento. Pode ainda estar a ser processado.",
@@ -202,7 +204,21 @@
     "deficienciesFound": "Deficiências detetadas ({count})",
     "allResults": "Todos os resultados",
     "privacyNotice": "Este relatório foi partilhado consigo pela oficina que realizou a inspeção. Qualquer pessoa com este link pode aceder-lhe, por isso não o reencaminhe. Contacte a oficina para desativar o link ou pedir a eliminação dos seus dados.",
-    "inspectionPhotos": "Fotografias e documentos"
+    "inspectionPhotos": "Fotografias e documentos",
+    "checkResult": {
+      "pass": "Tudo em ordem",
+      "pass_minor": "Alguns itens a acompanhar",
+      "fail": "Alguns itens precisam de reparação",
+      "fail_dangerous": "Alguns itens precisam de reparação urgente",
+      "incomplete": "Não concluída"
+    },
+    "checkResultDetail": {
+      "pass": "Nada precisou de atenção.",
+      "pass_minor": "Nada urgente. Convém planear os itens assinalados.",
+      "fail": "Alguns itens precisam de reparação. As notas indicam o que foi encontrado.",
+      "fail_dangerous": "Alguns itens não são seguros e devem ser reparados antes de continuar a utilização.",
+      "incomplete": "Esta verificação ainda está em curso."
+    }
   },
   "terms": {
     "title": "Condições Gerais de Venda",
@@ -234,5 +250,31 @@
     "telegramConnect": "Fale connosco no Telegram",
     "telegramScan": "Leia este código QR para nos enviar uma mensagem no Telegram e receber atualizações e apoio.",
     "downloadCertificate": "Transferir certificado de inspeção"
+  },
+  "expired": {
+    "pageTitle": "Link expirado",
+    "title": "Este link expirou",
+    "body": {
+      "invoice": "Contacte {workshop} para receber um novo link para esta fatura.",
+      "quote": "Contacte {workshop} para receber um novo link para este orçamento.",
+      "inspection": "Contacte {workshop} para receber um novo link para esta inspeção.",
+      "statusReport": "Contacte {workshop} para receber um novo link para esta atualização."
+    },
+    "bodyNoName": {
+      "invoice": "Contacte a oficina para receber um novo link para esta fatura.",
+      "quote": "Contacte a oficina para receber um novo link para este orçamento.",
+      "inspection": "Contacte a oficina para receber um novo link para esta inspeção.",
+      "statusReport": "Contacte a oficina para receber um novo link para esta atualização."
+    }
+  },
+  "gone": {
+    "pageTitle": "Link indisponível",
+    "title": "Este link já não funciona",
+    "body": "Pode ter sido removido ou o endereço pode estar incompleto. Contacte {workshop} para receber um novo link.",
+    "bodyNoName": "Pode ter sido removido ou o endereço pode estar incompleto. Contacte a oficina para receber um novo link."
+  },
+  "openUntil": {
+    "text": "Este link funciona até {date}. Depois disso, contacte {workshop} para receber um novo.",
+    "textNoName": "Este link funciona até {date}. Depois disso, contacte a oficina para receber um novo."
   }
 }

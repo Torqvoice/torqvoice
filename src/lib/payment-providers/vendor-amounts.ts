@@ -81,3 +81,18 @@ export function toPayPalValue(amount: number, currency: string): string {
     ? String(Math.round(amount))
     : amount.toFixed(2)
 }
+
+/**
+ * Paystack takes every amount in the currency's subunit, a hundredth of the
+ * main unit, whatever the currency: kobo, pesewa, cents. From the Initialize
+ * Transaction reference: "Amount should be in the subunit of the supported
+ * currency".
+ */
+export function toPaystackAmount(amount: number): number {
+  return Math.round(amount * 100)
+}
+
+/** The integer Paystack reports, back in the app's terms. */
+export function fromPaystackAmount(amount: number): number {
+  return amount / 100
+}

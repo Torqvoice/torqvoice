@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { buildWorkOrderPdfBuffer } from '@/features/invoices/Pdf/buildWorkOrderPdfBuffer'
@@ -25,8 +25,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       return NextResponse.json({ error: 'Record not found' }, { status: 404 })
     }
 
-    const cookieStore = await cookies()
-    const locale = cookieStore.get('locale')?.value || 'en'
+    const locale = await resolveDocumentLocale(ctx.organizationId)
 
     const result = await buildWorkOrderPdfBuffer(owned.id, locale)
     if (!result) {

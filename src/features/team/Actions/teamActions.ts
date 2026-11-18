@@ -1,6 +1,8 @@
 'use server'
 
 import { cookies } from 'next/headers'
+import { getLocale } from 'next-intl/server'
+import { saveInitialWorkshopLocale } from '@/features/settings/Lib/initialWorkshopLocale'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import {
@@ -14,7 +16,6 @@ import { setTechnicianStanding } from '../Lib/technicianStanding'
 import { revokeTechnicianCredentials } from '../Lib/revokeTechnicianCredentials'
 import { emailVerificationRequired } from '@/lib/email-verification-policy'
 import {
-  getFeatures,
   isCloudMode,
   organizationAllowance,
   FeatureGatedError,
@@ -23,6 +24,8 @@ import {
 import { demoGuard } from '@/lib/demo'
 import { canInvite } from '../Lib/invitationRules'
 import { createAndSendInvitation } from '../Lib/createInvitation'
+import { customRoleName } from '../Lib/customRoleName'
+import { memberSeats } from '../Lib/memberSeats'
 
 export async function getOrganization() {
   return withAuth(
@@ -98,6 +101,9 @@ export async function createOrganization(input: unknown) {
         )
       }
 
+      // Invoices and mails print in the workshop's language, which starts as
+      // the one its owner is using now.
+      const locale = await getLocale()
       const org = await db.$transaction(async (tx) => {
         const created = await tx.organization.create({
           data: { name: data.name },
@@ -110,6 +116,7 @@ export async function createOrganization(input: unknown) {
             role: 'owner',
           },
         })
+        await saveInitialWorkshopLocale(tx, created.id, userId, locale)
 
         return created
       })
@@ -165,13 +172,13 @@ export async function inviteMember(input: unknown) {
       })
       if (!membership) throw new Error("You don't belong to an organization")
 
-      const features = await getFeatures(organizationId)
-      const memberCount = await db.organizationMember.count({ where: { organizationId } })
-      if (memberCount >= features.maxUsers) {
+      // The same count the add-person dialog reads before it offers the form
+      const seats = await memberSeats(organizationId)
+      if (seats.full) {
         throw new FeatureGatedError(
           'maxUsers',
           'Team member limit reached. Upgrade your plan to add more members.',
-          features.maxUsers
+          seats.limit
         )
       }
 
@@ -194,7 +201,7 @@ export async function inviteMember(input: unknown) {
       const seatsDirectly =
         !!invitedUser && (invitedUser.emailVerified || !(await emailVerificationRequired()))
       if (!seatsDirectly) {
-        await createAndSendInvitation({
+        const { roleLabel } = await createAndSendInvitation({
           organizationId,
           organizationName: membership.organization.name,
           invitedById: userId,
@@ -203,7 +210,7 @@ export async function inviteMember(input: unknown) {
           roleId: data.roleId,
         })
         revalidatePath('/settings/team')
-        return { invited: true, email: data.email, role: data.role }
+        return { invited: true, email: data.email, role: data.role, roleLabel }
       }
 
       const existingMembership = await db.organizationMember.findFirst({
@@ -212,6 +219,7 @@ export async function inviteMember(input: unknown) {
       if (existingMembership) {
         throw new Error('This person is already on the team')
       }
+      const roleLabel = (await customRoleName(organizationId, data.roleId)) ?? data.role
 
       await db.organizationMember.create({
         data: {
@@ -223,7 +231,7 @@ export async function inviteMember(input: unknown) {
       })
 
       revalidatePath('/settings/team')
-      return { invited: true, email: data.email, role: data.role }
+      return { invited: true, email: data.email, role: data.role, roleLabel }
     },
     {
       requiredPermissions: [
@@ -232,7 +240,10 @@ export async function inviteMember(input: unknown) {
       audit: ({ result }) => ({
         action: 'team.invite',
         entity: 'OrganizationMember',
-        message: `Invited ${result.email} as ${result.role}`,
+        details: {
+          key: 'team_sendInvitation',
+          params: { email: result.email, role: result.roleLabel },
+        },
         metadata: { email: result.email, role: result.role },
       }),
     }

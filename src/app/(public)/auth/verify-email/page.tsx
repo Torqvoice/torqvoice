@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 import { authClient, signOut, useSession } from '@/lib/auth-client'
+import { resetAnalytics } from '@/lib/analytics'
 import { Button } from '@/components/ui/button'
 import { Loader2, Mail, LogOut } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -75,6 +76,7 @@ export default function VerifyEmailPage() {
 
   const handleSignOut = async () => {
     await signOut()
+    resetAnalytics()
     router.push('/auth/sign-in')
   }
 

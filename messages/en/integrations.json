@@ -13,6 +13,8 @@
     "availableTitle": "Available",
     "availableDescription": "Services you can add. Each one is set up once and runs in the background.",
     "allConnected": "Every available service is connected.",
+    "cloudOnly": "Cloud only",
+    "cloudOnlyHint": "Available on Torqvoice Cloud",
     "searchPlaceholder": "Search integrations",
     "noMatches": "Nothing matches \"{query}\".",
     "readMore": "Read more",
@@ -30,6 +32,7 @@
     "automation": "Automation",
     "storage": "Files",
     "registry": "Vehicle registry",
+    "repair": "Repair data",
     "other": "Other",
     "ai": "AI"
   },
@@ -70,6 +73,16 @@
       "invoices": "Invoices to the ledger",
       "customers": "Customers to the ledger",
       "payments": "Payments both ways"
+    },
+    "backup": {
+      "target": "Backup destination"
+    },
+    "repair": {
+      "labor": "Labor times on work orders and quotes",
+      "fluids": "Fluid types and capacities"
+    },
+    "diagnostics": {
+      "codes": "Fault code meanings"
     }
   },
   "statuses": {
@@ -138,13 +151,18 @@
     "inboundUrl": "Inbound webhook URL",
     "inboundHintSecret": "Paste this URL into the vendor's inbound message settings. It carries a secret that identifies your workshop, so keep it private.",
     "inboundHintMeta": "Paste this URL as the callback URL in your Meta app, with the verify token you entered above, and subscribe to messages.",
-    "inboundHintStripe": "Add this URL in your Stripe dashboard under Developers, Webhooks, subscribed to checkout.session.completed. Then paste the signing secret Stripe shows into the webhook secret field here, so notifications can be verified.",
+    "inboundHintStripe": "Add this URL in the Stripe dashboard: open Workbench, then Webhooks, choose Create an event destination, and subscribe it to checkout.session.completed. Stripe then shows a signing secret for the endpoint; paste it into the signing secret field here so every notification is checked by its signature. Until it is in, Torqvoice confirms each notification by asking Stripe for the checkout itself.",
     "inboundHintVipps": "Enter this URL as the callback URL in the Vipps MobilePay portal. Vipps also requires published terms of sale, which are set under Settings, Payment.",
     "inboundHintPaypal": "Add this URL in the PayPal developer dashboard under Webhooks, subscribed to PAYMENT.CAPTURE.COMPLETED.",
+    "inboundHintPaystack": "Paste this URL as the Webhook URL in the Paystack dashboard under Settings, API Keys & Webhooks. Paystack keeps one for test mode and one for live mode, so set it in the mode your key belongs to.",
     "copy": "Copy",
     "copied": "Copied",
     "updateKeys": "Update keys",
     "updateKeysHint": "The last check failed. Enter the keys again to try once more.",
+    "awaitingKeys": "Connected, but still waiting for {keys}.",
+    "awaitingKeysHint": "The webhook already answers the vendor, so register it now. Add these here once the vendor has issued them.",
+    "saveKeys": "Save keys",
+    "keysSaved": "Keys saved",
     "inspectionSync": {
       "title": "Inspection sync",
       "vehicles": "{count} vehicles with a plate in this workshop",
@@ -154,11 +172,101 @@
       "never": "No complete pass yet",
       "inProgress": "A pass is running",
       "off": "Turn the setting on and save; until then a pass checks nothing.",
-      "syncNowHelp": "Sync now starts a pass straight away instead of waiting for the hourly one. It looks up 25 vehicles at a time and continues on its own until every due vehicle is done."
+      "syncNowHelp": "Sync now starts a pass straight away instead of waiting for the hourly one. It looks up 25 vehicles at a time and continues on its own until every due vehicle is done. The first pass looks up every vehicle with a plate.",
+      "confirmTitle": "Look up vehicles now?",
+      "confirmDescription": "{count} of the {total} vehicles with a plate will be looked up in {name} now, 25 at a time, and their inspection due dates saved. Vehicles checked recently are skipped. If {name} charges per lookup, each vehicle found is billed to your account.",
+      "confirmLabel": "Look up {count} vehicles",
+      "nothingDue": "Every vehicle with a plate was checked recently, so there is nothing to look up yet."
     },
     "supersedes": "Connecting {next} disconnects {current}. Only one at a time can be in charge, so {current} stops being used the moment {next} goes live.",
+    "platformHandlesBackupsTitle": "Backups are already included",
+    "platformHandlesBackups": "Torqvoice already backs this workshop up every hour and keeps restore points for 30 days. Connect a bucket if you also want a copy you own, readable without Torqvoice.",
+    "platformHandlesBackupsLink": "See your restore points",
     "batchRetried": "{count, plural, =0 {Nothing to retry} one {# job queued again} other {# jobs queued again}}",
-    "advanced": "Advanced"
+    "advanced": "Advanced",
+    "generate": "Generate",
+    "show": "Show",
+    "hide": "Hide",
+    "generatedPasswordWarning": "Keep a copy of this password somewhere safe, away from this server. Without it nobody can open these backups, not even Torqvoice.",
+    "backup": {
+      "title": "Backups",
+      "description": "When this destination last got a good backup, when the next one runs, and the latest runs.",
+      "lastGood": "Last good backup",
+      "added": "{size} added",
+      "never": "None yet",
+      "nextRun": "Next run",
+      "notScheduled": "Not scheduled",
+      "repositorySize": "Stored at the destination",
+      "runNow": "Back up now",
+      "running": "Backing up",
+      "runningHint": "A backup is running. This page updates by itself until it is done.",
+      "started": "Backup started",
+      "recentTitle": "Recent runs",
+      "noRuns": "No backups have run yet.",
+      "addedNote": "The first run uploads everything. Each run after it adds only the pieces that changed since, which is why it is small. Every backup is still complete and can be restored or explored on its own.",
+      "notStarted": "Not started",
+      "filesNewCount": "{count, plural, one {# new file} other {# new files}}",
+      "columns": {
+        "status": "Status",
+        "started": "Started",
+        "trigger": "Started by",
+        "duration": "Duration",
+        "filesNew": "New files",
+        "bytesAdded": "Added"
+      },
+      "trigger": {
+        "scheduled": "Schedule",
+        "manual": "Manual",
+        "restore": "Restore"
+      },
+      "status": {
+        "queued": "Queued",
+        "running": "Running",
+        "done": "Done",
+        "failed": "Failed",
+        "skipped": "Skipped"
+      },
+      "restoring": "Restoring",
+      "restoringHint": "A restore is running: the workshop's data is being replaced with the backup. This page updates by itself until it is done. Do not work in the workshop until then.",
+      "explore": "Explore",
+      "restore": {
+        "showAll": "Show all backups",
+        "refresh": "Refresh",
+        "loading": "Reading the backups at the destination",
+        "loadFailed": "The backups could not be listed",
+        "empty": "No backups at this destination yet.",
+        "needsOwner": "Only the workshop's owner can restore a backup here.",
+        "needsAdmin": "Only an owner or administrator can restore a backup.",
+        "filesIncluded": "Photos and files included",
+        "filesNotIncluded": "Photos and files not included",
+        "earlierInstall": "Earlier install",
+        "action": "Restore",
+        "dialogTitle": "Restore the backup from {time}?",
+        "warning": "Restoring <bold>replaces everything this workshop has now</bold>: customers, vehicles, jobs, invoices, settings and, when the backup includes them, photos and files. Anything added since the backup was taken is gone. This cannot be undone.",
+        "secretsNote": "Secret keys the backup left out keep the values this install has now. User accounts and passwords are not touched.",
+        "confirmPrompt": "Type the workshop's name, <bold>{name}</bold>, to confirm.",
+        "whileRunning": "The restore runs in the background and takes a few minutes when there are many photos. The page updates by itself until it is done.",
+        "cancel": "Cancel",
+        "confirm": "Restore this backup",
+        "started": "Restore started"
+      }
+    },
+    "lockedBackups": "Scheduled, encrypted backups of your workshop to storage you own.",
+    "searchOrType": "Search or type a name",
+    "useTyped": "Use \"{value}\"",
+    "listNeedsKeys": "Enter the keys above to see the list",
+    "listEmpty": "Nothing was listed. Type a name instead.",
+    "testing": "Testing the connection",
+    "testOk": "The connection works: a test object was written and removed again.",
+    "testFailed": "The test failed",
+    "testSteps": {
+      "settings": "Check the provider settings",
+      "list": "The key cannot list the bucket",
+      "write": "The key cannot write to the bucket",
+      "delete": "The key cannot delete from the bucket",
+      "folder": "The folder cannot be created or opened"
+    },
+    "testHint": "Fill in the keys and the bucket to test them before connecting. The test writes one small object and removes it."
   },
   "activity": {
     "title": "Activity",
@@ -181,7 +289,10 @@
     },
     "noFailures": "Nothing failed.",
     "retryFailed": "Retry failed jobs",
-    "details": "Show details"
+    "details": "Show details",
+    "loadingMore": "Loading older jobs",
+    "loadFailed": "Older jobs could not be loaded.",
+    "cleared": "Finished jobs are cleared after 7 days."
   },
   "errors": {
     "generic": "Something went wrong",
@@ -195,7 +306,10 @@
     "invalid": "The provider's response was incomplete. Try again.",
     "state": "This sign-in has expired or belongs to another session. Start again.",
     "exchange": "The provider refused the sign-in. Check the app credentials and try again.",
-    "identify": "Connected, but the account could not be read. Try reconnecting."
+    "identify": "Connected, but the account could not be read. Try reconnecting.",
+    "backupRunning": "A backup is already running.",
+    "restoreOwnerOnly": "On Torqvoice Cloud only the workshop's owner can restore a backup.",
+    "restoreBusy": "A backup or restore is already running on this server. Try again when it is done."
   },
   "meeting": {
     "join": "Join video call",
@@ -226,6 +340,7 @@
       }
     },
     "microsoft-365": {
+      "name": "Microsoft 365 Calendar",
       "description": "Put scheduled work orders on an Outlook calendar, add a Microsoft Teams link, and see the calendar's busy time in Torqvoice.",
       "tenantHelp": "Register an application in Microsoft Entra (App registrations), allow personal and work accounts, add the redirect URI below as a Web platform, create a client secret, and paste both here.",
       "fields": {
@@ -298,7 +413,10 @@
         "verifyToken": "Webhook verify token",
         "appSecret": "App secret",
         "apiVersion": "Graph API version",
-        "appSecretHelp": "Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers."
+        "appSecretHelp": "Meta signs every delivery with it. Until it is entered, messages posted to the webhook are refused, since anyone who learns the URL could otherwise post as your customers.",
+        "phoneNumberIdHelp": "From WhatsApp Manager, on the number you send from; not the phone number itself. Meta issues it only after the webhook is verified, so leave it empty, connect, register the webhook, then come back and add it.",
+        "accessTokenHelp": "A permanent system user token. The one Meta shows during setup expires within 24 hours. Add it together with the phone number ID once the webhook is verified.",
+        "verifyTokenHelp": "Any phrase you choose. Paste the same one into Meta when registering the webhook."
       },
       "settings": {
         "enabled": "Send messages on this channel",
@@ -417,7 +535,19 @@
       },
       "settings": {
         "syncInspections": "Keep inspection dates up to date for every vehicle in this workshop",
-        "syncInspectionsHelp": "Once an hour, vehicles that have not been checked recently are looked up by plate and their next EU-kontroll date is saved. Only vehicles stored in this workshop are ever sent. A vehicle is rechecked monthly, and weekly once its deadline is within two months."
+        "syncInspectionsHelp": "Once an hour, vehicles due a check are looked up by plate and their next EU-kontroll date is saved; how often a vehicle is rechecked is set below. Only vehicles stored in this workshop are ever sent.",
+        "inspectionRecheck": "Recheck vehicles that already have a date",
+        "inspectionRecheckHelp": "A date only changes when an inspection is passed. Monthly notices an early test soonest; only near the deadline costs the least. Near the deadline, every vehicle is rechecked weekly whatever you choose here.",
+        "recheckMonthly": "Every month",
+        "recheckQuarterly": "Every three months",
+        "recheckNearDeadline": "Only near the deadline",
+        "inspectionSoonDays": "Near the deadline means within",
+        "inspectionSoonDaysHelp": "Inside this window a vehicle is rechecked weekly, so a passed inspection drops it off the reminder list within days. A shorter window means fewer lookups.",
+        "soon30": "30 days",
+        "soon60": "60 days",
+        "soon90": "90 days",
+        "inspectionOnlyWithCustomer": "Only vehicles with a customer",
+        "inspectionOnlyWithCustomerHelp": "Skip vehicles with no customer on file. Nobody can be reminded about them, so looking them up costs for nothing."
       }
     },
     "openapi-automotive": {
@@ -429,8 +559,33 @@
       "settings": {
         "country": "Country",
         "countryHelp": "The registry to search. French and Italian plates look the same, so the country cannot be read off the plate.",
-        "bikes": "Also look up motorcycles",
-        "bikesHelp": "When a plate is not a car, ask the motorcycle registry too. A miss on the car side is free, so this costs nothing extra unless a motorcycle is found. Not available for Portugal."
+        "cars": "Look up cars",
+        "carsHelp": "Search the car registry. Turn this off if you only work on motorcycles, so a lookup skips the car search and answers faster.",
+        "bikes": "Look up motorcycles",
+        "bikesHelp": "Search the motorcycle registry. With cars on too, it is asked only when no car matches, and a miss on the car side is free. Not available for Portugal."
+      }
+    },
+    "checkcardetails": {
+      "description": "Fill in a vehicle from its British plate or VIN: make, model, year, colour, fuel, engine size and the MOT due date, from DVLA data through Check Car Details. Cars and motorcycles come from the same register. With UK Vehicle Data turned on for your account, the VIN, transmission and weights come too. Each lookup is billed to the workshop's own Check Car Details account. No owner data is returned.",
+      "fields": {
+        "apiKey": "API key",
+        "apiKeyHelp": "Create an account on api.checkcardetails.co.uk and copy the live key under API Keys. Vehicle Registration is included on every account. To get the VIN as well, click Request Access next to UK Vehicle Data under Your Data Points; lookups use it as soon as it is turned on. A test key only finds plates that contain the letter A."
+      },
+      "settings": {
+        "syncInspections": "Keep MOT dates up to date for every vehicle in this workshop",
+        "syncInspectionsHelp": "When this is on, every vehicle with a plate is looked up once and its MOT due date saved. After that, vehicles are rechecked as set below. Each vehicle found is billed as one Vehicle Registration lookup; plates the register does not know are free. Only vehicles stored in this workshop are sent.",
+        "inspectionRecheck": "Recheck vehicles that already have a date",
+        "inspectionRecheckHelp": "A date only changes when an inspection is passed. Monthly notices an early test soonest; only near the deadline costs the least. Near the deadline, every vehicle is rechecked weekly whatever you choose here.",
+        "recheckMonthly": "Every month",
+        "recheckQuarterly": "Every three months",
+        "recheckNearDeadline": "Only near the deadline",
+        "inspectionSoonDays": "Near the deadline means within",
+        "inspectionSoonDaysHelp": "Inside this window a vehicle is rechecked weekly, so a passed inspection drops it off the reminder list within days. A shorter window means fewer lookups.",
+        "soon30": "30 days",
+        "soon60": "60 days",
+        "soon90": "90 days",
+        "inspectionOnlyWithCustomer": "Only vehicles with a customer",
+        "inspectionOnlyWithCustomerHelp": "Skip vehicles with no customer on file. Nobody can be reminded about them, so looking them up costs for nothing."
       }
     },
     "rdw": {
@@ -441,7 +596,19 @@
       },
       "settings": {
         "syncInspections": "Keep APK dates up to date for every vehicle in this workshop",
-        "syncInspectionsHelp": "Once an hour, vehicles that have not been checked recently are looked up by plate and their next APK date is saved. Only vehicles stored in this workshop are ever sent. A vehicle is rechecked monthly, and weekly once its deadline is within two months."
+        "syncInspectionsHelp": "Once an hour, vehicles due a check are looked up by plate and their next APK date is saved; how often a vehicle is rechecked is set below. Only vehicles stored in this workshop are ever sent.",
+        "inspectionRecheck": "Recheck vehicles that already have a date",
+        "inspectionRecheckHelp": "A date only changes when an inspection is passed. Monthly notices an early test soonest; only near the deadline costs the least. Near the deadline, every vehicle is rechecked weekly whatever you choose here.",
+        "recheckMonthly": "Every month",
+        "recheckQuarterly": "Every three months",
+        "recheckNearDeadline": "Only near the deadline",
+        "inspectionSoonDays": "Near the deadline means within",
+        "inspectionSoonDaysHelp": "Inside this window a vehicle is rechecked weekly, so a passed inspection drops it off the reminder list within days. A shorter window means fewer lookups.",
+        "soon30": "30 days",
+        "soon60": "60 days",
+        "soon90": "90 days",
+        "inspectionOnlyWithCustomer": "Only vehicles with a customer",
+        "inspectionOnlyWithCustomerHelp": "Skip vehicles with no customer on file. Nobody can be reminded about them, so looking them up costs for nothing."
       }
     },
     "regcheck": {
@@ -482,6 +649,7 @@
       }
     },
     "openai-compatible": {
+      "name": "OpenAI-compatible",
       "description": "Service descriptions, history summaries, document scanning and the assistant, answered by any server that speaks OpenAI's chat API: Ollama, Open WebUI, LocalAI, vLLM, LM Studio, LiteLLM and the like. Your data stays on your own hardware.",
       "fields": {
         "baseUrl": "Base URL",
@@ -501,7 +669,7 @@
         "secretKeyHelp": "From the Stripe dashboard under Developers, API keys. Test keys process nothing real, so try a payment on them first and swap to live keys after.",
         "publishableKey": "Publishable key",
         "webhookSecret": "Webhook signing secret",
-        "webhookSecretHelp": "Shown by Stripe once you add the notification URL from this page as a webhook. With it, every notification is verified before a payment is recorded."
+        "webhookSecretHelp": "Optional, and can be added after connecting. Stripe shows it under Reveal secret once the notification URL from this page is added as an endpoint. With it, every notification is verified by its signature; without it, Torqvoice asks Stripe for the checkout before recording a payment."
       },
       "settings": {
         "enabled": "Offer on invoice links",
@@ -537,6 +705,17 @@
         "sandboxHelp": "Use PayPal's sandbox with sandbox app keys. Leave it on until a full payment has gone through, then turn it off and enter the live app's keys."
       }
     },
+    "paystack": {
+      "description": "Paystack checkout from the invoice link, into your own Paystack account. The customer pays by card, bank transfer or mobile money, depending on the country, and the invoice marks itself paid.",
+      "fields": {
+        "secretKey": "Secret key",
+        "secretKeyHelp": "From the Paystack dashboard under Settings, API Keys & Webhooks. A test key (sk_test_) processes nothing real, so try a payment on it first and swap to the live key after."
+      },
+      "settings": {
+        "enabled": "Offer on invoice links",
+        "enabledHelp": "Switch off to take the pay button off shared invoices for a while, without disconnecting. Payments already started are still recorded."
+      }
+    },
     "quickbooks": {
       "description": "Send issued invoices, their customers and their payments to QuickBooks Online, and bring back payments recorded there.",
       "tenantHelp": "Create an app in the Intuit Developer portal. Copy the client id and secret from Keys and credentials, and enter the redirect URI below under Settings, Redirect URIs. Development keys reach sandbox companies, production keys live ones.",
@@ -552,8 +731,8 @@
         "startDateHelp": "Leave empty to send every issued invoice. Use the date your books moved to QuickBooks so older invoices are not entered twice.",
         "includeVehicle": "Name the vehicle on the invoice",
         "includeVehicleHelp": "A text line above the charges with the year, make, model, plate and mileage, so the books say which car.",
-        "laborItemId": "Item for labour lines",
-        "laborItemIdHelp": "Leave empty and an item named Labour is created under your income account the first time.",
+        "laborItemId": "Item for labor lines",
+        "laborItemIdHelp": "Leave empty and an item called \"Labour\" is created under your income account the first time.",
         "partsItemId": "Item for parts lines",
         "partsItemIdHelp": "Leave empty and an item named Parts is created under your income account the first time.",
         "taxAmounts": "Tax amounts",
@@ -573,6 +752,192 @@
         "pullPaymentsHelp": "Every 30 minutes. A payment received in QuickBooks against an invoice from Torqvoice is recorded on the invoice here."
       }
     },
+    "xero": {
+      "description": "Send issued invoices, their customers and their payments to Xero, and bring back payments recorded there.",
+      "tenantHelp": "Create a Web app at developer.xero.com under My Apps. On its Configuration page copy the client id, generate a secret, and add the redirect URI below. For payments recorded in Xero to arrive straight away, open the app's Webhooks page, point it at your Torqvoice address followed by /api/webhooks/xero, tick Invoices and Payments, and enter the webhook key below.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret",
+        "webhookKey": "Webhook key",
+        "webhookKeyHelp": "Optional. The key on your Xero app's Webhooks page. With it, payments recorded in Xero arrive here straight away; without it, within 30 minutes."
+      },
+      "settings": {
+        "tenantId": "Xero organisation",
+        "tenantIdHelp": "The organisation invoices are written to. Only the organisations you allowed when connecting are listed; reconnect to allow another.",
+        "pushInvoices": "Send issued invoices to Xero",
+        "pushOnComplete": "Also send invoices when the job is marked completed",
+        "pushOnCompleteHelp": "Without this an invoice goes over once it is sent, shared or paid. With it, a completed job goes over straight away and is updated if it changes.",
+        "startDate": "Only invoices dated on or after",
+        "startDateHelp": "Leave empty to send every issued invoice. Use the date your books moved to Xero so older invoices are not entered twice.",
+        "invoiceStatus": "Status in Xero",
+        "invoiceStatusHelp": "Approved invoices count as sales straight away and can take payments. Choose Draft or Awaiting approval if someone checks each invoice in Xero first; payments are then recorded once it is approved there.",
+        "invoiceStatusAuthorised": "Approved",
+        "invoiceStatusSubmitted": "Awaiting approval",
+        "invoiceStatusDraft": "Draft",
+        "invoiceNumbers": "Invoice numbers",
+        "invoiceNumbersHelp": "Keep the Torqvoice number so both systems agree, or let Xero number the invoice in its own sequence. With Xero numbering, choose the Torqvoice invoice number as the reference to find each invoice again.",
+        "invoiceNumbersTorqvoice": "Use the Torqvoice number",
+        "invoiceNumbersXero": "Let Xero number them",
+        "reference": "Reference",
+        "referenceHelp": "What goes in the invoice's Reference field in Xero, which shows on the invoice and in lists and searches there.",
+        "referenceVehicle": "Vehicle and plate",
+        "referenceTitle": "Job title",
+        "referenceInvoiceNumber": "Torqvoice invoice number",
+        "referenceNone": "Nothing",
+        "includeVehicle": "Name the vehicle on the invoice",
+        "includeVehicleHelp": "A text line above the charges with the year, make, model, plate and mileage.",
+        "includeNotes": "Include the customer notes",
+        "includeNotesHelp": "The invoice's notes to the customer, as a text line on the invoice.",
+        "notesPosition": "Position of the customer notes",
+        "notesPositionHelp": "Above the charges puts the notes right after the vehicle line, before labour and parts. Below the charges puts them last.",
+        "notesPositionBelow": "Below the charges",
+        "notesPositionAbove": "Above the charges",
+        "includePartNumbers": "Show part numbers on part lines",
+        "includePartNumbersHelp": "Each part line's description starts with its part number.",
+        "brandingThemeId": "Branding theme",
+        "brandingThemeIdHelp": "The Xero branding theme the invoice uses, which decides its layout when viewed or sent from Xero. Leave empty for the organisation's default.",
+        "laborAccount": "Account for labour",
+        "laborAccountHelp": "The sales account labour lines are booked to. Leave empty to use the organisation's Sales account, or the account of the item chosen below.",
+        "partsAccount": "Account for parts",
+        "partsAccountHelp": "The sales account part lines are booked to. Leave empty to use the organisation's Sales account, or the account of the item chosen below.",
+        "shopFeeAccount": "Account for the shop fee",
+        "shopFeeAccountHelp": "The shop fee line goes here. Leave empty to book it with labour.",
+        "laborItem": "Item for labour lines",
+        "laborItemHelp": "Optional. A Xero item every labour line is tagged with, for item reports in Xero. The account chosen above still wins.",
+        "partsItem": "Item for part lines",
+        "partsItemHelp": "Optional. A Xero item every part line is tagged with, for item reports in Xero. The account chosen above still wins.",
+        "matchItemsByPartNumber": "Match parts to Xero items by part number",
+        "matchItemsByPartNumberHelp": "A part whose number is also the code of an item in Xero is sold as that item, so stock tracked in Xero goes down. Xero refuses the invoice when a tracked item does not have enough on hand.",
+        "taxAmounts": "Tax amounts",
+        "taxAmountsHelp": "As billed sends the tax on each line exactly as it stands on the invoice the customer received, so both systems agree to the cent. Worked out by Xero lets Xero apply the rate of each line's tax rate, and the log says when the totals differ.",
+        "taxAmountsBilled": "As billed in Torqvoice",
+        "taxAmountsXero": "Worked out by Xero",
+        "taxType": "Tax rate for taxed lines",
+        "taxTypeHelp": "Torqvoice picks the Xero tax rate whose percentage matches each invoice, such as GST on Income. Choose one here to always use it instead.",
+        "zeroTaxType": "Tax rate for untaxed lines",
+        "zeroTaxTypeHelp": "Used for lines without tax and for tax-exempt customers. Leave empty to use GST Free Income, Zero Rated or No GST, whichever the organisation has.",
+        "tracking1": "Tracking option",
+        "tracking1Help": "Tag every line with a tracking option, such as the branch or department, for reports in Xero.",
+        "tracking2": "Second tracking option",
+        "tracking2Help": "An option from the other tracking category, if the organisation has two.",
+        "sendFromXero": "Email the invoice to the customer from Xero",
+        "sendFromXeroHelp": "Xero sends its own copy of the invoice to the customer's email, with any online payment options set up in Xero. Turn this off if Torqvoice already sends the invoice, so the customer does not get it twice.",
+        "markAsSent": "Mark invoices as sent in Xero",
+        "markAsSentHelp": "Torqvoice delivers the invoice, so Xero shows it as sent instead of waiting for someone to send it there. Applies to approved invoices.",
+        "attachPdf": "Attach the invoice PDF",
+        "attachPdfHelp": "The invoice the customer received from Torqvoice is attached to the invoice in Xero.",
+        "updateContacts": "Keep customer details up to date in Xero",
+        "updateContactsHelp": "A change to a customer's name, email, phone, address or tax number here is copied to their contact in Xero. Off, contacts are only created and then left as the bookkeeper has them.",
+        "sameEmail": "Customers with the same email",
+        "sameEmailHelp": "Several customers can share an email address, such as a family or a company's accounts inbox. With the first choice, a Xero contact found by email is used only when its name matches the customer too; otherwise the customer gets a new contact, and the log names the other one so they can be merged in Xero if they are the same customer.",
+        "sameEmailCreate": "Create a new contact when the name is different",
+        "sameEmailReuse": "Use the existing contact, even if the name is different",
+        "voidOnDelete": "Void the Xero invoice when the job is deleted here",
+        "voidOnDeleteHelp": "An invoice with payments in Xero is never voided; the log says it was left alone.",
+        "pushPayments": "Record payments in Xero",
+        "paymentAccount": "Pay into",
+        "paymentAccountHelp": "The bank account payments recorded in Torqvoice are put into in Xero. Leave empty to use the first bank account.",
+        "cashAccount": "Cash payments into",
+        "cardAccount": "Card payments into",
+        "transferAccount": "Bank transfers into",
+        "onlineAccount": "Online payments into",
+        "methodAccountHelp": "Leave empty to use the account above.",
+        "onlineAccountHelp": "Payments taken through Stripe, PayPal, Vipps and the other payment connectors, often a clearing account. Leave empty to use the account above.",
+        "manualPaidAsPayment": "Record a payment when an invoice is marked paid by hand",
+        "manualPaidAsPaymentHelp": "An invoice marked as paid in Torqvoice without a payment entry gets one payment in Xero for whatever it still shows as owed. Off, it stays open there until a payment is recorded.",
+        "pullPayments": "Bring back payments recorded in Xero",
+        "pullPaymentsHelp": "A payment recorded in Xero against an invoice from Torqvoice is recorded on the invoice here, straight away with a webhook, otherwise within 30 minutes."
+      }
+    },
+    "zoho-books": {
+      "description": "Send issued invoices, their customers and their payments to Zoho Books, and bring back payments recorded there.",
+      "tenantHelp": "Create a Server-based Application in the Zoho API Console (api-console.zoho.com, or the console of your own region, such as api-console.zoho.eu). Add the redirect URI below, copy the client id and secret, and on the client's Settings tab tick \"Use the same OAuth credentials for all data centers\" if workshops sign in from other regions.",
+      "fields": {
+        "clientId": "Client ID",
+        "clientSecret": "Client secret"
+      },
+      "settings": {
+        "organizationId": "Zoho Books organisation",
+        "organizationIdHelp": "The organisation invoices are written to. Every organisation the Zoho user who connected can reach is listed.",
+        "pushInvoices": "Send issued invoices to Zoho Books",
+        "pushOnComplete": "Also send invoices when the job is marked completed",
+        "pushOnCompleteHelp": "Without this an invoice goes over once it is sent, shared or paid. With it, a completed job goes over straight away and is updated if it changes.",
+        "startDate": "Only invoices dated on or after",
+        "startDateHelp": "Leave empty to send every issued invoice. Use the date your books moved to Zoho Books so older invoices are not entered twice.",
+        "invoiceStatus": "Status in Zoho Books",
+        "invoiceStatusHelp": "Sent invoices count as sales straight away and can take payments. Choose Draft if someone checks each invoice in Zoho Books first; payments are then recorded once it is sent there.",
+        "invoiceStatusSent": "Sent",
+        "invoiceStatusDraft": "Draft",
+        "invoiceNumbers": "Invoice numbers",
+        "invoiceNumbersHelp": "Keep the Torqvoice number so both systems agree, or let Zoho Books number the invoice in its own sequence. With Zoho numbering, choose the Torqvoice invoice number as the reference to find each invoice again.",
+        "invoiceNumbersTorqvoice": "Use the Torqvoice number",
+        "invoiceNumbersZoho": "Let Zoho Books number them",
+        "reference": "Reference",
+        "referenceHelp": "What goes in the invoice's Reference# field in Zoho Books, which shows on the invoice and in lists and searches there.",
+        "referenceVehicle": "Vehicle and plate",
+        "referenceTitle": "Job title",
+        "referenceInvoiceNumber": "Torqvoice invoice number",
+        "referenceNone": "Nothing",
+        "includeVehicle": "Name the vehicle on the invoice",
+        "includeVehicleHelp": "The year, make, model, plate and mileage, placed with the customer notes.",
+        "includeNotes": "Include the customer notes",
+        "includeNotesHelp": "The invoice's notes to the customer, as plain text.",
+        "notesPosition": "Where the vehicle and notes go",
+        "notesPositionHelp": "Customer Notes is Zoho's own field, printed under the charges on Zoho's invoice. Above or below the charges puts them in a text line among the invoice lines instead.",
+        "notesPositionCustomerNotes": "Zoho's Customer Notes field",
+        "notesPositionBelow": "A line below the charges",
+        "notesPositionAbove": "A line above the charges",
+        "includePartNumbers": "Show part numbers on part lines",
+        "includePartNumbersHelp": "Each part line's description starts with its part number.",
+        "templateId": "Invoice template",
+        "templateIdHelp": "The Zoho Books template the invoice uses when viewed or sent from Zoho. Leave empty for the organisation's default.",
+        "locationId": "Location",
+        "locationIdHelp": "Only for organisations with locations switched on in Zoho Books, where every invoice needs one. Leave empty otherwise.",
+        "laborAccount": "Account for labour",
+        "laborAccountHelp": "The income account labour lines are booked to. Leave empty to use the account of the item chosen below, or Zoho's Sales account.",
+        "partsAccount": "Account for parts",
+        "partsAccountHelp": "The income account part lines are booked to. Leave empty to use the account of the item chosen below, or Zoho's Sales account.",
+        "shopFeeAccount": "Account for the shop fee",
+        "shopFeeAccountHelp": "The shop fee line goes here. Leave empty to book it with labour.",
+        "laborItem": "Item for labour lines",
+        "laborItemHelp": "Optional. A Zoho Books item every labour line is tagged with, for item reports in Zoho. The account chosen above still wins.",
+        "partsItem": "Item for part lines",
+        "partsItemHelp": "Optional. A Zoho Books item every part line is tagged with, for item reports in Zoho. The account chosen above still wins.",
+        "matchItemsByPartNumber": "Match parts to Zoho items by part number",
+        "matchItemsByPartNumberHelp": "A part whose number is also the SKU of an item in Zoho Books is sold as that item, so stock tracked in Zoho goes down. Switch on SKUs under Settings, Items in Zoho Books for this to find anything.",
+        "taxId": "Tax for taxed lines",
+        "taxIdHelp": "Torqvoice picks the Zoho Books tax whose percentage matches each invoice. Choose one here for when several have the same percentage, or none does.",
+        "zeroTaxId": "Tax for untaxed lines",
+        "zeroTaxIdHelp": "Used for lines without tax and for tax-exempt customers, when the organisation has a 0% tax for them. Leave empty to send those lines without a tax.",
+        "roundingAdjustment": "Match the total to the cent",
+        "roundingAdjustmentHelp": "Zoho Books works out the tax itself. When its total lands a cent or two from the invoice the customer received, the difference goes in as Zoho's rounding adjustment, so both systems agree. Off, the log says when they differ.",
+        "sendFromZoho": "Email the invoice to the customer from Zoho Books",
+        "sendFromZohoHelp": "Zoho Books sends its own copy of the invoice to the customer's email, with any online payment options set up in Zoho. Turn this off if Torqvoice already sends the invoice, so the customer does not get it twice.",
+        "attachPdf": "Attach the invoice PDF",
+        "attachPdfHelp": "The invoice the customer received from Torqvoice is attached to the invoice in Zoho Books, and replaced when it changes.",
+        "updateContacts": "Keep customer details up to date in Zoho Books",
+        "updateContactsHelp": "A change to a customer's name, email, phone or address here is copied to their contact in Zoho Books. Off, contacts are only created and then left as the bookkeeper has them.",
+        "sameEmail": "Customers with the same email",
+        "sameEmailHelp": "Several customers can share an email address, such as a family or a company's accounts inbox. With the first choice, a Zoho contact found by email is used only when its name matches the customer too; otherwise the customer gets a new contact, and the log names the other one so they can be merged in Zoho if they are the same customer.",
+        "sameEmailCreate": "Create a new contact when the name is different",
+        "sameEmailReuse": "Use the existing contact, even if the name is different",
+        "voidOnDelete": "Void the Zoho invoice when the job is deleted here",
+        "voidOnDeleteHelp": "A draft is deleted and a sent invoice is voided. An invoice with payments in Zoho Books is never touched; the log says it was left alone.",
+        "pushPayments": "Record payments in Zoho Books",
+        "paymentAccount": "Deposit to",
+        "paymentAccountHelp": "The account payments recorded in Torqvoice are deposited to in Zoho Books. Leave empty to use Undeposited Funds.",
+        "cashAccount": "Cash payments to",
+        "cardAccount": "Card payments to",
+        "transferAccount": "Bank transfers to",
+        "onlineAccount": "Online payments to",
+        "methodAccountHelp": "Leave empty to use the account above.",
+        "onlineAccountHelp": "Payments taken through Stripe, PayPal, Vipps, Paystack and the other payment connectors, often a clearing account. Leave empty to use the account above.",
+        "manualPaidAsPayment": "Record a payment when an invoice is marked paid by hand",
+        "manualPaidAsPaymentHelp": "An invoice marked as paid in Torqvoice without a payment entry gets one payment in Zoho Books for whatever it still shows as owed. Off, it stays open there until a payment is recorded.",
+        "pullPayments": "Bring back payments recorded in Zoho Books",
+        "pullPaymentsHelp": "A payment recorded in Zoho Books against an invoice from Torqvoice is recorded on the invoice here within 30 minutes, and one deleted there is removed here."
+      }
+    },
     "fiken": {
       "description": "Send issued invoices, their customers and their payments to Fiken, and bring back payments recorded there.",
       "tenantHelp": "Create an app in Fiken under Rediger konto, API, for your own companies. Enter the redirect URI below on the app, then copy its client ID and client secret here. The company needs Fiken's API module.",
@@ -590,7 +955,7 @@
         "startDateHelp": "Leave empty to send every issued invoice. Use the date your books moved to Fiken so older invoices are not entered twice.",
         "attachPdf": "Attach the invoice PDF",
         "attachPdfHelp": "An invoice goes into Fiken as a sale (Annet salg) under its Torqvoice number. With this on, the PDF the customer received is filed on the sale as its voucher.",
-        "laborAccount": "Income account for labour",
+        "laborAccount": "Income account for labor",
         "laborAccountHelp": "Leave empty to use 3000.",
         "partsAccount": "Income account for parts",
         "partsAccountHelp": "Leave empty to use 3000.",
@@ -602,7 +967,7 @@
         "vatExport": "Exempt, export",
         "vatReverse": "Exempt, reverse charge",
         "zeroAccount": "Income account for invoices without VAT",
-        "zeroAccountHelp": "Leave empty to use the labour and parts accounts above. If Fiken refuses the account with the VAT type, the reason is shown in the activity log.",
+        "zeroAccountHelp": "Leave empty to use the labor and parts accounts above. If Fiken refuses the account with the VAT type, the reason is shown in the activity log.",
         "pushPayments": "Record payments in Fiken",
         "paymentAccount": "Deposit payments to",
         "paymentAccountHelp": "Leave empty to use the company's first bank account.",
@@ -620,7 +985,43 @@
         "refreshFleetHelp": "Once a day, models not refreshed in the last week are fetched again, so the vehicle page never waits and a new recall shows within a week of being filed. Only make, model and year are sent."
       }
     },
+    "openlaborproject": {
+      "description": "Look up book labor times and fluid capacities for the vehicle on a work order or quote, and add a job's hours as a labor line in one click. Most of the data is for US-market vehicles, and the guide says which market each lookup is for. Each value shows how sure Open Labor Project is of it, and many are AI-derived estimates, so check them before you quote a customer. Lookups use the workshop's own API key. On a paid Open Labor Project plan, a vehicle looked up once is kept for as long as the plan lasts, so looking it up again costs no call.",
+      "fields": {
+        "apiKey": "API key",
+        "apiKeyHelp": "Request a key on openlaborproject.com under Developers; it arrives by email. A free key has 10 calls a day and shows hours one job at a time. The Builder plan and up raise the limit and show every job's hours at once.",
+        "apiKeyServerHelp": "Leave this empty to use the key this server provides, or paste your own key from openlaborproject.com to use your own plan."
+      },
+      "settings": {
+        "minConfidence": "Show labor times from",
+        "minConfidenceHelp": "Leave out times the source is less sure of. Many times for European makes are AI estimates, so a strict choice can leave few jobs.",
+        "confidenceAll": "Every confidence level",
+        "confidenceMedium": "Medium and up",
+        "confidenceHigh": "Verified and up",
+        "confidenceOem": "OEM only",
+        "hoursFrom": "Hours to add",
+        "hoursFromHelp": "Which figure goes on the work order: the book time, or the top of the range Open Labor Project gives (1.6 h instead of 1.2 h, say). The top of the range leaves room for jobs that run long.",
+        "hoursBook": "Book time",
+        "hoursHigh": "Top of the range",
+        "adjustPercent": "Adjust times by (%)",
+        "adjustPercentHelp": "A percentage added to every time before it goes on the work order: 10 turns 1.2 h into 1.32 h, -10 turns it into 1.08 h. From -50 to 200.",
+        "rounding": "Round hours up to",
+        "roundingHelp": "Rounds each job's hours up, after any adjustment: with 0.25, 1.32 h becomes 1.5 h. A time already on a step stays as it is.",
+        "roundNone": "Do not round",
+        "roundTenth": "0.1 hour",
+        "roundQuarter": "0.25 hour",
+        "roundHalf": "0.5 hour",
+        "fluids": "Show fluid specs",
+        "fluidsHelp": "Adds a Fluids tab with capacities, specs and change intervals. Opening it uses a call of its own.",
+        "units": "Fluid units",
+        "unitsHelp": "The units capacities and change intervals are shown in.",
+        "unitsBoth": "Both",
+        "unitsMetric": "Metric (L, km)",
+        "unitsUs": "US (qt, mi)"
+      }
+    },
     "speech-to-text": {
+      "name": "Speech to text",
       "description": "Dictation on a work order, written down by a speech model instead of the browser: far more accurate, any language, and it knows a workshop's words. Separate from your AI provider, so you can keep that one as it is. Uses your own OpenAI key, or a server of your own that speaks OpenAI's transcription API. The recording is sent to be written down and is not kept.",
       "fields": {
         "apiKey": "API key",
@@ -636,6 +1037,116 @@
         "modeAi": "Always the speech model",
         "modeChoice": "Each person chooses: speech model or browser"
       }
+    },
+    "s3": {
+      "name": "Cloud storage bucket",
+      "description": "Encrypted backups of this workshop to a bucket you own at Amazon S3, Cloudflare R2, Backblaze B2, Wasabi, Hetzner Object Storage or any other S3-compatible storage, on a schedule you choose. After the first run only what changed is uploaded, so hourly backups stay cheap.",
+      "fields": {
+        "accessKeyId": "Access key ID",
+        "accessKeyIdHelp": "A key from your storage provider with permission to list, read, write and delete objects in the bucket. Make a key for Torqvoice alone, so it can be revoked on its own.",
+        "secretAccessKey": "Secret access key",
+        "password": "Backup password",
+        "passwordHelp": "Every backup is encrypted with this password. Make one up or press Generate, and keep a copy away from this server: without it nobody can open these backups, not even Torqvoice. To reconnect storage that already holds Torqvoice backups, enter the password they were made with.",
+        "endpoint": "Custom endpoint",
+        "endpointHelp": "Only for the Other provider: the S3 address of your own storage, such as a MinIO server, as a host name with a port if needed."
+      },
+      "settings": {
+        "provider": "Provider",
+        "providerAws": "Amazon S3",
+        "providerR2": "Cloudflare R2",
+        "providerB2": "Backblaze B2",
+        "providerWasabi": "Wasabi",
+        "providerHetzner": "Hetzner Object Storage",
+        "providerOther": "Other S3-compatible storage",
+        "region": "Region",
+        "regionHelp": "Where the bucket lives. Pick it from the provider's list; for other storage, type what it expects, if anything. Not used by Cloudflare R2.",
+        "accountId": "Cloudflare account ID",
+        "accountIdHelp": "The 32-character id shown on the R2 overview page of your Cloudflare dashboard.",
+        "bucket": "Bucket",
+        "bucketHelp": "Listed from the key as soon as it is entered. A key that may use one bucket but not list them takes the name typed in.",
+        "prefix": "Folder in the bucket",
+        "prefixHelp": "The backups live under this folder. Use a different folder for each workshop that shares the bucket.",
+        "frequency": "How often",
+        "frequencyHourly": "Every hour",
+        "frequencyEvery4h": "Every 4 hours",
+        "frequencyDaily": "Every day",
+        "frequencyWeekly": "Every week",
+        "frequencyMonthly": "Every month",
+        "time": "Time of day",
+        "timeHelp": "On the workshop clock, as HH:MM. Used by daily, weekly and monthly backups.",
+        "weekday": "Day of the week",
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "monthDay": "Day of the month",
+        "monthDayLast": "Last day",
+        "contents": "Contents",
+        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way. A backup holds the workshop's records and, when chosen, its files. User accounts and passwords are not in it: on a new server you sign in, invite the team and restore the data into that workshop.",
+        "contentsData": "Data only",
+        "contentsDataAndSecrets": "Data and secret keys",
+        "includeFiles": "Include photos and files",
+        "includeFilesHelp": "Every file is uploaded once and reused by later backups, so this costs little after the first run.",
+        "keepHourly": "Keep hourly backups",
+        "keepHourlyHelp": "How many of the most recent hourly backups to keep. Only matters for hourly and 4-hourly schedules.",
+        "keepDaily": "Keep daily backups",
+        "keepWeekly": "Keep weekly backups",
+        "keepMonthly": "Keep monthly backups",
+        "keepMonthlyHelp": "Older backups are removed after each run, keeping the newest of each kind. Set a number to 0 to keep none of that kind."
+      }
+    },
+    "local-folder": {
+      "name": "Local folder",
+      "description": "Encrypted backups of this workshop to a folder on this server: the backups volume in the compose file, or a network drive mounted there. A copy on the same disk as the database is not safe on its own; pair it with storage elsewhere.",
+      "fields": {
+        "password": "Backup password",
+        "passwordHelp": "Every backup is encrypted with this password. Make one up or press Generate, and keep a copy away from this server: without it nobody can open these backups, not even Torqvoice. To reconnect storage that already holds Torqvoice backups, enter the password they were made with."
+      },
+      "settings": {
+        "folder": "Folder",
+        "folderHelp": "The folder under the server's backup root that holds this workshop's backups. Leave it empty to use a folder named after this workshop. On a new server, type the folder name an earlier install used to get its backups back.",
+        "frequency": "How often",
+        "frequencyHourly": "Every hour",
+        "frequencyEvery4h": "Every 4 hours",
+        "frequencyDaily": "Every day",
+        "frequencyWeekly": "Every week",
+        "frequencyMonthly": "Every month",
+        "time": "Time of day",
+        "timeHelp": "On the workshop clock, as HH:MM. Used by daily, weekly and monthly backups.",
+        "weekday": "Day of the week",
+        "sunday": "Sunday",
+        "monday": "Monday",
+        "tuesday": "Tuesday",
+        "wednesday": "Wednesday",
+        "thursday": "Thursday",
+        "friday": "Friday",
+        "saturday": "Saturday",
+        "monthDay": "Day of the month",
+        "monthDayLast": "Last day",
+        "contents": "Contents",
+        "contentsHelp": "Secret keys are the ones this workshop typed into Torqvoice: payment, AI and webhook keys. Every backup is encrypted with the backup password either way. A backup holds the workshop's records and, when chosen, its files. User accounts and passwords are not in it: on a new server you sign in, invite the team and restore the data into that workshop.",
+        "contentsData": "Data only",
+        "contentsDataAndSecrets": "Data and secret keys",
+        "includeFiles": "Include photos and files",
+        "includeFilesHelp": "Every file is uploaded once and reused by later backups, so this costs little after the first run.",
+        "keepHourly": "Keep hourly backups",
+        "keepHourlyHelp": "How many of the most recent hourly backups to keep. Only matters for hourly and 4-hourly schedules.",
+        "keepDaily": "Keep daily backups",
+        "keepWeekly": "Keep weekly backups",
+        "keepMonthly": "Keep monthly backups",
+        "keepMonthlyHelp": "Older backups are removed after each run, keeping the newest of each kind. Set a number to 0 to keep none of that kind."
+      }
+    },
+    "torqvoice-codes": {
+      "description": "See what a fault code means on the vehicle in front of you, in your own language: the meaning, likely causes and related codes. Type or paste codes on a work order and they become observations with their meaning saved, so prints and history never wait on a connection. Run by Torqvoice and included in every cloud plan. A lookup sends only make, model, year and engine, never a VIN, a plate or a customer.",
+      "fields": {
+        "apiToken": "Access key",
+        "apiTokenHelp": "The key Torqvoice gave you for the code service."
+      },
+      "settings": {}
     }
   },
   "jobKinds": {
@@ -658,6 +1169,42 @@
     "safety": {
       "refresh": "Recall data refresh",
       "vehicle": "Recall check for a new vehicle"
+    },
+    "repair": {
+      "checkPlan": "Check that stored lookups may be kept"
     }
+  },
+  "backupAlerts": {
+    "destination": "backup destination",
+    "failedTitle": "Backup failed",
+    "failedMessage": "The backup to {name} did not finish: {reason}",
+    "failedSubject": "Backup to {name} failed",
+    "failedEmailIntro": "The scheduled backup of your workshop to {name} did not finish.",
+    "openToRetry": "Open Settings, Integrations, {name} to see the run and try again.",
+    "overdueTitle": "Backup overdue",
+    "overdueSince": "No backup to {name} has finished since {time}.",
+    "overdueNever": "No backup to {name} has finished yet.",
+    "overdueSubject": "Backup to {name} is overdue",
+    "openToSee": "Open Settings, Integrations, {name} to see what went wrong.",
+    "platformName": "Backups by Torqvoice",
+    "restoredTitle": "Workshop restored",
+    "restoredSubject": "Your workshop was restored from a backup",
+    "restoredIntro": "{name}: the workshop was put back to restore point {snapshot} on {time}. Everything entered after that point is no longer in the workshop.",
+    "restoredByMember": "A member of your workshop asked for this restore.",
+    "restoredBySupport": "Torqvoice support did this at your request. Reason given: {reason}",
+    "noReason": "none given",
+    "restoredUndo": "A safety copy of the workshop as it was right before the restore was taken first and is kept for 90 days. Contact support to go back to it."
+  },
+  "aiErrors": {
+    "modelAccess": "This API key has no access to the selected model. Pick another in Settings → Integrations.",
+    "spendLimit": "This OpenAI account has reached its spending limit. Check the limits at platform.openai.com.",
+    "noCredit": "This OpenAI account has no credit left. Add billing at platform.openai.com.",
+    "keyRejected": "The AI provider rejected the API key. Check it in Settings → Integrations.",
+    "noUsableCredit": "The AI provider reports no usable credit for this API key.",
+    "modelUnavailable": "The AI provider does not offer the selected model. Pick another in Settings → Integrations.",
+    "imageTooLarge": "The image was too large for the AI provider.",
+    "rateLimited": "The AI provider is rate limiting this API key. Try again in a moment.",
+    "providerDown": "The AI provider is unavailable right now. Try again in a moment.",
+    "unexpected": "The AI provider returned an unexpected response."
   }
 }

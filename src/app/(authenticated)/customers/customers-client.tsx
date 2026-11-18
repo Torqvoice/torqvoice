@@ -5,7 +5,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 
-import { useState, useCallback, useTransition, useEffect } from 'react'
+import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
@@ -99,6 +99,7 @@ export function CustomersClient({
   unnumbered?: number
 }) {
   const t = useTranslations('customers.list')
+  const ta = useTranslations('common.a11y')
   const tc = useTranslations('common')
   const tcm = useTranslations('common.contextMenu')
   const router = useRouter()
@@ -117,6 +118,12 @@ export function CustomersClient({
   const [showImport, setShowImport] = useState(false)
   const [editCustomer, setEditCustomer] = useState<Customer | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  // Selection outlives the page of rows it was made on, so every row shown is
+  // remembered: the delete prompt can still name what is selected elsewhere.
+  const seenRows = useRef(new Map<string, (typeof data.customers)[number]>())
+  useEffect(() => {
+    for (const row of data.customers) seenRows.current.set(row.id, row)
+  }, [data.customers])
   const [isDeleting, setIsDeleting] = useState(false)
   const modal = useGlassModal()
   const confirm = useConfirm()
@@ -198,34 +205,48 @@ export function CustomersClient({
       title: t('deleteTitle'),
       description: t('deleteDescription', { name }),
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
-    const result = await deleteCustomer(id)
-    if (result.success) {
+    // An action that cannot reach the server throws instead of answering, so
+    // it is caught and reported the way a refusal is.
+    const result = await deleteCustomer(id).catch(() => null)
+    if (result?.success) {
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('deleteError'))
+      modal.open('error', tc('errors.error'), result?.error || t('deleteError'))
     }
   }
 
   const handleBatchDelete = async () => {
     if (selected.size === 0) return
+    // Name the first few customers so the count is not taken on trust.
+    const named = Array.from(selected)
+      .map((id) => seenRows.current.get(id))
+      .filter((row) => row !== undefined)
+      .slice(0, 3)
     const ok = await confirm({
       title: t('batchDeleteTitle'),
       description: t('batchDeleteDescription', { count: selected.size }),
+      subject: named.map((c) => ({
+        label: c.name,
+        detail: c.company && c.company !== c.name ? c.company : undefined,
+      })),
+      subjectMore: selected.size - named.length,
       confirmLabel: tc('buttons.delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
     setIsDeleting(true)
-    const result = await deleteCustomers(Array.from(selected))
-    if (result.success) {
+    const result = await deleteCustomers(Array.from(selected)).catch(() => null)
+    if (result?.success) {
       toast.success(t('batchDeleteSuccess', { count: result.data?.deleted ?? selected.size }))
       setSelected(new Set())
       router.refresh()
     } else {
-      modal.open('error', tc('errors.error'), result.error || t('deleteError'))
+      modal.open('error', tc('errors.error'), result?.error || t('deleteError'))
     }
     setIsDeleting(false)
   }
@@ -304,6 +325,7 @@ export function CustomersClient({
                 <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   placeholder={t('searchPlaceholder')}
+                  aria-label={t('searchPlaceholder')}
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   className="h-9 pl-9"
@@ -375,6 +397,7 @@ export function CustomersClient({
                   className="mt-1 shrink-0"
                   checked={selected.has(c.id)}
                   onCheckedChange={() => toggleSelect(c.id)}
+                  aria-label={ta('selectRow', { name: c.name })}
                 />
                 <button
                   type="button"
@@ -450,6 +473,7 @@ export function CustomersClient({
                         : false
                   }
                   onCheckedChange={toggleSelectAll}
+                  aria-label={ta('selectAll')}
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
@@ -535,6 +559,7 @@ export function CustomersClient({
                         <Checkbox
                           checked={selected.has(c.id)}
                           onCheckedChange={() => toggleSelect(c.id)}
+                          aria-label={ta('selectRow', { name: c.name })}
                           onClick={(e) => e.stopPropagation()}
                         />
                       </TableCell>

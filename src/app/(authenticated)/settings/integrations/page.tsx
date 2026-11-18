@@ -3,6 +3,11 @@ import { getLayoutData } from '@/lib/get-layout-data'
 import { isSupportEnabled } from '@/lib/support'
 import { getIntegrationCatalog } from '@/features/integrations/Actions/integrationActions'
 import { IntegrationsCatalog } from './integrations-catalog'
+import { settingsPageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return settingsPageTitle('integrations')
+}
 
 export default async function IntegrationsPage() {
   const data = await getLayoutData()

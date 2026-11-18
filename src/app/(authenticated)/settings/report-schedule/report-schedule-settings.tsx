@@ -222,16 +222,18 @@ function ScheduleForm({
         endDate: endDate || null,
       }
 
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
       const result = schedule
-        ? await updateReportSchedule({ ...payload, id: schedule.id })
-        : await createReportSchedule(payload)
+        ? await updateReportSchedule({ ...payload, id: schedule.id }).catch(() => null)
+        : await createReportSchedule(payload).catch(() => null)
 
-      if (result.success) {
+      if (result?.success) {
         toast.success(schedule ? t('updated') : t('created'))
         router.refresh()
         onClose()
       } else {
-        toast.error(result.error || t('failedSave'))
+        toast.error(result?.error || t('failedSave'))
       }
     })
   }
@@ -384,12 +386,14 @@ function ScheduleCard({
   const handleSendNow = () => {
     setSending(true)
     startTransition(async () => {
-      const result = await sendReportNow(schedule.id)
-      if (result.success) {
+      // An action that cannot reach the server throws instead of answering, so
+      // it is caught and reported the way a refusal is.
+      const result = await sendReportNow(schedule.id).catch(() => null)
+      if (result?.success) {
         toast.success(t('sentNow'))
         router.refresh()
       } else {
-        toast.error(result.error || t('failedSend'))
+        toast.error(result?.error || t('failedSend'))
       }
       setSending(false)
     })
@@ -430,12 +434,12 @@ function ScheduleCard({
 
   const handleToggle = () => {
     startTransition(async () => {
-      const result = await toggleReportSchedule(schedule.id)
-      if (result.success) {
+      const result = await toggleReportSchedule(schedule.id).catch(() => null)
+      if (result?.success) {
         toast.success(schedule.isActive ? t('toggledOff') : t('toggledOn'))
         router.refresh()
       } else {
-        toast.error(result.error || t('failedToggle'))
+        toast.error(result?.error || t('failedToggle'))
       }
     })
   }
@@ -443,12 +447,12 @@ function ScheduleCard({
   const handleDelete = () => {
     setDeleting(true)
     startTransition(async () => {
-      const result = await deleteReportSchedule(schedule.id)
-      if (result.success) {
+      const result = await deleteReportSchedule(schedule.id).catch(() => null)
+      if (result?.success) {
         toast.success(t('deleted'))
         router.refresh()
       } else {
-        toast.error(result.error || t('failedDelete'))
+        toast.error(result?.error || t('failedDelete'))
       }
       setDeleting(false)
     })
@@ -593,7 +597,7 @@ export function ReportScheduleSettings({ schedules, members }: Props) {
           <h2 className="text-lg font-semibold">{t('title')}</h2>
           <p className="text-sm text-muted-foreground">{t('description')}</p>
         </div>
-        <Button size="sm" onClick={openNew}>
+        <Button id="report-schedule-new" size="sm" onClick={openNew}>
           <Plus className="mr-1.5 h-3.5 w-3.5" />
           {t('newSchedule')}
         </Button>
@@ -613,7 +617,7 @@ export function ReportScheduleSettings({ schedules, members }: Props) {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div id="report-schedule-list" className="grid gap-4 sm:grid-cols-2">
           {schedules.map((schedule) => (
             <ScheduleCard
               key={schedule.id}
@@ -627,7 +631,7 @@ export function ReportScheduleSettings({ schedules, members }: Props) {
 
       {/* Create / Edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-2xl">
+        <DialogContent className="sm:max-w-2xl" aria-describedby={undefined}>
           <DialogHeader>
             <DialogTitle>{editingSchedule ? t('editSchedule') : t('newSchedule')}</DialogTitle>
           </DialogHeader>

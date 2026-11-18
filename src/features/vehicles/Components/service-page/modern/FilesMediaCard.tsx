@@ -16,7 +16,14 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from 'sonner'
 import { useServiceType } from '@/components/service-type-context'
 
-type FileTab = 'images' | 'dropoff' | 'documents' | 'diagnostics' | 'video' | 'statusReports'
+type FileTab =
+  | 'all'
+  | 'images'
+  | 'dropoff'
+  | 'documents'
+  | 'diagnostics'
+  | 'video'
+  | 'statusReports'
 
 /** A walk round a car is a handful of shots; this is the phone route's cap too. */
 const MAX_DROPOFF = 30
@@ -41,24 +48,25 @@ interface FilesMediaCardProps {
   /**
    * Status reports: the photos and video the workshop sends the customer
    * while the job is open. They are media about the job, so they live here
-   * with the rest of it. The list is the same one the classic page gives a
-   * tab of its own.
+   * with the rest of it. The list is the one a `?tab=statusReports` link opens.
    */
   statusReports?: { count: number; list: ReactNode }
 }
 
 /**
  * Everything filed on the job in one card: photos, documents, diagnostic
- * reports, video, and the status reports sent to the customer. The classic
- * page gives most of these a tab of its own at the top of the page; here they
- * are tabs of one card, each a grid of tiles with the way to add one at the end.
+ * reports, video, and the status reports sent to the customer. It opens on
+ * all of the files together, since the question is usually "what is on this
+ * job", and the tabs after it are the same files one kind at a time. They used
+ * to be tabs at the top of the page; here they are tabs of one card, each a
+ * grid of tiles with the way to add one at the end.
  *
  * The card is drawn in the middle of the work order form without belonging to
  * it. A file is saved the moment it is chosen and a caption the moment it is
  * left, so neither may mark the job as having unsaved changes, Enter in a
  * caption must not save the job, and a status report's own form must not
  * submit this one; all three stop here. It also sits outside the form's
- * fieldset: a locked invoice still takes photos, as the classic tabs allowed.
+ * fieldset: a locked invoice still takes photos, as the old tabs allowed.
  */
 export function FilesMediaCard({
   serviceRecordId,
@@ -71,7 +79,7 @@ export function FilesMediaCard({
   maxImages,
   maxDiagnostics,
   maxDocuments,
-  initialTab = 'images',
+  initialTab = 'all',
   statusReports,
 }: FilesMediaCardProps) {
   const t = useTranslations('service')
@@ -118,13 +126,21 @@ export function FilesMediaCard({
     }
   }
 
-  // The page hands over diagnostics and documents as one list, as the classic
-  // tab shows them; here each has a tab of its own.
+  // The page hands over diagnostics and documents as one list, as the old
+  // documents tab showed them; here each has a tab of its own.
   const diagnostics = documents.filter((file) => file.category === 'diagnostic')
   const otherDocuments = documents.filter((file) => file.category !== 'diagnostic')
 
-  // A tab under a plan cap says how much of it is used, as the classic photo tab did.
+  const total = images.length + dropoff.length + videos.length + documents.length
+  // Everything on the job in the order it arrived, whichever tab it is filed
+  // under. The status reports are not files and keep to their own tab.
+  const everything = [...images, ...dropoff, ...documents, ...videos].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  )
+
+  // A tab under a plan cap says how much of it is used, as the old photo tab did.
   const tabs: { value: FileTab; label: string; count: number; max?: number }[] = [
+    { value: 'all', label: t('modern.media.tabs.all'), count: total },
     {
       value: 'images',
       label: t('modern.media.tabs.photos'),
@@ -159,8 +175,6 @@ export function FilesMediaCard({
         ]
       : []),
   ]
-  const total = images.length + dropoff.length + videos.length + documents.length
-
   return (
     <div
       id="files-media"
@@ -224,6 +238,16 @@ export function FilesMediaCard({
         {/* Each grid is keyed by its tab, so switching tabs starts it from the
             job's files rather than from the last tab's tiles. */}
         <div role="tabpanel" className="@container">
+          {tab === 'all' && (
+            <MediaGrid
+              key="all"
+              kind="all"
+              serviceRecordId={serviceRecordId}
+              files={everything}
+              caps={{ image: capOf(maxImages), document: capOf(maxDocuments) }}
+              customerId={customerId}
+            />
+          )}
           {tab === 'images' && (
             <MediaGrid
               key="image"

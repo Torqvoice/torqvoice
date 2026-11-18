@@ -1,5 +1,6 @@
 'use client'
 
+import { handleGated } from '@/components/upgrade-gate'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -11,6 +12,7 @@ import {
   Save,
   Send,
   Smartphone,
+  PenLine,
   Trash2,
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -389,6 +391,9 @@ export function EmailDesigner({
         title: t('leaveTitle'),
         description: t('leaveBody'),
         confirmLabel: t('leaveConfirm'),
+        cancelLabel: t('leaveCancel'),
+        icon: PenLine,
+        defaultFocus: 'cancel',
       })
       if (!go) return
     }
@@ -401,6 +406,7 @@ export function EmailDesigner({
       title: t('deleteTitle'),
       description: t('deleteConfirm', { name: saved.name }),
       confirmLabel: t('delete'),
+      icon: Trash2,
       destructive: true,
     })
     if (!ok) return
@@ -420,6 +426,7 @@ export function EmailDesigner({
     setSending(true)
     try {
       const result = await sendTestEmail(inputFor(saved?.name ?? template.name), testEmail)
+      if (handleGated(result)) return
       if (!result.success) throw new Error(result.error)
       setTestOpen(false)
       openModal(

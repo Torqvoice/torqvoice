@@ -1,8 +1,12 @@
+import { getTranslations } from 'next-intl/server'
+import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
+import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
+import { publicInspection } from '@/lib/public-payload'
+import { lookUpShareLink } from '@/lib/share-link.server'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
 import { InspectionView } from './inspection-view'
 import { getFeatures } from '@/lib/features'
-import { resolvePortalOrg } from '@/lib/portal-slug'
 import type { Metadata } from 'next'
 import { headers } from 'next/headers'
 import { getAppBaseUrl } from '@/lib/app-url'
@@ -27,8 +31,20 @@ import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySe
 
 export const revalidate = 60
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orgId: string; token: string }>
+}): Promise<Metadata> {
+  const { orgId, token } = await params
+  const link = await lookUpShareLink('inspection', orgId, token)
+  const robots = { index: false, follow: false }
+  // A closed link's tab does not say what the link led to.
+  if (link.status === 'expired' || link.status === 'gone') {
+    return { title: await closedShareLinkTitle(link.organizationId, link.status), robots }
+  }
+  const t = await getTranslations('portal.inspectionDetail')
+  return { title: t('title'), robots }
 }
 
 export default async function PublicInspectionPage({
@@ -38,9 +54,20 @@ export default async function PublicInspectionPage({
 }) {
   const { orgId: orgParam, token } = await params
 
-  // Resolve slug (e.g. "egelandauto") or UUID to the real org ID
-  const resolvedOrg = await resolvePortalOrg(orgParam)
-  const orgId = resolvedOrg?.id ?? orgParam
+  // Only an address with no workshop behind it is the plain 404. A customer
+  // whose link is closed gets a page that tells them who to ask.
+  const link = await lookUpShareLink('inspection', orgParam, token)
+  if (link.status === 'unknownWorkshop') notFound()
+  if (link.status !== 'open') {
+    return (
+      <ShareLinkClosed
+        organizationId={link.organizationId}
+        status={link.status}
+        kind="inspection"
+      />
+    )
+  }
+  const { organizationId: orgId, shared } = link
 
   const inspection = await db.inspection.findFirst({
     where: { publicToken: token, organizationId: orgId },
@@ -88,7 +115,7 @@ export default async function PublicInspectionPage({
   })
 
   if (!inspection) {
-    notFound()
+    return <ShareLinkClosed organizationId={orgId} status="gone" kind="inspection" />
   }
 
   // Every setting, as the PDF loads them: the certificate design reads its
@@ -136,19 +163,11 @@ export default async function PublicInspectionPage({
   const portalUrl = portalEnabled ? `${appUrl}/portal/${portalSlug || orgId}` : undefined
 
   // Gated here, once, so neither the certificate nor the page's own data
-  // carries the type key while the workshop has it switched off.
-  const publicInspection = {
-    ...inspection,
-    vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
-    items: inspection.items.map((item) => ({
-      ...item,
-      imageUrls: item.imageUrls.map(toPublic),
-    })),
-    attachments: inspection.attachments.map((file) => ({
-      ...file,
-      fileUrl: toPublic(file.fileUrl),
-    })),
-  }
+  // carries the type key while the workshop has it switched off. What the
+  // browser gets is named field by field, never the row: a prop of a client
+  // component is readable by anyone holding the link, drawn or not.
+  const gatedVehicle = gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap))
+  const publicView = publicInspection({ ...inspection, vehicle: gatedVehicle }, toPublic)
 
   const linkedQuote = inspection.quotes?.[0]
   const quoteShareUrl = linkedQuote?.publicToken
@@ -169,7 +188,7 @@ export default async function PublicInspectionPage({
     const labels = await loadCertificateLabels(locale, settingsMap)
     const design = templateConfigFromSource(source)
     const itemPhotos: Record<string, { dataUri: string }[]> = {}
-    for (const item of publicInspection.items) {
+    for (const item of publicView.items) {
       const photos = item.imageUrls.filter((url) => !isVideo(url)).map((url) => ({ dataUri: url }))
       if (photos.length > 0) itemPhotos[item.id] = photos
     }
@@ -177,7 +196,7 @@ export default async function PublicInspectionPage({
     spec = buildCertificatePrintSpec({
       data: {
         ...inspection,
-        vehicle: publicInspection.vehicle,
+        vehicle: gatedVehicle,
       },
       conditionMarks: hasMap ? await loadVehicleConditionMarks(orgId, inspection.vehicleId) : [],
       bodyType: hasMap ? inspection.vehicle.bodyType : null,
@@ -192,6 +211,7 @@ export default async function PublicInspectionPage({
         : undefined,
       workshop: { ...workshop, slogan: settingsMap['workshop.slogan'] || undefined },
       labels,
+      locale,
       logoDataUri: toPublic(documentLogoPath(settingsMap, 'certificate')) || undefined,
       signatureDataUri: await certificateSignatureDataUri(orgId, inspection),
       torqvoiceLogoDataUri: features.brandingRemoved ? undefined : await getTorqvoiceLogoDataUri(),
@@ -201,7 +221,7 @@ export default async function PublicInspectionPage({
       layoutConfig: design.layoutConfig,
       portalUrl,
       itemPhotos,
-      overviewPhotos: publicInspection.attachments
+      overviewPhotos: publicView.attachments
         .filter((file) => file.fileType.startsWith('image/'))
         .map((file) => ({ dataUri: file.fileUrl, caption: file.description })),
       attachedDocuments: certificateDocuments(inspection.attachments).map((file) => file.fileName),
@@ -210,7 +230,8 @@ export default async function PublicInspectionPage({
 
   return (
     <InspectionView
-      inspection={publicInspection}
+      expiryNote={<ShareLinkOpenUntil organizationId={orgId} expiry={shared.expiry} />}
+      inspection={publicView}
       spec={spec}
       workshop={workshop}
       logoUrl={logoUrl}

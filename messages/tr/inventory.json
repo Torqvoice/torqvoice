@@ -14,7 +14,8 @@
     "supplier": "Tedarikçi",
     "location": "Konum",
     "low": "Düşük",
-    "barcode": "Barkod"
+    "barcode": "Barkod",
+    "notTracked": "Takip edilmiyor"
   },
   "empty": {
     "noMatch": "Aramanızla eşleşen parça bulunamadı.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Tüm parçalara kâr marjı uygula",
-    "multiplierLabel": "Kâr marjı çarpanı",
-    "description": "Satış fiyatı tüm {count} parça için maliyet x {multiplier} olarak ayarlanacaktır.",
-    "percentage": "(%{percent} kâr marjı)",
+    "intro": "Parçaların satış fiyatını maliyet artı bir yüzde olarak ayarlar.",
+    "percentLabel": "Kâr marjı %",
+    "percentHint": "Maliyetin üzerine %30 eklemek için 30 girin.",
+    "percentInvalid": "Kâr marjı -%100'den yüksek olmalıdır.",
+    "exampleTitle": "Örnek",
+    "exampleMarkup": "Kâr marjı %{percent}",
     "cancel": "İptal",
     "apply": "Uygula",
     "overrideExisting": "Mevcut satış fiyatlarını geçersiz kıl",
     "overrideExistingHint": "Mevcut satış fiyatı olanlar dahil tüm parçalar güncellenecek.",
-    "skipExistingHint": "Yalnızca satış fiyatı olmayan parçalar güncellenecek."
+    "skipExistingHint": "Yalnızca satış fiyatı olmayan parçalar güncellenecek.",
+    "newPartsNote": "Yeni parçalarda {unitCost} girildiğinde {sellPrice} bu kâr marjıyla doldurulur.",
+    "settingsNote": "{settings} > {workshop} altındaki {setting} ayrı bir ayardır ve parçalar bir işe eklendiğinde uygulanır."
   },
   "errors": {
-    "multiplierPositive": "Çarpan 0'dan büyük olmalıdır",
     "deleteFailed": "Parça silinemedi",
     "applyFailed": "Kâr marjı uygulanamadı",
     "saveFailed": "Parça kaydedilemedi",
@@ -70,16 +75,19 @@
     "currentStock": "Mevcut stok: {quantity}",
     "addedStock": "Stoka {amount} eklendi",
     "customAmount": "Adet...",
-    "scanParts": "Parça tara"
+    "scanParts": "Parça tara",
+    "notTracked": "Bu parçanın stoğu takip edilmiyor"
   },
   "form": {
     "editPart": "Parçayı düzenle",
     "addNewPart": "Yeni parça ekle",
     "supplierLink": "Tedarikçi linki",
     "supplierLinkPlaceholder": "https://supplier.com/product/...",
+    "supplierLinkInvalid": "Tedarikçi linki bir web adresi değil. Düzeltin veya linksiz kaydetmek için alanı temizleyin.",
     "fetch": "Getir",
-    "fetchFailed": "Getirme başarısız",
-    "fetchError": "URL'den meta veriler alınamadı",
+    "fetchBlocked": "Bu tedarikçinin sitesi otomatik sorgulamayı engelliyor. Alanları kendiniz doldurun. Parça ve link yine de kaydedilebilir.",
+    "fetchTimedOut": "Tedarikçinin sitesinin yanıt vermesi çok uzun sürdü. Tekrar deneyin veya alanları kendiniz doldurun. Parça ve link yine de kaydedilebilir.",
+    "fetchUnreadable": "Bu linkten parça bilgileri okunamadı. Alanları kendiniz doldurun. Parça ve link yine de kaydedilebilir.",
     "image": "Görsel",
     "dropOrClick": "Görsel bırakın veya tıklayın",
     "replace": "Değiştir",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "İngiliz",
     "unitCost": "Birim maliyet",
     "sellPrice": "Satış fiyatı",
+    "sellPriceMarkupHint": "{sellPrice}, {unitCost} + %{percent} olarak doldurulur. Kendi fiyatınızı belirlemek için bir fiyat yazın. Yüzdeyi değiştirmek için {inventory} sayfasındaki {applyMarkup} düğmesini kullanın.",
     "supplier": "Tedarikçi",
     "supplierPlaceholder": "AutoParts Ltd.",
     "supplierPhone": "Tedarikçi telefonu",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Parça açıklaması...",
     "cancel": "İptal",
     "saveChanges": "Değişiklikleri kaydet",
-    "addPart": "Parça ekle"
+    "addPart": "Parça ekle",
+    "tags": "Etiketler",
+    "tagsPlaceholder": "Markalar, modeller veya bulmaya yarayan her şey",
+    "tagsHint": "Her etiketten sonra Enter'a veya virgüle basın. Bir işte, aracın markası veya modeliyle etiketlenmiş parçalar önce listelenir.",
+    "tagsHintMarine": "Her etiketten sonra Enter'a veya virgüle basın. Bir işte, teknenin markası veya modeliyle etiketlenmiş parçalar önce listelenir.",
+    "removeTag": "{tag} kaldır",
+    "tagTooLong": "Bir etiket en fazla {max} karakter olabilir. Kaydetmeden önce kısaltın.",
+    "trackStock": "Stok takibi",
+    "trackStockHint": "Ücretlendirdiğiniz ama hiç saymadığınız ücretler ve sarf malzemeleri için kapatın.",
+    "trackStockOffNote": "Kaydedince miktar sıfırlanır ve stok geçmişine not düşülür. İşler artık miktarı değiştirmez."
   },
   "openMenu": "Menüyü aç",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "İş emri silindi",
       "quote_conversion": "Teklif dönüştürüldü",
       "manual_adjustment": "Manuel düzeltme",
-      "bulk_markup": "Toplu kâr marjı"
+      "bulk_markup": "Toplu kâr marjı",
+      "stock_tracking_off": "Stok takibi kapatıldı"
     },
     "backToInventory": "Stok",
     "reason": "Neden",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} stokta",
     "outOfStock": "Stokta yok",
     "onBackorder": "Ön siparişte ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Etiket",
+    "all": "Tüm etiketler",
+    "filterBy": "{tag} etiketli parçaları göster",
+    "more": "+{count} daha"
   }
 }

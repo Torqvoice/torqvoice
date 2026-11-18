@@ -12,6 +12,7 @@
   "noChats": "No hay chats anteriores sobre este registro",
   "chatsPrivate": "Tus chats son privados y solo tú puedes verlos.",
   "deleteChat": "Eliminar chat",
+  "deleteChatFailed": "No se pudo eliminar el chat. Inténtalo de nuevo.",
   "error": "Algo salió mal. Inténtalo de nuevo.",
   "disclaimer": "Las respuestas se generan a partir de los registros que muestra la aplicación y pueden ser incorrectas. Compruébalas antes de actuar.",
   "vehicleSuggestion1": "Resume el historial de servicio",

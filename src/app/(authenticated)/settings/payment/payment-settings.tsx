@@ -89,6 +89,7 @@ export function PaymentSettings({
       <ReadOnlyBanner />
       <ReadOnlyWrapper>
         <AppCard
+          id="payment-details"
           icon={Banknote}
           title={t('payment.detailsTitle')}
           action={
@@ -129,7 +130,12 @@ export function PaymentSettings({
           </div>
         </AppCard>
 
-        <AppCard icon={CreditCard} title={t('payment.onlinePayments')} contentClassName="space-y-4">
+        <AppCard
+          id="payment-online"
+          icon={CreditCard}
+          title={t('payment.onlinePayments')}
+          contentClassName="space-y-4"
+        >
           <p className="text-sm text-muted-foreground">{t('payment.onlinePaymentsDescription')}</p>
 
           <ul className="divide-y rounded-lg border">
@@ -163,7 +169,12 @@ export function PaymentSettings({
           <p className="text-xs text-muted-foreground">{t('payment.onlinePaymentsHint')}</p>
         </AppCard>
 
-        <AppCard icon={FileText} title={t('payment.termsOfSale')} contentClassName="space-y-4">
+        <AppCard
+          id="payment-terms-of-sale"
+          icon={FileText}
+          title={t('payment.termsOfSale')}
+          contentClassName="space-y-4"
+        >
           <p className="text-sm text-muted-foreground">{t('payment.termsOfSaleDescription')}</p>
 
           <div className="space-y-2">
@@ -192,7 +203,7 @@ export function PaymentSettings({
           </div>
 
           {!termsOfSaleUrl && termsOfSale && (
-            <div className="space-y-1">
+            <div id="payment-public-terms-url" className="space-y-1">
               <Label className="text-xs text-muted-foreground">{t('payment.publicTermsUrl')}</Label>
               <div className="flex items-center gap-2">
                 <code className="flex-1 rounded bg-muted px-3 py-2 text-xs break-all">

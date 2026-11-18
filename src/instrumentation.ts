@@ -13,7 +13,10 @@ export async function register() {
     if (process.env.DISABLE_BACKGROUND_JOBS === '1') {
       const { warnAboutAppUrl } = await import('./lib/auth-origin-hint')
       warnAboutAppUrl()
-      console.warn('[cron] DISABLE_BACKGROUND_JOBS=1, no scheduled work started')
+      const { markBackgroundJobsDisabled } = await import('./lib/background-jobs')
+      markBackgroundJobsDisabled()
+      const { createLogger } = await import('./lib/logger')
+      createLogger('cron').info('DISABLE_BACKGROUND_JOBS=1, no scheduled work started')
       return
     }
     const {
@@ -30,8 +33,12 @@ export async function register() {
       checkLowStock,
       checkDueReminders,
       processScheduledMessages,
+      processAppointmentNotifications,
       processIntegrationJobs,
       cleanupIntegrationLogs,
+      processBackupRuns,
+      syncWorkshopHolidays,
+      startHeartbeat,
     } = await import('./cronTasks')
     const { warnAboutAppUrl } = await import('./lib/auth-origin-hint')
     warnAboutAppUrl()
@@ -48,7 +55,12 @@ export async function register() {
     checkLowStock()
     checkDueReminders()
     processScheduledMessages()
+    processAppointmentNotifications()
     processIntegrationJobs()
     cleanupIntegrationLogs()
+    processBackupRuns()
+    syncWorkshopHolidays()
+    // Last, so the health check only sees beats once everything above started.
+    startHeartbeat()
   }
 }

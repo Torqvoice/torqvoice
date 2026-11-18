@@ -1,7 +1,7 @@
 'use client'
 
+import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import {
@@ -15,6 +15,7 @@ import {
 import {
   Plus,
   Loader2,
+  CalendarPlus,
   Wrench,
   Users,
   Car,
@@ -25,24 +26,10 @@ import {
 } from 'lucide-react'
 import { VehiclePickerDialog } from '@/components/vehicle-picker-dialog'
 import { NewInspectionDialog } from '@/features/inspections/Components/NewInspectionDialog'
-import { getVehicles } from '@/features/vehicles/Actions/vehicleActions'
-import { getCustomersList } from '@/features/customers/Actions/customerActions'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
-
-interface VehicleOption {
-  id: string
-  make: string
-  model: string
-  year: number
-  licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
-}
-
-interface CustomerOption {
-  id: string
-  name: string
-  company: string | null
-}
+import { openBooking, useBookingAccess } from '@/components/booking-launcher'
+import { ShortcutKeys } from '@/features/shortcuts/Components/ShortcutKeys'
+import { useShortcut } from '@/features/shortcuts/Components/ShortcutsProvider'
 
 interface TemplateOption {
   id: string
@@ -52,38 +39,18 @@ interface TemplateOption {
 
 export function QuickCreateMenu() {
   const t = useTranslations('navigation')
-  const router = useRouter()
+  // Through the save guard: the menu is in the header of every page, an
+  // open work order or quote with unsaved edits included.
+  const go = useGuardedPush()
+  const { canBook } = useBookingAccess()
   const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false)
   const [inspectionDialogOpen, setInspectionDialogOpen] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [vehicles, setVehicles] = useState<VehicleOption[]>([])
-  const [customers, setCustomers] = useState<CustomerOption[]>([])
   const [templates, setTemplates] = useState<TemplateOption[]>([])
 
-  const handleNewWorkOrder = async () => {
-    setLoading(true)
-    try {
-      const [vehiclesResult, customersResult] = await Promise.all([
-        getVehicles(),
-        getCustomersList(),
-      ])
-      setVehicles(
-        vehiclesResult.success && vehiclesResult.data
-          ? vehiclesResult.data.map((v) => ({
-              id: v.id,
-              make: v.make,
-              model: v.model,
-              year: v.year,
-              licensePlate: v.licensePlate,
-              customer: v.customer,
-            }))
-          : []
-      )
-      setCustomers(customersResult.success && customersResult.data ? customersResult.data : [])
-      setVehicleDialogOpen(true)
-    } finally {
-      setLoading(false)
-    }
+  // The picker searches vehicles itself, so there is nothing to load first.
+  const handleNewWorkOrder = () => {
+    setVehicleDialogOpen(true)
   }
 
   const handleNewInspection = async () => {
@@ -105,6 +72,12 @@ export function QuickCreateMenu() {
     }
   }
 
+  // The same two dialogs on their shortcuts. The rest of the menu opens a
+  // page, which the shortcut registry does on its own.
+  useShortcut('create.workOrder', handleNewWorkOrder)
+  useShortcut('create.inspection', () => void handleNewInspection())
+  useShortcut('create.appointment', () => openBooking(), canBook)
+
   return (
     <>
       <DropdownMenu>
@@ -118,32 +91,46 @@ export function QuickCreateMenu() {
             {t('quickCreate.title')}
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-48">
+        <DropdownMenuContent align="end" className="w-56">
           <DropdownMenuLabel>{t('quickCreate.title')}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={handleNewWorkOrder}>
             <Wrench className="h-4 w-4" />
             {t('quickCreate.workOrder')}
+            <ShortcutKeys id="create.workOrder" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/customers?create=true')}>
+          {/* Beside the work order: the same car, for another day. */}
+          {canBook && (
+            <DropdownMenuItem onSelect={() => openBooking()}>
+              <CalendarPlus className="h-4 w-4" />
+              {t('quickCreate.appointment')}
+              <ShortcutKeys id="create.appointment" className="ml-auto" />
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem onSelect={() => go('/customers?create=true')}>
             <Users className="h-4 w-4" />
             {t('quickCreate.customer')}
+            <ShortcutKeys id="create.customer" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/vehicles?create=true')}>
+          <DropdownMenuItem onSelect={() => go('/vehicles?create=true')}>
             <Car className="h-4 w-4" />
             {t('quickCreate.vehicle')}
+            <ShortcutKeys id="create.vehicle" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/quotes?create=true')}>
+          <DropdownMenuItem onSelect={() => go('/quotes?create=true')}>
             <FileText className="h-4 w-4" />
             {t('quickCreate.quote')}
+            <ShortcutKeys id="create.quote" className="ml-auto" />
           </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => router.push('/inventory?create=true')}>
+          <DropdownMenuItem onSelect={() => go('/inventory?create=true')}>
             <Package className="h-4 w-4" />
             {t('quickCreate.part')}
+            <ShortcutKeys id="create.part" className="ml-auto" />
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={handleNewInspection}>
             <ClipboardCheck className="h-4 w-4" />
             {t('quickCreate.inspection')}
+            <ShortcutKeys id="create.inspection" className="ml-auto" />
           </DropdownMenuItem>
 
           {/* Everything above creates a record. This creates a person, which
@@ -151,18 +138,13 @@ export function QuickCreateMenu() {
               adding a mechanic is not the same errand as booking a car in. */}
           <DropdownMenuSeparator />
           <DropdownMenuLabel>{t('quickCreate.shopActions')}</DropdownMenuLabel>
-          <DropdownMenuItem onSelect={() => router.push('/settings/team?add=true')}>
+          <DropdownMenuItem onSelect={() => go('/settings/team?add=true')}>
             <UserPlus className="mr-2 h-4 w-4" />
             {t('quickCreate.person')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <VehiclePickerDialog
-        open={vehicleDialogOpen}
-        onOpenChange={setVehicleDialogOpen}
-        vehicles={vehicles}
-        customers={customers}
-      />
+      <VehiclePickerDialog open={vehicleDialogOpen} onOpenChange={setVehicleDialogOpen} />
       <NewInspectionDialog
         open={inspectionDialogOpen}
         onOpenChange={setInspectionDialogOpen}

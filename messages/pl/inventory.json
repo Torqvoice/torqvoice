@@ -14,7 +14,8 @@
     "supplier": "Dostawca",
     "location": "Lokalizacja",
     "low": "Niski",
-    "barcode": "Kod kreskowy"
+    "barcode": "Kod kreskowy",
+    "notTracked": "Nieśledzone"
   },
   "empty": {
     "noMatch": "Żadne części nie pasują do wyszukiwania.",
@@ -44,17 +45,21 @@
   },
   "markup": {
     "title": "Zastosuj marżę do wszystkich części",
-    "multiplierLabel": "Mnożnik marży",
-    "description": "Cena sprzedaży zostanie ustawiona na koszt x {multiplier} dla wszystkich {count} części.",
-    "percentage": "({percent}% marży)",
+    "intro": "Ustawia cenę sprzedaży części jako koszt plus procent.",
+    "percentLabel": "Marża %",
+    "percentHint": "Wpisz 30, aby doliczyć 30% do kosztu.",
+    "percentInvalid": "Marża musi być większa niż -100%.",
+    "exampleTitle": "Przykład",
+    "exampleMarkup": "Marża {percent}%",
     "cancel": "Anuluj",
     "apply": "Zastosuj",
     "overrideExisting": "Nadpisz istniejące ceny sprzedaży",
     "overrideExistingHint": "Wszystkie części zostaną zaktualizowane, w tym te z istniejącą ceną sprzedaży.",
-    "skipExistingHint": "Zaktualizowane zostaną tylko części bez ceny sprzedaży."
+    "skipExistingHint": "Zaktualizowane zostaną tylko części bez ceny sprzedaży.",
+    "newPartsNote": "W nowych częściach pole „{sellPrice}” wypełnia się z tą marżą po wpisaniu pola „{unitCost}”.",
+    "settingsNote": "„{setting}” w {settings} > {workshop} to osobne ustawienie, stosowane, gdy części trafiają do zlecenia."
   },
   "errors": {
-    "multiplierPositive": "Mnożnik musi być większy niż 0",
     "deleteFailed": "Nie udało się usunąć części",
     "applyFailed": "Nie udało się zastosować marży",
     "saveFailed": "Nie udało się zapisać części",
@@ -70,16 +75,19 @@
     "currentStock": "Aktualny stan: {quantity}",
     "addedStock": "Dodano {amount} do stanu",
     "customAmount": "Ilość...",
-    "scanParts": "Skanuj części"
+    "scanParts": "Skanuj części",
+    "notTracked": "Stan tej części nie jest śledzony"
   },
   "form": {
     "editPart": "Edytuj część",
     "addNewPart": "Dodaj nową część",
     "supplierLink": "Link do dostawcy",
     "supplierLinkPlaceholder": "https://dostawca.pl/produkt/...",
+    "supplierLinkInvalid": "Link do dostawcy nie jest adresem strony. Popraw go albo wyczyść pole, aby zapisać bez linku.",
     "fetch": "Pobierz",
-    "fetchFailed": "Pobieranie nie powiodło się",
-    "fetchError": "Nie udało się pobrać metadanych z adresu URL",
+    "fetchBlocked": "Strona tego dostawcy blokuje automatyczne pobieranie danych. Wypełnij pola samodzielnie. Część i link nadal można zapisać.",
+    "fetchTimedOut": "Strona dostawcy zbyt długo nie odpowiadała. Spróbuj ponownie albo wypełnij pola samodzielnie. Część i link nadal można zapisać.",
+    "fetchUnreadable": "Nie udało się odczytać danych części z tego linku. Wypełnij pola samodzielnie. Część i link nadal można zapisać.",
     "image": "Zdjęcie",
     "dropOrClick": "Upuść zdjęcie lub kliknij",
     "replace": "Zamień",
@@ -119,6 +127,7 @@
     "unitGroupImperial": "Imperialne",
     "unitCost": "Koszt jedn.",
     "sellPrice": "Cena sprzedaży",
+    "sellPriceMarkupHint": "Pole „{sellPrice}” wypełnia się jako „{unitCost}” + {percent}%. Wpisz cenę, aby ustawić własną. Procent zmienisz przyciskiem „{applyMarkup}” na stronie „{inventory}”.",
     "supplier": "Dostawca",
     "supplierPlaceholder": "AutoParts Sp. z o.o.",
     "supplierPhone": "Telefon dostawcy",
@@ -129,7 +138,16 @@
     "descriptionPlaceholder": "Opis części...",
     "cancel": "Anuluj",
     "saveChanges": "Zapisz zmiany",
-    "addPart": "Dodaj część"
+    "addPart": "Dodaj część",
+    "tags": "Tagi",
+    "tagsPlaceholder": "Marki, modele lub cokolwiek, po czym ją znaleźć",
+    "tagsHint": "Po każdym tagu naciśnij Enter lub przecinek. W zleceniu najpierw widać części oznaczone marką lub modelem pojazdu.",
+    "tagsHintMarine": "Po każdym tagu naciśnij Enter lub przecinek. W zleceniu najpierw widać części oznaczone marką lub modelem jednostki pływającej.",
+    "removeTag": "Usuń {tag}",
+    "tagTooLong": "Tag może mieć najwyżej {max} znaków. Skróć go przed zapisaniem.",
+    "trackStock": "Śledź stan",
+    "trackStockHint": "Wyłącz dla opłat i materiałów eksploatacyjnych, które doliczasz, ale nigdy nie liczysz.",
+    "trackStockOffNote": "Zapisanie ustawia ilość na zero i odnotowuje to w historii stanu. Zlecenia już jej nie zmieniają."
   },
   "openMenu": "Otwórz menu",
   "history": {
@@ -146,7 +164,8 @@
       "service_record_deleted": "Zlecenie usunięte",
       "quote_conversion": "Wycena przekształcona",
       "manual_adjustment": "Korekta ręczna",
-      "bulk_markup": "Marża zbiorcza"
+      "bulk_markup": "Marża zbiorcza",
+      "stock_tracking_off": "Śledzenie stanu wyłączone"
     },
     "backToInventory": "Magazyn",
     "reason": "Powód",
@@ -157,5 +176,11 @@
     "inStock": "{quantity} w magazynie",
     "outOfStock": "Brak w magazynie",
     "onBackorder": "W zamówieniu ({count})"
+  },
+  "tags": {
+    "filterPlaceholder": "Tag",
+    "all": "Wszystkie tagi",
+    "filterBy": "Pokaż części z tagiem {tag}",
+    "more": "+{count} więcej"
   }
 }

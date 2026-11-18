@@ -4,12 +4,13 @@ import { db } from '@/lib/db'
 import { listOrgEntries } from '@/features/time-tracking/Lib/timeEntries'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { netLineTotal } from '@/lib/tax'
+import { earnedLineTotal, netLineTotal, taxedNetAmountOf } from '@/lib/tax'
 import { TaxByRateTable } from '../Lib/taxByRate'
 import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { shareBilledHours } from '../Lib/sharedBilledHours'
 
 /** Hours a labour line stands for. A shop fee line is one unit of a charge, not an hour. */
 const laborHours = (line: { hours: number; pricingType: string }) =>
@@ -68,18 +69,21 @@ export async function getRevenueReport(params: ReportRange) {
           type: true,
           taxRate: true,
           taxInclusive: true,
+          subtotal: true,
+          discountAmount: true,
           manuallyPaid: true,
           payments: { select: { amount: true } },
-          partItems: { select: { unitCost: true, quantity: true, total: true } },
-          laborItems: { select: { total: true } },
+          partItems: { select: { unitCost: true, quantity: true, total: true, taxable: true } },
+          laborItems: { select: { total: true, taxable: true } },
         },
         orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
       })
 
       // Monthly breakdown.
       // `revenue` is the gross customer-facing total (what was charged).
-      // `partsRevenue` and `laborRevenue` are NET (pre-tax) so they add up
-      // consistently with `partsCost` (which is always net) for profit math.
+      // `partsRevenue` and `laborRevenue` are NET (pre-tax) and carry their
+      // share of the job's discount, so they add up consistently with
+      // `partsCost` (which is always net) for profit math.
       const monthly: Record<
         string,
         {
@@ -106,11 +110,11 @@ export async function getRevenueReport(params: ReportRange) {
         const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
         const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
         const partsRevenue = r.partItems.reduce(
-          (s, p) => s + netLineTotal(p.total, r.taxRate, r.taxInclusive),
+          (s, p) => s + earnedLineTotal(p.total, r, p.taxable),
           0
         )
         const laborRevenue = r.laborItems.reduce(
-          (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
+          (s, l) => s + earnedLineTotal(l.total, r, l.taxable),
           0
         )
         const _date = r.startDateTime ?? r.serviceDate
@@ -324,6 +328,9 @@ export async function getTechnicianReport(params: ReportRange) {
  * started in the window, the same figure the overview tab shows. The ratio
  * is the efficiency a workshop actually manages by: hours it could invoice
  * for every hour it paid.
+ *
+ * A job with helpers shares its billed hours between the people on it, by
+ * the time each clocked on that job (Lib/sharedBilledHours.ts).
  */
 export async function getTechnicianTimeReport(params: ReportRange) {
   return withAuth(
@@ -341,7 +348,9 @@ export async function getTechnicianTimeReport(params: ReportRange) {
             technicianId: { not: null },
           },
           select: {
+            id: true,
             technicianId: true,
+            helpers: { select: { technicianId: true } },
             laborItems: { select: { hours: true, pricingType: true } },
           },
         }),
@@ -374,9 +383,44 @@ export async function getTechnicianTimeReport(params: ReportRange) {
         r.clockedMinutes += minutes
         r.jobs.add(e.serviceRecord.id)
       }
+      // What each person clocked on the jobs that more than one person is
+      // on, over the whole life of the job rather than the window: the share
+      // is of the work, and a job started last month was worked last month.
+      const sharedIds = records.filter((rec) => rec.helpers.length > 0).map((rec) => rec.id)
+      const clockedOnJob = new Map<string, Map<string, number>>()
+      if (sharedIds.length > 0) {
+        const worked = await db.timeEntry.findMany({
+          where: { organizationId, serviceRecordId: { in: sharedIds } },
+          select: {
+            serviceRecordId: true,
+            technicianId: true,
+            startedAt: true,
+            endedAt: true,
+            durationMinutes: true,
+          },
+        })
+        for (const e of worked) {
+          const minutes =
+            e.durationMinutes ??
+            Math.max(0, Math.round(((e.endedAt ?? now).getTime() - e.startedAt.getTime()) / 60_000))
+          let byPerson = clockedOnJob.get(e.serviceRecordId)
+          if (!byPerson) {
+            byPerson = new Map()
+            clockedOnJob.set(e.serviceRecordId, byPerson)
+          }
+          byPerson.set(e.technicianId, (byPerson.get(e.technicianId) ?? 0) + minutes)
+        }
+      }
+
       for (const rec of records) {
         if (!rec.technicianId) continue
-        row(rec.technicianId).billedHours += rec.laborItems.reduce((s, l) => s + laborHours(l), 0)
+        const shares = shareBilledHours({
+          hours: rec.laborItems.reduce((s, l) => s + laborHours(l), 0),
+          technicianId: rec.technicianId,
+          helperIds: rec.helpers.map((h) => h.technicianId),
+          clockedMinutes: clockedOnJob.get(rec.id) ?? new Map(),
+        })
+        for (const [technicianId, hours] of shares) row(technicianId).billedHours += hours
       }
 
       const names = new Map(
@@ -430,16 +474,20 @@ export async function getPartsUsageReport(params: ReportRange) {
           partNumber: true,
           quantity: true,
           total: true,
+          taxable: true,
           unitCost: true,
-          serviceRecord: { select: { taxRate: true, taxInclusive: true } },
+          serviceRecord: {
+            select: { taxRate: true, taxInclusive: true, subtotal: true, discountAmount: true },
+          },
         },
       })
 
-      // Use net (pre-tax) line totals so revenue/profit math is consistent
-      // across inclusive- and exclusive-tax records.
+      // Use net (pre-tax) line totals, less each line's share of the job's
+      // discount, so revenue/profit math is consistent across inclusive- and
+      // exclusive-tax records and agrees with the revenue report.
       const partWithNet = parts.map((p) => ({
         ...p,
-        netTotal: netLineTotal(p.total, p.serviceRecord.taxRate, p.serviceRecord.taxInclusive),
+        netTotal: earnedLineTotal(p.total, p.serviceRecord, p.taxable),
       }))
 
       const byPart: Record<
@@ -693,7 +741,9 @@ export async function getInventoryReport() {
   return withAuth(
     async ({ organizationId }) => {
       const parts = await db.inventoryPart.findMany({
-        where: { organizationId, isArchived: false },
+        // Stock on hand: a part that does not track stock (a fee,
+        // consumables) has none, so it is not counted, valued or listed low.
+        where: { organizationId, isArchived: false, trackStock: true },
         select: {
           id: true,
           name: true,
@@ -885,7 +935,7 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
               total: true,
             },
           },
-          laborItems: { select: { hours: true, total: true, pricingType: true } },
+          laborItems: { select: { hours: true, total: true, pricingType: true, taxable: true } },
         },
         orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
       })
@@ -912,7 +962,7 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
         // Labor "cost" here is what was charged to the customer for labor.
         // Net (pre-tax) so monthly breakdowns are consistent across modes.
         const laborCost = r.laborItems.reduce(
-          (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive),
+          (s, l) => s + netLineTotal(l.total, r.taxRate, r.taxInclusive, l.taxable),
           0
         )
         const laborHrs = r.laborItems.reduce((s, l) => s + laborHours(l), 0)
@@ -1011,6 +1061,7 @@ export async function getTaxReport(params: ReportRange) {
           serviceDate: true,
           startDateTime: true,
           subtotal: true,
+          taxableSubtotal: true,
           taxRate: true,
           taxAmount: true,
           taxInclusive: true,
@@ -1038,7 +1089,7 @@ export async function getTaxReport(params: ReportRange) {
         // The taxable base = total - tax. This is the net amount on which tax
         // was calculated, and it works in BOTH inclusive and exclusive modes
         // (and accounts for any discount applied).
-        const taxableBase = Math.max(0, r.totalAmount - r.taxAmount)
+        const taxableBase = taxedNetAmountOf(r)
 
         if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 }
         monthly[month].taxCollected += r.taxAmount

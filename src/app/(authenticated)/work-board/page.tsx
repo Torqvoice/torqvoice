@@ -11,6 +11,11 @@ import { WorkBoardClient } from '@/features/workboard/Components/WorkBoardClient
 import { getAuthContext } from '@/lib/get-auth-context'
 import { addZonedDays, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { pageTitle } from '@/lib/page-title'
+
+export function generateMetadata() {
+  return pageTitle('workBoard')
+}
 
 // The week that holds the workshop's today, on the workshop's clock.
 function getWeekStart(date: Date, weekStartDay: number, timeZone: string): string {

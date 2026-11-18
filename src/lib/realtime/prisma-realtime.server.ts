@@ -3,7 +3,7 @@ import 'server-only'
 import { Prisma } from '@/generated/prisma/client'
 import { currentActor } from './actor.server'
 import { publishRecordChange } from './publish.server'
-import type { ChangeAuthor, RecordAction, RecordKind } from './events'
+import { PORTAL_THREAD_HINT, type ChangeAuthor, type RecordAction, type RecordKind } from './events'
 
 /**
  * Every write the app makes, announced without being asked.
@@ -68,6 +68,9 @@ const CHILD_MODELS: Record<
     also: { parent: 'inspection', fk: 'inspectionId' },
   },
   TimeEntry: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'clock' },
+  // Who else is on the job, so a work order open at the desk shows a helper
+  // the moment somebody adds one from the board.
+  ServiceRecordHelper: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'team' },
   Payment: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'payments' },
   QuotePart: { parent: 'quote', fk: 'quoteId', hint: 'parts' },
   QuoteLabor: { parent: 'quote', fk: 'quoteId', hint: 'labor' },
@@ -76,7 +79,20 @@ const CHILD_MODELS: Record<
   InspectionAttachment: { parent: 'inspection', fk: 'inspectionId', hint: 'attachments' },
   VehicleFinding: { parent: 'vehicle', fk: 'vehicleId', hint: 'findings' },
   TireSetAttachment: { parent: 'tireSet', fk: 'tireSetId', hint: 'attachments' },
+  // A mark is drawn on a work order's drop-off or on an inspection, so the
+  // page open on that one redraws its map when a mark changes elsewhere.
+  ConditionMark: {
+    parent: 'serviceRecord',
+    fk: 'serviceRecordId',
+    hint: 'conditionMarks',
+    also: { parent: 'inspection', fk: 'inspectionId' },
+  },
   TireMeasurement: { parent: 'tireSet', fk: 'tireSetId', hint: 'measurements' },
+  // The customer portal's chat. A message written, read or deleted on either
+  // side is a change of that customer's thread: the workshop's open
+  // conversation re-reads itself, and the customer's own socket is told
+  // (lib/realtime/portal.server.ts), which is what makes the chat live.
+  PortalMessage: { parent: 'customer', fk: 'customerId', hint: PORTAL_THREAD_HINT },
 }
 
 const WRITES: Record<string, RecordAction | 'bulk'> = {

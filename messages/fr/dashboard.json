@@ -45,6 +45,7 @@
   "showCards": "Afficher les cartes",
   "cards": {
     "maintenance": "Maintenance prévue",
+    "calendarEvents": "Événements du calendrier",
     "reminders": "Rappels à venir",
     "inspections": "Inspections",
     "serviceRequests": "Demandes de service",
@@ -75,7 +76,13 @@
     "dismissedOn": "Ignoré le {date}",
     "restore": "Restaurer",
     "settingsAriaLabel": "Paramètres de maintenance",
-    "dismissAriaLabel": "Ignorer"
+    "dismissAriaLabel": "Ignorer",
+    "dismissError": "Impossible d'ignorer le véhicule. Veuillez réessayer."
+  },
+  "calendarEvents": {
+    "title": "Événements du calendrier",
+    "description": "{days} prochains jours",
+    "noData": "Rien au calendrier pour les {days} prochains jours."
   },
   "reminders": {
     "title": "Rappels à venir",

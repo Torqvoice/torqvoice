@@ -104,30 +104,34 @@ test.describe('the free plan', () => {
   })
 
   test('offers the same upgrade when a new work order creates the customer', async ({ page }) => {
-    // The flow the getting-started checklist sends a new workshop to: vehicle,
-    // customer and job from one dialog. Still at the limit, the customer is
-    // refused, and with it the vehicle that would have belonged to them.
+    // The flow the getting-started checklist sends a new workshop to: the
+    // work order picker opens the full vehicle form, whose owner picker adds
+    // the customer. Still at the limit, the customer is refused, and with it
+    // the vehicle that would have belonged to them.
     const customers = await customerRows(organizationId)
     const vehicles = await vehicleRows(organizationId)
 
     await page.goto('/work-orders?new=1')
     await settle(page)
+    const vehicleForm = page.getByRole('dialog', { name: 'Add New Vehicle' })
     await expect(async () => {
       await page
         .getByRole('dialog', { name: 'Select Vehicle' })
         .getByRole('button', { name: 'Add New Vehicle' })
         .first()
         .click()
-      await expect(page.locator('#new-make')).toBeVisible({ timeout: 2_000 })
+      await expect(vehicleForm.locator('#make')).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
 
-    await page.locator('#new-make').fill('Volvo')
-    await page.locator('#new-model').fill('V70')
-    await page.locator('#new-year').fill('2015')
-    await page.getByRole('combobox').filter({ hasText: 'Select a customer (optional)' }).click()
-    await page.getByRole('option', { name: 'Create new customer' }).click()
-    await page.locator('#new-customer-name').fill(`E2E Work order customer ${stamp}`)
-    await page.getByRole('button', { name: 'Create & Continue' }).click()
+    await vehicleForm.locator('#make').fill('Volvo')
+    await vehicleForm.locator('#model').fill('V70')
+    await vehicleForm.locator('#year').fill('2015')
+    await vehicleForm.getByRole('combobox').click()
+    await page.getByRole('button', { name: 'Add Customer', exact: true }).click()
+    const customerForm = page.getByRole('dialog', { name: 'Add New Customer' })
+    await expect(customerForm).toBeVisible()
+    await customerForm.locator('#name').fill(`E2E Work order customer ${stamp}`)
+    await customerForm.locator('button[type="submit"]').click()
 
     await expectUpgradeOffered(page, new RegExp(`up to ${FREE_CUSTOMERS} customers`))
     expect(await customerRows(organizationId), 'no customer written').toBe(customers)
@@ -137,18 +141,24 @@ test.describe('the free plan', () => {
   })
 
   test('offers an upgrade when inviting a colleague', async ({ page }) => {
-    // The free plan is one person, so the first invitation is the limit.
+    // The free plan is one person, so the first invitation is the limit. The
+    // add-person dialog says so on the office choice, before an address is
+    // typed: a workshop in PostHog filled in the whole form four times first.
     await page.goto('/settings/team')
     await settle(page)
+    const office = page.getByRole('button', { name: /Someone in the office/ })
     await expect(async () => {
       await page.getByRole('button', { name: 'Add', exact: true }).first().click()
-      await expect(page.getByText('Someone in the office')).toBeVisible({ timeout: 2_000 })
+      await expect(office).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
-    await page.getByText('Someone in the office').click()
-    await page.locator('#member-email').fill(`e2e-colleague-${stamp}@example.com`)
-    await page.getByRole('button', { name: 'Invite', exact: true }).click()
+    await expect(office, 'the full plan is named on the choice').toContainText(
+      'Your plan includes one team member'
+    )
+    await expect(office).toHaveAttribute('data-locked', 'true')
 
+    await office.click()
     await expectUpgradeOffered(page, /one team member/)
+    await expect(page.locator('#member-email'), 'no form to fill in for nothing').toHaveCount(0)
     expect(await teamInvitations(organizationId), 'no invitation went out').toBe(0)
   })
 

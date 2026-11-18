@@ -1,18 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { assertContentLength, assertZipWithinLimits } from '@/lib/backup/zip-guard'
+import { assertContentLength } from '@/lib/backup/zip-guard'
 import { rateLimit } from '@/lib/rate-limit'
 import { getAuthContext } from '@/lib/get-auth-context'
+import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { db } from '@/lib/db'
 import { isDemoMode, demoOffMessage } from '@/lib/demo'
-import { resolveInvoicePrefix } from '@/lib/invoice-utils'
+import {
+  clearNextNumberSetting,
+  JOB_NUMBER_SETTING_KEYS,
+  jobNumberSequence,
+} from '@/lib/job-number'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
-import { mkdir, writeFile, rm } from 'fs/promises'
+import { mkdir, rm } from 'fs/promises'
 import path from 'path'
 import os from 'os'
-import JSZip from 'jszip'
+import {
+  extractEntry,
+  openZip,
+  readEntryJson,
+  spoolUpload,
+  type SpooledUpload,
+} from '@/lib/backup/zip-file'
 import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
+import { prepareImportedFile, writeImportedFile } from '@/lib/backup/import-photo'
+import { releaseFiles } from '@/lib/files/manager'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -190,21 +203,6 @@ function getPaymentMethod(typeId: number): string {
   return methods[typeId] || 'other'
 }
 
-function getMimeType(filename: string): string {
-  const ext = filename.split('.').pop()?.toLowerCase()
-  const mimeMap: Record<string, string> = {
-    jpg: 'image/jpeg',
-    jpeg: 'image/jpeg',
-    png: 'image/png',
-    webp: 'image/webp',
-    pdf: 'application/pdf',
-    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    csv: 'text/csv',
-    txt: 'text/plain',
-  }
-  return mimeMap[ext || ''] || 'application/octet-stream'
-}
-
 // ── API Route ────────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
@@ -218,6 +216,10 @@ export async function POST(request: NextRequest) {
   if (!ctx) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+  // While a restore replaces this workshop's rows and files, nothing is written here.
+  if (isRestoring(ctx.organizationId)) {
+    return NextResponse.json({ error: RESTORE_IN_PROGRESS_MESSAGE }, { status: 409 })
+  }
   // Reading or replacing the whole workshop is an owner's or admin's call.
   if (!ctx.isAdmin) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
@@ -226,59 +228,61 @@ export async function POST(request: NextRequest) {
   const { organizationId, userId } = ctx
   const timeZone = await workshopTimeZone(organizationId)
   let tmpDir: string | null = null
+  let upload: SpooledUpload | null = null
+  // Every file this import writes, so a run that fails hands them back.
+  const importedFileUrls: string[] = []
 
   try {
-    // Read zip from request body
+    // The zip goes to disk as it arrives; nothing of it is held in memory
     assertContentLength(request, 200 * 1024 * 1024)
-    const arrayBuffer = await request.arrayBuffer()
-    const zipBuffer = Buffer.from(arrayBuffer)
+    upload = await spoolUpload(request, 200 * 1024 * 1024, 'invoice-ninja-upload')
 
-    if (zipBuffer.length < 100) {
+    if (upload.size < 100) {
       return NextResponse.json(
         { error: 'Uploaded file is too small to be a valid backup' },
         { status: 400 }
       )
     }
 
-    // Extract zip
-    const zip = await JSZip.loadAsync(zipBuffer)
-    assertZipWithinLimits(zip.files)
-
-    // Find and parse backup.json
-    const backupEntry = zip.file('backup.json')
-    if (!backupEntry) {
-      return NextResponse.json({ error: 'No backup.json found in the zip file' }, { status: 400 })
-    }
-
-    const backupJson = await backupEntry.async('string')
-    const body = JSON.parse(backupJson) as INBackup
-
-    if (!body.clients || !Array.isArray(body.clients)) {
-      return NextResponse.json(
-        { error: 'Invalid Invoice Ninja export: missing clients array' },
-        { status: 400 }
-      )
-    }
-
-    // Extract zip to temp dir for document file access
-    tmpDir = path.join(os.tmpdir(), `in-import-${Date.now()}`)
-    await mkdir(tmpDir, { recursive: true })
-
-    for (const [relativePath, entry] of Object.entries(zip.files)) {
-      if (entry.dir) continue
-      // Only extract document files, not the full backup
-      if (!relativePath.startsWith('documents/')) continue
-      // Guard against zip-slip: `startsWith("documents/")` alone is bypassable
-      // with `documents/../../..`, so verify the resolved path stays in tmpDir.
-      const targetPath = resolveWithinDir(tmpDir, relativePath)
-      if (!targetPath) {
-        console.warn(`[import-invoice-ninja] Skipping unsafe zip entry: ${relativePath}`)
-        continue
+    const zip = await openZip(upload.path)
+    let body: INBackup
+    try {
+      // Find and parse backup.json straight from the archive
+      const backupEntry = zip.find('backup.json')
+      if (!backupEntry) {
+        return NextResponse.json({ error: 'No backup.json found in the zip file' }, { status: 400 })
       }
-      await mkdir(path.dirname(targetPath), { recursive: true })
-      const content = await entry.async('nodebuffer')
-      await writeFile(targetPath, content)
+      body = await readEntryJson<INBackup>(zip, backupEntry)
+
+      if (!body.clients || !Array.isArray(body.clients)) {
+        return NextResponse.json(
+          { error: 'Invalid Invoice Ninja export: missing clients array' },
+          { status: 400 }
+        )
+      }
+
+      // Extract the documents to a temp dir, one file at a time
+      tmpDir = path.join(os.tmpdir(), `in-import-${Date.now()}`)
+      await mkdir(tmpDir, { recursive: true })
+
+      for (const entry of zip.entries) {
+        if (entry.dir) continue
+        // Only extract document files, not the full backup
+        if (!entry.name.startsWith('documents/')) continue
+        // Guard against zip-slip: `startsWith("documents/")` alone is bypassable
+        // with `documents/../../..`, so verify the resolved path stays in tmpDir.
+        const targetPath = resolveWithinDir(tmpDir, entry.name)
+        if (!targetPath) {
+          console.warn(`[import-invoice-ninja] Skipping unsafe zip entry: ${entry.name}`)
+          continue
+        }
+        await extractEntry(zip, entry, targetPath)
+      }
+    } finally {
+      zip.close()
     }
+    await upload.remove()
+    upload = null
 
     const clients = body.clients.filter((c) => !c.is_deleted)
     const contacts = body.client_contacts || []
@@ -296,23 +300,18 @@ export async function POST(request: NextRequest) {
       docsByInvoice.set(doc.documentable_id, existing)
     }
 
-    // Get invoice prefix settings
-    const prefixSetting = await db.appSetting.findFirst({
-      where: { organizationId, key: 'workshop.invoicePrefix' },
+    // Imported jobs carry on the workshop's own numbering, in its format and
+    // past every number already issued in it; see src/lib/job-number.ts.
+    const numberingSettings = await db.appSetting.findMany({
+      where: { organizationId, key: { in: [...JOB_NUMBER_SETTING_KEYS] } },
     })
-    const invoicePrefix = resolveInvoicePrefix(prefixSetting?.value ?? '{year}-')
-
-    // Get the current highest invoice number
-    const lastRecord = await db.serviceRecord.findFirst({
-      where: { organizationId },
-      orderBy: { createdAt: 'desc' },
-      select: { invoiceNumber: true },
+    const sequence = await jobNumberSequence({
+      organizationId,
+      settings: Object.fromEntries(numberingSettings.map((s) => [s.key, s.value])),
+      timeZone,
     })
-    let nextInvoiceNum = 1001
-    if (lastRecord?.invoiceNumber) {
-      const match = lastRecord.invoiceNumber.match(/(\d+)$/)
-      if (match) nextInvoiceNum = Number.parseInt(match[1], 10) + 1
-    }
+    const invoicePrefix = sequence.prefix
+    let nextInvoiceNum = sequence.first
 
     // Uploads directory for this org
     const uploadsBase = path.join(uploadsRoot(), organizationId)
@@ -329,6 +328,7 @@ export async function POST(request: NextRequest) {
       documents: 0,
     }
 
+    // As long as the route may run: the photos are re-encoded inside.
     await db.$transaction(
       async (tx) => {
         // ── Create a single placeholder vehicle for all imported invoices ──
@@ -407,6 +407,7 @@ export async function POST(request: NextRequest) {
 
           const partsTotal = partItems.reduce((sum, li) => sum + (li.line_total || 0), 0)
           const laborTotal = laborItems.reduce((sum, li) => sum + (li.line_total || 0), 0)
+          const serviceDate = toSafeWorkshopDate(invoice.date, timeZone) ?? new Date()
 
           const record = await tx.serviceRecord.create({
             data: {
@@ -417,7 +418,10 @@ export async function POST(request: NextRequest) {
               type: 'repair',
               status: 'completed',
               cost: amount,
-              serviceDate: toSafeWorkshopDate(invoice.date, timeZone) ?? new Date(),
+              serviceDate,
+              // Reports and the calendar find a job by when it started; a
+              // job without a start is in none of them.
+              startDateTime: serviceDate,
               invoiceNumber,
               subtotal: partsTotal + laborTotal,
               discountType:
@@ -491,21 +495,25 @@ export async function POST(request: NextRequest) {
 
             const targetDir = path.join(uploadsBase, 'services')
             await mkdir(targetDir, { recursive: true })
+            // A photo is fitted and re-encoded on the way, so it lands at
+            // the size an upload through the app would have, and the file is
+            // stored under a generated name like an upload's, so the file
+            // manager keeps track of it.
             const safeName = doc.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-            const filename = `in-${invoice.number}-${safeName}`
-            const targetPath = path.join(targetDir, filename)
-            await writeFile(targetPath, fileData)
+            const prepared = await prepareImportedFile(`in-${invoice.number}-${safeName}`, fileData)
+            const storedName = await writeImportedFile(targetDir, prepared.name, prepared.data)
 
-            const fileUrl = `/api/protected/files/${organizationId}/services/${filename}`
-            const isImage = /\.(jpg|jpeg|png|webp)$/i.test(doc.name)
+            const fileUrl = `/api/protected/files/${organizationId}/services/${storedName}`
+            importedFileUrls.push(fileUrl)
 
             await tx.serviceAttachment.create({
               data: {
-                fileName: doc.name,
+                // The user's own name, with the extension the stored bytes now have.
+                fileName: prepared.compressed ? doc.name.replace(/\.[^.]+$/, '.jpg') : doc.name,
                 fileUrl,
-                fileType: getMimeType(doc.name),
-                fileSize: fileData.length,
-                category: isImage ? 'image' : 'diagnostic',
+                fileType: prepared.type,
+                fileSize: prepared.data.length,
+                category: prepared.type.startsWith('image/') ? 'image' : 'diagnostic',
                 serviceRecordId: record.id,
               },
             })
@@ -540,8 +548,12 @@ export async function POST(request: NextRequest) {
             counts.payments++
           }
         }
+        // "Next invoice number" was used up by the first imported job.
+        if (sequence.usesNextNumberSetting && nextInvoiceNum > sequence.first) {
+          await clearNextNumberSetting(organizationId, tx)
+        }
       },
-      { timeout: 120000 }
+      { timeout: maxDuration * 1000 }
     )
 
     return NextResponse.json({
@@ -551,6 +563,10 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('[import-invoice-ninja] Error:', error)
     console.error('[backup import]', error)
+    // The rows were rolled back, so nothing uses the files this run wrote.
+    await releaseFiles(importedFileUrls, { organizationId, reason: 'import failed' }).catch((err) =>
+      console.error('[backup import] could not release imported files:', err)
+    )
     const message = 'Import failed'
     return NextResponse.json({ error: message }, { status: 500 })
   } finally {
@@ -559,5 +575,9 @@ export async function POST(request: NextRequest) {
         /* ignore cleanup errors */
       })
     }
+    // The upload is still there when the request failed before it was extracted.
+    upload?.remove().catch(() => {
+      /* ignore cleanup errors */
+    })
   }
 }

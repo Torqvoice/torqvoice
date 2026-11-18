@@ -103,7 +103,8 @@
     "invoiceDesignDefault": "Verkstedets standard",
     "invoiceDesignHint": "Fakturaer til denne kunden skrives ut med dette designet i stedet for verkstedets standard. En faktura kan fortsatt velge sitt eget.",
     "reminderOptOut": "Ingen påminnelser",
-    "reminderOptOutHint": "Ikke ta med denne kunden i påminnelser om EU-kontroll eller andre utsendinger."
+    "reminderOptOutHint": "Ikke ta med denne kunden i påminnelser om EU-kontroll eller andre utsendinger.",
+    "bookAppointment": "Book time"
   },
   "serviceRequests": {
     "statusNew": "Ny",
@@ -120,6 +121,12 @@
     "saveNotes": "Lagre notater",
     "submitted": "Sendt inn {date}",
     "preferred": "Foretrukket: {date}",
+    "preferredMorning": "Foretrukket: {date}, formiddag",
+    "preferredAfternoon": "Foretrukket: {date}, ettermiddag",
+    "files": "{count, plural, one {# bilde eller video fra kunden} other {# bilder eller videoer fra kunden}}",
+    "openPhoto": "Åpne bilde {number}",
+    "openVideo": "Åpne video {number}",
+    "fileMissing": "Bilde {number} er ikke lenger tilgjengelig",
     "workOrderCreated": "Arbeidsordre opprettet",
     "workOrderError": "Kunne ikke opprette arbeidsordre",
     "requestDismissed": "Forespørsel avvist",

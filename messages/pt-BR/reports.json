@@ -150,7 +150,7 @@
       "tableTitle": "Registrado contra faturado",
       "clocked": "Registrado",
       "billed": "Faturado",
-      "hint": "As horas registradas vêm do relógio de ponto. As horas faturadas são as linhas de mão de obra dos serviços atribuídos ao técnico iniciados no período. A eficiência é faturado dividido por registrado.",
+      "hint": "As horas registradas vêm do relógio de ponto. As horas faturadas são as linhas de mão de obra dos serviços atribuídos ao técnico iniciados no período. Um serviço com mais de uma pessoa divide as horas faturadas pelo tempo que cada uma registrou nele; se alguma não registrou tempo nele, as horas ficam com o técnico. A eficiência é faturado dividido por registrado.",
       "noClock": "Sem registro",
       "jobsClocked": "Serviços registrados"
     }

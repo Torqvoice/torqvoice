@@ -1,20 +1,24 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useGuardedPush } from '@/hooks/use-guarded-push'
+import { useState, useEffect, useRef, type KeyboardEvent } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+  Dialog,
+  DialogBody,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { cn } from '@/lib/utils'
 import { Loader2, Plus, Car, Search, ArrowLeft, UserPlus, ShoppingCart, Ship } from 'lucide-react'
-import { createVehicle } from '@/features/vehicles/Actions/vehicleActions'
+import { searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
+import { plateFromSearch } from '@/features/vehicles/Lib/plate'
+import { usePlateLookupAccess } from '@/components/plate-lookup-context'
 import { createDraftCounterSale } from '@/features/vehicles/Actions/createDraftServiceRecord'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { createCustomer } from '@/features/customers/Actions/customerActions'
@@ -29,20 +33,21 @@ interface Vehicle {
   model: string
   year: number
   licensePlate: string | null
-  customer: { id: string; name: string; company: string | null } | null
+  customer: { id: string; name: string } | null
 }
 
-interface Customer {
+interface CustomerOption {
   id: string
   name: string
   company: string | null
 }
 
+// Enough recent vehicles to pick from at a glance; anything else is a search away.
+const PAGE_SIZE = 30
+
 interface VehiclePickerDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  vehicles: Vehicle[]
-  customers: Customer[]
   title?: string
   redirectQuery?: Record<string, string>
 }
@@ -50,12 +55,10 @@ interface VehiclePickerDialogProps {
 export function VehiclePickerDialog({
   open,
   onOpenChange,
-  vehicles,
-  customers,
   title,
   redirectQuery,
 }: VehiclePickerDialogProps) {
-  const router = useRouter()
+  const go = useGuardedPush()
   const t = useTranslations('workOrders.vehiclePicker')
   const tc = useTranslations('common.buttons')
   const isMarine = useServiceType() === 'marine'
@@ -64,37 +67,82 @@ export function VehiclePickerDialog({
   const displayTitle = isMarine ? t('titleMarine') : title || t('title')
 
   const [vehicleSearch, setVehicleSearch] = useState('')
-  const [pickerStep, setPickerStep] = useState<'select' | 'create' | 'sale'>('select')
-
-  const [newMake, setNewMake] = useState('')
-  const [newModel, setNewModel] = useState('')
-  const [newYear, setNewYear] = useState('')
-  const [newPlate, setNewPlate] = useState('')
-  const [selectedCustomerId, setSelectedCustomerId] = useState('')
+  const [pickerStep, setPickerStep] = useState<'select' | 'sale'>('select')
+  const { canCreate: canAddVehicle } = usePlateLookupAccess()
+  // A vehicle not on file is added in the same form as everywhere else, and
+  // its work order opens as soon as it is saved. `null` is closed; the string
+  // is the plate the search was for, to start the new vehicle from.
+  const [newVehicle, setNewVehicle] = useState<string | null>(null)
+  // Kept as the whole customer, not just its id: the combobox remounts when the
+  // step changes and needs the customer to show who the record will be saved to.
+  const [selectedCustomer, setSelectedCustomer] = useState<CustomerOption | null>(null)
+  const selectedCustomerId = selectedCustomer?.id ?? ''
   const [showNewCustomer, setShowNewCustomer] = useState(false)
   const [newCustomerName, setNewCustomerName] = useState('')
   const [newCustomerPhone, setNewCustomerPhone] = useState('')
   const [creating, setCreating] = useState(false)
 
-  const filteredVehicles = useMemo(() => {
-    if (!vehicleSearch.trim()) return vehicles
-    const q = vehicleSearch.toLowerCase()
-    return vehicles.filter(
-      (v) =>
-        `${v.year} ${v.make} ${v.model}`.toLowerCase().includes(q) ||
-        v.licensePlate?.toLowerCase().includes(q) ||
-        v.customer?.name.toLowerCase().includes(q)
+  // The list is searched on the server: a workshop can have tens of thousands
+  // of vehicles, and sending them all to the browser made the picker take
+  // seconds to open and to show each typed letter.
+  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([])
+  const [vehiclesLoading, setVehiclesLoading] = useState(false)
+  const requestRef = useRef(0)
+
+  useEffect(() => {
+    if (!open || pickerStep !== 'select') return
+    const query = vehicleSearch.trim()
+    const request = ++requestRef.current
+    setVehiclesLoading(true)
+    const timer = setTimeout(
+      async () => {
+        try {
+          const result = await searchVehicles(query || undefined, PAGE_SIZE)
+          if (request !== requestRef.current) return
+          setFilteredVehicles(result.success && result.data ? result.data : [])
+          setActiveIndex(0)
+        } catch {
+          if (request === requestRef.current) setFilteredVehicles([])
+        } finally {
+          if (request === requestRef.current) setVehiclesLoading(false)
+        }
+      },
+      query ? 300 : 0
     )
-  }, [vehicles, vehicleSearch])
+    return () => clearTimeout(timer)
+  }, [open, pickerStep, vehicleSearch])
+
+  // The arrow keys walk the list from the search box and Enter picks the highlighted row,
+  // so the common case is type, Enter, done, without reaching for the mouse.
+  const [activeIndex, setActiveIndex] = useState(0)
+  const listRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    listRef.current
+      ?.querySelector<HTMLElement>('[data-active="true"]')
+      ?.scrollIntoView?.({ block: 'nearest' })
+  }, [activeIndex])
+
+  const handleSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (filteredVehicles.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setActiveIndex((i) => Math.min(i + 1, filteredVehicles.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setActiveIndex((i) => Math.max(i - 1, 0))
+    } else if (e.key === 'Enter') {
+      e.preventDefault()
+      const active = filteredVehicles[activeIndex]
+      if (active) handleSelect(active.id)
+    }
+  }
 
   const resetState = () => {
     setPickerStep('select')
     setVehicleSearch('')
-    setNewMake('')
-    setNewModel('')
-    setNewYear('')
-    setNewPlate('')
-    setSelectedCustomerId('')
+    setActiveIndex(0)
+    setNewVehicle(null)
+    setSelectedCustomer(null)
     setShowNewCustomer(false)
     setNewCustomerName('')
     setNewCustomerPhone('')
@@ -136,7 +184,7 @@ export function VehiclePickerDialog({
 
       onOpenChange(false)
       resetState()
-      router.push(`/sales/${result.data.id}`)
+      go(`/sales/${result.data.id}`)
     } catch {
       toast.error(t('somethingWentWrong'))
       setCreating(false)
@@ -147,7 +195,7 @@ export function VehiclePickerDialog({
     onOpenChange(false)
     resetState()
     const qs = redirectQuery ? '?' + new URLSearchParams(redirectQuery).toString() : ''
-    router.push(`/vehicles/${vehicleId}/service/new${qs}`)
+    go(`/vehicles/${vehicleId}/service/new${qs}`)
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
@@ -155,84 +203,42 @@ export function VehiclePickerDialog({
     if (!nextOpen) resetState()
   }
 
-  const handleQuickCreate = async () => {
-    if (!newMake.trim() || !newModel.trim() || !newYear.trim()) return
-    const yearNum = parseInt(newYear, 10)
-    if (isNaN(yearNum) || yearNum < 1900 || yearNum > new Date().getFullYear() + 2) {
-      toast.error(t('invalidYear'))
-      return
-    }
-    if (showNewCustomer && !newCustomerName.trim()) {
-      toast.error(t('customerNameRequired'))
-      return
-    }
-
-    setCreating(true)
-    try {
-      let customerId = selectedCustomerId || undefined
-
-      if (showNewCustomer && newCustomerName.trim()) {
-        const customerResult = await createCustomer({
-          name: newCustomerName.trim(),
-          phone: newCustomerPhone.trim() || undefined,
-        })
-        if (!customerResult.success || !customerResult.data) {
-          if (!handleGated(customerResult)) {
-            toast.error(customerResult.error || t('failedCreateCustomer'))
-          }
-          setCreating(false)
-          return
-        }
-        customerId = customerResult.data.id
-      }
-
-      const vehicleResult = await createVehicle({
-        make: newMake.trim(),
-        model: newModel.trim(),
-        year: yearNum,
-        licensePlate: newPlate.trim() || undefined,
-        customerId,
-      })
-      if (!vehicleResult.success || !vehicleResult.data) {
-        toast.error(
-          vehicleResult.error ||
-            (isMarine ? t('failedCreateVehicleMarine') : t('failedCreateVehicle'))
-        )
-        setCreating(false)
-        return
-      }
-
-      handleSelect(vehicleResult.data.id)
-    } catch {
-      toast.error(t('somethingWentWrong'))
-      setCreating(false)
-    }
-  }
-
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-md" aria-describedby={undefined}>
-        {pickerStep === 'select' ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>{displayTitle}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-3">
-              <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder={isMarine ? t('searchPlaceholderMarine') : t('searchPlaceholder')}
-                  value={vehicleSearch}
-                  onChange={(e) => setVehicleSearch(e.target.value)}
-                  className="pl-9"
-                  autoFocus
-                />
-              </div>
-              <div className="max-h-[300px] overflow-y-auto">
-                {filteredVehicles.length === 0 ? (
-                  <div className="py-6 text-center space-y-3">
+    <>
+      <Dialog open={open} onOpenChange={handleOpenChange}>
+        <DialogContent className="max-w-md" aria-describedby={undefined}>
+          {pickerStep === 'select' ? (
+            <>
+              <DialogHeader>
+                <DialogTitle>{displayTitle}</DialogTitle>
+                {/* The search box is pinned above the list, so it never moves under the cursor */}
+                <div className="relative mt-1">
+                  <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder={isMarine ? t('searchPlaceholderMarine') : t('searchPlaceholder')}
+                    value={vehicleSearch}
+                    onChange={(e) => setVehicleSearch(e.target.value)}
+                    onKeyDown={handleSearchKeyDown}
+                    className="pl-9"
+                    autoFocus
+                  />
+                  {/* A search in flight runs a thin bar under the box; the old rows stay in place */}
+                  {vehiclesLoading && filteredVehicles.length > 0 && (
+                    <span className="search-progress" aria-hidden="true" />
+                  )}
+                </div>
+              </DialogHeader>
+              {/* One fixed height whatever the list holds, so the dialog never resizes or
+                re-centres while results, a spinner and the empty message take turns */}
+              <DialogBody ref={listRef} className="h-80 p-2">
+                {vehiclesLoading && filteredVehicles.length === 0 ? (
+                  <div className="flex h-full items-center justify-center">
+                    <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : filteredVehicles.length === 0 ? (
+                  <div className="flex h-full items-center justify-center px-6 text-center">
                     <p className="text-sm text-muted-foreground">
-                      {vehicles.length === 0
+                      {!vehicleSearch.trim()
                         ? isMarine
                           ? t('emptyMarine')
                           : t('empty')
@@ -240,18 +246,21 @@ export function VehiclePickerDialog({
                           ? t('emptySearchMarine')
                           : t('emptySearch')}
                     </p>
-                    <Button variant="outline" onClick={() => setPickerStep('create')}>
-                      <Plus className="h-4 w-4 mr-1" />
-                      {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
-                    </Button>
                   </div>
                 ) : (
-                  <div className="space-y-1">
-                    {filteredVehicles.map((v) => (
+                  <div
+                    className={cn(
+                      'space-y-0.5 transition-opacity',
+                      vehiclesLoading && 'opacity-60'
+                    )}
+                  >
+                    {filteredVehicles.map((v, index) => (
                       <button
                         key={v.id}
                         type="button"
-                        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors hover:bg-muted"
+                        data-active={index === activeIndex}
+                        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left transition-colors data-[active=true]:bg-muted"
+                        onMouseMove={() => setActiveIndex(index)}
                         onClick={() => handleSelect(v.id)}
                       >
                         {isMarine ? (
@@ -260,10 +269,10 @@ export function VehiclePickerDialog({
                           <Car className="h-4 w-4 shrink-0 text-muted-foreground" />
                         )}
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium">
+                          <p className="truncate text-sm font-medium">
                             {v.year} {v.make} {v.model}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="truncate text-xs text-muted-foreground">
                             {[v.licensePlate, v.customer?.name].filter(Boolean).join(' · ') ||
                               (isMarine ? t('noPlateMarine') : t('noPlate'))}
                           </p>
@@ -272,277 +281,138 @@ export function VehiclePickerDialog({
                     ))}
                   </div>
                 )}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('create')}>
-                  <Plus className="h-4 w-4 mr-1" />
-                  {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
-                </Button>
+              </DialogBody>
+              <DialogFooter className="flex-row">
+                {canAddVehicle && (
+                  <Button
+                    variant="ghost"
+                    className="flex-1"
+                    onClick={() => setNewVehicle(plateFromSearch(vehicleSearch))}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
+                  </Button>
+                )}
                 <Button variant="ghost" className="flex-1" onClick={() => setPickerStep('sale')}>
                   <ShoppingCart className="h-4 w-4 mr-1" />
                   {t('partsSale')}
                 </Button>
-              </div>
-            </div>
-          </>
-        ) : pickerStep === 'sale' ? (
-          <>
-            <DialogHeader>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 shrink-0"
-                  onClick={() => setPickerStep('select')}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <DialogTitle>{t('partsSale')}</DialogTitle>
-              </div>
-            </DialogHeader>
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                {isMarine ? t('partsSaleDescriptionMarine') : t('partsSaleDescription')}
-              </p>
-              <div className="space-y-1.5">
-                <Label>{t('customer')}</Label>
-                {!showNewCustomer ? (
-                  <>
-                    <CustomerCombobox
-                      value={selectedCustomerId}
-                      placeholder={t('selectCustomer')}
-                      noneLabel={t('none')}
-                      onChange={(id) => setSelectedCustomerId(id)}
-                    />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 px-2 text-xs text-muted-foreground"
-                      onClick={() => {
-                        setShowNewCustomer(true)
-                        setSelectedCustomerId('')
-                      }}
-                    >
-                      <UserPlus className="h-3.5 w-3.5 mr-1" />
-                      {t('createNewCustomer')}
-                    </Button>
-                  </>
-                ) : (
-                  <div className="space-y-3 rounded-md border p-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">{t('newCustomer')}</p>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs"
-                        onClick={() => {
-                          setShowNewCustomer(false)
-                          setNewCustomerName('')
-                          setNewCustomerPhone('')
-                        }}
-                      >
-                        {tc('cancel')}
-                      </Button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="sale-customer-name">{t('customerName')}</Label>
-                        <Input
-                          id="sale-customer-name"
-                          placeholder={t('customerNamePlaceholder')}
-                          value={newCustomerName}
-                          onChange={(e) => setNewCustomerName(e.target.value)}
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="sale-customer-phone">{t('phone')}</Label>
-                        <Input
-                          id="sale-customer-phone"
-                          placeholder={t('phonePlaceholder')}
-                          value={newCustomerPhone}
-                          onChange={(e) => setNewCustomerPhone(e.target.value)}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <Button
-                className="w-full"
-                disabled={
-                  creating || (showNewCustomer ? !newCustomerName.trim() : !selectedCustomerId)
-                }
-                onClick={handleCreateSale}
-              >
-                {creating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                    {t('creating')}
-                  </>
-                ) : (
-                  t('createSale')
-                )}
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <DialogHeader>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 shrink-0"
-                  onClick={() => setPickerStep('select')}
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                </Button>
-                <DialogTitle>
-                  {isMarine ? t('addNewVehicleMarine') : t('addNewVehicle')}
-                </DialogTitle>
-              </div>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="new-make">{isMarine ? t('makeMarine') : t('make')}</Label>
-                  <Input
-                    id="new-make"
-                    placeholder={isMarine ? 'e.g. Boston Whaler' : 'e.g. Toyota'}
-                    value={newMake}
-                    onChange={(e) => setNewMake(e.target.value)}
-                    autoFocus
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="new-model">{t('model')}</Label>
-                  <Input
-                    id="new-model"
-                    placeholder={isMarine ? 'e.g. Montauk 170' : 'e.g. Camry'}
-                    value={newModel}
-                    onChange={(e) => setNewModel(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <Label htmlFor="new-year">{t('year')}</Label>
-                  <Input
-                    id="new-year"
-                    type="number"
-                    placeholder={`e.g. ${new Date().getFullYear()}`}
-                    value={newYear}
-                    onChange={(e) => setNewYear(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="new-plate">
-                    {isMarine ? t('licensePlateMarine') : t('licensePlate')}
-                  </Label>
-                  <Input
-                    id="new-plate"
-                    placeholder="e.g. ABC-1234"
-                    value={newPlate}
-                    onChange={(e) => setNewPlate(e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <Label>{t('customer')}</Label>
-                {!showNewCustomer ? (
-                  <Select
-                    value={selectedCustomerId}
-                    onValueChange={(val) => {
-                      if (val === '__new__') {
-                        setShowNewCustomer(true)
-                        setSelectedCustomerId('')
-                      } else {
-                        setSelectedCustomerId(val)
-                      }
-                    }}
+              </DialogFooter>
+            </>
+          ) : (
+            <>
+              <DialogHeader>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 shrink-0"
+                    onClick={() => setPickerStep('select')}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={t('selectCustomer')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="__new__">
-                        <span className="flex items-center gap-1.5">
-                          <UserPlus className="h-3.5 w-3.5" />
-                          {t('createNewCustomer')}
-                        </span>
-                      </SelectItem>
-                      {customers.map((c) => (
-                        <SelectItem key={c.id} value={c.id}>
-                          {c.name}
-                          {c.company ? ` (${c.company})` : ''}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="space-y-3 rounded-md border p-3">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium">{t('newCustomer')}</p>
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <DialogTitle>{t('partsSale')}</DialogTitle>
+                </div>
+              </DialogHeader>
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {isMarine ? t('partsSaleDescriptionMarine') : t('partsSaleDescription')}
+                </p>
+                <div className="space-y-1.5">
+                  <Label>{t('customer')}</Label>
+                  {!showNewCustomer ? (
+                    <>
+                      <CustomerCombobox
+                        value={selectedCustomerId}
+                        placeholder={t('selectCustomer')}
+                        noneLabel={t('none')}
+                        initialCustomer={selectedCustomer}
+                        onChange={(_id, customer) => setSelectedCustomer(customer)}
+                      />
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 text-xs"
+                        className="h-8 px-2 text-xs text-muted-foreground"
                         onClick={() => {
-                          setShowNewCustomer(false)
-                          setNewCustomerName('')
-                          setNewCustomerPhone('')
+                          setShowNewCustomer(true)
+                          setSelectedCustomer(null)
                         }}
                       >
-                        {tc('cancel')}
+                        <UserPlus className="h-3.5 w-3.5 mr-1" />
+                        {t('createNewCustomer')}
                       </Button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="new-customer-name">{t('customerName')}</Label>
-                        <Input
-                          id="new-customer-name"
-                          placeholder={t('customerNamePlaceholder')}
-                          value={newCustomerName}
-                          onChange={(e) => setNewCustomerName(e.target.value)}
-                        />
+                    </>
+                  ) : (
+                    <div className="space-y-3 rounded-md border p-3">
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm font-medium">{t('newCustomer')}</p>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-7 text-xs"
+                          onClick={() => {
+                            setShowNewCustomer(false)
+                            setNewCustomerName('')
+                            setNewCustomerPhone('')
+                          }}
+                        >
+                          {tc('cancel')}
+                        </Button>
                       </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="new-customer-phone">{t('phone')}</Label>
-                        <Input
-                          id="new-customer-phone"
-                          placeholder={t('phonePlaceholder')}
-                          value={newCustomerPhone}
-                          onChange={(e) => setNewCustomerPhone(e.target.value)}
-                        />
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="sale-customer-name">{t('customerName')}</Label>
+                          <Input
+                            id="sale-customer-name"
+                            placeholder={t('customerNamePlaceholder')}
+                            value={newCustomerName}
+                            onChange={(e) => setNewCustomerName(e.target.value)}
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="sale-customer-phone">{t('phone')}</Label>
+                          <Input
+                            id="sale-customer-phone"
+                            placeholder={t('phonePlaceholder')}
+                            value={newCustomerPhone}
+                            onChange={(e) => setNewCustomerPhone(e.target.value)}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+                <Button
+                  className="w-full"
+                  disabled={
+                    creating || (showNewCustomer ? !newCustomerName.trim() : !selectedCustomerId)
+                  }
+                  onClick={handleCreateSale}
+                >
+                  {creating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                      {t('creating')}
+                    </>
+                  ) : (
+                    t('createSale')
+                  )}
+                </Button>
               </div>
-              <Button
-                className="w-full"
-                disabled={
-                  creating ||
-                  !newMake.trim() ||
-                  !newModel.trim() ||
-                  !newYear.trim() ||
-                  (showNewCustomer && !newCustomerName.trim())
-                }
-                onClick={handleQuickCreate}
-              >
-                {creating ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
-                    {t('creating')}
-                  </>
-                ) : (
-                  t('createAndContinue')
-                )}
-              </Button>
-            </div>
-          </>
-        )}
-      </DialogContent>
-    </Dialog>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+      {/* Beside the picker, not inside it: the same form the vehicles page
+          opens, with the plate lookup and the full customer form in it. */}
+      <VehicleForm
+        open={newVehicle !== null}
+        onOpenChange={(next) => {
+          if (!next) setNewVehicle(null)
+        }}
+        initialPlate={newVehicle ?? ''}
+        onCreated={(created) => handleSelect(created.id)}
+      />
+    </>
   )
 }

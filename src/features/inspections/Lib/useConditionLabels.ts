@@ -35,8 +35,10 @@ export function useConditionLabels(scale: SeverityScale, country?: string | null
     [label, scale, country]
   )
 
-  const result = useCallback((value: TestResult) => t(`results.${value}`), [t])
-  const resultDetail = useCallback((value: TestResult) => t(`results.detail.${value}`), [t])
+  // A roadworthiness test gives a verdict; a workshop's own check gives a summary.
+  const group = scale === 'basic' ? 'checkResults' : 'results'
+  const result = useCallback((value: TestResult) => t(`${group}.${value}`), [t, group])
+  const resultDetail = useCallback((value: TestResult) => t(`${group}.detail.${value}`), [t, group])
 
   return { label, short, hint, graded, result, resultDetail }
 }

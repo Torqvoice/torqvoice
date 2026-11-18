@@ -106,6 +106,7 @@
     "deleteBody": "Se eliminarán {duration} en {job} de {technician} de la hoja de horas. Esta acción no se puede deshacer.",
     "deleteConfirm": "Eliminar",
     "deleted": "Entrada eliminada",
+    "deleteFailed": "No se pudo eliminar la entrada",
     "stoppedByManager": "Reloj detenido en {minutes}",
     "csv": {
       "technician": "Técnico",

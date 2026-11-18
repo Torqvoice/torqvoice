@@ -27,7 +27,7 @@ describe('integration setting changes', () => {
     expect(describeSettingChanges(fiken, before, after)).toEqual([
       'Send issued invoices to Fiken: off → on',
       'Only invoices dated on or after: empty → 2026-10-01',
-      'Income account for labour: empty → 3020',
+      'Income account for labor: empty → 3020',
       'VAT type for invoices without VAT: None (no VAT handling) → Exempt (fritatt)',
       'Income account for invoices without VAT: empty → 3100',
       'Record a payment when an invoice is marked paid by hand: off → on',

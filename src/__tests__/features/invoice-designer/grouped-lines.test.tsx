@@ -117,8 +117,8 @@ describe('a parts table grouped by category', () => {
       .filter((r: any) => r[table.emphasisKey])
       .map((r: any) => [r.desc, r.total])
     expect(subtotals).toEqual([
-      [`${BRAKES} subtotal`, '€ 245.50'],
-      [`${CONSUMABLES} subtotal`, '€ 12.00'],
+      [`${BRAKES} subtotal`, '$245.50'],
+      [`${CONSUMABLES} subtotal`, '$12.00'],
     ])
     // A heading and a subtotal per group around the three sample parts.
     expect(table.rows).toHaveLength(3 + 4)
@@ -159,7 +159,7 @@ describe('the combined items table grouped by category', () => {
     const numbers = table.rows.filter((r: any) => r.n).map((r: any) => r.n)
     expect(numbers).toEqual(['1', '2', '3', '4'])
     const laborSubtotal = table.rows.find((r: any) => r.desc === 'Labor subtotal')
-    expect(laborSubtotal.total).toBe('€ 222.50')
+    expect(laborSubtotal.total).toBe('$222.50')
   })
 })
 
