@@ -22,6 +22,7 @@ import { QuoteRequestDialog } from '@/features/inspections/Components/QuoteReque
 import { MediaLightbox, type LightboxImage } from '@/features/inspections/Components/MediaLightbox'
 import { SpecSheet } from '@/features/invoice-designer/Render/SpecSheet'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
+import type { PublicInspection, PublicInspectionItem } from '@/lib/public-payload'
 import {
   CONDITION_TOKENS,
   TEST_RESULT_TOKENS,
@@ -34,63 +35,6 @@ import {
   type SeverityScale,
 } from '@/features/inspections/Lib/conditions'
 import { toast } from 'sonner'
-
-interface InspectionItem {
-  id: string
-  name: string
-  section: string
-  sortOrder: number
-  condition: string
-  notes: string | null
-  imageUrls: string[]
-  description?: string | null
-  code?: string | null
-  sectionCode?: string | null
-  inputType?: string | null
-  unit?: string | null
-  minValue?: number | null
-  maxValue?: number | null
-  measuredValue?: number | null
-  textValue?: string | null
-}
-
-interface InspectionRecord {
-  id: string
-  status: string
-  mileage: number | null
-  notes: string | null
-  completedAt: Date | null
-  createdAt: Date
-  severityScale?: string | null
-  country?: string | null
-  vehicleCategory?: string | null
-  nextTestDue?: Date | null
-  certificateNumber?: string | null
-  inspectorName?: string | null
-  testLocation?: string | null
-  vehicle: {
-    make: string
-    model: string
-    year: number
-    vin: string | null
-    licensePlate: string | null
-    /** Null unless the workshop records the German type key. */
-    hsn?: string | null
-    tsn?: string | null
-    mileage: number
-    customer: { name: string } | null
-  }
-  template: { name: string; severityScale?: string | null; country?: string | null }
-  items: InspectionItem[]
-  /** Files on the inspection as a whole that the workshop chose to show. */
-  attachments?: {
-    id: string
-    fileName: string
-    fileUrl: string
-    fileType: string
-    description: string | null
-  }[]
-}
 
 const CONDITION_ICONS: Record<Condition, React.ComponentType<{ className?: string }>> = {
   pass: Check,
@@ -120,7 +64,7 @@ export function InspectionView({
   serviceType = 'automotive',
   spec,
 }: {
-  inspection: InspectionRecord
+  inspection: PublicInspection
   workshop: { name: string; address: string; phone: string; email: string }
   logoUrl: string
   primaryColor: string
@@ -178,7 +122,7 @@ export function InspectionView({
 
   const sections = useMemo(() => {
     const order: string[] = []
-    const grouped: Record<string, InspectionItem[]> = {}
+    const grouped: Record<string, PublicInspectionItem[]> = {}
     for (const item of gradedItems) {
       if (!grouped[item.section]) {
         grouped[item.section] = []
@@ -264,7 +208,7 @@ export function InspectionView({
       : []),
   ]
 
-  const renderValue = (item: InspectionItem) => {
+  const renderValue = (item: PublicInspectionItem) => {
     if (
       item.inputType === 'measurement' &&
       item.measuredValue !== null &&
@@ -292,7 +236,7 @@ export function InspectionView({
     return null
   }
 
-  const renderMedia = (item: InspectionItem) =>
+  const renderMedia = (item: PublicInspectionItem) =>
     item.imageUrls.length > 0 && (
       <ul className="mt-2 flex flex-wrap gap-2">
         {item.imageUrls.map((url, index) => (

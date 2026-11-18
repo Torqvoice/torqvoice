@@ -60,7 +60,8 @@ export interface QuotePrintData {
   discountValue: number
   discountAmount: number
   totalAmount: number
-  notes: string | null
+  /** The workshop's own note. Never printed: the sheet's note is `description`. */
+  notes?: string | null
   /** The warranty the customer is offered; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
   warrantyMonths?: number | null

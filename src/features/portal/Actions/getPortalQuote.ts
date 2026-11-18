@@ -18,6 +18,7 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
+import { PUBLIC_QUOTE_SELECT } from '@/lib/public-payload'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { resolveWorkshopTimeZone } from '@/lib/timezone'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
@@ -56,46 +57,9 @@ export async function getPortalQuote(quoteId: string) {
   return withPortalAuth(async ({ customerId, organizationId }) => {
     const quote = await db.quote.findFirst({
       where: { id: quoteId, customerId, organizationId, ...SENT_TO_CUSTOMER },
-      include: {
-        // Explicit select: internal unitCost/markupPercent never reach the customer.
-        partItems: {
-          select: {
-            id: true,
-            partNumber: true,
-            name: true,
-            quantity: true,
-            unit: true,
-            category: true,
-            unitPrice: true,
-            total: true,
-            excluded: true,
-            taxable: true,
-          },
-          orderBy: { sortOrder: 'asc' },
-        },
-        laborItems: { orderBy: { sortOrder: 'asc' } },
-        customer: {
-          select: {
-            name: true,
-            email: true,
-            phone: true,
-            address: true,
-            company: true,
-            taxId: true,
-          },
-        },
-        vehicle: {
-          select: {
-            make: true,
-            model: true,
-            year: true,
-            vin: true,
-            licensePlate: true,
-            hsn: true,
-            tsn: true,
-          },
-        },
-      },
+      // Only the columns a customer's copy is built from; the workshop's
+      // own notes and a line's cost and markup are never read.
+      select: PUBLIC_QUOTE_SELECT,
     })
     if (!quote) return null
 
