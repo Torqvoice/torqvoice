@@ -23,59 +23,7 @@ import {
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { SpecSheet } from '@/features/invoice-designer/Render/SpecSheet'
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
-
-interface QuoteRecord {
-  id: string
-  quoteNumber: string | null
-  title: string
-  description: string | null
-  status: string
-  validUntil: Date | null
-  createdAt: Date
-  subtotal: number
-  taxRate: number
-  taxAmount: number
-  taxInclusive?: boolean
-  discountType: string | null
-  discountValue: number
-  discountAmount: number
-  totalAmount: number
-  notes: string | null
-  partItems: {
-    partNumber: string | null
-    name: string
-    quantity: number
-    unit?: string | null
-    unitPrice: number
-    total: number
-    excluded?: boolean
-  }[]
-  laborItems: {
-    description: string
-    hours: number
-    rate: number
-    total: number
-    pricingType?: string
-    excluded?: boolean
-  }[]
-  customer: {
-    name: string
-    email: string | null
-    phone: string | null
-    address: string | null
-    company: string | null
-    taxId?: string | null
-  } | null
-  vehicle: {
-    make: string
-    model: string
-    year: number
-    vin: string | null
-    licensePlate: string | null
-    hsn?: string | null
-    tsn?: string | null
-  } | null
-}
+import type { PublicAttachment, PublicQuoteRecord } from '@/lib/public-payload'
 
 interface InvoiceLayoutConfig {
   sections: Array<{
@@ -151,17 +99,6 @@ function getUnassignedCustomFields(
   return allCustomFields.filter((cf) => !cf.fieldId || !assignedFieldIds.has(cf.fieldId))
 }
 
-interface QuoteAttachmentView {
-  id: string
-  fileName: string
-  fileUrl: string
-  fileType: string
-  fileSize: number
-  category: string
-  description: string | null
-  includeInInvoice: boolean
-}
-
 export function QuoteView({
   spec,
   quote,
@@ -183,13 +120,12 @@ export function QuoteView({
   imageAttachments = [],
   documentAttachments = [],
   layoutConfig,
-  customFields = [],
   serviceType = 'automotive',
   taxLabel,
 }: {
   /** The document the workshop designed, built server-side from this quote. */
   spec: DocumentSpec
-  quote: QuoteRecord
+  quote: PublicQuoteRecord
   workshop: { name: string; address: string; phone: string; email: string }
   currencyCode: string
   currencyFormat?: 'symbol' | 'code'
@@ -207,10 +143,9 @@ export function QuoteView({
   headerStyle?: string
   logoSize?: number
   portalUrl?: string
-  imageAttachments?: QuoteAttachmentView[]
-  documentAttachments?: QuoteAttachmentView[]
+  imageAttachments?: PublicAttachment[]
+  documentAttachments?: PublicAttachment[]
   layoutConfig?: InvoiceLayoutConfig
-  customFields?: CustomField[]
   serviceType?: 'automotive' | 'marine'
   taxLabel?: string
 }) {

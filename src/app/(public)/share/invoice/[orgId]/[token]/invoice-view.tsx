@@ -38,93 +38,7 @@ const PAY_VENDORS: {
   { id: 'paystack', label: 'payWithPaystack' },
 ]
 import type { DocumentSpec } from '@/features/invoice-designer/Spec/documentSpec'
-
-interface InvoiceRecord {
-  id: string
-  title: string
-  description: string | null
-  type: string
-  status: string
-  serviceDate: Date
-  startDateTime: Date | null
-  invoiceDate: Date | null
-  invoiceDueDate: Date | null
-  shopName: string | null
-  techName: string | null
-  mileage: number | null
-  diagnosticNotes: string | null
-  invoiceNotes: string | null
-  subtotal: number
-  taxRate: number
-  taxAmount: number
-  taxInclusive?: boolean
-  totalAmount: number
-  cost: number
-  invoiceNumber: string | null
-  manuallyPaid: boolean
-  discountType: string | null
-  discountValue: number
-  discountAmount: number
-  warrantyMonths: number | null
-  warrantyMileage: number | null
-  warrantyExpiresAt: Date | string | null
-  warrantyNotes: string | null
-  partItems: {
-    partNumber: string | null
-    name: string
-    quantity: number
-    unit?: string | null
-    unitPrice: number
-    total: number
-  }[]
-  laborItems: {
-    description: string
-    hours: number
-    rate: number
-    total: number
-    pricingType?: string
-  }[]
-  payments: {
-    amount: number
-    date: Date
-    method: string
-  }[]
-  attachments: {
-    id: string
-    fileName: string
-    fileUrl: string
-    fileType: string
-    fileSize: number
-    category: string
-    description: string | null
-  }[]
-  customer?: {
-    name: string
-    email: string | null
-    phone: string | null
-    address: string | null
-    company: string | null
-    taxId?: string | null
-  } | null
-  vehicle: {
-    make: string
-    model: string
-    year: number
-    vin: string | null
-    licensePlate: string | null
-    hsn?: string | null
-    tsn?: string | null
-    mileage: number
-    customer: {
-      name: string
-      email: string | null
-      phone: string | null
-      address: string | null
-      company: string | null
-      taxId?: string | null
-    } | null
-  } | null
-}
+import type { PublicInvoiceRecord } from '@/lib/public-payload'
 
 interface InvoiceSettings {
   bankAccount: string
@@ -247,14 +161,12 @@ export function InvoiceView({
   logoSize = 100,
   portalUrl,
   layoutConfig,
-  customFields = [],
-  findings = [],
   serviceType = 'automotive',
   taxLabel,
 }: {
   /** The document the workshop designed, built server-side from this job. */
   spec: DocumentSpec
-  record: InvoiceRecord
+  record: PublicInvoiceRecord
   workshop: { name: string; address: string; phone: string; email: string }
   currencyCode: string
   currencyFormat?: 'symbol' | 'code'
@@ -278,8 +190,6 @@ export function InvoiceView({
   logoSize?: number
   portalUrl?: string
   layoutConfig?: InvoiceLayoutConfig
-  customFields?: CustomField[]
-  findings?: Array<{ description: string; severity: string; notes: string | null }>
   serviceType?: 'automotive' | 'marine'
   taxLabel?: string
 }) {
