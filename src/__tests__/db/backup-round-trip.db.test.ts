@@ -470,6 +470,8 @@ function compare(before: Dump, after: Dump): Difference[] {
  */
 const OWNED_BY_WHOEVER_RESTORES =
   'The row is owned by whoever restores the backup: the column is required, and the account the file names may not exist here.'
+const PLATE_AS_STORED =
+  'A plate is stored in upper case with single spaces (normalizePlate), as the editor stores it, so a backup from before that rule restores in the same form.'
 const EXPECTED: Readonly<Record<string, string>> = {
   'AppSetting.userId': OWNED_BY_WHOEVER_RESTORES,
   'CustomFieldDefinition.userId': OWNED_BY_WHOEVER_RESTORES,
@@ -482,6 +484,7 @@ const EXPECTED: Readonly<Record<string, string>> = {
   'StockMovement.userId': OWNED_BY_WHOEVER_RESTORES,
   'TireSet.userId': OWNED_BY_WHOEVER_RESTORES,
   'TireWarehouse.userId': OWNED_BY_WHOEVER_RESTORES,
+  'Vehicle.licensePlate': PLATE_AS_STORED,
   'Vehicle.userId': OWNED_BY_WHOEVER_RESTORES,
 }
 
