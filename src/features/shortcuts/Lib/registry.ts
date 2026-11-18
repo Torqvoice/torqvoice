@@ -163,6 +163,16 @@ export const SHORTCUTS: readonly ShortcutDef[] = [
     href: '/inventory?create=true',
     command: 'action:new-part',
   },
+  // Not A: Windows 11 keeps Alt+A for suggested actions. L is the calendar's
+  // letter in the go-to set, where the booking lands. The + menu opens the
+  // booking dialog on it, and only for someone who may book.
+  {
+    id: 'create.appointment',
+    group: 'create',
+    scope: 'global',
+    defaultKeys: ['alt+l'],
+    label: { from: 'shortcuts', key: 'newAppointment' },
+  },
   {
     id: 'create.inspection',
     group: 'create',

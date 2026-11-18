@@ -74,6 +74,8 @@ const LINKED_LATER =
   'The row it points at is restored later, so the link is written once it exists. Checked below.'
 const IMPORT_BATCH =
   'Spreadsheet import batches are not in a backup; the id would point at nothing.'
+const BOOKING_TOKEN =
+  'Tells a booking sent twice from a new one while its dialog is still open. No dialog is waiting on a restored job.'
 
 /** Columns a map leaves out on purpose, by model, with what happens instead. */
 const NOT_IN_THE_MAP: Readonly<Record<string, Readonly<Record<string, string>>>> = {
@@ -85,6 +87,7 @@ const NOT_IN_THE_MAP: Readonly<Record<string, Readonly<Record<string, string>>>>
     inspectionId: LINKED_LATER,
     tireSetId: LINKED_LATER,
     importBatchId: IMPORT_BATCH,
+    bookingToken: BOOKING_TOKEN,
   },
   Quote: {
     warrantyStatus: WARRANTY,

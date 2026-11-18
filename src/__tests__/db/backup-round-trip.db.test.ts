@@ -470,7 +470,12 @@ function compare(before: Dump, after: Dump): Difference[] {
  */
 const OWNED_BY_WHOEVER_RESTORES =
   'The row is owned by whoever restores the backup: the column is required, and the account the file names may not exist here.'
+const PLATE_AS_STORED =
+  'A plate is stored in upper case with single spaces (normalizePlate), as the editor stores it, so a backup from before that rule restores in the same form.'
+const BOOKING_TOKEN_SPENT =
+  'The token tells a booking sent twice from a new one while its dialog is still open. No dialog is waiting on a restored booking, so it comes back without one; empty tokens never collide, the unique index counts only the ones that are set.'
 const EXPECTED: Readonly<Record<string, string>> = {
+  'Appointment.bookingToken': BOOKING_TOKEN_SPENT,
   'AppSetting.userId': OWNED_BY_WHOEVER_RESTORES,
   'CustomFieldDefinition.userId': OWNED_BY_WHOEVER_RESTORES,
   'Customer.userId': OWNED_BY_WHOEVER_RESTORES,
@@ -479,9 +484,11 @@ const EXPECTED: Readonly<Record<string, string>> = {
   'LaborPreset.userId': OWNED_BY_WHOEVER_RESTORES,
   'Quote.userId': OWNED_BY_WHOEVER_RESTORES,
   'ScheduledMessage.createdById': OWNED_BY_WHOEVER_RESTORES,
+  'ServiceRecord.bookingToken': BOOKING_TOKEN_SPENT,
   'StockMovement.userId': OWNED_BY_WHOEVER_RESTORES,
   'TireSet.userId': OWNED_BY_WHOEVER_RESTORES,
   'TireWarehouse.userId': OWNED_BY_WHOEVER_RESTORES,
+  'Vehicle.licensePlate': PLATE_AS_STORED,
   'Vehicle.userId': OWNED_BY_WHOEVER_RESTORES,
 }
 

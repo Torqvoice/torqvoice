@@ -100,6 +100,7 @@ function App({ children }: { children?: React.ReactNode }) {
       initialPrefs={{ goToSequences: true }}
       commands={{ isAdminOrOwner: true }}
       plateLookupAvailable={false}
+      bookingAvailable
     >
       <CalendarKeys />
       {children}

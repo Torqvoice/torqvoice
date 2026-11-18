@@ -86,6 +86,14 @@ export const saveBookingSchema = z
     id: z.string().min(1).optional(),
     /** An appointment becoming a work order: removed once the job exists. */
     fromAppointmentId: z.string().min(1).optional(),
+    /**
+     * A new booking only: made up by the dialog when it opens, so the same
+     * booking sent twice is booked once (see createBookingOnce).
+     */
+    token: z
+      .string()
+      .regex(/^[A-Za-z0-9_-]{16,64}$/)
+      .optional(),
     title: z.string().trim().min(1, 'Add a title').max(200),
     /** Rich text from the editor; cleaned on the server before it is kept. */
     description: z.string().max(20_000).optional(),

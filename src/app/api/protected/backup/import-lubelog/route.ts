@@ -22,6 +22,7 @@ import { resolveWithinDir } from '@/lib/safe-path'
 import { uploadsRoot } from '@/lib/upload-root'
 import { prepareImportedFile, writeImportedFile } from '@/lib/backup/import-photo'
 import { releaseFiles } from '@/lib/files/manager'
+import { normalizePlate } from '@/lib/license-plate'
 
 // Allow up to 5 minutes for large imports
 export const maxDuration = 300
@@ -357,7 +358,7 @@ export async function POST(request: NextRequest) {
               make: v.Make,
               model: v.Model,
               year: v.Year,
-              licensePlate: v.LicensePlate || null,
+              licensePlate: normalizePlate(v.LicensePlate),
               fuelType: determineFuelType(v),
               mileage: vehicleMileage.get(v._id) || 0,
               purchasePrice: parseDecimal(v.PurchasePrice) || null,

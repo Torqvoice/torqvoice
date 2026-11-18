@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createDraftServiceRecord } from '@/features/vehicles/Actions/createDraftServiceRecord'
+import { untouchedDraftWhere } from '@/features/vehicles/Lib/untouchedDraft'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -25,21 +26,14 @@ export default async function NewServicePage({
   // (created within the last 5 seconds, nothing on it yet), reuse it instead
   // of creating a duplicate. This prevents double-creation from Next.js
   // Server Component re-renders. The title is not part of the test any more:
-  // it comes from the workshop's template now, not a fixed placeholder.
+  // it comes from the workshop's template now, not a fixed placeholder. Nor
+  // is the shop fee: see untouchedDraftWhere.
   let timeZone = 'UTC'
   const existingResult = await withAuth(
     async ({ organizationId }) => {
       timeZone = await workshopTimeZone(organizationId)
-      const fiveSecondsAgo = new Date(Date.now() - 5000)
       return db.serviceRecord.findFirst({
-        where: {
-          vehicleId: id,
-          vehicle: { organizationId },
-          status: 'pending',
-          createdAt: { gte: fiveSecondsAgo },
-          partItems: { none: {} },
-          laborItems: { none: {} },
-        },
+        where: untouchedDraftWhere({ vehicleId: id, organizationId, now: new Date() }),
         select: { id: true },
         orderBy: { createdAt: 'desc' },
       })
