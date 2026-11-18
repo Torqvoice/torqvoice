@@ -35,6 +35,7 @@ import { extractEntry, type OpenedZip, readJsonFile, type ZipEntry } from '@/lib
 import { releaseFilesNotRestored } from '@/lib/files/manager'
 import { uploadsRoot } from '@/lib/upload-root'
 import { randomUUID } from 'node:crypto'
+import { normalizePlate } from '@/lib/license-plate'
 import { tenantScoped } from './tenant-guard'
 import {
   acquireRestoreLock,
@@ -1113,7 +1114,7 @@ export async function restoreBackup(
                 model: v.model as string,
                 year: v.year as number,
                 vin: (v.vin as string) || null,
-                licensePlate: (v.licensePlate as string) || null,
+                licensePlate: normalizePlate(v.licensePlate as string | null | undefined),
                 color: (v.color as string) || null,
                 mileage: (v.mileage as number) || 0,
                 fuelType: (v.fuelType as string) || null,
