@@ -18,7 +18,10 @@ import type { Prisma } from '@/generated/prisma/client'
  * old job being edited cannot push today's reading about, and saving a job
  * again without touching its reading leaves a vehicle that was corrected by
  * hand alone. A job is dated by when it starts, else by its service date. A
- * booked job without a reading is not in the way of today's.
+ * booked job without a reading is not in the way of today's. History written
+ * in bulk (the importer) asks once per vehicle, for its newest imported job,
+ * after every row is in: asked row by row, the answer would follow the order
+ * of the file.
  *
  * The vehicle's reading is lowered in one place only, the vehicle form, where
  * the person sees a notice and saves anyway (odometers are replaced).
@@ -76,7 +79,8 @@ function laterJobsWithReading(
     organizationId: job.organizationId,
     vehicleId: job.vehicleId,
     id: { not: job.jobId },
-    mileage: { gt: 0 },
+    // Zero counts: after a new odometer a later job may well read 0.
+    mileage: { not: null },
     OR: [
       { startDateTime: { gt: job.jobDate } },
       { startDateTime: null, serviceDate: { gt: job.jobDate } },

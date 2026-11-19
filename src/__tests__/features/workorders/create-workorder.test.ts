@@ -536,7 +536,7 @@ describe('createServiceRecord — vehicle mileage', () => {
     createdJob('sr-backdated')
     // The only job the rule asks about is one dated after this, with a reading.
     vi.mocked(db.serviceRecord.findFirst).mockImplementation((async ({ where }: any) =>
-      where?.mileage?.gt === 0 ? { id: 'sr-later' } : null) as any)
+      where?.mileage && 'not' in where.mileage ? { id: 'sr-later' } : null) as any)
 
     const result = await createServiceRecord({
       vehicleId: VEHICLE_ID,

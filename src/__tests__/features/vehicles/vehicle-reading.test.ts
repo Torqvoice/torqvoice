@@ -165,6 +165,15 @@ describe('a job reading and the vehicle', () => {
     expect(vehicle().mileage).toBe(5)
   })
 
+  it('counts a later job that reads zero, as after a new odometer', async () => {
+    // The cluster was replaced: the newest job and the vehicle both read 0.
+    vehicle().mileage = 0
+    const old = job('old', '2026-03-01', null)
+    job('newer', '2026-10-01', 0)
+    expect(await save(old, 180_000, null)).toBe(false)
+    expect(vehicle().mileage).toBe(0)
+  })
+
   it('dates a job without a start by its service date', async () => {
     const undated = job('undated', '2026-03-01', null, { startDateTime: null })
     job('newer', '2026-10-01', 100_000, { startDateTime: null })

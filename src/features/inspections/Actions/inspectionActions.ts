@@ -994,6 +994,9 @@ export async function linkWorkOrderToInspection(
           vehicleId: true,
           invoiceNumber: true,
           inspectionId: true,
+          mileage: true,
+          startDateTime: true,
+          serviceDate: true,
           laborItems: { select: { description: true } },
         },
       })
@@ -1017,6 +1020,18 @@ export async function linkWorkOrderToInspection(
           where: { id: job.id },
           data: { inspectionId: inspection.id, mileage: inspection.mileage ?? undefined },
         })
+        // The inspection's reading is now the job's, and may be news to the
+        // vehicle: the rule is in vehicleReading.ts.
+        if (inspection.mileage != null) {
+          await applyJobReading(tx, {
+            organizationId,
+            vehicleId: inspection.vehicleId,
+            jobId: job.id,
+            jobDate: jobReadingDate(job),
+            reading: inspection.mileage,
+            previousReading: job.mileage,
+          })
+        }
         const lines = [
           ...(hasInspectionLine ? [] : [inspection.template.name]),
           ...defects.map(defectLineText),

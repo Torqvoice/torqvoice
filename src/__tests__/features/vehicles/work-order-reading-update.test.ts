@@ -77,7 +77,7 @@ beforeEach(() => {
     where.organizationId === ORG && where.id in state.vehicles ? { id: where.id } : null) as any)
   vi.mocked(db.serviceRecord.findFirst).mockImplementation((async ({ where }: any) => {
     // The rule's question: another job on the vehicle, later, with a reading.
-    if (where.mileage?.gt === 0) {
+    if (where.mileage && 'not' in where.mileage) {
       expect(where.organizationId).toBe(ORG)
       return state.laterReading ? { id: 'sr-later' } : null
     }

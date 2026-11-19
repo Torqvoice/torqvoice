@@ -29,23 +29,7 @@ function txClient(pending: Store) {
     vehicle: {
       create: create(pending.vehicles, 'v'),
       update: vi.fn(),
-      // The owner attached to a car that has none, or a reading moved up.
-      updateMany: vi.fn(
-        async ({
-          where,
-          data,
-        }: {
-          where: { id: string; mileage?: { lt: number } }
-          data: { mileage?: number }
-        }) => {
-          if (data.mileage === undefined || !where.mileage) return { count: 0 }
-          const car = [...committed.vehicles, ...pending.vehicles].find((v) => v.id === where.id)
-          if (!car || ((car.mileage as number | undefined) ?? 0) >= where.mileage.lt)
-            return { count: 0 }
-          car.mileage = data.mileage
-          return { count: 1 }
-        }
-      ),
+      updateMany: vi.fn(async () => ({ count: 0 })),
     },
     serviceRecord: {
       create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => {
@@ -55,21 +39,6 @@ function txClient(pending: Store) {
         pending.services.push({ id, ...data })
         return { id }
       }),
-      // The one question asked of the jobs: is there a later one with a reading?
-      findFirst: vi.fn(
-        async ({
-          where,
-        }: {
-          where: { vehicleId: string; id: { not: string }; OR: [{ startDateTime: { gt: Date } }] }
-        }) =>
-          [...committed.services, ...pending.services].find(
-            (s) =>
-              s.vehicleId === where.vehicleId &&
-              s.id !== where.id.not &&
-              ((s.mileage as number | null) ?? 0) > 0 &&
-              (s.startDateTime as Date) > where.OR[0].startDateTime.gt
-          ) ?? null
-      ),
     },
   }
 }
@@ -84,8 +53,51 @@ const db = {
     return result
   }),
   customer: { findMany: vi.fn(async () => []) },
-  vehicle: { findMany: vi.fn(async () => []) },
-  serviceRecord: { findMany: vi.fn(async () => []) },
+  vehicle: {
+    findMany: vi.fn(async () => []),
+    // A reading moved up, once the rows are in.
+    updateMany: vi.fn(
+      async ({
+        where,
+        data,
+      }: {
+        where: { id: string; mileage: { lt: number } }
+        data: { mileage: number }
+      }) => {
+        const car = committed.vehicles.find((v) => v.id === where.id)
+        if (!car || ((car.mileage as number | undefined) ?? 0) >= where.mileage.lt)
+          return { count: 0 }
+        car.mileage = data.mileage
+        return { count: 1 }
+      }
+    ),
+  },
+  serviceRecord: {
+    // The plan reads what exists (nothing); the readings are settled from
+    // what this import wrote.
+    findMany: vi.fn(async (args?: { where?: { vehicleId?: string; importBatchId?: string } }) =>
+      args?.where?.importBatchId
+        ? committed.services.filter(
+            (s) => s.vehicleId === args.where?.vehicleId && ((s.mileage as number | null) ?? 0) > 0
+          )
+        : []
+    ),
+    // The rule's one question: a later job on the vehicle with a reading?
+    findFirst: vi.fn(
+      async ({
+        where,
+      }: {
+        where: { vehicleId: string; id: { not: string }; OR: [{ startDateTime: { gt: Date } }] }
+      }) =>
+        committed.services.find(
+          (s) =>
+            s.vehicleId === where.vehicleId &&
+            s.id !== where.id.not &&
+            s.mileage != null &&
+            (s.startDateTime as Date) > where.OR[0].startDateTime.gt
+        ) ?? null
+    ),
+  },
   importBatch: {
     create: vi.fn(async () => ({ id: 'batch' })),
     update: vi.fn(async () => ({})),
@@ -213,8 +225,10 @@ describe('commitImport', () => {
       ['2014-12-10', 'ABC123', 'Toyota', 'Hilux', '2000', 'Oil change', '148000'],
       // A slip in an old row: a digit too many, on a job before the newest.
       ['2015-01-15', 'ABC123', 'Toyota', 'Hilux', '2000', 'Tyres', '1490000'],
-      // Oldest first on the other car.
+      // Oldest first on the other car, with the same slip in the middle: it
+      // must not stick just because it was written before the newest row.
       ['2014-03-01', 'OVB334', 'Land Rover', 'Discovery', '1998', 'Service', '90000'],
+      ['2014-09-01', 'OVB334', 'Land Rover', 'Discovery', '1998', 'Service', '950000'],
       ['2015-03-01', 'OVB334', 'Land Rover', 'Discovery', '1998', 'Service', '101000'],
     ]
     const res = await commitImport({
@@ -222,10 +236,10 @@ describe('commitImport', () => {
       mapping: { ...input.mapping, '6': 'service.mileage' },
     })
     if (!('data' in res) || !res.data) throw new Error(`import failed: ${res.error}`)
-    expect(res.data).toMatchObject({ created: 5, failed: 0 })
+    expect(res.data).toMatchObject({ created: 6, failed: 0 })
     // Every reading is kept on its job, as the file had it.
     expect(committed.services.map((s) => s.mileage)).toEqual([
-      152000, 148000, 1490000, 90000, 101000,
+      152000, 148000, 1490000, 90000, 950000, 101000,
     ])
     expect(committed.vehicles.map((v) => [v.licensePlate, v.mileage])).toEqual([
       ['ABC123', 152000],
