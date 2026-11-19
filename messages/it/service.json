@@ -761,6 +761,15 @@
     "fromQuote": "Dal preventivo {ref}",
     "startInspection": "Avvia ispezione"
   },
+  "reference": {
+    "label": "Riferimento / n. ordine",
+    "placeholder": "N. ordine o riferimento",
+    "requiredNotice": "Questo cliente richiede un riferimento o un numero d'ordine sulle sue fatture. Compilalo prima di inviare la fattura.",
+    "requiredToInvoice": "Questo cliente richiede un riferimento o un numero d'ordine sulle sue fatture. Compila Riferimento / n. ordine sull'ordine di lavoro, poi invia la fattura.",
+    "saveFailed": "Impossibile salvare il riferimento",
+    "saved": "Salvato",
+    "notSwitchedOn": "Il campo Riferimento / n. ordine è disattivato per questa officina. Attivalo in Impostazioni, Officina."
+  },
   "photoHandoff": {
     "button": "Aggiungi dal telefono",
     "dialogTitle": "Aggiungi foto e documenti da un telefono",

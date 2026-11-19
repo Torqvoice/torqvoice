@@ -763,6 +763,7 @@
       "customer_email": "E-mail",
       "customer_phone": "Telefoon",
       "customer_tax_id": "Btw-nummer klant",
+      "customer_reference": "Uw referentie / inkoopnummer",
       "vehicle_name": "Voertuig",
       "vin": "VIN",
       "license_plate": "Kenteken",
@@ -1226,6 +1227,9 @@
     "typeKeyTitle": "Duitse typesleutel (HSN/TSN)",
     "typeKeyEnabled": "HSN/TSN bij voertuigen vastleggen",
     "typeKeyHint": "Voegt de fabrikant- en typecode van het Duitse kentekenbewijs (velden 2.1 en 2.2) toe aan voertuigen. De code staat bij het voertuig, op de werkorder en op alle afgedrukte documenten, en voertuigen zijn erop te vinden via zoeken. Uitschakelen verbergt de code weer en bewaart wat is ingevoerd.",
+    "customerReferenceTitle": "Referentie / inkoopnummer",
+    "customerReferenceEnabled": "Een klantreferentie of inkoopnummer vastleggen op werkorders en offertes",
+    "customerReferenceHint": "Voegt een veld Referentie / inkoopnummer toe aan werkorders, balieverkopen en offertes, voor het inkoopnummer of de referentie die je klant je geeft. Het kan via de documentontwerper op facturen, offertes en werkorders worden afgedrukt, is te vinden via zoeken en kan naar je boekhoudsysteem worden gestuurd. Een klant kan als Inkoopnummer verplicht worden gemarkeerd, en zijn facturen wachten dan tot de referentie is ingevuld. Uitschakelen verbergt het veld weer en bewaart wat is ingevoerd.",
     "unitsTitle": "Eenheden",
     "unitsDescription": "Hoe afstanden, vloeistoffen en onderdelen in deze werkplaats worden geschreven.",
     "unitSystem": "Eenhedensysteem",
@@ -2787,6 +2791,10 @@
       "document_title": {
         "label": "Documenttitel",
         "description": "De titel van de opdracht of het document."
+      },
+      "customer_reference": {
+        "label": "Referentie / inkoopnummer",
+        "description": "De referentie of het inkoopnummer dat je klant voor de klus heeft opgegeven. Leeg als er geen is."
       },
       "total": {
         "label": "Totaal",

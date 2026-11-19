@@ -151,6 +151,7 @@
     "summaryPaid": "Pago",
     "summaryLeft": "Por pagar",
     "summaryDue": "Data de vencimento",
+    "summaryReference": "A sua referência / n.º de encomenda",
     "summaryDate": "Data",
     "fullInvoice": "A fatura completa"
   },
@@ -624,6 +625,7 @@
     "number": "Número do orçamento",
     "date": "Data",
     "validUntil": "Válido até",
+    "reference": "A sua referência / n.º de encomenda",
     "vehicle": "Viatura",
     "fullQuote": "O orçamento completo",
     "answerTitle": "A oficina aguarda a sua resposta",

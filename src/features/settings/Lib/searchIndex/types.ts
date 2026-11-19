@@ -1,3 +1,4 @@
+import type { PlanFeatures } from '@/lib/features'
 import type { SettingsPageKey } from '@/features/settings/Lib/settingsPages'
 
 /**
@@ -38,4 +39,10 @@ export type SettingsEntry = {
   values?: Record<string, string>
   /** English aliases, lower case. */
   keywords: string[]
+  /**
+   * The plan feature the setting itself is drawn for. Without it the page has
+   * no such control, so the palette has no such entry: findable whenever the
+   * switch is there, and only then.
+   */
+  requires?: keyof PlanFeatures
 }

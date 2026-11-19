@@ -10,7 +10,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const quote = { findFirst: vi.fn(), update: vi.fn().mockResolvedValue({}) }
 const serviceRecord = { findFirst: vi.fn(), update: vi.fn().mockResolvedValue({}) }
 const inspection = { findFirst: vi.fn(), update: vi.fn().mockResolvedValue({}) }
-const appSetting = { findFirst: vi.fn() }
+// findMany answers the Reference / PO switch, which is off: no rows.
+const appSetting = { findFirst: vi.fn(), findMany: vi.fn().mockResolvedValue([]) }
 vi.mock('@/lib/db', () => ({
   db: {
     quote,

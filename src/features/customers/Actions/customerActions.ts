@@ -1,5 +1,9 @@
 'use server'
 
+import {
+  gatePoRequired,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { createCustomerSchema, updateCustomerSchema } from '../Schema/customerSchema'
@@ -29,16 +33,31 @@ async function assertInvoiceDesign(organizationId: string, designId: string | nu
   if (!design) throw new Error('Design not found')
 }
 
+/**
+ * "PO required" belongs to the Reference / PO field. A workshop that has the
+ * field off has no such switch, so the value is neither set nor cleared for
+ * it: what was chosen while the field was on is still there when it returns.
+ */
+async function dropPoRequiredWhenOff(
+  organizationId: string,
+  data: { poRequired?: boolean }
+): Promise<void> {
+  if (data.poRequired === undefined) return
+  if (!(await isCustomerReferenceEnabled(organizationId))) delete data.poRequired
+}
+
 export async function getCustomers() {
   return withAuth(
     async ({ userId, organizationId }) => {
-      return db.customer.findMany({
+      const customers = await db.customer.findMany({
         where: { organizationId },
         include: {
           _count: { select: { vehicles: true } },
         },
         orderBy: { updatedAt: 'desc' },
       })
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
+      return customers.map((customer) => gatePoRequired(customer, referenceOn))
     },
     {
       requiredPermissions: [
@@ -76,7 +95,9 @@ export async function getCustomer(customerId: string) {
       // Missing or foreign-org customer yields null rather than an error: the
       // page renders its not-found state, and this also runs during the
       // post-delete re-render of the customer route.
-      return customer
+      if (!customer) return customer
+      // Never "PO required" for a workshop that has the Reference / PO field off.
+      return gatePoRequired(customer, await isCustomerReferenceEnabled(organizationId))
     },
     {
       requiredPermissions: [
@@ -101,6 +122,7 @@ export async function createCustomer(input: unknown) {
 
       const data = createCustomerSchema.parse(input)
       await assertInvoiceDesign(organizationId, data.invoiceDesignId)
+      await dropPoRequiredWhenOff(organizationId, data)
 
       // Auto-assign the next sequential number when none was provided; the
       // per-org unique index guards against races and manual duplicates.
@@ -161,6 +183,7 @@ export async function updateCustomer(input: unknown) {
     async ({ userId, organizationId }) => {
       const { id, ...data } = updateCustomerSchema.parse(input)
       await assertInvoiceDesign(organizationId, data.invoiceDesignId)
+      await dropPoRequiredWhenOff(organizationId, data)
       let result
       try {
         result = await db.customer.updateMany({
@@ -383,8 +406,9 @@ export async function getCustomersPaginated(params: {
         db.customer.count({ where }),
       ])
 
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
       return {
-        customers,
+        customers: customers.map((customer) => gatePoRequired(customer, referenceOn)),
         total,
         page,
         pageSize,

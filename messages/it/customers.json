@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Le fatture di questo cliente vengono stampate con questo design invece del predefinito dell'officina. Una fattura può comunque sceglierne uno proprio.",
     "reminderOptOut": "Nessun promemoria",
     "reminderOptOutHint": "Non includere questo cliente nei promemoria revisione o in altre campagne.",
+    "poRequired": "N. ordine obbligatorio",
+    "poRequiredHint": "Le fatture di questo cliente restano in attesa finché Riferimento / n. ordine non è compilato sull'ordine di lavoro.",
+    "poRequiredBadge": "N. ordine obbligatorio",
     "bookAppointment": "Prenota appuntamento"
   },
   "serviceRequests": {

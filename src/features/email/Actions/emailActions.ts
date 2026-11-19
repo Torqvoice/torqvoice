@@ -4,6 +4,8 @@ import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 import { requireEmailSending, withPlatformMailAllowance } from '@/features/email/Lib/emailAllowance'
 import { demoGuard } from '@/lib/demo'
@@ -173,6 +175,9 @@ export async function sendQuoteEmail(input: {
             document: {
               number: quoteNum,
               title: quote.title,
+              customerReference: (await isCustomerReferenceEnabled(organizationId))
+                ? quote.customerReference
+                : null,
               total: quote.totalAmount,
               currencyCode,
               currencyFormat,
@@ -293,6 +298,8 @@ export async function sendInvoiceEmail(input: {
         },
       })
       if (!owned) throw new Error('Service record not found')
+      // A customer who needs their PO on the invoice does not get one without it.
+      await assertInvoiceHasRequiredReference(organizationId, serviceRecordId)
 
       const settings = await getWorkshopSettings(organizationId)
       if (settings['workshop.emailEnabled'] === 'false') {
@@ -354,6 +361,8 @@ export async function sendInvoiceEmail(input: {
             document: {
               number: invoiceNum,
               title: record.title,
+              // Already taken away by the assembly for a workshop without the field.
+              customerReference: record.customerReference,
               total: record.totalAmount > 0 ? record.totalAmount : record.cost,
               paid: assembly.paymentSummary?.totalPaid,
               dueDate: record.invoiceDueDate,

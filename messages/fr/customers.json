@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Les factures de ce client sont imprimées avec ce design au lieu du défaut de l'atelier. Une facture peut toujours choisir le sien.",
     "reminderOptOut": "Pas de rappels",
     "reminderOptOutHint": "Ne pas inclure ce client dans les rappels de contrôle ni les autres campagnes.",
+    "poRequired": "N° de commande obligatoire",
+    "poRequiredHint": "Les factures de ce client attendent que le champ Référence / n° de commande soit rempli sur l'ordre de travail.",
+    "poRequiredBadge": "N° de commande requis",
     "bookAppointment": "Prendre rendez-vous"
   },
   "serviceRequests": {

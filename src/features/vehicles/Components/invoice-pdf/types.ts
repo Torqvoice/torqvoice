@@ -64,6 +64,8 @@ export interface InvoiceData {
   totalAmount: number
   cost: number
   invoiceNumber: string | null
+  /** The customer's reference / PO, already null for a workshop that has the field off. */
+  customerReference?: string | null
   discountType?: string | null
   discountValue?: number
   discountAmount?: number

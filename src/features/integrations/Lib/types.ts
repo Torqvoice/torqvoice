@@ -174,9 +174,17 @@ export interface PreviewTestResult {
   reason?: string
 }
 
+/**
+ * A feature a workshop switches on for itself, which a connector setting or
+ * choice can belong to. See Lib/workshop-manifest.ts.
+ */
+export type WorkshopFeature = 'customerReference'
+
 export interface SettingOption {
   value: string
   label: string
+  /** Only offered to a workshop that has this feature switched on. */
+  requires?: WorkshopFeature
   /**
    * Only offered on a self-hosted install. The registry drops the option
    * from the manifest on the cloud instance, so it is neither drawn nor
@@ -216,6 +224,8 @@ export interface SettingField {
   allowCustom?: boolean
   /** Only shown while another setting has this value. */
   showWhen?: SettingCondition
+  /** Only part of the manifest of a workshop that has this feature switched on. */
+  requires?: WorkshopFeature
   required?: boolean
 }
 

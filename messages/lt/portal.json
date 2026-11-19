@@ -364,6 +364,7 @@
     "summaryPaid": "Sumokėta",
     "summaryLeft": "Liko sumokėti",
     "summaryDue": "Apmokėjimo terminas",
+    "summaryReference": "Jūsų nuoroda / užsakymo nr.",
     "summaryDate": "Data",
     "fullInvoice": "Visa sąskaita"
   },
@@ -598,6 +599,7 @@
     "number": "Pasiūlymo numeris",
     "date": "Data",
     "validUntil": "Galioja iki",
+    "reference": "Jūsų nuoroda / užsakymo nr.",
     "vehicle": "Transporto priemonė",
     "fullQuote": "Visas pasiūlymas",
     "answerTitle": "Dirbtuvės laukia jūsų atsakymo",

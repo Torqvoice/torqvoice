@@ -4,6 +4,7 @@ import {
   type InvoiceSectionStyle,
   type LayoutDocumentType,
   BUILTIN_CUSTOMER_FIELDS,
+  isOptInField,
   BUILTIN_FOOTER_FIELDS,
   BUILTIN_HEADER_FIELDS,
   BUILTIN_JOB_DETAILS_FIELDS,
@@ -495,7 +496,10 @@ export const workOrderPresets: LayoutPreset[] = [
       job_qr: 'right',
     },
     fields: {
-      customer: BUILTIN_CUSTOMER_FIELDS.map((f) => f.id as string),
+      // Every customer line a design shows unasked; the opt-in ones stay off.
+      customer: BUILTIN_CUSTOMER_FIELDS.map((f) => f.id as string).filter(
+        (id) => !isOptInField('customer', id)
+      ),
       vehicle: BUILTIN_VEHICLE_FIELDS.map((f) => f.id as string),
       job_details: BUILTIN_JOB_DETAILS_FIELDS.map((f) => f.id as string),
     },

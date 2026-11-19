@@ -338,6 +338,40 @@ describe('addQuoteToServiceRecord', () => {
     }
   })
 
+  it("gives the job the quote's customer reference / PO when it has none", async () => {
+    const { recordUpdate } = setup({ quote: { customerReference: 'PO-48213' } })
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    expect(recordUpdate).toHaveBeenCalledWith({
+      where: { id: JOB_ID },
+      data: { customerReference: 'PO-48213' },
+    })
+  })
+
+  it('never replaces a reference the job already has', async () => {
+    const { recordUpdate } = setup({
+      quote: { customerReference: 'PO-48213' },
+      job: { customerReference: 'PO-ON-THE-JOB' },
+    })
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    for (const [call] of recordUpdate.mock.calls) {
+      expect(call.data).not.toHaveProperty('customerReference')
+    }
+  })
+
+  it('writes no reference for a quote that has none', async () => {
+    const { recordUpdate } = setup()
+
+    await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    for (const [call] of recordUpdate.mock.calls) {
+      expect(call.data).not.toHaveProperty('customerReference')
+    }
+  })
+
   it("leaves the link empty when the quote's inspection is for another car", async () => {
     // The lookup is scoped to the vehicle, so it finds nothing.
     const { recordUpdate } = setup({ quote: { inspectionId: 'insp-1' } })

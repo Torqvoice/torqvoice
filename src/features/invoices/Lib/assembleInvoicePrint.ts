@@ -63,6 +63,11 @@ import {
 } from './issuedInvoice'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 import {
+  customerReferenceEnabledIn,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
+import { getFeatures } from '@/lib/features'
+import {
   loadMarkTypeRows,
   loadVisitConditionMap,
 } from '@/features/condition-map/Lib/loadMarks.server'
@@ -372,9 +377,9 @@ export async function assembleInvoicePrint(
   options: AssembleOptions = {}
 ): Promise<InvoicePrintAssembly | null> {
   const mode = options.mode ?? 'auto'
-  const record = await loadRecord(recordId)
-  if (!record?.organizationId) return null
-  const organizationId = record.organizationId
+  const loaded = await loadRecord(recordId)
+  if (!loaded?.organizationId) return null
+  const organizationId = loaded.organizationId
 
   const [settings, org] = await Promise.all([
     db.appSetting.findMany({ where: { organizationId }, select: { key: true, value: true } }),
@@ -385,6 +390,17 @@ export async function assembleInvoicePrint(
   ])
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
+
+  // The customer's reference / PO is the job's own, never part of what an
+  // issue freezes: an issued invoice reads it from the row like a draft, so
+  // a number that arrives after the invoice went out is on it at once. A
+  // workshop that has the field off gets the job without it, here, before
+  // any sheet, mail or share page is built from the assembly.
+  const record = gateCustomerReference(
+    loaded,
+    settingsMap[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] === 'true' &&
+      customerReferenceEnabledIn(settingsMap, await getFeatures(organizationId))
+  )
 
   const frozen: IssuedInvoiceData | null =
     mode === 'auto' && rendersFromIssue(record) ? readIssuedInvoiceData(record.issuedData) : null

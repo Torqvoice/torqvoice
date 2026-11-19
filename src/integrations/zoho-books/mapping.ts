@@ -225,12 +225,17 @@ export function buildContact(
 
 /* ---------- invoices ---------- */
 
-export type ReferenceChoice = 'vehicle' | 'title' | 'invoiceNumber' | 'none'
+export type ReferenceChoice = 'vehicle' | 'title' | 'invoiceNumber' | 'customerReference' | 'none'
 
 /** The reference field, from the workshop's choice. */
 export function referenceFor(inv: AccountingInvoice, choice: ReferenceChoice): string {
   if (choice === 'none') return ''
   if (choice === 'invoiceNumber') return zohoText(inv.invoiceNumber, 100)
+  // The customer's reference / PO, and for a job without one the vehicle and
+  // plate as before: a blank Reference# finds nothing in Zoho's lists.
+  if (choice === 'customerReference' && inv.customerReference) {
+    return zohoText(inv.customerReference, 100)
+  }
   if (choice === 'title' || !inv.vehicle) return zohoText(inv.title, 100)
   const name = [inv.vehicle.make, inv.vehicle.model].filter(Boolean).join(' ')
   return zohoText([inv.vehicle.licensePlate, name].filter(Boolean).join(' '), 100)

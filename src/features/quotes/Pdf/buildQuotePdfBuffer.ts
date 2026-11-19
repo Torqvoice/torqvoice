@@ -34,6 +34,10 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  customerReferenceEnabledIn,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 
 /** What the quote number is when the workshop's numbering never gave it one. */
 export function quoteNumberOf(quote: { id: string; quoteNumber?: string | null }): string {
@@ -176,10 +180,13 @@ export async function buildQuotePdfBuffer(
 
   const element = React.createElement(QuotePDF, {
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
-    data: {
-      ...quote,
-      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
-    },
+    data: gateCustomerReference(
+      {
+        ...quote,
+        vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+      },
+      customerReferenceEnabledIn(settingsMap, features)
+    ),
     workshop: {
       name: org?.name || '',
       address: settingsMap['workshop.address'] || '',

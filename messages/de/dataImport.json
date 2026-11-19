@@ -202,6 +202,7 @@
       "total": "Gesamtbetrag",
       "mileage": "Kilometerstand beim Service",
       "invoiceNumber": "Rechnungsnummer",
+      "customerReference": "Referenz / Bestellnr.",
       "notes": "Servicenotizen",
       "technician": "Techniker"
     }

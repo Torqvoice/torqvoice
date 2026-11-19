@@ -8,6 +8,9 @@
  * there against an invoice this app issued.
  */
 
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
+import { normalizeCustomerReference } from '@/features/customer-reference/Lib/reference'
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { organizationTranslator } from '@/i18n/organization-translator'
 import type { Prisma } from '@/generated/prisma/client'
@@ -63,6 +66,19 @@ export interface AccountingInvoice {
   /** The job's own title, which a ledger can carry as the invoice's reference. */
   title?: string
   invoiceNumber: string | null
+  /**
+   * The customer's own reference / PO for the job. Present only for a
+   * workshop that has the Reference / PO field switched on; a connector
+   * sends it only where its settings say to.
+   */
+  customerReference?: string | null
+  /**
+   * The customer's invoices need that reference and this job has none. A
+   * connector does not put such an invoice in the ledger on completion
+   * alone: it waits, like the invoice itself, until the reference is there
+   * or the invoice has gone out some other way.
+   */
+  awaitingReference?: boolean
   status: string
   issuedAt: Date | null
   /** The date the sheet prints, which is the date the ledger should carry. */
@@ -102,6 +118,9 @@ const customerSelect = {
   customerNumber: true,
 } as const
 
+/** The invoice's customer, with whether their invoices wait for a reference / PO. */
+const invoiceCustomerSelect = { ...customerSelect, poRequired: true } as const
+
 export async function loadCustomerForAccounting(
   organizationId: string,
   customerId: string
@@ -127,6 +146,7 @@ export async function loadInvoiceForAccounting(
       vehicleId: true,
       title: true,
       invoiceNumber: true,
+      customerReference: true,
       status: true,
       issuedAt: true,
       sentAt: true,
@@ -147,14 +167,14 @@ export async function loadInvoiceForAccounting(
       totalAmount: true,
       cost: true,
       manuallyPaid: true,
-      customer: { select: customerSelect },
+      customer: { select: invoiceCustomerSelect },
       vehicle: {
         select: {
           year: true,
           make: true,
           model: true,
           licensePlate: true,
-          customer: { select: customerSelect },
+          customer: { select: invoiceCustomerSelect },
         },
       },
       laborItems: {
@@ -217,11 +237,31 @@ export async function loadInvoiceForAccounting(
       taxable: p.taxable,
     })),
   ]
+  // The setting is asked only for a job that has something to say about it,
+  // so a workshop without the field costs no query here and gets the invoice
+  // it always got. `poRequired` is read off the customer and goes no further:
+  // the customer a connector is handed is the one it was always handed.
+  const withFlag = r.customer ?? r.vehicle?.customer ?? null
+  let customer: Omit<NonNullable<typeof withFlag>, 'poRequired'> | null = null
+  let poRequired = false
+  if (withFlag) {
+    const { poRequired: flag, ...rest } = withFlag
+    customer = rest
+    poRequired = flag === true
+  }
+  const reference = normalizeCustomerReference(r.customerReference)
+  const referenceOn =
+    reference || poRequired ? await isCustomerReferenceEnabled(organizationId) : false
   return {
     id: r.id,
     vehicleId: r.vehicleId,
     title: r.title,
     invoiceNumber: r.invoiceNumber,
+    // Left off altogether, not sent as null, when there is nothing to say:
+    // a connector's checksum of what it pushed must not move for an invoice
+    // this field does not concern.
+    ...(referenceOn && reference ? { customerReference: reference } : {}),
+    ...(referenceOn && poRequired && !reference ? { awaitingReference: true } : {}),
     status: r.status,
     issuedAt: issuedAtOf(r),
     invoiceDate: effectiveInvoiceDate(r),
@@ -240,7 +280,7 @@ export async function loadInvoiceForAccounting(
     // Records from before itemised totals carry the amount in cost only.
     totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
     manuallyPaid: r.manuallyPaid,
-    customer: r.customer ?? r.vehicle?.customer ?? null,
+    customer,
     vehicle: r.vehicle
       ? {
           year: r.vehicle.year,
@@ -461,4 +501,22 @@ export async function invoicesForBackfill(
     take: limit,
   })
   return rows.map((r) => r.id)
+}
+
+/**
+ * "Your reference / PO", in the language the workshop writes its documents
+ * in. For a connector that puts the customer's reference into a text the
+ * customer reads on the ledger's own invoice.
+ */
+export async function customerReferenceLabel(organizationId: string): Promise<string> {
+  const fallback = 'Your reference / PO'
+  try {
+    const locale = await resolveDocumentLocale(organizationId)
+    const pdf = (await import(`../../../../messages/${locale}/pdf.json`)).default as {
+      common?: Record<string, string>
+    }
+    return pdf.common?.customerReference || fallback
+  } catch {
+    return fallback
+  }
 }

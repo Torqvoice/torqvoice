@@ -111,6 +111,25 @@ export const workshopEntries: SettingsEntry[] = [
     ],
   },
   {
+    id: 'workshop.customerReference',
+    page: 'workshop',
+    title: 'workshop.customerReferenceTitle',
+    description: 'workshop.customerReferenceEnabled',
+    anchor: 'customerReferenceEnabled',
+    // The switch is only drawn on the plans that have the field.
+    requires: 'customFields',
+    keywords: [
+      'po',
+      'po number',
+      'purchase order',
+      'reference',
+      'customer reference',
+      'your reference',
+      'requisition',
+      'order number',
+    ],
+  },
+  {
     id: 'workshop.units',
     page: 'workshop',
     title: 'workshop.unitsTitle',

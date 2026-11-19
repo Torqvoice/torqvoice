@@ -3,6 +3,8 @@ import { db } from './db'
 import { sessionOrganizationScope } from './session-scope'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { customerReferenceEnabledIn } from '@/features/customer-reference/Lib/referenceSetting'
+import { getFeatures } from './features'
 import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
 
 type AuthResult =
@@ -33,6 +35,8 @@ type AuthResult =
       serviceType: string | undefined
       /** Whether vehicles carry the German type key (HSN/TSN). */
       typeKeyEnabled: boolean
+      /** Whether work orders and quotes carry the customer's reference / PO. */
+      customerReferenceEnabled: boolean
       /** The unit a plate lookup writes engine size in. */
       engineSizeUnit: EngineSizeUnit
       currencyCode: string | undefined
@@ -84,6 +88,7 @@ export async function getLayoutData(): Promise<AuthResult> {
                 SETTING_KEYS.WORKBOARD_WEEK_START_DAY,
                 SETTING_KEYS.SERVICE_TYPE,
                 SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
+                SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED,
                 SETTING_KEYS.ENGINE_SIZE_UNIT,
                 SETTING_KEYS.CURRENCY_CODE,
                 SETTING_KEYS.CURRENCY_FORMAT,
@@ -103,6 +108,14 @@ export async function getLayoutData(): Promise<AuthResult> {
   ])
 
   const orgMap = new Map(orgSettings?.map((s) => [s.key, s.value]) ?? [])
+  // The plan is only asked about by a workshop that turned the field on.
+  const customerReferenceEnabled =
+    membership && orgMap.get(SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED) === 'true'
+      ? customerReferenceEnabledIn(
+          Object.fromEntries(orgMap),
+          await getFeatures(membership.organizationId)
+        )
+      : false
 
   return {
     status: 'ok',
@@ -127,6 +140,7 @@ export async function getLayoutData(): Promise<AuthResult> {
     weekStartDay: parseInt(orgMap.get(SETTING_KEYS.WORKBOARD_WEEK_START_DAY) || '1', 10),
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
     typeKeyEnabled: typeKeyEnabledIn(Object.fromEntries(orgMap)),
+    customerReferenceEnabled,
     engineSizeUnit: engineSizeUnitOf(orgMap.get(SETTING_KEYS.ENGINE_SIZE_UNIT)),
     currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
     currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,

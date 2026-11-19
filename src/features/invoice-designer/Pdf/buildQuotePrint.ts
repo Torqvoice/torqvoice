@@ -63,6 +63,8 @@ export interface QuotePrintData {
   totalAmount: number
   /** The workshop's own note. Never printed: the sheet's note is `description`. */
   notes?: string | null
+  /** The customer's reference / PO, already null for a workshop that has the field off. */
+  customerReference?: string | null
   /** The warranty the customer is offered; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
   warrantyMonths?: number | null
@@ -218,6 +220,11 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     customer_phone: data.customer?.phone || '',
     customer_tax_id: data.customer?.taxId
       ? `${L('customerTaxId', 'Tax ID')}: ${data.customer.taxId}`
+      : '',
+    // Empty for a quote without one, and for a workshop that has the field
+    // off: the value is taken away before it reaches here.
+    customer_reference: data.customerReference
+      ? `${L('customerReference', 'Your reference / PO')}: ${data.customerReference}`
       : '',
     vehicle_name: data.vehicle ? `${vehicleName(data.vehicle)}` : '',
     vin: data.vehicle?.vin

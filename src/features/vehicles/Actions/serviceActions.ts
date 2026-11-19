@@ -1,5 +1,11 @@
 'use server'
 
+import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
+import {
+  gateCustomerReference,
+  gatePoRequired,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
 import {
@@ -298,6 +304,7 @@ export async function getServiceRecord(recordId: string) {
               taxId: true,
               taxExempt: true,
               reminderOptOut: true,
+              poRequired: true,
               notes: true,
               createdAt: true,
             },
@@ -339,6 +346,7 @@ export async function getServiceRecord(recordId: string) {
                   taxId: true,
                   taxExempt: true,
                   reminderOptOut: true,
+                  poRequired: true,
                   notes: true,
                   createdAt: true,
                 },
@@ -358,7 +366,19 @@ export async function getServiceRecord(recordId: string) {
         select: { id: true, quoteNumber: true, title: true },
       })
 
-      return { ...record, quotes }
+      // Without the customer's reference / PO, and without "PO required" on
+      // its customer, for a workshop that has the field off: the page has no
+      // box and no notice for them, so they are not sent there either.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
+      return {
+        ...gateCustomerReference(record, referenceOn),
+        customer: record.customer && gatePoRequired(record.customer, referenceOn),
+        vehicle: record.vehicle && {
+          ...record.vehicle,
+          customer: record.vehicle.customer && gatePoRequired(record.vehicle.customer, referenceOn),
+        },
+        quotes,
+      }
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
@@ -1283,6 +1303,7 @@ export async function getWorkOrders(params: {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
 
       // Promised to a customer for today or earlier, and not handed over.
       // Anything already late belongs to the same answer: it was due before
@@ -1312,6 +1333,10 @@ export async function getWorkOrders(params: {
           ...(await typeKeySearch(organizationId, params.search)).map((vehicle) => ({ vehicle })),
           { vehicle: { customer: { name: { contains: params.search, mode: 'insensitive' } } } },
           { customer: { name: { contains: params.search, mode: 'insensitive' } } },
+          // The customer's reference / PO, for a workshop that uses the field.
+          ...(referenceOn
+            ? [{ customerReference: { contains: params.search, mode: 'insensitive' } }]
+            : []),
         ]
       }
 
@@ -1384,7 +1409,7 @@ export async function getWorkOrders(params: {
       }
 
       return {
-        records,
+        records: records.map((record) => gateCustomerReference(record, referenceOn)),
         total,
         page,
         pageSize,
@@ -1496,6 +1521,8 @@ export async function generatePublicLink(serviceRecordId: string) {
         where: { id: serviceRecordId, organizationId },
       })
       if (!record) throw new Error('Record not found')
+      // A customer who needs their PO on the invoice does not get one without it.
+      await assertInvoiceHasRequiredReference(organizationId, serviceRecordId)
 
       // The link is a way of sending the invoice, so what it shows is frozen
       // now, before the stamp below locks it.

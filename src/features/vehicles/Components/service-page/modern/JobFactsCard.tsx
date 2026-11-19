@@ -19,6 +19,9 @@ import type { InitialData } from '../../service-edit/form-types'
 import { formatTypeKey } from '../../../Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
+import { CustomerReferenceField } from '@/features/customer-reference/Components/CustomerReferenceField'
+import { setServiceRecordReference } from '@/features/customer-reference/Actions/setServiceRecordReference'
 import { LowerReadingNotice } from '../../LowerReadingNotice'
 import { isLowerReading } from '../../../Lib/vehicleReading'
 
@@ -45,6 +48,9 @@ interface JobFactsCardProps {
     year: number
     licensePlate: string | null
   } | null
+  /** The Reference / PO box, as it is typed and once it has saved. */
+  onReferenceChange?: (reference: string) => void
+  onReferenceSaved?: () => void
 }
 
 function initials(name: string): string {
@@ -130,8 +136,11 @@ export function JobFactsCard({
   setSelectedVehicleId,
   techName,
   initialVehicle,
+  onReferenceChange,
+  onReferenceSaved,
   distanceUnit,
 }: JobFactsCardProps) {
+  const referenceEnabled = useCustomerReferenceEnabled()
   const t = useTranslations('service')
   const tv = useTranslations('vehicles.form')
   const tInfo = useTranslations('service.modern.vehicleInfo')
@@ -253,6 +262,19 @@ export function JobFactsCard({
             </>
           ) : (
             <p className="text-sm text-muted-foreground">{t('modern.noCustomer')}</p>
+          )}
+          {/* Under the customer, whose number it is. Not inside a locked
+              fieldset: a PO that arrives after the invoice went out is typed
+              here all the same, and saves on its own. */}
+          {referenceEnabled && (
+            <CustomerReferenceField
+              value={record.customerReference ?? null}
+              required={Boolean(customer?.poRequired)}
+              labelClassName={factLabel}
+              onSave={(reference) => setServiceRecordReference(record.id, reference)}
+              onValueChange={onReferenceChange}
+              onSaved={onReferenceSaved}
+            />
           )}
         </div>
 
@@ -574,6 +596,7 @@ function CustomerDetails({
   const tForm = useTranslations('customers.form')
   const tDetail = useTranslations('customers.detail')
   const tCommon = useTranslations('common.form')
+  const referenceEnabled = useCustomerReferenceEnabled()
 
   const rows: {
     key: string
@@ -607,6 +630,7 @@ function CustomerDetails({
   const badges = [
     customer.taxExempt ? tDetail('taxExemptBadge') : null,
     customer.reminderOptOut ? tForm('reminderOptOut') : null,
+    referenceEnabled && customer.poRequired ? tForm('poRequiredBadge') : null,
   ].filter((badge): badge is string => Boolean(badge))
 
   return (

@@ -323,6 +323,11 @@ export function ModernDetails(props: ModernDetailsProps) {
                   setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
                   techName={formState.techName}
                   initialVehicle={props.initialVehicle}
+                  onReferenceChange={props.onReferenceChange}
+                  onReferenceSaved={() => {
+                    formState.flashSaved()
+                    router.refresh()
+                  }}
                   distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
                 />
 

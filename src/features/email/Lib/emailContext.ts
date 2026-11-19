@@ -38,6 +38,8 @@ export interface VehicleContext {
 export interface DocumentContext {
   number?: string | null
   title?: string | null
+  /** The customer's reference / PO; absent for a workshop that has the field off. */
+  customerReference?: string | null
   total?: number | null
   /** Already paid; the balance is worked out from it. */
   paid?: number | null
@@ -157,6 +159,7 @@ export function tagValuesFor<K extends EmailKind>(
     mileage: base.vehicle?.mileage ? String(base.vehicle.mileage) : undefined,
     document_number: text(doc?.number),
     document_title: text(doc?.title),
+    customer_reference: text(doc?.customerReference),
     total: doc?.total !== null && doc?.total !== undefined && fmt ? fmt(doc.total) : undefined,
     balance_due: balance !== null && fmt ? fmt(balance) : undefined,
     due_date: dueDate ? formatDate(dueDate) : undefined,

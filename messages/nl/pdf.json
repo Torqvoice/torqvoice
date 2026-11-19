@@ -227,6 +227,7 @@
     "signature": "Handtekening",
     "signedBy": "Ondertekend door",
     "signatureDate": "Datum",
+    "customerReference": "Uw referentie / inkoopnummer",
     "conditionMapTitle": "Staat van het voertuig",
     "conditionMapNo": "Nr.",
     "conditionMapArea": "Plaats",

@@ -364,6 +364,7 @@
     "summaryPaid": "Pagato",
     "summaryLeft": "Da pagare",
     "summaryDue": "Scadenza",
+    "summaryReference": "Vostro riferimento / n. ordine",
     "summaryDate": "Data",
     "fullInvoice": "La fattura completa"
   },
@@ -598,6 +599,7 @@
     "number": "Numero preventivo",
     "date": "Data",
     "validUntil": "Valido fino al",
+    "reference": "Vostro riferimento / n. ordine",
     "vehicle": "Veicolo",
     "fullQuote": "Il preventivo completo",
     "answerTitle": "L'officina aspetta la tua risposta",

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { manifest } from '@/integrations/xero/manifest'
 import type {
   AccountingCustomer,
   AccountingInvoice,
@@ -767,5 +768,54 @@ describe('telling customers apart by name', () => {
     expect(sameName({ name: 'Anna O\u2019Brien', company: null }, { Name: "Anna O'Brien" })).toBe(
       true
     )
+  })
+})
+
+/**
+ * The customer's reference / PO from the work order. It reaches Xero only
+ * through the Reference setting's own option; every other choice sends what
+ * it sent before the field existed.
+ */
+describe('Xero and the customer reference / PO', () => {
+  const withPo: AccountingInvoice = { ...invoice, customerReference: 'PO-48213' }
+
+  it('changes nothing about the Reference for any choice a workshop already had', () => {
+    for (const choice of ['vehicle', 'title', 'invoiceNumber', 'none'] as const) {
+      expect(referenceFor(withPo, choice), choice).toBe(referenceFor(invoice, choice))
+    }
+  })
+
+  it('sends the same invoice, to the byte, with a reference on the job and the default setting', () => {
+    const before = buildInvoice(invoice, {
+      ...options,
+      reference: referenceFor(invoice, 'vehicle'),
+    })
+    const after = buildInvoice(withPo, { ...options, reference: referenceFor(withPo, 'vehicle') })
+    expect(JSON.stringify(after)).toBe(JSON.stringify(before))
+  })
+
+  it('puts the reference in Reference when the workshop chooses it', () => {
+    expect(referenceFor(withPo, 'customerReference')).toBe('PO-48213')
+    const body = buildInvoice(withPo, {
+      ...options,
+      reference: referenceFor(withPo, 'customerReference'),
+    })
+    expect(body.Reference).toBe('PO-48213')
+  })
+
+  it('falls back to the vehicle and plate for a job without one', () => {
+    expect(referenceFor(invoice, 'customerReference')).toBe(referenceFor(invoice, 'vehicle'))
+  })
+
+  it('offers the choice in the Reference setting and keeps the default', () => {
+    const setting = manifest.settings.find((s) => s.key === 'reference')
+    expect(setting?.default).toBe('vehicle')
+    expect(setting?.options?.map((o) => o.value)).toEqual([
+      'vehicle',
+      'title',
+      'invoiceNumber',
+      'customerReference',
+      'none',
+    ])
   })
 })

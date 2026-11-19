@@ -202,6 +202,7 @@
       "total": "Totalbeløp",
       "mileage": "Kilometerstand ved service",
       "invoiceNumber": "Fakturanummer",
+      "customerReference": "Referanse / bestillingsnr.",
       "notes": "Servicenotater",
       "technician": "Tekniker"
     }

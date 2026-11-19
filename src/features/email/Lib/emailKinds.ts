@@ -57,6 +57,7 @@ const VEHICLE: readonly EmailTag[] = ['vehicle', 'plate', 'mileage']
 const DOCUMENT: readonly EmailTag[] = [
   'document_number',
   'document_title',
+  'customer_reference',
   'total',
   'balance_due',
   'due_date',

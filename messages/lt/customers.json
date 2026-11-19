@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Šio kliento sąskaitos spausdinamos šiuo dizainu vietoj dirbtuvės numatytojo. Sąskaita vis tiek gali pasirinkti savo.",
     "reminderOptOut": "Be priminimų",
     "reminderOptOutHint": "Neįtraukti šio kliento į apžiūros priminimus ar kitas kampanijas.",
+    "poRequired": "Būtinas užsakymo nr.",
+    "poRequiredHint": "Šio kliento sąskaitos laukia, kol darbo užsakyme bus užpildytas laukas Nuoroda / užsakymo nr..",
+    "poRequiredBadge": "Būtinas užsakymo nr.",
     "bookAppointment": "Užregistruoti vizitą"
   },
   "serviceRequests": {

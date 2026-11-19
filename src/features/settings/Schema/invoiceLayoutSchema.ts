@@ -359,6 +359,9 @@ export const BUILTIN_CUSTOMER_FIELDS = [
   { id: 'customer_email', name: 'Customer Email' },
   { id: 'customer_phone', name: 'Customer Phone' },
   { id: 'customer_tax_id', name: 'Customer Tax ID' },
+  // The customer's own reference or purchase order number for the job. Opt-in
+  // (OPT_IN_FIELDS): off in the defaults and in every saved design.
+  { id: 'customer_reference', name: 'Your reference / PO' },
 ] as const
 
 export const BUILTIN_VEHICLE_FIELDS = [
@@ -539,6 +542,24 @@ export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
   defects: ['no_defects_note'],
 }
 
+/**
+ * Fields no sheet prints until a design switches them on, by section.
+ *
+ * The opposite of a grandfathered field: one that arrived for the workshops
+ * that asked for it, and must change nothing for anyone else. It is off in
+ * the default layouts, off in a saved layout that does not mention it, and
+ * left out where a section with no field list of its own is read as showing
+ * everything, so no design made before the field existed starts printing it.
+ */
+export const OPT_IN_FIELDS: Record<string, readonly string[]> = {
+  customer: ['customer_reference'],
+}
+
+/** Whether this field waits for a design to switch it on. */
+export function isOptInField(sectionId: string, fieldId: string): boolean {
+  return (OPT_IN_FIELDS[sectionId] ?? []).includes(fieldId)
+}
+
 /** The ids of `sectionId`'s grandfathered fields that `fields` never mentions. */
 export function unmentionedGrandfathered(
   sectionId: string,
@@ -717,7 +738,11 @@ function getDefaultFieldsForSection(
     case 'customer':
       return BUILTIN_CUSTOMER_FIELDS.map((f) => ({
         id: f.id,
-        visible: workOrder ? f.id === 'customer_name' || f.id === 'customer_phone' : true,
+        visible: isOptInField('customer', f.id)
+          ? false
+          : workOrder
+            ? f.id === 'customer_name' || f.id === 'customer_phone'
+            : true,
       }))
     case 'vehicle':
       return BUILTIN_VEHICLE_FIELDS.map((f) => ({

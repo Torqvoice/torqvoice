@@ -763,6 +763,7 @@
       "customer_email": "E-Mail",
       "customer_phone": "Telefon",
       "customer_tax_id": "USt-IdNr.",
+      "customer_reference": "Ihre Referenz / Bestellnr.",
       "vehicle_name": "Fahrzeug",
       "vin": "FIN",
       "license_plate": "Kennzeichen",
@@ -1226,6 +1227,9 @@
     "typeKeyTitle": "Deutsche Schlüsselnummer (HSN/TSN)",
     "typeKeyEnabled": "HSN/TSN an Fahrzeugen erfassen",
     "typeKeyHint": "Ergänzt Fahrzeuge um Hersteller- und Typschlüsselnummer aus der Zulassungsbescheinigung Teil I (Felder 2.1 und 2.2). Sie erscheint am Fahrzeug, am Arbeitsauftrag und auf allen gedruckten Dokumenten, und Fahrzeuge lassen sich über die Suche danach finden. Beim Ausschalten wird sie wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
+    "customerReferenceTitle": "Referenz / Bestellnr.",
+    "customerReferenceEnabled": "Kundenreferenz oder Bestellnummer an Arbeitsaufträgen und Angeboten erfassen",
+    "customerReferenceHint": "Ergänzt Arbeitsaufträge, Thekenverkäufe und Angebote um ein Feld Referenz / Bestellnr. für die Bestellnummer oder Referenz, die dir dein Kunde nennt. Sie lässt sich im Dokument-Designer auf Rechnungen, Angebote und Arbeitsaufträge drucken, über die Suche finden und an deine Buchhaltung senden. Ein Kunde kann als Bestellnr. erforderlich markiert werden, seine Rechnungen warten dann, bis die Referenz eingetragen ist. Beim Ausschalten wird das Feld wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
     "unitsTitle": "Einheiten",
     "unitsDescription": "Wie Strecken, Flüssigkeiten und Teile in dieser Werkstatt angegeben werden.",
     "unitSystem": "Einheitensystem",
@@ -2787,6 +2791,10 @@
       "document_title": {
         "label": "Dokumenttitel",
         "description": "Der Titel des Auftrags oder Dokuments."
+      },
+      "customer_reference": {
+        "label": "Referenz / Bestellnr.",
+        "description": "Die Referenz oder Bestellnummer, die dein Kunde für den Auftrag angegeben hat. Leer, wenn es keine gibt."
       },
       "total": {
         "label": "Gesamtbetrag",

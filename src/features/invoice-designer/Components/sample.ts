@@ -190,6 +190,10 @@ export function fieldValues(
     customer_email: 'alex@example.com',
     customer_phone: '+1 555 0134',
     customer_tax_id: `${L('customerTaxId', 'Tax ID')}: 000 000 000`,
+    // Only for a workshop that uses the field, since nobody else's sheet prints it.
+    customer_reference: workshop.customerReferenceEnabled
+      ? `${L('customerReference', 'Your reference / PO')}: PO-48213`
+      : '',
     // A made-up vehicle.
     vehicle_name: '2020 Volvo V60',
     vin: fillTemplate(L('vin', 'VIN: {vin}'), { vin: 'YV1AA0000L0000000' }),

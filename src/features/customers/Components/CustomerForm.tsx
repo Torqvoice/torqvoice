@@ -31,6 +31,7 @@ import type { VehicleDocumentScan } from '@/features/vehicles/Actions/aiAnalyzeV
 import { Loader2 } from 'lucide-react'
 import { clearableInput } from '@/lib/clearable'
 import { handleGated } from '@/components/upgrade-gate'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { openBooking, useBookingAccess } from '@/components/booking-launcher'
 
 interface CustomerFormProps {
@@ -47,6 +48,7 @@ interface CustomerFormProps {
     taxId?: string | null
     taxExempt?: boolean
     reminderOptOut?: boolean
+    poRequired?: boolean
     notes?: string | null
     invoiceDesignId?: string | null
   }
@@ -93,6 +95,16 @@ export function CustomerForm({
   }, [open])
 
   const [reminderOptOut, setReminderOptOut] = useState(customer?.reminderOptOut ?? false)
+  // "PO required", for a workshop that uses the Reference / PO field. The
+  // form stays mounted while the list opens it for one customer after
+  // another, so the switch follows whichever customer is open.
+  const referenceEnabled = useCustomerReferenceEnabled()
+  const [poRequired, setPoRequired] = useState(customer?.poRequired ?? false)
+  const openCustomerId = customer?.id ?? null
+  const openCustomerPoRequired = customer?.poRequired ?? false
+  useEffect(() => {
+    if (open) setPoRequired(openCustomerPoRequired)
+  }, [open, openCustomerId, openCustomerPoRequired])
   const formRef = useRef<HTMLFormElement>(null)
   /** Vehicle details from a scanned document, offered once the customer exists. */
   const [scannedVehicle, setScannedVehicle] = useState<VehicleDocumentScan | null>(null)
@@ -138,6 +150,11 @@ export function CustomerForm({
       taxId: optional('taxId'),
       taxExempt,
       reminderOptOut,
+      // Sent only where the switch is drawn, and when editing only if the
+      // customer came with its value: a save must never clear one it did not show.
+      ...(referenceEnabled && (!customer || customer.poRequired !== undefined)
+        ? { poRequired }
+        : {}),
       notes: optional('notes'),
       invoiceDesignId: invoiceDesignId === FOLLOW_DEFAULT ? null : invoiceDesignId,
     }
@@ -365,6 +382,16 @@ export function CustomerForm({
                 </div>
                 <Switch checked={reminderOptOut} onCheckedChange={setReminderOptOut} />
               </div>
+
+              {referenceEnabled && (
+                <div className="flex items-center justify-between gap-4 rounded-lg border p-3">
+                  <div className="space-y-0.5">
+                    <Label htmlFor="poRequired">{t('poRequired')}</Label>
+                    <p className="text-xs text-muted-foreground">{t('poRequiredHint')}</p>
+                  </div>
+                  <Switch id="poRequired" checked={poRequired} onCheckedChange={setPoRequired} />
+                </div>
+              )}
             </div>
 
             <div className="space-y-2 md:col-span-2">

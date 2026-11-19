@@ -60,6 +60,7 @@ import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
 import { useSampleFormat } from './useSampleFormat'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { specForPreset } from './presetSpec'
 import { themeOf } from './designTheme'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -126,6 +127,7 @@ export function InvoiceDesigner({
   const router = useRouter()
   const t = useTranslations('settings.designer')
   const typeKeyEnabled = useTypeKeyEnabled()
+  const customerReferenceEnabled = useCustomerReferenceEnabled()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
   const { formatDate } = useFormatDate()
@@ -354,7 +356,7 @@ export function InvoiceDesigner({
   const data: DocumentData = useMemo(
     () => ({
       ...buildSampleData(
-        { ...workshop, typeKeyEnabled },
+        { ...workshop, typeKeyEnabled, customerReferenceEnabled },
         customFields,
         t,
         printLabels,
@@ -369,6 +371,7 @@ export function InvoiceDesigner({
     [
       workshop,
       typeKeyEnabled,
+      customerReferenceEnabled,
       customFields,
       t,
       printLabels,

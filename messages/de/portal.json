@@ -364,6 +364,7 @@
     "summaryPaid": "Bezahlt",
     "summaryLeft": "Noch offen",
     "summaryDue": "Fälligkeitsdatum",
+    "summaryReference": "Ihre Referenz / Bestellnr.",
     "summaryDate": "Datum",
     "fullInvoice": "Die vollständige Rechnung"
   },
@@ -598,6 +599,7 @@
     "number": "Angebotsnummer",
     "date": "Datum",
     "validUntil": "Gültig bis",
+    "reference": "Ihre Referenz / Bestellnr.",
     "vehicle": "Fahrzeug",
     "fullQuote": "Das vollständige Angebot",
     "answerTitle": "Die Werkstatt wartet auf Ihre Antwort",

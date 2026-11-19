@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { type EmailTag, TAG_GROUPS, TAGS, tagsInGroup } from '../Lib/tags'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 
 type TagInput = HTMLInputElement | HTMLTextAreaElement
 
@@ -172,7 +173,12 @@ export function TagPicker({
   onInsert: (tag: EmailTag) => void
 }) {
   const t = useTranslations('settings.emailTemplates')
-  const offered = new Set(tags)
+  // The customer's reference / PO is a tag only for a workshop that uses the
+  // field; for everybody else the list is what it has always been.
+  const customerReferenceEnabled = useCustomerReferenceEnabled()
+  const offered = new Set(
+    tags.filter((tag) => customerReferenceEnabled || tag !== 'customer_reference')
+  )
 
   return (
     <TooltipProvider delayDuration={300}>

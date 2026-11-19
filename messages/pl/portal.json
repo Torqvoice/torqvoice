@@ -364,6 +364,7 @@
     "summaryPaid": "Zapłacono",
     "summaryLeft": "Do zapłaty",
     "summaryDue": "Termin płatności",
+    "summaryReference": "Państwa referencja / nr zamówienia",
     "summaryDate": "Data",
     "fullInvoice": "Cała faktura"
   },
@@ -598,6 +599,7 @@
     "number": "Numer wyceny",
     "date": "Data",
     "validUntil": "Ważna do",
+    "reference": "Państwa referencja / nr zamówienia",
     "vehicle": "Pojazd",
     "fullQuote": "Cała wycena",
     "answerTitle": "Warsztat czeka na Twoją odpowiedź",

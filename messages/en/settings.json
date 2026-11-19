@@ -763,6 +763,7 @@
       "customer_email": "Customer Email",
       "customer_phone": "Customer Phone",
       "customer_tax_id": "Customer Tax ID",
+      "customer_reference": "Your reference / PO",
       "vehicle_name": "Vehicle",
       "vin": "VIN",
       "license_plate": "License Plate",
@@ -1226,6 +1227,9 @@
     "typeKeyTitle": "German type key (HSN/TSN)",
     "typeKeyEnabled": "Record HSN/TSN on vehicles",
     "typeKeyHint": "Adds the manufacturer and type key from the German registration certificate (fields 2.1 and 2.2) to vehicles. It shows on the vehicle, the work order and every printed document, and vehicles can be found by it in search. Turning it off hides it again and keeps what was entered.",
+    "customerReferenceTitle": "Reference / PO",
+    "customerReferenceEnabled": "Record a customer reference or PO number on work orders and quotes",
+    "customerReferenceHint": "Adds a Reference / PO field to work orders, counter sales and quotes, for the purchase order number or reference your customer gives you. It can be printed on invoices, quotes and work orders from the document designer, found in search, and sent to your accounting system. A customer can be marked as PO required, and their invoices then wait until the reference is filled in. Turning it off hides it again and keeps what was entered.",
     "unitsTitle": "Units",
     "unitsDescription": "How distances, fluids and parts are written in this workshop.",
     "unitSystem": "Unit System",
@@ -2787,6 +2791,10 @@
       "document_title": {
         "label": "Document title",
         "description": "The title of the job or document."
+      },
+      "customer_reference": {
+        "label": "Reference / PO",
+        "description": "The reference or PO number your customer gave for the job. Blank when there is none."
       },
       "total": {
         "label": "Total",

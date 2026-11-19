@@ -1,5 +1,6 @@
 'use server'
 
+import { notAwaitingReference } from '@/features/customer-reference/Lib/referenceSetting'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { getTranslations } from 'next-intl/server'
 import { zonedDayKey } from '@/lib/timezone'
@@ -163,6 +164,8 @@ export async function getPortalInvoices() {
         organizationId,
         OR: [{ vehicle: { customerId } }, { customerId }],
         status: 'completed',
+        // Not the ones still waiting for the customer's reference / PO.
+        ...(await notAwaitingReference(organizationId)),
       },
       select: {
         id: true,
@@ -200,6 +203,7 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
         organizationId,
         OR: [{ vehicle: { customerId } }, { customerId }],
         status: 'completed',
+        ...(await notAwaitingReference(organizationId)),
       },
       select: { id: true, title: true, invoiceNumber: true, publicToken: true },
     })
@@ -247,6 +251,9 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
       title: record.title,
       invoiceNumber: record.invoiceNumber,
       publicToken: record.publicToken,
+      // The customer's own reference / PO for the job; null for a workshop
+      // that has the field off, which the assembly has already seen to.
+      customerReference: assembly.record.customerReference ?? null,
       spec,
       // The finished inspection linked to the job, whose certificate goes with it.
       hasCertificate: certificateInspection !== null,

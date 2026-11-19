@@ -89,6 +89,8 @@ interface SearchResult {
     id: string
     title: string
     invoiceNumber: string | null
+    /** The customer's reference / PO; only sent for a workshop that uses the field. */
+    customerReference?: string | null
     vehicle: Vehicle | null
   }[]
   parts: {
@@ -105,6 +107,8 @@ interface SearchResult {
     title: string
     quoteNumber: string | null
     status: string
+    /** The customer's reference / PO; only sent for a workshop that uses the field. */
+    customerReference?: string | null
   }[]
   reminders: {
     id: string
@@ -1030,7 +1034,12 @@ export function SearchCommand({
               const href = s.vehicle
                 ? `/vehicles/${s.vehicle.id}/service/${s.id}`
                 : `/sales/${s.id}`
-              const subtitle = [s.vehicle ? vehicleLine(s.vehicle) : null, s.vehicle?.licensePlate]
+              const subtitle = [
+                s.vehicle ? vehicleLine(s.vehicle) : null,
+                s.vehicle?.licensePlate,
+                // What a search by PO number matched, said on the row it found.
+                s.customerReference,
+              ]
                 .filter(Boolean)
                 .join(' · ')
               return (
@@ -1083,7 +1092,7 @@ export function SearchCommand({
                 onSelect={() => pickRecord(`/quotes/${q.id}`, q.title, q.quoteNumber ?? undefined)}
                 icon={FileText}
                 title={q.title}
-                subtitle={q.status}
+                subtitle={[q.status, q.customerReference].filter(Boolean).join(' · ')}
                 trailing={q.quoteNumber}
               />
             ))}

@@ -66,6 +66,8 @@ export interface ServiceDetail {
   taxAmount: number
   totalAmount: number
   invoiceNumber: string | null
+  /** The customer's reference / PO for the job. Shown only while the workshop uses the field. */
+  customerReference?: string | null
   discountType: string | null
   discountValue: number
   discountAmount: number
@@ -166,6 +168,8 @@ export interface Vehicle {
     taxId?: string | null
     taxExempt?: boolean
     reminderOptOut?: boolean
+    /** This customer's invoices wait for a reference / PO. */
+    poRequired?: boolean
     notes?: string | null
     createdAt?: Date | string
   } | null

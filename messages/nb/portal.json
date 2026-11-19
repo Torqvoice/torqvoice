@@ -364,6 +364,7 @@
     "summaryPaid": "Betalt",
     "summaryLeft": "Igjen å betale",
     "summaryDue": "Forfallsdato",
+    "summaryReference": "Deres referanse / bestillingsnr.",
     "summaryDate": "Dato",
     "fullInvoice": "Hele fakturaen"
   },
@@ -598,6 +599,7 @@
     "number": "Tilbudsnummer",
     "date": "Dato",
     "validUntil": "Gyldig til",
+    "reference": "Deres referanse / bestillingsnr.",
     "vehicle": "Kjøretøy",
     "fullQuote": "Hele tilbudet",
     "answerTitle": "Verkstedet venter på svar fra deg",

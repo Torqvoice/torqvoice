@@ -202,6 +202,7 @@
       "total": "Bendra suma",
       "mileage": "Rida paslaugos metu",
       "invoiceNumber": "Sąskaitos numeris",
+      "customerReference": "Nuoroda / užsakymo nr.",
       "notes": "Paslaugos pastabos",
       "technician": "Technikas"
     }

@@ -202,6 +202,7 @@
       "total": "Kwota łączna",
       "mileage": "Przebieg przy serwisie",
       "invoiceNumber": "Numer faktury",
+      "customerReference": "Referencja / nr zamówienia",
       "notes": "Notatki serwisowe",
       "technician": "Technik"
     }

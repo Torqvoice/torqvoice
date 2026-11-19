@@ -3,6 +3,7 @@
 import { useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { toast } from 'sonner'
 import type {
   InvoiceDocumentStyle,
@@ -21,6 +22,7 @@ import {
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
+  isOptInField,
   layoutDocumentType,
   NO_CUSTOM_FIELD_SECTIONS,
   unmentionedGrandfathered,
@@ -420,6 +422,7 @@ export function DesignerInspector({
     </Group>
   )
   const typeKeyEnabled = useTypeKeyEnabled()
+  const customerReferenceEnabled = useCustomerReferenceEnabled()
   /** The field row being dragged to a new spot in the list, if any. */
   const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
@@ -433,7 +436,10 @@ export function DesignerInspector({
      */
     const builtins = getBuiltinFieldsForSection(section.id, layoutDocumentType(layout))
     const builtinIds = new Set(builtins.map((f) => f.id))
-    const stored = (section.fields ?? builtins.map((f) => ({ id: f.id, visible: true }))) // A stored id no builtin list carries any more is a leftover, not a field.
+    const stored = (
+      section.fields ??
+      builtins.map((f) => ({ id: f.id, visible: !isOptInField(section.id, f.id) }))
+    ) // A stored id no builtin list carries any more is a leftover, not a field.
       .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
     // A field added after this layout was written still needs its switch.
     // Without this a saved design, which is loaded as it was stored, can never
@@ -501,8 +507,16 @@ export function DesignerInspector({
     const dragFieldOver = (overId: string) => {
       if (dragFieldId) moveField(dragFieldId, overId)
     }
-    // The rows on screen: the type key's only for a workshop that records it.
-    const shownFields = resolvedFields.filter((field) => typeKeyEnabled || field.id !== 'hsn_tsn')
+    // The rows on screen: the type key's only for a workshop that records it,
+    // and the customer's reference / PO only for one that uses that field, on
+    // the documents that have a job or a quote to take it from.
+    const referenceOffered =
+      customerReferenceEnabled && layoutDocumentType(layout) !== 'certificate'
+    const shownFields = resolvedFields.filter(
+      (field) =>
+        (typeKeyEnabled || field.id !== 'hsn_tsn') &&
+        (referenceOffered || field.id !== 'customer_reference')
+    )
     /**
      * The keyboard's reorder: past the next row up or down that can move, as
      * a drag would. A row printed in a place of its own is stepped over, the

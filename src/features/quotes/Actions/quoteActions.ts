@@ -1,5 +1,9 @@
 'use server'
 
+import {
+  gateCustomerReference,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { ATTENTION_STATUSES } from '@/features/quotes/Lib/quoteStatus'
 import {
   assertInvoiceEditable,
@@ -85,11 +89,16 @@ export async function getQuotesPaginated(params: {
         where.status = params.status
       }
 
+      // The customer's reference / PO, for a workshop that uses the field.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
       if (params.search) {
         where.OR = [
           { title: { contains: params.search, mode: 'insensitive' } },
           { quoteNumber: { contains: params.search, mode: 'insensitive' } },
           { customer: { name: { contains: params.search, mode: 'insensitive' } } },
+          ...(referenceOn
+            ? [{ customerReference: { contains: params.search, mode: 'insensitive' } }]
+            : []),
         ]
       }
 
@@ -147,7 +156,7 @@ export async function getQuotesPaginated(params: {
       counts.attention = ATTENTION_STATUSES.reduce((sum, status) => sum + (counts[status] ?? 0), 0)
 
       return {
-        records,
+        records: records.map((record) => gateCustomerReference(record, referenceOn)),
         total,
         page,
         pageSize,
@@ -221,9 +230,11 @@ export async function getQuote(quoteId: string) {
       // Missing or foreign-org quote yields null rather than an error: the page
       // renders its not-found state, and this also runs during the post-delete
       // re-render of the quote route.
-      if (!quote?.vehicle) return quote
+      if (!quote) return quote
+      const shown = gateCustomerReference(quote, await isCustomerReferenceEnabled(organizationId))
+      if (!shown.vehicle) return shown
       const enabled = await isTypeKeyEnabled(organizationId)
-      return { ...quote, vehicle: gateTypeKey(quote.vehicle, enabled) }
+      return { ...shown, vehicle: gateTypeKey(shown.vehicle, enabled) }
     },
     { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] }
   )
@@ -564,6 +575,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             // would put the technician back to asking.
             tireSetId: quote.tireSetId,
             inspectionId: inspection?.id ?? null,
+            // The customer's reference / PO goes with the work it was given for.
+            customerReference: quote.customerReference,
             shopName: org?.name || undefined,
             invoiceNumber,
             subtotal: quote.subtotal,
@@ -819,6 +832,7 @@ export async function addQuoteToServiceRecord(
           inspectionId: true,
           tireSetId: true,
           serviceDate: true,
+          customerReference: true,
           ...CONFLICT_JOB_SELECT,
         },
       })
@@ -931,6 +945,10 @@ export async function addQuoteToServiceRecord(
         const changes = {
           ...(inspection ? { inspectionId: inspection.id } : {}),
           ...(!record.tireSetId && quote.tireSetId ? { tireSetId: quote.tireSetId } : {}),
+          // The job's own reference / PO stands; one it lacks comes from the quote.
+          ...(!record.customerReference && quote.customerReference
+            ? { customerReference: quote.customerReference }
+            : {}),
           ...(carriedDiscount !== null
             ? { discountType: 'fixed', discountValue: carriedDiscount }
             : {}),

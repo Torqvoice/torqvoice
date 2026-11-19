@@ -151,6 +151,7 @@
     "summaryPaid": "Ödenen",
     "summaryLeft": "Kalan",
     "summaryDue": "Son ödeme tarihi",
+    "summaryReference": "Referansınız / sipariş no",
     "summaryDate": "Tarih",
     "fullInvoice": "Faturanın tamamı"
   },
@@ -624,6 +625,7 @@
     "number": "Teklif numarası",
     "date": "Tarih",
     "validUntil": "Son geçerlilik",
+    "reference": "Referansınız / sipariş no",
     "vehicle": "Araç",
     "fullQuote": "Teklifin tamamı",
     "answerTitle": "Servis yanıtınızı bekliyor",
