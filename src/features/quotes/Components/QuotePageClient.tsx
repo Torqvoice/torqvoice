@@ -344,10 +344,13 @@ export function QuotePageClient({
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             {/* Header */}
             <div className="shrink-0 border-b bg-background px-4 py-2">
-              <div className="flex items-center justify-between">
+              {/* Title and actions share a row while both fit. On a phone the
+                  actions drop to a row of their own, as on the work order,
+                  instead of squeezing the title under them. */}
+              <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2">
                 <Link
                   href="/quotes"
-                  className="flex min-w-0 items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
+                  className="flex min-w-0 flex-[1_1_16rem] items-center gap-3 text-foreground transition-colors hover:text-muted-foreground"
                 >
                   <ArrowLeft className="h-4 w-4 shrink-0" />
                   <div className="min-w-0">
@@ -365,7 +368,7 @@ export function QuotePageClient({
                     </p>
                   </div>
                 </Link>
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="flex shrink-0 flex-wrap items-center gap-2">
                   {state.hasUnsavedChanges && (
                     <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
                       {t('page.unsavedChanges')}
@@ -385,11 +388,11 @@ export function QuotePageClient({
                     className={state.hasUnsavedChanges ? 'animate-pulse' : ''}
                   >
                     {state.saving ? (
-                      <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                      <Loader2 className="h-3.5 w-3.5 sm:mr-1 animate-spin" />
                     ) : (
-                      <Save className="mr-1 h-3.5 w-3.5" />
+                      <Save className="h-3.5 w-3.5 sm:mr-1" />
                     )}
-                    {t('page.save')}
+                    <span className="sr-only sm:not-sr-only">{t('page.save')}</span>
                   </Button>
                   <ButtonGroup>
                     <Button
@@ -402,8 +405,8 @@ export function QuotePageClient({
                         setShowPdfPreview(true)
                       }}
                     >
-                      <Eye className="mr-1 h-3.5 w-3.5" />
-                      {tPreview('preview')}
+                      <Eye className="h-3.5 w-3.5 sm:mr-1" />
+                      <span className="sr-only sm:not-sr-only">{tPreview('preview')}</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -412,11 +415,11 @@ export function QuotePageClient({
                       disabled={state.downloading}
                     >
                       {state.downloading ? (
-                        <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                        <Loader2 className="h-3.5 w-3.5 sm:mr-1 animate-spin" />
                       ) : (
-                        <Download className="mr-1 h-3.5 w-3.5" />
+                        <Download className="h-3.5 w-3.5 sm:mr-1" />
                       )}
-                      {t('page.pdf')}
+                      <span className="sr-only sm:not-sr-only">{t('page.pdf')}</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -429,11 +432,11 @@ export function QuotePageClient({
                       }}
                     >
                       {state.saving ? (
-                        <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                        <Loader2 className="h-3.5 w-3.5 sm:mr-1 animate-spin" />
                       ) : (
-                        <Send className="mr-1 h-3.5 w-3.5" />
+                        <Send className="h-3.5 w-3.5 sm:mr-1" />
                       )}
-                      {t('page.send')}
+                      <span className="sr-only sm:not-sr-only">{t('page.send')}</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -446,11 +449,11 @@ export function QuotePageClient({
                       }}
                     >
                       {state.saving ? (
-                        <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                        <Loader2 className="h-3.5 w-3.5 sm:mr-1 animate-spin" />
                       ) : (
-                        <Globe className="mr-1 h-3.5 w-3.5" />
+                        <Globe className="h-3.5 w-3.5 sm:mr-1" />
                       )}
-                      {t('page.share')}
+                      <span className="sr-only sm:not-sr-only">{t('page.share')}</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -458,8 +461,8 @@ export function QuotePageClient({
                       className="text-destructive hover:bg-destructive/10"
                       onClick={state.handleDelete}
                     >
-                      <Trash2 className="mr-1 h-3.5 w-3.5" />
-                      {t('page.delete')}
+                      <Trash2 className="h-3.5 w-3.5 sm:mr-1" />
+                      <span className="sr-only sm:not-sr-only">{t('page.delete')}</span>
                     </Button>
                   </ButtonGroup>
                 </div>
