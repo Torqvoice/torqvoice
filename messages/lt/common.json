@@ -31,6 +31,13 @@
     "address": "Adresas",
     "notes": "Pastabos"
   },
+  "passwordFeedback": {
+    "tooShort": "Per trumpas, {count, plural, one {trūksta # simbolio} few {trūksta # simbolių} other {trūksta # simbolių}}",
+    "tooLong": "Per ilgas, {count, plural, one {# simboliu} few {# simboliais} other {# simbolių}} viršija {max} simbolių ribą",
+    "ok": "Slaptažodis tinka",
+    "mismatch": "Nesutampa su aukščiau įvestu slaptažodžiu",
+    "match": "Slaptažodžiai sutampa"
+  },
   "errors": {
     "unexpected": "Įvyko netikėta klaida. Bandykite dar kartą.",
     "error": "Klaida"

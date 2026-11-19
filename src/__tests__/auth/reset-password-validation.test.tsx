@@ -20,6 +20,7 @@ vi.mock('next/link', () => ({
 // Mock lucide-react icons used in the component
 vi.mock('lucide-react', () => ({
   Gauge: () => <svg data-testid="icon-gauge" />,
+  CheckCircle2: () => <svg data-testid="icon-check" />,
   Loader2: () => <svg data-testid="icon-loader" />,
   XCircle: () => <svg data-testid="icon-xcircle" />,
 }))

@@ -18,6 +18,8 @@ import { TERMS_URL } from '@/lib/marketing-urls'
 import { acceptInvitation } from '@/features/team/Actions/acceptInvitation'
 import { track } from '@/lib/analytics'
 import { takeHandedEmail } from '@/lib/auth-email-handoff'
+import { PasswordFeedback } from '@/components/password-feedback'
+import { PASSWORD_MIN_LENGTH } from '@/lib/password-rules'
 
 export function SignUpForm({
   inviteToken,
@@ -267,11 +269,12 @@ export function SignUpForm({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
+              minLength={PASSWORD_MIN_LENGTH}
               autoComplete="new-password"
+              aria-describedby="password-feedback"
               className="h-11 bg-background/50"
             />
-            <p className="text-xs text-muted-foreground">{t('passwordHint')}</p>
+            <PasswordFeedback id="password-feedback" password={password} hint={t('passwordHint')} />
           </div>
 
           <div

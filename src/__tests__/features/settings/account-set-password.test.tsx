@@ -148,6 +148,18 @@ describe('an account that signed up with Google and has no password', () => {
     expect(screen.getByRole('button', { name: 'Sign in again' })).toBeEnabled()
   })
 
+  it('says while typing whether the new password is long enough and the two match', () => {
+    renderPage(false)
+    const next = screen.getByLabelText('New Password')
+    const confirm = screen.getByLabelText('Confirm New Password')
+    typePasswords('short', 'sho')
+    expect(next).toHaveAccessibleDescription('Too short, 3 more characters')
+    expect(confirm).toHaveAccessibleDescription('Does not match the password above')
+    typePasswords('long enough')
+    expect(next).toHaveAccessibleDescription('Password OK')
+    expect(confirm).toHaveAccessibleDescription('Passwords match')
+  })
+
   it('sends nothing when the two passwords differ', () => {
     renderPage(false)
     typePasswords('correct horse battery', 'correct horse batteri')

@@ -31,6 +31,13 @@
     "address": "Dirección",
     "notes": "Notas"
   },
+  "passwordFeedback": {
+    "tooShort": "Demasiado corta, {count, plural, one {falta # carácter} other {faltan # caracteres}}",
+    "tooLong": "Demasiado larga, {count, plural, one {# carácter} other {# caracteres}} por encima del límite de {max}",
+    "ok": "Contraseña válida",
+    "mismatch": "No coincide con la contraseña de arriba",
+    "match": "Las contraseñas coinciden"
+  },
   "errors": {
     "unexpected": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
     "error": "Error"

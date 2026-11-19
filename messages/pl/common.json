@@ -31,6 +31,13 @@
     "address": "Adres",
     "notes": "Notatki"
   },
+  "passwordFeedback": {
+    "tooShort": "Za krótkie, {count, plural, one {brakuje # znaku} few {brakuje # znaków} many {brakuje # znaków} other {brakuje # znaku}}",
+    "tooLong": "Za długie, {count, plural, one {# znak} few {# znaki} many {# znaków} other {# znaku}} ponad limit {max} znaków",
+    "ok": "Hasło OK",
+    "mismatch": "Nie pasuje do hasła powyżej",
+    "match": "Hasła są zgodne"
+  },
   "errors": {
     "unexpected": "Wystąpił nieoczekiwany błąd. Spróbuj ponownie.",
     "error": "Błąd"

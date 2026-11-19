@@ -31,6 +31,13 @@
     "address": "Address",
     "notes": "Notes"
   },
+  "passwordFeedback": {
+    "tooShort": "Too short, {count, plural, one {# more character} other {# more characters}}",
+    "tooLong": "Too long, {count, plural, one {# character} other {# characters}} over the {max}-character limit",
+    "ok": "Password OK",
+    "mismatch": "Does not match the password above",
+    "match": "Passwords match"
+  },
   "errors": {
     "unexpected": "An unexpected error occurred. Please try again.",
     "error": "Error"
