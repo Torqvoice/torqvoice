@@ -24,7 +24,28 @@ import type { Prisma } from '@/generated/prisma/client'
  * the person sees a notice and saves anyway (odometers are replaced).
  */
 
-type ReadingClient = Pick<Prisma.TransactionClient, 'serviceRecord' | 'vehicle'>
+/**
+ * The three queries the rule makes, so the app's client, a transaction and a
+ * test double all fit without the rule importing the database itself.
+ */
+export interface ReadingClient {
+  serviceRecord: {
+    findFirst(args: {
+      where: Prisma.ServiceRecordWhereInput
+      select: { id: true }
+    }): PromiseLike<{ id: string } | null>
+    aggregate(args: {
+      where: Prisma.ServiceRecordWhereInput
+      _max: { mileage: true }
+    }): PromiseLike<{ _max: { mileage: number | null } }>
+  }
+  vehicle: {
+    updateMany(args: {
+      where: Prisma.VehicleWhereInput
+      data: { mileage: number }
+    }): PromiseLike<{ count: number }>
+  }
+}
 
 export interface JobReading {
   organizationId: string
