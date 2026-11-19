@@ -192,6 +192,7 @@
       "engineCode": "Variklio kodas",
       "hsn": "HSN (gamintojo kodas)",
       "tsn": "TSN (tipo kodas)",
+      "fleetNumber": "Autoparko / vieneto numeris",
       "purchaseDate": "Pirkimo data",
       "purchasePrice": "Pirkimo kaina"
     },

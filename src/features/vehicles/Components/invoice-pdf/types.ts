@@ -91,6 +91,12 @@ export interface InvoiceData {
     taxable?: boolean | null
   }[]
   customFields?: PrintableCustomField[]
+  /**
+   * The vehicle's and the customer's own custom fields. They print only where
+   * a design places one; unlike `customFields` they are never added to the
+   * extras panel on their own.
+   */
+  recordCustomFields?: PrintableCustomField[]
   findings?: Array<{ description: string; severity: string; notes: string | null }>
   /** 'included', 'not_included' or null; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
@@ -116,6 +122,8 @@ export interface InvoiceData {
     /** German type approval key. Absent where a caller predates it. */
     hsn?: string | null
     tsn?: string | null
+    /** The owner's fleet / unit number; null for a workshop that has the field off. */
+    fleetNumber?: string | null
     mileage: number
     customer: {
       name: string

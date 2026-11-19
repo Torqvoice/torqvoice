@@ -192,6 +192,7 @@
       "engineCode": "Motor kodu",
       "hsn": "HSN (üretici kodu)",
       "tsn": "TSN (tip kodu)",
+      "fleetNumber": "Filo / birim numarası",
       "purchaseDate": "Satın alma tarihi",
       "purchasePrice": "Satın alma fiyatı"
     },

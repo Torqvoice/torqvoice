@@ -228,6 +228,7 @@
     "signedBy": "Pasirašė",
     "signatureDate": "Data",
     "customerReference": "Jūsų nuoroda / užsakymo nr.",
+    "fleetNumber": "Autoparko nr.",
     "conditionMapTitle": "Transporto priemonės būklė",
     "conditionMapNo": "Nr.",
     "conditionMapArea": "Vieta",

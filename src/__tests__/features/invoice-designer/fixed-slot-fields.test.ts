@@ -46,6 +46,8 @@ const sample = () =>
       typeKeyEnabled: true,
       // Likewise the customer's reference / PO, for a workshop that uses it.
       customerReferenceEnabled: true,
+      // And the vehicle's fleet number.
+      fleetNumberEnabled: true,
       logoUrl: '/logo.png',
     } as any,
     [],

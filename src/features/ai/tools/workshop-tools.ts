@@ -2,7 +2,8 @@ import 'server-only'
 import { db } from '@/lib/db'
 import type OpenAI from 'openai'
 import { hasPermission, PermissionAction } from '@/lib/permissions'
-import { TABLE_SUBJECTS, columnsFor } from './workshop-columns'
+import { type ShownColumns, TABLE_SUBJECTS, columnsFor } from './workshop-columns'
+import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 
 const MAX_ROWS = 100
@@ -564,7 +565,7 @@ export const CHILD_TABLES: { tables: string[]; parent: string; key: string }[] =
  *    pool, and the rest of the app qualifies its raw queries as
  *    "public"."table" so a stray view could never be picked up by mistake
  */
-function columnList(table: string, shown: { customerReference: boolean }, alias = ''): string {
+function columnList(table: string, shown: ShownColumns, alias = ''): string {
   return columnsFor(table, shown)
     .map((c) => `${alias}"${c}"`)
     .join(', ')
@@ -582,7 +583,10 @@ async function executeOrgScopedQuery(
 
   // The Reference / PO columns exist in this workshop's views only while it
   // has that field switched on.
-  const shown = { customerReference: await isCustomerReferenceEnabled(orgId) }
+  const shown: ShownColumns = {
+    customerReference: await isCustomerReferenceEnabled(orgId),
+    fleetNumber: await isFleetNumberEnabled(orgId),
+  }
 
   return db.$transaction(
     async (tx) => {

@@ -228,6 +228,7 @@
     "signedBy": "Ondertekend door",
     "signatureDate": "Datum",
     "customerReference": "Uw referentie / inkoopnummer",
+    "fleetNumber": "Vlootnr.",
     "conditionMapTitle": "Staat van het voertuig",
     "conditionMapNo": "Nr.",
     "conditionMapArea": "Plaats",

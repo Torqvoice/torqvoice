@@ -203,6 +203,8 @@ export function fieldValues(
     hsn_tsn: workshop.typeKeyEnabled
       ? fillTemplate(L('typeKey', 'HSN/TSN: {typeKey}'), { typeKey: '9101 / ABC' })
       : '',
+    // Only for a workshop that records one.
+    fleet_number: workshop.fleetNumberEnabled ? `${L('fleetNumber', 'Fleet no.')}: T-208` : '',
     mileage: fillTemplate(L('mileage', 'Mileage: {mileage}'), {
       // In the workshop's unit; unset prints miles, as its invoices do.
       mileage: `84,120 ${workshop.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')}`,

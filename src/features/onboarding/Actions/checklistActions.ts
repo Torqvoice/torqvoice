@@ -183,6 +183,21 @@ export async function removeSampleData() {
             field: { organizationId },
           },
         }),
+        // And on the sample vehicles and customers themselves.
+        db.customFieldValue.deleteMany({
+          where: {
+            entityType: 'vehicle',
+            entityId: { in: ids.vehicles },
+            field: { organizationId },
+          },
+        }),
+        db.customFieldValue.deleteMany({
+          where: {
+            entityType: 'customer',
+            entityId: { in: ids.customers },
+            field: { organizationId },
+          },
+        }),
         db.serviceRecord.deleteMany({
           where: { organizationId, id: { in: ids.serviceRecords } },
         }),

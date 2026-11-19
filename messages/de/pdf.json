@@ -228,6 +228,7 @@
     "signedBy": "Unterzeichnet von",
     "signatureDate": "Datum",
     "customerReference": "Ihre Referenz / Bestellnr.",
+    "fleetNumber": "Fuhrpark-Nr.",
     "conditionMapTitle": "Fahrzeugzustand",
     "conditionMapNo": "Nr.",
     "conditionMapArea": "Bereich",

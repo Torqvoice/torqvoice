@@ -1,5 +1,9 @@
 'use client'
 
+import {
+  type RecordCustomField,
+  RecordCustomFields,
+} from '@/features/custom-fields/Components/RecordCustomFields'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useCallback, useMemo, useState, useTransition } from 'react'
@@ -125,6 +129,8 @@ interface QuoteRow {
 }
 
 interface CustomerDetail {
+  /** The workshop's own fields for the customer; none unless it defined some. */
+  customFields?: RecordCustomField[]
   id: string
   customerNumber: string | null
   name: string
@@ -438,6 +444,7 @@ export function CustomerDetailClient({
                 {customer.notes}
               </p>
             )}
+            <RecordCustomFields fields={customer.customFields} className="mt-2" />
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {aiEnabled && (

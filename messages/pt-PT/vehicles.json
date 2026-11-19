@@ -36,7 +36,8 @@
     "inspectionDue30": "Vence dentro de 30 dias",
     "inspectionDue90": "Vence dentro de 90 dias",
     "inspectionDue": "Inspeção {date}",
-    "remindCustomers": "Lembrar estes clientes"
+    "remindCustomers": "Lembrar estes clientes",
+    "fleetNumber": "N.º de frota / unidade"
   },
   "detail": {
     "vehicleArchived": "Esta viatura está arquivada",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Verificado no registo automóvel a {date}",
     "notRegistered": "Não registada",
     "soldReported": "Cliente comunicou a venda a {date}",
+    "fleetNumber": "N.º frota",
     "typeKey": "HSN/TSN",
     "addPhoto": "Adicionar fotografia",
     "changePhoto": "Alterar fotografia",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "N.º de frota / unidade",
+    "fleetNumberPlaceholder": "ex. T-208",
     "typeKeyHint": "Do certificado de matrícula alemão: o HSN é o campo 2.1, o TSN são os três primeiros caracteres do campo 2.2.",
     "hsnInvalid": "O HSN tem quatro algarismos, do campo 2.1 do certificado de matrícula.",
     "tsnInvalid": "O TSN tem três letras ou algarismos, o início do campo 2.2 do certificado de matrícula.",

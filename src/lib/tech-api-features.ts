@@ -21,5 +21,14 @@
  * - `job-reference`: a job carries `customerReference`, the customer's own
  *   reference or purchase order number for it. Null when the job has none or
  *   the workshop does not use the field.
+ * - `vehicle-fleet-number`: a job's vehicle carries `fleetNumber`, the
+ *   workshop's own fleet or unit number for it. Null when the vehicle has
+ *   none or the workshop does not use the field.
  */
-export const TECH_API_FEATURES = ['job-video', 'checkin', 'job-documents', 'job-reference'] as const
+export const TECH_API_FEATURES = [
+  'job-video',
+  'checkin',
+  'job-documents',
+  'job-reference',
+  'vehicle-fleet-number',
+] as const

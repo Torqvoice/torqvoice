@@ -36,7 +36,8 @@
     "inspectionDue30": "Frist innen 30 dager",
     "inspectionDue90": "Frist innen 90 dager",
     "inspectionDue": "EU-kontroll {date}",
-    "remindCustomers": "Minn disse kundene"
+    "remindCustomers": "Minn disse kundene",
+    "fleetNumber": "Flåte- / enhetsnummer"
   },
   "detail": {
     "vehicleArchived": "Dette kjøretøyet er arkivert",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Sjekket mot registeret {date}",
     "notRegistered": "Avregistrert",
     "soldReported": "Kunden meldte solgt {date}",
+    "fleetNumber": "Flåtenr.",
     "typeKey": "HSN/TSN",
     "addPhoto": "Legg til bilde",
     "changePhoto": "Bytt bilde",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "Flåte- / enhetsnummer",
+    "fleetNumberPlaceholder": "f.eks. T-208",
     "typeKeyHint": "Fra et tysk vognkort: HSN står i felt 2.1, TSN er de tre første tegnene i felt 2.2.",
     "hsnInvalid": "HSN er fire sifre, fra felt 2.1 i vognkortet.",
     "tsnInvalid": "TSN er tre bokstaver eller sifre, starten av felt 2.2 i vognkortet.",

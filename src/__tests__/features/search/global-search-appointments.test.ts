@@ -16,6 +16,11 @@ vi.mock('@/lib/workshop-timezone', () => ({
 vi.mock('@/features/tire-hotel/Lib/tireHotelSettings', () => ({
   isTireHotelEnabled: vi.fn(async () => false),
 }))
+// No fleet number either, as for every workshop that has not switched it on.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
 vi.mock('@/features/vehicles/Lib/typeKeySetting', () => ({
   isTypeKeyEnabled: vi.fn(async () => false),
 }))

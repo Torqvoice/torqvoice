@@ -38,7 +38,12 @@ import {
   deleteFieldDefinition,
 } from '@/features/custom-fields/Actions/customFieldActions'
 import { setCustomFieldPlacement } from '@/features/settings/Actions/invoiceLayoutActions'
-import type { FieldType, EntityType } from '@/features/custom-fields/Schema/customFieldSchema'
+import {
+  type EntityType,
+  type FieldType,
+  isRecordEntityType,
+} from '@/features/custom-fields/Schema/customFieldSchema'
+import { useServiceType } from '@/components/service-type-context'
 import {
   type InvoiceLayoutConfig,
   BUILTIN_SECTIONS,
@@ -108,6 +113,7 @@ export function CustomFieldsManager({
   const [editing, setEditing] = useState<FieldDef | null>(null)
   const [loading, setLoading] = useState(false)
   const [filterEntity, setFilterEntity] = useState<string>('all')
+  const isMarine = useServiceType() === 'marine'
 
   const [formData, setFormData] = useState({
     name: '',
@@ -124,8 +130,14 @@ export function CustomFieldsManager({
   const [placement, setPlacement] = useState<string>('general')
   const [initialPlacement, setInitialPlacement] = useState<string | null>(null)
 
+  // A vehicle's or a customer's field belongs to no one document: it prints
+  // only where a design places it, so it has no placement here.
   const configForEntity = (entityType: string) =>
-    entityType === 'quote' ? quoteLayoutConfig : layoutConfig
+    isRecordEntityType(entityType)
+      ? undefined
+      : entityType === 'quote'
+        ? quoteLayoutConfig
+        : layoutConfig
 
   const fieldTypeLabels: Record<string, string> = {
     text: t('customFields.fieldTypes.text'),
@@ -139,6 +151,8 @@ export function CustomFieldsManager({
   const entityTypeLabels: Record<string, string> = {
     service_record: t('customFields.serviceRecord'),
     quote: t('customFields.quote'),
+    vehicle: isMarine ? t('customFields.vehicleMarine') : t('customFields.vehicle'),
+    customer: t('customFields.customer'),
   }
 
   const resetForm = () => {
@@ -198,7 +212,11 @@ export function CustomFieldsManager({
 
     if (result.success) {
       const definitionId = editing ? editing.id : result.data?.id
-      if (definitionId && (!editing || placement !== initialPlacement)) {
+      if (
+        definitionId &&
+        !isRecordEntityType(formData.entityType) &&
+        (!editing || placement !== initialPlacement)
+      ) {
         const placementResult = await setCustomFieldPlacement({
           definitionId,
           entityType: formData.entityType,
@@ -247,7 +265,7 @@ export function CustomFieldsManager({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {['all', 'service_record', 'quote'].map((key) => (
+          {['all', 'service_record', 'quote', 'vehicle', 'customer'].map((key) => (
             <button
               key={key}
               type="button"
@@ -451,6 +469,8 @@ export function CustomFieldsManager({
                       {t('customFields.serviceRecord')}
                     </SelectItem>
                     <SelectItem value="quote">{t('customFields.quote')}</SelectItem>
+                    <SelectItem value="vehicle">{entityTypeLabels.vehicle}</SelectItem>
+                    <SelectItem value="customer">{entityTypeLabels.customer}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -540,23 +560,29 @@ export function CustomFieldsManager({
               <p className="text-xs text-muted-foreground">{t('customFields.defaultValueHint')}</p>
             </div>
 
-            <div className="space-y-2">
-              <Label>{t('customFields.placement')}</Label>
-              <Select value={placement} onValueChange={setPlacement}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLACEMENT_SECTIONS.map((id) => (
-                    <SelectItem key={id} value={id}>
-                      {t(`layoutEditor.sections.${id}`)}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="hidden">{t('customFields.placementHidden')}</SelectItem>
-                </SelectContent>
-              </Select>
-              <p className="text-xs text-muted-foreground">{t('customFields.placementHint')}</p>
-            </div>
+            {isRecordEntityType(formData.entityType) ? (
+              <p className="text-xs text-muted-foreground">
+                {t('customFields.recordPlacementHint')}
+              </p>
+            ) : (
+              <div className="space-y-2">
+                <Label>{t('customFields.placement')}</Label>
+                <Select value={placement} onValueChange={setPlacement}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLACEMENT_SECTIONS.map((id) => (
+                      <SelectItem key={id} value={id}>
+                        {t(`layoutEditor.sections.${id}`)}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="hidden">{t('customFields.placementHidden')}</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">{t('customFields.placementHint')}</p>
+              </div>
+            )}
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">

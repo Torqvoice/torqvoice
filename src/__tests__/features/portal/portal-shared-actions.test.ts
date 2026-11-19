@@ -37,6 +37,11 @@ vi.mock('@/lib/db', () => ({
 vi.mock('@/lib/customer-session', () => ({
   getCustomerSession: vi.fn(async () => ({ customerId: 'c1', organizationId: 'org1' })),
 }))
+// No fleet number either, as for every workshop that has not switched it on.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
 vi.mock('@/features/vehicles/Lib/typeKeySetting', () => ({
   gateTypeKey: (vehicle: unknown) => vehicle,
   isTypeKeyEnabled: async () => false,

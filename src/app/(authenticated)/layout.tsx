@@ -33,6 +33,8 @@ import { isSupportEnabled } from '@/lib/support'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { TypeKeyProvider } from '@/components/type-key-context'
 import { CustomerReferenceProvider } from '@/components/customer-reference-context'
+import { FleetNumberProvider } from '@/components/fleet-number-context'
+import { RecordCustomFieldsProvider } from '@/components/record-custom-fields-context'
 import { EngineSizeUnitProvider } from '@/components/engine-size-context'
 import { LicenseExpiryProvider } from '@/components/license-expiry-context'
 import {
@@ -533,7 +535,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // layout asks whether the workshop uses the Reference / PO field.
   return (
     <CustomerReferenceProvider enabled={data.customerReferenceEnabled}>
-      {page}
+      <FleetNumberProvider enabled={data.fleetNumberEnabled}>
+        <RecordCustomFieldsProvider value={data.recordCustomFields}>
+          {page}
+        </RecordCustomFieldsProvider>
+      </FleetNumberProvider>
     </CustomerReferenceProvider>
   )
 }

@@ -94,6 +94,8 @@ vi.mock('@/lib/db', () => {
 })
 
 import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
+import { deleteCustomer, deleteCustomers } from '@/features/customers/Actions/customerActions'
+import { undoImportBatch } from '@/features/import/Actions/importActions'
 import { deleteQuote } from '@/features/quotes/Actions/quoteActions'
 import { deleteContent } from '@/features/settings/Actions/deleteContent'
 import { deleteVehicle as deleteVehicleFromPage } from '@/features/vehicles/Actions/deleteVehicle'
@@ -170,6 +172,14 @@ describe('deleting a vehicle, which takes its work orders with it', () => {
         field: { organizationId: 'org-a' },
       },
     },
+    // And the vehicle's own.
+    {
+      where: {
+        entityType: 'vehicle',
+        entityId: { in: ['v-1'] },
+        field: { organizationId: 'org-a' },
+      },
+    },
   ]
 
   it('removes the values of those work orders, from the vehicles list', async () => {
@@ -195,10 +205,10 @@ describe('deleting a vehicle, which takes its work orders with it', () => {
     expect(valueDeletes()).toEqual(expected)
   })
 
-  it('asks for nothing when the vehicle had no work orders', async () => {
+  it('removes only the vehicle’s own when it had no work orders', async () => {
     expect((await deleteVehicleFromPage('v-1')).success).toBe(true)
 
-    expect(valueDeletes()).toEqual([])
+    expect(valueDeletes()).toEqual([expected[1]])
   })
 })
 
@@ -285,5 +295,73 @@ describe('the helper every delete goes through', () => {
         field: { organizationId: 'org-a' },
       },
     })
+  })
+})
+
+/**
+ * A vehicle's and a customer's own values hang on the record's id the same
+ * way, so every path that deletes one takes them along too.
+ */
+const own = (entityType: string, ids: string[]) => ({
+  where: { entityType, entityId: { in: ids }, field: { organizationId: 'org-a' } },
+})
+
+describe('deleting a customer', () => {
+  it('removes the customer’s own values in the same transaction, after the row', async () => {
+    expect((await deleteCustomer('c-1')).success).toBe(true)
+
+    expect(valueDeletes()).toEqual([own('customer', ['c-1'])])
+    expect(index('customFieldValue.deleteMany')).toBeGreaterThan(index('customer.deleteMany'))
+    expect(calls.list[index('customer.deleteMany')].args).toEqual({
+      where: { id: 'c-1', organizationId: 'org-a' },
+    })
+  })
+
+  it('removes, from the list, only the values of the customers that are this workshop’s', async () => {
+    // Three ticked, one of them an id from another workshop.
+    rows.findMany.customer = [{ id: 'c-1' }, { id: 'c-2' }]
+
+    expect((await deleteCustomers(['c-1', 'c-2', 'theirs'])).success).toBe(true)
+
+    expect(calls.list[index('customer.findMany')].args).toEqual({
+      where: { id: { in: ['c-1', 'c-2', 'theirs'] }, organizationId: 'org-a' },
+      select: { id: true },
+    })
+    expect(valueDeletes()).toEqual([own('customer', ['c-1', 'c-2'])])
+  })
+})
+
+describe('delete content, for vehicles and customers', () => {
+  it('removes the values of the vehicles and the customers it found, by id', async () => {
+    rows.findMany.vehicle = [{ id: 'v-1' }, { id: 'v-2' }]
+    rows.findMany.customer = [{ id: 'c-1' }]
+
+    expect((await deleteContent({ vehicles: true, customers: true } as never)).success).toBe(true)
+
+    expect(valueDeletes()).toEqual([own('vehicle', ['v-1', 'v-2']), own('customer', ['c-1'])])
+  })
+
+  it('leaves customer values alone when only vehicles are deleted', async () => {
+    rows.findMany.vehicle = [{ id: 'v-1' }]
+    rows.findMany.customer = [{ id: 'c-1' }]
+
+    await deleteContent({ vehicles: true } as never)
+
+    expect(valueDeletes()).toEqual([own('vehicle', ['v-1'])])
+  })
+})
+
+describe('undoing an import', () => {
+  it('removes the values of the vehicles and the customers it takes back', async () => {
+    rows.findFirst.importBatch = { id: 'b-1', organizationId: 'org-a', status: 'completed' }
+    rows.findMany.vehicle = [{ id: 'v-1' }]
+    rows.findMany.customer = [{ id: 'c-1' }]
+
+    const result = await undoImportBatch('b-1')
+
+    expect(result.success).toBe(true)
+    expect(valueDeletes()).toEqual(
+      expect.arrayContaining([own('vehicle', ['v-1']), own('customer', ['c-1'])])
+    )
   })
 })

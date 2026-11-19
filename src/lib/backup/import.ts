@@ -1142,6 +1142,7 @@ export async function restoreBackup(
                 engineCode: (v.engineCode as string) || null,
                 hsn: (v.hsn as string) || null,
                 tsn: (v.tsn as string) || null,
+                fleetNumber: (v.fleetNumber as string) || null,
                 bodyType: (v.bodyType as string) || null,
                 purchaseDate: toSafeDate(v.purchaseDate as string) ?? null,
                 purchasePrice: numberOr(v.purchasePrice, null),

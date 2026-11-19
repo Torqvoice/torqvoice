@@ -130,6 +130,25 @@ export const workshopEntries: SettingsEntry[] = [
     ],
   },
   {
+    id: 'workshop.fleetNumber',
+    page: 'workshop',
+    title: 'workshop.fleetNumberTitle',
+    description: 'workshop.fleetNumberEnabled',
+    anchor: 'fleetNumberEnabled',
+    // The switch is only drawn on the plans that have the field.
+    requires: 'customFields',
+    keywords: [
+      'fleet',
+      'fleet number',
+      'unit number',
+      'unit no',
+      'fleet no',
+      'truck number',
+      'asset number',
+      'vehicle number',
+    ],
+  },
+  {
     id: 'workshop.units',
     page: 'workshop',
     title: 'workshop.unitsTitle',

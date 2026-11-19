@@ -2,7 +2,11 @@
 
 import { readFile } from 'node:fs/promises'
 import { headers } from 'next/headers'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
 import { inspectionResultsFor } from '@/features/inspections/Lib/linkedInspectionResults.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
@@ -80,7 +84,12 @@ export async function getPortalQuote(quoteId: string) {
     const shownQuote = gateCustomerReference(
       {
         ...quote,
-        vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+        vehicle:
+          quote.vehicle &&
+          gateFleetNumber(
+            gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+            fleetNumberEnabledIn(settingsMap, features)
+          ),
       },
       customerReferenceEnabledIn(settingsMap, features)
     )
@@ -138,6 +147,7 @@ export async function getPortalQuote(quoteId: string) {
         logoSize: Number(settingsMap['quote.logoSize']) || 100,
       },
       customFields,
+      recordCustomFields: await getRecordCustomFieldsForPrint(organizationId, quote),
       labels,
       locale,
       layoutConfig,

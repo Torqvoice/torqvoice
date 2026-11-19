@@ -15,7 +15,11 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
 import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
@@ -105,6 +109,7 @@ export default async function PublicQuotePage({
             'workshop.unitSystem',
             SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
             SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED,
+            SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED,
             'quote.primaryColor',
             'quote.backgroundColor',
             'quote.textColor',
@@ -154,7 +159,12 @@ export default async function PublicQuotePage({
   const shownQuote = gateCustomerReference(
     {
       ...quote,
-      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabled),
+      vehicle:
+        quote.vehicle &&
+        gateFleetNumber(
+          gateTypeKey(quote.vehicle, typeKeyEnabled),
+          fleetNumberEnabledIn(settingsMap, features)
+        ),
     },
     customerReferenceEnabledIn(settingsMap, features)
   )
@@ -248,6 +258,7 @@ export default async function PublicQuotePage({
       logoSize: Number(settingsMap['quote.logoSize']) || 100,
     },
     customFields,
+    recordCustomFields: await getRecordCustomFieldsForPrint(orgId, quote),
     labels,
     locale,
     layoutConfig,

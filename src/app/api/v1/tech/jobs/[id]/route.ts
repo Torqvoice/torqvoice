@@ -1,3 +1,4 @@
+import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import {
   gateCustomerReference,
   isCustomerReferenceEnabled,
@@ -73,6 +74,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               // Read out at the parts counter in Germany, where it names the exact type.
               hsn: true,
               tsn: true,
+              // The workshop's own number for the vehicle, for one that uses it.
+              fleetNumber: true,
               mileage: true,
               customer: { select: { id: true, name: true, phone: true, email: true } },
             },
@@ -122,10 +125,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       const typeKeyOn = await isTypeKeyEnabled(ctx.organizationId)
 
       const referenceOn = await isCustomerReferenceEnabled(ctx.organizationId)
+      const fleetNumberOn = await isFleetNumberEnabled(ctx.organizationId)
 
       return apiOk({
         ...gateCustomerReference(job, referenceOn),
-        vehicle: job.vehicle && gateTypeKey(job.vehicle, typeKeyOn),
+        vehicle: job.vehicle && gateFleetNumber(gateTypeKey(job.vehicle, typeKeyOn), fleetNumberOn),
         customer: job.customer ?? job.vehicle?.customer ?? null,
         isRunning: openEntry?.serviceRecordId === job.id,
         runningSince: openEntry?.serviceRecordId === job.id ? openEntry.startedAt : null,

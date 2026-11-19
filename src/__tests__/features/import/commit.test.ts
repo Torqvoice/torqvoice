@@ -138,6 +138,11 @@ vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) =
   ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
   isCustomerReferenceEnabled: vi.fn(async () => false),
 }))
+// Nor does it record a fleet number.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
 vi.mock('@/i18n/organization-translator', () => ({
   organizationTranslator: async () => () => 'Imported service',
 }))

@@ -1,5 +1,8 @@
 'use server'
 
+import { getRecordCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import {
   gatePoRequired,
   isCustomerReferenceEnabled,
@@ -96,8 +99,17 @@ export async function getCustomer(customerId: string) {
       // page renders its not-found state, and this also runs during the
       // post-delete re-render of the customer route.
       if (!customer) return customer
-      // Never "PO required" for a workshop that has the Reference / PO field off.
-      return gatePoRequired(customer, await isCustomerReferenceEnabled(organizationId))
+      // Never "PO required" for a workshop that has the Reference / PO field
+      // off, and no fleet number on its vehicles where that is off.
+      const fleetNumberOn = await isFleetNumberEnabled(organizationId)
+      return {
+        ...gatePoRequired(customer, await isCustomerReferenceEnabled(organizationId)),
+        vehicles: customer.vehicles.map((vehicle) => gateFleetNumber(vehicle, fleetNumberOn)),
+        // The workshop's own fields for this customer: none unless it defined some.
+        customFields: await getRecordCustomFieldsForPrint(organizationId, {
+          customerId: customer.id,
+        }),
+      }
     },
     {
       requiredPermissions: [
@@ -232,7 +244,13 @@ export async function updateCustomer(input: unknown) {
 export async function deleteCustomer(customerId: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const result = await db.customer.deleteMany({ where: { id: customerId, organizationId } })
+      // The customer's custom field values hang on their id alone, with no
+      // foreign key, so they are removed by name with the row.
+      const result = await db.$transaction(async (tx) => {
+        const deleted = await tx.customer.deleteMany({ where: { id: customerId, organizationId } })
+        await deleteCustomFieldValuesOf(tx, organizationId, 'customer', [customerId])
+        return deleted
+      })
       if (result.count === 0) throw new Error('Customer not found')
       revalidatePath('/customers')
       return { customerId }
@@ -256,8 +274,19 @@ export async function deleteCustomers(customerIds: string[]) {
   return withAuth(
     async ({ userId, organizationId }) => {
       if (customerIds.length === 0) throw new Error('No customers selected')
-      const result = await db.customer.deleteMany({
+      // Only the ones that are this workshop's: an id from elsewhere must not
+      // take another workshop's values with it.
+      const own = await db.customer.findMany({
         where: { id: { in: customerIds }, organizationId },
+        select: { id: true },
+      })
+      const ownIds = own.map((customer) => customer.id)
+      const result = await db.$transaction(async (tx) => {
+        const deleted = await tx.customer.deleteMany({
+          where: { id: { in: ownIds }, organizationId },
+        })
+        await deleteCustomFieldValuesOf(tx, organizationId, 'customer', ownIds)
+        return deleted
       })
       revalidatePath('/customers')
       return { deleted: result.count }

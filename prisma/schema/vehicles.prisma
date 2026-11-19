@@ -17,6 +17,10 @@ model Vehicle {
   /// up by the pair, since Germany has no public plate registry.
   hsn                    String?
   tsn                    String?
+  /// The number the owner knows the vehicle by in their own fleet ("Unit 14",
+  /// "T-208"). Free text, shown, printed and sent only while the workshop has
+  /// the field switched on (src/features/vehicles/Lib/fleetNumberSetting.ts).
+  fleetNumber String?
   purchaseDate           DateTime?
   purchasePrice          Float?
   imageUrl               String?

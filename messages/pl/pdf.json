@@ -228,6 +228,7 @@
     "signedBy": "Podpisał(a)",
     "signatureDate": "Data",
     "customerReference": "Państwa referencja / nr zamówienia",
+    "fleetNumber": "Nr taborowy",
     "conditionMapTitle": "Stan pojazdu",
     "conditionMapNo": "Nr",
     "conditionMapArea": "Miejsce",

@@ -8,6 +8,7 @@ import { useMemo } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
+import { useFleetNumberEnabled } from '@/components/fleet-number-context'
 import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
 import type { TaxComponentDefinition } from '@/lib/tax'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
@@ -39,6 +40,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
   const t = useTranslations('settings.designer')
   const typeKeyEnabled = useTypeKeyEnabled()
   const customerReferenceEnabled = useCustomerReferenceEnabled()
+  const fleetNumberEnabled = useFleetNumberEnabled()
   const messages = useMessages() as { pdf?: Record<string, Record<string, string>> }
   const sampleFormat = useSampleFormat()
 
@@ -63,6 +65,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         paymentTerms: '',
         typeKeyEnabled,
         customerReferenceEnabled,
+        fleetNumberEnabled,
         logoUrl: logoUrl ?? '',
         taxComponents: workshop?.taxComponents ?? null,
         unitSystem: workshop?.unitSystem,
@@ -81,6 +84,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
     messages,
     typeKeyEnabled,
     customerReferenceEnabled,
+    fleetNumberEnabled,
     sampleFormat,
   ])
 }

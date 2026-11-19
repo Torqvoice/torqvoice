@@ -123,6 +123,7 @@ export default async function PortalVehicleDetailPage({
     v.licensePlate ? t(marine ? 'plateMarine' : 'plate', { plate: v.licensePlate }) : null,
     v.vin ? t(marine ? 'vinMarine' : 'vin', { vin: v.vin }) : null,
     v.hsn || v.tsn ? t('typeKey', { typeKey: formatTypeKey(v.hsn, v.tsn) }) : null,
+    v.fleetNumber ? t('fleetNumber', { fleetNumber: v.fleetNumber }) : null,
     v.mileage > 0 ? odometer(v.mileage) : null,
     v.color || null,
   ].filter(Boolean) as string[]

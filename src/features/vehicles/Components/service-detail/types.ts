@@ -146,6 +146,8 @@ export interface Vehicle {
   engineCode?: string | null
   hsn?: string | null
   tsn?: string | null
+  /** The workshop's own number for the vehicle; null where the field is off. */
+  fleetNumber?: string | null
   purchaseDate?: Date | string | null
   purchasePrice?: number | null
   inspectionStatus?: {

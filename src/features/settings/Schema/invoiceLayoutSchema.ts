@@ -372,6 +372,9 @@ export const BUILTIN_VEHICLE_FIELDS = [
   // The German type approval key. On by default: it prints nothing until a
   // vehicle has one, and a workshop that records it wants it on the paper.
   { id: 'hsn_tsn', name: 'HSN/TSN' },
+  // The owner's own number for the vehicle. Opt-in (OPT_IN_FIELDS): off in the
+  // defaults and in every saved design.
+  { id: 'fleet_number', name: 'Fleet / unit number' },
 ] as const
 
 export const BUILTIN_SERVICE_FIELDS = [
@@ -553,6 +556,7 @@ export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
  */
 export const OPT_IN_FIELDS: Record<string, readonly string[]> = {
   customer: ['customer_reference'],
+  vehicle: ['fleet_number'],
 }
 
 /** Whether this field waits for a design to switch it on. */
@@ -747,7 +751,7 @@ function getDefaultFieldsForSection(
     case 'vehicle':
       return BUILTIN_VEHICLE_FIELDS.map((f) => ({
         id: f.id,
-        visible: workOrder ? f.id !== 'vin' : true,
+        visible: isOptInField('vehicle', f.id) ? false : workOrder ? f.id !== 'vin' : true,
       }))
     case 'service':
       return BUILTIN_SERVICE_FIELDS.map((f) => ({ id: f.id, visible: true }))

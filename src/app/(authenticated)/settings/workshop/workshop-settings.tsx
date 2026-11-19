@@ -40,6 +40,7 @@ import {
   Tag,
   FileBadge,
   Hash,
+  Truck,
 } from 'lucide-react'
 import {
   Select,
@@ -140,6 +141,9 @@ export function WorkshopSettings({
   const [customerReferenceEnabled, setCustomerReferenceEnabled] = useState(
     settings[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] === 'true'
   )
+  const [fleetNumberEnabled, setFleetNumberEnabled] = useState(
+    settings[SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED] === 'true'
+  )
   const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
     settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
   )
@@ -212,6 +216,7 @@ export function WorkshopSettings({
       ...(customerReferenceAvailable
         ? {
             [SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED]: customerReferenceEnabled ? 'true' : 'false',
+            [SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED]: fleetNumberEnabled ? 'true' : 'false',
           }
         : {}),
     })
@@ -531,6 +536,29 @@ export function WorkshopSettings({
                   <p className="text-sm text-muted-foreground">
                     {t('workshop.customerReferenceHint')}
                   </p>
+                </div>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-4">
+                <div className="flex flex-row items-center gap-3">
+                  <Truck className="h-5 w-5 text-muted-foreground" />
+                  <h3 className="text-lg font-semibold">{t('workshop.fleetNumberTitle')}</h3>
+                </div>
+                <div className="space-y-2">
+                  <Label
+                    htmlFor="fleetNumberEnabled"
+                    className="flex items-center justify-between gap-3"
+                  >
+                    <span className="leading-snug">{t('workshop.fleetNumberEnabled')}</span>
+                    <Switch
+                      id="fleetNumberEnabled"
+                      checked={fleetNumberEnabled}
+                      onCheckedChange={setFleetNumberEnabled}
+                    />
+                  </Label>
+                  <p className="text-sm text-muted-foreground">{t('workshop.fleetNumberHint')}</p>
                 </div>
               </div>
             </>

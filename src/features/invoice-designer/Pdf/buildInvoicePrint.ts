@@ -35,6 +35,7 @@ import {
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import {
   type VisitConditionMap,
   visitConditionMapForPrint,
@@ -234,6 +235,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
         : `VIN: ${data.vehicle.vin}`
       : '',
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
+    // Empty for a vehicle without one, and for a workshop that has the field off.
+    fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
@@ -272,7 +275,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     bank_account: invoiceSettings?.bankAccount?.split(/\r?\n/).filter(Boolean).join(' · ') || '',
     footer_note: invoiceSettings?.footerNote || `${shopDisplayName} · ${serviceDate}`,
   }
-  for (const cfEntry of data.customFields ?? []) {
+  for (const cfEntry of [...(data.customFields ?? []), ...(data.recordCustomFields ?? [])]) {
     if (cfEntry.value === '' || cfEntry.value == null) continue
     fields[toCustomFieldId(cfEntry.fieldId)] = customFieldLine(cfEntry, {
       labels,

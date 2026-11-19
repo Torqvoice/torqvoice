@@ -815,6 +815,37 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     ],
   },
   {
+    // The workshop's own number for the vehicle. Offered only to a workshop
+    // that uses the field (FLEET_NUMBER_FIELD_KEYS).
+    key: 'vehicle.fleetNumber',
+    group: 'vehicle',
+    type: 'text',
+    templateHeader: 'Fleet / unit number',
+    example: '',
+    synonyms: [
+      'fleetnumber',
+      'fleetno',
+      'fleetnum',
+      'fleetid',
+      'fleet',
+      'unitnumber',
+      'unitno',
+      'unitnum',
+      'unitid',
+      'unit',
+      'assetnumber',
+      'assetno',
+      'assetid',
+      'truckno',
+      'trucknumber',
+      'flottennummer',
+      'fuhrparknummer',
+      'flatenummer',
+      'vognnummer',
+      'internnummer',
+    ],
+  },
+  {
     key: 'vehicle.purchaseDate',
     group: 'vehicle',
     type: 'date',
@@ -1236,10 +1267,14 @@ export const TYPE_KEY_FIELD_KEYS: ReadonlySet<string> = new Set(['vehicle.hsn', 
 /** The customer's reference / PO, offered only to a workshop that uses the field. */
 export const REFERENCE_FIELD_KEYS: ReadonlySet<string> = new Set(['service.customerReference'])
 
+/** The vehicle's fleet / unit number, offered only to a workshop that uses the field. */
+export const FLEET_NUMBER_FIELD_KEYS: ReadonlySet<string> = new Set(['vehicle.fleetNumber'])
+
 /** The fields a workshop has to have switched on before an import offers them. */
 export interface ImportFieldOptions {
   typeKey?: boolean
   customerReference?: boolean
+  fleetNumber?: boolean
 }
 
 export function fieldsFor(entity: ImportEntity, opts: ImportFieldOptions = {}): ImportField[] {
@@ -1248,7 +1283,8 @@ export function fieldsFor(entity: ImportEntity, opts: ImportFieldOptions = {}): 
     (f) =>
       groups.has(f.group) &&
       (opts.typeKey || !TYPE_KEY_FIELD_KEYS.has(f.key)) &&
-      (opts.customerReference || !REFERENCE_FIELD_KEYS.has(f.key))
+      (opts.customerReference || !REFERENCE_FIELD_KEYS.has(f.key)) &&
+      (opts.fleetNumber || !FLEET_NUMBER_FIELD_KEYS.has(f.key))
   )
 }
 

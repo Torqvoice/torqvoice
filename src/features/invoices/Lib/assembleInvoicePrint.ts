@@ -28,7 +28,11 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { isOwnUploadUrl } from '@/lib/upload-url'
 import { formatDateForPdf } from '@/lib/format'
 import { legacyCustomFieldText } from '@/features/custom-fields/Lib/customFieldText'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import {
   type InvoiceLayoutConfig,
   mergeWithDefaults,
@@ -111,6 +115,7 @@ const RECORD_INCLUDE = {
       licensePlate: true,
       hsn: true,
       tsn: true,
+      fleetNumber: true,
       mileage: true,
       customer: { select: PARTY_SELECT },
     },
@@ -482,16 +487,30 @@ async function assembleLive(
           { photos: results === 'print' }
         )
 
+  // The fleet number for a workshop that has that field on, and the vehicle's
+  // and customer's own custom fields for one that has defined any.
+  const fleetNumberOn =
+    settingsMap[SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED] === 'true' &&
+    fleetNumberEnabledIn(settingsMap, await getFeatures(organizationId))
+  const recordCustomFields = await getRecordCustomFieldsForPrint(organizationId, {
+    vehicleId: record.vehicleId,
+    customerId: record.customerId ?? record.vehicle?.customerId,
+  })
+
   const data: InvoiceData = {
     ...record,
     customer: partyOf(record.customer),
     vehicle: record.vehicle
       ? {
-          ...gateTypeKey(record.vehicle, typeKeyEnabledIn(settingsMap)),
+          ...gateFleetNumber(
+            gateTypeKey(record.vehicle, typeKeyEnabledIn(settingsMap)),
+            fleetNumberOn
+          ),
           customer: partyOf(record.vehicle.customer),
         }
       : null,
     customFields,
+    recordCustomFields,
     findings,
   }
 
@@ -568,6 +587,9 @@ async function assembleFrozen(
           licensePlate: frozen.vehicle.licensePlate ?? null,
           hsn: frozen.vehicle.hsn ?? null,
           tsn: frozen.vehicle.tsn ?? null,
+          // As issued. An invoice issued before the field existed has none
+          // and prints none: it never borrows the vehicle's number of today.
+          fleetNumber: frozen.vehicle.fleetNumber ?? null,
           mileage: frozen.vehicle.mileage ?? record.vehicle?.mileage ?? 0,
           customer: null,
         }
@@ -579,6 +601,9 @@ async function assembleFrozen(
         ? cf
         : { ...cf, display: legacyCustomFieldText(cf.value, cf.fieldType) }
     ),
+    // The vehicle's and customer's fields as they stood at issue; none on an
+    // invoice issued before they could be printed.
+    recordCustomFields: frozen.recordCustomFields ?? [],
     findings: (frozen.findings ?? []).map((f) => ({ ...f, notes: f.notes ?? null })),
   }
 

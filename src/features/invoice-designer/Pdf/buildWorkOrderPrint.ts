@@ -41,6 +41,7 @@ import { warrantyForPrint } from './warrantyPrint'
 import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import {
   type InspectionResults,
   inspectionResultsForPrint,
@@ -255,6 +256,8 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     vehicle_name: vehicleName,
     vin: data.vehicle?.vin ? fillTemplate(L('vin', 'VIN: {vin}'), { vin: data.vehicle.vin }) : '',
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
+    // Empty for a vehicle without one, and for a workshop that has the field off.
+    fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
     license_plate: data.vehicle?.licensePlate
       ? fillTemplate(L('plate', 'Plate: {plate}'), { plate: data.vehicle.licensePlate })
       : '',
@@ -298,7 +301,7 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
       { date: printedOn }
     )}`,
   }
-  for (const cfEntry of data.customFields ?? []) {
+  for (const cfEntry of [...(data.customFields ?? []), ...(data.recordCustomFields ?? [])]) {
     if (cfEntry.value === '' || cfEntry.value == null) continue
     fields[toCustomFieldId(cfEntry.fieldId)] = customFieldLine(cfEntry, {
       labels,

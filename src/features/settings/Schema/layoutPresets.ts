@@ -500,7 +500,9 @@ export const workOrderPresets: LayoutPreset[] = [
       customer: BUILTIN_CUSTOMER_FIELDS.map((f) => f.id as string).filter(
         (id) => !isOptInField('customer', id)
       ),
-      vehicle: BUILTIN_VEHICLE_FIELDS.map((f) => f.id as string),
+      vehicle: BUILTIN_VEHICLE_FIELDS.map((f) => f.id as string).filter(
+        (id) => !isOptInField('vehicle', id)
+      ),
       job_details: BUILTIN_JOB_DETAILS_FIELDS.map((f) => f.id as string),
     },
     styles: { labor_table: {}, parts_table: {} },

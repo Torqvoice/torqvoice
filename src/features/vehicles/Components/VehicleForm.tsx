@@ -46,6 +46,14 @@ import type { CreateVehicleInput } from '../Schema/vehicleSchema'
 import { clearableInput } from '@/lib/clearable'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
+import { FLEET_NUMBER_MAX_LENGTH } from '../Lib/fleetNumber'
+import { useFleetNumberEnabled } from '@/components/fleet-number-context'
+import { useHasRecordCustomFields } from '@/components/record-custom-fields-context'
+import {
+  CustomFieldsForm,
+  type CustomFieldsSave,
+} from '@/features/custom-fields/Components/CustomFieldsForm'
+import { customFieldsRefusal } from '@/features/custom-fields/Lib/customFieldsRefusal'
 import { handleGated } from '@/components/upgrade-gate'
 import { PlateChip } from '@/components/plate-chip'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
@@ -89,6 +97,7 @@ interface VehicleFormProps {
     engineCode?: string | null
     hsn?: string | null
     tsn?: string | null
+    fleetNumber?: string | null
     imageUrl?: string | null
     customerId?: string | null
     /** The owner, so the selector can name them without loading every customer */
@@ -150,9 +159,20 @@ export function VehicleForm({
   // Only a workshop that switched the type key on sees the two boxes; a hidden
   // pair is left out of the save, so what a vehicle already has is kept.
   const showTypeKey = useTypeKeyEnabled() && !isMarine
+  const showFleetNumber = useFleetNumberEnabled()
+  // The workshop's own fields for a vehicle, when it has defined any. They
+  // save through their own action: checked before the vehicle is written,
+  // saved under its id once it has one.
+  const hasCustomFields = useHasRecordCustomFields('vehicle')
+  const customFieldsSave = useRef<CustomFieldsSave | null>(null)
+  // A closed dialog holds no fields: the next one registers its own save.
+  useEffect(() => {
+    if (!open) customFieldsSave.current = null
+  }, [open])
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('vehicles.form')
+  const tCustom = useTranslations('settings.customFields')
   const tDetail = useTranslations('vehicles.detail')
   const { timezone } = useDateSettings()
   const tc = useTranslations('common.buttons')
@@ -485,6 +505,16 @@ export function VehicleForm({
       }
     }
 
+    // The workshop's own fields first: one left empty that must not be stops
+    // the save here, marked and named on the form, before anything is written.
+    if (hasCustomFields && customFieldsSave.current) {
+      const checked = await customFieldsSave.current(vehicle ? undefined : { checkOnly: true })
+      if (!checked.valid) {
+        toast.error(customFieldsRefusal(checked, tCustom))
+        return
+      }
+    }
+
     setLoading(true)
 
     try {
@@ -550,6 +580,12 @@ export function VehicleForm({
         engineCode: optional('engineCode'),
         hsn: showTypeKey ? optional('hsn') : undefined,
         tsn: showTypeKey ? optional('tsn') : undefined,
+        // Sent only where the box is drawn, and when editing only if the
+        // vehicle came with its value: a save never clears what it did not show.
+        fleetNumber:
+          showFleetNumber && (!vehicle || vehicle.fleetNumber !== undefined)
+            ? optional('fleetNumber')
+            : undefined,
         // An empty string clears a hand-typed date; undefined leaves the stored
         // date alone, so saving another field, or a lookup that brought no
         // date, does not turn a registry's date into one typed by hand.
@@ -564,6 +600,13 @@ export function VehicleForm({
       const result = vehicle
         ? await updateVehicle({ ...payload, id: vehicle.id })
         : await createVehicle(payload)
+
+      // A new vehicle has an id now: its custom fields are saved under it.
+      if (result.success && !vehicle && hasCustomFields && customFieldsSave.current) {
+        const newId = result.data && 'id' in result.data ? String(result.data.id) : null
+        const saved = newId ? await customFieldsSave.current({ entityId: newId }) : null
+        if (saved && !saved.valid) toast.error(customFieldsRefusal(saved, tCustom))
+      }
 
       if (result.success) {
         // The vehicle as a picker shows it, with the owner it was saved under:
@@ -1107,6 +1150,21 @@ export function VehicleForm({
                     </div>
                   )}
 
+                  {showFleetNumber && (
+                    <div className="space-y-2">
+                      <Label htmlFor="fleetNumber">{t('fleetNumber')}</Label>
+                      <Input
+                        id="fleetNumber"
+                        name="fleetNumber"
+                        placeholder={t('fleetNumberPlaceholder')}
+                        maxLength={FLEET_NUMBER_MAX_LENGTH}
+                        autoComplete="off"
+                        className="w-full sm:w-48"
+                        defaultValue={vehicle?.fleetNumber ?? ''}
+                      />
+                    </div>
+                  )}
+
                   {!isMarine && (
                     <div className="space-y-2">
                       <Label htmlFor="inspectionDueAt">{t('inspectionDue')}</Label>
@@ -1276,6 +1334,17 @@ export function VehicleForm({
                   </div>
                 </FormCard>
               </div>
+
+              {hasCustomFields && open && (
+                <CustomFieldsForm
+                  embedded
+                  entityType="vehicle"
+                  entityId={vehicle?.id}
+                  onValuesReady={(save) => {
+                    customFieldsSave.current = save
+                  }}
+                />
+              )}
             </DialogBody>
 
             <DialogFooter className="sm:items-center">

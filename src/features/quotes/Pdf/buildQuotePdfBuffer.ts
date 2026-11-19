@@ -21,7 +21,11 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import '@/features/vehicles/Components/invoice-pdf/fonts'
 import { PDFDocument } from 'pdf-lib'
 import React from 'react'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
@@ -61,6 +65,7 @@ const QUOTE_INCLUDE = {
       licensePlate: true,
       hsn: true,
       tsn: true,
+      fleetNumber: true,
     },
   },
 } as const
@@ -183,7 +188,12 @@ export async function buildQuotePdfBuffer(
     data: gateCustomerReference(
       {
         ...quote,
-        vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+        vehicle:
+          quote.vehicle &&
+          gateFleetNumber(
+            gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+            fleetNumberEnabledIn(settingsMap, features)
+          ),
       },
       customerReferenceEnabledIn(settingsMap, features)
     ),
@@ -209,6 +219,7 @@ export async function buildQuotePdfBuffer(
     otherAttachments,
     pdfAttachmentNames: pdfAttachments.map((att) => att.fileName),
     customFields,
+    recordCustomFields: await getRecordCustomFieldsForPrint(organizationId, quote),
     labels,
     locale,
     layoutConfig,

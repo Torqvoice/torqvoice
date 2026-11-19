@@ -1,5 +1,9 @@
 'use client'
 
+import {
+  type RecordCustomField,
+  RecordCustomFields,
+} from '@/features/custom-fields/Components/RecordCustomFields'
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
@@ -177,6 +181,10 @@ interface VehicleDetail {
   engineCode: string | null
   hsn: string | null
   tsn: string | null
+  /** Null for a workshop that has the fleet number switched off. */
+  fleetNumber?: string | null
+  /** The workshop's own fields for the vehicle; none unless it defined some. */
+  customFields?: RecordCustomField[]
   purchaseDate: Date | null
   purchasePrice: number | null
   imageUrl: string | null
@@ -716,8 +724,20 @@ export function VehicleDetailClassic({
                     </span>
                   </>
                 )}
+                {vehicle.fleetNumber && (
+                  <>
+                    {(vehicle.licensePlate ||
+                      vehicle.vin ||
+                      vehicle.engineCode ||
+                      (typeKeyEnabled && (vehicle.hsn || vehicle.tsn))) && <span>&middot;</span>}
+                    <span>
+                      {t('fleetNumber')} <span className="font-mono">{vehicle.fleetNumber}</span>
+                    </span>
+                  </>
+                )}
               </div>
             </div>
+            <RecordCustomFields fields={vehicle.customFields} className="mt-1 text-xs" />
             <div className="mt-1 flex flex-wrap items-center gap-1.5">
               {vehicle.fuelType && (
                 <Badge variant="secondary" className="text-xs px-1.5 py-0">

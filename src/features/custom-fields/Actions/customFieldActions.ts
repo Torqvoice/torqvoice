@@ -15,6 +15,7 @@ import {
   assertOwnRecord,
   recordLockError,
   isEntityType,
+  kindOffered,
   recordSubject,
 } from '../Lib/customFieldRecords.server'
 import {
@@ -44,6 +45,8 @@ export async function getFieldDefinitions(entityType?: string) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
       if (entityType) where.entityType = entityType
+      // A vehicle's or a customer's fields are not drawn on a plan without them.
+      if (isEntityType(entityType) && !(await kindOffered(entityType, organizationId))) return []
 
       return db.customFieldDefinition.findMany({
         where,
@@ -176,6 +179,7 @@ export async function getCustomFieldValues(entityId: string, entityType: string)
     async ({ organizationId }) => {
       if (!isEntityType(entityType)) throw new Error('Unknown record type')
       await assertOwnRecord(entityId, entityType, organizationId)
+      if (!(await kindOffered(entityType, organizationId))) return []
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
@@ -265,6 +269,9 @@ export async function saveValidatedCustomFieldValues(
       if (!isEntityType(entityType)) throw new Error('Unknown record type')
       const input = saveValuesSchema.parse({ entityId, values })
       await assertOwnRecord(input.entityId, entityType, organizationId)
+      // Hidden by the plan: there is no form to have sent this, nothing is
+      // asked for and nothing is written.
+      if (!(await kindOffered(entityType, organizationId))) return { saved: true }
 
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
