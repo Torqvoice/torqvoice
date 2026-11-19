@@ -1022,6 +1022,11 @@ export async function linkWorkOrderToInspection(
       await db.$transaction(async (tx) => {
         // What the job read before, under its row lock (vehicleReading.ts).
         const before = await lockJobReading(tx, { organizationId, jobId: job.id })
+        // Moved to another vehicle since it was looked up: it is no longer a
+        // job this inspection may land on.
+        if (!before || before.vehicleId !== inspection.vehicleId) {
+          throw new Error('Work order not found')
+        }
         await tx.serviceRecord.update({
           where: { id: job.id },
           data: { inspectionId: inspection.id, mileage: inspection.mileage ?? undefined },
@@ -1035,7 +1040,7 @@ export async function linkWorkOrderToInspection(
             jobId: job.id,
             jobDate: jobReadingDate(job),
             reading: inspection.mileage,
-            previousReading: before ? before.mileage : job.mileage,
+            previousReading: before.mileage,
           })
         }
         const lines = [

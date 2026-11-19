@@ -461,13 +461,16 @@ async function settleReadings(state: CommitState): Promise<void> {
         if (at > best || (at === best && (job.mileage ?? 0) > (newest.mileage ?? 0))) newest = job
       }
       if (!newest) continue
-      await applyJobReading(db, {
-        organizationId,
-        vehicleId,
-        jobId: newest.id,
-        jobDate: jobReadingDate(newest),
-        reading: newest.mileage,
-      })
+      const job = newest
+      await db.$transaction((tx) =>
+        applyJobReading(tx, {
+          organizationId,
+          vehicleId,
+          jobId: job.id,
+          jobDate: jobReadingDate(job),
+          reading: job.mileage,
+        })
+      )
     } catch {
       // The history is in; a reading that could not be settled stays as it was.
     }

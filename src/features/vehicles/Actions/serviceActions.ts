@@ -622,13 +622,15 @@ export async function createServiceRecord(input: unknown) {
           where: { id: vehicle.id },
           data: { maintenanceDismissed: false, maintenanceDismissedAt: null },
         })
-        await applyJobReading(db, {
-          organizationId,
-          vehicleId: vehicle.id,
-          jobId: record.id,
-          jobDate: jobReadingDate(record),
-          reading: data.mileage,
-        })
+        await db.$transaction((tx) =>
+          applyJobReading(tx, {
+            organizationId,
+            vehicleId: vehicle.id,
+            jobId: record.id,
+            jobDate: jobReadingDate(record),
+            reading: data.mileage,
+          })
+        )
       }
 
       revalidatePath('/')

@@ -223,6 +223,20 @@ export function useServiceFormState({
     if (added.length > 0) setPartsAddedElsewhere((current) => [...current, ...added])
   }, [savedPartsKey])
 
+  /**
+   * A save went through while the page stays unsaved (a reading held back for
+   * its question): the lines it sent are the server's now. Without this the
+   * refresh after it brought them back as lines added elsewhere, and the next
+   * save sent them twice.
+   */
+  const acknowledgeSavedLines = useCallback(
+    (lines: { parts: ServicePartInput[]; labor: ServiceLaborInput[] }) => {
+      syncedPartsRef.current = lines.parts
+      syncedLaborRef.current = lines.labor
+    },
+    []
+  )
+
   useEffect(() => {
     if (!locked) return
     if (autosaveTimer.current) {
@@ -625,6 +639,7 @@ export function useServiceFormState({
     confirmedReading,
     confirmedReadingRef,
     confirmReading,
+    acknowledgeSavedLines,
     /**
      * Whether edits are still unsaved, read at the moment of the call. For
      * code that awaits saveNow and has to know whether the save went

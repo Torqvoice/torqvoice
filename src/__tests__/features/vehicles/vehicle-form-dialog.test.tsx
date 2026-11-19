@@ -499,6 +499,33 @@ describe('a reading far above the last one on the vehicle form', () => {
     expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ mileage: 225400 })
   })
 
+  it('asks again for the same value on another vehicle', async () => {
+    const view = renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await screen.findByRole('alertdialog')
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, it is correct' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
+
+    // The list opens the same form for another vehicle.
+    view.rerender(
+      <TooltipProvider>
+        <VehicleForm
+          open
+          onOpenChange={vi.fn()}
+          vehicle={{ ...VEHICLE, id: 'veh-other' }}
+          distanceUnit="km"
+        />
+      </TooltipProvider>
+    )
+    await waitFor(() => expect(field()).toHaveValue(225040))
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    expect(await screen.findByRole('alertdialog')).toBeInTheDocument()
+    expect(updateVehicle).toHaveBeenCalledTimes(1)
+  })
+
   it('asks once for a value, and again for another', async () => {
     vi.mocked(updateVehicle).mockResolvedValue({ success: false, error: 'Network' } as never)
     renderForm()

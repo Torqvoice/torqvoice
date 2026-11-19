@@ -479,7 +479,15 @@ describe('createServiceRecord — vehicle mileage', () => {
       .mockResolvedValue({ id, vehicleId: VEHICLE_ID, startDateTime: START, serviceDate: START })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
-        serviceRecord: { create: mockCreate },
+        // The vehicle's reading is decided in a transaction of its own,
+        // under the vehicle's row lock; it reads the same tables.
+        $queryRaw: async () => [],
+        serviceRecord: {
+          create: mockCreate,
+          findFirst: db.serviceRecord.findFirst,
+          aggregate: vi.fn(async () => ({ _max: { mileage: null } })),
+        },
+        vehicle: db.vehicle,
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: vi.fn() },
         serviceAttachment: { createMany: vi.fn() },
@@ -584,7 +592,15 @@ describe('createServiceRecord — labor items', () => {
     const mockLaborCreateMany = vi.fn()
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
-        serviceRecord: { create: mockCreate },
+        // The vehicle's reading is decided in a transaction of its own,
+        // under the vehicle's row lock; it reads the same tables.
+        $queryRaw: async () => [],
+        serviceRecord: {
+          create: mockCreate,
+          findFirst: db.serviceRecord.findFirst,
+          aggregate: vi.fn(async () => ({ _max: { mileage: null } })),
+        },
+        vehicle: db.vehicle,
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: mockLaborCreateMany },
         serviceAttachment: { createMany: vi.fn() },

@@ -97,6 +97,25 @@ describe('the jobs an inspection can land on', () => {
 })
 
 describe('linking to a booked job', () => {
+  it('refuses a job that moved to another vehicle after it was looked up', async () => {
+    db.serviceRecord.findFirst.mockResolvedValue({
+      id: 'job-1',
+      vehicleId: 'veh-1',
+      invoiceNumber: '2026-1007',
+      inspectionId: null,
+      mileage: null,
+      startDateTime: new Date('2026-11-19T09:00:00Z'),
+      serviceDate: new Date('2026-11-19T09:00:00Z'),
+      laborItems: [],
+    })
+    // Under the row lock the job is on another vehicle now.
+    tx.$queryRaw.mockResolvedValueOnce([{ mileage: null, vehicleId: 'veh-2' }])
+    const result = await linkWorkOrderToInspection('insp-1', 'job-1', { includeDefects: true })
+    expect(result.success).toBe(false)
+    expect(tx.serviceRecord.update).not.toHaveBeenCalled()
+    expect(tx.vehicle.updateMany).not.toHaveBeenCalled()
+  })
+
   it('links the job and adds the inspection line and the defects, worst first', async () => {
     db.serviceRecord.findFirst.mockResolvedValue({
       id: 'job-1',

@@ -85,6 +85,7 @@ function page(over: { confirmed?: number | null; saved?: number | null } = {}) {
     notesRef: { current: { description: '', diagnosticNotes: '', invoiceNotes: '' } },
     initialData: { id: 'job1', mileage: over.saved ?? null, lastReading: 148000 },
     confirmedReadingRef: { current: over.confirmed ?? null },
+    acknowledgeSavedLines: vi.fn(),
   }
   const hook = renderHook(() =>
     useServiceActions({
@@ -136,6 +137,12 @@ describe('a reading far above the last one, not yet answered', () => {
     // Nothing moves the person away from what they are typing.
     expect(document.activeElement).toBe(document.body)
     expect(form.isSavingRef.current).toBe(false)
+    // The lines it sent are the server's now: the refresh after the save must
+    // not bring them back as lines added elsewhere, to be saved a second time.
+    expect(form.acknowledgeSavedLines).toHaveBeenCalledWith({
+      parts: sent().partItems,
+      labor: sent().laborItems,
+    })
   })
 
   it('the Save button does the same, and takes the person to the question', async () => {

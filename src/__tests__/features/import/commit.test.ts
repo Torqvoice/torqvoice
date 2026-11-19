@@ -53,7 +53,20 @@ function txClient(pending: Store) {
 const db = {
   $transaction: vi.fn(async (fn: (tx: ReturnType<typeof txClient>) => Promise<unknown>) => {
     const pending: Store = { customers: [], vehicles: [], services: [] }
-    const result = await fn(txClient(pending))
+    // A row chunk writes through the transaction client; the readings, settled
+    // afterwards, read and write the vehicles as they are (the db below), under
+    // the vehicle's row lock.
+    const tx = txClient(pending)
+    const result = await fn({
+      ...tx,
+      $queryRaw: async () => [],
+      serviceRecord: { ...tx.serviceRecord, findFirst: db.serviceRecord.findFirst },
+      vehicle: {
+        ...tx.vehicle,
+        findFirst: db.vehicle.findFirst,
+        updateMany: db.vehicle.updateMany,
+      },
+    } as never)
     committed.customers.push(...pending.customers)
     committed.vehicles.push(...pending.vehicles)
     committed.services.push(...pending.services)

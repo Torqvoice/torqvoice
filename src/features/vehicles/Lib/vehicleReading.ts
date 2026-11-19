@@ -54,6 +54,8 @@ interface VehicleReadingRow {
  * without the rule importing the database itself.
  */
 export interface ReadingClient {
+  /** For the vehicle's row lock (lockVehicleReading). */
+  $queryRaw: Prisma.TransactionClient['$queryRaw']
   serviceRecord: {
     findFirst(args: {
       where: Prisma.ServiceRecordWhereInput
@@ -127,12 +129,21 @@ function laterJobsWithReading(
 
 /**
  * Applies the rule above after a job's reading was written. Answers whether
- * the vehicle's reading changed. Takes the transaction when the writer has one.
+ * the vehicle's reading changed. Runs in the writer's transaction, which
+ * holds the vehicle's row lock from here until it commits.
  */
 export async function applyJobReading(client: ReadingClient, job: JobReading): Promise<boolean> {
   const reading = readingOf(job.reading)
   if (job.previousReading !== undefined && (job.previousReading ?? null) === (job.reading ?? null))
     return false
+  // Nothing to raise and nothing a correction could start from.
+  if (reading == null && readingOf(job.previousReading) == null) return false
+
+  // Every decision about this vehicle's reading takes turns, the ones that
+  // leave it alone included: a job that decides "not higher" while another
+  // job's correction is lowering the vehicle would otherwise leave the
+  // vehicle below its reading.
+  await lockVehicleReading(client, job)
 
   // The job had a reading on this vehicle and now reads lower, or nothing:
   // a correction, if the vehicle's reading is this job's.
@@ -257,6 +268,21 @@ export async function lockJobReading(
     WHERE "id" = ${job.jobId} AND "organizationId" = ${job.organizationId}
     FOR UPDATE`
   return rows[0] ?? null
+}
+
+/**
+ * Locks the vehicle's row until the writer's transaction ends. The rule's
+ * reads come after it, so they see what the writer before it committed.
+ * Called inside the writer's transaction: outside one it is let go at once.
+ */
+async function lockVehicleReading(
+  client: Pick<ReadingClient, '$queryRaw'>,
+  job: { organizationId: string; vehicleId: string }
+): Promise<void> {
+  await client.$queryRaw`
+    SELECT "id" FROM "public"."vehicles"
+    WHERE "id" = ${job.vehicleId} AND "organizationId" = ${job.organizationId}
+    FOR UPDATE`
 }
 
 /**

@@ -89,6 +89,7 @@ export function useServiceActions({
     markSaved,
     markDirty,
     confirmedReadingRef,
+    acknowledgeSavedLines,
   } = formState
 
   /**
@@ -280,6 +281,7 @@ export function useServiceActions({
     if (result.success && holdReading) {
       commitLaborAddedElsewhere()
       commitPartsAddedElsewhere()
+      acknowledgeSavedLines({ parts: payload.partItems, labor: payload.laborItems })
       // Saved but for the reading: the page stays unsaved, without another
       // autosave unless something else is edited, and a link waiting on this
       // save asks the person to stay and answer.

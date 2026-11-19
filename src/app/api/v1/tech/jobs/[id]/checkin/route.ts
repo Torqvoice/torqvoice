@@ -88,10 +88,12 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
             where: { id: job.id, organizationId: ctx.organizationId },
             data: { mileage },
           })
-          if (locked && before) {
+          // The vehicle the job is on now, under the lock: it may have been
+          // moved since the job was looked up.
+          if (locked?.vehicleId && before) {
             await applyJobReading(tx, {
               organizationId: ctx.organizationId,
-              vehicleId: job.vehicleId,
+              vehicleId: locked.vehicleId,
               jobId: job.id,
               jobDate: jobReadingDate(before),
               reading: mileage,

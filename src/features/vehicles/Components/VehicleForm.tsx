@@ -231,6 +231,9 @@ export function VehicleForm({
   const resetDrafts = () => {
     setEditingMileage(false)
     setMileageDraft(vehicle ? String(vehicle.mileage) : '')
+    // A yes was for that vehicle and that reading; the next one is asked again.
+    confirmedReadingRef.current = null
+    setReadingToConfirm(null)
     setInspectionDraft(openedInspectionDue)
     setVinDraft(vehicle?.vin ?? '')
     setColorDraft(vehicle?.color ?? '')

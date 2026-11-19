@@ -409,6 +409,47 @@ describe('two saves at once', () => {
   })
 })
 
+describe('a correction and another job’s reading at the same moment', () => {
+  it('leaves the vehicle on the other job’s reading when it is the higher one', async () => {
+    // Job A set the vehicle to 1,490,000 by mistake; job B, on the same day,
+    // has no reading yet.
+    const car = await makeVehicle(148_000)
+    const a = await newJob(car, '2026-11-19', 1_490_000)
+    const b = await newJob(car, '2026-11-19')
+
+    // A is corrected to 149,000 and its transaction is held open after the
+    // rule has run. While it is open, B is saved with 160,000: before A has
+    // committed, B can only see the vehicle at 1,490,000.
+    let corrected!: () => void
+    const correctedNow = new Promise<void>((resolve) => {
+      corrected = resolve
+    })
+    const holdA = db.$transaction(
+      async (tx) => {
+        await reading.lockJobReading(tx, { organizationId: home.organizationId, jobId: a })
+        await tx.serviceRecord.update({ where: { id: a }, data: { mileage: 149_000 } })
+        await reading.applyJobReading(tx, {
+          organizationId: home.organizationId,
+          vehicleId: car,
+          jobId: a,
+          jobDate: new Date('2026-11-19T09:00:00Z'),
+          reading: 149_000,
+          previousReading: 1_490_000,
+        })
+        corrected()
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+      },
+      { timeout: 20_000 }
+    )
+    await correctedNow
+    const saveB = saveJob(b, { mileage: 160_000 })
+    await Promise.all([holdA, saveB])
+
+    // B waited for A, then saw 149,000 and moved the vehicle on.
+    expect(await vehicleOf(car)).toMatchObject({ mileage: 160_000, readingJobId: b })
+  })
+})
+
 describe('another workshop', () => {
   it('cannot correct, move or read this workshop’s vehicle through a job id', async () => {
     const car = await makeVehicle(148_000)
