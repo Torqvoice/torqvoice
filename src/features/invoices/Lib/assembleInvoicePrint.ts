@@ -27,6 +27,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { isOwnUploadUrl } from '@/lib/upload-url'
 import { formatDateForPdf } from '@/lib/format'
+import { legacyCustomFieldText } from '@/features/custom-fields/Lib/customFieldText'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import {
   type InvoiceLayoutConfig,
@@ -555,7 +556,13 @@ async function assembleFrozen(
           customer: null,
         }
       : null,
-    customFields: frozen.customFields ?? [],
+    // The snapshot holds the raw value. One issued before custom fields
+    // followed the workshop's language keeps the wording it was sent with.
+    customFields: (frozen.customFields ?? []).map((cf) =>
+      cf.format === 'workshop'
+        ? cf
+        : { ...cf, display: legacyCustomFieldText(cf.value, cf.fieldType) }
+    ),
     findings: (frozen.findings ?? []).map((f) => ({ ...f, notes: f.notes ?? null })),
   }
 

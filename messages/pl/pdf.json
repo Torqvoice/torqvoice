@@ -236,7 +236,9 @@
     "serviceTypeMaintenance": "Konserwacja",
     "serviceTypeRepair": "Naprawa",
     "serviceTypeUpgrade": "Modernizacja",
-    "serviceTypeInspection": "Inspekcja"
+    "serviceTypeInspection": "Inspekcja",
+    "customFieldYes": "Tak",
+    "customFieldNo": "Nie"
   },
   "workOrder": {
     "title": "ZLECENIE",

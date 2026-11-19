@@ -110,6 +110,12 @@ export const issuedInvoiceDataSchema = z
             label: z.string(),
             value: z.string(),
             fieldType: z.string(),
+            /**
+             * 'workshop' when the value prints in the workshop's language and
+             * date format. Absent on invoices issued while every document
+             * printed "Yes"/"No" and a US long date; those keep that wording.
+             */
+            format: z.string().optional(),
           })
           .passthrough()
       )

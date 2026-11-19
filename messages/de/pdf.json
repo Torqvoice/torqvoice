@@ -236,7 +236,9 @@
     "serviceTypeMaintenance": "Wartung",
     "serviceTypeRepair": "Reparatur",
     "serviceTypeUpgrade": "Verbesserung",
-    "serviceTypeInspection": "Überprüfung"
+    "serviceTypeInspection": "Überprüfung",
+    "customFieldYes": "Ja",
+    "customFieldNo": "Nein"
   },
   "workOrder": {
     "title": "ARBEITSAUFTRAG",

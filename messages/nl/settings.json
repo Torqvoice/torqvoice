@@ -1195,7 +1195,9 @@
     "placement": "Plaats op het document",
     "placementHidden": "Wordt niet afgedrukt",
     "placementHint": "In welke sectie van de factuur of offerte dit veld wordt afgedrukt. In de designer kun je het ook in meer secties inschakelen.",
-    "failedSavePlacement": "Kan de veldplaatsing niet opslaan"
+    "failedSavePlacement": "Kan de veldplaatsing niet opslaan",
+    "formTitle": "Aangepaste velden",
+    "requiredError": "{label} is verplicht"
   },
   "workshop": {
     "title": "Werkplaatsstandaarden",
