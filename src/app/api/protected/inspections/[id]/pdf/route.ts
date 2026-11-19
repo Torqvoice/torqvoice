@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
@@ -181,6 +181,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       attachedDocuments: documents.map((document) => document.fileName),
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
+    await pdfFontsReady()
     const buffer = await renderToBuffer(element)
     // The signed forms follow the certificate as pages of their own.
     const body = await appendCertificateDocuments(buffer, documents)

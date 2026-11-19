@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import React from 'react'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
@@ -57,6 +57,7 @@ export async function buildWorkOrderPdfBuffer(
     locale,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
+  await pdfFontsReady()
   const buffer = await renderToBuffer(element)
   return { buffer, filename: `${workOrderNumberOf(assembly.record)}-work-order.pdf` }
 }

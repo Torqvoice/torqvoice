@@ -3,7 +3,7 @@ import 'server-only'
 import { readFile } from 'fs/promises'
 import React from 'react'
 import { type DocumentProps, renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
@@ -176,6 +176,7 @@ export async function buildCertificatePdfBuffer({
     bodyType: inspection.vehicle.bodyType,
     conditionMapLabels,
   }) as unknown as React.ReactElement<DocumentProps>
+  await pdfFontsReady()
   const rendered = await renderToBuffer(element)
   const body = await appendCertificateDocuments(Buffer.from(rendered), documents)
   const vehicleName = vehicleNameOf(inspection.vehicle, '-')
