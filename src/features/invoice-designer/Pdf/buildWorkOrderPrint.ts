@@ -20,7 +20,7 @@ import {
   toCustomFieldId,
   type InvoiceLayoutConfig,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
-import { formatFieldValue } from '@/features/vehicles/Components/invoice-pdf/CustomFields'
+import { customFieldLine } from '@/features/custom-fields/Lib/customFieldText'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import type {
   InvoiceData,
@@ -295,8 +295,11 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
   }
   for (const cfEntry of data.customFields ?? []) {
     if (cfEntry.value === '' || cfEntry.value == null) continue
-    fields[toCustomFieldId(cfEntry.fieldId)] =
-      `${cfEntry.label}: ${formatFieldValue(cfEntry.value, cfEntry.fieldType)}`
+    fields[toCustomFieldId(cfEntry.fieldId)] = customFieldLine(cfEntry, {
+      labels,
+      dateFormat: df,
+      timezone: tz,
+    })
   }
 
   const items: DocumentData['items'] = [

@@ -1195,7 +1195,9 @@
     "placement": "Vieta dokumente",
     "placementHidden": "Nespausdinama",
     "placementHint": "Kurioje sąskaitos arba pasiūlymo dalyje spausdinamas šis laukas. Dizaineryje jį galima įjungti ir kitose dalyse.",
-    "failedSavePlacement": "Nepavyko išsaugoti lauko vietos"
+    "failedSavePlacement": "Nepavyko išsaugoti lauko vietos",
+    "formTitle": "Pasirinktiniai laukai",
+    "requiredError": "{label}: būtina užpildyti"
   },
   "workshop": {
     "title": "Dirbtuvių numatytosios reikšmės",

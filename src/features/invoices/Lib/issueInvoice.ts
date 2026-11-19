@@ -58,6 +58,7 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
       label: cf.label,
       value: cf.value,
       fieldType: cf.fieldType,
+      format: 'workshop',
     })),
     conditionMap: freezeConditionMap(a.conditionMap),
     inspectionResults: freezeInspectionResults(a.inspectionResults),

@@ -1195,7 +1195,9 @@
     "placement": "Belgedeki konum",
     "placementHidden": "Yazdırılmaz",
     "placementHint": "Bu alanın faturanın veya teklifin hangi bölümünde yazdırılacağı. Tasarımcıda başka bölümlerde de açabilirsiniz.",
-    "failedSavePlacement": "Alan konumu kaydedilemedi"
+    "failedSavePlacement": "Alan konumu kaydedilemedi",
+    "formTitle": "Özel alanlar",
+    "requiredError": "{label} zorunludur"
   },
   "workshop": {
     "title": "Atölye Varsayılanları",

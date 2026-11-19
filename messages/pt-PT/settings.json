@@ -1195,7 +1195,9 @@
     "placement": "Posição no documento",
     "placementHidden": "Não é impresso",
     "placementHint": "Em que secção da fatura ou do orçamento este campo é impresso. No editor também pode ativá-lo em mais secções.",
-    "failedSavePlacement": "Não foi possível guardar a posição do campo"
+    "failedSavePlacement": "Não foi possível guardar a posição do campo",
+    "formTitle": "Campos personalizados",
+    "requiredError": "O campo {label} é obrigatório"
   },
   "workshop": {
     "title": "Predefinições da oficina",

@@ -236,7 +236,9 @@
     "serviceTypeMaintenance": "Priežiūra",
     "serviceTypeRepair": "Remontas",
     "serviceTypeUpgrade": "Pagerinimas",
-    "serviceTypeInspection": "Apžiūra"
+    "serviceTypeInspection": "Apžiūra",
+    "customFieldYes": "Taip",
+    "customFieldNo": "Ne"
   },
   "workOrder": {
     "title": "DARBO UŽSAKYMAS",

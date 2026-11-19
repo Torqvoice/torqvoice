@@ -1195,7 +1195,9 @@
     "placement": "Position auf dem Dokument",
     "placementHidden": "Wird nicht gedruckt",
     "placementHint": "In welchem Abschnitt der Rechnung oder des Angebots dieses Feld gedruckt wird. Im Designer kann es zusätzlich in weiteren Abschnitten aktiviert werden.",
-    "failedSavePlacement": "Feldposition konnte nicht gespeichert werden"
+    "failedSavePlacement": "Feldposition konnte nicht gespeichert werden",
+    "formTitle": "Benutzerdefinierte Felder",
+    "requiredError": "{label} ist erforderlich"
   },
   "workshop": {
     "title": "Werkstatt-Standards",
