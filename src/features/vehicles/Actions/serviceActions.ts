@@ -3,6 +3,7 @@
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
 import {
   gateCustomerReference,
+  gatePoRequired,
   isCustomerReferenceEnabled,
 } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
@@ -363,10 +364,17 @@ export async function getServiceRecord(recordId: string) {
         select: { id: true, quoteNumber: true, title: true },
       })
 
-      // Without the customer's reference / PO for a workshop that has the
-      // field off: the page has no box for it, so it is not sent there either.
+      // Without the customer's reference / PO, and without "PO required" on
+      // its customer, for a workshop that has the field off: the page has no
+      // box and no notice for them, so they are not sent there either.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
       return {
-        ...gateCustomerReference(record, await isCustomerReferenceEnabled(organizationId)),
+        ...gateCustomerReference(record, referenceOn),
+        customer: record.customer && gatePoRequired(record.customer, referenceOn),
+        vehicle: record.vehicle && {
+          ...record.vehicle,
+          customer: record.vehicle.customer && gatePoRequired(record.vehicle.customer, referenceOn),
+        },
         quotes,
       }
     },

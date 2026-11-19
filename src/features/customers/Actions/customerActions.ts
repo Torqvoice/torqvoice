@@ -1,6 +1,9 @@
 'use server'
 
-import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
+import {
+  gatePoRequired,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { createCustomerSchema, updateCustomerSchema } from '../Schema/customerSchema'
@@ -46,13 +49,15 @@ async function dropPoRequiredWhenOff(
 export async function getCustomers() {
   return withAuth(
     async ({ userId, organizationId }) => {
-      return db.customer.findMany({
+      const customers = await db.customer.findMany({
         where: { organizationId },
         include: {
           _count: { select: { vehicles: true } },
         },
         orderBy: { updatedAt: 'desc' },
       })
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
+      return customers.map((customer) => gatePoRequired(customer, referenceOn))
     },
     {
       requiredPermissions: [
@@ -90,7 +95,9 @@ export async function getCustomer(customerId: string) {
       // Missing or foreign-org customer yields null rather than an error: the
       // page renders its not-found state, and this also runs during the
       // post-delete re-render of the customer route.
-      return customer
+      if (!customer) return customer
+      // Never "PO required" for a workshop that has the Reference / PO field off.
+      return gatePoRequired(customer, await isCustomerReferenceEnabled(organizationId))
     },
     {
       requiredPermissions: [
@@ -399,8 +406,9 @@ export async function getCustomersPaginated(params: {
         db.customer.count({ where }),
       ])
 
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
       return {
-        customers,
+        customers: customers.map((customer) => gatePoRequired(customer, referenceOn)),
         total,
         page,
         pageSize,

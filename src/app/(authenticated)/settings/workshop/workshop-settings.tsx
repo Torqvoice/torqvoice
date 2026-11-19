@@ -520,7 +520,8 @@ export function WorkshopSettings({
                     htmlFor="customerReferenceEnabled"
                     className="flex items-center justify-between gap-3"
                   >
-                    <span>{t('workshop.customerReferenceEnabled')}</span>
+                    {/* Long enough to wrap on a phone, so it gets room between its lines. */}
+                    <span className="leading-snug">{t('workshop.customerReferenceEnabled')}</span>
                     <Switch
                       id="customerReferenceEnabled"
                       checked={customerReferenceEnabled}
