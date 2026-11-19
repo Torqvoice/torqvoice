@@ -2,6 +2,7 @@ import {
   FOOTER_SPECIAL_FIELD_IDS,
   footerColumnsOf,
   getBuiltinFieldsForSection,
+  isOptInField,
   unmentionedGrandfathered,
   isCustomFieldId,
   type InvoiceLayoutConfig,
@@ -265,10 +266,14 @@ export function lookOf(section: InvoiceSection, theme: DocumentTheme) {
 /**
  * The fields a section shows, in the order it shows them. A section with no
  * list of its own shows all of them, which is what a layout written before the
- * choice existed means.
+ * choice existed means; all but the opt-in ones, which wait to be asked for.
  */
 export function sectionFields(section: InvoiceSection): string[] {
-  if (!section.fields) return getBuiltinFieldsForSection(section.id).map((f) => f.id)
+  if (!section.fields) {
+    return getBuiltinFieldsForSection(section.id)
+      .map((f) => f.id)
+      .filter((id) => !isOptInField(section.id, id))
+  }
   return [
     ...section.fields.filter((f) => f.visible).map((f) => f.id),
     // A row that printed before it had a switch keeps printing until somebody

@@ -247,6 +247,9 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
       title: record.title,
       invoiceNumber: record.invoiceNumber,
       publicToken: record.publicToken,
+      // The customer's own reference / PO for the job; null for a workshop
+      // that has the field off, which the assembly has already seen to.
+      customerReference: assembly.record.customerReference ?? null,
       spec,
       // The finished inspection linked to the job, whose certificate goes with it.
       hasCertificate: certificateInspection !== null,

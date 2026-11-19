@@ -111,6 +111,23 @@ export const workshopEntries: SettingsEntry[] = [
     ],
   },
   {
+    id: 'workshop.customerReference',
+    page: 'workshop',
+    title: 'workshop.customerReferenceTitle',
+    description: 'workshop.customerReferenceEnabled',
+    anchor: 'customerReferenceEnabled',
+    keywords: [
+      'po',
+      'po number',
+      'purchase order',
+      'reference',
+      'customer reference',
+      'your reference',
+      'requisition',
+      'order number',
+    ],
+  },
+  {
     id: 'workshop.units',
     page: 'workshop',
     title: 'workshop.unitsTitle',

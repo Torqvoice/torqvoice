@@ -364,6 +364,7 @@
     "summaryPaid": "Paid",
     "summaryLeft": "Left to pay",
     "summaryDue": "Due date",
+    "summaryReference": "Your reference / PO",
     "summaryDate": "Date",
     "fullInvoice": "The full invoice"
   },
@@ -598,6 +599,7 @@
     "number": "Quote number",
     "date": "Date",
     "validUntil": "Valid until",
+    "reference": "Your reference / PO",
     "vehicle": "Vehicle",
     "fullQuote": "The full quote",
     "answerTitle": "The workshop is waiting for your answer",

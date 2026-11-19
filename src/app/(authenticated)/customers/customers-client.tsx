@@ -72,6 +72,7 @@ interface Customer {
   company: string | null
   taxId: string | null
   taxExempt: boolean
+  poRequired?: boolean
   notes: string | null
   _count: { vehicles: number }
 }

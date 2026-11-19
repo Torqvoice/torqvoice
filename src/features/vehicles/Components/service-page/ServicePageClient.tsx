@@ -67,6 +67,8 @@ import { LeaveUnsavedDialog } from './LeaveUnsavedDialog'
 import { useLiveRecord } from '@/features/realtime/hooks'
 import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
 import { ModernDetails } from './modern/ModernDetails'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
+import { referenceMissing } from '@/features/customer-reference/Lib/reference'
 import { ModernHero } from './modern/ModernHero'
 import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
@@ -137,6 +139,27 @@ export function ServicePageClient({
 
   // Counter sales carry the customer directly; vehicle jobs resolve it via the vehicle.
   const customer = record.customer ?? record.vehicle?.customer ?? null
+
+  // The customer's reference / PO, for a workshop that uses the field. The
+  // box saves on its own; the page keeps what it holds so that sending the
+  // invoice can be stopped here, with a reason, before the server refuses it.
+  const referenceEnabled = useCustomerReferenceEnabled()
+  const tReference = useTranslations('service.reference')
+  const referenceTextRef = useRef(record.customerReference ?? '')
+  const savedReference = record.customerReference ?? ''
+  useEffect(() => {
+    referenceTextRef.current = savedReference
+  }, [savedReference])
+  const checkReference = useCallback(() => {
+    if (
+      !referenceMissing(referenceEnabled, { customerReference: referenceTextRef.current }, customer)
+    ) {
+      return true
+    }
+    toast.error(tReference('requiredToInvoice'))
+    document.getElementById('customerReference')?.focus()
+    return false
+  }, [referenceEnabled, customer, tReference])
 
   const validTabs: ServiceTab[] = ['details', 'images', 'video', 'documents', 'statusReports']
   const resolvedInitialTab =
@@ -464,6 +487,7 @@ export function ServicePageClient({
   }
 
   const shareInvoice = async () => {
+    if (!checkReference()) return
     if (!(await checkDates())) return
     if (formState.hasUnsavedChanges) await actions.saveNow()
     actions.setShowShareDialog(true)
@@ -513,6 +537,7 @@ export function ServicePageClient({
     },
     onDelete: actions.handleDelete,
     onShowEmail: async () => {
+      if (!checkReference()) return
       if (!(await checkDates())) return
       if (formState.hasUnsavedChanges) await actions.saveNow()
       actions.setShowEmailDialog(true)
@@ -535,6 +560,7 @@ export function ServicePageClient({
       publicToken={record.publicToken ?? null}
       balance={formState.balanceDue}
       currencyCode={currencyCode}
+      beforeFirstShare={checkReference}
     />
   ) : null
 
@@ -565,6 +591,9 @@ export function ServicePageClient({
     jobClock,
     locked: lockState.locked,
     payCode,
+    onReferenceChange: (reference) => {
+      referenceTextRef.current = reference
+    },
   }
 
   const sidebarProps: WorkOrderSidebarProps = {

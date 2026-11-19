@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Invoices for this customer print with this design instead of the workshop default. An invoice can still choose its own.",
     "reminderOptOut": "No reminders",
     "reminderOptOutHint": "Do not include this customer in inspection reminders or other campaigns.",
+    "poRequired": "PO required",
+    "poRequiredHint": "Invoices for this customer wait until Reference / PO is filled in on the work order.",
+    "poRequiredBadge": "PO required",
     "bookAppointment": "Book appointment"
   },
   "serviceRequests": {

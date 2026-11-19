@@ -39,6 +39,8 @@ export interface QuoteRecord {
   warrantyMileage?: number | null
   warrantyNotes?: string | null
   customerMessage: string | null
+  /** The customer's reference / PO. Null while the workshop has the field off. */
+  customerReference?: string | null
   responseDismissedAt?: Date | null
   publicToken: string | null
   sharedAt: Date | null

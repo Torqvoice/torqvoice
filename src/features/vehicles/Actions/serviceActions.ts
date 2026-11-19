@@ -1,5 +1,6 @@
 'use server'
 
+import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
 import { db } from '@/lib/db'
 import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
 import {
@@ -296,6 +297,7 @@ export async function getServiceRecord(recordId: string) {
               taxId: true,
               taxExempt: true,
               reminderOptOut: true,
+              poRequired: true,
               notes: true,
               createdAt: true,
             },
@@ -337,6 +339,7 @@ export async function getServiceRecord(recordId: string) {
                   taxId: true,
                   taxExempt: true,
                   reminderOptOut: true,
+                  poRequired: true,
                   notes: true,
                   createdAt: true,
                 },
@@ -1493,6 +1496,8 @@ export async function generatePublicLink(serviceRecordId: string) {
         where: { id: serviceRecordId, organizationId },
       })
       if (!record) throw new Error('Record not found')
+      // A customer who needs their PO on the invoice does not get one without it.
+      await assertInvoiceHasRequiredReference(organizationId, serviceRecordId)
 
       // The link is a way of sending the invoice, so what it shows is frozen
       // now, before the stamp below locks it.

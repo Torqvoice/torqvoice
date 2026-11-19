@@ -227,6 +227,7 @@
     "signature": "Signature",
     "signedBy": "Signed by",
     "signatureDate": "Date",
+    "customerReference": "Your reference / PO",
     "conditionMapTitle": "Vehicle condition",
     "conditionMapNo": "#",
     "conditionMapArea": "Area",

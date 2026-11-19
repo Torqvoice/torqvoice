@@ -73,6 +73,7 @@ import {
 import { SendSmsDialog } from '@/features/sms/Components/SendSmsDialog'
 import { TelegramQrCode } from '@/features/telegram/Components/TelegramQrCode'
 import { useServiceType } from '@/components/service-type-context'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
@@ -133,6 +134,7 @@ interface CustomerDetail {
   company: string | null
   taxId: string | null
   taxExempt: boolean
+  poRequired?: boolean
   notes: string | null
   invoiceDesignId?: string | null
   /** The design the customer's invoices print with, when one was chosen. */
@@ -215,6 +217,8 @@ export function CustomerDetailClient({
 }) {
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
+  const tForm = useTranslations('customers.form')
+  const referenceEnabled = useCustomerReferenceEnabled()
   const serviceLabel = useServiceLabels()
   const tQuoteStatus = useTranslations('quotes.statusLabels')
   const quoteStatusLabel = useCallback(
@@ -405,6 +409,14 @@ export function CustomerDetailClient({
                 {customer.taxExempt && (
                   <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400">
                     {t('taxExemptBadge')}
+                  </span>
+                )}
+                {referenceEnabled && customer.poRequired && (
+                  <span
+                    data-testid="po-required-badge"
+                    className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400"
+                  >
+                    {tForm('poRequiredBadge')}
                   </span>
                 )}
                 {/* A customer on another design is easy to forget about when

@@ -62,6 +62,8 @@ export interface DesignerWorkshop {
   paymentTerms: string
   /** Whether the workshop records the German type key, so the sample car shows one. */
   typeKeyEnabled?: boolean
+  /** Whether the workshop uses the Reference / PO field, so the sample customer shows one. */
+  customerReferenceEnabled?: boolean
   /** How the workshop writes distance; the sample car's mileage uses it, as printed invoices do. */
   unitSystem?: 'metric' | 'imperial'
   logoUrl: string

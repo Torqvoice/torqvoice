@@ -105,6 +105,9 @@ export default async function PortalInvoicePage({
       label: t('summaryDate'),
       value: day(record.invoiceDate ?? record.startDateTime ?? record.serviceDate),
     },
+    ...(invoice.customerReference
+      ? [{ label: t('summaryReference'), value: invoice.customerReference }]
+      : []),
     { label: t('summaryTotal'), value: fmt.money(record.totalAmount) },
     { label: t('summaryPaid'), value: fmt.money(payment.paid) },
     ...(record.invoiceDueDate && owes

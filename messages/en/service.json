@@ -760,6 +760,14 @@
     "fromQuote": "From quote {ref}",
     "startInspection": "Start inspection"
   },
+  "reference": {
+    "label": "Reference / PO",
+    "placeholder": "PO number or reference",
+    "requiredNotice": "This customer needs a reference or PO number on their invoices. Fill it in before the invoice is sent.",
+    "requiredToInvoice": "This customer needs a reference or PO number on their invoices. Fill in Reference / PO on the work order, then send the invoice.",
+    "saveFailed": "Could not save the reference",
+    "saved": "Saved"
+  },
   "photoHandoff": {
     "button": "Add from phone",
     "dialogTitle": "Add photos and documents from a phone",

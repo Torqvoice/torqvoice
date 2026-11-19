@@ -32,6 +32,7 @@ import { SupportBubble } from '@/features/support/Components/SupportBubble'
 import { isSupportEnabled } from '@/lib/support'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { TypeKeyProvider } from '@/components/type-key-context'
+import { CustomerReferenceProvider } from '@/components/customer-reference-context'
 import { EngineSizeUnitProvider } from '@/components/engine-size-context'
 import { LicenseExpiryProvider } from '@/components/license-expiry-context'
 import {
@@ -343,7 +344,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  return (
+  const page = (
     <ServiceTypeProvider serviceType={data.serviceType}>
       <TypeKeyProvider enabled={data.typeKeyEnabled}>
         <EngineSizeUnitProvider unit={data.engineSizeUnit}>
@@ -526,5 +527,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </EngineSizeUnitProvider>
       </TypeKeyProvider>
     </ServiceTypeProvider>
+  )
+
+  // Around the whole page rather than nested in it: every screen under this
+  // layout asks whether the workshop uses the Reference / PO field.
+  return (
+    <CustomerReferenceProvider enabled={data.customerReferenceEnabled}>
+      {page}
+    </CustomerReferenceProvider>
   )
 }

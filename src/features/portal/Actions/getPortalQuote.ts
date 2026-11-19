@@ -14,6 +14,10 @@ import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchem
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  customerReferenceEnabledIn,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { db } from '@/lib/db'
@@ -71,10 +75,15 @@ export async function getPortalQuote(quoteId: string) {
     const settingsMap: Record<string, string> = {}
     for (const s of settings) settingsMap[s.key] = s.value
 
-    const shownQuote = {
-      ...quote,
-      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
-    }
+    // Without the type key and without the customer's reference / PO, for a
+    // workshop that has those fields off.
+    const shownQuote = gateCustomerReference(
+      {
+        ...quote,
+        vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+      },
+      customerReferenceEnabledIn(settingsMap, features)
+    )
     const workshop = {
       name: org?.name || '',
       address: settingsMap['workshop.address'] || '',
@@ -140,6 +149,8 @@ export async function getPortalQuote(quoteId: string) {
       id: quote.id,
       title: quote.title,
       quoteNumber: quote.quoteNumber,
+      // The customer's own reference / PO; null for a workshop with the field off.
+      customerReference: shownQuote.customerReference ?? null,
       status: quote.status,
       totalAmount: quote.totalAmount,
       validUntil: quote.validUntil?.toISOString() ?? null,

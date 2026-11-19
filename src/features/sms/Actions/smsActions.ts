@@ -1,5 +1,6 @@
 'use server'
 
+import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { getPlatformSmsAllowance, normalizeOrgPhone } from '@/lib/sms'
@@ -28,6 +29,11 @@ export async function sendSmsToCustomer(input: {
 
       if (!customer) throw new Error('Customer not found')
       if (!customer.phone) throw new Error('Customer has no phone number')
+      // A text filed against an invoice counts as sending it (deliverSms), so
+      // it answers to the same rule as every other way of sending one.
+      if (input.relatedEntityType === 'invoice' && input.relatedEntityId) {
+        await assertInvoiceHasRequiredReference(organizationId, input.relatedEntityId)
+      }
 
       // Normalize the destination phone using the workshop's default
       // country code so the audit-log row records the same E.164 number

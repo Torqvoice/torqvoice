@@ -222,6 +222,11 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     customer_email: customer?.email || '',
     customer_phone: customer?.phone || '',
     customer_tax_id: customer?.taxId ? `${L('customerTaxId', 'Tax ID')}: ${customer.taxId}` : '',
+    // Empty for a job without one, and for a workshop that has the field off:
+    // the value is taken away before it reaches here.
+    customer_reference: data.customerReference
+      ? `${L('customerReference', 'Your reference / PO')}: ${data.customerReference}`
+      : '',
     vehicle_name: vehicleName,
     vin: data.vehicle?.vin
       ? labels.vin

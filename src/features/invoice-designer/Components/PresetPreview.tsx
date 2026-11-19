@@ -7,6 +7,7 @@ import { workOrderLabels } from '../Lib/workOrderLabels'
 import { useMemo } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
 import type { TaxComponentDefinition } from '@/lib/tax'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
@@ -37,6 +38,7 @@ interface PreviewWorkshop {
 function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUrl?: string) {
   const t = useTranslations('settings.designer')
   const typeKeyEnabled = useTypeKeyEnabled()
+  const customerReferenceEnabled = useCustomerReferenceEnabled()
   const messages = useMessages() as { pdf?: Record<string, Record<string, string>> }
   const sampleFormat = useSampleFormat()
 
@@ -60,6 +62,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         orgNumber: '',
         paymentTerms: '',
         typeKeyEnabled,
+        customerReferenceEnabled,
         logoUrl: logoUrl ?? '',
         taxComponents: workshop?.taxComponents ?? null,
         unitSystem: workshop?.unitSystem,
@@ -70,7 +73,16 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
       docType,
       sampleFormat
     )
-  }, [docType, workshop, logoUrl, t, messages, typeKeyEnabled, sampleFormat])
+  }, [
+    docType,
+    workshop,
+    logoUrl,
+    t,
+    messages,
+    typeKeyEnabled,
+    customerReferenceEnabled,
+    sampleFormat,
+  ])
 }
 
 export function PresetPreview({

@@ -35,6 +35,8 @@ model Quote {
   shareNeverExpires Boolean   @default(false)
   shareRenewedAt    DateTime?
   customerMessage String?
+  /// See ServiceRecord.customerReference. Copied to the job on conversion.
+  customerReference String?
   convertedToId   String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt

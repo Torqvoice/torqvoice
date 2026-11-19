@@ -128,6 +128,9 @@ export const PUBLIC_QUOTE_SELECT = {
   validUntil: true,
   createdAt: true,
   sentAt: true,
+  // The customer's own reference / PO. Their number, so theirs to see; taken
+  // away again by the caller for a workshop that has the field off.
+  customerReference: true,
   subtotal: true,
   taxRate: true,
   taxAmount: true,

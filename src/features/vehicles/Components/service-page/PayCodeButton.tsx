@@ -43,6 +43,7 @@ export function PayCodeButton({
   currencyCode,
   size = 'sm',
   className,
+  beforeFirstShare,
 }: {
   serviceRecordId: string
   organizationId: string
@@ -51,6 +52,12 @@ export function PayCodeButton({
   currencyCode: string
   size?: 'sm' | 'default'
   className?: string
+  /**
+   * Asked before the dialog opens on an invoice that has no link yet, where
+   * showing the code shares the invoice for the first time. False keeps it
+   * shut; the caller has said why.
+   */
+  beforeFirstShare?: () => boolean
 }) {
   const t = useTranslations('service.payCode')
   const router = useRouter()
@@ -127,7 +134,10 @@ export function PayCodeButton({
         variant="outline"
         size={size}
         className={className}
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          if (!token && beforeFirstShare && !beforeFirstShare()) return
+          setOpen(true)
+        }}
         data-testid="pay-code-open"
       >
         <QrCode className="mr-1.5 h-4 w-4" aria-hidden="true" />

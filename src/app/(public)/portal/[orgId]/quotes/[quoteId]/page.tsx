@@ -60,6 +60,9 @@ export default async function PortalQuotePage({
 
   const facts: PortalFact[] = [
     ...(quote.quoteNumber ? [{ label: t('number'), value: quote.quoteNumber }] : []),
+    ...(quote.customerReference
+      ? [{ label: t('reference'), value: quote.customerReference }]
+      : []),
     { label: t('date'), value: fmt.day(quote.createdAt) },
     ...(quote.validUntil ? [{ label: t('validUntil'), value: fmt.day(quote.validUntil) }] : []),
     ...(quote.vehicle

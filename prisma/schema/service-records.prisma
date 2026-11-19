@@ -38,6 +38,12 @@ model ServiceRecord {
   invoiceNumber   String?
   invoiceDate     DateTime?
   invoiceDueDate  DateTime?
+  /// The customer's own reference for this job: a purchase order number, a
+  /// requisition, a name. Free text, shown and sent only while the workshop
+  /// has the field switched on (src/features/customer-reference). Never part
+  /// of an issued invoice's frozen copy: it prints from here, so one typed
+  /// after the invoice went out shows on it at once.
+  customerReference String?
   discountType    String?
   discountValue   Float     @default(0)
   discountAmount  Float     @default(0)

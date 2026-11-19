@@ -26,6 +26,9 @@ import type { QuoteRecord } from './quote-page-types'
 import { VehicleCombobox } from './VehicleCombobox'
 import { CustomerCombobox } from './CustomerCombobox'
 import { vehicleName } from '@/lib/vehicle-name'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
+import { CustomerReferenceField } from '@/features/customer-reference/Components/CustomerReferenceField'
+import { setQuoteReference } from '@/features/customer-reference/Actions/setQuoteReference'
 
 interface QuoteRightColumnProps {
   state: QuoteFormState
@@ -57,6 +60,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
   lockReason,
 }: QuoteRightColumnProps) {
   const formatCurrency = useFormatCurrency()
+  const referenceEnabled = useCustomerReferenceEnabled()
   const [validUntil, setValidUntil] = useState(state.defaultValidDate)
   const locked = lockReason !== null
   const statusAllowed = (value: string) => !lockReason || quoteStatusKeepsLock(lockReason, value)
@@ -280,6 +284,16 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
             </div>
           </fieldset>
         </div>
+        {/* Outside the lock: a customer who accepts by raising a purchase
+            order sends its number after the quote has locked. */}
+        {referenceEnabled && (
+          <CustomerReferenceField
+            layout="stacked"
+            labelClassName="text-xs"
+            value={quote.customerReference ?? null}
+            onSave={(reference) => setQuoteReference(quote.id, reference)}
+          />
+        )}
         {quote.inspectionId && (
           <Link
             href={`/inspections/${quote.inspectionId}`}

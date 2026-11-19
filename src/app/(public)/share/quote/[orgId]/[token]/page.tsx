@@ -24,6 +24,10 @@ import { lookUpShareLink } from '@/lib/share-link.server'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  customerReferenceEnabledIn,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 
 export const revalidate = 60
 
@@ -144,10 +148,15 @@ export default async function PublicQuotePage({
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
   const typeKeyEnabled = typeKeyEnabledIn(settingsMap)
-  const shownQuote = {
-    ...quote,
-    vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabled),
-  }
+  // Without the type key and without the customer's reference / PO, for a
+  // workshop that has those fields off.
+  const shownQuote = gateCustomerReference(
+    {
+      ...quote,
+      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabled),
+    },
+    customerReferenceEnabledIn(settingsMap, features)
+  )
 
   const workshop = {
     name: org?.name || '',

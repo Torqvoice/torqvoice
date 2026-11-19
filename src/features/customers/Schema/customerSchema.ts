@@ -10,6 +10,8 @@ export const createCustomerSchema = z.object({
   taxId: z.string().optional(),
   taxExempt: z.boolean().optional(),
   reminderOptOut: z.boolean().optional(),
+  /** Invoices wait for a reference / PO. Kept only by a workshop that uses the field. */
+  poRequired: z.boolean().optional(),
   notes: z.string().optional(),
   /** An invoice design for this customer's invoices; null follows the default. */
   invoiceDesignId: z.string().nullable().optional(),
