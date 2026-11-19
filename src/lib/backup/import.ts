@@ -177,6 +177,20 @@ function numberOr<T>(value: unknown, fallback: T): number | T {
   return typeof value === 'number' && Number.isFinite(value) ? value : fallback
 }
 
+/**
+ * A vehicle's year as the backup holds it. The column is a non-null
+ * integer, and 0 is the app's unknown-year marker, so a row without a
+ * decodable year restores as 0 instead of failing the whole restore
+ * mid-transaction; a year written as text (a hand-edited backup) is read
+ * as its number, as the vehicle form's own coercion does. Values above
+ * the column's signed 32-bit maximum are rejected the same way: they
+ * would still fail the insert and roll the restore back.
+ */
+function restoredVehicleYear(value: unknown): number {
+  const n = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : NaN
+  return Number.isInteger(n) && n > 0 && n <= 2147483647 ? n : 0
+}
+
 /** A foreign key from the backup, kept only when this import restored its target. */
 function keptReference(id: unknown, restored: ReadonlySet<string> | undefined): string | null {
   return typeof id === 'string' && id && restored?.has(id) ? id : null
@@ -1112,7 +1126,7 @@ export async function restoreBackup(
                 id: v.id as string,
                 make: v.make as string,
                 model: v.model as string,
-                year: v.year as number,
+                year: restoredVehicleYear(v.year),
                 vin: (v.vin as string) || null,
                 licensePlate: normalizePlate(v.licensePlate as string | null | undefined),
                 color: (v.color as string) || null,

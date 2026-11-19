@@ -121,6 +121,37 @@ describe('restoreFromDisk', () => {
     expect(releaseFilesNotRestored).not.toHaveBeenCalled()
   })
 
+  it('restores a vehicle year as its number, or the unknown marker 0', async () => {
+    const dir = path.join(root, 'restored')
+    const at = '2026-01-01T00:00:00Z'
+    writeBackup(dir, {
+      version: 2,
+      data: {
+        vehicles: [
+          { id: 'v1', make: 'Ford', model: 'Edge', year: 2021, createdAt: at, updatedAt: at },
+          { id: 'v2', make: 'Ford', model: 'Focus', createdAt: at, updatedAt: at },
+          { id: 'v3', make: 'VW', model: 'Golf', year: '1998', createdAt: at, updatedAt: at },
+          { id: 'v4', make: 'Opel', model: 'Astra', year: 0, createdAt: at, updatedAt: at },
+          // Above the year column's signed 32-bit maximum: a hand-edited
+          // backup must restore the vehicle as unknown, not roll the
+          // restore back when the insert rejects the value.
+          { id: 'v5', make: 'Ford', model: 'S-Max', year: 2147483648, createdAt: at, updatedAt: at },
+          { id: 'v6', make: 'Skoda', model: 'Octavia', year: '3000000000', createdAt: at, updatedAt: at },
+        ],
+      },
+    })
+
+    await restoreFromDisk(actor, { dataFile: path.join(dir, 'stage', 'data.json'), filesDir: null })
+
+    // A missing, text, zero or out-of-column-range year all restore as
+    // the app's unknown-year marker instead of failing the restore on
+    // the vehicle's row.
+    const years = state.calls
+      .filter((c) => c.model === 'vehicle' && c.method === 'create')
+      .map((c) => c.args.data.year)
+    expect(years).toEqual([2021, 0, 1998, 0, 0, 0])
+  })
+
   it('refuses a file that is not a backup before any row is touched', async () => {
     const dir = path.join(root, 'restored')
     writeBackup(dir, { version: 3, data: {} })
