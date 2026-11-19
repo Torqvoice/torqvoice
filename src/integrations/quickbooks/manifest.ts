@@ -76,6 +76,7 @@ export const manifest: ConnectorManifest = {
         { value: 'customField', label: 'customerReferenceCustomField' },
       ],
       showWhen: { key: 'pushInvoices', equals: true },
+      requires: 'customerReference',
     },
     {
       key: 'customerReferenceField',
@@ -84,6 +85,7 @@ export const manifest: ConnectorManifest = {
       help: 'customerReferenceFieldHelp',
       source: 'salesCustomFields',
       showWhen: { key: 'customerReference', equals: 'customField' },
+      requires: 'customerReference',
     },
     {
       key: 'laborItemId',

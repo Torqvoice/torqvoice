@@ -116,6 +116,8 @@ export const workshopEntries: SettingsEntry[] = [
     title: 'workshop.customerReferenceTitle',
     description: 'workshop.customerReferenceEnabled',
     anchor: 'customerReferenceEnabled',
+    // The switch is only drawn on the plans that have the field.
+    requires: 'customFields',
     keywords: [
       'po',
       'po number',

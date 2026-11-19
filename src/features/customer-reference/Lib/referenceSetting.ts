@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import type { Prisma } from '@/generated/prisma/client'
 import { getFeatures } from '@/lib/features'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { referenceMissing } from './reference'
@@ -66,4 +67,49 @@ export async function invoiceAwaitsReference(
   })
   if (!record) return false
   return referenceMissing(true, record, record.customer ?? record.vehicle?.customer ?? null)
+}
+
+/**
+ * The jobs whose invoice has not gone out and may not yet: never issued, no
+ * reference, and billed to a customer whose invoices need one. As a Prisma
+ * filter, for the lists that would otherwise show a completed job to its
+ * customer as an invoice. The billed customer is the job's own, or its
+ * vehicle's when the job names none, the same rule as everywhere else.
+ */
+const AWAITING_REFERENCE = {
+  issuedAt: null,
+  AND: [
+    { OR: [{ customerReference: null }, { customerReference: '' }] },
+    {
+      OR: [
+        { customer: { poRequired: true } },
+        { customerId: null, vehicle: { customer: { poRequired: true } } },
+      ],
+    },
+  ],
+} satisfies Prisma.ServiceRecordWhereInput
+
+/**
+ * What a customer-facing list of invoices adds to its filter: nothing for a
+ * workshop that has the field off, and otherwise everything but the jobs
+ * still waiting for their reference. An invoice that was issued some other
+ * way (it was paid, say) is the customer's document and is never held.
+ */
+export async function notAwaitingReference(
+  organizationId: string
+): Promise<Prisma.ServiceRecordWhereInput> {
+  return (await isCustomerReferenceEnabled(organizationId)) ? { NOT: AWAITING_REFERENCE } : {}
+}
+
+/** The same question about one job: held back from its customer for now. */
+export async function invoiceHeldFromCustomer(
+  organizationId: string,
+  serviceRecordId: string
+): Promise<boolean> {
+  if (!(await isCustomerReferenceEnabled(organizationId))) return false
+  const held = await db.serviceRecord.findFirst({
+    where: { id: serviceRecordId, organizationId, ...AWAITING_REFERENCE },
+    select: { id: true },
+  })
+  return held !== null
 }

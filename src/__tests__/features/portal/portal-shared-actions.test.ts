@@ -12,6 +12,15 @@ const vehicles = [
   { id: 'theirs', customerId: 'c2', organizationId: 'org1', isArchived: false },
 ]
 
+// The Reference / PO field is off here, as it is for every workshop that has
+// not asked for it; the rest of the module is the real one.
+vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) => ({
+  ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
+  isCustomerReferenceEnabled: vi.fn(async () => false),
+  notAwaitingReference: vi.fn(async () => ({})),
+  invoiceHeldFromCustomer: vi.fn(async () => false),
+}))
+
 vi.mock('@/lib/db', () => ({
   db: {
     vehicle: {

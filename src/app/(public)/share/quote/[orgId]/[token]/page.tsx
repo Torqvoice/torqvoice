@@ -104,6 +104,7 @@ export default async function PublicQuotePage({
             'workshop.timezone',
             'workshop.unitSystem',
             SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
+            SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED,
             'quote.primaryColor',
             'quote.backgroundColor',
             'quote.textColor',

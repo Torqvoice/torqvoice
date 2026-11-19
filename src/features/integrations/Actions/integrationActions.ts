@@ -1,5 +1,11 @@
 'use server'
 
+import {
+  manifestForWorkshop,
+  trimManifest,
+  withoutGatedChoices,
+  workshopFeatures,
+} from '@/features/integrations/Lib/workshop-manifest'
 import { getTranslations } from 'next-intl/server'
 import { connectorName } from '@/features/integrations/Lib/display-name'
 import { randomUUID } from 'node:crypto'
@@ -247,6 +253,9 @@ export async function getIntegrationCatalog() {
       ])
       const byId = new Map(connections.map((c) => [c.connectorId, c]))
       const country = countrySetting?.value ?? null
+      // Settings that belong to a feature this workshop has not switched on
+      // are not in the manifests it is handed.
+      const has = await workshopFeatures(organizationId)
       // Every connector is listed, whatever the plan. A free workshop sees
       // what an upgrade brings, marked as such, instead of a catalog with
       // two entries under a navigation badge that says PRO.
@@ -254,7 +263,7 @@ export async function getIntegrationCatalog() {
         const c = byId.get(manifest.id)
         const spec = oauthSpec(manifest)
         return {
-          manifest: manifestForClient(manifest),
+          manifest: manifestForClient(trimManifest(manifest, has)),
           enabled: connectorAllowed(manifest, features),
           status: (c?.status as ConnectionStatus | undefined) ?? null,
           externalAccountName: c?.externalAccountName ?? null,
@@ -403,7 +412,7 @@ export async function getIntegrationConnection(connectorId: string) {
       const awaitingKeys = row ? awaitingKeysFor(manifest, row.credentials) : []
       const appUrl = (process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/$/, '')
       return {
-        manifest: manifestForClient(manifest),
+        manifest: manifestForClient(await manifestForWorkshop(manifest, organizationId)),
         connection: row
           ? {
               id: row.id,
@@ -616,7 +625,10 @@ export async function updateIntegrationSettings(connectorId: string, raw: unknow
       demoGuard()
       const manifest = getManifest(connectorId)
       if (!manifest) throw new Error('Unknown integration')
-      const clean = cleanSettings(manifest, raw)
+      // Only what this workshop is offered is taken: a setting or a choice
+      // that belongs to a feature it has not switched on is left as stored.
+      const offered = await manifestForWorkshop(manifest, organizationId)
+      const clean = withoutGatedChoices(manifest, offered, cleanSettings(offered, raw))
       const row = await db.integrationConnection.findUnique({
         where: { organizationId_connectorId: { organizationId, connectorId } },
         select: { id: true, settings: true, status: true },

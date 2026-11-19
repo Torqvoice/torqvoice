@@ -766,7 +766,8 @@
     "requiredNotice": "Dieser Kunde braucht eine Referenz oder Bestellnummer auf seinen Rechnungen. Trage sie ein, bevor die Rechnung versendet wird.",
     "requiredToInvoice": "Dieser Kunde braucht eine Referenz oder Bestellnummer auf seinen Rechnungen. Fülle Referenz / Bestellnr. am Arbeitsauftrag aus und sende dann die Rechnung.",
     "saveFailed": "Referenz konnte nicht gespeichert werden",
-    "saved": "Gespeichert"
+    "saved": "Gespeichert",
+    "notSwitchedOn": "Das Feld Referenz / Bestellnr. ist für diese Werkstatt ausgeschaltet. Schalte es unter Einstellungen, Werkstatt ein."
   },
   "photoHandoff": {
     "button": "Vom Handy hinzufügen",

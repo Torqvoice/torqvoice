@@ -117,7 +117,11 @@ export const manifest: ConnectorManifest = {
         { value: 'invoiceNumber', label: 'referenceInvoiceNumber' },
         // The customer's own reference / PO from the work order, for a
         // workshop that uses that field (Settings, Workshop).
-        { value: 'customerReference', label: 'referenceCustomerReference' },
+        {
+          value: 'customerReference',
+          label: 'referenceCustomerReference',
+          requires: 'customerReference',
+        },
         { value: 'none', label: 'referenceNone' },
       ],
       showWhen: { key: 'pushInvoices', equals: true },

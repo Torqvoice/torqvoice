@@ -81,6 +81,7 @@ export const manifest: ConnectorManifest = {
       help: 'customerReferenceInTextHelp',
       default: false,
       showWhen: { key: 'pushInvoices', equals: true },
+      requires: 'customerReference',
     },
     {
       key: 'laborAccount',

@@ -25,6 +25,22 @@ export const HIDDEN_COLUMNS: readonly string[] = [
   'bookingToken',
 ]
 
+/**
+ * Columns that belong to a field a workshop switches on for itself. They are
+ * in the lists below, and left out of the views of a workshop that has the
+ * field off (or a plan without it): off means hidden, from the model too.
+ */
+export const REFERENCE_COLUMNS: readonly string[] = ['customerReference', 'poRequired']
+
+/** The columns of one table as this workshop's view shows them. */
+export function columnsFor(table: string, options: { customerReference: boolean }): string[] {
+  const columns = TABLE_COLUMNS[table]
+  if (!columns) throw new Error(`No column list for table ${table}`)
+  return options.customerReference
+    ? [...columns]
+    : columns.filter((column) => !REFERENCE_COLUMNS.includes(column))
+}
+
 export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
   vehicles: [
     'id',
@@ -72,7 +88,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'startDateTime',
     'endDateTime',
     'promisedAt',
-    // The customer's reference / PO for the job (Settings, Workshop).
+    // The customer's reference / PO for the job (Settings, Workshop); see REFERENCE_COLUMNS.
     'customerReference',
     'shopName',
     'techName',

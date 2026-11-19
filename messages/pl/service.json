@@ -766,7 +766,8 @@
     "requiredNotice": "Ten klient wymaga referencji lub numeru zamówienia na fakturach. Uzupełnij je przed wysłaniem faktury.",
     "requiredToInvoice": "Ten klient wymaga referencji lub numeru zamówienia na fakturach. Uzupełnij pole Referencja / nr zamówienia w zleceniu, a potem wyślij fakturę.",
     "saveFailed": "Nie udało się zapisać referencji",
-    "saved": "Zapisano"
+    "saved": "Zapisano",
+    "notSwitchedOn": "Pole Referencja / nr zamówienia jest wyłączone w tym warsztacie. Włącz je w Ustawienia, Warsztat."
   },
   "photoHandoff": {
     "button": "Dodaj z telefonu",

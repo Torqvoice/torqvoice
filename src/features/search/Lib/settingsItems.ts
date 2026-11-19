@@ -92,6 +92,8 @@ export function useSettingsSearchItems(
     for (const entry of SETTINGS_SEARCH_INDEX) {
       const page = byKey.get(entry.page)
       if (!page) continue
+      // A setting the plan does not draw is not offered as a place to go.
+      if (entry.requires && !features?.[entry.requires]) continue
       const pageTitle = t(`nav.items.${page.key}.title`)
       const title = t(entry.title, entry.values)
       const description = entry.description ? t(entry.description, entry.values) : undefined

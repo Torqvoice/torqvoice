@@ -164,7 +164,8 @@ export function CustomerReferenceField({
           id={`${id}-required`}
           role="status"
           data-testid="customer-reference-required"
-          className="text-xs font-medium text-amber-700 dark:text-amber-400"
+          // The same quiet amber as the card's other notices (a lower reading, a changed vehicle).
+          className="text-xs text-amber-600 dark:text-amber-500"
         >
           {t('requiredNotice')}
         </p>

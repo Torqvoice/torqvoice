@@ -766,7 +766,8 @@
     "requiredNotice": "Šiam klientui sąskaitose reikia nuorodos arba užsakymo numerio. Užpildykite ją prieš siųsdami sąskaitą.",
     "requiredToInvoice": "Šiam klientui sąskaitose reikia nuorodos arba užsakymo numerio. Darbo užsakyme užpildykite lauką Nuoroda / užsakymo nr., tada siųskite sąskaitą.",
     "saveFailed": "Nepavyko išsaugoti nuorodos",
-    "saved": "Išsaugota"
+    "saved": "Išsaugota",
+    "notSwitchedOn": "Laukas Nuoroda / užsakymo nr. šioms dirbtuvėms išjungtas. Įjunkite jį skiltyje Nustatymai, Dirbtuvės."
   },
   "photoHandoff": {
     "button": "Pridėti iš telefono",

@@ -132,10 +132,11 @@ describe('saving the reference on a work order', () => {
     expect(db.serviceRecord.update).not.toHaveBeenCalled()
   })
 
-  it('is refused for a workshop that has the field off', async () => {
+  it('is refused for a workshop that has the field off, in the reader’s own words', async () => {
     workshop({ field: false })
     const result = await setServiceRecordReference('svc1', 'PO-1')
     expect(result.success).toBe(false)
+    expect(result.error).toBe('service.reference.notSwitchedOn')
     expect(db.serviceRecord.update).not.toHaveBeenCalled()
   })
 
@@ -246,7 +247,7 @@ describe('"PO required" on a customer', () => {
   it('is saved by a workshop that uses the field', async () => {
     workshop({ field: true })
     vi.mocked(db.customer.updateMany).mockResolvedValue({ count: 1 } as never)
-    await updateCustomer({ id: 'c1', name: 'ZZ 636 Haulage', poRequired: true })
+    await updateCustomer({ id: 'c1', name: 'ZZ Example Haulage', poRequired: true })
     expect(vi.mocked(db.customer.updateMany).mock.calls[0][0].data).toMatchObject({
       poRequired: true,
     })
@@ -255,14 +256,14 @@ describe('"PO required" on a customer', () => {
   it('is neither set nor cleared by a workshop that has the field off', async () => {
     workshop({ field: false })
     vi.mocked(db.customer.updateMany).mockResolvedValue({ count: 1 } as never)
-    await updateCustomer({ id: 'c1', name: 'ZZ 636 Haulage', poRequired: false })
+    await updateCustomer({ id: 'c1', name: 'ZZ Example Haulage', poRequired: false })
     expect(vi.mocked(db.customer.updateMany).mock.calls[0][0].data).not.toHaveProperty('poRequired')
   })
 
   it('is left alone by a save that does not mention it, as an old tab’s does not', async () => {
     workshop({ field: true })
     vi.mocked(db.customer.updateMany).mockResolvedValue({ count: 1 } as never)
-    await updateCustomer({ id: 'c1', name: 'ZZ 636 Haulage' })
+    await updateCustomer({ id: 'c1', name: 'ZZ Example Haulage' })
     expect(vi.mocked(db.customer.updateMany).mock.calls[0][0].data).not.toHaveProperty('poRequired')
   })
 })

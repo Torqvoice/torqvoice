@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -22,7 +23,8 @@ export async function setQuoteReference(quoteId: string, reference: string) {
         throw new Error('Invalid reference')
       }
       if (!(await isCustomerReferenceEnabled(organizationId))) {
-        throw new Error('The Reference / PO field is not switched on')
+        // Said to whoever is signed in, so in their language.
+        throw new Error((await getTranslations('service.reference'))('notSwitchedOn'))
       }
       const quote = await db.quote.findFirst({
         where: { id: quoteId, organizationId },

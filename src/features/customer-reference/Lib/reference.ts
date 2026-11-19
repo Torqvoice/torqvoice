@@ -25,10 +25,3 @@ export function referenceMissing(
     enabled && Boolean(customer?.poRequired) && !normalizeCustomerReference(job.customerReference)
   )
 }
-
-/**
- * The refusal an action returns when an invoice may not go out yet. A code,
- * not a sentence: the server does not know the language of whoever is signed
- * in, so the screen turns it into words (`service.reference.requiredToInvoice`).
- */
-export const REFERENCE_REQUIRED_ERROR = 'CUSTOMER_REFERENCE_REQUIRED'

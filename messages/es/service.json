@@ -766,7 +766,8 @@
     "requiredNotice": "Este cliente necesita una referencia o un número de pedido en sus facturas. Rellénalo antes de enviar la factura.",
     "requiredToInvoice": "Este cliente necesita una referencia o un número de pedido en sus facturas. Rellena Referencia / n.º de pedido en la orden de trabajo y luego envía la factura.",
     "saveFailed": "No se pudo guardar la referencia",
-    "saved": "Guardado"
+    "saved": "Guardado",
+    "notSwitchedOn": "El campo Referencia / n.º de pedido está desactivado para este taller. Actívalo en Configuración, Taller."
   },
   "photoHandoff": {
     "button": "Añadir desde el móvil",

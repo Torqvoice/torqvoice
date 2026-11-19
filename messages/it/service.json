@@ -766,7 +766,8 @@
     "requiredNotice": "Questo cliente richiede un riferimento o un numero d'ordine sulle sue fatture. Compilalo prima di inviare la fattura.",
     "requiredToInvoice": "Questo cliente richiede un riferimento o un numero d'ordine sulle sue fatture. Compila Riferimento / n. ordine sull'ordine di lavoro, poi invia la fattura.",
     "saveFailed": "Impossibile salvare il riferimento",
-    "saved": "Salvato"
+    "saved": "Salvato",
+    "notSwitchedOn": "Il campo Riferimento / n. ordine è disattivato per questa officina. Attivalo in Impostazioni, Officina."
   },
   "photoHandoff": {
     "button": "Aggiungi dal telefono",
