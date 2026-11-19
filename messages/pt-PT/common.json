@@ -31,6 +31,13 @@
     "address": "Morada",
     "notes": "Observações"
   },
+  "passwordFeedback": {
+    "tooShort": "Demasiado curta, {count, plural, one {falta # carácter} other {faltam # caracteres}}",
+    "tooLong": "Demasiado longa, {count, plural, one {# carácter} other {# caracteres}} acima do limite de {max}",
+    "ok": "Palavra-passe OK",
+    "mismatch": "Não coincide com a palavra-passe acima",
+    "match": "As palavras-passe coincidem"
+  },
   "errors": {
     "unexpected": "Ocorreu um erro inesperado. Tente novamente.",
     "error": "Erro"

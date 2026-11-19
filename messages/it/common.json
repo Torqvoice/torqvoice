@@ -31,6 +31,13 @@
     "address": "Indirizzo",
     "notes": "Note"
   },
+  "passwordFeedback": {
+    "tooShort": "Troppo corta, {count, plural, one {manca # carattere} other {mancano # caratteri}}",
+    "tooLong": "Troppo lunga, {count, plural, one {# carattere} other {# caratteri}} oltre il limite di {max}",
+    "ok": "Password OK",
+    "mismatch": "Non corrisponde alla password sopra",
+    "match": "Le password corrispondono"
+  },
   "errors": {
     "unexpected": "Si è verificato un errore imprevisto. La preghiamo di riprovare.",
     "error": "Errore"

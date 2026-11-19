@@ -31,6 +31,13 @@
     "address": "Adres",
     "notes": "Notities"
   },
+  "passwordFeedback": {
+    "tooShort": "Te kort, {count, plural, one {nog # teken} other {nog # tekens}}",
+    "tooLong": "Te lang, {count, plural, one {# teken} other {# tekens}} boven de limiet van {max}",
+    "ok": "Wachtwoord OK",
+    "mismatch": "Komt niet overeen met het wachtwoord hierboven",
+    "match": "Wachtwoorden komen overeen"
+  },
   "errors": {
     "unexpected": "Er is een onverwachte fout opgetreden. Probeer het opnieuw.",
     "error": "Fout"

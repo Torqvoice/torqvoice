@@ -31,6 +31,13 @@
     "address": "Adresse",
     "notes": "Notater"
   },
+  "passwordFeedback": {
+    "tooShort": "For kort, {count, plural, one {# tegn til} other {# tegn til}}",
+    "tooLong": "For langt, {count, plural, one {# tegn} other {# tegn}} over grensen på {max} tegn",
+    "ok": "Passordet er OK",
+    "mismatch": "Samsvarer ikke med passordet over",
+    "match": "Passordene samsvarer"
+  },
   "errors": {
     "unexpected": "En uventet feil oppstod. Vennligst prøv igjen.",
     "error": "Feil"

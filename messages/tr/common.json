@@ -31,6 +31,13 @@
     "address": "Adres",
     "notes": "Notlar"
   },
+  "passwordFeedback": {
+    "tooShort": "Çok kısa, {count, plural, one {# karakter daha} other {# karakter daha}}",
+    "tooLong": "Çok uzun, {max} karakter sınırını {count, plural, one {# karakter} other {# karakter}} aşıyor",
+    "ok": "Şifre uygun",
+    "mismatch": "Yukarıdaki şifreyle eşleşmiyor",
+    "match": "Şifreler eşleşiyor"
+  },
   "errors": {
     "unexpected": "Beklenmeyen bir hata oluştu. Lütfen tekrar deneyin.",
     "error": "Hata"

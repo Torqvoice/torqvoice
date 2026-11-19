@@ -46,6 +46,7 @@ import { signInUrlFor } from '@/lib/signed-out'
 import { useCooldown } from '@/hooks/use-cooldown'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { PasswordFeedback, PasswordMatchFeedback } from '@/components/password-feedback'
 
 export function AccountSettings({
   twoFactorEnabled: initialTwoFactorEnabled,
@@ -250,7 +251,7 @@ export function AccountSettings({
       toast.error(t('account.passwordsNoMatch'))
       return
     }
-    if (newPassword.length < 8) {
+    if (newPassword.length < PASSWORD_MIN_LENGTH) {
       toast.error(t('account.passwordMinLength'))
       return
     }
@@ -482,7 +483,9 @@ export function AccountSettings({
               autoComplete="new-password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
+              aria-describedby="newPassword-feedback"
             />
+            <PasswordFeedback id="newPassword-feedback" password={newPassword} />
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">{t('account.confirmNewPassword')}</Label>
@@ -492,6 +495,12 @@ export function AccountSettings({
               autoComplete="new-password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              aria-describedby="confirmPassword-feedback"
+            />
+            <PasswordMatchFeedback
+              id="confirmPassword-feedback"
+              password={newPassword}
+              confirmation={confirmPassword}
             />
           </div>
         </div>

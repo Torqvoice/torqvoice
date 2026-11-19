@@ -31,6 +31,13 @@
     "address": "Endereço",
     "notes": "Observações"
   },
+  "passwordFeedback": {
+    "tooShort": "Muito curta, {count, plural, one {falta # caractere} other {faltam # caracteres}}",
+    "tooLong": "Muito longa, {count, plural, one {# caractere} other {# caracteres}} acima do limite de {max}",
+    "ok": "Senha OK",
+    "mismatch": "Não confere com a senha acima",
+    "match": "As senhas conferem"
+  },
   "errors": {
     "unexpected": "Ocorreu um erro inesperado. Por favor, tente novamente.",
     "error": "Erro"

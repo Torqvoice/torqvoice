@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Loader2, XCircle } from 'lucide-react'
 import { AuthLogo } from '@/components/auth-logo'
+import { PasswordFeedback, PasswordMatchFeedback } from '@/components/password-feedback'
+import { PASSWORD_MIN_LENGTH } from '@/lib/password-rules'
 
 function ResetPasswordInner() {
   const t = useTranslations('auth.resetPassword')
@@ -31,7 +33,7 @@ function ResetPasswordInner() {
       return
     }
 
-    if (newPassword.length < 8) {
+    if (newPassword.length < PASSWORD_MIN_LENGTH) {
       setError(t('errors.passwordTooShort'))
       return
     }
@@ -99,9 +101,12 @@ function ResetPasswordInner() {
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
-            minLength={8}
+            minLength={PASSWORD_MIN_LENGTH}
+            autoComplete="new-password"
+            aria-describedby="new-password-feedback"
             className="h-11 bg-background/50"
           />
+          <PasswordFeedback id="new-password-feedback" password={newPassword} />
         </div>
 
         <div className="space-y-2">
@@ -113,8 +118,15 @@ function ResetPasswordInner() {
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            minLength={8}
+            minLength={PASSWORD_MIN_LENGTH}
+            autoComplete="new-password"
+            aria-describedby="confirm-password-feedback"
             className="h-11 bg-background/50"
+          />
+          <PasswordMatchFeedback
+            id="confirm-password-feedback"
+            password={newPassword}
+            confirmation={confirmPassword}
           />
         </div>
 
