@@ -368,7 +368,7 @@ export function QuotePageClient({
                     </p>
                   </div>
                 </Link>
-                <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2">
+                <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2 max-sm:w-full">
                   {state.hasUnsavedChanges && (
                     <span className="text-xs font-medium text-amber-600 dark:text-amber-400 max-sm:order-last">
                       {t('page.unsavedChanges')}
