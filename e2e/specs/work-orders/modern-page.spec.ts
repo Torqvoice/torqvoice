@@ -1,6 +1,7 @@
 import { expect, type Locator, type Page, test } from '@playwright/test'
 import {
   deleteTechnicians,
+  highestReadingForJob,
   insertTechnician,
   jobAssignment,
   ownerOrganizationId,
@@ -107,13 +108,21 @@ test.describe('the overhauled work order page', () => {
       await expect(page.getByRole('option', { name: 'Repair' })).toBeVisible({ timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
     await page.getByRole('option', { name: 'Repair' }).click()
-    await fillSettled(page.locator('#mileage'), '123456')
+    // Far above anything the car has read, so the page asks whether it is
+    // right before saving it, and the answer is yes. Read from the database,
+    // so a second run (the car already moved on) is asked the same.
+    const reading = String((await highestReadingForJob(jobIdOf(factsJob))) + 150_000)
+    await fillSettled(page.locator('#mileage'), reading)
+    const question = page.getByTestId('reading-question')
+    await expect(question).toContainText('Are you sure this reading is correct?')
+    await question.getByRole('button', { name: 'Yes, it is correct' }).click()
+    await expect(question).toHaveCount(0)
     await saveWorkOrder(page)
 
     await page.reload()
     await settle(page)
     await expect(page.getByTestId('service-type')).toContainText('Repair')
-    await expect(page.locator('#mileage')).toHaveValue('123456')
+    await expect(page.locator('#mileage')).toHaveValue(reading)
   })
 
   test('shows the whole customer and vehicle under "More info", with the VIN one click from the clipboard', async ({
