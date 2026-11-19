@@ -463,6 +463,8 @@
     "editMileageMarine": "Endre motortimer",
     "lowerReading": "Lavere enn forrige avlesning ({reading}). Du kan likevel lagre.",
     "lowerReadingMarine": "Lavere enn forrige avlesning ({hours} timer). Du kan likevel lagre.",
+    "muchHigherReading": "Mye høyere enn forrige avlesning ({reading}). Sjekk at det ikke er en tastefeil. Du kan likevel lagre.",
+    "muchHigherReadingMarine": "Mye høyere enn forrige avlesning ({hours} timer). Sjekk at det ikke er en tastefeil. Du kan likevel lagre.",
     "bookAppointment": "Book time",
     "addTitleMarine": "Legg til nytt fartøy"
   },

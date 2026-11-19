@@ -463,6 +463,8 @@
     "editMileageMarine": "Change engine hours",
     "lowerReading": "Lower than the last reading ({reading}). You can still save it.",
     "lowerReadingMarine": "Lower than the last reading ({hours} hours). You can still save it.",
+    "muchHigherReading": "Much higher than the last reading ({reading}). Check for a typo. You can still save it.",
+    "muchHigherReadingMarine": "Much higher than the last reading ({hours} hours). Check for a typo. You can still save it.",
     "bookAppointment": "Book appointment",
     "addTitleMarine": "Add New Vessel"
   },

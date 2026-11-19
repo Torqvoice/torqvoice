@@ -463,6 +463,8 @@
     "editMileageMarine": "Alterar horas de motor",
     "lowerReading": "Inferior à última leitura ({reading}). Pode guardar na mesma.",
     "lowerReadingMarine": "Inferior à última leitura ({hours} horas). Pode guardar na mesma.",
+    "muchHigherReading": "Muito superior à última leitura ({reading}). Verifique se não há uma gralha. Pode guardar na mesma.",
+    "muchHigherReadingMarine": "Muito superior à última leitura ({hours} horas). Verifique se não há uma gralha. Pode guardar na mesma.",
     "bookAppointment": "Fazer marcação",
     "addTitleMarine": "Adicionar Nova Embarcação"
   },

@@ -51,8 +51,7 @@ import { PlateChip } from '@/components/plate-chip'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
 import { cn } from '@/lib/utils'
 import { PhotoHandoffButton } from './service-page/PhotoHandoffButton'
-import { LowerReadingNotice } from './LowerReadingNotice'
-import { isLowerReading } from '../Lib/vehicleReading'
+import { ReadingNotice, useReadingNotice } from './ReadingNotice'
 
 /**
  * How alike two names must read before the scanned keeper is offered as an
@@ -643,6 +642,7 @@ export function VehicleForm({
   const mileageLabel = isMarine ? t('mileageMarine') : t('mileage')
   const unit = distanceUnit
   const mileageShown = mileageDraft.trim() === '' ? null : Number(mileageDraft)
+  const readingNotice = useReadingNotice(mileageDraft, vehicle?.mileage)
   const inspectionShown = inspectionDraft
     ? {
         // A date key, read at noon UTC so it names the same day everywhere.
@@ -895,7 +895,7 @@ export function VehicleForm({
                           </button>
                         )}
                       </dd>
-                      <LowerReadingNotice
+                      <ReadingNotice
                         entered={mileageDraft}
                         last={vehicle?.mileage}
                         unit={unit}
@@ -1245,11 +1245,7 @@ export function VehicleForm({
                           placeholder="0"
                           value={mileageDraft}
                           onChange={(e) => setMileageDraft(e.target.value)}
-                          aria-describedby={
-                            isLowerReading(mileageDraft, vehicle?.mileage)
-                              ? 'mileage-notice'
-                              : undefined
-                          }
+                          aria-describedby={readingNotice ? 'mileage-notice' : undefined}
                           // No spinner: it would sit on top of the unit, and
                           // nobody steps an odometer reading one at a time.
                           className={cn(
@@ -1266,7 +1262,7 @@ export function VehicleForm({
                           </span>
                         )}
                       </div>
-                      <LowerReadingNotice
+                      <ReadingNotice
                         id="mileage-notice"
                         entered={mileageDraft}
                         last={vehicle?.mileage}

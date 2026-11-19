@@ -463,6 +463,8 @@
     "editMileageMarine": "Zmień godziny pracy silnika",
     "lowerReading": "Mniej niż ostatni odczyt ({reading}). Mimo to możesz zapisać.",
     "lowerReadingMarine": "Mniej niż ostatni odczyt ({hours} godz.). Mimo to możesz zapisać.",
+    "muchHigherReading": "Znacznie więcej niż ostatni odczyt ({reading}). Sprawdź, czy nie ma literówki. Mimo to możesz zapisać.",
+    "muchHigherReadingMarine": "Znacznie więcej niż ostatni odczyt ({hours} godz.). Sprawdź, czy nie ma literówki. Mimo to możesz zapisać.",
     "bookAppointment": "Umów wizytę",
     "addTitleMarine": "Dodaj nową jednostkę"
   },

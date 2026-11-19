@@ -15,6 +15,10 @@ interface Store {
 
 let committed: Store
 let seq = 0
+/** What the import wrote over vehicles that were already there. */
+let vehicleUpdates: { where: { id: string }; data: Record<string, unknown> }[] = []
+/** Vehicles the workshop already has, for a vehicle sheet to match. */
+let existingVehicles: Record<string, unknown>[] = []
 
 /** A transaction client that keeps its writes aside until the transaction succeeds. */
 function txClient(pending: Store) {
@@ -28,7 +32,10 @@ function txClient(pending: Store) {
     customer: { create: create(pending.customers, 'c'), update: vi.fn() },
     vehicle: {
       create: create(pending.vehicles, 'v'),
-      update: vi.fn(),
+      update: vi.fn(async (args: { where: { id: string }; data: Record<string, unknown> }) => {
+        vehicleUpdates.push(args)
+        return { id: args.where.id }
+      }),
       updateMany: vi.fn(async () => ({ count: 0 })),
     },
     serviceRecord: {
@@ -54,20 +61,30 @@ const db = {
   }),
   customer: { findMany: vi.fn(async () => []) },
   vehicle: {
-    findMany: vi.fn(async () => []),
-    // A reading moved up, once the rows are in.
+    findMany: vi.fn(async () => existingVehicles),
+    // The rule reads the vehicle, then moves it up only as it was read.
+    findFirst: vi.fn(async ({ where }: { where: { id: string } }) => {
+      const car = committed.vehicles.find((v) => v.id === where.id)
+      return car
+        ? {
+            mileage: (car.mileage as number | undefined) ?? 0,
+            readingJobId: (car.readingJobId as string | undefined) ?? null,
+            readingBeforeJob: (car.readingBeforeJob as number | undefined) ?? null,
+          }
+        : null
+    }),
     updateMany: vi.fn(
       async ({
         where,
         data,
       }: {
-        where: { id: string; mileage: { lt: number } }
-        data: { mileage: number }
+        where: { id: string; mileage: number }
+        data: { mileage: number; readingJobId: string; readingBeforeJob: number | null }
       }) => {
         const car = committed.vehicles.find((v) => v.id === where.id)
-        if (!car || ((car.mileage as number | undefined) ?? 0) >= where.mileage.lt)
+        if (!car || ((car.mileage as number | undefined) ?? 0) !== where.mileage)
           return { count: 0 }
-        car.mileage = data.mileage
+        Object.assign(car, data)
         return { count: 1 }
       }
     ),
@@ -140,12 +157,13 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 const TOKEN = '6f1c2b0e-8d4a-4c7e-9a3b-2f5d6e7a8b9c'
 const HEADER = ['Date', 'Rego', 'Make', 'Model', 'Year', 'Job']
 let rows: string[][] = []
+let stagedEntity = 'services'
 vi.mock('@/features/import/Lib/staging', () => ({
   readStagedImport: async () => ({
     token: TOKEN,
     organizationId: 'org',
     fileName: 'history.csv',
-    entity: 'services',
+    entity: stagedEntity,
     presetId: null,
     sheet: { format: 'csv', columns: HEADER, rows },
     createdAt: new Date().toISOString(),
@@ -186,6 +204,9 @@ async function run() {
 beforeEach(() => {
   committed = { customers: [], vehicles: [], services: [] }
   seq = 0
+  vehicleUpdates = []
+  existingVehicles = []
+  stagedEntity = 'services'
 })
 
 describe('commitImport', () => {
@@ -245,5 +266,46 @@ describe('commitImport', () => {
       ['ABC123', 152000],
       ['OVB334', 101000],
     ])
+    // Each vehicle knows which job set its reading, so correcting that job
+    // later brings the vehicle with it.
+    const jobOf = (title: string, mileage: number) =>
+      committed.services.find((s) => s.title === title && s.mileage === mileage)?.id
+    expect(committed.vehicles.map((v) => v.readingJobId)).toEqual([
+      jobOf('Brakes', 152000),
+      jobOf('Service', 101000),
+    ])
+  })
+
+  it('makes a reading from a vehicle sheet the vehicle’s own, no longer a job’s', async () => {
+    stagedEntity = 'vehicles'
+    existingVehicles = [
+      {
+        id: 'v-existing',
+        licensePlate: 'ABC123',
+        vin: null,
+        make: 'Toyota',
+        model: 'Hilux',
+        year: 2000,
+        customerId: null,
+      },
+    ]
+    rows = [['', 'ABC123', 'Toyota', 'Hilux', '2000', '', '149000']]
+    const res = await commitImport({
+      ...input,
+      mapping: {
+        '1': 'vehicle.licensePlate',
+        '2': 'vehicle.make',
+        '3': 'vehicle.model',
+        '4': 'vehicle.year',
+        '6': 'vehicle.mileage',
+      },
+      options: { ...input.options, entity: 'vehicles' },
+    })
+    if (!('data' in res) || !res.data) throw new Error(`import failed: ${res.error}`)
+    expect(vehicleUpdates).toHaveLength(1)
+    expect(vehicleUpdates[0]).toMatchObject({
+      where: { id: 'v-existing' },
+      data: { mileage: 149000, readingJobId: null, readingBeforeJob: null },
+    })
   })
 })

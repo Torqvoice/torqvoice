@@ -463,6 +463,8 @@
     "editMileageMarine": "Motor saatlerini değiştir",
     "lowerReading": "Son okumadan düşük ({reading}). Yine de kaydedebilirsiniz.",
     "lowerReadingMarine": "Son okumadan düşük ({hours} saat). Yine de kaydedebilirsiniz.",
+    "muchHigherReading": "Son okumadan çok daha yüksek ({reading}). Yazım hatası olup olmadığını kontrol edin. Yine de kaydedebilirsiniz.",
+    "muchHigherReadingMarine": "Son okumadan çok daha yüksek ({hours} saat). Yazım hatası olup olmadığını kontrol edin. Yine de kaydedebilirsiniz.",
     "bookAppointment": "Randevu oluştur",
     "addTitleMarine": "Yeni Tekne Ekle"
   },

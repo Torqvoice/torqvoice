@@ -19,8 +19,7 @@ import type { InitialData } from '../../service-edit/form-types'
 import { formatTypeKey } from '../../../Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
-import { LowerReadingNotice } from '../../LowerReadingNotice'
-import { isLowerReading } from '../../../Lib/vehicleReading'
+import { ReadingNotice, useReadingNotice } from '../../ReadingNotice'
 
 interface JobFactsCardProps {
   record: ServiceDetail
@@ -170,10 +169,8 @@ export function JobFactsCard({
   // The picker can point the job at another vehicle before the save; the facts
   // on this card describe the saved one, so say which is which while they differ.
   const vehicleChanged = Boolean(vehicle && selectedVehicleId && selectedVehicleId !== vehicle.id)
-  const showReadingNotice =
-    readingTyped !== null &&
-    !vehicleChanged &&
-    isLowerReading(readingTyped, initialData.lastReading)
+  const readingNotice = useReadingNotice(readingTyped ?? '', initialData.lastReading)
+  const showReadingNotice = readingTyped !== null && !vehicleChanged && readingNotice !== null
 
   return (
     <section
@@ -355,7 +352,7 @@ export function JobFactsCard({
                     the last reading was read for. It stays after the page
                     saves by itself, or it would be gone in five seconds. */}
                 {showReadingNotice && (
-                  <LowerReadingNotice
+                  <ReadingNotice
                     id="mileage-notice"
                     entered={readingTyped ?? ''}
                     last={initialData.lastReading}

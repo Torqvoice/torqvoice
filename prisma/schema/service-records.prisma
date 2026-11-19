@@ -147,6 +147,8 @@ model ServiceRecord {
   /// (or neither, for anonymous walk-in sales)
   vehicleId String?
   vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  /// The vehicle whose current reading this job set, if it still is.
+  readingOfVehicle Vehicle? @relation("VehicleReadingJob")
 
   /// Direct customer for records without a vehicle. Vehicle-linked records
   /// leave this null and resolve the customer through the vehicle, so

@@ -463,6 +463,8 @@
     "editMileageMarine": "Pakeisti variklio valandas",
     "lowerReading": "Mažiau nei paskutinis rodmuo ({reading}). Vis tiek galite išsaugoti.",
     "lowerReadingMarine": "Mažiau nei paskutinis rodmuo ({hours} val.). Vis tiek galite išsaugoti.",
+    "muchHigherReading": "Daug daugiau nei paskutinis rodmuo ({reading}). Patikrinkite, ar nesuklydote vesdami. Vis tiek galite išsaugoti.",
+    "muchHigherReadingMarine": "Daug daugiau nei paskutinis rodmuo ({hours} val.). Patikrinkite, ar nesuklydote vesdami. Vis tiek galite išsaugoti.",
     "bookAppointment": "Užregistruoti vizitą",
     "addTitleMarine": "Pridėti naują laivą"
   },
