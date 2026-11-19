@@ -677,15 +677,20 @@ export function VehicleForm({
           <DialogHeader>
             {/* The plate and the name say which vehicle is open before any
                 field does; the docs link sits on the same line, clear of the
-                close button. On a phone the name drops under the plate and
-                wraps rather than shrinking to its first letter, and the docs
-                link goes under it, as in the other dialogs. */}
+                close button. On a phone the name takes its own row under the
+                plate and wraps rather than shrinking to its first letter, and
+                the docs link goes under it, as in the other dialogs. */}
             <div className="flex flex-wrap items-start gap-x-3 gap-y-2 pr-8 text-left">
               {vehicle?.licensePlate && !isMarine && (
                 <PlateChip plate={vehicle.licensePlate} size="md" className="mt-0.5" />
               )}
-              <div className="min-w-0 flex-[1_1_12rem] space-y-1">
-                <DialogTitle className="break-words leading-tight">
+              <div className="min-w-0 basis-full space-y-1 sm:flex-[1_1_12rem]">
+                {/* Three lines at most: the fields scroll under a pinned
+                    header, so an unbounded name could push them out of reach. */}
+                <DialogTitle
+                  className="line-clamp-3 break-words leading-tight"
+                  title={vehicle ? `${vehicle.make} ${vehicle.model}`.trim() : undefined}
+                >
                   {vehicle ? (
                     <>
                       <span className="sr-only">{t('editTitle')}: </span>
