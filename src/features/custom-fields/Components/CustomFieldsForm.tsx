@@ -77,12 +77,12 @@ export function CustomFieldsForm({
       if (field.required && field.fieldType !== 'checkbox') {
         const val = values[field.id] ?? field.value ?? ''
         if (!val.trim()) {
-          newErrors[field.id] = `${field.label} is required`
+          newErrors[field.id] = tSettings('requiredError', { label: field.label })
         }
       }
     }
     return newErrors
-  }, [fields, values])
+  }, [fields, values, tSettings])
 
   useEffect(() => {
     if (onValuesReady) {
@@ -127,7 +127,7 @@ export function CustomFieldsForm({
   if (fields.length === 0) return null
 
   return (
-    <AppCard title="Custom Fields" contentClassName="space-y-4">
+    <AppCard title={tSettings('formTitle')} contentClassName="space-y-4">
       {fields.map((field) => {
         const val = values[field.id] ?? field.value ?? ''
         const hasError = !!errors[field.id]

@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Usuń łódź",
     "editMileage": "Zmień przebieg",
     "editMileageMarine": "Zmień godziny pracy silnika",
+    "lowerReading": "Mniej niż ostatni odczyt ({reading}). Mimo to możesz zapisać.",
+    "lowerReadingMarine": "Mniej niż ostatni odczyt ({hours} godz.). Mimo to możesz zapisać.",
     "bookAppointment": "Umów wizytę",
     "addTitleMarine": "Dodaj nową jednostkę"
   },

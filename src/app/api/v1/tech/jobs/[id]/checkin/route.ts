@@ -5,6 +5,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { BODY_TYPES } from '@/features/condition-map/Lib/drawingTypes'
 import { loadCheckin } from '@/features/condition-map/Lib/checkin.server'
+import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import {
   appLocale,
   checkinJobFor,
@@ -66,20 +67,25 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       await noteArrival(ctx.organizationId, job)
 
       if (mileage !== undefined) {
+        const before = await db.serviceRecord.findFirst({
+          where: { id: job.id, organizationId: ctx.organizationId },
+          select: { mileage: true, startDateTime: true, serviceDate: true },
+        })
         await db.serviceRecord.updateMany({
           where: { id: job.id, organizationId: ctx.organizationId },
           data: { mileage },
         })
-        // The vehicle's reading only ever goes up, as it does when the job is
-        // saved on the web: a typo on an old job must not wind the clock back.
-        if (mileage !== null) {
-          await db.vehicle.updateMany({
-            where: {
-              id: job.vehicleId,
-              organizationId: ctx.organizationId,
-              mileage: { lt: mileage },
-            },
-            data: { mileage },
+        // A lower reading is kept on the job and never winds the vehicle
+        // back; whether a higher one moves it is the same rule as on the web
+        // (vehicleReading.ts).
+        if (before) {
+          await applyJobReading(db, {
+            organizationId: ctx.organizationId,
+            vehicleId: job.vehicleId,
+            jobId: job.id,
+            jobDate: jobReadingDate(before),
+            reading: mileage,
+            previousReading: before.mileage,
           })
         }
       }

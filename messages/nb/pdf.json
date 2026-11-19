@@ -237,7 +237,9 @@
     "serviceTypeMaintenance": "Vedlikehold",
     "serviceTypeRepair": "Reparasjon",
     "serviceTypeUpgrade": "Oppgradering",
-    "serviceTypeInspection": "Inspeksjon"
+    "serviceTypeInspection": "Inspeksjon",
+    "customFieldYes": "Ja",
+    "customFieldNo": "Nei"
   },
   "workOrder": {
     "title": "ARBEIDSORDRE",

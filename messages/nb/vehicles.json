@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Slett båt",
     "editMileage": "Endre kilometerstand",
     "editMileageMarine": "Endre motortimer",
+    "lowerReading": "Lavere enn forrige avlesning ({reading}). Du kan likevel lagre.",
+    "lowerReadingMarine": "Lavere enn forrige avlesning ({hours} timer). Du kan likevel lagre.",
     "bookAppointment": "Book time",
     "addTitleMarine": "Legg til nytt fartøy"
   },

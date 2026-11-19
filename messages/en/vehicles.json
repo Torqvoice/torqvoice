@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Delete boat",
     "editMileage": "Change mileage",
     "editMileageMarine": "Change engine hours",
+    "lowerReading": "Lower than the last reading ({reading}). You can still save it.",
+    "lowerReadingMarine": "Lower than the last reading ({hours} hours). You can still save it.",
     "bookAppointment": "Book appointment",
     "addTitleMarine": "Add New Vessel"
   },

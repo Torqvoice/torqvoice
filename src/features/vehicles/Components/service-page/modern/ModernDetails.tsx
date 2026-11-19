@@ -328,6 +328,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                     formState.flashSaved()
                     router.refresh()
                   }}
+                  distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
                 />
 
                 <Lockable locked={locked}>

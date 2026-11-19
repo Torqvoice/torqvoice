@@ -38,6 +38,7 @@ import {
   detectDecimalSeparator,
 } from '../Lib/normalize'
 import { releaseFiles } from '@/lib/files/manager'
+import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import { escapeHtml } from '@/features/email/Render/escape'
 import { organizationTranslator } from '@/i18n/organization-translator'
 import { serviceRecordFileUrls, vehicleFileUrls } from '@/lib/files/collect'
@@ -358,6 +359,8 @@ interface CommitState {
   /** Row index → id of the customer/vehicle that row created, for rows that share it. */
   customerIds: Map<number, string>
   vehicleIds: Map<number, string>
+  /** Vehicles that got a job with a reading, settled once every row is written. */
+  readingVehicleIds: Set<string>
   nextCustomerNumber: number
 }
 
@@ -423,6 +426,43 @@ function forgetRow(state: CommitState, row: RowPlan) {
     ids.delete(row.index)
     if (own == null) continue
     for (const [index, id] of ids) if (id === own) ids.delete(index)
+  }
+}
+
+/**
+ * The vehicles' readings, once every row is written. The newest imported job
+ * on each vehicle speaks for it, by the rule every job reading follows
+ * (vehicleReading.ts); asked row by row, a slip in an old row could become
+ * the vehicle's reading just because of where it sat in the file.
+ */
+async function settleReadings(state: CommitState): Promise<void> {
+  const { organizationId, batchId } = state
+  for (const vehicleId of state.readingVehicleIds) {
+    try {
+      const jobs = await db.serviceRecord.findMany({
+        where: { organizationId, vehicleId, importBatchId: batchId, mileage: { gt: 0 } },
+        select: { id: true, mileage: true, startDateTime: true, serviceDate: true },
+      })
+      let newest: (typeof jobs)[number] | null = null
+      for (const job of jobs) {
+        if (!newest) {
+          newest = job
+          continue
+        }
+        const [at, best] = [jobReadingDate(job).getTime(), jobReadingDate(newest).getTime()]
+        if (at > best || (at === best && (job.mileage ?? 0) > (newest.mileage ?? 0))) newest = job
+      }
+      if (!newest) continue
+      await applyJobReading(db, {
+        organizationId,
+        vehicleId,
+        jobId: newest.id,
+        jobDate: jobReadingDate(newest),
+        reading: newest.mileage,
+      })
+    } catch {
+      // The history is in; a reading that could not be settled stays as it was.
+    }
   }
 }
 
@@ -523,7 +563,9 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           vin: v.vin,
           licensePlate: v.licensePlate,
           color: v.color,
-          mileage: v.mileage ?? row.service?.mileage ?? 0,
+          // A reading on the job comes to the vehicle once every row is
+          // in (settleReadings), not from whichever row happens to be first.
+          mileage: v.mileage ?? 0,
           // Unknown fuel and gearbox take the schema defaults rather than a guess stored as fact.
           ...(v.fuelType && { fuelType: v.fuelType }),
           ...(v.transmission && { transmission: v.transmission }),
@@ -582,12 +624,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
         importBatchId: batchId,
       },
     })
-    if (s.mileage != null) {
-      await tx.vehicle.updateMany({
-        where: { id: vehicleId, mileage: { lt: s.mileage } },
-        data: { mileage: s.mileage },
-      })
-    }
+    if (s.mileage != null && s.mileage > 0) state.readingVehicleIds.add(vehicleId)
   }
 }
 
@@ -638,6 +675,7 @@ export async function commitImport(raw: unknown) {
         entity,
         customerIds: new Map(),
         vehicleIds: new Map(),
+        readingVehicleIds: new Set(),
         nextCustomerNumber: await nextCustomerNumberStart(organizationId, plan.rows),
       }
 
@@ -691,6 +729,8 @@ export async function commitImport(raw: unknown) {
         done += chunk.length
         await writeImportProgress(organizationId, input.token, { phase: 'writing', done, total })
       }
+
+      await settleReadings(state)
 
       const skipped = plan.summary.skip
       const failed = plan.summary.error + failures.length

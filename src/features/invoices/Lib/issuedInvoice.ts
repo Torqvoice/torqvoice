@@ -82,6 +82,12 @@ export const issuedInvoiceDataSchema = z
       .passthrough()
       .nullable()
       .optional(),
+    /**
+     * The job's own reading, the one the mileage line prints, as it was when
+     * issued; null when the job had none. Absent on invoices issued before it
+     * was kept, which go on printing the job's reading as it stands.
+     */
+    jobMileage: z.number().nullable().optional(),
     technicianName: z.string().nullable().optional(),
     /** Who signed the sheet; the signature itself is issuedSignatureSnapshot. */
     signerName: z.string().nullable().optional(),
@@ -104,6 +110,12 @@ export const issuedInvoiceDataSchema = z
             label: z.string(),
             value: z.string(),
             fieldType: z.string(),
+            /**
+             * 'workshop' when the value prints in the workshop's language and
+             * date format. Absent on invoices issued while every document
+             * printed "Yes"/"No" and a US long date; those keep that wording.
+             */
+            format: z.string().optional(),
           })
           .passthrough()
       )

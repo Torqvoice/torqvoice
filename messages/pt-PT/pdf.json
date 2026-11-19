@@ -237,7 +237,9 @@
     "serviceTypeMaintenance": "Manutenção",
     "serviceTypeRepair": "Reparação",
     "serviceTypeUpgrade": "Melhoria",
-    "serviceTypeInspection": "Inspeção"
+    "serviceTypeInspection": "Inspeção",
+    "customFieldYes": "Sim",
+    "customFieldNo": "Não"
   },
   "workOrder": {
     "title": "ORDEM DE TRABALHO",

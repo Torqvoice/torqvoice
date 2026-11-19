@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Tekneyi sil",
     "editMileage": "Kilometreyi değiştir",
     "editMileageMarine": "Motor saatlerini değiştir",
+    "lowerReading": "Son okumadan düşük ({reading}). Yine de kaydedebilirsiniz.",
+    "lowerReadingMarine": "Son okumadan düşük ({hours} saat). Yine de kaydedebilirsiniz.",
     "bookAppointment": "Randevu oluştur",
     "addTitleMarine": "Yeni Tekne Ekle"
   },

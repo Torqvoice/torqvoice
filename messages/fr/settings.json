@@ -1196,7 +1196,9 @@
     "placement": "Emplacement sur le document",
     "placementHidden": "Non imprimé",
     "placementHint": "Dans quelle section de la facture ou du devis ce champ est imprimé. Dans le designer, vous pouvez aussi l'activer dans d'autres sections.",
-    "failedSavePlacement": "Impossible d'enregistrer l'emplacement du champ"
+    "failedSavePlacement": "Impossible d'enregistrer l'emplacement du champ",
+    "formTitle": "Champs personnalisés",
+    "requiredError": "Le champ {label} est obligatoire"
   },
   "workshop": {
     "title": "Valeurs par défaut de l'atelier",

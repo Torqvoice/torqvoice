@@ -1196,7 +1196,9 @@
     "placement": "Miejsce na dokumencie",
     "placementHidden": "Nie jest drukowane",
     "placementHint": "W której sekcji faktury lub wyceny drukowane jest to pole. W projektancie można je włączyć także w innych sekcjach.",
-    "failedSavePlacement": "Nie udało się zapisać miejsca pola"
+    "failedSavePlacement": "Nie udało się zapisać miejsca pola",
+    "formTitle": "Pola niestandardowe",
+    "requiredError": "Pole {label} jest wymagane"
   },
   "workshop": {
     "title": "Domyślne warsztatu",

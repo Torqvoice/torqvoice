@@ -237,7 +237,9 @@
     "serviceTypeMaintenance": "Техобслуживание",
     "serviceTypeRepair": "Ремонт",
     "serviceTypeUpgrade": "Модернизация",
-    "serviceTypeInspection": "Осмотр"
+    "serviceTypeInspection": "Осмотр",
+    "customFieldYes": "Да",
+    "customFieldNo": "Нет"
   },
   "workOrder": {
     "title": "ЗАКАЗ-НАРЯД",

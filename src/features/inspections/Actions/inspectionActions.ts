@@ -16,6 +16,7 @@ import {
 } from '@/features/signatures/Lib/memberSignature.server'
 import { liveCertificateDesign } from '../Pdf/certificateDesign'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
+import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { defectLineText, defectsWorstFirst } from '../Lib/conversion'
@@ -798,6 +799,15 @@ export async function createWorkOrderFromInspection(
             mileage: inspection.mileage,
           },
         })
+        // The job starts with the inspection's reading, which may be news to
+        // the vehicle: the rule is in vehicleReading.ts.
+        await applyJobReading(tx, {
+          organizationId,
+          vehicleId: inspection.vehicle.id,
+          jobId: draft.id,
+          jobDate: jobReadingDate(draft),
+          reading: inspection.mileage,
+        })
         // Hours start at zero: the workshop prices the job as it works. The
         // lines are labor, taxed or not as the workshop taxes labor.
         const laborTaxable = (await loadTaxApplies(organizationId, tx)).labor
@@ -984,6 +994,9 @@ export async function linkWorkOrderToInspection(
           vehicleId: true,
           invoiceNumber: true,
           inspectionId: true,
+          mileage: true,
+          startDateTime: true,
+          serviceDate: true,
           laborItems: { select: { description: true } },
         },
       })
@@ -1007,6 +1020,18 @@ export async function linkWorkOrderToInspection(
           where: { id: job.id },
           data: { inspectionId: inspection.id, mileage: inspection.mileage ?? undefined },
         })
+        // The inspection's reading is now the job's, and may be news to the
+        // vehicle: the rule is in vehicleReading.ts.
+        if (inspection.mileage != null) {
+          await applyJobReading(tx, {
+            organizationId,
+            vehicleId: inspection.vehicleId,
+            jobId: job.id,
+            jobDate: jobReadingDate(job),
+            reading: inspection.mileage,
+            previousReading: job.mileage,
+          })
+        }
         const lines = [
           ...(hasInspectionLine ? [] : [inspection.template.name]),
           ...defects.map(defectLineText),

@@ -27,6 +27,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { isOwnUploadUrl } from '@/lib/upload-url'
 import { formatDateForPdf } from '@/lib/format'
+import { legacyCustomFieldText } from '@/features/custom-fields/Lib/customFieldText'
 import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import {
   type InvoiceLayoutConfig,
@@ -552,6 +553,9 @@ async function assembleFrozen(
 
   const data: InvoiceData = {
     ...record,
+    // The job's reading as issued. An invoice issued before it was kept has
+    // none, and prints the job's reading as it stands, as it always did.
+    mileage: frozen.jobMileage !== undefined ? frozen.jobMileage : record.mileage,
     techName: technicianName ?? record.techName,
     technician: technicianName ? { name: technicianName } : null,
     customer,
@@ -568,7 +572,13 @@ async function assembleFrozen(
           customer: null,
         }
       : null,
-    customFields: frozen.customFields ?? [],
+    // The snapshot holds the raw value. One issued before custom fields
+    // followed the workshop's language keeps the wording it was sent with.
+    customFields: (frozen.customFields ?? []).map((cf) =>
+      cf.format === 'workshop'
+        ? cf
+        : { ...cf, display: legacyCustomFieldText(cf.value, cf.fieldType) }
+    ),
     findings: (frozen.findings ?? []).map((f) => ({ ...f, notes: f.notes ?? null })),
   }
 

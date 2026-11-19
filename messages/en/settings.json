@@ -1196,7 +1196,9 @@
     "placement": "Placement on document",
     "placementHidden": "Not printed",
     "placementHint": "Which section of the invoice or quote this field prints in. In the designer you can also switch it on in more sections.",
-    "failedSavePlacement": "Failed to save field placement"
+    "failedSavePlacement": "Failed to save field placement",
+    "formTitle": "Custom Fields",
+    "requiredError": "{label} is required"
   },
   "workshop": {
     "title": "Workshop Defaults",

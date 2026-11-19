@@ -1196,7 +1196,9 @@
     "placement": "Posizione sul documento",
     "placementHidden": "Non stampato",
     "placementHint": "In quale sezione della fattura o del preventivo viene stampato questo campo. Nel designer puoi attivarlo anche in altre sezioni.",
-    "failedSavePlacement": "Impossibile salvare la posizione del campo"
+    "failedSavePlacement": "Impossibile salvare la posizione del campo",
+    "formTitle": "Campi personalizzati",
+    "requiredError": "Il campo {label} è obbligatorio"
   },
   "workshop": {
     "title": "Predefiniti officina",

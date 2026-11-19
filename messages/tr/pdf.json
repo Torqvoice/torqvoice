@@ -237,7 +237,9 @@
     "serviceTypeMaintenance": "Bakım",
     "serviceTypeRepair": "Onarım",
     "serviceTypeUpgrade": "Yükseltme",
-    "serviceTypeInspection": "Muayene"
+    "serviceTypeInspection": "Muayene",
+    "customFieldYes": "Evet",
+    "customFieldNo": "Hayır"
   },
   "workOrder": {
     "title": "İŞ EMRİ",

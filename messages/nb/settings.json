@@ -1196,7 +1196,9 @@
     "placement": "Plassering på dokumentet",
     "placementHidden": "Skrives ikke ut",
     "placementHint": "Hvilken del av fakturaen eller tilbudet dette feltet skrives ut i. I designeren kan du også slå det på i flere seksjoner.",
-    "failedSavePlacement": "Kunne ikke lagre feltplasseringen"
+    "failedSavePlacement": "Kunne ikke lagre feltplasseringen",
+    "formTitle": "Egendefinerte felter",
+    "requiredError": "{label} er påkrevd"
   },
   "workshop": {
     "title": "Verkstedstandarder",

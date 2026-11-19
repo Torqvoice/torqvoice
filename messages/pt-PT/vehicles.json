@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Eliminar embarcação",
     "editMileage": "Alterar quilometragem",
     "editMileageMarine": "Alterar horas de motor",
+    "lowerReading": "Inferior à última leitura ({reading}). Pode guardar na mesma.",
+    "lowerReadingMarine": "Inferior à última leitura ({hours} horas). Pode guardar na mesma.",
     "bookAppointment": "Fazer marcação",
     "addTitleMarine": "Adicionar Nova Embarcação"
   },
