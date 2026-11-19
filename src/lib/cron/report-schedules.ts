@@ -2,7 +2,7 @@ import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import React from 'react'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
@@ -752,6 +752,7 @@ export async function processOneSchedule(
   })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  await pdfFontsReady()
   const pdfBuffer = await renderToBuffer(element as any)
 
   // Resolve recipient emails

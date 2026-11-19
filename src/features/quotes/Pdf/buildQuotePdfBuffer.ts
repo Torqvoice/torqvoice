@@ -18,7 +18,7 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'node:fs/promises'
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import { PDFDocument } from 'pdf-lib'
 import React from 'react'
 import {
@@ -228,6 +228,7 @@ export async function buildQuotePdfBuffer(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
 
+  await pdfFontsReady()
   const rendered = await renderToBuffer(element)
   return {
     buffer: pdfAttachments.length > 0 ? await appendPdfs(rendered, pdfAttachments) : rendered,

@@ -1,6 +1,6 @@
 import 'server-only'
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import React from 'react'
 import { readFile } from 'fs/promises'
 import { db } from '@/lib/db'
@@ -194,6 +194,7 @@ export async function buildCustomerCertificatePdf({
     attachedDocuments: documents.map((document) => document.fileName),
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
+  await pdfFontsReady()
   const buffer = await renderToBuffer(element)
   // The signed forms follow the certificate as pages of their own.
   const body = await appendCertificateDocuments(buffer, documents)

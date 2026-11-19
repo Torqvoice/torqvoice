@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import React from 'react'
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import { cookies } from 'next/headers'
 import { createTranslator } from 'next-intl'
 import { getAuthContext } from '@/lib/get-auth-context'
@@ -140,6 +140,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       seasonLabel,
       // Cast because react-pdf's element typing does not describe this.
     }) as any
+    await pdfFontsReady()
     const buffer = await renderToBuffer(element)
 
     const fileName = `tire-labels-${set.reference ?? set.id}.pdf`

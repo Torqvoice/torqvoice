@@ -1,7 +1,7 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { NextResponse } from 'next/server'
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
@@ -180,6 +180,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       labels,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     }) as any
+    await pdfFontsReady()
     const pdfBuffer = await renderToBuffer(element)
 
     const vehicleName = `${vehicleNameOf(vehicle)}`
