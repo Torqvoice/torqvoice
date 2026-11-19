@@ -34,6 +34,8 @@ interface Vehicle {
   model: string
   year: number
   licensePlate: string | null
+  /** Null unless the workshop uses the fleet / unit number. */
+  fleetNumber?: string | null
   customer: { id: string; name: string } | null
 }
 
@@ -272,8 +274,9 @@ export function VehiclePickerDialog({
                         <div className="min-w-0 flex-1">
                           <p className="truncate text-sm font-medium">{vehicleName(v)}</p>
                           <p className="truncate text-xs text-muted-foreground">
-                            {[v.licensePlate, v.customer?.name].filter(Boolean).join(' · ') ||
-                              (isMarine ? t('noPlateMarine') : t('noPlate'))}
+                            {[v.licensePlate, v.fleetNumber, v.customer?.name]
+                              .filter(Boolean)
+                              .join(' · ') || (isMarine ? t('noPlateMarine') : t('noPlate'))}
                           </p>
                         </div>
                       </button>

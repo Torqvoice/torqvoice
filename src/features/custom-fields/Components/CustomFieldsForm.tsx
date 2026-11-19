@@ -46,7 +46,8 @@ interface FieldWithValue {
  * refused the whole save (a locked document, a missing permission).
  */
 export type CustomFieldsSaveOutcome =
-  | { valid: true }
+  /** `values` is set when they were asked for (`collect`): every field the form shows. */
+  | { valid: true; values?: Record<string, string> }
   | { valid: false; problem?: 'required' | 'invalid'; fields?: string[]; error?: string }
 
 /**
@@ -65,6 +66,18 @@ export type CustomFieldsSave = (options?: {
   checkOnly?: boolean
   /** The record to save under, when the form was drawn before it existed. */
   entityId?: string
+  /**
+   * Check what is on the form, write nothing, and hand back every value it
+   * shows. For a form whose record's own save carries the values (the
+   * vehicle's and the customer's): the server checks them again and writes
+   * them with the record, all or nothing.
+   */
+  collect?: boolean
+  /**
+   * The fields the server refused when the record's own save carried the
+   * values: marked on the form like the form's own refusals.
+   */
+  refuse?: CustomFieldError[]
 }) => Promise<CustomFieldsSaveOutcome>
 
 /**
@@ -117,6 +130,15 @@ export function CustomFieldsForm({
   // What the server holds for each field, as last loaded or saved. A value
   // left as it was is never re-checked for its type: see the save action.
   const savedValues = useRef<Record<string, string>>({})
+  // The fields and values as they are now, for a save that waited for the
+  // fields to load: its own copy of the state is from before.
+  const fieldsRef = useRef<FieldWithValue[]>([])
+  const valuesRef = useRef<Record<string, string>>({})
+  fieldsRef.current = fields
+  valuesRef.current = values
+  // Settles once the fields have loaded. A save pressed before that waits for
+  // them: checked against no fields at all, a required one would pass unseen.
+  const loaded = useRef<Promise<void>>(Promise.resolve())
   const card = useRef<HTMLDivElement>(null)
   // The field to take the person to, and a count so asking twice for the same
   // field (Save pressed again with nothing fixed) takes them there again.
@@ -147,30 +169,32 @@ export function CustomFieldsForm({
         const result = await getCustomFieldValues(entityId, entityType)
         if (result.success && result.data) {
           setFields(result.data)
+          fieldsRef.current = result.data
           const v: Record<string, string> = {}
           for (const f of result.data) v[f.id] = f.value
           setValues(v)
+          valuesRef.current = v
           savedValues.current = v
         }
       } else {
         const result = await getFieldDefinitions(entityType)
         if (result.success && result.data) {
-          setFields(
-            result.data
-              .filter((d) => d.isActive)
-              .map((d) => ({ ...d, value: d.defaultValue ?? '' }))
-          )
+          const drawn = result.data
+            .filter((d) => d.isActive)
+            .map((d) => ({ ...d, value: d.defaultValue ?? '' }))
+          setFields(drawn)
+          fieldsRef.current = drawn
         }
       }
       setLoading(false)
     }
-    load()
+    loaded.current = load()
   }, [entityId, entityType])
 
   const validate = useCallback((): CustomFieldError[] => {
     const found: CustomFieldError[] = []
-    for (const field of fields) {
-      const val = values[field.id] ?? field.value ?? ''
+    for (const field of fieldsRef.current) {
+      const val = valuesRef.current[field.id] ?? field.value ?? ''
       if (isMissingRequiredValue(field, val)) {
         found.push({ fieldId: field.id, label: field.label, issue: 'required' })
         continue
@@ -180,7 +204,7 @@ export function CustomFieldsForm({
       if (issue) found.push({ fieldId: field.id, label: field.label, issue })
     }
     return found
-  }, [fields, values])
+  }, [])
 
   useEffect(() => {
     if (onValuesReady) {
@@ -202,9 +226,51 @@ export function CustomFieldsForm({
           }
         }
 
+        // Fields not drawn yet: wait for them, then judge what they show.
+        await loaded.current
+        const fields = fieldsRef.current
+        const values = valuesRef.current
+
+        // Refused by the record's own save: a field the form does not show
+        // (added, or made required, while it was open) is drawn first, so
+        // the message has a field to sit under.
+        if (options?.refuse) {
+          const fieldErrors = options.refuse
+          const missing = fieldErrors.some((error) => !fields.some((f) => f.id === error.fieldId))
+          if (missing && entityId) {
+            const fresh = await getCustomFieldValues(entityId, entityType)
+            if (fresh.success && fresh.data) {
+              const current = fresh.data
+              setFields(current)
+              fieldsRef.current = current
+              setValues((typed) => {
+                const next = { ...typed }
+                for (const f of current) if (!(f.id in next)) next[f.id] = f.value
+                return next
+              })
+            }
+          } else if (missing) {
+            const fresh = await getFieldDefinitions(entityType)
+            if (fresh.success && fresh.data) {
+              const current = fresh.data
+                .filter((d) => d.isActive)
+                .map((d) => ({ ...d, value: values[d.id] ?? d.defaultValue ?? '' }))
+              setFields(current)
+              fieldsRef.current = current
+            }
+          }
+          return refused(fieldErrors)
+        }
+
         const found = validate()
         if (found.length > 0) return refused(found)
         setErrors({})
+        if (options?.collect) {
+          return {
+            valid: true,
+            values: Object.fromEntries(fields.map((f) => [f.id, values[f.id] ?? f.value ?? ''])),
+          }
+        }
         if (options?.checkOnly) return { valid: true }
         const saveUnder = options?.entityId ?? entityId
         // A record made a moment ago has no stored values: what the form shows
@@ -243,7 +309,7 @@ export function CustomFieldsForm({
         return { valid: true }
       })
     }
-  }, [onValuesReady, entityId, entityType, fields, values, validate, locked])
+  }, [onValuesReady, entityId, entityType, validate, locked])
 
   const updateValue = (fieldId: string, value: string) => {
     setValues((prev) => ({ ...prev, [fieldId]: value }))

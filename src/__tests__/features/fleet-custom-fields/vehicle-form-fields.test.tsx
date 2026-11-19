@@ -180,7 +180,7 @@ describe('the fleet / unit number', () => {
 })
 
 describe('the workshop’s own fields on a vehicle', () => {
-  it('are loaded for the vehicle that is open and saved with it', async () => {
+  it('are loaded for the vehicle that is open and go with the vehicle’s own save', async () => {
     renderForm({ customFields: true })
     await screen.findByText('Custom Fields')
     expect(loadValues).toHaveBeenCalledWith('veh-1', 'vehicle')
@@ -190,11 +190,10 @@ describe('the workshop’s own fields on a vehicle', () => {
     await pressSave()
 
     await waitFor(() => expect(updateVehicle).toHaveBeenCalled())
-    expect(save).toHaveBeenCalledWith(
-      'veh-1',
-      'vehicle',
-      expect.objectContaining({ tacho: 'March', depot: 'North' })
-    )
+    // One save, which the server checks and writes with the vehicle: no
+    // second call that could succeed or fail on its own.
+    expect(sent().customFields).toEqual({ tacho: 'March', depot: 'North', note: '' })
+    expect(save).not.toHaveBeenCalled()
     expect(toast.error).not.toHaveBeenCalled()
   })
 
@@ -252,21 +251,39 @@ describe('the workshop’s own fields on a vehicle', () => {
     await screen.findByText('Custom Fields')
     fireEvent.change(input('tacho'), { target: { value: 'March' } })
     fireEvent.change(input('depot'), { target: { value: 'North' } })
-    save.mockResolvedValue({
-      success: true,
-      data: {
-        saved: false,
-        fieldErrors: [{ fieldId: 'note', label: 'Livery', issue: 'required' }],
-      },
-    })
+    vi.mocked(updateVehicle).mockResolvedValue({
+      success: false,
+      error: 'Not saved. Fill in: Livery',
+      customFieldErrors: [{ fieldId: 'note', label: 'Livery', issue: 'required' }],
+    } as never)
 
     await pressSave()
 
-    expect(updateVehicle).not.toHaveBeenCalled()
+    expect(updateVehicle).toHaveBeenCalledTimes(1)
     expect(toast.error).toHaveBeenCalledWith('Not saved. Fill in: Livery')
     expect(within(screen.getByTestId('custom-field-note')).getByRole('alert')).toHaveTextContent(
       'Livery is required'
     )
+    // Nothing was saved, and the dialog is still open on what was typed.
+    expect(screen.getByRole('dialog')).toBeInTheDocument()
+    expect(input('tacho').value).toBe('March')
+  })
+
+  it('waits for the fields when Save is pressed before they have loaded, and refuses the empty one', async () => {
+    let finishLoading: (value: unknown) => void = () => undefined
+    loadValues.mockReturnValue(new Promise((resolve) => (finishLoading = resolve)))
+    renderForm({ customFields: true })
+    await screen.findByRole('dialog')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await act(async () => {
+      finishLoading({ success: true, data: FIELDS })
+    })
+
+    await waitFor(() =>
+      expect(toast.error).toHaveBeenCalledWith('Not saved. Fill in: Tachograph due, Home depot')
+    )
+    expect(updateVehicle).not.toHaveBeenCalled()
   })
 })
 
@@ -292,7 +309,7 @@ describe('a new vehicle with fields of the workshop’s own', () => {
     expect(input('tacho')).toHaveFocus()
   })
 
-  it('is created first, and its fields are then saved under its id', async () => {
+  it('is created with its fields in one save', async () => {
     vi.mocked(createVehicle).mockResolvedValue({
       success: true,
       data: { id: 'veh-new', make: 'Volvo', model: 'FH', year: 2019 },
@@ -304,14 +321,32 @@ describe('a new vehicle with fields of the workshop’s own', () => {
 
     await add()
 
-    await waitFor(() => expect(save).toHaveBeenCalled())
-    expect(save).toHaveBeenCalledWith('veh-new', 'vehicle', {
-      tacho: 'March',
-      depot: 'North',
-      note: '',
+    await waitFor(() => expect(createVehicle).toHaveBeenCalled())
+    expect(vi.mocked(createVehicle).mock.calls[0][0]).toMatchObject({
+      customFields: { tacho: 'March', depot: 'North', note: '' },
     })
-    expect(vi.mocked(createVehicle).mock.invocationCallOrder[0]).toBeLessThan(
-      save.mock.invocationCallOrder[0]
+    expect(save).not.toHaveBeenCalled()
+  })
+
+  it('refused by the server: nothing is made, the dialog stays open on what was typed', async () => {
+    vi.mocked(createVehicle).mockResolvedValue({
+      success: false,
+      error: 'Not saved. Fill in: Home depot',
+      customFieldErrors: [{ fieldId: 'depot', label: 'Home depot', issue: 'required' }],
+    } as never)
+    const { onOpenChange } = renderForm({ customFields: true }, { vehicle: undefined })
+    await screen.findByText('Custom Fields')
+    fireEvent.change(input('tacho'), { target: { value: 'March' } })
+    fireEvent.change(input('depot'), { target: { value: 'North' } })
+
+    await add()
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Not saved. Fill in: Home depot'))
+    expect(toast.success).not.toHaveBeenCalled()
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+    expect(input('tacho').value).toBe('March')
+    expect(within(screen.getByTestId('custom-field-depot')).getByRole('alert')).toHaveTextContent(
+      'Home depot is required'
     )
   })
 })

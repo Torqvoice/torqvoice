@@ -1,5 +1,6 @@
 'use server'
 
+import { prepareRecordCustomFields } from '@/features/custom-fields/Lib/recordCustomFieldValues.server'
 import { getRecordCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
 import {
@@ -319,27 +320,44 @@ async function saveInspectionDate(
 export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const { inspectionDueAt, registryLookup, ...data } = createVehicleSchema.parse(input)
+      const { inspectionDueAt, registryLookup, customFields, ...data } =
+        createVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
       // The owner the vehicle is filed under must be one of our customers.
       await assertOwnedCustomer(data.customerId, organizationId)
+      // The workshop's own fields, when the form sent them: checked first, so
+      // a required one left empty stops the vehicle being made at all.
+      const writeCustomFields = await prepareRecordCustomFields(
+        organizationId,
+        'vehicle',
+        null,
+        customFields
+      )
       const timeZone = await workshopTimeZone(organizationId)
-      const vehicle = await db.vehicle.create({
-        data: {
-          ...data,
-          licensePlate: normalizePlate(data.licensePlate),
-          hsn: data.hsn || null,
-          tsn: data.tsn || null,
-          // Only a workshop that has the field: nobody else has a box for it.
-          fleetNumber: (await isFleetNumberEnabled(organizationId))
-            ? normalizeFleetNumber(data.fleetNumber)
-            : null,
-          purchaseDate: toSafeWorkshopDate(data.purchaseDate, timeZone) ?? null,
-          customerId: data.customerId || null,
-          userId,
-          organizationId,
-        },
-      })
+      const fleetNumberOn = await isFleetNumberEnabled(organizationId)
+      const createWith = (store: Pick<typeof db, 'vehicle'>) =>
+        store.vehicle.create({
+          data: {
+            ...data,
+            licensePlate: normalizePlate(data.licensePlate),
+            hsn: data.hsn || null,
+            tsn: data.tsn || null,
+            // Only a workshop that has the field: nobody else has a box for it.
+            fleetNumber: fleetNumberOn ? normalizeFleetNumber(data.fleetNumber) : null,
+            purchaseDate: toSafeWorkshopDate(data.purchaseDate, timeZone) ?? null,
+            customerId: data.customerId || null,
+            userId,
+            organizationId,
+          },
+        })
+      // With its fields, in one transaction: both are saved or neither is.
+      const vehicle = writeCustomFields
+        ? await db.$transaction(async (tx) => {
+            const made = await createWith(tx)
+            await writeCustomFields(tx, made.id)
+            return made
+          })
+        : await createWith(db)
       await saveInspectionDate(organizationId, vehicle.id, inspectionDueAt, registryLookup, vehicle)
       revalidatePath('/')
       revalidatePath('/vehicles')
@@ -366,7 +384,8 @@ export async function createVehicle(input: unknown) {
 export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
-      const { id, inspectionDueAt, registryLookup, ...data } = updateVehicleSchema.parse(input)
+      const { id, inspectionDueAt, registryLookup, customFields, ...data } =
+        updateVehicleSchema.parse(input)
       // An edit that leaves the plate out leaves it alone; one that sends it
       // stores the same form a new vehicle gets.
       const licensePlate =
@@ -387,35 +406,53 @@ export async function updateVehicle(input: unknown) {
       })
       if (!before) throw new Error('Vehicle not found')
       await assertOwnedCustomer(data.customerId, organizationId)
+      // The workshop's own fields, when the form sent them: checked before
+      // anything is written.
+      const writeCustomFields = await prepareRecordCustomFields(
+        organizationId,
+        'vehicle',
+        id,
+        customFields
+      )
 
-      const updateResult = await db.vehicle.updateMany({
-        where: { id, organizationId },
-        data: {
-          ...data,
-          vin: data.vin !== undefined ? data.vin || null : undefined,
-          licensePlate,
-          color: data.color !== undefined ? data.color || null : undefined,
-          fuelType: data.fuelType !== undefined ? data.fuelType || null : undefined,
-          transmission: data.transmission !== undefined ? data.transmission || null : undefined,
-          engineSize: data.engineSize !== undefined ? data.engineSize || null : undefined,
-          engineCode: data.engineCode !== undefined ? data.engineCode || null : undefined,
-          hsn: data.hsn !== undefined ? data.hsn || null : undefined,
-          tsn: data.tsn !== undefined ? data.tsn || null : undefined,
-          // Left as stored when the form did not send it, and when the
-          // workshop has the field off: what was typed while it was on stays.
-          fleetNumber:
-            data.fleetNumber !== undefined && (await isFleetNumberEnabled(organizationId))
-              ? normalizeFleetNumber(data.fleetNumber)
-              : undefined,
-          purchaseDate: toSafeWorkshopDate(
-            data.purchaseDate,
-            await workshopTimeZone(organizationId)
-          ),
-          customerId: data.customerId !== undefined ? data.customerId || null : undefined,
-          // An emptied photo is no photo, not an empty address.
-          imageUrl: data.imageUrl !== undefined ? data.imageUrl || null : undefined,
-        },
-      })
+      const updateWith = async (store: Pick<typeof db, 'vehicle'>) =>
+        store.vehicle.updateMany({
+          where: { id, organizationId },
+          data: {
+            ...data,
+            vin: data.vin !== undefined ? data.vin || null : undefined,
+            licensePlate,
+            color: data.color !== undefined ? data.color || null : undefined,
+            fuelType: data.fuelType !== undefined ? data.fuelType || null : undefined,
+            transmission: data.transmission !== undefined ? data.transmission || null : undefined,
+            engineSize: data.engineSize !== undefined ? data.engineSize || null : undefined,
+            engineCode: data.engineCode !== undefined ? data.engineCode || null : undefined,
+            hsn: data.hsn !== undefined ? data.hsn || null : undefined,
+            tsn: data.tsn !== undefined ? data.tsn || null : undefined,
+            // Left as stored when the form did not send it, and when the
+            // workshop has the field off: what was typed while it was on stays.
+            fleetNumber:
+              data.fleetNumber !== undefined && (await isFleetNumberEnabled(organizationId))
+                ? normalizeFleetNumber(data.fleetNumber)
+                : undefined,
+            purchaseDate: toSafeWorkshopDate(
+              data.purchaseDate,
+              await workshopTimeZone(organizationId)
+            ),
+            customerId: data.customerId !== undefined ? data.customerId || null : undefined,
+            // An emptied photo is no photo, not an empty address.
+            imageUrl: data.imageUrl !== undefined ? data.imageUrl || null : undefined,
+          },
+        })
+      // With its fields, in one transaction: both are saved or neither is.
+      const updateResult = writeCustomFields
+        ? await db.$transaction(async (tx) => {
+            const updated = await updateWith(tx)
+            if (updated.count === 0) throw new Error('Vehicle not found')
+            await writeCustomFields(tx, id)
+            return updated
+          })
+        : await updateWith(db)
       if (updateResult.count === 0) throw new Error('Vehicle not found')
       // A replaced image is let go once the new one is saved; the file manager
       // keeps it if anything else still shows it.
@@ -508,10 +545,12 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId, isArchived: false }
       if (customerId) where.customerId = customerId
+      // The fleet / unit number finds the vehicle and is shown on its row,
+      // for a workshop that uses it; null on every row otherwise.
+      const fleetNumberOn = await isFleetNumberEnabled(organizationId)
       if (search) {
         const words = searchWordsOf(search)
         const typeKeyOn = await isTypeKeyEnabled(organizationId)
-        const fleetNumberOn = await isFleetNumberEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -535,7 +574,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
           where.OR = fieldMatch(words[0])
         }
       }
-      return db.vehicle.findMany({
+      const vehicles = await db.vehicle.findMany({
         where,
         select: {
           id: true,
@@ -543,6 +582,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
           model: true,
           year: true,
           licensePlate: true,
+          fleetNumber: true,
           customerId: true,
           customer: { select: { id: true, name: true } },
         },
@@ -550,6 +590,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
         skip: offset,
         take: limit,
       })
+      return vehicles.map((vehicle) => gateFleetNumber(vehicle, fleetNumberOn))
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],

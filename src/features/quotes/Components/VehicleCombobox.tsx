@@ -22,6 +22,8 @@ interface VehicleOption {
   model: string
   year: number
   licensePlate: string | null
+  /** Null unless the workshop uses the fleet / unit number. */
+  fleetNumber?: string | null
   customerId: string | null
   customer: { id: string; name: string } | null
 }
@@ -89,6 +91,7 @@ export function VehicleCombobox({
     model: v.model,
     year: v.year,
     licensePlate: v.licensePlate,
+    fleetNumber: v.fleetNumber ?? null,
     customerId: v.customerId,
     customer: v.customer,
   })
@@ -239,6 +242,9 @@ export function VehicleCombobox({
                       {vehicleName(v)}
                       {v.licensePlate && (
                         <span className="ml-1.5 text-muted-foreground">· {v.licensePlate}</span>
+                      )}
+                      {v.fleetNumber && (
+                        <span className="ml-1.5 text-muted-foreground">· {v.fleetNumber}</span>
                       )}
                     </p>
                     {v.customer?.name && (

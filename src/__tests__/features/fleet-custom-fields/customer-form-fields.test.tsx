@@ -142,7 +142,7 @@ describe('the workshop’s own fields on a customer', () => {
     expect(input('centre')).toHaveFocus()
   })
 
-  it('saves the fields, then the customer, once they are filled in', async () => {
+  it('saves the fields with the customer, in one save, once they are filled in', async () => {
     renderForm(true)
     await screen.findByText('Custom Fields')
     fireEvent.change(input('centre'), { target: { value: 'CC-7741' } })
@@ -151,14 +151,14 @@ describe('the workshop’s own fields on a customer', () => {
     await submit()
 
     await waitFor(() => expect(updateCustomer).toHaveBeenCalled())
-    expect(save).toHaveBeenCalledWith(
-      'cust-1',
-      'customer',
-      expect.objectContaining({ centre: 'CC-7741', contact: 'Ida' })
-    )
+    expect(vi.mocked(updateCustomer).mock.calls[0][0]).toMatchObject({
+      id: 'cust-1',
+      customFields: { centre: 'CC-7741', contact: 'Ida' },
+    })
+    expect(save).not.toHaveBeenCalled()
   })
 
-  it('creates a new customer first and saves its fields under the new id', async () => {
+  it('creates a new customer with its fields, and not while one is empty', async () => {
     vi.mocked(createCustomer).mockResolvedValue({
       success: true,
       data: { id: 'cust-new', name: 'ZZ New', company: null },
@@ -176,7 +176,33 @@ describe('the workshop’s own fields on a customer', () => {
     fireEvent.change(input('contact'), { target: { value: 'Ida' } })
     await submit()
 
-    await waitFor(() => expect(save).toHaveBeenCalled())
-    expect(save).toHaveBeenCalledWith('cust-new', 'customer', { centre: 'CC-1', contact: 'Ida' })
+    await waitFor(() => expect(createCustomer).toHaveBeenCalled())
+    expect(vi.mocked(createCustomer).mock.calls[0][0]).toMatchObject({
+      name: 'ZZ New',
+      customFields: { centre: 'CC-1', contact: 'Ida' },
+    })
+    expect(save).not.toHaveBeenCalled()
+  })
+
+  it('refused by the server: nothing is saved and the dialog keeps what was typed', async () => {
+    vi.mocked(updateCustomer).mockResolvedValue({
+      success: false,
+      error: 'Not saved. Fill in: Cost centre',
+      customFieldErrors: [{ fieldId: 'centre', label: 'Cost centre', issue: 'required' }],
+    } as never)
+    const onOpenChange = vi.fn()
+    renderForm(true, { onOpenChange })
+    await screen.findByText('Custom Fields')
+    fireEvent.change(input('centre'), { target: { value: 'CC-1' } })
+    fireEvent.change(input('contact'), { target: { value: 'Ida' } })
+
+    await submit()
+
+    await waitFor(() => expect(toast.error).toHaveBeenCalledWith('Not saved. Fill in: Cost centre'))
+    expect(onOpenChange).not.toHaveBeenCalledWith(false)
+    expect(input('contact').value).toBe('Ida')
+    expect(within(screen.getByTestId('custom-field-centre')).getByRole('alert')).toHaveTextContent(
+      'Cost centre is required'
+    )
   })
 })

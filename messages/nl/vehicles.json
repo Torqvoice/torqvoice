@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Vloot- / wagennummer",
     "fleetNumberPlaceholder": "bijv. T-208",
+    "fleetNumberTooLong": "Vloot- / wagennummer mag maximaal {max} tekens bevatten",
     "typeKeyHint": "Van een Duits kentekenbewijs: HSN staat in veld 2.1, TSN zijn de eerste drie tekens van veld 2.2.",
     "hsnInvalid": "Het HSN bestaat uit vier cijfers, uit veld 2.1 van het kentekenbewijs.",
     "tsnInvalid": "Het TSN bestaat uit drie letters of cijfers, het begin van veld 2.2 van het kentekenbewijs.",

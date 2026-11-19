@@ -4,10 +4,20 @@
  */
 export const FLEET_NUMBER_MAX_LENGTH = 40
 
-/** What is stored for what was typed: trimmed, and null when nothing is left. */
+/**
+ * What is stored for what was typed: trimmed, and null when nothing is left.
+ * Never cut: a value over the limit is refused where it comes in (the form
+ * and the action) or reported on its row (the importer), see
+ * `fleetNumberTooLong`.
+ */
 export function normalizeFleetNumber(value: string | null | undefined): string | null {
   const trimmed = (value ?? '').trim()
-  return trimmed ? trimmed.slice(0, FLEET_NUMBER_MAX_LENGTH) : null
+  return trimmed || null
+}
+
+/** Whether a value, once trimmed, is longer than a fleet number may be. */
+export function fleetNumberTooLong(value: string | null | undefined): boolean {
+  return (value ?? '').trim().length > FLEET_NUMBER_MAX_LENGTH
 }
 
 /** "Fleet no.: T-208" for a print, or nothing for a vehicle without one. */

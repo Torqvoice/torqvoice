@@ -562,7 +562,11 @@ export function CustomFieldsManager({
 
             {isRecordEntityType(formData.entityType) ? (
               <p className="text-xs text-muted-foreground">
-                {t('customFields.recordPlacementHint')}
+                {t(
+                  isMarine
+                    ? 'customFields.recordPlacementHintMarine'
+                    : 'customFields.recordPlacementHint'
+                )}
               </p>
             ) : (
               <div className="space-y-2">

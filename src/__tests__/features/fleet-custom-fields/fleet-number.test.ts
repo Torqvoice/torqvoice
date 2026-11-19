@@ -12,6 +12,7 @@ import { describe, expect, it } from 'vitest'
 import {
   FLEET_NUMBER_MAX_LENGTH,
   fleetNumberLine,
+  fleetNumberTooLong,
   normalizeFleetNumber,
 } from '@/features/vehicles/Lib/fleetNumber'
 import {
@@ -60,8 +61,49 @@ describe('what is stored for what was typed', () => {
     expect(normalizeFleetNumber(undefined)).toBeNull()
   })
 
-  it('cuts a pasted paragraph to the length of a fleet number', () => {
-    expect(normalizeFleetNumber('x'.repeat(500))).toHaveLength(FLEET_NUMBER_MAX_LENGTH)
+  it('never cuts a long value: it is refused or reported where it comes in', () => {
+    expect(normalizeFleetNumber('x'.repeat(500))).toHaveLength(500)
+    expect(fleetNumberTooLong('x'.repeat(FLEET_NUMBER_MAX_LENGTH))).toBe(false)
+    expect(fleetNumberTooLong(` ${'x'.repeat(FLEET_NUMBER_MAX_LENGTH)} `)).toBe(false)
+    expect(fleetNumberTooLong('x'.repeat(FLEET_NUMBER_MAX_LENGTH + 1))).toBe(true)
+  })
+
+  it('is refused by the action over the limit, with the limit in the reason', () => {
+    const base = { make: 'Volvo', model: 'FH', year: 2019 }
+    const long = createVehicleSchema.safeParse({ ...base, fleetNumber: 'x'.repeat(41) })
+    expect(long.success).toBe(false)
+    expect(long.error?.issues[0].message).toContain('40')
+    expect(createVehicleSchema.safeParse({ ...base, fleetNumber: 'x'.repeat(40) }).success).toBe(
+      true
+    )
+  })
+
+  it('is reported on its row by an import, and left out rather than cut', async () => {
+    const { planImport } = await import('@/features/import/Lib/pipeline')
+    const long = 'Unit '.repeat(10)
+    const plan = planImport(
+      [['Volvo', 'FH', '2019', 'ZZ 208', long]],
+      {
+        '0': 'vehicle.make',
+        '1': 'vehicle.model',
+        '2': 'vehicle.year',
+        '3': 'vehicle.licensePlate',
+        '4': 'vehicle.fleetNumber',
+      },
+      {
+        entity: 'vehicles',
+        dateFormat: 'auto',
+        decimalSeparator: 'auto',
+        defaultCountryCode: '+47',
+        duplicates: 'update',
+      },
+      { customers: [], vehicles: [], invoiceNumbers: [] }
+    )
+    const row = plan.rows[0]
+    expect(row.warnings).toContainEqual(
+      expect.objectContaining({ code: 'fleet_number_too_long', value: long })
+    )
+    expect(row.vehicle?.fleetNumber ?? null).toBeNull()
   })
 
   it('is a field an old tab does not have to send', () => {

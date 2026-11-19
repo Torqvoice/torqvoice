@@ -27,6 +27,12 @@ export type ActionResult<T = unknown> = {
    * than "it failed" (who to ask, what to ask for) checks this instead.
    */
   forbidden?: boolean
+  /**
+   * Set when a vehicle's or a customer's save was stopped by the workshop's
+   * own fields: which ones, so the form can mark each under the field.
+   * Nothing was written. `error` already names them.
+   */
+  customFieldErrors?: { fieldId: string; label: string; issue: string }[]
 }
 
 export type AuthContext = {
@@ -226,6 +232,14 @@ export async function withAuth<T>(
         error: error.message,
         gated: { feature: gated.feature, limit: gated.limit },
       }
+    }
+    // Matched by name for the same reason. The fields go back to the form,
+    // which marks each one; the sentence naming them is the error.
+    if (error instanceof Error && error.name === 'CustomFieldsRefusedError') {
+      const refused = error as Error & {
+        fieldErrors: { fieldId: string; label: string; issue: string }[]
+      }
+      return { success: false, error: error.message, customFieldErrors: refused.fieldErrors }
     }
     // In full here, where only the server sees it. The page gets the action's
     // own words, or a plain sentence when the error came from the database or

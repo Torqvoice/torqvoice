@@ -40,6 +40,7 @@ import {
   Tag,
   FileBadge,
   Hash,
+  Ship,
   Truck,
 } from 'lucide-react'
 import {
@@ -543,7 +544,11 @@ export function WorkshopSettings({
 
               <div className="space-y-4">
                 <div className="flex flex-row items-center gap-3">
-                  <Truck className="h-5 w-5 text-muted-foreground" />
+                  {serviceType === 'marine' ? (
+                    <Ship className="h-5 w-5 text-muted-foreground" />
+                  ) : (
+                    <Truck className="h-5 w-5 text-muted-foreground" />
+                  )}
                   <h3 className="text-lg font-semibold">{t('workshop.fleetNumberTitle')}</h3>
                 </div>
                 <div className="space-y-2">
@@ -551,14 +556,26 @@ export function WorkshopSettings({
                     htmlFor="fleetNumberEnabled"
                     className="flex items-center justify-between gap-3"
                   >
-                    <span className="leading-snug">{t('workshop.fleetNumberEnabled')}</span>
+                    <span className="leading-snug">
+                      {t(
+                        serviceType === 'marine'
+                          ? 'workshop.fleetNumberEnabledMarine'
+                          : 'workshop.fleetNumberEnabled'
+                      )}
+                    </span>
                     <Switch
                       id="fleetNumberEnabled"
                       checked={fleetNumberEnabled}
                       onCheckedChange={setFleetNumberEnabled}
                     />
                   </Label>
-                  <p className="text-sm text-muted-foreground">{t('workshop.fleetNumberHint')}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {t(
+                      serviceType === 'marine'
+                        ? 'workshop.fleetNumberHintMarine'
+                        : 'workshop.fleetNumberHint'
+                    )}
+                  </p>
                 </div>
               </div>
             </>

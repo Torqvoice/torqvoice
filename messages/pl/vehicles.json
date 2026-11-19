@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Numer taborowy / wewnętrzny",
     "fleetNumberPlaceholder": "np. T-208",
+    "fleetNumberTooLong": "Numer taborowy / wewnętrzny może mieć maksymalnie {max} znaków",
     "typeKeyHint": "Z niemieckiego dowodu rejestracyjnego: HSN to pole 2.1, TSN to pierwsze trzy znaki pola 2.2.",
     "hsnInvalid": "HSN to cztery cyfry z pola 2.1 dowodu rejestracyjnego.",
     "tsnInvalid": "TSN to trzy litery lub cyfry z początku pola 2.2 dowodu rejestracyjnego.",

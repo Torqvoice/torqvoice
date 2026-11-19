@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Fleet / unit number",
     "fleetNumberPlaceholder": "e.g. T-208",
+    "fleetNumberTooLong": "Fleet / unit number can be at most {max} characters",
     "typeKeyHint": "From a German registration certificate: HSN is field 2.1, TSN is the first three characters of field 2.2.",
     "hsnInvalid": "HSN is four digits, from field 2.1 of the registration certificate.",
     "tsnInvalid": "TSN is three letters or digits, the start of field 2.2 of the registration certificate.",

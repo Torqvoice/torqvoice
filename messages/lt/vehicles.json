@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Autoparko / vieneto numeris",
     "fleetNumberPlaceholder": "pvz., T-208",
+    "fleetNumberTooLong": "Autoparko / vieneto numeris gali būti ne ilgesnis nei {max} simbolių",
     "typeKeyHint": "Iš Vokietijos registracijos liudijimo: HSN yra 2.1 laukelis, TSN yra pirmieji trys 2.2 laukelio simboliai.",
     "hsnInvalid": "HSN yra keturi skaitmenys iš registracijos liudijimo 2.1 laukelio.",
     "tsnInvalid": "TSN yra trys raidės arba skaitmenys, registracijos liudijimo 2.2 laukelio pradžia.",

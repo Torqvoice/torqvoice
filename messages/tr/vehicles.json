@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Filo / birim numarası",
     "fleetNumberPlaceholder": "örn. T-208",
+    "fleetNumberTooLong": "Filo / birim numarası en fazla {max} karakter olabilir",
     "typeKeyHint": "Alman ruhsatından: HSN 2.1 alanıdır, TSN ise 2.2 alanının ilk üç karakteridir.",
     "hsnInvalid": "HSN, ruhsatın 2.1 alanındaki dört rakamdır.",
     "tsnInvalid": "TSN, ruhsatın 2.2 alanının başındaki üç harf veya rakamdır.",

@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Flåte- / enhetsnummer",
     "fleetNumberPlaceholder": "f.eks. T-208",
+    "fleetNumberTooLong": "Flåte- / enhetsnummer kan være maks {max} tegn",
     "typeKeyHint": "Fra et tysk vognkort: HSN står i felt 2.1, TSN er de tre første tegnene i felt 2.2.",
     "hsnInvalid": "HSN er fire sifre, fra felt 2.1 i vognkortet.",
     "tsnInvalid": "TSN er tre bokstaver eller sifre, starten av felt 2.2 i vognkortet.",

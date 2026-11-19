@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Nº da frota / unidade",
     "fleetNumberPlaceholder": "ex. T-208",
+    "fleetNumberTooLong": "O Nº da frota / unidade pode ter no máximo {max} caracteres",
     "typeKeyHint": "Do documento de registro alemão: HSN é o campo 2.1, TSN são os três primeiros caracteres do campo 2.2.",
     "hsnInvalid": "O HSN tem quatro dígitos, do campo 2.1 do documento de registro.",
     "tsnInvalid": "O TSN tem três letras ou dígitos, o início do campo 2.2 do documento de registro.",

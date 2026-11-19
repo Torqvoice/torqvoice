@@ -328,6 +328,14 @@ export function JobFactsCard({
                     <CopyValue value={vehicle.vin} label={isMarine ? tv('vinMarine') : tv('vin')} />
                   </p>
                 )}
+                {/* The owner's own number for it, where the workshop uses one:
+                    the read leaves it null otherwise. */}
+                {vehicle.fleetNumber && (
+                  <p className="truncate text-xs text-muted-foreground">
+                    {tv('fleetNumber')}:{' '}
+                    <span className="font-mono text-foreground">{vehicle.fleetNumber}</span>
+                  </p>
+                )}
               </div>
             </div>
           )}

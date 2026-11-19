@@ -38,6 +38,8 @@ export interface ReminderFormVehicle {
   model: string
   year: number
   licensePlate: string | null
+  /** Null unless the workshop uses the fleet / unit number. */
+  fleetNumber?: string | null
   customerName: string | null
   customerId: string | null
 }
@@ -213,6 +215,7 @@ export function ReminderFormDialog({
                   model: v.model,
                   year: v.year,
                   licensePlate: v.licensePlate,
+                  fleetNumber: v.fleetNumber ?? null,
                   customerName: v.customer?.name ?? null,
                   customerId: v.customerId,
                 }))
@@ -376,6 +379,11 @@ export function ReminderFormDialog({
                               {v.licensePlate && (
                                 <span className="ml-1.5 text-muted-foreground">
                                   · {v.licensePlate}
+                                </span>
+                              )}
+                              {v.fleetNumber && (
+                                <span className="ml-1.5 text-muted-foreground">
+                                  · {v.fleetNumber}
                                 </span>
                               )}
                             </p>

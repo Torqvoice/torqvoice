@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "N.º de frota / unidade",
     "fleetNumberPlaceholder": "ex. T-208",
+    "fleetNumberTooLong": "O N.º de frota / unidade pode ter no máximo {max} caracteres",
     "typeKeyHint": "Do certificado de matrícula alemão: o HSN é o campo 2.1, o TSN são os três primeiros caracteres do campo 2.2.",
     "hsnInvalid": "O HSN tem quatro algarismos, do campo 2.1 do certificado de matrícula.",
     "tsnInvalid": "O TSN tem três letras ou algarismos, o início do campo 2.2 do certificado de matrícula.",

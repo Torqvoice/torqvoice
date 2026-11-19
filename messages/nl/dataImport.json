@@ -213,6 +213,7 @@
     "invalid_email": "E-mailadres \"{value}\" is ongeldig en is weggelaten",
     "invalid_vin": "VIN \"{value}\" heeft geen 17 tekens; bewaard zoals ingevoerd",
     "invalid_type_key": "{field} \"{value}\" is geen geldig HSN of TSN; weggelaten",
+    "fleet_number_too_long": "Vloot- / wagennummer \"{value}\" is langer dan 40 tekens; weggelaten",
     "vehicle_make_model_required": "Merk en model ontbreken",
     "vehicle_year_required": "Bouwjaar ontbreekt",
     "vehicle_year_invalid": "Bouwjaar \"{value}\" is geen geldig jaar",

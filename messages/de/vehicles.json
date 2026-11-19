@@ -405,6 +405,7 @@
     "typeKey": "HSN/TSN",
     "fleetNumber": "Fuhrpark- / Fahrzeugnummer",
     "fleetNumberPlaceholder": "z.B. T-208",
+    "fleetNumberTooLong": "Fuhrpark- / Fahrzeugnummer darf höchstens {max} Zeichen lang sein",
     "typeKeyHint": "Aus der Zulassungsbescheinigung Teil I: HSN steht in Feld 2.1, TSN sind die ersten drei Zeichen in Feld 2.2.",
     "hsnInvalid": "Die HSN besteht aus vier Ziffern, aus Feld 2.1 der Zulassungsbescheinigung.",
     "tsnInvalid": "Die TSN besteht aus drei Buchstaben oder Ziffern, vom Anfang von Feld 2.2 der Zulassungsbescheinigung.",
