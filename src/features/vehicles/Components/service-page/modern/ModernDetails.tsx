@@ -581,6 +581,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                   <CustomFieldsForm
                     entityId={record.id}
                     entityType="service_record"
+                    locked={locked}
                     onValuesReady={formState.onCustomFieldsReady}
                     onChange={formState.markDirty}
                   />

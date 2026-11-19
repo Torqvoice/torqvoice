@@ -80,6 +80,7 @@ export function useServiceActions({
     customFieldsSaveRef,
     lastSaveErrorRef,
     leavingRef,
+    autosaveRunRef,
     editRevisionRef,
     markSaved,
   } = formState
@@ -96,6 +97,9 @@ export function useServiceActions({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
+    // Whether the autosave timer started this save, read once and spent.
+    const autosave = autosaveRunRef.current
+    autosaveRunRef.current = false
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     // Running from here: the custom fields go to the server before the rest,
@@ -108,10 +112,24 @@ export function useServiceActions({
     // Validate and save custom fields before saving
     if (customFieldsSaveRef.current) {
       try {
-        const { valid } = await customFieldsSaveRef.current()
-        if (!valid) {
+        // A save the person asked for takes them to the first field at
+        // fault; an autosave marks it and leaves them where they are typing.
+        const outcome = await customFieldsSaveRef.current({ reveal: !autosave })
+        if (!outcome.valid) {
           isSavingRef.current = false
-          refuse(t('page.customFieldsInvalid'))
+          // Nothing of the work order was saved, and the message says so and
+          // names the fields by the workshop's own labels. The server's own
+          // words instead when it refused the whole save (the invoice locked
+          // since the page was opened).
+          refuse(
+            outcome.error ??
+              t(
+                outcome.problem === 'invalid'
+                  ? 'page.customFieldsNotValid'
+                  : 'page.customFieldsMissing',
+                { fields: (outcome.fields ?? []).join(', ') }
+              )
+          )
           return
         }
       } catch (err) {

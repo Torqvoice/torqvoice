@@ -1197,7 +1197,12 @@
     "placementHint": "Which section of the invoice or quote this field prints in. In the designer you can also switch it on in more sections.",
     "failedSavePlacement": "Failed to save field placement",
     "formTitle": "Custom Fields",
-    "requiredError": "{label} is required"
+    "requiredError": "{label} is required",
+    "numberError": "{label} must be a number",
+    "dateError": "{label} must be a valid date",
+    "optionError": "{label} must be one of its options",
+    "checkboxError": "{label} must be either ticked or unticked",
+    "tooLongError": "{label} can be at most {max} characters"
   },
   "workshop": {
     "title": "Workshop Defaults",

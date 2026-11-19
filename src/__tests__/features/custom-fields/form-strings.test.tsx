@@ -30,7 +30,7 @@ vi.mock('@/features/custom-fields/Actions/customFieldActions', () => ({
     ],
   })),
   getFieldDefinitions: vi.fn(async () => ({ success: true, data: [] })),
-  saveCustomFieldValues: vi.fn(async () => ({ success: true })),
+  saveValidatedCustomFieldValues: vi.fn(async () => ({ success: true, data: { saved: true } })),
 }))
 
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
@@ -55,11 +55,11 @@ describe('the custom fields card', () => {
     )
     expect(await screen.findByText('Custom Fields')).toBeInTheDocument()
 
-    let result: { valid: boolean } | undefined
+    let result: unknown
     await act(async () => {
       result = await save?.()
     })
-    expect(result).toEqual({ valid: false })
+    expect(result).toEqual({ valid: false, problem: 'required', fields: ['Key number'] })
     expect(screen.getByText('Key number is required')).toBeInTheDocument()
     // A checkbox left unticked is an answer, never a missing one.
     expect(screen.queryByText('Courtesy car is required')).not.toBeInTheDocument()

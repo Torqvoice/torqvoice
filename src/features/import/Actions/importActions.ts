@@ -1,5 +1,9 @@
 'use server'
 
+import {
+  deleteCustomFieldValuesOf,
+  workOrderIdsOfVehicles,
+} from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { db } from '@/lib/db'
@@ -855,6 +859,18 @@ export async function undoImportBatch(batchId: string) {
         )),
       ]
 
+      // Custom field values on those jobs, and on any job since added to an
+      // imported vehicle (it cascades with the vehicle), go with them.
+      const goneWorkOrderIds = [
+        ...new Set([
+          ...batchRecords.map((r) => r.id),
+          ...(await workOrderIdsOfVehicles(
+            organizationId,
+            batchVehicles.map((v) => v.id)
+          )),
+        ]),
+      ]
+
       const result = await db.$transaction(async (tx) => {
         const serviceRecords = await tx.serviceRecord.deleteMany({
           where: { importBatchId: batchId, organizationId },
@@ -862,6 +878,7 @@ export async function undoImportBatch(batchId: string) {
         const vehicles = await tx.vehicle.deleteMany({
           where: { importBatchId: batchId, organizationId },
         })
+        await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', goneWorkOrderIds)
         const customers = await tx.customer.deleteMany({
           where: { importBatchId: batchId, organizationId },
         })

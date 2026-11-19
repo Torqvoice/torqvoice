@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Scegli le date manualmente",
     "datesExpiredBack": "Indietro",
     "datesExpiredSetToday": "Imposta a oggi",
-    "customFieldsInvalid": "Compila tutti i campi personalizzati obbligatori",
+    "customFieldsMissing": "Non salvato. Compila: {fields}",
+    "customFieldsNotValid": "Non salvato. Controlla: {fields}",
     "customFieldsSaveFailed": "Impossibile salvare i campi personalizzati",
     "problems": {
       "title": "Il lavoro deve avere un titolo prima di poter essere salvato.",

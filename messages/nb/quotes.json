@@ -89,7 +89,8 @@
       "images": "Bilder",
       "documents": "Dokumenter"
     },
-    "customFieldsInvalid": "Fyll ut alle obligatoriske egendefinerte felt",
+    "customFieldsMissing": "Ikke lagret. Fyll ut: {fields}",
+    "customFieldsNotValid": "Ikke lagret. Sjekk: {fields}",
     "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt"
   },
   "form": {

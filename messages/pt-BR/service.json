@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Escolher datas manualmente",
     "datesExpiredBack": "Voltar",
     "datesExpiredSetToday": "Definir para hoje",
-    "customFieldsInvalid": "Preencha todos os campos personalizados obrigatórios",
+    "customFieldsMissing": "Não salvo. Preencha: {fields}",
+    "customFieldsNotValid": "Não salvo. Verifique: {fields}",
     "customFieldsSaveFailed": "Falha ao salvar campos personalizados",
     "problems": {
       "title": "A ordem precisa de um título antes de ser salva.",

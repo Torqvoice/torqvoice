@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { workOrderIdsOfVehicles } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -157,7 +158,31 @@ export async function removeSampleData() {
         ...(await vehicleFileUrls(organizationId, ids.vehicles)),
       ]
 
+      // Custom field values someone filled in on a sample job or quote. They
+      // hang on the record's id alone, so nothing cascades to them; a job
+      // added to a sample vehicle since goes with the vehicle too.
+      const goneWorkOrderIds = [
+        ...new Set([
+          ...ids.serviceRecords,
+          ...(await workOrderIdsOfVehicles(organizationId, ids.vehicles)),
+        ]),
+      ]
+
       await db.$transaction([
+        db.customFieldValue.deleteMany({
+          where: {
+            entityType: 'service_record',
+            entityId: { in: goneWorkOrderIds },
+            field: { organizationId },
+          },
+        }),
+        db.customFieldValue.deleteMany({
+          where: {
+            entityType: 'quote',
+            entityId: { in: ids.quotes },
+            field: { organizationId },
+          },
+        }),
         db.serviceRecord.deleteMany({
           where: { organizationId, id: { in: ids.serviceRecords } },
         }),

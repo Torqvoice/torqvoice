@@ -2,16 +2,26 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
+import { z } from 'zod'
 import {
   createFieldDefinitionSchema,
-  entityTypes,
-  type EntityType,
   updateFieldDefinitionSchema,
 } from '../Schema/customFieldSchema'
 import { revalidatePath } from 'next/cache'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { requireFeature } from '@/lib/features'
 import { clearedToNull } from '@/lib/clearable'
+import {
+  assertOwnRecord,
+  recordLockError,
+  isEntityType,
+  recordSubject,
+} from '../Lib/customFieldRecords.server'
+import {
+  customFieldTypeIssue,
+  isMissingRequiredValue,
+  type CustomFieldIssue,
+} from '../Lib/customFieldValueRules'
 
 /**
  * Whose permission a record's custom fields fall under: the record's own.
@@ -21,38 +31,11 @@ import { clearedToNull } from '@/lib/clearable'
  * or the quote, the same as its title. A Member who may edit a work order saw
  * none of the workshop's custom fields on it and could not have saved one,
  * and was refused on every page load besides. Defining fields stays behind
- * Settings; reading and filling them follows the record.
+ * Settings; reading and filling them follows the record. An unknown kind of
+ * record needs Settings.
  */
-const RECORD_SUBJECT: Record<EntityType, PermissionSubject> = {
-  service_record: PermissionSubject.SERVICES,
-  quote: PermissionSubject.QUOTES,
-}
-
-function isEntityType(value: unknown): value is EntityType {
-  return typeof value === 'string' && (entityTypes as readonly string[]).includes(value)
-}
-
-/** The permission a call about one record's fields needs. An unknown kind needs Settings. */
 function recordPermission(entityType: unknown, action: PermissionAction) {
-  return [
-    {
-      action,
-      subject: isEntityType(entityType) ? RECORD_SUBJECT[entityType] : PermissionSubject.SETTINGS,
-    },
-  ]
-}
-
-/**
- * The record has to be this workshop's. These actions are handed a bare id,
- * and a value row is keyed by it, so without this a caller could attach
- * values to a record that is not theirs.
- */
-async function assertOwnRecord(entityId: string, entityType: EntityType, organizationId: string) {
-  const found =
-    entityType === 'quote'
-      ? await db.quote.count({ where: { id: entityId, organizationId } })
-      : await db.serviceRecord.count({ where: { id: entityId, organizationId } })
-  if (found === 0) throw new Error('Record not found')
+  return [{ action, subject: recordSubject(entityType) }]
 }
 
 export async function getFieldDefinitions(entityType?: string) {
@@ -221,34 +204,139 @@ export async function getCustomFieldValues(entityId: string, entityType: string)
   )
 }
 
-export async function saveCustomFieldValues(
+const saveValuesSchema = z.object({
+  entityId: z.string().min(1),
+  values: z.record(z.string(), z.string()),
+})
+
+/**
+ * One refused field: which, what the workshop calls it, and what is wrong.
+ * The label comes from the server so a form that has never heard of the
+ * field (it was added while the form was open) can still name it.
+ */
+export interface CustomFieldError {
+  fieldId: string
+  label: string
+  issue: CustomFieldIssue
+}
+
+/** What a save of a record's values comes back with. */
+export type SaveCustomFieldValuesResult =
+  | { saved: true }
+  /** Nothing was written. The refused fields, in the order the form shows them. */
+  | { saved: false; fieldErrors: CustomFieldError[] }
+
+/**
+ * Saves a record's custom field values, checked against the fields'
+ * definitions. All of them are written or none is.
+ *
+ * This replaces the action that wrote whatever it was sent, under a new
+ * name on purpose: a tab opened before the change still calls the old one,
+ * finds nothing there and is asked to reload, instead of saving values
+ * nobody checked.
+ *
+ * - A locked work order or quote refuses a change to a value, with the
+ *   error every other edit to what it prints gets. A save that changes
+ *   nothing is not an edit and goes through untouched: the page saves its
+ *   custom fields along with everything else, and what stays open on a
+ *   locked document must not be held up by fields nobody touched.
+ * - A required field refuses an empty value. One the request leaves out is
+ *   judged by what the record shows for it (the stored value, else the
+ *   field's default), so leaving a field out is no way around the rule, and
+ *   a form opened before the field became required is told about it. Only
+ *   here: nothing else that writes to the record (its status, a payment, a
+ *   line added from a phone) looks at custom fields, so a record made before
+ *   a field became required keeps working and is asked for the value when
+ *   its form is next saved, which is what the form has always done.
+ * - A value has to suit its type, unless it is the value already stored for
+ *   that field. That one is left alone and not written again: a choice whose
+ *   option was since removed, or a date an import wrote in another shape,
+ *   must not stop the rest of the record from being saved.
+ * - A field that is unknown or switched off is skipped, as before. It may
+ *   have been switched off while the form was open.
+ */
+export async function saveValidatedCustomFieldValues(
   entityId: string,
   entityType: string,
   values: Record<string, string>
 ) {
   return withAuth(
-    async ({ organizationId }) => {
+    async ({ organizationId }): Promise<SaveCustomFieldValuesResult> => {
       if (!isEntityType(entityType)) throw new Error('Unknown record type')
-      await assertOwnRecord(entityId, entityType, organizationId)
+      const input = saveValuesSchema.parse({ entityId, values })
+      await assertOwnRecord(input.entityId, entityType, organizationId)
+
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
+        // The order the form draws them in, so the first error is the first field.
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
       })
+      const stored = await db.customFieldValue.findMany({
+        where: {
+          entityId: input.entityId,
+          entityType,
+          fieldId: { in: definitions.map((d) => d.id) },
+        },
+        select: { fieldId: true, value: true },
+      })
+      const storedValue = new Map(stored.map((row) => [row.fieldId, row.value]))
 
-      const validFieldIds = new Set(definitions.map((d) => d.id))
+      const lockError = await recordLockError(input.entityId, entityType, organizationId)
+      if (lockError) {
+        // Changed against what the record shows: the stored value, else the
+        // field's default. A form sends that back for a field nobody has
+        // filled in, and that is not a change either.
+        const changesSomething = definitions.some((definition) => {
+          const value: string | undefined = input.values[definition.id]
+          const shown = storedValue.get(definition.id) ?? definition.defaultValue ?? ''
+          return value !== undefined && value !== shown
+        })
+        if (changesSomething) throw lockError
+        // Nothing is written and nothing is asked for: a required field left
+        // empty before the lock cannot be filled in now.
+        return { saved: true }
+      }
 
-      const ops = Object.entries(values)
-        .filter(([fieldId]) => validFieldIds.has(fieldId))
-        .map(([fieldId, value]) =>
-          db.customFieldValue.upsert({
-            where: {
-              fieldId_entityId: { fieldId, entityId },
-            },
-            create: { fieldId, entityId, entityType, value },
-            update: { value },
-          })
+      const fieldErrors: CustomFieldError[] = []
+      const refuse = (definition: { id: string; label: string }, issue: CustomFieldIssue) =>
+        fieldErrors.push({ fieldId: definition.id, label: definition.label, issue })
+      const changed: { fieldId: string; value: string }[] = []
+      for (const definition of definitions) {
+        // Only own keys: the object came through JSON and zod, so it has no
+        // inherited ones a field id could collide with.
+        const value: string | undefined = input.values[definition.id]
+        if (value === undefined) {
+          // Not sent, so nothing is written. What the record shows for it
+          // still has to satisfy "required".
+          const shown = storedValue.get(definition.id) ?? definition.defaultValue ?? ''
+          if (isMissingRequiredValue(definition, shown)) refuse(definition, 'required')
+          continue
+        }
+
+        if (isMissingRequiredValue(definition, value)) {
+          refuse(definition, 'required')
+          continue
+        }
+        if (storedValue.get(definition.id) === value) continue
+
+        const issue = customFieldTypeIssue(definition, value)
+        if (issue) refuse(definition, issue)
+        else changed.push({ fieldId: definition.id, value })
+      }
+
+      if (fieldErrors.length > 0) return { saved: false, fieldErrors }
+
+      if (changed.length > 0) {
+        await db.$transaction(
+          changed.map(({ fieldId, value }) =>
+            db.customFieldValue.upsert({
+              where: { fieldId_entityId: { fieldId, entityId: input.entityId } },
+              create: { fieldId, entityId: input.entityId, entityType, value },
+              update: { value },
+            })
+          )
         )
-
-      await db.$transaction(ops)
+      }
       return { saved: true }
     },
     { requiredPermissions: recordPermission(entityType, PermissionAction.UPDATE) }

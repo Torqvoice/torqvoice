@@ -89,7 +89,8 @@
       "images": "Zdjęcia",
       "documents": "Dokumenty"
     },
-    "customFieldsInvalid": "Wypełnij wszystkie wymagane pola niestandardowe",
+    "customFieldsMissing": "Nie zapisano. Uzupełnij: {fields}",
+    "customFieldsNotValid": "Nie zapisano. Sprawdź: {fields}",
     "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych"
   },
   "form": {

@@ -23,6 +23,7 @@ import type { ConcernRow } from '../service-edit/form-types'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
+import type { CustomFieldsSave } from '@/features/custom-fields/Components/CustomFieldsForm'
 
 export function useServiceFormState({
   vehicleId,
@@ -101,6 +102,12 @@ export function useServiceFormState({
    * autosave left without it.
    */
   const editRevisionRef = useRef(0)
+  /**
+   * True for the one save the autosave timer starts. The person is typing
+   * somewhere on the page then, so a refusal is said without taking the
+   * focus away from them; a save they asked for takes them to the field.
+   */
+  const autosaveRunRef = useRef(false)
 
   const markDirty = useCallback(() => {
     // A locked invoice cannot be saved, so nothing may queue an autosave that
@@ -112,6 +119,7 @@ export function useServiceFormState({
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
       if (!isSavingRef.current && formRef.current) {
+        autosaveRunRef.current = true
         formRef.current.requestSubmit()
       }
     }, 5000)
@@ -282,9 +290,9 @@ export function useServiceFormState({
   })
 
   // Custom fields save callback ref
-  const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
+  const customFieldsSaveRef = useRef<CustomFieldsSave | null>(null)
 
-  const onCustomFieldsReady = useCallback((save: () => Promise<{ valid: boolean }>) => {
+  const onCustomFieldsReady = useCallback((save: CustomFieldsSave) => {
     customFieldsSaveRef.current = save
   }, [])
 
@@ -560,6 +568,7 @@ export function useServiceFormState({
     leaveWithoutSaving,
     lastSaveErrorRef,
     leavingRef,
+    autosaveRunRef,
     // State
     loading,
     setLoading,

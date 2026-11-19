@@ -38,6 +38,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { assertInvoiceEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
+import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
 import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import { ACTIVE_HELPERS } from '@/features/workboard/Lib/jobTeam'
@@ -1431,6 +1432,8 @@ export async function deleteServiceRecord(recordId: string) {
           serviceRecordLabel: record.invoiceNumber || record.title,
         })
         await tx.serviceRecord.delete({ where: { id: recordId } })
+        // Its custom field values hang on its id alone, so nothing cascades.
+        await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', [recordId])
       })
       await releaseFiles(files, { organizationId, reason: 'work order deleted' })
 

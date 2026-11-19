@@ -89,7 +89,8 @@
       "images": "Immagini",
       "documents": "Documenti"
     },
-    "customFieldsInvalid": "Compila tutti i campi personalizzati obbligatori",
+    "customFieldsMissing": "Non salvato. Compila: {fields}",
+    "customFieldsNotValid": "Non salvato. Controlla: {fields}",
     "customFieldsSaveFailed": "Impossibile salvare i campi personalizzati"
   },
   "form": {

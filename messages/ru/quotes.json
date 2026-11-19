@@ -89,7 +89,8 @@
       "images": "Изображения",
       "documents": "Документы"
     },
-    "customFieldsInvalid": "Заполните все обязательные пользовательские поля",
+    "customFieldsMissing": "Не сохранено. Заполните: {fields}",
+    "customFieldsNotValid": "Не сохранено. Проверьте: {fields}",
     "customFieldsSaveFailed": "Не удалось сохранить пользовательские поля"
   },
   "form": {

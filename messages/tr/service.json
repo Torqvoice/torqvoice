@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Tarihleri manuel olarak seç",
     "datesExpiredBack": "Geri",
     "datesExpiredSetToday": "Bugüne ayarla",
-    "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
+    "customFieldsMissing": "Kaydedilmedi. Doldurun: {fields}",
+    "customFieldsNotValid": "Kaydedilmedi. Kontrol edin: {fields}",
     "customFieldsSaveFailed": "Özel alanlar kaydedilemedi",
     "problems": {
       "title": "İş kaydedilmeden önce bir başlık gerekiyor.",

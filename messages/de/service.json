@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Daten manuell auswählen",
     "datesExpiredBack": "Zurück",
     "datesExpiredSetToday": "Auf heute setzen",
-    "customFieldsInvalid": "Bitte füllen Sie alle erforderlichen benutzerdefinierten Felder aus",
+    "customFieldsMissing": "Nicht gespeichert. Bitte ausfüllen: {fields}",
+    "customFieldsNotValid": "Nicht gespeichert. Bitte prüfen: {fields}",
     "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden",
     "problems": {
       "title": "Der Auftrag braucht einen Titel, bevor er gespeichert werden kann.",

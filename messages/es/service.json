@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Elegir fechas manualmente",
     "datesExpiredBack": "Atrás",
     "datesExpiredSetToday": "Establecer a hoy",
-    "customFieldsInvalid": "Por favor complete todos los campos personalizados obligatorios",
+    "customFieldsMissing": "No se ha guardado. Rellena: {fields}",
+    "customFieldsNotValid": "No se ha guardado. Revisa: {fields}",
     "customFieldsSaveFailed": "Error al guardar los campos personalizados",
     "problems": {
       "title": "El trabajo necesita un título antes de poder guardarse.",

@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Wybierz daty ręcznie",
     "datesExpiredBack": "Wstecz",
     "datesExpiredSetToday": "Ustaw na dziś",
-    "customFieldsInvalid": "Proszę wypełnić wszystkie wymagane pola niestandardowe",
+    "customFieldsMissing": "Nie zapisano. Uzupełnij: {fields}",
+    "customFieldsNotValid": "Nie zapisano. Sprawdź: {fields}",
     "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych",
     "problems": {
       "title": "Zlecenie musi mieć tytuł, zanim będzie można je zapisać.",

@@ -42,7 +42,8 @@ vi.mock('@/lib/db', () => ({
     },
     customer: { count: vi.fn(), deleteMany: vi.fn() },
     vehicle: { count: vi.fn(), deleteMany: vi.fn() },
-    serviceRecord: { count: vi.fn(), findFirst: vi.fn(), deleteMany: vi.fn() },
+    serviceRecord: { count: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), deleteMany: vi.fn() },
+    customFieldValue: { deleteMany: vi.fn() },
     organization: { findUnique: vi.fn() },
     quote: { deleteMany: vi.fn() },
     inspection: { deleteMany: vi.fn() },
@@ -118,10 +119,28 @@ describe('removeSampleData', () => {
       value: JSON.stringify(SAMPLE_IDS),
     } as never)
     vi.mocked(db.$transaction).mockResolvedValue([] as never)
+    // A job someone added to a sample vehicle goes with the vehicle.
+    vi.mocked(db.serviceRecord.findMany).mockResolvedValue([{ id: 'added-later' }] as never)
 
     const result = await removeSampleData()
     expect(result.success).toBe(true)
     expect(result.data).toEqual({ removed: true })
+
+    // Custom field values filled in on a sample job or quote go with it.
+    expect(db.customFieldValue.deleteMany).toHaveBeenCalledWith({
+      where: {
+        entityType: 'service_record',
+        entityId: { in: [...SAMPLE_IDS.serviceRecords, 'added-later'] },
+        field: { organizationId: ORG },
+      },
+    })
+    expect(db.customFieldValue.deleteMany).toHaveBeenCalledWith({
+      where: {
+        entityType: 'quote',
+        entityId: { in: SAMPLE_IDS.quotes },
+        field: { organizationId: ORG },
+      },
+    })
 
     expect(db.serviceRecord.deleteMany).toHaveBeenCalledWith({
       where: { organizationId: ORG, id: { in: SAMPLE_IDS.serviceRecords } },

@@ -89,7 +89,8 @@
       "images": "Imagens",
       "documents": "Documentos"
     },
-    "customFieldsInvalid": "Preencha todos os campos personalizados obrigatórios",
+    "customFieldsMissing": "Não guardado. Preencha: {fields}",
+    "customFieldsNotValid": "Não guardado. Verifique: {fields}",
     "customFieldsSaveFailed": "Não foi possível guardar os campos personalizados"
   },
   "form": {

@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Pasirinkti datas rankiniu būdu",
     "datesExpiredBack": "Atgal",
     "datesExpiredSetToday": "Nustatyti šiandienos datą",
-    "customFieldsInvalid": "Užpildykite visus privalomus pasirinktinius laukus",
+    "customFieldsMissing": "Neišsaugota. Užpildykite: {fields}",
+    "customFieldsNotValid": "Neišsaugota. Patikrinkite: {fields}",
     "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų",
     "problems": {
       "title": "Užsakymui reikia pavadinimo, kad jį būtų galima išsaugoti.",

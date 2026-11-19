@@ -89,7 +89,8 @@
       "images": "Vaizdai",
       "documents": "Dokumentai"
     },
-    "customFieldsInvalid": "Užpildykite visus privalomus pasirinktinius laukus",
+    "customFieldsMissing": "Neišsaugota. Užpildykite: {fields}",
+    "customFieldsNotValid": "Neišsaugota. Patikrinkite: {fields}",
     "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų"
   },
   "form": {

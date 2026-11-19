@@ -71,6 +71,7 @@ export function SearchableSelect({
   searchable,
   'aria-label': ariaLabel,
   'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
 }: {
   value: string | null | undefined
   onValueChange: (value: string) => void
@@ -88,6 +89,8 @@ export function SearchableSelect({
   searchable?: boolean
   'aria-label'?: string
   'aria-invalid'?: boolean
+  /** The id of the message that explains why the value is refused. */
+  'aria-describedby'?: string
 }) {
   const t = useTranslations('common.searchableSelect')
   const [open, setOpen] = useState(false)
@@ -125,6 +128,7 @@ export function SearchableSelect({
           aria-haspopup="listbox"
           aria-label={ariaLabel}
           aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
           disabled={disabled}
           data-size={size}
           // The button can be narrower than the name in it; hovering shows all of it.

@@ -1197,7 +1197,12 @@
     "placementHint": "Em qual seção da fatura ou do orçamento este campo é impresso. No designer você também pode ativá-lo em mais seções.",
     "failedSavePlacement": "Não foi possível salvar a posição do campo",
     "formTitle": "Campos personalizados",
-    "requiredError": "O campo {label} é obrigatório"
+    "requiredError": "O campo {label} é obrigatório",
+    "numberError": "O campo {label} deve ser um número",
+    "dateError": "O campo {label} deve ser uma data válida",
+    "optionError": "O campo {label} deve ser uma das opções disponíveis",
+    "checkboxError": "O campo {label} deve estar marcado ou desmarcado",
+    "tooLongError": "O campo {label} pode ter no máximo {max} caracteres"
   },
   "workshop": {
     "title": "Padrões da oficina",

@@ -89,7 +89,8 @@
       "images": "Bilder",
       "documents": "Dokumente"
     },
-    "customFieldsInvalid": "Bitte alle erforderlichen benutzerdefinierten Felder ausfüllen",
+    "customFieldsMissing": "Nicht gespeichert. Bitte ausfüllen: {fields}",
+    "customFieldsNotValid": "Nicht gespeichert. Bitte prüfen: {fields}",
     "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden"
   },
   "form": {

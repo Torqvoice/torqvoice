@@ -43,6 +43,7 @@ import {
 import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
 import { emptyPart, makeEmptyLabor, makeEmptyService } from './quote-page-types'
+import type { CustomFieldsSave } from '@/features/custom-fields/Components/CustomFieldsForm'
 
 interface SelectedVehicle {
   id: string
@@ -221,6 +222,12 @@ export function useQuoteFormState({
    * save did not carry must still be saved before the page is left.
    */
   const editRevisionRef = useRef(0)
+  /**
+   * True for the one save the autosave timer starts. The person is typing
+   * somewhere on the page then, so a refusal is said without taking the
+   * focus away from them; a save they asked for takes them to the field.
+   */
+  const autosaveRunRef = useRef(false)
   /** Why the last save failed, for the dialog that holds a link back. */
   const lastSaveErrorRef = useRef<string | null>(null)
   /** True while a link waits on its save: a failure goes into that dialog. */
@@ -232,9 +239,9 @@ export function useQuoteFormState({
   const isSavingRef = useRef(false)
 
   // Custom fields save callback ref
-  const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
+  const customFieldsSaveRef = useRef<CustomFieldsSave | null>(null)
 
-  const onCustomFieldsReady = useCallback((save: () => Promise<{ valid: boolean }>) => {
+  const onCustomFieldsReady = useCallback((save: CustomFieldsSave) => {
     customFieldsSaveRef.current = save
   }, [])
 
@@ -248,6 +255,7 @@ export function useQuoteFormState({
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     autosaveTimer.current = setTimeout(() => {
       if (!isSavingRef.current && formRef.current) {
+        autosaveRunRef.current = true
         formRef.current.requestSubmit()
       }
     }, 5000)
@@ -505,6 +513,9 @@ export function useQuoteFormState({
     // currentTarget is nulled once the event has finished dispatching, which
     // happens during the custom-fields await below. Read the form now.
     const form = e.currentTarget
+    // Whether the autosave timer started this save, read once and spent.
+    const autosave = autosaveRunRef.current
+    autosaveRunRef.current = false
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     // Saving from here on, the custom fields included: whoever waits for this
@@ -520,10 +531,23 @@ export function useQuoteFormState({
     // Validate and save custom fields before saving; a locked quote saves nothing.
     if (!locked && customFieldsSaveRef.current) {
       try {
-        const { valid } = await customFieldsSaveRef.current()
-        if (!valid) {
+        // A save the person asked for takes them to the first field at
+        // fault; an autosave marks it and leaves them where they are typing.
+        const outcome = await customFieldsSaveRef.current({ reveal: !autosave })
+        if (!outcome.valid) {
           isSavingRef.current = false
-          const message = t('page.customFieldsInvalid')
+          // Nothing of the quote was saved, and the message says so and names
+          // the fields by the workshop's own labels. The server's own words
+          // instead when it refused the whole save (the quote locked since
+          // the page was opened).
+          const message =
+            outcome.error ??
+            t(
+              outcome.problem === 'invalid'
+                ? 'page.customFieldsNotValid'
+                : 'page.customFieldsMissing',
+              { fields: (outcome.fields ?? []).join(', ') }
+            )
           failed(message, () => toast.error(message))
           return
         }

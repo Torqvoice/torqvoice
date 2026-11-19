@@ -89,7 +89,8 @@
       "images": "Images",
       "documents": "Documents"
     },
-    "customFieldsInvalid": "Please fill in all required custom fields",
+    "customFieldsMissing": "Not saved. Fill in: {fields}",
+    "customFieldsNotValid": "Not saved. Check: {fields}",
     "customFieldsSaveFailed": "Failed to save custom fields"
   },
   "form": {

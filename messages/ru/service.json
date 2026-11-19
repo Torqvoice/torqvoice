@@ -15,7 +15,8 @@
     "datesExpiredCustomize": "Выбрать даты вручную",
     "datesExpiredBack": "Назад",
     "datesExpiredSetToday": "Установить на сегодня",
-    "customFieldsInvalid": "Заполните все обязательные пользовательские поля",
+    "customFieldsMissing": "Не сохранено. Заполните: {fields}",
+    "customFieldsNotValid": "Не сохранено. Проверьте: {fields}",
     "customFieldsSaveFailed": "Не удалось сохранить пользовательские поля",
     "problems": {
       "title": "Заказу нужно название, прежде чем его можно сохранить.",
