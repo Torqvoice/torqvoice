@@ -297,8 +297,14 @@ test.describe('the customer reference / PO', () => {
     const withField = await invoicePdf(page)
     expect(withField.flat).toContain(`Your reference / PO: ${REFERENCE}`)
     // The same sheet with one line more: every word it said before is still there.
-    const added = withField.flat.replace(`Your reference / PO: ${REFERENCE}`, '')
-    for (const word of withoutField.flat.split(' ').filter((w) => w.length > 3)) {
+    // A glyph the sheet's subset font has no name for (the full stop of an
+    // e-mail address) is read back as a control code, and which code depends
+    // on every other character on the sheet, so those are left out of the words.
+    const readable = (text: string) => [...text].filter((char) => char >= ' ').join('')
+    const added = readable(withField.flat.replace(`Your reference / PO: ${REFERENCE}`, ''))
+    for (const word of readable(withoutField.flat)
+      .split(' ')
+      .filter((w) => w.length > 3)) {
       expect(added, `the sheet still says "${word}"`).toContain(word)
     }
     expect(withField.pages).toBe(withoutField.pages)
