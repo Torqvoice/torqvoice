@@ -57,7 +57,9 @@ describe('PasswordFeedback', () => {
 
   it('shows the hint it is given while the field is empty', () => {
     render(<NewPasswordForm hint="Must be at least 8 characters" />)
-    expect(screen.getByText('Must be at least 8 characters')).toBeInTheDocument()
+    expect(screen.getByLabelText('New password')).toHaveAccessibleDescription(
+      'Must be at least 8 characters'
+    )
   })
 
   it('counts down the characters still needed while too short', async () => {
