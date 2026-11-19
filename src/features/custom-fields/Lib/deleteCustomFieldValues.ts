@@ -17,7 +17,7 @@ interface ValueStore {
     deleteMany: (args: {
       where: {
         entityType: EntityType
-        entityId?: { in: string[] }
+        entityId: { in: string[] }
         field: { organizationId: string }
       }
     }) => PromiseLike<unknown>
@@ -28,22 +28,16 @@ interface ValueStore {
 const CHUNK = 5000
 
 /**
- * Removes the values of the given records, or of every record of that kind
- * in the workshop when `entityIds` is 'all'. Scoped to the workshop's own
- * fields, like every other query.
+ * Removes the values of the given records. Always by id: the caller names
+ * the records it deleted, so a record made in the meantime keeps its values.
+ * Scoped to the workshop's own fields, like every other query.
  */
 export async function deleteCustomFieldValuesOf(
   store: ValueStore,
   organizationId: string,
   entityType: EntityType,
-  entityIds: string[] | 'all'
+  entityIds: string[]
 ): Promise<void> {
-  if (entityIds === 'all') {
-    await store.customFieldValue.deleteMany({
-      where: { entityType, field: { organizationId } },
-    })
-    return
-  }
   for (let start = 0; start < entityIds.length; start += CHUNK) {
     await store.customFieldValue.deleteMany({
       where: {

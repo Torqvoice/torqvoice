@@ -94,6 +94,11 @@ vi.mock('@/lib/db', () => {
 })
 
 import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
+import { deleteQuote } from '@/features/quotes/Actions/quoteActions'
+import { deleteContent } from '@/features/settings/Actions/deleteContent'
+import { deleteVehicle as deleteVehicleFromPage } from '@/features/vehicles/Actions/deleteVehicle'
+import { deleteServiceRecord } from '@/features/vehicles/Actions/serviceActions'
+import { deleteVehicle } from '@/features/vehicles/Actions/vehicleActions'
 
 const index = (key: string) => calls.list.findIndex((call) => call.key === key)
 const valueDeletes = () =>
@@ -109,7 +114,6 @@ beforeEach(() => {
 describe('deleting a work order', () => {
   it('removes its custom field values in the same transaction, after the record', async () => {
     rows.findFirst.serviceRecord = { id: 'sr-1', vehicleId: 'v-1', invoiceNumber: 'WO-1' }
-    const { deleteServiceRecord } = await import('@/features/vehicles/Actions/serviceActions')
 
     expect((await deleteServiceRecord('sr-1')).success).toBe(true)
 
@@ -126,8 +130,6 @@ describe('deleting a work order', () => {
   })
 
   it('removes nothing when the work order is not this workshop’s', async () => {
-    const { deleteServiceRecord } = await import('@/features/vehicles/Actions/serviceActions')
-
     expect((await deleteServiceRecord('theirs')).success).toBe(false)
 
     expect(valueDeletes()).toEqual([])
@@ -137,7 +139,6 @@ describe('deleting a work order', () => {
 describe('deleting a quote', () => {
   it('removes its custom field values with it', async () => {
     rows.findFirst.quote = { id: 'q-1', organizationId: 'org-a' }
-    const { deleteQuote } = await import('@/features/quotes/Actions/quoteActions')
 
     expect((await deleteQuote('q-1')).success).toBe(true)
 
@@ -154,8 +155,6 @@ describe('deleting a quote', () => {
   })
 
   it('removes nothing when the quote is not this workshop’s', async () => {
-    const { deleteQuote } = await import('@/features/quotes/Actions/quoteActions')
-
     expect((await deleteQuote('theirs')).success).toBe(false)
 
     expect(valueDeletes()).toEqual([])
@@ -176,7 +175,6 @@ describe('deleting a vehicle, which takes its work orders with it', () => {
   it('removes the values of those work orders, from the vehicles list', async () => {
     rows.findFirst.vehicle = { year: 2020, make: 'Ford', model: 'F-150', licensePlate: null }
     rows.findMany.serviceRecord = [{ id: 'sr-1' }, { id: 'sr-2' }]
-    const { deleteVehicle } = await import('@/features/vehicles/Actions/vehicleActions')
 
     expect((await deleteVehicle('v-1')).success).toBe(true)
 
@@ -191,51 +189,70 @@ describe('deleting a vehicle, which takes its work orders with it', () => {
 
   it('removes them from the vehicle’s own page too', async () => {
     rows.findMany.serviceRecord = [{ id: 'sr-1' }, { id: 'sr-2' }]
-    const { deleteVehicle } = await import('@/features/vehicles/Actions/deleteVehicle')
 
-    expect((await deleteVehicle('v-1')).success).toBe(true)
+    expect((await deleteVehicleFromPage('v-1')).success).toBe(true)
 
     expect(valueDeletes()).toEqual(expected)
   })
 
   it('asks for nothing when the vehicle had no work orders', async () => {
-    const { deleteVehicle } = await import('@/features/vehicles/Actions/deleteVehicle')
-
-    expect((await deleteVehicle('v-1')).success).toBe(true)
+    expect((await deleteVehicleFromPage('v-1')).success).toBe(true)
 
     expect(valueDeletes()).toEqual([])
   })
 })
 
 describe('delete content', () => {
-  it('removes every work order value with the vehicles, and every quote value with the quotes', async () => {
-    const { deleteContent } = await import('@/features/settings/Actions/deleteContent')
+  it('removes the values of the work orders and quotes it found, by id', async () => {
+    rows.findMany.serviceRecord = [{ id: 'sr-1' }, { id: 'sr-2' }]
+    rows.findMany.quote = [{ id: 'q-1' }]
 
     const result = await deleteContent({ vehicles: true, quotes: true } as never)
 
     expect(result.success).toBe(true)
+    // By id, never "every value in the workshop": a job or quote made while
+    // this runs is not in the list and keeps its values.
     expect(valueDeletes()).toEqual([
-      { where: { entityType: 'service_record', field: { organizationId: 'org-a' } } },
-      { where: { entityType: 'quote', field: { organizationId: 'org-a' } } },
+      {
+        where: {
+          entityType: 'service_record',
+          entityId: { in: ['sr-1', 'sr-2'] },
+          field: { organizationId: 'org-a' },
+        },
+      },
+      {
+        where: {
+          entityType: 'quote',
+          entityId: { in: ['q-1'] },
+          field: { organizationId: 'org-a' },
+        },
+      },
     ])
     // The field definitions were not ticked, so they stay.
     expect(index('customFieldDefinition.deleteMany')).toBe(-1)
   })
 
   it('leaves quote values alone when only vehicles are deleted', async () => {
-    const { deleteContent } = await import('@/features/settings/Actions/deleteContent')
+    rows.findMany.serviceRecord = [{ id: 'sr-1' }]
+    rows.findMany.quote = [{ id: 'q-1' }]
 
     await deleteContent({ vehicles: true } as never)
 
     expect(valueDeletes()).toEqual([
-      { where: { entityType: 'service_record', field: { organizationId: 'org-a' } } },
+      {
+        where: {
+          entityType: 'service_record',
+          entityId: { in: ['sr-1'] },
+          field: { organizationId: 'org-a' },
+        },
+      },
     ])
   })
 })
 
 describe('the helper every delete goes through', () => {
   const store = () => {
-    const deleteMany = vi.fn(async (_args: { where: { entityId?: { in: string[] } } }) => ({
+    const deleteMany = vi.fn(async (_args: { where: { entityId: { in: string[] } } }) => ({
       count: 0,
     }))
     return { store: { customFieldValue: { deleteMany } }, deleteMany }
@@ -253,7 +270,7 @@ describe('the helper every delete goes through', () => {
 
     await deleteCustomFieldValuesOf(s, 'org-a', 'service_record', ids)
 
-    const asked = deleteMany.mock.calls.flatMap(([args]) => args.where.entityId?.in ?? [])
+    const asked = deleteMany.mock.calls.flatMap(([args]) => args.where.entityId.in)
     expect(deleteMany).toHaveBeenCalledTimes(3)
     expect(asked).toEqual(ids)
   })

@@ -6,39 +6,9 @@ import { act, fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const save = vi.hoisted(() => vi.fn())
+const load = vi.hoisted(() => vi.fn())
 vi.mock('@/features/custom-fields/Actions/customFieldActions', () => ({
-  getCustomFieldValues: vi.fn(async () => ({
-    success: true,
-    data: [
-      {
-        id: 'po',
-        name: 'po',
-        label: 'PO number',
-        fieldType: 'text',
-        options: null,
-        required: true,
-        value: 'PO 1',
-      },
-      {
-        id: 'axles',
-        name: 'axles',
-        label: 'Axles',
-        fieldType: 'number',
-        options: null,
-        required: false,
-        value: '2',
-      },
-      {
-        id: 'bay',
-        name: 'bay',
-        label: 'Bay',
-        fieldType: 'select',
-        options: 'Bay 1, Bay 2',
-        required: false,
-        value: 'Bay 3',
-      },
-    ],
-  })),
+  getCustomFieldValues: load,
   getFieldDefinitions: vi.fn(async () => ({ success: true, data: [] })),
   saveValidatedCustomFieldValues: save,
 }))
@@ -71,8 +41,39 @@ async function mount() {
 
 const field = (id: string) => screen.getByTestId(`custom-field-${id}`)
 
+const FIELDS = [
+  {
+    id: 'po',
+    name: 'po',
+    label: 'PO number',
+    fieldType: 'text',
+    options: null,
+    required: true,
+    value: 'PO 1',
+  },
+  {
+    id: 'axles',
+    name: 'axles',
+    label: 'Axles',
+    fieldType: 'number',
+    options: null,
+    required: false,
+    value: '2',
+  },
+  {
+    id: 'bay',
+    name: 'bay',
+    label: 'Bay',
+    fieldType: 'select',
+    options: 'Bay 1, Bay 2',
+    required: false,
+    value: 'Bay 3',
+  },
+]
+
 beforeEach(() => {
   save.mockReset().mockResolvedValue({ success: true, data: { saved: true } })
+  load.mockReset().mockResolvedValue({ success: true, data: FIELDS })
 })
 
 describe('saving the custom fields', () => {
@@ -147,6 +148,38 @@ describe('saving the custom fields', () => {
       valid: false,
       error: 'This document is locked because it has been sent.',
     })
+  })
+
+  it('draws a field made required while the form was open, and marks it', async () => {
+    const run = await mount()
+    fireEvent.change(field('axles').querySelector('input') as HTMLInputElement, {
+      target: { value: '4' },
+    })
+    // The workshop added "Order ref" and made it required since the page loaded.
+    load.mockResolvedValue({
+      success: true,
+      data: [
+        ...FIELDS,
+        {
+          id: 'ref',
+          name: 'ref',
+          label: 'Order ref',
+          fieldType: 'text',
+          options: null,
+          required: true,
+          value: '',
+        },
+      ],
+    })
+    save.mockResolvedValue({
+      success: true,
+      data: { saved: false, fieldErrors: { ref: 'required' } },
+    })
+
+    expect(await run()).toEqual({ valid: false, problem: 'required' })
+    expect(field('ref')).toHaveTextContent('Order ref is required')
+    // What was typed is kept.
+    expect(field('axles').querySelector('input')).toHaveValue(4)
   })
 
   it('stops an empty required field before anything is sent', async () => {

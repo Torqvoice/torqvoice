@@ -202,11 +202,49 @@ describe('a required field', () => {
     expect(result.data).toEqual({ saved: true })
   })
 
-  it('is not asked for when the save does not mention it', async () => {
+  it('cannot be got around by leaving it out of the request', async () => {
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', { axles: '2' })
+
+    expect(result.data).toEqual({ saved: false, fieldErrors: { po: 'required' } })
+    expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
+  })
+
+  it('may be left out when the record already holds a value for it', async () => {
+    db.customFieldValue.findMany.mockResolvedValue([{ fieldId: 'po', value: 'PO 1' }])
+
     const result = await saveValidatedCustomFieldValues('job-1', 'service_record', { axles: '2' })
 
     expect(result.data).toEqual({ saved: true })
     expect(written()).toEqual({ axles: '2' })
+  })
+
+  it('may be left out when the field has a default the record shows', async () => {
+    db.customFieldDefinition.findMany.mockResolvedValue(
+      FIELDS.map((field) => (field.id === 'po' ? { ...field, defaultValue: 'On account' } : field))
+    )
+
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', { axles: '2' })
+
+    expect(result.data).toEqual({ saved: true })
+    expect(written()).toEqual({ axles: '2' })
+  })
+
+  it('is still asked for when the record holds it empty and the request leaves it out', async () => {
+    db.customFieldValue.findMany.mockResolvedValue([{ fieldId: 'po', value: '' }])
+
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', { axles: '2' })
+
+    expect(result.data).toEqual({ saved: false, fieldErrors: { po: 'required' } })
+  })
+
+  it('leaves alone a field that is not required and not sent', async () => {
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {
+      po: 'PO 7',
+      loan: 'true',
+    })
+
+    expect(result.data).toEqual({ saved: true })
+    expect(written()).toEqual({ po: 'PO 7', loan: 'true' })
   })
 })
 

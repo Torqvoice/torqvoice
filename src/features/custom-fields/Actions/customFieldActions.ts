@@ -226,11 +226,14 @@ export type SaveCustomFieldValuesResult =
  *
  * - A locked work order or quote refuses the save, as it refuses every other
  *   edit to what it prints.
- * - A required field refuses an empty value. Only here: nothing else that
- *   writes to the record (its status, a payment, a line added from a phone)
- *   looks at custom fields, so a record made before a field became required
- *   keeps working and is asked for the value when its form is next saved,
- *   which is what the form has always done.
+ * - A required field refuses an empty value. One the request leaves out is
+ *   judged by what the record shows for it (the stored value, else the
+ *   field's default), so leaving a field out is no way around the rule, and
+ *   a form opened before the field became required is told about it. Only
+ *   here: nothing else that writes to the record (its status, a payment, a
+ *   line added from a phone) looks at custom fields, so a record made before
+ *   a field became required keeps working and is asked for the value when
+ *   its form is next saved, which is what the form has always done.
  * - A value has to suit its type, unless it is the value already stored for
  *   that field. That one is left alone and not written again: a choice whose
  *   option was since removed, or a date an import wrote in another shape,
@@ -269,7 +272,13 @@ export async function saveValidatedCustomFieldValues(
         // Only own keys: the object came through JSON and zod, so it has no
         // inherited ones a field id could collide with.
         const value: string | undefined = input.values[definition.id]
-        if (value === undefined) continue
+        if (value === undefined) {
+          // Not sent, so nothing is written. What the record shows for it
+          // still has to satisfy "required".
+          const shown = storedValue.get(definition.id) ?? definition.defaultValue ?? ''
+          if (isMissingRequiredValue(definition, shown)) fieldErrors[definition.id] = 'required'
+          continue
+        }
 
         if (isMissingRequiredValue(definition, value)) {
           fieldErrors[definition.id] = 'required'

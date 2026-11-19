@@ -10,6 +10,8 @@ const serviceRecord = {
 const serviceRequest = { create: vi.fn(), findUnique: vi.fn(), updateMany: vi.fn() }
 const scheduledMessage = { create: vi.fn() }
 const appSetting = { findUnique: vi.fn() }
+// A deleted placeholder job takes its custom field values with it.
+const customFieldValue = { deleteMany: vi.fn() }
 // These tests are about workshop scoping, not files: the file manager and the
 // files a delete collects have tests of their own (src/__tests__/lib/files).
 vi.mock('@/lib/files/collect', () => ({
@@ -26,7 +28,14 @@ vi.mock('@/lib/files/manager', () => ({
 }))
 
 vi.mock('@/lib/db', () => ({
-  db: { inspectionReminderSend, serviceRecord, serviceRequest, scheduledMessage, appSetting },
+  db: {
+    inspectionReminderSend,
+    serviceRecord,
+    serviceRequest,
+    scheduledMessage,
+    appSetting,
+    customFieldValue,
+  },
 }))
 const notify = vi.fn(async () => undefined)
 vi.mock('@/lib/notify', () => ({ notify }))
@@ -110,6 +119,7 @@ beforeEach(() => {
   inspectionReminderSend.update.mockResolvedValue({})
   scheduledMessage.create.mockResolvedValue({ id: 'msg-1' })
   claimableResource.mockResolvedValue({ workBayId: 'bay-1' })
+  serviceRecord.deleteMany.mockResolvedValue({ count: 1 })
 })
 
 describe('booking link', () => {
@@ -235,6 +245,32 @@ describe('booking link', () => {
     expect(notify).toHaveBeenCalledWith(
       expect.objectContaining({ type: 'online_booking_cancelled' })
     )
+    // The placeholder is gone, and so are the custom field values on it.
+    expect(customFieldValue.deleteMany).toHaveBeenCalledWith({
+      where: {
+        entityType: 'service_record',
+        entityId: { in: ['rec-1'] },
+        field: { organizationId: 'org-a' },
+      },
+    })
+  })
+
+  it('keeps the custom field values of a job somebody started before the cancel landed', async () => {
+    inspectionReminderSend.findUnique.mockResolvedValue(
+      send({ bookedAt: new Date(), bookedServiceRecordId: 'rec-1' })
+    )
+    serviceRecord.findUnique.mockResolvedValue({
+      startDateTime: future,
+      endDateTime: new Date(future.getTime() + 3_600_000),
+      status: 'scheduled',
+    })
+    // Still a placeholder when looked up, in progress by the time of the delete.
+    serviceRecord.findFirst.mockResolvedValue({ id: 'rec-1' })
+    serviceRecord.deleteMany.mockResolvedValue({ count: 0 })
+
+    await cancelBooking(TOKEN)
+
+    expect(customFieldValue.deleteMany).not.toHaveBeenCalled()
   })
 
   it('books and cancels nothing while the workshop is being restored', async () => {

@@ -333,10 +333,12 @@ export async function cancelBooking(rawToken: string) {
     const files = stillPlaceholder
       ? await serviceRecordFileUrls(send.organizationId, [stillPlaceholder.id])
       : []
-    await db.serviceRecord.deleteMany({ where: placeholder })
-    if (stillPlaceholder) {
+    const removed = await db.serviceRecord.deleteMany({ where: placeholder })
+    // Only when the delete really took the job: one a technician started
+    // since the lookup above is kept, and keeps its custom field values.
+    if (removed.count > 0) {
       await deleteCustomFieldValuesOf(db, send.organizationId, 'service_record', [
-        stillPlaceholder.id,
+        send.bookedServiceRecordId,
       ])
     }
     await releaseFiles(files, {

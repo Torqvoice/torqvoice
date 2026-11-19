@@ -133,13 +133,34 @@ export function CustomFieldsForm({
           // The server checks the same rules again: it is the one that decides.
           const result = await saveValidatedCustomFieldValues(entityId, entityType, values)
           if (!result.success || !result.data) return { valid: false, error: result.error }
-          if (!result.data.saved) return refused(result.data.fieldErrors)
+          if (!result.data.saved) {
+            const { fieldErrors } = result.data
+            // A field this form does not show: it was added, or made required,
+            // while the form was open. Draw the fields as they are now, keeping
+            // what was typed, so the message has a field to sit under.
+            if (Object.keys(fieldErrors).some((id) => !fields.some((f) => f.id === id))) {
+              const fresh = await getCustomFieldValues(entityId, entityType)
+              if (fresh.success && fresh.data) {
+                const current = fresh.data
+                setFields(current)
+                setValues((typed) => {
+                  const next = { ...typed }
+                  for (const f of current) if (!(f.id in next)) next[f.id] = f.value
+                  return next
+                })
+                for (const f of current) {
+                  if (!(f.id in savedValues.current)) savedValues.current[f.id] = f.value
+                }
+              }
+            }
+            return refused(fieldErrors)
+          }
           savedValues.current = { ...savedValues.current, ...values }
         }
         return { valid: true }
       })
     }
-  }, [onValuesReady, entityId, entityType, values, validate])
+  }, [onValuesReady, entityId, entityType, fields, values, validate])
 
   const updateValue = (fieldId: string, value: string) => {
     setValues((prev) => ({ ...prev, [fieldId]: value }))

@@ -74,15 +74,20 @@ export async function deleteContent(input: unknown) {
           ...(await vehicleFileUrls(organizationId, vehicleIds)),
           ...(await serviceRecordFileUrls(organizationId, counterSaleIds))
         )
+        // Every work order there is now. Their custom field values hang on
+        // the id alone, so they are removed by these ids afterwards: a job
+        // made while this runs is not in the list and keeps its values.
+        const workOrderIds = await idsOf(
+          db.serviceRecord.findMany({ where: { organizationId }, select: { id: true } })
+        )
 
         await db.vehicle.deleteMany({ where: { organizationId } })
         // Counter sales have no vehicle so the cascade above misses them, but
         // their attachment files were already collected for cleanup — delete the
         // records too so no orphaned work orders survive.
         await db.serviceRecord.deleteMany({ where: { organizationId } })
-        // No work order is left, so none of their custom field values is
-        // either. The fields themselves stay unless they were ticked too.
-        await deleteCustomFieldValuesOf(db, organizationId, 'service_record', 'all')
+        // The fields themselves stay unless they were ticked too.
+        await deleteCustomFieldValuesOf(db, organizationId, 'service_record', workOrderIds)
         deleted.push('vehicles')
       }
 
@@ -96,7 +101,7 @@ export async function deleteContent(input: unknown) {
         )
         filesToRelease.push(...(await quoteFileUrls(organizationId, quoteIds)))
         await db.quote.deleteMany({ where: { organizationId } })
-        await deleteCustomFieldValuesOf(db, organizationId, 'quote', 'all')
+        await deleteCustomFieldValuesOf(db, organizationId, 'quote', quoteIds)
         deleted.push('quotes')
       }
 
