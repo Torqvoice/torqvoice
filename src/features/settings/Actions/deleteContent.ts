@@ -1,5 +1,6 @@
 'use server'
 
+import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
@@ -79,6 +80,9 @@ export async function deleteContent(input: unknown) {
         // their attachment files were already collected for cleanup — delete the
         // records too so no orphaned work orders survive.
         await db.serviceRecord.deleteMany({ where: { organizationId } })
+        // No work order is left, so none of their custom field values is
+        // either. The fields themselves stay unless they were ticked too.
+        await deleteCustomFieldValuesOf(db, organizationId, 'service_record', 'all')
         deleted.push('vehicles')
       }
 
@@ -92,6 +96,7 @@ export async function deleteContent(input: unknown) {
         )
         filesToRelease.push(...(await quoteFileUrls(organizationId, quoteIds)))
         await db.quote.deleteMany({ where: { organizationId } })
+        await deleteCustomFieldValuesOf(db, organizationId, 'quote', 'all')
         deleted.push('quotes')
       }
 

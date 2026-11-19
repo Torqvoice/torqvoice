@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { DateInput } from '@/components/ui/date-input'
@@ -12,9 +12,16 @@ import { AppCard } from '@/components/app-card'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   getCustomFieldValues,
-  saveCustomFieldValues,
+  saveValidatedCustomFieldValues,
   getFieldDefinitions,
 } from '@/features/custom-fields/Actions/customFieldActions'
+import {
+  CUSTOM_FIELD_VALUE_MAX_LENGTH,
+  customFieldOptions,
+  customFieldTypeIssue,
+  isMissingRequiredValue,
+  type CustomFieldIssue,
+} from '@/features/custom-fields/Lib/customFieldValueRules'
 import { Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -28,6 +35,26 @@ interface FieldWithValue {
   value: string
 }
 
+/**
+ * What saving the custom fields came to. When it is not valid the fields at
+ * fault are marked on the form, and the page says why its save stopped:
+ * `problem` tells a value left out from one that does not fit its field, and
+ * `error` carries the server's own words when it refused the whole save (a
+ * locked document, a missing permission).
+ */
+export type CustomFieldsSaveOutcome =
+  | { valid: true }
+  | { valid: false; problem?: 'required' | 'invalid'; error?: string }
+
+const ISSUE_MESSAGE = {
+  required: 'requiredError',
+  number: 'numberError',
+  date: 'dateError',
+  option: 'optionError',
+  checkbox: 'checkboxError',
+  tooLong: 'tooLongError',
+} as const satisfies Record<CustomFieldIssue, string>
+
 export function CustomFieldsForm({
   entityId,
   entityType,
@@ -36,14 +63,17 @@ export function CustomFieldsForm({
 }: {
   entityId?: string
   entityType: 'service_record' | 'quote'
-  onValuesReady?: (save: () => Promise<{ valid: boolean }>) => void
+  onValuesReady?: (save: () => Promise<CustomFieldsSaveOutcome>) => void
   onChange?: () => void
 }) {
   const tSettings = useTranslations('settings.customFields')
   const [fields, setFields] = useState<FieldWithValue[]>([])
   const [values, setValues] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, CustomFieldIssue>>({})
+  // What the server holds for each field, as last loaded or saved. A value
+  // left as it was is never re-checked for its type: see the save action.
+  const savedValues = useRef<Record<string, string>>({})
 
   useEffect(() => {
     async function load() {
@@ -55,6 +85,7 @@ export function CustomFieldsForm({
           const v: Record<string, string> = {}
           for (const f of result.data) v[f.id] = f.value
           setValues(v)
+          savedValues.current = v
         }
       } else {
         const result = await getFieldDefinitions(entityType)
@@ -71,30 +102,39 @@ export function CustomFieldsForm({
     load()
   }, [entityId, entityType])
 
-  const validate = useCallback((): Record<string, string> => {
-    const newErrors: Record<string, string> = {}
+  const validate = useCallback((): Record<string, CustomFieldIssue> => {
+    const found: Record<string, CustomFieldIssue> = {}
     for (const field of fields) {
-      if (field.required && field.fieldType !== 'checkbox') {
-        const val = values[field.id] ?? field.value ?? ''
-        if (!val.trim()) {
-          newErrors[field.id] = tSettings('requiredError', { label: field.label })
-        }
+      const val = values[field.id] ?? field.value ?? ''
+      if (isMissingRequiredValue(field, val)) {
+        found[field.id] = 'required'
+        continue
       }
+      if (savedValues.current[field.id] === val) continue
+      const issue = customFieldTypeIssue(field, val)
+      if (issue) found[field.id] = issue
     }
-    return newErrors
-  }, [fields, values, tSettings])
+    return found
+  }, [fields, values])
 
   useEffect(() => {
     if (onValuesReady) {
       onValuesReady(async () => {
-        const validationErrors = validate()
-        if (Object.keys(validationErrors).length > 0) {
-          setErrors(validationErrors)
-          return { valid: false }
+        const refused = (found: Record<string, CustomFieldIssue>): CustomFieldsSaveOutcome => {
+          setErrors(found)
+          const onlyMissing = Object.values(found).every((issue) => issue === 'required')
+          return { valid: false, problem: onlyMissing ? 'required' : 'invalid' }
         }
+
+        const found = validate()
+        if (Object.keys(found).length > 0) return refused(found)
         setErrors({})
         if (entityId && Object.keys(values).length > 0) {
-          await saveCustomFieldValues(entityId, entityType, values)
+          // The server checks the same rules again: it is the one that decides.
+          const result = await saveValidatedCustomFieldValues(entityId, entityType, values)
+          if (!result.success || !result.data) return { valid: false, error: result.error }
+          if (!result.data.saved) return refused(result.data.fieldErrors)
+          savedValues.current = { ...savedValues.current, ...values }
         }
         return { valid: true }
       })
@@ -130,7 +170,13 @@ export function CustomFieldsForm({
     <AppCard title={tSettings('formTitle')} contentClassName="space-y-4">
       {fields.map((field) => {
         const val = values[field.id] ?? field.value ?? ''
-        const hasError = !!errors[field.id]
+        const issue = errors[field.id]
+        const hasError = !!issue
+        const errorId = `custom-field-error-${field.id}`
+        const invalid = {
+          'aria-invalid': hasError || undefined,
+          'aria-describedby': hasError ? errorId : undefined,
+        }
         return (
           <div key={field.id} data-testid={`custom-field-${field.id}`} className="space-y-1.5">
             {field.fieldType !== 'checkbox' && (
@@ -145,6 +191,7 @@ export function CustomFieldsForm({
                 value={val}
                 onChange={(e) => updateValue(field.id, e.target.value)}
                 className={cn(hasError && 'border-destructive focus-visible:ring-destructive')}
+                {...invalid}
               />
             )}
 
@@ -154,6 +201,7 @@ export function CustomFieldsForm({
                 value={val}
                 onChange={(e) => updateValue(field.id, e.target.value)}
                 className={cn(hasError && 'border-destructive focus-visible:ring-destructive')}
+                {...invalid}
               />
             )}
 
@@ -171,6 +219,7 @@ export function CustomFieldsForm({
                 onChange={(e) => updateValue(field.id, e.target.value)}
                 rows={3}
                 className={cn(hasError && 'border-destructive focus-visible:ring-destructive')}
+                {...invalid}
               />
             )}
 
@@ -193,16 +242,22 @@ export function CustomFieldsForm({
                   ...(field.required
                     ? []
                     : [{ value: 'none', label: tSettings('defaultValueNone') }]),
-                  ...(field.options || '')
-                    .split(',')
-                    .map((o) => o.trim())
-                    .filter(Boolean)
-                    .map((option) => ({ value: option, label: option })),
+                  ...customFieldOptions(field.options).map((option) => ({
+                    value: option,
+                    label: option,
+                  })),
                 ]}
               />
             )}
 
-            {hasError && <p className="text-xs text-destructive">{errors[field.id]}</p>}
+            {issue && (
+              <p id={errorId} role="alert" className="text-xs text-destructive">
+                {tSettings(ISSUE_MESSAGE[issue], {
+                  label: field.label,
+                  max: CUSTOM_FIELD_VALUE_MAX_LENGTH,
+                })}
+              </p>
+            )}
           </div>
         )
       })}

@@ -1197,7 +1197,12 @@
     "placementHint": "En qué sección de la factura o del presupuesto se imprime este campo. En el diseñador también puedes activarlo en más secciones.",
     "failedSavePlacement": "No se pudo guardar la ubicación del campo",
     "formTitle": "Campos personalizados",
-    "requiredError": "El campo {label} es obligatorio"
+    "requiredError": "El campo {label} es obligatorio",
+    "numberError": "El campo {label} debe ser un número",
+    "dateError": "El campo {label} debe ser una fecha válida",
+    "optionError": "El campo {label} debe ser una de sus opciones",
+    "checkboxError": "El campo {label} debe estar marcado o desmarcado",
+    "tooLongError": "El campo {label} admite como máximo {max} caracteres"
   },
   "workshop": {
     "title": "Valores predeterminados del taller",

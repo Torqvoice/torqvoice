@@ -90,6 +90,7 @@
       "documents": "Documenten"
     },
     "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
+    "customFieldsNotValid": "Sommige aangepaste velden zijn ongeldig. Controleer de gemarkeerde velden.",
     "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan"
   },
   "form": {

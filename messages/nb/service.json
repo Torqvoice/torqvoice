@@ -16,6 +16,7 @@
     "datesExpiredBack": "Tilbake",
     "datesExpiredSetToday": "Sett til i dag",
     "customFieldsInvalid": "Vennligst fyll ut alle obligatoriske egendefinerte felt",
+    "customFieldsNotValid": "Noen egendefinerte felt er ugyldige. Sjekk de markerte feltene.",
     "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt",
     "problems": {
       "title": "Jobben må ha en tittel før den kan lagres.",

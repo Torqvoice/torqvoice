@@ -16,6 +16,7 @@
     "datesExpiredBack": "Zurück",
     "datesExpiredSetToday": "Auf heute setzen",
     "customFieldsInvalid": "Bitte füllen Sie alle erforderlichen benutzerdefinierten Felder aus",
+    "customFieldsNotValid": "Einige benutzerdefinierte Felder sind ungültig. Bitte prüfen Sie die markierten Felder.",
     "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden",
     "problems": {
       "title": "Der Auftrag braucht einen Titel, bevor er gespeichert werden kann.",

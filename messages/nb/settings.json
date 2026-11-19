@@ -1197,7 +1197,12 @@
     "placementHint": "Hvilken del av fakturaen eller tilbudet dette feltet skrives ut i. I designeren kan du også slå det på i flere seksjoner.",
     "failedSavePlacement": "Kunne ikke lagre feltplasseringen",
     "formTitle": "Egendefinerte felter",
-    "requiredError": "{label} er påkrevd"
+    "requiredError": "{label} er påkrevd",
+    "numberError": "{label} må være et tall",
+    "dateError": "{label} må være en gyldig dato",
+    "optionError": "{label} må være ett av valgene",
+    "checkboxError": "{label} må enten være avkrysset eller ikke avkrysset",
+    "tooLongError": "{label} kan ha maks {max} tegn"
   },
   "workshop": {
     "title": "Verkstedstandarder",

@@ -7,6 +7,7 @@ import {
   getDocumentLockSettings,
 } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState, quoteLockState } from '@/lib/document-lock'
+import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { discountAmountFor } from '@/lib/tax'
 import { db } from '@/lib/db'
@@ -459,7 +460,11 @@ export async function deleteQuote(quoteId: string) {
 
       // Its attachments cascade with it; their files are let go afterwards.
       const files = await quoteFileUrls(organizationId, [quoteId])
-      await db.quote.deleteMany({ where: { id: quoteId, organizationId } })
+      // Its custom field values hang on its id alone, so nothing cascades.
+      await db.$transaction(async (tx) => {
+        await tx.quote.deleteMany({ where: { id: quoteId, organizationId } })
+        await deleteCustomFieldValuesOf(tx, organizationId, 'quote', [quoteId])
+      })
       await releaseFiles(files, { organizationId, reason: 'quote deleted' })
       revalidatePath('/quotes')
       return { quoteId }

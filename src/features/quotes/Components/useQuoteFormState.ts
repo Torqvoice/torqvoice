@@ -43,6 +43,7 @@ import {
 import { isPriceOverridden, lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import type { QuoteRecord, QuotePartInput, QuoteLaborInput } from './quote-page-types'
 import { emptyPart, makeEmptyLabor, makeEmptyService } from './quote-page-types'
+import type { CustomFieldsSaveOutcome } from '@/features/custom-fields/Components/CustomFieldsForm'
 
 interface SelectedVehicle {
   id: string
@@ -232,9 +233,9 @@ export function useQuoteFormState({
   const isSavingRef = useRef(false)
 
   // Custom fields save callback ref
-  const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
+  const customFieldsSaveRef = useRef<(() => Promise<CustomFieldsSaveOutcome>) | null>(null)
 
-  const onCustomFieldsReady = useCallback((save: () => Promise<{ valid: boolean }>) => {
+  const onCustomFieldsReady = useCallback((save: () => Promise<CustomFieldsSaveOutcome>) => {
     customFieldsSaveRef.current = save
   }, [])
 
@@ -520,10 +521,19 @@ export function useQuoteFormState({
     // Validate and save custom fields before saving; a locked quote saves nothing.
     if (!locked && customFieldsSaveRef.current) {
       try {
-        const { valid } = await customFieldsSaveRef.current()
-        if (!valid) {
+        const outcome = await customFieldsSaveRef.current()
+        if (!outcome.valid) {
           isSavingRef.current = false
-          const message = t('page.customFieldsInvalid')
+          // The server's own words when it refused the whole save (the quote
+          // locked since the page was opened); else which kind of problem the
+          // marked fields have.
+          const message =
+            outcome.error ??
+            t(
+              outcome.problem === 'invalid'
+                ? 'page.customFieldsNotValid'
+                : 'page.customFieldsInvalid'
+            )
           failed(message, () => toast.error(message))
           return
         }

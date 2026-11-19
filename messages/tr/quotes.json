@@ -90,6 +90,7 @@
       "documents": "Belgeler"
     },
     "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
+    "customFieldsNotValid": "Bazı özel alanlar geçerli değil. Lütfen işaretlenen alanları kontrol edin.",
     "customFieldsSaveFailed": "Özel alanlar kaydedilemedi"
   },
   "form": {

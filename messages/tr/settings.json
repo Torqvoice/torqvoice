@@ -1197,7 +1197,12 @@
     "placementHint": "Bu alanın faturanın veya teklifin hangi bölümünde yazdırılacağı. Tasarımcıda başka bölümlerde de açabilirsiniz.",
     "failedSavePlacement": "Alan konumu kaydedilemedi",
     "formTitle": "Özel alanlar",
-    "requiredError": "{label} zorunludur"
+    "requiredError": "{label} zorunludur",
+    "numberError": "{label} bir sayı olmalıdır",
+    "dateError": "{label} geçerli bir tarih olmalıdır",
+    "optionError": "{label} seçeneklerinden biri olmalıdır",
+    "checkboxError": "{label} işaretli ya da işaretsiz olmalıdır",
+    "tooLongError": "{label} en fazla {max} karakter olabilir"
   },
   "workshop": {
     "title": "Atölye Varsayılanları",

@@ -90,6 +90,7 @@
       "documents": "Dokumentai"
     },
     "customFieldsInvalid": "Užpildykite visus privalomus pasirinktinius laukus",
+    "customFieldsNotValid": "Kai kurie pasirinktiniai laukai netinkami. Patikrinkite pažymėtus laukus.",
     "customFieldsSaveFailed": "Nepavyko išsaugoti pasirinktinių laukų"
   },
   "form": {

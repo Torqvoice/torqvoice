@@ -34,12 +34,16 @@ vi.mock('@/lib/with-auth', () => ({
   },
 }))
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
+vi.mock('@/lib/document-lock.server', () => ({
+  assertInvoiceEditable: vi.fn(),
+  assertQuoteEditable: vi.fn(),
+}))
 vi.mock('@/lib/features', () => ({ requireFeature: vi.fn() }))
 
 import {
   getCustomFieldValues,
   getFieldDefinitions,
-  saveCustomFieldValues,
+  saveValidatedCustomFieldValues,
 } from '@/features/custom-fields/Actions/customFieldActions'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 
@@ -47,7 +51,11 @@ const needed = () => seenOptions.at(-1)?.requiredPermissions
 
 beforeEach(() => {
   seenOptions.length = 0
-  db.customFieldDefinition.findMany.mockReset().mockResolvedValue([{ id: 'f-1', defaultValue: '' }])
+  db.customFieldDefinition.findMany
+    .mockReset()
+    .mockResolvedValue([
+      { id: 'f-1', fieldType: 'text', options: null, required: false, defaultValue: '' },
+    ])
   db.customFieldValue.findMany.mockReset().mockResolvedValue([])
   db.customFieldValue.upsert.mockReset().mockReturnValue('upsert')
   db.serviceRecord.count.mockReset().mockResolvedValue(1)
@@ -86,7 +94,9 @@ describe("reading a record's custom fields", () => {
 
 describe('filling them in', () => {
   it('needs what saving the work order needs', async () => {
-    const result = await saveCustomFieldValues('job-1', 'service_record', { 'f-1': 'Blue' })
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {
+      'f-1': 'Blue',
+    })
     expect(result.success).toBe(true)
     expect(needed()).toEqual([
       { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
@@ -95,7 +105,7 @@ describe('filling them in', () => {
   })
 
   it('needs what saving the quote needs', async () => {
-    await saveCustomFieldValues('q-1', 'quote', { 'f-1': 'Blue' })
+    await saveValidatedCustomFieldValues('q-1', 'quote', { 'f-1': 'Blue' })
     expect(needed()).toEqual([
       { action: PermissionAction.UPDATE, subject: PermissionSubject.QUOTES },
     ])
@@ -118,7 +128,9 @@ describe("a record that is not this workshop's", () => {
   it('cannot have values attached to it', async () => {
     db.quote.count.mockResolvedValue(0)
 
-    const result = await saveCustomFieldValues('somebody-elses-quote', 'quote', { 'f-1': 'x' })
+    const result = await saveValidatedCustomFieldValues('somebody-elses-quote', 'quote', {
+      'f-1': 'x',
+    })
 
     expect(result).toEqual({ success: false, error: 'Record not found' })
     expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
@@ -134,7 +146,7 @@ describe('a kind of record nobody defined', () => {
     ])
     expect(read).toEqual({ success: false, error: 'Unknown record type' })
 
-    const saved = await saveCustomFieldValues('x', 'customer', { 'f-1': 'x' })
+    const saved = await saveValidatedCustomFieldValues('x', 'customer', { 'f-1': 'x' })
     expect(needed()).toEqual([
       { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
     ])

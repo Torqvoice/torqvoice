@@ -108,10 +108,20 @@ export function useServiceActions({
     // Validate and save custom fields before saving
     if (customFieldsSaveRef.current) {
       try {
-        const { valid } = await customFieldsSaveRef.current()
-        if (!valid) {
+        const outcome = await customFieldsSaveRef.current()
+        if (!outcome.valid) {
           isSavingRef.current = false
-          refuse(t('page.customFieldsInvalid'))
+          // The server's own words when it refused the whole save (the
+          // invoice locked since the page was opened); else which kind of
+          // problem the marked fields have.
+          refuse(
+            outcome.error ??
+              t(
+                outcome.problem === 'invalid'
+                  ? 'page.customFieldsNotValid'
+                  : 'page.customFieldsInvalid'
+              )
+          )
           return
         }
       } catch (err) {

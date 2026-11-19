@@ -90,6 +90,7 @@
       "documents": "Dokumenty"
     },
     "customFieldsInvalid": "Wypełnij wszystkie wymagane pola niestandardowe",
+    "customFieldsNotValid": "Niektóre pola niestandardowe są nieprawidłowe. Sprawdź oznaczone pola.",
     "customFieldsSaveFailed": "Nie udało się zapisać pól niestandardowych"
   },
   "form": {

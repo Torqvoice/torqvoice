@@ -1197,7 +1197,12 @@
     "placementHint": "In welke sectie van de factuur of offerte dit veld wordt afgedrukt. In de designer kun je het ook in meer secties inschakelen.",
     "failedSavePlacement": "Kan de veldplaatsing niet opslaan",
     "formTitle": "Aangepaste velden",
-    "requiredError": "{label} is verplicht"
+    "requiredError": "{label} is verplicht",
+    "numberError": "{label} moet een getal zijn",
+    "dateError": "{label} moet een geldige datum zijn",
+    "optionError": "{label} moet een van de opties zijn",
+    "checkboxError": "{label} moet aangevinkt of niet aangevinkt zijn",
+    "tooLongError": "{label} mag maximaal {max} tekens bevatten"
   },
   "workshop": {
     "title": "Werkplaatsstandaarden",

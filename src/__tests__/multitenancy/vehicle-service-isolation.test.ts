@@ -57,6 +57,8 @@ vi.mock('@/lib/db', () => ({
       delete: vi.fn(),
     },
     servicePart: { findMany: vi.fn() },
+    // A deleted work order or quote takes its custom field values with it.
+    customFieldValue: { deleteMany: vi.fn() },
     inventoryPart: { updateMany: vi.fn() },
     $transaction: vi.fn(),
   },
@@ -120,6 +122,8 @@ beforeEach(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   vi.mocked(db.$transaction).mockImplementation(async (cb: any) => cb(db))
   vi.mocked(db.servicePart.findMany).mockResolvedValue([] as any)
+  // Deleting a vehicle first reads which work orders go with it.
+  vi.mocked(db.serviceRecord.findMany).mockResolvedValue([] as any)
 })
 
 // ---------------------------------------------------------------------------

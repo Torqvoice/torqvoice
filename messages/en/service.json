@@ -16,6 +16,7 @@
     "datesExpiredBack": "Back",
     "datesExpiredSetToday": "Set to today",
     "customFieldsInvalid": "Please fill in all required custom fields",
+    "customFieldsNotValid": "Some custom fields are not valid. Check the marked fields.",
     "customFieldsSaveFailed": "Failed to save custom fields",
     "problems": {
       "title": "The job needs a title before it can be saved.",

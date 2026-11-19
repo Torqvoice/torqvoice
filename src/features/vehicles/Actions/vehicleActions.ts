@@ -1,6 +1,10 @@
 'use server'
 
 import {
+  deleteCustomFieldValuesOf,
+  workOrderIdsOfVehicles,
+} from '@/features/custom-fields/Lib/deleteCustomFieldValues'
+import {
   INSPECTION_CAPABILITY,
   recordRegistryAnswer,
 } from '@/features/integrations/Lib/inspection-sync'
@@ -437,7 +441,13 @@ export async function deleteVehicle(vehicleId: string) {
       // Everything the delete cascades to, read while it still exists, and
       // let go once the rows are gone.
       const files = await vehicleFileUrls(organizationId, [vehicleId])
-      await db.vehicle.deleteMany({ where: { id: vehicleId, organizationId } })
+      // Its work orders go with it by cascade; their custom field values hang
+      // on the work order's id alone and have to be removed by name.
+      const workOrderIds = await workOrderIdsOfVehicles(organizationId, [vehicleId])
+      await db.$transaction(async (tx) => {
+        await tx.vehicle.deleteMany({ where: { id: vehicleId, organizationId } })
+        await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', workOrderIds)
+      })
       await releaseFiles(files, { organizationId, reason: 'vehicle deleted' })
 
       const vehicleDisplay = `${vehicleName(vehicle)}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`

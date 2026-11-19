@@ -90,6 +90,7 @@
       "documents": "Dokumente"
     },
     "customFieldsInvalid": "Bitte alle erforderlichen benutzerdefinierten Felder ausfüllen",
+    "customFieldsNotValid": "Einige benutzerdefinierte Felder sind ungültig. Bitte die markierten Felder prüfen.",
     "customFieldsSaveFailed": "Benutzerdefinierte Felder konnten nicht gespeichert werden"
   },
   "form": {

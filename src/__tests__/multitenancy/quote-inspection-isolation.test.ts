@@ -69,6 +69,8 @@ vi.mock('@/lib/db', () => ({
       findFirst: vi.fn(),
       update: vi.fn(),
     },
+    // A deleted work order or quote takes its custom field values with it.
+    customFieldValue: { deleteMany: vi.fn() },
     $transaction: vi.fn(),
   },
 }))
@@ -135,6 +137,10 @@ const ORG_A_INSPECTION = {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  // Deleting a quote removes it and its custom field values in one
+  // transaction; run the callback against the mock db.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  vi.mocked(db.$transaction).mockImplementation(async (cb: any) => cb(db))
   vi.mocked(db.documentDesignSnapshot.findUnique).mockResolvedValue({ id: 'snap-1' } as any)
   // Locking is read before any edit to an invoice or quote; no settings
   // rows means locking is off, which is how these tests expect to run.

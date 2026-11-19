@@ -16,6 +16,7 @@
     "datesExpiredBack": "Terug",
     "datesExpiredSetToday": "Instellen op vandaag",
     "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
+    "customFieldsNotValid": "Sommige aangepaste velden zijn ongeldig. Controleer de gemarkeerde velden.",
     "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan",
     "problems": {
       "title": "De opdracht heeft een titel nodig voordat deze kan worden opgeslagen.",

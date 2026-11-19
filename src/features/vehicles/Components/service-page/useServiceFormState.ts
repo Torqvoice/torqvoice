@@ -23,6 +23,7 @@ import type { ConcernRow } from '../service-edit/form-types'
 import type { ServicePartInput, ServiceLaborInput, InitialData } from './service-page-types'
 import type { ServiceDetail } from '../service-detail/types'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
+import type { CustomFieldsSaveOutcome } from '@/features/custom-fields/Components/CustomFieldsForm'
 
 export function useServiceFormState({
   vehicleId,
@@ -282,9 +283,9 @@ export function useServiceFormState({
   })
 
   // Custom fields save callback ref
-  const customFieldsSaveRef = useRef<(() => Promise<{ valid: boolean }>) | null>(null)
+  const customFieldsSaveRef = useRef<(() => Promise<CustomFieldsSaveOutcome>) | null>(null)
 
-  const onCustomFieldsReady = useCallback((save: () => Promise<{ valid: boolean }>) => {
+  const onCustomFieldsReady = useCallback((save: () => Promise<CustomFieldsSaveOutcome>) => {
     customFieldsSaveRef.current = save
   }, [])
 

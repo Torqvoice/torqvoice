@@ -1,5 +1,6 @@
 'use server'
 
+import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -333,6 +334,11 @@ export async function cancelBooking(rawToken: string) {
       ? await serviceRecordFileUrls(send.organizationId, [stillPlaceholder.id])
       : []
     await db.serviceRecord.deleteMany({ where: placeholder })
+    if (stillPlaceholder) {
+      await deleteCustomFieldValuesOf(db, send.organizationId, 'service_record', [
+        stillPlaceholder.id,
+      ])
+    }
     await releaseFiles(files, {
       organizationId: send.organizationId,
       reason: 'online booking cancelled',

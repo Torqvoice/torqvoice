@@ -90,6 +90,7 @@
       "documents": "Documentos"
     },
     "customFieldsInvalid": "Completa todos los campos personalizados obligatorios",
+    "customFieldsNotValid": "Algunos campos personalizados no son válidos. Revisa los campos resaltados.",
     "customFieldsSaveFailed": "No se pudieron guardar los campos personalizados"
   },
   "form": {

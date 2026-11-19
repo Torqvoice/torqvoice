@@ -1197,7 +1197,12 @@
     "placementHint": "In welchem Abschnitt der Rechnung oder des Angebots dieses Feld gedruckt wird. Im Designer kann es zusätzlich in weiteren Abschnitten aktiviert werden.",
     "failedSavePlacement": "Feldposition konnte nicht gespeichert werden",
     "formTitle": "Benutzerdefinierte Felder",
-    "requiredError": "{label} ist erforderlich"
+    "requiredError": "{label} ist erforderlich",
+    "numberError": "{label} muss eine Zahl sein",
+    "dateError": "{label} muss ein gültiges Datum sein",
+    "optionError": "{label} muss eine der vorgegebenen Optionen sein",
+    "checkboxError": "{label} muss entweder angehakt oder nicht angehakt sein",
+    "tooLongError": "{label} darf höchstens {max} Zeichen lang sein"
   },
   "workshop": {
     "title": "Werkstatt-Standards",

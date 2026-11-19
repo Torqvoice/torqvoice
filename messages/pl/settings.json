@@ -1197,7 +1197,12 @@
     "placementHint": "W której sekcji faktury lub wyceny drukowane jest to pole. W projektancie można je włączyć także w innych sekcjach.",
     "failedSavePlacement": "Nie udało się zapisać miejsca pola",
     "formTitle": "Pola niestandardowe",
-    "requiredError": "Pole {label} jest wymagane"
+    "requiredError": "Pole {label} jest wymagane",
+    "numberError": "Pole {label} musi zawierać liczbę",
+    "dateError": "Pole {label} musi zawierać prawidłową datę",
+    "optionError": "Pole {label} musi zawierać jedną z dostępnych opcji",
+    "checkboxError": "Pole {label} musi być zaznaczone lub odznaczone",
+    "tooLongError": "Pole {label} może zawierać maksymalnie {max} znaków"
   },
   "workshop": {
     "title": "Domyślne warsztatu",

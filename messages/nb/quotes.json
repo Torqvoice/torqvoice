@@ -90,6 +90,7 @@
       "documents": "Dokumenter"
     },
     "customFieldsInvalid": "Fyll ut alle obligatoriske egendefinerte felt",
+    "customFieldsNotValid": "Noen egendefinerte felt er ugyldige. Sjekk de markerte feltene.",
     "customFieldsSaveFailed": "Kunne ikke lagre egendefinerte felt"
   },
   "form": {
