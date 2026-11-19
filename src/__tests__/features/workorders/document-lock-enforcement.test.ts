@@ -134,6 +134,16 @@ describe('a locked invoice refuses edits', () => {
     expect(db.serviceRecord.updateMany).not.toHaveBeenCalled()
   })
 
+  it('says the invoice is locked even when the form sent with it does not parse', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(PAID_INVOICE as any)
+
+    const result = await updateServiceRecord({ id: 'rec-1', title: null })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('This document is locked because it has been paid.')
+    expect(db.serviceRecord.update).not.toHaveBeenCalled()
+  })
+
   it('refuses deleteServiceRecord', async () => {
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(PAID_INVOICE as any)
 
@@ -234,6 +244,48 @@ describe('a locked quote refuses edits', () => {
 
     expect(result.success).toBe(false)
     expect(result.error).toMatch(/locked/i)
+    expect(db.quote.update).not.toHaveBeenCalled()
+  })
+
+  it('says the quote is locked when Save is pressed on the locked page', async () => {
+    // The locked page turns its inputs off, so the form reads no title and
+    // sends null. Whoever pressed Save is told about the lock, not handed
+    // "title: Invalid input: expected string, received null".
+    lockSettings({
+      [SETTING_KEYS.QUOTE_LOCK_ENABLED]: 'true',
+      [SETTING_KEYS.QUOTE_LOCK_TRIGGER]: 'sent',
+    })
+    vi.mocked(db.quote.findFirst).mockResolvedValue({
+      status: 'sent',
+      sentAt: new Date('2026-11-19T10:00:00Z'),
+      editUnlockedAt: null,
+    } as any)
+
+    const result = await updateQuote({
+      id: 'quote-1',
+      title: null,
+      description: '',
+      status: 'sent',
+      validUntil: '',
+      partItems: [],
+      laborItems: [],
+    })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('This document is locked because it has been sent.')
+    expect(db.quote.update).not.toHaveBeenCalled()
+  })
+
+  it('still names the field when a quote that is not locked is sent without a title', async () => {
+    vi.mocked(db.quote.findFirst).mockResolvedValue({
+      status: 'draft',
+      editUnlockedAt: null,
+    } as any)
+
+    const result = await updateQuote({ id: 'quote-1', title: null })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/^title:/)
     expect(db.quote.update).not.toHaveBeenCalled()
   })
 
