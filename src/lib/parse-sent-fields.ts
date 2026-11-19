@@ -24,3 +24,19 @@ export function parseSentFields<T extends z.ZodType>(schema: T, input: unknown):
   }
   return parsed as z.infer<T>
 }
+
+/**
+ * The id an update was sent with, read before the rest of the input is
+ * parsed, or null when there is none to read.
+ *
+ * An update of a locked document is refused whatever else it carries, so the
+ * lock is asked first. The page of a locked document turns its inputs off,
+ * and a form with its inputs off sends them as null: parsed first, pressing
+ * Save answered "title: Invalid input: expected string, received null" where
+ * the person needed to hear that the document is locked.
+ */
+export function sentId(input: unknown): string | null {
+  if (!input || typeof input !== 'object') return null
+  const id = (input as Record<string, unknown>).id
+  return typeof id === 'string' && id ? id : null
+}
