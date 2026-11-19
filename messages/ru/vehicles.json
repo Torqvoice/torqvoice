@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Удалить лодку",
     "editMileage": "Изменить пробег",
     "editMileageMarine": "Изменить моточасы",
+    "lowerReading": "Меньше последнего показания ({reading}). Сохранить всё равно можно.",
+    "lowerReadingMarine": "Меньше последнего показания ({hours} ч). Сохранить всё равно можно.",
     "bookAppointment": "Создать запись",
     "addTitleMarine": "Добавить новое судно"
   },

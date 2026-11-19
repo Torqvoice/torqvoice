@@ -19,6 +19,8 @@ import type { InitialData } from '../../service-edit/form-types'
 import { formatTypeKey } from '../../../Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
+import { LowerReadingNotice } from '../../LowerReadingNotice'
+import { isLowerReading } from '../../../Lib/vehicleReading'
 
 interface JobFactsCardProps {
   record: ServiceDetail
@@ -34,6 +36,8 @@ interface JobFactsCardProps {
   selectedVehicleId: string | null
   setSelectedVehicleId: (id: string) => void
   techName: string
+  /** "km" or "mi", for the notice under the reading. */
+  distanceUnit?: string
   initialVehicle?: {
     id: string
     make: string
@@ -126,6 +130,7 @@ export function JobFactsCard({
   setSelectedVehicleId,
   techName,
   initialVehicle,
+  distanceUnit,
 }: JobFactsCardProps) {
   const t = useTranslations('service')
   const tv = useTranslations('vehicles.form')
@@ -137,6 +142,12 @@ export function JobFactsCard({
   const formatCurrency = useFormatCurrency()
   const { timezone } = useDateSettings()
   const [changingVehicle, setChangingVehicle] = useState(false)
+  // What was typed in the reading field since the page loaded; null until then.
+  const [readingTyped, setReadingTyped] = useState<string | null>(null)
+  const readingIsSaved =
+    readingTyped !== null &&
+    readingTyped.trim() !== '' &&
+    Number(readingTyped) === initialData.mileage
 
   // Closed on the server and on the first paint, then as this browser left it:
   // localStorage is not readable before hydration.
@@ -163,6 +174,11 @@ export function JobFactsCard({
   // The picker can point the job at another vehicle before the save; the facts
   // on this card describe the saved one, so say which is which while they differ.
   const vehicleChanged = Boolean(vehicle && selectedVehicleId && selectedVehicleId !== vehicle.id)
+  const showReadingNotice =
+    readingTyped !== null &&
+    !vehicleChanged &&
+    !readingIsSaved &&
+    isLowerReading(readingTyped, initialData.lastReading)
 
   return (
     <section
@@ -322,18 +338,34 @@ export function JobFactsCard({
             )}
 
             {selectedVehicleId && (
-              <div className="flex items-center gap-2">
-                <Label htmlFor="mileage" className={factLabel}>
-                  {serviceType === 'marine' ? t('basicInfo.mileageMarine') : t('basicInfo.mileage')}
-                </Label>
-                <Input
-                  id="mileage"
-                  name="mileage"
-                  type="number"
-                  placeholder="50000"
-                  className="h-8 w-32"
-                  defaultValue={initialData.mileage ?? ''}
-                />
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="mileage" className={factLabel}>
+                    {serviceType === 'marine'
+                      ? t('basicInfo.mileageMarine')
+                      : t('basicInfo.mileage')}
+                  </Label>
+                  <Input
+                    id="mileage"
+                    name="mileage"
+                    type="number"
+                    placeholder="50000"
+                    className="h-8 w-32"
+                    defaultValue={initialData.mileage ?? ''}
+                    onChange={(e) => setReadingTyped(e.target.value)}
+                    aria-describedby={showReadingNotice ? 'mileage-notice' : undefined}
+                  />
+                </div>
+                {/* Only for a reading typed now and not yet saved, on the
+                    vehicle the last reading was read for. */}
+                {showReadingNotice && (
+                  <LowerReadingNotice
+                    id="mileage-notice"
+                    entered={readingTyped ?? ''}
+                    last={initialData.lastReading}
+                    unit={distanceUnit}
+                  />
+                )}
               </div>
             )}
           </fieldset>

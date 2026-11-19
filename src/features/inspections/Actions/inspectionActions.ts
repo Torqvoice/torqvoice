@@ -16,6 +16,7 @@ import {
 } from '@/features/signatures/Lib/memberSignature.server'
 import { liveCertificateDesign } from '../Pdf/certificateDesign'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
+import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { defectLineText, defectsWorstFirst } from '../Lib/conversion'
@@ -797,6 +798,15 @@ export async function createWorkOrderFromInspection(
             inspectionId: inspection.id,
             mileage: inspection.mileage,
           },
+        })
+        // The job starts with the inspection's reading, which may be news to
+        // the vehicle: the rule is in vehicleReading.ts.
+        await applyJobReading(tx, {
+          organizationId,
+          vehicleId: inspection.vehicle.id,
+          jobId: draft.id,
+          jobDate: jobReadingDate(draft),
+          reading: inspection.mileage,
         })
         // Hours start at zero: the workshop prices the job as it works. The
         // lines are labor, taxed or not as the workshop taxes labor.

@@ -323,6 +323,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                   setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
                   techName={formState.techName}
                   initialVehicle={props.initialVehicle}
+                  distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
                 />
 
                 <Lockable locked={locked}>

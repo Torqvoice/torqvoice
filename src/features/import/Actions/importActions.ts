@@ -38,6 +38,7 @@ import {
   detectDecimalSeparator,
 } from '../Lib/normalize'
 import { releaseFiles } from '@/lib/files/manager'
+import { applyJobReading } from '@/features/vehicles/Lib/vehicleReading'
 import { escapeHtml } from '@/features/email/Render/escape'
 import { organizationTranslator } from '@/i18n/organization-translator'
 import { serviceRecordFileUrls, vehicleFileUrls } from '@/lib/files/collect'
@@ -553,7 +554,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
       throw new Error('Service row is missing its vehicle, date or title')
     const total = s.total ?? 0
     const serviceDate = new Date(s.date)
-    await tx.serviceRecord.create({
+    const job = await tx.serviceRecord.create({
       data: {
         title: s.title,
         description: textToHtml(s.description),
@@ -579,12 +580,15 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
         importBatchId: batchId,
       },
     })
-    if (s.mileage != null) {
-      await tx.vehicle.updateMany({
-        where: { id: vehicleId, mileage: { lt: s.mileage } },
-        data: { mileage: s.mileage },
-      })
-    }
+    // The newest imported reading moves the vehicle, as a job saved in the
+    // app does (vehicleReading.ts); the rows may come in any order.
+    await applyJobReading(tx, {
+      organizationId,
+      vehicleId,
+      jobId: job.id,
+      jobDate: serviceDate,
+      reading: s.mileage,
+    })
   }
 }
 

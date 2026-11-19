@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Boot verwijderen",
     "editMileage": "Kilometerstand wijzigen",
     "editMileageMarine": "Motoruren wijzigen",
+    "lowerReading": "Lager dan de vorige stand ({reading}). U kunt toch opslaan.",
+    "lowerReadingMarine": "Lager dan de vorige stand ({hours} uur). U kunt toch opslaan.",
     "bookAppointment": "Afspraak inplannen",
     "addTitleMarine": "Nieuw vaartuig toevoegen"
   },

@@ -38,6 +38,7 @@ import { getServiceFindings } from '@/features/vehicles/Actions/findingActions'
 import { faultCodesConnected, seenBefore } from '@/features/fault-codes/Lib/service.server'
 import { oemSourceFor } from '@/features/fault-codes/Lib/codes'
 import { db } from '@/lib/db'
+import { jobReadingDate, lastReadingBeforeJob } from '@/features/vehicles/Lib/vehicleReading'
 import {
   loadVehicleConditionMarks,
   markTypeCatalogue,
@@ -249,6 +250,21 @@ export async function ServiceRecordPage({
   // The date inputs show the workshop's calendar day, not the server's.
   const timeZone = organizationId ? await workshopTimeZone(organizationId) : 'UTC'
 
+  // What the reading field warns against going below (vehicleReading.ts).
+  const lastReading =
+    record.vehicle && organizationId && isRenderable(record.serviceDate)
+      ? await lastReadingBeforeJob(db, {
+          organizationId,
+          vehicleId: record.vehicle.id,
+          jobId: record.id,
+          jobDate: jobReadingDate({
+            startDateTime: isRenderable(record.startDateTime) ? record.startDateTime : null,
+            serviceDate: record.serviceDate,
+          }),
+          vehicleReading: record.vehicle.mileage,
+        })
+      : null
+
   const initialData = {
     id: record.id,
     title: record.title,
@@ -256,6 +272,7 @@ export async function ServiceRecordPage({
     type: record.type,
     status: record.status,
     mileage: record.mileage,
+    lastReading,
     serviceDate: zonedDayKey(
       isRenderable(record.serviceDate) ? new Date(record.serviceDate) : new Date(),
       timeZone

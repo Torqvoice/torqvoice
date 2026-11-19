@@ -40,7 +40,7 @@ vi.mock('@/lib/invoice-utils', async (importOriginal) => ({
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
-    vehicle: { findFirst: vi.fn(), update: vi.fn() },
+    vehicle: { findFirst: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
     appSetting: { findMany: vi.fn(), updateMany: vi.fn() },
     organization: { findUnique: vi.fn() },
     // findMany: a draft with no stated time is placed in the first free slot,
@@ -90,6 +90,11 @@ function setupCommonMocks() {
   vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null) // no previous records
   vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: null }] as any)
   vi.mocked(db.vehicle.update).mockResolvedValue(VEHICLE as any)
+  // The vehicle's reading is moved by the shared rule, which compares in the
+  // database: this stands in for "the reading is higher than the vehicle's".
+  vi.mocked(db.vehicle.updateMany).mockImplementation((async ({ where, data }: any) => ({
+    count: VEHICLE.mileage < where.mileage.lt && data.mileage === where.mileage.lt ? 1 : 0,
+  })) as any)
 }
 
 beforeEach(() => {
@@ -460,11 +465,12 @@ describe('createServiceRecord — parts and inventory', () => {
 // ---------------------------------------------------------------------------
 
 describe('createServiceRecord — vehicle mileage', () => {
-  it('updates vehicle mileage when service mileage is higher', async () => {
-    setupAuth()
-    setupCommonMocks()
+  const START = new Date('2026-11-19T09:00:00Z')
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-mile' })
+  function createdJob(id: string) {
+    const mockCreate = vi
+      .fn()
+      .mockResolvedValue({ id, vehicleId: VEHICLE_ID, startDateTime: START, serviceDate: START })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
         serviceRecord: { create: mockCreate },
@@ -474,47 +480,82 @@ describe('createServiceRecord — vehicle mileage', () => {
         inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
       })
     )
+  }
 
-    await createServiceRecord({
+  /** What the vehicle's reading was set to, if it was. */
+  const movedTo = () => {
+    const moved = vi
+      .mocked(db.vehicle.updateMany)
+      .mock.calls.map(([args]) => args as any)
+      .filter((args) => VEHICLE.mileage < args.where.mileage.lt)
+    return moved.length ? moved[0].data.mileage : null
+  }
+
+  it('updates vehicle mileage when service mileage is higher', async () => {
+    setupAuth()
+    setupCommonMocks()
+    createdJob('sr-mile')
+
+    const result = await createServiceRecord({
       vehicleId: VEHICLE_ID,
       title: 'Service',
       mileage: 55000, // higher than vehicle's 50000
     })
 
-    expect(vi.mocked(db.vehicle.update)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ mileage: 55000 }),
-      })
-    )
+    expect(result.success).toBe(true)
+    expect(movedTo()).toBe(55000)
+    // Scoped to the workshop, and only ever upwards.
+    expect(vi.mocked(db.vehicle.updateMany)).toHaveBeenCalledWith({
+      where: { id: VEHICLE_ID, organizationId: ORG, mileage: { lt: 55000 } },
+      data: { mileage: 55000 },
+    })
   })
 
   it('does not downgrade vehicle mileage when service mileage is lower', async () => {
     setupAuth()
     setupCommonMocks()
+    createdJob('sr-low')
 
-    const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-low' })
-    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
-      fn({
-        serviceRecord: { create: mockCreate },
-        servicePart: { createMany: vi.fn() },
-        serviceLabor: { createMany: vi.fn() },
-        serviceAttachment: { createMany: vi.fn() },
-        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
-      })
-    )
-
-    await createServiceRecord({
+    const result = await createServiceRecord({
       vehicleId: VEHICLE_ID,
       title: 'Service',
       mileage: 40000, // lower than vehicle's 50000
     })
 
-    // Should NOT include mileage in the update
+    // Saved all the same: a lower reading is never refused.
+    expect(result.success).toBe(true)
+    expect(movedTo()).toBeNull()
     expect(vi.mocked(db.vehicle.update)).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.not.objectContaining({ mileage: 40000 }),
-      })
+      expect.objectContaining({ data: expect.not.objectContaining({ mileage: 40000 }) })
     )
+  })
+
+  it('leaves the vehicle alone when a later job already carries a reading', async () => {
+    setupAuth()
+    setupCommonMocks()
+    createdJob('sr-backdated')
+    // The only job the rule asks about is one dated after this, with a reading.
+    vi.mocked(db.serviceRecord.findFirst).mockImplementation((async ({ where }: any) =>
+      where?.mileage?.gt === 0 ? { id: 'sr-later' } : null) as any)
+
+    const result = await createServiceRecord({
+      vehicleId: VEHICLE_ID,
+      title: 'Service',
+      mileage: 55000,
+    })
+
+    expect(result.success).toBe(true)
+    expect(vi.mocked(db.vehicle.updateMany)).not.toHaveBeenCalled()
+  })
+
+  it('writes no reading for a job created without one', async () => {
+    setupAuth()
+    setupCommonMocks()
+    createdJob('sr-none')
+
+    await createServiceRecord({ vehicleId: VEHICLE_ID, title: 'Service' })
+
+    expect(vi.mocked(db.vehicle.updateMany)).not.toHaveBeenCalled()
   })
 })
 
