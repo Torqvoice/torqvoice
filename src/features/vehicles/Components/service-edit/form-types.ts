@@ -31,6 +31,8 @@ export interface InitialData {
   type: string
   status: string
   mileage: number | null
+  /** The last known reading before this job's, for the notice beside the field. */
+  lastReading?: number | null
   serviceDate: string
   startDateTime?: string | null
   endDateTime?: string | null

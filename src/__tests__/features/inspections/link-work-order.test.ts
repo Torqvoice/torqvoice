@@ -6,7 +6,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const { db, tx } = vi.hoisted(() => {
   const tx = {
-    serviceRecord: { update: vi.fn() },
+    // findFirst: whether a later job on the vehicle already has a reading.
+    serviceRecord: { update: vi.fn(), findFirst: vi.fn(async () => null) },
+    // The vehicle's reading, moved up when the job's is news to it.
+    vehicle: { updateMany: vi.fn(async () => ({ count: 1 })) },
     serviceLabor: { createMany: vi.fn() },
     // The workshop's tax rule for labor; none set, so the lines are taxed.
     appSetting: { findMany: vi.fn(async () => []) },
@@ -90,6 +93,9 @@ describe('linking to a booked job', () => {
       vehicleId: 'veh-1',
       invoiceNumber: '2026-1007',
       inspectionId: null,
+      mileage: null,
+      startDateTime: new Date('2026-11-19T09:00:00Z'),
+      serviceDate: new Date('2026-11-19T09:00:00Z'),
       laborItems: [],
     })
     const result = await linkWorkOrderToInspection('insp-1', 'job-1', { includeDefects: true })
@@ -97,6 +103,11 @@ describe('linking to a booked job', () => {
     expect(tx.serviceRecord.update).toHaveBeenCalledWith({
       where: { id: 'job-1' },
       data: { inspectionId: 'insp-1', mileage: 120000 },
+    })
+    // The inspection's reading reaches the vehicle with the link, upwards only.
+    expect(tx.vehicle.updateMany).toHaveBeenCalledWith({
+      where: { id: 'veh-1', organizationId: 'org', mileage: { lt: 120000 } },
+      data: { mileage: 120000 },
     })
     expect(
       tx.serviceLabor.createMany.mock.calls[0][0].data.map(

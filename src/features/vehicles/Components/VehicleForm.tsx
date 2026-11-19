@@ -51,6 +51,8 @@ import { PlateChip } from '@/components/plate-chip'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
 import { cn } from '@/lib/utils'
 import { PhotoHandoffButton } from './service-page/PhotoHandoffButton'
+import { LowerReadingNotice } from './LowerReadingNotice'
+import { isLowerReading } from '../Lib/vehicleReading'
 
 /**
  * How alike two names must read before the scanned keeper is offered as an
@@ -893,6 +895,12 @@ export function VehicleForm({
                           </button>
                         )}
                       </dd>
+                      <LowerReadingNotice
+                        entered={mileageDraft}
+                        last={vehicle?.mileage}
+                        unit={unit}
+                        className="max-w-56"
+                      />
                     </div>
                     {!isMarine && (
                       <div className="space-y-1">
@@ -1237,6 +1245,11 @@ export function VehicleForm({
                           placeholder="0"
                           value={mileageDraft}
                           onChange={(e) => setMileageDraft(e.target.value)}
+                          aria-describedby={
+                            isLowerReading(mileageDraft, vehicle?.mileage)
+                              ? 'mileage-notice'
+                              : undefined
+                          }
                           // No spinner: it would sit on top of the unit, and
                           // nobody steps an odometer reading one at a time.
                           className={cn(
@@ -1253,6 +1266,12 @@ export function VehicleForm({
                           </span>
                         )}
                       </div>
+                      <LowerReadingNotice
+                        id="mileage-notice"
+                        entered={mileageDraft}
+                        last={vehicle?.mileage}
+                        unit={unit}
+                      />
                     </div>
                   </div>
                 </FormCard>

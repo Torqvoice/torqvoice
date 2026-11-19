@@ -45,8 +45,16 @@ const JOB = {
   inspectionId: null,
   invoiceNumber: 'WO-1',
   createdAt: new Date('2026-11-09T08:00:00Z'),
+  startDateTime: new Date('2026-11-09T08:00:00Z') as Date | null,
+  serviceDate: new Date('2026-11-09T08:00:00Z'),
 }
-const OLD_JOB = { ...JOB, id: 'job-0', createdAt: new Date('2026-05-01T08:00:00Z') }
+const OLD_JOB = {
+  ...JOB,
+  id: 'job-0',
+  createdAt: new Date('2026-05-01T08:00:00Z'),
+  startDateTime: new Date('2026-05-01T08:00:00Z') as Date | null,
+  serviceDate: new Date('2026-05-01T08:00:00Z'),
+}
 
 const state = {
   marks: [] as Mark[],
@@ -109,6 +117,8 @@ const matches = (row: Record<string, unknown>, where: Record<string, unknown>): 
       return row[k] !== (v as { not: unknown }).not
     if (v && typeof v === 'object' && 'lt' in (v as object))
       return (row[k] as number) < (v as { lt: number }).lt
+    if (v && typeof v === 'object' && 'gt' in (v as object))
+      return row[k] != null && (row[k] as number | Date) > (v as { gt: number | Date }).gt
     return row[k] === v
   })
 
@@ -132,7 +142,8 @@ vi.mock('@/lib/db', () => {
               attachments: state.attachments.filter((a) => a.category === 'dropoff'),
             }
           }
-          return job
+          // A row as it was read, not the one a later write changes.
+          return { ...job }
         }
       ),
       update: vi.fn(async ({ data }: { data: { mileage: number | null } }) => {
@@ -307,6 +318,7 @@ beforeEach(() => {
   }
   JOB.mileage = null
   JOB.status = 'scheduled'
+  OLD_JOB.mileage = null
 })
 
 describe('reading a check-in', () => {
@@ -374,6 +386,31 @@ describe('mileage and body', () => {
     await PATCH(req({ mileage: 99 }), job())
     expect(JOB.mileage).toBe(99)
     expect(state.vehicle.mileage).toBe(125400)
+  })
+
+  it('keeps an equal reading without touching the vehicle', async () => {
+    await PATCH(req({ mileage: 120000 }), job())
+    expect(JOB.mileage).toBe(120000)
+    expect(state.vehicle.mileage).toBe(120000)
+  })
+
+  it('does not let an earlier visit checked in late push today’s reading on', async () => {
+    // This visit already read 125 400; the May job is filled in afterwards
+    // with a digit too many.
+    await PATCH(req({ mileage: 125400 }), job())
+    state.ctx.isAdmin = true
+    const res = await PATCH(req({ mileage: 1189000 }), {
+      params: Promise.resolve({ id: OLD_JOB.id }),
+    })
+    expect(res.status).toBe(200)
+    expect(OLD_JOB.mileage).toBe(1189000)
+    expect(state.vehicle.mileage).toBe(125400)
+  })
+
+  it('answers a lower reading as it always has', async () => {
+    const { status, body } = await read(await PATCH(req({ mileage: 99 }), job()))
+    expect(status).toBe(200)
+    expect(body.data).toEqual({ mileage: 99 })
   })
 
   it('chooses the drawing the vehicle is marked on', async () => {

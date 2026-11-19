@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Boot löschen",
     "editMileage": "Kilometerstand ändern",
     "editMileageMarine": "Betriebsstunden ändern",
+    "lowerReading": "Niedriger als der letzte Stand ({reading}). Sie können trotzdem speichern.",
+    "lowerReadingMarine": "Niedriger als der letzte Stand ({hours} Stunden). Sie können trotzdem speichern.",
     "bookAppointment": "Termin buchen",
     "addTitleMarine": "Neues Wasserfahrzeug hinzufügen"
   },

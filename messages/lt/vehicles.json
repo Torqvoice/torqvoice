@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Ištrinti valtį",
     "editMileage": "Pakeisti ridą",
     "editMileageMarine": "Pakeisti variklio valandas",
+    "lowerReading": "Mažiau nei paskutinis rodmuo ({reading}). Vis tiek galite išsaugoti.",
+    "lowerReadingMarine": "Mažiau nei paskutinis rodmuo ({hours} val.). Vis tiek galite išsaugoti.",
     "bookAppointment": "Užregistruoti vizitą",
     "addTitleMarine": "Pridėti naują laivą"
   },

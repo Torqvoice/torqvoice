@@ -39,6 +39,7 @@ import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileSt
 import { assertInvoiceEditable, getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
 import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
+import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import { ACTIVE_HELPERS } from '@/features/workboard/Lib/jobTeam'
 import { FRESH_SHARE_LINK } from '@/lib/share-expiry'
 
@@ -605,22 +606,19 @@ export async function createServiceRecord(input: unknown) {
         await onInventoryChanged(organizationId)
       }
 
-      // Update vehicle mileage if service mileage is higher, and reset maintenance dismissed
+      // A new job resets maintenance dismissed, and its reading may become the
+      // vehicle's: the rule is in vehicleReading.ts.
       if (vehicle) {
-        const vehicleUpdate: {
-          mileage?: number
-          maintenanceDismissed: boolean
-          maintenanceDismissedAt: null
-        } = {
-          maintenanceDismissed: false,
-          maintenanceDismissedAt: null,
-        }
-        if (data.mileage && data.mileage > vehicle.mileage) {
-          vehicleUpdate.mileage = data.mileage
-        }
         await db.vehicle.update({
           where: { id: vehicle.id },
-          data: vehicleUpdate,
+          data: { maintenanceDismissed: false, maintenanceDismissedAt: null },
+        })
+        await applyJobReading(db, {
+          organizationId,
+          vehicleId: vehicle.id,
+          jobId: record.id,
+          jobDate: jobReadingDate(record),
+          reading: data.mileage,
         })
       }
 
@@ -979,17 +977,19 @@ export async function updateServiceRecord(input: unknown) {
         return updated
       })
 
-      // Update vehicle mileage if this is the latest service record and mileage is higher
-      if (existing.vehicle && recordData.mileage && recordData.mileage > existing.vehicle.mileage) {
-        const latestRecord = await db.serviceRecord.findFirst({
-          where: { vehicleId: existing.vehicle.id },
-          orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
-          select: { id: true },
-        })
-        if (latestRecord?.id === id) {
-          await db.vehicle.update({
-            where: { id: existing.vehicle.id },
-            data: { mileage: recordData.mileage },
+      // The job's reading may become the vehicle's: the rule is in
+      // vehicleReading.ts. A job that moved to another vehicle in this save
+      // speaks for that vehicle, with whatever reading it now carries.
+      if (record.vehicleId) {
+        const sameVehicle = record.vehicleId === existing.vehicleId
+        if (recordData.mileage !== undefined || !sameVehicle) {
+          await applyJobReading(db, {
+            organizationId,
+            vehicleId: record.vehicleId,
+            jobId: id,
+            jobDate: jobReadingDate(record),
+            reading: record.mileage,
+            previousReading: sameVehicle ? existing.mileage : undefined,
           })
         }
       }

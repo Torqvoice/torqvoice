@@ -53,6 +53,7 @@ import { toast } from 'sonner'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { BOOKING_EVENT, BookingAccessProvider } from '@/components/booking-launcher'
 import { VehicleForm } from '@/features/vehicles/Components/VehicleForm'
+import { ServiceTypeProvider } from '@/components/service-type-context'
 import { createVehicle, updateVehicle } from '@/features/vehicles/Actions/vehicleActions'
 
 const VEHICLE = {
@@ -384,5 +385,70 @@ describe('adding a vehicle', () => {
     renderNew({ initialPlate: 'AB 12345' })
     await waitFor(() => expect(screen.getByLabelText('License Plate')).toHaveValue('AB 12345'))
     expect(screen.getByLabelText('License Plate')).toHaveFocus()
+  })
+})
+
+describe('a reading lowered on the vehicle form', () => {
+  const NOTICE = 'Lower than the last reading (225,040 km). You can still save it.'
+  const field = () => screen.getByLabelText('Mileage', { selector: 'input#mileage' })
+
+  it('says nothing while the reading is as saved or goes up', async () => {
+    renderForm()
+    await screen.findByRole('dialog')
+    expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
+    fireEvent.change(field(), { target: { value: '231500' } })
+    expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
+    fireEvent.change(field(), { target: { value: '' } })
+    expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
+  })
+
+  it('says so beside the field when it goes down, and saves it all the same', async () => {
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '22504' } })
+    // Under the field and under the figure at the top, which is the same reading.
+    expect(screen.getAllByText(NOTICE)).toHaveLength(2)
+    expect(field()).toHaveAccessibleDescription(NOTICE.replace(' km', '\u00a0km'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalled())
+    expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ mileage: 22504 })
+    expect(toast.error).not.toHaveBeenCalled()
+  })
+
+  it('goes away when the reading is put back', async () => {
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '100' } })
+    expect(screen.getAllByTestId('lower-reading-notice').length).toBeGreaterThan(0)
+    fireEvent.change(field(), { target: { value: '225040' } })
+    expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
+  })
+
+  it('has nothing to compare with on a new vehicle', async () => {
+    renderForm({ vehicle: undefined })
+    await screen.findByRole('dialog')
+    fireEvent.change(screen.getByLabelText('Mileage', { selector: 'input#mileage' }), {
+      target: { value: '5' },
+    })
+    expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
+  })
+
+  it('speaks of engine hours in a boat workshop', async () => {
+    render(
+      <ServiceTypeProvider serviceType="marine">
+        <TooltipProvider>
+          <VehicleForm open onOpenChange={vi.fn()} vehicle={{ ...VEHICLE, mileage: 1240 }} />
+        </TooltipProvider>
+      </ServiceTypeProvider>
+    )
+    await screen.findByRole('dialog')
+    fireEvent.change(screen.getByLabelText('Engine Hours', { selector: 'input#mileage' }), {
+      target: { value: '900' },
+    })
+    expect(
+      screen.getAllByText('Lower than the last reading (1,240 hours). You can still save it.')
+        .length
+    ).toBeGreaterThan(0)
   })
 })

@@ -461,6 +461,8 @@
     "deleteVehicleMarine": "Supprimer le bateau",
     "editMileage": "Changer le kilométrage",
     "editMileageMarine": "Changer les heures moteur",
+    "lowerReading": "Inférieur au dernier relevé ({reading}). Vous pouvez quand même enregistrer.",
+    "lowerReadingMarine": "Inférieur au dernier relevé ({hours} heures). Vous pouvez quand même enregistrer.",
     "bookAppointment": "Prendre rendez-vous",
     "addTitleMarine": "Ajouter un nouveau navire"
   },
