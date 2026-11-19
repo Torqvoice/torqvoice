@@ -368,14 +368,14 @@ export function QuotePageClient({
                     </p>
                   </div>
                 </Link>
-                <div className="flex shrink-0 flex-wrap items-center gap-2">
+                <div className="flex max-w-full shrink-0 flex-wrap items-center gap-2">
                   {state.hasUnsavedChanges && (
-                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400">
+                    <span className="text-xs font-medium text-amber-600 dark:text-amber-400 max-sm:order-last">
                       {t('page.unsavedChanges')}
                     </span>
                   )}
                   {state.showSaved && !state.hasUnsavedChanges && (
-                    <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                    <span className="text-xs font-medium text-green-600 dark:text-green-400 max-sm:order-last">
                       {t('page.saved')}
                     </span>
                   )}
