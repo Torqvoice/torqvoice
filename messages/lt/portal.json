@@ -67,7 +67,9 @@
     "portalNotEnabled": "Šios dirbtuvės šiuo metu nesiūlo prieigos internetu.",
     "noPassword": "Be slaptažodžio. Atsiųsime nuorodą, kuri jus prijungs.",
     "noPasswordSms": "Be slaptažodžio. SMS žinute atsiųsime kodą, kuris jus prijungs.",
-    "method": "Kaip prisijungti"
+    "method": "Kaip prisijungti",
+    "demoNotice": "Demonstracinė versija nesiunčia el. laiškų ir SMS, todėl prisijungimo nuorodos nebus. Apsižvalgykite kaip {customer}, pavyzdinis klientas.",
+    "demoButton": "Atidaryti demonstracinį portalą"
   },
   "nav": {
     "label": "Pagrindinis meniu",

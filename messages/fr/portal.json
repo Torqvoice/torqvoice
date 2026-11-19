@@ -67,7 +67,9 @@
     "portalNotEnabled": "Cet atelier ne propose pas d'accès en ligne pour le moment.",
     "noPassword": "Pas de mot de passe. Nous vous envoyons un lien qui vous connecte.",
     "noPasswordSms": "Pas de mot de passe. Nous vous envoyons par SMS un code qui vous connecte.",
-    "method": "Comment vous connecter"
+    "method": "Comment vous connecter",
+    "demoNotice": "La démo n'envoie ni e-mail ni SMS, aucun lien de connexion ne sera donc envoyé. Découvrez le portail en tant que {customer}, un client d'exemple.",
+    "demoButton": "Ouvrir le portail de démonstration"
   },
   "nav": {
     "label": "Principal",

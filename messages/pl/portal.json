@@ -67,7 +67,9 @@
     "portalNotEnabled": "Ten warsztat nie oferuje teraz dostępu online.",
     "noPassword": "Bez hasła. Wyślemy Ci link, który Cię zaloguje.",
     "noPasswordSms": "Bez hasła. Wyślemy Ci SMS-em kod, który Cię zaloguje.",
-    "method": "Jak się zalogować"
+    "method": "Jak się zalogować",
+    "demoNotice": "Wersja demo nie wysyła e-maili ani SMS-ów, więc link do logowania nie przyjdzie. Rozejrzyj się jako {customer}, przykładowy klient.",
+    "demoButton": "Otwórz portal demo"
   },
   "nav": {
     "label": "Główna nawigacja",

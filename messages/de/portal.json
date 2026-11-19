@@ -67,7 +67,9 @@
     "portalNotEnabled": "Diese Werkstatt bietet derzeit keinen Online-Zugang an.",
     "noPassword": "Kein Passwort nötig. Wir senden Ihnen einen Link, mit dem Sie angemeldet werden.",
     "noPasswordSms": "Kein Passwort nötig. Wir schicken Ihnen per SMS einen Code, mit dem Sie angemeldet werden.",
-    "method": "Wie möchten Sie sich anmelden?"
+    "method": "Wie möchten Sie sich anmelden?",
+    "demoNotice": "Die Demo versendet keine E-Mails oder SMS, es kommt also kein Anmeldelink. Sehen Sie sich als {customer} um, ein Beispielkunde.",
+    "demoButton": "Demo-Portal öffnen"
   },
   "nav": {
     "label": "Hauptmenü",

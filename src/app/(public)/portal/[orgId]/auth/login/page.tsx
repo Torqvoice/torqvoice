@@ -3,6 +3,8 @@ import { getTranslations } from 'next-intl/server'
 import { PortalLanding } from '@/features/portal/Components/PortalLanding'
 import { PortalLoginForm } from '@/features/portal/Components/PortalLoginForm'
 import { PortalPlainScreen } from '@/features/portal/Components/PortalPlainScreen'
+import { PortalButton, PortalNotice } from '@/features/portal/Components/Ui'
+import { findDemoPortalCustomer } from '@/features/portal/Lib/demoCustomer'
 import { isPortalLive } from '@/features/portal/Lib/portalLive'
 import { signInErrorMessageKey } from '@/features/portal/Lib/signInLink'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
@@ -47,6 +49,9 @@ export default async function PortalLoginPage({
     redirect(`/portal/${orgParam}/dashboard`)
   }
 
+  // Null everywhere but the demo, which sends no link or code to sign in with.
+  const demoCustomer = await findDemoPortalCustomer(orgId)
+
   const [settings, smsProvider] = await Promise.all([
     db.appSetting.findMany({
       where: {
@@ -74,12 +79,32 @@ export default async function PortalLoginPage({
       description={get(SETTING_KEYS.PORTAL_DESCRIPTION)}
       hoursText={get(SETTING_KEYS.PORTAL_HOURS)}
     >
-      <PortalLoginForm
-        orgId={orgParam}
-        error={authError}
-        smsEnabled={smsProvider !== null}
-        defaultCountryCode={normalizeCountryCode(get(SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE))}
-      />
+      {demoCustomer ? (
+        <form
+          method="post"
+          action={`/portal/${orgParam}/auth/demo`}
+          className="flex flex-col gap-5"
+        >
+          {authError && (
+            <PortalNotice tone="danger" role="alert">
+              {authError}
+            </PortalNotice>
+          )}
+          <p className="p-muted text-base leading-normal">
+            {t('demoNotice', { customer: demoCustomer.name })}
+          </p>
+          <PortalButton type="submit" variant="accent" size="lg" block>
+            {t('demoButton')}
+          </PortalButton>
+        </form>
+      ) : (
+        <PortalLoginForm
+          orgId={orgParam}
+          error={authError}
+          smsEnabled={smsProvider !== null}
+          defaultCountryCode={normalizeCountryCode(get(SETTING_KEYS.WORKSHOP_DEFAULT_COUNTRY_CODE))}
+        />
+      )}
     </PortalLanding>
   )
 }

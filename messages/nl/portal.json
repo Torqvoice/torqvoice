@@ -67,7 +67,9 @@
     "portalNotEnabled": "Deze werkplaats biedt op dit moment geen online toegang.",
     "noPassword": "Geen wachtwoord. We sturen u een link waarmee u inlogt.",
     "noPasswordSms": "Geen wachtwoord. We sturen u een sms met een code waarmee u inlogt.",
-    "method": "Hoe wilt u inloggen?"
+    "method": "Hoe wilt u inloggen?",
+    "demoNotice": "De demo verstuurt geen e-mails of sms, dus er komt geen inloglink. Kijk rond als {customer}, een voorbeeldklant.",
+    "demoButton": "Demoportaal openen"
   },
   "nav": {
     "label": "Hoofdmenu",

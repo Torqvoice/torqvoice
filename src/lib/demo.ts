@@ -17,6 +17,13 @@ export const DEMO_USER_EMAIL = process.env.DEMO_USER_EMAIL || 'demo@torqvoice.co
 export const DEMO_USER_PASSWORD = process.env.DEMO_USER_PASSWORD || 'demo'
 
 /**
+ * The seeded customer a visitor becomes in the customer portal. The demo sends
+ * no sign-in link, so the portal's login page signs them in as this one.
+ */
+export const DEMO_PORTAL_CUSTOMER_EMAIL =
+  process.env.DEMO_PORTAL_CUSTOMER_EMAIL || 'sarah.coleman@example.com'
+
+/**
  * Where a demo visitor is sent when something is off here: the hosted app,
  * free to start, is where the thing they just tried works with their own
  * workshop. Every refusal on the demo ends with it, so it reads the same.

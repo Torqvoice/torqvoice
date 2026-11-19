@@ -67,7 +67,9 @@
     "portalNotEnabled": "Dette verkstedet tilbyr ikke innlogging på nett akkurat nå.",
     "noPassword": "Ingen passord. Vi sender deg en lenke som logger deg inn.",
     "noPasswordSms": "Ingen passord. Vi sender deg en kode på SMS som logger deg inn.",
-    "method": "Slik logger du inn"
+    "method": "Slik logger du inn",
+    "demoNotice": "Demoen sender ikke e-post eller SMS, så det kommer ingen påloggingslenke. Se deg rundt som {customer}, en eksempelkunde.",
+    "demoButton": "Åpne demoportalen"
   },
   "nav": {
     "label": "Hovedmeny",

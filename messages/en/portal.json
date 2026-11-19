@@ -67,7 +67,9 @@
     "portalNotEnabled": "This workshop does not offer online access right now.",
     "noPassword": "No password. We send you a link that signs you in.",
     "noPasswordSms": "No password. We text you a code that signs you in.",
-    "method": "How to sign in"
+    "method": "How to sign in",
+    "demoNotice": "The demo sends no email or texts, so there is no sign-in link to wait for. Look around as {customer}, a sample customer.",
+    "demoButton": "Open the demo portal"
   },
   "nav": {
     "label": "Main",

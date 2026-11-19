@@ -67,7 +67,9 @@
       "used": "Esse link de acesso já foi usado. Peça um novo abaixo.",
       "expired": "Esse link de acesso expirou. Peça um novo abaixo.",
       "noAccount": "Não encontramos sua conta. Peça à oficina para conferir o e-mail que ela tem cadastrado para você."
-    }
+    },
+    "demoNotice": "A demonstração não envia e-mails nem SMS, então nenhum link de acesso será enviado. Explore o portal como {customer}, um cliente de exemplo.",
+    "demoButton": "Abrir o portal de demonstração"
   },
   "nav": {
     "invoices": "Faturas",

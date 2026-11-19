@@ -67,7 +67,9 @@
     "portalNotEnabled": "Al momento questa officina non offre l'accesso online.",
     "noPassword": "Nessuna password. Ti inviamo un link per accedere.",
     "noPasswordSms": "Nessuna password. Ti inviamo un codice via SMS per accedere.",
-    "method": "Come vuoi accedere"
+    "method": "Come vuoi accedere",
+    "demoNotice": "La demo non invia email né SMS, quindi non arriverà alcun link di accesso. Esplora il portale come {customer}, un cliente di esempio.",
+    "demoButton": "Apri il portale demo"
   },
   "nav": {
     "label": "Principale",

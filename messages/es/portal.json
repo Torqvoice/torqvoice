@@ -67,7 +67,9 @@
     "portalNotEnabled": "Este taller no ofrece acceso en línea por ahora.",
     "noPassword": "Sin contraseña. Te enviamos un enlace que inicia tu sesión.",
     "noPasswordSms": "Sin contraseña. Te enviamos por SMS un código que inicia tu sesión.",
-    "method": "Cómo quieres entrar"
+    "method": "Cómo quieres entrar",
+    "demoNotice": "La demo no envía correos ni SMS, así que no llegará ningún enlace de acceso. Explore el portal como {customer}, un cliente de ejemplo.",
+    "demoButton": "Abrir el portal de demostración"
   },
   "nav": {
     "label": "Principal",

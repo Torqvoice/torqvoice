@@ -67,7 +67,9 @@
       "used": "Bu giriş bağlantısı zaten kullanıldı. Aşağıdan yenisini isteyin.",
       "expired": "Bu giriş bağlantısının süresi doldu. Aşağıdan yenisini isteyin.",
       "noAccount": "Hesabınızı bulamadık. Servisten sizin için kayıtlı e-posta adresini kontrol etmesini isteyin."
-    }
+    },
+    "demoNotice": "Demo e-posta veya SMS göndermez, bu yüzden giriş bağlantısı gelmez. Portalı örnek müşteri {customer} olarak gezin.",
+    "demoButton": "Demo portalını aç"
   },
   "nav": {
     "invoices": "Faturalar",
