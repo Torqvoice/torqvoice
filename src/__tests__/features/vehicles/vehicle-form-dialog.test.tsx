@@ -458,19 +458,66 @@ describe('a reading far above the last one on the vehicle form', () => {
     'Much higher than the last reading (225,040 km). Check for a typo. You can still save it.'
   const field = () => screen.getByLabelText('Mileage', { selector: 'input#mileage' })
 
-  it('asks about a typo when a digit too many is typed, and saves it all the same', async () => {
+  it('says so beside the field while typing, and asks on Save before saving it', async () => {
     renderForm()
     await screen.findByRole('dialog')
     fireEvent.change(field(), { target: { value: '2250400' } })
     // Under the field and under the figure at the top, which is the same reading.
     expect(screen.getAllByText(NOTICE)).toHaveLength(2)
     expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
-    expect(field()).toHaveAccessibleDescription(NOTICE.replace(' km', ' km'))
+    expect(field()).toHaveAccessibleDescription(NOTICE.replace(' km', '\u00a0km'))
 
     fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
-    await waitFor(() => expect(updateVehicle).toHaveBeenCalled())
+    const ask = await screen.findByRole('alertdialog')
+    expect(ask).toHaveTextContent('Are you sure this reading is correct?')
+    expect(ask).toHaveTextContent('2,250,400 km is much higher than the last reading, 225,040 km.')
+    // Nothing is saved until the answer.
+    expect(updateVehicle).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, it is correct' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
     expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ mileage: 2250400 })
     expect(toast.error).not.toHaveBeenCalled()
+  })
+
+  it('Change it goes back to the field and saves nothing', async () => {
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await screen.findByRole('alertdialog')
+    fireEvent.click(screen.getByRole('button', { name: 'Change it' }))
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument())
+    await waitFor(() => expect(field()).toHaveFocus())
+    expect(updateVehicle).not.toHaveBeenCalled()
+
+    // Corrected, it saves without a question.
+    fireEvent.change(field(), { target: { value: '225400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ mileage: 225400 })
+  })
+
+  it('asks once for a value, and again for another', async () => {
+    vi.mocked(updateVehicle).mockResolvedValue({ success: false, error: 'Network' } as never)
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await screen.findByRole('alertdialog')
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, it is correct' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
+
+    // The save failed and is tried again: the same value is not asked again.
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(2))
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+
+    fireEvent.change(field(), { target: { value: '2250500' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    expect(await screen.findByRole('alertdialog')).toBeInTheDocument()
+    expect(updateVehicle).toHaveBeenCalledTimes(2)
   })
 
   it('says nothing up to 100,000 above the last reading, and goes away when fixed', async () => {

@@ -465,6 +465,13 @@
     "lowerReadingMarine": "Lower than the last reading ({hours} hours). You can still save it.",
     "muchHigherReading": "Much higher than the last reading ({reading}). Check for a typo. You can still save it.",
     "muchHigherReadingMarine": "Much higher than the last reading ({hours} hours). Check for a typo. You can still save it.",
+    "readingConfirmTitle": "Are you sure this reading is correct?",
+    "readingConfirmBody": "{entered} is much higher than the last reading, {last}.",
+    "readingConfirmBodyMarine": "{entered} hours is much higher than the last reading, {last} hours.",
+    "readingConfirmYes": "Yes, it is correct",
+    "readingConfirmChange": "Change it",
+    "readingConfirmHeld": "The reading is saved once you answer. The rest of the work order saves as usual.",
+    "readingConfirmWaiting": "The reading is not saved yet. Answer the question under it first.",
     "bookAppointment": "Book appointment",
     "addTitleMarine": "Add New Vessel"
   },

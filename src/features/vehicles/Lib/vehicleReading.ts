@@ -167,7 +167,8 @@ export async function applyJobReading(client: ReadingClient, job: JobReading): P
         id: job.vehicleId,
         organizationId: job.organizationId,
         mileage: current.mileage,
-        readingJobId: current.readingJobId,
+        // Null, never undefined: undefined would drop the condition.
+        readingJobId: current.readingJobId ?? null,
       },
       data: {
         mileage: reading,
@@ -252,7 +253,7 @@ export async function lockJobReading(
   job: { organizationId: string; jobId: string }
 ): Promise<{ mileage: number | null; vehicleId: string | null } | null> {
   const rows = await tx.$queryRaw<{ mileage: number | null; vehicleId: string | null }[]>`
-    SELECT "mileage", "vehicleId" FROM "service_records"
+    SELECT "mileage", "vehicleId" FROM "public"."service_records"
     WHERE "id" = ${job.jobId} AND "organizationId" = ${job.organizationId}
     FOR UPDATE`
   return rows[0] ?? null
@@ -364,4 +365,27 @@ export function readingNotice(
   if (isLowerReading(entered, last)) return 'lower'
   if (isMuchHigherReading(entered, last, kind)) return 'higher'
   return null
+}
+
+/**
+ * Whether a reading about to be saved must first be confirmed by the person
+ * at the screen: much higher than the last known one (MUCH_HIGHER_READING),
+ * new on this record, and not already confirmed at this value. Only a
+ * question for the screen: the server takes any reading, as the technician
+ * app and the API send it.
+ */
+export function readingNeedsAnswer(reading: {
+  /** What would be saved: null for an emptied field. */
+  value: number | null | undefined
+  /** What the record holds now: a value already saved is not asked about again. */
+  saved: number | null | undefined
+  last: number | null | undefined
+  kind: ReadingKind
+  /** The value the person last said yes to. */
+  confirmed: number | null
+}): boolean {
+  const { value } = reading
+  if (value == null || !Number.isFinite(value)) return false
+  if (value === reading.saved || value === reading.confirmed) return false
+  return isMuchHigherReading(String(value), reading.last, reading.kind)
 }

@@ -128,6 +128,9 @@ function transaction(extra: Record<string, unknown> = {}) {
     serviceConcern: { createMany: vi.fn(), findMany: vi.fn().mockResolvedValue([]) },
     serviceAttachment: { createMany: vi.fn(), deleteMany: vi.fn() },
     inventoryPart: { findFirst: vi.fn().mockResolvedValue(null) },
+    // The job's row lock, and a vehicle whose reading nothing here moves.
+    $queryRaw: async () => [],
+    vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
     ...extra,
   }
   vi.mocked(db.$transaction).mockImplementation((async (fn: (client: typeof tx) => unknown) =>

@@ -465,6 +465,13 @@
     "lowerReadingMarine": "Lager dan de vorige stand ({hours} uur). U kunt toch opslaan.",
     "muchHigherReading": "Veel hoger dan de vorige stand ({reading}). Controleer op een typefout. U kunt toch opslaan.",
     "muchHigherReadingMarine": "Veel hoger dan de vorige stand ({hours} uur). Controleer op een typefout. U kunt toch opslaan.",
+    "readingConfirmTitle": "Weet u zeker dat deze stand klopt?",
+    "readingConfirmBody": "{entered} is veel hoger dan de vorige stand, {last}.",
+    "readingConfirmBodyMarine": "{entered} uur is veel hoger dan de vorige stand, {last} uur.",
+    "readingConfirmYes": "Ja, dit klopt",
+    "readingConfirmChange": "Wijzigen",
+    "readingConfirmHeld": "De stand wordt opgeslagen zodra u antwoordt. De rest van de werkorder wordt gewoon opgeslagen.",
+    "readingConfirmWaiting": "De stand is nog niet opgeslagen. Beantwoord eerst de vraag eronder.",
     "bookAppointment": "Afspraak inplannen",
     "addTitleMarine": "Nieuw vaartuig toevoegen"
   },

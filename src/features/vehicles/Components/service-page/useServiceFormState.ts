@@ -289,6 +289,25 @@ export function useServiceFormState({
     },
   })
 
+  /**
+   * The reading the person said yes to, when it was far above the last one
+   * (readingNeedsAnswer). Until then the save holds the reading back and the
+   * page stays unsaved; the ref is what a save started this instant reads.
+   */
+  const [confirmedReading, setConfirmedReading] = useState<number | null>(null)
+  const confirmedReadingRef = useRef<number | null>(null)
+  const confirmReading = useCallback(
+    (value: number) => {
+      confirmedReadingRef.current = value
+      setConfirmedReading(value)
+      // Saved now: the answer is the last thing the reading waited for.
+      markDirty()
+      if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+      if (!isSavingRef.current && formRef.current) formRef.current.requestSubmit()
+    },
+    [markDirty]
+  )
+
   // Custom fields save callback ref
   const customFieldsSaveRef = useRef<CustomFieldsSave | null>(null)
 
@@ -603,6 +622,9 @@ export function useServiceFormState({
     markSaved,
     editRevisionRef,
     saveNow,
+    confirmedReading,
+    confirmedReadingRef,
+    confirmReading,
     /**
      * Whether edits are still unsaved, read at the moment of the call. For
      * code that awaits saveNow and has to know whether the save went

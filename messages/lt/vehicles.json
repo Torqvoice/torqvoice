@@ -465,6 +465,13 @@
     "lowerReadingMarine": "Mažiau nei paskutinis rodmuo ({hours} val.). Vis tiek galite išsaugoti.",
     "muchHigherReading": "Daug daugiau nei paskutinis rodmuo ({reading}). Patikrinkite, ar nesuklydote vesdami. Vis tiek galite išsaugoti.",
     "muchHigherReadingMarine": "Daug daugiau nei paskutinis rodmuo ({hours} val.). Patikrinkite, ar nesuklydote vesdami. Vis tiek galite išsaugoti.",
+    "readingConfirmTitle": "Ar tikrai šis rodmuo teisingas?",
+    "readingConfirmBody": "{entered} yra daug daugiau nei paskutinis rodmuo, {last}.",
+    "readingConfirmBodyMarine": "{entered} val. yra daug daugiau nei paskutinis rodmuo, {last} val.",
+    "readingConfirmYes": "Taip, teisingas",
+    "readingConfirmChange": "Pakeisti",
+    "readingConfirmHeld": "Rodmuo bus išsaugotas, kai atsakysite. Likusi užsakymo dalis išsaugoma kaip įprasta.",
+    "readingConfirmWaiting": "Rodmuo dar neišsaugotas. Pirmiausia atsakykite į klausimą po juo.",
     "bookAppointment": "Užregistruoti vizitą",
     "addTitleMarine": "Pridėti naują laivą"
   },

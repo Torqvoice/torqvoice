@@ -1,8 +1,9 @@
 /**
- * The reading on the work order: typing one below the last known reading, or
- * one so far above it that a digit may have slipped in, says so beside the
- * field, and never anything when readings go up by a normal amount. It is a
- * notice, not a stop: the field stays as typed, for the save to send.
+ * The reading on the work order. Typing one below the last known reading says
+ * so quietly beside the field; one so far above it that a digit may have
+ * slipped in is asked about under the field, and the save holds it back until
+ * it is answered (work-order-reading-question.test.tsx). Nothing at all when
+ * readings go up by a normal amount.
  */
 
 import { describe, expect, it, vi } from 'vitest'
@@ -128,70 +129,115 @@ describe('the reading on a work order', () => {
 })
 
 describe('a reading far above the last one on a work order', () => {
-  const HIGHER =
-    'Much higher than the last reading (412,380 km). Check for a typo. You can still save it.'
+  const ASK = 'Are you sure this reading is correct?'
+  const BODY = '4,123,800 km is much higher than the last reading, 412,380 km.'
 
-  it('asks about a typo for a digit too many, and only that notice', () => {
-    renderCard()
-    const field = screen.getByLabelText('Mileage')
-    fireEvent.change(field, { target: { value: '4123800' } })
-    expect(screen.getAllByRole('status')).toHaveLength(1)
-    expect(screen.getByRole('status')).toHaveTextContent(HIGHER)
-    expect(field).toHaveAccessibleDescription(HIGHER.replace(' km', '\u00a0km'))
-    expect(field).toHaveValue(4123800)
-    expect(field).toBeValid()
-  })
-
-  it('says nothing up to 100,000 above, whatever the unit', () => {
-    renderCard()
-    const field = screen.getByLabelText('Mileage')
-    fireEvent.change(field, { target: { value: '512380' } })
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
-    fireEvent.change(field, { target: { value: '512381' } })
-    expect(screen.getByTestId('higher-reading-notice')).toBeInTheDocument()
-  })
-
-  it('is still there after the autosave, and gone when the value is fixed', () => {
-    const view = renderCard()
-    const field = screen.getByLabelText('Mileage')
-    fireEvent.change(field, { target: { value: '4123800' } })
-    view.rerender(
+  function renderAsking(over: { confirmedReading?: number | null; marine?: boolean } = {}) {
+    const onConfirmReading = vi.fn()
+    const card = (
       <JobFactsCard
         record={{ id: 'job-1', vehicle: VEHICLE, customer: null } as unknown as Props['record']}
         currencyCode="GBP"
-        initialData={{ id: 'job-1', mileage: 4123800, lastReading: 412380 } as Props['initialData']}
+        initialData={
+          {
+            id: 'job-1',
+            mileage: null,
+            lastReading: over.marine ? 1240 : 412380,
+          } as Props['initialData']
+        }
         vehicleName="2019 Scania R 450"
         selectedVehicleId="veh-1"
         setSelectedVehicleId={vi.fn()}
         techName=""
         distanceUnit="km"
+        confirmedReading={over.confirmedReading ?? null}
+        onConfirmReading={onConfirmReading}
       />
     )
-    expect(screen.getByRole('status')).toHaveTextContent(HIGHER)
+    const view = render(
+      over.marine ? <ServiceTypeProvider serviceType="marine">{card}</ServiceTypeProvider> : card
+    )
+    return { onConfirmReading, view }
+  }
+
+  it('asks under the field, with both readings, and only that', () => {
+    renderAsking()
+    const field = screen.getByLabelText('Mileage')
+    fireEvent.change(field, { target: { value: '4123800' } })
+    const question = screen.getByTestId('reading-question')
+    expect(question).toHaveTextContent(ASK)
+    expect(question).toHaveTextContent(BODY)
+    expect(screen.queryByTestId('higher-reading-notice')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
+    // Nothing pops up over the field: it keeps what was typed.
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    expect(field).toHaveValue(4123800)
+  })
+
+  it('Yes, it is correct says yes to that value', () => {
+    const { onConfirmReading } = renderAsking()
+    fireEvent.change(screen.getByLabelText('Mileage'), { target: { value: '4123800' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, it is correct' }))
+    expect(onConfirmReading).toHaveBeenCalledWith(4123800)
+  })
+
+  it('Change it goes back to the field, with the value ready to type over', () => {
+    const { onConfirmReading } = renderAsking()
+    const field = screen.getByLabelText('Mileage') as HTMLInputElement
+    fireEvent.change(field, { target: { value: '4123800' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Change it' }))
+    expect(field).toHaveFocus()
+    expect(onConfirmReading).not.toHaveBeenCalled()
     fireEvent.change(field, { target: { value: '413800' } })
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('reading-question')).not.toBeInTheDocument()
   })
 
-  it('says nothing without a last reading', () => {
-    renderCard({ lastReading: null })
-    fireEvent.change(screen.getByLabelText('Mileage'), { target: { value: '9000000' } })
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  it('is asked once for a value: not again once confirmed, again for another', () => {
+    renderAsking({ confirmedReading: 4123800 })
+    const field = screen.getByLabelText('Mileage')
+    fireEvent.change(field, { target: { value: '4123800' } })
+    expect(screen.queryByTestId('reading-question')).not.toBeInTheDocument()
+    fireEvent.change(field, { target: { value: '4123900' } })
+    expect(screen.getByTestId('reading-question')).toBeInTheDocument()
   })
 
-  it('says nothing when the last reading is 0, as after a new odometer', () => {
-    renderCard({ lastReading: 0 })
-    fireEvent.change(screen.getByLabelText('Mileage'), { target: { value: '9000000' } })
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  it('is not asked up to 100,000 above, nor without a last reading', () => {
+    renderAsking()
+    const field = screen.getByLabelText('Mileage')
+    fireEvent.change(field, { target: { value: '512380' } })
+    expect(screen.queryByTestId('reading-question')).not.toBeInTheDocument()
+    fireEvent.change(field, { target: { value: '512381' } })
+    expect(screen.getByTestId('reading-question')).toBeInTheDocument()
   })
 
-  it('uses 5,000 engine hours in a boat workshop', () => {
-    renderCard({ lastReading: 1240, marine: true })
+  it('stays after the page saved the rest by itself', () => {
+    const { view } = renderAsking()
+    fireEvent.change(screen.getByLabelText('Mileage'), { target: { value: '4123800' } })
+    view.rerender(
+      <JobFactsCard
+        record={{ id: 'job-1', vehicle: VEHICLE, customer: null } as unknown as Props['record']}
+        currencyCode="GBP"
+        initialData={{ id: 'job-1', mileage: null, lastReading: 412380 } as Props['initialData']}
+        vehicleName="2019 Scania R 450"
+        selectedVehicleId="veh-1"
+        setSelectedVehicleId={vi.fn()}
+        techName=""
+        distanceUnit="km"
+        confirmedReading={null}
+        onConfirmReading={vi.fn()}
+      />
+    )
+    expect(screen.getByTestId('reading-question')).toBeInTheDocument()
+  })
+
+  it('uses 5,000 engine hours, in hours, in a boat workshop', () => {
+    renderAsking({ marine: true })
     const field = screen.getByLabelText('Engine Hours')
     fireEvent.change(field, { target: { value: '6240' } })
-    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('reading-question')).not.toBeInTheDocument()
     fireEvent.change(field, { target: { value: '12400' } })
-    expect(screen.getByRole('status')).toHaveTextContent(
-      'Much higher than the last reading (1,240 hours). Check for a typo. You can still save it.'
+    expect(screen.getByTestId('reading-question')).toHaveTextContent(
+      '12,400 hours is much higher than the last reading, 1,240 hours.'
     )
   })
 })

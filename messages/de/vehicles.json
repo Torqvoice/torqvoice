@@ -465,6 +465,13 @@
     "lowerReadingMarine": "Niedriger als der letzte Stand ({hours} Stunden). Sie können trotzdem speichern.",
     "muchHigherReading": "Viel höher als der letzte Stand ({reading}). Bitte auf Tippfehler prüfen. Sie können trotzdem speichern.",
     "muchHigherReadingMarine": "Viel höher als der letzte Stand ({hours} Stunden). Bitte auf Tippfehler prüfen. Sie können trotzdem speichern.",
+    "readingConfirmTitle": "Ist dieser Stand wirklich korrekt?",
+    "readingConfirmBody": "{entered} ist viel höher als der letzte Stand, {last}.",
+    "readingConfirmBodyMarine": "{entered} Stunden sind viel höher als der letzte Stand, {last} Stunden.",
+    "readingConfirmYes": "Ja, stimmt",
+    "readingConfirmChange": "Ändern",
+    "readingConfirmHeld": "Der Stand wird gespeichert, sobald Sie antworten. Der Rest des Auftrags wird wie gewohnt gespeichert.",
+    "readingConfirmWaiting": "Der Stand ist noch nicht gespeichert. Beantworten Sie zuerst die Frage darunter.",
     "bookAppointment": "Termin buchen",
     "addTitleMarine": "Neues Wasserfahrzeug hinzufügen"
   },

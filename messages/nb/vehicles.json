@@ -465,6 +465,13 @@
     "lowerReadingMarine": "Lavere enn forrige avlesning ({hours} timer). Du kan likevel lagre.",
     "muchHigherReading": "Mye høyere enn forrige avlesning ({reading}). Sjekk at det ikke er en tastefeil. Du kan likevel lagre.",
     "muchHigherReadingMarine": "Mye høyere enn forrige avlesning ({hours} timer). Sjekk at det ikke er en tastefeil. Du kan likevel lagre.",
+    "readingConfirmTitle": "Er du sikker på at avlesningen er riktig?",
+    "readingConfirmBody": "{entered} er mye høyere enn forrige avlesning, {last}.",
+    "readingConfirmBodyMarine": "{entered} timer er mye høyere enn forrige avlesning, {last} timer.",
+    "readingConfirmYes": "Ja, den er riktig",
+    "readingConfirmChange": "Endre",
+    "readingConfirmHeld": "Avlesningen lagres når du har svart. Resten av arbeidsordren lagres som vanlig.",
+    "readingConfirmWaiting": "Avlesningen er ikke lagret ennå. Svar på spørsmålet under den først.",
     "bookAppointment": "Book time",
     "addTitleMarine": "Legg til nytt fartøy"
   },

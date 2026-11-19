@@ -465,6 +465,13 @@
     "lowerReadingMarine": "Mniej niż ostatni odczyt ({hours} godz.). Mimo to możesz zapisać.",
     "muchHigherReading": "Znacznie więcej niż ostatni odczyt ({reading}). Sprawdź, czy nie ma literówki. Mimo to możesz zapisać.",
     "muchHigherReadingMarine": "Znacznie więcej niż ostatni odczyt ({hours} godz.). Sprawdź, czy nie ma literówki. Mimo to możesz zapisać.",
+    "readingConfirmTitle": "Czy na pewno ten odczyt jest prawidłowy?",
+    "readingConfirmBody": "{entered} to znacznie więcej niż ostatni odczyt, {last}.",
+    "readingConfirmBodyMarine": "{entered} godz. to znacznie więcej niż ostatni odczyt, {last} godz.",
+    "readingConfirmYes": "Tak, jest prawidłowy",
+    "readingConfirmChange": "Zmień",
+    "readingConfirmHeld": "Odczyt zostanie zapisany, gdy odpowiesz. Reszta zlecenia zapisuje się jak zwykle.",
+    "readingConfirmWaiting": "Odczyt nie jest jeszcze zapisany. Najpierw odpowiedz na pytanie pod nim.",
     "bookAppointment": "Umów wizytę",
     "addTitleMarine": "Dodaj nową jednostkę"
   },

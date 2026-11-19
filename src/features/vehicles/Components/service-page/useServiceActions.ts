@@ -18,6 +18,8 @@ import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templat
 import { formatCurrency } from '@/lib/format'
 import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceForm'
 import { WARRANTY_NONE } from '@/lib/warranty'
+import { useServiceType } from '@/components/service-type-context'
+import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import type { ServiceDetail } from '../service-detail/types'
 import type { useServiceFormState } from './useServiceFormState'
 
@@ -39,6 +41,8 @@ export function useServiceActions({
   const confirm = useConfirm()
   const t = useTranslations('service')
   const tc = useTranslations('common')
+  const tv = useTranslations('vehicles.form')
+  const readingKind = useServiceType() === 'marine' ? 'hours' : 'distance'
 
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [downloading, setDownloading] = useState(false)
@@ -83,6 +87,8 @@ export function useServiceActions({
     autosaveRunRef,
     editRevisionRef,
     markSaved,
+    markDirty,
+    confirmedReadingRef,
   } = formState
 
   /**
@@ -182,6 +188,20 @@ export function useServiceActions({
         : rawMileage.trim() === ''
           ? null
           : mileageNumber
+    // A reading far above the last one waits for the person's answer under
+    // the field (ReadingQuestion). Only the reading: the rest of the work
+    // order saves, and the page stays unsaved until it is answered. The last
+    // reading belongs to the saved vehicle, so a job being moved to another
+    // one is not asked about.
+    const holdReading =
+      selectedVehicleId === vehicleId &&
+      readingNeedsAnswer({
+        value: parsedMileage,
+        saved: initialData.mileage,
+        last: initialData.lastReading,
+        kind: readingKind,
+        confirmed: confirmedReadingRef.current,
+      })
     // The editor reports an emptied box as one empty paragraph.
     const richText = (html: string) => (html === '<p></p>' ? '' : html)
 
@@ -196,7 +216,8 @@ export function useServiceActions({
       type,
       status,
       cost: totalAmount,
-      mileage: parsedMileage,
+      // Left out, the job keeps the reading it has.
+      mileage: holdReading ? undefined : parsedMileage,
       serviceDate: getVisible('serviceDate') || new Date().toISOString(),
       // techName intentionally omitted: it has no UI in the form (read-only),
       // and the Schedule card writes it directly via assignTechnician. Sending
@@ -256,7 +277,21 @@ export function useServiceActions({
       throw err
     }
 
-    if (result.success) {
+    if (result.success && holdReading) {
+      commitLaborAddedElsewhere()
+      commitPartsAddedElsewhere()
+      // Saved but for the reading: the page stays unsaved, without another
+      // autosave unless something else is edited, and a link waiting on this
+      // save asks the person to stay and answer.
+      if (editRevisionRef.current !== revision) markDirty()
+      lastSaveErrorRef.current = tv('readingConfirmWaiting')
+      if (!autosave && !leavingRef.current) {
+        // A save they asked for takes them to the question.
+        const question = document.getElementById('reading-question')
+        question?.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+        question?.querySelector<HTMLButtonElement>('[data-reading-confirm]')?.focus()
+      }
+    } else if (result.success) {
       commitLaborAddedElsewhere()
       commitPartsAddedElsewhere()
       markSaved(revision)

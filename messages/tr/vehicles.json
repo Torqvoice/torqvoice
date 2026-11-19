@@ -465,6 +465,13 @@
     "lowerReadingMarine": "Son okumadan düşük ({hours} saat). Yine de kaydedebilirsiniz.",
     "muchHigherReading": "Son okumadan çok daha yüksek ({reading}). Yazım hatası olup olmadığını kontrol edin. Yine de kaydedebilirsiniz.",
     "muchHigherReadingMarine": "Son okumadan çok daha yüksek ({hours} saat). Yazım hatası olup olmadığını kontrol edin. Yine de kaydedebilirsiniz.",
+    "readingConfirmTitle": "Bu okumanın doğru olduğundan emin misiniz?",
+    "readingConfirmBody": "{entered}, son okuma olan {last} değerinden çok daha yüksek.",
+    "readingConfirmBodyMarine": "{entered} saat, son okuma olan {last} saatten çok daha yüksek.",
+    "readingConfirmYes": "Evet, doğru",
+    "readingConfirmChange": "Değiştir",
+    "readingConfirmHeld": "Okuma, yanıt verdiğinizde kaydedilir. İş emrinin geri kalanı her zamanki gibi kaydedilir.",
+    "readingConfirmWaiting": "Okuma henüz kaydedilmedi. Önce altındaki soruyu yanıtlayın.",
     "bookAppointment": "Randevu oluştur",
     "addTitleMarine": "Yeni Tekne Ekle"
   },
