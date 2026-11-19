@@ -56,12 +56,13 @@ const FIELDS = [
   },
 ]
 
-async function mount(entityType: 'service_record' | 'quote' = 'service_record') {
+async function mount(entityType: 'service_record' | 'quote' = 'service_record', locked = false) {
   let run: CustomFieldsSave | undefined
   render(
     <CustomFieldsForm
       entityId="rec-1"
       entityType={entityType}
+      locked={locked}
       onValuesReady={(fn) => {
         run = fn
       }}
@@ -268,6 +269,18 @@ describe('the details', () => {
     expect(wrapper('contact')).toHaveTextContent('Fleet contact is required')
     expect(wrapper('centre')).toHaveTextContent('Cost centre is required')
     expect(control('contact')).toHaveFocus()
+  })
+
+  it('on a locked document the fields are no step of the save: nothing is asked for or sent', async () => {
+    // Read-only on the page, so an empty required field cannot be filled in
+    // and must not stop the page saving what it still can.
+    const run = await mount('service_record', true)
+
+    expect(await run()).toEqual({ valid: true })
+
+    expect(save).not.toHaveBeenCalled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(scrolled).not.toHaveBeenCalled()
   })
 
   it('a required checkbox left unticked is never called missing', async () => {

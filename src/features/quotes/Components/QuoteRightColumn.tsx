@@ -296,6 +296,7 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
         <CustomFieldsForm
           entityId={quote.id}
           entityType="quote"
+          locked={locked}
           onValuesReady={state.onCustomFieldsReady}
           onChange={state.markDirty}
         />

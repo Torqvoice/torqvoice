@@ -400,6 +400,90 @@ describe('a locked document', () => {
     expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
   })
 
+  it('lets a save through that changes no value, so what stays open on the page still saves', async () => {
+    lock.assertInvoiceEditable.mockRejectedValue(new DocumentLockedError('sent'))
+    db.customFieldValue.findMany.mockResolvedValue(
+      Object.entries(VALID).map(([fieldId, value]) => ({ fieldId, value }))
+    )
+
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', VALID)
+
+    expect(result).toEqual({ success: true, data: { saved: true } })
+    expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
+    expect(db.$transaction).not.toHaveBeenCalled()
+  })
+
+  it('does not count a field nobody filled in, sent back as its default, as a change', async () => {
+    lock.assertQuoteEditable.mockRejectedValue(new DocumentLockedError('accepted'))
+    db.customFieldDefinition.findMany.mockResolvedValue(
+      FIELDS.map((field) => (field.id === 'bay' ? { ...field, defaultValue: 'Bay 1' } : field))
+    )
+    db.customFieldValue.findMany.mockResolvedValue([{ fieldId: 'po', value: 'PO 1' }])
+
+    // What the form sends for a record with one stored value: that value,
+    // the default where there is one, and nothing for the rest.
+    const result = await saveValidatedCustomFieldValues('q-1', 'quote', {
+      po: 'PO 1',
+      axles: '',
+      due: '',
+      bay: 'Bay 1',
+      loan: '',
+      note: '',
+    })
+
+    expect(result).toEqual({ success: true, data: { saved: true } })
+    expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
+  })
+
+  it('does not ask a locked record for a required field it was locked without', async () => {
+    lock.assertInvoiceEditable.mockRejectedValue(new DocumentLockedError('paid'))
+
+    // "PO number" became required after this invoice was paid; nothing is stored.
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {
+      po: '',
+      axles: '',
+    })
+
+    expect(result).toEqual({ success: true, data: { saved: true } })
+    expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
+  })
+
+  it('refuses the whole save when one value among unchanged ones is changed', async () => {
+    lock.assertInvoiceEditable.mockRejectedValue(new DocumentLockedError('sent'))
+    db.customFieldValue.findMany.mockResolvedValue(
+      Object.entries(VALID).map(([fieldId, value]) => ({ fieldId, value }))
+    )
+
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {
+      ...VALID,
+      axles: '4',
+    })
+
+    expect(result).toEqual({
+      success: false,
+      error: 'This document is locked because it has been sent.',
+    })
+    expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
+  })
+
+  it('refuses clearing a value on a locked record too', async () => {
+    lock.assertQuoteEditable.mockRejectedValue(new DocumentLockedError('sent'))
+    db.customFieldValue.findMany.mockResolvedValue([{ fieldId: 'note', value: 'Keys in office' }])
+
+    const result = await saveValidatedCustomFieldValues('q-1', 'quote', { note: '' })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toBe('This document is locked because it has been sent.')
+  })
+
+  it('still fails on anything that is not the lock', async () => {
+    lock.assertInvoiceEditable.mockRejectedValue(new Error('Something else'))
+
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {})
+
+    expect(result).toEqual({ success: false, error: 'Something else' })
+  })
+
   it('takes them again once an owner has unlocked it', async () => {
     // assertInvoiceEditable passes for an unlocked invoice; nothing else stands in the way.
     const result = await saveValidatedCustomFieldValues('job-1', 'service_record', VALID)

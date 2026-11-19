@@ -77,11 +77,19 @@ export function CustomFieldsForm({
   entityType,
   onValuesReady,
   onChange,
+  locked = false,
 }: {
   entityId?: string
   entityType: 'service_record' | 'quote'
   onValuesReady?: (save: CustomFieldsSave) => void
   onChange?: () => void
+  /**
+   * The document is locked and the fields are drawn read-only. Saving them is
+   * then no step of the page's save at all: nothing can have changed, and a
+   * required field left empty before the lock cannot be filled in now, so it
+   * must not stand in the way of what the page still saves.
+   */
+  locked?: boolean
 }) {
   const tSettings = useTranslations('settings.customFields')
   const [fields, setFields] = useState<FieldWithValue[]>([])
@@ -159,6 +167,10 @@ export function CustomFieldsForm({
   useEffect(() => {
     if (onValuesReady) {
       onValuesReady(async (options) => {
+        if (locked) {
+          setErrors({})
+          return { valid: true }
+        }
         const refused = (found: CustomFieldError[]): CustomFieldsSaveOutcome => {
           setErrors(Object.fromEntries(found.map((error) => [error.fieldId, error.issue])))
           if (options?.reveal !== false && found[0]) {
@@ -206,7 +218,7 @@ export function CustomFieldsForm({
         return { valid: true }
       })
     }
-  }, [onValuesReady, entityId, entityType, fields, values, validate])
+  }, [onValuesReady, entityId, entityType, fields, values, validate, locked])
 
   const updateValue = (fieldId: string, value: string) => {
     setValues((prev) => ({ ...prev, [fieldId]: value }))

@@ -13,7 +13,7 @@ import { requireFeature } from '@/lib/features'
 import { clearedToNull } from '@/lib/clearable'
 import {
   assertOwnRecord,
-  assertRecordEditable,
+  recordLockError,
   isEntityType,
   recordSubject,
 } from '../Lib/customFieldRecords.server'
@@ -235,8 +235,11 @@ export type SaveCustomFieldValuesResult =
  * finds nothing there and is asked to reload, instead of saving values
  * nobody checked.
  *
- * - A locked work order or quote refuses the save, as it refuses every other
- *   edit to what it prints.
+ * - A locked work order or quote refuses a change to a value, with the
+ *   error every other edit to what it prints gets. A save that changes
+ *   nothing is not an edit and goes through untouched: the page saves its
+ *   custom fields along with everything else, and what stays open on a
+ *   locked document must not be held up by fields nobody touched.
  * - A required field refuses an empty value. One the request leaves out is
  *   judged by what the record shows for it (the stored value, else the
  *   field's default), so leaving a field out is no way around the rule, and
@@ -262,7 +265,6 @@ export async function saveValidatedCustomFieldValues(
       if (!isEntityType(entityType)) throw new Error('Unknown record type')
       const input = saveValuesSchema.parse({ entityId, values })
       await assertOwnRecord(input.entityId, entityType, organizationId)
-      await assertRecordEditable(input.entityId, entityType, organizationId)
 
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
@@ -278,6 +280,22 @@ export async function saveValidatedCustomFieldValues(
         select: { fieldId: true, value: true },
       })
       const storedValue = new Map(stored.map((row) => [row.fieldId, row.value]))
+
+      const lockError = await recordLockError(input.entityId, entityType, organizationId)
+      if (lockError) {
+        // Changed against what the record shows: the stored value, else the
+        // field's default. A form sends that back for a field nobody has
+        // filled in, and that is not a change either.
+        const changesSomething = definitions.some((definition) => {
+          const value: string | undefined = input.values[definition.id]
+          const shown = storedValue.get(definition.id) ?? definition.defaultValue ?? ''
+          return value !== undefined && value !== shown
+        })
+        if (changesSomething) throw lockError
+        // Nothing is written and nothing is asked for: a required field left
+        // empty before the lock cannot be filled in now.
+        return { saved: true }
+      }
 
       const fieldErrors: CustomFieldError[] = []
       const refuse = (definition: { id: string; label: string }, issue: CustomFieldIssue) =>

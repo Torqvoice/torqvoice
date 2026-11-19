@@ -1,6 +1,7 @@
 import 'server-only'
 
 import { db } from '@/lib/db'
+import { DocumentLockedError } from '@/lib/document-lock'
 import { assertInvoiceEditable, assertQuoteEditable } from '@/lib/document-lock.server'
 import { PermissionSubject } from '@/lib/permissions'
 import { entityTypes, type EntityType } from '../Schema/customFieldSchema'
@@ -64,13 +65,22 @@ export async function assertOwnRecord(
 }
 
 /**
- * A locked work order or quote refuses its custom fields like the rest of
- * what it prints: they are on the document the customer holds.
+ * The refusal a locked work order or quote gives, or null when the record
+ * may be edited. Its custom fields are on the document the customer holds,
+ * so a change to one is refused with this same error, the one every other
+ * edit to the document gets. It is handed back rather than thrown because a
+ * save that changes nothing is not an edit, and must not fail on the lock.
  */
-export async function assertRecordEditable(
+export async function recordLockError(
   entityId: string,
   entityType: EntityType,
   organizationId: string
-) {
-  await RECORD_KINDS[entityType].assertEditable(entityId, organizationId)
+): Promise<DocumentLockedError | null> {
+  try {
+    await RECORD_KINDS[entityType].assertEditable(entityId, organizationId)
+    return null
+  } catch (error) {
+    if (error instanceof DocumentLockedError) return error
+    throw error
+  }
 }
