@@ -15,8 +15,8 @@
     "datesExpiredCustomize": "Choisir les dates manuellement",
     "datesExpiredBack": "Retour",
     "datesExpiredSetToday": "Définir à aujourd'hui",
-    "customFieldsInvalid": "Veuillez remplir tous les champs personnalisés obligatoires",
-    "customFieldsNotValid": "Certains champs personnalisés ne sont pas valides. Veuillez vérifier les champs signalés.",
+    "customFieldsMissing": "Non enregistré. Renseignez : {fields}",
+    "customFieldsNotValid": "Non enregistré. Vérifiez : {fields}",
     "customFieldsSaveFailed": "Échec de l'enregistrement des champs personnalisés",
     "problems": {
       "title": "Le travail doit avoir un titre avant d'être enregistré.",

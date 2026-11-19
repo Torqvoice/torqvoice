@@ -209,11 +209,22 @@ const saveValuesSchema = z.object({
   values: z.record(z.string(), z.string()),
 })
 
+/**
+ * One refused field: which, what the workshop calls it, and what is wrong.
+ * The label comes from the server so a form that has never heard of the
+ * field (it was added while the form was open) can still name it.
+ */
+export interface CustomFieldError {
+  fieldId: string
+  label: string
+  issue: CustomFieldIssue
+}
+
 /** What a save of a record's values comes back with. */
 export type SaveCustomFieldValuesResult =
   | { saved: true }
-  /** Nothing was written. Each refused field, by id, with what is wrong with it. */
-  | { saved: false; fieldErrors: Record<string, CustomFieldIssue> }
+  /** Nothing was written. The refused fields, in the order the form shows them. */
+  | { saved: false; fieldErrors: CustomFieldError[] }
 
 /**
  * Saves a record's custom field values, checked against the fields'
@@ -255,6 +266,8 @@ export async function saveValidatedCustomFieldValues(
 
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
+        // The order the form draws them in, so the first error is the first field.
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
       })
       const stored = await db.customFieldValue.findMany({
         where: {
@@ -266,7 +279,9 @@ export async function saveValidatedCustomFieldValues(
       })
       const storedValue = new Map(stored.map((row) => [row.fieldId, row.value]))
 
-      const fieldErrors: Record<string, CustomFieldIssue> = {}
+      const fieldErrors: CustomFieldError[] = []
+      const refuse = (definition: { id: string; label: string }, issue: CustomFieldIssue) =>
+        fieldErrors.push({ fieldId: definition.id, label: definition.label, issue })
       const changed: { fieldId: string; value: string }[] = []
       for (const definition of definitions) {
         // Only own keys: the object came through JSON and zod, so it has no
@@ -276,22 +291,22 @@ export async function saveValidatedCustomFieldValues(
           // Not sent, so nothing is written. What the record shows for it
           // still has to satisfy "required".
           const shown = storedValue.get(definition.id) ?? definition.defaultValue ?? ''
-          if (isMissingRequiredValue(definition, shown)) fieldErrors[definition.id] = 'required'
+          if (isMissingRequiredValue(definition, shown)) refuse(definition, 'required')
           continue
         }
 
         if (isMissingRequiredValue(definition, value)) {
-          fieldErrors[definition.id] = 'required'
+          refuse(definition, 'required')
           continue
         }
         if (storedValue.get(definition.id) === value) continue
 
         const issue = customFieldTypeIssue(definition, value)
-        if (issue) fieldErrors[definition.id] = issue
+        if (issue) refuse(definition, issue)
         else changed.push({ fieldId: definition.id, value })
       }
 
-      if (Object.keys(fieldErrors).length > 0) return { saved: false, fieldErrors }
+      if (fieldErrors.length > 0) return { saved: false, fieldErrors }
 
       if (changed.length > 0) {
         await db.$transaction(

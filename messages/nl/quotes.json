@@ -89,8 +89,8 @@
       "images": "Afbeeldingen",
       "documents": "Documenten"
     },
-    "customFieldsInvalid": "Vul alle verplichte aangepaste velden in",
-    "customFieldsNotValid": "Sommige aangepaste velden zijn ongeldig. Controleer de gemarkeerde velden.",
+    "customFieldsMissing": "Niet opgeslagen. Vul in: {fields}",
+    "customFieldsNotValid": "Niet opgeslagen. Controleer: {fields}",
     "customFieldsSaveFailed": "Kan aangepaste velden niet opslaan"
   },
   "form": {

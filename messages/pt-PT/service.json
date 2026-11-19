@@ -15,8 +15,8 @@
     "datesExpiredCustomize": "Escolher datas manualmente",
     "datesExpiredBack": "Voltar",
     "datesExpiredSetToday": "Definir para hoje",
-    "customFieldsInvalid": "Preencha todos os campos personalizados obrigatórios",
-    "customFieldsNotValid": "Alguns campos personalizados não são válidos. Verifique os campos assinalados.",
+    "customFieldsMissing": "Não guardado. Preencha: {fields}",
+    "customFieldsNotValid": "Não guardado. Verifique: {fields}",
     "customFieldsSaveFailed": "Não foi possível guardar os campos personalizados",
     "problems": {
       "title": "A ordem de serviço precisa de um título antes de ser guardada.",

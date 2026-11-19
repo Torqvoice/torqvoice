@@ -94,6 +94,8 @@ export function DateInput({
   onChange,
   className,
   placeholder,
+  'aria-invalid': ariaInvalid,
+  'aria-describedby': ariaDescribedBy,
 }: {
   id?: string
   name?: string
@@ -101,6 +103,9 @@ export function DateInput({
   onChange: (value: string) => void
   className?: string
   placeholder?: string
+  'aria-invalid'?: boolean
+  /** The id of the message that explains why the value is refused. */
+  'aria-describedby'?: string
 }) {
   const { dateFormat } = useDateSettings()
   const ta = useTranslations('common.a11y')
@@ -166,6 +171,8 @@ export function DateInput({
           }
         }}
         className={cn('pr-9', className)}
+        aria-invalid={ariaInvalid}
+        aria-describedby={ariaDescribedBy}
       />
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>

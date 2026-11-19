@@ -89,8 +89,8 @@
       "images": "Görseller",
       "documents": "Belgeler"
     },
-    "customFieldsInvalid": "Lütfen tüm zorunlu özel alanları doldurun",
-    "customFieldsNotValid": "Bazı özel alanlar geçerli değil. Lütfen işaretlenen alanları kontrol edin.",
+    "customFieldsMissing": "Kaydedilmedi. Doldurun: {fields}",
+    "customFieldsNotValid": "Kaydedilmedi. Kontrol edin: {fields}",
     "customFieldsSaveFailed": "Özel alanlar kaydedilemedi"
   },
   "form": {

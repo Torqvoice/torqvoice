@@ -59,7 +59,7 @@ describe('the custom fields card', () => {
     await act(async () => {
       result = await save?.()
     })
-    expect(result).toEqual({ valid: false, problem: 'required' })
+    expect(result).toEqual({ valid: false, problem: 'required', fields: ['Key number'] })
     expect(screen.getByText('Key number is required')).toBeInTheDocument()
     // A checkbox left unticked is an answer, never a missing one.
     expect(screen.queryByText('Courtesy car is required')).not.toBeInTheDocument()

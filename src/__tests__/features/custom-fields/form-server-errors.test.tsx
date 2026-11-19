@@ -99,11 +99,17 @@ describe('saving the custom fields', () => {
   it('shows what the server refused next to the field it refused', async () => {
     save.mockResolvedValue({
       success: true,
-      data: { saved: false, fieldErrors: { axles: 'number', bay: 'option' } },
+      data: {
+        saved: false,
+        fieldErrors: [
+          { fieldId: 'axles', label: 'Axles', issue: 'number' },
+          { fieldId: 'bay', label: 'Bay', issue: 'option' },
+        ],
+      },
     })
     const run = await mount()
 
-    expect(await run()).toEqual({ valid: false, problem: 'invalid' })
+    expect(await run()).toEqual({ valid: false, problem: 'invalid', fields: ['Axles', 'Bay'] })
     expect(field('axles')).toHaveTextContent('Axles must be a number')
     expect(field('bay')).toHaveTextContent('Bay must be one of its options')
     expect(field('po')).not.toHaveTextContent('PO number is required')
@@ -113,18 +119,21 @@ describe('saving the custom fields', () => {
   it('says "required" when that is all the server found', async () => {
     save.mockResolvedValue({
       success: true,
-      data: { saved: false, fieldErrors: { po: 'required' } },
+      data: {
+        saved: false,
+        fieldErrors: [{ fieldId: 'po', label: 'PO number', issue: 'required' }],
+      },
     })
     const run = await mount()
 
-    expect(await run()).toEqual({ valid: false, problem: 'required' })
+    expect(await run()).toEqual({ valid: false, problem: 'required', fields: ['PO number'] })
     expect(field('po')).toHaveTextContent('PO number is required')
   })
 
   it('clears a field’s message as soon as it is edited', async () => {
     save.mockResolvedValue({
       success: true,
-      data: { saved: false, fieldErrors: { axles: 'number' } },
+      data: { saved: false, fieldErrors: [{ fieldId: 'axles', label: 'Axles', issue: 'number' }] },
     })
     const run = await mount()
     await run()
@@ -173,10 +182,13 @@ describe('saving the custom fields', () => {
     })
     save.mockResolvedValue({
       success: true,
-      data: { saved: false, fieldErrors: { ref: 'required' } },
+      data: {
+        saved: false,
+        fieldErrors: [{ fieldId: 'ref', label: 'Order ref', issue: 'required' }],
+      },
     })
 
-    expect(await run()).toEqual({ valid: false, problem: 'required' })
+    expect(await run()).toEqual({ valid: false, problem: 'required', fields: ['Order ref'] })
     expect(field('ref')).toHaveTextContent('Order ref is required')
     // What was typed is kept.
     expect(field('axles').querySelector('input')).toHaveValue(4)
@@ -188,7 +200,7 @@ describe('saving the custom fields', () => {
       target: { value: '  ' },
     })
 
-    expect(await run()).toEqual({ valid: false, problem: 'required' })
+    expect(await run()).toEqual({ valid: false, problem: 'required', fields: ['PO number'] })
     expect(save).not.toHaveBeenCalled()
     expect(field('po')).toHaveTextContent('PO number is required')
   })

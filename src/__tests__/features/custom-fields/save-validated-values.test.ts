@@ -42,13 +42,24 @@ import { DocumentLockedError } from '@/lib/document-lock'
 const { saveValidatedCustomFieldValues } = actions
 
 const FIELDS = [
-  { id: 'po', fieldType: 'text', options: null, required: true },
-  { id: 'axles', fieldType: 'number', options: null, required: false },
-  { id: 'due', fieldType: 'date', options: null, required: false },
-  { id: 'bay', fieldType: 'select', options: 'Bay 1, Bay 2', required: false },
-  { id: 'loan', fieldType: 'checkbox', options: null, required: true },
-  { id: 'note', fieldType: 'textarea', options: null, required: false },
+  { id: 'po', label: 'PO number', fieldType: 'text', options: null, required: true },
+  { id: 'axles', label: 'Axles', fieldType: 'number', options: null, required: false },
+  { id: 'due', label: 'Next test due', fieldType: 'date', options: null, required: false },
+  { id: 'bay', label: 'Bay', fieldType: 'select', options: 'Bay 1, Bay 2', required: false },
+  { id: 'loan', label: 'Courtesy car', fieldType: 'checkbox', options: null, required: true },
+  { id: 'note', label: 'Handover notes', fieldType: 'textarea', options: null, required: false },
 ]
+
+/**
+ * What the server answers for these faults: each refused field with the
+ * workshop's label for it, in the order the form shows the fields.
+ */
+const refusals = (faults: Record<string, string>) =>
+  FIELDS.filter((field) => field.id in faults).map((field) => ({
+    fieldId: field.id,
+    label: field.label,
+    issue: faults[field.id],
+  }))
 
 const VALID = {
   po: 'PO 4471',
@@ -108,6 +119,7 @@ describe('values that suit their fields', () => {
 
     expect(db.customFieldDefinition.findMany).toHaveBeenCalledWith({
       where: { organizationId: 'org-1', entityType: 'quote', isActive: true },
+      orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
     })
   })
 
@@ -135,7 +147,10 @@ describe('a value that does not suit its field', () => {
       ...bad,
     })
 
-    expect(result).toEqual({ success: true, data: { saved: false, fieldErrors } })
+    expect(result).toEqual({
+      success: true,
+      data: { saved: false, fieldErrors: refusals(fieldErrors) },
+    })
   })
 
   it('writes none of the values, the good ones included', async () => {
@@ -155,7 +170,7 @@ describe('a value that does not suit its field', () => {
 
     expect(result.data).toEqual({
       saved: false,
-      fieldErrors: { po: 'required', axles: 'number', bay: 'option' },
+      fieldErrors: refusals({ po: 'required', axles: 'number', bay: 'option' }),
     })
   })
 
@@ -177,7 +192,7 @@ describe('a required field', () => {
         ...VALID,
         po,
       })
-      expect(result.data).toEqual({ saved: false, fieldErrors: { po: 'required' } })
+      expect(result.data).toEqual({ saved: false, fieldErrors: refusals({ po: 'required' }) })
     }
     expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
   })
@@ -190,7 +205,7 @@ describe('a required field', () => {
       po: '',
     })
 
-    expect(result.data).toEqual({ saved: false, fieldErrors: { po: 'required' } })
+    expect(result.data).toEqual({ saved: false, fieldErrors: refusals({ po: 'required' }) })
   })
 
   it('takes an unticked checkbox: that is an answer', async () => {
@@ -205,7 +220,7 @@ describe('a required field', () => {
   it('cannot be got around by leaving it out of the request', async () => {
     const result = await saveValidatedCustomFieldValues('job-1', 'service_record', { axles: '2' })
 
-    expect(result.data).toEqual({ saved: false, fieldErrors: { po: 'required' } })
+    expect(result.data).toEqual({ saved: false, fieldErrors: refusals({ po: 'required' }) })
     expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
   })
 
@@ -234,7 +249,7 @@ describe('a required field', () => {
 
     const result = await saveValidatedCustomFieldValues('job-1', 'service_record', { axles: '2' })
 
-    expect(result.data).toEqual({ saved: false, fieldErrors: { po: 'required' } })
+    expect(result.data).toEqual({ saved: false, fieldErrors: refusals({ po: 'required' }) })
   })
 
   it('leaves alone a field that is not required and not sent', async () => {
@@ -245,6 +260,71 @@ describe('a required field', () => {
 
     expect(result.data).toEqual({ saved: true })
     expect(written()).toEqual({ po: 'PO 7', loan: 'true' })
+  })
+})
+
+describe('what the person is told is missing', () => {
+  const TWO_REQUIRED = [
+    { id: 'contact', label: 'Fleet contact', fieldType: 'text', options: null, required: true },
+    { id: 'colour', label: 'Colour', fieldType: 'text', options: null, required: false },
+    { id: 'centre', label: 'Cost centre', fieldType: 'select', options: 'A, B', required: true },
+  ]
+
+  beforeEach(() => {
+    db.customFieldDefinition.findMany.mockResolvedValue(TWO_REQUIRED)
+  })
+
+  it('names the one empty required field by the workshop\u2019s own label', async () => {
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {
+      contact: '',
+      colour: 'Blue',
+      centre: 'A',
+    })
+
+    expect(result.data).toEqual({
+      saved: false,
+      fieldErrors: [{ fieldId: 'contact', label: 'Fleet contact', issue: 'required' }],
+    })
+    expect(db.customFieldValue.upsert).not.toHaveBeenCalled()
+  })
+
+  it('names both when two are empty, in the order the form shows them', async () => {
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {
+      centre: '',
+      colour: 'Blue',
+      contact: ' ',
+    })
+
+    expect(result.data).toEqual({
+      saved: false,
+      fieldErrors: [
+        { fieldId: 'contact', label: 'Fleet contact', issue: 'required' },
+        { fieldId: 'centre', label: 'Cost centre', issue: 'required' },
+      ],
+    })
+  })
+
+  it('names them to a client that sent neither, so a stale or hand-made request is told too', async () => {
+    const result = await saveValidatedCustomFieldValues('q-1', 'quote', { colour: 'Blue' })
+
+    expect(result.data).toEqual({
+      saved: false,
+      fieldErrors: [
+        { fieldId: 'contact', label: 'Fleet contact', issue: 'required' },
+        { fieldId: 'centre', label: 'Cost centre', issue: 'required' },
+      ],
+    })
+  })
+
+  it('saves once all of them are filled in', async () => {
+    const result = await saveValidatedCustomFieldValues('job-1', 'service_record', {
+      contact: 'Dana',
+      colour: '',
+      centre: 'B',
+    })
+
+    expect(result.data).toEqual({ saved: true })
+    expect(written()).toEqual({ contact: 'Dana', colour: '', centre: 'B' })
   })
 })
 
@@ -277,7 +357,7 @@ describe('a value the record already holds', () => {
       bay: 'Bay 4',
     })
 
-    expect(result.data).toEqual({ saved: false, fieldErrors: { bay: 'option' } })
+    expect(result.data).toEqual({ saved: false, fieldErrors: refusals({ bay: 'option' }) })
   })
 
   it('writes nothing when nothing changed', async () => {

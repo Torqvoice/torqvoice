@@ -89,8 +89,8 @@
       "images": "Images",
       "documents": "Documents"
     },
-    "customFieldsInvalid": "Veuillez remplir tous les champs personnalisés obligatoires",
-    "customFieldsNotValid": "Certains champs personnalisés ne sont pas valides. Veuillez vérifier les champs signalés.",
+    "customFieldsMissing": "Non enregistré. Renseignez : {fields}",
+    "customFieldsNotValid": "Non enregistré. Vérifiez : {fields}",
     "customFieldsSaveFailed": "Impossible d'enregistrer les champs personnalisés"
   },
   "form": {
