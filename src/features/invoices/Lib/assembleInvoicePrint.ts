@@ -537,6 +537,9 @@ async function assembleFrozen(
 
   const data: InvoiceData = {
     ...record,
+    // The job's reading as issued. An invoice issued before it was kept has
+    // none, and prints the job's reading as it stands, as it always did.
+    mileage: frozen.jobMileage !== undefined ? frozen.jobMileage : record.mileage,
     techName: technicianName ?? record.techName,
     technician: technicianName ? { name: technicianName } : null,
     customer,

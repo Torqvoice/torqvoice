@@ -46,6 +46,9 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
           mileage: a.data.vehicle.mileage,
         }
       : null,
+    // The check-in on a phone, or a later save, can change the job's reading
+    // after the invoice has gone out; the sheet keeps the one it went out with.
+    jobMileage: a.data.mileage ?? null,
     technicianName: a.data.technician?.name || a.data.techName || null,
     signerName: a.signer.name || null,
     findings: (a.data.findings ?? []).map((f) => ({
