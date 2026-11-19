@@ -32,13 +32,24 @@ export const HIDDEN_COLUMNS: readonly string[] = [
  */
 export const REFERENCE_COLUMNS: readonly string[] = ['customerReference', 'poRequired']
 
+/** The vehicle's fleet / unit number: the same rule, its own switch. */
+export const FLEET_NUMBER_COLUMNS: readonly string[] = ['fleetNumber']
+
+/** Which of the switched-on fields this workshop uses. */
+export interface ShownColumns {
+  customerReference: boolean
+  fleetNumber: boolean
+}
+
 /** The columns of one table as this workshop's view shows them. */
-export function columnsFor(table: string, options: { customerReference: boolean }): string[] {
+export function columnsFor(table: string, options: ShownColumns): string[] {
   const columns = TABLE_COLUMNS[table]
   if (!columns) throw new Error(`No column list for table ${table}`)
-  return options.customerReference
-    ? [...columns]
-    : columns.filter((column) => !REFERENCE_COLUMNS.includes(column))
+  return columns.filter(
+    (column) =>
+      (options.customerReference || !REFERENCE_COLUMNS.includes(column)) &&
+      (options.fleetNumber || !FLEET_NUMBER_COLUMNS.includes(column))
+  )
 }
 
 export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
@@ -57,6 +68,8 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'engineCode',
     'hsn',
     'tsn',
+    // The workshop's own number for the vehicle (Settings, Workshop); see FLEET_NUMBER_COLUMNS.
+    'fleetNumber',
     'purchaseDate',
     'purchasePrice',
     'imageUrl',

@@ -36,7 +36,8 @@
     "inspectionDue30": "Dans 30 jours",
     "inspectionDue90": "Dans 90 jours",
     "inspectionDue": "Contrôle {date}",
-    "remindCustomers": "Rappeler ces clients"
+    "remindCustomers": "Rappeler ces clients",
+    "fleetNumber": "N° de parc / d'unité"
   },
   "detail": {
     "vehicleArchived": "Ce véhicule est archivé",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Vérifié auprès du registre le {date}",
     "notRegistered": "Non immatriculé",
     "soldReported": "Vente signalée par le client le {date}",
+    "fleetNumber": "N° de parc",
     "typeKey": "HSN/TSN",
     "addPhoto": "Ajouter une photo",
     "changePhoto": "Changer la photo",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "N° de parc / d'unité",
+    "fleetNumberPlaceholder": "ex. T-208",
     "typeKeyHint": "Sur un certificat d'immatriculation allemand : le HSN est le champ 2.1, le TSN les trois premiers caractères du champ 2.2.",
     "hsnInvalid": "Le HSN compte quatre chiffres, au champ 2.1 du certificat d'immatriculation.",
     "tsnInvalid": "Le TSN compte trois lettres ou chiffres, au début du champ 2.2 du certificat d'immatriculation.",

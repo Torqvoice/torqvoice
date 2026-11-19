@@ -22,6 +22,8 @@ const liveCustomFields = vi.fn(async (): Promise<unknown[]> => [])
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
   getCustomFieldsForPrint: () => liveCustomFields(),
+  // The vehicle's and the customer's own fields: this workshop has none.
+  getRecordCustomFieldsForPrint: async () => [],
 }))
 vi.mock('@/features/invoice-designer/Lib/designRules.server', () => ({
   designRuleSubjectOf: () => ({}),

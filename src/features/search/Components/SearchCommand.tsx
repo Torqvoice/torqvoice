@@ -73,6 +73,8 @@ type Vehicle = {
   licensePlate: string | null
   hsn?: string | null
   tsn?: string | null
+  /** Only sent by a workshop that uses the fleet number. */
+  fleetNumber?: string | null
 }
 
 interface SearchResult {
@@ -1021,7 +1023,12 @@ export function SearchCommand({
                 icon={Car}
                 title={vehicleLine(v)}
                 subtitle={
-                  typeKeyEnabled && (v.hsn || v.tsn) ? formatTypeKey(v.hsn, v.tsn) : undefined
+                  [
+                    v.fleetNumber,
+                    typeKeyEnabled && (v.hsn || v.tsn) ? formatTypeKey(v.hsn, v.tsn) : null,
+                  ]
+                    .filter(Boolean)
+                    .join(' · ') || undefined
                 }
                 trailing={v.licensePlate}
               />

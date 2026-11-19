@@ -192,6 +192,7 @@
       "engineCode": "Code moteur",
       "hsn": "HSN (code constructeur)",
       "tsn": "TSN (code type)",
+      "fleetNumber": "N° de parc / d'unité",
       "purchaseDate": "Date d'achat",
       "purchasePrice": "Prix d'achat"
     },

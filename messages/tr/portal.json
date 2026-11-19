@@ -196,6 +196,7 @@
     "plate": "Plaka: {plate}",
     "vin": "VIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Filo no: {fleetNumber}",
     "serviceCount": "{count, plural, one {# ziyaret} other {# ziyaret}}",
     "inspectionCount": "{count, plural, one {# muayene} other {# muayene}}",
     "serviceHistory": "Servis geçmişi ({count})",

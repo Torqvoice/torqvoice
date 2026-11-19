@@ -1,5 +1,6 @@
 'use server'
 
+import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import {
   deleteCustomFieldValuesOf,
   workOrderIdsOfVehicles,
@@ -233,6 +234,7 @@ async function buildPlan(
   const mapping = sanitizeMapping(input.mapping, staged.entity, {
     typeKey: await isTypeKeyEnabled(organizationId),
     customerReference: await isCustomerReferenceEnabled(organizationId),
+    fleetNumber: await isFleetNumberEnabled(organizationId),
   })
   const existing = await loadExisting(organizationId, staged.entity)
   const plan = planImport(staged.sheet.rows, mapping, options, existing, input.overrides)
@@ -543,6 +545,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
             engineCode: v.engineCode,
             hsn: v.hsn,
             tsn: v.tsn,
+            fleetNumber: v.fleetNumber,
             purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
             purchasePrice: v.purchasePrice,
             customerId,
@@ -577,6 +580,7 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
           engineCode: v.engineCode,
           hsn: v.hsn,
           tsn: v.tsn,
+          fleetNumber: v.fleetNumber ?? null,
           purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
           purchasePrice: v.purchasePrice,
           customerId,
@@ -882,9 +886,26 @@ export async function undoImportBatch(batchId: string) {
           where: { importBatchId: batchId, organizationId },
         })
         await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', goneWorkOrderIds)
+        // Values filled in on an imported vehicle or customer since.
+        await deleteCustomFieldValuesOf(
+          tx,
+          organizationId,
+          'vehicle',
+          batchVehicles.map((v) => v.id)
+        )
+        const batchCustomers = await tx.customer.findMany({
+          where: { importBatchId: batchId, organizationId },
+          select: { id: true },
+        })
         const customers = await tx.customer.deleteMany({
           where: { importBatchId: batchId, organizationId },
         })
+        await deleteCustomFieldValuesOf(
+          tx,
+          organizationId,
+          'customer',
+          batchCustomers.map((c) => c.id)
+        )
         await tx.importBatch.update({
           where: { id: batchId },
           data: { status: 'undone', undoneAt: new Date() },
@@ -956,6 +977,7 @@ export async function suggestMappingWithAi(token: string) {
       const fields = fieldsFor(staged.entity, {
         typeKey: await isTypeKeyEnabled(organizationId),
         customerReference: await isCustomerReferenceEnabled(organizationId),
+        fleetNumber: await isFleetNumberEnabled(organizationId),
       })
       const { columns, rows } = staged.sheet
 

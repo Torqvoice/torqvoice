@@ -33,6 +33,12 @@ import { clearableInput } from '@/lib/clearable'
 import { handleGated } from '@/components/upgrade-gate'
 import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { openBooking, useBookingAccess } from '@/components/booking-launcher'
+import { useHasRecordCustomFields } from '@/components/record-custom-fields-context'
+import {
+  CustomFieldsForm,
+  type CustomFieldsSave,
+} from '@/features/custom-fields/Components/CustomFieldsForm'
+import { customFieldsRefusal } from '@/features/custom-fields/Lib/customFieldsRefusal'
 
 interface CustomerFormProps {
   open: boolean
@@ -74,6 +80,16 @@ export function CustomerForm({
   const modal = useGlassModal()
   const tv = useTranslations('vehicles.form')
   const [loading, setLoading] = useState(false)
+  // The workshop's own fields for a customer, when it has defined any. They
+  // save through their own action: checked before the customer is written,
+  // saved under its id once it has one.
+  const hasCustomFields = useHasRecordCustomFields('customer')
+  const customFieldsSave = useRef<CustomFieldsSave | null>(null)
+  const tCustom = useTranslations('settings.customFields')
+  // A closed dialog holds no fields: the next one registers its own save.
+  useEffect(() => {
+    if (!open) customFieldsSave.current = null
+  }, [open])
   const [taxExempt, setTaxExempt] = useState(customer?.taxExempt ?? false)
   // The workshop's saved invoice designs, fetched when the dialog opens so
   // the three places this form is used need not each carry the list. Radix
@@ -135,9 +151,19 @@ export function CustomerForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setLoading(true)
-
     const formData = new FormData(e.currentTarget)
+
+    // The workshop's own fields first: one left empty that must not be stops
+    // the save here, marked and named on the form, before anything is written.
+    if (hasCustomFields && customFieldsSave.current) {
+      const checked = await customFieldsSave.current(customer ? undefined : { checkOnly: true })
+      if (!checked.valid) {
+        toast.error(customFieldsRefusal(checked, tCustom))
+        return
+      }
+    }
+
+    setLoading(true)
     // An emptied field reaches the update action as '' so it can be cleared.
     const optional = (name: string) => clearableInput(formData.get(name), Boolean(customer))
     const data = {
@@ -162,6 +188,13 @@ export function CustomerForm({
     const result = customer
       ? await updateCustomer({ ...data, id: customer.id })
       : await createCustomer(data)
+
+    // A new customer has an id now: its custom fields are saved under it.
+    if (result.success && !customer && hasCustomFields && customFieldsSave.current) {
+      const newId = (result.data as { id?: string } | undefined)?.id
+      const saved = newId ? await customFieldsSave.current({ entityId: newId }) : null
+      if (saved && !saved.valid) toast.error(customFieldsRefusal(saved, tCustom))
+    }
 
     if (result.success) {
       if (!customer) track('customer:create')
@@ -404,6 +437,19 @@ export function CustomerForm({
                 defaultValue={customer?.notes ?? ''}
               />
             </div>
+
+            {hasCustomFields && open && (
+              <div className="md:col-span-2">
+                <CustomFieldsForm
+                  embedded
+                  entityType="customer"
+                  entityId={customer?.id}
+                  onValuesReady={(save) => {
+                    customFieldsSave.current = save
+                  }}
+                />
+              </div>
+            )}
           </DialogBody>
 
           <DialogFooter>

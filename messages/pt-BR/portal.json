@@ -196,6 +196,7 @@
     "plate": "Placa: {plate}",
     "vin": "VIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Nº frota: {fleetNumber}",
     "serviceCount": "{count, plural, one {# visita} other {# visitas}}",
     "inspectionCount": "{count, plural, one {# inspeção} other {# inspeções}}",
     "serviceHistory": "Histórico de serviços ({count})",

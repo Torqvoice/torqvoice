@@ -8,6 +8,7 @@
  * the preview cannot drift from the result.
  */
 
+import { normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
 import type { ImportEntity } from './fields'
 import {
   type DateFormat,
@@ -77,6 +78,8 @@ export interface VehicleDraft {
   engineCode: string | null
   hsn: string | null
   tsn: string | null
+  /** The fleet / unit number; only mapped by a workshop that uses the field. */
+  fleetNumber?: string | null
   /** ISO date, so the plan survives JSON. */
   purchaseDate: string | null
   purchasePrice: number | null
@@ -341,6 +344,7 @@ function extractVehicle(
     engineCode: cleanText(v['vehicle.engineCode']),
     hsn: typeKey.hsn,
     tsn: typeKey.tsn,
+    fleetNumber: normalizeFleetNumber(cleanText(v['vehicle.fleetNumber'])),
     purchaseDate,
     purchasePrice,
   }

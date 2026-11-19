@@ -421,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Гаражный №: {fleetNumber}",
     "distanceKm": "{value} км",
     "distanceMi": "{value} миль",
     "engineHours": "{value} моточ.",

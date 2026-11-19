@@ -140,13 +140,13 @@ describe("a record that is not this workshop's", () => {
 
 describe('a kind of record nobody defined', () => {
   it('falls back to the strictest permission, and is refused anyway', async () => {
-    const read = await getCustomFieldValues('x', 'customer')
+    const read = await getCustomFieldValues('x', 'invoice')
     expect(needed()).toEqual([
       { action: PermissionAction.READ, subject: PermissionSubject.SETTINGS },
     ])
     expect(read).toEqual({ success: false, error: 'Unknown record type' })
 
-    const saved = await saveValidatedCustomFieldValues('x', 'customer', { 'f-1': 'x' })
+    const saved = await saveValidatedCustomFieldValues('x', 'invoice', { 'f-1': 'x' })
     expect(needed()).toEqual([
       { action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS },
     ])

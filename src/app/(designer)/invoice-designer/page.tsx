@@ -1,3 +1,4 @@
+import { isRecordEntityType } from '@/features/custom-fields/Schema/customFieldSchema'
 import { redirect } from 'next/navigation'
 import { defaultCertificateDesign } from '@/features/inspections/Lib/defaultCertificateDesign'
 
@@ -208,14 +209,18 @@ export default async function InvoiceDesignerPage({
         customFields={
           customFieldsResult.success && customFieldsResult.data
             ? customFieldsResult.data
-                .filter((f) => f.entityType === 'service_record')
+                // The job's own fields, and the vehicle's and the customer's,
+                // which print only where a design places them.
+                .filter(
+                  (f) => f.entityType === 'service_record' || isRecordEntityType(f.entityType)
+                )
                 .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
             : []
         }
         quoteCustomFields={
           customFieldsResult.success && customFieldsResult.data
             ? customFieldsResult.data
-                .filter((f) => f.entityType === 'quote')
+                .filter((f) => f.entityType === 'quote' || isRecordEntityType(f.entityType))
                 .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
             : []
         }

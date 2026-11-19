@@ -36,7 +36,8 @@
     "inspectionDue30": "Vence en 30 días",
     "inspectionDue90": "Vence en 90 días",
     "inspectionDue": "ITV {date}",
-    "remindCustomers": "Recordar a estos clientes"
+    "remindCustomers": "Recordar a estos clientes",
+    "fleetNumber": "N.º de flota / unidad"
   },
   "detail": {
     "vehicleArchived": "Este vehículo esta archivado",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Comprobado en el registro el {date}",
     "notRegistered": "Sin matricular",
     "soldReported": "El cliente indicó venta el {date}",
+    "fleetNumber": "N.º flota",
     "typeKey": "HSN/TSN",
     "addPhoto": "Añadir foto",
     "changePhoto": "Cambiar foto",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "N.º de flota / unidad",
+    "fleetNumberPlaceholder": "ej. T-208",
     "typeKeyHint": "Del permiso de circulación alemán: HSN es el campo 2.1 y TSN son los tres primeros caracteres del campo 2.2.",
     "hsnInvalid": "El HSN tiene cuatro dígitos, del campo 2.1 del permiso de circulación.",
     "tsnInvalid": "El TSN tiene tres letras o dígitos, el inicio del campo 2.2 del permiso de circulación.",

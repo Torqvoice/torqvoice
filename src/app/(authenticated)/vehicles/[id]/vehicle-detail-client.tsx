@@ -1,5 +1,9 @@
 'use client'
 
+import {
+  type RecordCustomField,
+  useRecordCustomFieldRows,
+} from '@/features/custom-fields/Components/RecordCustomFields'
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { Fragment, useCallback, useEffect, useRef, useState, useTransition } from 'react'
@@ -188,6 +192,10 @@ interface VehicleDetail {
   engineCode: string | null
   hsn: string | null
   tsn: string | null
+  /** Null for a workshop that has the fleet number switched off. */
+  fleetNumber?: string | null
+  /** The workshop's own fields for the vehicle; none unless it defined some. */
+  customFields?: RecordCustomField[]
   purchaseDate: Date | null
   purchasePrice: number | null
   imageUrl: string | null
@@ -642,6 +650,7 @@ export function VehicleDetailClient({
       [tPlate('fuel'), fuelLabel, false],
       [tPlate('transmission'), transmissionLabel, false],
       [tPlate('color'), vehicle.color, false],
+      [t('fleetNumber'), vehicle.fleetNumber ?? null, true],
       [
         t('typeKey'),
         typeKeyEnabled && (vehicle.hsn || vehicle.tsn)
@@ -651,6 +660,8 @@ export function VehicleDetailClient({
       ],
     ] as [string, string | null, boolean][]
   ).filter(([, value]) => Boolean(value))
+  // The workshop's own fields for the vehicle, under the built-in ones.
+  const customRows = useRecordCustomFieldRows(vehicle.customFields)
 
   // The history's chips. Observations and reminders are lists of open items,
   // reached from the open items under the vehicle; while one is showing it
@@ -1399,7 +1410,11 @@ export function VehicleDetailClient({
                 )}
               </dl>
 
-              {(vehicle.vin || specs.length > 0 || vehicle.purchaseDate || tireSets.length > 0) && (
+              {(vehicle.vin ||
+                specs.length > 0 ||
+                customRows.length > 0 ||
+                vehicle.purchaseDate ||
+                tireSets.length > 0) && (
                 <>
                   <div className="mx-1.5 my-3 h-px bg-border" />
                   <h2 className="px-1.5 pb-1.5 text-[13px] font-semibold">{t('vehicleFacts')}</h2>
@@ -1432,6 +1447,13 @@ export function VehicleDetailClient({
                             <CopyValue value={value} label={label} className="-my-1" />
                           )}
                         </dd>
+                      </Fragment>
+                    ))}
+
+                    {customRows.map((row) => (
+                      <Fragment key={row.id}>
+                        <dt className="text-muted-foreground">{row.label}</dt>
+                        <dd className="min-w-0 whitespace-pre-wrap break-words">{row.text}</dd>
                       </Fragment>
                     ))}
 

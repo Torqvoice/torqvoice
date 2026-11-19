@@ -421,6 +421,7 @@
     "vin": "VIN : {vin}",
     "vinMarine": "HIN : {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "N° de parc : {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mi",
     "engineHours": "{value} heures moteur",

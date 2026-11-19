@@ -36,6 +36,15 @@ vi.mock('@/lib/files/manager', () => ({
   parseStoredFileUrl: vi.fn(() => null),
 }))
 
+// No fleet number and no fields of the workshop's own, as for every workshop
+// that has asked for neither.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
+vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
+  getRecordCustomFieldsForPrint: vi.fn(async () => []),
+}))
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },

@@ -29,6 +29,7 @@ import {
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import {
   type VisitConditionMap,
   visitConditionMapForPrint,
@@ -109,6 +110,7 @@ export interface QuotePrintData {
     licensePlate: string | null
     hsn?: string | null
     tsn?: string | null
+    fleetNumber?: string | null
   } | null
 }
 
@@ -130,6 +132,11 @@ export interface QuotePrintInput {
   pdfAttachmentNames?: string[]
   otherAttachmentNames?: string[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
+  /**
+   * The vehicle's and the customer's own custom fields. They print only where
+   * a design places one, and are never added to the extras panel on their own.
+   */
+  recordCustomFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
   /** The document's language, the one its labels are in; numbers are written its way. */
   locale?: string
@@ -233,6 +240,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
         : `VIN: ${data.vehicle.vin}`
       : '',
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
+    // Empty for a vehicle without one, and for a workshop that has the field off.
+    fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
@@ -259,7 +268,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
         : L('validityFooter30', 'This quote is valid for 30 days')
     } · ${shopName}`,
   }
-  for (const cfEntry of input.customFields ?? []) {
+  for (const cfEntry of [...(input.customFields ?? []), ...(input.recordCustomFields ?? [])]) {
     if (cfEntry.value === '' || cfEntry.value == null) continue
     fields[toCustomFieldId(cfEntry.fieldId)] = customFieldLine(cfEntry, {
       labels,

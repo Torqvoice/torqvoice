@@ -36,7 +36,8 @@
     "inspectionDue30": "Due in 30 days",
     "inspectionDue90": "Due in 90 days",
     "inspectionDue": "Inspection {date}",
-    "remindCustomers": "Remind these customers"
+    "remindCustomers": "Remind these customers",
+    "fleetNumber": "Fleet / unit number"
   },
   "detail": {
     "vehicleArchived": "This vehicle is archived",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Checked against the registry {date}",
     "notRegistered": "Not registered",
     "soldReported": "Customer reported sold {date}",
+    "fleetNumber": "Fleet no.",
     "typeKey": "HSN/TSN",
     "addPhoto": "Add photo",
     "changePhoto": "Change photo",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "Fleet / unit number",
+    "fleetNumberPlaceholder": "e.g. T-208",
     "typeKeyHint": "From a German registration certificate: HSN is field 2.1, TSN is the first three characters of field 2.2.",
     "hsnInvalid": "HSN is four digits, from field 2.1 of the registration certificate.",
     "tsnInvalid": "TSN is three letters or digits, the start of field 2.2 of the registration certificate.",

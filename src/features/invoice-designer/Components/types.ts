@@ -64,6 +64,8 @@ export interface DesignerWorkshop {
   typeKeyEnabled?: boolean
   /** Whether the workshop uses the Reference / PO field, so the sample customer shows one. */
   customerReferenceEnabled?: boolean
+  /** Whether the workshop records a fleet / unit number, so the sample vehicle shows one. */
+  fleetNumberEnabled?: boolean
   /** How the workshop writes distance; the sample car's mileage uses it, as printed invoices do. */
   unitSystem?: 'metric' | 'imperial'
   logoUrl: string

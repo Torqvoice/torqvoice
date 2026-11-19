@@ -129,6 +129,7 @@ vi.mock('@/features/inspections/Lib/linkedInspectionResults.server', () => ({
 }))
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
   getCustomFieldsForPrint: async () => [],
+  getRecordCustomFieldsForPrint: async () => [],
 }))
 vi.mock('@/features/signatures/Lib/memberSignature.server', () => ({
   documentSigner: async () => ({ name: '' }),

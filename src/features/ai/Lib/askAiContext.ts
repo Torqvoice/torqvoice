@@ -1,4 +1,5 @@
 import 'server-only'
+import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { db } from '@/lib/db'
 import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { zonedDayKey } from '@/lib/timezone'
@@ -273,6 +274,7 @@ async function vehicleContext(
       engineCode: true,
       hsn: true,
       tsn: true,
+      fleetNumber: true,
       purchaseDate: true,
       purchasePrice: true,
       isArchived: true,
@@ -359,6 +361,10 @@ async function vehicleContext(
         (await isTypeKeyEnabled(organizationId))
           ? formatTypeKey(vehicle.hsn, vehicle.tsn) || undefined
           : undefined,
+      ],
+      [
+        'fleet / unit number',
+        (await isFleetNumberEnabled(organizationId)) ? vehicle.fleetNumber : undefined,
       ],
       ['purchased', dayOf(vehicle.purchaseDate, o.timeZone)],
       ['purchase price', o.showMoney ? money(vehicle.purchasePrice, o.currencyCode) : undefined],

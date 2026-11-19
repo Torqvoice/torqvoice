@@ -21,7 +21,7 @@
  */
 
 import { renderToBuffer } from '@react-pdf/renderer'
-import '@/features/vehicles/Components/invoice-pdf/fonts'
+import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import React from 'react'
 import { InvoicePDF } from '@/features/vehicles/Components/InvoicePDF'
 import { getFeatures } from '@/lib/features'
@@ -96,6 +96,7 @@ export async function renderInvoicePdf(
     ...attachments,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   }) as any
+  await pdfFontsReady()
   return renderToBuffer(element)
 }
 

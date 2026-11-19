@@ -148,6 +148,8 @@ export const PUBLIC_QUOTE_SELECT = {
   // Whose signature the sheet carries, and which car and inspection it reads.
   userId: true,
   vehicleId: true,
+  // Whose custom fields a design may place on the sheet; never sent as it is.
+  customerId: true,
   inspectionId: true,
   partItems: {
     select: {
@@ -189,6 +191,8 @@ export const PUBLIC_QUOTE_SELECT = {
       licensePlate: true,
       hsn: true,
       tsn: true,
+      // Taken away again by the caller for a workshop that has the field off.
+      fleetNumber: true,
     },
   },
 } as const

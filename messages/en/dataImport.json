@@ -192,6 +192,7 @@
       "engineCode": "Engine code",
       "hsn": "HSN (manufacturer key)",
       "tsn": "TSN (type key)",
+      "fleetNumber": "Fleet / unit number",
       "purchaseDate": "Purchase date",
       "purchasePrice": "Purchase price"
     },

@@ -36,7 +36,8 @@
     "inspectionDue30": "Fällig in 30 Tagen",
     "inspectionDue90": "Fällig in 90 Tagen",
     "inspectionDue": "HU {date}",
-    "remindCustomers": "Diese Kunden erinnern"
+    "remindCustomers": "Diese Kunden erinnern",
+    "fleetNumber": "Fuhrpark- / Fahrzeugnummer"
   },
   "detail": {
     "vehicleArchived": "Dieses Fahrzeug ist archiviert",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Mit dem Register abgeglichen am {date}",
     "notRegistered": "Nicht zugelassen",
     "soldReported": "Kunde meldet Verkauf am {date}",
+    "fleetNumber": "Fuhrpark-Nr.",
     "typeKey": "HSN/TSN",
     "addPhoto": "Foto hinzufügen",
     "changePhoto": "Foto ändern",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "Fuhrpark- / Fahrzeugnummer",
+    "fleetNumberPlaceholder": "z.B. T-208",
     "typeKeyHint": "Aus der Zulassungsbescheinigung Teil I: HSN steht in Feld 2.1, TSN sind die ersten drei Zeichen in Feld 2.2.",
     "hsnInvalid": "Die HSN besteht aus vier Ziffern, aus Feld 2.1 der Zulassungsbescheinigung.",
     "tsnInvalid": "Die TSN besteht aus drei Buchstaben oder Ziffern, vom Anfang von Feld 2.2 der Zulassungsbescheinigung.",

@@ -192,6 +192,7 @@
       "engineCode": "Motorcode",
       "hsn": "HSN (fabrikantcode)",
       "tsn": "TSN (typecode)",
+      "fleetNumber": "Vloot- / wagennummer",
       "purchaseDate": "Aankoopdatum",
       "purchasePrice": "Aankoopprijs"
     },

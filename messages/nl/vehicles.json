@@ -36,7 +36,8 @@
     "inspectionDue30": "Vervalt binnen 30 dagen",
     "inspectionDue90": "Vervalt binnen 90 dagen",
     "inspectionDue": "APK {date}",
-    "remindCustomers": "Deze klanten herinneren"
+    "remindCustomers": "Deze klanten herinneren",
+    "fleetNumber": "Vloot- / wagennummer"
   },
   "detail": {
     "vehicleArchived": "Dit voertuig is gearchiveerd",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Gecontroleerd bij het register op {date}",
     "notRegistered": "Niet geregistreerd",
     "soldReported": "Klant meldde verkocht op {date}",
+    "fleetNumber": "Vlootnr.",
     "typeKey": "HSN/TSN",
     "addPhoto": "Foto toevoegen",
     "changePhoto": "Foto wijzigen",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "Vloot- / wagennummer",
+    "fleetNumberPlaceholder": "bijv. T-208",
     "typeKeyHint": "Van een Duits kentekenbewijs: HSN staat in veld 2.1, TSN zijn de eerste drie tekens van veld 2.2.",
     "hsnInvalid": "Het HSN bestaat uit vier cijfers, uit veld 2.1 van het kentekenbewijs.",
     "tsnInvalid": "Het TSN bestaat uit drie letters of cijfers, het begin van veld 2.2 van het kentekenbewijs.",

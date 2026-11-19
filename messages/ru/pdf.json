@@ -228,6 +228,7 @@
     "signedBy": "Подписал(а)",
     "signatureDate": "Дата",
     "customerReference": "Ваш референс / № заказа",
+    "fleetNumber": "Гаражный №",
     "conditionMapTitle": "Состояние автомобиля",
     "conditionMapNo": "№",
     "conditionMapArea": "Место",

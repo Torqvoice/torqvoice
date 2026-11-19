@@ -1,5 +1,12 @@
 'use server'
 
+import { getRecordCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
+import {
+  fleetNumberMatch,
+  gateFleetNumber,
+  isFleetNumberEnabled,
+} from '@/features/vehicles/Lib/fleetNumberSetting'
 import {
   deleteCustomFieldValuesOf,
   workOrderIdsOfVehicles,
@@ -31,7 +38,7 @@ import { vehicleName } from '@/lib/vehicle-name'
 export async function getVehicles() {
   return withAuth(
     async ({ organizationId }) => {
-      return db.vehicle.findMany({
+      const vehicles = await db.vehicle.findMany({
         where: { organizationId, isArchived: false },
         include: {
           customer: { select: { id: true, name: true, company: true } },
@@ -41,6 +48,8 @@ export async function getVehicles() {
         },
         orderBy: { updatedAt: 'desc' },
       })
+      const fleetNumberOn = await isFleetNumberEnabled(organizationId)
+      return vehicles.map((vehicle) => gateFleetNumber(vehicle, fleetNumberOn))
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
@@ -117,7 +126,15 @@ export async function getVehicle(vehicleId: string) {
         0
       )
 
-      return { ...vehicle, lifetimeSpend }
+      // Without the fleet number for a workshop that has that field off.
+      return {
+        ...gateFleetNumber(vehicle, await isFleetNumberEnabled(organizationId)),
+        lifetimeSpend,
+        // The workshop's own fields for this vehicle: none unless it defined some.
+        customFields: await getRecordCustomFieldsForPrint(organizationId, {
+          vehicleId: vehicle.id,
+        }),
+      }
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
@@ -147,6 +164,7 @@ export async function getVehiclesPaginated(params: {
       if (params.search) {
         const words = searchWordsOf(params.search)
         const typeKeyOn = await isTypeKeyEnabled(organizationId)
+        const fleetNumberOn = await isFleetNumberEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -155,6 +173,7 @@ export async function getVehiclesPaginated(params: {
             { licensePlate: { contains: word, mode: 'insensitive' } },
             { vin: { contains: word, mode: 'insensitive' } },
             ...(typeKeyOn ? typeKeySearchTerms(word) : []),
+            ...fleetNumberMatch(word, fleetNumberOn),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)
@@ -217,8 +236,9 @@ export async function getVehiclesPaginated(params: {
         db.vehicleInspectionStatus.count({ where: { organizationId, dueAt: { not: null } } }),
       ])
 
+      const fleetNumberShown = await isFleetNumberEnabled(organizationId)
       return {
-        vehicles,
+        vehicles: vehicles.map((vehicle) => gateFleetNumber(vehicle, fleetNumberShown)),
         total,
         page,
         pageSize,
@@ -310,6 +330,10 @@ export async function createVehicle(input: unknown) {
           licensePlate: normalizePlate(data.licensePlate),
           hsn: data.hsn || null,
           tsn: data.tsn || null,
+          // Only a workshop that has the field: nobody else has a box for it.
+          fleetNumber: (await isFleetNumberEnabled(organizationId))
+            ? normalizeFleetNumber(data.fleetNumber)
+            : null,
           purchaseDate: toSafeWorkshopDate(data.purchaseDate, timeZone) ?? null,
           customerId: data.customerId || null,
           userId,
@@ -377,6 +401,12 @@ export async function updateVehicle(input: unknown) {
           engineCode: data.engineCode !== undefined ? data.engineCode || null : undefined,
           hsn: data.hsn !== undefined ? data.hsn || null : undefined,
           tsn: data.tsn !== undefined ? data.tsn || null : undefined,
+          // Left as stored when the form did not send it, and when the
+          // workshop has the field off: what was typed while it was on stays.
+          fleetNumber:
+            data.fleetNumber !== undefined && (await isFleetNumberEnabled(organizationId))
+              ? normalizeFleetNumber(data.fleetNumber)
+              : undefined,
           purchaseDate: toSafeWorkshopDate(
             data.purchaseDate,
             await workshopTimeZone(organizationId)
@@ -447,6 +477,8 @@ export async function deleteVehicle(vehicleId: string) {
       await db.$transaction(async (tx) => {
         await tx.vehicle.deleteMany({ where: { id: vehicleId, organizationId } })
         await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', workOrderIds)
+        // And the vehicle's own.
+        await deleteCustomFieldValuesOf(tx, organizationId, 'vehicle', [vehicleId])
       })
       await releaseFiles(files, { organizationId, reason: 'vehicle deleted' })
 
@@ -479,6 +511,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
       if (search) {
         const words = searchWordsOf(search)
         const typeKeyOn = await isTypeKeyEnabled(organizationId)
+        const fleetNumberOn = await isFleetNumberEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -487,6 +520,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
             { licensePlate: { contains: word, mode: 'insensitive' } },
             { vin: { contains: word, mode: 'insensitive' } },
             ...(typeKeyOn ? typeKeySearchTerms(word) : []),
+            ...fleetNumberMatch(word, fleetNumberOn),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)

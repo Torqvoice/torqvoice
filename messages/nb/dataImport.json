@@ -192,6 +192,7 @@
       "engineCode": "Motorkode",
       "hsn": "HSN (produsentnøkkel)",
       "tsn": "TSN (typenøkkel)",
+      "fleetNumber": "Flåte- / enhetsnummer",
       "purchaseDate": "Kjøpsdato",
       "purchasePrice": "Kjøpspris"
     },

@@ -20,6 +20,7 @@ const db = {
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
   getCustomFieldsForPrint: async () => [],
+  getRecordCustomFieldsForPrint: async () => [],
 }))
 vi.mock('@/features/invoice-designer/Lib/designRules.server', () => ({
   designRuleSubjectOf: () => ({}),

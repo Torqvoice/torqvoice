@@ -228,6 +228,7 @@
     "signedBy": "Firmado por",
     "signatureDate": "Fecha",
     "customerReference": "Su referencia / n.º de pedido",
+    "fleetNumber": "N.º flota",
     "conditionMapTitle": "Estado del vehículo",
     "conditionMapNo": "N.º",
     "conditionMapArea": "Zona",

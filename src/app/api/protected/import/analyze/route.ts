@@ -1,3 +1,4 @@
+import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { NextRequest, NextResponse } from 'next/server'
 import { canImportAnything } from '@/features/import/Lib/importAccess.server'
 import { getAuthContext } from '@/lib/get-auth-context'
@@ -93,7 +94,8 @@ export async function POST(request: NextRequest) {
 
   const typeKey = await isTypeKeyEnabled(organizationId)
   const customerReference = await isCustomerReferenceEnabled(organizationId)
-  const offered = { typeKey, customerReference }
+  const fleetNumber = await isFleetNumberEnabled(organizationId)
+  const offered = { typeKey, customerReference, fleetNumber }
   const suggestion = suggestMapping(sheet.columns, sheet.rows, entity, presetId, offered)
 
   const [countrySetting, features, aiConfigured] = await Promise.all([

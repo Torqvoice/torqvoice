@@ -117,16 +117,18 @@ describe('the settings search', () => {
 describe('the model’s column lists', () => {
   it('leave the reference and "PO required" out for a workshop that has the field off', () => {
     for (const table of ['service_records', 'quotes', 'customers']) {
-      const off = columnsFor(table, { customerReference: false })
+      const off = columnsFor(table, { customerReference: false, fleetNumber: true })
       for (const column of REFERENCE_COLUMNS) expect(off, table).not.toContain(column)
       // Nothing else goes with them.
       expect(off).toEqual(TABLE_COLUMNS[table].filter((c) => !REFERENCE_COLUMNS.includes(c)))
-      expect(columnsFor(table, { customerReference: true })).toEqual([...TABLE_COLUMNS[table]])
+      expect(columnsFor(table, { customerReference: true, fleetNumber: true })).toEqual([
+        ...TABLE_COLUMNS[table],
+      ])
     }
   })
 
   it('leave every other table alone', () => {
-    expect(columnsFor('vehicles', { customerReference: false })).toEqual([
+    expect(columnsFor('vehicles', { customerReference: false, fleetNumber: true })).toEqual([
       ...TABLE_COLUMNS.vehicles,
     ])
   })

@@ -192,6 +192,7 @@
       "engineCode": "Motorcode",
       "hsn": "HSN (Herstellerschlüsselnummer)",
       "tsn": "TSN (Typschlüsselnummer)",
+      "fleetNumber": "Fuhrpark- / Fahrzeugnummer",
       "purchaseDate": "Kaufdatum",
       "purchasePrice": "Kaufpreis"
     },

@@ -4,6 +4,7 @@ import { sessionOrganizationScope } from './session-scope'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 import { customerReferenceEnabledIn } from '@/features/customer-reference/Lib/referenceSetting'
+import { fleetNumberEnabledIn } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { getFeatures } from './features'
 import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
 
@@ -37,6 +38,10 @@ type AuthResult =
       typeKeyEnabled: boolean
       /** Whether work orders and quotes carry the customer's reference / PO. */
       customerReferenceEnabled: boolean
+      /** Whether vehicles carry a Fleet / unit number. */
+      fleetNumberEnabled: boolean
+      /** Whether the workshop has defined custom fields for vehicles and for customers. */
+      recordCustomFields: { vehicle: boolean; customer: boolean }
       /** The unit a plate lookup writes engine size in. */
       engineSizeUnit: EngineSizeUnit
       currencyCode: string | undefined
@@ -89,6 +94,7 @@ export async function getLayoutData(): Promise<AuthResult> {
                 SETTING_KEYS.SERVICE_TYPE,
                 SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
                 SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED,
+                SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED,
                 SETTING_KEYS.ENGINE_SIZE_UNIT,
                 SETTING_KEYS.CURRENCY_CODE,
                 SETTING_KEYS.CURRENCY_FORMAT,
@@ -112,6 +118,31 @@ export async function getLayoutData(): Promise<AuthResult> {
   const customerReferenceEnabled =
     membership && orgMap.get(SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED) === 'true'
       ? customerReferenceEnabledIn(
+          Object.fromEntries(orgMap),
+          await getFeatures(membership.organizationId)
+        )
+      : false
+  // Which of its vehicles and customers carry custom fields: none for a
+  // workshop that has defined none, or whose plan has no custom fields.
+  const recordKinds =
+    membership && (await getFeatures(membership.organizationId)).customFields
+      ? await db.customFieldDefinition.findMany({
+          where: {
+            organizationId: membership.organizationId,
+            isActive: true,
+            entityType: { in: ['vehicle', 'customer'] },
+          },
+          select: { entityType: true },
+          distinct: ['entityType'],
+        })
+      : []
+  const recordCustomFields = {
+    vehicle: recordKinds.some((row) => row.entityType === 'vehicle'),
+    customer: recordKinds.some((row) => row.entityType === 'customer'),
+  }
+  const fleetNumberEnabled =
+    membership && orgMap.get(SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED) === 'true'
+      ? fleetNumberEnabledIn(
           Object.fromEntries(orgMap),
           await getFeatures(membership.organizationId)
         )
@@ -141,6 +172,8 @@ export async function getLayoutData(): Promise<AuthResult> {
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
     typeKeyEnabled: typeKeyEnabledIn(Object.fromEntries(orgMap)),
     customerReferenceEnabled,
+    fleetNumberEnabled,
+    recordCustomFields,
     engineSizeUnit: engineSizeUnitOf(orgMap.get(SETTING_KEYS.ENGINE_SIZE_UNIT)),
     currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
     currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,

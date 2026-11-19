@@ -1,5 +1,6 @@
 'use server'
 
+import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
 import {
   gateCustomerReference,
@@ -327,6 +328,7 @@ export async function getServiceRecord(recordId: string) {
               engineCode: true,
               hsn: true,
               tsn: true,
+              fleetNumber: true,
               purchaseDate: true,
               purchasePrice: true,
               inspectionStatus: {
@@ -373,8 +375,9 @@ export async function getServiceRecord(recordId: string) {
       return {
         ...gateCustomerReference(record, referenceOn),
         customer: record.customer && gatePoRequired(record.customer, referenceOn),
+        // And without the vehicle's fleet number where that is switched off.
         vehicle: record.vehicle && {
-          ...record.vehicle,
+          ...gateFleetNumber(record.vehicle, await isFleetNumberEnabled(organizationId)),
           customer: record.vehicle.customer && gatePoRequired(record.vehicle.customer, referenceOn),
         },
         quotes,

@@ -510,6 +510,13 @@ function VehicleDetails({
     },
     { key: 'color', label: tv('color'), value: vehicle.color ?? null },
     { key: 'engineCode', label: tv('engineCode'), value: vehicle.engineCode ?? null, copy: true },
+    // Null for a workshop that has the fleet number off: the read gates it.
+    {
+      key: 'fleetNumber',
+      label: tv('fleetNumber'),
+      value: vehicle.fleetNumber ?? null,
+      copy: true,
+    },
     {
       key: 'typeKey',
       label: tv('typeKey'),

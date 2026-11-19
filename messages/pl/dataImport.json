@@ -192,6 +192,7 @@
       "engineCode": "Kod silnika",
       "hsn": "HSN (kod producenta)",
       "tsn": "TSN (kod typu)",
+      "fleetNumber": "Numer taborowy / wewnętrzny",
       "purchaseDate": "Data zakupu",
       "purchasePrice": "Cena zakupu"
     },

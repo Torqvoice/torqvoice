@@ -26,6 +26,7 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
+import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { loadPortalLook } from '@/features/portal/Lib/portalLook.server'
 import { PORTAL_REQUEST_MAX_FILES } from '@/features/portal/Lib/portalUploads'
 import { ownPortalUploadUrl } from '@/features/portal/Lib/portalUploadOwner.server'
@@ -74,6 +75,7 @@ export async function getPortalVehicleDetail(vehicleId: string) {
         licensePlate: true,
         hsn: true,
         tsn: true,
+        fleetNumber: true,
         color: true,
         mileage: true,
         fuelType: true,
@@ -115,7 +117,11 @@ export async function getPortalVehicleDetail(vehicleId: string) {
       throw new Error('Vehicle not found')
     }
 
-    return gateTypeKey(vehicle, await isTypeKeyEnabled(organizationId))
+    // The type key and the fleet number each only for a workshop that uses it.
+    return gateFleetNumber(
+      gateTypeKey(vehicle, await isTypeKeyEnabled(organizationId)),
+      await isFleetNumberEnabled(organizationId)
+    )
   })
 }
 

@@ -228,6 +228,7 @@
     "signedBy": "Signert av",
     "signatureDate": "Dato",
     "customerReference": "Deres referanse / bestillingsnr.",
+    "fleetNumber": "Flåtenr.",
     "conditionMapTitle": "Kjøretøyets tilstand",
     "conditionMapNo": "Nr.",
     "conditionMapArea": "Område",

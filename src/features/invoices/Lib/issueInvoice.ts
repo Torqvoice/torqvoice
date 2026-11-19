@@ -43,6 +43,7 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
           licensePlate: a.data.vehicle.licensePlate,
           hsn: a.data.vehicle.hsn ?? null,
           tsn: a.data.vehicle.tsn ?? null,
+          fleetNumber: a.data.vehicle.fleetNumber ?? null,
           mileage: a.data.vehicle.mileage,
         }
       : null,
@@ -57,6 +58,13 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
       notes: f.notes ?? null,
     })),
     customFields: (a.data.customFields ?? []).map((cf) => ({
+      fieldId: cf.fieldId,
+      label: cf.label,
+      value: cf.value,
+      fieldType: cf.fieldType,
+      format: 'workshop',
+    })),
+    recordCustomFields: (a.data.recordCustomFields ?? []).map((cf) => ({
       fieldId: cf.fieldId,
       label: cf.label,
       value: cf.value,

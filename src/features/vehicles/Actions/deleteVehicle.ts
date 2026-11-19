@@ -25,6 +25,8 @@ export async function deleteVehicle(vehicleId: string) {
           where: { id: vehicleId, organizationId },
         })
         await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', workOrderIds)
+        // And the vehicle's own.
+        await deleteCustomFieldValuesOf(tx, organizationId, 'vehicle', [vehicleId])
         return deleted
       })
       if (result.count === 0) throw new Error('Vehicle not found')

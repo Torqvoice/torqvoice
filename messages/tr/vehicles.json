@@ -36,7 +36,8 @@
     "inspectionDue30": "30 gün içinde",
     "inspectionDue90": "90 gün içinde",
     "inspectionDue": "Muayene {date}",
-    "remindCustomers": "Bu müşterilere hatırlat"
+    "remindCustomers": "Bu müşterilere hatırlat",
+    "fleetNumber": "Filo / birim numarası"
   },
   "detail": {
     "vehicleArchived": "Bu araç arşivlenmiş",
@@ -102,6 +103,7 @@
     "inspectionCheckedAt": "Sicilde {date} tarihinde kontrol edildi",
     "notRegistered": "Kayıtlı değil",
     "soldReported": "Müşteri {date} tarihinde satıldığını bildirdi",
+    "fleetNumber": "Filo no",
     "typeKey": "HSN/TSN",
     "addPhoto": "Fotoğraf ekle",
     "changePhoto": "Fotoğrafı değiştir",
@@ -401,6 +403,8 @@
     "hsn": "HSN",
     "tsn": "TSN",
     "typeKey": "HSN/TSN",
+    "fleetNumber": "Filo / birim numarası",
+    "fleetNumberPlaceholder": "örn. T-208",
     "typeKeyHint": "Alman ruhsatından: HSN 2.1 alanıdır, TSN ise 2.2 alanının ilk üç karakteridir.",
     "hsnInvalid": "HSN, ruhsatın 2.1 alanındaki dört rakamdır.",
     "tsnInvalid": "TSN, ruhsatın 2.2 alanının başındaki üç harf veya rakamdır.",

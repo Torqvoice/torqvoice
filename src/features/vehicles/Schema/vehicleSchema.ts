@@ -30,6 +30,8 @@ export const createVehicleSchema = z.object({
   engineCode: z.string().optional(),
   hsn: hsnSchema.optional(),
   tsn: tsnSchema.optional(),
+  /** The owner's own number for the vehicle. Kept only by a workshop that uses the field. */
+  fleetNumber: z.string().max(200).optional(),
   purchaseDate: z.string().optional(),
   purchasePrice: z.coerce.number().optional(),
   imageUrl: optionalUploadUrlSchema.optional(),

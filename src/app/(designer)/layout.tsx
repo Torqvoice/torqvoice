@@ -6,6 +6,8 @@ import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permis
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { TypeKeyProvider } from '@/components/type-key-context'
 import { CustomerReferenceProvider } from '@/components/customer-reference-context'
+import { FleetNumberProvider } from '@/components/fleet-number-context'
+import { RecordCustomFieldsProvider } from '@/components/record-custom-fields-context'
 import { ConfirmProvider } from '@/components/confirm-dialog'
 import { CurrencySettingsProvider } from '@/components/currency-settings-context'
 import { DateSettingsProvider } from '@/components/date-settings-context'
@@ -71,7 +73,11 @@ export default async function DesignerLayout({ children }: { children: React.Rea
   // layout asks whether the workshop uses the Reference / PO field.
   return (
     <CustomerReferenceProvider enabled={data.customerReferenceEnabled}>
-      {page}
+      <FleetNumberProvider enabled={data.fleetNumberEnabled}>
+        <RecordCustomFieldsProvider value={data.recordCustomFields}>
+          {page}
+        </RecordCustomFieldsProvider>
+      </FleetNumberProvider>
     </CustomerReferenceProvider>
   )
 }

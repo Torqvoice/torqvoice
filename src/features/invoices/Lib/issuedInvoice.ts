@@ -77,6 +77,8 @@ export const issuedInvoiceDataSchema = z
         // Absent on invoices issued before the type key was recorded.
         hsn: z.string().nullable().optional(),
         tsn: z.string().nullable().optional(),
+        // Absent on invoices issued before the fleet number was recorded.
+        fleetNumber: z.string().nullable().optional(),
         mileage: z.number().optional(),
       })
       .passthrough()
@@ -115,6 +117,23 @@ export const issuedInvoiceDataSchema = z
              * date format. Absent on invoices issued while every document
              * printed "Yes"/"No" and a US long date; those keep that wording.
              */
+            format: z.string().optional(),
+          })
+          .passthrough()
+      )
+      .optional(),
+    /**
+     * The vehicle's and the customer's own custom fields as they stood when
+     * issued. Absent on invoices issued before they could be printed.
+     */
+    recordCustomFields: z
+      .array(
+        z
+          .object({
+            fieldId: z.string(),
+            label: z.string(),
+            value: z.string(),
+            fieldType: z.string(),
             format: z.string().optional(),
           })
           .passthrough()

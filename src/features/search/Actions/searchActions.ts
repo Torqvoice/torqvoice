@@ -1,5 +1,6 @@
 'use server'
 
+import { fleetNumberMatch, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
@@ -81,6 +82,10 @@ export async function globalSearch(query: string) {
       ): { customerReference: Prisma.StringNullableFilter }[] =>
         referenceOn ? [{ customerReference: { contains: word, mode } }] : []
 
+      // The fleet / unit number finds its vehicle, for a workshop that uses
+      // it. Off, it neither matches nor comes back.
+      const fleetNumberOn = await isFleetNumberEnabled(organizationId)
+
       const vehicleWhere: Prisma.VehicleWhereInput = {
         organizationId,
         AND: words.map((word) => {
@@ -90,6 +95,7 @@ export async function globalSearch(query: string) {
             { licensePlate: { contains: word, mode } },
             { vin: { contains: word, mode } },
             ...typeKeyMatch(word),
+            ...fleetNumberMatch(word, fleetNumberOn),
             { customer: { name: { contains: word, mode } } },
           ]
           const year = searchYear(word)
@@ -130,6 +136,7 @@ export async function globalSearch(query: string) {
             licensePlate: true,
             hsn: true,
             tsn: true,
+            ...(fleetNumberOn ? { fleetNumber: true } : {}),
           },
           take: 10,
         }),
