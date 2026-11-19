@@ -42,7 +42,7 @@ export function LowerReadingNotice({
     >
       {isMarine
         ? t('lowerReadingMarine', { hours: reading })
-        : t('lowerReading', { reading: unit ? `${reading} ${unit}` : reading })}
+        : t('lowerReading', { reading: unit ? `${reading}\u00a0${unit}` : reading })}
     </p>
   )
 }

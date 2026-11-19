@@ -144,10 +144,6 @@ export function JobFactsCard({
   const [changingVehicle, setChangingVehicle] = useState(false)
   // What was typed in the reading field since the page loaded; null until then.
   const [readingTyped, setReadingTyped] = useState<string | null>(null)
-  const readingIsSaved =
-    readingTyped !== null &&
-    readingTyped.trim() !== '' &&
-    Number(readingTyped) === initialData.mileage
 
   // Closed on the server and on the first paint, then as this browser left it:
   // localStorage is not readable before hydration.
@@ -177,7 +173,6 @@ export function JobFactsCard({
   const showReadingNotice =
     readingTyped !== null &&
     !vehicleChanged &&
-    !readingIsSaved &&
     isLowerReading(readingTyped, initialData.lastReading)
 
   return (
@@ -356,8 +351,9 @@ export function JobFactsCard({
                     aria-describedby={showReadingNotice ? 'mileage-notice' : undefined}
                   />
                 </div>
-                {/* Only for a reading typed now and not yet saved, on the
-                    vehicle the last reading was read for. */}
+                {/* Only for a reading typed on this visit, on the vehicle
+                    the last reading was read for. It stays after the page
+                    saves by itself, or it would be gone in five seconds. */}
                 {showReadingNotice && (
                   <LowerReadingNotice
                     id="mileage-notice"

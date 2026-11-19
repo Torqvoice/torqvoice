@@ -73,11 +73,30 @@ describe('the reading on a work order', () => {
     const field = screen.getByLabelText('Mileage')
     fireEvent.change(field, { target: { value: '41238' } })
     expect(screen.getByRole('status')).toHaveTextContent(NOTICE)
-    expect(field).toHaveAccessibleDescription(NOTICE)
+    expect(field).toHaveAccessibleDescription(NOTICE.replace(' km', '\u00a0km'))
     // Nothing is refused: the field holds what was typed and is not marked invalid.
     expect(field).toHaveValue(41238)
     expect(field).toBeValid()
     expect(field).toBeEnabled()
+  })
+
+  it('is still there after the page has saved the reading by itself', () => {
+    const view = renderCard()
+    fireEvent.change(screen.getByLabelText('Mileage'), { target: { value: '41238' } })
+    // The autosave lands and the page hands the card the saved job.
+    view.rerender(
+      <JobFactsCard
+        record={{ id: 'job-1', vehicle: VEHICLE, customer: null } as unknown as Props['record']}
+        currencyCode="GBP"
+        initialData={{ id: 'job-1', mileage: 41238, lastReading: 412380 } as Props['initialData']}
+        vehicleName="2019 Scania R 450"
+        selectedVehicleId="veh-1"
+        setSelectedVehicleId={vi.fn()}
+        techName=""
+        distanceUnit="km"
+      />
+    )
+    expect(screen.getByRole('status')).toHaveTextContent(NOTICE)
   })
 
   it('goes quiet again when the field is emptied or corrected upwards', () => {

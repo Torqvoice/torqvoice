@@ -408,7 +408,7 @@ describe('a reading lowered on the vehicle form', () => {
     fireEvent.change(field(), { target: { value: '22504' } })
     // Under the field and under the figure at the top, which is the same reading.
     expect(screen.getAllByText(NOTICE)).toHaveLength(2)
-    expect(field()).toHaveAccessibleDescription(NOTICE)
+    expect(field()).toHaveAccessibleDescription(NOTICE.replace(' km', '\u00a0km'))
 
     fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
     await waitFor(() => expect(updateVehicle).toHaveBeenCalled())
