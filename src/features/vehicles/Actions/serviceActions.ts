@@ -26,7 +26,7 @@ import { EMPTY_WARRANTY, normalizeWarranty } from '@/lib/warranty'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
-import { parseSentFields } from '@/lib/parse-sent-fields'
+import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
 import { isSystemStatus, statusColumns } from '@/features/work-order-statuses/Lib/stages'
@@ -666,11 +666,13 @@ export async function createServiceRecord(input: unknown) {
 export async function updateServiceRecord(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      // Refused before anything is read or written: this is the main way the
+      // money on an invoice changes. Before the input is parsed too, so a
+      // locked invoice says it is locked whatever the form sent with it.
+      const recordId = sentId(input)
+      if (recordId) await assertInvoiceEditable(recordId, organizationId)
       // Only what was sent: see parseSentFields for what the defaults did.
       const data = parseSentFields(updateServiceSchema, input)
-      // Refused before anything is read or written: this is the main way the
-      // money on an invoice changes.
-      await assertInvoiceEditable(data.id, organizationId)
       const timeZone = await workshopTimeZone(organizationId)
       const existing = await db.serviceRecord.findFirst({
         where: { id: data.id, organizationId },

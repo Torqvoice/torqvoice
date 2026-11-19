@@ -21,7 +21,7 @@ import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { savedDocumentTax, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { withTaxableLabor, withTaxableParts } from '@/lib/taxable-lines'
-import { parseSentFields } from '@/lib/parse-sent-fields'
+import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
 import {
   isShopFeeLine,
   newShopFeeLine,
@@ -264,9 +264,13 @@ export async function createQuote(input: unknown) {
 export async function updateQuote(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      // The lock answers before the input is read: a locked page sends a form
+      // with its inputs off, and the person saving it is told about the lock,
+      // not about a field that did not arrive.
+      const quoteId = sentId(input)
+      if (quoteId) await assertQuoteEditable(quoteId, organizationId)
       // Only what was sent: see parseSentFields for what the defaults did.
       const data = parseSentFields(updateQuoteSchema, input)
-      await assertQuoteEditable(data.id, organizationId)
       const existing = await db.quote.findFirst({
         where: { id: data.id, organizationId },
       })
