@@ -760,6 +760,14 @@
     "fromQuote": "Z wyceny {ref}",
     "startInspection": "Rozpocznij przegląd"
   },
+  "reference": {
+    "label": "Referencja / nr zamówienia",
+    "placeholder": "Nr zamówienia lub referencja",
+    "requiredNotice": "Ten klient wymaga referencji lub numeru zamówienia na fakturach. Uzupełnij je przed wysłaniem faktury.",
+    "requiredToInvoice": "Ten klient wymaga referencji lub numeru zamówienia na fakturach. Uzupełnij pole Referencja / nr zamówienia w zleceniu, a potem wyślij fakturę.",
+    "saveFailed": "Nie udało się zapisać referencji",
+    "saved": "Zapisano"
+  },
   "photoHandoff": {
     "button": "Dodaj z telefonu",
     "dialogTitle": "Dodaj zdjęcia i dokumenty z telefonu",

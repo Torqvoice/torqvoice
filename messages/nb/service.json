@@ -760,6 +760,14 @@
     "fromQuote": "Fra tilbud {ref}",
     "startInspection": "Start inspeksjon"
   },
+  "reference": {
+    "label": "Referanse / bestillingsnr.",
+    "placeholder": "Bestillingsnr. eller referanse",
+    "requiredNotice": "Denne kunden trenger en referanse eller et bestillingsnummer på fakturaene sine. Fyll det inn før fakturaen sendes.",
+    "requiredToInvoice": "Denne kunden trenger en referanse eller et bestillingsnummer på fakturaene sine. Fyll ut Referanse / bestillingsnr. på arbeidsordren, og send deretter fakturaen.",
+    "saveFailed": "Kunne ikke lagre referansen",
+    "saved": "Lagret"
+  },
   "photoHandoff": {
     "button": "Legg til fra mobil",
     "dialogTitle": "Legg til bilder og dokumenter fra en telefon",

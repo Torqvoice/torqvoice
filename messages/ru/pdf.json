@@ -227,6 +227,7 @@
     "signature": "Подпись",
     "signedBy": "Подписал(а)",
     "signatureDate": "Дата",
+    "customerReference": "Ваш референс / № заказа",
     "conditionMapTitle": "Состояние автомобиля",
     "conditionMapNo": "№",
     "conditionMapArea": "Место",

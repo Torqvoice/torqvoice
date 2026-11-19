@@ -202,6 +202,7 @@
       "total": "Importe total",
       "mileage": "Kilometraje en el servicio",
       "invoiceNumber": "Número de factura",
+      "customerReference": "Referencia / n.º de pedido",
       "notes": "Notas del servicio",
       "technician": "Técnico"
     }

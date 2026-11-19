@@ -524,3 +524,49 @@ describe('regions and hosts', () => {
     expect(modifiedSince(new Date('2026-11-14T19:05:06.789Z'))).toBe('2026-11-14T19:05:06+0000')
   })
 })
+
+/**
+ * The customer's reference / PO from the work order. It reaches Zoho Books
+ * only through the Reference setting's own option; every other choice sends
+ * what it sent before the field existed.
+ */
+describe('Zoho Books and the customer reference / PO', () => {
+  const withPo: AccountingInvoice = { ...invoice, customerReference: 'PO-48213' }
+
+  it('changes nothing about the reference for any choice a workshop already had', () => {
+    for (const choice of ['vehicle', 'title', 'invoiceNumber', 'none'] as const) {
+      expect(referenceFor(withPo, choice), choice).toBe(referenceFor(invoice, choice))
+    }
+  })
+
+  it('sends the same invoice, to the byte, with a reference on the job and the default setting', () => {
+    const before = buildInvoice(invoice, options({ reference: referenceFor(invoice, 'vehicle') }))
+    const after = buildInvoice(withPo, options({ reference: referenceFor(withPo, 'vehicle') }))
+    expect(JSON.stringify(after)).toBe(JSON.stringify(before))
+  })
+
+  it('puts the reference in reference_number when the workshop chooses it', () => {
+    expect(referenceFor(withPo, 'customerReference')).toBe('PO-48213')
+    const body = buildInvoice(
+      withPo,
+      options({ reference: referenceFor(withPo, 'customerReference') })
+    )
+    expect(body.reference_number).toBe('PO-48213')
+  })
+
+  it('falls back to the vehicle and plate for a job without one', () => {
+    expect(referenceFor(invoice, 'customerReference')).toBe(referenceFor(invoice, 'vehicle'))
+  })
+
+  it('offers the choice in the Reference setting and keeps the default', () => {
+    const setting = manifest.settings.find((s) => s.key === 'reference')
+    expect(setting?.default).toBe('vehicle')
+    expect(setting?.options?.map((o) => o.value)).toEqual([
+      'vehicle',
+      'title',
+      'invoiceNumber',
+      'customerReference',
+      'none',
+    ])
+  })
+})

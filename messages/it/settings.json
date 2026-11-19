@@ -763,6 +763,7 @@
       "customer_email": "E-mail",
       "customer_phone": "Telefono",
       "customer_tax_id": "P. IVA cliente",
+      "customer_reference": "Vostro riferimento / n. ordine",
       "vehicle_name": "Veicolo",
       "vin": "VIN",
       "license_plate": "Targa",
@@ -1219,6 +1220,9 @@
     "typeKeyTitle": "Codice tipo tedesco (HSN/TSN)",
     "typeKeyEnabled": "Registra HSN/TSN sui veicoli",
     "typeKeyHint": "Aggiunge ai veicoli il codice costruttore e il codice tipo del libretto di circolazione tedesco (campi 2.1 e 2.2). Compare sul veicolo, sull'ordine di lavoro e su tutti i documenti stampati, e la ricerca trova i veicoli in base a esso. Disattivandolo viene di nuovo nascosto e i valori inseriti restano salvati.",
+    "customerReferenceTitle": "Riferimento / n. ordine",
+    "customerReferenceEnabled": "Registra un riferimento o numero d'ordine del cliente su ordini di lavoro e preventivi",
+    "customerReferenceHint": "Aggiunge un campo Riferimento / n. ordine a ordini di lavoro, vendite al banco e preventivi, per il numero d'ordine o il riferimento che ti dà il cliente. Si può stampare su fatture, preventivi e ordini di lavoro dal designer di documenti, trovare con la ricerca e inviare al tuo gestionale contabile. Un cliente può essere contrassegnato con N. ordine obbligatorio, e le sue fatture restano allora in attesa finché il riferimento non è compilato. Disattivandolo il campo viene di nuovo nascosto e i valori inseriti restano salvati.",
     "unitsTitle": "Unità",
     "unitsDescription": "Come sono scritte distanze, fluidi e ricambi in questa officina.",
     "unitSystem": "Sistema di unità",
@@ -2780,6 +2784,10 @@
       "document_title": {
         "label": "Titolo documento",
         "description": "Il titolo del lavoro o del documento."
+      },
+      "customer_reference": {
+        "label": "Riferimento / n. ordine",
+        "description": "Il riferimento o numero d'ordine che il cliente ha indicato per il lavoro. Vuoto se non c'è."
       },
       "total": {
         "label": "Totale",

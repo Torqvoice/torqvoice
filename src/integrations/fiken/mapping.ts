@@ -285,6 +285,20 @@ export interface SaleOptions {
   /** The VAT type for an invoice without VAT. */
   zeroVatType: string
   timezone: string
+  /**
+   * Lead the first line's text with the customer's reference / PO, when the
+   * invoice has one. A sale has no field for it; off, nothing is added.
+   */
+  customerReferenceInText?: boolean
+}
+
+/**
+ * "Deres ref.: PO-48213. Bremseklosser": the reference in front of the first
+ * line's own words. Fiken is Norwegian bookkeeping, so the caption is too,
+ * like the "Arbeid" and "Deler" this file already writes.
+ */
+export function withCustomerReference(description: string, reference: string): string {
+  return `Deres ref.: ${reference}. ${description}`.slice(0, TEXT_MAX)
 }
 
 /** Whether VAT was billed, which is what decides how the sale is booked. */
@@ -365,6 +379,15 @@ export function buildSale(inv: AccountingInvoice, o: SaleOptions): Record<string
         account: accountFor({ kind: 'labor', taxable: true }),
         vatType,
       },
+    ]
+  }
+  if (o.customerReferenceInText && inv.customerReference && lines.length > 0) {
+    lines = [
+      {
+        ...lines[0],
+        description: withCustomerReference(lines[0].description, inv.customerReference),
+      },
+      ...lines.slice(1),
     ]
   }
   return {

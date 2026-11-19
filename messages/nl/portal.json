@@ -364,6 +364,7 @@
     "summaryPaid": "Betaald",
     "summaryLeft": "Nog te betalen",
     "summaryDue": "Vervaldatum",
+    "summaryReference": "Uw referentie / inkoopnummer",
     "summaryDate": "Datum",
     "fullInvoice": "De volledige factuur"
   },
@@ -598,6 +599,7 @@
     "number": "Offertenummer",
     "date": "Datum",
     "validUntil": "Geldig tot",
+    "reference": "Uw referentie / inkoopnummer",
     "vehicle": "Voertuig",
     "fullQuote": "De volledige offerte",
     "answerTitle": "De werkplaats wacht op uw antwoord",

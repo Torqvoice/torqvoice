@@ -227,6 +227,7 @@
     "signature": "Assinatura",
     "signedBy": "Assinado por",
     "signatureDate": "Data",
+    "customerReference": "A sua referência / n.º de encomenda",
     "conditionMapTitle": "Estado da viatura",
     "conditionMapNo": "N.º",
     "conditionMapArea": "Zona",

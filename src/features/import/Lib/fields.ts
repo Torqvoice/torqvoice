@@ -1116,6 +1116,49 @@ export const IMPORT_FIELDS: readonly ImportField[] = [
     ],
   },
   {
+    // The customer's reference / PO for the job. Offered only to a workshop
+    // that uses the field (REFERENCE_FIELD_KEYS).
+    key: 'service.customerReference',
+    group: 'service',
+    type: 'text',
+    templateHeader: 'Reference / PO',
+    example: 'PO-48213',
+    synonyms: [
+      'po',
+      'pono',
+      'ponumber',
+      'ponum',
+      'purchaseorder',
+      'purchaseorderno',
+      'purchaseordernumber',
+      'customerpo',
+      'customerponumber',
+      'customerreference',
+      'customerref',
+      'yourreference',
+      'yourref',
+      'reference',
+      'referencepo',
+      'requisition',
+      'requisitionnumber',
+      'bestellnummer',
+      'ihrzeichen',
+      'kundenreferenz',
+      'dereferanse',
+      'kundereferanse',
+      'innkjopsordre',
+      'rekvisisjon',
+      'inkoopordernummer',
+      'uwreferentie',
+      'numerodecommande',
+      'votrereference',
+      'ordendecompra',
+      'sureferencia',
+      'ordinediacquisto',
+      'numerzamowienia',
+    ],
+  },
+  {
     key: 'service.notes',
     group: 'service',
     type: 'text',
@@ -1190,10 +1233,22 @@ export function groupsFor(entity: ImportEntity): FieldGroup[] {
 /** The German type key's columns, offered only to a workshop that records it. */
 export const TYPE_KEY_FIELD_KEYS: ReadonlySet<string> = new Set(['vehicle.hsn', 'vehicle.tsn'])
 
-export function fieldsFor(entity: ImportEntity, opts: { typeKey?: boolean } = {}): ImportField[] {
+/** The customer's reference / PO, offered only to a workshop that uses the field. */
+export const REFERENCE_FIELD_KEYS: ReadonlySet<string> = new Set(['service.customerReference'])
+
+/** The fields a workshop has to have switched on before an import offers them. */
+export interface ImportFieldOptions {
+  typeKey?: boolean
+  customerReference?: boolean
+}
+
+export function fieldsFor(entity: ImportEntity, opts: ImportFieldOptions = {}): ImportField[] {
   const groups = new Set(groupsFor(entity))
   return IMPORT_FIELDS.filter(
-    (f) => groups.has(f.group) && (opts.typeKey || !TYPE_KEY_FIELD_KEYS.has(f.key))
+    (f) =>
+      groups.has(f.group) &&
+      (opts.typeKey || !TYPE_KEY_FIELD_KEYS.has(f.key)) &&
+      (opts.customerReference || !REFERENCE_FIELD_KEYS.has(f.key))
   )
 }
 

@@ -278,6 +278,33 @@ export interface InvoiceOptions {
    * work the tax out from the code.
    */
   txnTaxDetail: Record<string, unknown> | null
+  /**
+   * Where the customer's reference / PO goes, when the workshop has chosen a
+   * place for it; absent, it is not sent and the invoice is what it always
+   * was. `memo` leads the message the customer reads, under the caption
+   * given; `customField` fills one of the company's sales custom fields.
+   */
+  customerReference?:
+    | { place: 'memo'; label: string }
+    | { place: 'customField'; definitionId: string }
+    | null
+}
+
+/**
+ * The longest value a sales custom field is sent with. Intuit's reference
+ * gives no figure; 31 is the limit the QuickBooks form itself enforces, so a
+ * longer reference is cut here rather than have the whole invoice refused.
+ */
+export const CUSTOM_FIELD_MAX = 31
+
+/** The message on the invoice: the reference first when it goes there, then the notes. */
+function customerMemo(inv: AccountingInvoice, o: InvoiceOptions): string | null {
+  const reference =
+    o.customerReference?.place === 'memo' && inv.customerReference
+      ? `${o.customerReference.label}: ${inv.customerReference}`
+      : null
+  if (!reference) return inv.notes ? inv.notes.slice(0, 1000) : null
+  return [reference, inv.notes].filter(Boolean).join('\n').slice(0, 1000)
 }
 
 /** "2018 Toyota Corolla, AB 12345, 84 200 km", or null without a vehicle. */
@@ -367,6 +394,7 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
         : { PercentBased: false },
     })
   }
+  const memo = customerMemo(inv, o)
   const body: Record<string, unknown> = {
     CustomerRef: { value: o.customerRef },
     TxnDate: zonedDayKey(inv.invoiceDate, o.timezone),
@@ -374,7 +402,20 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
     ...(o.customTxnNumbers &&
       refField(inv.invoiceNumber) && { DocNumber: refField(inv.invoiceNumber) }),
     Line: lines,
-    ...(inv.notes && { CustomerMemo: { value: inv.notes.slice(0, 1000) } }),
+    ...(memo && { CustomerMemo: { value: memo } }),
+    // Only when the job has a reference: a sparse update leaves a field it
+    // does not mention alone, and an empty value on a new invoice is not
+    // something Intuit documents.
+    ...(o.customerReference?.place === 'customField' &&
+      inv.customerReference && {
+        CustomField: [
+          {
+            DefinitionId: o.customerReference.definitionId,
+            Type: 'StringType',
+            StringValue: inv.customerReference.slice(0, CUSTOM_FIELD_MAX),
+          },
+        ],
+      }),
     PrivateNote: `${NOTE_MARK} ${o.url}`.slice(0, 4000),
     ...(o.customerEmail && { BillEmail: { Address: o.customerEmail.slice(0, 100) } }),
     ...(o.currency && { CurrencyRef: { value: o.currency } }),
@@ -390,6 +431,41 @@ export function buildInvoice(inv: AccountingInvoice, o: InvoiceOptions): Record<
         : 'TaxExcluded'
   }
   return body
+}
+
+/** One entry of Preferences.SalesFormsPrefs.CustomField, as QuickBooks returns it. */
+export interface QboPreferenceField {
+  Name?: string
+  Type?: string
+  StringValue?: string
+  BooleanValue?: boolean
+}
+
+/**
+ * The company's sales custom fields that are switched on, by the id an
+ * invoice names them with.
+ *
+ * QuickBooks lists them as flat name and value pairs in two groups:
+ * `SalesFormsPrefs.UseSalesCustom2` says whether slot 2 is in use and
+ * `SalesFormsPrefs.SalesCustomName2` what the company calls it. The number
+ * is the DefinitionId. A field can only be created or switched on in
+ * QuickBooks itself, so one that is off is not offered.
+ */
+export function salesCustomFields(
+  groups: ReadonlyArray<{ CustomField?: ReadonlyArray<QboPreferenceField> }> | undefined
+): { definitionId: string; name: string }[] {
+  const entries = (groups ?? []).flatMap((group) => group.CustomField ?? [])
+  const used = new Set<string>()
+  const names = new Map<string, string>()
+  for (const entry of entries) {
+    const use = /^SalesFormsPrefs\.UseSalesCustom(\d+)$/.exec(entry.Name ?? '')
+    if (use && entry.BooleanValue === true) used.add(use[1])
+    const name = /^SalesFormsPrefs\.SalesCustomName(\d+)$/.exec(entry.Name ?? '')
+    if (name && entry.StringValue?.trim()) names.set(name[1], entry.StringValue.trim())
+  }
+  return [...used]
+    .sort((a, b) => Number(a) - Number(b))
+    .map((id) => ({ definitionId: id, name: names.get(id) ?? `Custom field ${id}` }))
 }
 
 export interface PaymentOptions {

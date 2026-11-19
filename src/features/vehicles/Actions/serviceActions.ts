@@ -1,6 +1,10 @@
 'use server'
 
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
+import {
+  gateCustomerReference,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
 import {
@@ -359,7 +363,12 @@ export async function getServiceRecord(recordId: string) {
         select: { id: true, quoteNumber: true, title: true },
       })
 
-      return { ...record, quotes }
+      // Without the customer's reference / PO for a workshop that has the
+      // field off: the page has no box for it, so it is not sent there either.
+      return {
+        ...gateCustomerReference(record, await isCustomerReferenceEnabled(organizationId)),
+        quotes,
+      }
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
@@ -1285,6 +1294,7 @@ export async function getWorkOrders(params: {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
 
       // Promised to a customer for today or earlier, and not handed over.
       // Anything already late belongs to the same answer: it was due before
@@ -1314,6 +1324,10 @@ export async function getWorkOrders(params: {
           ...(await typeKeySearch(organizationId, params.search)).map((vehicle) => ({ vehicle })),
           { vehicle: { customer: { name: { contains: params.search, mode: 'insensitive' } } } },
           { customer: { name: { contains: params.search, mode: 'insensitive' } } },
+          // The customer's reference / PO, for a workshop that uses the field.
+          ...(referenceOn
+            ? [{ customerReference: { contains: params.search, mode: 'insensitive' } }]
+            : []),
         ]
       }
 
@@ -1386,7 +1400,7 @@ export async function getWorkOrders(params: {
       }
 
       return {
-        records,
+        records: records.map((record) => gateCustomerReference(record, referenceOn)),
         total,
         page,
         pageSize,

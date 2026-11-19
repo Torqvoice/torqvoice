@@ -202,6 +202,7 @@
       "total": "Totaalbedrag",
       "mileage": "Kilometerstand bij service",
       "invoiceNumber": "Factuurnummer",
+      "customerReference": "Referentie / inkoopnummer",
       "notes": "Servicenotities",
       "technician": "Monteur"
     }

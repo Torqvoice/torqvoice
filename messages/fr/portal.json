@@ -364,6 +364,7 @@
     "summaryPaid": "Payé",
     "summaryLeft": "Reste à payer",
     "summaryDue": "Échéance",
+    "summaryReference": "Votre référence / n° de commande",
     "summaryDate": "Date",
     "fullInvoice": "La facture complète"
   },
@@ -598,6 +599,7 @@
     "number": "Numéro de devis",
     "date": "Date",
     "validUntil": "Valable jusqu'au",
+    "reference": "Votre référence / n° de commande",
     "vehicle": "Véhicule",
     "fullQuote": "Le devis complet",
     "answerTitle": "L'atelier attend votre réponse",

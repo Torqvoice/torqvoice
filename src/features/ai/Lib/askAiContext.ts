@@ -1,5 +1,6 @@
 import 'server-only'
 import { db } from '@/lib/db'
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { zonedDayKey } from '@/lib/timezone'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
@@ -30,6 +31,12 @@ export interface AskAiContextOptions {
   currencyCode: string
   unitSystem: 'metric' | 'imperial'
   timeZone: string
+  /**
+   * Whether the workshop uses the Reference / PO field. Worked out here, by
+   * buildAskAiContext, so no caller has to know to ask: off, the model is
+   * told nothing about a reference or about "PO required".
+   */
+  customerReference?: boolean
 }
 
 export interface AskAiContext {
@@ -123,6 +130,7 @@ type JobRow = {
   serviceDate: Date
   startDateTime: Date | null
   invoiceNumber: string | null
+  customerReference: string | null
   manuallyPaid: boolean
   technician: { name: string } | null
   vehicle: {
@@ -150,6 +158,7 @@ const jobSelect = {
   serviceDate: true,
   startDateTime: true,
   invoiceNumber: true,
+  customerReference: true,
   manuallyPaid: true,
   technician: { select: { name: true } },
   vehicle: { select: { id: true, year: true, make: true, model: true, licensePlate: true } },
@@ -188,6 +197,7 @@ function jobOneLine(job: JobRow, o: AskAiContextOptions, withVehicle: boolean): 
     ['status', job.status],
     ['type', job.type],
     ['invoice', job.invoiceNumber],
+    ['customer reference / PO', o.customerReference ? job.customerReference : undefined],
     ['mileage', job.mileage],
   ]
   if (o.showMoney) {
@@ -471,6 +481,7 @@ async function customerContext(
       address: true,
       taxExempt: true,
       reminderOptOut: true,
+      poRequired: true,
       notes: true,
       createdAt: true,
       vehicles: {
@@ -548,6 +559,10 @@ async function customerContext(
       ['address', clip(customer.address, 200)],
       ['tax exempt', customer.taxExempt ? 'yes' : undefined],
       ['opted out of reminders and campaigns', customer.reminderOptOut ? 'yes' : undefined],
+      [
+        'invoices need a reference / PO',
+        o.customerReference && customer.poRequired ? 'yes' : undefined,
+      ],
       ['customer since', dayOf(customer.createdAt, o.timeZone)],
     ])
   )
@@ -615,9 +630,13 @@ export async function buildAskAiContext(
   subject: AskAiSubject,
   options: AskAiContextOptions
 ): Promise<AskAiContext | null> {
+  const o = {
+    ...options,
+    customerReference: await isCustomerReferenceEnabled(organizationId),
+  }
   return subject.type === 'vehicle'
-    ? vehicleContext(organizationId, subject.id, options)
-    : customerContext(organizationId, subject.id, options)
+    ? vehicleContext(organizationId, subject.id, o)
+    : customerContext(organizationId, subject.id, o)
 }
 
 /**

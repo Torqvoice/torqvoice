@@ -18,5 +18,8 @@
  *   on the job list from its day on.
  * - `job-documents`: a PDF of up to 25 MB can be attached to a job, and is
  *   filed with the job's documents.
+ * - `job-reference`: a job carries `customerReference`, the customer's own
+ *   reference or purchase order number for it. Null when the job has none or
+ *   the workshop does not use the field.
  */
-export const TECH_API_FEATURES = ['job-video', 'checkin', 'job-documents'] as const
+export const TECH_API_FEATURES = ['job-video', 'checkin', 'job-documents', 'job-reference'] as const

@@ -763,6 +763,7 @@
       "customer_email": "E-mail",
       "customer_phone": "Telefone",
       "customer_tax_id": "NIF do cliente",
+      "customer_reference": "A sua referência / n.º de encomenda",
       "vehicle_name": "Viatura",
       "vin": "VIN",
       "license_plate": "Matrícula",
@@ -1219,6 +1220,9 @@
     "typeKeyTitle": "Chave de tipo alemã (HSN/TSN)",
     "typeKeyEnabled": "Registar HSN/TSN nos veículos",
     "typeKeyHint": "Acrescenta aos veículos o código do fabricante e do tipo do certificado de matrícula alemão (campos 2.1 e 2.2). Aparece no veículo, na ordem de reparação e em todos os documentos impressos, e a pesquisa encontra veículos por ele. Ao desativar, volta a ficar oculto e o que foi introduzido é mantido.",
+    "customerReferenceTitle": "Referência / n.º de encomenda",
+    "customerReferenceEnabled": "Registar uma referência ou número de encomenda do cliente nas ordens de serviço e orçamentos",
+    "customerReferenceHint": "Acrescenta o campo Referência / n.º de encomenda às ordens de serviço, vendas ao balcão e orçamentos, para o número de encomenda ou a referência que o seu cliente lhe indica. Pode ser impresso em faturas, orçamentos e ordens de serviço a partir do editor de documentos, encontrado na pesquisa e enviado para o seu sistema de contabilidade. Um cliente pode ser marcado com N.º de encomenda obrigatório, e as faturas dele ficam então a aguardar até a referência estar preenchida. Ao desativar, o campo volta a ficar oculto e o que foi introduzido é mantido.",
     "unitsTitle": "Unidades",
     "unitsDescription": "Como as distâncias, os fluidos e as peças são escritos nesta oficina.",
     "unitSystem": "Sistema de unidades",
@@ -2780,6 +2784,10 @@
       "document_title": {
         "label": "Título do documento",
         "description": "O título do trabalho ou do documento."
+      },
+      "customer_reference": {
+        "label": "Referência / n.º de encomenda",
+        "description": "A referência ou o número de encomenda que o seu cliente indicou para o trabalho. Em branco quando não existe."
       },
       "total": {
         "label": "Total",

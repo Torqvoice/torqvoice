@@ -275,6 +275,9 @@ async function importServiceRecordTree(
       startDateTime: startDT ?? undefined,
       endDateTime: endDT ?? undefined,
       promisedAt: sr.promisedAt ? (toSafeDate(sr.promisedAt as string) ?? null) : null,
+      // The customer's reference / PO. Absent from a backup taken before the
+      // field existed, which restores as none.
+      customerReference: (sr.customerReference as string) || null,
       shopName: (sr.shopName as string) || null,
       techName: (sr.techName as string) || null,
       parts: (sr.parts as string) || null,
@@ -877,6 +880,8 @@ export async function restoreBackup(
                 taxExempt: (c.taxExempt as boolean) || false,
                 // A customer who asked not to be reminded stays unreminded.
                 reminderOptOut: (c.reminderOptOut as boolean) || false,
+                // A customer whose invoices wait for a reference / PO still does.
+                poRequired: (c.poRequired as boolean) || false,
                 // The Telegram chat the customer linked; without it their
                 // messages arrive from nobody.
                 telegramChatId: (c.telegramChatId as string) || null,
@@ -1459,6 +1464,7 @@ export async function restoreBackup(
                 viewCount: (q.viewCount as number) || 0,
                 lastViewedAt: q.lastViewedAt ? toSafeDate(q.lastViewedAt as string) : null,
                 customerMessage: (q.customerMessage as string) || null,
+                customerReference: (q.customerReference as string) || null,
                 sentAt: q.sentAt ? toSafeDate(q.sentAt as string) : null,
                 responseDismissedAt: q.responseDismissedAt
                   ? toSafeDate(q.responseDismissedAt as string)

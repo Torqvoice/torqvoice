@@ -760,6 +760,14 @@
     "fromQuote": "Issu du devis {ref}",
     "startInspection": "Commencer l'inspection"
   },
+  "reference": {
+    "label": "Référence / n° de commande",
+    "placeholder": "N° de commande ou référence",
+    "requiredNotice": "Ce client exige une référence ou un numéro de commande sur ses factures. Renseignez-le avant l'envoi de la facture.",
+    "requiredToInvoice": "Ce client exige une référence ou un numéro de commande sur ses factures. Remplissez Référence / n° de commande sur l'ordre de travail, puis envoyez la facture.",
+    "saveFailed": "Impossible d'enregistrer la référence",
+    "saved": "Enregistré"
+  },
   "photoHandoff": {
     "button": "Ajouter depuis le téléphone",
     "dialogTitle": "Ajouter des photos et des documents depuis un téléphone",

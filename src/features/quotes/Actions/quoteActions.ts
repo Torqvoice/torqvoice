@@ -88,11 +88,16 @@ export async function getQuotesPaginated(params: {
         where.status = params.status
       }
 
+      // The customer's reference / PO, for a workshop that uses the field.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
       if (params.search) {
         where.OR = [
           { title: { contains: params.search, mode: 'insensitive' } },
           { quoteNumber: { contains: params.search, mode: 'insensitive' } },
           { customer: { name: { contains: params.search, mode: 'insensitive' } } },
+          ...(referenceOn
+            ? [{ customerReference: { contains: params.search, mode: 'insensitive' } }]
+            : []),
         ]
       }
 
@@ -150,7 +155,7 @@ export async function getQuotesPaginated(params: {
       counts.attention = ATTENTION_STATUSES.reduce((sum, status) => sum + (counts[status] ?? 0), 0)
 
       return {
-        records,
+        records: records.map((record) => gateCustomerReference(record, referenceOn)),
         total,
         page,
         pageSize,

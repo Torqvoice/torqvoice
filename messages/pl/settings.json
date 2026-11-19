@@ -763,6 +763,7 @@
       "customer_email": "E-mail",
       "customer_phone": "Telefon",
       "customer_tax_id": "NIP klienta",
+      "customer_reference": "Państwa referencja / nr zamówienia",
       "vehicle_name": "Pojazd",
       "vin": "VIN",
       "license_plate": "Numer rejestracyjny",
@@ -1219,6 +1220,9 @@
     "typeKeyTitle": "Niemiecki klucz typu (HSN/TSN)",
     "typeKeyEnabled": "Zapisuj HSN/TSN przy pojazdach",
     "typeKeyHint": "Dodaje do pojazdów kod producenta i kod typu z niemieckiego dowodu rejestracyjnego (pola 2.1 i 2.2). Jest widoczny przy pojeździe, na zleceniu i na wszystkich drukowanych dokumentach, a wyszukiwarka znajduje po nim pojazdy. Po wyłączeniu jest ponownie ukryty, a wprowadzone wartości zostają zachowane.",
+    "customerReferenceTitle": "Referencja / nr zamówienia",
+    "customerReferenceEnabled": "Zapisuj referencję lub numer zamówienia klienta w zleceniach i wycenach",
+    "customerReferenceHint": "Dodaje pole Referencja / nr zamówienia do zleceń, sprzedaży przy ladzie i wycen, na numer zamówienia lub referencję podaną przez klienta. Można je drukować na fakturach, wycenach i zleceniach za pomocą kreatora dokumentów, wyszukiwać i wysyłać do systemu księgowego. Klienta można oznaczyć jako Wymagany nr zamówienia, a jego faktury czekają wtedy, aż referencja zostanie uzupełniona. Po wyłączeniu pole jest ponownie ukryte, a wprowadzone wartości zostają zachowane.",
     "unitsTitle": "Jednostki",
     "unitsDescription": "Jak w tym warsztacie zapisuje się odległości, płyny i części.",
     "unitSystem": "System jednostek",
@@ -2780,6 +2784,10 @@
       "document_title": {
         "label": "Tytuł dokumentu",
         "description": "Tytuł zlecenia lub dokumentu."
+      },
+      "customer_reference": {
+        "label": "Referencja / nr zamówienia",
+        "description": "Referencja lub numer zamówienia podany przez klienta dla tej pracy. Puste, jeśli go nie ma."
       },
       "total": {
         "label": "Razem",

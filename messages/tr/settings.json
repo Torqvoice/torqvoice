@@ -763,6 +763,7 @@
       "customer_email": "E-posta",
       "customer_phone": "Telefon",
       "customer_tax_id": "Müşteri vergi no",
+      "customer_reference": "Referansınız / sipariş no",
       "vehicle_name": "Araç",
       "vin": "VIN",
       "license_plate": "Plaka",
@@ -1219,6 +1220,9 @@
     "typeKeyTitle": "Alman tip anahtarı (HSN/TSN)",
     "typeKeyEnabled": "Araçlarda HSN/TSN kaydet",
     "typeKeyHint": "Araçlara Alman ruhsatındaki üretici ve tip kodunu (2.1 ve 2.2 alanları) ekler. Araçta, iş emrinde ve tüm basılı belgelerde görünür, arama da araçları bu kodla bulur. Kapatıldığında yeniden gizlenir, girilen değerler korunur.",
+    "customerReferenceTitle": "Referans / sipariş no",
+    "customerReferenceEnabled": "İş emirlerinde ve tekliflerde müşteri referansı veya sipariş numarası kaydet",
+    "customerReferenceHint": "İş emirlerine, tezgâh satışlarına ve tekliflere, müşterinizin verdiği sipariş numarası veya referans için bir Referans / sipariş no alanı ekler. Belge tasarımcısından faturalara, tekliflere ve iş emirlerine basılabilir, aramada bulunabilir ve muhasebe sisteminize gönderilebilir. Bir müşteri Sipariş no zorunlu olarak işaretlenebilir; bu durumda faturaları referans doldurulana kadar bekler. Kapatıldığında alan yeniden gizlenir, girilen değerler korunur.",
     "unitsTitle": "Birimler",
     "unitsDescription": "Bu atölyede mesafelerin, sıvıların ve parçaların nasıl yazıldığı.",
     "unitSystem": "Birim Sistemi",
@@ -2780,6 +2784,10 @@
       "document_title": {
         "label": "Belge başlığı",
         "description": "İşin veya belgenin başlığı."
+      },
+      "customer_reference": {
+        "label": "Referans / sipariş no",
+        "description": "Müşterinizin iş için verdiği referans veya sipariş numarası. Yoksa boş kalır."
       },
       "total": {
         "label": "Toplam",

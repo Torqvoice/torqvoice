@@ -1,3 +1,7 @@
+import {
+  gateCustomerReference,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
@@ -53,6 +57,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           },
           status: true,
           diagnosticNotes: true,
+          // The customer's reference / PO, for a workshop that uses the field.
+          customerReference: true,
           mileage: true,
           startDateTime: true,
           endDateTime: true,
@@ -115,8 +121,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
       const typeKeyOn = await isTypeKeyEnabled(ctx.organizationId)
 
+      const referenceOn = await isCustomerReferenceEnabled(ctx.organizationId)
+
       return apiOk({
-        ...job,
+        ...gateCustomerReference(job, referenceOn),
         vehicle: job.vehicle && gateTypeKey(job.vehicle, typeKeyOn),
         customer: job.customer ?? job.vehicle?.customer ?? null,
         isRunning: openEntry?.serviceRecordId === job.id,

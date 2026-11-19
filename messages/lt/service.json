@@ -760,6 +760,14 @@
     "fromQuote": "Iš pasiūlymo {ref}",
     "startInspection": "Pradėti apžiūrą"
   },
+  "reference": {
+    "label": "Nuoroda / užsakymo nr.",
+    "placeholder": "Užsakymo nr. arba nuoroda",
+    "requiredNotice": "Šiam klientui sąskaitose reikia nuorodos arba užsakymo numerio. Užpildykite ją prieš siųsdami sąskaitą.",
+    "requiredToInvoice": "Šiam klientui sąskaitose reikia nuorodos arba užsakymo numerio. Darbo užsakyme užpildykite lauką Nuoroda / užsakymo nr., tada siųskite sąskaitą.",
+    "saveFailed": "Nepavyko išsaugoti nuorodos",
+    "saved": "Išsaugota"
+  },
   "photoHandoff": {
     "button": "Pridėti iš telefono",
     "dialogTitle": "Pridėti nuotraukas ir dokumentus iš telefono",

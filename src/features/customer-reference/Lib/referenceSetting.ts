@@ -20,11 +20,12 @@ export function customerReferenceEnabledIn(
 export async function isCustomerReferenceEnabled(organizationId: string): Promise<boolean> {
   const rows = await db.appSetting.findMany({
     where: { organizationId, key: SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED },
-    select: { value: true },
+    select: { key: true, value: true },
   })
   // The setting first: a workshop that never turned it on costs one indexed
   // read and no look at its plan.
-  if (rows[0]?.value !== 'true') return false
+  const row = rows.find((candidate) => candidate.key === SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED)
+  if (row?.value !== 'true') return false
   return (await getFeatures(organizationId)).customFields
 }
 

@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Rechnungen für diesen Kunden werden mit diesem Design statt dem Werkstatt-Standard gedruckt. Eine Rechnung kann trotzdem ein eigenes wählen.",
     "reminderOptOut": "Keine Erinnerungen",
     "reminderOptOutHint": "Diesen Kunden nicht in HU-Erinnerungen oder andere Kampagnen aufnehmen.",
+    "poRequired": "Bestellnr. erforderlich",
+    "poRequiredHint": "Rechnungen für diesen Kunden warten, bis Referenz / Bestellnr. am Arbeitsauftrag ausgefüllt ist.",
+    "poRequiredBadge": "Bestellnr. Pflicht",
     "bookAppointment": "Termin buchen"
   },
   "serviceRequests": {

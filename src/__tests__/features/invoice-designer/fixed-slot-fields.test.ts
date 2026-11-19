@@ -44,6 +44,8 @@ const sample = () =>
       paymentTerms: 'Net 14',
       // The type key is only sampled for a workshop that records it.
       typeKeyEnabled: true,
+      // Likewise the customer's reference / PO, for a workshop that uses it.
+      customerReferenceEnabled: true,
       logoUrl: '/logo.png',
     } as any,
     [],

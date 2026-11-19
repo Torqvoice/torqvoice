@@ -6,6 +6,7 @@ import type {
 import { manifest } from '@/integrations/quickbooks/manifest'
 import {
   buildCustomer,
+  CUSTOM_FIELD_MAX,
   buildInvoice,
   buildPayment,
   checksumOf,
@@ -14,6 +15,7 @@ import {
   faultMessage,
   localPaymentMethod,
   refField,
+  salesCustomFields,
   sqlString,
 } from '@/integrations/quickbooks/mapping'
 
@@ -379,5 +381,110 @@ describe('QuickBooks API helpers', () => {
     expect(manifest.auth.callbackParams).toEqual(['realmId'])
     expect(manifest.auth.tokenAuth).toBe('basic')
     expect(manifest.auth.pkce).toBeFalsy()
+  })
+})
+
+/**
+ * The customer's reference / PO from the work order. QuickBooks has no
+ * purchase order number on an invoice, so it goes where the workshop says:
+ * nowhere (the default), the message on the invoice, or a sales custom field.
+ */
+describe('QuickBooks and the customer reference / PO', () => {
+  const withPo: AccountingInvoice = { ...invoice, customerReference: 'PO-48213' }
+
+  it('sends the same invoice, to the byte, until the workshop chooses a place for it', () => {
+    const before = JSON.stringify(buildInvoice(invoice, options))
+    expect(JSON.stringify(buildInvoice(withPo, options))).toBe(before)
+    expect(JSON.stringify(buildInvoice(withPo, { ...options, customerReference: null }))).toBe(
+      before
+    )
+    expect(checksumOf(buildInvoice(withPo, options))).toBe(
+      checksumOf(buildInvoice(invoice, options))
+    )
+  })
+
+  it('leaves a job without a reference alone whatever the setting says', () => {
+    const before = JSON.stringify(buildInvoice(invoice, options))
+    for (const customerReference of [
+      { place: 'memo', label: 'Your reference / PO' },
+      { place: 'customField', definitionId: '2' },
+    ] as const) {
+      expect(JSON.stringify(buildInvoice(invoice, { ...options, customerReference }))).toBe(before)
+    }
+  })
+
+  it('leads the message on the invoice with it, above the notes', () => {
+    const body = buildInvoice(withPo, {
+      ...options,
+      customerReference: { place: 'memo', label: 'Your reference / PO' },
+    })
+    expect(body.CustomerMemo).toEqual({ value: 'Your reference / PO: PO-48213\nThank you' })
+    expect(body.CustomField).toBeUndefined()
+  })
+
+  it('writes a message for it on an invoice that had no notes', () => {
+    const body = buildInvoice(
+      { ...withPo, notes: null },
+      { ...options, customerReference: { place: 'memo', label: 'Deres referanse / PO' } }
+    )
+    expect(body.CustomerMemo).toEqual({ value: 'Deres referanse / PO: PO-48213' })
+  })
+
+  it('fills the chosen sales custom field, and leaves the message as it was', () => {
+    const body = buildInvoice(withPo, {
+      ...options,
+      customerReference: { place: 'customField', definitionId: '2' },
+    })
+    expect(body.CustomField).toEqual([
+      { DefinitionId: '2', Type: 'StringType', StringValue: 'PO-48213' },
+    ])
+    expect(body.CustomerMemo).toEqual({ value: 'Thank you' })
+  })
+
+  it('cuts a long reference to what a custom field holds', () => {
+    const body = buildInvoice(
+      { ...withPo, customerReference: 'P'.repeat(60) },
+      { ...options, customerReference: { place: 'customField', definitionId: '1' } }
+    )
+    const [field] = body.CustomField as { StringValue: string }[]
+    expect(field.StringValue).toHaveLength(CUSTOM_FIELD_MAX)
+  })
+
+  it('reads the custom fields a company has switched on for sales forms', () => {
+    // The shape of Preferences.SalesFormsPrefs.CustomField, in the order
+    // QuickBooks is documented not to guarantee.
+    const fields = salesCustomFields([
+      {
+        CustomField: [
+          { Name: 'SalesFormsPrefs.UseSalesCustom3', Type: 'BooleanType', BooleanValue: false },
+          { Name: 'SalesFormsPrefs.UseSalesCustom1', Type: 'BooleanType', BooleanValue: true },
+          { Name: 'SalesFormsPrefs.UseSalesCustom2', Type: 'BooleanType', BooleanValue: true },
+        ],
+      },
+      {
+        CustomField: [
+          {
+            Name: 'SalesFormsPrefs.SalesCustomName2',
+            Type: 'StringType',
+            StringValue: 'P.O. Number',
+          },
+          { Name: 'SalesFormsPrefs.SalesCustomName1', Type: 'StringType', StringValue: 'Crew' },
+          { Name: 'SalesFormsPrefs.SalesCustomName3', Type: 'StringType', StringValue: 'Old' },
+        ],
+      },
+    ])
+    expect(fields).toEqual([
+      { definitionId: '1', name: 'Crew' },
+      { definitionId: '2', name: 'P.O. Number' },
+    ])
+    expect(salesCustomFields(undefined)).toEqual([])
+  })
+
+  it('is not sent unless asked for: the setting starts at "Not sent"', () => {
+    const setting = manifest.settings.find((s) => s.key === 'customerReference')
+    expect(setting?.default).toBe('none')
+    expect(setting?.options?.map((o) => o.value)).toEqual(['none', 'memo', 'customField'])
+    const field = manifest.settings.find((s) => s.key === 'customerReferenceField')
+    expect(field?.showWhen).toEqual({ key: 'customerReference', equals: 'customField' })
   })
 })

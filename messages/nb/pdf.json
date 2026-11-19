@@ -227,6 +227,7 @@
     "signature": "Signatur",
     "signedBy": "Signert av",
     "signatureDate": "Dato",
+    "customerReference": "Deres referanse / bestillingsnr.",
     "conditionMapTitle": "Kjøretøyets tilstand",
     "conditionMapNo": "Nr.",
     "conditionMapArea": "Område",

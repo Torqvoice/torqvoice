@@ -227,6 +227,7 @@
     "signature": "İmza",
     "signedBy": "İmzalayan",
     "signatureDate": "Tarih",
+    "customerReference": "Referansınız / sipariş no",
     "conditionMapTitle": "Araç durumu",
     "conditionMapNo": "No",
     "conditionMapArea": "Bölge",

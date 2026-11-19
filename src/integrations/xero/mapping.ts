@@ -400,11 +400,17 @@ export function vehicleDescription(inv: AccountingInvoice, distanceUnit: string)
 /** The Reference field, from the workshop's choice. */
 export function referenceFor(
   inv: AccountingInvoice,
-  choice: 'vehicle' | 'title' | 'invoiceNumber' | 'none'
+  choice: 'vehicle' | 'title' | 'invoiceNumber' | 'customerReference' | 'none'
 ): string | null {
   if (choice === 'none') return null
   if (choice === 'invoiceNumber') return clip(inv.invoiceNumber, 255) ?? null
   if (choice === 'title') return clip(inv.title, 255) ?? null
+  // The customer's reference / PO, and for a job without one the vehicle and
+  // plate as before: Xero's lists and searches go by this field, and a blank
+  // one finds nothing.
+  if (choice === 'customerReference' && inv.customerReference) {
+    return clip(inv.customerReference, 255) ?? null
+  }
   if (!inv.vehicle) return clip(inv.title, 255) ?? null
   const name = [inv.vehicle.make, inv.vehicle.model].filter(Boolean).join(' ')
   return clip([inv.vehicle.licensePlate, name].filter(Boolean).join(' '), 255) ?? null

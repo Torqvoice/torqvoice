@@ -84,6 +84,8 @@ interface WorkOrder {
   promisedAt: Date | null
   techName: string | null
   invoiceNumber: string | null
+  /** The customer's reference / PO; null unless the workshop uses the field. */
+  customerReference?: string | null
   customer: { id: string; name: string; email: string | null; phone: string | null } | null
   vehicle: {
     id: string
@@ -455,6 +457,11 @@ export function WorkOrdersClient({
                       {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
                     </span>
                     {r.invoiceNumber && <span className="font-mono">{r.invoiceNumber}</span>}
+                    {r.customerReference && (
+                      <span className="max-w-full truncate font-mono" data-testid="row-reference">
+                        {r.customerReference}
+                      </span>
+                    )}
                     {r.techName && <span className="truncate">{r.techName}</span>}
                     {/* On a phone there is no room for every promise, so only
                         a broken one earns a line. */}
@@ -649,6 +656,15 @@ export function WorkOrdersClient({
                         )}
                         <TableCell className="truncate">
                           <span className="font-medium">{r.title}</span>
+                          {/* What a search by PO number matched, beside the job it found. */}
+                          {r.customerReference && (
+                            <span
+                              className="ml-2 font-mono text-xs text-muted-foreground"
+                              data-testid="row-reference"
+                            >
+                              {r.customerReference}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap items-center gap-1">

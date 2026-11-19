@@ -763,6 +763,7 @@
       "customer_email": "E-post",
       "customer_phone": "Telefon",
       "customer_tax_id": "Org.nr / MVA-nr",
+      "customer_reference": "Deres referanse / bestillingsnr.",
       "vehicle_name": "Kjøretøy",
       "vin": "VIN",
       "license_plate": "Registreringsnummer",
@@ -1219,6 +1220,9 @@
     "typeKeyTitle": "Tysk typenøkkel (HSN/TSN)",
     "typeKeyEnabled": "Registrer HSN/TSN på kjøretøy",
     "typeKeyHint": "Legger til produsent- og typenøkkelen fra det tyske vognkortet (felt 2.1 og 2.2) på kjøretøy. Den vises på kjøretøyet, arbeidsordren og alle utskrevne dokumenter, og kjøretøy kan finnes med den i søket. Slås den av, skjules den igjen, og det som er lagt inn beholdes.",
+    "customerReferenceTitle": "Referanse / bestillingsnr.",
+    "customerReferenceEnabled": "Registrer kundens referanse eller bestillingsnummer på arbeidsordrer og tilbud",
+    "customerReferenceHint": "Legger til feltet Referanse / bestillingsnr. på arbeidsordrer, disksalg og tilbud, for bestillingsnummeret eller referansen kunden gir deg. Det kan skrives ut på fakturaer, tilbud og arbeidsordrer fra dokumentdesigneren, finnes i søket og sendes til regnskapssystemet ditt. En kunde kan merkes med Krever bestillingsnr., og fakturaene deres venter da til referansen er fylt ut. Slås det av, skjules feltet igjen, og det som er lagt inn beholdes.",
     "unitsTitle": "Enheter",
     "unitsDescription": "Hvordan avstander, væsker og deler skrives i dette verkstedet.",
     "unitSystem": "Enhetssystem",
@@ -2780,6 +2784,10 @@
       "document_title": {
         "label": "Dokumenttittel",
         "description": "Tittelen på jobben eller dokumentet."
+      },
+      "customer_reference": {
+        "label": "Referanse / bestillingsnr.",
+        "description": "Referansen eller bestillingsnummeret kunden oppga for jobben. Tomt når det ikke finnes."
       },
       "total": {
         "label": "Totalt",

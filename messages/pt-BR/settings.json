@@ -763,6 +763,7 @@
       "customer_email": "E-mail",
       "customer_phone": "Telefone",
       "customer_tax_id": "CNPJ do cliente",
+      "customer_reference": "Sua referência / nº do pedido",
       "vehicle_name": "Veículo",
       "vin": "VIN",
       "license_plate": "Placa",
@@ -1219,6 +1220,9 @@
     "typeKeyTitle": "Chave de tipo alemã (HSN/TSN)",
     "typeKeyEnabled": "Registrar HSN/TSN nos veículos",
     "typeKeyHint": "Adiciona aos veículos o código do fabricante e do tipo do documento de registro alemão (campos 2.1 e 2.2). Ele aparece no veículo, na ordem de serviço e em todos os documentos impressos, e a busca encontra veículos por ele. Ao desativar, ele é ocultado de novo e o que foi digitado é mantido.",
+    "customerReferenceTitle": "Referência / nº do pedido",
+    "customerReferenceEnabled": "Registrar uma referência ou número de pedido do cliente nas ordens de serviço e orçamentos",
+    "customerReferenceHint": "Adiciona o campo Referência / nº do pedido às ordens de serviço, vendas no balcão e orçamentos, para o número de pedido ou a referência que o seu cliente informa. Ele pode ser impresso em faturas, orçamentos e ordens de serviço pelo designer de documentos, encontrado na busca e enviado ao seu sistema contábil. Um cliente pode ser marcado com Exige nº do pedido, e as faturas dele aguardam até que a referência seja preenchida. Ao desativar, o campo é ocultado de novo e o que foi digitado é mantido.",
     "unitsTitle": "Unidades",
     "unitsDescription": "Como distâncias, fluidos e peças são escritos nesta oficina.",
     "unitSystem": "Sistema de unidades",
@@ -2780,6 +2784,10 @@
       "document_title": {
         "label": "Título do documento",
         "description": "O título do serviço ou do documento."
+      },
+      "customer_reference": {
+        "label": "Referência / nº do pedido",
+        "description": "A referência ou o número de pedido que o seu cliente informou para o serviço. Em branco quando não houver."
       },
       "total": {
         "label": "Total",

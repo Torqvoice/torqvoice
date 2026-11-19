@@ -763,6 +763,7 @@
       "customer_email": "Correo electrónico",
       "customer_phone": "Teléfono",
       "customer_tax_id": "NIF / CIF del cliente",
+      "customer_reference": "Su referencia / n.º de pedido",
       "vehicle_name": "Vehículo",
       "vin": "VIN",
       "license_plate": "Matrícula",
@@ -1219,6 +1220,9 @@
     "typeKeyTitle": "Clave de tipo alemana (HSN/TSN)",
     "typeKeyEnabled": "Registrar HSN/TSN en los vehículos",
     "typeKeyHint": "Añade a los vehículos la clave del fabricante y del tipo del permiso de circulación alemán (campos 2.1 y 2.2). Aparece en el vehículo, en la orden de trabajo y en todos los documentos impresos, y los vehículos se pueden encontrar por ella en la búsqueda. Al desactivarla se oculta de nuevo y se conserva lo introducido.",
+    "customerReferenceTitle": "Referencia / n.º de pedido",
+    "customerReferenceEnabled": "Registrar una referencia o número de pedido del cliente en órdenes de trabajo y presupuestos",
+    "customerReferenceHint": "Añade un campo Referencia / n.º de pedido a las órdenes de trabajo, ventas de mostrador y presupuestos, para el número de pedido o la referencia que te da tu cliente. Se puede imprimir en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos, encontrar en la búsqueda y enviar a tu sistema contable. Un cliente se puede marcar con n.º de pedido obligatorio, y sus facturas esperan entonces hasta que se rellene la referencia. Al desactivarlo se oculta de nuevo y se conserva lo introducido.",
     "unitsTitle": "Unidades",
     "unitsDescription": "Cómo se escriben las distancias, los líquidos y las piezas en este taller.",
     "unitSystem": "Sistema de unidades",
@@ -2780,6 +2784,10 @@
       "document_title": {
         "label": "Título del documento",
         "description": "El título del trabajo o del documento."
+      },
+      "customer_reference": {
+        "label": "Referencia / n.º de pedido",
+        "description": "La referencia o el número de pedido que tu cliente dio para el trabajo. Vacío si no hay ninguno."
       },
       "total": {
         "label": "Total",

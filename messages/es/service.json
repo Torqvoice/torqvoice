@@ -760,6 +760,14 @@
     "fromQuote": "Del presupuesto {ref}",
     "startInspection": "Iniciar inspección"
   },
+  "reference": {
+    "label": "Referencia / n.º de pedido",
+    "placeholder": "N.º de pedido o referencia",
+    "requiredNotice": "Este cliente necesita una referencia o un número de pedido en sus facturas. Rellénalo antes de enviar la factura.",
+    "requiredToInvoice": "Este cliente necesita una referencia o un número de pedido en sus facturas. Rellena Referencia / n.º de pedido en la orden de trabajo y luego envía la factura.",
+    "saveFailed": "No se pudo guardar la referencia",
+    "saved": "Guardado"
+  },
   "photoHandoff": {
     "button": "Añadir desde el móvil",
     "dialogTitle": "Añadir fotos y documentos desde un móvil",

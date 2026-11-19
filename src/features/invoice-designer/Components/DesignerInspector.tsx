@@ -510,7 +510,8 @@ export function DesignerInspector({
     // The rows on screen: the type key's only for a workshop that records it,
     // and the customer's reference / PO only for one that uses that field, on
     // the documents that have a job or a quote to take it from.
-    const referenceOffered = customerReferenceEnabled && layoutDocumentType(layout) !== 'certificate'
+    const referenceOffered =
+      customerReferenceEnabled && layoutDocumentType(layout) !== 'certificate'
     const shownFields = resolvedFields.filter(
       (field) =>
         (typeKeyEnabled || field.id !== 'hsn_tsn') &&

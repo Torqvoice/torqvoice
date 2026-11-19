@@ -1,5 +1,6 @@
 'use server'
 
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
@@ -71,6 +72,14 @@ export async function globalSearch(query: string) {
       const typeKeyOn = await isTypeKeyEnabled(organizationId)
       const typeKeyMatch = (word: string): Prisma.VehicleWhereInput[] =>
         typeKeyOn ? typeKeySearchTerms(word) : []
+
+      // The customer's reference / PO finds its work order or quote, for a
+      // workshop that uses the field. Off, it neither matches nor comes back.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
+      const referenceMatch = (
+        word: string
+      ): { customerReference: Prisma.StringNullableFilter }[] =>
+        referenceOn ? [{ customerReference: { contains: word, mode } }] : []
 
       const vehicleWhere: Prisma.VehicleWhereInput = {
         organizationId,
@@ -211,6 +220,7 @@ export async function globalSearch(query: string) {
                 { title: { contains: word, mode } },
                 { invoiceNumber: { contains: word, mode } },
                 { techName: { contains: word, mode } },
+                ...referenceMatch(word),
               ],
             })),
           },
@@ -218,6 +228,7 @@ export async function globalSearch(query: string) {
             id: true,
             title: true,
             invoiceNumber: true,
+            customerReference: referenceOn,
             vehicle: {
               select: {
                 id: true,
@@ -271,6 +282,7 @@ export async function globalSearch(query: string) {
                 { title: { contains: word, mode } },
                 { quoteNumber: { contains: word, mode } },
                 { customer: { name: { contains: word, mode } } },
+                ...referenceMatch(word),
               ],
             })),
           },
@@ -279,6 +291,7 @@ export async function globalSearch(query: string) {
             title: true,
             quoteNumber: true,
             status: true,
+            customerReference: referenceOn,
           },
           take: 10,
         }),

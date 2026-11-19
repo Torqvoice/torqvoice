@@ -34,6 +34,7 @@ import {
 } from './normalize'
 import type { ColumnMapping } from './suggest'
 import { vehicleName } from '@/lib/vehicle-name'
+import { normalizeCustomerReference } from '@/features/customer-reference/Lib/reference'
 
 export type DuplicateRule = 'skip' | 'update' | 'create'
 
@@ -88,6 +89,8 @@ export interface ServiceDraft {
   total: number | null
   mileage: number | null
   invoiceNumber: string | null
+  /** The customer's reference / PO; only mapped by a workshop that uses the field. */
+  customerReference?: string | null
   notes: string | null
   technician: string | null
 }
@@ -386,6 +389,7 @@ function extractService(
     total,
     mileage,
     invoiceNumber: cleanText(v['service.invoiceNumber']),
+    customerReference: normalizeCustomerReference(cleanText(v['service.customerReference'])),
     notes,
     technician: cleanText(v['service.technician']),
   }

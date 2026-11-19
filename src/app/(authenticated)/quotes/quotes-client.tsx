@@ -59,6 +59,8 @@ import { vehicleName } from '@/lib/vehicle-name'
 interface QuoteRecord {
   id: string
   quoteNumber: string | null
+  /** The customer's reference / PO; null unless the workshop uses the field. */
+  customerReference?: string | null
   title: string
   status: string
   totalAmount: number
@@ -305,6 +307,11 @@ export function QuotesClient({
                     {quoteStatusLabel(q.status, tStatus)}
                   </StatusBadge>
                   {q.quoteNumber && <span className="font-mono">{q.quoteNumber}</span>}
+                  {q.customerReference && (
+                    <span className="max-w-full truncate font-mono" data-testid="row-reference">
+                      {q.customerReference}
+                    </span>
+                  )}
                   <span className="font-mono">{formatDate(new Date(q.createdAt))}</span>
                 </div>
               </button>
@@ -413,7 +420,18 @@ export function QuotesClient({
                       >
                         {q.quoteNumber || '-'}
                       </TableCell>
-                      <TableCell className="truncate font-medium">{q.title}</TableCell>
+                      <TableCell className="truncate font-medium">
+                        {q.title}
+                        {/* What a search by PO number matched, beside the quote it found. */}
+                        {q.customerReference && (
+                          <span
+                            className="ml-2 font-mono text-xs font-normal text-muted-foreground"
+                            data-testid="row-reference"
+                          >
+                            {q.customerReference}
+                          </span>
+                        )}
+                      </TableCell>
                       <TableCell className="hidden truncate md:table-cell text-muted-foreground">
                         {q.customer ? (
                           <TableCellLink href={`/customers/${q.customer.id}`}>

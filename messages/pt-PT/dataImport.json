@@ -202,6 +202,7 @@
       "total": "Valor total",
       "mileage": "Quilometragem no serviço",
       "invoiceNumber": "Número da fatura",
+      "customerReference": "Referência / n.º de encomenda",
       "notes": "Notas do serviço",
       "technician": "Técnico"
     }
