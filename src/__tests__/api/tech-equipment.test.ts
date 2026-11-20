@@ -515,6 +515,7 @@ describe('the meters of the equipment a job works on', () => {
         value: null,
         last: 100,
         item: null,
+        required: false,
       },
       {
         vehicleMeterId: 'vm-crane',
@@ -524,6 +525,7 @@ describe('the meters of the equipment a job works on', () => {
         value: 12.5,
         last: 10,
         item: crane,
+        required: false,
       },
     ])
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValueOnce({
@@ -574,6 +576,7 @@ const METER_VIEW = (over: Record<string, unknown>) => ({
   value: null,
   last: 100,
   item: null,
+  required: false,
   ...over,
 })
 

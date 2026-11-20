@@ -66,6 +66,8 @@ export type ApiErrorCode =
   | 'invalid_request'
   | 'conflict'
   | 'document_locked'
+  /** A job not completed until the meters in `details.meters` have readings. */
+  | 'meters_required'
   | 'server_error'
 
 export function apiError(status: number, code: ApiErrorCode, message: string, extra?: unknown) {

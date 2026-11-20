@@ -2153,6 +2153,8 @@ export async function restoreBackup(
               unit: (type.unit as string) ?? '',
               sortOrder: (type.sortOrder as number) || 0,
               isActive: type.isActive !== false,
+              // A file from before the option asks for nothing.
+              required: type.required === true,
               createdAt: toSafeDate(type.createdAt as string),
               updatedAt: toSafeDate(type.updatedAt as string),
               organizationId,

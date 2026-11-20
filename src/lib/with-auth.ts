@@ -33,6 +33,18 @@ export type ActionResult<T = unknown> = {
    * Nothing was written. `error` already names them.
    */
   customFieldErrors?: { fieldId: string; label: string; issue: string }[]
+  /**
+   * Set when a job was not completed, or its invoice not sent, shared or
+   * paid, because a meter the workshop requires has no reading on it: which
+   * ones, so the work order can mark each box. Nothing was written. `error`
+   * already names them.
+   */
+  requiredMeters?: {
+    vehicleMeterId: string
+    meterTypeId: string
+    name: string
+    item: { id: string; label: string } | null
+  }[]
 }
 
 export type AuthContext = {
@@ -240,6 +252,12 @@ export async function withAuth<T>(
         fieldErrors: { fieldId: string; label: string; issue: string }[]
       }
       return { success: false, error: error.message, customFieldErrors: refused.fieldErrors }
+    }
+    // Matched by name for the same reason: the meters go back to the work
+    // order, which marks each box; the sentence naming them is the error.
+    if (error instanceof Error && error.name === 'RequiredMetersRefusedError') {
+      const refused = error as Error & { meters: NonNullable<ActionResult['requiredMeters']> }
+      return { success: false, error: error.message, requiredMeters: refused.meters }
     }
     // In full here, where only the server sees it. The page gets the action's
     // own words, or a plain sentence when the error came from the database or

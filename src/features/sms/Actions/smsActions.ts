@@ -1,6 +1,7 @@
 'use server'
 
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
+import { assertRequiredMetersRead } from '@/features/meters/Lib/requiredMeters.server'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { getPlatformSmsAllowance, normalizeOrgPhone } from '@/lib/sms'
@@ -33,6 +34,7 @@ export async function sendSmsToCustomer(input: {
       // it answers to the same rule as every other way of sending one.
       if (input.relatedEntityType === 'invoice' && input.relatedEntityId) {
         await assertInvoiceHasRequiredReference(organizationId, input.relatedEntityId)
+        await assertRequiredMetersRead(organizationId, input.relatedEntityId, 'send')
       }
 
       // Normalize the destination phone using the workshop's default

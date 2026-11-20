@@ -19,6 +19,8 @@ vi.mock('@/lib/db', () => ({
     inspection,
     appSetting,
     organization: { findUnique: async () => ({ name: 'Fjord Auto' }) },
+    // No meter of the workshop's is required.
+    meterType: { findFirst: async () => null },
     user: { findUnique: async () => ({ name: 'Kari' }) },
   },
 }))

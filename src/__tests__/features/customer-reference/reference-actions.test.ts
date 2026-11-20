@@ -37,6 +37,8 @@ vi.mock('@/lib/db', () => ({
     quote: { findFirst: vi.fn(), update: vi.fn() },
     customer: { updateMany: vi.fn(), findFirst: vi.fn() },
     documentDesign: { findFirst: vi.fn() },
+    // No meter of the workshop's is required.
+    meterType: { findFirst: vi.fn() },
   },
 }))
 

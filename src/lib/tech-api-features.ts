@@ -32,7 +32,10 @@
  *   Added since, without a name of their own (the app tells them by their
  *   presence and does without them on an older server): each meter's
  *   `askAbove` (number or null, see `/jobs/:id/meters`), and a refused PUT's
- *   `error.details: { vehicleMeterId, code }`.
+ *   `error.details: { vehicleMeterId, code }`. Then each meter's `required`
+ *   (boolean): the job is not completed without its reading, and
+ *   `PATCH /jobs/:id/status` answers 409 `meters_required` with
+ *   `error.details.meters` ([{ vehicleMeterId, meterTypeId, name, item }]).
  * - `vehicle-equipment`: a job carries `equipment`, null while the workshop
  *   records none, else `{ items, workOn }`: the pieces of equipment on the
  *   job's vehicle (a crane, a tail lift) with id, label, type, make, model,

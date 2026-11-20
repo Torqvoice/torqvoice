@@ -45,6 +45,8 @@ vi.mock('@/lib/db', () => ({
     quote: { findFirst: vi.fn(), update: vi.fn(), updateMany: vi.fn(), deleteMany: vi.fn() },
     servicePart: { findMany: vi.fn(), create: vi.fn() },
     payment: { create: vi.fn(), findFirst: vi.fn(), delete: vi.fn() },
+    // No meter of the workshop's is required (unset, it answers nothing).
+    meterType: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
 }))

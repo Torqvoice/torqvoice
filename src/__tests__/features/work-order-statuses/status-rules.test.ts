@@ -12,7 +12,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 const serviceRecord = { findFirst: vi.fn(), update: vi.fn() }
 const workOrderStatus = { findFirst: vi.fn() }
-vi.mock('@/lib/db', () => ({ db: { serviceRecord, workOrderStatus } }))
+// No meter of the workshop's is required: completing asks nothing more.
+const meterType = { findFirst: vi.fn(async () => null) }
+vi.mock('@/lib/db', () => ({ db: { serviceRecord, workOrderStatus, meterType } }))
 vi.mock('@/lib/with-auth', () => ({
   withAuth: async (fn: (ctx: { organizationId: string; userId: string }) => Promise<unknown>) => {
     try {

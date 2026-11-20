@@ -24,6 +24,9 @@ import {
  * `last` is above 0 and the reading is more than `askAbove` above `last`
  * (strictly), unless it is the value already saved or one already confirmed;
  * null never asks. It follows the meter's unit (see appJobMeters.server.ts).
+ * And `required`: the workshop asks for this reading before the job is
+ * completed; `PATCH /jobs/:id/status` refuses `completed` without it (409
+ * `meters_required`). False for every meter of a workshop that asks none.
  * PUT takes `{ readings: [{ vehicleMeterId, value }] }`, an item's meter as
  * well as the vehicle's, `value` a number or
  * null to take the job's reading away, and answers each one with whether it

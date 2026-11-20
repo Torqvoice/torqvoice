@@ -153,6 +153,36 @@ describe('meters through a restore', () => {
     expect(await db.meterType.count({ where: { organizationId } })).toBe(1)
   })
 
+  it('come back required when the workshop required them, and not required otherwise', async () => {
+    await db.meterType.create({
+      data: { name: `PTO hours ${stamp}`, unit: 'hrs', required: true, organizationId },
+    })
+    const options = async () =>
+      (
+        await db.meterType.findMany({
+          where: { organizationId },
+          orderBy: { name: 'asc' },
+          select: { name: true, required: true },
+        })
+      ).map((t) => [t.name, t.required])
+    const before = await options()
+    expect(before).toEqual([
+      [`Engine hours ${stamp}`, false],
+      [`PTO hours ${stamp}`, true],
+    ])
+
+    await restore(await exportWith(['vehicles']))
+    expect(await options()).toEqual(before)
+
+    // A file taken before the option existed asks for nothing.
+    await restore(
+      await exportWith(['vehicles'], (data) => {
+        for (const type of data.meterTypes as Record<string, unknown>[]) delete type.required
+      })
+    )
+    expect((await options()).map(([, required]) => required)).toEqual([false, false])
+  })
+
   it('are left alone by a restore of custom fields only', async () => {
     const before = await meterRows()
     await restore(await exportWith(['customFields']))

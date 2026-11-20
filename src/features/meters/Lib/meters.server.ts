@@ -25,11 +25,31 @@ export interface MeterTypeView {
  * first, so a workshop without it costs no query on meters at all.
  */
 export async function activeMeterTypes(organizationId: string): Promise<MeterTypeView[]> {
+  return (await activeMeterTypesWithOptions(organizationId)).map(({ id, name, unit }) => ({
+    id,
+    name,
+    unit,
+  }))
+}
+
+/** A meter in use with what the workshop chose for it, for a job's meters. */
+interface MeterTypeWithOptions extends MeterTypeView {
+  required: boolean
+}
+
+/**
+ * `activeMeterTypes` with each meter's options. Kept apart so the views that
+ * name a meter (forms, documents, the vehicle page) carry exactly what they
+ * did before options existed.
+ */
+async function activeMeterTypesWithOptions(
+  organizationId: string
+): Promise<MeterTypeWithOptions[]> {
   if (!(await getFeatures(organizationId)).customFields) return []
   return db.meterType.findMany({
     where: { organizationId, isActive: true },
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-    select: { id: true, name: true, unit: true },
+    select: { id: true, name: true, unit: true, required: true },
   })
 }
 
@@ -237,6 +257,11 @@ export interface JobMeterView {
   last: number | null
   /** The piece of equipment the meter is on, for an item the job works on. */
   item?: { id: string; label: string } | null
+  /**
+   * The workshop asks for this reading before the job is completed or its
+   * invoice goes out (requiredMeters.server.ts decides; this only shows it).
+   */
+  required: boolean
 }
 
 /**
@@ -248,8 +273,9 @@ export async function jobMeterViews(
   job: { id: string; vehicleId: string | null; readAt: Date }
 ): Promise<JobMeterView[]> {
   if (!job.vehicleId) return []
-  const types = await activeMeterTypes(organizationId)
+  const types = await activeMeterTypesWithOptions(organizationId)
   if (types.length === 0) return []
+  const required = new Set(types.filter((t) => t.required).map((t) => t.id))
   const [vehicleMeters, itemIds] = await Promise.all([
     vehicleMeterViews(organizationId, job.vehicleId, types),
     jobWorkOnItemIds(organizationId, job),
@@ -287,6 +313,7 @@ export async function jobMeterViews(
         { readAt: job.readAt }
       ),
       item,
+      required: required.has(meter.meterTypeId),
     }
   })
 }

@@ -7,6 +7,11 @@ import {
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
 import {
+  assertRequiredMetersRead,
+  missingRequiredMetersForNewJob,
+  requiredMetersRefusal,
+} from '@/features/meters/Lib/requiredMeters.server'
+import {
   gateCustomerReference,
   gatePoRequired,
   isCustomerReferenceEnabled,
@@ -426,6 +431,13 @@ export async function createServiceRecord(input: unknown) {
         })
         if (!directCustomer) throw new Error('Customer not found')
       }
+      // Made completed straight away: a job that does not exist yet has no
+      // reading of the vehicle's required meters, so it is refused, naming
+      // them. Made open, it is completed once they are read.
+      if (data.status === 'completed' && vehicle) {
+        const missing = await missingRequiredMetersForNewJob(organizationId, vehicle.id)
+        if (missing.length > 0) throw await requiredMetersRefusal('complete', missing)
+      }
 
       // Auto-populate shop name and invoice prefix from settings
       const [settings, org] = await Promise.all([
@@ -708,6 +720,14 @@ export async function updateServiceRecord(input: unknown) {
         },
       })
       if (!existing) throw new Error('Service record not found')
+      // A save that completes the job asks for its required meters first,
+      // on the vehicle it will be on; nothing of the save is written without
+      // them. Any other save is never asked.
+      if (data.status === 'completed' && existing.status !== 'completed') {
+        await assertRequiredMetersRead(organizationId, existing.id, 'complete', {
+          vehicleId: data.vehicleId ?? existing.vehicleId,
+        })
+      }
 
       const {
         id,
@@ -1139,6 +1159,9 @@ export async function updateServiceStatus(
         },
       })
       if (!record) throw new Error('Record not found')
+      if (status === 'completed' && record.status !== 'completed') {
+        await assertRequiredMetersRead(organizationId, record.id, 'complete')
+      }
 
       await db.serviceRecord.update({
         where: { id: recordId },
@@ -1291,6 +1314,10 @@ export async function toggleManuallyPaid(recordId: string) {
       const after = invoiceLockState({ ...record, manuallyPaid: !record.manuallyPaid }, settings)
       if (before.locked && !after.locked && before.reason) {
         throw new DocumentLockedError(before.reason)
+      }
+      // Marking it paid issues the invoice, which waits for required meters.
+      if (!record.manuallyPaid) {
+        await assertRequiredMetersRead(organizationId, record.id, 'markPaid')
       }
 
       await db.serviceRecord.update({
@@ -1564,6 +1591,8 @@ export async function generatePublicLink(serviceRecordId: string) {
       if (!record) throw new Error('Record not found')
       // A customer who needs their PO on the invoice does not get one without it.
       await assertInvoiceHasRequiredReference(organizationId, serviceRecordId)
+      // Nor before the readings the workshop requires are on the job.
+      await assertRequiredMetersRead(organizationId, serviceRecordId, 'share')
 
       // The link is a way of sending the invoice, so what it shows is frozen
       // now, before the stamp below locks it.

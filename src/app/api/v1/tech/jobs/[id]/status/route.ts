@@ -8,6 +8,10 @@ import { stopJobClocks } from '@/features/time-tracking/Lib/timeEntries'
 import { notify } from '@/lib/notify'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
+import {
+  missingRequiredMeters,
+  requiredMetersRefusal,
+} from '@/features/meters/Lib/requiredMeters.server'
 
 /**
  * Moves a job along.
@@ -20,6 +24,14 @@ import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
  * Invoicing, pricing and everything downstream stay with the office; a
  * technician saying "I have finished" is a statement about the work, not a
  * decision to bill for it.
+ *
+ * A job the workshop asks meter readings of is not completed without them:
+ * 409 `meters_required`, the message naming the meters ("Not completed. Fill
+ * in: PTO hours"), and `details: { meters: [{ vehicleMeterId, meterTypeId,
+ * name, item }] }`, `item` null for the vehicle's own meter, else the piece
+ * of equipment's `{ id, label }`. The readings go in through
+ * `PUT /jobs/:id/meters`; each meter there says whether it is `required`.
+ * Nothing about the job changes, its clocks included.
  */
 const bodySchema = z.object({
   status: z.enum(['pending', 'in-progress', 'waiting-parts', 'completed']),
@@ -51,6 +63,16 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         },
       })
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
+
+      // Before anything moves, the clocks included: the readings the
+      // workshop requires, for a job being completed now.
+      if (status === 'completed' && job.status !== 'completed') {
+        const missing = await missingRequiredMeters(ctx.organizationId, job.id, 'complete')
+        if (missing.length > 0) {
+          const refusal = await requiredMetersRefusal('complete', missing)
+          return apiError(409, 'meters_required', refusal.message, { meters: missing })
+        }
+      }
 
       // Finishing a job stops the clock on it. A technician who has moved on
       // is not going to remember, and a clock left running past the end of the

@@ -4,6 +4,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
+import { assertRequiredMetersRead } from '@/features/meters/Lib/requiredMeters.server'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createPaymentSchema } from '../Schema/paymentSchema'
@@ -22,6 +23,10 @@ export async function createPayment(input: unknown) {
         select: { id: true, vehicleId: true },
       })
       if (!serviceRecord) throw new Error('Service record not found')
+      // A payment that would issue the invoice waits for the readings the
+      // workshop requires, as sending it does. Once the invoice is out, or
+      // the job completed, money is taken as before.
+      await assertRequiredMetersRead(organizationId, serviceRecord.id, 'payment')
 
       const payment = await db.payment.create({
         data: {

@@ -5,6 +5,7 @@ import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
+import { assertRequiredMetersRead } from '@/features/meters/Lib/requiredMeters.server'
 import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 import { requireEmailSending, withPlatformMailAllowance } from '@/features/email/Lib/emailAllowance'
@@ -300,6 +301,8 @@ export async function sendInvoiceEmail(input: {
       if (!owned) throw new Error('Service record not found')
       // A customer who needs their PO on the invoice does not get one without it.
       await assertInvoiceHasRequiredReference(organizationId, serviceRecordId)
+      // Nor before the readings the workshop requires are on the job.
+      await assertRequiredMetersRead(organizationId, serviceRecordId, 'send')
 
       const settings = await getWorkshopSettings(organizationId)
       if (settings['workshop.emailEnabled'] === 'false') {

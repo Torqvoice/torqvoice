@@ -10,6 +10,10 @@ model MeterType {
   sortOrder Int      @default(0)
   /// Hidden from new vehicles and from every form; readings are kept.
   isActive  Boolean  @default(true)
+  /// A job on a vehicle or an item that has this meter is not completed, and
+  /// its invoice not issued, until the job has a reading of it. Never asked
+  /// of a quote, a hidden meter or a job completed already.
+  required  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -99,3 +99,21 @@ export async function equipmentLabels(
     items.map((item) => [item.id, equipmentLabel({ typeName: item.type.name, ...item })])
   )
 }
+
+/**
+ * Which of these items are on this vehicle now: what a job moved to that
+ * vehicle keeps working on (its save lets go of the rest). Takes ids that
+ * came through `jobWorkOnItemIds`, so it is behind the same gate.
+ */
+export async function itemsOnVehicle(
+  organizationId: string,
+  itemIds: string[],
+  vehicleId: string
+): Promise<Set<string>> {
+  if (itemIds.length === 0) return new Set()
+  const items = await db.equipmentItem.findMany({
+    where: { organizationId, id: { in: itemIds }, vehicleId },
+    select: { id: true },
+  })
+  return new Set(items.map((item) => item.id))
+}
