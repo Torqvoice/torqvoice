@@ -70,7 +70,7 @@
     "manufacture": "Pagaminta",
     "manufacturePlaceholder": "2019 arba {date}",
     "manufactureHint": "Tik metai, pvz., 2019, arba visa data, pvz., {date}.",
-    "manufactureInvalid": "Vien mėnesio ir metų nepakanka. Įveskite metus, pvz., 2019, arba visą datą, pvz., {date}.",
+    "manufactureInvalid": "Įveskite metus, pvz., 2019, arba visą datą, pvz., {date}.",
     "manufactureFuture": "Pagaminimo metai yra ateityje.",
     "installDate": "Sumontuota",
     "ratedCapacity": "Vardinė keliamoji galia",

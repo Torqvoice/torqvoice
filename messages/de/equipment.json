@@ -70,7 +70,7 @@
     "manufacture": "Baujahr",
     "manufacturePlaceholder": "2019 oder {date}",
     "manufactureHint": "Nur ein Jahr, etwa 2019, oder ein vollständiges Datum, etwa {date}.",
-    "manufactureInvalid": "Monat und Jahr allein reichen nicht. Geben Sie ein Jahr ein, etwa 2019, oder ein vollständiges Datum, etwa {date}.",
+    "manufactureInvalid": "Geben Sie ein Jahr ein, etwa 2019, oder ein vollständiges Datum, etwa {date}.",
     "manufactureFuture": "Das Baujahr liegt in der Zukunft.",
     "installDate": "Montiert",
     "ratedCapacity": "Nenntragfähigkeit",

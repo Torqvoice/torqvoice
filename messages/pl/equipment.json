@@ -70,7 +70,7 @@
     "manufacture": "Rok produkcji",
     "manufacturePlaceholder": "2019 lub {date}",
     "manufactureHint": "Sam rok, np. 2019, lub pełna data, np. {date}.",
-    "manufactureInvalid": "Sam miesiąc i rok nie wystarczą. Wpisz rok, np. 2019, lub pełną datę, np. {date}.",
+    "manufactureInvalid": "Wpisz rok, np. 2019, lub pełną datę, np. {date}.",
     "manufactureFuture": "Rok produkcji jest w przyszłości.",
     "installDate": "Zamontowano",
     "ratedCapacity": "Udźwig nominalny",

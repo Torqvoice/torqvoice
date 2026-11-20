@@ -70,7 +70,7 @@
     "manufacture": "Produsert",
     "manufacturePlaceholder": "2019 eller {date}",
     "manufactureHint": "Bare et år, som 2019, eller en hel dato, som {date}.",
-    "manufactureInvalid": "Måned og år alene er ikke nok. Skriv et år, som 2019, eller en hel dato, som {date}.",
+    "manufactureInvalid": "Skriv et år, som 2019, eller en hel dato, som {date}.",
     "manufactureFuture": "Produksjonsåret er i fremtiden.",
     "installDate": "Montert",
     "ratedCapacity": "Nominell kapasitet",

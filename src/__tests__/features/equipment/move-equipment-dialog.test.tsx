@@ -36,6 +36,7 @@ vi.mock('@/features/equipment/Actions/equipmentItemActions', () => ({
 vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }))
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
 
+import { moveEquipmentItem } from '@/features/equipment/Actions/equipmentItemActions'
 import { MoveEquipmentDialog } from '@/features/equipment/Components/MoveEquipmentDialog'
 
 class StubObserver {
@@ -77,5 +78,32 @@ describe('the vehicle list in the move dialog', () => {
     await openList('veh-elsewhere')
     const names = screen.getAllByRole('option').map((o) => o.textContent)
     expect(names.filter((n) => /Scania|Transit/.test(n ?? ''))).toHaveLength(2)
+  })
+})
+
+describe('the move dialog while the move is under way', () => {
+  it('takes no other vehicle until it is over, and takes one again once it has failed', async () => {
+    let finish: (value: { success: boolean; error?: string }) => void = () => undefined
+    vi.mocked(moveEquipmentItem).mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve as typeof finish
+        }) as never
+    )
+    await openList('veh-truck')
+    await act(async () => {
+      fireEvent.click(
+        screen.getAllByRole('option').find((o) => /Transit/.test(o.textContent ?? ''))!
+      )
+    })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Move' }))
+    })
+    expect(screen.getByRole('combobox')).toBeDisabled()
+
+    await act(async () => {
+      finish({ success: false, error: 'offline' })
+    })
+    expect(screen.getByRole('combobox')).toBeEnabled()
   })
 })

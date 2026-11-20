@@ -70,7 +70,7 @@
     "manufacture": "Fabrication",
     "manufacturePlaceholder": "2019 ou {date}",
     "manufactureHint": "Une année seule, comme 2019, ou une date complète, comme {date}.",
-    "manufactureInvalid": "Le mois et l'année seuls ne suffisent pas. Saisissez une année, comme 2019, ou une date complète, comme {date}.",
+    "manufactureInvalid": "Saisissez une année, comme 2019, ou une date complète, comme {date}.",
     "manufactureFuture": "L'année de fabrication est dans le futur.",
     "installDate": "Monté le",
     "ratedCapacity": "Charge maximale d'utilisation",

@@ -197,150 +197,158 @@ export function EquipmentItemDialog({
         <DialogHeader>
           <DialogTitle>{item ? t('editTitle') : t('addTitle')}</DialogTitle>
         </DialogHeader>
-        <DialogBody className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="equipment-type">{t('type')}</Label>
-            <Select value={typeId} onValueChange={setTypeId}>
-              <SelectTrigger id="equipment-type" className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {offered.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {type.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {text('equipment-make', t('make'), make, setMake)}
-            {text('equipment-model', t('model'), model, setModel)}
-            {text('equipment-serial', t('serialNumber'), serialNumber, setSerialNumber)}
+        <DialogBody>
+          {/*
+           * Locked while the save is under way: what is typed then would not
+           * be in what is being saved. A failed save hands it back.
+           */}
+          <fieldset disabled={saving} className="min-w-0 space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="equipment-manufacture">{t('manufacture')}</Label>
-              <Input
-                id="equipment-manufacture"
-                value={manufacture}
-                maxLength={20}
-                // Figures only, unless the workshop writes the month's name.
-                inputMode={dateFormat.includes('MMM') ? 'text' : 'numeric'}
-                placeholder={t('manufacturePlaceholder', { date: sampleDate })}
-                aria-invalid={manufactureInvalid || undefined}
-                aria-describedby="equipment-manufacture-hint"
-                onChange={(e) => setManufacture(e.target.value)}
-              />
-              <p
-                id="equipment-manufacture-hint"
-                className={
-                  manufactureInvalid ? 'text-xs text-destructive' : 'text-xs text-muted-foreground'
-                }
-              >
-                {manufactureInvalid
-                  ? t('manufactureInvalid', { date: sampleDate })
-                  : t('manufactureHint', { date: sampleDate })}
-              </p>
+              <Label htmlFor="equipment-type">{t('type')}</Label>
+              <Select value={typeId} onValueChange={setTypeId} disabled={saving}>
+                <SelectTrigger id="equipment-type" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {offered.map((type) => (
+                    <SelectItem key={type.id} value={type.id}>
+                      {type.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="equipment-install">{t('installDate')}</Label>
-              <DateInput id="equipment-install" value={installDate} onChange={setInstallDate} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {text('equipment-make', t('make'), make, setMake)}
+              {text('equipment-model', t('model'), model, setModel)}
+              {text('equipment-serial', t('serialNumber'), serialNumber, setSerialNumber)}
+              <div className="space-y-1.5">
+                <Label htmlFor="equipment-manufacture">{t('manufacture')}</Label>
+                <Input
+                  id="equipment-manufacture"
+                  value={manufacture}
+                  maxLength={20}
+                  // Figures only, unless the workshop writes the month's name.
+                  inputMode={dateFormat.includes('MMM') ? 'text' : 'numeric'}
+                  placeholder={t('manufacturePlaceholder', { date: sampleDate })}
+                  aria-invalid={manufactureInvalid || undefined}
+                  aria-describedby="equipment-manufacture-hint"
+                  onChange={(e) => setManufacture(e.target.value)}
+                />
+                <p
+                  id="equipment-manufacture-hint"
+                  className={
+                    manufactureInvalid
+                      ? 'text-xs text-destructive'
+                      : 'text-xs text-muted-foreground'
+                  }
+                >
+                  {manufactureInvalid
+                    ? t('manufactureInvalid', { date: sampleDate })
+                    : t('manufactureHint', { date: sampleDate })}
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="equipment-install">{t('installDate')}</Label>
+                <DateInput id="equipment-install" value={installDate} onChange={setInstallDate} />
+              </div>
+              {text(
+                'equipment-capacity',
+                t('ratedCapacity'),
+                ratedCapacity,
+                setRatedCapacity,
+                t('ratedCapacityPlaceholder')
+              )}
+              <div className="space-y-1.5">
+                <Label htmlFor="equipment-last-examined">{t('lastExaminedAt')}</Label>
+                <DateInput
+                  id="equipment-last-examined"
+                  value={lastExaminedAt}
+                  onChange={setLastExaminedAt}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="equipment-next-examination">{t('nextExaminationDue')}</Label>
+                <DateInput
+                  id="equipment-next-examination"
+                  value={nextExaminationDue}
+                  onChange={setNextExaminationDue}
+                />
+              </div>
             </div>
             {text(
-              'equipment-capacity',
-              t('ratedCapacity'),
-              ratedCapacity,
-              setRatedCapacity,
-              t('ratedCapacityPlaceholder')
+              'equipment-certificate',
+              t('certificateReference'),
+              certificateReference,
+              setCertificateReference
             )}
             <div className="space-y-1.5">
-              <Label htmlFor="equipment-last-examined">{t('lastExaminedAt')}</Label>
-              <DateInput
-                id="equipment-last-examined"
-                value={lastExaminedAt}
-                onChange={setLastExaminedAt}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="equipment-next-examination">{t('nextExaminationDue')}</Label>
-              <DateInput
-                id="equipment-next-examination"
-                value={nextExaminationDue}
-                onChange={setNextExaminationDue}
-              />
-            </div>
-          </div>
-          {text(
-            'equipment-certificate',
-            t('certificateReference'),
-            certificateReference,
-            setCertificateReference
-          )}
-          <div className="space-y-1.5">
-            <span className="text-sm font-medium" id="equipment-report-label">
-              {t('report')}
-            </span>
-            {report ? (
-              <div className="flex items-center gap-2 rounded-md border px-2 py-1.5 text-sm">
-                <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
-                <a
-                  href={report.url}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="min-w-0 flex-1 truncate underline-offset-2 hover:underline"
-                >
-                  {report.name}
-                </a>
+              <span className="text-sm font-medium" id="equipment-report-label">
+                {t('report')}
+              </span>
+              {report ? (
+                <div className="flex items-center gap-2 rounded-md border px-2 py-1.5 text-sm">
+                  <FileText className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <a
+                    href={report.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="min-w-0 flex-1 truncate underline-offset-2 hover:underline"
+                  >
+                    {report.name}
+                  </a>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                    disabled={saving}
+                    onClick={() => {
+                      if (unsaved.current === report.url) discardUnsaved()
+                      setReport(null)
+                    }}
+                    aria-label={t('removeReport', { name: report.name })}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </Button>
+                </div>
+              ) : (
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6"
-                  disabled={saving}
-                  onClick={() => {
-                    if (unsaved.current === report.url) discardUnsaved()
-                    setReport(null)
-                  }}
-                  aria-label={t('removeReport', { name: report.name })}
+                  variant="outline"
+                  size="sm"
+                  disabled={uploading || saving}
+                  aria-describedby="equipment-report-label"
+                  onClick={() => fileInput.current?.click()}
                 >
-                  <X className="h-3.5 w-3.5" />
+                  <Upload className="mr-1 h-3.5 w-3.5" />
+                  {uploading ? t('uploading') : t('attachReport')}
                 </Button>
-              </div>
-            ) : (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={uploading || saving}
-                aria-describedby="equipment-report-label"
-                onClick={() => fileInput.current?.click()}
-              >
-                <Upload className="mr-1 h-3.5 w-3.5" />
-                {uploading ? t('uploading') : t('attachReport')}
-              </Button>
-            )}
-            <input
-              ref={fileInput}
-              type="file"
-              accept="application/pdf,image/jpeg,image/png,image/webp"
-              className="hidden"
-              aria-hidden
-              tabIndex={-1}
-              onChange={(e) => {
-                const file = e.target.files?.[0]
-                if (file) void upload(file)
-              }}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="equipment-notes">{t('notes')}</Label>
-            <Textarea
-              id="equipment-notes"
-              value={notes}
-              maxLength={EQUIPMENT_NOTES_MAX}
-              rows={3}
-              onChange={(e) => setNotes(e.target.value)}
-            />
-          </div>
+              )}
+              <input
+                ref={fileInput}
+                type="file"
+                accept="application/pdf,image/jpeg,image/png,image/webp"
+                className="hidden"
+                aria-hidden
+                tabIndex={-1}
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) void upload(file)
+                }}
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="equipment-notes">{t('notes')}</Label>
+              <Textarea
+                id="equipment-notes"
+                value={notes}
+                maxLength={EQUIPMENT_NOTES_MAX}
+                rows={3}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
+          </fieldset>
         </DialogBody>
         <DialogFooter>
           <Button type="button" variant="outline" onClick={cancel} disabled={saving}>

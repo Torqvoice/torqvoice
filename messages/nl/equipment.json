@@ -70,7 +70,7 @@
     "manufacture": "Bouwjaar",
     "manufacturePlaceholder": "2019 of {date}",
     "manufactureHint": "Alleen een jaar, zoals 2019, of een volledige datum, zoals {date}.",
-    "manufactureInvalid": "Alleen maand en jaar is niet genoeg. Typ een jaar, zoals 2019, of een volledige datum, zoals {date}.",
+    "manufactureInvalid": "Typ een jaar, zoals 2019, of een volledige datum, zoals {date}.",
     "manufactureFuture": "Het bouwjaar ligt in de toekomst.",
     "installDate": "Gemonteerd",
     "ratedCapacity": "Nominale capaciteit",
