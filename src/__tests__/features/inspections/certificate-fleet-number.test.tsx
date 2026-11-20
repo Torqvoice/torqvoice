@@ -300,15 +300,15 @@ describe('the designer', () => {
 
   it('offers the fleet number on the certificate’s vehicle block, off, to a workshop that records it', () => {
     inspector(true)
-    const row = screen.getByText('Fleet / unit number').closest('div')
-    expect(row).not.toBeNull()
-    const toggle = within(row as HTMLElement).queryByRole('switch')
-    if (toggle) expect(toggle).toHaveAttribute('aria-checked', 'false')
+    const row = screen.getByTestId('field-row-fleet_number')
+    expect(row).toHaveTextContent('Fleet / unit number')
+    expect(within(row).getByRole('switch')).toHaveAttribute('aria-checked', 'false')
   })
 
   it('does not offer it to a workshop that has the field off', () => {
     inspector(false)
-    expect(screen.queryByText('Fleet / unit number')).not.toBeInTheDocument()
+    expect(screen.getByTestId('field-row-license_plate')).toBeInTheDocument()
+    expect(screen.queryByTestId('field-row-fleet_number')).not.toBeInTheDocument()
   })
 })
 
