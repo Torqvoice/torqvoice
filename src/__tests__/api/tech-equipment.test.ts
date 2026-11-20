@@ -104,6 +104,8 @@ vi.mock('@/lib/db', () => {
         if (select?.vehicle) {
           return {
             ...JOB,
+            startDateTime: null,
+            serviceDate: new Date('2026-11-20T08:00:00Z'),
             title: 'Service',
             customerReference: null,
             vehicle: { id: JOB.vehicleId, fleetNumber: null, hsn: null, tsn: null, customer: null },
@@ -166,6 +168,11 @@ vi.mock('@/lib/document-lock.server', async () => {
     assertInvoiceEditable: vi.fn(async () => {
       if (state.locked) throw new DocumentLockedError('sent')
     }),
+    getInvoiceLockState: vi.fn(async () =>
+      state.locked
+        ? { locked: true, reason: 'sent', unlockedAt: null }
+        : { locked: false, reason: null, unlockedAt: null }
+    ),
   }
 })
 vi.mock('@/lib/audit', () => ({ logAudit: vi.fn(async () => undefined) }))
@@ -221,7 +228,12 @@ import { logAudit } from '@/lib/audit'
 import { db } from '@/lib/db'
 import { publishRecordChange } from '@/lib/realtime/publish.server'
 import { jobMeterViews } from '@/features/meters/Lib/meters.server'
-import { writeJobMeterReadings } from '@/features/meters/Lib/jobMeterReading.server'
+import {
+  InvalidMeterReadingError,
+  MeterNotOnJobError,
+  writeJobMeterReadings,
+} from '@/features/meters/Lib/jobMeterReading.server'
+import { MUCH_HIGHER_READING } from '@/features/vehicles/Lib/vehicleReading'
 import { TECH_API_FEATURES } from '@/lib/tech-api-features'
 
 const put = (body: unknown, id = JOB.id) =>
@@ -454,7 +466,12 @@ describe('setting what a job works on', () => {
     state.locked = true
     const res = await read(await put({ itemIds: ['crane'] }))
     expect(res.status).toBe(409)
-    expect(res.body.error.code).toBe('document_locked')
+    // The code and English message as before, and the lock's reason beside them.
+    expect(res.body.error).toEqual({
+      code: 'document_locked',
+      message: 'This document is locked because it has been sent.',
+      details: { reason: 'sent' },
+    })
     expect(state.links).toEqual([])
     expect(logAudit).not.toHaveBeenCalled()
   })
@@ -540,5 +557,155 @@ describe('the meters of the equipment a job works on', () => {
     expect(res.body.data.readings).toEqual([
       { vehicleMeterId: 'vm-crane', value: 12.5, last: 10, lower: false },
     ])
+  })
+})
+
+const METER_VIEW = (over: Record<string, unknown>) => ({
+  vehicleMeterId: 'vm',
+  meterTypeId: 'mt',
+  name: 'Engine hours',
+  unit: 'h',
+  value: null,
+  last: 100,
+  item: null,
+  ...over,
+})
+
+describe('the ask-first limit on each meter', () => {
+  const meters = [
+    METER_VIEW({ vehicleMeterId: 'vm-hours', unit: 'hrs' }),
+    METER_VIEW({ vehicleMeterId: 'vm-km', name: 'Trailer km', unit: 'km' }),
+    METER_VIEW({ vehicleMeterId: 'vm-lifts', name: 'Lifts', unit: 'cycles' }),
+  ]
+  const expected = [
+    { ...meters[0], askAbove: MUCH_HIGHER_READING.hours },
+    { ...meters[1], askAbove: MUCH_HIGHER_READING.distance },
+    { ...meters[2], askAbove: null },
+  ]
+
+  it('comes with the meters GET, beside every key it had', async () => {
+    vi.mocked(jobMeterViews).mockResolvedValueOnce(meters)
+    const res = await read(
+      await getMeters(new Request('https://app.test/api'), {
+        params: Promise.resolve({ id: JOB.id }),
+      })
+    )
+    expect(res.body.data.meters).toEqual(expected)
+  })
+
+  it('comes with the job, looked up once', async () => {
+    vi.mocked(jobMeterViews).mockResolvedValueOnce(meters)
+    const res = await read(
+      await getJob(new Request('https://app.test/api'), {
+        params: Promise.resolve({ id: JOB.id }),
+      })
+    )
+    expect(res.body.data.meters).toEqual(expected)
+    expect(jobMeterViews).toHaveBeenCalledWith('org-1', {
+      id: JOB.id,
+      vehicleId: JOB.vehicleId,
+      readAt: new Date('2026-11-20T08:00:00Z'),
+    })
+    // Its dates come with the job itself, not from a second look-up.
+    expect(db.serviceRecord.findFirst).toHaveBeenCalledTimes(1)
+    expect(res.body.data).not.toHaveProperty('serviceDate')
+  })
+})
+
+describe('the job’s document lock', () => {
+  const job = async () =>
+    read(
+      await getJob(new Request('https://app.test/api'), {
+        params: Promise.resolve({ id: JOB.id }),
+      })
+    )
+
+  it('says the job is editable', async () => {
+    const res = await job()
+    expect(res.body.data.documentLock).toEqual({ locked: false, reason: null })
+  })
+
+  it('says the job is locked and why, beside the keys the job had', async () => {
+    state.locked = true
+    const res = await job()
+    expect(res.body.data.documentLock).toEqual({ locked: true, reason: 'sent' })
+    expect(res.body.data).toMatchObject({ id: JOB.id, title: 'Service', meters: [] })
+  })
+})
+
+describe('a meter reading refused', () => {
+  const putReadings = async (readings: unknown) =>
+    read(
+      await putMeters(
+        new Request('https://app.test/api', {
+          method: 'PUT',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ readings }),
+        }),
+        { params: Promise.resolve({ id: JOB.id }) }
+      )
+    )
+
+  it('names the reading and why, with the code and message it always had', async () => {
+    vi.mocked(writeJobMeterReadings).mockRejectedValueOnce(
+      new InvalidMeterReadingError('vm-2', 'invalid_number')
+    )
+    const res = await putReadings([{ vehicleMeterId: 'vm-2', value: '12.345' }])
+    expect(res.status).toBe(400)
+    expect(res.body.error).toEqual({
+      code: 'invalid_request',
+      message: 'A reading is a number with up to two decimals, each meter once.',
+      details: { vehicleMeterId: 'vm-2', code: 'invalid_number' },
+    })
+  })
+
+  it('says which meter came twice', async () => {
+    vi.mocked(writeJobMeterReadings).mockRejectedValueOnce(
+      new InvalidMeterReadingError('vm-1', 'duplicate')
+    )
+    const res = await putReadings([
+      { vehicleMeterId: 'vm-1', value: 1 },
+      { vehicleMeterId: 'vm-1', value: 2 },
+    ])
+    expect(res.status).toBe(400)
+    expect(res.body.error.details).toEqual({ vehicleMeterId: 'vm-1', code: 'duplicate' })
+  })
+
+  it('says which meter is not the job’s, still a 404', async () => {
+    vi.mocked(writeJobMeterReadings).mockRejectedValueOnce(new MeterNotOnJobError('vm-x'))
+    const res = await putReadings([{ vehicleMeterId: 'vm-x', value: 1 }])
+    expect(res.status).toBe(404)
+    expect(res.body.error).toEqual({
+      code: 'not_found',
+      message: 'That meter is not on this job’s vehicle or the equipment it works on.',
+      details: { vehicleMeterId: 'vm-x', code: 'not_on_job' },
+    })
+  })
+
+  it('on a locked invoice says why, beside the message it had', async () => {
+    const { DocumentLockedError } =
+      await vi.importActual<typeof import('@/lib/document-lock')>('@/lib/document-lock')
+    vi.mocked(writeJobMeterReadings).mockRejectedValueOnce(new DocumentLockedError('paid'))
+    const res = await putReadings([{ vehicleMeterId: 'vm-1', value: 1 }])
+    expect(res.status).toBe(409)
+    expect(res.body.error).toEqual({
+      code: 'document_locked',
+      message: 'This document is locked because it has been paid.',
+      details: { reason: 'paid' },
+    })
+  })
+})
+
+describe('the answer to setting what a job works on', () => {
+  it('carries the job’s meters as they now are, beside the equipment', async () => {
+    const craneMeter = METER_VIEW({
+      vehicleMeterId: 'vm-crane',
+      item: { id: 'crane', label: 'Crane, HIAB X-HiPro 192 (4471)' },
+    })
+    vi.mocked(jobMeterViews).mockResolvedValueOnce([craneMeter])
+    const res = await read(await put({ itemIds: ['crane'] }))
+    expect(res.status).toBe(200)
+    expect(res.body.data.equipment.workOn).toEqual(['crane'])
+    expect(res.body.data.meters).toEqual([{ ...craneMeter, askAbove: MUCH_HIGHER_READING.hours }])
   })
 })

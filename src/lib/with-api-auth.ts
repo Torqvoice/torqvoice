@@ -75,6 +75,21 @@ export function apiError(status: number, code: ApiErrorCode, message: string, ex
   )
 }
 
+/**
+ * The 409 for an edit refused because the job's invoice (or a quote) is
+ * locked: the English message, and `details.reason`, the lock's own reason
+ * ('sent', 'paid' or 'accepted', LockReason) for the app to word itself.
+ * Takes the error by shape, since a route may catch it by name.
+ */
+export function documentLockedResponse(error: Error & { reason?: unknown }) {
+  return apiError(
+    409,
+    'document_locked',
+    error.message,
+    typeof error.reason === 'string' ? { reason: error.reason } : undefined
+  )
+}
+
 export function apiOk<T>(data: T, status = 200) {
   return NextResponse.json({ data }, { status })
 }
@@ -222,7 +237,7 @@ export async function withApiAuth(
     // request that can never succeed. The message names the rule that applied
     // and is written for the caller, so it is safe to return.
     if (err instanceof DocumentLockedError) {
-      return apiError(409, 'document_locked', err.message)
+      return documentLockedResponse(err)
     }
     if (err instanceof ZodError) {
       return apiError(

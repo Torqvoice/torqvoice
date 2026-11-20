@@ -1,11 +1,12 @@
 import { z } from 'zod'
 import { logAudit } from '@/lib/audit'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { apiError, apiOk, documentLockedResponse, withApiAuth } from '@/lib/with-api-auth'
 import { checkinJobFor } from '@/features/condition-map/Lib/checkinAccess.server'
 import { equipmentEnabled } from '@/features/equipment/Lib/equipmentGate.server'
 import { appJobEquipment, writeJobWorkOn } from '@/features/equipment/Lib/jobWorkOn.server'
 import { MAX_WORK_ON } from '@/features/equipment/Schema/equipmentSchema'
+import { appJobMeters } from '@/features/meters/Lib/appJobMeters.server'
 
 /**
  * The equipment fitted to a job's vehicle (a crane, a tail lift) and which of
@@ -15,9 +16,16 @@ import { MAX_WORK_ON } from '@/features/equipment/Schema/equipmentSchema'
  * GET answers `{ equipment }`, the same as the job: null while the workshop
  * records no equipment, else `{ items, workOn }`.
  * PUT takes `{ itemIds }`, the whole list the job works on (empty for none),
- * and answers `{ equipment }` as it now is. An item taken off the list takes
- * this job's readings of its meters with it, as on the web. The meters of the
+ * and answers `{ equipment, meters }` as they now are: `meters` is what
+ * `GET /jobs/:id/meters` answers, so the app need not ask again for the
+ * meters of the items it just picked. An item taken off the list takes this
+ * job's readings of its meters with it, as on the web. The meters of the
  * items the job works on are read and written through `/jobs/:id/meters`.
+ * A locked invoice answers 409 `document_locked` with `details: { reason }`.
+ *
+ * Each item carries `state`: null on the job's vehicle now, else "moved" or
+ * "removed" since the job picked it; `removed` is true for both. Such an item
+ * stays on the job and can be taken off the list, not picked again.
  */
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -64,9 +72,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         })
       } catch (error) {
         const name = error instanceof Error ? error.name : ''
-        if (name === 'DocumentLockedError') {
-          return apiError(409, 'document_locked', (error as Error).message)
-        }
+        if (name === 'DocumentLockedError') return documentLockedResponse(error as Error)
         // An item that is not on this job's vehicle, or one removed from it.
         if (error instanceof Error && error.message === 'Equipment not found') {
           return apiError(404, 'not_found', 'That equipment is not on this job’s vehicle.')
@@ -84,7 +90,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           equipmentItemIds: result.itemIds,
         },
       })
-      return apiOk({ equipment: await appJobEquipment(ctx.organizationId, job) })
+      const [equipment, meters] = await Promise.all([
+        appJobEquipment(ctx.organizationId, job),
+        appJobMeters(ctx.organizationId, job),
+      ])
+      return apiOk({ equipment, meters })
     },
     {
       requireTechnician: true,

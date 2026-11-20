@@ -1,12 +1,15 @@
 import { z } from 'zod'
-import { db } from '@/lib/db'
 import { logAudit } from '@/lib/audit'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
+import { apiError, apiOk, documentLockedResponse, withApiAuth } from '@/lib/with-api-auth'
 import { checkinJobFor } from '@/features/condition-map/Lib/checkinAccess.server'
-import { jobMeterViews, metersEnabled } from '@/features/meters/Lib/meters.server'
-import { writeJobMeterReadings } from '@/features/meters/Lib/jobMeterReading.server'
-import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
+import { metersEnabled } from '@/features/meters/Lib/meters.server'
+import { appJobMeters } from '@/features/meters/Lib/appJobMeters.server'
+import {
+  type InvalidMeterReadingError,
+  type MeterNotOnJobError,
+  writeJobMeterReadings,
+} from '@/features/meters/Lib/jobMeterReading.server'
 
 /**
  * A job's readings of its vehicle's meters besides the odometer (engine
@@ -16,20 +19,20 @@ import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
  * GET answers `{ meters }`: per meter its name, unit, this job's reading
  * (null when none), the last reading before the job (null when none) and
  * `item`: null for the vehicle's own meter, else `{ id, label }` of the piece
- * of equipment it is on, one the job works on (`vehicle-equipment`).
+ * of equipment it is on, one the job works on (`vehicle-equipment`), and
+ * `askAbove`: ask "Are you sure this reading is correct?" before saving when
+ * `last` is above 0 and the reading is more than `askAbove` above `last`
+ * (strictly), unless it is the value already saved or one already confirmed;
+ * null never asks. It follows the meter's unit (see appJobMeters.server.ts).
  * PUT takes `{ readings: [{ vehicleMeterId, value }] }`, an item's meter as
  * well as the vehicle's, `value` a number or
  * null to take the job's reading away, and answers each one with whether it
  * is below the last reading: kept all the same, as on the web.
+ * All or nothing: one refused reading changes nothing, and the error names
+ * it in `details: { vehicleMeterId, code }`, code `invalid_number` or
+ * `duplicate` (400) or `not_on_job` (404). A locked invoice answers 409
+ * `document_locked` with `details: { reason }` ('sent', 'paid' or 'accepted').
  */
-
-async function readingDateOf(organizationId: string, jobId: string): Promise<Date | null> {
-  const job = await db.serviceRecord.findFirst({
-    where: { id: jobId, organizationId },
-    select: { startDateTime: true, serviceDate: true },
-  })
-  return job ? jobReadingDate(job) : null
-}
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   return withApiAuth(
@@ -38,10 +41,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       const { id } = await params
       const job = await checkinJobFor(ctx, id)
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
-      const readAt = await readingDateOf(ctx.organizationId, job.id)
-      const meters = readAt
-        ? await jobMeterViews(ctx.organizationId, { id: job.id, vehicleId: job.vehicleId, readAt })
-        : []
+      const meters = await appJobMeters(ctx.organizationId, {
+        id: job.id,
+        vehicleId: job.vehicleId,
+      })
       return apiOk({ meters })
     },
     {
@@ -90,21 +93,23 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         })
       } catch (error) {
         const name = error instanceof Error ? error.name : ''
-        if (name === 'DocumentLockedError') {
-          return apiError(409, 'document_locked', (error as Error).message)
-        }
+        if (name === 'DocumentLockedError') return documentLockedResponse(error as Error)
         if (name === 'InvalidMeterReadingError') {
+          const refused = error as InvalidMeterReadingError
           return apiError(
             400,
             'invalid_request',
-            'A reading is a number with up to two decimals, each meter once.'
+            'A reading is a number with up to two decimals, each meter once.',
+            { vehicleMeterId: refused.vehicleMeterId, code: refused.code }
           )
         }
-        if (error instanceof Error && error.message === 'Meter not found') {
+        if (name === 'MeterNotOnJobError') {
+          const refused = error as MeterNotOnJobError
           return apiError(
             404,
             'not_found',
-            'That meter is not on this job’s vehicle or the equipment it works on.'
+            'That meter is not on this job’s vehicle or the equipment it works on.',
+            { vehicleMeterId: refused.vehicleMeterId, code: refused.code }
           )
         }
         throw error

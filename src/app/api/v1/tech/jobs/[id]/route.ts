@@ -1,12 +1,12 @@
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
-import { jobMeterViews } from '@/features/meters/Lib/meters.server'
+import { appJobMeters } from '@/features/meters/Lib/appJobMeters.server'
 import { appJobEquipment } from '@/features/equipment/Lib/jobWorkOn.server'
-import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import {
   gateCustomerReference,
   isCustomerReferenceEnabled,
 } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
+import { getInvoiceLockState } from '@/lib/document-lock.server'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { getOpenEntry } from '@/features/time-tracking/Lib/timeEntries'
@@ -20,6 +20,14 @@ import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
  * they are an admin. A technician who guesses another job's id gets a 404
  * rather than a 403: whether a job exists in someone else's bay is not
  * information this endpoint should confirm.
+ *
+ * Besides the job's own fields it carries:
+ * - `documentLock: { locked, reason }`: whether the job's invoice is locked
+ *   against edits, and why ('sent', 'paid' or 'accepted'; null when not
+ *   locked), so the app can disable inputs before Save, as the web does. An
+ *   edit sent anyway answers 409 `document_locked` with `details.reason`.
+ * - `meters`: as `GET /jobs/:id/meters` answers them, `askAbove` included.
+ * - `equipment`: as `GET /jobs/:id/equipment` answers it.
  */
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
   return withApiAuth(
@@ -66,6 +74,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           mileage: true,
           startDateTime: true,
           endDateTime: true,
+          // What a meter reading on the job is dated by; not sent itself.
+          serviceDate: true,
           vehicle: {
             select: {
               id: true,
@@ -121,6 +131,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       })
 
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
+      const { serviceDate, ...shown } = job
 
       const openEntry = await getOpenEntry(ctx.organizationId, ctx.technicianIds)
       const totalMinutes = job.timeEntries.reduce((sum, e) => sum + (e.durationMinutes ?? 0), 0)
@@ -131,27 +142,21 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       const fleetNumberOn = await isFleetNumberEnabled(ctx.organizationId)
       // The vehicle's other meters with this job's readings; empty while the
       // workshop has none. Written through /jobs/:id/meters.
-      const jobDate = await db.serviceRecord.findFirst({
-        where: { id: job.id, organizationId: ctx.organizationId },
-        select: { startDateTime: true, serviceDate: true },
+      const meters = await appJobMeters(ctx.organizationId, {
+        id: job.id,
+        vehicleId: job.vehicle?.id ?? null,
+        dates: { startDateTime: job.startDateTime, serviceDate },
       })
-      const meters =
-        job.vehicle && jobDate
-          ? await jobMeterViews(ctx.organizationId, {
-              id: job.id,
-              vehicleId: job.vehicle.id,
-              readAt: jobReadingDate(jobDate),
-            })
-          : []
       // The equipment on the vehicle and which of it the job works on; null
       // while the workshop records none. Set through /jobs/:id/equipment.
       const equipment = await appJobEquipment(ctx.organizationId, {
         id: job.id,
         vehicleId: job.vehicle?.id ?? null,
       })
+      const lock = await getInvoiceLockState(job.id, ctx.organizationId)
 
       return apiOk({
-        ...gateCustomerReference(job, referenceOn),
+        ...gateCustomerReference(shown, referenceOn),
         vehicle: job.vehicle && gateFleetNumber(gateTypeKey(job.vehicle, typeKeyOn), fleetNumberOn),
         customer: job.customer ?? job.vehicle?.customer ?? null,
         isRunning: openEntry?.serviceRecordId === job.id,
@@ -159,6 +164,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         totalMinutes,
         meters,
         equipment,
+        documentLock: { locked: lock.locked, reason: lock.locked ? lock.reason : null },
       })
     },
     {

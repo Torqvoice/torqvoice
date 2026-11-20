@@ -17,10 +17,31 @@ export interface JobMeterReadingResult {
   lower: boolean
 }
 
+/**
+ * Why a request's readings were refused, all of them, naming the one at
+ * fault: `invalid_number` (not a number with up to two decimals),
+ * `duplicate` (the same meter twice in one request) or `not_on_job` (not a
+ * meter of the job's vehicle or of equipment the job works on, or not this
+ * workshop's). The technician API hands both on as they are.
+ */
+export type MeterReadingRefusal = 'invalid_number' | 'duplicate' | 'not_on_job'
+
 export class InvalidMeterReadingError extends Error {
-  constructor() {
+  constructor(
+    readonly vehicleMeterId: string | null = null,
+    readonly code: Exclude<MeterReadingRefusal, 'not_on_job'> = 'invalid_number'
+  ) {
     super('That is not a reading')
     this.name = 'InvalidMeterReadingError'
+  }
+}
+
+/** A meter that is not the job's to read. Its message is the one the actions always gave. */
+export class MeterNotOnJobError extends Error {
+  readonly code = 'not_on_job' as const
+  constructor(readonly vehicleMeterId: string) {
+    super('Meter not found')
+    this.name = 'MeterNotOnJobError'
   }
 }
 
@@ -65,7 +86,8 @@ export async function writeJobMeterReadings(input: {
   })
   if (!job || !job.vehicleId) throw new Error('Work order not found')
   const ids = input.readings.map((r) => r.vehicleMeterId)
-  if (new Set(ids).size !== ids.length) throw new InvalidMeterReadingError()
+  const twice = ids.find((id, i) => ids.indexOf(id) !== i)
+  if (twice !== undefined) throw new InvalidMeterReadingError(twice, 'duplicate')
 
   const [types, itemIds] = await Promise.all([
     activeMeterTypes(organizationId),
@@ -104,12 +126,12 @@ export async function writeJobMeterReadings(input: {
   const readAt = jobReadingDate(job)
   const plan = input.readings.map((reading) => {
     const meter = meters.find((m) => m.id === reading.vehicleMeterId)
-    if (!meter) throw new Error('Meter not found')
+    if (!meter) throw new MeterNotOnJobError(reading.vehicleMeterId)
     const typed = typeof reading.value === 'string' ? reading.value.trim() : reading.value
     let value: number | null = null
     if (typed !== null && typed !== '') {
       const parsed = parseMeterValue(typed)
-      if (parsed === null) throw new InvalidMeterReadingError()
+      if (parsed === null) throw new InvalidMeterReadingError(reading.vehicleMeterId)
       value = roundMeterValue(parsed)
     }
     const others = meter.readings

@@ -411,6 +411,47 @@ describe('a reading on a job', () => {
     )
   })
 
+  it('names the reading it refuses and why, and writes none of them', async () => {
+    const many = (readings: { vehicleMeterId: string; value: string | number }[]) =>
+      writeJobMeterReadings({
+        organizationId: 'org-1',
+        userId: 'user-1',
+        jobId: 'job-1',
+        source: 'tech',
+        readings,
+      })
+    await expect(
+      many([
+        { vehicleMeterId: 'vm-1', value: 4300 },
+        { vehicleMeterId: 'vm-2', value: '4.256.7' },
+      ])
+    ).rejects.toMatchObject({
+      name: 'InvalidMeterReadingError',
+      vehicleMeterId: 'vm-2',
+      code: 'invalid_number',
+    })
+    await expect(
+      many([
+        { vehicleMeterId: 'vm-1', value: 1 },
+        { vehicleMeterId: 'vm-2', value: 2 },
+        { vehicleMeterId: 'vm-1', value: 3 },
+      ])
+    ).rejects.toMatchObject({ vehicleMeterId: 'vm-1', code: 'duplicate' })
+    await expect(
+      many([
+        { vehicleMeterId: 'vm-1', value: 1 },
+        { vehicleMeterId: 'vm-theirs', value: 2 },
+      ])
+    ).rejects.toMatchObject({
+      name: 'MeterNotOnJobError',
+      // The message the web's actions always showed.
+      message: 'Meter not found',
+      vehicleMeterId: 'vm-theirs',
+      code: 'not_on_job',
+    })
+    expect(db.meterReading.upsert).not.toHaveBeenCalled()
+  })
+
   it('judges against a reading dated by its job as the job is now, not when it was typed', async () => {
     db.vehicleMeter.findMany.mockResolvedValue([
       fitted('vm-1', [

@@ -55,6 +55,8 @@ describe('a handler that hits a locked document', () => {
     expect(body.error.code).toBe('document_locked')
     expect(body.error.message).toMatch(/locked/i)
     expect(body.error.message).toMatch(/paid/i)
+    // And the reason as a word the app can switch on.
+    expect(body.error.details).toEqual({ reason: 'paid' })
   })
 
   it('leaves ordinary handlers untouched', async () => {
