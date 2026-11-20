@@ -2215,3 +2215,104 @@ export async function setKeyboardShortcuts(
     )
   })
 }
+
+export interface SharedDocumentFiles {
+  quotePhoto: string
+  quoteDocument: string
+  inspectionPhoto: string
+  inspectionOverview: string
+  /** On the inspection, kept off the report. */
+  inspectionHidden: string
+  statusVideo: string
+}
+
+export interface PlantedSharedDocuments {
+  vehicleId: string
+  quoteToken: string
+  inspectionToken: string
+  reportToken: string
+}
+
+/**
+ * A quote, an inspection and a status report, each shared with a link and
+ * carrying the files its page shows, on a vehicle of their own. For the
+ * spec that checks a share link opens its own document's files and no other.
+ */
+export async function plantSharedDocuments(
+  organizationId: string,
+  userId: string,
+  files: SharedDocumentFiles,
+  label: string
+): Promise<PlantedSharedDocuments> {
+  return withDb(async (db) => {
+    const id = () => randomBytes(12).toString('hex')
+    const vehicleId = id()
+    const quoteId = id()
+    const inspectionId = id()
+    const quoteToken = id()
+    const inspectionToken = id()
+    const reportToken = id()
+    await db.query(
+      `insert into vehicles (id, make, model, year, "userId", "organizationId", "updatedAt")
+       values ($1, 'E2E', $2, 2020, $3, $4, now())`,
+      [vehicleId, label, userId, organizationId]
+    )
+    await db.query(
+      `insert into quotes (id, title, "userId", "organizationId", "vehicleId", "publicToken", "sharedAt", "updatedAt")
+       values ($1, $2, $3, $4, $5, $6, now(), now())`,
+      [quoteId, `${label} quote`, userId, organizationId, vehicleId, quoteToken]
+    )
+    for (const [fileUrl, fileName, fileType, category] of [
+      [files.quotePhoto, 'damage.png', 'image/png', 'image'],
+      [files.quoteDocument, 'estimate.pdf', 'application/pdf', 'document'],
+    ]) {
+      await db.query(
+        `insert into quote_attachments (id, "quoteId", "fileName", "fileUrl", "fileType", "fileSize", category)
+         values ($1, $2, $3, $4, $5, 10, $6)`,
+        [id(), quoteId, fileName, fileUrl, fileType, category]
+      )
+    }
+
+    const template = await db.query<{ id: string }>(
+      `select id from inspection_templates where "organizationId" = $1 limit 1`,
+      [organizationId]
+    )
+    if (!template.rows[0]) throw new Error('The seeded workshop has no inspection template')
+    await db.query(
+      `insert into inspections (id, "vehicleId", "organizationId", "templateId", status, "publicToken", "sharedAt", "updatedAt")
+       values ($1, $2, $3, $4, 'completed', $5, now(), now())`,
+      [inspectionId, vehicleId, organizationId, template.rows[0].id, inspectionToken]
+    )
+    await db.query(
+      `insert into inspection_items (id, "inspectionId", name, section, condition, "imageUrls")
+       values ($1, $2, 'Brakes', 'Checks', 'fail', $3)`,
+      [id(), inspectionId, [files.inspectionPhoto]]
+    )
+    for (const [fileUrl, fileName, fileType, category, shown] of [
+      [files.inspectionOverview, 'overview.png', 'image/png', 'image', true],
+      [files.inspectionHidden, 'paperwork.pdf', 'application/pdf', 'document', false],
+    ]) {
+      await db.query(
+        `insert into inspection_attachments (id, "inspectionId", "fileName", "fileUrl", "fileType", "fileSize", category, "includeInReport")
+         values ($1, $2, $3, $4, $5, 10, $6, $7)`,
+        [id(), inspectionId, fileName, fileUrl, fileType, category, shown]
+      )
+    }
+
+    await db.query(
+      `insert into status_reports (id, "publicToken", "organizationId", "inspectionId", "videoUrl", "videoFileName", status, "updatedAt")
+       values ($1, $2, $3, $4, $5, 'walkaround.mp4', 'sent', now())`,
+      [id(), reportToken, organizationId, inspectionId, files.statusVideo]
+    )
+    return { vehicleId, quoteToken, inspectionToken, reportToken }
+  })
+}
+
+/** Removes what `plantSharedDocuments` made. */
+export async function removeSharedDocuments(planted: PlantedSharedDocuments): Promise<void> {
+  await withDb(async (db) => {
+    await db.query('delete from quotes where "vehicleId" = $1', [planted.vehicleId])
+    await db.query('delete from inspections where "vehicleId" = $1', [planted.vehicleId])
+    await db.query('delete from vehicles where id = $1', [planted.vehicleId])
+  })
+}

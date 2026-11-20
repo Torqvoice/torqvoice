@@ -1,7 +1,7 @@
 import 'server-only'
 import { NextResponse } from 'next/server'
 import type { ShareKind } from '@/lib/share-expiry'
-import { findSharedDocument, findSharedDocumentOfAnyKind } from '@/lib/share-link.server'
+import { findSharedDocument } from '@/lib/share-link.server'
 
 const NOT_FOUND = { error: 'Not found' }
 const EXPIRED = { error: 'This link has expired', expired: true }
@@ -22,9 +22,7 @@ export async function refuseClosedShareLink(
   return null
 }
 
-/** The same for a route that only has the token, whichever document it names. */
-export async function refuseExpiredShareToken(token: string): Promise<NextResponse | null> {
-  const shared = await findSharedDocumentOfAnyKind(token)
-  if (shared && !shared.open) return NextResponse.json(EXPIRED, { status: 410 })
-  return null
+/** The answer a route behind a share link gives once the link has expired. */
+export function shareLinkExpiredResponse(): NextResponse {
+  return NextResponse.json(EXPIRED, { status: 410 })
 }
