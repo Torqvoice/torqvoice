@@ -66,6 +66,8 @@ vi.mock('@/lib/db', () => ({
       delete: vi.fn(),
     },
     servicePart: { findMany: vi.fn() },
+    // A deleted job's meter readings stay in the history; none here.
+    meterReading: { findMany: vi.fn(async () => []), updateMany: vi.fn() },
     // A deleted work order or quote takes its custom field values with it.
     customFieldValue: { deleteMany: vi.fn() },
     inventoryPart: { updateMany: vi.fn() },

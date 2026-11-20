@@ -37,6 +37,20 @@ export function gateFleetNumber<T extends { fleetNumber?: string | null }>(
 }
 
 /**
+ * The vehicle as the technician API sends it: with no `fleetNumber` key at all
+ * while the field is off, so a workshop that never turned it on gets the
+ * payload it always had.
+ */
+export function apiFleetNumber<T extends { fleetNumber?: string | null }>(
+  vehicle: T,
+  enabled: boolean
+): T | Omit<T, 'fleetNumber'> {
+  if (enabled) return vehicle
+  const { fleetNumber: _hidden, ...rest } = vehicle
+  return rest
+}
+
+/**
  * The vehicle condition a search term adds as a fleet number, for a workshop
  * that records one; nothing otherwise, so the query is what it always was.
  */

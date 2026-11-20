@@ -241,6 +241,72 @@ describe('paging', () => {
     expect(json.data.notifications).toHaveLength(501)
     expect(result.rows).toBe(501)
   })
+
+  it('reads a meter type’s meters in pages of their own and writes them inside the type', async () => {
+    const meter = (i: number, typeId: string) => ({
+      id: `m${String(i).padStart(4, '0')}`,
+      meterTypeId: typeId,
+      organizationId: 'org-1',
+      readings: [{ id: `r${i}`, value: '12.5', vehicleMeterId: `m${i}` }],
+    })
+    const engine = { id: 't1', name: 'Engine hours', unit: 'hrs', organizationId: 'org-1' }
+    const pto = { id: 't2', name: 'PTO hours', unit: 'hrs', organizationId: 'org-1' }
+    const firstPage = Array.from({ length: 100 }, (_, i) => meter(i, 't1'))
+    state.pages.meterType = [[engine, pto]]
+    state.pages.vehicleMeter = [firstPage, [meter(100, 't1')], [meter(200, 't2')]]
+
+    const { json, raw, result } = await run({ ...NONE, vehicles: true })
+
+    const calls = state.calls.filter((c) => c.model === 'vehicleMeter')
+    expect(calls.map((c) => c.args.where)).toEqual([
+      { organizationId: 'org-1', meterTypeId: 't1' },
+      { organizationId: 'org-1', meterTypeId: 't1' },
+      { organizationId: 'org-1', meterTypeId: 't2' },
+    ])
+    expect(calls[0].args).toMatchObject({ take: 100, orderBy: { id: 'asc' } })
+    expect(calls[1].args).toMatchObject({ cursor: { id: 'm0099' }, skip: 1 })
+    expect(calls[0].args.include).toEqual({ readings: true })
+    // The type itself no longer loads its meters.
+    expect(state.calls.find((c) => c.model === 'meterType')?.args.include).toBeUndefined()
+    // The very bytes an include would have written, so the import reads it as before.
+    const nested = [
+      { ...engine, vehicleMeters: [...firstPage, meter(100, 't1')] },
+      { ...pto, vehicleMeters: [meter(200, 't2')] },
+    ]
+    expect(raw).toContain(`"meterTypes":${JSON.stringify(nested)}`)
+    expect(json.data.meterTypes).toEqual(nested)
+    expect(result.rows).toBe(2)
+  })
+
+  it('writes an equipment type with no items as an empty list, and its items under it', async () => {
+    const crane = { id: 'e1', name: 'Crane', organizationId: 'org-1' }
+    const tail = { id: 'e2', name: 'Tail lift', organizationId: 'org-1' }
+    const item = {
+      id: 'i1',
+      typeId: 'e2',
+      organizationId: 'org-1',
+      fittings: [{ id: 'f1' }],
+      jobs: [],
+      quotes: [],
+    }
+    state.pages.equipmentType = [[crane, tail]]
+    state.pages.equipmentItem = [[], [item]]
+
+    const { raw } = await run({ ...NONE, vehicles: true })
+
+    const calls = state.calls.filter((c) => c.model === 'equipmentItem')
+    expect(calls.map((c) => c.args.where)).toEqual([
+      { organizationId: 'org-1', typeId: 'e1' },
+      { organizationId: 'org-1', typeId: 'e2' },
+    ])
+    expect(calls[0].args.include).toEqual({ fittings: true, jobs: true, quotes: true })
+    expect(raw).toContain(
+      `"equipmentTypes":${JSON.stringify([
+        { ...crane, items: [] },
+        { ...tail, items: [item] },
+      ])}`
+    )
+  })
 })
 
 describe('secrets', () => {

@@ -1,6 +1,9 @@
 'use server'
 
-import { unlinkJobMeterReadingsFromOtherVehicles } from '@/features/meters/Lib/jobMeterReading.server'
+import {
+  unlinkJobMeterReadingsFromOtherVehicles,
+  unlinkMeterReadingsOfDeletedJobs,
+} from '@/features/meters/Lib/jobMeterReading.server'
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
 import {
@@ -1492,6 +1495,8 @@ export async function deleteServiceRecord(recordId: string) {
           // preserves "this stock came back from job X".
           serviceRecordLabel: record.invoiceNumber || record.title,
         })
+        // Its meter readings stay in the history, at the date they count at now.
+        await unlinkMeterReadingsOfDeletedJobs(tx, { organizationId, jobIds: [recordId] })
         await tx.serviceRecord.delete({ where: { id: recordId } })
         // Its custom field values hang on its id alone, so nothing cascades.
         await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', [recordId])

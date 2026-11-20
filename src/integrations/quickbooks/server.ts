@@ -48,6 +48,9 @@ import {
   apiHost,
   buildCustomer,
   buildInvoice,
+  clearWrittenText,
+  writtenText,
+  writtenTextOf,
   buildPayment,
   checksumOf,
   customerDisplayName,
@@ -636,6 +639,9 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
         const res = await api<{ Invoice: QboInvoice }>(ctx, 'invoice', {
           body: {
             ...body,
+            // A reference taken off the job is taken off the invoice too,
+            // where it is still as this connector wrote it.
+            ...clearWrittenText(body, current.Invoice, writtenTextOf(link.metadata)),
             Id: current.Invoice.Id,
             SyncToken: current.Invoice.SyncToken,
             sparse: true,
@@ -656,7 +662,12 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
       remoteId: saved.Id,
       remoteUrl: invoiceUrl(state.environment, saved.Id),
       checksum,
-      metadata: { docNumber: saved.DocNumber ?? null, customerId: customer.id },
+      metadata: {
+        docNumber: saved.DocNumber ?? null,
+        customerId: customer.id,
+        // What it wrote in the message and the custom field, to take back later.
+        written: writtenText(body),
+      },
     })
     const theirs = saved.TotalAmt ?? 0
     if (Math.abs(theirs - inv.totalAmount) > TOTAL_TOLERANCE) {

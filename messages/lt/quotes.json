@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "Darbo užsakymas išlaikė savo nuorodą / užsakymo nr., {job}. Pasiūlymo nuoroda, {quote}, nebuvo nukopijuota.",
     "convert": "Konvertuoti",
     "convertToWorkOrder": "Konvertuoti į darbo užsakymą",
     "cancel": "Atšaukti",

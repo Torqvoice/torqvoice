@@ -1,8 +1,8 @@
-import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { apiFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { appJobMeters } from '@/features/meters/Lib/appJobMeters.server'
 import { appJobEquipment } from '@/features/equipment/Lib/jobWorkOn.server'
 import {
-  gateCustomerReference,
+  apiCustomerReference,
   isCustomerReferenceEnabled,
 } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
@@ -156,8 +156,10 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       const lock = await getInvoiceLockState(job.id, ctx.organizationId)
 
       return apiOk({
-        ...gateCustomerReference(shown, referenceOn),
-        vehicle: job.vehicle && gateFleetNumber(gateTypeKey(job.vehicle, typeKeyOn), fleetNumberOn),
+        // A field the workshop does not use is left out, key and all: the
+        // payload is the one it had before the field existed.
+        ...apiCustomerReference(shown, referenceOn),
+        vehicle: job.vehicle && apiFleetNumber(gateTypeKey(job.vehicle, typeKeyOn), fleetNumberOn),
         customer: job.customer ?? job.vehicle?.customer ?? null,
         isRunning: openEntry?.serviceRecordId === job.id,
         runningSince: openEntry?.serviceRecordId === job.id ? openEntry.startedAt : null,
