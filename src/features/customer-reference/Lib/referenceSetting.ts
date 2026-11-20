@@ -38,6 +38,20 @@ export function gateCustomerReference<T extends { customerReference?: string | n
   return enabled ? record : { ...record, customerReference: null }
 }
 
+/**
+ * The job as the technician API sends it: with no `customerReference` key at
+ * all while the field is off, so a workshop that never turned it on gets the
+ * payload it always had.
+ */
+export function apiCustomerReference<T extends { customerReference?: string | null }>(
+  record: T,
+  enabled: boolean
+): T | Omit<T, 'customerReference'> {
+  if (enabled) return record
+  const { customerReference: _hidden, ...rest } = record
+  return rest
+}
+
 /** The customer as a page may show it: never "PO required" while the field is off. */
 export function gatePoRequired<T extends { poRequired?: boolean | null }>(
   customer: T,
