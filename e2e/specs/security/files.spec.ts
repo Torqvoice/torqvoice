@@ -242,17 +242,19 @@ test.describe('an SVG', () => {
       '<svg xmlns="http://www.w3.org/2000/svg"><script>document.title="owned"</script></svg>'
     )
     try {
-      for (const url of [
-        `/api/protected/files/${organizationId}/logos/${name}`,
-        `/api/public/files/${shareToken}/logos/${name}`,
-      ]) {
-        const response = await page.request.get(url)
-        expect(response.status(), `${url} is served`).toBe(200)
-        const headers = response.headers()
-        expect(headers['content-disposition'], `${url} is a download`).toBe('attachment')
-        expect(headers['content-security-policy'], `${url} is sandboxed`).toContain('sandbox')
-        expect(headers['x-content-type-options']).toBe('nosniff')
-      }
+      const url = `/api/protected/files/${organizationId}/logos/${name}`
+      const response = await page.request.get(url)
+      expect(response.status(), `${url} is served`).toBe(200)
+      const headers = response.headers()
+      expect(headers['content-disposition'], `${url} is a download`).toBe('attachment')
+      expect(headers['content-security-policy'], `${url} is sandboxed`).toContain('sandbox')
+      expect(headers['x-content-type-options']).toBe('nosniff')
+
+      // A share link opens only what its document shows, and this file is
+      // no logo the workshop uses. The public route's own SVG headers are
+      // unit-tested in src/__tests__/lib/shared-files.test.ts.
+      const shared = await page.request.get(`/api/public/files/${shareToken}/logos/${name}`)
+      expect(shared.status(), 'a file the shared document does not show').toBe(404)
     } finally {
       await unlink(uploadDir('logos', name))
     }

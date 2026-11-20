@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { refuseExpiredShareToken } from '@/lib/share-link-route'
+import { shareLinkExpiredResponse } from '@/lib/share-link-route'
 import { svgDownloadHeaders } from '@/lib/upload-url'
-import { db } from '@/lib/db'
+import { isSharedFile, resolveSharedFileToken } from '@/lib/shared-files.server'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
 import { uploadsRoot } from '@/lib/upload-root'
@@ -55,51 +55,16 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid filename' }, { status: 400 })
   }
 
-  // A document's pictures close with its link.
-  const closed = await refuseExpiredShareToken(token)
-  if (closed) return closed
-
-  // Validate token and get org (check both invoice and quote tokens)
-  let orgId: string | undefined
-
-  const serviceRecord = await db.serviceRecord.findUnique({
-    where: { publicToken: token },
-    select: { organizationId: true },
-  })
-
-  if (serviceRecord?.organizationId) {
-    orgId = serviceRecord.organizationId
-  } else {
-    const quote = await db.quote.findFirst({
-      where: { publicToken: token },
-      select: { organizationId: true },
-    })
-    if (quote?.organizationId) {
-      orgId = quote.organizationId
-    } else {
-      const inspection = await db.inspection.findFirst({
-        where: { publicToken: token },
-        select: { organizationId: true },
-      })
-      if (inspection?.organizationId) {
-        orgId = inspection.organizationId
-      }
-    }
-  }
-
-  if (!orgId) {
-    const statusReport = await db.statusReport.findFirst({
-      where: { publicToken: token },
-      select: { organizationId: true },
-    })
-    if (statusReport?.organizationId) {
-      orgId = statusReport.organizationId
-    }
-  }
-
-  if (!orgId) {
+  // One lookup of the token answers both whether its link is still open and
+  // which document's files it opens. A document's pictures close with its
+  // link. A file the document does not show answers exactly as a missing one
+  // does, so the route never says whether a name exists.
+  const shared = await resolveSharedFileToken(token)
+  if (shared.status === 'expired') return shareLinkExpiredResponse()
+  if (shared.status !== 'open' || !(await isSharedFile(shared.document, category, filename))) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
+  const orgId = shared.document.organizationId
   const filePath = path.join(uploadsRoot(), orgId, category, filename)
 
   try {
