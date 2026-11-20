@@ -174,19 +174,17 @@ export default async function PublicInspectionPage({
   // browser gets is named field by field, never the row: a prop of a client
   // component is readable by anyone holding the link, drawn or not.
   //
-  // The fleet number is printed by the built-in report beside the plate, for
-  // a workshop that has the field on; a designed certificate does not print
-  // it, so neither the certificate nor the page carries it then.
-  const typeKeyGated = gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap))
-  const gatedVehicle = apiFleetNumber(typeKeyGated, false)
+  // The fleet number likewise, for a workshop that has the field on. Then
+  // whatever prints it carries it: the built-in report draws it from the
+  // page's data, a designed certificate only where its design switches the
+  // field on, so with a design the page's own data never has the key.
+  const gatedVehicle = gateFleetNumber(
+    gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+    fleetNumberEnabledIn(settingsMap, features)
+  )
   const source = await certificateDesignSource(orgId, inspection, settingsMap)
   const publicView = publicInspection(
-    {
-      ...inspection,
-      vehicle: source
-        ? gatedVehicle
-        : gateFleetNumber(typeKeyGated, fleetNumberEnabledIn(settingsMap, features)),
-    },
+    { ...inspection, vehicle: source ? apiFleetNumber(gatedVehicle, false) : gatedVehicle },
     toPublic
   )
 

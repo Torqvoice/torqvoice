@@ -35,6 +35,7 @@ import {
 } from '../Lib/conditions'
 import { defectsWorstFirst } from '../Lib/conversion'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import { vehicleName } from '@/lib/vehicle-name'
 
 /**
@@ -83,6 +84,8 @@ export interface CertificatePrintData {
     licensePlate: string | null
     hsn?: string | null
     tsn?: string | null
+    /** Null unless the workshop records a fleet / unit number (the caller gates it). */
+    fleetNumber?: string | null
     mileage: number | null
     customer: {
       name: string
@@ -328,6 +331,8 @@ export function buildCertificatePrintSpec(input: CertificatePrintInput): Documen
     vehicle_name: `${vehicleName(data.vehicle)}`,
     vin: data.vehicle.vin ? fillTemplate(L('vin', 'VIN: {vin}'), { vin: data.vehicle.vin }) : '',
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
+    // Printed only where a design switches the field on (an opt-in field).
+    fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
     license_plate: data.vehicle.licensePlate
       ? fillTemplate(L('plate', 'Plate: {plate}'), { plate: data.vehicle.licensePlate })
       : '',

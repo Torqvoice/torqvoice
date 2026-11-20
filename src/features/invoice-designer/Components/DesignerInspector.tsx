@@ -544,7 +544,9 @@ export function DesignerInspector({
     // the documents that have a job or a quote to take it from.
     const referenceOffered =
       customerReferenceEnabled && layoutDocumentType(layout) !== 'certificate'
-    const fleetNumberOffered = fleetNumberEnabled && layoutDocumentType(layout) !== 'certificate'
+    // The fleet number on every document, the certificate included, for a
+    // workshop that records one.
+    const fleetNumberOffered = fleetNumberEnabled
     // Meter readings, for a workshop that has defined a meter.
     const metersOffered = metersDefined && layoutDocumentType(layout) !== 'certificate'
     // The vehicle's photo, on the invoice, the quote and the work order.
