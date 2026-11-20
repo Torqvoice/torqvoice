@@ -27,7 +27,7 @@ describe('a box with a background colour', () => {
   })
 
   it('gains and loses its picture without a style warning', () => {
-    const error = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
     const { rerender, getByTestId } = render(<Box image="data:image/png;base64,AA==" />)
     rerender(<Box />)
     rerender(<Box image="data:image/png;base64,AA==" />)

@@ -39,9 +39,9 @@ vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
 import { MoveEquipmentDialog } from '@/features/equipment/Components/MoveEquipmentDialog'
 
 class StubObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe = vi.fn()
+  unobserve = vi.fn()
+  disconnect = vi.fn()
 }
 
 beforeEach(() => {

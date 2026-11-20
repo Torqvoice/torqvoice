@@ -135,8 +135,8 @@ describe('the question on the vehicle page’s own reading dialog', () => {
         last={4256.7}
         meterUnit="hrs"
         onWorkOrder={false}
-        onConfirm={() => {}}
-        onChange={() => {}}
+        onConfirm={vi.fn()}
+        onChange={vi.fn()}
       />
     )
     expect(screen.getByText(/much higher than the last reading/)).toBeInTheDocument()
@@ -148,8 +148,8 @@ describe('the question on the vehicle page’s own reading dialog', () => {
         entered={42567}
         last={4256.7}
         meterUnit="hrs"
-        onConfirm={() => {}}
-        onChange={() => {}}
+        onConfirm={vi.fn()}
+        onChange={vi.fn()}
       />
     )
     expect(screen.getByText(/The rest of the work order saves as usual/)).toBeInTheDocument()
