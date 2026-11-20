@@ -1,5 +1,6 @@
 'use client'
 
+import { JobMeters } from '@/features/meters/Components/JobMeters'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -390,6 +391,16 @@ export function JobFactsCard({
                     entered={readingTyped ?? ''}
                     last={initialData.lastReading}
                     unit={distanceUnit}
+                  />
+                )}
+                {/* The vehicle's other meters, read on this job. Only on the
+                    vehicle they were loaded for. */}
+                {!vehicleChanged && (
+                  <JobMeters
+                    jobId={initialData.id}
+                    meters={initialData.meters ?? []}
+                    locked={locked}
+                    labelClassName={factLabel}
                   />
                 )}
               </div>

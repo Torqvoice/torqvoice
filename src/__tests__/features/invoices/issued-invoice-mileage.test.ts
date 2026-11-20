@@ -17,6 +17,11 @@ const db = {
   vehicleFinding: { findMany: vi.fn() },
   documentDesign: { findFirst: vi.fn() },
 }
+// No meters in this workshop.
+vi.mock('@/features/meters/Lib/meters.server', () => ({
+  printableMeterReadings: async () => [],
+  activeMeterTypes: async () => [],
+}))
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
   getCustomFieldsForPrint: async () => [],

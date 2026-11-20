@@ -212,7 +212,14 @@
     "integration_backup_run": "Yedekleme başlatıldı",
     "integration_backup_restore": "Yedek geri yüklendi",
     "shareLink_expiry": "Paylaşım bağlantısı süresi değiştirildi",
-    "shareLink_revoke": "Paylaşım bağlantıları kaldırıldı"
+    "shareLink_revoke": "Paylaşım bağlantıları kaldırıldı",
+    "meterType_create": "Sayaç oluşturuldu",
+    "meterType_update": "Sayaç güncellendi",
+    "meterType_delete": "Sayaç silindi",
+    "vehicleMeter_remove": "Araç sayacı kaldırıldı",
+    "vehicleMeter_replace": "Araç sayacı değiştirildi",
+    "meterReading_markWrong": "Sayaç okuması hatalı olarak işaretlendi",
+    "meterReading_restore": "Sayaç okuması yeniden sayıldı"
   },
   "summary": {
     "auth_twoFactorEnabled": "İki adımlı giriş açıldı",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Paylaşım bağlantısı atölye ayarını izleyecek şekilde ayarlandı",
     "share_link_expiry_never": "Paylaşım bağlantısı süresi dolmayacak şekilde ayarlandı",
     "share_link_expiry_date": "Paylaşım bağlantısının süresi {date} olarak ayarlandı",
-    "share_link_revoke_bulk": "{count, plural, one {# paylaşım bağlantısı kaldırıldı} other {# paylaşım bağlantısı kaldırıldı}}"
+    "share_link_revoke_bulk": "{count, plural, one {# paylaşım bağlantısı kaldırıldı} other {# paylaşım bağlantısı kaldırıldı}}",
+    "meterType_create": "\"{name}\" sayacı oluşturuldu",
+    "meterType_update": "\"{name}\" sayacı güncellendi",
+    "meterType_delete": "\"{name}\" sayacı silindi",
+    "vehicleMeter_remove": "\"{name}\" sayacı bir araçtan kaldırıldı",
+    "vehicleMeter_replace": "\"{name}\" sayacı değiştirildi: eskisi {oldEnd} değerinde bitti, yenisi {newStart} değerinde başladı",
+    "meterReading_markWrong": "{name} okuması {value} hatalı olarak işaretlendi",
+    "meterReading_restore": "{name} okuması {value} yeniden sayıldı"
   }
 }

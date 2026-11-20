@@ -212,7 +212,14 @@
     "integration_backup_run": "Pradėtas atsarginės kopijos kūrimas",
     "integration_backup_restore": "Atkurta atsarginė kopija",
     "shareLink_expiry": "Pakeistas bendrinimo nuorodos galiojimas",
-    "shareLink_revoke": "Pašalintos bendrinimo nuorodos"
+    "shareLink_revoke": "Pašalintos bendrinimo nuorodos",
+    "meterType_create": "Sukurtas skaitiklis",
+    "meterType_update": "Atnaujintas skaitiklis",
+    "meterType_delete": "Ištrintas skaitiklis",
+    "vehicleMeter_remove": "Pašalintas transporto priemonės skaitiklis",
+    "vehicleMeter_replace": "Pakeistas transporto priemonės skaitiklis",
+    "meterReading_markWrong": "Skaitiklio rodmuo pažymėtas kaip klaidingas",
+    "meterReading_restore": "Skaitiklio rodmuo vėl skaičiuojamas"
   },
   "summary": {
     "auth_twoFactorEnabled": "Įjungtas dviejų veiksnių prisijungimas",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Bendrinimo nuorodai nustatytas dirbtuvių nustatymas",
     "share_link_expiry_never": "Bendrinimo nuoroda nustatyta galioti neribotai",
     "share_link_expiry_date": "Bendrinimo nuoroda nustatyta galioti iki {date}",
-    "share_link_revoke_bulk": "{count, plural, one {Pašalinta # bendrinimo nuoroda} few {Pašalintos # bendrinimo nuorodos} many {Pašalinta # bendrinimo nuorodos} other {Pašalinta # bendrinimo nuorodų}}"
+    "share_link_revoke_bulk": "{count, plural, one {Pašalinta # bendrinimo nuoroda} few {Pašalintos # bendrinimo nuorodos} many {Pašalinta # bendrinimo nuorodos} other {Pašalinta # bendrinimo nuorodų}}",
+    "meterType_create": "Sukurtas skaitiklis \"{name}\"",
+    "meterType_update": "Atnaujintas skaitiklis \"{name}\"",
+    "meterType_delete": "Ištrintas skaitiklis \"{name}\"",
+    "vehicleMeter_remove": "Skaitiklis \"{name}\" pašalintas iš transporto priemonės",
+    "vehicleMeter_replace": "Pakeistas skaitiklis \"{name}\": senasis baigėsi ties {oldEnd}, naujasis prasidėjo nuo {newStart}",
+    "meterReading_markWrong": "{name} rodmuo {value} pažymėtas kaip klaidingas",
+    "meterReading_restore": "{name} rodmuo {value} vėl skaičiuojamas"
   }
 }

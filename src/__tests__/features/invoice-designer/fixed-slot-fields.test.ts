@@ -48,6 +48,8 @@ const sample = () =>
       customerReferenceEnabled: true,
       // And the vehicle's fleet number.
       fleetNumberEnabled: true,
+      // And one meter, so its reading has something to print.
+      meterTypes: [{ name: 'Engine hours', unit: 'hrs' }],
       logoUrl: '/logo.png',
     } as any,
     [],

@@ -819,7 +819,8 @@
       "customer_line": "Ligne de signature du client",
       "legend": "Légende",
       "previous_marks": "Marques antérieures",
-      "blank_sheet": "Feuille vierge à remplir à la main"
+      "blank_sheet": "Feuille vierge à remplir à la main",
+      "meter_readings": "Relevés de compteurs"
     },
     "presetsTitle": "Partir d’une disposition",
     "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",
@@ -3243,5 +3244,38 @@
       "bulkRevoked": "{count, plural, one {# lien supprimé} other {# liens supprimés}}",
       "bulkRevokeFailed": "Impossible de supprimer les liens. Réessayez."
     }
+  },
+  "meters": {
+    "title": "Compteurs",
+    "description": "Compteurs relevés sur les véhicules en plus du compteur kilométrique, comme les heures moteur ou les heures de prise de force. Choisissez sur chaque véhicule ceux qu'il possède ; les relevés se font sur le véhicule et sur les ordres de travail, et peuvent être imprimés sur les factures, devis et ordres de travail depuis le concepteur de documents.",
+    "descriptionMarine": "Compteurs relevés sur les bateaux en plus des heures moteur, comme les heures de prise de force ou les heures du groupe électrogène. Choisissez sur chaque bateau ceux qu'il possède ; les relevés se font sur le bateau et sur les ordres de travail, et peuvent être imprimés sur les factures, devis et ordres de travail depuis le concepteur de documents.",
+    "name": "Nom",
+    "namePlaceholder": "ex. Heures moteur",
+    "unit": "Unité",
+    "unitPlaceholder": "ex. h",
+    "add": "Ajouter un compteur",
+    "suggestions": "Suggestions :",
+    "suggestEngineHours": "Heures moteur",
+    "suggestPtoHours": "Heures de prise de force",
+    "hoursUnit": "h",
+    "hidden": "Masqué",
+    "inUse": "Utiliser {name}",
+    "inUseShort": "Utilisé",
+    "onVehicles": "{count, plural, =0 {Sur aucun véhicule pour l'instant} one {Sur # véhicule} other {Sur # véhicules}}",
+    "onVehiclesMarine": "{count, plural, =0 {Sur aucun bateau pour l'instant} one {Sur # bateau} other {Sur # bateaux}}",
+    "edit": "Modifier {name}",
+    "editTitle": "Modifier le compteur",
+    "editHint": "Un nouveau nom ou une nouvelle unité s'affiche partout où le compteur apparaît, y compris sur les documents imprimés à partir de maintenant. Les factures déjà émises conservent ce qu'elles ont imprimé.",
+    "delete": "Supprimer le compteur",
+    "deleteNamed": "Supprimer {name}",
+    "deleteTitle": "Supprimer {name} ?",
+    "deleteHint": "{count, plural, =0 {Il n'est encore sur aucun véhicule.} one {Il est sur # véhicule, et ses relevés y sont supprimés avec lui.} other {Il est sur # véhicules, et leurs relevés sont supprimés avec lui.}} Pour conserver les relevés, mettez-le plutôt hors service.",
+    "deleteHintMarine": "{count, plural, =0 {Il n'est encore sur aucun bateau.} one {Il est sur # bateau, et ses relevés y sont supprimés avec lui.} other {Il est sur # bateaux, et leurs relevés sont supprimés avec lui.}} Pour conserver les relevés, mettez-le plutôt hors service.",
+    "created": "{name} ajouté",
+    "updated": "{name} enregistré",
+    "deleted": "{name} supprimé",
+    "saveError": "Impossible d'enregistrer le compteur",
+    "duplicateName": "Un compteur porte déjà ce nom.",
+    "odometerName": "\"{name}\" est le compteur kilométrique, que chaque véhicule possède déjà. Donnez un autre nom au compteur."
   }
 }

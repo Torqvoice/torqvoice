@@ -1,0 +1,83 @@
+/// A meter the workshop reads on vehicles besides the odometer: engine
+/// hours, PTO hours. The workshop's own list, named in its own words. The
+/// odometer (`Vehicle.mileage`) is not one of these and is never changed by
+/// them.
+model MeterType {
+  id        String   @id @default(cuid())
+  name      String
+  /// What a reading is counted in, printed after it: "hrs".
+  unit      String
+  sortOrder Int      @default(0)
+  /// Hidden from new vehicles and from every form; readings are kept.
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  vehicleMeters VehicleMeter[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("meter_types")
+}
+
+/// One of the workshop's meters, fitted to one vehicle. Which meters a
+/// vehicle has is chosen per vehicle.
+model VehicleMeter {
+  id        String    @id @default(cuid())
+  createdAt DateTime  @default(now())
+  /// Taken off this vehicle. Its readings stay in the history.
+  removedAt DateTime?
+
+  vehicleId      String
+  vehicle        Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  meterTypeId    String
+  meterType      MeterType    @relation(fields: [meterTypeId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  readings MeterReading[]
+
+  @@unique([vehicleId, meterTypeId])
+  @@index([organizationId])
+  @@map("vehicle_meters")
+}
+
+/// One reading of a vehicle's meter: typed on the vehicle, taken on a job,
+/// sent from the technician app or put back from a backup.
+model MeterReading {
+  id          String   @id @default(cuid())
+  /// What the meter showed, with decimals (4256.7 hours).
+  value       Decimal  @db.Decimal(14, 2)
+  /// When it was read: the job's date for a job's reading.
+  readAt      DateTime
+  /// A reading that starts a new counter after the meter was replaced. Its
+  /// `value` is what the new meter showed; `replacedFrom` what the old one
+  /// had reached when it came off. The running total carries on across it.
+  replacedFrom Decimal? @db.Decimal(14, 2)
+  /// Marked as wrong: still in the history, no longer counted.
+  wrongAt     DateTime?
+  wrongById   String?
+  createdById String?
+  /// Where it came from: web, tech or backup.
+  source      String   @default("web")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  vehicleMeterId  String
+  vehicleMeter    VehicleMeter   @relation(fields: [vehicleMeterId], references: [id], onDelete: Cascade)
+  /// The job it was taken on. A deleted job leaves the reading in the
+  /// vehicle's history, as it leaves the vehicle's mileage.
+  serviceRecordId String?
+  serviceRecord   ServiceRecord? @relation(fields: [serviceRecordId], references: [id], onDelete: SetNull)
+  organizationId  String
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([vehicleMeterId, serviceRecordId])
+  @@index([vehicleMeterId, readAt])
+  @@index([serviceRecordId])
+  @@index([organizationId])
+  @@map("meter_readings")
+}

@@ -819,7 +819,8 @@
       "customer_line": "Unterschriftszeile Kunde",
       "legend": "Legende",
       "previous_marks": "Frühere Markierungen",
-      "blank_sheet": "Leeres Blatt zum Ausfüllen von Hand"
+      "blank_sheet": "Leeres Blatt zum Ausfüllen von Hand",
+      "meter_readings": "Zählerstände"
     },
     "presetsTitle": "Mit einer Anordnung beginnen",
     "presetsHint": "Ersetzt die Anordnung unten. Nichts wird gespeichert, bis Sie speichern.",
@@ -3243,5 +3244,38 @@
       "bulkRevoked": "{count, plural, one {# Link entfernt} other {# Links entfernt}}",
       "bulkRevokeFailed": "Die Links konnten nicht entfernt werden. Versuchen Sie es erneut."
     }
+  },
+  "meters": {
+    "title": "Zähler",
+    "description": "Zähler, die Sie neben dem Kilometerzähler an Fahrzeugen ablesen, etwa Betriebsstunden oder Zapfwellenstunden. Legen Sie bei jedem Fahrzeug fest, welche davon es hat; Stände werden am Fahrzeug und in Arbeitsaufträgen erfasst und lassen sich über den Dokumentdesigner auf Rechnungen, Angeboten und Arbeitsaufträgen drucken.",
+    "descriptionMarine": "Zähler, die Sie neben den Betriebsstunden an Wasserfahrzeugen ablesen, etwa Zapfwellenstunden oder Generatorstunden. Legen Sie bei jedem Wasserfahrzeug fest, welche davon es hat; Stände werden am Wasserfahrzeug und in Arbeitsaufträgen erfasst und lassen sich über den Dokumentdesigner auf Rechnungen, Angeboten und Arbeitsaufträgen drucken.",
+    "name": "Name",
+    "namePlaceholder": "z. B. Betriebsstunden",
+    "unit": "Einheit",
+    "unitPlaceholder": "z. B. Std.",
+    "add": "Zähler hinzufügen",
+    "suggestions": "Vorschläge:",
+    "suggestEngineHours": "Betriebsstunden",
+    "suggestPtoHours": "Zapfwellenstunden",
+    "hoursUnit": "Std.",
+    "hidden": "Ausgeblendet",
+    "inUse": "{name} verwenden",
+    "inUseShort": "In Gebrauch",
+    "onVehicles": "{count, plural, =0 {Noch an keinem Fahrzeug} one {An # Fahrzeug} other {An # Fahrzeugen}}",
+    "onVehiclesMarine": "{count, plural, =0 {Noch an keinem Wasserfahrzeug} one {An # Wasserfahrzeug} other {An # Wasserfahrzeugen}}",
+    "edit": "{name} bearbeiten",
+    "editTitle": "Zähler bearbeiten",
+    "editHint": "Ein neuer Name oder eine neue Einheit erscheint überall, wo der Zähler erscheint, auch auf ab jetzt gedruckten Dokumenten. Bereits ausgestellte Rechnungen behalten, was sie gedruckt haben.",
+    "delete": "Zähler löschen",
+    "deleteNamed": "{name} löschen",
+    "deleteTitle": "{name} löschen?",
+    "deleteHint": "{count, plural, =0 {Er ist noch an keinem Fahrzeug.} one {Er ist an # Fahrzeug, und seine Stände dort werden mit gelöscht.} other {Er ist an # Fahrzeugen, und deren Stände werden mit gelöscht.}} Um die Stände zu behalten, nehmen Sie ihn stattdessen außer Gebrauch.",
+    "deleteHintMarine": "{count, plural, =0 {Er ist noch an keinem Wasserfahrzeug.} one {Er ist an # Wasserfahrzeug, und seine Stände dort werden mit gelöscht.} other {Er ist an # Wasserfahrzeugen, und deren Stände werden mit gelöscht.}} Um die Stände zu behalten, nehmen Sie ihn stattdessen außer Gebrauch.",
+    "created": "{name} hinzugefügt",
+    "updated": "{name} gespeichert",
+    "deleted": "{name} gelöscht",
+    "saveError": "Der Zähler konnte nicht gespeichert werden",
+    "duplicateName": "Es gibt bereits einen Zähler mit diesem Namen.",
+    "odometerName": "\"{name}\" ist der Kilometerzähler, den jedes Fahrzeug bereits hat. Geben Sie dem Zähler einen anderen Namen."
   }
 }

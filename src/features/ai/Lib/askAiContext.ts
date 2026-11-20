@@ -1,4 +1,5 @@
 import 'server-only'
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
 import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { db } from '@/lib/db'
 import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
@@ -369,6 +370,15 @@ async function vehicleContext(
       ['purchased', dayOf(vehicle.purchaseDate, o.timeZone)],
       ['purchase price', o.showMoney ? money(vehicle.purchasePrice, o.currencyCode) : undefined],
       ['archived', vehicle.isArchived ? (vehicle.archiveReason ?? 'yes') : undefined],
+      // The vehicle's other meters as they read now, for a workshop that has
+      // meters; nothing is said about them otherwise.
+      ...(await printableMeterReadings(organizationId, { vehicleId: vehicle.id })).map(
+        (meter) =>
+          [`meter: ${meter.name}`, `${meter.value}${meter.unit ? ` ${meter.unit}` : ''}`] as [
+            string,
+            string,
+          ]
+      ),
     ])
   )
   if (vehicle.customer) {

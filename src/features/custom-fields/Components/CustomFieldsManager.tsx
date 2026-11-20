@@ -263,14 +263,16 @@ export function CustomFieldsManager({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
+      {/* Five kinds of record now: the tabs wrap on a phone and the button
+          stays in view instead of being pushed off the edge. */}
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
           {['all', 'service_record', 'quote', 'vehicle', 'customer'].map((key) => (
             <button
               key={key}
               type="button"
               onClick={() => setFilterEntity(key)}
-              className={`text-sm font-medium transition-colors ${
+              className={`whitespace-nowrap text-sm font-medium transition-colors ${
                 filterEntity === key
                   ? 'text-foreground'
                   : 'text-muted-foreground hover:text-foreground'

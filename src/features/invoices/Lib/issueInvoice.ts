@@ -44,6 +44,13 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
           hsn: a.data.vehicle.hsn ?? null,
           tsn: a.data.vehicle.tsn ?? null,
           fleetNumber: a.data.vehicle.fleetNumber ?? null,
+          // Raw values: they print in the workshop's number format as it is
+          // at print time, like the custom fields frozen beside them.
+          meterReadings: (a.data.vehicle.meterReadings ?? []).map((meter) => ({
+            name: meter.name,
+            unit: meter.unit,
+            value: meter.value,
+          })),
           mileage: a.data.vehicle.mileage,
         }
       : null,

@@ -74,7 +74,7 @@ function readModels(): { fields: Map<string, Field[]>; tables: Map<string, strin
     const list: Field[] = []
     for (const line of block[2].split('\n')) {
       const field =
-        /^\s+(\w+)\s+(String|Int|Float|Boolean|DateTime|Json|Bytes|BigInt)(\?|\[\])?(\s.*)?$/.exec(
+        /^\s+(\w+)\s+(String|Int|Float|Decimal|Boolean|DateTime|Json|Bytes|BigInt)(\?|\[\])?(\s.*)?$/.exec(
           line
         )
       if (!field || line.trim().startsWith('//')) continue
@@ -191,6 +191,9 @@ function generic(field: Field, position: Position, index: number, variant: Varia
       return BigInt(variant === 'zeros' ? 0 : 1000 + index)
     case 'Float':
       return variant === 'zeros' ? 0 : 12.5 + index
+    case 'Decimal':
+      // As text, which is how a decimal goes into Prisma and comes out of JSON.
+      return variant === 'zeros' ? '0' : `${4256 + index}.75`
     case 'Boolean':
       return field.fallback !== 'true'
     case 'DateTime':

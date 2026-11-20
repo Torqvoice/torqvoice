@@ -819,7 +819,8 @@
       "customer_line": "Linia podpisu klienta",
       "legend": "Legenda",
       "previous_marks": "Wcześniejsze oznaczenia",
-      "blank_sheet": "Pusty arkusz do wypełnienia ręcznie"
+      "blank_sheet": "Pusty arkusz do wypełnienia ręcznie",
+      "meter_readings": "Odczyty liczników"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
@@ -3243,5 +3244,38 @@
       "bulkRevoked": "{count, plural, one {Usunięto # link} few {Usunięto # linki} many {Usunięto # linków} other {Usunięto # linku}}",
       "bulkRevokeFailed": "Nie udało się usunąć linków. Spróbuj ponownie."
     }
+  },
+  "meters": {
+    "title": "Liczniki",
+    "description": "Liczniki, które odczytujesz w pojazdach oprócz licznika przebiegu, np. godziny pracy silnika lub godziny pracy WOM. Wybierz w każdym pojeździe, które z nich ma; odczyty wpisuje się w pojeździe i w zleceniach, a w projektancie dokumentów można je drukować na fakturach, wycenach i zleceniach.",
+    "descriptionMarine": "Liczniki, które odczytujesz w jednostkach pływających oprócz godzin pracy silnika, np. godziny pracy WOM lub godziny pracy agregatu. Wybierz w każdej jednostce pływającej, które z nich ma; odczyty wpisuje się w jednostce i w zleceniach, a w projektancie dokumentów można je drukować na fakturach, wycenach i zleceniach.",
+    "name": "Nazwa",
+    "namePlaceholder": "np. Godziny pracy silnika",
+    "unit": "Jednostka",
+    "unitPlaceholder": "np. godz.",
+    "add": "Dodaj licznik",
+    "suggestions": "Sugestie:",
+    "suggestEngineHours": "Godziny pracy silnika",
+    "suggestPtoHours": "Godziny pracy WOM",
+    "hoursUnit": "godz.",
+    "hidden": "Ukryty",
+    "inUse": "Używaj {name}",
+    "inUseShort": "W użyciu",
+    "onVehicles": "{count, plural, =0 {Jeszcze w żadnym pojeździe} one {W # pojeździe} few {W # pojazdach} many {W # pojazdach} other {W # pojazdach}}",
+    "onVehiclesMarine": "{count, plural, =0 {Jeszcze w żadnej jednostce pływającej} one {W # jednostce pływającej} few {W # jednostkach pływających} many {W # jednostkach pływających} other {W # jednostkach pływających}}",
+    "edit": "Edytuj {name}",
+    "editTitle": "Edytuj licznik",
+    "editHint": "Nowa nazwa lub jednostka pojawia się wszędzie tam, gdzie licznik, także na dokumentach drukowanych od teraz. Już wystawione faktury zachowują to, co wydrukowały.",
+    "delete": "Usuń licznik",
+    "deleteNamed": "Usuń {name}",
+    "deleteTitle": "Usunąć {name}?",
+    "deleteHint": "{count, plural, =0 {Nie ma go jeszcze w żadnym pojeździe.} one {Jest w # pojeździe, a jego odczyty tam zostaną usunięte razem z nim.} few {Jest w # pojazdach, a ich odczyty zostaną usunięte razem z nim.} many {Jest w # pojazdach, a ich odczyty zostaną usunięte razem z nim.} other {Jest w # pojazdach, a ich odczyty zostaną usunięte razem z nim.}} Aby zachować odczyty, wyłącz go raczej z użycia.",
+    "deleteHintMarine": "{count, plural, =0 {Nie ma go jeszcze w żadnej jednostce pływającej.} one {Jest w # jednostce pływającej, a jego odczyty tam zostaną usunięte razem z nim.} few {Jest w # jednostkach pływających, a ich odczyty zostaną usunięte razem z nim.} many {Jest w # jednostkach pływających, a ich odczyty zostaną usunięte razem z nim.} other {Jest w # jednostkach pływających, a ich odczyty zostaną usunięte razem z nim.}} Aby zachować odczyty, wyłącz go raczej z użycia.",
+    "created": "Dodano {name}",
+    "updated": "Zapisano {name}",
+    "deleted": "Usunięto {name}",
+    "saveError": "Nie udało się zapisać licznika",
+    "duplicateName": "Licznik o tej nazwie już istnieje.",
+    "odometerName": "\"{name}\" to licznik przebiegu, który ma już każdy pojazd. Nadaj licznikowi inną nazwę."
   }
 }

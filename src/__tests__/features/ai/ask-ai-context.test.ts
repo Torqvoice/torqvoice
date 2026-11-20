@@ -6,6 +6,11 @@ const serviceRecord = { findMany: vi.fn() }
 
 // The type key is off, as it is for most workshops.
 const appSetting = { findMany: vi.fn().mockResolvedValue([]) }
+// No meters in this workshop.
+vi.mock('@/features/meters/Lib/meters.server', () => ({
+  printableMeterReadings: async () => [],
+  activeMeterTypes: async () => [],
+}))
 vi.mock('@/lib/db', () => ({ db: { vehicle, customer, serviceRecord, appSetting } }))
 
 const { buildAskAiContext, askAiSystemPrompt, MAX_CONTEXT_CHARS } = await import(

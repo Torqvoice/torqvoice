@@ -15,6 +15,7 @@
  * appended whole where they are PDFs.
  */
 
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'node:fs/promises'
 import { renderToBuffer } from '@react-pdf/renderer'
@@ -188,12 +189,16 @@ export async function buildQuotePdfBuffer(
     data: gateCustomerReference(
       {
         ...quote,
-        vehicle:
-          quote.vehicle &&
-          gateFleetNumber(
+        vehicle: quote.vehicle && {
+          ...gateFleetNumber(
             gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
             fleetNumberEnabledIn(settingsMap, features)
           ),
+          // The vehicle's current meter readings, for a workshop that has meters.
+          meterReadings: await printableMeterReadings(organizationId, {
+            vehicleId: quote.vehicleId,
+          }),
+        },
       },
       customerReferenceEnabledIn(settingsMap, features)
     ),

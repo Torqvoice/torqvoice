@@ -1,4 +1,6 @@
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { jobMeterViews } from '@/features/meters/Lib/meters.server'
+import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import {
   gateCustomerReference,
   isCustomerReferenceEnabled,
@@ -126,6 +128,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
       const referenceOn = await isCustomerReferenceEnabled(ctx.organizationId)
       const fleetNumberOn = await isFleetNumberEnabled(ctx.organizationId)
+      // The vehicle's other meters with this job's readings; empty while the
+      // workshop has none. Written through /jobs/:id/meters.
+      const jobDate = await db.serviceRecord.findFirst({
+        where: { id: job.id, organizationId: ctx.organizationId },
+        select: { startDateTime: true, serviceDate: true },
+      })
+      const meters =
+        job.vehicle && jobDate
+          ? await jobMeterViews(ctx.organizationId, {
+              id: job.id,
+              vehicleId: job.vehicle.id,
+              readAt: jobReadingDate(jobDate),
+            })
+          : []
 
       return apiOk({
         ...gateCustomerReference(job, referenceOn),
@@ -134,6 +150,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         isRunning: openEntry?.serviceRecordId === job.id,
         runningSince: openEntry?.serviceRecordId === job.id ? openEntry.startedAt : null,
         totalMinutes,
+        meters,
       })
     },
     {

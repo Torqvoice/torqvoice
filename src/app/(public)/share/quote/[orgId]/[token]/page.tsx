@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server'
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
@@ -159,12 +160,14 @@ export default async function PublicQuotePage({
   const shownQuote = gateCustomerReference(
     {
       ...quote,
-      vehicle:
-        quote.vehicle &&
-        gateFleetNumber(
+      vehicle: quote.vehicle && {
+        ...gateFleetNumber(
           gateTypeKey(quote.vehicle, typeKeyEnabled),
           fleetNumberEnabledIn(settingsMap, features)
         ),
+        // The vehicle's current meter readings, for a workshop that has meters.
+        meterReadings: await printableMeterReadings(orgId, { vehicleId: quote.vehicleId }),
+      },
     },
     customerReferenceEnabledIn(settingsMap, features)
   )

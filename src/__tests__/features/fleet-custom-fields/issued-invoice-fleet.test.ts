@@ -15,6 +15,12 @@ const db = {
   documentDesign: { findFirst: vi.fn() },
 }
 const recordFields = vi.fn(async (): Promise<unknown[]> => [])
+// The job's meter readings, as the workshop's meters give them.
+const meterReadings = vi.fn(async (): Promise<unknown[]> => [])
+vi.mock('@/features/meters/Lib/meters.server', () => ({
+  printableMeterReadings: (...args: unknown[]) => meterReadings(...(args as [])),
+  activeMeterTypes: async () => [],
+}))
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/lib/features', () => ({ getFeatures: vi.fn(async () => ({ customFields: true })) }))
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
@@ -175,5 +181,34 @@ describe('an issued invoice', () => {
     expect(assembly?.issuedAt).toEqual(ISSUED_AT)
     expect(assembly?.data.vehicle?.fleetNumber ?? null).toBeNull()
     expect(assembly?.data.recordCustomFields ?? []).toEqual([])
+  })
+})
+
+describe('meter readings on an issued invoice', () => {
+  const ENGINE = { name: 'Engine hours', unit: 'hrs', value: 4256.7 }
+
+  it('are read from this job, and frozen with what it was issued with', async () => {
+    meterReadings.mockResolvedValue([ENGINE])
+    const issued = await issue()
+    expect(meterReadings).toHaveBeenCalledWith('org-1', { jobId: 'rec-1' })
+
+    // The reading is corrected on the job after the invoice went out.
+    meterReadings.mockResolvedValue([{ ...ENGINE, value: 4300 }])
+    db.serviceRecord.findUnique.mockResolvedValue(issued)
+    const assembly = await assembleInvoicePrint('rec-1')
+
+    expect(assembly?.data.vehicle?.meterReadings).toEqual([ENGINE])
+  })
+
+  it('issued before meters existed prints none, and never borrows today’s', async () => {
+    meterReadings.mockResolvedValue([ENGINE])
+    const issued = await issue()
+    const { meterReadings: _frozen, ...vehicleBefore } = issued.issuedData.vehicle
+    db.serviceRecord.findUnique.mockResolvedValue({
+      ...issued,
+      issuedData: { ...issued.issuedData, vehicle: vehicleBefore },
+    })
+
+    expect((await assembleInvoicePrint('rec-1'))?.data.vehicle?.meterReadings).toEqual([])
   })
 })

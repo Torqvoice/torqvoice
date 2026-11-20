@@ -819,7 +819,8 @@
       "customer_line": "Riga della firma del cliente",
       "legend": "Legenda",
       "previous_marks": "Segni precedenti",
-      "blank_sheet": "Foglio vuoto da compilare a mano"
+      "blank_sheet": "Foglio vuoto da compilare a mano",
+      "meter_readings": "Letture dei contatori"
     },
     "presetsTitle": "Partire da una disposizione",
     "presetsHint": "Sostituisce la disposizione qui sotto. Nulla viene salvato finché non salvi.",
@@ -3243,5 +3244,38 @@
       "bulkRevoked": "{count, plural, one {# link rimosso} other {# link rimossi}}",
       "bulkRevokeFailed": "Impossibile rimuovere i link. Riprova."
     }
+  },
+  "meters": {
+    "title": "Contatori",
+    "description": "Contatori che leggi sui veicoli oltre al contachilometri, come le ore motore o le ore della presa di forza. Scegli su ogni veicolo quali ha; le letture si fanno sul veicolo e negli ordini di lavoro, e si possono stampare su fatture, preventivi e ordini di lavoro dal designer dei documenti.",
+    "descriptionMarine": "Contatori che leggi sulle imbarcazioni oltre alle ore motore, come le ore della presa di forza o le ore del generatore. Scegli su ogni imbarcazione quali ha; le letture si fanno sull'imbarcazione e negli ordini di lavoro, e si possono stampare su fatture, preventivi e ordini di lavoro dal designer dei documenti.",
+    "name": "Nome",
+    "namePlaceholder": "es. Ore motore",
+    "unit": "Unità",
+    "unitPlaceholder": "es. h",
+    "add": "Aggiungi contatore",
+    "suggestions": "Suggerimenti:",
+    "suggestEngineHours": "Ore motore",
+    "suggestPtoHours": "Ore presa di forza",
+    "hoursUnit": "h",
+    "hidden": "Nascosto",
+    "inUse": "Usa {name}",
+    "inUseShort": "In uso",
+    "onVehicles": "{count, plural, =0 {Ancora su nessun veicolo} one {Su # veicolo} other {Su # veicoli}}",
+    "onVehiclesMarine": "{count, plural, =0 {Ancora su nessuna imbarcazione} one {Su # imbarcazione} other {Su # imbarcazioni}}",
+    "edit": "Modifica {name}",
+    "editTitle": "Modifica contatore",
+    "editHint": "Un nuovo nome o una nuova unità appare ovunque compaia il contatore, anche sui documenti stampati da ora in poi. Le fatture già emesse mantengono ciò che hanno stampato.",
+    "delete": "Elimina contatore",
+    "deleteNamed": "Elimina {name}",
+    "deleteTitle": "Eliminare {name}?",
+    "deleteHint": "{count, plural, =0 {Non è ancora su nessun veicolo.} one {È su # veicolo, e le sue letture lì vengono eliminate con esso.} other {È su # veicoli, e le loro letture vengono eliminate con esso.}} Per conservare le letture, mettilo invece fuori uso.",
+    "deleteHintMarine": "{count, plural, =0 {Non è ancora su nessuna imbarcazione.} one {È su # imbarcazione, e le sue letture lì vengono eliminate con esso.} other {È su # imbarcazioni, e le loro letture vengono eliminate con esso.}} Per conservare le letture, mettilo invece fuori uso.",
+    "created": "{name} aggiunto",
+    "updated": "{name} salvato",
+    "deleted": "{name} eliminato",
+    "saveError": "Impossibile salvare il contatore",
+    "duplicateName": "Esiste già un contatore con questo nome.",
+    "odometerName": "\"{name}\" è il contachilometri, che ogni veicolo ha già. Dai un altro nome al contatore."
   }
 }

@@ -24,6 +24,11 @@
  * - `vehicle-fleet-number`: a job's vehicle carries `fleetNumber`, the
  *   workshop's own fleet or unit number for it. Null when the vehicle has
  *   none or the workshop does not use the field.
+ * - `vehicle-meters`: a job carries `meters`, the vehicle's meters besides
+ *   the odometer (engine hours, PTO hours) with this job's reading of each
+ *   and the last one before it; empty when the workshop records none.
+ *   `/jobs/:id/meters` reads them and takes readings (PUT), decimals allowed;
+ *   a reading below the last one is kept and reported, never refused.
  */
 export const TECH_API_FEATURES = [
   'job-video',
@@ -31,4 +36,5 @@ export const TECH_API_FEATURES = [
   'job-documents',
   'job-reference',
   'vehicle-fleet-number',
+  'vehicle-meters',
 ] as const

@@ -1,4 +1,5 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
+import { meterLine } from '@/features/meters/Lib/meterValue'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { documentNumbers } from '@/lib/document-numbers'
@@ -111,6 +112,12 @@ export interface QuotePrintData {
     hsn?: string | null
     tsn?: string | null
     fleetNumber?: string | null
+    /**
+     * The vehicle's meters besides the odometer as this document prints them,
+     * unformatted: the job's readings on an invoice or work order, the
+     * vehicle's current ones on a quote. Empty while meters are off.
+     */
+    meterReadings?: { name: string; unit: string; value: number }[]
   } | null
 }
 
@@ -242,6 +249,10 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     // Empty for a vehicle without one, and for a workshop that has the field off.
     fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
+    // One line per meter, in the workshop's order; empty without readings.
+    meter_readings: (data.vehicle?.meterReadings ?? [])
+      .map((meter) => meterLine(meter, nums.meter))
+      .join('\n'),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })

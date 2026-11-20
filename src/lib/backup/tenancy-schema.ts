@@ -859,6 +859,59 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [],
   },
+  MeterType: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  VehicleMeter: {
+    organizationId: true,
+    foreignKeys: {
+      vehicleId: {
+        target: 'Vehicle',
+        required: true,
+        relation: 'vehicle',
+      },
+      meterTypeId: {
+        target: 'MeterType',
+        required: true,
+        relation: 'meterType',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  MeterReading: {
+    organizationId: true,
+    foreignKeys: {
+      vehicleMeterId: {
+        target: 'VehicleMeter',
+        required: true,
+        relation: 'vehicleMeter',
+      },
+      serviceRecordId: {
+        target: 'ServiceRecord',
+        required: false,
+        relation: 'serviceRecord',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
   AppSetting: {
     organizationId: true,
     foreignKeys: {

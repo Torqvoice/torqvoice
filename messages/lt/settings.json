@@ -819,7 +819,8 @@
       "customer_line": "Kliento parašo eilutė",
       "legend": "Legenda",
       "previous_marks": "Ankstesnės žymos",
-      "blank_sheet": "Tuščias lapas pildyti ranka"
+      "blank_sheet": "Tuščias lapas pildyti ranka",
+      "meter_readings": "Skaitiklių rodmenys"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
@@ -3243,5 +3244,38 @@
       "bulkRevoked": "{count, plural, one {Pašalinta # nuoroda} few {Pašalintos # nuorodos} many {Pašalinta # nuorodos} other {Pašalinta # nuorodų}}",
       "bulkRevokeFailed": "Nepavyko pašalinti nuorodų. Bandykite dar kartą."
     }
+  },
+  "meters": {
+    "title": "Skaitikliai",
+    "description": "Skaitikliai, kurių rodmenis be odometro nuskaitote transporto priemonėse, pavyzdžiui, variklio valandos ar galios ėmimo veleno valandos. Kiekvienoje transporto priemonėje pasirinkite, kuriuos ji turi; rodmenys įvedami transporto priemonėje ir darbo užsakymuose, o dokumentų dizaineryje juos galima spausdinti sąskaitose faktūrose, pasiūlymuose ir darbo užsakymuose.",
+    "descriptionMarine": "Skaitikliai, kurių rodmenis be variklio valandų nuskaitote laivuose, pavyzdžiui, galios ėmimo veleno valandos ar generatoriaus valandos. Kiekviename laive pasirinkite, kuriuos jis turi; rodmenys įvedami laive ir darbo užsakymuose, o dokumentų dizaineryje juos galima spausdinti sąskaitose faktūrose, pasiūlymuose ir darbo užsakymuose.",
+    "name": "Pavadinimas",
+    "namePlaceholder": "pvz., Variklio valandos",
+    "unit": "Vienetas",
+    "unitPlaceholder": "pvz., val.",
+    "add": "Pridėti skaitiklį",
+    "suggestions": "Pasiūlymai:",
+    "suggestEngineHours": "Variklio valandos",
+    "suggestPtoHours": "Galios ėmimo veleno valandos",
+    "hoursUnit": "val.",
+    "hidden": "Paslėptas",
+    "inUse": "Naudoti {name}",
+    "inUseShort": "Naudojamas",
+    "onVehicles": "{count, plural, =0 {Kol kas nėra jokioje transporto priemonėje} one {Yra # transporto priemonėje} few {Yra # transporto priemonėse} many {Yra # transporto priemonės} other {Yra # transporto priemonių}}",
+    "onVehiclesMarine": "{count, plural, =0 {Kol kas nėra jokiame laive} one {Yra # laive} few {Yra # laivuose} many {Yra # laivo} other {Yra # laivų}}",
+    "edit": "Redaguoti {name}",
+    "editTitle": "Redaguoti skaitiklį",
+    "editHint": "Naujas pavadinimas ar vienetas rodomas visur, kur rodomas skaitiklis, taip pat ir nuo šiol spausdinamuose dokumentuose. Jau išrašytos sąskaitos faktūros išlaiko tai, kas jose buvo išspausdinta.",
+    "delete": "Ištrinti skaitiklį",
+    "deleteNamed": "Ištrinti {name}",
+    "deleteTitle": "Ištrinti {name}?",
+    "deleteHint": "{count, plural, =0 {Kol kas jis nėra jokioje transporto priemonėje.} one {Jis yra # transporto priemonėje, ir jo rodmenys joje ištrinami kartu su juo.} few {Jis yra # transporto priemonėse, ir jų rodmenys ištrinami kartu su juo.} many {Jis yra # transporto priemonės, ir jų rodmenys ištrinami kartu su juo.} other {Jis yra # transporto priemonių, ir jų rodmenys ištrinami kartu su juo.}} Jei norite išsaugoti rodmenis, verčiau nustokite jį naudoti.",
+    "deleteHintMarine": "{count, plural, =0 {Kol kas jis nėra jokiame laive.} one {Jis yra # laive, ir jo rodmenys jame ištrinami kartu su juo.} few {Jis yra # laivuose, ir jų rodmenys ištrinami kartu su juo.} many {Jis yra # laivo, ir jų rodmenys ištrinami kartu su juo.} other {Jis yra # laivų, ir jų rodmenys ištrinami kartu su juo.}} Jei norite išsaugoti rodmenis, verčiau nustokite jį naudoti.",
+    "created": "{name} pridėtas",
+    "updated": "{name} išsaugotas",
+    "deleted": "{name} ištrintas",
+    "saveError": "Nepavyko išsaugoti skaitiklio",
+    "duplicateName": "Skaitiklis tokiu pavadinimu jau yra.",
+    "odometerName": "\"{name}\" yra odometras, kurį jau turi kiekviena transporto priemonė. Suteikite skaitikliui kitą pavadinimą."
   }
 }

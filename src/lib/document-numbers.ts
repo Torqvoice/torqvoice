@@ -17,6 +17,8 @@ export interface DocumentNumbers {
   distance(value: number): string
   /** A part's quantity with its unit, "2,5 l". */
   quantity(value: number, unit?: string | null): string
+  /** A meter reading such as engine hours: grouped, up to two decimals, "4,256.7". */
+  meter(value: number): string
 }
 
 /**
@@ -41,17 +43,20 @@ export function documentNumbers(locale: string | undefined): DocumentNumbers {
       count: (value) => String(value),
       distance: (value) => value.toLocaleString(),
       quantity: (value, unit) => formatQuantity(value, unit),
+      meter: (value) => value.toLocaleString(undefined, { maximumFractionDigits: 2 }),
     }
   }
   // As many decimals as a stored quantity has: 0.125 h prints whole, since the
   // line total is charged on it. Six still drops float noise such as 0.30000000000000004.
   const counts = formatter(locale, { useGrouping: false, maximumFractionDigits: 6 })
   const distances = formatter(locale, { maximumFractionDigits: 0 })
+  const meters = formatter(locale, { maximumFractionDigits: 2 })
   const count = (value: number) => (counts ? printable(counts.format(value)) : String(value))
   return {
     count,
     distance: (value) => (distances ? printable(distances.format(value)) : String(value)),
     quantity: (value, unit) => (unit ? `${count(value)} ${unit}` : count(value)),
+    meter: (value) => (meters ? printable(meters.format(value)) : String(value)),
   }
 }
 

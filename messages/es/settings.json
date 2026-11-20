@@ -819,7 +819,8 @@
       "customer_line": "Línea de firma del cliente",
       "legend": "Leyenda",
       "previous_marks": "Marcas anteriores",
-      "blank_sheet": "Hoja en blanco para rellenar a mano"
+      "blank_sheet": "Hoja en blanco para rellenar a mano",
+      "meter_readings": "Lecturas de contadores"
     },
     "presetsTitle": "Empezar con una disposición",
     "presetsHint": "Sustituye la disposición de abajo. No se guarda nada hasta que guardes.",
@@ -3243,5 +3244,38 @@
       "bulkRevoked": "{count, plural, one {# enlace eliminado} other {# enlaces eliminados}}",
       "bulkRevokeFailed": "No se pudieron eliminar los enlaces. Inténtalo de nuevo."
     }
+  },
+  "meters": {
+    "title": "Contadores",
+    "description": "Contadores que se leen en los vehículos además del cuentakilómetros, como las horas de motor o las horas de toma de fuerza. Elija en cada vehículo cuáles tiene; las lecturas se toman en el vehículo y en las órdenes de trabajo, y pueden imprimirse en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos.",
+    "descriptionMarine": "Contadores que se leen en las embarcaciones además de las horas de motor, como las horas de toma de fuerza o las horas del generador. Elija en cada embarcación cuáles tiene; las lecturas se toman en la embarcación y en las órdenes de trabajo, y pueden imprimirse en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos.",
+    "name": "Nombre",
+    "namePlaceholder": "p. ej. Horas de motor",
+    "unit": "Unidad",
+    "unitPlaceholder": "p. ej. h",
+    "add": "Añadir contador",
+    "suggestions": "Sugerencias:",
+    "suggestEngineHours": "Horas de motor",
+    "suggestPtoHours": "Horas de toma de fuerza",
+    "hoursUnit": "h",
+    "hidden": "Oculto",
+    "inUse": "Usar {name}",
+    "inUseShort": "En uso",
+    "onVehicles": "{count, plural, =0 {Aún en ningún vehículo} one {En # vehículo} other {En # vehículos}}",
+    "onVehiclesMarine": "{count, plural, =0 {Aún en ninguna embarcación} one {En # embarcación} other {En # embarcaciones}}",
+    "edit": "Editar {name}",
+    "editTitle": "Editar contador",
+    "editHint": "Un nuevo nombre o unidad se muestra en todos los lugares donde aparece el contador, también en los documentos que se impriman a partir de ahora. Las facturas ya emitidas conservan lo que imprimieron.",
+    "delete": "Eliminar contador",
+    "deleteNamed": "Eliminar {name}",
+    "deleteTitle": "¿Eliminar {name}?",
+    "deleteHint": "{count, plural, =0 {Aún no está en ningún vehículo.} one {Está en # vehículo, y sus lecturas allí se eliminan con él.} other {Está en # vehículos, y sus lecturas se eliminan con él.}} Para conservar las lecturas, desactive su uso en su lugar.",
+    "deleteHintMarine": "{count, plural, =0 {Aún no está en ninguna embarcación.} one {Está en # embarcación, y sus lecturas allí se eliminan con él.} other {Está en # embarcaciones, y sus lecturas se eliminan con él.}} Para conservar las lecturas, desactive su uso en su lugar.",
+    "created": "{name} añadido",
+    "updated": "{name} guardado",
+    "deleted": "{name} eliminado",
+    "saveError": "No se pudo guardar el contador",
+    "duplicateName": "Ya existe un contador con ese nombre.",
+    "odometerName": "\"{name}\" es el cuentakilómetros, que todos los vehículos ya tienen. Dé otro nombre al contador."
   }
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
+import type { MeterTypeView, VehicleMeterView } from '@/features/meters/Lib/meters.server'
 import {
   type RecordCustomField,
   RecordCustomFields,
@@ -290,6 +292,8 @@ export function VehicleDetailClassic({
   safetyAvailable = false,
   paginatedFindings,
   tireSets = [],
+  meterTypes = [],
+  vehicleMeters = [],
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
@@ -297,6 +301,9 @@ export function VehicleDetailClassic({
   paginatedFindings: PaginatedFindings
   /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
   tireSets?: VehicleTireSet[]
+  /** The workshop's meters in use (empty while meters are off) and this vehicle's. */
+  meterTypes?: MeterTypeView[]
+  vehicleMeters?: VehicleMeterView[]
   serviceSearch: string
   serviceRecordType: string
   currencyCode?: string
@@ -1280,6 +1287,15 @@ export function VehicleDetailClassic({
           year={vehicle.year}
           existingFindings={paginatedFindings.records.map((f) => f.description)}
         />
+      )}
+
+      {/* The meters besides the odometer: engine hours and the like. */}
+      {meterTypes.length > 0 && (
+        <Card className="py-0">
+          <CardContent className="p-4">
+            <VehicleMeters vehicleId={vehicle.id} types={meterTypes} meters={vehicleMeters} />
+          </CardContent>
+        </Card>
       )}
 
       {/* Tabs */}

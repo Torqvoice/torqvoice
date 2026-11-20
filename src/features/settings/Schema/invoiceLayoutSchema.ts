@@ -375,6 +375,9 @@ export const BUILTIN_VEHICLE_FIELDS = [
   // The owner's own number for the vehicle. Opt-in (OPT_IN_FIELDS): off in the
   // defaults and in every saved design.
   { id: 'fleet_number', name: 'Fleet / unit number' },
+  // The vehicle's meters besides the odometer, one line each ("Engine hours:
+  // 4,256.7 hrs"). Opt-in like the fleet number.
+  { id: 'meter_readings', name: 'Meter readings' },
 ] as const
 
 export const BUILTIN_SERVICE_FIELDS = [
@@ -556,7 +559,7 @@ export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
  */
 export const OPT_IN_FIELDS: Record<string, readonly string[]> = {
   customer: ['customer_reference'],
-  vehicle: ['fleet_number'],
+  vehicle: ['fleet_number', 'meter_readings'],
 }
 
 /** Whether this field waits for a design to switch it on. */

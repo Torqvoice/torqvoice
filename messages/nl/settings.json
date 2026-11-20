@@ -819,7 +819,8 @@
       "customer_line": "Handtekeningregel klant",
       "legend": "Legenda",
       "previous_marks": "Eerdere markeringen",
-      "blank_sheet": "Leeg blad om met de hand in te vullen"
+      "blank_sheet": "Leeg blad om met de hand in te vullen",
+      "meter_readings": "Tellerstanden"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
@@ -3243,5 +3244,38 @@
       "bulkRevoked": "{count, plural, one {# link verwijderd} other {# links verwijderd}}",
       "bulkRevokeFailed": "Kon de links niet verwijderen. Probeer het opnieuw."
     }
+  },
+  "meters": {
+    "title": "Tellers",
+    "description": "Tellers die u naast de kilometerteller op voertuigen afleest, zoals motoruren of aftakasuren. Kies per voertuig welke het heeft; standen worden op het voertuig en op werkorders vastgelegd en kunnen vanuit de documentontwerper op facturen, offertes en werkorders worden afgedrukt.",
+    "descriptionMarine": "Tellers die u naast de motoruren op vaartuigen afleest, zoals aftakasuren of generatoruren. Kies per vaartuig welke het heeft; standen worden op het vaartuig en op werkorders vastgelegd en kunnen vanuit de documentontwerper op facturen, offertes en werkorders worden afgedrukt.",
+    "name": "Naam",
+    "namePlaceholder": "bijv. Motoruren",
+    "unit": "Eenheid",
+    "unitPlaceholder": "bijv. u",
+    "add": "Teller toevoegen",
+    "suggestions": "Suggesties:",
+    "suggestEngineHours": "Motoruren",
+    "suggestPtoHours": "Aftakasuren",
+    "hoursUnit": "u",
+    "hidden": "Verborgen",
+    "inUse": "{name} gebruiken",
+    "inUseShort": "In gebruik",
+    "onVehicles": "{count, plural, =0 {Nog op geen enkel voertuig} one {Op # voertuig} other {Op # voertuigen}}",
+    "onVehiclesMarine": "{count, plural, =0 {Nog op geen enkel vaartuig} one {Op # vaartuig} other {Op # vaartuigen}}",
+    "edit": "{name} bewerken",
+    "editTitle": "Teller bewerken",
+    "editHint": "Een nieuwe naam of eenheid verschijnt overal waar de teller verschijnt, ook op documenten die vanaf nu worden afgedrukt. Al uitgegeven facturen houden wat ze hebben afgedrukt.",
+    "delete": "Teller verwijderen",
+    "deleteNamed": "{name} verwijderen",
+    "deleteTitle": "{name} verwijderen?",
+    "deleteHint": "{count, plural, =0 {Hij staat nog op geen enkel voertuig.} one {Hij staat op # voertuig, en de standen daar worden mee verwijderd.} other {Hij staat op # voertuigen, en hun standen worden mee verwijderd.}} Wilt u de standen houden, zet hem dan liever uit gebruik.",
+    "deleteHintMarine": "{count, plural, =0 {Hij staat nog op geen enkel vaartuig.} one {Hij staat op # vaartuig, en de standen daar worden mee verwijderd.} other {Hij staat op # vaartuigen, en hun standen worden mee verwijderd.}} Wilt u de standen houden, zet hem dan liever uit gebruik.",
+    "created": "{name} toegevoegd",
+    "updated": "{name} opgeslagen",
+    "deleted": "{name} verwijderd",
+    "saveError": "De teller kon niet worden opgeslagen",
+    "duplicateName": "Er bestaat al een teller met die naam.",
+    "odometerName": "\"{name}\" is de kilometerteller, die elk voertuig al heeft. Geef de teller een andere naam."
   }
 }

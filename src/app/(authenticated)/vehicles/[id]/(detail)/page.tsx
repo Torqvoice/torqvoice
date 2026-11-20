@@ -1,4 +1,5 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
+import { activeMeterTypes, vehicleMeterViews } from '@/features/meters/Lib/meters.server'
 import { getTranslations } from 'next-intl/server'
 import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
@@ -242,6 +243,13 @@ export default async function VehicleDetailPage({
     aiEnabled = features?.ai === true && aiConfigured
   }
 
+  // The workshop's meters besides the odometer, and this vehicle's: nothing
+  // read at all for a workshop whose plan has no custom fields, and nothing
+  // shown for one that has defined no meter.
+  const meterTypes = orgId ? await activeMeterTypes(orgId) : []
+  const vehicleMeters =
+    orgId && meterTypes.length > 0 ? await vehicleMeterViews(orgId, id, meterTypes) : []
+
   // Both pages take the same data; the classic one also reads the type
   // filter, the new one the booking warnings.
   const viewProps = {
@@ -261,6 +269,8 @@ export default async function VehicleDetailPage({
     paginatedFindings,
     tireSets: tireSetsResult.success && tireSetsResult.data ? tireSetsResult.data : [],
     serviceRecordType: type,
+    meterTypes,
+    vehicleMeters,
   }
 
   return (
