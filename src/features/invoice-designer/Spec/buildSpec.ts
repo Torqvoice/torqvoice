@@ -1432,6 +1432,10 @@ function equipmentBlock(
     kind: 'table',
     // A fleet's list can run over a page: its headings follow it.
     repeatHeader: true,
+    // Seven narrow columns side by side: keep them apart, and let a long
+    // serial number or model wrap in its own column.
+    columnGap: 6,
+    breakLongWords: true,
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
     rowBackground: theme.background || '#ffffff',

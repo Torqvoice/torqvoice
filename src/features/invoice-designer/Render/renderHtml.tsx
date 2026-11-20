@@ -281,8 +281,15 @@ function NodeBody({ node }: { node: Node }): ReactNode {
       )
 
     case 'table': {
-      const cell = (width: number | 'flex'): CSSProperties =>
-        width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }
+      const last = node.columns.length - 1
+      const cell = (width: number | 'flex', index: number): CSSProperties => ({
+        ...(width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }),
+        // As in the PDF: padding inside every cell but the last.
+        ...(node.columnGap && index < last
+          ? { paddingRight: node.columnGap, boxSizing: 'border-box' as const }
+          : {}),
+        ...(node.breakLongWords ? { overflowWrap: 'anywhere' as const } : {}),
+      })
       let band = node.bandStart ?? 0
       return (
         <div {...id} style={boxCss(node.style)}>
@@ -295,8 +302,11 @@ function NodeBody({ node }: { node: Node }): ReactNode {
               padding: `${node.headerPadding ?? 6}px 8px`,
             }}
           >
-            {node.columns.map((column) => (
-              <span key={column.key} style={{ ...cell(column.width), textAlign: column.align }}>
+            {node.columns.map((column, index) => (
+              <span
+                key={column.key}
+                style={{ ...cell(column.width, index), textAlign: column.align }}
+              >
                 {column.label}
               </span>
             ))}
@@ -345,11 +355,11 @@ function NodeBody({ node }: { node: Node }): ReactNode {
                 ) : null}
                 {heading
                   ? null
-                  : node.columns.map((column) => (
+                  : node.columns.map((column, index) => (
                       <span
                         key={column.key}
                         style={{
-                          ...cell(column.width),
+                          ...cell(column.width, index),
                           textAlign: column.align,
                           whiteSpace: 'pre-line',
                         }}

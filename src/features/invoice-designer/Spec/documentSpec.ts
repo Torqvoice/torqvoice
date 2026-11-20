@@ -136,6 +136,19 @@ export type Node =
        * tables print as they always have.
        */
       repeatHeader?: boolean
+      /**
+       * Room kept between neighbouring columns, in points, so one cell's text
+       * never runs on into the next. Set by the equipment table, whose many
+       * left-aligned columns touched; unset is none, as the parts and labour
+       * tables have always printed.
+       */
+      columnGap?: number
+      /**
+       * A word wider than its column (a 60-character serial number) wraps
+       * inside itself, without a hyphen added, instead of running across the
+       * next columns and off the page. Set by the equipment table.
+       */
+      breakLongWords?: boolean
       anchor?: Anchor
     }
   /** Empty room, or a filled rule when it carries a color. */

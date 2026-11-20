@@ -134,13 +134,20 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
         for (const column of node.columns) {
           const value = row[column.key]
           if (!value) continue
-          const columnWidth = column.width === 'flex' ? flexWidth : column.width
+          // A column gap is padding inside every cell but the last, so it
+          // comes off the room the text has, not off the table.
+          const columnWidth =
+            (column.width === 'flex' ? flexWidth : column.width) -
+            (column === node.columns[node.columns.length - 1] ? 0 : (node.columnGap ?? 0))
           // lineCount and not width-over-width: a part described over three
           // lines is three lines however narrow each one is, and dividing the
           // whole run by the column width counted it as one. The table then
           // measured shorter than it prints, and whatever the engine placed
           // after it landed on top of the last rows.
-          lines = Math.max(lines, lineCount(value, columnWidth, cellStyle, inherited.fontSize))
+          lines = Math.max(
+            lines,
+            lineCount(value, columnWidth, cellStyle, inherited.fontSize, node.breakLongWords)
+          )
         }
         let rowHeight = lines * inherited.fontSize * DEFAULT_LINE_HEIGHT
         const sub = node.subKey ? row[node.subKey] : undefined

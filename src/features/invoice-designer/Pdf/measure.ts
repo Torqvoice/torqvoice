@@ -41,7 +41,9 @@ export function lineCount(
   text: string,
   width: number,
   style: TextStyle | undefined,
-  baseSize: number
+  baseSize: number,
+  /** A word wider than the line wraps inside itself (see the table's breakLongWords). */
+  breakLongWords = false
 ): number {
   if (!text) return 0
   if (width <= 0) return 1
@@ -56,6 +58,15 @@ export function lineCount(
     let used = 0
     for (const word of paragraph.split(/\s+/)) {
       const w = widthOf(word, style, baseSize)
+      if (breakLongWords && w > width) {
+        // Its own lines, as many as its width needs; the rest of the last
+        // one is left to the words after it.
+        const whole = Math.floor(w / width)
+        lines += (used > 0 ? 1 : 0) + whole
+        used = w - whole * width
+        line = used > 0 ? 1 : 0
+        continue
+      }
       if (used > 0 && used + spaceWidth + w > width) {
         lines += 1
         used = w
