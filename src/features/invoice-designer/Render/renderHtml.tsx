@@ -24,8 +24,8 @@ function padding(style?: BoxStyle): CSSProperties {
 export function boxCss(style?: BoxStyle): CSSProperties {
   if (!style) return {}
   return {
-    // Always the longhand: a box that gains or loses its picture (the
-    // vehicle photo switched in the designer) then never mixes the shorthand
+    // Always the longhand: a box that gains or loses its picture (a photo
+    // switched on or off in the designer) then never mixes the shorthand
     // with the picture's own longhands, which React warns about.
     backgroundColor: style.background,
     border: style.borderWidth ? `${style.borderWidth}px solid ${style.borderColor}` : undefined,
