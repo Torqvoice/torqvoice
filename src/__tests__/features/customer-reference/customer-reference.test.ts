@@ -345,3 +345,23 @@ describe('the mail tag', () => {
     expect(values.customer_reference).toBeUndefined()
   })
 })
+
+describe('an invoice after the plan loses the field', () => {
+  const on = { 'documents.customerReferenceEnabled': 'true' }
+
+  it('keeps printing the reference once it has been issued', async () => {
+    const { invoiceReferencePrints } = await import(
+      '@/features/customer-reference/Lib/referenceSetting'
+    )
+    expect(invoiceReferencePrints(on, { customFields: false }, { issuedAt: new Date() })).toBe(true)
+  })
+
+  it('prints none on a job never issued, or when the workshop switched the field off', async () => {
+    const { invoiceReferencePrints } = await import(
+      '@/features/customer-reference/Lib/referenceSetting'
+    )
+    expect(invoiceReferencePrints(on, { customFields: false }, { issuedAt: null })).toBe(false)
+    expect(invoiceReferencePrints({}, { customFields: true }, { issuedAt: new Date() })).toBe(false)
+    expect(invoiceReferencePrints(on, { customFields: true }, { issuedAt: null })).toBe(true)
+  })
+})

@@ -77,7 +77,7 @@ import {
 } from './issuedInvoice'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 import {
-  customerReferenceEnabledIn,
+  invoiceReferencePrints,
   gateCustomerReference,
 } from '@/features/customer-reference/Lib/referenceSetting'
 import { getFeatures } from '@/lib/features'
@@ -428,10 +428,12 @@ export async function assembleInvoicePrint(
   // a number that arrives after the invoice went out is on it at once. A
   // workshop that has the field off gets the job without it, here, before
   // any sheet, mail or share page is built from the assembly.
+  // An invoice already issued keeps printing its reference after the plan
+  // loses the field.
   const record = gateCustomerReference(
     loaded,
     settingsMap[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] === 'true' &&
-      customerReferenceEnabledIn(settingsMap, await getFeatures(organizationId))
+      invoiceReferencePrints(settingsMap, await getFeatures(organizationId), loaded)
   )
 
   const frozen: IssuedInvoiceData | null =

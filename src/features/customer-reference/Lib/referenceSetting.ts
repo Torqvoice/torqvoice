@@ -18,6 +18,22 @@ export function customerReferenceEnabledIn(
   return settings[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] === 'true' && features.customFields
 }
 
+/**
+ * Whether an invoice prints its reference. As everywhere else while the plan
+ * has the field. After a downgrade an invoice already issued keeps printing
+ * the reference it has, as it keeps its other details: the customer's
+ * accounts department needs the same sheet again. A workshop that switched
+ * the field off itself prints none.
+ */
+export function invoiceReferencePrints(
+  settings: Record<string, string | undefined>,
+  features: { customFields: boolean },
+  invoice: { issuedAt: Date | null }
+): boolean {
+  if (settings[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] !== 'true') return false
+  return features.customFields || invoice.issuedAt !== null
+}
+
 export async function isCustomerReferenceEnabled(organizationId: string): Promise<boolean> {
   const rows = await db.appSetting.findMany({
     where: { organizationId, key: SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED },
