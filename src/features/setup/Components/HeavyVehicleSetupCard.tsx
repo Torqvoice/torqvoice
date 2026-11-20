@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -35,6 +35,13 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
   const router = useRouter()
   const [closing, setClosing] = useState(false)
   const { canEdit } = useSettingsPermission()
+  // Opened from the palette or the link at the foot of the page, the card
+  // takes the focus, so a keyboard or screen reader user lands on it rather
+  // than on the page's start.
+  const cardRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (window.location.hash === `#${HEAVY_VEHICLE_SETUP_ANCHOR}`) cardRef.current?.focus()
+  }, [])
 
   const steps: { key: keyof HeavyVehicleSetupState; href: string; title: string; hint: string }[] =
     [
@@ -85,8 +92,10 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
   const Icon = isMarine ? Ship : Truck
   return (
     <Card
+      ref={cardRef}
+      tabIndex={-1}
       id={HEAVY_VEHICLE_SETUP_ANCHOR}
-      className="scroll-mt-20 py-0"
+      className="scroll-mt-20 py-0 outline-none"
       data-testid="heavy-vehicle-setup"
       aria-labelledby="heavy-vehicle-setup-title"
     >
@@ -126,7 +135,7 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
               <li key={step.key} data-testid={`heavy-vehicle-step-${step.key}`}>
                 <Link
                   href={step.href}
-                  className="flex items-start gap-3 px-3 py-2.5 transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none"
+                  className="flex items-start gap-3 px-3 py-2.5 transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
                 >
                   {on ? (
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
