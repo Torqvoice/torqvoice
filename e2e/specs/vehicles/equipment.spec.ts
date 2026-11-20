@@ -224,8 +224,14 @@ test.describe('equipment', () => {
     await settle(page)
     const moved = equipment(page).locator('li', { hasText: CRANE })
     await expect(moved).toBeVisible({ timeout: 30_000 })
-    // Its meter went with it, reading what the job read.
+    // Its meter went with it, with every reading, the one taken on the job too.
     await moved.getByRole('button', { name: /Show details/ }).click()
-    await expect(moved.getByTestId('equipment-meters').getByText('820 hrs')).toBeVisible()
+    const meter = moved.getByTestId('equipment-meters')
+    await expect(meter).toContainText(HOURS)
+    await meter.getByRole('button', { name: /more/ }).click()
+    await page.getByRole('menuitem', { name: 'History' }).click()
+    const history = page.getByTestId('meter-history')
+    await expect(history).toContainText('820')
+    await expect(history).toContainText('812.5')
   })
 })
