@@ -236,7 +236,9 @@
     "serviceTypeMaintenance": "Поддръжка",
     "serviceTypeRepair": "Ремонт",
     "serviceTypeUpgrade": "Подобрение",
-    "serviceTypeInspection": "Инспекция"
+    "serviceTypeInspection": "Инспекция",
+    "customFieldYes": "Да",
+    "customFieldNo": "Не"
   },
   "workOrder": {
     "title": "РАБОТНА ПОРЪЧКА",

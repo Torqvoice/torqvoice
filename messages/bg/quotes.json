@@ -89,8 +89,9 @@
       "images": "Изображения",
       "documents": "Документи"
     },
-    "customFieldsInvalid": "Попълни всички задължителни персонализирани полета",
-    "customFieldsSaveFailed": "Персонализираните полета не можаха да бъдат запазени"
+    "customFieldsSaveFailed": "Персонализираните полета не можаха да бъдат запазени",
+    "customFieldsMissing": "Не е запазено. Попълнете: {fields}",
+    "customFieldsNotValid": "Не е запазено. Проверете: {fields}"
   },
   "form": {
     "newQuote": "Нова оферта",
