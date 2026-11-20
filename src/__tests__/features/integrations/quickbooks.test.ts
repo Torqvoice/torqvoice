@@ -10,6 +10,7 @@ import {
   buildInvoice,
   buildPayment,
   checksumOf,
+  clearWrittenText,
   customerDisplayName,
   faultCode,
   faultMessage,
@@ -17,6 +18,8 @@ import {
   refField,
   salesCustomFields,
   sqlString,
+  writtenText,
+  writtenTextOf,
 } from '@/integrations/quickbooks/mapping'
 
 const customer: AccountingCustomer = {
@@ -478,6 +481,37 @@ describe('QuickBooks and the customer reference / PO', () => {
       { definitionId: '2', name: 'P.O. Number' },
     ])
     expect(salesCustomFields(undefined)).toEqual([])
+  })
+
+  it('takes back nothing on an invoice whose link has no record of what was written', () => {
+    const written = writtenTextOf({ docNumber: 'INV-1001', customerId: '58' })
+    expect(written).toEqual({ memo: null, customField: null })
+    expect(
+      clearWrittenText(
+        buildInvoice(invoice, options),
+        { CustomerMemo: { value: 'Your reference / PO: PO-48213' } },
+        written
+      )
+    ).toEqual({})
+  })
+
+  it('remembers what went into the message and the custom field, and nothing else', () => {
+    const memo = buildInvoice(withPo, {
+      ...options,
+      customerReference: { place: 'memo', label: 'Your reference / PO' },
+    })
+    expect(writtenText(memo)).toEqual({
+      memo: 'Your reference / PO: PO-48213\nThank you',
+      customField: null,
+    })
+    const field = buildInvoice(
+      { ...withPo, notes: null },
+      { ...options, customerReference: { place: 'customField', definitionId: '2' } }
+    )
+    expect(writtenText(field)).toEqual({
+      memo: null,
+      customField: { definitionId: '2', value: 'PO-48213' },
+    })
   })
 
   it('is not sent unless asked for: the setting starts at "Not sent"', () => {

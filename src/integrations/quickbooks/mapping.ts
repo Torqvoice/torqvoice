@@ -125,6 +125,8 @@ export interface QboInvoice {
   TotalAmt?: number
   Balance?: number
   PrivateNote?: string
+  CustomerMemo?: { value?: string }
+  CustomField?: { DefinitionId: string; StringValue?: string }[]
   status?: string
 }
 
@@ -512,3 +514,73 @@ export function localPaymentMethod(name: string | undefined): string {
 }
 
 export { checksumOf } from '@/features/integrations/Lib/checksum'
+
+/**
+ * The free text this connector last wrote on an invoice: the customer's
+ * message and the custom field the reference goes in. Kept on the invoice's
+ * link, so a later sync can take back its own words and nobody else's.
+ */
+export interface WrittenText {
+  memo: string | null
+  customField: { definitionId: string; value: string } | null
+}
+
+/** What an invoice body writes into the message and the reference's custom field. */
+export function writtenText(body: Record<string, unknown>): WrittenText {
+  const memo = (body.CustomerMemo as { value?: string } | undefined)?.value ?? null
+  const [field] = (body.CustomField as { DefinitionId: string; StringValue: string }[]) ?? []
+  return {
+    memo: memo || null,
+    customField: field?.StringValue
+      ? { definitionId: field.DefinitionId, value: field.StringValue }
+      : null,
+  }
+}
+
+/** A link's record of what was written, or null for one from before it was kept. */
+export function writtenTextOf(metadata: Record<string, unknown> | null | undefined): WrittenText {
+  const written = metadata?.written as Partial<WrittenText> | undefined
+  const field = written?.customField
+  return {
+    memo: typeof written?.memo === 'string' ? written.memo : null,
+    customField:
+      field && typeof field.definitionId === 'string' && typeof field.value === 'string'
+        ? { definitionId: field.definitionId, value: field.value }
+        : null,
+  }
+}
+
+const sameText = (a: string | undefined, b: string) =>
+  (a ?? '').replace(/\r\n/g, '\n').trim() === b.replace(/\r\n/g, '\n').trim()
+
+/**
+ * What a sparse update adds to take away text this connector wrote that the
+ * job no longer has: a reference taken off the work order, with no notes to
+ * fill the message instead. A sparse update leaves alone a field it does not
+ * mention, so without this the old reference would stay in QuickBooks.
+ *
+ * Only text still exactly as this connector wrote it is cleared: a message
+ * or a custom field the bookkeeper has typed into since is theirs and stays.
+ */
+export function clearWrittenText(
+  body: Record<string, unknown>,
+  current: Pick<QboInvoice, 'CustomerMemo' | 'CustomField'>,
+  written: WrittenText
+): Record<string, unknown> {
+  const clears: Record<string, unknown> = {}
+  if (!body.CustomerMemo && written.memo && sameText(current.CustomerMemo?.value, written.memo)) {
+    clears.CustomerMemo = { value: '' }
+  }
+  const field = written.customField
+  const sent = (body.CustomField as { DefinitionId: string }[] | undefined) ?? []
+  if (field && !sent.some((f) => f.DefinitionId === field.definitionId)) {
+    const theirs = current.CustomField?.find((f) => f.DefinitionId === field.definitionId)
+    if (theirs && sameText(theirs.StringValue, field.value)) {
+      clears.CustomField = [
+        ...sent,
+        { DefinitionId: field.definitionId, Type: 'StringType', StringValue: '' },
+      ]
+    }
+  }
+  return clears
+}
