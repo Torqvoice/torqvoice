@@ -113,3 +113,21 @@ export async function invoiceHeldFromCustomer(
   })
   return held !== null
 }
+
+/**
+ * Of these jobs, the ones held back from their customer for now: for a page
+ * that lists a customer's jobs and must not offer a held one as an invoice.
+ * Empty for a workshop that has the field off, without a look at the jobs.
+ */
+export async function heldFromCustomerIds(
+  organizationId: string,
+  serviceRecordIds: string[]
+): Promise<Set<string>> {
+  if (serviceRecordIds.length === 0) return new Set()
+  if (!(await isCustomerReferenceEnabled(organizationId))) return new Set()
+  const held = await db.serviceRecord.findMany({
+    where: { id: { in: serviceRecordIds }, organizationId, ...AWAITING_REFERENCE },
+    select: { id: true },
+  })
+  return new Set(held.map((record) => record.id))
+}

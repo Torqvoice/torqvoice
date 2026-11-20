@@ -19,6 +19,7 @@ vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) =
   isCustomerReferenceEnabled: vi.fn(async () => false),
   notAwaitingReference: vi.fn(async () => ({})),
   invoiceHeldFromCustomer: vi.fn(async () => false),
+  heldFromCustomerIds: vi.fn(async () => new Set<string>()),
 }))
 
 vi.mock('@/lib/db', () => ({
@@ -28,7 +29,19 @@ vi.mock('@/lib/db', () => ({
         const found = vehicles.find((row) =>
           Object.entries(where).every(([key, value]) => row[key as keyof typeof row] === value)
         )
-        return found ? { ...found, make: 'Volvo', model: 'V60', soldReportedAt: null } : null
+        return found
+          ? {
+              ...found,
+              make: 'Volvo',
+              model: 'V60',
+              soldReportedAt: null,
+              serviceRecords: [
+                { id: 'billed', status: 'completed' },
+                { id: 'held', status: 'completed' },
+                { id: 'open', status: 'in-progress' },
+              ],
+            }
+          : null
       }),
     },
     serviceRecord: { findMany: vi.fn(async () => []) },
@@ -48,6 +61,7 @@ vi.mock('@/features/vehicles/Lib/typeKeySetting', () => ({
 }))
 
 import { getPortalInvoices, getPortalVehicleDetail } from '@/features/portal/Actions/portalActions'
+import { heldFromCustomerIds } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 
 beforeEach(() => {
@@ -67,6 +81,17 @@ describe('one vehicle in the portal', () => {
       success: false,
       error: 'Vehicle not found',
     })
+  })
+
+  it('marks a finished job still waiting for its reference / PO as held, and only that one', async () => {
+    vi.mocked(heldFromCustomerIds).mockResolvedValueOnce(new Set(['held']))
+    const result = await getPortalVehicleDetail('kept')
+    expect(heldFromCustomerIds).toHaveBeenCalledWith('org1', ['billed', 'held'])
+    expect(result.data?.serviceRecords).toEqual([
+      expect.objectContaining({ id: 'billed', invoiceHeld: false }),
+      expect.objectContaining({ id: 'held', invoiceHeld: true }),
+      expect.objectContaining({ id: 'open', invoiceHeld: false }),
+    ])
   })
 
   it("does not find another customer's vehicle", async () => {
