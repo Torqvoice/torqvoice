@@ -218,6 +218,23 @@ describe('the record’s fields for a document', () => {
     ])
   })
 
+  it('lists only the vehicle’s own fields for the vehicle’s page, not its owner’s', async () => {
+    db.customFieldDefinition.findMany.mockResolvedValue([
+      { ...REQUIRED, id: 'f-v', label: 'Depot', entityType: 'vehicle' },
+      { ...REQUIRED, id: 'f-c', label: 'Cost centre', entityType: 'customer' },
+    ])
+    db.vehicle.findFirst.mockResolvedValue({ customerId: 'owner-1' })
+    db.customFieldValue.findMany.mockResolvedValue([
+      { fieldId: 'f-v', value: 'Leeds North' },
+      { fieldId: 'f-c', value: 'CC-7741' },
+    ])
+
+    expect(
+      await getRecordCustomFieldsForPrint('org-1', { vehicleId: 'v-1' }, { owner: false })
+    ).toEqual([{ fieldId: 'f-v', label: 'Depot', fieldType: 'text', value: 'Leeds North' }])
+    expect(db.vehicle.findFirst).not.toHaveBeenCalled()
+  })
+
   it('does not look the owner up when the workshop has no customer fields', async () => {
     db.customFieldDefinition.findMany.mockResolvedValue([{ ...REQUIRED, entityType: 'vehicle' }])
     await getRecordCustomFieldsForPrint('org-1', { vehicleId: 'v-1' })

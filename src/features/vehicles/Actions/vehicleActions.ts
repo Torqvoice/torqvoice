@@ -136,10 +136,13 @@ export async function getVehicle(vehicleId: string) {
       return {
         ...gateFleetNumber(vehicle, await isFleetNumberEnabled(organizationId)),
         lifetimeSpend,
-        // The workshop's own fields for this vehicle: none unless it defined some.
-        customFields: await getRecordCustomFieldsForPrint(organizationId, {
-          vehicleId: vehicle.id,
-        }),
+        // The workshop's own fields for this vehicle: none unless it defined
+        // some. Its owner's fields belong on the customer's page, not here.
+        customFields: await getRecordCustomFieldsForPrint(
+          organizationId,
+          { vehicleId: vehicle.id },
+          { owner: false }
+        ),
       }
     },
     {

@@ -51,10 +51,15 @@ export async function getCustomFieldsForPrint(
  * sheet designed before these existed gains a line. Nothing is read, and
  * nothing comes back, for a workshop that has defined none or whose plan has
  * no custom fields.
+ *
+ * `owner: false` leaves out the fields of a vehicle's owner when no customer
+ * is named: the vehicle's own page lists its own fields only, since the
+ * owner's are the customer's and live on the customer's page.
  */
 export async function getRecordCustomFieldsForPrint(
   organizationId: string,
-  record: { vehicleId?: string | null; customerId?: string | null }
+  record: { vehicleId?: string | null; customerId?: string | null },
+  { owner = true }: { owner?: boolean } = {}
 ): Promise<PrintCustomField[]> {
   if (!record.vehicleId && !record.customerId) return []
   const definitions = await db.customFieldDefinition.findMany({
@@ -68,7 +73,12 @@ export async function getRecordCustomFieldsForPrint(
   // The document's customer, else its vehicle's owner: the invoice's rule.
   // A quote made for a vehicle alone still prints its owner's fields.
   let customerId = record.customerId ?? null
-  if (!customerId && record.vehicleId && definitions.some((d) => d.entityType === 'customer')) {
+  if (
+    owner &&
+    !customerId &&
+    record.vehicleId &&
+    definitions.some((d) => d.entityType === 'customer')
+  ) {
     const vehicle = await db.vehicle.findFirst({
       where: { id: record.vehicleId, organizationId },
       select: { customerId: true },
