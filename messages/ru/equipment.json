@@ -70,7 +70,7 @@
     "manufacture": "Изготовлено",
     "manufacturePlaceholder": "2019 или {date}",
     "manufactureHint": "Только год, например 2019, или полная дата, например {date}.",
-    "manufactureInvalid": "Одних месяца и года недостаточно. Введите год, например 2019, или полную дату, например {date}.",
+    "manufactureInvalid": "Введите год, например 2019, или полную дату, например {date}.",
     "manufactureFuture": "Год изготовления в будущем.",
     "installDate": "Установлено",
     "ratedCapacity": "Номинальная грузоподъёмность",

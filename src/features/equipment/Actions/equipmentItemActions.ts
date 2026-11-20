@@ -5,11 +5,13 @@ import { revalidatePath } from 'next/cache'
 import { publishRecordChange } from '@/lib/realtime/publish.server'
 import { auditDetails } from '@/lib/audit'
 import { db } from '@/lib/db'
+import { formatDate } from '@/lib/format'
 import { requireFeature } from '@/lib/features'
 import { isGeneratedName, parseStoredFileUrl, releaseFiles } from '@/lib/files/manager'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { vehicleName } from '@/lib/vehicle-name'
 import { withAuth } from '@/lib/with-auth'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
 import { activeMeterTypes } from '@/features/meters/Lib/meters.server'
@@ -94,6 +96,18 @@ async function columns(
   reportFileName: string | null
 }> {
   const made = data.manufacture ? parseManufacture(data.manufacture) : null
+  if (data.manufacture && !made) {
+    // Worded as the dialog words it: the two forms taken, the date as this
+    // workshop writes one.
+    const setting = await db.appSetting.findFirst({
+      where: { organizationId, key: SETTING_KEYS.DATE_FORMAT },
+      select: { value: true },
+    })
+    const sample = formatDate(new Date(2019, 4, 14), setting?.value || undefined)
+    throw new Error(
+      (await getTranslations('equipment.form'))('manufactureInvalid', { date: sample })
+    )
+  }
   if (made) {
     // Made next year at the latest: a plate can be stamped ahead of delivery.
     const thisYear = Number(

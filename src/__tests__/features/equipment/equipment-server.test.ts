@@ -41,6 +41,7 @@ const db = vi.hoisted(() => ({
     createMany: vi.fn(),
   },
   quote: { findFirst: vi.fn() },
+  appSetting: { findFirst: vi.fn(async () => ({ value: 'dd.MM.yyyy' })) },
   meterType: { findMany: vi.fn(async () => [] as unknown[]) },
   vehicleMeter: { findMany: vi.fn(async () => [] as unknown[]) },
   meterReading: { findMany: vi.fn(async () => [] as unknown[]), updateMany: vi.fn() },
@@ -240,7 +241,13 @@ describe('an item', () => {
   })
 
   it('refuses a manufacture that is neither, a year in the future and a day that does not exist', async () => {
-    expect((await addEquipmentItem({ ...base, manufacture: '19' })).success).toBe(false)
+    expect((await addEquipmentItem({ ...base, manufacture: '19' })).error).toBe(
+      'manufactureInvalid'
+    )
+    // A month and year alone is refused in the same words: a year or a full date.
+    expect((await addEquipmentItem({ ...base, manufacture: '03/2019' })).error).toBe(
+      'manufactureInvalid'
+    )
     expect((await addEquipmentItem({ ...base, manufacture: '2999' })).error).toBe(
       'manufactureFuture'
     )

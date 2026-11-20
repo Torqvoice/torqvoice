@@ -70,7 +70,7 @@
     "manufacture": "Üretim",
     "manufacturePlaceholder": "2019 veya {date}",
     "manufactureHint": "Yalnızca bir yıl, örneğin 2019, ya da tam bir tarih, örneğin {date}.",
-    "manufactureInvalid": "Yalnızca ay ve yıl yetmez. 2019 gibi bir yıl ya da {date} gibi tam bir tarih yazın.",
+    "manufactureInvalid": "2019 gibi bir yıl ya da {date} gibi tam bir tarih yazın.",
     "manufactureFuture": "Üretim yılı gelecekte.",
     "installDate": "Takıldığı tarih",
     "ratedCapacity": "Nominal kapasite",

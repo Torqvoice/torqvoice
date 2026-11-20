@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { isDayKey, parseManufacture } from '../Lib/equipmentDays'
+import { isDayKey } from '../Lib/equipmentDays'
 
 export const EQUIPMENT_TYPE_NAME_MAX = 60
 export const EQUIPMENT_TEXT_MAX = 120
@@ -40,12 +40,14 @@ const day = z
   .nullable()
   .optional()
 
-/** A year alone or a full day, as the plate gives it; empty for none. */
+/**
+ * A year alone or a full day, as the plate gives it; empty for none. Which
+ * of them it is, and a refusal worded for the person, is the action's.
+ */
 const manufacture = z
   .string()
   .trim()
-  .max(10)
-  .refine((value) => value === '' || parseManufacture(value) !== null, 'Not a year or a date')
+  .max(20)
   .transform((value) => (value === '' ? null : value))
   .nullable()
   .optional()

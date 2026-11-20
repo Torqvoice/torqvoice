@@ -70,7 +70,7 @@
     "manufacture": "Costruzione",
     "manufacturePlaceholder": "2019 o {date}",
     "manufactureHint": "Solo un anno, come 2019, o una data completa, come {date}.",
-    "manufactureInvalid": "Mese e anno da soli non bastano. Inserisci un anno, come 2019, o una data completa, come {date}.",
+    "manufactureInvalid": "Inserisci un anno, come 2019, o una data completa, come {date}.",
     "manufactureFuture": "L'anno di costruzione è nel futuro.",
     "installDate": "Montato il",
     "ratedCapacity": "Portata nominale",
