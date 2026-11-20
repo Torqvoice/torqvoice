@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "Arbeidsordren beholdt sin egen referanse / bestillingsnr., {job}. Tilbudets, {quote}, ble ikke kopiert over.",
     "convert": "Konverter",
     "convertToWorkOrder": "Konverter til arbeidsordre",
     "cancel": "Avbryt",

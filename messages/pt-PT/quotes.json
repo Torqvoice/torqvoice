@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "A ordem de trabalho manteve a sua própria referência / n.º de encomenda, {job}. A do orçamento, {quote}, não foi copiada.",
     "convert": "Converter",
     "convertToWorkOrder": "Converter em ordem de serviço",
     "cancel": "Cancelar",

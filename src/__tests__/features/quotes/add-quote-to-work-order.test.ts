@@ -21,6 +21,12 @@ vi.mock('@/lib/cached-session', () => ({
 
 vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
+const reference = vi.hoisted(() => ({ on: true }))
+vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) => ({
+  ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
+  isCustomerReferenceEnabled: vi.fn(async () => reference.on),
+}))
+
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
@@ -364,6 +370,48 @@ describe('addQuoteToServiceRecord', () => {
     for (const [call] of recordUpdate.mock.calls) {
       expect(call.data).not.toHaveProperty('customerReference')
     }
+  })
+
+  it('says so, naming both, when the job keeps its own reference over a different one', async () => {
+    reference.on = true
+    setup({
+      quote: { customerReference: 'PO-48213' },
+      job: { customerReference: 'PO-ON-THE-JOB' },
+    })
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    expect(result.success).toBe(true)
+    expect(result.data?.referenceKept).toEqual({ job: 'PO-ON-THE-JOB', quote: 'PO-48213' })
+  })
+
+  it('says nothing when the two references are the same, or the job took the quote’s', async () => {
+    reference.on = true
+    setup({ quote: { customerReference: 'PO-48213' }, job: { customerReference: ' PO-48213 ' } })
+    expect((await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)).data?.referenceKept).toBe(
+      null
+    )
+
+    setup({ quote: { customerReference: 'PO-48213' } })
+    expect((await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)).data?.referenceKept).toBe(
+      null
+    )
+  })
+
+  it('says nothing about references while the workshop does not use the field', async () => {
+    reference.on = false
+    const { recordUpdate } = setup({
+      quote: { customerReference: 'PO-48213' },
+      job: { customerReference: 'PO-ON-THE-JOB' },
+    })
+
+    const result = await addQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID, JOB_ID)
+
+    expect(result.data?.referenceKept).toBe(null)
+    for (const [call] of recordUpdate.mock.calls) {
+      expect(call.data).not.toHaveProperty('customerReference')
+    }
+    reference.on = true
   })
 
   it('writes no reference for a quote that has none', async () => {
