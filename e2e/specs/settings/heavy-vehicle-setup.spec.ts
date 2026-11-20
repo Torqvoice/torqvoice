@@ -41,7 +41,7 @@ test.afterAll(forgetCard)
 test('a workshop that has not asked sees only the line at the foot of the page', async ({
   page,
 }) => {
-  await page.goto('/settings/custom-fields')
+  await page.goto('/settings/invoice?tab=customFields')
   await settle(page)
   await expect(page.getByTestId('heavy-vehicle-setup')).toHaveCount(0)
   await expect(page.getByTestId('heavy-vehicle-setup-link')).toBeVisible()
@@ -60,12 +60,12 @@ test('the search palette opens it on Settings, Custom Fields', async ({ page }) 
   }).toPass({ timeout: 30_000 })
   await input.fill('heavy vehicles')
   await page.getByRole('option', { name: /Set up for fleets and heavy vehicles/ }).click()
-  await page.waitForURL(/\/settings\/custom-fields/)
+  await page.waitForURL(/\/settings\/invoice\?tab=customFields/)
   const card = page.getByTestId('heavy-vehicle-setup')
   await expect(card).toBeVisible({ timeout: 30_000 })
   await expect(card.getByRole('link', { name: /Meters/ })).toHaveAttribute(
     'href',
-    '/settings/custom-fields#meters'
+    '/settings/invoice?tab=customFields#meters'
   )
   await expect(card.getByRole('link', { name: /guide/ })).toHaveAttribute(
     'href',
@@ -76,7 +76,7 @@ test('the search palette opens it on Settings, Custom Fields', async ({ page }) 
 })
 
 test('a step turned on shows as on', async ({ page }) => {
-  await page.goto('/settings/custom-fields')
+  await page.goto('/settings/invoice?tab=customFields')
   await settle(page)
   const step = page.getByTestId('heavy-vehicle-step-reference')
   await expect(step).toContainText('Turn on')
@@ -95,7 +95,7 @@ test('a step turned on shows as on', async ({ page }) => {
   await page.getByRole('button', { name: 'Save Workshop Settings' }).click()
   await expect(page.getByText('Settings saved')).toBeVisible()
 
-  await page.goto('/settings/custom-fields')
+  await page.goto('/settings/invoice?tab=customFields')
   await settle(page)
   await expect(page.getByTestId('heavy-vehicle-step-reference')).toContainText('On')
   await expect(page.getByTestId('heavy-vehicle-setup-progress')).toHaveText(
@@ -106,7 +106,7 @@ test('a step turned on shows as on', async ({ page }) => {
 test('put away it is gone, and the line at the foot of the page brings it back', async ({
   page,
 }) => {
-  await page.goto('/settings/custom-fields')
+  await page.goto('/settings/invoice?tab=customFields')
   await settle(page)
   await page.getByRole('button', { name: 'Close the setup checklist' }).click()
   await expect(page.getByTestId('heavy-vehicle-setup')).toHaveCount(0, { timeout: 30_000 })

@@ -203,4 +203,24 @@ export const invoiceEntries: SettingsEntry[] = [
     query: 'tab=customFields',
     keywords: ['custom fields', 'extra fields', 'own fields', 'additional fields', 'custom data'],
   },
+  {
+    id: 'invoice.meters',
+    page: 'invoice',
+    title: 'meters.title',
+    description: 'meters.description',
+    anchor: 'meters',
+    query: 'tab=customFields',
+    // The tab is only drawn on the plans that have custom fields.
+    requires: 'customFields',
+    keywords: ['meters', 'engine hours', 'pto hours', 'crane hours', 'hour meter', 'counter'],
+  },
+  {
+    id: 'invoice.equipment',
+    page: 'invoice',
+    title: 'layoutEditor.sections.equipment',
+    anchor: 'equipment',
+    query: 'tab=customFields',
+    requires: 'customFields',
+    keywords: ['equipment', 'equipment types', 'crane', 'tail lift', 'hook loader', 'serial'],
+  },
 ]

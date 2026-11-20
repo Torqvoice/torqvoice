@@ -142,7 +142,7 @@ export async function createMeterType(input: unknown) {
             organizationId,
           },
         })
-        revalidatePath('/settings/custom-fields')
+        revalidatePath('/settings/invoice')
         return meter
       } catch (error) {
         if (duplicateName(error)) {
@@ -186,7 +186,7 @@ export async function updateMeterType(input: unknown) {
         where: { id, organizationId },
         select: { id: true, name: true, unit: true, isActive: true },
       })
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return meter
     },
     {
@@ -218,7 +218,7 @@ export async function deleteMeterType(id: string) {
       })
       if (!meter) throw new Error('Meter not found')
       await db.meterType.deleteMany({ where: { id, organizationId } })
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return meter
     },
     {

@@ -83,7 +83,7 @@ test.describe('meters', () => {
   })
 
   test('a meter is defined in Settings, Custom Fields', async ({ page }) => {
-    await page.goto('/settings/custom-fields')
+    await page.goto('/settings/invoice?tab=customFields')
     await settle(page)
     const manager = page.getByTestId('meters-manager')
     await expect(manager).toBeVisible()

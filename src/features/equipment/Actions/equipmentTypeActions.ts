@@ -33,7 +33,7 @@ function isDuplicate(error: unknown): boolean {
 }
 
 function refresh() {
-  revalidatePath('/settings/custom-fields')
+  revalidatePath('/settings/invoice')
 }
 
 /** Every type the workshop has defined, shown or hidden, with how many items each has. */

@@ -8,6 +8,15 @@ import {
   getQuoteLayoutConfig,
 } from '@/features/settings/Actions/invoiceLayoutActions'
 import { getFieldDefinitions } from '@/features/custom-fields/Actions/customFieldActions'
+import { getMeterSuggestions, getMeterTypes } from '@/features/meters/Actions/meterTypeActions'
+import { MetersManager } from '@/features/meters/Components/MetersManager'
+import { getEquipmentTypes } from '@/features/equipment/Actions/equipmentTypeActions'
+import { EquipmentTypesManager } from '@/features/equipment/Components/EquipmentTypesManager'
+import { heavyVehicleSetupState } from '@/features/setup/Lib/heavyVehicleSetup.server'
+import {
+  HeavyVehicleSetupCard,
+  HeavyVehicleSetupLink,
+} from '@/features/setup/Components/HeavyVehicleSetupCard'
 import { redirect } from 'next/navigation'
 import { InvoiceSettings } from './invoice-settings'
 import { countUnfrozenInvoices } from '@/features/invoices/Actions/legacyInvoiceActions'
@@ -32,6 +41,17 @@ export default async function InvoiceSettingsPage() {
     getQuoteLayoutConfig(),
     features.customFields ? getFieldDefinitions() : Promise.resolve({ success: true, data: [] }),
   ])
+
+  // The Custom Fields tab also holds the workshop's meters and equipment, and
+  // the fleet and heavy vehicle checklist once the workshop asked for it.
+  const [metersResult, suggestionsResult, equipmentResult, setup] = features.customFields
+    ? await Promise.all([
+        getMeterTypes(),
+        getMeterSuggestions(),
+        getEquipmentTypes(),
+        heavyVehicleSetupState(data.organizationId),
+      ])
+    : [null, null, null, null]
 
   const settings = result.success && result.data ? result.data : {}
   const customFields =
@@ -74,6 +94,24 @@ export default async function InvoiceSettingsPage() {
       initialQuoteLayout={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
       customFields={customFields}
       customFieldsEnabled={features.customFields ?? false}
+      customFieldsTop={setup ? <HeavyVehicleSetupCard state={setup} /> : null}
+      customFieldsBottom={
+        features.customFields ? (
+          <>
+            <MetersManager
+              meters={metersResult?.success && metersResult.data ? metersResult.data : []}
+              suggestions={
+                suggestionsResult?.success && suggestionsResult.data ? suggestionsResult.data : []
+              }
+            />
+            <EquipmentTypesManager
+              types={equipmentResult?.success && equipmentResult.data ? equipmentResult.data : []}
+            />
+            {/* At the foot of the tab, so it moves nothing above it. */}
+            {!setup && <HeavyVehicleSetupLink />}
+          </>
+        ) : null
+      }
       telegramEnabled={telegramEnabled}
     />
   )

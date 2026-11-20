@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { customFieldsSettingsHref } from '@/features/custom-fields/Lib/settingsPath'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
@@ -59,19 +60,19 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
       },
       {
         key: 'customFields',
-        href: '/settings/custom-fields#custom-fields',
+        href: customFieldsSettingsHref('custom-fields'),
         title: t('customFieldsTitle'),
         hint: t(isMarine ? 'customFieldsHintMarine' : 'customFieldsHint'),
       },
       {
         key: 'meters',
-        href: '/settings/custom-fields#meters',
+        href: customFieldsSettingsHref('meters'),
         title: t('metersTitle'),
         hint: t(isMarine ? 'metersHintMarine' : 'metersHint'),
       },
       {
         key: 'equipment',
-        href: '/settings/custom-fields#equipment',
+        href: customFieldsSettingsHref('equipment'),
         title: t('equipmentTitle'),
         hint: t(isMarine ? 'equipmentHintMarine' : 'equipmentHint'),
       },
@@ -189,7 +190,7 @@ export function useOpenHeavyVehicleSetup() {
       toast.error(result.error || t('saveError'))
       return
     }
-    router.push(`/settings/custom-fields#${HEAVY_VEHICLE_SETUP_ANCHOR}`)
+    router.push(customFieldsSettingsHref(HEAVY_VEHICLE_SETUP_ANCHOR))
     router.refresh()
   }
 }

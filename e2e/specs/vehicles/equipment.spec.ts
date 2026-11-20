@@ -100,7 +100,7 @@ test.describe('equipment', () => {
   test('kinds of equipment are defined and put in order in Settings, Custom Fields', async ({
     page,
   }) => {
-    await page.goto('/settings/custom-fields')
+    await page.goto('/settings/invoice?tab=customFields')
     await settle(page)
     const manager = page.getByTestId('equipment-types-manager')
     for (const name of [CRANE, TAIL_LIFT]) {

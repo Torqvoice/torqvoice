@@ -209,7 +209,6 @@ export async function setCustomFieldPlacement(input: {
       // graduate a classic layout to designer rendering (isDesignerLayout).
       await persistLayoutConfig(userId, organizationId, key, { ...config, sections })
 
-      revalidatePath('/settings/custom-fields')
       revalidatePath('/settings/invoice')
       return { definitionId, placement }
     },

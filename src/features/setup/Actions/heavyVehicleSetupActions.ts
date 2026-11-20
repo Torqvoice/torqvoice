@@ -15,7 +15,7 @@ async function setCard(organizationId: string, userId: string, value: 'open' | '
     update: { value },
     create: { organizationId, userId, key: HEAVY_VEHICLE_SETUP_KEY, value },
   })
-  revalidatePath('/settings/custom-fields')
+  revalidatePath('/settings/invoice')
 }
 
 /**

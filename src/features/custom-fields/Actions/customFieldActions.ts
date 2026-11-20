@@ -87,7 +87,7 @@ export async function createFieldDefinition(input: unknown) {
         },
       })
 
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return field
     },
     {
@@ -126,7 +126,7 @@ export async function updateFieldDefinition(input: unknown) {
         },
       })
 
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return field
     },
     {
@@ -158,7 +158,7 @@ export async function deleteFieldDefinition(fieldId: string) {
         db.customFieldDefinition.delete({ where: { id: fieldId } }),
       ])
 
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return { fieldId, fieldName: field.name }
     },
     {

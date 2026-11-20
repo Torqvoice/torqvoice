@@ -162,8 +162,11 @@ describe('the checklist', () => {
       '/settings/workshop#fleetNumberEnabled'
     )
     expect(link(/Fleet or unit number/)).toHaveTextContent('Turn on')
-    expect(link(/^Meters/)).toHaveAttribute('href', '/settings/custom-fields#meters')
-    expect(link(/^Equipment/)).toHaveAttribute('href', '/settings/custom-fields#equipment')
+    expect(link(/^Meters/)).toHaveAttribute('href', '/settings/invoice?tab=customFields#meters')
+    expect(link(/^Equipment/)).toHaveAttribute(
+      'href',
+      '/settings/invoice?tab=customFields#equipment'
+    )
     expect(link(/guide/)).toHaveAttribute('href', HEAVY_VEHICLE_DOCS_URL)
     // The docs are linked without a language or an anchor.
     expect(HEAVY_VEHICLE_DOCS_URL).toBe('https://torqvoice.com/docs/heavy-vehicles')

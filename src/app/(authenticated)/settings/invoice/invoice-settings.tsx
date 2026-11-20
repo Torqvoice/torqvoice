@@ -69,6 +69,10 @@ interface InvoiceSettingsProps {
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
   customFieldsEnabled: boolean
+  /** Shown above the fields list on the Custom Fields tab: the setup checklist. */
+  customFieldsTop?: React.ReactNode
+  /** Shown below it: the workshop's meters and equipment, and the way into setup. */
+  customFieldsBottom?: React.ReactNode
   telegramEnabled?: boolean
 }
 
@@ -126,6 +130,8 @@ export function InvoiceSettings({
   initialQuoteLayout,
   customFields,
   customFieldsEnabled,
+  customFieldsTop,
+  customFieldsBottom,
 }: InvoiceSettingsProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -753,11 +759,15 @@ export function InvoiceSettings({
           </div>
         </ReadOnlyWrapper>
       ) : (
-        <CustomFieldsManager
-          initialFields={customFields}
-          layoutConfig={initialInvoiceLayout ?? getDefaultInvoiceLayout()}
-          quoteLayoutConfig={initialQuoteLayout ?? getDefaultInvoiceLayout()}
-        />
+        <div className="space-y-8">
+          {customFieldsTop}
+          <CustomFieldsManager
+            initialFields={customFields}
+            layoutConfig={initialInvoiceLayout ?? getDefaultInvoiceLayout()}
+            quoteLayoutConfig={initialQuoteLayout ?? getDefaultInvoiceLayout()}
+          />
+          {customFieldsBottom}
+        </div>
       )}
     </div>
   )
