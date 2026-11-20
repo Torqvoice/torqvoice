@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { refuseExpiredShareToken } from '@/lib/share-link-route'
 import { svgDownloadHeaders } from '@/lib/upload-url'
-import { db } from '@/lib/db'
+import { isSharedFile, loadSharedDocumentFiles } from '@/lib/shared-files.server'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
 import { uploadsRoot } from '@/lib/upload-root'
@@ -59,47 +59,14 @@ export async function GET(
   const closed = await refuseExpiredShareToken(token)
   if (closed) return closed
 
-  // Validate token and get org (check both invoice and quote tokens)
-  let orgId: string | undefined
-
-  const serviceRecord = await db.serviceRecord.findUnique({
-    where: { publicToken: token },
-    select: { organizationId: true },
-  })
-
-  if (serviceRecord?.organizationId) {
-    orgId = serviceRecord.organizationId
-  } else {
-    const quote = await db.quote.findFirst({
-      where: { publicToken: token },
-      select: { organizationId: true },
-    })
-    if (quote?.organizationId) {
-      orgId = quote.organizationId
-    } else {
-      const inspection = await db.inspection.findFirst({
-        where: { publicToken: token },
-        select: { organizationId: true },
-      })
-      if (inspection?.organizationId) {
-        orgId = inspection.organizationId
-      }
-    }
-  }
-
-  if (!orgId) {
-    const statusReport = await db.statusReport.findFirst({
-      where: { publicToken: token },
-      select: { organizationId: true },
-    })
-    if (statusReport?.organizationId) {
-      orgId = statusReport.organizationId
-    }
-  }
-
-  if (!orgId) {
+  // A token opens what its document shows the customer and nothing else of
+  // the workshop. A file it does not show answers exactly as a missing one
+  // does, so the route never says whether a name exists.
+  const shared = await loadSharedDocumentFiles(token)
+  if (!shared || !isSharedFile(shared, category, filename)) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
+  const orgId = shared.organizationId
   const filePath = path.join(uploadsRoot(), orgId, category, filename)
 
   try {
