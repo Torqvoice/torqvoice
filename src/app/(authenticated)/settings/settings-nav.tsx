@@ -203,6 +203,16 @@ export function SettingsNav({
 
   const pages = visibleSettingsPages({ isCloud, supportEnabled })
 
+  // The list is longer than the window: after a link or the search lands on a
+  // page further down, bring that page's row into view so the person can see
+  // where they are. "nearest" moves nothing when the row is already visible.
+  const navRef = useRef<HTMLElement>(null)
+  useEffect(() => {
+    navRef.current
+      ?.querySelector<HTMLElement>('[aria-current="page"]')
+      ?.scrollIntoView?.({ block: 'nearest' })
+  }, [pathname])
+
   const newPill = (item: SettingsPage) =>
     newItems.includes(item.href) ? (
       <span className="shrink-0 rounded bg-primary/15 px-1.5 py-0.5 text-[10px] font-semibold uppercase text-primary">
@@ -236,7 +246,7 @@ export function SettingsNav({
   }
 
   return (
-    <nav className="flex flex-col gap-4">
+    <nav ref={navRef} className="flex flex-col gap-4">
       <SettingsSearch features={features} isCloud={isCloud} supportEnabled={supportEnabled} />
       {SETTINGS_CATEGORIES.map((category) => {
         const visibleItems = pages.filter((p) => p.category === category)
@@ -255,6 +265,7 @@ export function SettingsNav({
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-current={isActive ? 'page' : undefined}
                     className={cn(
                       'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
                       isActive
