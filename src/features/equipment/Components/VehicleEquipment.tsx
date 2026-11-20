@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useFormatter, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { ChevronDown, ChevronRight, FileText, History, MoreHorizontal, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -18,6 +18,8 @@ import {
 import { useConfirm } from '@/components/confirm-dialog'
 import { useServiceType } from '@/components/service-type-context'
 import { useDateSettings } from '@/components/date-settings-context'
+import { formatDate } from '@/lib/format'
+import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
 import type { EquipmentItemView, VehicleEquipmentView } from '../Lib/equipment.server'
@@ -30,11 +32,14 @@ import {
 import { EquipmentItemDialog } from './EquipmentItemDialog'
 import { MoveEquipmentDialog } from './MoveEquipmentDialog'
 
-/** A day key ("2026-11-20") as the person reads dates, never moved by a clock. */
+/**
+ * A day key ("2026-11-20") in the workshop's date format, never moved by a
+ * clock: read at local midnight and written without a zone, as the date
+ * field shows it.
+ */
 export function useDayText() {
-  const format = useFormatter()
-  return (day: string) =>
-    format.dateTime(new Date(`${day}T00:00:00Z`), { dateStyle: 'medium', timeZone: 'UTC' })
+  const { dateFormat } = useDateSettings()
+  return (day: string) => formatDate(new Date(`${day}T00:00:00`), dateFormat)
 }
 
 type Dialog =
@@ -325,11 +330,8 @@ function ItemRow({
 function HistoryList({ equipment }: { equipment: VehicleEquipmentView }) {
   const t = useTranslations('equipment.vehicle')
   const router = useRouter()
-  const format = useFormatter()
-  const { timezone } = useDateSettings()
-  // When it left is a moment: its day is the workshop's.
-  const day = (iso: string) =>
-    format.dateTime(new Date(iso), { dateStyle: 'medium', timeZone: timezone || undefined })
+  // When it left is a moment: its day is the workshop's, in its date format.
+  const { formatDate: day } = useFormatDate()
 
   const refit = async (item: EquipmentItemView) => {
     const result = await refitEquipmentItem(item.id)
