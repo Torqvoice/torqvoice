@@ -50,9 +50,11 @@
     "delete": "Excluir",
     "deleteTitle": "Excluir {name} definitivamente?",
     "deleteHint": "O histórico, os medidores, as leituras e o arquivo do relatório também são excluídos. Para mantê-los, retire-o em vez disso.",
+    "deleteJobs": "{count, plural, one {# ordem de serviço é feita nele e deixará de mostrá-lo.} other {# ordens de serviço são feitas nele e deixarão de mostrá-lo.}} As faturas emitidas mantêm sua cópia impressa.",
     "deleted": "{name} excluído",
     "history": "{count, plural, one {Equipamento anterior (#)} other {Equipamentos anteriores (#)}}",
     "movedTo": "Movido para <vehicle></vehicle> em {date}",
+    "movedOn": "Movido em {date}",
     "removedOn": "Retirado em {date}",
     "refit": "Recolocar",
     "refitted": "{name} recolocado",
@@ -103,6 +105,8 @@
     "none": "Nenhum equipamento escolhido",
     "search": "Buscar equipamento",
     "noMatch": "Nenhum equipamento encontrado",
-    "saveError": "Não foi possível salvar em que o serviço é feito"
+    "saveError": "Não foi possível salvar em que o serviço é feito",
+    "moved": "Movido desde então",
+    "removed": "Retirado desde então"
   }
 }

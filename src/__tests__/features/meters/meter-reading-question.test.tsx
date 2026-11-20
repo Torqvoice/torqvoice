@@ -11,6 +11,8 @@ vi.mock('@/features/meters/Actions/jobMeterActions', () => ({ setJobMeterReading
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
 
 import { JobMeters } from '@/features/meters/Components/JobMeters'
+import { meterAskLimit } from '@/features/meters/Lib/meterAsk'
+import { MUCH_HIGHER_READING } from '@/features/vehicles/Lib/vehicleReading'
 
 const METER = {
   vehicleMeterId: 'vm-1',
@@ -58,5 +60,68 @@ describe('a reading far above the last one', () => {
     await act(async () => typeAndLeave('4290,5'))
     expect(screen.queryByTestId('reading-question')).not.toBeInTheDocument()
     expect(setJobMeterReading).toHaveBeenCalledTimes(1)
+  })
+
+  it('for a meter in kilometres uses the odometer’s limit, not the hours one', async () => {
+    const km = { ...METER, name: 'Trailer km', unit: 'km', last: 120_000 }
+    render(<JobMeters jobId="job-1" meters={[km]} />)
+    // 30,000 km since the last visit: a year of driving, not a slipped digit.
+    const box = screen.getByLabelText('Trailer km')
+    await act(async () => {
+      fireEvent.change(box, { target: { value: '150000' } })
+      fireEvent.blur(box)
+    })
+    expect(screen.queryByTestId('reading-question')).not.toBeInTheDocument()
+    expect(setJobMeterReading).toHaveBeenCalledTimes(1)
+  })
+
+  it('is never asked for a meter whose unit fits no limit', async () => {
+    const lifts = { ...METER, name: 'Lifts', unit: 'cycles', last: 10 }
+    render(<JobMeters jobId="job-1" meters={[lifts]} />)
+    const box = screen.getByLabelText('Lifts')
+    await act(async () => {
+      fireEvent.change(box, { target: { value: '9999999' } })
+      fireEvent.blur(box)
+    })
+    expect(screen.queryByTestId('reading-question')).not.toBeInTheDocument()
+    expect(setJobMeterReading).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('the limit a meter’s unit asks with', () => {
+  it('is the distance limit for distances, the hours limit for hours, and none otherwise', () => {
+    for (const unit of ['km', ' KM ', 'Kilometres', 'mi', 'miles', 'nm', 'NMI', 'км']) {
+      expect(meterAskLimit(unit), unit).toBe(MUCH_HIGHER_READING.distance)
+    }
+    // English, and every language's own short form for engine hours.
+    for (const unit of [
+      'h',
+      'hr',
+      'HRS',
+      'hours',
+      'Std.',
+      't',
+      'timer',
+      'u',
+      'sa',
+      'val.',
+      'godz.',
+      'ч',
+    ]) {
+      expect(meterAskLimit(unit), unit).toBe(MUCH_HIGHER_READING.hours)
+    }
+    for (const unit of ['', 'l', 'litres', 'cycles', 'kWh', 'bar', null, undefined]) {
+      expect(meterAskLimit(unit), String(unit)).toBeNull()
+    }
+  })
+
+  it('knows every hours unit the app ships in its languages', async () => {
+    const { readdirSync, readFileSync } = await import('node:fs')
+    const dir = `${process.cwd()}/messages`
+    for (const locale of readdirSync(dir)) {
+      const settings = JSON.parse(readFileSync(`${dir}/${locale}/settings.json`, 'utf8'))
+      const unit = settings.meters?.hoursUnit
+      if (unit) expect(meterAskLimit(unit), `${locale}: ${unit}`).toBe(MUCH_HIGHER_READING.hours)
+    }
   })
 })

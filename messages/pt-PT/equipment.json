@@ -50,9 +50,11 @@
     "delete": "Eliminar",
     "deleteTitle": "Eliminar {name} definitivamente?",
     "deleteHint": "O histórico, os contadores, as leituras e o ficheiro do relatório também são eliminados. Para os manter, retire-o em alternativa.",
+    "deleteJobs": "{count, plural, one {# ordem de serviço incide sobre ele e deixará de o mostrar.} other {# ordens de serviço incidem sobre ele e deixarão de o mostrar.}} As faturas emitidas mantêm a sua cópia impressa.",
     "deleted": "{name} eliminado",
     "history": "{count, plural, one {Equipamento anterior (#)} other {Equipamentos anteriores (#)}}",
     "movedTo": "Movido para <vehicle></vehicle> a {date}",
+    "movedOn": "Movido a {date}",
     "removedOn": "Retirado a {date}",
     "refit": "Voltar a colocar",
     "refitted": "{name} colocado novamente",
@@ -103,6 +105,8 @@
     "none": "Nenhum equipamento escolhido",
     "search": "Pesquisar equipamento",
     "noMatch": "Nenhum equipamento corresponde",
-    "saveError": "Não foi possível guardar em que equipamento o trabalho incide"
+    "saveError": "Não foi possível guardar em que equipamento o trabalho incide",
+    "moved": "Movido entretanto",
+    "removed": "Retirado entretanto"
   }
 }

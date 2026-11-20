@@ -10,8 +10,11 @@ type Tx = {
 
 /**
  * The equipment a quote is for goes with the work it becomes: onto a new job,
- * or added to an existing one beside what it already works on. Only items on
- * the job's vehicle, and nothing while equipment is off.
+ * or added to an existing one beside what it already works on. These are new
+ * picks for the job, so they are checked as `checkedWorkOnItems` checks one:
+ * only items on the job's vehicle now and not taken off. A quote keeps an
+ * item that moved since, but the job does not take it on. Nothing while
+ * equipment is off.
  */
 export async function copyQuoteEquipmentToJob(
   tx: Tx,

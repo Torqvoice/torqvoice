@@ -27,7 +27,11 @@ import {
 } from '@/components/ui/dialog'
 import type { EquipmentItemView, EquipmentTypeView } from '../Lib/equipment.server'
 import { manufactureText, parseManufacture } from '../Lib/equipmentDays'
-import { addEquipmentItem, updateEquipmentItem } from '../Actions/equipmentItemActions'
+import {
+  addEquipmentItem,
+  discardEquipmentReport,
+  updateEquipmentItem,
+} from '../Actions/equipmentItemActions'
 import { EQUIPMENT_NOTES_MAX, EQUIPMENT_TEXT_MAX } from '../Schema/equipmentSchema'
 
 /**
@@ -75,6 +79,18 @@ export function EquipmentItemDialog({
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
   const manufactureInvalid = manufacture.trim() !== '' && parseManufacture(manufacture) === null
+  // A report uploaded here and not saved yet: the upload wrote it already, so
+  // it is let go of when it is taken off or the dialog closes without saving.
+  const unsaved = useRef<string | null>(null)
+  const discardUnsaved = () => {
+    const url = unsaved.current
+    unsaved.current = null
+    if (url) void discardEquipmentReport(url).catch(() => undefined)
+  }
+  const cancel = () => {
+    discardUnsaved()
+    onClose()
+  }
 
   const upload = async (file: File) => {
     setUploading(true)
@@ -94,6 +110,8 @@ export function EquipmentItemDialog({
         toast.error(json.error || t('uploadError'))
         return
       }
+      discardUnsaved()
+      unsaved.current = json.url
       setReport({ url: json.url, name: json.name })
     } catch {
       toast.error(t('uploadError'))
@@ -128,6 +146,8 @@ export function EquipmentItemDialog({
       toast.error(result.error || t('saveError'))
       return
     }
+    // Saved: the item points at it now.
+    unsaved.current = null
     toast.success(item ? t('updated') : t('added'))
     onClose()
     router.refresh()
@@ -153,7 +173,7 @@ export function EquipmentItemDialog({
   )
 
   return (
-    <Dialog open onOpenChange={(next) => !next && onClose()}>
+    <Dialog open onOpenChange={(next) => !next && cancel()}>
       <DialogContent className="sm:max-w-lg" data-testid="equipment-dialog">
         <DialogHeader>
           <DialogTitle>{item ? t('editTitle') : t('addTitle')}</DialogTitle>
@@ -253,7 +273,10 @@ export function EquipmentItemDialog({
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6"
-                  onClick={() => setReport(null)}
+                  onClick={() => {
+                    if (unsaved.current === report.url) discardUnsaved()
+                    setReport(null)
+                  }}
                   aria-label={t('removeReport', { name: report.name })}
                 >
                   <X className="h-3.5 w-3.5" />
@@ -297,7 +320,7 @@ export function EquipmentItemDialog({
           </div>
         </DialogBody>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>
+          <Button type="button" variant="outline" onClick={cancel}>
             {tc('cancel')}
           </Button>
           <Button

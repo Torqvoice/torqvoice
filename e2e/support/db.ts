@@ -103,37 +103,72 @@ export async function restoreInvoiceDesignState(state: InvoiceDesignState): Prom
   })
 }
 
+/**
+ * Every setting Settings > Tax saves (`setTax` in support/settings.ts goes
+ * through that page), by its key in SETTING_KEYS: the tax keys, the default
+ * rate, which is not named `workshop.tax…`, and whether invoice lines show
+ * prices with tax.
+ */
+const TAX_SETTING_KEYS = [
+  'workshop.taxEnabled',
+  'workshop.defaultTaxRate',
+  'workshop.taxInclusive',
+  'workshop.taxLabel',
+  'workshop.taxMode',
+  'workshop.taxComponents',
+  'workshop.taxSelective',
+  'workshop.taxAppliesToParts',
+  'workshop.taxAppliesToLabor',
+  'workshop.taxAppliesToShopFee',
+  'invoice.lineItemsInclTax',
+] as const
+
 /** The workshop's tax settings, for a spec that sets its own and must hand them back. */
 export interface TaxSettingsState {
   organizationId: string
-  settings: { key: string; value: string }[]
+  /** The rows as they were, whole: a key missing here had no row. */
+  settings: { id: string; key: string; value: string; userId: string }[]
 }
 
 export async function taxSettingsState(): Promise<TaxSettingsState> {
   const organizationId = await ownerOrganizationId()
   return withDb(async (db) => {
-    const settings = await db.query<{ key: string; value: string }>(
-      `select key, value from app_settings where "organizationId" = $1 and key like 'workshop.tax%'`,
-      [organizationId]
+    const settings = await db.query<{ id: string; key: string; value: string; userId: string }>(
+      `select id, key, value, "userId" from app_settings
+        where "organizationId" = $1 and key = any($2::text[])`,
+      [organizationId, [...TAX_SETTING_KEYS]]
     )
     return { organizationId, settings: settings.rows }
   })
 }
 
-/** Puts the tax settings back exactly as `taxSettingsState` found them. */
+/**
+ * Puts the tax settings back exactly as `taxSettingsState` found them: a row
+ * the spec added is deleted, a row it changed gets its value back, and a row
+ * it deleted is put back as it was, id and owner included.
+ */
 export async function restoreTaxSettings(state: TaxSettingsState): Promise<void> {
-  const keys = state.settings.map((row) => row.key)
+  const kept = state.settings.map((row) => row.key)
   await withDb(async (db) => {
-    await db.query(
-      `delete from app_settings
-        where "organizationId" = $1 and key like 'workshop.tax%' and not (key = any($2::text[]))`,
-      [state.organizationId, keys]
-    )
-    for (const row of state.settings) {
+    await db.query('begin')
+    try {
       await db.query(
-        `update app_settings set value = $3 where "organizationId" = $1 and key = $2`,
-        [state.organizationId, row.key, row.value]
+        `delete from app_settings
+          where "organizationId" = $1 and key = any($2::text[]) and not (key = any($3::text[]))`,
+        [state.organizationId, [...TAX_SETTING_KEYS], kept]
       )
+      for (const row of state.settings) {
+        await db.query(
+          `insert into app_settings (id, key, value, "userId", "organizationId")
+           values ($1, $2, $3, $4, $5)
+           on conflict ("organizationId", key) do update set value = excluded.value`,
+          [row.id, row.key, row.value, row.userId, state.organizationId]
+        )
+      }
+      await db.query('commit')
+    } catch (error) {
+      await db.query('rollback')
+      throw error
     }
   })
 }

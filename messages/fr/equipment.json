@@ -50,9 +50,11 @@
     "delete": "Supprimer",
     "deleteTitle": "Supprimer {name} définitivement ?",
     "deleteHint": "Son historique, ses compteurs, relevés et fichier de rapport sont aussi supprimés. Pour les garder, démontez-le plutôt.",
+    "deleteJobs": "{count, plural, one {# ordre de travail le concerne et ne l'affichera plus.} other {# ordres de travail le concernent et ne l'afficheront plus.}} Les factures émises conservent leur copie imprimée.",
     "deleted": "{name} supprimé",
     "history": "{count, plural, one {Équipement précédent (#)} other {Équipements précédents (#)}}",
     "movedTo": "Déplacé vers <vehicle></vehicle> le {date}",
+    "movedOn": "Déplacé le {date}",
     "removedOn": "Démonté le {date}",
     "refit": "Remonter",
     "refitted": "{name} remonté",
@@ -103,6 +105,8 @@
     "none": "Aucun équipement choisi",
     "search": "Rechercher un équipement",
     "noMatch": "Aucun équipement ne correspond",
-    "saveError": "Impossible d'enregistrer les équipements concernés par le travail"
+    "saveError": "Impossible d'enregistrer les équipements concernés par le travail",
+    "moved": "Déplacé depuis",
+    "removed": "Démonté depuis"
   }
 }

@@ -29,9 +29,10 @@ function printable(row: ItemRow, meters: PrintableEquipment['meters']): Printabl
 /**
  * What a document can print in its Equipment section, both lists, since the
  * design picks one: the items the job (or quote) works on, and everything on
- * the vehicle now. On the job's list each item's meters print the readings
- * taken on that job; on the vehicle's list, what each reads now. Nothing
- * while equipment is off.
+ * the vehicle now. The work's list keeps what it worked on: an item moved to
+ * another vehicle or taken off since still prints on it. On the job's list
+ * each item's meters print the readings taken on that job; on the vehicle's
+ * list, what each reads now. Nothing while equipment is off.
  */
 export async function printableEquipment(
   organizationId: string,
@@ -50,7 +51,7 @@ export async function printableEquipment(
   } else if ('quoteId' in source) {
     pickedIds = (
       await db.quoteEquipment.findMany({
-        where: { organizationId, quoteId: source.quoteId, item: { vehicleId } },
+        where: { organizationId, quoteId: source.quoteId, item: { organizationId } },
         orderBy: { createdAt: 'asc' },
         select: { itemId: true },
       })

@@ -9,11 +9,17 @@ import {
 } from '@/features/meters/Lib/meters.server'
 import { vehicleName } from '@/lib/vehicle-name'
 import { dateToDay } from './equipmentDays'
-import { type EquipmentTypeView, equipmentTypes, jobWorkOnItemIds } from './equipmentGate.server'
+import {
+  type EquipmentTypeView,
+  type WorkOnItemState,
+  equipmentTypes,
+  jobWorkOnItemIds,
+  workOnItemState,
+} from './equipmentGate.server'
 import { equipmentLabel } from './equipmentLabel'
 
 export { equipmentEnabled, equipmentTypes, jobWorkOnItemIds } from './equipmentGate.server'
-export type { EquipmentTypeView } from './equipmentGate.server'
+export type { EquipmentTypeView, WorkOnItemState } from './equipmentGate.server'
 
 /** One piece of equipment as a page shows it. Days are day keys ("2026-11-20"). */
 export interface EquipmentItemView {
@@ -36,6 +42,8 @@ export interface EquipmentItemView {
   removedAt: string | null
   vehicleId: string
   meters: VehicleMeterView[]
+  /** How many work orders work on it, on the vehicle page: what deleting it takes from them. */
+  jobCount?: number
 }
 
 /** A time an item was on this vehicle and left it. */
@@ -46,7 +54,10 @@ export interface EquipmentHistoryView {
   endedAt: string
   /** "moved" to another vehicle, or "removed". */
   endReason: 'moved' | 'removed'
-  /** Where it went, when it was moved and that vehicle is this workshop's. */
+  /**
+   * Where it went when it left, from its next fitting (not where it is now).
+   * Null when it was removed, or when where it went is not known.
+   */
   movedTo: { id: string; name: string } | null
 }
 
@@ -147,7 +158,7 @@ export async function vehicleEquipmentView(
   const [rows, fittings, meterTypes] = await Promise.all([
     db.equipmentItem.findMany({
       where: { organizationId, vehicleId, removedAt: null },
-      select: ITEM_SELECT,
+      select: { ...ITEM_SELECT, _count: { select: { jobs: true } } },
     }),
     db.equipmentFitting.findMany({
       where: { organizationId, vehicleId, endedAt: { not: null } },
@@ -157,43 +168,66 @@ export async function vehicleEquipmentView(
         fittedAt: true,
         endedAt: true,
         endReason: true,
-        item: {
-          select: {
-            ...ITEM_SELECT,
-            vehicle: {
-              select: { id: true, year: true, make: true, model: true, licensePlate: true },
-            },
-          },
-        },
+        item: { select: ITEM_SELECT },
       },
     }),
     activeMeterTypes(organizationId),
   ])
   rows.sort(byTypeThenAdded)
-  const meters = await equipmentMeterViews(
-    organizationId,
-    rows.map((r) => r.id),
-    meterTypes
-  )
+  // Where a moved item went at the time: the vehicle of its next fitting,
+  // not the one it is on now, which may be this one again.
+  const movedItemIds = [
+    ...new Set(fittings.filter((f) => f.endReason === 'moved').map((f) => f.item.id)),
+  ]
+  const [meters, laterFittings] = await Promise.all([
+    equipmentMeterViews(
+      organizationId,
+      rows.map((r) => r.id),
+      meterTypes
+    ),
+    movedItemIds.length > 0
+      ? db.equipmentFitting.findMany({
+          where: { organizationId, itemId: { in: movedItemIds } },
+          select: {
+            itemId: true,
+            fittedAt: true,
+            vehicle: {
+              select: { id: true, year: true, make: true, model: true, licensePlate: true },
+            },
+          },
+        })
+      : Promise.resolve([]),
+  ])
+  const wentTo = (itemId: string, endedAt: Date) => {
+    let next: (typeof laterFittings)[number] | null = null
+    for (const f of laterFittings) {
+      if (f.itemId !== itemId || f.fittedAt.getTime() < endedAt.getTime()) continue
+      if (!next || f.fittedAt.getTime() < next.fittedAt.getTime()) next = f
+    }
+    if (!next) return null
+    const to = next.vehicle
+    return {
+      id: to.id,
+      name: `${vehicleName(to)}${to.licensePlate ? ` (${to.licensePlate})` : ''}`,
+    }
+  }
   return {
     types,
     meterTypes,
-    items: rows.map((row) => itemView(row, meters.get(row.id) ?? [])),
+    items: rows.map((row) => ({
+      ...itemView(row, meters.get(row.id) ?? []),
+      jobCount: row._count.jobs,
+    })),
     history: fittings.map((fitting) => {
-      const moved = fitting.endReason === 'moved' && fitting.item.vehicleId !== vehicleId
-      const to = fitting.item.vehicle
+      const endedAt = fitting.endedAt as Date
+      const moved = fitting.endReason === 'moved'
       return {
         fittingId: fitting.id,
         item: itemView(fitting.item),
         fittedAt: fitting.fittedAt.toISOString(),
-        endedAt: (fitting.endedAt as Date).toISOString(),
-        endReason: fitting.endReason === 'moved' ? 'moved' : 'removed',
-        movedTo: moved
-          ? {
-              id: to.id,
-              name: `${vehicleName(to)}${to.licensePlate ? ` (${to.licensePlate})` : ''}`,
-            }
-          : null,
+        endedAt: endedAt.toISOString(),
+        endReason: moved ? 'moved' : 'removed',
+        movedTo: moved ? wentTo(fitting.item.id, endedAt) : null,
       }
     }),
   }
@@ -201,26 +235,29 @@ export async function vehicleEquipmentView(
 
 /** What the work order's "Work on" offers and has picked. Null while equipment is off. */
 export interface JobEquipmentView {
-  /** Every item on the job's vehicle now, the ones it works on included. */
-  items: { id: string; label: string; typeName: string }[]
+  /**
+   * Every item on the job's vehicle now, and every item the job already
+   * works on wherever it is now. One moved or taken off since is marked by
+   * `state`: it can be unpicked, not newly picked.
+   */
+  items: { id: string; label: string; typeName: string; state: WorkOnItemState }[]
   /** The ones it works on. */
   selected: string[]
 }
 
-export async function jobEquipmentView(
+/**
+ * The items on the vehicle now, beside the ones the work already has. The
+ * work keeps what it worked on: an item moved or taken off since stays on it.
+ */
+async function workOnView(
   organizationId: string,
-  job: { id: string; vehicleId: string | null }
-): Promise<JobEquipmentView | null> {
-  const types = await equipmentTypes(organizationId)
-  if (types.length === 0 || !job.vehicleId) return null
-  const [rows, selected] = await Promise.all([
-    db.equipmentItem.findMany({
-      where: { organizationId, vehicleId: job.vehicleId, removedAt: null },
-      select: ITEM_SELECT,
-    }),
-    jobWorkOnItemIds(organizationId, job, true),
-  ])
-  // An item removed since still shows on the job that worked on it.
+  vehicleId: string,
+  selected: string[]
+): Promise<JobEquipmentView> {
+  const rows: ItemRow[] = await db.equipmentItem.findMany({
+    where: { organizationId, vehicleId, removedAt: null },
+    select: ITEM_SELECT,
+  })
   const missing = selected.filter((id) => !rows.some((r) => r.id === id))
   if (missing.length > 0) {
     rows.push(
@@ -234,10 +271,25 @@ export async function jobEquipmentView(
   return {
     items: rows.map((row) => {
       const view = itemView(row)
-      return { id: view.id, label: view.label, typeName: view.typeName }
+      return {
+        id: view.id,
+        label: view.label,
+        typeName: view.typeName,
+        state: workOnItemState(row, vehicleId),
+      }
     }),
-    selected,
+    selected: selected.filter((id) => rows.some((r) => r.id === id)),
   }
+}
+
+export async function jobEquipmentView(
+  organizationId: string,
+  job: { id: string; vehicleId: string | null }
+): Promise<JobEquipmentView | null> {
+  const types = await equipmentTypes(organizationId)
+  if (types.length === 0 || !job.vehicleId) return null
+  const selected = await jobWorkOnItemIds(organizationId, job, true)
+  return workOnView(organizationId, job.vehicleId, selected)
 }
 
 /** The same for a quote, which carries its picks to the job it becomes. */
@@ -247,23 +299,14 @@ export async function quoteEquipmentView(
 ): Promise<JobEquipmentView | null> {
   const types = await equipmentTypes(organizationId)
   if (types.length === 0 || !quote.vehicleId) return null
-  const [rows, picked] = await Promise.all([
-    db.equipmentItem.findMany({
-      where: { organizationId, vehicleId: quote.vehicleId, removedAt: null },
-      select: ITEM_SELECT,
-    }),
-    db.quoteEquipment.findMany({
-      where: { organizationId, quoteId: quote.id, item: { vehicleId: quote.vehicleId } },
-      orderBy: { createdAt: 'asc' },
-      select: { itemId: true },
-    }),
-  ])
-  rows.sort(byTypeThenAdded)
-  return {
-    items: rows.map((row) => {
-      const view = itemView(row)
-      return { id: view.id, label: view.label, typeName: view.typeName }
-    }),
-    selected: picked.map((p) => p.itemId).filter((id) => rows.some((r) => r.id === id)),
-  }
+  const picked = await db.quoteEquipment.findMany({
+    where: { organizationId, quoteId: quote.id, item: { organizationId } },
+    orderBy: { createdAt: 'asc' },
+    select: { itemId: true },
+  })
+  return workOnView(
+    organizationId,
+    quote.vehicleId,
+    picked.map((p) => p.itemId)
+  )
 }

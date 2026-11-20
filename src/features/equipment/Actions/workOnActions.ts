@@ -44,7 +44,11 @@ export async function setJobEquipment(input: unknown) {
   )
 }
 
-/** The same for a quote; its picks go with it to the work order it becomes. */
+/**
+ * The same for a quote; its picks go with it to the work order it becomes. A
+ * quote keeps an item it already has when the item moves or is taken off;
+ * only new picks have to be on the quote's vehicle now.
+ */
 export async function setQuoteEquipment(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
@@ -57,21 +61,30 @@ export async function setQuoteEquipment(input: unknown) {
       })
       if (!quote?.vehicleId) throw new Error('Quote not found')
       await assertQuoteEditable(quote.id, organizationId)
-      const before = (
-        await db.quoteEquipment.findMany({
-          where: { organizationId, quoteId: quote.id },
-          select: { itemId: true },
-        })
-      ).map((row) => row.itemId)
-      const itemIds = await checkedWorkOnItems(
-        organizationId,
-        quote.vehicleId,
-        data.itemIds,
-        before
-      )
-      const dropped = before.filter((id) => !itemIds.includes(id))
-      const added = itemIds.filter((id) => !before.includes(id))
-      await db.$transaction(async (tx) => {
+      // Read and written under the quote's row lock, as a job's list is: two
+      // saves at once take turns rather than leaving a mix neither chose.
+      const itemIds = await db.$transaction(async (tx) => {
+        const locked = await tx.$queryRaw<{ vehicleId: string | null }[]>`
+          SELECT "vehicleId" FROM "public"."quotes"
+          WHERE "id" = ${quote.id} AND "organizationId" = ${organizationId}
+          FOR UPDATE`
+        const vehicleId = locked[0]?.vehicleId
+        if (!vehicleId) throw new Error('Quote not found')
+        const before = (
+          await tx.quoteEquipment.findMany({
+            where: { organizationId, quoteId: quote.id },
+            select: { itemId: true },
+          })
+        ).map((row) => row.itemId)
+        const itemIds = await checkedWorkOnItems(
+          organizationId,
+          vehicleId,
+          data.itemIds,
+          before,
+          tx
+        )
+        const dropped = before.filter((id) => !itemIds.includes(id))
+        const added = itemIds.filter((id) => !before.includes(id))
         if (dropped.length > 0) {
           await tx.quoteEquipment.deleteMany({
             where: { organizationId, quoteId: quote.id, itemId: { in: dropped } },
@@ -83,6 +96,7 @@ export async function setQuoteEquipment(input: unknown) {
             skipDuplicates: true,
           })
         }
+        return itemIds
       })
       revalidatePath(`/quotes/${quote.id}`)
       return { quoteId: quote.id, quoteRef: quote.quoteNumber || quote.id, itemIds }

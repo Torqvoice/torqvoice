@@ -20,6 +20,7 @@ const db = vi.hoisted(() => ({
   equipmentItem: {
     findMany: vi.fn(async () => [] as unknown[]),
     findFirst: vi.fn(),
+    count: vi.fn(async () => 0),
     create: vi.fn(async (_args: { data: Record<string, unknown> }) => ({ id: 'item-new' })),
     updateMany: vi.fn(async () => ({ count: 1 })),
     deleteMany: vi.fn(async () => ({ count: 1 })),
@@ -34,7 +35,12 @@ const db = vi.hoisted(() => ({
     deleteMany: vi.fn(),
     createMany: vi.fn(),
   },
-  quoteEquipment: { findMany: vi.fn(async () => [] as unknown[]) },
+  quoteEquipment: {
+    findMany: vi.fn(async () => [] as unknown[]),
+    deleteMany: vi.fn(),
+    createMany: vi.fn(),
+  },
+  quote: { findFirst: vi.fn() },
   meterType: { findMany: vi.fn(async () => [] as unknown[]) },
   vehicleMeter: { findMany: vi.fn(async () => [] as unknown[]) },
   meterReading: { findMany: vi.fn(async () => [] as unknown[]), updateMany: vi.fn() },
@@ -47,7 +53,9 @@ const db = vi.hoisted(() => ({
       licensePlate: 'ZZ19 TST',
     })),
   },
-  serviceRecord: { findFirst: vi.fn() },
+  serviceRecord: { findFirst: vi.fn(), updateMany: vi.fn() },
+  // The row lock a job's or quote's list is read under: what it is on now.
+  $queryRaw: vi.fn(async () => [{ mileage: null, vehicleId: 'veh-A' }] as unknown[]),
   $transaction: vi.fn(async (arg: unknown) =>
     typeof arg === 'function'
       ? (arg as (tx: unknown) => unknown)(db)
@@ -68,7 +76,11 @@ vi.mock('@/lib/document-lock.server', () => ({
 }))
 vi.mock('@/lib/files/manager', async () => {
   const actual = await vi.importActual<typeof import('@/lib/files/manager')>('@/lib/files/manager')
-  return { parseStoredFileUrl: actual.parseStoredFileUrl, releaseFiles: vi.fn() }
+  return {
+    parseStoredFileUrl: actual.parseStoredFileUrl,
+    isGeneratedName: actual.isGeneratedName,
+    releaseFiles: vi.fn(),
+  }
 })
 vi.mock('@/lib/with-auth', () => ({
   withAuth: async (fn: (ctx: { userId: string; organizationId: string }) => Promise<unknown>) => {
@@ -90,6 +102,7 @@ import { copyQuoteEquipmentToJob } from '@/features/equipment/Lib/equipmentWorkO
 import {
   addEquipmentItem,
   deleteEquipmentItem,
+  discardEquipmentReport,
   moveEquipmentItem,
   removeEquipmentItem,
   updateEquipmentItem,
@@ -100,7 +113,8 @@ import {
   reorderEquipmentTypes,
   updateEquipmentType,
 } from '@/features/equipment/Actions/equipmentTypeActions'
-import { setJobEquipment } from '@/features/equipment/Actions/workOnActions'
+import { setJobEquipment, setQuoteEquipment } from '@/features/equipment/Actions/workOnActions'
+import { quoteEquipmentView } from '@/features/equipment/Lib/equipment.server'
 
 const plan = (customFields: boolean) =>
   vi.mocked(getFeatures).mockResolvedValue({ customFields } as never)
@@ -285,7 +299,7 @@ describe('an item', () => {
 })
 
 describe('an item moved to another vehicle', () => {
-  it('closes its time on the old vehicle, starts one on the new, and leaves the old jobs', async () => {
+  it('closes its time on the old vehicle, starts one on the new, and stays on the old jobs', async () => {
     const result = await moveEquipmentItem({ id: 'item-1', vehicleId: 'veh-B' })
     expect(result.success).toBe(true)
     expect(db.equipmentFitting.updateMany).toHaveBeenCalledWith({
@@ -299,16 +313,10 @@ describe('an item moved to another vehicle', () => {
     expect(db.equipmentFitting.create).toHaveBeenCalledWith({
       data: expect.objectContaining({ itemId: 'item-1', vehicleId: 'veh-B' }),
     })
-    // Its readings on the old vehicle's jobs stay in its history, no longer those jobs'.
-    expect(db.meterReading.updateMany).toHaveBeenCalledWith({
-      where: {
-        organizationId: 'org-1',
-        vehicleMeter: { equipmentItemId: { in: ['item-1'] } },
-        serviceRecordId: { not: null },
-        serviceRecord: { vehicleId: { not: 'veh-B' } },
-      },
-      data: { serviceRecordId: null },
-    })
+    // A job keeps what it worked on: the old vehicle's jobs keep the item
+    // and the readings taken on them, locked or not.
+    expect(db.meterReading.updateMany).not.toHaveBeenCalled()
+    expect(db.serviceRecordEquipment.deleteMany).not.toHaveBeenCalled()
   })
 
   it('cannot go to another workshop’s vehicle', async () => {
@@ -329,6 +337,9 @@ describe('an item taken off', () => {
       where: { organizationId: 'org-1', itemId: 'item-1', endedAt: null },
       data: { endedAt: expect.any(Date), endReason: 'removed' },
     })
+    // The jobs that worked on it keep it and their readings of it.
+    expect(db.meterReading.updateMany).not.toHaveBeenCalled()
+    expect(db.serviceRecordEquipment.deleteMany).not.toHaveBeenCalled()
   })
 })
 
@@ -342,16 +353,72 @@ describe('what a work order works on', () => {
     db.serviceRecordEquipment.findMany.mockResolvedValue([])
   })
 
-  it('is only the job’s vehicle’s equipment, inside the workshop', async () => {
+  it('newly picks only the job’s vehicle’s equipment, inside the workshop', async () => {
     db.equipmentItem.findMany.mockResolvedValue([])
+    expect((await setJobEquipment({ id: 'job-1', itemIds: ['item-gone'] })).success).toBe(false)
+    expect(db.equipmentItem.findMany).toHaveBeenCalledWith({
+      where: { organizationId: 'org-1', id: { in: ['item-gone'] } },
+      select: { id: true, vehicleId: true, removedAt: true },
+    })
+    // On another of the workshop's vehicles: not this job's to pick.
+    db.equipmentItem.findMany.mockResolvedValue([
+      { id: 'item-elsewhere', vehicleId: 'veh-B', removedAt: null },
+    ])
     expect((await setJobEquipment({ id: 'job-1', itemIds: ['item-elsewhere'] })).success).toBe(
       false
     )
-    expect(db.equipmentItem.findMany).toHaveBeenCalledWith({
-      where: { organizationId: 'org-1', vehicleId: 'veh-A', id: { in: ['item-elsewhere'] } },
-      select: { id: true, removedAt: true },
-    })
     expect(db.serviceRecordEquipment.createMany).not.toHaveBeenCalled()
+  })
+
+  it('keeps an item it already works on that has moved or been taken off since', async () => {
+    db.serviceRecordEquipment.findMany.mockResolvedValue([
+      { itemId: 'item-moved' },
+      { itemId: 'item-off' },
+    ])
+    db.equipmentItem.findMany.mockResolvedValue([
+      { id: 'item-moved', vehicleId: 'veh-B', removedAt: null },
+      { id: 'item-off', vehicleId: 'veh-A', removedAt: new Date() },
+      { id: 'item-new', vehicleId: 'veh-A', removedAt: null },
+    ])
+    const result = await setJobEquipment({
+      id: 'job-1',
+      itemIds: ['item-moved', 'item-off', 'item-new'],
+    })
+    expect(result).toMatchObject({
+      success: true,
+      data: { itemIds: ['item-moved', 'item-off', 'item-new'] },
+    })
+    expect(db.serviceRecordEquipment.deleteMany).not.toHaveBeenCalled()
+    expect(db.serviceRecordEquipment.createMany).toHaveBeenCalledWith({
+      data: [{ serviceRecordId: 'job-1', itemId: 'item-new', organizationId: 'org-1' }],
+      skipDuplicates: true,
+    })
+  })
+
+  it('reads what the job had inside its transaction, after the job’s row is locked', async () => {
+    const order: string[] = []
+    let inTransaction = false
+    db.$transaction.mockImplementationOnce(async (arg: unknown) => {
+      inTransaction = true
+      try {
+        return await (arg as (tx: unknown) => unknown)(db)
+      } finally {
+        inTransaction = false
+      }
+    })
+    db.$queryRaw.mockImplementationOnce(async (...args: unknown[]) => {
+      order.push(`lock:${inTransaction}:${String((args[0] as string[]).join('?'))}`)
+      return [{ mileage: null, vehicleId: 'veh-A' }]
+    })
+    db.serviceRecordEquipment.findMany.mockImplementationOnce(async () => {
+      order.push(`read:${inTransaction}`)
+      return [{ itemId: 'item-1' }]
+    })
+    db.equipmentItem.findMany.mockResolvedValue([])
+    expect((await setJobEquipment({ id: 'job-1', itemIds: [] })).success).toBe(true)
+    expect(order).toHaveLength(2)
+    expect(order[0]).toMatch(/^lock:true:.*"service_records".*FOR UPDATE/s)
+    expect(order[1]).toBe('read:true')
   })
 
   it('takes an item’s readings on the job away with it when it is taken off the list', async () => {
@@ -359,7 +426,9 @@ describe('what a work order works on', () => {
       { itemId: 'item-1' },
       { itemId: 'item-2' },
     ])
-    db.equipmentItem.findMany.mockResolvedValue([{ id: 'item-2', removedAt: null }])
+    db.equipmentItem.findMany.mockResolvedValue([
+      { id: 'item-2', vehicleId: 'veh-A', removedAt: null },
+    ])
     expect((await setJobEquipment({ id: 'job-1', itemIds: ['item-2'] })).success).toBe(true)
     expect(db.serviceRecordEquipment.deleteMany).toHaveBeenCalledWith({
       where: { organizationId: 'org-1', serviceRecordId: 'job-1', itemId: { in: ['item-1'] } },
@@ -384,7 +453,244 @@ describe('what a work order works on', () => {
 
   it('cannot newly pick an item that was removed', async () => {
     db.serviceRecordEquipment.findMany.mockResolvedValue([])
-    db.equipmentItem.findMany.mockResolvedValue([{ id: 'item-1', removedAt: new Date() }])
+    db.equipmentItem.findMany.mockResolvedValue([
+      { id: 'item-1', vehicleId: 'veh-A', removedAt: new Date() },
+    ])
     expect((await setJobEquipment({ id: 'job-1', itemIds: ['item-1'] })).success).toBe(false)
+  })
+})
+
+/** An item as ITEM_SELECT reads it. */
+const itemRow = (id: string, extra: Record<string, unknown> = {}) => ({
+  id,
+  typeId: 'et-crane',
+  make: 'HIAB',
+  model: null,
+  serialNumber: id,
+  manufactureYear: null,
+  manufactureDate: null,
+  installDate: null,
+  notes: null,
+  ratedCapacity: null,
+  nextExaminationDue: null,
+  lastExaminedAt: null,
+  certificateReference: null,
+  reportFileUrl: null,
+  reportFileName: null,
+  removedAt: null,
+  vehicleId: 'veh-A',
+  createdAt: new Date('2026-01-01T00:00:00Z'),
+  type: { name: 'Crane', sortOrder: 0 },
+  ...extra,
+})
+
+describe('a job that worked on an item moved or taken off since', () => {
+  it('still shows it on its picker, marked, beside what is on its vehicle now', async () => {
+    db.serviceRecordEquipment.findMany.mockResolvedValue([
+      { itemId: 'moved' },
+      { itemId: 'off' },
+      { itemId: 'here' },
+    ])
+    db.equipmentItem.findMany
+      .mockResolvedValueOnce([itemRow('here'), itemRow('free')])
+      .mockResolvedValueOnce([
+        itemRow('moved', { vehicleId: 'veh-B' }),
+        itemRow('off', { removedAt: new Date('2026-06-01T00:00:00Z') }),
+      ])
+    const view = await jobEquipmentView('org-1', { id: 'job-1', vehicleId: 'veh-A' })
+    // Read by the job alone, not by where its items are now.
+    expect(db.serviceRecordEquipment.findMany.mock.calls[0][0]).toMatchObject({
+      where: {
+        organizationId: 'org-1',
+        serviceRecordId: 'job-1',
+        item: { organizationId: 'org-1' },
+      },
+    })
+    expect(view?.selected).toEqual(['moved', 'off', 'here'])
+    expect(Object.fromEntries(view?.items.map((i) => [i.id, i.state]) ?? [])).toEqual({
+      here: null,
+      free: null,
+      moved: 'moved',
+      off: 'removed',
+    })
+  })
+
+  it('still prints it, with the readings taken on the job', async () => {
+    db.serviceRecordEquipment.findMany.mockResolvedValue([{ itemId: 'moved' }])
+    db.equipmentItem.findMany.mockResolvedValue([itemRow('moved', { vehicleId: 'veh-B' })])
+    const lists = await printableEquipment('org-1', { jobId: 'job-1', vehicleId: 'veh-A' })
+    expect(lists.job.map((i) => i.serialNumber)).toEqual(['moved'])
+    expect(lists.vehicle).toEqual([])
+  })
+})
+
+describe('a quote’s equipment', () => {
+  beforeEach(() => {
+    db.quote.findFirst.mockResolvedValue({ id: 'q-1', vehicleId: 'veh-A', quoteNumber: 'Q-1' })
+  })
+
+  it('keeps an item it already has after the item moved, on its picker and its print', async () => {
+    db.quoteEquipment.findMany.mockResolvedValue([{ itemId: 'moved' }])
+    db.equipmentItem.findMany
+      .mockResolvedValueOnce([itemRow('here')])
+      .mockResolvedValueOnce([itemRow('moved', { vehicleId: 'veh-B' })])
+    const view = await quoteEquipmentView('org-1', { id: 'q-1', vehicleId: 'veh-A' })
+    expect(db.quoteEquipment.findMany.mock.calls[0][0]).toMatchObject({
+      where: { organizationId: 'org-1', quoteId: 'q-1', item: { organizationId: 'org-1' } },
+    })
+    expect(view?.selected).toEqual(['moved'])
+    expect(view?.items.find((i) => i.id === 'moved')?.state).toBe('moved')
+
+    db.equipmentItem.findMany.mockResolvedValue([itemRow('moved', { vehicleId: 'veh-B' })])
+    const lists = await printableEquipment('org-1', { quoteId: 'q-1', vehicleId: 'veh-A' })
+    expect(lists.job.map((i) => i.serialNumber)).toEqual(['moved'])
+  })
+
+  it('reads what the quote had inside its transaction, after the quote’s row is locked', async () => {
+    const order: string[] = []
+    let inTransaction = false
+    db.$transaction.mockImplementationOnce(async (arg: unknown) => {
+      inTransaction = true
+      try {
+        return await (arg as (tx: unknown) => unknown)(db)
+      } finally {
+        inTransaction = false
+      }
+    })
+    db.$queryRaw.mockImplementationOnce(async (...args: unknown[]) => {
+      order.push(`lock:${inTransaction}:${(args[0] as string[]).join('?')}`)
+      return [{ vehicleId: 'veh-A' }]
+    })
+    db.quoteEquipment.findMany.mockImplementationOnce(async () => {
+      order.push(`read:${inTransaction}`)
+      return [{ itemId: 'item-1' }]
+    })
+    db.equipmentItem.findMany.mockResolvedValue([
+      { id: 'item-2', vehicleId: 'veh-A', removedAt: null },
+    ])
+    const result = await setQuoteEquipment({ id: 'q-1', itemIds: ['item-2'] })
+    expect(result).toMatchObject({ success: true, data: { itemIds: ['item-2'] } })
+    expect(order).toHaveLength(2)
+    expect(order[0]).toMatch(/^lock:true:.*"quotes".*FOR UPDATE/s)
+    expect(order[1]).toBe('read:true')
+    expect(db.quoteEquipment.deleteMany).toHaveBeenCalledWith({
+      where: { organizationId: 'org-1', quoteId: 'q-1', itemId: { in: ['item-1'] } },
+    })
+  })
+
+  it('newly picks only an item on the quote’s vehicle now', async () => {
+    db.quoteEquipment.findMany.mockResolvedValue([])
+    db.equipmentItem.findMany.mockResolvedValue([
+      { id: 'moved', vehicleId: 'veh-B', removedAt: null },
+    ])
+    expect((await setQuoteEquipment({ id: 'q-1', itemIds: ['moved'] })).success).toBe(false)
+    expect(db.quoteEquipment.createMany).not.toHaveBeenCalled()
+  })
+})
+
+describe('a vehicle’s equipment history', () => {
+  const fitting = (id: string, endedAt: string, endReason: string, item: unknown) => ({
+    id,
+    fittedAt: new Date('2026-01-01T00:00:00Z'),
+    endedAt: new Date(endedAt),
+    endReason,
+    item,
+  })
+
+  it('says where a moved item went at the time, even after it came back', async () => {
+    // The crane went from truck A to truck B in March, and came back in June.
+    const crane = itemRow('crane', { vehicleId: 'veh-A' })
+    db.equipmentItem.findMany.mockResolvedValue([{ ...crane, _count: { jobs: 0 } }])
+    db.equipmentFitting.findMany
+      .mockResolvedValueOnce([fitting('f-1', '2026-03-01T10:00:00Z', 'moved', crane)])
+      .mockResolvedValueOnce([
+        {
+          itemId: 'crane',
+          fittedAt: new Date('2026-01-01T00:00:00Z'),
+          vehicle: { id: 'veh-A', year: 2019, make: 'Volvo', model: 'FH', licensePlate: 'A1' },
+        },
+        {
+          itemId: 'crane',
+          fittedAt: new Date('2026-06-01T00:00:00Z'),
+          vehicle: { id: 'veh-A', year: 2019, make: 'Volvo', model: 'FH', licensePlate: 'A1' },
+        },
+        {
+          itemId: 'crane',
+          fittedAt: new Date('2026-03-01T10:00:00Z'),
+          vehicle: { id: 'veh-B', year: 2021, make: 'Scania', model: 'R 450', licensePlate: 'B2' },
+        },
+      ])
+    const view = await vehicleEquipmentView('org-1', 'veh-A')
+    expect(view?.history).toEqual([
+      expect.objectContaining({
+        fittingId: 'f-1',
+        endReason: 'moved',
+        movedTo: { id: 'veh-B', name: '2021 Scania R 450 (B2)' },
+      }),
+    ])
+  })
+
+  it('says removed for an item taken off, and no vehicle', async () => {
+    const crane = itemRow('crane', { removedAt: new Date('2026-03-01T10:00:00Z') })
+    db.equipmentItem.findMany.mockResolvedValue([])
+    db.equipmentFitting.findMany.mockResolvedValueOnce([
+      fitting('f-1', '2026-03-01T10:00:00Z', 'removed', crane),
+    ])
+    const view = await vehicleEquipmentView('org-1', 'veh-A')
+    expect(view?.history[0]).toMatchObject({ endReason: 'removed', movedTo: null })
+  })
+
+  it('tells how many work orders work on each item, for the delete question', async () => {
+    db.equipmentItem.findMany.mockResolvedValue([{ ...itemRow('crane'), _count: { jobs: 3 } }])
+    const view = await vehicleEquipmentView('org-1', 'veh-A')
+    expect(view?.items[0].jobCount).toBe(3)
+  })
+})
+
+describe('an item deleted for good', () => {
+  it('leaves the jobs themselves alone, and with them what issued invoices froze', async () => {
+    await deleteEquipmentItem('item-1')
+    expect(db.equipmentItem.deleteMany).toHaveBeenCalledTimes(1)
+    expect(db.serviceRecord.updateMany).not.toHaveBeenCalled()
+  })
+})
+
+describe('a report uploaded and never saved', () => {
+  const FRESH = '/api/protected/files/org-1/vehicles/0b6c8f8e-6d1f-4c7e-9a43-2f1d7c9b0a11.pdf'
+
+  it('is let go of through the file manager once no item points at it', async () => {
+    vi.mocked(releaseFiles).mockResolvedValueOnce({ removed: [FRESH], kept: [], skipped: [] })
+    expect(await discardEquipmentReport(FRESH)).toEqual({
+      success: true,
+      data: { discarded: true },
+    })
+    expect(db.equipmentItem.count).toHaveBeenCalledWith({
+      where: { organizationId: 'org-1', reportFileUrl: FRESH },
+    })
+    expect(releaseFiles).toHaveBeenCalledWith([FRESH], {
+      organizationId: 'org-1',
+      reason: 'equipment report not saved',
+    })
+  })
+
+  it('is kept while an item points at it', async () => {
+    db.equipmentItem.count.mockResolvedValueOnce(1)
+    expect(await discardEquipmentReport(FRESH)).toEqual({
+      success: true,
+      data: { discarded: false },
+    })
+    expect(releaseFiles).not.toHaveBeenCalled()
+  })
+
+  it('touches nothing of another workshop, another folder or a file the upload did not name', async () => {
+    for (const url of [
+      '/api/protected/files/org-2/vehicles/0b6c8f8e-6d1f-4c7e-9a43-2f1d7c9b0a11.pdf',
+      '/api/protected/files/org-1/services/0b6c8f8e-6d1f-4c7e-9a43-2f1d7c9b0a11.pdf',
+      '/api/protected/files/org-1/vehicles/seed-photo.jpg',
+      'https://example.com/x.pdf',
+    ]) {
+      expect((await discardEquipmentReport(url)).success).toBe(false)
+    }
+    expect(releaseFiles).not.toHaveBeenCalled()
   })
 })

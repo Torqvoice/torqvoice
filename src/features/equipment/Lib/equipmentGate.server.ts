@@ -34,10 +34,12 @@ export async function equipmentEnabled(organizationId: string): Promise<boolean>
 }
 
 /**
- * The items a job works on ("Work on"), in the order they were picked, that
- * are still on the job's vehicle. An item moved away since stays linked in
- * the database but is not the job's to read or print: it is on another
- * vehicle now. Empty while equipment is off.
+ * The items a job works on ("Work on"), in the order they were picked. A job
+ * keeps what it worked on: an item moved to another vehicle or taken off
+ * since is still the job's to show, read and print. Which vehicle an item is
+ * on is only asked when it is newly picked (`checkedWorkOnItems`), and a job
+ * that moves to another vehicle drops its links in that save. Empty while
+ * equipment is off.
  */
 export async function jobWorkOnItemIds(
   organizationId: string,
@@ -50,12 +52,28 @@ export async function jobWorkOnItemIds(
     where: {
       organizationId,
       serviceRecordId: job.id,
-      item: { vehicleId: job.vehicleId, organizationId },
+      item: { organizationId },
     },
     orderBy: { createdAt: 'asc' },
     select: { itemId: true },
   })
   return rows.map((row) => row.itemId)
+}
+
+/**
+ * Where an item stands for work that already has it: on the vehicle the work
+ * is for (null), moved to another vehicle since, or taken off. A moved or
+ * removed item stays on the work but cannot be newly picked.
+ */
+export type WorkOnItemState = 'moved' | 'removed' | null
+
+export function workOnItemState(
+  item: { vehicleId: string; removedAt: Date | string | null },
+  vehicleId: string
+): WorkOnItemState {
+  if (item.vehicleId !== vehicleId) return 'moved'
+  if (item.removedAt) return 'removed'
+  return null
 }
 
 /**

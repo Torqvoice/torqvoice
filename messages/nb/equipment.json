@@ -50,9 +50,11 @@
     "delete": "Slett",
     "deleteTitle": "Slette {name} for godt?",
     "deleteHint": "Historikk, målere, avlesninger og rapportfil slettes også. For å beholde dem, demonter den i stedet.",
+    "deleteJobs": "{count, plural, one {# arbeidsordre gjelder det og vil ikke lenger vise det.} other {# arbeidsordrer gjelder det og vil ikke lenger vise det.}} Utstedte fakturaer beholder sin trykte kopi.",
     "deleted": "{name} slettet",
     "history": "{count, plural, one {Tidligere utstyr (#)} other {Tidligere utstyr (#)}}",
     "movedTo": "Flyttet til <vehicle></vehicle> {date}",
+    "movedOn": "Flyttet {date}",
     "removedOn": "Demontert {date}",
     "refit": "Sett på igjen",
     "refitted": "{name} satt på igjen",
@@ -103,6 +105,8 @@
     "none": "Ikke noe utstyr valgt",
     "search": "Søk i utstyr",
     "noMatch": "Ikke noe utstyr samsvarer",
-    "saveError": "Kunne ikke lagre hva jobben gjelder"
+    "saveError": "Kunne ikke lagre hva jobben gjelder",
+    "moved": "Flyttet siden",
+    "removed": "Demontert siden"
   }
 }

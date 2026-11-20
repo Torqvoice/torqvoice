@@ -11,6 +11,7 @@ import { setJobMeterReading } from '../Actions/jobMeterActions'
 import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
 import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
+import { meterReadingKind } from '../Lib/meterAsk'
 import type { JobMeterView } from '../Lib/meters.server'
 
 /**
@@ -75,16 +76,19 @@ function JobMeterField({
       : `${format.number(last, { maximumFractionDigits: 2 })}${meter.unit ? ` ${meter.unit}` : ''}`
 
   // A reading far above the last one waits for a yes before it is saved,
-  // the question the odometer asks (vehicleReading.ts), with the hours limit.
+  // the question the odometer asks (vehicleReading.ts), with the limit for the
+  // meter's unit (meterAsk.ts); a meter in another unit asks nothing.
   const [confirmed, setConfirmed] = useState<number | null>(null)
   const typedValue = parseMeterValue(typed)
+  const askKind = meterReadingKind(meter.unit)
   const asking =
     typedValue !== null &&
+    askKind !== null &&
     readingNeedsAnswer({
       value: typedValue,
       saved: parseMeterValue(saved.current),
       last,
-      kind: 'hours',
+      kind: askKind,
       confirmed,
     })
 

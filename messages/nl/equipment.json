@@ -50,9 +50,11 @@
     "delete": "Verwijderen",
     "deleteTitle": "{name} definitief verwijderen?",
     "deleteHint": "De geschiedenis, tellers, standen en het rapportbestand worden ook verwijderd. Wilt u ze bewaren, demonteer het dan.",
+    "deleteJobs": "{count, plural, one {# werkorder werkt eraan en toont het niet meer.} other {# werkorders werken eraan en tonen het niet meer.}} Uitgegeven facturen behouden hun afgedrukte kopie.",
     "deleted": "{name} verwijderd",
     "history": "{count, plural, one {Eerdere uitrusting (#)} other {Eerdere uitrusting (#)}}",
     "movedTo": "Verplaatst naar <vehicle></vehicle> op {date}",
+    "movedOn": "Verplaatst op {date}",
     "removedOn": "Gedemonteerd op {date}",
     "refit": "Terugplaatsen",
     "refitted": "{name} teruggeplaatst",
@@ -103,6 +105,8 @@
     "none": "Geen uitrusting gekozen",
     "search": "Uitrusting zoeken",
     "noMatch": "Geen uitrusting gevonden",
-    "saveError": "Kan niet opslaan waar de klus aan werkt"
+    "saveError": "Kan niet opslaan waar de klus aan werkt",
+    "moved": "Sindsdien verplaatst",
+    "removed": "Sindsdien gedemonteerd"
   }
 }

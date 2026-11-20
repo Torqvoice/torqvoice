@@ -115,14 +115,20 @@ vi.mock('@/lib/db', () => {
       }),
     },
     serviceRecordEquipment: {
-      findMany: vi.fn(async ({ where }: { where: Where & { item?: { vehicleId: string } } }) =>
+      findMany: vi.fn(async ({ where }: { where: Where & { item?: Where } }) =>
         state.links
           .filter(
             (l) =>
               l.organizationId === where.organizationId &&
               l.serviceRecordId === where.serviceRecordId &&
               (!where.item ||
-                state.items.some((i) => i.id === l.itemId && i.vehicleId === where.item?.vehicleId))
+                state.items.some(
+                  (i) =>
+                    i.id === l.itemId &&
+                    Object.entries(where.item ?? {}).every(
+                      ([key, value]) => i[key as keyof Item] === value
+                    )
+                ))
           )
           .map((l) => ({ itemId: l.itemId }))
       ),
@@ -141,6 +147,8 @@ vi.mock('@/lib/db', () => {
         return { count: 1 }
       }),
     },
+    // The job's row lock: what the job is on as the lock is taken.
+    $queryRaw: vi.fn(async () => [{ mileage: null, vehicleId: JOB.vehicleId }]),
     $transaction: vi.fn(async (run: (tx: unknown) => Promise<unknown>) => run(db)),
   }
   return { db }
@@ -289,6 +297,7 @@ describe('reading a job’s equipment', () => {
           model: 'X-HiPro 192',
           serialNumber: '4471',
           removed: false,
+          state: null,
         },
         {
           id: 'lift',
@@ -298,6 +307,7 @@ describe('reading a job’s equipment', () => {
           model: null,
           serialNumber: null,
           removed: false,
+          state: null,
         },
       ],
       workOn: ['lift'],
@@ -415,7 +425,29 @@ describe('setting what a job works on', () => {
       res.body.data.equipment.items.find((i: { id: string }) => i.id === 'lift')
     ).toMatchObject({
       removed: true,
+      state: 'removed',
     })
+  })
+
+  it('keeps an item that moved to another vehicle since on the job, and refuses picking it anew', async () => {
+    state.links = [{ serviceRecordId: JOB.id, itemId: 'crane', organizationId: 'org-1' }]
+    state.items[0].vehicleId = 'veh-2'
+    // Still the job's, marked as moved.
+    const before = await read(
+      await GET(new Request('https://app.test/api'), { params: Promise.resolve({ id: JOB.id }) })
+    )
+    expect(before.body.data.equipment.workOn).toEqual(['crane'])
+    expect(
+      before.body.data.equipment.items.find((i: { id: string }) => i.id === 'crane')
+    ).toMatchObject({ removed: true, state: 'moved' })
+    // Saving the list with it kept changes nothing about it.
+    const kept = await read(await put({ itemIds: ['crane', 'lift'] }))
+    expect(kept.status).toBe(200)
+    expect(state.links.map((l) => l.itemId)).toEqual(['crane', 'lift'])
+    // Once let go of, it cannot come back: it is on another vehicle now.
+    await put({ itemIds: ['lift'] })
+    expect((await put({ itemIds: ['lift', 'crane'] })).status).toBe(404)
+    expect(state.links.map((l) => l.itemId)).toEqual(['lift'])
   })
 
   it('is refused on a locked invoice, as every other edit to the job is', async () => {

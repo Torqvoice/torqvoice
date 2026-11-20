@@ -179,7 +179,9 @@ function ItemRow({
   const destroy = async () => {
     const ok = await confirm({
       title: t('deleteTitle', { name: item.label }),
-      description: t('deleteHint'),
+      description: item.jobCount
+        ? `${t('deleteHint')} ${t('deleteJobs', { count: item.jobCount })}`
+        : t('deleteHint'),
       confirmLabel: t('delete'),
       destructive: true,
       irreversible: true,
@@ -345,15 +347,19 @@ function HistoryList({ equipment }: { equipment: VehicleEquipmentView }) {
         <li key={entry.fittingId} className="space-y-0.5 text-xs">
           <p className="min-w-0 break-words">{entry.item.label}</p>
           <p className="text-muted-foreground">
-            {entry.movedTo ? (
-              t.rich('movedTo', {
-                date: day(entry.endedAt),
-                vehicle: () => (
-                  <Link href={`/vehicles/${entry.movedTo?.id}`} className="underline">
-                    {entry.movedTo?.name}
-                  </Link>
-                ),
-              })
+            {entry.endReason === 'moved' ? (
+              entry.movedTo ? (
+                t.rich('movedTo', {
+                  date: day(entry.endedAt),
+                  vehicle: () => (
+                    <Link href={`/vehicles/${entry.movedTo?.id}`} className="underline">
+                      {entry.movedTo?.name}
+                    </Link>
+                  ),
+                })
+              ) : (
+                t('movedOn', { date: day(entry.endedAt) })
+              )
             ) : (
               <>
                 {t('removedOn', { date: day(entry.endedAt) })}

@@ -50,9 +50,11 @@
     "delete": "Löschen",
     "deleteTitle": "{name} endgültig löschen?",
     "deleteHint": "Verlauf, Zähler, Stände und Berichtsdatei werden ebenfalls gelöscht. Um sie zu behalten, bauen Sie die Ausrüstung stattdessen ab.",
+    "deleteJobs": "{count, plural, one {# Arbeitsauftrag arbeitet daran und zeigt sie dann nicht mehr an.} other {# Arbeitsaufträge arbeiten daran und zeigen sie dann nicht mehr an.}} Ausgestellte Rechnungen behalten ihre gedruckte Kopie.",
     "deleted": "{name} gelöscht",
     "history": "{count, plural, one {Frühere Ausrüstung (#)} other {Frühere Ausrüstung (#)}}",
     "movedTo": "Am {date} umgesetzt auf <vehicle></vehicle>",
+    "movedOn": "Am {date} umgesetzt",
     "removedOn": "Abgebaut am {date}",
     "refit": "Wieder anbauen",
     "refitted": "{name} wieder angebaut",
@@ -103,6 +105,8 @@
     "none": "Keine Ausrüstung gewählt",
     "search": "Ausrüstung suchen",
     "noMatch": "Keine passende Ausrüstung",
-    "saveError": "Konnte nicht speichern, woran der Auftrag arbeitet"
+    "saveError": "Konnte nicht speichern, woran der Auftrag arbeitet",
+    "moved": "Seitdem umgesetzt",
+    "removed": "Seitdem abgebaut"
   }
 }

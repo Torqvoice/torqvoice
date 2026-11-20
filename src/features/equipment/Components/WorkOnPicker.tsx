@@ -24,6 +24,8 @@ import { setJobEquipment, setQuoteEquipment } from '../Actions/workOnActions'
  * can be picked, since one visit often covers the crane and the tail lift.
  * Each pick saves on its own, like the reference box beside it, and the
  * page reloads its meters: a job reads the meters of every item it works on.
+ * An item the work already has that was moved to another vehicle or taken
+ * off since stays listed and marked: it can be unpicked, not picked again.
  * Draws nothing while equipment is off or the vehicle has none.
  */
 export function WorkOnPicker({
@@ -100,11 +102,13 @@ export function WorkOnPicker({
                 <CommandGroup>
                   {equipment.items.map((item) => {
                     const on = selected.includes(item.id)
+                    // Moved or taken off since: it can be unpicked, not picked again.
+                    const gone = item.state !== null
                     return (
                       <CommandItem
                         key={item.id}
                         value={`${item.label} ${item.id}`}
-                        disabled={saving}
+                        disabled={saving || (gone && !on)}
                         onSelect={() => void toggle(item.id)}
                         aria-selected={on}
                         data-testid={`work-on-item-${item.id}`}
@@ -118,7 +122,15 @@ export function WorkOnPicker({
                         >
                           {on && <Check className="h-3 w-3" />}
                         </span>
-                        <span className="min-w-0 break-words">{item.label}</span>
+                        <span className="min-w-0 flex-1 break-words">{item.label}</span>
+                        {gone && (
+                          <span
+                            className="ml-2 shrink-0 text-xs text-muted-foreground"
+                            data-testid={`work-on-state-${item.id}`}
+                          >
+                            {t(item.state === 'moved' ? 'moved' : 'removed')}
+                          </span>
+                        )}
                       </CommandItem>
                     )
                   })}

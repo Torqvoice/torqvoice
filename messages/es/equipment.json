@@ -50,9 +50,11 @@
     "delete": "Eliminar",
     "deleteTitle": "¿Eliminar {name} definitivamente?",
     "deleteHint": "También se eliminan su historial, contadores, lecturas y archivo de informe. Para conservarlos, retírelo en su lugar.",
+    "deleteJobs": "{count, plural, one {# orden de trabajo trabaja en él y dejará de mostrarlo.} other {# órdenes de trabajo trabajan en él y dejarán de mostrarlo.}} Las facturas emitidas conservan su copia impresa.",
     "deleted": "{name} eliminado",
     "history": "{count, plural, one {Equipamiento anterior (#)} other {Equipamiento anterior (#)}}",
     "movedTo": "Movido a <vehicle></vehicle> el {date}",
+    "movedOn": "Movido el {date}",
     "removedOn": "Retirado el {date}",
     "refit": "Volver a instalar",
     "refitted": "{name} instalado de nuevo",
@@ -103,6 +105,8 @@
     "none": "Ningún equipamiento elegido",
     "search": "Buscar equipamiento",
     "noMatch": "Ningún equipamiento coincide",
-    "saveError": "No se pudo guardar sobre qué trabaja la orden"
+    "saveError": "No se pudo guardar sobre qué trabaja la orden",
+    "moved": "Movido desde entonces",
+    "removed": "Retirado desde entonces"
   }
 }

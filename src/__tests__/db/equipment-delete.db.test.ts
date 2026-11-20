@@ -155,6 +155,23 @@ describe('equipment on a real database', () => {
     expect(await db.meterReading.count({ where: { vehicleMeterId: crane.meter.id } })).toBe(1)
   })
 
+  it('takes a deleted item off its jobs and leaves what an issued invoice froze', async () => {
+    const crane = await truckWithCrane()
+    const frozen = { equipment: { job: [{ type: 'Crane', make: 'Hiab' }], vehicle: [] } }
+    await db.serviceRecord.update({
+      where: { id: crane.job.id },
+      data: { issuedData: frozen, issuedAt: new Date('2026-11-02T10:00:00Z') },
+    })
+    // What deleteEquipmentItem does.
+    await db.equipmentItem.deleteMany({ where: { id: crane.item.id, organizationId } })
+    expect(await db.serviceRecordEquipment.count({ where: { itemId: crane.item.id } })).toBe(0)
+    const job = await db.serviceRecord.findUnique({
+      where: { id: crane.job.id },
+      select: { issuedData: true },
+    })
+    expect(job?.issuedData).toEqual(frozen)
+  })
+
   it('takes an item’s meters, not the item, when their meter is deleted', async () => {
     const crane = await truckWithCrane()
     await db.meterType.deleteMany({ where: { id: crane.hours.id, organizationId } })

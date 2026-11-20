@@ -6,7 +6,7 @@ import { publishRecordChange } from '@/lib/realtime/publish.server'
 import { auditDetails } from '@/lib/audit'
 import { db } from '@/lib/db'
 import { requireFeature } from '@/lib/features'
-import { releaseFiles, parseStoredFileUrl } from '@/lib/files/manager'
+import { isGeneratedName, parseStoredFileUrl, releaseFiles } from '@/lib/files/manager'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { vehicleName } from '@/lib/vehicle-name'
 import { withAuth } from '@/lib/with-auth'
@@ -14,7 +14,6 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
 import { activeMeterTypes } from '@/features/meters/Lib/meters.server'
 import { readingTime, readingValue } from '@/features/meters/Lib/readingInput.server'
-import { unlinkItemMeterReadings } from '@/features/meters/Lib/jobMeterReading.server'
 import { dayToDate, parseManufacture } from '../Lib/equipmentDays'
 import { equipmentTypes } from '../Lib/equipmentGate.server'
 import { equipmentLabel } from '../Lib/equipmentLabel'
@@ -256,8 +255,9 @@ export async function updateEquipmentItem(input: unknown) {
 /**
  * Moves an item to another of the workshop's vehicles. It keeps its meters,
  * readings and the jobs that worked on it; the old vehicle's history says
- * where it went. Readings taken on the old vehicle's jobs stay in the item's
- * history but are no longer those jobs', as when a job moves.
+ * where it went. A job keeps what it worked on: the old vehicle's jobs still
+ * show and print the item and the readings taken on them, locked or not.
+ * Only new picks look at where the item is now.
  */
 export async function moveEquipmentItem(input: unknown) {
   return withAuth(
@@ -280,11 +280,6 @@ export async function moveEquipmentItem(input: unknown) {
         })
         await tx.equipmentFitting.create({
           data: { itemId: item.id, vehicleId: data.vehicleId, organizationId, fittedAt: now },
-        })
-        await unlinkItemMeterReadings(tx, {
-          organizationId,
-          itemIds: [item.id],
-          exceptVehicleId: data.vehicleId,
         })
       })
       refresh(organizationId, item.vehicleId, data.vehicleId)
@@ -313,7 +308,10 @@ export async function moveEquipmentItem(input: unknown) {
   )
 }
 
-/** Takes an item off its vehicle. It keeps its removed date and stays in the history. */
+/**
+ * Takes an item off its vehicle. It keeps its removed date and stays in the
+ * history, and the jobs that worked on it keep it and their readings of it.
+ */
 export async function removeEquipmentItem(id: string) {
   return withAuth(
     async ({ organizationId }) => {
@@ -415,6 +413,38 @@ export async function deleteEquipmentItem(id: string) {
           result
         ),
     }
+  )
+}
+
+/**
+ * Lets go of a report the item dialog uploaded and never saved: the dialog
+ * was cancelled, or the file taken off before saving. Only an upload of this
+ * workshop's in the vehicles folder, named as the upload route names one, and
+ * only once no item points at it; the file manager checks every other column
+ * too and moves it to its trash, so a mistake is still recoverable.
+ */
+export async function discardEquipmentReport(url: string) {
+  return withAuth(
+    async ({ organizationId }) => {
+      await requireFeature(organizationId, 'customFields')
+      const file = parseStoredFileUrl(url)
+      if (
+        !file ||
+        file.organizationId !== organizationId ||
+        file.folder !== 'vehicles' ||
+        !isGeneratedName(file.name)
+      ) {
+        throw new Error('Not a report file')
+      }
+      const used = await db.equipmentItem.count({ where: { organizationId, reportFileUrl: url } })
+      if (used > 0) return { discarded: false }
+      const result = await releaseFiles([url], {
+        organizationId,
+        reason: 'equipment report not saved',
+      })
+      return { discarded: result.removed.length > 0 }
+    },
+    { requiredPermissions: UPDATE }
   )
 }
 

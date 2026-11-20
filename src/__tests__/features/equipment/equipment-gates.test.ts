@@ -29,6 +29,9 @@ const ALLOWED = [
   'src/lib/files/collect.ts',
   // Deleting a workshop's data: items before their types, which refuse to go first.
   'src/lib/delete-user-data.ts',
+  // The fleet setup checklist counts the types to say whether the step is on,
+  // behind the same plan check.
+  'src/features/setup/Lib/heavyVehicleSetup.server.ts',
 ]
 
 const TABLES =

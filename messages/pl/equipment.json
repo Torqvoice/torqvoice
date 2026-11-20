@@ -50,9 +50,11 @@
     "delete": "Usuń",
     "deleteTitle": "Usunąć {name} na stałe?",
     "deleteHint": "Historia, liczniki, odczyty i plik protokołu też zostaną usunięte. Aby je zachować, zdemontuj zamiast usuwać.",
+    "deleteJobs": "{count, plural, one {# zlecenie dotyczy tego wyposażenia i przestanie je pokazywać.} few {# zlecenia dotyczą tego wyposażenia i przestaną je pokazywać.} many {# zleceń dotyczy tego wyposażenia i przestanie je pokazywać.} other {# zlecenia dotyczy tego wyposażenia i przestanie je pokazywać.}} Wystawione faktury zachowują swoją wydrukowaną kopię.",
     "deleted": "Usunięto {name}",
     "history": "{count, plural, one {Wcześniejsze wyposażenie (#)} few {Wcześniejsze wyposażenie (#)} many {Wcześniejsze wyposażenie (#)} other {Wcześniejsze wyposażenie (#)}}",
     "movedTo": "Przeniesiono do <vehicle></vehicle> {date}",
+    "movedOn": "Przeniesiono {date}",
     "removedOn": "Zdemontowano {date}",
     "refit": "Zamontuj ponownie",
     "refitted": "Ponownie zamontowano {name}",
@@ -103,6 +105,8 @@
     "none": "Nie wybrano wyposażenia",
     "search": "Szukaj wyposażenia",
     "noMatch": "Brak pasującego wyposażenia",
-    "saveError": "Nie udało się zapisać, czego dotyczy zlecenie"
+    "saveError": "Nie udało się zapisać, czego dotyczy zlecenie",
+    "moved": "Od tego czasu przeniesione",
+    "removed": "Od tego czasu zdemontowane"
   }
 }

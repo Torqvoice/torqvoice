@@ -50,9 +50,11 @@
     "delete": "Elimina",
     "deleteTitle": "Eliminare {name} definitivamente?",
     "deleteHint": "Vengono eliminati anche storico, contatori, letture e file del rapporto. Per conservarli, smontala invece.",
+    "deleteJobs": "{count, plural, one {# ordine di lavoro interviene su di essa e non la mostrerà più.} other {# ordini di lavoro intervengono su di essa e non la mostreranno più.}} Le fatture emesse conservano la loro copia stampata.",
     "deleted": "{name} eliminato",
     "history": "{count, plural, one {Attrezzatura precedente (#)} other {Attrezzature precedenti (#)}}",
     "movedTo": "Spostato su <vehicle></vehicle> il {date}",
+    "movedOn": "Spostato il {date}",
     "removedOn": "Smontato il {date}",
     "refit": "Rimonta",
     "refitted": "{name} rimontato",
@@ -103,6 +105,8 @@
     "none": "Nessuna attrezzatura scelta",
     "search": "Cerca attrezzatura",
     "noMatch": "Nessuna attrezzatura corrispondente",
-    "saveError": "Impossibile salvare su cosa interviene il lavoro"
+    "saveError": "Impossibile salvare su cosa interviene il lavoro",
+    "moved": "Spostato nel frattempo",
+    "removed": "Smontato nel frattempo"
   }
 }

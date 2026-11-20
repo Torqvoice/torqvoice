@@ -40,6 +40,10 @@ export interface JobMeterReadingInput {
  *
  * - The job and every meter have to be this workshop's, and each meter has to
  *   be on the job's vehicle now, or on a piece of equipment the job works on.
+ *   An item the job works on that moved to another vehicle or was taken off
+ *   since still takes readings on this job: the job worked on it, and a
+ *   reading misread then is corrected on the job it was read on. An item on
+ *   the vehicle that the job does not work on takes none here.
  * - A locked invoice refuses the change, as it refuses every other edit to
  *   the job: what it printed is frozen with it.
  * - A job's reading is dated by the job (`effectiveReadAt`), the date the
@@ -214,24 +218,21 @@ export async function unlinkJobMeterReadingsFromOtherVehicles(
 }
 
 /**
- * Readings of these items' meters taken on these jobs, or on any job when
- * `jobIds` is left out, stop being the job's: the job no longer works on the
- * item, or the item left the job's vehicle. They stay in the item's history.
+ * Readings of these items' meters taken on these jobs stop being the job's:
+ * the job no longer works on the item. They stay in the item's history. An
+ * item that moves or is taken off keeps its readings on the jobs that worked
+ * on it; this is only for a job that lets go of the item.
  */
 export async function unlinkItemMeterReadings(
   tx: { meterReading: { updateMany: typeof db.meterReading.updateMany } },
-  input: { organizationId: string; itemIds: string[]; jobIds?: string[]; exceptVehicleId?: string }
+  input: { organizationId: string; itemIds: string[]; jobIds: string[] }
 ): Promise<void> {
-  if (input.itemIds.length === 0) return
-  if (input.jobIds && input.jobIds.length === 0) return
+  if (input.itemIds.length === 0 || input.jobIds.length === 0) return
   await tx.meterReading.updateMany({
     where: {
       organizationId: input.organizationId,
       vehicleMeter: { equipmentItemId: { in: input.itemIds } },
-      serviceRecordId: input.jobIds ? { in: input.jobIds } : { not: null },
-      ...(input.exceptVehicleId
-        ? { serviceRecord: { vehicleId: { not: input.exceptVehicleId } } }
-        : {}),
+      serviceRecordId: { in: input.jobIds },
     },
     data: { serviceRecordId: null },
   })

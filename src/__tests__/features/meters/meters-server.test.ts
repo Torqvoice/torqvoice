@@ -86,6 +86,7 @@ import { getFeatures } from '@/lib/features'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import {
   activeMeterTypes,
+  jobMeterViews,
   printableMeterReadings,
   vehicleMeterViews,
 } from '@/features/meters/Lib/meters.server'
@@ -581,16 +582,62 @@ describe('the meters of the equipment a job works on', () => {
       { vehicleId: 'veh-1' },
       { equipmentItemId: { in: ['item-crane'] } },
     ])
-    // Only the items still on the job's vehicle are the job's.
+    // Every item the job works on, wherever it is now: a job keeps what it
+    // worked on, and a reading misread then is corrected on that job.
     expect(db.serviceRecordEquipment.findMany.mock.calls[0][0]?.where).toEqual({
       organizationId: 'org-1',
       serviceRecordId: 'job-1',
-      item: { vehicleId: 'veh-1', organizationId: 'org-1' },
+      item: { organizationId: 'org-1' },
     })
     expect(db.meterReading.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         create: expect.objectContaining({ vehicleMeterId: 'vm-crane', value: 812.5 }),
       })
     )
+  })
+})
+
+describe('a job whose item has moved to another vehicle since', () => {
+  it('still shows that item’s meters with the reading taken on the job', async () => {
+    db.equipmentType.findMany.mockResolvedValue([{ id: 'et-crane', name: 'Crane', isActive: true }])
+    db.serviceRecordEquipment.findMany.mockResolvedValue([{ itemId: 'item-crane' }])
+    db.equipmentItem.findMany.mockResolvedValue([
+      // On veh-2 now; the job is on veh-1.
+      { id: 'item-crane', make: 'HIAB', model: null, serialNumber: null, type: { name: 'Crane' } },
+    ])
+    db.vehicleMeter.findMany
+      .mockResolvedValueOnce([]) // the vehicle's own meters
+      .mockResolvedValueOnce([
+        {
+          id: 'vm-crane',
+          meterTypeId: 't-engine',
+          equipmentItemId: 'item-crane',
+          readings: [
+            row('r-job', 812.5, '2026-03-01', {
+              serviceRecordId: 'job-1',
+              serviceRecord: {
+                id: 'job-1',
+                title: 'Crane service',
+                invoiceNumber: null,
+                vehicleId: 'veh-1',
+                startDateTime: null,
+                serviceDate: new Date('2026-03-01T09:00:00Z'),
+              },
+            }),
+          ],
+        },
+      ])
+    const views = await jobMeterViews('org-1', {
+      id: 'job-1',
+      vehicleId: 'veh-1',
+      readAt: new Date('2026-03-01T09:00:00Z'),
+    })
+    expect(views).toEqual([
+      expect.objectContaining({
+        vehicleMeterId: 'vm-crane',
+        value: 812.5,
+        item: { id: 'item-crane', label: 'Crane, HIAB' },
+      }),
+    ])
   })
 })

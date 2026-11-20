@@ -50,9 +50,11 @@
     "delete": "Ištrinti",
     "deleteTitle": "Ištrinti {name} visam laikui?",
     "deleteHint": "Taip pat ištrinami istorija, skaitikliai, rodmenys ir ataskaitos failas. Jei norite juos išsaugoti, verčiau nuimkite.",
+    "deleteJobs": "{count, plural, one {# darbo užsakymas susijęs su ja ir jos neberodys.} few {# darbo užsakymai susiję su ja ir jos neberodys.} many {# darbo užsakymo susiję su ja ir jos neberodys.} other {# darbo užsakymų susiję su ja ir jos neberodys.}} Išrašytos sąskaitos faktūros išlaiko savo spausdintą kopiją.",
     "deleted": "Ištrinta: {name}",
     "history": "{count, plural, one {Ankstesnė įranga (#)} few {Ankstesnė įranga (#)} many {Ankstesnė įranga (#)} other {Ankstesnė įranga (#)}}",
     "movedTo": "Perkelta į <vehicle></vehicle> {date}",
+    "movedOn": "Perkelta {date}",
     "removedOn": "Nuimta {date}",
     "refit": "Sumontuoti atgal",
     "refitted": "Sumontuota atgal: {name}",
@@ -103,6 +105,8 @@
     "none": "Įranga nepasirinkta",
     "search": "Ieškoti įrangos",
     "noMatch": "Atitinkančios įrangos nėra",
-    "saveError": "Nepavyko išsaugoti, kam skirtas darbas"
+    "saveError": "Nepavyko išsaugoti, kam skirtas darbas",
+    "moved": "Nuo tada perkelta",
+    "removed": "Nuo tada nuimta"
   }
 }

@@ -50,9 +50,11 @@
     "delete": "Sil",
     "deleteTitle": "{name} kalıcı olarak silinsin mi?",
     "deleteHint": "Geçmişi, sayaçları, okumaları ve rapor dosyası da silinir. Bunları korumak için bunun yerine sökün.",
+    "deleteJobs": "{count, plural, one {# iş emri bu ekipmanla ilgili ve artık onu göstermeyecek.} other {# iş emri bu ekipmanla ilgili ve artık onu göstermeyecek.}} Düzenlenmiş faturalar basılı kopyalarını korur.",
     "deleted": "{name} silindi",
     "history": "{count, plural, one {Önceki ekipman (#)} other {Önceki ekipman (#)}}",
     "movedTo": "{date} tarihinde <vehicle></vehicle> üzerine taşındı",
+    "movedOn": "{date} tarihinde taşındı",
     "removedOn": "{date} tarihinde söküldü",
     "refit": "Geri tak",
     "refitted": "{name} geri takıldı",
@@ -103,6 +105,8 @@
     "none": "Ekipman seçilmedi",
     "search": "Ekipman ara",
     "noMatch": "Eşleşen ekipman yok",
-    "saveError": "İşin hangi ekipman için olduğu kaydedilemedi"
+    "saveError": "İşin hangi ekipman için olduğu kaydedilemedi",
+    "moved": "O zamandan beri taşındı",
+    "removed": "O zamandan beri söküldü"
   }
 }

@@ -29,6 +29,9 @@ const ALLOWED = [
   'src/features/equipment/',
   'src/lib/backup/build-data.ts',
   'src/lib/backup/import.ts',
+  // The fleet setup checklist counts the meters to say whether the step is
+  // on, behind the same plan check.
+  'src/features/setup/Lib/heavyVehicleSetup.server.ts',
 ]
 
 describe('the meter tables', () => {

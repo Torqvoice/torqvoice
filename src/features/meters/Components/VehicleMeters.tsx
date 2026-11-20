@@ -43,6 +43,7 @@ import {
 import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
 import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
+import { meterReadingKind } from '../Lib/meterAsk'
 import type { MeterTypeView, VehicleMeterView } from '../Lib/meters.server'
 
 /** "4,256.7 hrs" in the viewer's number format. */
@@ -409,16 +410,19 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
   // Checked against the reading as it stands now; the server checks against
   // the last one before the chosen day and says so if it differs.
   const lower = isLowerMeterValue(value, meter.current)
-  // A reading far above the last one waits for a yes, the odometer's question.
+  // A reading far above the last one waits for a yes, the odometer's question,
+  // with the limit for the meter's unit (meterAsk.ts).
   const [confirmed, setConfirmed] = useState<number | null>(null)
   const typedValue = parseMeterValue(value)
+  const askKind = meterReadingKind(meter.unit)
   const asking =
     typedValue !== null &&
+    askKind !== null &&
     readingNeedsAnswer({
       value: typedValue,
       saved: null,
       last: meter.current,
-      kind: 'hours',
+      kind: askKind,
       confirmed,
     })
 

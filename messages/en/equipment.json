@@ -50,9 +50,11 @@
     "delete": "Delete",
     "deleteTitle": "Delete {name} for good?",
     "deleteHint": "Its history, meters, readings and report file are deleted too. To keep them, remove it instead.",
+    "deleteJobs": "{count, plural, one {# work order works on it and will no longer show it.} other {# work orders work on it and will no longer show it.}} Issued invoices keep their printed copy.",
     "deleted": "Deleted {name}",
     "history": "{count, plural, one {Earlier equipment (#)} other {Earlier equipment (#)}}",
     "movedTo": "Moved to <vehicle></vehicle> on {date}",
+    "movedOn": "Moved on {date}",
     "removedOn": "Removed on {date}",
     "refit": "Put back",
     "refitted": "Put {name} back",
@@ -103,6 +105,8 @@
     "none": "No equipment picked",
     "search": "Search equipment",
     "noMatch": "No equipment matches",
-    "saveError": "Could not save what the job works on"
+    "saveError": "Could not save what the job works on",
+    "moved": "Moved since",
+    "removed": "Taken off since"
   }
 }
