@@ -10,6 +10,7 @@ import {
   examinationState,
   isDayKey,
   manufactureText,
+  manufactureValue,
   parseManufacture,
 } from '@/features/equipment/Lib/equipmentDays'
 import { equipmentLabel } from '@/features/equipment/Lib/equipmentLabel'
@@ -35,6 +36,43 @@ describe('when it was made', () => {
     expect(parseManufacture('19')).toBeNull()
     expect(parseManufacture('1850')).toBeNull()
     expect(parseManufacture('May 2019')).toBeNull()
+  })
+
+  it('takes a full date written the way the workshop writes dates', () => {
+    const made = { year: 2019, day: '2019-05-14' }
+    expect(parseManufacture('14/05/2019', 'dd/MM/yyyy')).toEqual(made)
+    expect(parseManufacture('05/14/2019', 'MM/dd/yyyy')).toEqual(made)
+    expect(parseManufacture('14.05.2019', 'dd.MM.yyyy')).toEqual(made)
+    // The app's default format names the month.
+    expect(parseManufacture('May 14, 2019', 'MMM d, yyyy')).toEqual(made)
+    // ISO is taken in every workshop.
+    expect(parseManufacture('2019-05-14', 'MM/dd/yyyy')).toEqual(made)
+  })
+
+  it('reads an ambiguous date by the workshop’s format', () => {
+    expect(parseManufacture('03/04/2019', 'dd/MM/yyyy')?.day).toBe('2019-04-03')
+    expect(parseManufacture('03/04/2019', 'MM/dd/yyyy')?.day).toBe('2019-03-04')
+  })
+
+  it('takes a year alone in any workshop', () => {
+    expect(parseManufacture('2019', 'dd.MM.yyyy')).toEqual({ year: 2019, day: null })
+  })
+
+  it('refuses a month and year alone, and a month name', () => {
+    for (const format of ['dd/MM/yyyy', 'MM/dd/yyyy', 'dd.MM.yyyy']) {
+      expect(parseManufacture('03/2019', format)).toBeNull()
+      expect(parseManufacture('03.2019', format)).toBeNull()
+      expect(parseManufacture('2019-03', format)).toBeNull()
+      expect(parseManufacture('March 2019', format)).toBeNull()
+    }
+    expect(parseManufacture('March 2019', 'MMM d, yyyy')).toBeNull()
+    expect(parseManufacture('31/02/2019', 'dd/MM/yyyy')).toBeNull()
+  })
+
+  it('goes to the server as the year or the ISO day', () => {
+    expect(manufactureValue('14.05.2019', 'dd.MM.yyyy')).toBe('2019-05-14')
+    expect(manufactureValue(' 2019 ', 'dd.MM.yyyy')).toBe('2019')
+    expect(manufactureValue('', 'dd.MM.yyyy')).toBe('')
   })
 
   it('shows as it was typed when the item is edited', () => {
