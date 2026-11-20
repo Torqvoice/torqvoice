@@ -87,7 +87,11 @@ export function EquipmentItemDialog({
     unsaved.current = null
     if (url) void discardEquipmentReport(url).catch(() => undefined)
   }
+  // While a save is under way the dialog stays open: closing it would let go
+  // of a report the save is about to point the item at.
+  const savingNow = useRef(false)
   const cancel = () => {
+    if (savingNow.current) return
     discardUnsaved()
     onClose()
   }
@@ -122,7 +126,8 @@ export function EquipmentItemDialog({
   }
 
   const save = async () => {
-    if (!typeId || manufactureInvalid) return
+    if (!typeId || manufactureInvalid || savingNow.current) return
+    savingNow.current = true
     setSaving(true)
     const fields = {
       typeId,
@@ -138,10 +143,17 @@ export function EquipmentItemDialog({
       notes,
       report,
     }
-    const result = item
-      ? await updateEquipmentItem({ id: item.id, ...fields })
-      : await addEquipmentItem({ vehicleId, ...fields })
-    setSaving(false)
+    let result: Awaited<ReturnType<typeof addEquipmentItem>>
+    try {
+      result = item
+        ? await updateEquipmentItem({ id: item.id, ...fields })
+        : await addEquipmentItem({ vehicleId, ...fields })
+    } catch {
+      result = { success: false }
+    } finally {
+      savingNow.current = false
+      setSaving(false)
+    }
     if (!result.success) {
       toast.error(result.error || t('saveError'))
       return
@@ -174,7 +186,7 @@ export function EquipmentItemDialog({
 
   return (
     <Dialog open onOpenChange={(next) => !next && cancel()}>
-      <DialogContent className="sm:max-w-lg" data-testid="equipment-dialog">
+      <DialogContent className="sm:max-w-lg" data-testid="equipment-dialog" closeDisabled={saving}>
         <DialogHeader>
           <DialogTitle>{item ? t('editTitle') : t('addTitle')}</DialogTitle>
         </DialogHeader>
@@ -273,6 +285,7 @@ export function EquipmentItemDialog({
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6"
+                  disabled={saving}
                   onClick={() => {
                     if (unsaved.current === report.url) discardUnsaved()
                     setReport(null)
@@ -287,7 +300,7 @@ export function EquipmentItemDialog({
                 type="button"
                 variant="outline"
                 size="sm"
-                disabled={uploading}
+                disabled={uploading || saving}
                 aria-describedby="equipment-report-label"
                 onClick={() => fileInput.current?.click()}
               >
@@ -320,7 +333,7 @@ export function EquipmentItemDialog({
           </div>
         </DialogBody>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={cancel}>
+          <Button type="button" variant="outline" onClick={cancel} disabled={saving}>
             {tc('cancel')}
           </Button>
           <Button

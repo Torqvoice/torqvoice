@@ -1,4 +1,5 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync, unlinkSync } from 'node:fs'
+import path from 'node:path'
 import { expect, type Page, test } from '@playwright/test'
 import { Client } from 'pg'
 import {
@@ -26,6 +27,7 @@ const DESIGN_NAME = `E2E vehicle photo design ${stamp}`
 let jobUrl = ''
 let vehicleId = ''
 let photoBefore: string | null = null
+let uploadedUrl = ''
 let restoreTo: InvoiceDesignState
 let imagesWithout = 0
 
@@ -114,18 +116,39 @@ test.beforeAll(async ({ browser }) => {
     },
   })
   expect(upload.status()).toBe(200)
-  await setPhoto((await upload.json()).url)
+  uploadedUrl = (await upload.json()).url
+  await setPhoto(uploadedUrl)
   await page.close()
 })
+
+/**
+ * Where the app keeps the uploaded photo, when the suite shares its disk:
+ * the app server inherits this environment, so the same DATA_ROOT.
+ */
+function uploadedFile(): string | null {
+  const name = uploadedUrl.split('/').pop()
+  if (!name) return null
+  const root = process.env.DATA_ROOT || path.join(process.cwd(), 'data')
+  return path.join(root, 'uploads', uploadedUrl.split('/').at(-3) ?? '', 'vehicles', name)
+}
 
 test.afterAll(async () => {
   await setPhoto(photoBefore)
   await restoreInvoiceDesignState(restoreTo)
+  // The photo this spec uploaded; nothing points at it now. A suite that
+  // runs against a server on another disk leaves it to that server's data.
+  const file = uploadedFile()
+  if (file && existsSync(file)) unlinkSync(file)
 })
 
 test('a vehicle with a photo prints as before until the design asks', async ({ page }) => {
+  // The workshop's own design, before this spec changes it: the invoice
+  // draws exactly as many pictures with the vehicle's photo as without it.
+  const withPhoto = await invoiceImages(page)
+  await setPhoto(null)
   imagesWithout = await invoiceImages(page)
-  expect(imagesWithout).toBeGreaterThanOrEqual(0)
+  await setPhoto(uploadedUrl)
+  expect(withPhoto).toBe(imagesWithout)
 })
 
 test('photo beside the details: the invoice carries the photo', async ({ page }) => {

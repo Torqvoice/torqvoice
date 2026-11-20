@@ -165,6 +165,12 @@ export interface AssembleOptions {
    * the work order, which reads it for its own design.
    */
   vehiclePhoto?: boolean
+  /**
+   * How long to wait for the vehicle's photo before the sheet goes without
+   * it. Issuing waits longer (ISSUE_PHOTO_WAIT_MS), since it keeps the photo
+   * for good; every other sheet waits the usual few seconds.
+   */
+  photoWaitMs?: number
 }
 
 export interface InvoicePrintAssembly {
@@ -435,7 +441,7 @@ export async function assembleInvoicePrint(
   const photo = options.vehiclePhoto !== false
   if (frozen)
     return assembleFrozen(record, organizationId, org, settingsMap, frozen, results, photo)
-  return assembleLive(record, organizationId, org, settingsMap, results, photo)
+  return assembleLive(record, organizationId, org, settingsMap, results, photo, options.photoWaitMs)
 }
 
 async function assembleLive(
@@ -444,7 +450,8 @@ async function assembleLive(
   org: InvoicePrintAssembly['org'],
   settingsMap: Record<string, string>,
   results: NonNullable<AssembleOptions['inspectionResults']>,
-  photo: boolean
+  photo: boolean,
+  photoWaitMs: number | undefined
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
   const [findings, customFields, look, signatureDataUri, conditionMap] = await Promise.all([
@@ -541,7 +548,8 @@ async function assembleLive(
           organizationId,
           record.vehicleId,
           template.layoutConfig,
-          template
+          template,
+          { waitMs: photoWaitMs }
         )
       : {}
 

@@ -5,6 +5,7 @@ import {
   ensureDesignSnapshot,
 } from '@/features/invoice-designer/Lib/designSnapshots'
 import { assembleInvoicePrint, type InvoicePrintAssembly } from './assembleInvoicePrint'
+import { ISSUE_PHOTO_WAIT_MS } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
 import {
   freezeConditionMap,
   freezeEquipment,
@@ -99,9 +100,13 @@ async function captureIssue(
 ): Promise<boolean> {
   // The inspection's rows are frozen, never its photographs, so they are not
   // decoded here only to be thrown away.
+  // The photo is kept for good, so issuing waits longer for it than a
+  // redraw does, sharing any decode already under way. Still nothing: the
+  // invoice issues without it.
   const assembly = await assembleInvoicePrint(recordId, {
     mode: 'live',
     inspectionResults: 'rows',
+    photoWaitMs: ISSUE_PHOTO_WAIT_MS,
   })
   if (!assembly) return false
 

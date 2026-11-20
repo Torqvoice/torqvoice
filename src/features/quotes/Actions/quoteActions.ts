@@ -385,6 +385,19 @@ export async function updateQuote(input: unknown) {
           },
         })
 
+        // A quote moved to another vehicle (or to none) no longer works on the
+        // old vehicle's equipment, as a job does when it moves. An item that
+        // moved on its own while the quote stayed is still the quote's.
+        if (updated.vehicleId !== existing.vehicleId) {
+          await tx.quoteEquipment.deleteMany({
+            where: {
+              organizationId,
+              quoteId: id,
+              ...(updated.vehicleId ? { item: { vehicleId: { not: updated.vehicleId } } } : {}),
+            },
+          })
+        }
+
         if (partItems !== undefined) {
           await tx.quotePart.deleteMany({ where: { quoteId: id } })
           if (taxedParts && taxedParts.length > 0) {
