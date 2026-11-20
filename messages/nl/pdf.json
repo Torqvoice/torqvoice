@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Upgrade",
     "serviceTypeInspection": "Inspectie",
     "customFieldYes": "Ja",
-    "customFieldNo": "Nee"
+    "customFieldNo": "Nee",
+    "equipmentTitle": "Uitrusting",
+    "equipmentType": "Soort",
+    "equipmentMake": "Merk",
+    "equipmentModel": "Model",
+    "equipmentManufactureYear": "Bouwjaar",
+    "equipmentSerialNumber": "Serienr.",
+    "equipmentInstallDate": "Gemonteerd",
+    "equipmentRatedCapacity": "Capaciteit",
+    "equipmentLastExamined": "Laatst gekeurd",
+    "equipmentNextExamination": "Volgende keuring",
+    "equipmentCertificateReference": "Certificaat",
+    "equipmentMeters": "Tellerstanden",
+    "equipmentNotes": "Notities"
   },
   "workOrder": {
     "title": "WERKORDER",

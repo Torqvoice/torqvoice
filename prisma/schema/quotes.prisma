@@ -1,45 +1,45 @@
 model Quote {
-  id              String    @id @default(cuid())
-  quoteNumber     String?
-  title           String
-  description     String?
-  status          String    @default("draft")
-  validUntil      DateTime?
-  subtotal        Float     @default(0)
-  taxRate         Float     @default(0)
-  taxAmount       Float     @default(0)
-  taxInclusive    Boolean   @default(false)
+  id                String    @id @default(cuid())
+  quoteNumber       String?
+  title             String
+  description       String?
+  status            String    @default("draft")
+  validUntil        DateTime?
+  subtotal          Float     @default(0)
+  taxRate           Float     @default(0)
+  taxAmount         Float     @default(0)
+  taxInclusive      Boolean   @default(false)
   /// See ServiceRecord.taxComponents.
-  taxComponents   Json?
+  taxComponents     Json?
   /// See ServiceRecord.taxableSubtotal.
-  taxableSubtotal Float?
-  discountType    String?
-  discountValue   Float     @default(0)
-  discountAmount  Float     @default(0)
-  totalAmount     Float     @default(0)
-  notes           String?
+  taxableSubtotal   Float?
+  discountType      String?
+  discountValue     Float     @default(0)
+  discountAmount    Float     @default(0)
+  totalAmount       Float     @default(0)
+  notes             String?
   /// The warranty the customer is being offered, stated before they accept.
   /// Same meaning as on ServiceRecord, and copied there on conversion. No
   /// expiry: the period starts with the work, which a quote has no date for.
-  warrantyStatus  String?
-  warrantyMonths  Int?
-  warrantyMileage Int?
-  warrantyNotes   String?
-  publicToken     String?
-  sharedAt        DateTime?
-  viewCount       Int       @default(0)
-  lastViewedAt    DateTime?
+  warrantyStatus    String?
+  warrantyMonths    Int?
+  warrantyMileage   Int?
+  warrantyNotes     String?
+  publicToken       String?
+  sharedAt          DateTime?
+  viewCount         Int       @default(0)
+  lastViewedAt      DateTime?
   /// See ServiceRecord: this document's own answer to when its share link
   /// stops working, and the last time the link was sent again or reopened.
   shareExpiresAt    DateTime?
   shareNeverExpires Boolean   @default(false)
   shareRenewedAt    DateTime?
-  customerMessage String?
+  customerMessage   String?
   /// See ServiceRecord.customerReference. Copied to the job on conversion.
   customerReference String?
-  convertedToId   String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  convertedToId     String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   /// Most recent time this quote reached the customer, by email or share
   /// link. Exists so an unlock is spent when the quote is issued again; the
@@ -80,6 +80,8 @@ model Quote {
   inspection   Inspection? @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
 
   partItems   QuotePart[]
+  /// The equipment it is for, carried to the work order.
+  equipment   QuoteEquipment[]
   laborItems  QuoteLabor[]
   attachments QuoteAttachment[]
 

@@ -1,5 +1,6 @@
 'use server'
 
+import { copyQuoteEquipmentToJob } from '@/features/equipment/Lib/equipmentWorkOn.server'
 import {
   gateCustomerReference,
   isCustomerReferenceEnabled,
@@ -633,6 +634,13 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
 
         // Copy attachments from quote to service record
         await copyQuoteAttachmentsToJob(tx, organizationId, created.id, quote.attachments)
+        // And the equipment it is for.
+        await copyQuoteEquipmentToJob(tx, {
+          organizationId,
+          quoteId: quote.id,
+          jobId: created.id,
+          vehicleId,
+        })
 
         // Marking it converted is what claims it: two clicks at once cannot
         // both raise a job, since the second finds nothing left to claim and
@@ -943,6 +951,12 @@ export async function addQuoteToServiceRecord(
         )
 
         await copyQuoteAttachmentsToJob(tx, organizationId, record.id, quote.attachments)
+        await copyQuoteEquipmentToJob(tx, {
+          organizationId,
+          quoteId: quote.id,
+          jobId: record.id,
+          vehicleId: record.vehicleId,
+        })
 
         // Links the job did not have, and the answers to the conflicts. A
         // link it has is never rewritten.

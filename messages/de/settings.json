@@ -754,7 +754,8 @@
       "concerns": "Kundenanliegen",
       "job_description": "Gewünschte Arbeiten",
       "work_checklist": "Arbeitscheckliste",
-      "condition_map": "Fahrzeugzustand"
+      "condition_map": "Fahrzeugzustand",
+      "equipment": "Ausrüstung"
     },
     "fields": {
       "customer_name": "Kundenname",
@@ -820,7 +821,19 @@
       "legend": "Legende",
       "previous_marks": "Frühere Markierungen",
       "blank_sheet": "Leeres Blatt zum Ausfüllen von Hand",
-      "meter_readings": "Zählerstände"
+      "meter_readings": "Zählerstände",
+      "equipment_type": "Typ",
+      "equipment_make": "Hersteller",
+      "equipment_model": "Modell",
+      "equipment_manufacture_year": "Baujahr",
+      "equipment_serial_number": "Seriennummer",
+      "equipment_install_date": "Montiert",
+      "equipment_rated_capacity": "Nenntragfähigkeit",
+      "equipment_last_examined": "Zuletzt geprüft",
+      "equipment_next_examination": "Nächste Prüfung fällig",
+      "equipment_certificate_reference": "Prüfbescheinigung Nr.",
+      "equipment_meters": "Zählerstände",
+      "equipment_notes": "Notizen"
     },
     "presetsTitle": "Mit einer Anordnung beginnen",
     "presetsHint": "Ersetzt die Anordnung unten. Nichts wird gespeichert, bis Sie speichern.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Nur die Seiten",
     "conditionMapWidthHint": "Leer füllt die Zeile. Punkte angeben, um die Zeichnung zu verkleinern; sie sitzt dann nach der Ausrichtung, und die Legende behält die volle Breite.",
     "conditionMapDense": "Kompakte Tabelle",
-    "conditionMapDenseHint": "Setzt die Zeilen der Tabelle unter der Zeichnung enger, sodass sie weniger Platz auf der Seite braucht."
+    "conditionMapDenseHint": "Setzt die Zeilen der Tabelle unter der Zeichnung enger, sodass sie weniger Platz auf der Seite braucht.",
+    "equipmentList": "Welche Ausrüstung",
+    "equipmentListVehicle": "Am Fahrzeug",
+    "equipmentListVehicleMarine": "Am Boot",
+    "equipmentListJob": "Bearbeitet",
+    "equipmentListHint": "Am Fahrzeug listet alles, was derzeit daran montiert ist. Bearbeitet listet nur die Ausrüstung, an der der Auftrag oder das Angebot arbeitet. Die Felder unten bestimmen die Spalten und ihre Reihenfolge.",
+    "equipmentListHintMarine": "Am Boot listet alles, was derzeit daran montiert ist. Bearbeitet listet nur die Ausrüstung, an der der Auftrag oder das Angebot arbeitet. Die Felder unten bestimmen die Spalten und ihre Reihenfolge.",
+    "equipmentNoneHint": "Legen Sie unter Einstellungen, Benutzerdefinierte Felder Ausrüstungsarten an, um hier die Ausrüstung des Fahrzeugs zu drucken.",
+    "equipmentNoneHintMarine": "Legen Sie unter Einstellungen, Benutzerdefinierte Felder Ausrüstungsarten an, um hier die Ausrüstung des Boots zu drucken.",
+    "equipmentTitle": "Überschrift",
+    "equipmentTitleHint": "Leer lassen, um die Standardüberschrift in der Sprache des Dokuments zu drucken, oder eine eigene schreiben, zum Beispiel \"Angaben zur angebauten Ausrüstung\"."
   },
   "preview": {
     "title": "Bremsenservice und Ölwechsel",

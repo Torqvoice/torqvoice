@@ -734,6 +734,9 @@
     "removeTitleMarine": "{name} bu tekneden kaldırılsın mı?",
     "removeHint": "Okumaları korunur ve sayaç yeniden eklenirse geri gelir.",
     "removed": "{name} kaldırıldı",
-    "added": "{name} eklendi"
+    "added": "{name} eklendi",
+    "itemTitle": "Sayaçlar",
+    "noItemMeters": "Bu öğede sayaç yok.",
+    "addItemMeterHint": "Sayaç, nereye takılırsa takılsın bu öğeyle birlikte gider."
   }
 }

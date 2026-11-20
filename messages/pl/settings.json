@@ -754,7 +754,8 @@
       "concerns": "Uwagi klienta",
       "job_description": "Zlecone prace",
       "work_checklist": "Lista prac",
-      "condition_map": "Stan pojazdu"
+      "condition_map": "Stan pojazdu",
+      "equipment": "Wyposażenie"
     },
     "fields": {
       "customer_name": "Nazwa klienta",
@@ -820,7 +821,19 @@
       "legend": "Legenda",
       "previous_marks": "Wcześniejsze oznaczenia",
       "blank_sheet": "Pusty arkusz do wypełnienia ręcznie",
-      "meter_readings": "Odczyty liczników"
+      "meter_readings": "Odczyty liczników",
+      "equipment_type": "Typ",
+      "equipment_make": "Marka",
+      "equipment_model": "Model",
+      "equipment_manufacture_year": "Rok produkcji",
+      "equipment_serial_number": "Numer seryjny",
+      "equipment_install_date": "Zamontowano",
+      "equipment_rated_capacity": "Udźwig nominalny",
+      "equipment_last_examined": "Ostatnie badanie",
+      "equipment_next_examination": "Termin następnego badania",
+      "equipment_certificate_reference": "Numer świadectwa",
+      "equipment_meters": "Odczyty liczników",
+      "equipment_notes": "Notatki"
     },
     "presetsTitle": "Zacznij od układu",
     "presetsHint": "Zastępuje układ poniżej. Nic nie zostanie zapisane, dopóki nie zapiszesz.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Tylko boki",
     "conditionMapWidthHint": "Puste wypełnia wiersz. Podaj punkty, aby zmniejszyć rysunek; ustawi się według wyrównania, a legenda zachowa pełną szerokość.",
     "conditionMapDense": "Zwarta tabela",
-    "conditionMapDenseHint": "Zmniejsza odstępy między wierszami tabeli pod rysunkiem, dzięki czemu zajmuje ona mniej miejsca na stronie."
+    "conditionMapDenseHint": "Zmniejsza odstępy między wierszami tabeli pod rysunkiem, dzięki czemu zajmuje ona mniej miejsca na stronie.",
+    "equipmentList": "Które wyposażenie",
+    "equipmentListVehicle": "W pojeździe",
+    "equipmentListVehicleMarine": "Na łodzi",
+    "equipmentListJob": "Objęte pracą",
+    "equipmentListHint": "W pojeździe pokazuje wszystko, co jest w nim teraz zamontowane. Objęte pracą pokazuje tylko elementy, których dotyczy zlecenie lub oferta. Pola poniżej wybierają kolumny i ich kolejność.",
+    "equipmentListHintMarine": "Na łodzi pokazuje wszystko, co jest na niej teraz zamontowane. Objęte pracą pokazuje tylko elementy, których dotyczy zlecenie lub oferta. Pola poniżej wybierają kolumny i ich kolejność.",
+    "equipmentNoneHint": "Dodaj typy wyposażenia w Ustawienia, Pola niestandardowe, aby drukować tutaj wyposażenie pojazdu.",
+    "equipmentNoneHintMarine": "Dodaj typy wyposażenia w Ustawienia, Pola niestandardowe, aby drukować tutaj wyposażenie łodzi.",
+    "equipmentTitle": "Nagłówek",
+    "equipmentTitleHint": "Zostaw puste, aby drukować domyślny nagłówek w języku dokumentu, albo wpisz własny, na przykład \"Szczegóły zamontowanego wyposażenia\"."
   },
   "preview": {
     "title": "Serwis hamulców i wymiana oleju",

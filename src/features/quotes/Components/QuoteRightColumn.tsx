@@ -1,5 +1,6 @@
 'use client'
 
+import { WorkOnPicker } from '@/features/equipment/Components/WorkOnPicker'
 import { memo, useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -294,6 +295,12 @@ export const QuoteRightColumn = memo(function QuoteRightColumn({
             onSave={(reference) => setQuoteReference(quote.id, reference)}
           />
         )}
+        <WorkOnPicker
+          target={{ kind: 'quote', id: quote.id }}
+          equipment={quote.equipment}
+          locked={locked}
+          labelClassName="text-xs font-medium"
+        />
         {quote.inspectionId && (
           <Link
             href={`/inspections/${quote.inspectionId}`}

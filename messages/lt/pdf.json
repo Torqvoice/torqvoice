@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Pagerinimas",
     "serviceTypeInspection": "Apžiūra",
     "customFieldYes": "Taip",
-    "customFieldNo": "Ne"
+    "customFieldNo": "Ne",
+    "equipmentTitle": "Įranga",
+    "equipmentType": "Tipas",
+    "equipmentMake": "Gamintojas",
+    "equipmentModel": "Modelis",
+    "equipmentManufactureYear": "Metai",
+    "equipmentSerialNumber": "Serijos Nr.",
+    "equipmentInstallDate": "Sumontuota",
+    "equipmentRatedCapacity": "Keliamoji galia",
+    "equipmentLastExamined": "Paskutinė patikra",
+    "equipmentNextExamination": "Kita patikra",
+    "equipmentCertificateReference": "Sertifikatas",
+    "equipmentMeters": "Rodmenys",
+    "equipmentNotes": "Pastabos"
   },
   "workOrder": {
     "title": "DARBO UŽSAKYMAS",

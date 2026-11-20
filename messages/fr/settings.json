@@ -754,7 +754,8 @@
       "concerns": "Demandes du client",
       "job_description": "Travaux demandés",
       "work_checklist": "Liste des travaux",
-      "condition_map": "État du véhicule"
+      "condition_map": "État du véhicule",
+      "equipment": "Équipements"
     },
     "fields": {
       "customer_name": "Nom du client",
@@ -820,7 +821,19 @@
       "legend": "Légende",
       "previous_marks": "Marques antérieures",
       "blank_sheet": "Feuille vierge à remplir à la main",
-      "meter_readings": "Relevés de compteurs"
+      "meter_readings": "Relevés de compteurs",
+      "equipment_type": "Type",
+      "equipment_make": "Marque",
+      "equipment_model": "Modèle",
+      "equipment_manufacture_year": "Année de fabrication",
+      "equipment_serial_number": "Numéro de série",
+      "equipment_install_date": "Monté le",
+      "equipment_rated_capacity": "Charge maximale d'utilisation",
+      "equipment_last_examined": "Dernière vérification",
+      "equipment_next_examination": "Prochaine vérification due",
+      "equipment_certificate_reference": "Référence du certificat",
+      "equipment_meters": "Relevés de compteurs",
+      "equipment_notes": "Notes"
     },
     "presetsTitle": "Partir d’une disposition",
     "presetsHint": "Remplace la disposition ci-dessous. Rien n’est enregistré avant votre validation.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Côtés seulement",
     "conditionMapWidthHint": "Vide occupe toute la ligne. Indiquez des points pour réduire le dessin ; il se place selon l'alignement et la légende garde toute la largeur.",
     "conditionMapDense": "Tableau compact",
-    "conditionMapDenseHint": "Resserre les lignes du tableau sous le dessin pour qu'il prenne moins de place sur la page."
+    "conditionMapDenseHint": "Resserre les lignes du tableau sous le dessin pour qu'il prenne moins de place sur la page.",
+    "equipmentList": "Quels équipements",
+    "equipmentListVehicle": "Sur le véhicule",
+    "equipmentListVehicleMarine": "Sur le bateau",
+    "equipmentListJob": "Travaillés",
+    "equipmentListHint": "Sur le véhicule liste tout ce qui y est monté actuellement. Travaillés liste uniquement les éléments sur lesquels porte l'ordre de travail ou le devis. Les champs ci-dessous choisissent les colonnes et leur ordre.",
+    "equipmentListHintMarine": "Sur le bateau liste tout ce qui y est monté actuellement. Travaillés liste uniquement les éléments sur lesquels porte l'ordre de travail ou le devis. Les champs ci-dessous choisissent les colonnes et leur ordre.",
+    "equipmentNoneHint": "Ajoutez des types d'équipement dans Paramètres, Champs personnalises pour imprimer ici les équipements du véhicule.",
+    "equipmentNoneHintMarine": "Ajoutez des types d'équipement dans Paramètres, Champs personnalises pour imprimer ici les équipements du bateau.",
+    "equipmentTitle": "Titre",
+    "equipmentTitleHint": "Laissez vide pour imprimer le titre par défaut dans la langue du document, ou écrivez le vôtre, par exemple \"Détail des équipements montés\"."
   },
   "preview": {
     "title": "Révision des freins et vidange",

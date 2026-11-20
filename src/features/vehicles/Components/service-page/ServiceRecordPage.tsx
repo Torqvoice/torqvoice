@@ -1,5 +1,6 @@
 import { workshopTaxOffer } from '@/features/settings/Lib/workshopTaxOffer'
 import { jobMeterViews } from '@/features/meters/Lib/meters.server'
+import { jobEquipmentView } from '@/features/equipment/Lib/equipment.server'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
@@ -279,6 +280,12 @@ export async function ServiceRecordPage({
         })
       : []
 
+  // And what it works on of the vehicle's equipment ("Work on").
+  const equipment =
+    record.vehicle && organizationId
+      ? await jobEquipmentView(organizationId, { id: record.id, vehicleId: record.vehicle.id })
+      : null
+
   const initialData = {
     id: record.id,
     title: record.title,
@@ -288,6 +295,7 @@ export async function ServiceRecordPage({
     mileage: record.mileage,
     lastReading,
     meters,
+    equipment,
     serviceDate: zonedDayKey(
       isRenderable(record.serviceDate) ? new Date(record.serviceDate) : new Date(),
       timeZone

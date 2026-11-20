@@ -37,6 +37,12 @@ const db = vi.hoisted(() => ({
     })),
   },
   serviceRecord: { findFirst: vi.fn() },
+  // No equipment unless a test defines some.
+  equipmentType: { findMany: vi.fn(async () => [] as unknown[]) },
+  equipmentItem: { findMany: vi.fn(async () => [] as unknown[]) },
+  serviceRecordEquipment: {
+    findMany: vi.fn(async (_args?: { where: unknown }) => [] as unknown[]),
+  },
   // A transaction runs on the same mocks, so what it writes can be asked about.
   $transaction: vi.fn(async (fn: (tx: unknown) => unknown) => fn(db)),
 }))
@@ -97,6 +103,7 @@ import {
   addMeterReading,
   markMeterReadingWrong,
 } from '@/features/meters/Actions/vehicleMeterActions'
+import { setJobMeterReading } from '@/features/meters/Actions/jobMeterActions'
 
 const plan = (customFields: boolean) =>
   vi.mocked(getFeatures).mockResolvedValue({ customFields } as never)
@@ -350,7 +357,7 @@ describe('a reading on a job', () => {
     expect(db.vehicleMeter.findMany.mock.calls[0][0].where).toMatchObject({
       id: { in: ['vm-1'] },
       organizationId: 'org-1',
-      vehicleId: 'veh-1',
+      OR: [{ vehicleId: 'veh-1' }],
       removedAt: null,
     })
     expect(db.meterReading.upsert).not.toHaveBeenCalled()
@@ -434,7 +441,12 @@ describe('a job moved to another vehicle', () => {
       where: {
         organizationId: 'org-1',
         serviceRecordId: 'job-1',
-        vehicleMeter: { vehicleId: { not: 'veh-B' } },
+        NOT: {
+          OR: [
+            { vehicleMeter: { vehicleId: 'veh-B' } },
+            { vehicleMeter: { equipmentItem: { vehicleId: 'veh-B' } } },
+          ],
+        },
       },
       data: { serviceRecordId: null },
     })
@@ -523,5 +535,62 @@ describe('more of the review’s rules', () => {
         },
       }),
     ])
+  })
+
+  it('logs a reading typed on the work order like any change to the work order', async () => {
+    db.serviceRecord.findFirst.mockResolvedValue({
+      id: 'job-1',
+      vehicleId: 'veh-1',
+      startDateTime: null,
+      serviceDate: new Date('2026-03-01T09:00:00Z'),
+      invoiceNumber: 'WO-1042',
+    })
+    db.vehicleMeter.findMany.mockResolvedValue([{ id: 'vm-1', readings: [] }])
+    audits.length = 0
+    await setJobMeterReading({ jobId: 'job-1', vehicleMeterId: 'vm-1', value: '4300' })
+    expect(audits).toEqual([
+      expect.objectContaining({
+        action: 'service.update',
+        entityId: 'job-1',
+        details: { key: 'service_update', params: { ref: 'WO-1042' } },
+      }),
+    ])
+  })
+})
+
+describe('the meters of the equipment a job works on', () => {
+  it('can be read on that job, beside the vehicle’s own', async () => {
+    db.serviceRecord.findFirst.mockResolvedValue({
+      id: 'job-1',
+      vehicleId: 'veh-1',
+      startDateTime: null,
+      serviceDate: new Date('2026-03-01T09:00:00Z'),
+    })
+    db.equipmentType.findMany.mockResolvedValue([{ id: 'et-crane', name: 'Crane', isActive: true }])
+    db.serviceRecordEquipment.findMany.mockResolvedValue([{ itemId: 'item-crane' }])
+    db.vehicleMeter.findMany.mockResolvedValue([{ id: 'vm-crane', readings: [] }])
+    await writeJobMeterReading({
+      organizationId: 'org-1',
+      userId: 'user-1',
+      jobId: 'job-1',
+      vehicleMeterId: 'vm-crane',
+      value: '812.5',
+      source: 'web',
+    })
+    expect(db.vehicleMeter.findMany.mock.calls[0][0].where.OR).toEqual([
+      { vehicleId: 'veh-1' },
+      { equipmentItemId: { in: ['item-crane'] } },
+    ])
+    // Only the items still on the job's vehicle are the job's.
+    expect(db.serviceRecordEquipment.findMany.mock.calls[0][0]?.where).toEqual({
+      organizationId: 'org-1',
+      serviceRecordId: 'job-1',
+      item: { vehicleId: 'veh-1', organizationId: 'org-1' },
+    })
+    expect(db.meterReading.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({ vehicleMeterId: 'vm-crane', value: 812.5 }),
+      })
+    )
   })
 })

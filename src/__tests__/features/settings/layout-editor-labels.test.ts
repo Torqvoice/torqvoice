@@ -22,6 +22,7 @@ import {
   BUILTIN_SIGNATURE_FIELDS,
   BUILTIN_DEFECTS_FIELDS,
   BUILTIN_RESULTS_TABLE_FIELDS,
+  BUILTIN_EQUIPMENT_FIELDS,
   WORK_ORDER_SECTIONS,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -41,7 +42,10 @@ const FIELD_IDS = [
   // order can print as well as the certificate.
   ...BUILTIN_DEFECTS_FIELDS,
   ...BUILTIN_RESULTS_TABLE_FIELDS,
-].map((f) => f.id)
+]
+  .map((f): string => f.id)
+  // The Equipment section's columns, named apart from every other field.
+  .concat(BUILTIN_EQUIPMENT_FIELDS.map((f) => `equipment_${f.id}`))
 
 const SECTION_IDS = [...new Set([...BUILTIN_SECTIONS, ...WORK_ORDER_SECTIONS].map((s) => s.id))]
 

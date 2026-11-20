@@ -734,6 +734,9 @@
     "removeTitleMarine": "Remover {name} desta embarcação?",
     "removeHint": "As leituras são mantidas e voltam se o medidor for adicionado novamente.",
     "removed": "{name} removido",
-    "added": "{name} adicionado"
+    "added": "{name} adicionado",
+    "itemTitle": "Medidores",
+    "noItemMeters": "Nenhum medidor neste item.",
+    "addItemMeterHint": "O medidor acompanha este item onde quer que esteja instalado."
   }
 }

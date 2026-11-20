@@ -1,6 +1,7 @@
 'use server'
 
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { readFile } from 'node:fs/promises'
 import { headers } from 'next/headers'
 import {
@@ -95,6 +96,13 @@ export async function getPortalQuote(quoteId: string) {
             vehicleId: quote.vehicleId,
           }),
         },
+        // What is fitted to the vehicle, and the items the quote works on.
+        // Only the finished sheet leaves the server, so it prints only where
+        // the design places the Equipment section.
+        equipment: await printableEquipment(organizationId, {
+          quoteId: quote.id,
+          vehicleId: quote.vehicleId,
+        }),
       },
       customerReferenceEnabledIn(settingsMap, features)
     )

@@ -416,6 +416,101 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [],
   },
+  EquipmentType: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  EquipmentItem: {
+    organizationId: true,
+    foreignKeys: {
+      typeId: {
+        target: 'EquipmentType',
+        required: true,
+        relation: 'type',
+      },
+      vehicleId: {
+        target: 'Vehicle',
+        required: true,
+        relation: 'vehicle',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  EquipmentFitting: {
+    organizationId: true,
+    foreignKeys: {
+      itemId: {
+        target: 'EquipmentItem',
+        required: true,
+        relation: 'item',
+      },
+      vehicleId: {
+        target: 'Vehicle',
+        required: true,
+        relation: 'vehicle',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  ServiceRecordEquipment: {
+    organizationId: true,
+    foreignKeys: {
+      serviceRecordId: {
+        target: 'ServiceRecord',
+        required: true,
+        relation: 'serviceRecord',
+      },
+      itemId: {
+        target: 'EquipmentItem',
+        required: true,
+        relation: 'item',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  QuoteEquipment: {
+    organizationId: true,
+    foreignKeys: {
+      quoteId: {
+        target: 'Quote',
+        required: true,
+        relation: 'quote',
+      },
+      itemId: {
+        target: 'EquipmentItem',
+        required: true,
+        relation: 'item',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
   ImportBatch: {
     organizationId: true,
     foreignKeys: {
@@ -875,8 +970,13 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     foreignKeys: {
       vehicleId: {
         target: 'Vehicle',
-        required: true,
+        required: false,
         relation: 'vehicle',
+      },
+      equipmentItemId: {
+        target: 'EquipmentItem',
+        required: false,
+        relation: 'equipmentItem',
       },
       meterTypeId: {
         target: 'MeterType',

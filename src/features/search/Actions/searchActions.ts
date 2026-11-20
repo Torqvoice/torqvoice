@@ -14,6 +14,9 @@ import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 import { accessFor } from '@/lib/viewer-access'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { listAppointments } from '@/features/calendar/Lib/appointmentList.server'
+import { equipmentEnabled } from '@/features/equipment/Lib/equipmentGate.server'
+import { equipmentSerialMatch } from '@/features/equipment/Lib/equipmentSearch'
+import { withMatchedEquipment } from '@/features/equipment/Lib/equipmentSearch.server'
 
 export async function getRecentCustomers() {
   return withAuth(
@@ -86,6 +89,11 @@ export async function globalSearch(query: string) {
       // it. Off, it neither matches nor comes back.
       const fleetNumberOn = await isFleetNumberEnabled(organizationId)
 
+      // A serial number of equipment fitted to a vehicle (a crane, a tail
+      // lift) finds the vehicle it is on now, for a workshop that records
+      // equipment. Off, the query is what it always was.
+      const equipmentOn = await equipmentEnabled(organizationId)
+
       const vehicleWhere: Prisma.VehicleWhereInput = {
         organizationId,
         AND: words.map((word) => {
@@ -96,6 +104,7 @@ export async function globalSearch(query: string) {
             { vin: { contains: word, mode } },
             ...typeKeyMatch(word),
             ...fleetNumberMatch(word, fleetNumberOn),
+            ...equipmentSerialMatch(organizationId, word, equipmentOn),
             { customer: { name: { contains: word, mode } } },
           ]
           const year = searchYear(word)
@@ -435,7 +444,9 @@ export async function globalSearch(query: string) {
       ])
 
       return {
-        vehicles,
+        vehicles: equipmentOn
+          ? await withMatchedEquipment(organizationId, vehicles, words)
+          : vehicles,
         customers,
         services,
         parts,

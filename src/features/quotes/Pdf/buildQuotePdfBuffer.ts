@@ -16,6 +16,7 @@
  */
 
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'node:fs/promises'
 import { renderToBuffer } from '@react-pdf/renderer'
@@ -199,6 +200,11 @@ export async function buildQuotePdfBuffer(
             vehicleId: quote.vehicleId,
           }),
         },
+        // What is fitted to the vehicle, and the items the quote works on.
+        equipment: await printableEquipment(organizationId, {
+          quoteId: quote.id,
+          vehicleId: quote.vehicleId,
+        }),
       },
       customerReferenceEnabledIn(settingsMap, features)
     ),

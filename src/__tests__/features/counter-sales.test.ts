@@ -206,6 +206,7 @@ describe('updateServiceRecord — counter sale semantics', () => {
         $queryRaw: async () => [],
         vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
         serviceRecord: { update: txUpdate },
+        serviceRecordEquipment: { deleteMany: async () => ({ count: 0 }) },
       })
     )
 
@@ -261,6 +262,7 @@ describe('updateServiceRecord — counter sale semantics', () => {
         $queryRaw: async () => [],
         vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
         serviceRecord: { update: txUpdate },
+        serviceRecordEquipment: { deleteMany: async () => ({ count: 0 }) },
       })
     )
 

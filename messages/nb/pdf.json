@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Oppgradering",
     "serviceTypeInspection": "Inspeksjon",
     "customFieldYes": "Ja",
-    "customFieldNo": "Nei"
+    "customFieldNo": "Nei",
+    "equipmentTitle": "Utstyr",
+    "equipmentType": "Type",
+    "equipmentMake": "Merke",
+    "equipmentModel": "Modell",
+    "equipmentManufactureYear": "Produksjonsår",
+    "equipmentSerialNumber": "Serienr.",
+    "equipmentInstallDate": "Montert",
+    "equipmentRatedCapacity": "Kapasitet",
+    "equipmentLastExamined": "Sist kontrollert",
+    "equipmentNextExamination": "Neste kontroll",
+    "equipmentCertificateReference": "Sertifikat",
+    "equipmentMeters": "Måleravlesninger",
+    "equipmentNotes": "Notater"
   },
   "workOrder": {
     "title": "ARBEIDSORDRE",

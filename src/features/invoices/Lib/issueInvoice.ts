@@ -7,6 +7,7 @@ import {
 import { assembleInvoicePrint, type InvoicePrintAssembly } from './assembleInvoicePrint'
 import {
   freezeConditionMap,
+  freezeEquipment,
   freezeInspectionResults,
   ISSUED_INVOICE_VERSION,
   shouldIssue,
@@ -80,6 +81,8 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
     })),
     conditionMap: freezeConditionMap(a.conditionMap),
     inspectionResults: freezeInspectionResults(a.inspectionResults),
+    // Both lists as they stood, so a design reapplied later can print either.
+    equipment: freezeEquipment(a.data.equipment),
   }
 }
 

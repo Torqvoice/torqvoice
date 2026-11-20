@@ -754,7 +754,8 @@
       "concerns": "Klachten van de klant",
       "job_description": "Gevraagd werk",
       "work_checklist": "Werkchecklist",
-      "condition_map": "Staat van het voertuig"
+      "condition_map": "Staat van het voertuig",
+      "equipment": "Uitrusting"
     },
     "fields": {
       "customer_name": "Klantnaam",
@@ -820,7 +821,19 @@
       "legend": "Legenda",
       "previous_marks": "Eerdere markeringen",
       "blank_sheet": "Leeg blad om met de hand in te vullen",
-      "meter_readings": "Tellerstanden"
+      "meter_readings": "Tellerstanden",
+      "equipment_type": "Soort",
+      "equipment_make": "Merk",
+      "equipment_model": "Model",
+      "equipment_manufacture_year": "Bouwjaar",
+      "equipment_serial_number": "Serienummer",
+      "equipment_install_date": "Gemonteerd",
+      "equipment_rated_capacity": "Nominale capaciteit",
+      "equipment_last_examined": "Laatst gekeurd",
+      "equipment_next_examination": "Volgende keuring",
+      "equipment_certificate_reference": "Certificaatnummer",
+      "equipment_meters": "Tellerstanden",
+      "equipment_notes": "Notities"
     },
     "presetsTitle": "Begin met een indeling",
     "presetsHint": "Vervangt de indeling hieronder. Er wordt niets opgeslagen tot u opslaat.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Alleen de zijkanten",
     "conditionMapWidthHint": "Leeg vult de rij. Geef punten op om de tekening kleiner te maken; hij staat dan waar de uitlijning hem zet en de legenda houdt de volle breedte.",
     "conditionMapDense": "Compacte tabel",
-    "conditionMapDenseHint": "Zet de rijen van de tabel onder de tekening dichter op elkaar, zodat die minder ruimte op de pagina inneemt."
+    "conditionMapDenseHint": "Zet de rijen van de tabel onder de tekening dichter op elkaar, zodat die minder ruimte op de pagina inneemt.",
+    "equipmentList": "Welke uitrusting",
+    "equipmentListVehicle": "Op het voertuig",
+    "equipmentListVehicleMarine": "Op de boot",
+    "equipmentListJob": "Aan gewerkt",
+    "equipmentListHint": "Op het voertuig toont alles wat er nu op gemonteerd is. Aan gewerkt toont alleen de onderdelen waaraan de werkorder of offerte werkt. De velden hieronder bepalen de kolommen en hun volgorde.",
+    "equipmentListHintMarine": "Op de boot toont alles wat er nu op gemonteerd is. Aan gewerkt toont alleen de onderdelen waaraan de werkorder of offerte werkt. De velden hieronder bepalen de kolommen en hun volgorde.",
+    "equipmentNoneHint": "Voeg uitrustingssoorten toe onder Instellingen, Aangepaste velden om hier de uitrusting van het voertuig af te drukken.",
+    "equipmentNoneHintMarine": "Voeg uitrustingssoorten toe onder Instellingen, Aangepaste velden om hier de uitrusting van de boot af te drukken.",
+    "equipmentTitle": "Kop",
+    "equipmentTitleHint": "Laat leeg om de standaardkop in de taal van het document af te drukken, of schrijf je eigen kop, bijvoorbeeld \"Gegevens van gemonteerde uitrusting\"."
   },
   "preview": {
     "title": "Remservice en oliewissel",

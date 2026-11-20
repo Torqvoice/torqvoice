@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Modernizacja",
     "serviceTypeInspection": "Inspekcja",
     "customFieldYes": "Tak",
-    "customFieldNo": "Nie"
+    "customFieldNo": "Nie",
+    "equipmentTitle": "Wyposażenie",
+    "equipmentType": "Typ",
+    "equipmentMake": "Marka",
+    "equipmentModel": "Model",
+    "equipmentManufactureYear": "Rok prod.",
+    "equipmentSerialNumber": "Nr seryjny",
+    "equipmentInstallDate": "Zamontowano",
+    "equipmentRatedCapacity": "Udźwig",
+    "equipmentLastExamined": "Ostatnie badanie",
+    "equipmentNextExamination": "Następne badanie",
+    "equipmentCertificateReference": "Świadectwo",
+    "equipmentMeters": "Odczyty",
+    "equipmentNotes": "Notatki"
   },
   "workOrder": {
     "title": "ZLECENIE",

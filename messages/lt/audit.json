@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Pašalintas transporto priemonės skaitiklis",
     "vehicleMeter_replace": "Pakeistas transporto priemonės skaitiklis",
     "meterReading_markWrong": "Skaitiklio rodmuo pažymėtas kaip klaidingas",
-    "meterReading_restore": "Skaitiklio rodmuo vėl skaičiuojamas"
+    "meterReading_restore": "Skaitiklio rodmuo vėl skaičiuojamas",
+    "equipmentType_create": "Sukurtas įrangos tipas",
+    "equipmentType_update": "Atnaujintas įrangos tipas",
+    "equipmentType_reorder": "Pakeista įrangos tipų tvarka",
+    "equipmentType_delete": "Ištrintas įrangos tipas",
+    "equipment_add": "Pridėta įranga",
+    "equipment_update": "Atnaujinta įranga",
+    "equipment_move": "Perkelta įranga",
+    "equipment_remove": "Nuimta įranga",
+    "equipment_refit": "Įranga sumontuota atgal",
+    "equipment_delete": "Ištrinta įranga"
   },
   "summary": {
     "auth_twoFactorEnabled": "Įjungtas dviejų veiksnių prisijungimas",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "Skaitiklis \"{name}\" pašalintas iš transporto priemonės",
     "vehicleMeter_replace": "Pakeistas skaitiklis \"{name}\": senasis baigėsi ties {oldEnd}, naujasis prasidėjo nuo {newStart}",
     "meterReading_markWrong": "{name} rodmuo {value} pažymėtas kaip klaidingas",
-    "meterReading_restore": "{name} rodmuo {value} vėl skaičiuojamas"
+    "meterReading_restore": "{name} rodmuo {value} vėl skaičiuojamas",
+    "equipmentType_create": "Sukurtas įrangos tipas \"{name}\"",
+    "equipmentType_update": "Atnaujintas įrangos tipas \"{name}\"",
+    "equipmentType_reorder": "Pakeista įrangos tipų tvarka",
+    "equipmentType_delete": "Ištrintas įrangos tipas \"{name}\"",
+    "equipment_add": "{name} pridėta prie {vehicle}",
+    "equipment_update": "{name} atnaujinta ({vehicle})",
+    "equipment_move": "{name} perkelta iš {from} į {vehicle}",
+    "equipment_remove": "{name} nuimta nuo {vehicle}",
+    "equipment_refit": "{name} sumontuota atgal ant {vehicle}",
+    "equipment_delete": "{name} ištrinta iš {vehicle}",
+    "equipment_meter": "Skaitiklis {meter} pridėtas prie {name} ({vehicle})"
   }
 }

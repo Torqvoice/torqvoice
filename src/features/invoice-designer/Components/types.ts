@@ -68,6 +68,11 @@ export interface DesignerWorkshop {
   fleetNumberEnabled?: boolean
   /** The workshop's meters besides the odometer, so the sample vehicle reads each one. */
   meterTypes?: { name: string; unit: string }[]
+  /**
+   * The names of the workshop's kinds of equipment. Any at all and the sample
+   * vehicle carries two made-up items for the Equipment section to list.
+   */
+  equipmentTypes?: string[]
   /** How the workshop writes distance; the sample car's mileage uses it, as printed invoices do. */
   unitSystem?: 'metric' | 'imperial'
   logoUrl: string

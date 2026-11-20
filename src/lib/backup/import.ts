@@ -701,6 +701,13 @@ export async function restoreBackup(
             tx.customFieldDefinition.deleteMany({ where: { organizationId } }),
           // Each vehicle's meters and their readings go with their meter.
           MeterType: () => tx.meterType.deleteMany({ where: { organizationId } }),
+          // An item points at its kind with Restrict, so any item still here
+          // (the vehicles normally take theirs first) goes before the kinds,
+          // with its history, meters and links.
+          EquipmentType: () =>
+            tx.equipmentItem
+              .deleteMany({ where: { organizationId } })
+              .then(() => tx.equipmentType.deleteMany({ where: { organizationId } })),
           InventoryPart: () => tx.inventoryPart.deleteMany({ where: { organizationId } }),
           Technician: () => tx.technician.deleteMany({ where: { organizationId } }),
           WorkBay: () => tx.workBay.deleteMany({ where: { organizationId } }),
@@ -750,13 +757,55 @@ export async function restoreBackup(
         // before meters, or by hand): clearing the vehicles takes their meters
         // and readings with them, so they are read first and put back below
         // on the vehicles that come back.
+        //
+        // An equipment item's meters go with the item, which goes with its
+        // vehicle, and with their meter: kept when the file replaces the
+        // items without meters, or the meters without equipment (a file taken
+        // before equipment, whose meters are only the vehicles').
+        const replacesItems = data.vehicles !== undefined || data.equipmentTypes !== undefined
+        const keepsVehicleMeters = data.vehicles !== undefined && data.meterTypes === undefined
+        const keepsItemMeters =
+          (replacesItems && data.meterTypes === undefined) ||
+          (data.meterTypes !== undefined && data.equipmentTypes === undefined)
         const keptMeters =
-          data.vehicles !== undefined && data.meterTypes === undefined
+          keepsVehicleMeters || keepsItemMeters
             ? await tx.vehicleMeter.findMany({
-                where: { organizationId },
+                where: {
+                  organizationId,
+                  ...(keepsVehicleMeters && keepsItemMeters
+                    ? {}
+                    : keepsVehicleMeters
+                      ? { vehicleId: { not: null } }
+                      : { equipmentItemId: { not: null } }),
+                },
                 include: { readings: true },
               })
             : []
+
+        // Equipment likewise: a file that replaces the vehicles without
+        // carrying equipment (one taken before it) would take every item
+        // with its vehicle, so the items and where they have been are read
+        // first and put back on the vehicles that come back. The links from
+        // jobs and quotes to items go with the job, the quote or the item, so
+        // a file without equipment that replaces any of those keeps them too.
+        const keptEquipment =
+          data.vehicles !== undefined && data.equipmentTypes === undefined
+            ? await tx.equipmentItem.findMany({
+                where: { organizationId },
+                include: { fittings: true },
+              })
+            : []
+        const keepsEquipmentLinks =
+          data.equipmentTypes === undefined &&
+          (data.vehicles !== undefined ||
+            data.counterSales !== undefined ||
+            data.quotes !== undefined)
+        const keptJobEquipment = keepsEquipmentLinks
+          ? await tx.serviceRecordEquipment.findMany({ where: { organizationId } })
+          : []
+        const keptQuoteEquipment = keepsEquipmentLinks
+          ? await tx.quoteEquipment.findMany({ where: { organizationId } })
+          : []
 
         for (const model of clearPlanFor(Object.keys(data))) {
           const clear = clearable[model]
@@ -1821,10 +1870,276 @@ export async function restoreBackup(
           }
         }
 
-        // 10b. The workshop's meters, then each vehicle's meters and their
-        // readings: after the vehicles and the jobs, so a vehicle the file did
-        // not bring back leaves its meter out, and a reading whose job is not
-        // here keeps its value without the link.
+        // 10a. Equipment: the workshop's kinds, then each item on a vehicle
+        // that came back, with where it has been and the jobs and quotes that
+        // worked on it. After the vehicles, the jobs and the quotes, and
+        // before the meters, which an item can carry. A job or quote the
+        // workshop no longer has leaves its link out; a vehicle it no longer
+        // has leaves out the item on it, or the stretch of history there.
+        const strings = (values: unknown[]) =>
+          values.filter((id): id is string => typeof id === 'string')
+        const rowsOf = (value: unknown) => (value as Record<string, unknown>[] | undefined) ?? []
+        if (data.equipmentTypes?.length) {
+          const types = data.equipmentTypes as Record<string, unknown>[]
+          await tx.equipmentType.createMany({
+            data: types.map((type) => ({
+              id: type.id as string,
+              name: type.name as string,
+              sortOrder: (type.sortOrder as number) || 0,
+              isActive: type.isActive !== false,
+              createdAt: toSafeDate(type.createdAt as string),
+              updatedAt: toSafeDate(type.updatedAt as string),
+              organizationId,
+            })),
+          })
+          const items = types.flatMap((type) =>
+            rowsOf(type.items).map((item) => ({ item, typeId: type.id as string }))
+          )
+          const [vehicleRows, jobRows, quoteRows] = await Promise.all([
+            tx.vehicle.findMany({
+              where: {
+                id: {
+                  in: strings(
+                    items.flatMap(({ item }) => [
+                      item.vehicleId,
+                      ...rowsOf(item.fittings).map((fitting) => fitting.vehicleId),
+                    ])
+                  ),
+                },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+            tx.serviceRecord.findMany({
+              where: {
+                id: {
+                  in: strings(
+                    items.flatMap(({ item }) => rowsOf(item.jobs).map((l) => l.serviceRecordId))
+                  ),
+                },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+            tx.quote.findMany({
+              where: {
+                id: {
+                  in: strings(
+                    items.flatMap(({ item }) => rowsOf(item.quotes).map((l) => l.quoteId))
+                  ),
+                },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+          ])
+          const vehicles = new Set(vehicleRows.map((row) => row.id))
+          const jobs = new Set(jobRows.map((row) => row.id))
+          const quotes = new Set(quoteRows.map((row) => row.id))
+          const fitted = items.filter(({ item }) => vehicles.has(item.vehicleId as string))
+          if (fitted.length > 0) {
+            await tx.equipmentItem.createMany({
+              data: fitted.map(({ item, typeId }) => ({
+                id: item.id as string,
+                make: (item.make as string) ?? null,
+                model: (item.model as string) ?? null,
+                serialNumber: (item.serialNumber as string) ?? null,
+                manufactureYear: (item.manufactureYear as number) ?? null,
+                manufactureDate: toSafeDate(item.manufactureDate as string) ?? null,
+                installDate: toSafeDate(item.installDate as string) ?? null,
+                notes: (item.notes as string) ?? null,
+                ratedCapacity: (item.ratedCapacity as string) ?? null,
+                nextExaminationDue: toSafeDate(item.nextExaminationDue as string) ?? null,
+                lastExaminedAt: toSafeDate(item.lastExaminedAt as string) ?? null,
+                certificateReference: (item.certificateReference as string) ?? null,
+                // The examination report, in the vehicles folder this restore writes.
+                reportFileUrl: rewriteFileUrl(item.reportFileUrl as string, organizationId),
+                reportFileName: (item.reportFileName as string) ?? null,
+                removedAt: toSafeDate(item.removedAt as string) ?? null,
+                createdAt: toSafeDate(item.createdAt as string),
+                updatedAt: toSafeDate(item.updatedAt as string),
+                typeId,
+                vehicleId: item.vehicleId as string,
+                organizationId,
+              })),
+            })
+            await tx.equipmentFitting.createMany({
+              data: fitted.flatMap(({ item }) =>
+                rowsOf(item.fittings)
+                  .filter((fitting) => vehicles.has(fitting.vehicleId as string))
+                  .map((fitting) => ({
+                    id: fitting.id as string,
+                    fittedAt: toSafeDate(fitting.fittedAt as string),
+                    endedAt: toSafeDate(fitting.endedAt as string) ?? null,
+                    endReason: (fitting.endReason as string) ?? null,
+                    itemId: item.id as string,
+                    vehicleId: fitting.vehicleId as string,
+                    organizationId,
+                  }))
+              ),
+            })
+            await tx.serviceRecordEquipment.createMany({
+              data: fitted.flatMap(({ item }) =>
+                rowsOf(item.jobs)
+                  .filter((link) => jobs.has(link.serviceRecordId as string))
+                  .map((link) => ({
+                    serviceRecordId: link.serviceRecordId as string,
+                    itemId: item.id as string,
+                    createdAt: toSafeDate(link.createdAt as string),
+                    organizationId,
+                  }))
+              ),
+            })
+            await tx.quoteEquipment.createMany({
+              data: fitted.flatMap(({ item }) =>
+                rowsOf(item.quotes)
+                  .filter((link) => quotes.has(link.quoteId as string))
+                  .map((link) => ({
+                    quoteId: link.quoteId as string,
+                    itemId: item.id as string,
+                    createdAt: toSafeDate(link.createdAt as string),
+                    organizationId,
+                  }))
+              ),
+            })
+          }
+        }
+
+        // 10a, for a file without equipment: the items the workshop had, on
+        // the vehicles that are there now, with where they have been.
+        if (keptEquipment.length > 0) {
+          const [vehicleRows, typeRows] = await Promise.all([
+            tx.vehicle.findMany({
+              where: {
+                id: {
+                  in: keptEquipment.flatMap((item) => [
+                    item.vehicleId,
+                    ...item.fittings.map((fitting) => fitting.vehicleId),
+                  ]),
+                },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+            tx.equipmentType.findMany({ where: { organizationId }, select: { id: true } }),
+          ])
+          const vehicles = new Set(vehicleRows.map((row) => row.id))
+          const types = new Set(typeRows.map((row) => row.id))
+          const back = keptEquipment.filter(
+            (item) => vehicles.has(item.vehicleId) && types.has(item.typeId)
+          )
+          if (back.length > 0) {
+            await tx.equipmentItem.createMany({
+              data: back.map((item) => ({
+                id: item.id,
+                make: item.make,
+                model: item.model,
+                serialNumber: item.serialNumber,
+                manufactureYear: item.manufactureYear,
+                manufactureDate: item.manufactureDate,
+                installDate: item.installDate,
+                notes: item.notes,
+                ratedCapacity: item.ratedCapacity,
+                nextExaminationDue: item.nextExaminationDue,
+                lastExaminedAt: item.lastExaminedAt,
+                certificateReference: item.certificateReference,
+                reportFileUrl: item.reportFileUrl,
+                reportFileName: item.reportFileName,
+                removedAt: item.removedAt,
+                createdAt: item.createdAt,
+                updatedAt: item.updatedAt,
+                typeId: item.typeId,
+                vehicleId: item.vehicleId,
+                organizationId,
+              })),
+            })
+            await tx.equipmentFitting.createMany({
+              data: back.flatMap((item) =>
+                item.fittings
+                  .filter((fitting) => vehicles.has(fitting.vehicleId))
+                  .map((fitting) => ({
+                    id: fitting.id,
+                    fittedAt: fitting.fittedAt,
+                    endedAt: fitting.endedAt,
+                    endReason: fitting.endReason,
+                    itemId: fitting.itemId,
+                    vehicleId: fitting.vehicleId,
+                    organizationId,
+                  }))
+              ),
+            })
+          }
+        }
+
+        // 10a, the links a file without equipment cannot put back: from the
+        // jobs and quotes there now to the items there now. A link still in
+        // place (on a job or quote the file did not replace) is left as it is.
+        if (keptJobEquipment.length > 0 || keptQuoteEquipment.length > 0) {
+          const itemIds = [...keptJobEquipment, ...keptQuoteEquipment].map((l) => l.itemId)
+          const [itemRows, jobRows, quoteRows, jobLinks, quoteLinks] = await Promise.all([
+            tx.equipmentItem.findMany({
+              where: { id: { in: itemIds }, organizationId },
+              select: { id: true },
+            }),
+            tx.serviceRecord.findMany({
+              where: { id: { in: keptJobEquipment.map((l) => l.serviceRecordId) }, organizationId },
+              select: { id: true },
+            }),
+            tx.quote.findMany({
+              where: { id: { in: keptQuoteEquipment.map((l) => l.quoteId) }, organizationId },
+              select: { id: true },
+            }),
+            tx.serviceRecordEquipment.findMany({
+              where: { itemId: { in: itemIds }, organizationId },
+              select: { serviceRecordId: true, itemId: true },
+            }),
+            tx.quoteEquipment.findMany({
+              where: { itemId: { in: itemIds }, organizationId },
+              select: { quoteId: true, itemId: true },
+            }),
+          ])
+          const items = new Set(itemRows.map((row) => row.id))
+          const jobs = new Set(jobRows.map((row) => row.id))
+          const quotes = new Set(quoteRows.map((row) => row.id))
+          const linkedJobs = new Set(jobLinks.map((l) => `${l.serviceRecordId}:${l.itemId}`))
+          const linkedQuotes = new Set(quoteLinks.map((l) => `${l.quoteId}:${l.itemId}`))
+          await tx.serviceRecordEquipment.createMany({
+            data: keptJobEquipment
+              .filter(
+                (link) =>
+                  items.has(link.itemId) &&
+                  jobs.has(link.serviceRecordId) &&
+                  !linkedJobs.has(`${link.serviceRecordId}:${link.itemId}`)
+              )
+              .map((link) => ({
+                serviceRecordId: link.serviceRecordId,
+                itemId: link.itemId,
+                createdAt: link.createdAt,
+                organizationId,
+              })),
+          })
+          await tx.quoteEquipment.createMany({
+            data: keptQuoteEquipment
+              .filter(
+                (link) =>
+                  items.has(link.itemId) &&
+                  quotes.has(link.quoteId) &&
+                  !linkedQuotes.has(`${link.quoteId}:${link.itemId}`)
+              )
+              .map((link) => ({
+                quoteId: link.quoteId,
+                itemId: link.itemId,
+                createdAt: link.createdAt,
+                organizationId,
+              })),
+          })
+        }
+
+        // 10b. The workshop's meters, then each vehicle's and each equipment
+        // item's meters and their readings: after the vehicles, the items and
+        // the jobs, so a vehicle or item the file did not bring back leaves
+        // its meter out, and a reading whose job is not here keeps its value
+        // without the link.
         if (data.meterTypes?.length) {
           const types = data.meterTypes as Record<string, unknown>[]
           await tx.meterType.createMany({
@@ -1840,17 +2155,22 @@ export async function restoreBackup(
             })),
           })
           const fitted = types.flatMap((type) =>
-            ((type.vehicleMeters as Record<string, unknown>[] | undefined) ?? []).map((meter) => ({
+            rowsOf(type.vehicleMeters).map((meter) => ({
               meter,
               meterTypeId: type.id as string,
             }))
           )
-          const strings = (values: unknown[]) =>
-            values.filter((id): id is string => typeof id === 'string')
-          const [vehicleRows, jobRows] = await Promise.all([
+          const [vehicleRows, itemRows, jobRows] = await Promise.all([
             tx.vehicle.findMany({
               where: {
                 id: { in: strings(fitted.map(({ meter }) => meter.vehicleId)) },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+            tx.equipmentItem.findMany({
+              where: {
+                id: { in: strings(fitted.map(({ meter }) => meter.equipmentItemId)) },
                 organizationId,
               },
               select: { id: true },
@@ -1860,9 +2180,7 @@ export async function restoreBackup(
                 id: {
                   in: strings(
                     fitted.flatMap(({ meter }) =>
-                      ((meter.readings as Record<string, unknown>[] | undefined) ?? []).map(
-                        (reading) => reading.serviceRecordId
-                      )
+                      rowsOf(meter.readings).map((reading) => reading.serviceRecordId)
                     )
                   ),
                 },
@@ -1872,6 +2190,7 @@ export async function restoreBackup(
             }),
           ])
           const vehicles = new Set(vehicleRows.map((row) => row.id))
+          const items = new Set(itemRows.map((row) => row.id))
           const jobs = new Set(jobRows.map((row) => row.id))
           // Who typed a reading, or marked it wrong, comes back when that
           // person is in this workshop.
@@ -1884,12 +2203,20 @@ export async function restoreBackup(
             ).map((row) => row.userId)
           )
           const member = (id: unknown) => (typeof id === 'string' && members.has(id) ? id : null)
-          const kept = fitted.filter(({ meter }) => vehicles.has(meter.vehicleId as string))
+          // A meter is on a vehicle or on an item, never both.
+          const onItem = (meter: Record<string, unknown>) =>
+            typeof meter.equipmentItemId === 'string'
+          const kept = fitted.filter(({ meter }) =>
+            onItem(meter)
+              ? items.has(meter.equipmentItemId as string)
+              : vehicles.has(meter.vehicleId as string)
+          )
           if (kept.length > 0) {
             await tx.vehicleMeter.createMany({
               data: kept.map(({ meter, meterTypeId }) => ({
                 id: meter.id as string,
-                vehicleId: meter.vehicleId as string,
+                vehicleId: onItem(meter) ? null : (meter.vehicleId as string),
+                equipmentItemId: onItem(meter) ? (meter.equipmentItemId as string) : null,
                 meterTypeId,
                 removedAt: toSafeDate(meter.removedAt as string) ?? null,
                 createdAt: toSafeDate(meter.createdAt as string),
@@ -1898,37 +2225,42 @@ export async function restoreBackup(
             })
             await tx.meterReading.createMany({
               data: kept.flatMap(({ meter }) =>
-                ((meter.readings as Record<string, unknown>[] | undefined) ?? []).map(
-                  (reading) => ({
-                    id: reading.id as string,
-                    vehicleMeterId: meter.id as string,
-                    value: String(reading.value),
-                    readAt: toSafeDate(reading.readAt as string) ?? new Date(),
-                    replacedFrom:
-                      reading.replacedFrom == null ? null : String(reading.replacedFrom),
-                    wrongAt: toSafeDate(reading.wrongAt as string) ?? null,
-                    wrongById: member(reading.wrongById),
-                    createdById: member(reading.createdById),
-                    source: (reading.source as string) || 'backup',
-                    createdAt: toSafeDate(reading.createdAt as string),
-                    updatedAt: toSafeDate(reading.updatedAt as string),
-                    serviceRecordId: jobs.has(reading.serviceRecordId as string)
-                      ? (reading.serviceRecordId as string)
-                      : null,
-                    organizationId,
-                  })
-                )
+                rowsOf(meter.readings).map((reading) => ({
+                  id: reading.id as string,
+                  vehicleMeterId: meter.id as string,
+                  value: String(reading.value),
+                  readAt: toSafeDate(reading.readAt as string) ?? new Date(),
+                  replacedFrom: reading.replacedFrom == null ? null : String(reading.replacedFrom),
+                  wrongAt: toSafeDate(reading.wrongAt as string) ?? null,
+                  wrongById: member(reading.wrongById),
+                  createdById: member(reading.createdById),
+                  source: (reading.source as string) || 'backup',
+                  createdAt: toSafeDate(reading.createdAt as string),
+                  updatedAt: toSafeDate(reading.updatedAt as string),
+                  serviceRecordId: jobs.has(reading.serviceRecordId as string)
+                    ? (reading.serviceRecordId as string)
+                    : null,
+                  organizationId,
+                }))
               ),
             })
           }
         }
 
-        // 10b, for a file without meters: the meters and readings the
-        // workshop had, on the vehicles, meters and jobs that are there now.
+        // 10b, for a file without meters or without equipment: the meters
+        // and readings the workshop had, on the vehicles, items, meters and
+        // jobs that are there now.
         if (keptMeters.length > 0) {
-          const [vehicleRows, typeRows, jobRows] = await Promise.all([
+          const [vehicleRows, itemRows, typeRows, jobRows] = await Promise.all([
             tx.vehicle.findMany({
-              where: { id: { in: keptMeters.map((m) => m.vehicleId) }, organizationId },
+              where: { id: { in: strings(keptMeters.map((m) => m.vehicleId)) }, organizationId },
+              select: { id: true },
+            }),
+            tx.equipmentItem.findMany({
+              where: {
+                id: { in: strings(keptMeters.map((m) => m.equipmentItemId)) },
+                organizationId,
+              },
               select: { id: true },
             }),
             tx.meterType.findMany({ where: { organizationId }, select: { id: true } }),
@@ -1945,16 +2277,37 @@ export async function restoreBackup(
             }),
           ])
           const vehicles = new Set(vehicleRows.map((row) => row.id))
+          const items = new Set(itemRows.map((row) => row.id))
           const types = new Set(typeRows.map((row) => row.id))
           const jobs = new Set(jobRows.map((row) => row.id))
+          // A meter the file already put back (the same id, or one of the
+          // same kind on the same vehicle or item) stays as the file has it.
+          const placed = await tx.vehicleMeter.findMany({
+            where: { organizationId },
+            select: { id: true, vehicleId: true, equipmentItemId: true, meterTypeId: true },
+          })
+          const placedIds = new Set(placed.map((m) => m.id))
+          const slot = (m: {
+            vehicleId: string | null
+            equipmentItemId: string | null
+            meterTypeId: string
+          }) => `${m.vehicleId ?? ''}:${m.equipmentItemId ?? ''}:${m.meterTypeId}`
+          const placedSlots = new Set(placed.map(slot))
           const back = keptMeters.filter(
-            (meter) => vehicles.has(meter.vehicleId) && types.has(meter.meterTypeId)
+            (meter) =>
+              types.has(meter.meterTypeId) &&
+              !placedIds.has(meter.id) &&
+              !placedSlots.has(slot(meter)) &&
+              (meter.equipmentItemId
+                ? items.has(meter.equipmentItemId)
+                : meter.vehicleId !== null && vehicles.has(meter.vehicleId))
           )
           if (back.length > 0) {
             await tx.vehicleMeter.createMany({
               data: back.map((meter) => ({
                 id: meter.id,
                 vehicleId: meter.vehicleId,
+                equipmentItemId: meter.equipmentItemId,
                 meterTypeId: meter.meterTypeId,
                 removedAt: meter.removedAt,
                 createdAt: meter.createdAt,

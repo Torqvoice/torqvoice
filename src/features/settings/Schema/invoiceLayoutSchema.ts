@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import {
+  DEFAULT_EQUIPMENT_COLUMNS,
+  EQUIPMENT_COLUMNS,
+} from '@/features/equipment/Lib/equipmentPrint'
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -93,6 +97,7 @@ export const invoiceSectionSchema = z.object({
    * a matter of local law and local habit, not of translation, and a business
    * that has to print "Tax Invoice" cannot wait for a release to do it.
    * Blank or unset prints the document's own name in the reader's language.
+   * The Equipment section reads it the same way, as its heading.
    */
   text: z.string().max(60).optional(),
   /**
@@ -103,6 +108,12 @@ export const invoiceSectionSchema = z.object({
    * and print after the parts in their own group. Unset prints one flat list.
    */
   groupBy: z.enum(['category']).optional(),
+  /**
+   * Which list the Equipment section prints: `job` is the items the job or
+   * the quote works on, `vehicle` everything fitted to the vehicle now. Unset
+   * is `vehicle`, the attached equipment a fleet's paperwork asks for.
+   */
+  scope: z.enum(['job', 'vehicle']).optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
@@ -238,6 +249,9 @@ export const BUILTIN_SECTIONS = [
   { id: 'customer', name: 'Customer' },
   { id: 'vehicle', name: 'Vehicle' },
   { id: 'service', name: 'Service' },
+  // What is fitted to the vehicle (a crane, a tail lift), as a table. Off
+  // until a workshop that records equipment switches it on.
+  { id: 'equipment', name: 'Equipment' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
   { id: 'labor_table', name: 'Labor Table' },
@@ -308,6 +322,7 @@ export const WORK_ORDER_SECTIONS = [
   { id: 'service', name: 'Service' },
   { id: 'job_details', name: 'Job Details' },
   { id: 'job_qr', name: 'Open on Phone' },
+  { id: 'equipment', name: 'Equipment' },
   { id: 'concerns', name: 'Customer Concerns' },
   { id: 'job_description', name: 'Work Requested' },
   { id: 'condition_map', name: 'Vehicle Condition' },
@@ -531,6 +546,35 @@ export const BUILTIN_RESULTS_TABLE_FIELDS = [
 ] as const
 
 /**
+ * The Equipment section's columns, in their default order. A field each, so
+ * the designer's switches and drag order choose which columns print and in
+ * what order, the way they choose a panel's lines.
+ */
+export const BUILTIN_EQUIPMENT_FIELDS: ReadonlyArray<{ id: string; name: string }> =
+  EQUIPMENT_COLUMNS.map((id) => ({
+    id,
+    name: {
+      type: 'Type',
+      make: 'Make',
+      model: 'Model',
+      manufacture_year: 'Year of manufacture',
+      serial_number: 'Serial number',
+      install_date: 'Installed',
+      rated_capacity: 'Rated capacity',
+      last_examined: 'Last examined',
+      next_examination: 'Next examination due',
+      certificate_reference: 'Certificate reference',
+      meters: 'Meter readings',
+      notes: 'Notes',
+    }[id],
+  }))
+
+/** Which list an Equipment section prints; unset is the vehicle's. */
+export function equipmentScopeOf(section: Pick<InvoiceSection, 'scope'>): 'job' | 'vehicle' {
+  return section.scope === 'job' ? 'job' : 'vehicle'
+}
+
+/**
  * Fields that printed before they had a switch, by section.
  *
  * A field added to a section is off in every layout saved before it existed,
@@ -622,10 +666,11 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'results_table',
   'job_details',
   'condition_map',
+  'equipment',
 ])
 
 /** Sections with fields of their own that print no workshop-defined fields. */
-export const NO_CUSTOM_FIELD_SECTIONS = new Set<string>(['condition_map'])
+export const NO_CUSTOM_FIELD_SECTIONS = new Set<string>(['condition_map', 'equipment'])
 
 /** Sections that print inside a panel and can have it taken away. */
 export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
@@ -718,6 +763,7 @@ export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   'job_description',
   'work_checklist',
   'condition_map',
+  'equipment',
 ])
 
 /** Default column assignment for column-eligible sections */
@@ -805,6 +851,12 @@ function getDefaultFieldsForSection(
       }))
     case 'defects':
       return BUILTIN_DEFECTS_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'equipment':
+      // The sample invoice's columns; the rest wait to be switched on.
+      return BUILTIN_EQUIPMENT_FIELDS.map((f) => ({
+        id: f.id,
+        visible: (DEFAULT_EQUIPMENT_COLUMNS as readonly string[]).includes(f.id),
+      }))
     case 'results_table':
       // Only the checks that were not OK, with their notes, a table per
       // section: what a reader wants to know. Passed, not-applicable and
@@ -834,6 +886,8 @@ const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
   'condition_map',
   'defects',
   'results_table',
+  // For a workshop that records equipment, and only where its design asks.
+  'equipment',
 ])
 /**
  * Sections that join a saved invoice or quote design in front of the ones
@@ -886,6 +940,8 @@ const HIDDEN_BY_DEFAULT_WORK_ORDER_SECTIONS = new Set<string>([
   // certificate. They join the work order only where a workshop asks.
   'defects',
   'results_table',
+  // What is fitted to the vehicle, for a workshop whose design asks for it.
+  'equipment',
 ])
 
 /** The work order's panels print as bare lines: no fills, no boxes, no colour. */
@@ -1063,6 +1119,8 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_JOB_DETAILS_FIELDS
     case 'condition_map':
       return builtinConditionMapFields(documentType)
+    case 'equipment':
+      return BUILTIN_EQUIPMENT_FIELDS
     default:
       return []
   }
@@ -1085,6 +1143,8 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_RESULTS_TABLE_FIELDS,
     ...BUILTIN_JOB_DETAILS_FIELDS,
     ...BUILTIN_CONDITION_MAP_FIELDS,
+    // Last, so a column never names another section's field of the same id.
+    ...BUILTIN_EQUIPMENT_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
 }

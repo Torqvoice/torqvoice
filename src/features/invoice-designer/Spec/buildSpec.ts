@@ -1,4 +1,5 @@
 import {
+  equipmentScopeOf,
   FOOTER_SPECIAL_FIELD_IDS,
   footerColumnsOf,
   getBuiltinFieldsForSection,
@@ -22,6 +23,12 @@ import {
 } from './certificateBlocks'
 import { signatureBlock } from './signatureBlock'
 import { conditionMapBlock } from './conditionMapBlock'
+import type { EquipmentPrint } from '../Pdf/equipmentPrint'
+import {
+  DEFAULT_EQUIPMENT_COLUMNS,
+  EQUIPMENT_COLUMNS,
+  type EquipmentColumn,
+} from '@/features/equipment/Lib/equipmentPrint'
 
 /**
  * The single description of a document.
@@ -138,6 +145,11 @@ export interface DocumentData {
    * has no Signature section to fill, and the section draws nothing.
    */
   signature?: DocumentSignature
+  /**
+   * What is fitted to the vehicle, both lists worded as rows; the Equipment
+   * section picks one and its columns. Absent when there is none to print.
+   */
+  equipment?: EquipmentPrint
 }
 
 export interface DocumentSignature {
@@ -1256,6 +1268,79 @@ function findingsBlock(
   )
 }
 
+/** The Equipment section's column heads, with the English the sheet falls back to. */
+const EQUIPMENT_COLUMN_LABELS: Record<EquipmentColumn, [key: string, fallback: string]> = {
+  type: ['equipmentType', 'Type'],
+  make: ['equipmentMake', 'Make'],
+  model: ['equipmentModel', 'Model'],
+  manufacture_year: ['equipmentManufactureYear', 'Year'],
+  serial_number: ['equipmentSerialNumber', 'Serial no.'],
+  install_date: ['equipmentInstallDate', 'Installed'],
+  rated_capacity: ['equipmentRatedCapacity', 'Rated capacity'],
+  last_examined: ['equipmentLastExamined', 'Last examined'],
+  next_examination: ['equipmentNextExamination', 'Next examination'],
+  certificate_reference: ['equipmentCertificateReference', 'Certificate'],
+  meters: ['equipmentMeters', 'Meter readings'],
+  notes: ['equipmentNotes', 'Notes'],
+}
+
+/** Narrow columns keep a width of their own; the rest share what is left. */
+const EQUIPMENT_COLUMN_WIDTHS: Partial<Record<EquipmentColumn, number>> = {
+  manufacture_year: 44,
+  install_date: 66,
+  last_examined: 66,
+  next_examination: 66,
+}
+
+/**
+ * The columns an Equipment section prints, in its order. A section with no
+ * list of its own prints the default columns rather than every one there is.
+ */
+export function equipmentColumnsOf(section: InvoiceSection): EquipmentColumn[] {
+  const known = new Set<string>(EQUIPMENT_COLUMNS)
+  if (!section.fields) return [...DEFAULT_EQUIPMENT_COLUMNS]
+  return section.fields
+    .filter((f) => f.visible && known.has(f.id))
+    .map((f) => f.id as EquipmentColumn)
+}
+
+/**
+ * What is fitted to the vehicle, one row per item, the columns the design
+ * chose. The table is the parts table's: rows never split, so a long list
+ * breaks between items. An empty list prints nothing, not even its title.
+ */
+function equipmentBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  const rows = data.equipment?.[equipmentScopeOf(section)] ?? []
+  const columns = equipmentColumnsOf(section)
+  if (!rows.length || !columns.length) return null
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+  // The workshop's own heading, or the document's word for it.
+  const title = section.text?.trim() || label(data, 'equipmentTitle', 'Equipment')
+  return titledTable(section, theme, title, undefined, {
+    kind: 'table',
+    rowPadding: theme.rowPadding,
+    ruleWidth: look.ruleWidth,
+    rowBackground: theme.background || '#ffffff',
+    stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
+    style: {
+      borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
+      borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
+    },
+    headerStyle: tableHead(look, theme, size),
+    columns: columns.map((key) => ({
+      key,
+      label: label(data, ...EQUIPMENT_COLUMN_LABELS[key]),
+      width: EQUIPMENT_COLUMN_WIDTHS[key] ?? 'flex',
+    })),
+    rows: rows.map((row) => Object.fromEntries(columns.map((key) => [key, row[key] || '-']))),
+  })
+}
+
 function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentData): Node | null {
   if (!data.totals.length) return null
   const look = lookOf(section, theme)
@@ -2132,6 +2217,8 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
       return laborTable(section, theme, data)
     case 'findings':
       return findingsBlock(section, theme, data)
+    case 'equipment':
+      return equipmentBlock(section, theme, data)
     case 'totals':
       return totals(section, theme, data)
     case 'notes':

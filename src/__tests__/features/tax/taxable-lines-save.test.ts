@@ -116,6 +116,7 @@ function transaction(extra: Record<string, unknown> = {}) {
     labor: vi.fn().mockResolvedValue({ count: 0 }),
   }
   const tx = {
+    serviceRecordEquipment: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
     serviceRecord: { create: written.record, update: written.record },
     quote: { create: written.record, update: written.record },
     servicePart: {

@@ -21,6 +21,10 @@ vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
   ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
   isFleetNumberEnabled: vi.fn(async () => false),
 }))
+// Nor equipment.
+vi.mock('@/features/equipment/Lib/equipmentGate.server', () => ({
+  equipmentEnabled: vi.fn(async () => false),
+}))
 vi.mock('@/features/vehicles/Lib/typeKeySetting', () => ({
   isTypeKeyEnabled: vi.fn(async () => false),
 }))

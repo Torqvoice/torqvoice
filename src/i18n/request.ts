@@ -71,6 +71,7 @@ export default getRequestConfig(async () => {
   const support = (await import(`../../messages/${locale}/support.json`)).default
   const inspections = (await import(`../../messages/${locale}/inspections.json`)).default
   const conditionMap = (await import(`../../messages/${locale}/conditionMap.json`)).default
+  const equipment = (await import(`../../messages/${locale}/equipment.json`)).default
   const workshopCalendar = (await import(`../../messages/${locale}/workshopCalendar.json`)).default
   const onboarding = (await import(`../../messages/${locale}/onboarding.json`)).default
   const tireHotel = (await import(`../../messages/${locale}/tireHotel.json`)).default
@@ -122,6 +123,7 @@ export default getRequestConfig(async () => {
       support,
       inspections,
       conditionMap,
+      equipment,
       workshopCalendar,
       onboarding,
       tireHotel,

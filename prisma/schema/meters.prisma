@@ -23,24 +23,31 @@ model MeterType {
   @@map("meter_types")
 }
 
-/// One of the workshop's meters, fitted to one vehicle. Which meters a
-/// vehicle has is chosen per vehicle.
+/// One of the workshop's meters, fitted to one vehicle or to one piece of
+/// equipment (exactly one of the two, held by a check in the database).
+/// Which meters a vehicle or an item has is chosen for each. An item's
+/// meters go with the item when it moves.
 model VehicleMeter {
   id        String    @id @default(cuid())
   createdAt DateTime  @default(now())
-  /// Taken off this vehicle. Its readings stay in the history.
+  /// Taken off this vehicle or item. Its readings stay in the history.
   removedAt DateTime?
 
-  vehicleId      String
-  vehicle        Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
-  meterTypeId    String
-  meterType      MeterType    @relation(fields: [meterTypeId], references: [id], onDelete: Cascade)
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  /// The vehicle it is on; empty for an item's meter.
+  vehicleId       String?
+  vehicle         Vehicle?       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  /// The piece of equipment it is on; empty for a vehicle's own meter.
+  equipmentItemId String?
+  equipmentItem   EquipmentItem? @relation(fields: [equipmentItemId], references: [id], onDelete: Cascade)
+  meterTypeId     String
+  meterType       MeterType      @relation(fields: [meterTypeId], references: [id], onDelete: Cascade)
+  organizationId  String
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   readings MeterReading[]
 
   @@unique([vehicleId, meterTypeId])
+  @@unique([equipmentItemId, meterTypeId])
   @@index([organizationId])
   @@map("vehicle_meters")
 }
@@ -48,23 +55,23 @@ model VehicleMeter {
 /// One reading of a vehicle's meter: typed on the vehicle, taken on a job,
 /// sent from the technician app or put back from a backup.
 model MeterReading {
-  id          String   @id @default(cuid())
+  id           String    @id @default(cuid())
   /// What the meter showed, with decimals (4256.7 hours).
-  value       Decimal  @db.Decimal(14, 2)
+  value        Decimal   @db.Decimal(14, 2)
   /// When it was read: the job's date for a job's reading.
-  readAt      DateTime
+  readAt       DateTime
   /// A reading that starts a new counter after the meter was replaced. Its
   /// `value` is what the new meter showed; `replacedFrom` what the old one
   /// had reached when it came off. The running total carries on across it.
-  replacedFrom Decimal? @db.Decimal(14, 2)
+  replacedFrom Decimal?  @db.Decimal(14, 2)
   /// Marked as wrong: still in the history, no longer counted.
-  wrongAt     DateTime?
-  wrongById   String?
-  createdById String?
+  wrongAt      DateTime?
+  wrongById    String?
+  createdById  String?
   /// Where it came from: web, tech or backup.
-  source      String   @default("web")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  source       String    @default("web")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   vehicleMeterId  String
   vehicleMeter    VehicleMeter   @relation(fields: [vehicleMeterId], references: [id], onDelete: Cascade)

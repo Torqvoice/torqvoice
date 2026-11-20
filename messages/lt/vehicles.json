@@ -734,6 +734,9 @@
     "removeTitleMarine": "Pašalinti {name} iš šio laivo?",
     "removeHint": "Jo rodmenys išsaugomi ir sugrįžta, jei skaitiklis vėl pridedamas.",
     "removed": "{name} pašalintas",
-    "added": "{name} pridėtas"
+    "added": "{name} pridėtas",
+    "itemTitle": "Skaitikliai",
+    "noItemMeters": "Šis vienetas neturi skaitiklių.",
+    "addItemMeterHint": "Skaitiklis keliauja su šiuo vienetu, kad ir kur jis būtų sumontuotas."
   }
 }

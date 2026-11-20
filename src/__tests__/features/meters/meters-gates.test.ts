@@ -20,8 +20,16 @@ function sourceFiles(dir: string): string[] {
   })
 }
 
-/** The meters feature itself, and the backup, which carries everything. */
-const ALLOWED = ['src/features/meters/', 'src/lib/backup/build-data.ts', 'src/lib/backup/import.ts']
+/**
+ * The meters feature itself, equipment (whose items have their own meters,
+ * gated by both lists) and the backup, which carries everything.
+ */
+const ALLOWED = [
+  'src/features/meters/',
+  'src/features/equipment/',
+  'src/lib/backup/build-data.ts',
+  'src/lib/backup/import.ts',
+]
 
 describe('the meter tables', () => {
   it('are read and written only by the meters feature and the backup', () => {
@@ -41,6 +49,7 @@ describe('the meter tables', () => {
       'jobMeterViews',
       'printableMeterReadings',
       'metersEnabled',
+      'equipmentMeterViews',
     ]) {
       const body = helpers.slice(helpers.indexOf(`export async function ${name}`))
       const end = body.indexOf('\nexport ', 1)

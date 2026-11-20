@@ -3,6 +3,7 @@ import 'server-only'
 import { db } from '@/lib/db'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
+import { jobWorkOnItemIds } from '@/features/equipment/Lib/equipmentGate.server'
 import { activeMeterTypes } from './meters.server'
 import { lastMeterValueBefore, parseMeterValue, roundMeterValue } from './meterValue'
 import { READING_JOB_DATES, effectiveReadAt } from './readingTime'
@@ -38,7 +39,7 @@ export interface JobMeterReadingInput {
  * transaction: a request with one bad reading changes nothing.
  *
  * - The job and every meter have to be this workshop's, and each meter has to
- *   be on the job's vehicle now.
+ *   be on the job's vehicle now, or on a piece of equipment the job works on.
  * - A locked invoice refuses the change, as it refuses every other edit to
  *   the job: what it printed is frozen with it.
  * - A job's reading is dated by the job (`effectiveReadAt`), the date the
@@ -62,12 +63,19 @@ export async function writeJobMeterReadings(input: {
   const ids = input.readings.map((r) => r.vehicleMeterId)
   if (new Set(ids).size !== ids.length) throw new InvalidMeterReadingError()
 
-  const types = await activeMeterTypes(organizationId)
+  const [types, itemIds] = await Promise.all([
+    activeMeterTypes(organizationId),
+    jobWorkOnItemIds(organizationId, { id: job.id, vehicleId: job.vehicleId }),
+  ])
   const meters = await db.vehicleMeter.findMany({
     where: {
       id: { in: ids },
       organizationId,
-      vehicleId: job.vehicleId,
+      // The vehicle's own meters, and those of the items the job works on.
+      OR: [
+        { vehicleId: job.vehicleId },
+        ...(itemIds.length > 0 ? [{ equipmentItemId: { in: itemIds } }] : []),
+      ],
       removedAt: null,
       meterTypeId: { in: types.map((t) => t.id) },
     },
@@ -177,8 +185,9 @@ export async function writeJobMeterReading(
 
 /**
  * A job that moved to another vehicle in this save: its readings stay in the
- * old vehicle's history but are no longer the job's, so nothing prints one
- * vehicle's engine hours under another. Called in the job's own transaction.
+ * old vehicle's history (or the old vehicle's equipment's) but are no longer
+ * the job's, so nothing prints one vehicle's engine hours under another.
+ * Called in the job's own transaction.
  */
 export async function unlinkJobMeterReadingsFromOtherVehicles(
   tx: { meterReading: { updateMany: typeof db.meterReading.updateMany } },
@@ -188,7 +197,41 @@ export async function unlinkJobMeterReadingsFromOtherVehicles(
     where: {
       organizationId: job.organizationId,
       serviceRecordId: job.jobId,
-      ...(job.vehicleId ? { vehicleMeter: { vehicleId: { not: job.vehicleId } } } : {}),
+      // Kept: the new vehicle's own meters and those of its equipment.
+      ...(job.vehicleId
+        ? {
+            NOT: {
+              OR: [
+                { vehicleMeter: { vehicleId: job.vehicleId } },
+                { vehicleMeter: { equipmentItem: { vehicleId: job.vehicleId } } },
+              ],
+            },
+          }
+        : {}),
+    },
+    data: { serviceRecordId: null },
+  })
+}
+
+/**
+ * Readings of these items' meters taken on these jobs, or on any job when
+ * `jobIds` is left out, stop being the job's: the job no longer works on the
+ * item, or the item left the job's vehicle. They stay in the item's history.
+ */
+export async function unlinkItemMeterReadings(
+  tx: { meterReading: { updateMany: typeof db.meterReading.updateMany } },
+  input: { organizationId: string; itemIds: string[]; jobIds?: string[]; exceptVehicleId?: string }
+): Promise<void> {
+  if (input.itemIds.length === 0) return
+  if (input.jobIds && input.jobIds.length === 0) return
+  await tx.meterReading.updateMany({
+    where: {
+      organizationId: input.organizationId,
+      vehicleMeter: { equipmentItemId: { in: input.itemIds } },
+      serviceRecordId: input.jobIds ? { in: input.jobIds } : { not: null },
+      ...(input.exceptVehicleId
+        ? { serviceRecord: { vehicleId: { not: input.exceptVehicleId } } }
+        : {}),
     },
     data: { serviceRecordId: null },
   })

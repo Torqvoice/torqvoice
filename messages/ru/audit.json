@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Снят счётчик с транспортного средства",
     "vehicleMeter_replace": "Заменён счётчик транспортного средства",
     "meterReading_markWrong": "Показание счётчика отмечено как ошибочное",
-    "meterReading_restore": "Показание счётчика снова учитывается"
+    "meterReading_restore": "Показание счётчика снова учитывается",
+    "equipmentType_create": "Создан вид оборудования",
+    "equipmentType_update": "Обновлён вид оборудования",
+    "equipmentType_reorder": "Изменён порядок видов оборудования",
+    "equipmentType_delete": "Удалён вид оборудования",
+    "equipment_add": "Добавлено оборудование",
+    "equipment_update": "Обновлено оборудование",
+    "equipment_move": "Перенесено оборудование",
+    "equipment_remove": "Демонтировано оборудование",
+    "equipment_refit": "Оборудование установлено обратно",
+    "equipment_delete": "Удалено оборудование"
   },
   "summary": {
     "auth_twoFactorEnabled": "Включён двухфакторный вход",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "Счётчик \"{name}\" снят с транспортного средства",
     "vehicleMeter_replace": "Заменён счётчик \"{name}\": старый остановился на {oldEnd}, новый начал с {newStart}",
     "meterReading_markWrong": "Показание {value} счётчика {name} отмечено как ошибочное",
-    "meterReading_restore": "Показание {value} счётчика {name} снова учитывается"
+    "meterReading_restore": "Показание {value} счётчика {name} снова учитывается",
+    "equipmentType_create": "Создан вид оборудования \"{name}\"",
+    "equipmentType_update": "Обновлён вид оборудования \"{name}\"",
+    "equipmentType_reorder": "Изменён порядок видов оборудования",
+    "equipmentType_delete": "Удалён вид оборудования \"{name}\"",
+    "equipment_add": "{name} добавлено на {vehicle}",
+    "equipment_update": "{name} обновлено на {vehicle}",
+    "equipment_move": "{name} перенесено с {from} на {vehicle}",
+    "equipment_remove": "{name} демонтировано с {vehicle}",
+    "equipment_refit": "{name} установлено обратно на {vehicle}",
+    "equipment_delete": "{name} удалено с {vehicle}",
+    "equipment_meter": "Счётчик {meter} добавлен к {name} на {vehicle}"
   }
 }

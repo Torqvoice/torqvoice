@@ -396,6 +396,38 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
   },
   { model: 'VehicleMeter', option: 'vehicles', nestedUnder: 'MeterType', restore: 'replace' },
   { model: 'MeterReading', option: 'vehicles', nestedUnder: 'VehicleMeter', restore: 'replace' },
+  // The equipment fitted to vehicles: the workshop's kinds, each kind's
+  // items, and under each item where it has been and the jobs and quotes
+  // that worked on it. With the vehicles, which the items are deleted with.
+  // An item points at its kind with Restrict, so the kinds clear after the
+  // vehicles (and the clear takes any item left first). An item's own meters
+  // travel under meterTypes with the vehicles' meters.
+  {
+    model: 'EquipmentType',
+    key: 'equipmentTypes',
+    option: 'vehicles',
+    restore: 'replace',
+    clearOrder: 57,
+  },
+  { model: 'EquipmentItem', option: 'vehicles', nestedUnder: 'EquipmentType', restore: 'replace' },
+  {
+    model: 'EquipmentFitting',
+    option: 'vehicles',
+    nestedUnder: 'EquipmentItem',
+    restore: 'replace',
+  },
+  {
+    model: 'ServiceRecordEquipment',
+    option: 'vehicles',
+    nestedUnder: 'EquipmentItem',
+    restore: 'replace',
+  },
+  {
+    model: 'QuoteEquipment',
+    option: 'vehicles',
+    nestedUnder: 'EquipmentItem',
+    restore: 'replace',
+  },
   { model: 'StoredImage', option: 'inventory', nestedUnder: 'InventoryPart', restore: 'replace' },
   { model: 'InspectionItem', option: 'inspections', nestedUnder: 'Inspection', restore: 'replace' },
   {

@@ -1,5 +1,6 @@
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { jobMeterViews } from '@/features/meters/Lib/meters.server'
+import { appJobEquipment } from '@/features/equipment/Lib/jobWorkOn.server'
 import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import {
   gateCustomerReference,
@@ -142,6 +143,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
               readAt: jobReadingDate(jobDate),
             })
           : []
+      // The equipment on the vehicle and which of it the job works on; null
+      // while the workshop records none. Set through /jobs/:id/equipment.
+      const equipment = await appJobEquipment(ctx.organizationId, {
+        id: job.id,
+        vehicleId: job.vehicle?.id ?? null,
+      })
 
       return apiOk({
         ...gateCustomerReference(job, referenceOn),
@@ -151,6 +158,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         runningSince: openEntry?.serviceRecordId === job.id ? openEntry.startedAt : null,
         totalMinutes,
         meters,
+        equipment,
       })
     },
     {

@@ -4,16 +4,14 @@ import { auditDetails } from '@/lib/audit'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { vehicleName } from '@/lib/vehicle-name'
 import { READING_JOB_DATES, effectiveReadAt } from '../Lib/readingTime'
-import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
-import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { zonedDate, zonedDayKey } from '@/lib/timezone'
 import { activeMeterTypes, vehicleMeterViews } from '../Lib/meters.server'
-import { lastMeterValueBefore, parseMeterValue, roundMeterValue } from '../Lib/meterValue'
+import { lastMeterValueBefore } from '../Lib/meterValue'
+import { readingTime, readingValue } from '../Lib/readingInput.server'
 import {
   addMeterReadingSchema,
   addVehicleMeterSchema,
@@ -24,29 +22,6 @@ import {
 const READ = [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }]
 const UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES }]
 
-/**
- * When a reading typed on the vehicle was taken. Today's is now, so it comes
- * after a job earlier today; another day's is that day at noon on the
- * workshop's clock, so it falls on that day wherever it is read.
- */
-async function readingTime(organizationId: string, readOn: string | undefined): Promise<Date> {
-  const now = new Date()
-  if (!readOn) return now
-  const timeZone = await workshopTimeZone(organizationId)
-  if (readOn === zonedDayKey(now, timeZone)) return now
-  const [y, m, d] = readOn.split('-').map(Number)
-  return zonedDate(y, m, d, 12, 0, timeZone)
-}
-
-/** A typed reading as a number, or the person is told it is not one. */
-async function readingValue(typed: string | number): Promise<number> {
-  const value = parseMeterValue(typed)
-  if (value === null) {
-    throw new Error((await getTranslations('vehicles.meters'))('invalidReading'))
-  }
-  return roundMeterValue(value)
-}
-
 /** The vehicle's own meter, in this workshop, with what a reading on it needs. */
 async function ownMeter(organizationId: string, vehicleMeterId: string) {
   const meter = await db.vehicleMeter.findFirst({
@@ -54,6 +29,7 @@ async function ownMeter(organizationId: string, vehicleMeterId: string) {
     select: {
       id: true,
       vehicleId: true,
+      equipmentItem: { select: { vehicleId: true, removedAt: true } },
       meterType: { select: { name: true, isActive: true } },
       readings: {
         select: {
@@ -69,8 +45,11 @@ async function ownMeter(organizationId: string, vehicleMeterId: string) {
     },
   })
   if (!meter || !meter.meterType.isActive) throw new Error('Meter not found')
+  // A removed item's meters are history: read, never written.
+  if (meter.equipmentItem?.removedAt) throw new Error('Meter not found')
   return {
     ...meter,
+    vehicleId: meterVehicleId(meter),
     likes: meter.readings.map((r) => ({
       id: r.id,
       value: r.value.toNumber(),
@@ -80,6 +59,17 @@ async function ownMeter(organizationId: string, vehicleMeterId: string) {
       wrongAt: r.wrongAt,
     })),
   }
+}
+
+/**
+ * The vehicle a meter is on: its own, or the one its piece of equipment is on
+ * now. Its page is what refreshes and what the audit names.
+ */
+function meterVehicleId(meter: {
+  vehicleId: string | null
+  equipmentItem: { vehicleId: string } | null
+}): string {
+  return meter.vehicleId ?? meter.equipmentItem?.vehicleId ?? ''
 }
 
 /** "2019 Scania R 450 (ZZ19 TST)": how a vehicle is named in the audit log. */
@@ -182,15 +172,21 @@ export async function removeVehicleMeter(vehicleMeterId: string) {
       await requireFeature(organizationId, 'customFields')
       const meter = await db.vehicleMeter.findFirst({
         where: { id: vehicleMeterId, organizationId, removedAt: null },
-        select: { id: true, vehicleId: true, meterType: { select: { name: true } } },
+        select: {
+          id: true,
+          vehicleId: true,
+          equipmentItem: { select: { vehicleId: true, removedAt: true } },
+          meterType: { select: { name: true } },
+        },
       })
       if (!meter) throw new Error('Meter not found')
       await db.vehicleMeter.updateMany({
         where: { id: vehicleMeterId, organizationId },
         data: { removedAt: new Date() },
       })
-      refresh(meter.vehicleId)
-      return { id: meter.id, vehicleId: meter.vehicleId, name: meter.meterType.name }
+      const vehicleId = meterVehicleId(meter)
+      refresh(vehicleId)
+      return { id: meter.id, vehicleId, name: meter.meterType.name }
     },
     {
       requiredPermissions: UPDATE,
@@ -265,7 +261,13 @@ export async function markMeterReadingWrong(input: unknown) {
           id: true,
           value: true,
           serviceRecordId: true,
-          vehicleMeter: { select: { vehicleId: true, meterType: { select: { name: true } } } },
+          vehicleMeter: {
+            select: {
+              vehicleId: true,
+              equipmentItem: { select: { vehicleId: true, removedAt: true } },
+              meterType: { select: { name: true } },
+            },
+          },
         },
       })
       if (!reading) throw new Error('Reading not found')
@@ -279,11 +281,12 @@ export async function markMeterReadingWrong(input: unknown) {
           ? { wrongAt: new Date(), wrongById: userId }
           : { wrongAt: null, wrongById: null },
       })
-      refresh(reading.vehicleMeter.vehicleId)
+      const vehicleId = meterVehicleId(reading.vehicleMeter)
+      refresh(vehicleId)
       return {
         id: reading.id,
         wrong: data.wrong,
-        vehicleId: reading.vehicleMeter.vehicleId,
+        vehicleId,
         name: reading.vehicleMeter.meterType.name,
         value: reading.value.toString(),
       }

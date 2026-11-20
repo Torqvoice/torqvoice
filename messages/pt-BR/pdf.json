@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Atualização",
     "serviceTypeInspection": "Inspeção",
     "customFieldYes": "Sim",
-    "customFieldNo": "Não"
+    "customFieldNo": "Não",
+    "equipmentTitle": "Equipamentos",
+    "equipmentType": "Tipo",
+    "equipmentMake": "Marca",
+    "equipmentModel": "Modelo",
+    "equipmentManufactureYear": "Ano",
+    "equipmentSerialNumber": "N.º de série",
+    "equipmentInstallDate": "Instalado em",
+    "equipmentRatedCapacity": "Capacidade",
+    "equipmentLastExamined": "Última inspeção",
+    "equipmentNextExamination": "Próxima inspeção",
+    "equipmentCertificateReference": "Certificado",
+    "equipmentMeters": "Leituras",
+    "equipmentNotes": "Observações"
   },
   "workOrder": {
     "title": "ORDEM DE SERVIÇO",

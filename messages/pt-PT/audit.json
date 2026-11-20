@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Contador da viatura removido",
     "vehicleMeter_replace": "Contador da viatura substituído",
     "meterReading_markWrong": "Leitura do contador marcada como errada",
-    "meterReading_restore": "Leitura do contador contada novamente"
+    "meterReading_restore": "Leitura do contador contada novamente",
+    "equipmentType_create": "Tipo de equipamento criado",
+    "equipmentType_update": "Tipo de equipamento atualizado",
+    "equipmentType_reorder": "Tipos de equipamento reordenados",
+    "equipmentType_delete": "Tipo de equipamento eliminado",
+    "equipment_add": "Equipamento adicionado",
+    "equipment_update": "Equipamento atualizado",
+    "equipment_move": "Equipamento movido",
+    "equipment_remove": "Equipamento retirado",
+    "equipment_refit": "Equipamento recolocado",
+    "equipment_delete": "Equipamento eliminado"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ativou o início de sessão em dois passos",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "Retirou o contador \"{name}\" de uma viatura",
     "vehicleMeter_replace": "Substituiu o contador \"{name}\": o antigo terminou em {oldEnd}, o novo começou em {newStart}",
     "meterReading_markWrong": "Marcou a leitura {value} de {name} como errada",
-    "meterReading_restore": "Voltou a contar a leitura {value} de {name}"
+    "meterReading_restore": "Voltou a contar a leitura {value} de {name}",
+    "equipmentType_create": "Criou o tipo de equipamento \"{name}\"",
+    "equipmentType_update": "Atualizou o tipo de equipamento \"{name}\"",
+    "equipmentType_reorder": "Reordenou os tipos de equipamento",
+    "equipmentType_delete": "Eliminou o tipo de equipamento \"{name}\"",
+    "equipment_add": "Adicionou {name} a {vehicle}",
+    "equipment_update": "Atualizou {name} em {vehicle}",
+    "equipment_move": "Moveu {name} de {from} para {vehicle}",
+    "equipment_remove": "Retirou {name} de {vehicle}",
+    "equipment_refit": "Voltou a colocar {name} em {vehicle}",
+    "equipment_delete": "Eliminou {name} de {vehicle}",
+    "equipment_meter": "Adicionou o contador {meter} a {name} em {vehicle}"
   }
 }

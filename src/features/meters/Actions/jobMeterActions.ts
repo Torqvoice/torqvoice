@@ -45,6 +45,19 @@ export async function setJobMeterReading(input: unknown) {
       requiredPermissions: [
         { action: PermissionAction.UPDATE, subject: PermissionSubject.SERVICES },
       ],
+      // Logged like any other change to the work order.
+      audit: ({ result }) => ({
+        action: 'service.update',
+        entity: 'ServiceRecord',
+        entityId: result.jobId,
+        details: { key: 'service_update', params: { ref: result.jobRef } },
+        metadata: {
+          serviceRecordId: result.jobId,
+          vehicleMeterId: result.vehicleMeterId,
+          value: result.value,
+          via: 'meters',
+        },
+      }),
     }
   )
 }

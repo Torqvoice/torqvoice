@@ -1028,6 +1028,14 @@ export async function updateServiceRecord(input: unknown) {
             jobId: id,
             vehicleId: updated.vehicleId,
           })
+          // And it no longer works on the old vehicle's equipment.
+          await tx.serviceRecordEquipment.deleteMany({
+            where: {
+              organizationId,
+              serviceRecordId: id,
+              ...(updated.vehicleId ? { item: { vehicleId: { not: updated.vehicleId } } } : {}),
+            },
+          })
         }
         if (updated.vehicleId && (recordData.mileage !== undefined || !sameVehicle)) {
           await applyJobReading(tx, {

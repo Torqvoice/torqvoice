@@ -734,6 +734,9 @@
     "removeTitleMarine": "Retirer {name} de ce bateau ?",
     "removeHint": "Ses relevés sont conservés et reviennent si le compteur est de nouveau ajouté.",
     "removed": "{name} retiré",
-    "added": "{name} ajouté"
+    "added": "{name} ajouté",
+    "itemTitle": "Compteurs",
+    "noItemMeters": "Aucun compteur sur cet élément.",
+    "addItemMeterHint": "Le compteur suit cet élément, quel que soit l'endroit où il est monté."
   }
 }

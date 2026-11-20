@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Yükseltme",
     "serviceTypeInspection": "Muayene",
     "customFieldYes": "Evet",
-    "customFieldNo": "Hayır"
+    "customFieldNo": "Hayır",
+    "equipmentTitle": "Ekipman",
+    "equipmentType": "Tür",
+    "equipmentMake": "Marka",
+    "equipmentModel": "Model",
+    "equipmentManufactureYear": "Yıl",
+    "equipmentSerialNumber": "Seri no.",
+    "equipmentInstallDate": "Takıldı",
+    "equipmentRatedCapacity": "Kapasite",
+    "equipmentLastExamined": "Son kontrol",
+    "equipmentNextExamination": "Sonraki kontrol",
+    "equipmentCertificateReference": "Sertifika",
+    "equipmentMeters": "Sayaçlar",
+    "equipmentNotes": "Notlar"
   },
   "workOrder": {
     "title": "İŞ EMRİ",

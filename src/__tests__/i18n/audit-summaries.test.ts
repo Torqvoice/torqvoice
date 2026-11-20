@@ -188,6 +188,8 @@ describe('audit summaries', () => {
       ref: 'X',
       code: 'X',
       from: 'A',
+      vehicle: 'V',
+      meter: 'M',
       to: 'B',
       jobRef: 'J',
       title: 'T',

@@ -92,6 +92,7 @@ describe('organisation scope', () => {
       'documentAssetSnapshots',
       'customFieldDefinitions',
       'meterTypes',
+      'equipmentTypes',
       'inventoryParts',
       'vehicles',
       'orgReminders',
@@ -162,6 +163,8 @@ describe('JSON shape', () => {
         vehicles: [],
         // The vehicles' meters travel with them.
         meterTypes: [],
+        // And the equipment fitted to them.
+        equipmentTypes: [],
         orgReminders: [],
         counterSales: [],
         appointments: [

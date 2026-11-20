@@ -9,6 +9,10 @@
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+// The equipment a quote is for goes with it; nothing of it here.
+vi.mock('@/features/equipment/Lib/equipmentWorkOn.server', () => ({
+  copyQuoteEquipmentToJob: vi.fn(),
+}))
 vi.mock('@/lib/cached-session', () => ({
   getCachedSession: vi.fn(),
   getCachedMembership: vi.fn(),

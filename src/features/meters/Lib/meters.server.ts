@@ -2,6 +2,7 @@ import 'server-only'
 
 import { READING_JOB_DATES, effectiveReadAt } from './readingTime'
 import { db } from '@/lib/db'
+import { equipmentLabels, jobWorkOnItemIds } from '@/features/equipment/Lib/equipmentGate.server'
 import { getFeatures } from '@/lib/features'
 import {
   type MeterReadingLike,
@@ -184,6 +185,46 @@ export async function vehicleMeterViews(
   })
 }
 
+/**
+ * The meters of pieces of equipment, by item, in the workshop's order, with
+ * their readings. An item's meters go with it from vehicle to vehicle. Empty
+ * while meters are off.
+ */
+export async function equipmentMeterViews(
+  organizationId: string,
+  itemIds: string[],
+  types?: MeterTypeView[]
+): Promise<Map<string, VehicleMeterView[]>> {
+  const byItem = new Map<string, VehicleMeterView[]>()
+  if (itemIds.length === 0) return byItem
+  const active = types ?? (await activeMeterTypes(organizationId))
+  if (active.length === 0) return byItem
+  const meters = await db.vehicleMeter.findMany({
+    where: {
+      organizationId,
+      equipmentItemId: { in: itemIds },
+      removedAt: null,
+      meterTypeId: { in: active.map((t) => t.id) },
+    },
+    select: {
+      id: true,
+      meterTypeId: true,
+      equipmentItemId: true,
+      readings: { select: READING_SELECT },
+    },
+  })
+  for (const itemId of itemIds) {
+    byItem.set(
+      itemId,
+      active.flatMap((type) => {
+        const meter = meters.find((m) => m.equipmentItemId === itemId && m.meterTypeId === type.id)
+        return meter ? [view(meter as never, type)] : []
+      })
+    )
+  }
+  return byItem
+}
+
 /** A meter's reading on one job, and what the person typing it should not go below. */
 export interface JobMeterView {
   vehicleMeterId: string
@@ -194,6 +235,8 @@ export interface JobMeterView {
   value: number | null
   /** The last counted reading before this job, for the lower-reading notice. */
   last: number | null
+  /** The piece of equipment the meter is on, for an item the job works on. */
+  item?: { id: string; label: string } | null
 }
 
 /**
@@ -205,8 +248,24 @@ export async function jobMeterViews(
   job: { id: string; vehicleId: string | null; readAt: Date }
 ): Promise<JobMeterView[]> {
   if (!job.vehicleId) return []
-  const meters = await vehicleMeterViews(organizationId, job.vehicleId)
-  return meters.map((meter) => {
+  const types = await activeMeterTypes(organizationId)
+  if (types.length === 0) return []
+  const [vehicleMeters, itemIds] = await Promise.all([
+    vehicleMeterViews(organizationId, job.vehicleId, types),
+    jobWorkOnItemIds(organizationId, job),
+  ])
+  // Then the meters of every item the job works on, item by item.
+  const [itemMeters, labels] = await Promise.all([
+    equipmentMeterViews(organizationId, itemIds, types),
+    equipmentLabels(organizationId, itemIds),
+  ])
+  const labelled = itemIds.flatMap((itemId) => {
+    const label = labels.get(itemId)
+    if (!label) return []
+    return (itemMeters.get(itemId) ?? []).map((meter) => ({ meter, item: { id: itemId, label } }))
+  })
+  const all = [...vehicleMeters.map((meter) => ({ meter, item: null })), ...labelled]
+  return all.map(({ meter, item }) => {
     const likes: MeterReadingLike[] = meter.readings.map((r) => ({
       id: r.id,
       value: r.value,
@@ -227,6 +286,7 @@ export async function jobMeterViews(
         likes.filter((r) => r.serviceRecordId !== job.id),
         { readAt: job.readAt }
       ),
+      item,
     }
   })
 }

@@ -23,6 +23,8 @@ vi.mock('@/lib/document-lock.server', () => ({
 vi.mock('@/features/meters/Lib/jobMeterReading.server', () => ({
   unlinkJobMeterReadingsFromOtherVehicles: vi.fn(async () => undefined),
 }))
+// What the job works on of a vehicle's equipment.
+const workOnDropped = vi.hoisted(() => vi.fn(async () => ({ count: 0 })))
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
@@ -120,6 +122,7 @@ beforeEach(() => {
         { mileage: state.job.mileage, vehicleId: state.job.vehicleId },
       ]),
       vehicle: db.vehicle,
+      serviceRecordEquipment: { deleteMany: workOnDropped },
       serviceRecord: {
         findFirst: db.serviceRecord.findFirst,
         update: vi.fn(async ({ data }: any) => {
@@ -192,5 +195,13 @@ describe('saving a work order', () => {
     await save({ vehicleId: 'veh-b', mileage: 120_000 })
     expect(state.vehicles['veh-b']).toBe(120_000)
     expect(state.vehicles['veh-a']).toBe(100_000)
+    // And it no longer works on the old vehicle's equipment.
+    expect(workOnDropped).toHaveBeenCalledWith({
+      where: {
+        organizationId: expect.any(String),
+        serviceRecordId: expect.any(String),
+        item: { vehicleId: { not: 'veh-b' } },
+      },
+    })
   })
 })

@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
@@ -168,6 +169,10 @@ export default async function PublicQuotePage({
         // The vehicle's current meter readings, for a workshop that has meters.
         meterReadings: await printableMeterReadings(orgId, { vehicleId: quote.vehicleId }),
       },
+      // What is fitted to the vehicle, and the items the quote works on.
+      // Only the finished sheet leaves the server, so it prints only where
+      // the design places the Equipment section.
+      equipment: await printableEquipment(orgId, { quoteId: quote.id, vehicleId: quote.vehicleId }),
     },
     customerReferenceEnabledIn(settingsMap, features)
   )

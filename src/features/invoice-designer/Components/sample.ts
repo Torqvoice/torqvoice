@@ -8,6 +8,7 @@ import { LABOR_GROUP, OTHER_PARTS_GROUP, partGroupKey } from '../Pdf/lineGroups'
 import type { DesignerWorkshop, DocumentType } from './types'
 import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import type { EquipmentPrint, EquipmentRow } from '../Pdf/equipmentPrint'
 
 /**
  * What the canvas prints for each field the layout can show.
@@ -496,7 +497,56 @@ export function buildSampleData(
     // invoice or a quote prints this visit's marks only.
     conditionMap:
       sampleConditionMap(t, docType === 'certificate' || docType === 'work_order') ?? undefined,
+    // Two items on the sample vehicle, the first one the job works on, for
+    // a workshop that records equipment; nothing for one that does not.
+    equipment: sampleEquipment(workshop, format),
   }
+}
+
+/**
+ * A crane and a tail lift, under the workshop's own names for its first two
+ * kinds of equipment. Makes, models and serials are made up, and dates go
+ * through the workshop's date format like the rest of the sample.
+ */
+function sampleEquipment(
+  workshop: DesignerWorkshop,
+  format: SampleFormat
+): EquipmentPrint | undefined {
+  const types = workshop.equipmentTypes ?? []
+  if (types.length === 0) return undefined
+  const day = (key: string) => format.date(new Date(`${key}T12:00:00Z`))
+  const number = (v: number) => v.toLocaleString('en-US', { maximumFractionDigits: 2 })
+  const meter = workshop.meterTypes?.[0]
+  const crane: EquipmentRow = {
+    type: types[0],
+    make: 'Hiab',
+    model: 'X-HiPro 192',
+    manufacture_year: '2019',
+    serial_number: 'HB-19-04412',
+    install_date: day('2019-06-03'),
+    rated_capacity: '18.5 tm',
+    last_examined: day('2026-02-10'),
+    next_examination: day('2027-02-10'),
+    certificate_reference: 'EX-2026-0117',
+    // Written as the sample's other meter readings are ("4,256.7").
+    meters: meter ? meterLine({ name: meter.name, unit: meter.unit, value: 812.5 }, number) : '',
+    notes: '',
+  }
+  const tailLift: EquipmentRow = {
+    type: types[1] ?? types[0],
+    make: 'Dhollandia',
+    model: 'DH-LM.15',
+    manufacture_year: '2021',
+    serial_number: 'DH21-88310',
+    install_date: day('2021-09-20'),
+    rated_capacity: '1500 kg',
+    last_examined: day('2026-05-02'),
+    next_examination: day('2026-11-02'),
+    certificate_reference: 'EX-2026-0342',
+    meters: '',
+    notes: '',
+  }
+  return { job: [crane], vehicle: [crane, tailLift] }
 }
 
 /** Three marks on a sedan, one of them from last time. */

@@ -39,6 +39,7 @@ import {
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { equipmentForPrint } from './equipmentPrint'
 import { type ConditionMapLabels, conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
@@ -503,6 +504,8 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     // block then decides for itself what an inspection with nothing wrong,
     // or with nothing graded yet, prints.
     certificate: inspectionResultsForPrint(layout, job.linkedInspection, labels),
+    // Both lists; the Equipment section picks one, where a design places it.
+    equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
     workOrder: {
       concerns: job.concerns.map((concern) => ({
         description: concern.description,

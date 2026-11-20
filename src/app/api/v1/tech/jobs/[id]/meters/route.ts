@@ -14,8 +14,11 @@ import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
  * `src/lib/tech-api-features.ts`.
  *
  * GET answers `{ meters }`: per meter its name, unit, this job's reading
- * (null when none) and the last reading before the job (null when none).
- * PUT takes `{ readings: [{ vehicleMeterId, value }] }`, `value` a number or
+ * (null when none), the last reading before the job (null when none) and
+ * `item`: null for the vehicle's own meter, else `{ id, label }` of the piece
+ * of equipment it is on, one the job works on (`vehicle-equipment`).
+ * PUT takes `{ readings: [{ vehicleMeterId, value }] }`, an item's meter as
+ * well as the vehicle's, `value` a number or
  * null to take the job's reading away, and answers each one with whether it
  * is below the last reading: kept all the same, as on the web.
  */
@@ -98,7 +101,11 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
           )
         }
         if (error instanceof Error && error.message === 'Meter not found') {
-          return apiError(404, 'not_found', 'That meter is not on this job’s vehicle.')
+          return apiError(
+            404,
+            'not_found',
+            'That meter is not on this job’s vehicle or the equipment it works on.'
+          )
         }
         throw error
       }

@@ -734,6 +734,9 @@
     "removeTitleMarine": "¿Quitar {name} de esta embarcación?",
     "removeHint": "Sus lecturas se conservan y vuelven si el contador se añade de nuevo.",
     "removed": "{name} quitado",
-    "added": "{name} añadido"
+    "added": "{name} añadido",
+    "itemTitle": "Contadores",
+    "noItemMeters": "Este elemento no tiene contadores.",
+    "addItemMeterHint": "El contador va con este elemento dondequiera que esté instalado."
   }
 }

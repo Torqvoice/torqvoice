@@ -754,7 +754,8 @@
       "concerns": "Kliento nusiskundimai",
       "job_description": "Užsakyti darbai",
       "work_checklist": "Darbų sąrašas",
-      "condition_map": "Transporto priemonės būklė"
+      "condition_map": "Transporto priemonės būklė",
+      "equipment": "Įranga"
     },
     "fields": {
       "customer_name": "Kliento vardas",
@@ -820,7 +821,19 @@
       "legend": "Legenda",
       "previous_marks": "Ankstesnės žymos",
       "blank_sheet": "Tuščias lapas pildyti ranka",
-      "meter_readings": "Skaitiklių rodmenys"
+      "meter_readings": "Skaitiklių rodmenys",
+      "equipment_type": "Tipas",
+      "equipment_make": "Gamintojas",
+      "equipment_model": "Modelis",
+      "equipment_manufacture_year": "Pagaminimo metai",
+      "equipment_serial_number": "Serijos numeris",
+      "equipment_install_date": "Sumontuota",
+      "equipment_rated_capacity": "Vardinė keliamoji galia",
+      "equipment_last_examined": "Paskutinė patikra",
+      "equipment_next_examination": "Kitos patikros terminas",
+      "equipment_certificate_reference": "Sertifikato numeris",
+      "equipment_meters": "Skaitiklių rodmenys",
+      "equipment_notes": "Pastabos"
     },
     "presetsTitle": "Pradėti nuo išdėstymo",
     "presetsHint": "Pakeičia žemiau esantį išdėstymą. Niekas neįrašoma, kol neišsaugote.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Tik šonai",
     "conditionMapWidthHint": "Tuščia užima visą eilutę. Nurodykite taškus, kad brėžinys būtų mažesnis; jis dedamas pagal lygiavimą, o legenda išlaiko visą plotį.",
     "conditionMapDense": "Glausta lentelė",
-    "conditionMapDenseHint": "Suglaudina lentelės po brėžiniu eilutes, kad ji užimtų mažiau vietos puslapyje."
+    "conditionMapDenseHint": "Suglaudina lentelės po brėžiniu eilutes, kad ji užimtų mažiau vietos puslapyje.",
+    "equipmentList": "Kokia įranga",
+    "equipmentListVehicle": "Transporto priemonėje",
+    "equipmentListVehicleMarine": "Laive",
+    "equipmentListJob": "Dirbta",
+    "equipmentListHint": "Transporto priemonėje parodo visą joje dabar sumontuotą įrangą. Dirbta parodo tik tuos elementus, su kuriais dirbama pagal užsakymą ar sąmatą. Žemiau esantys laukai parenka stulpelius ir jų tvarką.",
+    "equipmentListHintMarine": "Laive parodo visą jame dabar sumontuotą įrangą. Dirbta parodo tik tuos elementus, su kuriais dirbama pagal užsakymą ar sąmatą. Žemiau esantys laukai parenka stulpelius ir jų tvarką.",
+    "equipmentNoneHint": "Pridėkite įrangos tipų skiltyje Nustatymai, Pasirinktiniai laukai, kad čia būtų spausdinama transporto priemonės įranga.",
+    "equipmentNoneHintMarine": "Pridėkite įrangos tipų skiltyje Nustatymai, Pasirinktiniai laukai, kad čia būtų spausdinama laivo įranga.",
+    "equipmentTitle": "Antraštė",
+    "equipmentTitleHint": "Palikite tuščią, kad būtų spausdinama numatytoji antraštė dokumento kalba, arba įrašykite savo, pavyzdžiui, \"Sumontuotos įrangos duomenys\"."
   },
   "preview": {
     "title": "Stabdžių aptarnavimas ir tepalų keitimas",

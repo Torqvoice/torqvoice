@@ -754,7 +754,8 @@
       "concerns": "Kundens henvendelser",
       "job_description": "Ønsket arbeid",
       "work_checklist": "Sjekkliste for arbeid",
-      "condition_map": "Kjøretøyets tilstand"
+      "condition_map": "Kjøretøyets tilstand",
+      "equipment": "Utstyr"
     },
     "fields": {
       "customer_name": "Kundenavn",
@@ -820,7 +821,19 @@
       "legend": "Forklaring",
       "previous_marks": "Tidligere merker",
       "blank_sheet": "Tomt ark til utfylling for hånd",
-      "meter_readings": "Måleravlesninger"
+      "meter_readings": "Måleravlesninger",
+      "equipment_type": "Type",
+      "equipment_make": "Merke",
+      "equipment_model": "Modell",
+      "equipment_manufacture_year": "Produksjonsår",
+      "equipment_serial_number": "Serienummer",
+      "equipment_install_date": "Montert",
+      "equipment_rated_capacity": "Nominell kapasitet",
+      "equipment_last_examined": "Sist kontrollert",
+      "equipment_next_examination": "Neste kontroll forfaller",
+      "equipment_certificate_reference": "Sertifikatreferanse",
+      "equipment_meters": "Måleravlesninger",
+      "equipment_notes": "Notater"
     },
     "presetsTitle": "Start fra et oppsett",
     "presetsHint": "Erstatter oppsettet under. Ingenting lagres før du lagrer.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Bare sidene",
     "conditionMapWidthHint": "Tomt fyller raden. Angi punkter for å gjøre tegningen mindre; den plasseres da etter justeringen, og listen beholder full bredde.",
     "conditionMapDense": "Tett tabell",
-    "conditionMapDenseHint": "Setter radene i tabellen under tegningen tettere, så den tar mindre plass på siden."
+    "conditionMapDenseHint": "Setter radene i tabellen under tegningen tettere, så den tar mindre plass på siden.",
+    "equipmentList": "Hvilket utstyr",
+    "equipmentListVehicle": "På kjøretøyet",
+    "equipmentListVehicleMarine": "På båten",
+    "equipmentListJob": "Arbeidet på",
+    "equipmentListHint": "På kjøretøyet viser alt som er montert på det nå. Arbeidet på viser bare enhetene jobben eller tilbudet gjelder. Feltene under velger kolonnene og rekkefølgen.",
+    "equipmentListHintMarine": "På båten viser alt som er montert på den nå. Arbeidet på viser bare enhetene jobben eller tilbudet gjelder. Feltene under velger kolonnene og rekkefølgen.",
+    "equipmentNoneHint": "Legg til utstyrstyper under Innstillinger, Egendefinerte felter for å skrive ut kjøretøyets utstyr her.",
+    "equipmentNoneHintMarine": "Legg til utstyrstyper under Innstillinger, Egendefinerte felter for å skrive ut båtens utstyr her.",
+    "equipmentTitle": "Overskrift",
+    "equipmentTitleHint": "La feltet stå tomt for å skrive ut standardoverskriften på dokumentets språk, eller skriv din egen, for eksempel \"Detaljer om montert utstyr\"."
   },
   "preview": {
     "title": "Bremseservice og oljeskift",

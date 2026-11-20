@@ -734,6 +734,9 @@
     "removeTitleMarine": "{name} van dit vaartuig halen?",
     "removeHint": "De standen blijven bewaard en komen terug als de teller opnieuw wordt toegevoegd.",
     "removed": "{name} verwijderd",
-    "added": "{name} toegevoegd"
+    "added": "{name} toegevoegd",
+    "itemTitle": "Tellers",
+    "noItemMeters": "Geen tellers op dit onderdeel.",
+    "addItemMeterHint": "De teller gaat mee met dit onderdeel, waar het ook gemonteerd is."
   }
 }

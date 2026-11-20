@@ -754,7 +754,8 @@
       "concerns": "Customer Concerns",
       "job_description": "Work Requested",
       "work_checklist": "Work Checklist",
-      "condition_map": "Vehicle Condition"
+      "condition_map": "Vehicle Condition",
+      "equipment": "Equipment"
     },
     "fields": {
       "customer_name": "Customer Name",
@@ -820,7 +821,19 @@
       "legend": "Legend",
       "previous_marks": "Earlier marks",
       "blank_sheet": "Blank sheet to fill in by hand",
-      "meter_readings": "Meter readings"
+      "meter_readings": "Meter readings",
+      "equipment_type": "Type",
+      "equipment_make": "Make",
+      "equipment_model": "Model",
+      "equipment_manufacture_year": "Year of manufacture",
+      "equipment_serial_number": "Serial number",
+      "equipment_install_date": "Installed",
+      "equipment_rated_capacity": "Rated capacity",
+      "equipment_last_examined": "Last examined",
+      "equipment_next_examination": "Next examination due",
+      "equipment_certificate_reference": "Certificate reference",
+      "equipment_meters": "Meter readings",
+      "equipment_notes": "Notes"
     },
     "presetsTitle": "Start from an arrangement",
     "presetsHint": "Replaces the arrangement below. Nothing is saved until you save.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Sides only",
     "conditionMapWidthHint": "Empty spans the row. Set points to make the drawing smaller; it then sits where the alignment puts it, and the legend keeps the full width.",
     "conditionMapDense": "Dense table",
-    "conditionMapDenseHint": "Sets the rows of the table under the drawing closer together, so it takes less of the page."
+    "conditionMapDenseHint": "Sets the rows of the table under the drawing closer together, so it takes less of the page.",
+    "equipmentList": "Which equipment",
+    "equipmentListVehicle": "On the vehicle",
+    "equipmentListVehicleMarine": "On the vessel",
+    "equipmentListJob": "Worked on",
+    "equipmentListHint": "On the vehicle lists everything fitted to it now. Worked on lists only the items the job or quote works on. The fields below choose the columns and their order.",
+    "equipmentListHintMarine": "On the vessel lists everything fitted to it now. Worked on lists only the items the job or quote works on. The fields below choose the columns and their order.",
+    "equipmentNoneHint": "Add equipment types under Settings, Custom Fields to print the vehicle's equipment here.",
+    "equipmentNoneHintMarine": "Add equipment types under Settings, Custom Fields to print the vessel's equipment here.",
+    "equipmentTitle": "Heading",
+    "equipmentTitleHint": "Leave empty to print the default heading in the document's language, or write your own, for example \"Attached equipment details\"."
   },
   "preview": {
     "title": "Brake Service & Oil Change",

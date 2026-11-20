@@ -1,5 +1,8 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { activeMeterTypes, vehicleMeterViews } from '@/features/meters/Lib/meters.server'
+import { vehicleEquipmentView } from '@/features/equipment/Lib/equipment.server'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { zonedDayKey } from '@/lib/timezone'
 import { getTranslations } from 'next-intl/server'
 import { getVehicle } from '@/features/vehicles/Actions/vehicleActions'
 import { getServiceRecordsPaginated } from '@/features/vehicles/Actions/serviceActions'
@@ -249,6 +252,10 @@ export default async function VehicleDetailPage({
   const meterTypes = orgId ? await activeMeterTypes(orgId) : []
   const vehicleMeters =
     orgId && meterTypes.length > 0 ? await vehicleMeterViews(orgId, id, meterTypes) : []
+  // Its equipment, the same way: nothing read without the plan, nothing shown
+  // before the workshop has a type of equipment.
+  const equipment = orgId ? await vehicleEquipmentView(orgId, id) : null
+  const today = zonedDayKey(new Date(), orgId ? await workshopTimeZone(orgId) : 'UTC')
 
   // Both pages take the same data; the classic one also reads the type
   // filter, the new one the booking warnings.
@@ -271,6 +278,8 @@ export default async function VehicleDetailPage({
     serviceRecordType: type,
     meterTypes,
     vehicleMeters,
+    equipment,
+    today,
   }
 
   return (

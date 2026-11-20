@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Medidor do veículo removido",
     "vehicleMeter_replace": "Medidor do veículo substituído",
     "meterReading_markWrong": "Leitura do medidor marcada como errada",
-    "meterReading_restore": "Leitura do medidor contada novamente"
+    "meterReading_restore": "Leitura do medidor contada novamente",
+    "equipmentType_create": "Tipo de equipamento criado",
+    "equipmentType_update": "Tipo de equipamento atualizado",
+    "equipmentType_reorder": "Tipos de equipamento reordenados",
+    "equipmentType_delete": "Tipo de equipamento excluído",
+    "equipment_add": "Equipamento adicionado",
+    "equipment_update": "Equipamento atualizado",
+    "equipment_move": "Equipamento movido",
+    "equipment_remove": "Equipamento retirado",
+    "equipment_refit": "Equipamento recolocado",
+    "equipment_delete": "Equipamento excluído"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ativou o login em duas etapas",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "Removeu o medidor \"{name}\" de um veículo",
     "vehicleMeter_replace": "Substituiu o medidor \"{name}\": o antigo terminou em {oldEnd}, o novo começou em {newStart}",
     "meterReading_markWrong": "Marcou a leitura {value} de {name} como errada",
-    "meterReading_restore": "Contou novamente a leitura {value} de {name}"
+    "meterReading_restore": "Contou novamente a leitura {value} de {name}",
+    "equipmentType_create": "Criou o tipo de equipamento \"{name}\"",
+    "equipmentType_update": "Atualizou o tipo de equipamento \"{name}\"",
+    "equipmentType_reorder": "Reordenou os tipos de equipamento",
+    "equipmentType_delete": "Excluiu o tipo de equipamento \"{name}\"",
+    "equipment_add": "Adicionou {name} a {vehicle}",
+    "equipment_update": "Atualizou {name} em {vehicle}",
+    "equipment_move": "Moveu {name} de {from} para {vehicle}",
+    "equipment_remove": "Retirou {name} de {vehicle}",
+    "equipment_refit": "Recolocou {name} em {vehicle}",
+    "equipment_delete": "Excluiu {name} de {vehicle}",
+    "equipment_meter": "Adicionou o medidor {meter} a {name} em {vehicle}"
   }
 }

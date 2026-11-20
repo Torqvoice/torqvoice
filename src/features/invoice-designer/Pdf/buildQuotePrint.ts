@@ -29,6 +29,8 @@ import {
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { equipmentForPrint } from './equipmentPrint'
+import type { PrintableEquipmentLists } from '@/features/equipment/Lib/equipmentPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import {
@@ -119,6 +121,11 @@ export interface QuotePrintData {
      */
     meterReadings?: { name: string; unit: string; value: number }[]
   } | null
+  /**
+   * What is fitted to the vehicle, unformatted: the items the quote works on
+   * and everything on the vehicle now. Absent or empty while equipment is off.
+   */
+  equipment?: PrintableEquipmentLists
 }
 
 export interface QuotePrintInput {
@@ -442,6 +449,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     // What the inspection found, through the certificate's own blocks.
     certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
+    // Both lists; the Equipment section picks one, where a design places it.
+    equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
     signature: {

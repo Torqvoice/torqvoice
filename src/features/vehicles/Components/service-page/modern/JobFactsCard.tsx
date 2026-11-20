@@ -1,6 +1,7 @@
 'use client'
 
 import { JobMeters } from '@/features/meters/Components/JobMeters'
+import { WorkOnPicker } from '@/features/equipment/Components/WorkOnPicker'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -432,6 +433,15 @@ export function JobFactsCard({
                     entered={readingTyped ?? ''}
                     last={initialData.lastReading}
                     unit={distanceUnit}
+                  />
+                )}
+                {/* The equipment the job works on, whose meters follow. */}
+                {!vehicleChanged && initialData.equipment && (
+                  <WorkOnPicker
+                    target={{ kind: 'job', id: initialData.id }}
+                    equipment={initialData.equipment}
+                    locked={locked}
+                    labelClassName={factLabel}
                   />
                 )}
                 {/* The vehicle's other meters, read on this job. Only on the

@@ -162,6 +162,10 @@ const OVERRIDES: Readonly<Record<string, Readonly<Record<string, Override>>>> = 
   // The newer mark a dent was recorded again as. The seed has one mark per
   // place, so it names itself: what matters is that the link comes back.
   ConditionMark: { carriedToId: (position: Position) => position.id },
+  // A meter is on a vehicle or on an equipment item, never both (a check in
+  // the database). The seed's one meter is the item's; a vehicle's meter
+  // through a restore is in meters-backup.db.test.ts.
+  VehicleMeter: { vehicleId: null },
 }
 
 /** How much of their place in the file two positions share, for choosing a row in the same tree. */
@@ -523,6 +527,7 @@ const LEFT_EMPTY: Readonly<Record<string, string>> = {
   'StatusReport.serviceRecordId': ONE_PARENT,
   'StoredImage.inventoryPartId': ONE_PARENT,
   'StoredImage.tireMeasurementId': ONE_PARENT,
+  'VehicleMeter.vehicleId': ONE_PARENT,
 }
 
 const describeDb = url ? describe : describe.skip

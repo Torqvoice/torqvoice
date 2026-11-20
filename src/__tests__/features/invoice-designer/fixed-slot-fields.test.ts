@@ -50,6 +50,8 @@ const sample = () =>
       fleetNumberEnabled: true,
       // And one meter, so its reading has something to print.
       meterTypes: [{ name: 'Engine hours', unit: 'hrs' }],
+      // And kinds of equipment, so the Equipment table has rows to print.
+      equipmentTypes: ['Crane', 'Tail lift'],
       logoUrl: '/logo.png',
     } as any,
     [],
@@ -62,7 +64,13 @@ function printedWith(sectionId: string, order: string[]): string {
   const layout = mergeWithDefaults({})
   layout.sections = layout.sections.map((section) =>
     section.id === sectionId
-      ? { ...section, fields: order.map((id) => ({ id, visible: true })) }
+      ? {
+          ...section,
+          // Equipment is off until a design asks for it; on here, so its
+          // columns can be seen to move.
+          ...(sectionId === 'equipment' ? { visible: true } : {}),
+          fields: order.map((id) => ({ id, visible: true })),
+        }
       : section
   )
   const spec = buildDocumentSpec(layout, themeOf({} as any, layout), sample()) as any
@@ -74,6 +82,13 @@ function printedWith(sectionId: string, order: string[]): string {
     if (!node || typeof node !== 'object') return
     if (node.kind === 'text' && node.text) out.push(String(node.text))
     if (node.kind === 'image') out.push('[image]')
+    // A table's columns are its fields: their heads and cells, in order.
+    if (node.kind === 'table') {
+      out.push(node.columns.map((column: any) => column.label).join(' / '))
+      for (const row of node.rows) {
+        out.push(node.columns.map((column: any) => row[column.key]).join(' / '))
+      }
+    }
     for (const child of node.children ?? []) walk(child.node ?? child)
   }
   walk(content)

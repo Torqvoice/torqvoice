@@ -1,4 +1,5 @@
 import type { PrintableCustomField } from '@/features/custom-fields/Lib/customFieldText'
+import type { PrintableEquipmentLists } from '@/features/equipment/Lib/equipmentPrint'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 export interface TemplateConfig {
@@ -98,6 +99,12 @@ export interface InvoiceData {
    */
   recordCustomFields?: PrintableCustomField[]
   findings?: Array<{ description: string; severity: string; notes: string | null }>
+  /**
+   * What is fitted to the vehicle, unformatted: the items the job works on
+   * and everything on the vehicle, for a design's Equipment section to pick
+   * from. Absent or empty while equipment is off.
+   */
+  equipment?: PrintableEquipmentLists
   /** 'included', 'not_included' or null; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
   warrantyMonths?: number | null

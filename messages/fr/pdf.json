@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Mise à Niveau",
     "serviceTypeInspection": "Inspection",
     "customFieldYes": "Oui",
-    "customFieldNo": "Non"
+    "customFieldNo": "Non",
+    "equipmentTitle": "Équipements",
+    "equipmentType": "Type",
+    "equipmentMake": "Marque",
+    "equipmentModel": "Modèle",
+    "equipmentManufactureYear": "Année",
+    "equipmentSerialNumber": "N° de série",
+    "equipmentInstallDate": "Monté le",
+    "equipmentRatedCapacity": "CMU",
+    "equipmentLastExamined": "Dernière vérif.",
+    "equipmentNextExamination": "Prochaine vérif.",
+    "equipmentCertificateReference": "Certificat",
+    "equipmentMeters": "Relevés",
+    "equipmentNotes": "Notes"
   },
   "workOrder": {
     "title": "ORDRE DE TRAVAIL",

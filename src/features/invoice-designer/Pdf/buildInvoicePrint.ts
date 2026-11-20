@@ -35,6 +35,7 @@ import {
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { equipmentForPrint } from './equipmentPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import {
@@ -514,6 +515,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     // The linked inspection's findings, through the certificate's own blocks.
     certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
+    // Both lists; the Equipment section picks one, where a design places it.
+    equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
     telegramQr: input.telegramQrDataUri
       ? {
           dataUri: input.telegramQrDataUri,

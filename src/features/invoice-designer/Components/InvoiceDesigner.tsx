@@ -1,6 +1,7 @@
 'use client'
 
 import { useMeterTypes } from '@/components/meter-types-context'
+import { useEquipmentTypes } from '@/components/equipment-types-context'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff, PenLine, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
@@ -132,6 +133,7 @@ export function InvoiceDesigner({
   const customerReferenceEnabled = useCustomerReferenceEnabled()
   const fleetNumberEnabled = useFleetNumberEnabled()
   const meterTypes = useMeterTypes()
+  const equipmentTypes = useEquipmentTypes()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
   const { formatDate } = useFormatDate()
@@ -360,7 +362,14 @@ export function InvoiceDesigner({
   const data: DocumentData = useMemo(
     () => ({
       ...buildSampleData(
-        { ...workshop, typeKeyEnabled, customerReferenceEnabled, fleetNumberEnabled, meterTypes },
+        {
+          ...workshop,
+          typeKeyEnabled,
+          customerReferenceEnabled,
+          fleetNumberEnabled,
+          meterTypes,
+          equipmentTypes,
+        },
         customFields,
         t,
         printLabels,
@@ -378,6 +387,7 @@ export function InvoiceDesigner({
       customerReferenceEnabled,
       fleetNumberEnabled,
       meterTypes,
+      equipmentTypes,
       customFields,
       t,
       printLabels,
@@ -899,7 +909,11 @@ export function InvoiceDesigner({
     )
   }
 
-  const rail = [...layout.sections].sort((a, b) => a.order - b.order)
+  // The Equipment section only for a workshop that records equipment: for
+  // anyone else it could never print a thing.
+  const rail = [...layout.sections]
+    .sort((a, b) => a.order - b.order)
+    .filter((s) => s.id !== 'equipment' || equipmentTypes.length > 0)
   /** The keyboard's reorder: one step up or down the rail from where the section is. */
   const stepSection = (index: number, direction: -1 | 1) => {
     const over = rail[index + direction]
@@ -1215,6 +1229,7 @@ export function InvoiceDesigner({
           sloganSet={!!companyWorkshop.slogan?.trim()}
           paymentTermsSet={!!companyWorkshop.paymentTerms?.trim()}
           documentTitleDefault={data.meta.title}
+          equipmentTitleDefault={L('equipmentTitle', 'Equipment')}
           orgNumberLabel={orgNumberLabel}
           orgNumberLabelDefault={messages.pdf?.invoice?.orgNumberLabel ?? 'Org. Number'}
           onOrgNumberLabel={setOrgNumberLabel}

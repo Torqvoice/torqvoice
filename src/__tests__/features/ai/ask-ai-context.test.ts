@@ -11,6 +11,12 @@ vi.mock('@/features/meters/Lib/meters.server', () => ({
   printableMeterReadings: async () => [],
   activeMeterTypes: async () => [],
 }))
+// No equipment in this workshop unless a test says so: the view is null
+// while equipment is off (no plan, or no type defined).
+const vehicleEquipmentView = vi.fn()
+vi.mock('@/features/equipment/Lib/equipment.server', () => ({
+  vehicleEquipmentView: (...args: unknown[]) => vehicleEquipmentView(...args),
+}))
 vi.mock('@/lib/db', () => ({ db: { vehicle, customer, serviceRecord, appSetting } }))
 
 const { buildAskAiContext, askAiSystemPrompt, MAX_CONTEXT_CHARS } = await import(
@@ -82,7 +88,45 @@ function vehicleRow(overrides: Record<string, unknown> = {}) {
 beforeEach(() => {
   vi.clearAllMocks()
   serviceRecord.findMany.mockResolvedValue([])
+  vehicleEquipmentView.mockResolvedValue(null)
 })
+
+function equipmentItem(overrides: Record<string, unknown> = {}) {
+  return {
+    id: 'item_1',
+    typeId: 'type_crane',
+    typeName: 'Crane',
+    label: 'Crane, HIAB X-HiPro 192 (SN 4471)',
+    make: 'HIAB',
+    model: 'X-HiPro 192',
+    serialNumber: '4471',
+    manufactureYear: 2019,
+    manufactureDay: null,
+    installDate: '2020-03-01',
+    notes: null,
+    ratedCapacity: '19 tm',
+    nextExaminationDue: '2027-03-01',
+    lastExaminedAt: '2026-03-01',
+    certificateReference: 'LOLER-889',
+    report: null,
+    removedAt: null,
+    vehicleId: 'veh_1',
+    meters: [
+      {
+        id: 'vm_1',
+        meterTypeId: 'mt_pto',
+        name: 'PTO hours',
+        unit: 'h',
+        current: 812.5,
+        currentAt: null,
+        total: 812.5,
+        replaced: false,
+        readings: [],
+      },
+    ],
+    ...overrides,
+  }
+}
 
 describe('ask AI context', () => {
   it('loads the vehicle by id and organization only', async () => {
@@ -94,6 +138,49 @@ describe('ask AI context', () => {
     expect(ctx?.text).toContain('Brake pads')
     expect(ctx?.text).toContain('Ola Nordmann')
     expect(ctx?.text).toContain('/vehicles/veh_1/service/job_1')
+  })
+
+  it('says nothing about equipment while the workshop records none', async () => {
+    vehicle.findFirst.mockResolvedValue(vehicleRow())
+    const ctx = await buildAskAiContext(ORG, { type: 'vehicle', id: 'veh_1' }, options)
+    expect(vehicleEquipmentView).toHaveBeenCalledWith(ORG, 'veh_1')
+    expect(ctx?.text).not.toContain('Equipment')
+  })
+
+  it('tells the vehicle’s equipment, and what was removed or moved off it', async () => {
+    vehicle.findFirst.mockResolvedValue(vehicleRow())
+    vehicleEquipmentView.mockResolvedValue({
+      types: [],
+      meterTypes: [],
+      items: [equipmentItem()],
+      history: [
+        {
+          fittingId: 'fit_1',
+          item: equipmentItem({
+            id: 'item_2',
+            typeName: 'Tail lift',
+            make: 'Dhollandia',
+            model: 'DH-LM',
+            serialNumber: 'TL-55',
+            meters: [],
+            removedAt: '2026-06-01T10:00:00.000Z',
+          }),
+          fittedAt: '2021-01-10T10:00:00.000Z',
+          endedAt: '2026-06-01T10:00:00.000Z',
+          endReason: 'removed',
+          movedTo: null,
+        },
+      ],
+    })
+    const ctx = await buildAskAiContext(ORG, { type: 'vehicle', id: 'veh_1' }, options)
+    const text = ctx?.text ?? ''
+    expect(text).toContain('## Equipment fitted now')
+    expect(text).toContain(
+      '- Crane [make: HIAB, model: X-HiPro 192, serial number: 4471, manufactured: 2019, installed: 2020-03-01, rated capacity: 19 tm, last examined: 2026-03-01, next examination due: 2027-03-01, certificate: LOLER-889, meter: PTO hours: 812.5 h]'
+    )
+    expect(text).toContain('## Equipment no longer on this vehicle')
+    expect(text).toContain('Tail lift [make: Dhollandia, model: DH-LM, serial number: TL-55')
+    expect(text).toContain('fitted: 2021-01-10, removed: 2026-06-01')
   })
 
   it('returns null for a vehicle another workshop owns', async () => {

@@ -28,7 +28,7 @@ model Vehicle {
   /// The number the owner knows the vehicle by in their own fleet ("Unit 14",
   /// "T-208"). Free text, shown, printed and sent only while the workshop has
   /// the field switched on (src/features/vehicles/Lib/fleetNumberSetting.ts).
-  fleetNumber String?
+  fleetNumber            String?
   purchaseDate           DateTime?
   purchasePrice          Float?
   imageUrl               String?
@@ -73,6 +73,8 @@ model Vehicle {
   inspectionReminders InspectionReminderSend[]
   conditionMarks      ConditionMark[]
   meters              VehicleMeter[]
+  equipment           EquipmentItem[]
+  equipmentFittings   EquipmentFitting[]
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)

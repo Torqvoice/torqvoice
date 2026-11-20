@@ -734,6 +734,9 @@
     "removeTitleMarine": "Take {name} off this vessel?",
     "removeHint": "Its readings are kept, and come back if the meter is added again.",
     "removed": "{name} taken off",
-    "added": "{name} added"
+    "added": "{name} added",
+    "itemTitle": "Meters",
+    "noItemMeters": "No meters on this item.",
+    "addItemMeterHint": "The meter goes with this item wherever it is fitted."
   }
 }

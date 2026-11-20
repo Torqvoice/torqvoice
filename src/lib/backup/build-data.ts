@@ -153,7 +153,21 @@ const DATASETS: readonly Dataset[] = [
       db.meterType.findMany({
         ...page,
         where: { organizationId },
+        // A vehicle's meters and an equipment item's alike.
         include: { vehicleMeters: { include: { readings: true } } },
+      }),
+  },
+  // The equipment fitted to vehicles, under its kind: each item with where it
+  // has been and the jobs and quotes that worked on it.
+  {
+    key: 'equipmentTypes',
+    option: 'vehicles',
+    pageSize: 50,
+    read: (organizationId, page) =>
+      db.equipmentType.findMany({
+        ...page,
+        where: { organizationId },
+        include: { items: { include: { fittings: true, jobs: true, quotes: true } } },
       }),
   },
   {

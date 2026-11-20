@@ -26,6 +26,8 @@ const NOT_FILES: Record<string, string> = {
   'DocumentDesign.layout': 'section order and switches; the logo is in `template`',
   'DocumentDesignSnapshot.layout': 'the same, frozen',
   'Inspection.markTypesSnapshot': 'the kinds of mark at completion: names, shapes and colours',
+  'EquipmentItem.reportFileName':
+    'the name the examination report was uploaded with; the file is `reportFileUrl`',
   'ExternalCalendarEvent.remoteUrl': 'a link into the calendar provider',
   'ImportBatch.fileName': 'the name of a spreadsheet staged in the temp folder',
   'ImportBatch.mapping': 'column mapping of an import',

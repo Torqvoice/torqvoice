@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Voertuigteller verwijderd",
     "vehicleMeter_replace": "Voertuigteller vervangen",
     "meterReading_markWrong": "Tellerstand als fout gemarkeerd",
-    "meterReading_restore": "Tellerstand weer meegeteld"
+    "meterReading_restore": "Tellerstand weer meegeteld",
+    "equipmentType_create": "Soort uitrusting aangemaakt",
+    "equipmentType_update": "Soort uitrusting bijgewerkt",
+    "equipmentType_reorder": "Soorten uitrusting hergeordend",
+    "equipmentType_delete": "Soort uitrusting verwijderd",
+    "equipment_add": "Uitrusting toegevoegd",
+    "equipment_update": "Uitrusting bijgewerkt",
+    "equipment_move": "Uitrusting verplaatst",
+    "equipment_remove": "Uitrusting gedemonteerd",
+    "equipment_refit": "Uitrusting teruggeplaatst",
+    "equipment_delete": "Uitrusting verwijderd"
   },
   "summary": {
     "auth_twoFactorEnabled": "Inloggen in twee stappen ingeschakeld",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "Teller \"{name}\" van een voertuig gehaald",
     "vehicleMeter_replace": "Teller \"{name}\" vervangen: oude eindigde op {oldEnd}, nieuwe begon op {newStart}",
     "meterReading_markWrong": "Stand {value} van {name} als fout gemarkeerd",
-    "meterReading_restore": "Stand {value} van {name} weer meegeteld"
+    "meterReading_restore": "Stand {value} van {name} weer meegeteld",
+    "equipmentType_create": "Soort uitrusting \"{name}\" aangemaakt",
+    "equipmentType_update": "Soort uitrusting \"{name}\" bijgewerkt",
+    "equipmentType_reorder": "Soorten uitrusting hergeordend",
+    "equipmentType_delete": "Soort uitrusting \"{name}\" verwijderd",
+    "equipment_add": "{name} toegevoegd aan {vehicle}",
+    "equipment_update": "{name} op {vehicle} bijgewerkt",
+    "equipment_move": "{name} verplaatst van {from} naar {vehicle}",
+    "equipment_remove": "{name} gedemonteerd van {vehicle}",
+    "equipment_refit": "{name} teruggeplaatst op {vehicle}",
+    "equipment_delete": "{name} verwijderd van {vehicle}",
+    "equipment_meter": "Teller {meter} toegevoegd aan {name} op {vehicle}"
   }
 }

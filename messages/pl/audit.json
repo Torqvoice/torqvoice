@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Zdjęto licznik z pojazdu",
     "vehicleMeter_replace": "Wymieniono licznik pojazdu",
     "meterReading_markWrong": "Oznaczono odczyt licznika jako błędny",
-    "meterReading_restore": "Ponownie uwzględniono odczyt licznika"
+    "meterReading_restore": "Ponownie uwzględniono odczyt licznika",
+    "equipmentType_create": "Utworzono typ wyposażenia",
+    "equipmentType_update": "Zaktualizowano typ wyposażenia",
+    "equipmentType_reorder": "Zmieniono kolejność typów wyposażenia",
+    "equipmentType_delete": "Usunięto typ wyposażenia",
+    "equipment_add": "Dodano wyposażenie",
+    "equipment_update": "Zaktualizowano wyposażenie",
+    "equipment_move": "Przeniesiono wyposażenie",
+    "equipment_remove": "Zdemontowano wyposażenie",
+    "equipment_refit": "Ponownie zamontowano wyposażenie",
+    "equipment_delete": "Usunięto wyposażenie"
   },
   "summary": {
     "auth_twoFactorEnabled": "Włączono logowanie dwuskładnikowe",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "Zdjęto licznik \"{name}\" z pojazdu",
     "vehicleMeter_replace": "Wymieniono licznik \"{name}\": stary skończył na {oldEnd}, nowy zaczął od {newStart}",
     "meterReading_markWrong": "Oznaczono odczyt {value} licznika {name} jako błędny",
-    "meterReading_restore": "Ponownie uwzględniono odczyt {value} licznika {name}"
+    "meterReading_restore": "Ponownie uwzględniono odczyt {value} licznika {name}",
+    "equipmentType_create": "Utworzono typ wyposażenia \"{name}\"",
+    "equipmentType_update": "Zaktualizowano typ wyposażenia \"{name}\"",
+    "equipmentType_reorder": "Zmieniono kolejność typów wyposażenia",
+    "equipmentType_delete": "Usunięto typ wyposażenia \"{name}\"",
+    "equipment_add": "Dodano {name} do {vehicle}",
+    "equipment_update": "Zaktualizowano {name} w {vehicle}",
+    "equipment_move": "Przeniesiono {name} z {from} do {vehicle}",
+    "equipment_remove": "Zdemontowano {name} z {vehicle}",
+    "equipment_refit": "Ponownie zamontowano {name} w {vehicle}",
+    "equipment_delete": "Usunięto {name} z {vehicle}",
+    "equipment_meter": "Dodano licznik {meter} do {name} w {vehicle}"
   }
 }

@@ -734,6 +734,9 @@
     "removeTitleMarine": "{name} von diesem Wasserfahrzeug entfernen?",
     "removeHint": "Die Stände bleiben erhalten und kommen zurück, wenn der Zähler wieder hinzugefügt wird.",
     "removed": "{name} entfernt",
-    "added": "{name} hinzugefügt"
+    "added": "{name} hinzugefügt",
+    "itemTitle": "Zähler",
+    "noItemMeters": "Keine Zähler an diesem Eintrag.",
+    "addItemMeterHint": "Der Zähler bleibt bei diesem Eintrag, egal wo er montiert ist."
   }
 }

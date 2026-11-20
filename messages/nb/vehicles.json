@@ -734,6 +734,9 @@
     "removeTitleMarine": "Ta {name} av dette fartøyet?",
     "removeHint": "Avlesningene beholdes, og kommer tilbake hvis måleren legges til igjen.",
     "removed": "{name} tatt av",
-    "added": "{name} lagt til"
+    "added": "{name} lagt til",
+    "itemTitle": "Målere",
+    "noItemMeters": "Ingen målere på denne enheten.",
+    "addItemMeterHint": "Måleren følger denne enheten uansett hvor den er montert."
   }
 }

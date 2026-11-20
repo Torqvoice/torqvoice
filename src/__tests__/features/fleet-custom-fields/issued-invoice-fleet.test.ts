@@ -21,6 +21,11 @@ vi.mock('@/features/meters/Lib/meters.server', () => ({
   printableMeterReadings: (...args: unknown[]) => meterReadings(...(args as [])),
   activeMeterTypes: async () => [],
 }))
+// What is fitted to the vehicle; none here.
+vi.mock('@/features/equipment/Lib/equipmentPrint.server', () => ({
+  NO_EQUIPMENT: { job: [], vehicle: [] },
+  printableEquipment: async () => ({ job: [], vehicle: [] }),
+}))
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/lib/features', () => ({ getFeatures: vi.fn(async () => ({ customFields: true })) }))
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({

@@ -10,6 +10,8 @@ import {
   gateFleetNumber,
   isFleetNumberEnabled,
 } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { equipmentEnabled } from '@/features/equipment/Lib/equipmentGate.server'
+import { equipmentSerialMatch } from '@/features/equipment/Lib/equipmentSearch'
 import {
   deleteCustomFieldValuesOf,
   workOrderIdsOfVehicles,
@@ -169,6 +171,9 @@ export async function getVehiclesPaginated(params: {
         const words = searchWordsOf(params.search)
         const typeKeyOn = await isTypeKeyEnabled(organizationId)
         const fleetNumberOn = await isFleetNumberEnabled(organizationId)
+        // A serial number of equipment on the vehicle now finds it, for a
+        // workshop that records equipment; off, the query is unchanged.
+        const equipmentOn = await equipmentEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -178,6 +183,7 @@ export async function getVehiclesPaginated(params: {
             { vin: { contains: word, mode: 'insensitive' } },
             ...(typeKeyOn ? typeKeySearchTerms(word) : []),
             ...fleetNumberMatch(word, fleetNumberOn),
+            ...equipmentSerialMatch(organizationId, word, equipmentOn),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)
@@ -575,6 +581,9 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
       if (search) {
         const words = searchWordsOf(search)
         const typeKeyOn = await isTypeKeyEnabled(organizationId)
+        // A serial number of equipment on the vehicle now finds it, for a
+        // workshop that records equipment; off, the query is unchanged.
+        const equipmentOn = await equipmentEnabled(organizationId)
         const fieldMatch = (word: string) => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const conditions: any[] = [
@@ -584,6 +593,7 @@ export async function searchVehicles(search?: string, limit = 20, offset = 0, cu
             { vin: { contains: word, mode: 'insensitive' } },
             ...(typeKeyOn ? typeKeySearchTerms(word) : []),
             ...fleetNumberMatch(word, fleetNumberOn),
+            ...equipmentSerialMatch(organizationId, word, equipmentOn),
             { customer: { name: { contains: word, mode: 'insensitive' } } },
           ]
           const year = searchYear(word)

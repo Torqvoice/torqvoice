@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Compteur de véhicule retiré",
     "vehicleMeter_replace": "Compteur de véhicule remplacé",
     "meterReading_markWrong": "Relevé de compteur marqué comme erroné",
-    "meterReading_restore": "Relevé de compteur de nouveau compté"
+    "meterReading_restore": "Relevé de compteur de nouveau compté",
+    "equipmentType_create": "Type d'équipement créé",
+    "equipmentType_update": "Type d'équipement mis à jour",
+    "equipmentType_reorder": "Types d'équipement réordonnés",
+    "equipmentType_delete": "Type d'équipement supprimé",
+    "equipment_add": "Équipement ajouté",
+    "equipment_update": "Équipement mis à jour",
+    "equipment_move": "Équipement déplacé",
+    "equipment_remove": "Équipement démonté",
+    "equipment_refit": "Équipement remonté",
+    "equipment_delete": "Équipement supprimé"
   },
   "summary": {
     "auth_twoFactorEnabled": "A activé la connexion à deux facteurs",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "A retiré le compteur \"{name}\" d'un véhicule",
     "vehicleMeter_replace": "A remplacé le compteur \"{name}\" : l'ancien s'est arrêté à {oldEnd}, le nouveau a commencé à {newStart}",
     "meterReading_markWrong": "A marqué le relevé {value} de {name} comme erroné",
-    "meterReading_restore": "A de nouveau compté le relevé {value} de {name}"
+    "meterReading_restore": "A de nouveau compté le relevé {value} de {name}",
+    "equipmentType_create": "A créé le type d'équipement \"{name}\"",
+    "equipmentType_update": "A mis à jour le type d'équipement \"{name}\"",
+    "equipmentType_reorder": "A réordonné les types d'équipement",
+    "equipmentType_delete": "A supprimé le type d'équipement \"{name}\"",
+    "equipment_add": "A ajouté {name} sur {vehicle}",
+    "equipment_update": "A mis à jour {name} sur {vehicle}",
+    "equipment_move": "A déplacé {name} de {from} vers {vehicle}",
+    "equipment_remove": "A démonté {name} de {vehicle}",
+    "equipment_refit": "A remonté {name} sur {vehicle}",
+    "equipment_delete": "A supprimé {name} de {vehicle}",
+    "equipment_meter": "A ajouté le compteur {meter} à {name} sur {vehicle}"
   }
 }

@@ -219,7 +219,17 @@
     "vehicleMeter_remove": "Contatore del veicolo rimosso",
     "vehicleMeter_replace": "Contatore del veicolo sostituito",
     "meterReading_markWrong": "Lettura del contatore segnata come errata",
-    "meterReading_restore": "Lettura del contatore di nuovo conteggiata"
+    "meterReading_restore": "Lettura del contatore di nuovo conteggiata",
+    "equipmentType_create": "Tipo di attrezzatura creato",
+    "equipmentType_update": "Tipo di attrezzatura aggiornato",
+    "equipmentType_reorder": "Tipi di attrezzatura riordinati",
+    "equipmentType_delete": "Tipo di attrezzatura eliminato",
+    "equipment_add": "Attrezzatura aggiunta",
+    "equipment_update": "Attrezzatura aggiornata",
+    "equipment_move": "Attrezzatura spostata",
+    "equipment_remove": "Attrezzatura smontata",
+    "equipment_refit": "Attrezzatura rimontata",
+    "equipment_delete": "Attrezzatura eliminata"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ha attivato l'accesso a due fattori",
@@ -397,6 +407,17 @@
     "vehicleMeter_remove": "Ha rimosso il contatore \"{name}\" da un veicolo",
     "vehicleMeter_replace": "Ha sostituito il contatore \"{name}\": il vecchio si è fermato a {oldEnd}, il nuovo è partito da {newStart}",
     "meterReading_markWrong": "Ha segnato la lettura {value} di {name} come errata",
-    "meterReading_restore": "Ha conteggiato di nuovo la lettura {value} di {name}"
+    "meterReading_restore": "Ha conteggiato di nuovo la lettura {value} di {name}",
+    "equipmentType_create": "Ha creato il tipo di attrezzatura \"{name}\"",
+    "equipmentType_update": "Ha aggiornato il tipo di attrezzatura \"{name}\"",
+    "equipmentType_reorder": "Ha riordinato i tipi di attrezzatura",
+    "equipmentType_delete": "Ha eliminato il tipo di attrezzatura \"{name}\"",
+    "equipment_add": "Ha aggiunto {name} a {vehicle}",
+    "equipment_update": "Ha aggiornato {name} su {vehicle}",
+    "equipment_move": "Ha spostato {name} da {from} a {vehicle}",
+    "equipment_remove": "Ha smontato {name} da {vehicle}",
+    "equipment_refit": "Ha rimontato {name} su {vehicle}",
+    "equipment_delete": "Ha eliminato {name} da {vehicle}",
+    "equipment_meter": "Ha aggiunto il contatore {meter} a {name} su {vehicle}"
   }
 }

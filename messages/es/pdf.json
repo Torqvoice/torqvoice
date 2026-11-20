@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Mejora",
     "serviceTypeInspection": "Inspección",
     "customFieldYes": "Sí",
-    "customFieldNo": "No"
+    "customFieldNo": "No",
+    "equipmentTitle": "Equipamiento",
+    "equipmentType": "Tipo",
+    "equipmentMake": "Marca",
+    "equipmentModel": "Modelo",
+    "equipmentManufactureYear": "Año",
+    "equipmentSerialNumber": "N.º de serie",
+    "equipmentInstallDate": "Instalado",
+    "equipmentRatedCapacity": "Cap. nominal",
+    "equipmentLastExamined": "Última inspección",
+    "equipmentNextExamination": "Próxima inspección",
+    "equipmentCertificateReference": "Certificado",
+    "equipmentMeters": "Lecturas",
+    "equipmentNotes": "Notas"
   },
   "workOrder": {
     "title": "ORDEN DE TRABAJO",

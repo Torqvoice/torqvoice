@@ -754,7 +754,8 @@
       "concerns": "Müşteri şikayetleri",
       "job_description": "İstenen iş",
       "work_checklist": "İş kontrol listesi",
-      "condition_map": "Araç durumu"
+      "condition_map": "Araç durumu",
+      "equipment": "Ekipman"
     },
     "fields": {
       "customer_name": "Müşteri adı",
@@ -820,7 +821,19 @@
       "legend": "Açıklama",
       "previous_marks": "Önceki işaretler",
       "blank_sheet": "Elle doldurulacak boş sayfa",
-      "meter_readings": "Sayaç okumaları"
+      "meter_readings": "Sayaç okumaları",
+      "equipment_type": "Tür",
+      "equipment_make": "Marka",
+      "equipment_model": "Model",
+      "equipment_manufacture_year": "Üretim yılı",
+      "equipment_serial_number": "Seri numarası",
+      "equipment_install_date": "Takıldığı tarih",
+      "equipment_rated_capacity": "Nominal kapasite",
+      "equipment_last_examined": "Son kontrol",
+      "equipment_next_examination": "Sonraki periyodik kontrol",
+      "equipment_certificate_reference": "Sertifika referansı",
+      "equipment_meters": "Sayaç okumaları",
+      "equipment_notes": "Notlar"
     },
     "presetsTitle": "Bir düzenle başlayın",
     "presetsHint": "Aşağıdaki düzeni değiştirir. Siz kaydetmeden hiçbir şey kaydedilmez.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Yalnızca yanlar",
     "conditionMapWidthHint": "Boş bırakılırsa satırı doldurur. Çizimi küçültmek için punto girin; hizalamaya göre yerleşir ve açıklama tam genişlikte kalır.",
     "conditionMapDense": "Sıkışık tablo",
-    "conditionMapDenseHint": "Çizimin altındaki tablonun satırlarını birbirine yaklaştırır, böylece sayfada daha az yer kaplar."
+    "conditionMapDenseHint": "Çizimin altındaki tablonun satırlarını birbirine yaklaştırır, böylece sayfada daha az yer kaplar.",
+    "equipmentList": "Hangi ekipman",
+    "equipmentListVehicle": "Araçta",
+    "equipmentListVehicleMarine": "Teknede",
+    "equipmentListJob": "Üzerinde çalışılan",
+    "equipmentListHint": "Araçta, şu anda araca takılı olan her şeyi listeler. Üzerinde çalışılan, yalnızca iş emrinin veya teklifin üzerinde çalıştığı kalemleri listeler. Aşağıdaki alanlar sütunları ve sıralarını belirler.",
+    "equipmentListHintMarine": "Teknede, şu anda tekneye takılı olan her şeyi listeler. Üzerinde çalışılan, yalnızca iş emrinin veya teklifin üzerinde çalıştığı kalemleri listeler. Aşağıdaki alanlar sütunları ve sıralarını belirler.",
+    "equipmentNoneHint": "Aracın ekipmanını burada yazdırmak için Ayarlar, Özel Alanlar altında ekipman türleri ekleyin.",
+    "equipmentNoneHintMarine": "Teknenin ekipmanını burada yazdırmak için Ayarlar, Özel Alanlar altında ekipman türleri ekleyin.",
+    "equipmentTitle": "Başlık",
+    "equipmentTitleHint": "Belgenin dilinde varsayılan başlığı yazdırmak için boş bırakın veya kendi başlığınızı yazın, örneğin \"Takılı ekipman bilgileri\"."
   },
   "preview": {
     "title": "Fren bakımı ve yağ değişimi",

@@ -8,6 +8,8 @@ import { getFeatures, isCloudMode } from '@/lib/features'
 import { CustomFieldsManager } from '@/features/custom-fields/Components/CustomFieldsManager'
 import { getMeterSuggestions, getMeterTypes } from '@/features/meters/Actions/meterTypeActions'
 import { MetersManager } from '@/features/meters/Components/MetersManager'
+import { getEquipmentTypes } from '@/features/equipment/Actions/equipmentTypeActions'
+import { EquipmentTypesManager } from '@/features/equipment/Components/EquipmentTypesManager'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 import { settingsPageTitle } from '@/lib/page-title'
@@ -26,16 +28,24 @@ export default async function CustomFieldsPage() {
 
   const locked = !features.customFields
 
-  const [result, invoiceLayoutResult, quoteLayoutResult, metersResult, suggestionsResult] =
-    await Promise.all([
-      getFieldDefinitions(),
-      getInvoiceLayoutConfig(),
-      getQuoteLayoutConfig(),
-      // The workshop's meters live here too: defining the first one is what
-      // turns meters on.
-      locked ? null : getMeterTypes(),
-      locked ? null : getMeterSuggestions(),
-    ])
+  const [
+    result,
+    invoiceLayoutResult,
+    quoteLayoutResult,
+    metersResult,
+    suggestionsResult,
+    equipmentResult,
+  ] = await Promise.all([
+    getFieldDefinitions(),
+    getInvoiceLayoutConfig(),
+    getQuoteLayoutConfig(),
+    // The workshop's meters live here too: defining the first one is what
+    // turns meters on.
+    locked ? null : getMeterTypes(),
+    locked ? null : getMeterSuggestions(),
+    // And the kinds of equipment: the first one turns equipment on.
+    locked ? null : getEquipmentTypes(),
+  ])
   const fields = result.success && result.data ? result.data : []
 
   const content = (
@@ -51,6 +61,11 @@ export default async function CustomFieldsPage() {
           suggestions={
             suggestionsResult?.success && suggestionsResult.data ? suggestionsResult.data : []
           }
+        />
+      )}
+      {!locked && (
+        <EquipmentTypesManager
+          types={equipmentResult?.success && equipmentResult.data ? equipmentResult.data : []}
         />
       )}
     </div>

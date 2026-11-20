@@ -1,5 +1,9 @@
 import 'server-only'
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import {
+  type EquipmentItemView,
+  vehicleEquipmentView,
+} from '@/features/equipment/Lib/equipment.server'
 import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { db } from '@/lib/db'
 import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
@@ -65,6 +69,7 @@ const MAX_CUSTOMER_VEHICLES = 40
 const MAX_CUSTOMER_JOBS = 60
 const MAX_MESSAGES = 40
 const MAX_FREE_TEXT = 400
+const MAX_EQUIPMENT_HISTORY = 30
 
 /** Lines are appended in order of usefulness until the budget runs out. */
 class Budget {
@@ -252,6 +257,27 @@ function jobDetail(job: JobRow, o: AskAiContextOptions, withVehicle: boolean): s
   return lines
 }
 
+/** One piece of equipment, with what it is and when it is next examined. */
+function equipmentLine(item: EquipmentItemView): string {
+  const meters = item.meters
+    .filter((m) => m.current !== null)
+    .map(
+      (m) => [`meter: ${m.name}`, `${m.current}${m.unit ? ` ${m.unit}` : ''}`] as [string, string]
+    )
+  return `- ${item.typeName} [${fields([
+    ['make', item.make],
+    ['model', item.model],
+    ['serial number', item.serialNumber],
+    ['manufactured', item.manufactureDay ?? item.manufactureYear],
+    ['installed', item.installDate],
+    ['rated capacity', item.ratedCapacity],
+    ['last examined', item.lastExaminedAt],
+    ['next examination due', item.nextExaminationDue],
+    ['certificate', item.certificateReference],
+    ...meters,
+  ])}]${item.notes ? ` notes: ${clip(item.notes, 200)}` : ''}`
+}
+
 async function vehicleContext(
   organizationId: string,
   vehicleId: string,
@@ -393,6 +419,24 @@ async function vehicleContext(
     )
   } else {
     b.add('owner: none recorded')
+  }
+
+  // Equipment fitted to the vehicle (a crane, a tail lift), for a workshop
+  // that records it; nothing is said about it otherwise.
+  const equipment = await vehicleEquipmentView(organizationId, vehicle.id)
+  if (equipment) {
+    b.section('Equipment fitted now', equipment.items.map(equipmentLine))
+    b.section(
+      'Equipment no longer on this vehicle, most recent first',
+      equipment.history.slice(0, MAX_EQUIPMENT_HISTORY).map(
+        (h) =>
+          `${equipmentLine(h.item)} (${fields([
+            ['fitted', dayOf(new Date(h.fittedAt), o.timeZone)],
+            [h.endReason === 'moved' ? 'moved' : 'removed', dayOf(new Date(h.endedAt), o.timeZone)],
+            ['moved to', h.movedTo?.name],
+          ])})`
+      )
+    )
   }
 
   const recent = vehicle.serviceRecords.slice(0, RECENT_JOBS_IN_DETAIL)

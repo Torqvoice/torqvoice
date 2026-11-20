@@ -240,7 +240,20 @@
     "serviceTypeUpgrade": "Upgrade",
     "serviceTypeInspection": "Inspection",
     "customFieldYes": "Yes",
-    "customFieldNo": "No"
+    "customFieldNo": "No",
+    "equipmentTitle": "Equipment",
+    "equipmentType": "Type",
+    "equipmentMake": "Make",
+    "equipmentModel": "Model",
+    "equipmentManufactureYear": "Year",
+    "equipmentSerialNumber": "Serial no.",
+    "equipmentInstallDate": "Installed",
+    "equipmentRatedCapacity": "Rated capacity",
+    "equipmentLastExamined": "Last examined",
+    "equipmentNextExamination": "Next examination",
+    "equipmentCertificateReference": "Certificate",
+    "equipmentMeters": "Meter readings",
+    "equipmentNotes": "Notes"
   },
   "workOrder": {
     "title": "WORK ORDER",

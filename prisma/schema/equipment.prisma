@@ -1,0 +1,124 @@
+/// A kind of equipment the workshop fits or services on vehicles: crane,
+/// tail lift, hook loader. The workshop's own list, in its own words and
+/// order. Nothing about equipment shows until it has one.
+model EquipmentType {
+  id        String   @id @default(cuid())
+  name      String
+  sortOrder Int      @default(0)
+  /// Hidden from new items and from every picker; its items are kept and still show.
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  /// A type with items cannot be deleted, only hidden: the items would go with it.
+  items EquipmentItem[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
+  @@map("equipment_types")
+}
+
+/// One piece of equipment fitted to a vehicle. It can be moved to another
+/// vehicle and keeps its meters, readings and jobs; taken off, it keeps a
+/// removed date and stays in the history.
+model EquipmentItem {
+  id                   String    @id @default(cuid())
+  make                 String?
+  model                String?
+  serialNumber         String?
+  /// The year it was made. Always set when anything about its manufacture is known.
+  manufactureYear      Int?
+  /// The full day it was made, when the plate gives one. Its year is `manufactureYear`.
+  manufactureDate      DateTime? @db.Date
+  installDate          DateTime? @db.Date
+  notes                String?
+  /// Free text with its unit: "8 t", "2,000 kg at 3 m".
+  ratedCapacity        String?
+  nextExaminationDue   DateTime? @db.Date
+  lastExaminedAt       DateTime? @db.Date
+  certificateReference String?
+  /// The examination report, an uploaded file (lib/files/manager.ts deletes it).
+  reportFileUrl        String?
+  reportFileName       String?
+  /// Taken off the vehicle. Still listed in its history.
+  removedAt            DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  typeId         String
+  type           EquipmentType @relation(fields: [typeId], references: [id], onDelete: Restrict)
+  /// The vehicle it is on now, or was last on when removed.
+  vehicleId      String
+  vehicle        Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  fittings EquipmentFitting[]
+  /// Its own meters: rows of the vehicle meters table owned by the item.
+  meters   VehicleMeter[]
+  jobs     ServiceRecordEquipment[]
+  quotes   QuoteEquipment[]
+
+  @@index([vehicleId])
+  @@index([organizationId, serialNumber])
+  @@map("equipment_items")
+}
+
+/// When an item was on a vehicle: written when it is added and when it is
+/// moved, closed when it leaves. Each vehicle's equipment history reads these.
+model EquipmentFitting {
+  id        String    @id @default(cuid())
+  fittedAt  DateTime  @default(now())
+  /// When it left this vehicle: moved to another or taken off.
+  endedAt   DateTime?
+  /// Why it left: "moved" or "removed".
+  endReason String?
+
+  itemId         String
+  item           EquipmentItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  vehicleId      String
+  vehicle        Vehicle       @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([itemId])
+  @@index([vehicleId])
+  @@index([organizationId])
+  @@map("equipment_fittings")
+}
+
+/// The items a work order works on ("Work on"): one visit often covers the
+/// crane and the tail lift.
+model ServiceRecordEquipment {
+  serviceRecordId String
+  serviceRecord   ServiceRecord @relation(fields: [serviceRecordId], references: [id], onDelete: Cascade)
+  itemId          String
+  item            EquipmentItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  organizationId  String
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt       DateTime      @default(now())
+
+  @@id([serviceRecordId, itemId])
+  @@index([itemId])
+  @@index([organizationId])
+  @@map("service_record_equipment")
+}
+
+/// The items a quote is for. Carried to the work order the quote becomes.
+model QuoteEquipment {
+  quoteId        String
+  quote          Quote         @relation(fields: [quoteId], references: [id], onDelete: Cascade)
+  itemId         String
+  item           EquipmentItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  organizationId String
+  organization   Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
+
+  @@id([quoteId, itemId])
+  @@index([itemId])
+  @@index([organizationId])
+  @@map("quote_equipment")
+}

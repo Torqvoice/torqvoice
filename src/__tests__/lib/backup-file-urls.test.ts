@@ -201,6 +201,7 @@ describe('the import route rewrites every restored file column', () => {
     'QuoteAttachment.fileUrl': /quoteAttachment[\s\S]{0,400}?fields: \['fileUrl'\]/,
     'TireSetAttachment.fileUrl': /fileUrl: rewriteFileUrl\(att\.fileUrl/,
     'Vehicle.imageUrl': /imageUrl: rewriteFileUrl\(v\.imageUrl/,
+    'EquipmentItem.reportFileUrl': /reportFileUrl: rewriteFileUrl\(item\.reportFileUrl/,
     'InventoryPart.imageUrl': /imageUrl: rewriteFileUrl\(p\.imageUrl/,
     'StoredImage.url': /storedImage[\s\S]{0,400}?fields: \['url'\]/,
     'InspectionItem.imageUrls': /imageUrls: \(\(item\.imageUrls[\s\S]{0,200}?rewriteFileUrl/,

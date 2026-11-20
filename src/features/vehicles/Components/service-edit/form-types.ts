@@ -1,3 +1,4 @@
+import type { JobEquipmentView } from '@/features/equipment/Lib/equipment.server'
 import type { TaxComponent } from '@/lib/tax'
 import type { JobMeterView } from '@/features/meters/Lib/meters.server'
 import type {
@@ -36,6 +37,8 @@ export interface InitialData {
   lastReading?: number | null
   /** The job's reading of each of the vehicle's meters; empty while meters are off. */
   meters?: JobMeterView[]
+  /** The vehicle's equipment and what the job works on; null while equipment is off. */
+  equipment?: JobEquipmentView | null
   serviceDate: string
   startDateTime?: string | null
   endDateTime?: string | null

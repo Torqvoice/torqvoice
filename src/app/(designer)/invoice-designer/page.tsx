@@ -1,6 +1,8 @@
 import { isRecordEntityType } from '@/features/custom-fields/Schema/customFieldSchema'
 import { MeterTypesProvider } from '@/components/meter-types-context'
 import { activeMeterTypes } from '@/features/meters/Lib/meters.server'
+import { EquipmentTypesProvider } from '@/components/equipment-types-context'
+import { equipmentTypes } from '@/features/equipment/Lib/equipmentGate.server'
 import { redirect } from 'next/navigation'
 import { defaultCertificateDesign } from '@/features/inspections/Lib/defaultCertificateDesign'
 
@@ -140,97 +142,106 @@ export default async function InvoiceDesignerPage({
   // The workshop's meters, so the vehicle block offers their readings and the
   // sample shows one per meter. None on a plan without custom fields.
   const meterTypes = await activeMeterTypes(data.organizationId)
+  // The workshop's kinds of equipment, so the designer offers the Equipment
+  // section and its sample lists two items. None on a plan without custom
+  // fields, and none for a workshop that has defined none. A hidden type
+  // still counts, as it does on paper: its items still print.
+  const equipmentTypeNames = (await equipmentTypes(data.organizationId))
+    .sort((a, b) => Number(b.isActive) - Number(a.isActive))
+    .map((type) => type.name)
 
   return (
     <MeterTypesProvider value={meterTypes}>
-      {announcementLive && <DismissOnArrival id={INVOICE_DESIGNER_ANNOUNCEMENT} />}
-      <InvoiceDesigner
-        initialDocumentType={
-          doc === 'quote'
-            ? 'quote'
-            : doc === 'certificate'
-              ? 'certificate'
-              : doc === 'work_order'
-                ? 'work_order'
-                : 'invoice'
-        }
-        initialView={view === 'designer' ? 'designer' : 'gallery'}
-        initialPresetId={preset}
-        initialDesignId={design}
-        initialActiveDesigns={{
-          invoice: settings['invoice.activeDesign'] || '',
-          quote: settings['quote.activeDesign'] || '',
-          certificate: settings['certificate.activeDesign'] || '',
-          work_order: settings['work_order.activeDesign'] || '',
-        }}
-        invoiceLayout={invoiceLayout.success ? invoiceLayout.data : undefined}
-        quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
-        certificateLayout={
-          // Never designed: the canvas starts from the design that prints, Regulatory.
-          certificateLayout.success && isDesignerLayout(certificateLayout.data)
-            ? certificateLayout.data
-            : { ...defaultCertificateDesign().layout, version: DESIGNER_LAYOUT_VERSION }
-        }
-        workOrderLayout={workOrderLayout.success ? workOrderLayout.data : undefined}
-        invoiceTemplate={templateFor('invoice')}
-        quoteTemplate={templateFor('quote')}
-        certificateTemplate={
-          certificateLayout.success && isDesignerLayout(certificateLayout.data)
-            ? templateFor('certificate')
-            : {
-                ...templateFor('certificate'),
-                primaryColor:
-                  settings['certificate.primaryColor'] ||
-                  defaultCertificateDesign().template.primaryColor,
-                fontFamily:
-                  settings['certificate.fontFamily'] ||
-                  defaultCertificateDesign().template.fontFamily,
-                headerStyle:
-                  settings['certificate.headerStyle'] ||
-                  defaultCertificateDesign().template.headerStyle,
-                textColor:
-                  settings['certificate.textColor'] ||
-                  defaultCertificateDesign().template.textColor ||
-                  '',
-              }
-        }
-        workOrderTemplate={templateFor('work_order')}
-        initialSavedDesigns={savedDesigns}
-        telegramBotLink={telegramBotUsername ? botLinkOf(telegramBotUsername) : undefined}
-        workshop={{
-          name: organization?.name || '',
-          address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] || '',
-          phone: settings[SETTING_KEYS.WORKSHOP_PHONE] || '',
-          email: settings[SETTING_KEYS.WORKSHOP_EMAIL] || '',
-          slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] || '',
-          orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] || '',
-          orgNumberLabel: settings[SETTING_KEYS.ORG_NUMBER_LABEL] || '',
-          paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
-          logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
-          // Unset prints miles, as the invoices themselves do.
-          unitSystem: settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'metric' : 'imperial',
-          signatureUrl,
-          taxComponents: readWorkshopTax(settings).components,
-        }}
-        customFields={
-          customFieldsResult.success && customFieldsResult.data
-            ? customFieldsResult.data
-                // The job's own fields, and the vehicle's and the customer's,
-                // which print only where a design places them.
-                .filter(
-                  (f) => f.entityType === 'service_record' || isRecordEntityType(f.entityType)
-                )
-                .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
-            : []
-        }
-        quoteCustomFields={
-          customFieldsResult.success && customFieldsResult.data
-            ? customFieldsResult.data
-                .filter((f) => f.entityType === 'quote' || isRecordEntityType(f.entityType))
-                .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
-            : []
-        }
-      />
+      <EquipmentTypesProvider value={equipmentTypeNames}>
+        {announcementLive && <DismissOnArrival id={INVOICE_DESIGNER_ANNOUNCEMENT} />}
+        <InvoiceDesigner
+          initialDocumentType={
+            doc === 'quote'
+              ? 'quote'
+              : doc === 'certificate'
+                ? 'certificate'
+                : doc === 'work_order'
+                  ? 'work_order'
+                  : 'invoice'
+          }
+          initialView={view === 'designer' ? 'designer' : 'gallery'}
+          initialPresetId={preset}
+          initialDesignId={design}
+          initialActiveDesigns={{
+            invoice: settings['invoice.activeDesign'] || '',
+            quote: settings['quote.activeDesign'] || '',
+            certificate: settings['certificate.activeDesign'] || '',
+            work_order: settings['work_order.activeDesign'] || '',
+          }}
+          invoiceLayout={invoiceLayout.success ? invoiceLayout.data : undefined}
+          quoteLayout={quoteLayout.success ? quoteLayout.data : undefined}
+          certificateLayout={
+            // Never designed: the canvas starts from the design that prints, Regulatory.
+            certificateLayout.success && isDesignerLayout(certificateLayout.data)
+              ? certificateLayout.data
+              : { ...defaultCertificateDesign().layout, version: DESIGNER_LAYOUT_VERSION }
+          }
+          workOrderLayout={workOrderLayout.success ? workOrderLayout.data : undefined}
+          invoiceTemplate={templateFor('invoice')}
+          quoteTemplate={templateFor('quote')}
+          certificateTemplate={
+            certificateLayout.success && isDesignerLayout(certificateLayout.data)
+              ? templateFor('certificate')
+              : {
+                  ...templateFor('certificate'),
+                  primaryColor:
+                    settings['certificate.primaryColor'] ||
+                    defaultCertificateDesign().template.primaryColor,
+                  fontFamily:
+                    settings['certificate.fontFamily'] ||
+                    defaultCertificateDesign().template.fontFamily,
+                  headerStyle:
+                    settings['certificate.headerStyle'] ||
+                    defaultCertificateDesign().template.headerStyle,
+                  textColor:
+                    settings['certificate.textColor'] ||
+                    defaultCertificateDesign().template.textColor ||
+                    '',
+                }
+          }
+          workOrderTemplate={templateFor('work_order')}
+          initialSavedDesigns={savedDesigns}
+          telegramBotLink={telegramBotUsername ? botLinkOf(telegramBotUsername) : undefined}
+          workshop={{
+            name: organization?.name || '',
+            address: settings[SETTING_KEYS.WORKSHOP_ADDRESS] || '',
+            phone: settings[SETTING_KEYS.WORKSHOP_PHONE] || '',
+            email: settings[SETTING_KEYS.WORKSHOP_EMAIL] || '',
+            slogan: settings[SETTING_KEYS.WORKSHOP_SLOGAN] || '',
+            orgNumber: settings[SETTING_KEYS.INVOICE_ORG_NUMBER] || '',
+            orgNumberLabel: settings[SETTING_KEYS.ORG_NUMBER_LABEL] || '',
+            paymentTerms: settings[SETTING_KEYS.INVOICE_PAYMENT_TERMS] || '',
+            logoUrl: settings[SETTING_KEYS.COMPANY_LOGO] || '',
+            // Unset prints miles, as the invoices themselves do.
+            unitSystem: settings[SETTING_KEYS.UNIT_SYSTEM] === 'metric' ? 'metric' : 'imperial',
+            signatureUrl,
+            taxComponents: readWorkshopTax(settings).components,
+          }}
+          customFields={
+            customFieldsResult.success && customFieldsResult.data
+              ? customFieldsResult.data
+                  // The job's own fields, and the vehicle's and the customer's,
+                  // which print only where a design places them.
+                  .filter(
+                    (f) => f.entityType === 'service_record' || isRecordEntityType(f.entityType)
+                  )
+                  .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
+              : []
+          }
+          quoteCustomFields={
+            customFieldsResult.success && customFieldsResult.data
+              ? customFieldsResult.data
+                  .filter((f) => f.entityType === 'quote' || isRecordEntityType(f.entityType))
+                  .map((f) => ({ id: f.id, label: f.label, name: f.name, isActive: f.isActive }))
+              : []
+          }
+        />
+      </EquipmentTypesProvider>
     </MeterTypesProvider>
   )
 }

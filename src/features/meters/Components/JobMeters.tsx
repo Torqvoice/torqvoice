@@ -110,8 +110,17 @@ function JobMeterField({
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-2">
-        <Label htmlFor={id} className={labelClassName}>
+        <Label
+          htmlFor={id}
+          className={cn(labelClassName, meter.item && 'flex-col items-start gap-0')}
+        >
           {meter.name}
+          {/* A meter of a piece of equipment the job works on: which one. */}
+          {meter.item && (
+            <span className="line-clamp-2 max-w-44 text-[11px] font-normal normal-case tracking-normal text-muted-foreground">
+              {meter.item.label}
+            </span>
+          )}
         </Label>
         <div className="flex items-center gap-1.5">
           <Input

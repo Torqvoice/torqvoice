@@ -32,6 +32,7 @@ import { useDateSettings } from '@/components/date-settings-context'
 import { useServiceType } from '@/components/service-type-context'
 import { zonedDayKey } from '@/lib/timezone'
 import { cn } from '@/lib/utils'
+import { addEquipmentMeter } from '@/features/equipment/Actions/equipmentItemActions'
 import {
   addMeterReading,
   addVehicleMeter,
@@ -82,11 +83,17 @@ type Dialogs =
  */
 export function VehicleMeters({
   vehicleId,
+  equipmentItemId,
   types,
   meters,
   className,
 }: {
   vehicleId: string
+  /**
+   * For the meters of a piece of equipment on the vehicle rather than the
+   * vehicle's own: they are fitted to the item and go with it.
+   */
+  equipmentItemId?: string
   /** The workshop's meters in use; empty means meters are off. */
   types: MeterTypeView[]
   meters: VehicleMeterView[]
@@ -103,9 +110,16 @@ export function VehicleMeters({
   const available = types.filter((type) => !fitted.has(type.id))
 
   return (
-    <div className={cn('space-y-2', className)} data-testid="vehicle-meters">
+    <div
+      className={cn('space-y-2', className)}
+      data-testid={equipmentItemId ? 'equipment-meters' : 'vehicle-meters'}
+    >
       <div className="flex items-center justify-between gap-2">
-        <h2 className="text-[13px] font-semibold">{t('title')}</h2>
+        {equipmentItemId ? (
+          <h3 className="text-xs font-medium text-muted-foreground">{t('itemTitle')}</h3>
+        ) : (
+          <h2 className="text-[13px] font-semibold">{t('title')}</h2>
+        )}
         {available.length > 0 && (
           <Button
             type="button"
@@ -122,7 +136,7 @@ export function VehicleMeters({
 
       {meters.length === 0 ? (
         <p className="text-xs text-muted-foreground">
-          {t(isMarine ? 'noMetersMarine' : 'noMeters')}
+          {equipmentItemId ? t('noItemMeters') : t(isMarine ? 'noMetersMarine' : 'noMeters')}
         </p>
       ) : (
         <ul className="space-y-1">
@@ -184,6 +198,7 @@ export function VehicleMeters({
         open={dialog?.kind === 'add'}
         onClose={() => setDialog(null)}
         vehicleId={vehicleId}
+        equipmentItemId={equipmentItemId}
         types={available}
       />
       {dialog?.kind === 'reading' && (
@@ -271,11 +286,13 @@ function AddMeterDialog({
   open,
   onClose,
   vehicleId,
+  equipmentItemId,
   types,
 }: {
   open: boolean
   onClose: () => void
   vehicleId: string
+  equipmentItemId?: string
   types: MeterTypeView[]
 }) {
   const t = useTranslations('vehicles.meters')
@@ -303,12 +320,14 @@ function AddMeterDialog({
       return
     }
     setSaving(true)
-    const result = await addVehicleMeter({
-      vehicleId,
+    const fields = {
       meterTypeId: chosen.id,
       value: value.trim() || undefined,
       readOn: day || today(),
-    })
+    }
+    const result = equipmentItemId
+      ? await addEquipmentMeter({ equipmentItemId, ...fields })
+      : await addVehicleMeter({ vehicleId, ...fields })
     setSaving(false)
     if (!result.success) {
       toast.error(result.error || t('saveError'))
@@ -325,7 +344,9 @@ function AddMeterDialog({
         <DialogHeader>
           <DialogTitle>{t('addMeterTitle')}</DialogTitle>
           <DialogDescription>
-            {t(isMarine ? 'addMeterHintMarine' : 'addMeterHint')}
+            {equipmentItemId
+              ? t('addItemMeterHint')
+              : t(isMarine ? 'addMeterHintMarine' : 'addMeterHint')}
           </DialogDescription>
         </DialogHeader>
         <DialogBody className="space-y-4">

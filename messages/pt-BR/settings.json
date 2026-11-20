@@ -754,7 +754,8 @@
       "concerns": "Reclamações do cliente",
       "job_description": "Serviço solicitado",
       "work_checklist": "Lista de serviços",
-      "condition_map": "Estado do veículo"
+      "condition_map": "Estado do veículo",
+      "equipment": "Equipamentos"
     },
     "fields": {
       "customer_name": "Nome do cliente",
@@ -820,7 +821,19 @@
       "legend": "Legenda",
       "previous_marks": "Marcas anteriores",
       "blank_sheet": "Folha em branco para preencher à mão",
-      "meter_readings": "Leituras de medidores"
+      "meter_readings": "Leituras de medidores",
+      "equipment_type": "Tipo",
+      "equipment_make": "Marca",
+      "equipment_model": "Modelo",
+      "equipment_manufacture_year": "Ano de fabricação",
+      "equipment_serial_number": "Número de série",
+      "equipment_install_date": "Instalado em",
+      "equipment_rated_capacity": "Capacidade nominal",
+      "equipment_last_examined": "Última inspeção",
+      "equipment_next_examination": "Próxima inspeção prevista",
+      "equipment_certificate_reference": "Referência do certificado",
+      "equipment_meters": "Leituras de medidores",
+      "equipment_notes": "Observações"
     },
     "presetsTitle": "Começar por uma disposição",
     "presetsHint": "Substitui a disposição abaixo. Nada é salvo até você salvar.",
@@ -2652,7 +2665,17 @@
     "conditionMapViewsSides": "Só as laterais",
     "conditionMapWidthHint": "Vazio ocupa a linha toda. Informe pontos para reduzir o desenho; ele fica onde o alinhamento colocar e a legenda mantém a largura total.",
     "conditionMapDense": "Tabela compacta",
-    "conditionMapDenseHint": "Aproxima as linhas da tabela abaixo do desenho, para que ela ocupe menos espaço na página."
+    "conditionMapDenseHint": "Aproxima as linhas da tabela abaixo do desenho, para que ela ocupe menos espaço na página.",
+    "equipmentList": "Quais equipamentos",
+    "equipmentListVehicle": "No veículo",
+    "equipmentListVehicleMarine": "Na embarcação",
+    "equipmentListJob": "Trabalhados",
+    "equipmentListHint": "No veículo lista tudo o que está instalado nele agora. Trabalhados lista só os itens em que a ordem de serviço ou o orçamento trabalha. Os campos abaixo escolhem as colunas e a ordem delas.",
+    "equipmentListHintMarine": "Na embarcação lista tudo o que está instalado nela agora. Trabalhados lista só os itens em que a ordem de serviço ou o orçamento trabalha. Os campos abaixo escolhem as colunas e a ordem delas.",
+    "equipmentNoneHint": "Adicione tipos de equipamento em Configurações, Campos personalizados para imprimir aqui os equipamentos do veículo.",
+    "equipmentNoneHintMarine": "Adicione tipos de equipamento em Configurações, Campos personalizados para imprimir aqui os equipamentos da embarcação.",
+    "equipmentTitle": "Título",
+    "equipmentTitleHint": "Deixe vazio para imprimir o título padrão no idioma do documento, ou escreva o seu, por exemplo \"Detalhes dos equipamentos instalados\"."
   },
   "preview": {
     "title": "Serviço de freios e troca de óleo",

@@ -20,6 +20,7 @@
  */
 
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { NO_EQUIPMENT, printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { findingLine } from '@/features/fault-codes/Lib/codes'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'fs/promises'
@@ -62,6 +63,7 @@ import {
   readIssuedInvoiceData,
   rendersFromIssue,
   thawConditionMap,
+  thawEquipment,
   thawInspectionResults,
   type InvoiceConditionMap,
   type IssuedInvoiceData,
@@ -505,6 +507,12 @@ async function assembleLive(
         vehicleId: record.vehicleId,
       })
     : []
+  // What is fitted to the vehicle, both the items this job works on and
+  // everything on it, for a workshop that records equipment; a design
+  // prints one list only where it places the Equipment section.
+  const equipment = record.vehicle
+    ? await printableEquipment(organizationId, { jobId: record.id, vehicleId: record.vehicleId })
+    : NO_EQUIPMENT
 
   const data: InvoiceData = {
     ...record,
@@ -522,6 +530,7 @@ async function assembleLive(
     customFields,
     recordCustomFields,
     findings,
+    equipment,
   }
 
   return {
@@ -618,6 +627,9 @@ async function assembleFrozen(
     // invoice issued before they could be printed.
     recordCustomFields: frozen.recordCustomFields ?? [],
     findings: (frozen.findings ?? []).map((f) => ({ ...f, notes: f.notes ?? null })),
+    // The equipment it was issued with: none for one issued before equipment
+    // was recorded, never today's.
+    equipment: thawEquipment(frozen.equipment),
   }
 
   // The inspection's checks as they were when issued. An invoice issued

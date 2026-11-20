@@ -1,6 +1,8 @@
 'use client'
 
 import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
+import { VehicleEquipment } from '@/features/equipment/Components/VehicleEquipment'
+import type { VehicleEquipmentView } from '@/features/equipment/Lib/equipment.server'
 import type { MeterTypeView, VehicleMeterView } from '@/features/meters/Lib/meters.server'
 import {
   type RecordCustomField,
@@ -294,6 +296,8 @@ export function VehicleDetailClassic({
   tireSets = [],
   meterTypes = [],
   vehicleMeters = [],
+  equipment = null,
+  today = '',
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
@@ -304,6 +308,10 @@ export function VehicleDetailClassic({
   /** The workshop's meters in use (empty while meters are off) and this vehicle's. */
   meterTypes?: MeterTypeView[]
   vehicleMeters?: VehicleMeterView[]
+  /** The vehicle's equipment; null while equipment is off. */
+  equipment?: VehicleEquipmentView | null
+  /** Today on the workshop's calendar. */
+  today?: string
   serviceSearch: string
   serviceRecordType: string
   currencyCode?: string
@@ -1294,6 +1302,15 @@ export function VehicleDetailClassic({
         <Card className="py-0">
           <CardContent className="p-4">
             <VehicleMeters vehicleId={vehicle.id} types={meterTypes} meters={vehicleMeters} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* The equipment fitted to it: crane, tail lift and the like. */}
+      {equipment && (
+        <Card className="py-0">
+          <CardContent className="p-4">
+            <VehicleEquipment vehicleId={vehicle.id} equipment={equipment} today={today} />
           </CardContent>
         </Card>
       )}

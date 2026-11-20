@@ -75,6 +75,8 @@ type Vehicle = {
   tsn?: string | null
   /** Only sent by a workshop that uses the fleet number. */
   fleetNumber?: string | null
+  /** The equipment a serial number search matched; only sent while equipment is on. */
+  equipment?: string[]
 }
 
 interface SearchResult {
@@ -1026,6 +1028,7 @@ export function SearchCommand({
                   [
                     v.fleetNumber,
                     typeKeyEnabled && (v.hsn || v.tsn) ? formatTypeKey(v.hsn, v.tsn) : null,
+                    ...(v.equipment ?? []),
                   ]
                     .filter(Boolean)
                     .join(' · ') || undefined

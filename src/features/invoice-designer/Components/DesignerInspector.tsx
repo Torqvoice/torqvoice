@@ -1,6 +1,8 @@
 'use client'
 
+import { useServiceType } from '@/components/service-type-context'
 import { useMeterTypes } from '@/components/meter-types-context'
+import { useEquipmentTypes } from '@/components/equipment-types-context'
 import { useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
@@ -17,6 +19,7 @@ import type {
 import {
   BOXED_ELIGIBLE_SECTIONS,
   COLUMN_ELIGIBLE_SECTIONS,
+  equipmentScopeOf,
   fieldHasFixedSlot,
   FOOTER_SPECIAL_FIELD_IDS,
   SECTIONS_WITH_FIELDS,
@@ -37,7 +40,13 @@ import { RAIL_FOCUS, railArrow } from './railKeys'
 import type { DesignerTemplate } from './types'
 
 /** Sections whose body is a table, and so offer line controls. */
-const TABLE_SECTIONS = new Set(['items_table', 'parts_table', 'labor_table', 'findings'])
+const TABLE_SECTIONS = new Set([
+  'items_table',
+  'parts_table',
+  'labor_table',
+  'findings',
+  'equipment',
+])
 
 /**
  * Tables of lines that can be divided by the parts' category. The labor table
@@ -58,6 +67,7 @@ const HEADED_SECTIONS = new Set([
   'parts_table',
   'labor_table',
   'findings',
+  'equipment',
 ])
 
 const SWATCHES = [
@@ -353,6 +363,7 @@ export function DesignerInspector({
   sloganSet,
   paymentTermsSet,
   documentTitleDefault,
+  equipmentTitleDefault,
   orgNumberLabel,
   orgNumberLabelDefault,
   onOrgNumberLabel,
@@ -381,6 +392,8 @@ export function DesignerInspector({
   paymentTermsSet: boolean
   /** What the title strip prints when the workshop has not renamed it. */
   documentTitleDefault: string
+  /** What the Equipment section is headed when the workshop has not worded it. */
+  equipmentTitleDefault: string
   /** What the organisation number is called on paper, empty for the default. */
   orgNumberLabel: string
   /** The default caption in the reader's language, shown as the placeholder. */
@@ -392,10 +405,17 @@ export function DesignerInspector({
   signatureSet: boolean
 }) {
   const t = useTranslations('settings.designer')
+  const isMarine = useServiceType() === 'marine'
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tField = useTranslations('settings.layoutEditor.fields')
   /** A field's name, whether it is one of ours or one the workshop defined. */
-  const fieldName = (fieldId: string) => {
+  const fieldName = (fieldId: string, sectionId?: string) => {
+    // The Equipment section's fields are its columns, named on their own so
+    // "Type" or "Notes" there cannot be mistaken for another section's line.
+    if (sectionId === 'equipment') {
+      const key = `equipment_${fieldId}`
+      return tField.has(key) ? tField(key) : (getBuiltinFieldName(fieldId) ?? fieldId)
+    }
     if (!isCustomFieldId(fieldId)) {
       return tField.has(fieldId) ? tField(fieldId) : (getBuiltinFieldName(fieldId) ?? fieldId)
     }
@@ -427,6 +447,7 @@ export function DesignerInspector({
   const customerReferenceEnabled = useCustomerReferenceEnabled()
   const fleetNumberEnabled = useFleetNumberEnabled()
   const metersDefined = useMeterTypes().length > 0
+  const equipmentDefined = useEquipmentTypes().length > 0
   /** The field row being dragged to a new spot in the list, if any. */
   const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
@@ -473,7 +494,9 @@ export function DesignerInspector({
     // values bold by design, and the letterhead's built-in lines are display
     // typography of their own.
     const boldable = (id: string) =>
-      section.id !== 'bank_account' && (section.id !== 'header' || isCustomFieldId(id))
+      section.id !== 'bank_account' &&
+      section.id !== 'equipment' &&
+      (section.id !== 'header' || isCustomFieldId(id))
     // Until the workshop chooses weights, the automatic leads show as bold:
     // a panel's first line, a footer column's head. One choice anywhere in
     // the section hands the whole section over to the choices.
@@ -524,7 +547,9 @@ export function DesignerInspector({
         (typeKeyEnabled || field.id !== 'hsn_tsn') &&
         (referenceOffered || field.id !== 'customer_reference') &&
         (fleetNumberOffered || field.id !== 'fleet_number') &&
-        (metersOffered || field.id !== 'meter_readings')
+        (metersOffered || field.id !== 'meter_readings') &&
+        // An equipment item's meters, for a workshop that has defined a meter.
+        (metersDefined || section.id !== 'equipment' || field.id !== 'meters')
     )
     /**
      * The keyboard's reorder: past the next row up or down that can move, as
@@ -584,6 +609,31 @@ export function DesignerInspector({
                 onChange={(variant) => onSection(section.id, { variant })}
               />
               <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('variant.hint')}</p>
+            </Group>
+          )}
+
+          {/* Which equipment the table lists. The vehicle's is the default:
+              the attached equipment a fleet's paperwork asks for. */}
+          {section.id === 'equipment' && (
+            <Group title={t('equipmentList')}>
+              <Choice
+                value={equipmentScopeOf(section)}
+                options={[
+                  {
+                    value: 'vehicle',
+                    label: t(isMarine ? 'equipmentListVehicleMarine' : 'equipmentListVehicle'),
+                  },
+                  { value: 'job', label: t('equipmentListJob') },
+                ]}
+                onChange={(scope) =>
+                  onSection(section.id, { scope: scope === 'job' ? 'job' : undefined })
+                }
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {equipmentDefined
+                  ? t(isMarine ? 'equipmentListHintMarine' : 'equipmentListHint')
+                  : t(isMarine ? 'equipmentNoneHintMarine' : 'equipmentNoneHint')}
+              </p>
             </Group>
           )}
 
@@ -845,6 +895,23 @@ export function DesignerInspector({
             </Group>
           )}
 
+          {/* The table's heading is the workshop's to word, the way a fleet's
+              paperwork may call it "Attached equipment details". */}
+          {section.id === 'equipment' && (
+            <Group title={t('equipmentTitle')}>
+              <input
+                type="text"
+                data-testid="section-equipment-title"
+                maxLength={60}
+                value={section.text ?? ''}
+                placeholder={equipmentTitleDefault}
+                onChange={(e) => onSection(section.id, { text: e.target.value || undefined })}
+                className="h-7 w-full rounded-md border border-[#e3e5e9] px-2 text-[12px]"
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">{t('equipmentTitleHint')}</p>
+            </Group>
+          )}
+
           {/* The slogan is the workshop's own words, kept in company settings
               rather than here, because it is the same line wherever it is
               printed. When there is none the canvas shows a stand-in so the
@@ -1049,7 +1116,9 @@ export function DesignerInspector({
                   ) : (
                     <button
                       type="button"
-                      aria-label={t('fieldDragHandleKeyboard', { field: fieldName(field.id) })}
+                      aria-label={t('fieldDragHandleKeyboard', {
+                        field: fieldName(field.id, section.id),
+                      })}
                       title={t('fieldDragHandle')}
                       onKeyDown={(e) => {
                         const direction = railArrow(e, false)
@@ -1064,7 +1133,7 @@ export function DesignerInspector({
                     </button>
                   )}
                   <span className="min-w-0 flex-1 truncate text-[13px] font-medium">
-                    {fieldName(field.id)}
+                    {fieldName(field.id, section.id)}
                   </span>
                   {boldable(field.id) &&
                     (() => {

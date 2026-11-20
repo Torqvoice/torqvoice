@@ -29,6 +29,13 @@
  *   and the last one before it; empty when the workshop records none.
  *   `/jobs/:id/meters` reads them and takes readings (PUT), decimals allowed;
  *   a reading below the last one is kept and reported, never refused.
+ * - `vehicle-equipment`: a job carries `equipment`, null while the workshop
+ *   records none, else `{ items, workOn }`: the pieces of equipment on the
+ *   job's vehicle (a crane, a tail lift) with id, label, type, make, model,
+ *   serialNumber and removed, and the ids of the ones the job works on.
+ *   `/jobs/:id/equipment` reads it and sets what the job works on (PUT
+ *   `{ itemIds }`). The meters of those items come in `meters` with their
+ *   `item` ({ id, label }) and take readings through `/jobs/:id/meters`.
  */
 export const TECH_API_FEATURES = [
   'job-video',
@@ -37,4 +44,5 @@ export const TECH_API_FEATURES = [
   'job-reference',
   'vehicle-fleet-number',
   'vehicle-meters',
+  'vehicle-equipment',
 ] as const
