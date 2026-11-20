@@ -189,6 +189,11 @@ export function JobFactsCard({
   // The picker can point the job at another vehicle before the save; the facts
   // on this card describe the saved one, so say which is which while they differ.
   const vehicleChanged = Boolean(vehicle && selectedVehicleId && selectedVehicleId !== vehicle.id)
+  // With "Work on" or meter rows under the mileage, the labels share one
+  // width so the fields line up. Without them the mileage row is as it was.
+  const extraRows =
+    !vehicleChanged && (Boolean(initialData.equipment) || (initialData.meters?.length ?? 0) > 0)
+  const rowLabel = extraRows ? cn(factLabel, 'w-28 shrink-0') : factLabel
   // A reading typed on this visit, on the vehicle the last reading was read
   // for: far above it is a question to answer before it is saved; below it
   // is a quiet notice.
@@ -395,7 +400,7 @@ export function JobFactsCard({
             {selectedVehicleId && (
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="mileage" className={factLabel}>
+                  <Label htmlFor="mileage" className={rowLabel}>
                     {serviceType === 'marine'
                       ? t('basicInfo.mileageMarine')
                       : t('basicInfo.mileage')}
@@ -441,7 +446,7 @@ export function JobFactsCard({
                     target={{ kind: 'job', id: initialData.id }}
                     equipment={initialData.equipment}
                     locked={locked}
-                    labelClassName={factLabel}
+                    labelClassName={rowLabel}
                   />
                 )}
                 {/* The vehicle's other meters, read on this job. Only on the
@@ -451,7 +456,7 @@ export function JobFactsCard({
                     jobId={initialData.id}
                     meters={initialData.meters ?? []}
                     locked={locked}
-                    labelClassName={factLabel}
+                    labelClassName={rowLabel}
                   />
                 )}
               </div>
