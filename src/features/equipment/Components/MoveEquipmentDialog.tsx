@@ -41,8 +41,14 @@ export function MoveEquipmentDialog({
   const save = async () => {
     if (!vehicleId) return
     setSaving(true)
-    const result = await moveEquipmentItem({ id: item.id, vehicleId })
-    setSaving(false)
+    let result: Awaited<ReturnType<typeof moveEquipmentItem>>
+    try {
+      result = await moveEquipmentItem({ id: item.id, vehicleId })
+    } catch {
+      result = { success: false }
+    } finally {
+      setSaving(false)
+    }
     if (!result.success) {
       toast.error(result.error || t('saveError'))
       return
@@ -68,6 +74,8 @@ export function MoveEquipmentDialog({
             allowNone={false}
             excludeId={item.vehicleId}
             emptyLabel={t(isMarine ? 'noVehiclesMarine' : 'noVehicles')}
+            // Locked while it moves: another pick then would not be where it goes.
+            disabled={saving}
           />
         </DialogBody>
         <DialogFooter>

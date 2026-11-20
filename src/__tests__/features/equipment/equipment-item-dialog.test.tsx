@@ -64,3 +64,40 @@ describe('the Manufactured field', () => {
     )
   })
 })
+
+describe('the dialog while a save is under way', () => {
+  const fields = () => [
+    screen.getByLabelText('Type'),
+    screen.getByLabelText('Make'),
+    screen.getByLabelText('Model'),
+    screen.getByLabelText('Serial number'),
+    screen.getByLabelText('Manufactured'),
+    screen.getByLabelText('Installed'),
+    screen.getByLabelText('Notes'),
+  ]
+
+  it('takes no typing until the save is over, and takes it again once it has failed', async () => {
+    let finish: (value: { success: boolean; error?: string }) => void = () => undefined
+    actions.addEquipmentItem.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve as typeof finish
+        })
+    )
+    const onClose = renderDialog()
+    fireEvent.change(screen.getByLabelText('Make'), { target: { value: 'HIAB' } })
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    })
+
+    for (const field of fields()) expect(field).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Attach report' })).toBeDisabled()
+
+    await act(async () => {
+      finish({ success: false, error: 'offline' })
+    })
+    expect(onClose).not.toHaveBeenCalled()
+    for (const field of fields()) expect(field).toBeEnabled()
+    expect(screen.getByLabelText('Make')).toHaveValue('HIAB')
+  })
+})
