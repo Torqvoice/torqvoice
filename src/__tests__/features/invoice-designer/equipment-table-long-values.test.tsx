@@ -98,6 +98,22 @@ describe('a long value in the equipment table', () => {
     for (const piece of model) expect(piece.right).toBeLessThanOrEqual((year?.x ?? 0) - 5)
   })
 
+  it('wraps a heading too long for its narrow column inside that column', async () => {
+    const node = table({ columnGap: 6, breakLongWords: true }) as Extract<Node, { kind: 'table' }>
+    const items = await textOnPage({
+      ...node,
+      columns: node.columns.map((c) => (c.key === 'year' ? { ...c, label: 'Produksjonsår' } : c)),
+    })
+    const serialHead = items.find((item) => item.str === 'Serial no.')
+    const yearHead = items.filter(
+      (item) => /^[A-Za-zå]+$/.test(item.str) && 'Produksjonsår'.includes(item.str)
+    )
+    expect(serialHead).toBeDefined()
+    expect(yearHead.length).toBeGreaterThan(0)
+    for (const piece of yearHead)
+      expect(piece.right).toBeLessThanOrEqual((serialHead?.x ?? 0) + 0.5)
+  })
+
   it('ran off the page before, which is what the test above guards against', async () => {
     const items = await textOnPage(table({}))
     expect(Math.max(...items.map((item) => item.right))).toBeGreaterThan(PAGE_WIDTH - MARGIN)
