@@ -262,7 +262,7 @@ export function CustomFieldsManager({
     filterEntity === 'all' ? fields : fields.filter((f) => f.entityType === filterEntity)
 
   return (
-    <div className="space-y-4">
+    <div className="scroll-mt-20 space-y-4" id="custom-fields">
       {/* Five kinds of record now: the tabs wrap on a phone and the button
           stays in view instead of being pushed off the edge. */}
       <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">

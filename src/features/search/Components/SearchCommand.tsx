@@ -1,5 +1,7 @@
 'use client'
 
+import { useOpenHeavyVehicleSetup } from '@/features/setup/Components/HeavyVehicleSetupCard'
+
 import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
@@ -16,6 +18,8 @@ import {
   Plug,
   Keyboard,
   ScanLine,
+  Ship,
+  Truck,
   Search,
   Users,
   Wrench,
@@ -375,6 +379,12 @@ export function SearchCommand({
 }: SearchCommandProps) {
   const go = useGuardedPush()
   const t = useTranslations('search')
+  const tSetup = useTranslations('setup.heavyVehicles')
+  // The fleet and heavy vehicle checklist, opened from here on request; a plan
+  // without custom fields gets the upgrade dialog instead.
+  const openHeavySetup = useOpenHeavyVehicleSetup()
+  const openHeavySetupRef = useRef(openHeavySetup)
+  openHeavySetupRef.current = openHeavySetup
   const tNav = useTranslations('navigation.sidebar')
   const tSettings = useTranslations('settings')
   const tIntegrations = useTranslations('integrations')
@@ -482,6 +492,32 @@ export function SearchCommand({
     }
 
     if (canSettings) {
+      const title = tSetup(isMarine ? 'commandMarine' : 'command')
+      out.push({
+        item: {
+          kind: 'action',
+          id: 'action:heavy-vehicle-setup',
+          href: '#',
+          title,
+          icon: isMarine ? Ship : Truck,
+          run: () => void openHeavySetupRef.current(),
+        },
+        prepared: prepareItem({
+          title,
+          keywords: [
+            'fleet',
+            'heavy vehicle',
+            'truck',
+            'lorry',
+            'hgv',
+            'equipment',
+            'meters',
+            'engine hours',
+            'purchase order',
+            'setup',
+          ],
+        }),
+      })
       for (const { item, prepared } of settingsItems) {
         const subtitle = item.description
           ? `${item.breadcrumb} · ${item.description}`
@@ -536,6 +572,7 @@ export function SearchCommand({
     tIntegrations,
     tPlate,
     tShortcuts,
+    tSetup,
     openShortcutsHelp,
   ])
 

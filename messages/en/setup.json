@@ -1,0 +1,32 @@
+{
+  "heavyVehicles": {
+    "command": "Set up for fleets and heavy vehicles",
+    "commandMarine": "Set up for fleets and commercial vessels",
+    "title": "Set up for fleets and heavy vehicles",
+    "titleMarine": "Set up for fleets and commercial vessels",
+    "intro": "Five optional parts a fleet or heavy vehicle workshop usually turns on. Each one is off until you turn it on, and you can use any of them on its own.",
+    "introMarine": "Five optional parts a fleet or commercial vessel workshop usually turns on. Each one is off until you turn it on, and you can use any of them on its own.",
+    "progress": "{done} of {total} turned on",
+    "referenceTitle": "Reference / PO",
+    "referenceHint": "The customer's purchase order number on work orders, quotes and invoices, required for the customers who need it.",
+    "fleetNumberTitle": "Fleet or unit number",
+    "fleetNumberHint": "The owner's own number for each vehicle, searchable and printed on documents.",
+    "fleetNumberHintMarine": "The owner's own number for each vessel, searchable and printed on documents.",
+    "customFieldsTitle": "Custom fields",
+    "customFieldsHint": "Your own fields on vehicles and customers, such as a depot or a cost centre.",
+    "customFieldsHintMarine": "Your own fields on vessels and customers, such as a home port or a cost centre.",
+    "metersTitle": "Meters",
+    "metersHint": "Engine hours, PTO hours and other readings besides the odometer.",
+    "equipmentTitle": "Equipment",
+    "equipmentHint": "Cranes, tail lifts and other equipment fitted to vehicles, with examination dates.",
+    "equipmentHintMarine": "Cranes, davits and other equipment fitted to vessels, with examination dates.",
+    "done": "On",
+    "turnOn": "Turn on",
+    "docs": "Read the guide for fleets and heavy vehicles",
+    "dismiss": "Close the setup checklist",
+    "linkLead": "Working on fleets or heavy vehicles?",
+    "linkLeadMarine": "Working on fleets or commercial vessels?",
+    "linkAction": "Open the setup checklist",
+    "saveError": "Could not save the setup checklist"
+  }
+}

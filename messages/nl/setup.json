@@ -1,0 +1,32 @@
+{
+  "heavyVehicles": {
+    "command": "Instellen voor wagenparken en zware voertuigen",
+    "commandMarine": "Instellen voor vloten en beroepsvaartuigen",
+    "title": "Instellen voor wagenparken en zware voertuigen",
+    "titleMarine": "Instellen voor vloten en beroepsvaartuigen",
+    "intro": "Vijf optionele onderdelen die een werkplaats voor wagenparken of zware voertuigen meestal inschakelt. Elk onderdeel staat uit tot u het inschakelt, en u kunt ze ook los van elkaar gebruiken.",
+    "introMarine": "Vijf optionele onderdelen die een werkplaats voor vloten of beroepsvaartuigen meestal inschakelt. Elk onderdeel staat uit tot u het inschakelt, en u kunt ze ook los van elkaar gebruiken.",
+    "progress": "{done} van {total} ingeschakeld",
+    "referenceTitle": "Referentie / inkoopnummer",
+    "referenceHint": "Het inkoopordernummer van de klant op werkorders, offertes en facturen, verplicht voor de klanten die het nodig hebben.",
+    "fleetNumberTitle": "Vloot- / wagennummer",
+    "fleetNumberHint": "Het eigen nummer van de eigenaar voor elk voertuig, doorzoekbaar en afgedrukt op documenten.",
+    "fleetNumberHintMarine": "Het eigen nummer van de eigenaar voor elk vaartuig, doorzoekbaar en afgedrukt op documenten.",
+    "customFieldsTitle": "Aangepaste velden",
+    "customFieldsHint": "Uw eigen velden bij voertuigen en klanten, zoals een vestiging of een kostenplaats.",
+    "customFieldsHintMarine": "Uw eigen velden bij vaartuigen en klanten, zoals een thuishaven of een kostenplaats.",
+    "metersTitle": "Tellers",
+    "metersHint": "Motoruren, PTO-uren en andere tellerstanden naast de kilometerstand.",
+    "equipmentTitle": "Uitrusting",
+    "equipmentHint": "Kranen, laadkleppen en andere uitrusting op voertuigen, met keuringsdata.",
+    "equipmentHintMarine": "Kranen, davits en andere uitrusting op vaartuigen, met keuringsdata.",
+    "done": "Aan",
+    "turnOn": "Inschakelen",
+    "docs": "Lees de handleiding voor wagenparken en zware voertuigen",
+    "dismiss": "Instelchecklist sluiten",
+    "linkLead": "Werkt u aan wagenparken of zware voertuigen?",
+    "linkLeadMarine": "Werkt u aan vloten of beroepsvaartuigen?",
+    "linkAction": "Open de instelchecklist",
+    "saveError": "De instelchecklist kon niet worden opgeslagen"
+  }
+}

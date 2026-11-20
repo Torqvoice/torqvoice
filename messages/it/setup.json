@@ -1,0 +1,32 @@
+{
+  "heavyVehicles": {
+    "command": "Configura per flotte e veicoli pesanti",
+    "commandMarine": "Configura per flotte e imbarcazioni commerciali",
+    "title": "Configura per flotte e veicoli pesanti",
+    "titleMarine": "Configura per flotte e imbarcazioni commerciali",
+    "intro": "Cinque funzioni facoltative che un'officina per flotte o veicoli pesanti di solito attiva. Ognuna resta disattivata finché non la attivi, e puoi usarle anche singolarmente.",
+    "introMarine": "Cinque funzioni facoltative che un'officina per flotte o imbarcazioni commerciali di solito attiva. Ognuna resta disattivata finché non la attivi, e puoi usarle anche singolarmente.",
+    "progress": "{done} di {total} attivate",
+    "referenceTitle": "Riferimento / n. ordine",
+    "referenceHint": "Il numero d'ordine del cliente su ordini di lavoro, preventivi e fatture, obbligatorio per i clienti che lo richiedono.",
+    "fleetNumberTitle": "N. flotta / unità",
+    "fleetNumberHint": "Il numero interno del proprietario per ogni veicolo, ricercabile e stampato sui documenti.",
+    "fleetNumberHintMarine": "Il numero interno del proprietario per ogni imbarcazione, ricercabile e stampato sui documenti.",
+    "customFieldsTitle": "Campi personalizzati",
+    "customFieldsHint": "I tuoi campi su veicoli e clienti, come una sede o un centro di costo.",
+    "customFieldsHintMarine": "I tuoi campi su imbarcazioni e clienti, come un porto di stazionamento o un centro di costo.",
+    "metersTitle": "Contatori",
+    "metersHint": "Ore motore, ore della presa di forza e altre letture oltre al chilometraggio.",
+    "equipmentTitle": "Attrezzature",
+    "equipmentHint": "Gru, sponde idrauliche e altre attrezzature montate sui veicoli, con le date di verifica.",
+    "equipmentHintMarine": "Gru, gruette e altre attrezzature montate sulle imbarcazioni, con le date di verifica.",
+    "done": "Attivo",
+    "turnOn": "Attiva",
+    "docs": "Leggi la guida per flotte e veicoli pesanti",
+    "dismiss": "Chiudi la checklist di configurazione",
+    "linkLead": "Lavori su flotte o veicoli pesanti?",
+    "linkLeadMarine": "Lavori su flotte o imbarcazioni commerciali?",
+    "linkAction": "Apri la checklist di configurazione",
+    "saveError": "Impossibile salvare la checklist di configurazione"
+  }
+}

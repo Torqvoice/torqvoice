@@ -1,0 +1,32 @@
+{
+  "heavyVehicles": {
+    "command": "Für Fuhrparks und Nutzfahrzeuge einrichten",
+    "commandMarine": "Für Fuhrparks und Berufsschiffe einrichten",
+    "title": "Für Fuhrparks und Nutzfahrzeuge einrichten",
+    "titleMarine": "Für Fuhrparks und Berufsschiffe einrichten",
+    "intro": "Fünf optionale Bereiche, die eine Werkstatt für Fuhrparks und Nutzfahrzeuge meist einschaltet. Jeder bleibt aus, bis Sie ihn einschalten, und Sie können jeden einzeln nutzen.",
+    "introMarine": "Fünf optionale Bereiche, die eine Werkstatt für Fuhrparks und Berufsschiffe meist einschaltet. Jeder bleibt aus, bis Sie ihn einschalten, und Sie können jeden einzeln nutzen.",
+    "progress": "{done} von {total} eingeschaltet",
+    "referenceTitle": "Referenz / Bestellnr.",
+    "referenceHint": "Die Bestellnummer des Kunden auf Arbeitsaufträgen, Angeboten und Rechnungen, verpflichtend für die Kunden, die sie brauchen.",
+    "fleetNumberTitle": "Fuhrpark- / Fahrzeugnummer",
+    "fleetNumberHint": "Die eigene Nummer des Halters für jedes Fahrzeug, durchsuchbar und auf Dokumenten gedruckt.",
+    "fleetNumberHintMarine": "Die eigene Nummer des Eigners für jedes Wasserfahrzeug, durchsuchbar und auf Dokumenten gedruckt.",
+    "customFieldsTitle": "Benutzerdefinierte Felder",
+    "customFieldsHint": "Ihre eigenen Felder an Fahrzeugen und Kunden, etwa ein Standort oder eine Kostenstelle.",
+    "customFieldsHintMarine": "Ihre eigenen Felder an Wasserfahrzeugen und Kunden, etwa ein Heimathafen oder eine Kostenstelle.",
+    "metersTitle": "Zähler",
+    "metersHint": "Betriebsstunden, Nebenantriebsstunden und weitere Zählerstände neben dem Kilometerstand.",
+    "equipmentTitle": "Ausrüstung",
+    "equipmentHint": "Krane, Ladebordwände und andere an Fahrzeugen montierte Ausrüstung, mit Prüfterminen.",
+    "equipmentHintMarine": "Krane, Davits und andere an Wasserfahrzeugen montierte Ausrüstung, mit Prüfterminen.",
+    "done": "Ein",
+    "turnOn": "Einschalten",
+    "docs": "Leitfaden für Fuhrparks und Nutzfahrzeuge lesen",
+    "dismiss": "Einrichtungs-Checkliste schließen",
+    "linkLead": "Arbeiten Sie an Fuhrparks oder Nutzfahrzeugen?",
+    "linkLeadMarine": "Arbeiten Sie an Fuhrparks oder Berufsschiffen?",
+    "linkAction": "Einrichtungs-Checkliste öffnen",
+    "saveError": "Die Einrichtungs-Checkliste konnte nicht gespeichert werden"
+  }
+}

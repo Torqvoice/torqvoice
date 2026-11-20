@@ -1,0 +1,32 @@
+{
+  "heavyVehicles": {
+    "command": "Filolar ve ağır vasıtalar için kurulum",
+    "commandMarine": "Filolar ve ticari tekneler için kurulum",
+    "title": "Filolar ve ağır vasıtalar için kurulum",
+    "titleMarine": "Filolar ve ticari tekneler için kurulum",
+    "intro": "Filo veya ağır vasıta atölyesinin genellikle açtığı beş isteğe bağlı özellik. Her biri siz açana kadar kapalıdır ve her birini tek başına kullanabilirsiniz.",
+    "introMarine": "Filo veya ticari tekne atölyesinin genellikle açtığı beş isteğe bağlı özellik. Her biri siz açana kadar kapalıdır ve her birini tek başına kullanabilirsiniz.",
+    "progress": "{total} özellikten {done} tanesi açık",
+    "referenceTitle": "Referans / sipariş no",
+    "referenceHint": "Müşterinin satın alma sipariş numarası; iş emirlerinde, tekliflerde ve faturalarda yer alır, gereken müşteriler için zorunludur.",
+    "fleetNumberTitle": "Filo / birim numarası",
+    "fleetNumberHint": "Sahibin her araç için kullandığı kendi numarası; aranabilir ve belgelere yazdırılır.",
+    "fleetNumberHintMarine": "Sahibin her tekne için kullandığı kendi numarası; aranabilir ve belgelere yazdırılır.",
+    "customFieldsTitle": "Özel alanlar",
+    "customFieldsHint": "Araçlarda ve müşterilerde kendi alanlarınız, örneğin bir depo veya bir masraf merkezi.",
+    "customFieldsHintMarine": "Teknelerde ve müşterilerde kendi alanlarınız, örneğin bir bağlama limanı veya bir masraf merkezi.",
+    "metersTitle": "Sayaçlar",
+    "metersHint": "Kilometre sayacının yanında motor saatleri, PTO saatleri ve diğer okumalar.",
+    "equipmentTitle": "Ekipman",
+    "equipmentHint": "Araçlara takılı vinçler, kapak liftleri ve diğer ekipmanlar, periyodik kontrol tarihleriyle.",
+    "equipmentHintMarine": "Teknelere takılı vinçler, mataforalar ve diğer ekipmanlar, periyodik kontrol tarihleriyle.",
+    "done": "Açık",
+    "turnOn": "Aç",
+    "docs": "Filolar ve ağır vasıtalar rehberini oku",
+    "dismiss": "Kurulum kontrol listesini kapat",
+    "linkLead": "Filolar veya ağır vasıtalarla mı çalışıyorsunuz?",
+    "linkLeadMarine": "Filolar veya ticari teknelerle mi çalışıyorsunuz?",
+    "linkAction": "Kurulum kontrol listesini aç",
+    "saveError": "Kurulum kontrol listesi kaydedilemedi"
+  }
+}

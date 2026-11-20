@@ -1,0 +1,32 @@
+{
+  "heavyVehicles": {
+    "command": "Sett opp for flåter og tunge kjøretøy",
+    "commandMarine": "Sett opp for flåter og yrkesfartøy",
+    "title": "Sett opp for flåter og tunge kjøretøy",
+    "titleMarine": "Sett opp for flåter og yrkesfartøy",
+    "intro": "Fem valgfrie deler et verksted for flåter eller tunge kjøretøy vanligvis slår på. Hver av dem er av til du slår den på, og du kan bruke hver av dem for seg.",
+    "introMarine": "Fem valgfrie deler et verksted for flåter eller yrkesfartøy vanligvis slår på. Hver av dem er av til du slår den på, og du kan bruke hver av dem for seg.",
+    "progress": "{done} av {total} slått på",
+    "referenceTitle": "Referanse / bestillingsnr.",
+    "referenceHint": "Kundens bestillingsnummer på arbeidsordrer, tilbud og fakturaer, påkrevd for kundene som trenger det.",
+    "fleetNumberTitle": "Flåte- / enhetsnummer",
+    "fleetNumberHint": "Eierens eget nummer på hvert kjøretøy, søkbart og skrevet ut på dokumenter.",
+    "fleetNumberHintMarine": "Eierens eget nummer på hvert fartøy, søkbart og skrevet ut på dokumenter.",
+    "customFieldsTitle": "Egendefinerte felter",
+    "customFieldsHint": "Dine egne felter på kjøretøy og kunder, for eksempel et depot eller et kostnadssted.",
+    "customFieldsHintMarine": "Dine egne felter på fartøy og kunder, for eksempel en hjemmehavn eller et kostnadssted.",
+    "metersTitle": "Målere",
+    "metersHint": "Motortimer, kraftuttakstimer og andre avlesninger i tillegg til kilometerstanden.",
+    "equipmentTitle": "Utstyr",
+    "equipmentHint": "Kraner, bakløftere og annet utstyr montert på kjøretøy, med kontrolldatoer.",
+    "equipmentHintMarine": "Kraner, davitter og annet utstyr montert på fartøy, med kontrolldatoer.",
+    "done": "På",
+    "turnOn": "Slå på",
+    "docs": "Les veiledningen for flåter og tunge kjøretøy",
+    "dismiss": "Lukk oppsettlisten",
+    "linkLead": "Jobber du med flåter eller tunge kjøretøy?",
+    "linkLeadMarine": "Jobber du med flåter eller yrkesfartøy?",
+    "linkAction": "Åpne oppsettlisten",
+    "saveError": "Kunne ikke lagre oppsettlisten"
+  }
+}

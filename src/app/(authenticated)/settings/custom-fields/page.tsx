@@ -10,6 +10,11 @@ import { getMeterSuggestions, getMeterTypes } from '@/features/meters/Actions/me
 import { MetersManager } from '@/features/meters/Components/MetersManager'
 import { getEquipmentTypes } from '@/features/equipment/Actions/equipmentTypeActions'
 import { EquipmentTypesManager } from '@/features/equipment/Components/EquipmentTypesManager'
+import { heavyVehicleSetupState } from '@/features/setup/Lib/heavyVehicleSetup.server'
+import {
+  HeavyVehicleSetupCard,
+  HeavyVehicleSetupLink,
+} from '@/features/setup/Components/HeavyVehicleSetupCard'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 import { settingsPageTitle } from '@/lib/page-title'
@@ -46,10 +51,13 @@ export default async function CustomFieldsPage() {
     // And the kinds of equipment: the first one turns equipment on.
     locked ? null : getEquipmentTypes(),
   ])
+  // The fleet and heavy vehicle checklist, only once the workshop asked for it.
+  const setup = locked ? null : await heavyVehicleSetupState(data.organizationId)
   const fields = result.success && result.data ? result.data : []
 
   const content = (
     <div className="space-y-8">
+      {setup && <HeavyVehicleSetupCard state={setup} />}
       <CustomFieldsManager
         initialFields={fields}
         layoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
@@ -68,6 +76,8 @@ export default async function CustomFieldsPage() {
           types={equipmentResult?.success && equipmentResult.data ? equipmentResult.data : []}
         />
       )}
+      {/* At the foot of the page, so it moves nothing above it. */}
+      {!locked && !setup && <HeavyVehicleSetupLink />}
     </div>
   )
 
