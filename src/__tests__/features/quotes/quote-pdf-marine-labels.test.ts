@@ -33,7 +33,9 @@ vi.mock('@/lib/torqvoice-branding', () => ({ getTorqvoiceLogoDataUri: vi.fn(asyn
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
   getCustomFieldsForPrint: vi.fn(async () => []),
 }))
-vi.mock('@/features/vehicles/Components/invoice-pdf/fonts', () => ({}))
+vi.mock('@/features/vehicles/Components/invoice-pdf/fonts', () => ({
+  pdfFontsReady: async () => undefined,
+}))
 vi.mock('@/features/quotes/Components/QuotePDF', () => ({ QuotePDF: () => null }))
 vi.mock('@react-pdf/renderer', () => ({
   renderToBuffer: vi.fn(async (element: { props: Record<string, unknown> }) => {
