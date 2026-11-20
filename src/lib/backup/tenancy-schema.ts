@@ -1544,6 +1544,11 @@ export const TENANCY_SCHEMA: SchemaGraph = {
   Vehicle: {
     organizationId: true,
     foreignKeys: {
+      readingJobId: {
+        target: 'ServiceRecord',
+        required: false,
+        relation: 'readingJob',
+      },
       userId: {
         target: 'User',
         required: true,

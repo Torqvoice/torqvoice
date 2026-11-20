@@ -7,6 +7,14 @@ model Vehicle {
   licensePlate           String?
   color                  String?
   mileage                Int                  @default(0)
+  /// The job whose reading the vehicle's reading is, when a job set it
+  /// (vehicleReading.ts). Correcting that job's reading brings the vehicle
+  /// back down; anything that writes the reading directly clears it.
+  readingJobId           String?              @unique
+  readingJob             ServiceRecord?       @relation("VehicleReadingJob", fields: [readingJobId], references: [id], onDelete: SetNull)
+  /// What the vehicle read before that job set it: where a correction of the
+  /// job may take it back to. Means nothing without readingJobId.
+  readingBeforeJob       Int?
   fuelType               String?              @default("gasoline")
   transmission           String?              @default("automatic")
   engineSize             String?

@@ -265,6 +265,23 @@ export async function stockedPart(organizationId: string, atLeast = 10): Promise
   })
 }
 
+/**
+ * The highest reading known for a job's vehicle: its own, or any job's on it.
+ * A reading typed far above this is asked about before it is saved.
+ */
+export async function highestReadingForJob(serviceRecordId: string): Promise<number> {
+  return withDb(async (db) => {
+    const result = await db.query<{ highest: number | null }>(
+      `select greatest(v.mileage, (select max(s.mileage) from service_records s where s."vehicleId" = v.id)) as highest
+         from service_records r join vehicles v on v.id = r."vehicleId"
+        where r.id = $1`,
+      [serviceRecordId]
+    )
+    if (!result.rows[0]) throw new Error(`no vehicle for job ${serviceRecordId}`)
+    return Number(result.rows[0].highest ?? 0)
+  })
+}
+
 /** What one inventory part has on hand. */
 export async function partQuantity(partId: string): Promise<number> {
   return withDb(async (db) => {

@@ -261,7 +261,7 @@ export async function ServiceRecordPage({
             startDateTime: isRenderable(record.startDateTime) ? record.startDateTime : null,
             serviceDate: record.serviceDate,
           }),
-          vehicleReading: record.vehicle.mileage,
+          vehicle: record.vehicle,
         })
       : null
 

@@ -70,7 +70,13 @@ const USER_ID = 'user-1'
 const VEHICLE_ID = 'veh-1'
 const TECH_ID = 'tech-1'
 
-const VEHICLE = { id: VEHICLE_ID, organizationId: ORG, mileage: 50000 }
+const VEHICLE = {
+  id: VEHICLE_ID,
+  organizationId: ORG,
+  mileage: 50000,
+  readingJobId: null,
+  readingBeforeJob: null,
+}
 
 function setupAuth() {
   mockSession.mockResolvedValue({ user: { id: USER_ID, email: 'user@example.com' } } as any)
@@ -90,10 +96,10 @@ function setupCommonMocks() {
   vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(null) // no previous records
   vi.mocked(db.$queryRaw).mockResolvedValue([{ highest: null }] as any)
   vi.mocked(db.vehicle.update).mockResolvedValue(VEHICLE as any)
-  // The vehicle's reading is moved by the shared rule, which compares in the
-  // database: this stands in for "the reading is higher than the vehicle's".
+  // The vehicle's reading is moved by the shared rule, which sets it only on
+  // the vehicle as it read it (compare and set).
   vi.mocked(db.vehicle.updateMany).mockImplementation((async ({ where, data }: any) => ({
-    count: VEHICLE.mileage < where.mileage.lt && data.mileage === where.mileage.lt ? 1 : 0,
+    count: where.mileage === VEHICLE.mileage && data.mileage > VEHICLE.mileage ? 1 : 0,
   })) as any)
 }
 
@@ -473,7 +479,15 @@ describe('createServiceRecord — vehicle mileage', () => {
       .mockResolvedValue({ id, vehicleId: VEHICLE_ID, startDateTime: START, serviceDate: START })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
-        serviceRecord: { create: mockCreate },
+        // The vehicle's reading is decided in a transaction of its own,
+        // under the vehicle's row lock; it reads the same tables.
+        $queryRaw: async () => [],
+        serviceRecord: {
+          create: mockCreate,
+          findFirst: db.serviceRecord.findFirst,
+          aggregate: vi.fn(async () => ({ _max: { mileage: null } })),
+        },
+        vehicle: db.vehicle,
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: vi.fn() },
         serviceAttachment: { createMany: vi.fn() },
@@ -487,7 +501,7 @@ describe('createServiceRecord — vehicle mileage', () => {
     const moved = vi
       .mocked(db.vehicle.updateMany)
       .mock.calls.map(([args]) => args as any)
-      .filter((args) => VEHICLE.mileage < args.where.mileage.lt)
+      .filter((args) => args.data.mileage > VEHICLE.mileage)
     return moved.length ? moved[0].data.mileage : null
   }
 
@@ -504,10 +518,16 @@ describe('createServiceRecord — vehicle mileage', () => {
 
     expect(result.success).toBe(true)
     expect(movedTo()).toBe(55000)
-    // Scoped to the workshop, and only ever upwards.
+    // Scoped to the workshop, set only on the vehicle as it was read, and
+    // remembering the job that set it and what the vehicle read before.
     expect(vi.mocked(db.vehicle.updateMany)).toHaveBeenCalledWith({
-      where: { id: VEHICLE_ID, organizationId: ORG, mileage: { lt: 55000 } },
-      data: { mileage: 55000 },
+      where: {
+        id: VEHICLE_ID,
+        organizationId: ORG,
+        mileage: VEHICLE.mileage,
+        readingJobId: null,
+      },
+      data: { mileage: 55000, readingJobId: 'sr-mile', readingBeforeJob: VEHICLE.mileage },
     })
   })
 
@@ -572,7 +592,15 @@ describe('createServiceRecord — labor items', () => {
     const mockLaborCreateMany = vi.fn()
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
       fn({
-        serviceRecord: { create: mockCreate },
+        // The vehicle's reading is decided in a transaction of its own,
+        // under the vehicle's row lock; it reads the same tables.
+        $queryRaw: async () => [],
+        serviceRecord: {
+          create: mockCreate,
+          findFirst: db.serviceRecord.findFirst,
+          aggregate: vi.fn(async () => ({ _max: { mileage: null } })),
+        },
+        vehicle: db.vehicle,
         servicePart: { createMany: vi.fn() },
         serviceLabor: { createMany: mockLaborCreateMany },
         serviceAttachment: { createMany: vi.fn() },

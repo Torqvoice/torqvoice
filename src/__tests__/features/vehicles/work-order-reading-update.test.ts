@@ -73,8 +73,18 @@ beforeEach(() => {
   } as any)
   vi.mocked(db.user.findUnique).mockResolvedValue({ isSuperAdmin: false } as any)
   vi.mocked(db.appSetting.findMany).mockResolvedValue([])
-  vi.mocked(db.vehicle.findFirst).mockImplementation((async ({ where }: any) =>
-    where.organizationId === ORG && where.id in state.vehicles ? { id: where.id } : null) as any)
+  vi.mocked(db.vehicle.findFirst).mockImplementation((async ({ where }: any) => {
+    if (where.organizationId !== ORG || !(where.id in state.vehicles)) return null
+    // No vehicle here remembers a job: the correction of one that does is
+    // tested on a real database (src/__tests__/db/vehicle-reading.db.test.ts).
+    if (where.readingJobId) return null
+    return {
+      id: where.id,
+      mileage: state.vehicles[where.id],
+      readingJobId: null,
+      readingBeforeJob: null,
+    }
+  }) as any)
   vi.mocked(db.serviceRecord.findFirst).mockImplementation((async ({ where }: any) => {
     // The rule's question: another job on the vehicle, later, with a reading.
     if (where.mileage && 'not' in where.mileage) {
@@ -89,14 +99,25 @@ beforeEach(() => {
       : null
   }) as any)
   vi.mocked(db.vehicle.updateMany).mockImplementation((async ({ where, data }: any) => {
-    if (where.organizationId !== ORG || !(state.vehicles[where.id] < where.mileage.lt))
+    // Moved up only as it was read (compare and set).
+    if (
+      where.organizationId !== ORG ||
+      data.mileage === undefined ||
+      state.vehicles[where.id] !== where.mileage
+    )
       return { count: 0 }
     state.vehicles[where.id] = data.mileage
     return { count: 1 }
   }) as any)
   vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
     fn({
+      // The job's row lock, and what it read before the save.
+      $queryRaw: vi.fn(async () => [
+        { mileage: state.job.mileage, vehicleId: state.job.vehicleId },
+      ]),
+      vehicle: db.vehicle,
       serviceRecord: {
+        findFirst: db.serviceRecord.findFirst,
         update: vi.fn(async ({ data }: any) => {
           if (data.mileage !== undefined) state.job.mileage = data.mileage
           if (data.vehicleId) state.job.vehicleId = data.vehicleId

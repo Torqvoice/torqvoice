@@ -452,3 +452,136 @@ describe('a reading lowered on the vehicle form', () => {
     ).toBeGreaterThan(0)
   })
 })
+
+describe('a reading far above the last one on the vehicle form', () => {
+  const NOTICE =
+    'Much higher than the last reading (225,040 km). Check for a typo. You can still save it.'
+  const field = () => screen.getByLabelText('Mileage', { selector: 'input#mileage' })
+
+  it('says so beside the field while typing, and asks on Save before saving it', async () => {
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    // Under the field and under the figure at the top, which is the same reading.
+    expect(screen.getAllByText(NOTICE)).toHaveLength(2)
+    expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
+    expect(field()).toHaveAccessibleDescription(NOTICE.replace(' km', '\u00a0km'))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    const ask = await screen.findByRole('alertdialog')
+    expect(ask).toHaveTextContent('Are you sure this reading is correct?')
+    expect(ask).toHaveTextContent('2,250,400 km is much higher than the last reading, 225,040 km.')
+    // Nothing is saved until the answer.
+    expect(updateVehicle).not.toHaveBeenCalled()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, it is correct' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
+    expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ mileage: 2250400 })
+    expect(toast.error).not.toHaveBeenCalled()
+  })
+
+  it('Change it goes back to the field and saves nothing', async () => {
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await screen.findByRole('alertdialog')
+    fireEvent.click(screen.getByRole('button', { name: 'Change it' }))
+    await waitFor(() => expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument())
+    await waitFor(() => expect(field()).toHaveFocus())
+    expect(updateVehicle).not.toHaveBeenCalled()
+
+    // Corrected, it saves without a question.
+    fireEvent.change(field(), { target: { value: '225400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+    expect(vi.mocked(updateVehicle).mock.calls[0][0]).toMatchObject({ mileage: 225400 })
+  })
+
+  it('asks again for the same value on another vehicle', async () => {
+    const view = renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await screen.findByRole('alertdialog')
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, it is correct' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
+
+    // The list opens the same form for another vehicle.
+    view.rerender(
+      <TooltipProvider>
+        <VehicleForm
+          open
+          onOpenChange={vi.fn()}
+          vehicle={{ ...VEHICLE, id: 'veh-other' }}
+          distanceUnit="km"
+        />
+      </TooltipProvider>
+    )
+    await waitFor(() => expect(field()).toHaveValue(225040))
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    expect(await screen.findByRole('alertdialog')).toBeInTheDocument()
+    expect(updateVehicle).toHaveBeenCalledTimes(1)
+  })
+
+  it('asks once for a value, and again for another', async () => {
+    vi.mocked(updateVehicle).mockResolvedValue({ success: false, error: 'Network' } as never)
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '2250400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await screen.findByRole('alertdialog')
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, it is correct' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(1))
+
+    // The save failed and is tried again: the same value is not asked again.
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    await waitFor(() => expect(updateVehicle).toHaveBeenCalledTimes(2))
+    expect(screen.queryByRole('alertdialog')).not.toBeInTheDocument()
+
+    fireEvent.change(field(), { target: { value: '2250500' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }))
+    expect(await screen.findByRole('alertdialog')).toBeInTheDocument()
+    expect(updateVehicle).toHaveBeenCalledTimes(2)
+  })
+
+  it('says nothing up to 100,000 above the last reading, and goes away when fixed', async () => {
+    renderForm()
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '325040' } })
+    expect(screen.queryByTestId('higher-reading-notice')).not.toBeInTheDocument()
+    fireEvent.change(field(), { target: { value: '325041' } })
+    expect(screen.getAllByTestId('higher-reading-notice').length).toBeGreaterThan(0)
+    fireEvent.change(field(), { target: { value: '231500' } })
+    expect(screen.queryByTestId('higher-reading-notice')).not.toBeInTheDocument()
+  })
+
+  it('has nothing to compare with on a new vehicle or one that reads 0', async () => {
+    renderForm({ vehicle: { ...VEHICLE, mileage: 0 } })
+    await screen.findByRole('dialog')
+    fireEvent.change(field(), { target: { value: '9000000' } })
+    expect(screen.queryByTestId('higher-reading-notice')).not.toBeInTheDocument()
+  })
+
+  it('uses the engine hours limit in a boat workshop', async () => {
+    render(
+      <ServiceTypeProvider serviceType="marine">
+        <TooltipProvider>
+          <VehicleForm open onOpenChange={vi.fn()} vehicle={{ ...VEHICLE, mileage: 1240 }} />
+        </TooltipProvider>
+      </ServiceTypeProvider>
+    )
+    await screen.findByRole('dialog')
+    const hours = screen.getByLabelText('Engine Hours', { selector: 'input#mileage' })
+    fireEvent.change(hours, { target: { value: '6240' } })
+    expect(screen.queryByTestId('higher-reading-notice')).not.toBeInTheDocument()
+    fireEvent.change(hours, { target: { value: '12400' } })
+    expect(
+      screen.getAllByText(
+        'Much higher than the last reading (1,240 hours). Check for a typo. You can still save it.'
+      ).length
+    ).toBeGreaterThan(0)
+  })
+})

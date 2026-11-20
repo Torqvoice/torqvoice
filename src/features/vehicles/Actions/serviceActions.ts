@@ -40,7 +40,12 @@ import { assertInvoiceEditable, getDocumentLockSettings } from '@/lib/document-l
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
 import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
 import { typeKeySearch } from '@/features/vehicles/Lib/typeKeySetting'
-import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
+import {
+  applyJobReading,
+  forgetJobReading,
+  jobReadingDate,
+  lockJobReading,
+} from '@/features/vehicles/Lib/vehicleReading'
 import { ACTIVE_HELPERS } from '@/features/workboard/Lib/jobTeam'
 import { FRESH_SHARE_LINK } from '@/lib/share-expiry'
 
@@ -311,6 +316,9 @@ export async function getServiceRecord(recordId: string) {
               vin: true,
               licensePlate: true,
               mileage: true,
+              // Whose reading the vehicle's is: the reading field's notices.
+              readingJobId: true,
+              readingBeforeJob: true,
               // The facts card's "More info": what the desk would otherwise
               // open the vehicle page to read (and copy) mid-job.
               color: true,
@@ -614,13 +622,15 @@ export async function createServiceRecord(input: unknown) {
           where: { id: vehicle.id },
           data: { maintenanceDismissed: false, maintenanceDismissedAt: null },
         })
-        await applyJobReading(db, {
-          organizationId,
-          vehicleId: vehicle.id,
-          jobId: record.id,
-          jobDate: jobReadingDate(record),
-          reading: data.mileage,
-        })
+        await db.$transaction((tx) =>
+          applyJobReading(tx, {
+            organizationId,
+            vehicleId: vehicle.id,
+            jobId: record.id,
+            jobDate: jobReadingDate(record),
+            reading: data.mileage,
+          })
+        )
       }
 
       revalidatePath('/')
@@ -805,6 +815,9 @@ export async function updateServiceRecord(input: unknown) {
       }
 
       const record = await db.$transaction(async (tx) => {
+        // What the job read before this save, under its row lock, so two
+        // saves of the job at once take turns on the vehicle's reading too.
+        const before = await lockJobReading(tx, { organizationId, jobId: id })
         const updated = await tx.serviceRecord.update({
           where: { id },
           data: {
@@ -977,25 +990,28 @@ export async function updateServiceRecord(input: unknown) {
           }
         }
 
-        return updated
-      })
-
-      // The job's reading may become the vehicle's: the rule is in
-      // vehicleReading.ts. A job that moved to another vehicle in this save
-      // speaks for that vehicle, with whatever reading it now carries.
-      if (record.vehicleId) {
-        const sameVehicle = record.vehicleId === existing.vehicleId
-        if (recordData.mileage !== undefined || !sameVehicle) {
-          await applyJobReading(db, {
+        // The job's reading may become the vehicle's, or correct it: the rule
+        // is in vehicleReading.ts. A job that moved to another vehicle in this
+        // save speaks for that vehicle, with whatever reading it now carries;
+        // the vehicle it left keeps its reading, which is no longer the job's.
+        const vehicleBefore = before ? before.vehicleId : existing.vehicleId
+        const sameVehicle = updated.vehicleId === vehicleBefore
+        if (!sameVehicle && vehicleBefore) {
+          await forgetJobReading(tx, { organizationId, jobId: id })
+        }
+        if (updated.vehicleId && (recordData.mileage !== undefined || !sameVehicle)) {
+          await applyJobReading(tx, {
             organizationId,
-            vehicleId: record.vehicleId,
+            vehicleId: updated.vehicleId,
             jobId: id,
-            jobDate: jobReadingDate(record),
-            reading: record.mileage,
-            previousReading: sameVehicle ? existing.mileage : undefined,
+            jobDate: jobReadingDate(updated),
+            reading: updated.mileage,
+            previousReading: sameVehicle ? (before ? before.mileage : existing.mileage) : undefined,
           })
         }
-      }
+
+        return updated
+      })
 
       // Files of removed attachments, let go after the transaction committed.
       await releaseFiles(removedFileUrls, {

@@ -324,6 +324,8 @@ export function ModernDetails(props: ModernDetailsProps) {
                   techName={formState.techName}
                   initialVehicle={props.initialVehicle}
                   distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
+                  confirmedReading={formState.confirmedReading}
+                  onConfirmReading={formState.confirmReading}
                 />
 
                 <Lockable locked={locked}>

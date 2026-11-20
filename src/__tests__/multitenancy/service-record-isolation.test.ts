@@ -158,7 +158,11 @@ describe('updateServiceRecord — cross-org isolation', () => {
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(ORG_A_RECORD as any)
     const updatedRecord = { ...ORG_A_RECORD, title: 'Brake Pads' }
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
-      fn({ serviceRecord: { update: vi.fn().mockResolvedValue(updatedRecord) } })
+      fn({
+        $queryRaw: async () => [],
+        vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
+        serviceRecord: { update: vi.fn().mockResolvedValue(updatedRecord) },
+      })
     )
     const result = await updateServiceRecord({ id: 'sr-a', title: 'Brake Pads' })
     expect(result.success).toBe(true)

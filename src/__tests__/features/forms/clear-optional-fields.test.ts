@@ -255,7 +255,11 @@ describe('updateServiceRecord', () => {
   function runTransaction() {
     const update = vi.fn().mockResolvedValue({ ...existing })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
-      fn({ serviceRecord: { update } })
+      fn({
+        $queryRaw: async () => [],
+        vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
+        serviceRecord: { update },
+      })
     )
     return update
   }
