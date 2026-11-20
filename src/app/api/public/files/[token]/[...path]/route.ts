@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { refuseExpiredShareToken } from '@/lib/share-link-route'
+import { shareLinkExpiredResponse } from '@/lib/share-link-route'
 import { svgDownloadHeaders } from '@/lib/upload-url'
-import { isSharedFile, loadSharedDocumentFiles } from '@/lib/shared-files.server'
+import { isSharedFile, resolveSharedFileToken } from '@/lib/shared-files.server'
 import { readFile, stat } from 'fs/promises'
 import path from 'path'
 import { uploadsRoot } from '@/lib/upload-root'
@@ -55,18 +55,16 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid filename' }, { status: 400 })
   }
 
-  // A document's pictures close with its link.
-  const closed = await refuseExpiredShareToken(token)
-  if (closed) return closed
-
-  // A token opens what its document shows the customer and nothing else of
-  // the workshop. A file it does not show answers exactly as a missing one
+  // One lookup of the token answers both whether its link is still open and
+  // which document's files it opens. A document's pictures close with its
+  // link. A file the document does not show answers exactly as a missing one
   // does, so the route never says whether a name exists.
-  const shared = await loadSharedDocumentFiles(token)
-  if (!shared || !isSharedFile(shared, category, filename)) {
+  const shared = await resolveSharedFileToken(token)
+  if (shared.status === 'expired') return shareLinkExpiredResponse()
+  if (shared.status !== 'open' || !(await isSharedFile(shared.document, category, filename))) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
-  const orgId = shared.organizationId
+  const orgId = shared.document.organizationId
   const filePath = path.join(uploadsRoot(), orgId, category, filename)
 
   try {

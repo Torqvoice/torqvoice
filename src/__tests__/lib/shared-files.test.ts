@@ -3,7 +3,9 @@
  *
  * A share link opens the files its document shows the customer, and nothing
  * else of the workshop: not another job's photos, not another workshop's,
- * even with a valid token and a real file name.
+ * even with a valid token and a real file name. And it does so cheaply: a
+ * share page asks once per picture, so each file is one lookup of the token
+ * and one narrow question, never a load of everything the document holds.
  */
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
@@ -12,18 +14,26 @@ import path from 'node:path'
 
 vi.mock('@/lib/db', () => ({
   db: {
-    serviceRecord: { findUnique: vi.fn() },
-    quote: { findFirst: vi.fn() },
-    inspection: { findFirst: vi.fn() },
     statusReport: { findFirst: vi.fn() },
+    serviceAttachment: { findFirst: vi.fn() },
+    quoteAttachment: { findFirst: vi.fn() },
+    inspectionItem: { findFirst: vi.fn() },
+    inspectionAttachment: { findFirst: vi.fn() },
     appSetting: { findMany: vi.fn() },
   },
 }))
-vi.mock('@/lib/share-link-route', () => ({ refuseExpiredShareToken: vi.fn(async () => null) }))
+vi.mock('@/lib/share-link.server', () => ({ findSharedDocumentOfAnyKind: vi.fn() }))
 
 import { NextRequest } from 'next/server'
 import { db } from '@/lib/db'
-import { isSharedFile, loadSharedDocumentFiles, storedFileKey } from '@/lib/shared-files.server'
+import { findSharedDocumentOfAnyKind } from '@/lib/share-link.server'
+import {
+  isSharedFile,
+  resolveSharedFileToken,
+  type SharedFileDocument,
+  storedFileKey,
+  storedFileUrls,
+} from '@/lib/shared-files.server'
 import { GET } from '@/app/api/public/files/[token]/[...path]/route'
 
 const ORG = 'org_a'
@@ -31,78 +41,86 @@ const OTHER_ORG = 'org_b'
 const url = (category: string, file: string, org = ORG) =>
   `/api/protected/files/${org}/${category}/${file}`
 
-type Attachment = {
-  fileUrl: string
-  includeInInvoice?: boolean
-  includeInReport?: boolean
-  category?: string
-}
+type Row = Record<string, unknown>
 
-/** Two workshops, each with one document of every kind and a second job. */
-const serviceRecords: Record<string, { organizationId: string; attachments: Attachment[] }> = {
-  'job-token': {
-    organizationId: ORG,
-    attachments: [
-      { fileUrl: url('services', 'job-photo.jpg'), includeInInvoice: true },
-      { fileUrl: url('services', 'job-report.pdf'), includeInInvoice: true },
-      { fileUrl: url('tire-hotel', 'tire-set.jpg'), includeInInvoice: true },
-      { fileUrl: url('services', 'job-video.mp4'), includeInInvoice: true },
-      // Kept off the invoice by the workshop: the page does not list it.
-      { fileUrl: url('services', 'job-internal.jpg'), includeInInvoice: false },
-    ],
-  },
-  'other-job-token': {
-    organizationId: ORG,
-    attachments: [{ fileUrl: url('services', 'other-job-photo.jpg'), includeInInvoice: true }],
-  },
-  'stranger-job-token': {
-    organizationId: OTHER_ORG,
-    attachments: [
-      { fileUrl: url('services', 'stranger-photo.jpg', OTHER_ORG), includeInInvoice: true },
-    ],
-  },
-}
-
-const quotes: Record<string, { organizationId: string; attachments: Attachment[] }> = {
-  'quote-token': {
-    organizationId: ORG,
-    attachments: [
-      { fileUrl: url('quotes', 'quote-photo.jpg'), category: 'image' },
-      { fileUrl: url('quotes', 'quote-terms.pdf'), category: 'document' },
-      // A category the share page does not list.
-      { fileUrl: url('quotes', 'quote-other.jpg'), category: 'internal' },
-    ],
-  },
-}
-
-const inspections: Record<
+/** Every link of the two workshops: which document a token opens, and whether it is open. */
+const shared: Record<
   string,
-  { organizationId: string; items: { imageUrls: string[] }[]; attachments: Attachment[] }
+  { kind: 'invoice' | 'quote' | 'inspection'; id: string; organizationId: string; open: boolean }
 > = {
-  'inspection-token': {
-    organizationId: ORG,
-    items: [
-      { imageUrls: [url('inspections', 'brake-pads.jpg'), url('inspections', 'noise.mp4')] },
-      // The older address form is still on records.
-      { imageUrls: [`/api/files/${ORG}/inspections/tyre-tread.jpg`] },
-    ],
-    attachments: [
-      { fileUrl: url('documents', 'overview.jpg'), includeInReport: true },
-      { fileUrl: url('documents', 'hidden-paperwork.pdf'), includeInReport: false },
-    ],
+  'job-token': { kind: 'invoice', id: 'job', organizationId: ORG, open: true },
+  'other-job-token': { kind: 'invoice', id: 'other-job', organizationId: ORG, open: true },
+  'closed-job-token': { kind: 'invoice', id: 'closed-job', organizationId: ORG, open: false },
+  'stranger-job-token': {
+    kind: 'invoice',
+    id: 'stranger-job',
+    organizationId: OTHER_ORG,
+    open: true,
   },
+  'quote-token': { kind: 'quote', id: 'quote', organizationId: ORG, open: true },
+  'inspection-token': { kind: 'inspection', id: 'inspection', organizationId: ORG, open: true },
 }
+
+const serviceAttachments: Row[] = [
+  { serviceRecordId: 'job', fileUrl: url('services', 'job-photo.jpg'), includeInInvoice: true },
+  { serviceRecordId: 'job', fileUrl: url('services', 'job-report.pdf'), includeInInvoice: true },
+  { serviceRecordId: 'job', fileUrl: url('tire-hotel', 'tire-set.jpg'), includeInInvoice: true },
+  { serviceRecordId: 'job', fileUrl: url('services', 'job-video.mp4'), includeInInvoice: true },
+  // Kept off the invoice by the workshop: the page does not list it.
+  {
+    serviceRecordId: 'job',
+    fileUrl: url('services', 'job-internal.jpg'),
+    includeInInvoice: false,
+  },
+  {
+    serviceRecordId: 'other-job',
+    fileUrl: url('services', 'other-job-photo.jpg'),
+    includeInInvoice: true,
+  },
+  {
+    serviceRecordId: 'stranger-job',
+    fileUrl: url('services', 'stranger-photo.jpg', OTHER_ORG),
+    includeInInvoice: true,
+  },
+]
+
+const quoteAttachments: Row[] = [
+  { quoteId: 'quote', fileUrl: url('quotes', 'quote-photo.jpg'), category: 'image' },
+  { quoteId: 'quote', fileUrl: url('quotes', 'quote-terms.pdf'), category: 'document' },
+  // A category the share page does not list.
+  { quoteId: 'quote', fileUrl: url('quotes', 'quote-other.jpg'), category: 'internal' },
+]
+
+const inspectionItems: Row[] = [
+  {
+    inspectionId: 'inspection',
+    imageUrls: [url('inspections', 'brake-pads.jpg'), url('inspections', 'noise.mp4')],
+  },
+  // The older address form is still on records.
+  { inspectionId: 'inspection', imageUrls: [`/api/files/${ORG}/inspections/tyre-tread.jpg`] },
+]
+
+const inspectionAttachments: Row[] = [
+  { inspectionId: 'inspection', fileUrl: url('documents', 'overview.jpg'), includeInReport: true },
+  {
+    inspectionId: 'inspection',
+    fileUrl: url('documents', 'hidden-paperwork.pdf'),
+    includeInReport: false,
+  },
+]
 
 const statusReports: Record<
   string,
-  { organizationId: string; videoUrl: string | null; expiresAt: Date | null }
+  { id: string; organizationId: string; videoUrl: string | null; expiresAt: Date | null }
 > = {
   'report-token': {
+    id: 'report',
     organizationId: ORG,
     videoUrl: url('services', 'walkaround.mp4'),
     expiresAt: null,
   },
   'expired-report-token': {
+    id: 'old-report',
     organizationId: ORG,
     videoUrl: url('services', 'old-walkaround.mp4'),
     expiresAt: new Date('2000-01-01'),
@@ -111,7 +129,7 @@ const statusReports: Record<
 
 const settings = [
   { organizationId: ORG, key: 'workshop.logo', value: url('logos', 'company.png') },
-  { organizationId: ORG, key: 'quote.logo', value: url('logos', 'quote-letterhead.png') },
+  { organizationId: ORG, key: 'quote.logo', value: ` ${url('logos', 'quote-letterhead.png')} ` },
   {
     organizationId: OTHER_ORG,
     key: 'workshop.logo',
@@ -119,51 +137,44 @@ const settings = [
   },
 ]
 
-/** Applies an attachment `where` the way Prisma would. */
-function filterAttachments(rows: Attachment[], where?: Record<string, unknown>) {
-  if (!where) return rows
-  return rows.filter((row) =>
-    Object.entries(where).every(([key, value]) => {
-      const actual = (row as Record<string, unknown>)[key]
-      if (value && typeof value === 'object' && 'in' in value) {
-        return (value.in as unknown[]).includes(actual)
+/** Applies a Prisma `where` of the shapes the helper uses to one row. */
+function matches(row: Row, where: Record<string, unknown>): boolean {
+  return Object.entries(where).every(([key, condition]) => {
+    const actual = row[key]
+    if (condition && typeof condition === 'object') {
+      if ('in' in condition) return (condition.in as unknown[]).includes(actual)
+      if ('hasSome' in condition) {
+        return (condition.hasSome as unknown[]).some((value) =>
+          (actual as unknown[]).includes(value)
+        )
       }
-      return (actual ?? true) === value
-    })
-  )
+    }
+    return actual === condition
+  })
 }
 
-type Args = { where: { publicToken: string }; select: Record<string, any> }
+/** A `findFirst` over fixture rows that honours the query's filters. */
+function findFirstIn(rows: Row[]) {
+  return (async (args: { where: Record<string, unknown> }) =>
+    rows.find((row) => matches(row, args.where)) ? { id: 'row' } : null) as never
+}
 
 beforeEach(() => {
-  vi.mocked(db.serviceRecord.findUnique).mockImplementation((async (args: Args) => {
-    const row = serviceRecords[args.where.publicToken]
-    if (!row) return null
-    return {
-      organizationId: row.organizationId,
-      attachments: filterAttachments(row.attachments, args.select.attachments.where),
-    }
-  }) as never)
-  vi.mocked(db.quote.findFirst).mockImplementation((async (args: Args) => {
-    const row = quotes[args.where.publicToken]
-    if (!row) return null
-    return {
-      organizationId: row.organizationId,
-      attachments: filterAttachments(row.attachments, args.select.attachments.where),
-    }
-  }) as never)
-  vi.mocked(db.inspection.findFirst).mockImplementation((async (args: Args) => {
-    const row = inspections[args.where.publicToken]
-    if (!row) return null
-    return {
-      organizationId: row.organizationId,
-      items: row.items,
-      attachments: filterAttachments(row.attachments, args.select.attachments.where),
-    }
-  }) as never)
-  vi.mocked(db.statusReport.findFirst).mockImplementation((async (args: Args) => {
-    return statusReports[args.where.publicToken] ?? null
-  }) as never)
+  vi.clearAllMocks()
+  vi.mocked(findSharedDocumentOfAnyKind).mockImplementation(async (token: string) => {
+    const doc = shared[token]
+    return doc ? ({ ...doc, expiry: {} } as never) : null
+  })
+  vi.mocked(db.statusReport.findFirst).mockImplementation(
+    (async (args: { where: { publicToken: string } }) =>
+      statusReports[args.where.publicToken] ?? null) as never
+  )
+  vi.mocked(db.serviceAttachment.findFirst).mockImplementation(findFirstIn(serviceAttachments))
+  vi.mocked(db.quoteAttachment.findFirst).mockImplementation(findFirstIn(quoteAttachments))
+  vi.mocked(db.inspectionItem.findFirst).mockImplementation(findFirstIn(inspectionItems))
+  vi.mocked(db.inspectionAttachment.findFirst).mockImplementation(
+    findFirstIn(inspectionAttachments)
+  )
   vi.mocked(db.appSetting.findMany).mockImplementation((async (args: {
     where: { organizationId: string; key: { in: string[] } }
   }) =>
@@ -174,11 +185,11 @@ beforeEach(() => {
 })
 
 async function opens(token: string, category: string, file: string) {
-  const shared = await loadSharedDocumentFiles(token)
-  return !!shared && isSharedFile(shared, category, file)
+  const resolved = await resolveSharedFileToken(token)
+  return resolved.status === 'open' && (await isSharedFile(resolved.document, category, file))
 }
 
-describe('storedFileKey', () => {
+describe('stored addresses', () => {
   it('reads both address forms of this workshop', () => {
     expect(storedFileKey(url('services', 'a.jpg'), ORG)).toBe('services/a.jpg')
     expect(storedFileKey(`/api/files/${ORG}/services/a.jpg`, ORG)).toBe('services/a.jpg')
@@ -190,6 +201,12 @@ describe('storedFileKey', () => {
     expect(storedFileKey('/uploads/services/a.jpg', ORG)).toBeNull()
     expect(storedFileKey(null, ORG)).toBeNull()
   })
+
+  it('asks the database for exactly the addresses that read back as the file', () => {
+    for (const stored of storedFileUrls(ORG, 'services', 'a.jpg')) {
+      expect(storedFileKey(stored, ORG)).toBe('services/a.jpg')
+    }
+  })
 })
 
 describe('a work order or invoice link', () => {
@@ -200,7 +217,7 @@ describe('a work order or invoice link', () => {
     expect(await opens('job-token', 'tire-hotel', 'tire-set.jpg')).toBe(true)
   })
 
-  it('opens the workshop’s logos', async () => {
+  it('opens the workshop’s logos, a stored value with stray spaces included', async () => {
     expect(await opens('job-token', 'logos', 'company.png')).toBe(true)
     expect(await opens('job-token', 'logos', 'quote-letterhead.png')).toBe(true)
   })
@@ -267,14 +284,65 @@ describe('a status report link', () => {
     expect(await opens('report-token', 'services', 'stranger-photo.jpg')).toBe(false)
   })
 
-  it('stops opening its video once the report has expired', async () => {
-    expect(await opens('expired-report-token', 'services', 'old-walkaround.mp4')).toBe(false)
+  it('is closed once the report has expired', async () => {
+    expect(await resolveSharedFileToken('expired-report-token')).toEqual({ status: 'expired' })
   })
 })
 
 describe('a token no document carries', () => {
   it('opens nothing', async () => {
-    expect(await loadSharedDocumentFiles('no-such-token')).toBeNull()
+    expect(await resolveSharedFileToken('no-such-token')).toEqual({ status: 'unknown' })
+  })
+})
+
+describe('what one file costs', () => {
+  const invoice: SharedFileDocument = { kind: 'invoice', id: 'job', organizationId: ORG }
+
+  it('asks one narrow question for a document’s own file, and reads no logos', async () => {
+    expect(await isSharedFile(invoice, 'services', 'job-photo.jpg')).toBe(true)
+    expect(db.serviceAttachment.findFirst).toHaveBeenCalledTimes(1)
+    expect(db.appSetting.findMany).not.toHaveBeenCalled()
+    // Only the addresses that name the file, on this document, shown on it.
+    expect(vi.mocked(db.serviceAttachment.findFirst).mock.calls[0][0]).toEqual({
+      where: {
+        serviceRecordId: 'job',
+        includeInInvoice: true,
+        fileUrl: { in: storedFileUrls(ORG, 'services', 'job-photo.jpg') },
+      },
+      select: { id: true },
+    })
+  })
+
+  it('reads the logos first for a logo, and nothing of the document', async () => {
+    expect(await isSharedFile(invoice, 'logos', 'company.png')).toBe(true)
+    expect(db.appSetting.findMany).toHaveBeenCalledTimes(1)
+    expect(db.serviceAttachment.findFirst).not.toHaveBeenCalled()
+  })
+
+  it('asks an inspection about the one file, never for every check’s photos', async () => {
+    const inspection: SharedFileDocument = {
+      kind: 'inspection',
+      id: 'inspection',
+      organizationId: ORG,
+    }
+    expect(await isSharedFile(inspection, 'inspections', 'brake-pads.jpg')).toBe(true)
+    expect(vi.mocked(db.inspectionItem.findFirst).mock.calls[0][0]).toEqual({
+      where: {
+        inspectionId: 'inspection',
+        imageUrls: { hasSome: storedFileUrls(ORG, 'inspections', 'brake-pads.jpg') },
+      },
+      select: { id: true },
+    })
+    expect(db.inspectionAttachment.findFirst).not.toHaveBeenCalled()
+  })
+
+  it('needs no query at all for a status report’s video', async () => {
+    const resolved = await resolveSharedFileToken('report-token')
+    vi.mocked(db.statusReport.findFirst).mockClear()
+    expect(resolved.status).toBe('open')
+    if (resolved.status !== 'open') return
+    expect(await isSharedFile(resolved.document, 'services', 'walkaround.mp4')).toBe(true)
+    expect(db.statusReport.findFirst).not.toHaveBeenCalled()
   })
 })
 
@@ -291,6 +359,7 @@ describe('the public file route', () => {
     }
     write(ORG, 'services', 'job-photo.jpg', 'job photo')
     write(ORG, 'services', 'other-job-photo.jpg', 'other job photo')
+    write(ORG, 'services', 'old-walkaround.mp4', 'old video')
     write(ORG, 'logos', 'company.png', 'logo')
     write(OTHER_ORG, 'services', 'stranger-photo.jpg', 'stranger photo')
   })
@@ -306,12 +375,13 @@ describe('the public file route', () => {
       params: Promise.resolve({ token, path: [category, file] }),
     })
 
-  it('serves the document’s own file, never cached', async () => {
+  it('serves the document’s own file, never cached, looking the token up once', async () => {
     const response = await get('job-token', 'services', 'job-photo.jpg')
     expect(response.status).toBe(200)
     expect(await response.text()).toBe('job photo')
     expect(response.headers.get('content-type')).toBe('image/jpeg')
     expect(response.headers.get('cache-control')).toBe('private, no-store')
+    expect(findSharedDocumentOfAnyKind).toHaveBeenCalledTimes(1)
   })
 
   it('answers another job’s real file exactly as a missing one', async () => {
@@ -332,6 +402,14 @@ describe('the public file route', () => {
       const response = await get(token, 'logos', 'company.png')
       expect(response.status, token).toBe(200)
     }
+  })
+
+  it('says a closed link is closed, for a document and a status report alike', async () => {
+    const closedJob = await get('closed-job-token', 'logos', 'company.png')
+    const closedReport = await get('expired-report-token', 'services', 'old-walkaround.mp4')
+    expect(closedJob.status).toBe(410)
+    expect(closedReport.status).toBe(410)
+    expect(await closedReport.json()).toEqual(await closedJob.json())
   })
 
   it('serves a stored SVG logo only as a sandboxed download', async () => {

@@ -1,6 +1,8 @@
 import 'server-only'
 import { db } from '@/lib/db'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import type { ShareKind } from '@/lib/share-expiry'
+import { findSharedDocumentOfAnyKind } from '@/lib/share-link.server'
 
 /**
  * Which uploads a share link's token opens.
@@ -14,6 +16,11 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
  * Each share page turns a stored address into `/api/public/files/<token>/
  * <category>/<file>`. When a page starts drawing a new file, add its column
  * here too, or the customer sees a broken image.
+ *
+ * A share page with fifty photos asks this fifty times, so the token is
+ * looked up once per request, that one lookup also answers whether the link
+ * is still open, and each file is a single narrow question ("is this address
+ * on this document") rather than a load of everything the document holds.
  */
 
 /** The settings that hold a logo a shared page or its sheet draws. */
@@ -31,11 +38,15 @@ const SHOWN_QUOTE_CATEGORIES = ['image', 'document']
 /** Both forms a stored upload address has had: `/api/protected/files/` and `/api/files/`. */
 const STORED_FILE_URL = /^\/api\/(?:protected\/)?files\/([^/]+)\/([^/]+)\/([^/]+)$/
 
-export interface SharedDocumentFiles {
-  organizationId: string
-  /** `<category>/<file>` for every upload the document shows. */
-  files: Set<string>
-}
+/** The document behind an open link, as much of it as the file check needs. */
+export type SharedFileDocument =
+  | { kind: ShareKind; id: string; organizationId: string }
+  | { kind: 'statusReport'; id: string; organizationId: string; videoUrl: string | null }
+
+export type SharedFileToken =
+  | { status: 'unknown' }
+  | { status: 'expired' }
+  | { status: 'open'; document: SharedFileDocument }
 
 /**
  * The `<category>/<file>` a stored address names, or null when it is not an
@@ -53,111 +64,117 @@ export function storedFileKey(
   return `${category}/${file}`
 }
 
-function collect(organizationId: string, urls: (string | null | undefined)[]): Set<string> {
-  const files = new Set<string>()
-  for (const url of urls) {
-    const key = storedFileKey(url, organizationId)
-    if (key) files.add(key)
-  }
-  return files
-}
-
-/** The document a token stands for, as the urls of what its page shows. */
-async function documentFileUrls(
-  token: string
-): Promise<{ organizationId: string; urls: (string | null)[] } | null> {
-  // A work order or invoice: the files the workshop attached for the customer.
-  const record = await db.serviceRecord.findUnique({
-    where: { publicToken: token },
-    select: {
-      organizationId: true,
-      attachments: { where: { includeInInvoice: true }, select: { fileUrl: true } },
-    },
-  })
-  if (record?.organizationId) {
-    return {
-      organizationId: record.organizationId,
-      urls: record.attachments.map((file) => file.fileUrl),
-    }
-  }
-
-  // A quote: its photos and documents.
-  const quote = await db.quote.findFirst({
-    where: { publicToken: token },
-    select: {
-      organizationId: true,
-      attachments: {
-        where: { category: { in: SHOWN_QUOTE_CATEGORIES } },
-        select: { fileUrl: true },
-      },
-    },
-  })
-  if (quote?.organizationId) {
-    return {
-      organizationId: quote.organizationId,
-      urls: quote.attachments.map((file) => file.fileUrl),
-    }
-  }
-
-  // An inspection: every check's photos and videos, and the files on the
-  // inspection as a whole that the workshop chose to show.
-  const inspection = await db.inspection.findFirst({
-    where: { publicToken: token },
-    select: {
-      organizationId: true,
-      items: { select: { imageUrls: true } },
-      attachments: { where: { includeInReport: true }, select: { fileUrl: true } },
-    },
-  })
-  if (inspection?.organizationId) {
-    return {
-      organizationId: inspection.organizationId,
-      urls: [
-        ...inspection.items.flatMap((item) => item.imageUrls),
-        ...inspection.attachments.map((file) => file.fileUrl),
-      ],
-    }
-  }
-
-  // A status report: its video, while the report's own page still opens.
-  // Its expiry is its own column, which the link checks for the other
-  // documents do not read.
-  const report = await db.statusReport.findFirst({
-    where: { publicToken: token },
-    select: { organizationId: true, videoUrl: true, expiresAt: true },
-  })
-  if (report?.organizationId) {
-    const closed = report.expiresAt !== null && report.expiresAt < new Date()
-    return { organizationId: report.organizationId, urls: closed ? [] : [report.videoUrl] }
-  }
-
-  return null
+/**
+ * Every stored address that names this file: exactly the addresses
+ * `storedFileKey` reads back as `<category>/<file>` for this workshop.
+ */
+export function storedFileUrls(organizationId: string, category: string, file: string): string[] {
+  return [
+    `/api/protected/files/${organizationId}/${category}/${file}`,
+    `/api/files/${organizationId}/${category}/${file}`,
+  ]
 }
 
 /**
- * The uploads a token opens, or null for a token no document carries.
+ * The document a token stands for, and whether its link is open. One lookup
+ * serves both the expiry check and the file check. Invoices are tried first,
+ * being what most links lead to; a status report, which keeps its expiry in
+ * a column of its own, last.
  */
-export async function loadSharedDocumentFiles(token: string): Promise<SharedDocumentFiles | null> {
-  const shared = await documentFileUrls(token)
-  if (!shared) return null
-  const logos = await db.appSetting.findMany({
-    where: { organizationId: shared.organizationId, key: { in: LOGO_SETTING_KEYS } },
-    select: { value: true },
+export async function resolveSharedFileToken(token: string): Promise<SharedFileToken> {
+  const shared = await findSharedDocumentOfAnyKind(token)
+  if (shared) {
+    if (!shared.open) return { status: 'expired' }
+    return {
+      status: 'open',
+      document: { kind: shared.kind, id: shared.id, organizationId: shared.organizationId },
+    }
+  }
+
+  const report = await db.statusReport.findFirst({
+    where: { publicToken: token },
+    select: { id: true, organizationId: true, videoUrl: true, expiresAt: true },
   })
+  if (!report?.organizationId) return { status: 'unknown' }
+  // A report's video closes with the report's own page, and says so the way
+  // every other closed link does.
+  if (report.expiresAt !== null && report.expiresAt < new Date()) return { status: 'expired' }
   return {
-    organizationId: shared.organizationId,
-    files: collect(shared.organizationId, [
-      ...shared.urls,
-      ...logos.map((setting) => setting.value.trim()),
-    ]),
+    status: 'open',
+    document: {
+      kind: 'statusReport',
+      id: report.id,
+      organizationId: report.organizationId,
+      videoUrl: report.videoUrl,
+    },
   }
 }
 
+/** Whether the document itself shows a file stored under any of these addresses. */
+async function documentShows(document: SharedFileDocument, urls: string[]): Promise<boolean> {
+  switch (document.kind) {
+    case 'invoice': {
+      // A work order or invoice: the files the workshop attached for the customer.
+      const row = await db.serviceAttachment.findFirst({
+        where: { serviceRecordId: document.id, includeInInvoice: true, fileUrl: { in: urls } },
+        select: { id: true },
+      })
+      return row !== null
+    }
+    case 'quote': {
+      // A quote: its photos and documents.
+      const row = await db.quoteAttachment.findFirst({
+        where: {
+          quoteId: document.id,
+          category: { in: SHOWN_QUOTE_CATEGORIES },
+          fileUrl: { in: urls },
+        },
+        select: { id: true },
+      })
+      return row !== null
+    }
+    case 'inspection': {
+      // An inspection: every check's photos and videos, and the files on the
+      // inspection as a whole that the workshop chose to show.
+      const item = await db.inspectionItem.findFirst({
+        where: { inspectionId: document.id, imageUrls: { hasSome: urls } },
+        select: { id: true },
+      })
+      if (item) return true
+      const attachment = await db.inspectionAttachment.findFirst({
+        where: { inspectionId: document.id, includeInReport: true, fileUrl: { in: urls } },
+        select: { id: true },
+      })
+      return attachment !== null
+    }
+    case 'statusReport':
+      // A status report: its video.
+      return document.videoUrl !== null && urls.includes(document.videoUrl)
+  }
+}
+
+/** Whether the file is one of the workshop's logos. */
+async function isWorkshopLogo(organizationId: string, key: string): Promise<boolean> {
+  const logos = await db.appSetting.findMany({
+    where: { organizationId, key: { in: LOGO_SETTING_KEYS } },
+    select: { value: true },
+  })
+  return logos.some((setting) => storedFileKey(setting.value.trim(), organizationId) === key)
+}
+
 /** Whether the shared document shows this file. */
-export function isSharedFile(
-  shared: SharedDocumentFiles,
+export async function isSharedFile(
+  document: SharedFileDocument,
   category: string,
   filename: string
-): boolean {
-  return shared.files.has(`${category}/${filename}`)
+): Promise<boolean> {
+  const { organizationId } = document
+  const urls = storedFileUrls(organizationId, category, filename)
+  const key = `${category}/${filename}`
+  // A logo is asked about on every page of every link; anything else is a
+  // file of the document. Both are tried either way, in the likelier order.
+  if (category === 'logos') {
+    return (await isWorkshopLogo(organizationId, key)) || (await documentShows(document, urls))
+  }
+  return (await documentShows(document, urls)) || (await isWorkshopLogo(organizationId, key))
 }
