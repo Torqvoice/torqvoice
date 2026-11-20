@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Campos personalizados",
-    "description": "Defina campos personalizados que aparecen en registros de servicio y presupuestos.",
+    "description": "Los datos adicionales que registra tu taller: campos predefinidos, tus propios campos, contadores y equipamiento.",
     "addField": "Agregar campo",
     "filterAll": "Todos",
     "serviceRecord": "Registro de servicio",

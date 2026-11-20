@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Benutzerdefinierte Felder",
-    "description": "Definieren Sie benutzerdefinierte Felder, die auf Serviceberichten und Angeboten erscheinen.",
+    "description": "Die zusätzlichen Angaben, die Ihre Werkstatt erfasst: fertige Felder, eigene Felder, Zähler und Ausrüstung.",
     "addField": "Feld hinzufügen",
     "filterAll": "Alle",
     "serviceRecord": "Servicebericht",

@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Pola niestandardowe",
-    "description": "Zdefiniuj pola niestandardowe, które pojawiają się na kartach serwisowych i wycenach.",
+    "description": "Dodatkowe dane, które zapisuje Twój warsztat: gotowe pola, własne pola, liczniki i wyposażenie.",
     "addField": "Dodaj pole",
     "filterAll": "Wszystkie",
     "serviceRecord": "Karta serwisowa",

@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Campos personalizados",
-    "description": "Defina campos personalizados que aparecem nos registos de serviço e nos orçamentos.",
+    "description": "Os dados adicionais que a sua oficina regista: campos predefinidos, os seus campos, contadores e equipamentos.",
     "addField": "Adicionar campo",
     "filterAll": "Todos",
     "serviceRecord": "Registo de serviço",

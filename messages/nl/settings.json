@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Aangepaste velden",
-    "description": "Definieer aangepaste velden die verschijnen op servicerapporten en offertes.",
+    "description": "De extra gegevens die uw werkplaats vastlegt: kant-en-klare velden, uw eigen velden, tellers en uitrusting.",
     "addField": "Veld toevoegen",
     "filterAll": "Alle",
     "serviceRecord": "Servicerapport",

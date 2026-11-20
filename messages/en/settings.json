@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Custom Fields",
-    "description": "Define custom fields that appear on service records and quotes.",
+    "description": "The extra details your workshop records: ready-made fields, your own fields, meters and equipment.",
     "addField": "Add Field",
     "filterAll": "All",
     "serviceRecord": "Service Record",

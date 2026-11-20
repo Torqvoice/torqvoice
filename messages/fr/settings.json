@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Champs personnalisés",
-    "description": "Définissez des champs personnalisés qui apparaissent sur les fiches de service et les devis.",
+    "description": "Les informations supplémentaires que votre atelier enregistre : champs prêts à l'emploi, vos propres champs, compteurs et équipements.",
     "addField": "Ajouter un champ",
     "filterAll": "Tous",
     "serviceRecord": "Fiche de service",

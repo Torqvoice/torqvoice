@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Özel alanlar",
-    "description": "Servis kayıtlarında ve tekliflerde görünen özel alanları tanımlayın.",
+    "description": "Atölyenizin kaydettiği ek bilgiler: hazır alanlar, kendi alanlarınız, sayaçlar ve ekipman.",
     "addField": "Alan ekle",
     "filterAll": "Tümü",
     "serviceRecord": "Servis kaydı",

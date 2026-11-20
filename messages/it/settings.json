@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Campi personalizzati",
-    "description": "Definisci campi personalizzati che appaiono su schede di servizio e preventivi.",
+    "description": "I dati aggiuntivi che la tua officina registra: campi pronti, i tuoi campi, contatori e attrezzature.",
     "addField": "Aggiungi campo",
     "filterAll": "Tutti",
     "serviceRecord": "Scheda di servizio",

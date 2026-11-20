@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Egendefinerte felter",
-    "description": "Definer egendefinerte felter som vises på serviceregistreringer og tilbud.",
+    "description": "De ekstra opplysningene verkstedet ditt registrerer: ferdige felter, dine egne felter, målere og utstyr.",
     "addField": "Legg til felt",
     "filterAll": "Alle",
     "serviceRecord": "Serviceregistrering",

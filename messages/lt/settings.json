@@ -1165,7 +1165,7 @@
   },
   "customFields": {
     "title": "Pasirinktiniai laukai",
-    "description": "Apibrėžkite pasirinktinius laukus, rodomus paslaugų įrašuose ir pasiūlymuose.",
+    "description": "Papildoma informacija, kurią fiksuoja jūsų dirbtuvės: paruošti laukai, jūsų laukai, skaitikliai ir įranga.",
     "addField": "Pridėti lauką",
     "filterAll": "Visi",
     "serviceRecord": "Paslaugos įrašas",

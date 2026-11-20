@@ -124,7 +124,10 @@ function ReadyMadeRow({
           aria-describedby={`${switchId}-hint`}
         />
       </div>
-      <p id={`${switchId}-hint`} className="text-xs leading-relaxed text-muted-foreground">
+      <p
+        id={`${switchId}-hint`}
+        className="max-w-3xl text-xs leading-relaxed text-muted-foreground"
+      >
         {hint}
       </p>
     </li>
