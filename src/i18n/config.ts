@@ -1,5 +1,6 @@
 export const locales = [
   'en',
+  'bg',
   'de',
   'es',
   'fr',
@@ -20,6 +21,7 @@ export const defaultLocale: Locale = 'en'
 
 export const localeNames: Record<Locale, string> = {
   en: 'English',
+  bg: 'Български',
   de: 'Deutsch',
   es: 'Español',
   fr: 'Français',
