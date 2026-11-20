@@ -96,6 +96,8 @@
     "toMarine": "Til båt",
     "pick": "Velg et kjøretøy",
     "pickMarine": "Velg en båt",
+    "noVehicles": "Ingen kjøretøy funnet.",
+    "noVehiclesMarine": "Ingen båter funnet.",
     "confirm": "Flytt",
     "moved": "{name} flyttet",
     "saveError": "Kunne ikke flytte utstyret"

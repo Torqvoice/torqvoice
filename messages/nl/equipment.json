@@ -96,6 +96,8 @@
     "toMarine": "Naar boot",
     "pick": "Kies een voertuig",
     "pickMarine": "Kies een boot",
+    "noVehicles": "Geen voertuigen gevonden.",
+    "noVehiclesMarine": "Geen boten gevonden.",
     "confirm": "Verplaatsen",
     "moved": "{name} verplaatst",
     "saveError": "Kan de uitrusting niet verplaatsen"

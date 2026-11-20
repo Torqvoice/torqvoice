@@ -65,6 +65,9 @@ export function MoveEquipmentDialog({
             value={vehicleId}
             onChange={(id) => setVehicleId(id === item.vehicleId ? '' : id)}
             placeholder={t(isMarine ? 'pickMarine' : 'pick')}
+            allowNone={false}
+            excludeId={item.vehicleId}
+            emptyLabel={t(isMarine ? 'noVehiclesMarine' : 'noVehicles')}
           />
         </DialogBody>
         <DialogFooter>

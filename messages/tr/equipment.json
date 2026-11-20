@@ -96,6 +96,8 @@
     "toMarine": "Hedef tekne",
     "pick": "Bir araç seçin",
     "pickMarine": "Bir tekne seçin",
+    "noVehicles": "Araç bulunamadı.",
+    "noVehiclesMarine": "Tekne bulunamadı.",
     "confirm": "Taşı",
     "moved": "{name} taşındı",
     "saveError": "Ekipman taşınamadı"

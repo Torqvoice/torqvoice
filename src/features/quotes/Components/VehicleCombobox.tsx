@@ -44,6 +44,8 @@ interface VehicleComboboxProps {
   emptyLabel?: string
   /** When set, only this customer's vehicles are offered */
   customerId?: string
+  /** A vehicle left out of the list, such as the one something moves away from */
+  excludeId?: string
   /**
    * Shown under the list, e.g. a way to add a vehicle; `close` shuts the
    * list, and `search` is what was typed, for a form that starts from it
@@ -67,6 +69,7 @@ export function VehicleCombobox({
   allowNone = true,
   emptyLabel = 'No vehicles found.',
   customerId,
+  excludeId,
   footer,
   disabled = false,
 }: VehicleComboboxProps) {
@@ -225,7 +228,7 @@ export function VehicleCombobox({
                   {noneLabel}
                 </CommandItem>
               )}
-              {options.map((v) => (
+              {(excludeId ? options.filter((v) => v.id !== excludeId) : options).map((v) => (
                 <CommandItem
                   key={v.id}
                   onSelect={() => {

@@ -96,6 +96,8 @@
     "toMarine": "Auf Boot",
     "pick": "Fahrzeug auswählen",
     "pickMarine": "Boot auswählen",
+    "noVehicles": "Keine Fahrzeuge gefunden.",
+    "noVehiclesMarine": "Keine Boote gefunden.",
     "confirm": "Umsetzen",
     "moved": "{name} umgesetzt",
     "saveError": "Die Ausrüstung konnte nicht umgesetzt werden"

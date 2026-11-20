@@ -96,6 +96,8 @@
     "toMarine": "Para a embarcação",
     "pick": "Escolha um veículo",
     "pickMarine": "Escolha uma embarcação",
+    "noVehicles": "Nenhum veículo encontrado.",
+    "noVehiclesMarine": "Nenhuma embarcação encontrada.",
     "confirm": "Mover",
     "moved": "{name} movido",
     "saveError": "Não foi possível mover o equipamento"

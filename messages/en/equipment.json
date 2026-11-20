@@ -96,6 +96,8 @@
     "toMarine": "To vessel",
     "pick": "Choose a vehicle",
     "pickMarine": "Choose a vessel",
+    "noVehicles": "No vehicles found.",
+    "noVehiclesMarine": "No vessels found.",
     "confirm": "Move",
     "moved": "Moved {name}",
     "saveError": "Could not move the equipment"

@@ -96,6 +96,8 @@
     "toMarine": "Vers le bateau",
     "pick": "Choisir un véhicule",
     "pickMarine": "Choisir un bateau",
+    "noVehicles": "Aucun véhicule trouvé.",
+    "noVehiclesMarine": "Aucun bateau trouvé.",
     "confirm": "Déplacer",
     "moved": "{name} déplacé",
     "saveError": "Impossible de déplacer l'équipement"

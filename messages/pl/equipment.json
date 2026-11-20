@@ -96,6 +96,8 @@
     "toMarine": "Na łódź",
     "pick": "Wybierz pojazd",
     "pickMarine": "Wybierz łódź",
+    "noVehicles": "Nie znaleziono pojazdów.",
+    "noVehiclesMarine": "Nie znaleziono łodzi.",
     "confirm": "Przenieś",
     "moved": "Przeniesiono {name}",
     "saveError": "Nie udało się przenieść wyposażenia"

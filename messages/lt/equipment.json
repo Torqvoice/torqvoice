@@ -96,6 +96,8 @@
     "toMarine": "Į laivą",
     "pick": "Pasirinkite transporto priemonę",
     "pickMarine": "Pasirinkite laivą",
+    "noVehicles": "Transporto priemonių nerasta.",
+    "noVehiclesMarine": "Laivų nerasta.",
     "confirm": "Perkelti",
     "moved": "Perkelta: {name}",
     "saveError": "Nepavyko perkelti įrangos"
