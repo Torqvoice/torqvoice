@@ -8,6 +8,7 @@ import {
 } from '../../support/db'
 import { settle } from '../../support/hydration'
 import { type PdfContent, pdfContent } from '../../support/pdf'
+import { openCustomFieldsTab, setReadyMadeField } from '../../support/settings'
 import {
   addLabor,
   newWorkOrder,
@@ -173,17 +174,10 @@ test.describe('the customer reference / PO', () => {
     await expect(dialog.getByText('PO required')).toHaveCount(0)
   })
 
-  test('is switched on in Settings, Workshop', async ({ page }) => {
-    await page.goto('/settings/workshop')
-    await settle(page)
-    const toggle = page.locator('#customerReferenceEnabled')
-    await expect(toggle).toHaveAttribute('aria-checked', 'false')
-    await expect(async () => {
-      await toggle.click()
-      await expect(toggle).toHaveAttribute('aria-checked', 'true', { timeout: 2_000 })
-    }).toPass({ timeout: 30_000 })
-    await page.getByRole('button', { name: 'Save Workshop Settings' }).click()
-    await expect(page.getByText('Settings saved')).toBeVisible()
+  test('is switched on in Settings, Invoice & Quotes, Custom Fields', async ({ page }) => {
+    await openCustomFieldsTab(page)
+    await expect(page.locator('#customerReferenceEnabled')).toHaveAttribute('aria-checked', 'false')
+    await setReadyMadeField(page, 'customerReferenceEnabled', true)
 
     await page.reload()
     await expect(page.locator('#customerReferenceEnabled')).toHaveAttribute('aria-checked', 'true')
@@ -350,15 +344,8 @@ test.describe('the customer reference / PO', () => {
   })
 
   test('switched off again, it is hidden everywhere and kept', async ({ page }) => {
-    await page.goto('/settings/workshop')
-    await settle(page)
-    const toggle = page.locator('#customerReferenceEnabled')
-    await expect(async () => {
-      await toggle.click()
-      await expect(toggle).toHaveAttribute('aria-checked', 'false', { timeout: 2_000 })
-    }).toPass({ timeout: 30_000 })
-    await page.getByRole('button', { name: 'Save Workshop Settings' }).click()
-    await expect(page.getByText('Settings saved')).toBeVisible()
+    await openCustomFieldsTab(page)
+    await setReadyMadeField(page, 'customerReferenceEnabled', false)
 
     await page.goto(jobUrl)
     await expect(page.getByTestId('job-facts')).toBeVisible()

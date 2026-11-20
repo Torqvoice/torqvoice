@@ -2,6 +2,7 @@ import { expect, type Page, test } from '@playwright/test'
 import { Client } from 'pg'
 import { ownerOrganizationId } from '../../support/db'
 import { settle } from '../../support/hydration'
+import { openCustomFieldsTab } from '../../support/settings'
 import { pdfContent } from '../../support/pdf'
 import { addLabor, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/work-order'
 
@@ -100,8 +101,7 @@ test.describe('equipment', () => {
   test('kinds of equipment are defined and put in order in Settings, Custom Fields', async ({
     page,
   }) => {
-    await page.goto('/settings/invoice?tab=customFields')
-    await settle(page)
+    await openCustomFieldsTab(page)
     const manager = page.getByTestId('equipment-types-manager')
     for (const name of [CRANE, TAIL_LIFT]) {
       await manager.locator('#equipment-type-name').fill(name)

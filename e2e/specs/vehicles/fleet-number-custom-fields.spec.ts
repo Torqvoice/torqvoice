@@ -2,6 +2,7 @@ import { expect, type Page, test } from '@playwright/test'
 import { Client } from 'pg'
 import { ownerOrganizationId } from '../../support/db'
 import { settle } from '../../support/hydration'
+import { openCustomFieldsTab, setReadyMadeField } from '../../support/settings'
 import { seededVehicleUrl } from '../../support/work-order'
 
 /**
@@ -106,17 +107,12 @@ test.describe('the fleet number and a vehicle’s own fields', () => {
     await expect(dialog.getByTestId('custom-fields-vehicle')).toHaveCount(0)
   })
 
-  test('the fleet number is switched on in Settings, Workshop', async ({ page }) => {
-    await page.goto('/settings/workshop')
-    await settle(page)
-    const toggle = page.locator('#fleetNumberEnabled')
-    await expect(toggle).toHaveAttribute('aria-checked', 'false')
-    await expect(async () => {
-      await toggle.click()
-      await expect(toggle).toHaveAttribute('aria-checked', 'true', { timeout: 2_000 })
-    }).toPass({ timeout: 30_000 })
-    await page.getByRole('button', { name: 'Save Workshop Settings' }).click()
-    await expect(page.getByText('Settings saved')).toBeVisible()
+  test('the fleet number is switched on in Settings, Invoice & Quotes, Custom Fields', async ({
+    page,
+  }) => {
+    await openCustomFieldsTab(page)
+    await expect(page.locator('#fleetNumberEnabled')).toHaveAttribute('aria-checked', 'false')
+    await setReadyMadeField(page, 'fleetNumberEnabled', true)
 
     await page.reload()
     await expect(page.locator('#fleetNumberEnabled')).toHaveAttribute('aria-checked', 'true')

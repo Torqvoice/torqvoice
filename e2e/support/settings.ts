@@ -300,3 +300,41 @@ export async function setWarrantyDefaults(page: Page, warranty: WarrantySetup): 
   await page.getByRole('button', { name: 'Save warranty settings', exact: true }).click()
   await expect(page.getByText('Warranty settings saved', { exact: true })).toBeVisible()
 }
+
+/**
+ * Settings, Invoice & Quotes, Custom Fields, reached the way a person gets
+ * there: the sidebar, the settings menu, then the tab. Opening it by address
+ * would not notice a page the menu no longer leads to.
+ */
+export async function openCustomFieldsTab(page: Page): Promise<void> {
+  await page.goto('/')
+  await settle(page)
+  await page.getByRole('link', { name: 'Settings', exact: true }).first().click()
+  await page.waitForURL(/\/settings/)
+  await settle(page)
+  await page
+    .getByRole('link', { name: /^Invoice & Quotes/ })
+    .first()
+    .click()
+  await page.waitForURL(/\/settings\/invoice/)
+  await settle(page)
+  await page.getByRole('button', { name: 'Custom Fields', exact: true }).click()
+  await page.waitForURL(/tab=customFields/)
+  await expect(page.getByTestId('ready-made-fields')).toBeVisible()
+}
+
+/**
+ * One of the ready-made fields on that tab (`customerReferenceEnabled` or
+ * `fleetNumberEnabled`), switched and saved: the switch saves on its own.
+ */
+export async function setReadyMadeField(page: Page, id: string, on: boolean): Promise<void> {
+  const toggle = page.locator(`#${id}`)
+  await expect(toggle).toBeVisible()
+  if ((await toggle.getAttribute('aria-checked')) === String(on)) return
+  await expect(async () => {
+    if ((await toggle.getAttribute('aria-checked')) === String(on)) return
+    await toggle.click()
+    await expect(toggle).toHaveAttribute('aria-checked', String(on), { timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+  await expect(page.getByText('Settings saved').first()).toBeVisible()
+}
