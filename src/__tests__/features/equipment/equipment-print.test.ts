@@ -373,6 +373,14 @@ describe('the designer’s sample', () => {
     expect(items?.vehicle.map((row) => row.type)).toEqual(['Crane', 'Tail lift'])
     expect(items?.job.map((row) => row.type)).toEqual(['Crane'])
   })
+
+  it('names no maker of one kind under a workshop’s other kinds', () => {
+    // A workshop whose first type is a tail lift: no crane maker beside it.
+    const items = sample(['Tail lift', 'Crane'])
+    const makes = items?.vehicle.map((row) => `${row.make} ${row.model}`) ?? []
+    expect(makes.join(' ')).not.toMatch(/Hiab|HiPro|Dhollandia|Palfinger/i)
+    expect(new Set(makes).size).toBe(2)
+  })
 })
 
 describe('an issued invoice', () => {

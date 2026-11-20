@@ -504,9 +504,11 @@ export function buildSampleData(
 }
 
 /**
- * A crane and a tail lift, under the workshop's own names for its first two
- * kinds of equipment. Makes, models and serials are made up, and dates go
- * through the workshop's date format like the rest of the sample.
+ * Two items under the workshop's own names for its first two kinds of
+ * equipment. The makes, models and serials are made up and belong to no kind
+ * in particular, so a workshop whose first type is a tail lift never sees a
+ * crane maker's name on it. Dates go through the workshop's date format like
+ * the rest of the sample.
  */
 function sampleEquipment(
   workshop: DesignerWorkshop,
@@ -517,14 +519,14 @@ function sampleEquipment(
   const day = (key: string) => format.date(new Date(`${key}T12:00:00Z`))
   const number = (v: number) => v.toLocaleString('en-US', { maximumFractionDigits: 2 })
   const meter = workshop.meterTypes?.[0]
-  const crane: EquipmentRow = {
+  const first: EquipmentRow = {
     type: types[0],
-    make: 'Hiab',
-    model: 'X-HiPro 192',
+    make: 'Northline',
+    model: 'NL 192',
     manufacture_year: '2019',
-    serial_number: 'HB-19-04412',
+    serial_number: 'NL-19-04412',
     install_date: day('2019-06-03'),
-    rated_capacity: '18.5 tm',
+    rated_capacity: '2,000 kg',
     last_examined: day('2026-02-10'),
     next_examination: day('2027-02-10'),
     certificate_reference: 'EX-2026-0117',
@@ -532,21 +534,21 @@ function sampleEquipment(
     meters: meter ? meterLine({ name: meter.name, unit: meter.unit, value: 812.5 }, number) : '',
     notes: '',
   }
-  const tailLift: EquipmentRow = {
+  const second: EquipmentRow = {
     type: types[1] ?? types[0],
-    make: 'Dhollandia',
-    model: 'DH-LM.15',
+    make: 'Fjordmax',
+    model: 'FM 15',
     manufacture_year: '2021',
-    serial_number: 'DH21-88310',
+    serial_number: 'FM-21-88310',
     install_date: day('2021-09-20'),
-    rated_capacity: '1500 kg',
+    rated_capacity: '1,500 kg',
     last_examined: day('2026-05-02'),
     next_examination: day('2026-11-02'),
     certificate_reference: 'EX-2026-0342',
     meters: '',
     notes: '',
   }
-  return { job: [crane], vehicle: [crane, tailLift] }
+  return { job: [first], vehicle: [first, second] }
 }
 
 /** Three marks on a sedan, one of them from last time. */
