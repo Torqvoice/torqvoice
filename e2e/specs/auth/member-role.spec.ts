@@ -150,6 +150,10 @@ test.describe('the built-in Member role', () => {
   })
 
   test('is refused nothing on any page the role is meant to open', async ({ page }) => {
+    // Thirteen pages, each given a few seconds for a late refusal to reach the
+    // audit log: about a minute before any page is slow, so the usual limit
+    // leaves no room.
+    test.setTimeout(180_000)
     await signInAsMember(page)
 
     /**
