@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -207,11 +207,26 @@ export function SettingsNav({
   // page further down, bring that page's row into view so the person can see
   // where they are. "nearest" moves nothing when the row is already visible.
   const navRef = useRef<HTMLElement>(null)
-  useEffect(() => {
+  const showCurrent = useCallback(() => {
     navRef.current
       ?.querySelector<HTMLElement>('[aria-current="page"]')
       ?.scrollIntoView?.({ block: 'nearest' })
-  }, [pathname])
+  }, [])
+  useEffect(showCurrent, [pathname, showCurrent])
+  // On a narrow window this list is hidden and cannot scroll; when the window
+  // widens and it appears, the page has not changed, so look again then.
+  useEffect(() => {
+    const nav = navRef.current
+    if (!nav || typeof ResizeObserver === 'undefined') return
+    let shown = nav.offsetHeight > 0
+    const observer = new ResizeObserver(() => {
+      const now = nav.offsetHeight > 0
+      if (now && !shown) showCurrent()
+      shown = now
+    })
+    observer.observe(nav)
+    return () => observer.disconnect()
+  }, [showCurrent])
 
   const newPill = (item: SettingsPage) =>
     newItems.includes(item.href) ? (
