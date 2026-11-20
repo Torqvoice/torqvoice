@@ -15,6 +15,12 @@ export const createCustomerSchema = z.object({
   notes: z.string().optional(),
   /** An invoice design for this customer's invoices; null follows the default. */
   invoiceDesignId: z.string().nullable().optional(),
+  /**
+   * The workshop's own fields, as the full form shows them, by field id.
+   * Checked and written with the record, all or nothing. Left out by a form
+   * that does not show them, and then not looked at.
+   */
+  customFields: z.record(z.string(), z.string()).optional(),
 })
 
 export const updateCustomerSchema = createCustomerSchema.partial().extend({

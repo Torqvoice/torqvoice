@@ -212,7 +212,14 @@
     "integration_backup_run": "Back-up gestart",
     "integration_backup_restore": "Back-up teruggezet",
     "shareLink_expiry": "Verloop van deellink gewijzigd",
-    "shareLink_revoke": "Deellinks verwijderd"
+    "shareLink_revoke": "Deellinks verwijderd",
+    "meterType_create": "Teller aangemaakt",
+    "meterType_update": "Teller bijgewerkt",
+    "meterType_delete": "Teller verwijderd",
+    "vehicleMeter_remove": "Voertuigteller verwijderd",
+    "vehicleMeter_replace": "Voertuigteller vervangen",
+    "meterReading_markWrong": "Tellerstand als fout gemarkeerd",
+    "meterReading_restore": "Tellerstand weer meegeteld"
   },
   "summary": {
     "auth_twoFactorEnabled": "Inloggen in twee stappen ingeschakeld",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Deellink ingesteld op de instelling van de werkplaats",
     "share_link_expiry_never": "Deellink ingesteld om nooit te verlopen",
     "share_link_expiry_date": "Deellink ingesteld om te verlopen op {date}",
-    "share_link_revoke_bulk": "{count, plural, one {# deellink verwijderd} other {# deellinks verwijderd}}"
+    "share_link_revoke_bulk": "{count, plural, one {# deellink verwijderd} other {# deellinks verwijderd}}",
+    "meterType_create": "Teller \"{name}\" aangemaakt",
+    "meterType_update": "Teller \"{name}\" bijgewerkt",
+    "meterType_delete": "Teller \"{name}\" verwijderd",
+    "vehicleMeter_remove": "Teller \"{name}\" van een voertuig gehaald",
+    "vehicleMeter_replace": "Teller \"{name}\" vervangen: oude eindigde op {oldEnd}, nieuwe begon op {newStart}",
+    "meterReading_markWrong": "Stand {value} van {name} als fout gemarkeerd",
+    "meterReading_restore": "Stand {value} van {name} weer meegeteld"
   }
 }

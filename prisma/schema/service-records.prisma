@@ -195,6 +195,7 @@ model ServiceRecord {
   /// Alerts before a booked job, set when it was booked or edited from the calendar.
   appointmentNotifications AppointmentNotification[]
   conditionMarks           ConditionMark[]
+  meterReadings            MeterReading[]
   discoveredFindings       VehicleFinding[]          @relation("FindingDiscoveredIn")
   resolvedFindings         VehicleFinding[]          @relation("FindingResolvedIn")
 

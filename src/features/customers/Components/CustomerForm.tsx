@@ -39,6 +39,7 @@ import {
   type CustomFieldsSave,
 } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { customFieldsRefusal } from '@/features/custom-fields/Lib/customFieldsRefusal'
+import type { CustomFieldError } from '@/features/custom-fields/Lib/customFieldValueRules'
 
 interface CustomerFormProps {
   open: boolean
@@ -154,13 +155,17 @@ export function CustomerForm({
     const formData = new FormData(e.currentTarget)
 
     // The workshop's own fields first: one left empty that must not be stops
-    // the save here, marked and named on the form, before anything is written.
+    // the save here, marked and named on the form. The values then go with
+    // the customer's own save, which checks them again and writes both or
+    // neither.
+    let customFields: Record<string, string> | undefined
     if (hasCustomFields && customFieldsSave.current) {
-      const checked = await customFieldsSave.current(customer ? undefined : { checkOnly: true })
+      const checked = await customFieldsSave.current({ collect: true })
       if (!checked.valid) {
         toast.error(customFieldsRefusal(checked, tCustom))
         return
       }
+      customFields = checked.values
     }
 
     setLoading(true)
@@ -183,17 +188,20 @@ export function CustomerForm({
         : {}),
       notes: optional('notes'),
       invoiceDesignId: invoiceDesignId === FOLLOW_DEFAULT ? null : invoiceDesignId,
+      ...(customFields ? { customFields } : {}),
     }
 
     const result = customer
       ? await updateCustomer({ ...data, id: customer.id })
       : await createCustomer(data)
 
-    // A new customer has an id now: its custom fields are saved under it.
-    if (result.success && !customer && hasCustomFields && customFieldsSave.current) {
-      const newId = (result.data as { id?: string } | undefined)?.id
-      const saved = newId ? await customFieldsSave.current({ entityId: newId }) : null
-      if (saved && !saved.valid) toast.error(customFieldsRefusal(saved, tCustom))
+    // Refused by the workshop's own fields: nothing was saved. The fields
+    // are marked where they are and the dialog stays open on what was typed.
+    if (!result.success && result.customFieldErrors && customFieldsSave.current) {
+      await customFieldsSave.current({ refuse: result.customFieldErrors as CustomFieldError[] })
+      toast.error(result.error || t('saveError'))
+      setLoading(false)
+      return
     }
 
     if (result.success) {

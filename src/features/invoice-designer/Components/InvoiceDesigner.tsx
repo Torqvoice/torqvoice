@@ -1,5 +1,6 @@
 'use client'
 
+import { useMeterTypes } from '@/components/meter-types-context'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Eye, EyeOff, PenLine, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
@@ -130,6 +131,7 @@ export function InvoiceDesigner({
   const typeKeyEnabled = useTypeKeyEnabled()
   const customerReferenceEnabled = useCustomerReferenceEnabled()
   const fleetNumberEnabled = useFleetNumberEnabled()
+  const meterTypes = useMeterTypes()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
   const { formatDate } = useFormatDate()
@@ -358,7 +360,7 @@ export function InvoiceDesigner({
   const data: DocumentData = useMemo(
     () => ({
       ...buildSampleData(
-        { ...workshop, typeKeyEnabled, customerReferenceEnabled, fleetNumberEnabled },
+        { ...workshop, typeKeyEnabled, customerReferenceEnabled, fleetNumberEnabled, meterTypes },
         customFields,
         t,
         printLabels,
@@ -375,6 +377,7 @@ export function InvoiceDesigner({
       typeKeyEnabled,
       customerReferenceEnabled,
       fleetNumberEnabled,
+      meterTypes,
       customFields,
       t,
       printLabels,

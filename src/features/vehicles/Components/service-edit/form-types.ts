@@ -1,4 +1,5 @@
 import type { TaxComponent } from '@/lib/tax'
+import type { JobMeterView } from '@/features/meters/Lib/meters.server'
 import type {
   ServiceConcernInput,
   ServicePartInput,
@@ -33,6 +34,8 @@ export interface InitialData {
   mileage: number | null
   /** The last known reading before this job's, for the notice beside the field. */
   lastReading?: number | null
+  /** The job's reading of each of the vehicle's meters; empty while meters are off. */
+  meters?: JobMeterView[]
   serviceDate: string
   startDateTime?: string | null
   endDateTime?: string | null

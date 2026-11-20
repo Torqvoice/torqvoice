@@ -699,6 +699,8 @@ export async function restoreBackup(
           Vehicle: () => tx.vehicle.deleteMany({ where: { organizationId } }),
           CustomFieldDefinition: () =>
             tx.customFieldDefinition.deleteMany({ where: { organizationId } }),
+          // Each vehicle's meters and their readings go with their meter.
+          MeterType: () => tx.meterType.deleteMany({ where: { organizationId } }),
           InventoryPart: () => tx.inventoryPart.deleteMany({ where: { organizationId } }),
           Technician: () => tx.technician.deleteMany({ where: { organizationId } }),
           WorkBay: () => tx.workBay.deleteMany({ where: { organizationId } }),
@@ -1789,6 +1791,108 @@ export async function restoreBackup(
                 inspectionId: q.inspectionId as string,
                 updatedAt: toSafeDate(q.updatedAt as string),
               },
+            })
+          }
+        }
+
+        // 10b. The workshop's meters, then each vehicle's meters and their
+        // readings: after the vehicles and the jobs, so a vehicle the file did
+        // not bring back leaves its meter out, and a reading whose job is not
+        // here keeps its value without the link.
+        if (data.meterTypes?.length) {
+          const types = data.meterTypes as Record<string, unknown>[]
+          await tx.meterType.createMany({
+            data: types.map((type) => ({
+              id: type.id as string,
+              name: type.name as string,
+              unit: (type.unit as string) ?? '',
+              sortOrder: (type.sortOrder as number) || 0,
+              isActive: type.isActive !== false,
+              createdAt: toSafeDate(type.createdAt as string),
+              updatedAt: toSafeDate(type.updatedAt as string),
+              organizationId,
+            })),
+          })
+          const fitted = types.flatMap((type) =>
+            ((type.vehicleMeters as Record<string, unknown>[] | undefined) ?? []).map((meter) => ({
+              meter,
+              meterTypeId: type.id as string,
+            }))
+          )
+          const strings = (values: unknown[]) =>
+            values.filter((id): id is string => typeof id === 'string')
+          const [vehicleRows, jobRows] = await Promise.all([
+            tx.vehicle.findMany({
+              where: {
+                id: { in: strings(fitted.map(({ meter }) => meter.vehicleId)) },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+            tx.serviceRecord.findMany({
+              where: {
+                id: {
+                  in: strings(
+                    fitted.flatMap(({ meter }) =>
+                      ((meter.readings as Record<string, unknown>[] | undefined) ?? []).map(
+                        (reading) => reading.serviceRecordId
+                      )
+                    )
+                  ),
+                },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+          ])
+          const vehicles = new Set(vehicleRows.map((row) => row.id))
+          const jobs = new Set(jobRows.map((row) => row.id))
+          // Who typed a reading, or marked it wrong, comes back when that
+          // person is in this workshop.
+          const members = new Set(
+            (
+              await tx.organizationMember.findMany({
+                where: { organizationId },
+                select: { userId: true },
+              })
+            ).map((row) => row.userId)
+          )
+          const member = (id: unknown) => (typeof id === 'string' && members.has(id) ? id : null)
+          const kept = fitted.filter(({ meter }) => vehicles.has(meter.vehicleId as string))
+          if (kept.length > 0) {
+            await tx.vehicleMeter.createMany({
+              data: kept.map(({ meter, meterTypeId }) => ({
+                id: meter.id as string,
+                vehicleId: meter.vehicleId as string,
+                meterTypeId,
+                removedAt: toSafeDate(meter.removedAt as string) ?? null,
+                createdAt: toSafeDate(meter.createdAt as string),
+                organizationId,
+              })),
+            })
+            await tx.meterReading.createMany({
+              data: kept.flatMap(({ meter }) =>
+                ((meter.readings as Record<string, unknown>[] | undefined) ?? []).map(
+                  (reading) => ({
+                    id: reading.id as string,
+                    vehicleMeterId: meter.id as string,
+                    value: String(reading.value),
+                    readAt: toSafeDate(reading.readAt as string) ?? new Date(),
+                    replacedFrom:
+                      reading.replacedFrom == null ? null : String(reading.replacedFrom),
+                    wrongAt: toSafeDate(reading.wrongAt as string) ?? null,
+                    wrongById: member(reading.wrongById),
+                    createdById: member(reading.createdById),
+                    source: (reading.source as string) || 'backup',
+                    createdAt: toSafeDate(reading.createdAt as string),
+                    updatedAt: toSafeDate(reading.updatedAt as string),
+                    serviceRecordId: jobs.has(reading.serviceRecordId as string)
+                      ? (reading.serviceRecordId as string)
+                      : null,
+                    organizationId,
+                  })
+                )
+              ),
             })
           }
         }

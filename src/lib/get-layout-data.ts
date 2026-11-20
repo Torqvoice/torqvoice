@@ -79,7 +79,10 @@ export async function getLayoutData(): Promise<AuthResult> {
 
   if (!membership && !isSuperAdmin) return { status: 'no-organization' }
 
-  const [orgSettings, memberships] = await Promise.all([
+  // The plan is read alongside: the layout asks for it in this same request
+  // anyway (getFeatures is cached per request), so it costs no extra query
+  // and no extra wait.
+  const [orgSettings, memberships, plan] = await Promise.all([
     membership
       ? db.appSetting.findMany({
           where: {
@@ -111,21 +114,21 @@ export async function getLayoutData(): Promise<AuthResult> {
         organization: { select: { id: true, name: true, createdAt: true } },
       },
     }),
+    membership ? getFeatures(membership.organizationId) : null,
   ])
 
   const orgMap = new Map(orgSettings?.map((s) => [s.key, s.value]) ?? [])
   // The plan is only asked about by a workshop that turned the field on.
   const customerReferenceEnabled =
     membership && orgMap.get(SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED) === 'true'
-      ? customerReferenceEnabledIn(
-          Object.fromEntries(orgMap),
-          await getFeatures(membership.organizationId)
-        )
+      ? customerReferenceEnabledIn(Object.fromEntries(orgMap), plan ?? { customFields: false })
       : false
   // Which of its vehicles and customers carry custom fields: none for a
-  // workshop that has defined none, or whose plan has no custom fields.
+  // workshop that has defined none, or whose plan has no custom fields. Only
+  // a plan with custom fields asks at all, and the answer is at most two
+  // rows off the workshop's own index.
   const recordKinds =
-    membership && (await getFeatures(membership.organizationId)).customFields
+    membership && plan?.customFields
       ? await db.customFieldDefinition.findMany({
           where: {
             organizationId: membership.organizationId,
@@ -142,10 +145,7 @@ export async function getLayoutData(): Promise<AuthResult> {
   }
   const fleetNumberEnabled =
     membership && orgMap.get(SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED) === 'true'
-      ? fleetNumberEnabledIn(
-          Object.fromEntries(orgMap),
-          await getFeatures(membership.organizationId)
-        )
+      ? fleetNumberEnabledIn(Object.fromEntries(orgMap), plan ?? { customFields: false })
       : false
 
   return {

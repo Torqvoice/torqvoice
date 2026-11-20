@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { FLEET_NUMBER_MAX_LENGTH } from '../Lib/fleetNumber'
 import { optionalUploadUrlSchema } from '@/lib/upload-url'
 import { registryLookupSchema } from '../Lib/registryLookup'
 import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
@@ -31,7 +32,14 @@ export const createVehicleSchema = z.object({
   hsn: hsnSchema.optional(),
   tsn: tsnSchema.optional(),
   /** The owner's own number for the vehicle. Kept only by a workshop that uses the field. */
-  fleetNumber: z.string().max(200).optional(),
+  fleetNumber: z
+    .string()
+    .trim()
+    .max(
+      FLEET_NUMBER_MAX_LENGTH,
+      `Fleet / unit number can be at most ${FLEET_NUMBER_MAX_LENGTH} characters`
+    )
+    .optional(),
   purchaseDate: z.string().optional(),
   purchasePrice: z.coerce.number().optional(),
   imageUrl: optionalUploadUrlSchema.optional(),
@@ -48,6 +56,12 @@ export const createVehicleSchema = z.object({
    * on top of it.
    */
   registryLookup: registryLookupSchema.optional(),
+  /**
+   * The workshop's own fields, as the full form shows them, by field id.
+   * Checked and written with the record, all or nothing. Left out by a form
+   * that does not show them, and then not looked at.
+   */
+  customFields: z.record(z.string(), z.string()).optional(),
 })
 
 export const updateVehicleSchema = createVehicleSchema.partial().extend({

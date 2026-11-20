@@ -8,7 +8,7 @@
  * the preview cannot drift from the result.
  */
 
-import { normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
+import { fleetNumberTooLong, normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
 import type { ImportEntity } from './fields'
 import {
   type DateFormat,
@@ -103,6 +103,7 @@ export type RowIssueCode =
   | 'invalid_email'
   | 'invalid_vin'
   | 'invalid_type_key'
+  | 'fleet_number_too_long'
   | 'vehicle_make_model_required'
   | 'vehicle_year_required'
   | 'vehicle_year_invalid'
@@ -301,6 +302,17 @@ function extractVehicle(
   const vin = normalizeVin(v['vehicle.vin'])
   if (!vin.valid)
     warnings.push({ code: 'invalid_vin', field: 'vehicle.vin', value: v['vehicle.vin'] })
+  // A fleet number longer than the field takes is left out and said so on
+  // the row, never cut: a cut number names another vehicle.
+  let fleetNumber = normalizeFleetNumber(cleanText(v['vehicle.fleetNumber']))
+  if (fleetNumberTooLong(fleetNumber)) {
+    warnings.push({
+      code: 'fleet_number_too_long',
+      field: 'vehicle.fleetNumber',
+      value: v['vehicle.fleetNumber'],
+    })
+    fleetNumber = null
+  }
   const typeKey = normalizeTypeKey(v['vehicle.hsn'], v['vehicle.tsn'])
   if (typeKey.invalidHsn)
     warnings.push({ code: 'invalid_type_key', field: 'vehicle.hsn', value: v['vehicle.hsn'] })
@@ -344,7 +356,7 @@ function extractVehicle(
     engineCode: cleanText(v['vehicle.engineCode']),
     hsn: typeKey.hsn,
     tsn: typeKey.tsn,
-    fleetNumber: normalizeFleetNumber(cleanText(v['vehicle.fleetNumber'])),
+    fleetNumber,
     purchaseDate,
     purchasePrice,
   }

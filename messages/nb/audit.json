@@ -212,7 +212,14 @@
     "integration_backup_run": "Startet sikkerhetskopiering",
     "integration_backup_restore": "Gjenopprettet sikkerhetskopi",
     "shareLink_expiry": "Endret utløp for delt lenke",
-    "shareLink_revoke": "Fjernet delte lenker"
+    "shareLink_revoke": "Fjernet delte lenker",
+    "meterType_create": "Opprettet måler",
+    "meterType_update": "Oppdaterte måler",
+    "meterType_delete": "Slettet måler",
+    "vehicleMeter_remove": "Fjernet måler fra kjøretøy",
+    "vehicleMeter_replace": "Byttet måler på kjøretøy",
+    "meterReading_markWrong": "Merket måleravlesning som feil",
+    "meterReading_restore": "Telte måleravlesning igjen"
   },
   "summary": {
     "auth_twoFactorEnabled": "Slo på tofaktorinnlogging",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Satte en delt lenke til å følge verkstedets innstilling",
     "share_link_expiry_never": "Satte en delt lenke til å aldri utløpe",
     "share_link_expiry_date": "Satte en delt lenke til å utløpe {date}",
-    "share_link_revoke_bulk": "Fjernet {count, plural, one {# delt lenke} other {# delte lenker}}"
+    "share_link_revoke_bulk": "Fjernet {count, plural, one {# delt lenke} other {# delte lenker}}",
+    "meterType_create": "Opprettet måleren «{name}»",
+    "meterType_update": "Oppdaterte måleren «{name}»",
+    "meterType_delete": "Slettet måleren «{name}»",
+    "vehicleMeter_remove": "Tok måleren «{name}» av et kjøretøy",
+    "vehicleMeter_replace": "Byttet måleren «{name}»: gammel sluttet på {oldEnd}, ny startet på {newStart}",
+    "meterReading_markWrong": "Merket {name}-avlesningen {value} som feil",
+    "meterReading_restore": "Telte {name}-avlesningen {value} igjen"
   }
 }

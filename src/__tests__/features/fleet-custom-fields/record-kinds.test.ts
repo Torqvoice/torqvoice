@@ -11,7 +11,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const db = vi.hoisted(() => ({
   customFieldDefinition: { findMany: vi.fn(), findFirst: vi.fn() },
   customFieldValue: { findMany: vi.fn(), upsert: vi.fn() },
-  vehicle: { count: vi.fn() },
+  vehicle: { count: vi.fn(), findFirst: vi.fn() },
   customer: { count: vi.fn() },
   appSetting: { findMany: vi.fn(), upsert: vi.fn() },
   $transaction: vi.fn(),
@@ -153,6 +153,20 @@ describe('the record’s fields for a document', () => {
     expect(db.customFieldDefinition.findMany).not.toHaveBeenCalled()
   })
 
+  it('keeps vehicle and customer fields out of the whole list on a plan without them', async () => {
+    plan(false)
+    await getFieldDefinitions()
+    expect(db.customFieldDefinition.findMany.mock.calls[0][0].where).toEqual({
+      organizationId: 'org-1',
+      entityType: { notIn: ['vehicle', 'customer'] },
+    })
+    plan(true)
+    await getFieldDefinitions()
+    expect(db.customFieldDefinition.findMany.mock.calls[1][0].where).toEqual({
+      organizationId: 'org-1',
+    })
+  })
+
   it('reads no values for a workshop that has defined none', async () => {
     db.customFieldDefinition.findMany.mockResolvedValue([])
     expect(
@@ -163,6 +177,7 @@ describe('the record’s fields for a document', () => {
   })
 
   it('reads the definitions of this workshop only, and the values of these two records', async () => {
+    db.customFieldDefinition.findMany.mockResolvedValue([{ ...REQUIRED, entityType: 'vehicle' }])
     db.customFieldValue.findMany.mockResolvedValue([{ fieldId: 'f-1', value: 'March' }])
 
     expect(
@@ -180,6 +195,33 @@ describe('the record’s fields for a document', () => {
       ],
       fieldId: { in: ['f-1'] },
     })
+  })
+
+  it('takes the vehicle’s owner when the document has no customer of its own, as the invoice does', async () => {
+    db.customFieldDefinition.findMany.mockResolvedValue([
+      { ...REQUIRED, id: 'f-c', label: 'Cost centre', entityType: 'customer' },
+    ])
+    db.vehicle.findFirst.mockResolvedValue({ customerId: 'owner-1' })
+    db.customFieldValue.findMany.mockResolvedValue([{ fieldId: 'f-c', value: 'CC-7741' }])
+
+    expect(await getRecordCustomFieldsForPrint('org-1', { vehicleId: 'v-1' })).toEqual([
+      { fieldId: 'f-c', label: 'Cost centre', fieldType: 'text', value: 'CC-7741' },
+    ])
+    // The owner is read in this workshop only.
+    expect(db.vehicle.findFirst).toHaveBeenCalledWith({
+      where: { id: 'v-1', organizationId: 'org-1' },
+      select: { customerId: true },
+    })
+    expect(db.customFieldValue.findMany.mock.calls[0][0].where.OR).toEqual([
+      { entityType: 'vehicle', entityId: 'v-1' },
+      { entityType: 'customer', entityId: 'owner-1' },
+    ])
+  })
+
+  it('does not look the owner up when the workshop has no customer fields', async () => {
+    db.customFieldDefinition.findMany.mockResolvedValue([{ ...REQUIRED, entityType: 'vehicle' }])
+    await getRecordCustomFieldsForPrint('org-1', { vehicleId: 'v-1' })
+    expect(db.vehicle.findFirst).not.toHaveBeenCalled()
   })
 
   it('prints none on a plan without custom fields', async () => {

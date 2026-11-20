@@ -56,28 +56,41 @@ export async function getRecordCustomFieldsForPrint(
   organizationId: string,
   record: { vehicleId?: string | null; customerId?: string | null }
 ): Promise<PrintCustomField[]> {
-  const kinds = [
-    ...(record.vehicleId ? [{ entityType: 'vehicle', entityId: record.vehicleId }] : []),
-    ...(record.customerId ? [{ entityType: 'customer', entityId: record.customerId }] : []),
-  ]
-  if (kinds.length === 0) return []
+  if (!record.vehicleId && !record.customerId) return []
   const definitions = await db.customFieldDefinition.findMany({
-    where: { organizationId, entityType: { in: kinds.map((k) => k.entityType) }, isActive: true },
+    where: { organizationId, entityType: { in: ['vehicle', 'customer'] }, isActive: true },
     select: { id: true, label: true, fieldType: true, defaultValue: true, entityType: true },
     orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
   })
   if (definitions.length === 0) return []
   if (!(await getFeatures(organizationId)).customFields) return []
 
+  // The document's customer, else its vehicle's owner: the invoice's rule.
+  // A quote made for a vehicle alone still prints its owner's fields.
+  let customerId = record.customerId ?? null
+  if (!customerId && record.vehicleId && definitions.some((d) => d.entityType === 'customer')) {
+    const vehicle = await db.vehicle.findFirst({
+      where: { id: record.vehicleId, organizationId },
+      select: { customerId: true },
+    })
+    customerId = vehicle?.customerId ?? null
+  }
+  const kinds = [
+    ...(record.vehicleId ? [{ entityType: 'vehicle', entityId: record.vehicleId }] : []),
+    ...(customerId ? [{ entityType: 'customer', entityId: customerId }] : []),
+  ]
+  const shown = definitions.filter((d) => kinds.some((k) => k.entityType === d.entityType))
+  if (shown.length === 0) return []
+
   const rows = await db.customFieldValue.findMany({
     where: {
       OR: kinds,
-      fieldId: { in: definitions.map((d) => d.id) },
+      fieldId: { in: shown.map((d) => d.id) },
     },
     select: { fieldId: true, value: true },
   })
   const valueByField = new Map(rows.map((r) => [r.fieldId, r.value]))
-  return definitions
+  return shown
     .map((d) => ({
       fieldId: d.id,
       label: d.label,

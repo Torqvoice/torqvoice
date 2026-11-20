@@ -212,7 +212,14 @@
     "integration_backup_run": "Запущено резервное копирование",
     "integration_backup_restore": "Восстановлена резервная копия",
     "shareLink_expiry": "Изменён срок действия ссылки",
-    "shareLink_revoke": "Удалены ссылки"
+    "shareLink_revoke": "Удалены ссылки",
+    "meterType_create": "Создан счётчик",
+    "meterType_update": "Обновлён счётчик",
+    "meterType_delete": "Удалён счётчик",
+    "vehicleMeter_remove": "Снят счётчик с транспортного средства",
+    "vehicleMeter_replace": "Заменён счётчик транспортного средства",
+    "meterReading_markWrong": "Показание счётчика отмечено как ошибочное",
+    "meterReading_restore": "Показание счётчика снова учитывается"
   },
   "summary": {
     "auth_twoFactorEnabled": "Включён двухфакторный вход",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Для ссылки установлена настройка мастерской",
     "share_link_expiry_never": "Ссылка сделана бессрочной",
     "share_link_expiry_date": "Ссылка будет действовать до {date}",
-    "share_link_revoke_bulk": "{count, plural, one {Удалена # ссылка} few {Удалено # ссылки} many {Удалено # ссылок} other {Удалено # ссылки}}"
+    "share_link_revoke_bulk": "{count, plural, one {Удалена # ссылка} few {Удалено # ссылки} many {Удалено # ссылок} other {Удалено # ссылки}}",
+    "meterType_create": "Создан счётчик \"{name}\"",
+    "meterType_update": "Обновлён счётчик \"{name}\"",
+    "meterType_delete": "Удалён счётчик \"{name}\"",
+    "vehicleMeter_remove": "Счётчик \"{name}\" снят с транспортного средства",
+    "vehicleMeter_replace": "Заменён счётчик \"{name}\": старый остановился на {oldEnd}, новый начал с {newStart}",
+    "meterReading_markWrong": "Показание {value} счётчика {name} отмечено как ошибочное",
+    "meterReading_restore": "Показание {value} счётчика {name} снова учитывается"
   }
 }

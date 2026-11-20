@@ -1,5 +1,6 @@
 'use server'
 
+import { prepareRecordCustomFields } from '@/features/custom-fields/Lib/recordCustomFieldValues.server'
 import { getRecordCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
@@ -132,8 +133,16 @@ export async function createCustomer(input: unknown) {
         )
       }
 
-      const data = createCustomerSchema.parse(input)
+      const { customFields, ...data } = createCustomerSchema.parse(input)
       await assertInvoiceDesign(organizationId, data.invoiceDesignId)
+      // The workshop's own fields, when the form sent them: checked first, so
+      // a required one left empty stops the customer being made at all.
+      const writeCustomFields = await prepareRecordCustomFields(
+        organizationId,
+        'customer',
+        null,
+        customFields
+      )
       await dropPoRequiredWhenOff(organizationId, data)
 
       // Auto-assign the next sequential number when none was provided; the
@@ -152,15 +161,24 @@ export async function createCustomer(input: unknown) {
       }
 
       try {
-        const customer = await db.customer.create({
-          data: {
-            ...data,
-            customerNumber,
-            email: data.email || null,
-            userId,
-            organizationId,
-          },
-        })
+        const createWith = (store: Pick<typeof db, 'customer'>) =>
+          store.customer.create({
+            data: {
+              ...data,
+              customerNumber,
+              email: data.email || null,
+              userId,
+              organizationId,
+            },
+          })
+        // With its fields, in one transaction: both are saved or neither is.
+        const customer = writeCustomFields
+          ? await db.$transaction(async (tx) => {
+              const made = await createWith(tx)
+              await writeCustomFields(tx, made.id)
+              return made
+            })
+          : await createWith(db)
         // Someone added from an unknown WhatsApp number or email address
         // keeps the thread that prompted it.
         await claimWhatsappMessagesForCustomer(organizationId, customer.id, customer.phone)
@@ -193,12 +211,18 @@ export async function createCustomer(input: unknown) {
 export async function updateCustomer(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const { id, ...data } = updateCustomerSchema.parse(input)
+      const { id, customFields, ...data } = updateCustomerSchema.parse(input)
       await assertInvoiceDesign(organizationId, data.invoiceDesignId)
       await dropPoRequiredWhenOff(organizationId, data)
-      let result
-      try {
-        result = await db.customer.updateMany({
+      // The workshop's own fields, when the form sent them: checked before
+      // anything is written. The customer has to be this workshop's first.
+      const writeCustomFields =
+        customFields !== undefined &&
+        (await db.customer.count({ where: { id, organizationId } })) > 0
+          ? await prepareRecordCustomFields(organizationId, 'customer', id, customFields)
+          : null
+      const updateWith = (store: Pick<typeof db, 'customer'>) =>
+        store.customer.updateMany({
           where: { id, organizationId },
           // Fields left out of the input stay as they are; an emptied one
           // ('') is cleared.
@@ -213,6 +237,17 @@ export async function updateCustomer(input: unknown) {
             notes: clearedToNull(data.notes),
           },
         })
+      let result
+      try {
+        // With its fields, in one transaction: both are saved or neither is.
+        result = writeCustomFields
+          ? await db.$transaction(async (tx) => {
+              const updated = await updateWith(tx)
+              if (updated.count === 0) throw new Error('Customer not found')
+              await writeCustomFields(tx, id)
+              return updated
+            })
+          : await updateWith(db)
       } catch (err: unknown) {
         if (err && typeof err === 'object' && (err as { code?: string }).code === 'P2002') {
           throw new Error('Customer number is already in use')

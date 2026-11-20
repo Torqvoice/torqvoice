@@ -213,6 +213,7 @@
     "invalid_email": "El correo electrónico \"{value}\" no es válido y se omitió",
     "invalid_vin": "El VIN \"{value}\" no tiene 17 caracteres; se conservó tal como se escribió",
     "invalid_type_key": "{field} \"{value}\" no es un HSN o TSN válido; se ha omitido",
+    "fleet_number_too_long": "N.º de flota / unidad \"{value}\" tiene más de 40 caracteres; se ha omitido",
     "vehicle_make_model_required": "Faltan la marca y el modelo",
     "vehicle_year_required": "Falta el año",
     "vehicle_year_invalid": "El año \"{value}\" no es un año válido",

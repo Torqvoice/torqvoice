@@ -1,5 +1,7 @@
 'use client'
 
+import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
+import type { MeterTypeView, VehicleMeterView } from '@/features/meters/Lib/meters.server'
 import {
   type RecordCustomField,
   useRecordCustomFieldRows,
@@ -377,6 +379,8 @@ export function VehicleDetailClient({
   feedNotes,
   glance = null,
   appointments = [],
+  meterTypes = [],
+  vehicleMeters = [],
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
@@ -384,6 +388,9 @@ export function VehicleDetailClient({
   paginatedFindings: PaginatedFindings
   /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
   tireSets?: VehicleTireSet[]
+  /** The workshop's meters in use (empty while meters are off) and this vehicle's. */
+  meterTypes?: MeterTypeView[]
+  vehicleMeters?: VehicleMeterView[]
   serviceSearch: string
   /** No longer read: the history is searched, not filtered by type. */
   serviceRecordType?: string
@@ -1473,6 +1480,19 @@ export function VehicleDetailClient({
                       </>
                     )}
                   </dl>
+                </>
+              )}
+
+              {/* The meters besides the odometer: engine hours and the like. */}
+              {meterTypes.length > 0 && (
+                <>
+                  <div className="mx-1.5 my-3 h-px bg-border" />
+                  <VehicleMeters
+                    className="px-1.5"
+                    vehicleId={vehicle.id}
+                    types={meterTypes}
+                    meters={vehicleMeters}
+                  />
                 </>
               )}
 

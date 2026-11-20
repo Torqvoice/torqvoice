@@ -212,7 +212,14 @@
     "integration_backup_run": "Backup iniciado",
     "integration_backup_restore": "Backup restaurado",
     "shareLink_expiry": "Expiração do link compartilhado alterada",
-    "shareLink_revoke": "Links compartilhados removidos"
+    "shareLink_revoke": "Links compartilhados removidos",
+    "meterType_create": "Medidor criado",
+    "meterType_update": "Medidor atualizado",
+    "meterType_delete": "Medidor excluído",
+    "vehicleMeter_remove": "Medidor do veículo removido",
+    "vehicleMeter_replace": "Medidor do veículo substituído",
+    "meterReading_markWrong": "Leitura do medidor marcada como errada",
+    "meterReading_restore": "Leitura do medidor contada novamente"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ativou o login em duas etapas",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Link compartilhado definido para seguir a configuração da oficina",
     "share_link_expiry_never": "Link compartilhado definido para nunca expirar",
     "share_link_expiry_date": "Link compartilhado definido para expirar em {date}",
-    "share_link_revoke_bulk": "{count, plural, one {# link compartilhado removido} other {# links compartilhados removidos}}"
+    "share_link_revoke_bulk": "{count, plural, one {# link compartilhado removido} other {# links compartilhados removidos}}",
+    "meterType_create": "Criou o medidor \"{name}\"",
+    "meterType_update": "Atualizou o medidor \"{name}\"",
+    "meterType_delete": "Excluiu o medidor \"{name}\"",
+    "vehicleMeter_remove": "Removeu o medidor \"{name}\" de um veículo",
+    "vehicleMeter_replace": "Substituiu o medidor \"{name}\": o antigo terminou em {oldEnd}, o novo começou em {newStart}",
+    "meterReading_markWrong": "Marcou a leitura {value} de {name} como errada",
+    "meterReading_restore": "Contou novamente a leitura {value} de {name}"
   }
 }

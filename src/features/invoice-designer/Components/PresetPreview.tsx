@@ -1,5 +1,6 @@
 'use client'
 
+import { useMeterTypes } from '@/components/meter-types-context'
 import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
 import { invoiceLabels } from '../Lib/invoiceLabels'
 import { workOrderLabels } from '../Lib/workOrderLabels'
@@ -41,6 +42,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
   const typeKeyEnabled = useTypeKeyEnabled()
   const customerReferenceEnabled = useCustomerReferenceEnabled()
   const fleetNumberEnabled = useFleetNumberEnabled()
+  const meterTypes = useMeterTypes()
   const messages = useMessages() as { pdf?: Record<string, Record<string, string>> }
   const sampleFormat = useSampleFormat()
 
@@ -66,6 +68,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         typeKeyEnabled,
         customerReferenceEnabled,
         fleetNumberEnabled,
+        meterTypes,
         logoUrl: logoUrl ?? '',
         taxComponents: workshop?.taxComponents ?? null,
         unitSystem: workshop?.unitSystem,
@@ -85,6 +88,7 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
     typeKeyEnabled,
     customerReferenceEnabled,
     fleetNumberEnabled,
+    meterTypes,
     sampleFormat,
   ])
 }

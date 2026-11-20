@@ -124,6 +124,12 @@ export interface InvoiceData {
     tsn?: string | null
     /** The owner's fleet / unit number; null for a workshop that has the field off. */
     fleetNumber?: string | null
+    /**
+     * The vehicle's meters besides the odometer as this document prints them,
+     * unformatted: the job's readings on an invoice or work order, the
+     * vehicle's current ones on a quote. Empty while meters are off.
+     */
+    meterReadings?: { name: string; unit: string; value: number }[]
     mileage: number
     customer: {
       name: string

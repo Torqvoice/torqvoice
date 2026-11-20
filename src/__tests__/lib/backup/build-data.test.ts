@@ -91,6 +91,7 @@ describe('organisation scope', () => {
       'documentDesignSnapshots',
       'documentAssetSnapshots',
       'customFieldDefinitions',
+      'meterTypes',
       'inventoryParts',
       'vehicles',
       'orgReminders',

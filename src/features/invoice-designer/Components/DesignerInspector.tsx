@@ -1,5 +1,6 @@
 'use client'
 
+import { useMeterTypes } from '@/components/meter-types-context'
 import { useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
@@ -425,6 +426,7 @@ export function DesignerInspector({
   const typeKeyEnabled = useTypeKeyEnabled()
   const customerReferenceEnabled = useCustomerReferenceEnabled()
   const fleetNumberEnabled = useFleetNumberEnabled()
+  const metersDefined = useMeterTypes().length > 0
   /** The field row being dragged to a new spot in the list, if any. */
   const [dragFieldId, setDragFieldId] = useState<string | null>(null)
   const section = selected ? layout.sections.find((s) => s.id === selected) : undefined
@@ -515,11 +517,14 @@ export function DesignerInspector({
     const referenceOffered =
       customerReferenceEnabled && layoutDocumentType(layout) !== 'certificate'
     const fleetNumberOffered = fleetNumberEnabled && layoutDocumentType(layout) !== 'certificate'
+    // Meter readings, for a workshop that has defined a meter.
+    const metersOffered = metersDefined && layoutDocumentType(layout) !== 'certificate'
     const shownFields = resolvedFields.filter(
       (field) =>
         (typeKeyEnabled || field.id !== 'hsn_tsn') &&
         (referenceOffered || field.id !== 'customer_reference') &&
-        (fleetNumberOffered || field.id !== 'fleet_number')
+        (fleetNumberOffered || field.id !== 'fleet_number') &&
+        (metersOffered || field.id !== 'meter_readings')
     )
     /**
      * The keyboard's reorder: past the next row up or down that can move, as

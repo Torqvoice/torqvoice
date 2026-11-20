@@ -212,7 +212,14 @@
     "integration_backup_run": "Started Backup",
     "integration_backup_restore": "Restored Backup",
     "shareLink_expiry": "Changed Share Link Expiry",
-    "shareLink_revoke": "Removed Share Links"
+    "shareLink_revoke": "Removed Share Links",
+    "meterType_create": "Created Meter",
+    "meterType_update": "Updated Meter",
+    "meterType_delete": "Deleted Meter",
+    "vehicleMeter_remove": "Removed Vehicle Meter",
+    "vehicleMeter_replace": "Replaced Vehicle Meter",
+    "meterReading_markWrong": "Marked Meter Reading Wrong",
+    "meterReading_restore": "Counted Meter Reading Again"
   },
   "summary": {
     "auth_twoFactorEnabled": "Turned on two-factor sign-in",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Set a share link to follow the workshop setting",
     "share_link_expiry_never": "Set a share link to never expire",
     "share_link_expiry_date": "Set a share link to expire on {date}",
-    "share_link_revoke_bulk": "Removed {count, plural, one {# share link} other {# share links}}"
+    "share_link_revoke_bulk": "Removed {count, plural, one {# share link} other {# share links}}",
+    "meterType_create": "Created meter \"{name}\"",
+    "meterType_update": "Updated meter \"{name}\"",
+    "meterType_delete": "Deleted meter \"{name}\"",
+    "vehicleMeter_remove": "Took meter \"{name}\" off a vehicle",
+    "vehicleMeter_replace": "Replaced meter \"{name}\": old ended at {oldEnd}, new started at {newStart}",
+    "meterReading_markWrong": "Marked {name} reading {value} as wrong",
+    "meterReading_restore": "Counted {name} reading {value} again"
   }
 }

@@ -79,6 +79,10 @@ export const issuedInvoiceDataSchema = z
         tsn: z.string().nullable().optional(),
         // Absent on invoices issued before the fleet number was recorded.
         fleetNumber: z.string().nullable().optional(),
+        // Absent on invoices issued before meters were recorded.
+        meterReadings: z
+          .array(z.object({ name: z.string(), unit: z.string(), value: z.number() }))
+          .optional(),
         mileage: z.number().optional(),
       })
       .passthrough()

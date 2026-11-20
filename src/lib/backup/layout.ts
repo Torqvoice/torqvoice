@@ -33,6 +33,12 @@ export const BACKUP_LAYOUT: Record<string, LayoutNode> = {
     model: 'CustomFieldDefinition',
     children: { values: { model: 'CustomFieldValue' } },
   },
+  meterTypes: {
+    model: 'MeterType',
+    children: {
+      vehicleMeters: { model: 'VehicleMeter', children: { readings: { model: 'MeterReading' } } },
+    },
+  },
   inventoryParts: {
     model: 'InventoryPart',
     children: { movements: { model: 'StockMovement' }, gallery: { model: 'StoredImage' } },

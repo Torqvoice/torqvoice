@@ -1,5 +1,6 @@
 'use client'
 
+import { JobMeters } from '@/features/meters/Components/JobMeters'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -328,6 +329,14 @@ export function JobFactsCard({
                     <CopyValue value={vehicle.vin} label={isMarine ? tv('vinMarine') : tv('vin')} />
                   </p>
                 )}
+                {/* The owner's own number for it, where the workshop uses one:
+                    the read leaves it null otherwise. */}
+                {vehicle.fleetNumber && (
+                  <p className="truncate text-xs text-muted-foreground">
+                    {tv('fleetNumber')}:{' '}
+                    <span className="font-mono text-foreground">{vehicle.fleetNumber}</span>
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -382,6 +391,16 @@ export function JobFactsCard({
                     entered={readingTyped ?? ''}
                     last={initialData.lastReading}
                     unit={distanceUnit}
+                  />
+                )}
+                {/* The vehicle's other meters, read on this job. Only on the
+                    vehicle they were loaded for. */}
+                {!vehicleChanged && (
+                  <JobMeters
+                    jobId={initialData.id}
+                    meters={initialData.meters ?? []}
+                    locked={locked}
+                    labelClassName={factLabel}
                   />
                 )}
               </div>

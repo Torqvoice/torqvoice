@@ -1,4 +1,5 @@
 import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { meterLine } from '@/features/meters/Lib/meterValue'
 import { formatCurrency, formatDateForPdf } from '@/lib/format'
 import { calculateTotals } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
@@ -205,6 +206,16 @@ export function fieldValues(
       : '',
     // Only for a workshop that records one.
     fleet_number: workshop.fleetNumberEnabled ? `${L('fleetNumber', 'Fleet no.')}: T-208` : '',
+    // One made-up reading per meter the workshop has, in its number format.
+    meter_readings: (workshop.meterTypes ?? [])
+      .map((meter, i) =>
+        // Written as the sample's mileage is ("84,120").
+        meterLine(
+          { name: meter.name, unit: meter.unit, value: [4256.7, 2984.3][i] ?? 812.5 },
+          (v) => v.toLocaleString('en-US', { maximumFractionDigits: 2 })
+        )
+      )
+      .join('\n'),
     mileage: fillTemplate(L('mileage', 'Mileage: {mileage}'), {
       // In the workshop's unit; unset prints miles, as its invoices do.
       mileage: `84,120 ${workshop.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')}`,

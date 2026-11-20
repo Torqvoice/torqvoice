@@ -6,6 +6,8 @@ import {
 import { getLayoutData } from '@/lib/get-layout-data'
 import { getFeatures, isCloudMode } from '@/lib/features'
 import { CustomFieldsManager } from '@/features/custom-fields/Components/CustomFieldsManager'
+import { getMeterSuggestions, getMeterTypes } from '@/features/meters/Actions/meterTypeActions'
+import { MetersManager } from '@/features/meters/Components/MetersManager'
 import { FeatureLocked } from '../feature-locked-message'
 import { redirect } from 'next/navigation'
 import { settingsPageTitle } from '@/lib/page-title'
@@ -24,19 +26,34 @@ export default async function CustomFieldsPage() {
 
   const locked = !features.customFields
 
-  const [result, invoiceLayoutResult, quoteLayoutResult] = await Promise.all([
-    getFieldDefinitions(),
-    getInvoiceLayoutConfig(),
-    getQuoteLayoutConfig(),
-  ])
+  const [result, invoiceLayoutResult, quoteLayoutResult, metersResult, suggestionsResult] =
+    await Promise.all([
+      getFieldDefinitions(),
+      getInvoiceLayoutConfig(),
+      getQuoteLayoutConfig(),
+      // The workshop's meters live here too: defining the first one is what
+      // turns meters on.
+      locked ? null : getMeterTypes(),
+      locked ? null : getMeterSuggestions(),
+    ])
   const fields = result.success && result.data ? result.data : []
 
   const content = (
-    <CustomFieldsManager
-      initialFields={fields}
-      layoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
-      quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
-    />
+    <div className="space-y-8">
+      <CustomFieldsManager
+        initialFields={fields}
+        layoutConfig={invoiceLayoutResult.success ? invoiceLayoutResult.data : undefined}
+        quoteLayoutConfig={quoteLayoutResult.success ? quoteLayoutResult.data : undefined}
+      />
+      {!locked && (
+        <MetersManager
+          meters={metersResult?.success && metersResult.data ? metersResult.data : []}
+          suggestions={
+            suggestionsResult?.success && suggestionsResult.data ? suggestionsResult.data : []
+          }
+        />
+      )}
+    </div>
   )
 
   return locked ? (

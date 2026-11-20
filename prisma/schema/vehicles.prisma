@@ -64,6 +64,7 @@ model Vehicle {
   inspectionStatus    VehicleInspectionStatus?
   inspectionReminders InspectionReminderSend[]
   conditionMarks      ConditionMark[]
+  meters              VehicleMeter[]
 
   importBatchId String?
   importBatch   ImportBatch? @relation(fields: [importBatchId], references: [id], onDelete: SetNull)

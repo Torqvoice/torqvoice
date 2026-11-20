@@ -212,7 +212,14 @@
     "integration_backup_run": "Backup avviato",
     "integration_backup_restore": "Backup ripristinato",
     "shareLink_expiry": "Scadenza del link condiviso modificata",
-    "shareLink_revoke": "Link condivisi rimossi"
+    "shareLink_revoke": "Link condivisi rimossi",
+    "meterType_create": "Contatore creato",
+    "meterType_update": "Contatore aggiornato",
+    "meterType_delete": "Contatore eliminato",
+    "vehicleMeter_remove": "Contatore del veicolo rimosso",
+    "vehicleMeter_replace": "Contatore del veicolo sostituito",
+    "meterReading_markWrong": "Lettura del contatore segnata come errata",
+    "meterReading_restore": "Lettura del contatore di nuovo conteggiata"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ha attivato l'accesso a due fattori",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Link condiviso impostato per seguire l'impostazione dell'officina",
     "share_link_expiry_never": "Link condiviso impostato per non scadere mai",
     "share_link_expiry_date": "Link condiviso impostato per scadere il {date}",
-    "share_link_revoke_bulk": "{count, plural, one {# link condiviso rimosso} other {# link condivisi rimossi}}"
+    "share_link_revoke_bulk": "{count, plural, one {# link condiviso rimosso} other {# link condivisi rimossi}}",
+    "meterType_create": "Ha creato il contatore \"{name}\"",
+    "meterType_update": "Ha aggiornato il contatore \"{name}\"",
+    "meterType_delete": "Ha eliminato il contatore \"{name}\"",
+    "vehicleMeter_remove": "Ha rimosso il contatore \"{name}\" da un veicolo",
+    "vehicleMeter_replace": "Ha sostituito il contatore \"{name}\": il vecchio si è fermato a {oldEnd}, il nuovo è partito da {newStart}",
+    "meterReading_markWrong": "Ha segnato la lettura {value} di {name} come errata",
+    "meterReading_restore": "Ha conteggiato di nuovo la lettura {value} di {name}"
   }
 }

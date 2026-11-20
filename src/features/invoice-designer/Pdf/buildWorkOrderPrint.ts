@@ -1,4 +1,5 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
+import { meterLine } from '@/features/meters/Lib/meterValue'
 import {
   DEFAULT_DATE_FORMAT,
   DEFAULT_TIME_FORMAT,
@@ -258,6 +259,10 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
     // Empty for a vehicle without one, and for a workshop that has the field off.
     fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
+    // One line per meter, in the workshop's order; empty without readings.
+    meter_readings: (data.vehicle?.meterReadings ?? [])
+      .map((meter) => meterLine(meter, nums.meter))
+      .join('\n'),
     license_plate: data.vehicle?.licensePlate
       ? fillTemplate(L('plate', 'Plate: {plate}'), { plate: data.vehicle.licensePlate })
       : '',

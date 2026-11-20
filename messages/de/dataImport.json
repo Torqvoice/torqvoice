@@ -213,6 +213,7 @@
     "invalid_email": "E-Mail \"{value}\" ist ungültig und wurde weggelassen",
     "invalid_vin": "FIN \"{value}\" hat nicht 17 Zeichen; wie eingegeben übernommen",
     "invalid_type_key": "{field} \"{value}\" ist keine gültige HSN oder TSN und wurde ausgelassen",
+    "fleet_number_too_long": "Fuhrpark- / Fahrzeugnummer \"{value}\" ist länger als 40 Zeichen und wurde ausgelassen",
     "vehicle_make_model_required": "Marke und Modell fehlen",
     "vehicle_year_required": "Baujahr fehlt",
     "vehicle_year_invalid": "Baujahr \"{value}\" ist kein gültiges Jahr",

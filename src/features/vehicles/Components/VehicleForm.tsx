@@ -46,7 +46,7 @@ import type { CreateVehicleInput } from '../Schema/vehicleSchema'
 import { clearableInput } from '@/lib/clearable'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
-import { FLEET_NUMBER_MAX_LENGTH } from '../Lib/fleetNumber'
+import { FLEET_NUMBER_MAX_LENGTH, fleetNumberTooLong } from '../Lib/fleetNumber'
 import { useFleetNumberEnabled } from '@/components/fleet-number-context'
 import { useHasRecordCustomFields } from '@/components/record-custom-fields-context'
 import {
@@ -54,6 +54,7 @@ import {
   type CustomFieldsSave,
 } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { customFieldsRefusal } from '@/features/custom-fields/Lib/customFieldsRefusal'
+import type { CustomFieldError } from '@/features/custom-fields/Lib/customFieldValueRules'
 import { handleGated } from '@/components/upgrade-gate'
 import { PlateChip } from '@/components/plate-chip'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
@@ -505,14 +506,26 @@ export function VehicleForm({
       }
     }
 
+    // A fleet number longer than the field takes is refused here and said
+    // why, never cut: a cut number names another vehicle.
+    if (showFleetNumber && fleetNumberTooLong(String(formData.get('fleetNumber') ?? ''))) {
+      toast.error(t('fleetNumberTooLong', { max: FLEET_NUMBER_MAX_LENGTH }))
+      document.getElementById('fleetNumber')?.focus()
+      return
+    }
+
     // The workshop's own fields first: one left empty that must not be stops
-    // the save here, marked and named on the form, before anything is written.
+    // the save here, marked and named on the form. The values then go with
+    // the vehicle's own save, which checks them again and writes both or
+    // neither.
+    let customFields: Record<string, string> | undefined
     if (hasCustomFields && customFieldsSave.current) {
-      const checked = await customFieldsSave.current(vehicle ? undefined : { checkOnly: true })
+      const checked = await customFieldsSave.current({ collect: true })
       if (!checked.valid) {
         toast.error(customFieldsRefusal(checked, tCustom))
         return
       }
+      customFields = checked.values
     }
 
     setLoading(true)
@@ -595,17 +608,21 @@ export function VehicleForm({
         customerId,
       }
 
-      const payload = imageUrl !== undefined ? { ...data, imageUrl } : data
+      const payload = {
+        ...(imageUrl !== undefined ? { ...data, imageUrl } : data),
+        ...(customFields ? { customFields } : {}),
+      }
 
       const result = vehicle
         ? await updateVehicle({ ...payload, id: vehicle.id })
         : await createVehicle(payload)
 
-      // A new vehicle has an id now: its custom fields are saved under it.
-      if (result.success && !vehicle && hasCustomFields && customFieldsSave.current) {
-        const newId = result.data && 'id' in result.data ? String(result.data.id) : null
-        const saved = newId ? await customFieldsSave.current({ entityId: newId }) : null
-        if (saved && !saved.valid) toast.error(customFieldsRefusal(saved, tCustom))
+      // Refused by the workshop's own fields: nothing was saved. The fields
+      // are marked where they are and the dialog stays open on what was typed.
+      if (!result.success && result.customFieldErrors && customFieldsSave.current) {
+        await customFieldsSave.current({ refuse: result.customFieldErrors as CustomFieldError[] })
+        toast.error(result.error || t('saveError'))
+        return
       }
 
       if (result.success) {
@@ -1164,7 +1181,6 @@ export function VehicleForm({
                         id="fleetNumber"
                         name="fleetNumber"
                         placeholder={t('fleetNumberPlaceholder')}
-                        maxLength={FLEET_NUMBER_MAX_LENGTH}
                         autoComplete="off"
                         className="w-full sm:w-48"
                         defaultValue={vehicle?.fleetNumber ?? ''}

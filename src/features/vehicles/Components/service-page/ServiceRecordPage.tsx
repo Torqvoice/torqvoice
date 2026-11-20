@@ -1,4 +1,5 @@
 import { workshopTaxOffer } from '@/features/settings/Lib/workshopTaxOffer'
+import { jobMeterViews } from '@/features/meters/Lib/meters.server'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { parseTaxComponents } from '@/lib/tax-components'
 import { getServiceRecord } from '@/features/vehicles/Actions/serviceActions'
@@ -265,6 +266,19 @@ export async function ServiceRecordPage({
         })
       : null
 
+  // The vehicle's meters besides the odometer, with this job's readings.
+  const meters =
+    record.vehicle && organizationId && isRenderable(record.serviceDate)
+      ? await jobMeterViews(organizationId, {
+          id: record.id,
+          vehicleId: record.vehicle.id,
+          readAt: jobReadingDate({
+            startDateTime: isRenderable(record.startDateTime) ? record.startDateTime : null,
+            serviceDate: record.serviceDate,
+          }),
+        })
+      : []
+
   const initialData = {
     id: record.id,
     title: record.title,
@@ -273,6 +287,7 @@ export async function ServiceRecordPage({
     status: record.status,
     mileage: record.mileage,
     lastReading,
+    meters,
     serviceDate: zonedDayKey(
       isRenderable(record.serviceDate) ? new Date(record.serviceDate) : new Date(),
       timeZone

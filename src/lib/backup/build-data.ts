@@ -147,6 +147,16 @@ const DATASETS: readonly Dataset[] = [
       }),
   },
   {
+    key: 'meterTypes',
+    option: 'customFields',
+    read: (organizationId, page) =>
+      db.meterType.findMany({
+        ...page,
+        where: { organizationId },
+        include: { vehicleMeters: { include: { readings: true } } },
+      }),
+  },
+  {
     key: 'inventoryParts',
     option: 'inventory',
     read: (organizationId, page) =>

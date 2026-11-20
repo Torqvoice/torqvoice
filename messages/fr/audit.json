@@ -212,7 +212,14 @@
     "integration_backup_run": "Sauvegarde lancée",
     "integration_backup_restore": "Sauvegarde restaurée",
     "shareLink_expiry": "Expiration du lien de partage modifiée",
-    "shareLink_revoke": "Liens de partage supprimés"
+    "shareLink_revoke": "Liens de partage supprimés",
+    "meterType_create": "Compteur créé",
+    "meterType_update": "Compteur mis à jour",
+    "meterType_delete": "Compteur supprimé",
+    "vehicleMeter_remove": "Compteur de véhicule retiré",
+    "vehicleMeter_replace": "Compteur de véhicule remplacé",
+    "meterReading_markWrong": "Relevé de compteur marqué comme erroné",
+    "meterReading_restore": "Relevé de compteur de nouveau compté"
   },
   "summary": {
     "auth_twoFactorEnabled": "A activé la connexion à deux facteurs",
@@ -383,6 +390,13 @@
     "share_link_expiry_workshop": "Lien de partage réglé pour suivre le réglage de l'atelier",
     "share_link_expiry_never": "Lien de partage réglé pour ne jamais expirer",
     "share_link_expiry_date": "Lien de partage réglé pour expirer le {date}",
-    "share_link_revoke_bulk": "{count, plural, one {# lien de partage supprimé} other {# liens de partage supprimés}}"
+    "share_link_revoke_bulk": "{count, plural, one {# lien de partage supprimé} other {# liens de partage supprimés}}",
+    "meterType_create": "A créé le compteur \"{name}\"",
+    "meterType_update": "A mis à jour le compteur \"{name}\"",
+    "meterType_delete": "A supprimé le compteur \"{name}\"",
+    "vehicleMeter_remove": "A retiré le compteur \"{name}\" d'un véhicule",
+    "vehicleMeter_replace": "A remplacé le compteur \"{name}\" : l'ancien s'est arrêté à {oldEnd}, le nouveau a commencé à {newStart}",
+    "meterReading_markWrong": "A marqué le relevé {value} de {name} comme erroné",
+    "meterReading_restore": "A de nouveau compté le relevé {value} de {name}"
   }
 }

@@ -1,5 +1,6 @@
 'use server'
 
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
 import { readFile } from 'node:fs/promises'
 import { headers } from 'next/headers'
 import {
@@ -84,12 +85,16 @@ export async function getPortalQuote(quoteId: string) {
     const shownQuote = gateCustomerReference(
       {
         ...quote,
-        vehicle:
-          quote.vehicle &&
-          gateFleetNumber(
+        vehicle: quote.vehicle && {
+          ...gateFleetNumber(
             gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
             fleetNumberEnabledIn(settingsMap, features)
           ),
+          // The vehicle's current meter readings, for a workshop that has meters.
+          meterReadings: await printableMeterReadings(organizationId, {
+            vehicleId: quote.vehicleId,
+          }),
+        },
       },
       customerReferenceEnabledIn(settingsMap, features)
     )

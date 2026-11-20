@@ -1,4 +1,6 @@
 import { isRecordEntityType } from '@/features/custom-fields/Schema/customFieldSchema'
+import { MeterTypesProvider } from '@/components/meter-types-context'
+import { activeMeterTypes } from '@/features/meters/Lib/meters.server'
 import { redirect } from 'next/navigation'
 import { defaultCertificateDesign } from '@/features/inspections/Lib/defaultCertificateDesign'
 
@@ -135,8 +137,12 @@ export default async function InvoiceDesignerPage({
     logoUrl: settings[`${prefix}.logo`] || '',
   })
 
+  // The workshop's meters, so the vehicle block offers their readings and the
+  // sample shows one per meter. None on a plan without custom fields.
+  const meterTypes = await activeMeterTypes(data.organizationId)
+
   return (
-    <>
+    <MeterTypesProvider value={meterTypes}>
       {announcementLive && <DismissOnArrival id={INVOICE_DESIGNER_ANNOUNCEMENT} />}
       <InvoiceDesigner
         initialDocumentType={
@@ -225,6 +231,6 @@ export default async function InvoiceDesignerPage({
             : []
         }
       />
-    </>
+    </MeterTypesProvider>
   )
 }

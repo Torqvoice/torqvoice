@@ -19,6 +19,7 @@
  * the reader's translations.
  */
 
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
 import { findingLine } from '@/features/fault-codes/Lib/codes'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'fs/promises'
@@ -496,6 +497,11 @@ async function assembleLive(
     vehicleId: record.vehicleId,
     customerId: record.customerId ?? record.vehicle?.customerId,
   })
+  // The readings taken on this job of the vehicle's other meters, for a
+  // workshop that has meters; a design prints them only where it places them.
+  const meterReadings = record.vehicle
+    ? await printableMeterReadings(organizationId, { jobId: record.id })
+    : []
 
   const data: InvoiceData = {
     ...record,
@@ -506,6 +512,7 @@ async function assembleLive(
             gateTypeKey(record.vehicle, typeKeyEnabledIn(settingsMap)),
             fleetNumberOn
           ),
+          meterReadings,
           customer: partyOf(record.vehicle.customer),
         }
       : null,
@@ -590,6 +597,9 @@ async function assembleFrozen(
           // As issued. An invoice issued before the field existed has none
           // and prints none: it never borrows the vehicle's number of today.
           fleetNumber: frozen.vehicle.fleetNumber ?? null,
+          // Likewise the meter readings it was issued with: none for one
+          // issued before meters, never today's.
+          meterReadings: frozen.vehicle.meterReadings ?? [],
           mileage: frozen.vehicle.mileage ?? record.vehicle?.mileage ?? 0,
           customer: null,
         }
