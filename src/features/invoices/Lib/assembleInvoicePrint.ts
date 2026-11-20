@@ -500,7 +500,10 @@ async function assembleLive(
   // The readings taken on this job of the vehicle's other meters, for a
   // workshop that has meters; a design prints them only where it places them.
   const meterReadings = record.vehicle
-    ? await printableMeterReadings(organizationId, { jobId: record.id })
+    ? await printableMeterReadings(organizationId, {
+        jobId: record.id,
+        vehicleId: record.vehicleId,
+      })
     : []
 
   const data: InvoiceData = {

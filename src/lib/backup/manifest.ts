@@ -385,21 +385,17 @@ export const BACKUP_ENTITIES: readonly BackupEntity[] = [
     restore: 'replace',
   },
   // The workshop's meters besides the odometer, with each vehicle's meter and
-  // its readings under them, the way field definitions carry their values.
+  // its readings under them. With the vehicles: a vehicle export always
+  // carries its meters, so restoring vehicles never loses them.
   {
     model: 'MeterType',
     key: 'meterTypes',
-    option: 'customFields',
+    option: 'vehicles',
     restore: 'replace',
     clearOrder: 60,
   },
-  { model: 'VehicleMeter', option: 'customFields', nestedUnder: 'MeterType', restore: 'replace' },
-  {
-    model: 'MeterReading',
-    option: 'customFields',
-    nestedUnder: 'VehicleMeter',
-    restore: 'replace',
-  },
+  { model: 'VehicleMeter', option: 'vehicles', nestedUnder: 'MeterType', restore: 'replace' },
+  { model: 'MeterReading', option: 'vehicles', nestedUnder: 'VehicleMeter', restore: 'replace' },
   { model: 'StoredImage', option: 'inventory', nestedUnder: 'InventoryPart', restore: 'replace' },
   { model: 'InspectionItem', option: 'inspections', nestedUnder: 'Inspection', restore: 'replace' },
   {

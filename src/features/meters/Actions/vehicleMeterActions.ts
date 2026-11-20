@@ -1,5 +1,9 @@
 'use server'
 
+import { auditDetails } from '@/lib/audit'
+import { assertInvoiceEditable } from '@/lib/document-lock.server'
+import { vehicleName } from '@/lib/vehicle-name'
+import { READING_JOB_DATES, effectiveReadAt } from '../Lib/readingTime'
 import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
@@ -59,6 +63,7 @@ async function ownMeter(organizationId: string, vehicleMeterId: string) {
           createdAt: true,
           replacedFrom: true,
           wrongAt: true,
+          serviceRecord: { select: READING_JOB_DATES },
         },
       },
     },
@@ -69,12 +74,22 @@ async function ownMeter(organizationId: string, vehicleMeterId: string) {
     likes: meter.readings.map((r) => ({
       id: r.id,
       value: r.value.toNumber(),
-      readAt: r.readAt,
+      readAt: effectiveReadAt(r),
       createdAt: r.createdAt,
       replacedFrom: r.replacedFrom ? r.replacedFrom.toNumber() : null,
       wrongAt: r.wrongAt,
     })),
   }
+}
+
+/** "2019 Scania R 450 (ZZ19 TST)": how a vehicle is named in the audit log. */
+async function vehicleDisplay(organizationId: string, vehicleId: string): Promise<string> {
+  const vehicle = await db.vehicle.findFirst({
+    where: { id: vehicleId, organizationId },
+    select: { year: true, make: true, model: true, licensePlate: true },
+  })
+  if (!vehicle) return vehicleId
+  return `${vehicleName(vehicle)}${vehicle.licensePlate ? ` (${vehicle.licensePlate})` : ''}`
 }
 
 function refresh(vehicleId: string) {
@@ -134,9 +149,28 @@ export async function addVehicleMeter(input: unknown) {
         return fitted
       })
       refresh(data.vehicleId)
-      return { id: meter.id }
+      const type = types.find((t) => t.id === data.meterTypeId)
+      return {
+        id: meter.id,
+        vehicleId: data.vehicleId,
+        vehicleDisplay: await vehicleDisplay(organizationId, data.vehicleId),
+        change: `${type?.name ?? ''}${value !== null ? ` ${value}` : ''}`,
+      }
     },
-    { requiredPermissions: UPDATE }
+    {
+      requiredPermissions: UPDATE,
+      // Logged like any other change to the vehicle.
+      audit: ({ result }) => ({
+        action: 'vehicle.update',
+        entity: 'Vehicle',
+        entityId: result.vehicleId,
+        details: auditDetails('vehicle_update', {
+          name: result.vehicleDisplay,
+          fields: result.change,
+        }),
+        metadata: { vehicleId: result.vehicleId, vehicleMeterId: result.id, via: 'meters' },
+      }),
+    }
   )
 }
 
@@ -144,6 +178,8 @@ export async function addVehicleMeter(input: unknown) {
 export async function removeVehicleMeter(vehicleMeterId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      // Not on a plan without meters: their data is hidden there, and kept.
+      await requireFeature(organizationId, 'customFields')
       const meter = await db.vehicleMeter.findFirst({
         where: { id: vehicleMeterId, organizationId, removedAt: null },
         select: { id: true, vehicleId: true, meterType: { select: { name: true } } },
@@ -188,9 +224,28 @@ export async function addMeterReading(input: unknown) {
         select: { id: true },
       })
       refresh(meter.vehicleId)
-      return { id: reading.id, lower: last !== null && value < last, last }
+      return {
+        id: reading.id,
+        lower: last !== null && value < last,
+        last,
+        vehicleId: meter.vehicleId,
+        vehicleDisplay: await vehicleDisplay(organizationId, meter.vehicleId),
+        change: `${meter.meterType.name} ${value}`,
+      }
     },
-    { requiredPermissions: UPDATE }
+    {
+      requiredPermissions: UPDATE,
+      audit: ({ result }) => ({
+        action: 'vehicle.update',
+        entity: 'Vehicle',
+        entityId: result.vehicleId,
+        details: auditDetails('vehicle_update', {
+          name: result.vehicleDisplay,
+          fields: result.change,
+        }),
+        metadata: { vehicleId: result.vehicleId, readingId: result.id, via: 'meters' },
+      }),
+    }
   )
 }
 
@@ -209,10 +264,15 @@ export async function markMeterReadingWrong(input: unknown) {
         select: {
           id: true,
           value: true,
+          serviceRecordId: true,
           vehicleMeter: { select: { vehicleId: true, meterType: { select: { name: true } } } },
         },
       })
       if (!reading) throw new Error('Reading not found')
+      // A job's reading is part of what its invoice printed: a locked invoice
+      // refuses this as it refuses typing the reading again.
+      if (reading.serviceRecordId)
+        await assertInvoiceEditable(reading.serviceRecordId, organizationId)
       await db.meterReading.updateMany({
         where: { id: reading.id, organizationId },
         data: data.wrong

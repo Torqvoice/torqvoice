@@ -7,6 +7,7 @@ import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
 import { organizationTranslator } from '@/i18n/organization-translator'
+import { locales } from '@/i18n/config'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { createMeterTypeSchema, updateMeterTypeSchema } from '../Schema/meterSchema'
 
@@ -23,21 +24,46 @@ async function isMarine(organizationId: string): Promise<boolean> {
 }
 
 /**
- * The odometer's name as the workshop's documents print it: "Mileage", or
- * "Engine Hours" on a boat. A meter may not take it: the odometer is on
- * every vehicle already, and two lines with one name would say different
- * things.
+ * The odometer's names: "Mileage", or "Engine Hours" on a boat, in every
+ * language the app ships, since a workshop's documents can be printed in any
+ * of them. A meter may not take one: the odometer is on every vehicle
+ * already, and two lines with one name would say different things.
  */
 async function odometerNames(organizationId: string): Promise<string[]> {
-  const t = await organizationTranslator(organizationId, 'vehicles')
-  const marine = await isMarine(organizationId)
-  return [t(marine ? 'form.mileageMarine' : 'form.mileage')].map(folded)
+  const key = (await isMarine(organizationId)) ? 'mileageMarine' : 'mileage'
+  const names = await Promise.all(
+    locales.map(async (locale) => {
+      const messages = (await import(`../../../../messages/${locale}/vehicles.json`)).default as {
+        form?: Record<string, string>
+      }
+      return messages.form?.[key] ?? ''
+    })
+  )
+  return names.filter(Boolean).map(folded)
 }
 
 async function refuseOdometerName(organizationId: string, name: string): Promise<void> {
   if (!(await odometerNames(organizationId)).includes(folded(name))) return
   const t = await getTranslations('settings.meters')
   throw new Error(t('odometerName', { name: name.trim() }))
+}
+
+/**
+ * Two meters that differ only by case or spacing ("PTO hours" and "pto
+ * hours ") are one meter twice; the database's own check would let them
+ * both in.
+ */
+async function refuseDuplicateName(
+  organizationId: string,
+  name: string,
+  exceptId?: string
+): Promise<void> {
+  const others = await db.meterType.findMany({
+    where: { organizationId, ...(exceptId ? { id: { not: exceptId } } : {}) },
+    select: { name: true },
+  })
+  if (!others.some((other) => folded(other.name) === folded(name))) return
+  throw new Error((await getTranslations('settings.meters'))('duplicateName'))
 }
 
 /** Every meter the workshop has defined, shown or hidden, for the settings screen. */
@@ -102,6 +128,7 @@ export async function createMeterType(input: unknown) {
       await requireFeature(organizationId, 'customFields')
       const data = createMeterTypeSchema.parse(input)
       await refuseOdometerName(organizationId, data.name)
+      await refuseDuplicateName(organizationId, data.name)
       const last = await db.meterType.aggregate({
         where: { organizationId },
         _max: { sortOrder: true },
@@ -142,7 +169,10 @@ export async function updateMeterType(input: unknown) {
     async ({ organizationId }) => {
       await requireFeature(organizationId, 'customFields')
       const { id, ...data } = updateMeterTypeSchema.parse(input)
-      if (data.name !== undefined) await refuseOdometerName(organizationId, data.name)
+      if (data.name !== undefined) {
+        await refuseOdometerName(organizationId, data.name)
+        await refuseDuplicateName(organizationId, data.name, id)
+      }
       try {
         const result = await db.meterType.updateMany({ where: { id, organizationId }, data })
         if (result.count === 0) throw new Error('Meter not found')
@@ -180,6 +210,8 @@ export async function updateMeterType(input: unknown) {
 export async function deleteMeterType(id: string) {
   return withAuth(
     async ({ organizationId }) => {
+      // Not on a plan without meters: their data is hidden there, and kept.
+      await requireFeature(organizationId, 'customFields')
       const meter = await db.meterType.findFirst({
         where: { id, organizationId },
         select: { id: true, name: true },

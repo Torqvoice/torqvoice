@@ -5,6 +5,7 @@ import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import { activeMeterTypes } from './meters.server'
 import { lastMeterValueBefore, parseMeterValue, roundMeterValue } from './meterValue'
+import { READING_JOB_DATES, effectiveReadAt } from './readingTime'
 
 /** What a job's reading came to: what is stored, and the last one before it. */
 export interface JobMeterReadingResult {
@@ -22,37 +23,49 @@ export class InvalidMeterReadingError extends Error {
   }
 }
 
+export interface JobMeterReadingInput {
+  vehicleMeterId: string
+  /** A number, the text typed, or null / empty to take the job's reading away. */
+  value: string | number | null
+}
+
 /**
- * Writes one meter's reading on a job, or takes it away (`null`). The work
- * order page and the technician app both come through here.
+ * Writes the readings of a job's meters, or takes them away (`null`). The
+ * work order page (one at a time) and the technician app (several at once)
+ * both come through here.
  *
- * - The job and the meter have to be this workshop's, and the meter has to
- *   be on the job's vehicle.
+ * All of them are checked before any is written, and they are written in one
+ * transaction: a request with one bad reading changes nothing.
+ *
+ * - The job and every meter have to be this workshop's, and each meter has to
+ *   be on the job's vehicle now.
  * - A locked invoice refuses the change, as it refuses every other edit to
  *   the job: what it printed is frozen with it.
- * - The reading is dated by the job (when it starts, else its service day),
- *   the date the odometer reading on the same job has.
+ * - A job's reading is dated by the job (`effectiveReadAt`), the date the
+ *   odometer reading on the same job has, and follows it when the job moves.
  * - A reading below the last one before the job is kept and reported, never
  *   refused: meters are misread and replaced.
  */
-export async function writeJobMeterReading(input: {
+export async function writeJobMeterReadings(input: {
   organizationId: string
   userId: string | null
   jobId: string
-  vehicleMeterId: string
-  value: string | number | null
+  readings: JobMeterReadingInput[]
   source: 'web' | 'tech'
-}): Promise<JobMeterReadingResult> {
+}): Promise<JobMeterReadingResult[]> {
   const { organizationId } = input
   const job = await db.serviceRecord.findFirst({
     where: { id: input.jobId, organizationId },
     select: { id: true, vehicleId: true, startDateTime: true, serviceDate: true },
   })
   if (!job || !job.vehicleId) throw new Error('Work order not found')
+  const ids = input.readings.map((r) => r.vehicleMeterId)
+  if (new Set(ids).size !== ids.length) throw new InvalidMeterReadingError()
+
   const types = await activeMeterTypes(organizationId)
-  const meter = await db.vehicleMeter.findFirst({
+  const meters = await db.vehicleMeter.findMany({
     where: {
-      id: input.vehicleMeterId,
+      id: { in: ids },
       organizationId,
       vehicleId: job.vehicleId,
       removedAt: null,
@@ -69,51 +82,114 @@ export async function writeJobMeterReading(input: {
           replacedFrom: true,
           wrongAt: true,
           serviceRecordId: true,
+          serviceRecord: { select: READING_JOB_DATES },
         },
       },
     },
   })
-  if (!meter) throw new Error('Meter not found')
+
+  // Every reading is checked before anything is written.
+  const readAt = jobReadingDate(job)
+  const plan = input.readings.map((reading) => {
+    const meter = meters.find((m) => m.id === reading.vehicleMeterId)
+    if (!meter) throw new Error('Meter not found')
+    const typed = typeof reading.value === 'string' ? reading.value.trim() : reading.value
+    let value: number | null = null
+    if (typed !== null && typed !== '') {
+      const parsed = parseMeterValue(typed)
+      if (parsed === null) throw new InvalidMeterReadingError()
+      value = roundMeterValue(parsed)
+    }
+    const others = meter.readings
+      .filter((r) => r.serviceRecordId !== job.id)
+      .map((r) => ({
+        id: r.id,
+        value: r.value.toNumber(),
+        readAt: effectiveReadAt(r),
+        createdAt: r.createdAt,
+        replacedFrom: r.replacedFrom ? r.replacedFrom.toNumber() : null,
+        wrongAt: r.wrongAt,
+      }))
+    const last = lastMeterValueBefore(others, { readAt })
+    return {
+      vehicleMeterId: meter.id,
+      value,
+      last,
+      lower: value !== null && last !== null && value < last,
+    }
+  })
   await assertInvoiceEditable(job.id, organizationId)
 
-  const readAt = jobReadingDate(job)
-  const others = meter.readings
-    .filter((r) => r.serviceRecordId !== job.id)
-    .map((r) => ({
-      id: r.id,
-      value: r.value.toNumber(),
-      readAt: r.readAt,
-      createdAt: r.createdAt,
-      replacedFrom: r.replacedFrom ? r.replacedFrom.toNumber() : null,
-      wrongAt: r.wrongAt,
-    }))
-  const last = lastMeterValueBefore(others, { readAt })
-
-  const typed = typeof input.value === 'string' ? input.value.trim() : input.value
-  if (typed === null || typed === '') {
-    await db.meterReading.deleteMany({
-      where: { organizationId, vehicleMeterId: meter.id, serviceRecordId: job.id },
-    })
-    return { vehicleMeterId: meter.id, value: null, last, lower: false }
-  }
-  const parsed = parseMeterValue(typed)
-  if (parsed === null) throw new InvalidMeterReadingError()
-  const value = roundMeterValue(parsed)
-  await db.meterReading.upsert({
-    where: {
-      vehicleMeterId_serviceRecordId: { vehicleMeterId: meter.id, serviceRecordId: job.id },
-    },
-    create: {
-      vehicleMeterId: meter.id,
-      serviceRecordId: job.id,
-      value,
-      readAt,
-      organizationId,
-      createdById: input.userId,
-      source: input.source,
-    },
-    // A reading marked wrong and typed again counts again.
-    update: { value, readAt, wrongAt: null, wrongById: null },
+  await db.$transaction(async (tx) => {
+    for (const reading of plan) {
+      if (reading.value === null) {
+        await tx.meterReading.deleteMany({
+          where: {
+            organizationId,
+            vehicleMeterId: reading.vehicleMeterId,
+            serviceRecordId: job.id,
+          },
+        })
+        continue
+      }
+      await tx.meterReading.upsert({
+        where: {
+          vehicleMeterId_serviceRecordId: {
+            vehicleMeterId: reading.vehicleMeterId,
+            serviceRecordId: job.id,
+          },
+        },
+        create: {
+          vehicleMeterId: reading.vehicleMeterId,
+          serviceRecordId: job.id,
+          value: reading.value,
+          readAt,
+          organizationId,
+          createdById: input.userId,
+          source: input.source,
+        },
+        // A reading marked wrong and typed again counts again.
+        update: { value: reading.value, readAt, wrongAt: null, wrongById: null },
+      })
+    }
   })
-  return { vehicleMeterId: meter.id, value, last, lower: last !== null && value < last }
+  return plan
+}
+
+/** One reading on a job: the work order page's box. */
+export async function writeJobMeterReading(
+  input: {
+    organizationId: string
+    userId: string | null
+    jobId: string
+    source: 'web' | 'tech'
+  } & JobMeterReadingInput
+): Promise<JobMeterReadingResult> {
+  const [result] = await writeJobMeterReadings({
+    organizationId: input.organizationId,
+    userId: input.userId,
+    jobId: input.jobId,
+    source: input.source,
+    readings: [{ vehicleMeterId: input.vehicleMeterId, value: input.value }],
+  })
+  return result
+}
+
+/**
+ * A job that moved to another vehicle in this save: its readings stay in the
+ * old vehicle's history but are no longer the job's, so nothing prints one
+ * vehicle's engine hours under another. Called in the job's own transaction.
+ */
+export async function unlinkJobMeterReadingsFromOtherVehicles(
+  tx: { meterReading: { updateMany: typeof db.meterReading.updateMany } },
+  job: { organizationId: string; jobId: string; vehicleId: string | null }
+): Promise<void> {
+  await tx.meterReading.updateMany({
+    where: {
+      organizationId: job.organizationId,
+      serviceRecordId: job.jobId,
+      ...(job.vehicleId ? { vehicleMeter: { vehicleId: { not: job.vehicleId } } } : {}),
+    },
+    data: { serviceRecordId: null },
+  })
 }

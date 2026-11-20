@@ -160,6 +160,8 @@ describe('JSON shape', () => {
         documentDesignSnapshots: [],
         documentAssetSnapshots: [{ id: 'a1', organizationId: 'org-1', data: 'AQID' }],
         vehicles: [],
+        // The vehicles' meters travel with them.
+        meterTypes: [],
         orgReminders: [],
         counterSales: [],
         appointments: [

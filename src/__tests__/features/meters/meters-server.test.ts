@@ -13,6 +13,8 @@ const db = vi.hoisted(() => ({
   meterType: {
     findMany: vi.fn(),
     create: vi.fn(),
+    updateMany: vi.fn(async () => ({ count: 1 })),
+    findFirstOrThrow: vi.fn(),
     aggregate: vi.fn(async () => ({ _max: { sortOrder: 1 } })),
   },
   vehicleMeter: { findMany: vi.fn(), findFirst: vi.fn(), updateMany: vi.fn() },
@@ -25,8 +27,18 @@ const db = vi.hoisted(() => ({
     deleteMany: vi.fn(),
   },
   appSetting: { findFirst: vi.fn(async () => null) },
-  vehicle: { count: vi.fn(async () => 1) },
+  vehicle: {
+    count: vi.fn(async () => 1),
+    findFirst: vi.fn(async () => ({
+      year: 2019,
+      make: 'Scania',
+      model: 'R 450',
+      licensePlate: 'ZZ19 TST',
+    })),
+  },
   serviceRecord: { findFirst: vi.fn() },
+  // A transaction runs on the same mocks, so what it writes can be asked about.
+  $transaction: vi.fn(async (fn: (tx: unknown) => unknown) => fn(db)),
 }))
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/lib/features', () => ({ getFeatures: vi.fn(), requireFeature: vi.fn() }))
@@ -47,10 +59,17 @@ vi.mock('@/i18n/organization-translator', () => ({
 }))
 vi.mock('@/lib/workshop-timezone', () => ({ workshopTimeZone: vi.fn(async () => 'Europe/London') }))
 vi.mock('@/lib/document-lock.server', () => ({ assertInvoiceEditable: vi.fn() }))
+// The audit row each action would write, read through its own option.
+const audits = vi.hoisted(() => [] as unknown[])
 vi.mock('@/lib/with-auth', () => ({
-  withAuth: async (fn: (ctx: { userId: string; organizationId: string }) => Promise<unknown>) => {
+  withAuth: async (
+    fn: (ctx: { userId: string; organizationId: string }) => Promise<unknown>,
+    options: { audit?: (a: { result: unknown }) => unknown } = {}
+  ) => {
     try {
-      return { success: true, data: await fn({ userId: 'user-1', organizationId: 'org-1' }) }
+      const data = await fn({ userId: 'user-1', organizationId: 'org-1' })
+      if (options.audit) audits.push(options.audit({ result: data }))
+      return { success: true, data }
     } catch (error) {
       return { success: false, error: (error as Error).message }
     }
@@ -64,8 +83,16 @@ import {
   printableMeterReadings,
   vehicleMeterViews,
 } from '@/features/meters/Lib/meters.server'
-import { writeJobMeterReading } from '@/features/meters/Lib/jobMeterReading.server'
-import { createMeterType, getMeterSuggestions } from '@/features/meters/Actions/meterTypeActions'
+import {
+  unlinkJobMeterReadingsFromOtherVehicles,
+  writeJobMeterReading,
+  writeJobMeterReadings,
+} from '@/features/meters/Lib/jobMeterReading.server'
+import {
+  createMeterType,
+  getMeterSuggestions,
+  updateMeterType,
+} from '@/features/meters/Actions/meterTypeActions'
 import {
   addMeterReading,
   markMeterReadingWrong,
@@ -101,7 +128,9 @@ describe('a workshop without meters', () => {
   it('on a plan without custom fields is not even asked about them', async () => {
     plan(false)
     expect(await activeMeterTypes('org-1')).toEqual([])
-    expect(await printableMeterReadings('org-1', { jobId: 'job-1' })).toEqual([])
+    expect(await printableMeterReadings('org-1', { jobId: 'job-1', vehicleId: 'veh-1' })).toEqual(
+      []
+    )
     expect(await vehicleMeterViews('org-1', 'veh-1')).toEqual([])
     expect(db.meterType.findMany).not.toHaveBeenCalled()
     expect(db.meterReading.findMany).not.toHaveBeenCalled()
@@ -128,7 +157,7 @@ describe('what a document prints', () => {
       { value: decimal(2984.3), vehicleMeter: { meterTypeId: 't-pto' } },
       { value: decimal(4256.7), vehicleMeter: { meterTypeId: 't-engine' } },
     ])
-    expect(await printableMeterReadings('org-1', { jobId: 'job-1' })).toEqual([
+    expect(await printableMeterReadings('org-1', { jobId: 'job-1', vehicleId: 'veh-1' })).toEqual([
       { name: 'Engine hours', unit: 'hrs', value: 4256.7 },
       { name: 'PTO hours', unit: 'hrs', value: 2984.3 },
     ])
@@ -136,6 +165,8 @@ describe('what a document prints', () => {
       organizationId: 'org-1',
       serviceRecordId: 'job-1',
       wrongAt: null,
+      // Only the meters of the vehicle the job is on now.
+      vehicleMeter: { vehicleId: 'veh-1', removedAt: null },
     })
   })
 
@@ -180,6 +211,10 @@ describe('the workshop’s list of meters', () => {
   })
 
   it('adds a meter under this workshop', async () => {
+    // No meter of that name yet.
+    db.meterType.findMany.mockImplementation(async (args: { where: Record<string, unknown> }) =>
+      'isActive' in args.where ? TYPES : []
+    )
     db.meterType.create.mockResolvedValue({ id: 't-new', name: 'Engine hours', unit: 'hrs' })
     expect((await createMeterType({ name: 'Engine hours', unit: 'hrs' })).success).toBe(true)
     expect(db.meterType.create.mock.calls[0][0].data).toEqual({
@@ -263,22 +298,24 @@ describe('a reading on a job', () => {
     vehicleMeterId: 'vm-1',
     source: 'web' as const,
   }
+  const fitted = (id: string, readings: unknown[]) => ({ id, readings })
 
   beforeEach(() => {
     db.serviceRecord.findFirst.mockResolvedValue(job)
-    db.vehicleMeter.findFirst.mockResolvedValue({
-      id: 'vm-1',
-      readings: [
+    db.vehicleMeter.findMany.mockResolvedValue([
+      fitted('vm-1', [
         { ...row('a', 4000, '2026-01-01'), serviceRecordId: null },
         { ...row('own', 1, '2026-03-01'), serviceRecordId: 'job-1' },
-      ],
-    })
+      ]),
+      fitted('vm-2', []),
+    ])
   })
 
   it('is dated by the job and judged against the last reading before it, not its own', async () => {
     const result = await writeJobMeterReading({ ...input, value: '3999.9' })
 
     expect(result).toEqual({ vehicleMeterId: 'vm-1', value: 3999.9, last: 4000, lower: true })
+    expect(db.$transaction).toHaveBeenCalledTimes(1)
     expect(db.meterReading.upsert).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
@@ -306,12 +343,12 @@ describe('a reading on a job', () => {
   })
 
   it('is refused for a meter that is not on the job’s vehicle, or not this workshop’s', async () => {
-    db.vehicleMeter.findFirst.mockResolvedValue(null)
+    db.vehicleMeter.findMany.mockResolvedValue([])
     await expect(writeJobMeterReading({ ...input, value: '5000' })).rejects.toThrow(
       'Meter not found'
     )
-    expect(db.vehicleMeter.findFirst.mock.calls[0][0].where).toMatchObject({
-      id: 'vm-1',
+    expect(db.vehicleMeter.findMany.mock.calls[0][0].where).toMatchObject({
+      id: { in: ['vm-1'] },
       organizationId: 'org-1',
       vehicleId: 'veh-1',
       removedAt: null,
@@ -328,5 +365,163 @@ describe('a reading on a job', () => {
       id: 'job-1',
       organizationId: 'org-1',
     })
+  })
+
+  it('writes several at once all or nothing: one bad reading writes none of them', async () => {
+    await expect(
+      writeJobMeterReadings({
+        organizationId: 'org-1',
+        userId: 'user-1',
+        jobId: 'job-1',
+        source: 'tech',
+        readings: [
+          { vehicleMeterId: 'vm-1', value: 4300 },
+          { vehicleMeterId: 'vm-2', value: '4.256.7' },
+        ],
+      })
+    ).rejects.toThrow('That is not a reading')
+    expect(db.$transaction).not.toHaveBeenCalled()
+    expect(db.meterReading.upsert).not.toHaveBeenCalled()
+
+    await writeJobMeterReadings({
+      organizationId: 'org-1',
+      userId: 'user-1',
+      jobId: 'job-1',
+      source: 'tech',
+      readings: [
+        { vehicleMeterId: 'vm-1', value: 4300 },
+        { vehicleMeterId: 'vm-2', value: 12.5 },
+      ],
+    })
+    expect(db.$transaction).toHaveBeenCalledTimes(1)
+    expect(db.meterReading.upsert).toHaveBeenCalledTimes(2)
+  })
+
+  it('refuses a number with more than two decimals, as typed text is refused', async () => {
+    await expect(writeJobMeterReading({ ...input, value: 4300.125 })).rejects.toThrow(
+      'That is not a reading'
+    )
+  })
+
+  it('judges against a reading dated by its job as the job is now, not when it was typed', async () => {
+    db.vehicleMeter.findMany.mockResolvedValue([
+      fitted('vm-1', [
+        // Typed on 1 February for a job since moved to 1 April: it now comes
+        // after this job (1 March), so it is not "the last reading".
+        {
+          ...row('moved', 5000, '2026-02-01'),
+          serviceRecordId: 'job-2',
+          serviceRecord: { startDateTime: null, serviceDate: new Date('2026-04-01T09:00:00Z') },
+        },
+        { ...row('a', 4000, '2026-01-01'), serviceRecordId: null },
+      ]),
+    ])
+    expect(await writeJobMeterReading({ ...input, value: '4100' })).toMatchObject({
+      last: 4000,
+      lower: false,
+    })
+  })
+})
+
+describe('a job moved to another vehicle', () => {
+  it('leaves its readings in the old vehicle’s history, no longer the job’s', async () => {
+    await unlinkJobMeterReadingsFromOtherVehicles(db as never, {
+      organizationId: 'org-1',
+      jobId: 'job-1',
+      vehicleId: 'veh-B',
+    })
+    expect(db.meterReading.updateMany).toHaveBeenCalledWith({
+      where: {
+        organizationId: 'org-1',
+        serviceRecordId: 'job-1',
+        vehicleMeter: { vehicleId: { not: 'veh-B' } },
+      },
+      data: { serviceRecordId: null },
+    })
+  })
+})
+
+describe('the order of readings taken at the same moment', () => {
+  it('is the order they were typed in', async () => {
+    const noon = '2026-03-01'
+    db.vehicleMeter.findMany.mockResolvedValue([
+      {
+        id: 'vm-1',
+        meterTypeId: 't-engine',
+        readings: [
+          // Typed second: the new counter after a replacement, at the same moment.
+          {
+            ...row('new', 12, noon, { replacedFrom: decimal(9800) }),
+            createdAt: new Date('2026-03-01T12:05:00Z'),
+          },
+          { ...row('old', 9800, noon), createdAt: new Date('2026-03-01T12:01:00Z') },
+        ],
+      },
+    ])
+    const [meter] = await vehicleMeterViews('org-1', 'veh-1')
+    expect(meter.current).toBe(12)
+    expect(meter.readings.map((r) => r.id)).toEqual(['new', 'old'])
+  })
+})
+
+describe('more of the review’s rules', () => {
+  it('a job’s reading marked wrong on a locked invoice is refused, as typing it again is', async () => {
+    db.meterReading.findFirst.mockResolvedValue({
+      id: 'r-1',
+      value: decimal(4300),
+      serviceRecordId: 'job-1',
+      vehicleMeter: { vehicleId: 'veh-1', meterType: { name: 'Engine hours' } },
+    })
+    vi.mocked(assertInvoiceEditable).mockRejectedValueOnce(new Error('locked'))
+
+    expect(await markMeterReadingWrong({ readingId: 'r-1', wrong: true })).toEqual({
+      success: false,
+      error: 'locked',
+    })
+    expect(assertInvoiceEditable).toHaveBeenCalledWith('job-1', 'org-1')
+    expect(db.meterReading.updateMany).not.toHaveBeenCalled()
+  })
+
+  it('refuses the odometer’s name in every language the app ships', async () => {
+    // A workshop in English typing the German odometer name.
+    expect((await createMeterType({ name: 'Kilometerstand', unit: 'km' })).success).toBe(false)
+    expect((await createMeterType({ name: 'Kilométrage', unit: 'km' })).success).toBe(false)
+    expect(db.meterType.create).not.toHaveBeenCalled()
+  })
+
+  it('refuses a name that differs from another meter only by case or spacing, on create and rename', async () => {
+    db.meterType.findMany.mockImplementation(async (args: { where: Record<string, unknown> }) =>
+      'isActive' in args.where ? TYPES : [{ name: 'PTO hours' }]
+    )
+    expect(await createMeterType({ name: ' pto HOURS ', unit: 'hrs' })).toEqual({
+      success: false,
+      error: 'duplicateName',
+    })
+    expect(await updateMeterType({ id: 't-engine', name: 'PTO hours' })).toEqual({
+      success: false,
+      error: 'duplicateName',
+    })
+    expect(db.meterType.create).not.toHaveBeenCalled()
+  })
+
+  it('logs a reading typed on the vehicle like any change to the vehicle', async () => {
+    db.vehicleMeter.findFirst.mockResolvedValue({
+      id: 'vm-1',
+      vehicleId: 'veh-1',
+      meterType: { name: 'Engine hours', isActive: true },
+      readings: [],
+    })
+    audits.length = 0
+    await addMeterReading({ vehicleMeterId: 'vm-1', value: '4300' })
+    expect(audits).toEqual([
+      expect.objectContaining({
+        action: 'vehicle.update',
+        entityId: 'veh-1',
+        details: {
+          key: 'vehicle_update',
+          params: { name: '2019 Scania R 450 (ZZ19 TST)', fields: 'Engine hours 4300' },
+        },
+      }),
+    ])
   })
 })

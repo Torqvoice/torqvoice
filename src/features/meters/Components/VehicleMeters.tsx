@@ -328,15 +328,20 @@ function AddMeterDialog({
         </DialogHeader>
         <DialogBody className="space-y-4">
           <div className="space-y-1.5">
-            <Label>{t('meter')}</Label>
-            <div className="flex flex-wrap gap-2">
+            <Label id="meter-chooser-label">{t('meter')}</Label>
+            <div
+              className="flex flex-wrap gap-2"
+              role="radiogroup"
+              aria-labelledby="meter-chooser-label"
+            >
               {types.map((type) => (
                 <Button
                   key={type.id}
                   type="button"
                   size="sm"
+                  role="radio"
                   variant={chosen?.id === type.id ? 'default' : 'outline'}
-                  aria-pressed={chosen?.id === type.id}
+                  aria-checked={chosen?.id === type.id}
                   onClick={() => setTypeId(type.id)}
                 >
                   {type.name}
@@ -352,8 +357,8 @@ function AddMeterDialog({
             onChange={setValue}
           />
           <div className="space-y-1.5">
-            <Label>{t('readingDate')}</Label>
-            <DateInput value={day || today()} onChange={setDay} />
+            <Label htmlFor="meter-reading-date-0">{t('readingDate')}</Label>
+            <DateInput id="meter-reading-date-0" value={day || today()} onChange={setDay} />
           </div>
         </DialogBody>
         <DialogFooter>
@@ -438,8 +443,8 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
             </p>
           )}
           <div className="space-y-1.5">
-            <Label>{t('readingDate')}</Label>
-            <DateInput value={day || today()} onChange={setDay} />
+            <Label htmlFor="meter-reading-date-1">{t('readingDate')}</Label>
+            <DateInput id="meter-reading-date-1" value={day || today()} onChange={setDay} />
           </div>
         </DialogBody>
         <DialogFooter>
@@ -510,8 +515,8 @@ function ReplaceDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
             onChange={setNewStart}
           />
           <div className="space-y-1.5">
-            <Label>{t('replacedOn')}</Label>
-            <DateInput value={day || today()} onChange={setDay} />
+            <Label htmlFor="meter-replaced-date-2">{t('replacedOn')}</Label>
+            <DateInput id="meter-replaced-date-2" value={day || today()} onChange={setDay} />
           </div>
         </DialogBody>
         <DialogFooter>

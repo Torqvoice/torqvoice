@@ -2,6 +2,7 @@
 
 import { getTranslations } from 'next-intl/server'
 import { revalidatePath } from 'next/cache'
+import { db } from '@/lib/db'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
@@ -28,7 +29,11 @@ export async function setJobMeterReading(input: unknown) {
           source: 'web',
         })
         revalidatePath('/vehicles')
-        return result
+        const job = await db.serviceRecord.findFirst({
+          where: { id: data.jobId, organizationId },
+          select: { invoiceNumber: true },
+        })
+        return { ...result, jobId: data.jobId, jobRef: job?.invoiceNumber || data.jobId }
       } catch (error) {
         if (error instanceof Error && error.name === 'InvalidMeterReadingError') {
           throw new Error((await getTranslations('vehicles.meters'))('invalidReading'))

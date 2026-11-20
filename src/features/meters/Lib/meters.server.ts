@@ -1,5 +1,6 @@
 import 'server-only'
 
+import { READING_JOB_DATES, effectiveReadAt } from './readingTime'
 import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import {
@@ -45,7 +46,15 @@ const READING_SELECT = {
   wrongAt: true,
   source: true,
   serviceRecordId: true,
-  serviceRecord: { select: { id: true, title: true, invoiceNumber: true, vehicleId: true } },
+  serviceRecord: {
+    select: {
+      id: true,
+      title: true,
+      invoiceNumber: true,
+      vehicleId: true,
+      ...READING_JOB_DATES,
+    },
+  },
 } as const
 
 type ReadingRow = {
@@ -62,6 +71,8 @@ type ReadingRow = {
     title: string
     invoiceNumber: string | null
     vehicleId: string | null
+    startDateTime: Date | null
+    serviceDate: Date
   } | null
 }
 
@@ -69,7 +80,8 @@ function asLike(row: ReadingRow): MeterReadingLike {
   return {
     id: row.id,
     value: row.value.toNumber(),
-    readAt: row.readAt,
+    // A job's reading is dated by the job as it is now.
+    readAt: effectiveReadAt(row),
     createdAt: row.createdAt,
     replacedFrom: row.replacedFrom ? row.replacedFrom.toNumber() : null,
     wrongAt: row.wrongAt,
@@ -81,7 +93,10 @@ function asLike(row: ReadingRow): MeterReadingLike {
 export interface MeterReadingView {
   id: string
   value: number
+  /** When it counts as taken: a job's reading follows the job's date. */
   readAt: string
+  /** When it was typed, which orders two readings of the same moment. */
+  createdAt: string
   replacedFrom: number | null
   wrong: boolean
   source: string
@@ -108,7 +123,8 @@ function view(
 ): VehicleMeterView {
   const likes = meter.readings.map(asLike)
   const { current, total } = meterState(likes)
-  const newestFirst = [...meter.readings].sort((a, b) => byReadingTime(b, a))
+  const newestFirst = [...likes].sort((a, b) => byReadingTime(b, a))
+  const rows = new Map(meter.readings.map((row) => [row.id, row]))
   return {
     id: meter.id,
     meterTypeId: meter.meterTypeId,
@@ -118,15 +134,26 @@ function view(
     currentAt: current?.readAt.toISOString() ?? null,
     total,
     replaced: likes.some((r) => r.replacedFrom != null && !r.wrongAt),
-    readings: newestFirst.map((row) => ({
-      id: row.id,
-      value: row.value.toNumber(),
-      readAt: row.readAt.toISOString(),
-      replacedFrom: row.replacedFrom ? row.replacedFrom.toNumber() : null,
-      wrong: Boolean(row.wrongAt),
-      source: row.source,
-      job: row.serviceRecord,
-    })),
+    readings: newestFirst.map((like) => {
+      const row = rows.get(like.id) as ReadingRow
+      return {
+        id: like.id,
+        value: like.value,
+        readAt: like.readAt.toISOString(),
+        createdAt: like.createdAt.toISOString(),
+        replacedFrom: like.replacedFrom,
+        wrong: Boolean(like.wrongAt),
+        source: row.source,
+        job: row.serviceRecord
+          ? {
+              id: row.serviceRecord.id,
+              title: row.serviceRecord.title,
+              invoiceNumber: row.serviceRecord.invoiceNumber,
+              vehicleId: row.serviceRecord.vehicleId,
+            }
+          : null,
+      }
+    }),
   }
 }
 
@@ -184,7 +211,7 @@ export async function jobMeterViews(
       id: r.id,
       value: r.value,
       readAt: new Date(r.readAt),
-      createdAt: new Date(r.readAt),
+      createdAt: new Date(r.createdAt),
       replacedFrom: r.replacedFrom,
       wrongAt: r.wrong ? new Date(0) : null,
       serviceRecordId: r.job?.id ?? null,
@@ -220,17 +247,24 @@ export interface PrintableMeterReading {
  */
 export async function printableMeterReadings(
   organizationId: string,
-  source: { jobId: string } | { vehicleId: string | null }
+  source: { jobId: string; vehicleId: string | null } | { vehicleId: string | null }
 ): Promise<PrintableMeterReading[]> {
   const types = await activeMeterTypes(organizationId)
   if (types.length === 0) return []
   if ('jobId' in source) {
+    if (!source.vehicleId) return []
     const rows = await db.meterReading.findMany({
       where: {
         organizationId,
         serviceRecordId: source.jobId,
         wrongAt: null,
-        vehicleMeter: { meterTypeId: { in: types.map((t) => t.id) } },
+        // Only the meters of the vehicle the job is on now: a reading taken
+        // while the job was on another vehicle is that vehicle's.
+        vehicleMeter: {
+          vehicleId: source.vehicleId,
+          removedAt: null,
+          meterTypeId: { in: types.map((t) => t.id) },
+        },
       },
       select: { value: true, vehicleMeter: { select: { meterTypeId: true } } },
     })

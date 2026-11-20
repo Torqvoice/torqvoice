@@ -10,36 +10,42 @@
 export const METER_VALUE_MAX = 999_999_999_999.99
 
 /**
- * What was typed as a number, or null when it is not one. Takes the
- * decimal mark the person uses: "4256.7", "4256,7", "4,256.7" and
- * "4 256,7" all read as 4256.7. More than two decimals are refused rather
- * than rounded: a reading is copied off a meter, not worked out.
+ * What was typed as a number, or null when it is not a well-formed one.
+ * Takes the decimal mark the person uses and thousands grouped in threes:
+ * "4256.7", "4256,7", "4,256.7", "4.256,7", "4 256,7" and "1,234,567" all
+ * read. Anything else is refused rather than guessed: more than two
+ * decimals ("12.345"), a lone group that could be either ("4,256"), groups
+ * not of three ("1,5,0") or one mark used for both ("4.256.7"). A reading is
+ * copied off a meter, so a typo is better caught than saved as another number.
  */
 export function parseMeterValue(text: string | number | null | undefined): number | null {
-  if (typeof text === 'number') return validMeterValue(text) ? text : null
-  const raw = (text ?? '').replace(/[\s  ']/g, '')
-  if (raw === '' || !/^[0-9.,]+$/.test(raw)) return null
-  const lastDot = raw.lastIndexOf('.')
-  const lastComma = raw.lastIndexOf(',')
-  let normalized: string
-  if (lastDot >= 0 && lastComma >= 0) {
-    // Both marks: the last one is the decimal mark, the other groups.
-    const decimal = lastDot > lastComma ? '.' : ','
-    const group = decimal === '.' ? ',' : '.'
-    normalized = raw.split(group).join('').replace(decimal, '.')
-  } else if (lastComma >= 0) {
-    // A comma alone is a decimal mark. Several group thousands ("1,234,567");
-    // one followed by three digits ("4,256") could be either, and is refused
-    // like "12.345" below: a reading is never guessed.
-    const parts = raw.split(',')
-    if (parts.length === 2 && parts[1].length === 3) return null
-    normalized = parts.length > 2 ? parts.join('') : raw.replace(',', '.')
-  } else {
-    const parts = raw.split('.')
-    // Several dots group thousands ("1.234.567").
-    normalized = parts.length > 2 ? parts.join('') : raw
+  if (typeof text === 'number') {
+    // The same rule as typed text: no more than two decimals, never rounded.
+    if (!validMeterValue(text) || Math.abs(text * 100 - Math.round(text * 100)) > 1e-7) return null
+    return text
   }
-  if (!/^\d+(\.\d{1,2})?$/.test(normalized)) return null
+  const raw = (text ?? '').trim().replace(/[\u00a0\u202f]/g, ' ')
+  if (raw === '') return null
+  // Plain: digits, then a decimal mark and one or two decimals.
+  const plain = /^(\d+)(?:[.,](\d{1,2}))?$/.exec(raw)
+  if (plain) {
+    // "4,256" or "4.256" alone could be thousands or three decimals.
+    return finish(`${plain[1]}${plain[2] ? `.${plain[2]}` : ''}`)
+  }
+  // Grouped: one to three digits, then groups of three, all with one mark,
+  // then a different decimal mark. "4,256" is not here: a single group with
+  // no decimals could be either and is refused above.
+  const grouped = /^(\d{1,3})((?:([,. ']) ?\d{3})(?:\3\d{3})*)(?:([.,])(\d{1,2}))?$/.exec(raw)
+  if (!grouped) return null
+  const [, head, rest, group, decimal, decimals] = grouped
+  if (decimal && decimal === group) return null
+  const groups = rest.split(group).filter(Boolean)
+  if (groups.some((g) => !/^ ?\d{3}$/.test(g))) return null
+  if (groups.length === 1 && !decimal) return null
+  return finish(`${head}${groups.map((g) => g.trim()).join('')}${decimal ? `.${decimals}` : ''}`)
+}
+
+function finish(normalized: string): number | null {
   const value = Number(normalized)
   return validMeterValue(value) ? value : null
 }

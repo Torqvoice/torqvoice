@@ -1,5 +1,7 @@
 'use server'
 
+import { getTranslations } from 'next-intl/server'
+import { FLEET_NUMBER_MAX_LENGTH, fleetNumberTooLong } from '@/features/vehicles/Lib/fleetNumber'
 import { prepareRecordCustomFields } from '@/features/custom-fields/Lib/recordCustomFieldValues.server'
 import { getRecordCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
 import { normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
@@ -318,9 +320,22 @@ async function saveInspectionDate(
   })
 }
 
+/**
+ * A fleet number over the limit, refused in the person's language before the
+ * schema's own English one: the form refuses it too, this is for anything
+ * else that calls the action.
+ */
+async function refuseLongFleetNumber(input: unknown): Promise<void> {
+  const value = (input as { fleetNumber?: unknown } | null)?.fleetNumber
+  if (typeof value !== 'string' || !fleetNumberTooLong(value)) return
+  const t = await getTranslations('vehicles.form')
+  throw new Error(t('fleetNumberTooLong', { max: FLEET_NUMBER_MAX_LENGTH }))
+}
+
 export async function createVehicle(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
+      await refuseLongFleetNumber(input)
       const { inspectionDueAt, registryLookup, customFields, ...data } =
         createVehicleSchema.parse(input)
       assertOwnUploads(data, organizationId)
@@ -385,6 +400,7 @@ export async function createVehicle(input: unknown) {
 export async function updateVehicle(input: unknown) {
   return withAuth(
     async ({ organizationId, userId }) => {
+      await refuseLongFleetNumber(input)
       const { id, inspectionDueAt, registryLookup, customFields, ...data } =
         updateVehicleSchema.parse(input)
       // An edit that leaves the plate out leaves it alone; one that sends it

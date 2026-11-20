@@ -190,7 +190,7 @@ describe('meter readings on an issued invoice', () => {
   it('are read from this job, and frozen with what it was issued with', async () => {
     meterReadings.mockResolvedValue([ENGINE])
     const issued = await issue()
-    expect(meterReadings).toHaveBeenCalledWith('org-1', { jobId: 'rec-1' })
+    expect(meterReadings).toHaveBeenCalledWith('org-1', { jobId: 'rec-1', vehicleId: 'veh-1' })
 
     // The reading is corrected on the job after the invoice went out.
     meterReadings.mockResolvedValue([{ ...ENGINE, value: 4300 }])

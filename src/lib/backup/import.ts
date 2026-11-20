@@ -746,6 +746,18 @@ export async function restoreBackup(
           currentPortalMessages = await tx.portalMessage.findMany({ where: { organizationId } })
         }
 
+        // A file that replaces the vehicles without carrying meters (one taken
+        // before meters, or by hand): clearing the vehicles takes their meters
+        // and readings with them, so they are read first and put back below
+        // on the vehicles that come back.
+        const keptMeters =
+          data.vehicles !== undefined && data.meterTypes === undefined
+            ? await tx.vehicleMeter.findMany({
+                where: { organizationId },
+                include: { readings: true },
+              })
+            : []
+
         for (const model of clearPlanFor(Object.keys(data))) {
           const clear = clearable[model]
           if (clear) await clear()
@@ -1906,6 +1918,69 @@ export async function restoreBackup(
                     organizationId,
                   })
                 )
+              ),
+            })
+          }
+        }
+
+        // 10b, for a file without meters: the meters and readings the
+        // workshop had, on the vehicles, meters and jobs that are there now.
+        if (keptMeters.length > 0) {
+          const [vehicleRows, typeRows, jobRows] = await Promise.all([
+            tx.vehicle.findMany({
+              where: { id: { in: keptMeters.map((m) => m.vehicleId) }, organizationId },
+              select: { id: true },
+            }),
+            tx.meterType.findMany({ where: { organizationId }, select: { id: true } }),
+            tx.serviceRecord.findMany({
+              where: {
+                id: {
+                  in: keptMeters.flatMap((m) =>
+                    m.readings.flatMap((r) => (r.serviceRecordId ? [r.serviceRecordId] : []))
+                  ),
+                },
+                organizationId,
+              },
+              select: { id: true },
+            }),
+          ])
+          const vehicles = new Set(vehicleRows.map((row) => row.id))
+          const types = new Set(typeRows.map((row) => row.id))
+          const jobs = new Set(jobRows.map((row) => row.id))
+          const back = keptMeters.filter(
+            (meter) => vehicles.has(meter.vehicleId) && types.has(meter.meterTypeId)
+          )
+          if (back.length > 0) {
+            await tx.vehicleMeter.createMany({
+              data: back.map((meter) => ({
+                id: meter.id,
+                vehicleId: meter.vehicleId,
+                meterTypeId: meter.meterTypeId,
+                removedAt: meter.removedAt,
+                createdAt: meter.createdAt,
+                organizationId,
+              })),
+            })
+            await tx.meterReading.createMany({
+              data: back.flatMap((meter) =>
+                meter.readings.map((reading) => ({
+                  id: reading.id,
+                  vehicleMeterId: reading.vehicleMeterId,
+                  value: reading.value,
+                  readAt: reading.readAt,
+                  replacedFrom: reading.replacedFrom,
+                  wrongAt: reading.wrongAt,
+                  wrongById: reading.wrongById,
+                  createdById: reading.createdById,
+                  source: reading.source,
+                  createdAt: reading.createdAt,
+                  updatedAt: reading.updatedAt,
+                  serviceRecordId:
+                    reading.serviceRecordId && jobs.has(reading.serviceRecordId)
+                      ? reading.serviceRecordId
+                      : null,
+                  organizationId,
+                }))
               ),
             })
           }

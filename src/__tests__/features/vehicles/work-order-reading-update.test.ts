@@ -19,6 +19,10 @@ vi.mock('@/lib/document-lock.server', () => ({
   assertInvoiceEditable: vi.fn().mockResolvedValue(undefined),
   getDocumentLockSettings: vi.fn().mockResolvedValue({}),
 }))
+// The job's meter readings, which these jobs have none of.
+vi.mock('@/features/meters/Lib/jobMeterReading.server', () => ({
+  unlinkJobMeterReadingsFromOtherVehicles: vi.fn(async () => undefined),
+}))
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },

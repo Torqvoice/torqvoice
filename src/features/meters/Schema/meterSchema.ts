@@ -22,6 +22,12 @@ const typedValue = z.union([z.string().max(32), z.number()])
 const readingDay = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
+  // A day that exists: "2026-13-45" would roll over into another one.
+  .refine((day) => {
+    const [y, m, d] = day.split('-').map(Number)
+    const date = new Date(Date.UTC(y, m - 1, d))
+    return date.getUTCFullYear() === y && date.getUTCMonth() === m - 1 && date.getUTCDate() === d
+  }, 'Not a date')
   .optional()
   .or(z.literal(''))
 

@@ -5,7 +5,7 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { checkinJobFor } from '@/features/condition-map/Lib/checkinAccess.server'
 import { jobMeterViews, metersEnabled } from '@/features/meters/Lib/meters.server'
-import { writeJobMeterReading } from '@/features/meters/Lib/jobMeterReading.server'
+import { writeJobMeterReadings } from '@/features/meters/Lib/jobMeterReading.server'
 import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 
 /**
@@ -74,36 +74,33 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       if (!parsed.success) {
         return apiError(400, 'invalid_request', 'Send readings: [{ vehicleMeterId, value }].')
       }
-      const results = []
-      for (const reading of parsed.data.readings) {
-        try {
-          results.push(
-            await writeJobMeterReading({
-              organizationId: ctx.organizationId,
-              userId: ctx.userId,
-              jobId: job.id,
-              vehicleMeterId: reading.vehicleMeterId,
-              value: reading.value,
-              source: 'tech',
-            })
-          )
-        } catch (error) {
-          const name = error instanceof Error ? error.name : ''
-          if (name === 'DocumentLockedError') {
-            return apiError(409, 'document_locked', (error as Error).message)
-          }
-          if (name === 'InvalidMeterReadingError') {
-            return apiError(
-              400,
-              'invalid_request',
-              'A reading is a number with up to two decimals.'
-            )
-          }
-          if (error instanceof Error && error.message === 'Meter not found') {
-            return apiError(404, 'not_found', 'That meter is not on this job’s vehicle.')
-          }
-          throw error
+      // Every reading is checked first and all are written in one
+      // transaction: one bad reading in the request changes nothing.
+      let results
+      try {
+        results = await writeJobMeterReadings({
+          organizationId: ctx.organizationId,
+          userId: ctx.userId,
+          jobId: job.id,
+          readings: parsed.data.readings,
+          source: 'tech',
+        })
+      } catch (error) {
+        const name = error instanceof Error ? error.name : ''
+        if (name === 'DocumentLockedError') {
+          return apiError(409, 'document_locked', (error as Error).message)
         }
+        if (name === 'InvalidMeterReadingError') {
+          return apiError(
+            400,
+            'invalid_request',
+            'A reading is a number with up to two decimals, each meter once.'
+          )
+        }
+        if (error instanceof Error && error.message === 'Meter not found') {
+          return apiError(404, 'not_found', 'That meter is not on this job’s vehicle.')
+        }
+        throw error
       }
       await logAudit(ctx, {
         action: 'service.update',

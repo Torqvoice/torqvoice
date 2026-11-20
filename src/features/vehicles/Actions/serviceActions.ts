@@ -1,5 +1,6 @@
 'use server'
 
+import { unlinkJobMeterReadingsFromOtherVehicles } from '@/features/meters/Lib/jobMeterReading.server'
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
 import {
@@ -1021,6 +1022,12 @@ export async function updateServiceRecord(input: unknown) {
         const sameVehicle = updated.vehicleId === vehicleBefore
         if (!sameVehicle && vehicleBefore) {
           await forgetJobReading(tx, { organizationId, jobId: id })
+          // Its meter readings stay in the old vehicle's history, no longer the job's.
+          await unlinkJobMeterReadingsFromOtherVehicles(tx, {
+            organizationId,
+            jobId: id,
+            vehicleId: updated.vehicleId,
+          })
         }
         if (updated.vehicleId && (recordData.mileage !== undefined || !sameVehicle)) {
           await applyJobReading(tx, {

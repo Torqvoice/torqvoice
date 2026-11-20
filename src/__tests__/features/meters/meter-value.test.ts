@@ -39,6 +39,12 @@ describe('a reading as typed', () => {
     '12.345',
     '4,256',
     '1e5',
+    // One mark used twice, groups not of three, or both marks the same.
+    '4.256.7',
+    '1,5,0',
+    '12,34,567',
+    '4,256,7',
+    '1.234,567',
   ])('is not a reading: %j', (typed) => {
     // "12.345" is three decimals: refused rather than rounded or read as thousands.
     expect(parseMeterValue(typed)).toBeNull()
@@ -47,6 +53,8 @@ describe('a reading as typed', () => {
   it('takes a number as it is', () => {
     expect(parseMeterValue(4256.7)).toBe(4256.7)
     expect(parseMeterValue(-1)).toBeNull()
+    // More than two decimals is refused, not rounded, whichever way it comes.
+    expect(parseMeterValue(4256.725)).toBeNull()
   })
 })
 

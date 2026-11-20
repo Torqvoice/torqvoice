@@ -148,4 +148,30 @@ describe('meters on a real database', () => {
     expect(await db.meterType.count({ where: { id: type.id } })).toBe(1)
     expect(await readingsOf(meter.id)).toHaveLength(2)
   })
+
+  it('unlinks a job’s readings from the vehicle it left, and keeps them in that vehicle’s history', async () => {
+    const { unlinkJobMeterReadingsFromOtherVehicles } = await import(
+      '@/features/meters/Lib/jobMeterReading.server'
+    )
+    const a = await vehicleWithMeter('Move A')
+    const b = await db.vehicle.create({
+      data: { make: 'Scania', model: 'R 450', year: 2020, userId, organizationId },
+    })
+
+    await db.$transaction(async (tx) => {
+      await tx.serviceRecord.updateMany({
+        where: { id: a.job.id, organizationId },
+        data: { vehicleId: b.id },
+      })
+      await unlinkJobMeterReadingsFromOtherVehicles(tx, {
+        organizationId,
+        jobId: a.job.id,
+        vehicleId: b.id,
+      })
+    })
+
+    const readings = await readingsOf(a.meter.id)
+    expect(readings).toHaveLength(2)
+    expect(readings.every((r) => r.serviceRecordId === null)).toBe(true)
+  })
 })

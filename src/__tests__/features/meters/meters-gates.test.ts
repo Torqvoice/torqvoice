@@ -58,9 +58,9 @@ describe('the meter tables', () => {
       const source = readFileSync(`src/features/meters/Actions/${file}`, 'utf8')
       for (const action of source.matchAll(/export async function (\w+)/g)) {
         const name = action[1]
-        // Reading, taking a meter off, deleting and the settings lists are
-        // allowed after a downgrade: they add nothing.
-        if (/^(get|remove|delete)/.test(name)) continue
+        // Only reading is left open after a downgrade: taking a meter off or
+        // deleting one would destroy what the downgrade keeps.
+        if (/^get/.test(name)) continue
         const body = source.slice(action.index)
         const end = body.indexOf('\nexport ', 1)
         expect(body.slice(0, end > 0 ? end : undefined), `${file} ${name}`).toContain(
@@ -68,5 +68,13 @@ describe('the meter tables', () => {
         )
       }
     }
+  })
+
+  it('are no longer a job’s when the job moves to another vehicle, in the same save', () => {
+    const source = readFileSync('src/features/vehicles/Actions/serviceActions.ts', 'utf8')
+    const move = source.slice(source.indexOf('if (!sameVehicle && vehicleBefore) {'))
+    expect(move.slice(0, move.indexOf('\n        }\n'))).toContain(
+      'unlinkJobMeterReadingsFromOtherVehicles(tx'
+    )
   })
 })
