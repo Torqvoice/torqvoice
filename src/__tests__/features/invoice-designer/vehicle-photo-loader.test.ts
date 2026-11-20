@@ -7,11 +7,12 @@
  * keeps, so a redraw does not decode the photo again.
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import sharp from 'sharp'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const FIXTURES = '/home/sinamics/.cache/ref-po/vehicle-photo-loader'
+const FIXTURES = path.join(tmpdir(), 'torqvoice-vehicle-photo-loader')
 const ORG = 'org-1'
 const url = (name: string) => `/api/protected/files/${ORG}/vehicles/${name}`
 

@@ -9,6 +9,7 @@
  * keeps the photo it was issued with.
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { Document, renderToBuffer } from '@react-pdf/renderer'
 import React from 'react'
@@ -16,7 +17,7 @@ import { renderToStaticMarkup } from 'react-dom/server'
 import sharp from 'sharp'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-const FIXTURES = '/home/sinamics/.cache/ref-po/vehicle-photo-print'
+const FIXTURES = path.join(tmpdir(), 'torqvoice-vehicle-photo-print')
 
 const db = {
   serviceRecord: { findUnique: vi.fn(), findFirst: vi.fn(), update: vi.fn() },
