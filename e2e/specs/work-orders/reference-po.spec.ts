@@ -261,9 +261,25 @@ test.describe('the customer reference / PO', () => {
     )
   })
 
-  test('a design made before the field existed prints the invoice as it always did', async ({
-    page,
-  }) => {
+  test('a design saved with the field off prints no reference', async ({ page }) => {
+    // Saved first, so the sheet measured here and the one after the switch
+    // come from the same designer layout. A workshop that never saved a design
+    // prints the classic letterhead, and its first save changes the header on
+    // its own ("Due:" becomes a "Due Date" cell): that is the designer, not
+    // this field, and it must not be what the comparison below measures.
+    // The designer saves only a change: the switch on and off again is one,
+    // and leaves the design as it was.
+    await openDesigner(page)
+    await selectCustomerBlock(page)
+    const toggle = page.getByTestId('field-customer_reference')
+    await expect(toggle).toHaveAttribute('aria-checked', 'false')
+    for (const state of ['true', 'false']) {
+      await expect(async () => {
+        await toggle.click()
+        await expect(toggle).toHaveAttribute('aria-checked', state, { timeout: 2_000 })
+      }).toPass({ timeout: 30_000 })
+    }
+    await saveDesign(page)
     await page.goto(jobUrl)
     withoutField = await invoicePdf(page)
     expect(withoutField.pages).toBeGreaterThan(0)
