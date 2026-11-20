@@ -40,6 +40,8 @@ import {
   replaceVehicleMeter,
 } from '../Actions/vehicleMeterActions'
 import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
+import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
+import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import type { MeterTypeView, VehicleMeterView } from '../Lib/meters.server'
 
 /** "4,256.7 hrs" in the viewer's number format. */
@@ -386,12 +388,25 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
   // Checked against the reading as it stands now; the server checks against
   // the last one before the chosen day and says so if it differs.
   const lower = isLowerMeterValue(value, meter.current)
+  // A reading far above the last one waits for a yes, the odometer's question.
+  const [confirmed, setConfirmed] = useState<number | null>(null)
+  const typedValue = parseMeterValue(value)
+  const asking =
+    typedValue !== null &&
+    readingNeedsAnswer({
+      value: typedValue,
+      saved: null,
+      last: meter.current,
+      kind: 'hours',
+      confirmed,
+    })
 
-  const save = async () => {
+  const save = async (answered = false) => {
     if (parseMeterValue(value) === null) {
       toast.error(t('invalidReading'))
       return
     }
+    if (asking && !answered) return
     setSaving(true)
     const result = await addMeterReading({
       vehicleMeterId: meter.id,
@@ -442,6 +457,19 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
               {t('lowerReading', { last: meterText(meter.current, meter.unit) })}
             </p>
           )}
+          {asking && meter.current != null && typedValue !== null && (
+            <ReadingQuestion
+              id="meter-reading-question"
+              entered={typedValue}
+              last={meter.current}
+              meterUnit={meter.unit}
+              onConfirm={() => {
+                setConfirmed(typedValue)
+                void save(true)
+              }}
+              onChange={() => document.getElementById('meter-reading')?.focus()}
+            />
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="meter-reading-date-1">{t('readingDate')}</Label>
             <DateInput id="meter-reading-date-1" value={day || today()} onChange={setDay} />
@@ -451,7 +479,11 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
           <Button type="button" variant="outline" onClick={onClose}>
             {tc('cancel')}
           </Button>
-          <Button type="button" onClick={save} disabled={saving || !value.trim()}>
+          <Button
+            type="button"
+            onClick={() => void save()}
+            disabled={saving || !value.trim() || asking}
+          >
             {t('saveReading')}
           </Button>
         </DialogFooter>

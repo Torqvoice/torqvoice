@@ -8,7 +8,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { setJobMeterReading } from '../Actions/jobMeterActions'
-import { isLowerMeterValue } from '../Lib/meterValue'
+import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
+import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
+import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import type { JobMeterView } from '../Lib/meters.server'
 
 /**
@@ -72,8 +74,23 @@ function JobMeterField({
       ? ''
       : `${format.number(last, { maximumFractionDigits: 2 })}${meter.unit ? ` ${meter.unit}` : ''}`
 
-  const save = async () => {
+  // A reading far above the last one waits for a yes before it is saved,
+  // the question the odometer asks (vehicleReading.ts), with the hours limit.
+  const [confirmed, setConfirmed] = useState<number | null>(null)
+  const typedValue = parseMeterValue(typed)
+  const asking =
+    typedValue !== null &&
+    readingNeedsAnswer({
+      value: typedValue,
+      saved: parseMeterValue(saved.current),
+      last,
+      kind: 'hours',
+      confirmed,
+    })
+
+  const save = async (answered = false) => {
     if (typed.trim() === saved.current.trim()) return
+    if (asking && !answered) return
     const result = await setJobMeterReading({
       jobId,
       vehicleMeterId: meter.vehicleMeterId,
@@ -107,7 +124,7 @@ function JobMeterField({
             onChange={(e) => setTyped(e.target.value)}
             // Saved here, on its own: not an unsaved change of the page's form.
             onInput={(e) => e.stopPropagation()}
-            onBlur={save}
+            onBlur={() => void save()}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 e.preventDefault()
@@ -129,6 +146,19 @@ function JobMeterField({
           )}
         </div>
       </div>
+      {asking && last != null && typedValue !== null && (
+        <ReadingQuestion
+          id={`${id}-question`}
+          entered={typedValue}
+          last={last}
+          meterUnit={meter.unit}
+          onConfirm={() => {
+            setConfirmed(typedValue)
+            void save(true)
+          }}
+          onChange={() => document.getElementById(id)?.focus()}
+        />
+      )}
       {lower && (
         <p
           id={`${id}-lower`}

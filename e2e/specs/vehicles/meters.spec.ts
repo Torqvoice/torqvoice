@@ -101,7 +101,7 @@ test.describe('meters', () => {
       await expect(page.getByRole('dialog')).toBeVisible({ timeout: 3_000 })
     }).toPass({ timeout: 30_000 })
     const dialog = page.getByRole('dialog')
-    await dialog.getByRole('button', { name: METER, exact: true }).click()
+    await dialog.getByRole('radio', { name: METER, exact: true }).click()
     await dialog.locator('#meter-first-reading').fill('4256,7')
     await dialog.getByRole('button', { name: 'Add meter' }).click()
     await expect(dialog).toBeHidden({ timeout: 30_000 })

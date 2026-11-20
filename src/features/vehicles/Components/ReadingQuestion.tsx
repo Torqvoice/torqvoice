@@ -12,6 +12,12 @@ interface ReadingQuestionProps {
   last: number
   /** "km" or "mi", where the caller knows it. */
   unit?: string
+  /**
+   * For one of the vehicle's other meters (engine hours, PTO hours): its own
+   * unit, printed with both numbers whatever the workshop's service type,
+   * since it is not the odometer a boat counts in hours.
+   */
+  meterUnit?: string
   onConfirm: () => void
   onChange: () => void
   id?: string
@@ -28,6 +34,7 @@ export function ReadingQuestion({
   entered,
   last,
   unit,
+  meterUnit,
   onConfirm,
   onChange,
   id = 'reading-question',
@@ -35,9 +42,12 @@ export function ReadingQuestion({
 }: ReadingQuestionProps) {
   const t = useTranslations('vehicles.form')
   const format = useFormatter()
-  const isMarine = useServiceType() === 'marine'
+  const isMarine = useServiceType() === 'marine' && meterUnit === undefined
+  const shownUnit = meterUnit ?? unit
   const withUnit = (value: number) =>
-    unit && !isMarine ? `${format.number(value)} ${unit}` : format.number(value)
+    shownUnit && !isMarine
+      ? `${format.number(value, { maximumFractionDigits: 2 })} ${shownUnit}`
+      : format.number(value)
   return (
     <div
       id={id}
