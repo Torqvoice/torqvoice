@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import type { Anchor, Block, DocumentSpec } from '../Spec/documentSpec'
 import { BLOCK_GAP, layoutDocument, marginOf } from './layoutEngine'
+import { type TableSplit, measureTable, sliceBlock, tableOf } from './splitTable'
 import { RenderNode, textCss } from './renderHtml'
 import { fontStack } from '../Components/types'
 import './documentFonts.css'
@@ -26,6 +27,8 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
   const measureRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef<HTMLDivElement>(null)
   const [heights, setHeights] = useState<number[]>([])
+  // The rows of each long table, so the sheet can cut it across pages.
+  const [splits, setSplits] = useState<(TableSplit | null)[]>([])
   const [, setMeasureTick] = useState(0)
   const [scale, setScale] = useState(1)
   /**
@@ -56,10 +59,17 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
   useLayoutEffect(() => {
     const node = measureRef.current
     if (!node) return
-    const next = Array.from(node.children).map((child) => (child as HTMLElement).offsetHeight)
+    const children = Array.from(node.children) as HTMLElement[]
+    const next = children.map((child) => child.offsetHeight)
     setHeights((prev) =>
       prev.length === next.length && prev.every((h, i) => h === next[i]) ? prev : next
     )
+    const nextSplits = spec.blocks.map((block, i) =>
+      block.placement.mode === 'flow' && !block.placement.column && tableOf(block.content)
+        ? measureTable(children[i])
+        : null
+    )
+    setSplits((prev) => (JSON.stringify(prev) === JSON.stringify(nextSplits) ? prev : nextSplits))
     // With the heights, so the sheet is let through in the render that
     // places its blocks and the browser never paints the one before it.
     setReady(true)
@@ -98,7 +108,8 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
     const index = spec.blocks.findIndex((b) => b.id === id)
     return heights[index] ?? 0
   }
-  const layout = layoutDocument(spec, heightOf, {})
+  const splitOf = (id: string) => splits[spec.blocks.findIndex((b) => b.id === id)] ?? null
+  const layout = layoutDocument(spec, heightOf, { splitOf })
 
   const anchored = spec.blocks.filter((b) => b.placement.mode === 'anchored')
   const pinned = spec.blocks.filter((b) => b.placement.mode === 'pinned')
@@ -276,7 +287,7 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
           const row = r.row
           return (
             <div
-              key={r.index}
+              key={`${r.index}-${r.slice?.from ?? 0}`}
               style={{
                 position: 'absolute',
                 left: spec.page.margin.left,
@@ -285,7 +296,19 @@ export function SpecSheet({ spec }: { spec: DocumentSpec }) {
               }}
             >
               {row.type === 'single' ? (
-                blockBody(row.block, marginCss(row.block))
+                r.slice ? (
+                  // One piece of a long table: the first keeps the block's
+                  // top margin, the last its bottom one.
+                  blockBody(sliceBlock(row.block, r.slice), {
+                    ...marginCss(row.block),
+                    ...(r.slice.first ? {} : { marginTop: 0 }),
+                    ...(r.slice.to < (tableOf(row.block.content)?.rows.length ?? 0)
+                      ? { marginBottom: 0 }
+                      : {}),
+                  })
+                ) : (
+                  blockBody(row.block, marginCss(row.block))
+                )
               ) : (
                 <div style={{ display: 'flex', gap: BLOCK_GAP, alignItems: 'flex-start' }}>
                   {(['left', 'right'] as const).map((side) => (

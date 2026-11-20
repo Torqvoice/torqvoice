@@ -241,6 +241,7 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
       return (
         <View style={boxStylePdf(node.style)}>
           <View
+            fixed={node.repeatHeader || undefined}
             style={{
               flexDirection: 'row',
               paddingVertical: node.headerPadding ?? 6,

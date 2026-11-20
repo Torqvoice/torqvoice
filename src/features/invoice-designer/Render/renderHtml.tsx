@@ -270,10 +270,11 @@ function NodeBody({ node }: { node: Node }): ReactNode {
     case 'table': {
       const cell = (width: number | 'flex'): CSSProperties =>
         width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }
-      let band = 0
+      let band = node.bandStart ?? 0
       return (
         <div {...id} style={boxCss(node.style)}>
           <div
+            data-table-head=""
             style={{
               display: 'flex',
               ...boxCss(node.headerStyle),
@@ -315,6 +316,7 @@ function NodeBody({ node }: { node: Node }): ReactNode {
             const body = (
               <div
                 key={`${row[node.columns[0].key]}-${i}`}
+                data-table-row=""
                 style={{
                   display: 'flex',
                   alignItems: 'flex-start',

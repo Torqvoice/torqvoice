@@ -1,4 +1,5 @@
 import { groupFlowBlocks, type Block, type DocumentSpec, type FlowRow } from '../Spec/documentSpec'
+import type { TableSlice, TableSplit } from './splitTable'
 
 /**
  * Where everything on the sheet goes, computed rather than measured.
@@ -33,7 +34,16 @@ export interface PlacedRow {
   height: number
   /** Headroom above each lane of a pair where a placed block pushed it down. */
   laneOffsets: { left: number; right: number }
+  /** One piece of a table cut across pages: which of its rows this row draws. */
+  slice?: TableSlice
 }
+
+/**
+ * Taller than this, a table that does not fit is cut between its rows; a
+ * shorter one moves whole to the next sheet. The PDF draws with the same
+ * rule (SpecPdf), so both cut the same tables.
+ */
+export const SPLIT_MIN_HEIGHT = 300
 
 /** A line a drop can go into: before the row at `index`, or past the end. */
 export interface GapLine {
@@ -49,6 +59,12 @@ export interface LayoutOptions {
   band?: { page: number; x: number; y: number; width: number; height: number }
   /** Room opened before this flow row, previewing an insertion. */
   gapInsert?: { index: number; height: number }
+  /**
+   * The measured rows of a full-width block's table, for a sheet that cuts
+   * long tables across pages. Left out, every block moves whole, which is
+   * what the designer canvas and the PDF's own layout ask for.
+   */
+  splitOf?: (id: string) => TableSplit | null
 }
 
 export interface DocumentLayout {
@@ -177,6 +193,71 @@ export function layoutDocument(
     if (opts.gapInsert?.index === index) y += opts.gapInsert.height + BLOCK_GAP
 
     let placed = placeAt(p, y, row)
+    // A long table that does not fit is cut between its rows, each later
+    // piece starting a sheet under its column headings again.
+    const split =
+      row.type === 'single' && placed.bottom > flowLimit && placed.height > SPLIT_MIN_HEIGHT
+        ? opts.splitOf?.(row.block.id)
+        : null
+    if (split && row.type === 'single') {
+      const m = marginOf(row.block)
+      let from = 0
+      let top = placed.top
+      let first = true
+      while (from < split.rows.length) {
+        let used = first ? m.top + split.head : split.header
+        let to = from
+        // On the last sheet the engine allows, the rest prints there whatever it takes.
+        while (
+          to < split.rows.length &&
+          (p >= MAX_PAGES || top + used + split.rows[to] <= flowLimit)
+        ) {
+          used += split.rows[to]
+          to += 1
+        }
+        if (to === from) {
+          // Not even one row fits here: a fresh sheet, unless this is one.
+          const fresh = top <= flowTop(p) + 0.5 && !placedRows.some((r) => r.page === p)
+          if (!fresh && p < MAX_PAGES) {
+            p += 1
+            top = clearOf(p, flowTop(p), used, page.margin.left, contentWidth)
+            continue
+          }
+          used += split.rows[to]
+          to += 1
+        }
+        const last = to === split.rows.length
+        if (last) used += split.tail + m.bottom
+        if (first) {
+          gaps.push({ index, page: p, y: top - BLOCK_GAP / 2 })
+          rects.set(row.block.id, {
+            page: p,
+            x: page.margin.left + m.left,
+            y: top + m.top,
+            width: contentWidth - m.left - m.right,
+            height: used - m.top,
+          })
+        }
+        placedRows.push({
+          index,
+          row,
+          page: p,
+          y: top,
+          height: used,
+          laneOffsets: { left: 0, right: 0 },
+          slice: { from, to, first },
+        })
+        from = to
+        first = false
+        if (last) {
+          y = top + used + BLOCK_GAP
+          break
+        }
+        p += 1
+        top = clearOf(p, flowTop(p), split.header, page.margin.left, contentWidth)
+      }
+      return
+    }
     // A row that does not fit moves whole to the next sheet, unless it is
     // taller than a sheet, in which case it prints where it is and overflows.
     if (placed.bottom > flowLimit && placedRows.some((r) => r.page === p) && p < MAX_PAGES) {

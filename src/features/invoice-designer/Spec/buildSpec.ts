@@ -1307,7 +1307,8 @@ export function equipmentColumnsOf(section: InvoiceSection): EquipmentColumn[] {
 /**
  * What is fitted to the vehicle, one row per item, the columns the design
  * chose. The table is the parts table's: rows never split, so a long list
- * breaks between items. An empty list prints nothing, not even its title.
+ * breaks between items, and the PDF prints the headings again on each page
+ * it runs onto. An empty list prints nothing, not even its title.
  */
 function equipmentBlock(
   section: InvoiceSection,
@@ -1323,6 +1324,8 @@ function equipmentBlock(
   const title = section.text?.trim() || label(data, 'equipmentTitle', 'Equipment')
   return titledTable(section, theme, title, undefined, {
     kind: 'table',
+    // A fleet's list can run over a page: its headings follow it.
+    repeatHeader: true,
     rowPadding: theme.rowPadding,
     ruleWidth: look.ruleWidth,
     rowBackground: theme.background || '#ffffff',

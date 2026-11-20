@@ -119,6 +119,17 @@ export type Node =
       /** Vertical padding of the column headings, in points. Unset is 6. */
       headerPadding?: number
       stripe?: string
+      /**
+       * Banded rows already printed above this piece of a table cut across
+       * pages, so the banding carries on rather than starting over.
+       */
+      bandStart?: number
+      /**
+       * The PDF prints the column headings again at the top of each page the
+       * table runs onto. Set by the equipment table; the parts and labour
+       * tables print as they always have.
+       */
+      repeatHeader?: boolean
       anchor?: Anchor
     }
   /** Empty room, or a filled rule when it carries a color. */
