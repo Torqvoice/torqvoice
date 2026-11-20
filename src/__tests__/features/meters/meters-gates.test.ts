@@ -89,4 +89,22 @@ describe('the meter tables', () => {
       'unlinkJobMeterReadingsFromOtherVehicles(tx'
     )
   })
+
+  it('keep the date they count at when their job or its vehicle is deleted', () => {
+    const job = readFileSync('src/features/vehicles/Actions/serviceActions.ts', 'utf8')
+    const remove = job.slice(job.indexOf('export async function deleteServiceRecord'))
+    expect(remove.indexOf('unlinkMeterReadingsOfDeletedJobs(tx')).toBeGreaterThan(-1)
+    expect(remove.indexOf('unlinkMeterReadingsOfDeletedJobs(tx')).toBeLessThan(
+      remove.indexOf('tx.serviceRecord.delete(')
+    )
+    for (const file of [
+      'src/features/vehicles/Actions/deleteVehicle.ts',
+      'src/features/vehicles/Actions/vehicleActions.ts',
+    ]) {
+      const source = readFileSync(file, 'utf8')
+      const at = source.indexOf('unlinkMeterReadingsOfDeletedJobs(tx')
+      expect(at, file).toBeGreaterThan(-1)
+      expect(at, file).toBeLessThan(source.indexOf('tx.vehicle.deleteMany(', at - 400) + 1000)
+    }
+  })
 })

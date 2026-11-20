@@ -1,5 +1,6 @@
 import 'server-only'
 
+import type { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
@@ -209,6 +210,47 @@ export async function writeJobMeterReading(
   return result
 }
 
+/** What the unlink helpers need of the job's transaction. */
+type UnlinkTx = {
+  meterReading: {
+    findMany: typeof db.meterReading.findMany
+    updateMany: typeof db.meterReading.updateMany
+  }
+  serviceRecord: { findMany: typeof db.serviceRecord.findMany }
+}
+
+/**
+ * Lets readings go of the jobs they were taken on. A job's reading is dated by
+ * the job as it is now (`effectiveReadAt`), so the stored `readAt` can be the
+ * date the job had when the reading was typed, before a reschedule. The date it
+ * counts at today is written with the unlink, in the same statement, so the
+ * reading stays where it was in the history and the current reading does not
+ * change.
+ */
+async function unlinkReadingsFromJobs(
+  tx: UnlinkTx,
+  organizationId: string,
+  where: Prisma.MeterReadingWhereInput
+): Promise<void> {
+  const linked = await tx.meterReading.findMany({
+    where: { ...where, organizationId, serviceRecordId: { not: null } },
+    select: { serviceRecordId: true },
+    distinct: ['serviceRecordId'],
+  })
+  const jobIds = linked.flatMap((r) => (r.serviceRecordId ? [r.serviceRecordId] : []))
+  if (jobIds.length === 0) return
+  const jobs = await tx.serviceRecord.findMany({
+    where: { id: { in: jobIds }, organizationId },
+    select: { id: true, ...READING_JOB_DATES },
+  })
+  for (const job of jobs) {
+    await tx.meterReading.updateMany({
+      where: { ...where, organizationId, serviceRecordId: job.id },
+      data: { serviceRecordId: null, readAt: jobReadingDate(job) },
+    })
+  }
+}
+
 /**
  * A job that moved to another vehicle in this save: its readings stay in the
  * old vehicle's history (or the old vehicle's equipment's) but are no longer
@@ -216,26 +258,22 @@ export async function writeJobMeterReading(
  * Called in the job's own transaction.
  */
 export async function unlinkJobMeterReadingsFromOtherVehicles(
-  tx: { meterReading: { updateMany: typeof db.meterReading.updateMany } },
+  tx: UnlinkTx,
   job: { organizationId: string; jobId: string; vehicleId: string | null }
 ): Promise<void> {
-  await tx.meterReading.updateMany({
-    where: {
-      organizationId: job.organizationId,
-      serviceRecordId: job.jobId,
-      // Kept: the new vehicle's own meters and those of its equipment.
-      ...(job.vehicleId
-        ? {
-            NOT: {
-              OR: [
-                { vehicleMeter: { vehicleId: job.vehicleId } },
-                { vehicleMeter: { equipmentItem: { vehicleId: job.vehicleId } } },
-              ],
-            },
-          }
-        : {}),
-    },
-    data: { serviceRecordId: null },
+  await unlinkReadingsFromJobs(tx, job.organizationId, {
+    serviceRecordId: job.jobId,
+    // Kept: the new vehicle's own meters and those of its equipment.
+    ...(job.vehicleId
+      ? {
+          NOT: {
+            OR: [
+              { vehicleMeter: { vehicleId: job.vehicleId } },
+              { vehicleMeter: { equipmentItem: { vehicleId: job.vehicleId } } },
+            ],
+          },
+        }
+      : {}),
   })
 }
 
@@ -246,16 +284,47 @@ export async function unlinkJobMeterReadingsFromOtherVehicles(
  * on it; this is only for a job that lets go of the item.
  */
 export async function unlinkItemMeterReadings(
-  tx: { meterReading: { updateMany: typeof db.meterReading.updateMany } },
+  tx: UnlinkTx,
   input: { organizationId: string; itemIds: string[]; jobIds: string[] }
 ): Promise<void> {
   if (input.itemIds.length === 0 || input.jobIds.length === 0) return
-  await tx.meterReading.updateMany({
-    where: {
-      organizationId: input.organizationId,
-      vehicleMeter: { equipmentItemId: { in: input.itemIds } },
-      serviceRecordId: { in: input.jobIds },
-    },
-    data: { serviceRecordId: null },
+  await unlinkReadingsFromJobs(tx, input.organizationId, {
+    vehicleMeter: { equipmentItemId: { in: input.itemIds } },
+    serviceRecordId: { in: input.jobIds },
+  })
+}
+
+/**
+ * Jobs about to be deleted: their readings stay in the meters' history at the
+ * date they count at now. Called in the delete's transaction, before the
+ * delete (the foreign key would otherwise drop the link and leave the date the
+ * job had when the reading was typed).
+ */
+export async function unlinkMeterReadingsOfDeletedJobs(
+  tx: UnlinkTx,
+  input: {
+    organizationId: string
+    jobIds: string[]
+    /**
+     * When the jobs go with their vehicle: the vehicle's own meters and its
+     * equipment's go too, so only meters that live on elsewhere are touched
+     * (an item moved to another vehicle since).
+     */
+    vehicleId?: string
+  }
+): Promise<void> {
+  if (input.jobIds.length === 0) return
+  await unlinkReadingsFromJobs(tx, input.organizationId, {
+    serviceRecordId: { in: input.jobIds },
+    ...(input.vehicleId
+      ? {
+          NOT: {
+            OR: [
+              { vehicleMeter: { vehicleId: input.vehicleId } },
+              { vehicleMeter: { equipmentItem: { vehicleId: input.vehicleId } } },
+            ],
+          },
+        }
+      : {}),
   })
 }

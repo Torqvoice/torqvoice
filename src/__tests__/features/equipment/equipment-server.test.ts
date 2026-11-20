@@ -53,7 +53,11 @@ const db = vi.hoisted(() => ({
       licensePlate: 'ZZ19 TST',
     })),
   },
-  serviceRecord: { findFirst: vi.fn(), updateMany: vi.fn() },
+  serviceRecord: {
+    findFirst: vi.fn(),
+    findMany: vi.fn(async () => [] as unknown[]),
+    updateMany: vi.fn(),
+  },
   // The row lock a job's or quote's list is read under: what it is on now.
   $queryRaw: vi.fn(async () => [{ mileage: null, vehicleId: 'veh-A' }] as unknown[]),
   $transaction: vi.fn(async (arg: unknown) =>
@@ -429,6 +433,10 @@ describe('what a work order works on', () => {
     db.equipmentItem.findMany.mockResolvedValue([
       { id: 'item-2', vehicleId: 'veh-A', removedAt: null },
     ])
+    db.meterReading.findMany.mockResolvedValueOnce([{ serviceRecordId: 'job-1' }])
+    db.serviceRecord.findMany.mockResolvedValueOnce([
+      { id: 'job-1', startDateTime: null, serviceDate: new Date('2026-04-01T09:00:00Z') },
+    ])
     expect((await setJobEquipment({ id: 'job-1', itemIds: ['item-2'] })).success).toBe(true)
     expect(db.serviceRecordEquipment.deleteMany).toHaveBeenCalledWith({
       where: { organizationId: 'org-1', serviceRecordId: 'job-1', itemId: { in: ['item-1'] } },
@@ -437,9 +445,9 @@ describe('what a work order works on', () => {
       where: {
         organizationId: 'org-1',
         vehicleMeter: { equipmentItemId: { in: ['item-1'] } },
-        serviceRecordId: { in: ['job-1'] },
+        serviceRecordId: 'job-1',
       },
-      data: { serviceRecordId: null },
+      data: { serviceRecordId: null, readAt: new Date('2026-04-01T09:00:00Z') },
     })
   })
 

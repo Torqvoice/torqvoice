@@ -36,7 +36,7 @@ const db = vi.hoisted(() => ({
       licensePlate: 'ZZ19 TST',
     })),
   },
-  serviceRecord: { findFirst: vi.fn() },
+  serviceRecord: { findFirst: vi.fn(), findMany: vi.fn(async () => [] as unknown[]) },
   // No equipment unless a test defines some.
   equipmentType: { findMany: vi.fn(async () => [] as unknown[]) },
   equipmentItem: { findMany: vi.fn(async () => [] as unknown[]) },
@@ -91,7 +91,9 @@ import {
   vehicleMeterViews,
 } from '@/features/meters/Lib/meters.server'
 import {
+  unlinkItemMeterReadings,
   unlinkJobMeterReadingsFromOtherVehicles,
+  unlinkMeterReadingsOfDeletedJobs,
   writeJobMeterReading,
   writeJobMeterReadings,
 } from '@/features/meters/Lib/jobMeterReading.server'
@@ -472,13 +474,28 @@ describe('a reading on a job', () => {
   })
 })
 
-describe('a job moved to another vehicle', () => {
-  it('leaves its readings in the old vehicle’s history, no longer the job’s', async () => {
+describe('a reading let go of by its job', () => {
+  // Typed on 1 February for a job since rescheduled to 1 April: the reading
+  // counts at 1 April, and must still count there once it is not the job's.
+  const rescheduled = {
+    id: 'job-1',
+    startDateTime: null,
+    serviceDate: new Date('2026-04-01T09:00:00Z'),
+  }
+  beforeEach(() => {
+    db.meterReading.findMany.mockResolvedValue([{ serviceRecordId: 'job-1' }])
+    db.serviceRecord.findMany.mockResolvedValue([rescheduled])
+  })
+
+  it('stays in the old vehicle’s history at the job’s date when the job moves', async () => {
     await unlinkJobMeterReadingsFromOtherVehicles(db as never, {
       organizationId: 'org-1',
       jobId: 'job-1',
       vehicleId: 'veh-B',
     })
+    expect(db.serviceRecord.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { in: ['job-1'] }, organizationId: 'org-1' } })
+    )
     expect(db.meterReading.updateMany).toHaveBeenCalledWith({
       where: {
         organizationId: 'org-1',
@@ -490,8 +507,47 @@ describe('a job moved to another vehicle', () => {
           ],
         },
       },
-      data: { serviceRecordId: null },
+      data: { serviceRecordId: null, readAt: new Date('2026-04-01T09:00:00Z') },
     })
+  })
+
+  it('stays at the job’s start time when the job is deleted', async () => {
+    db.serviceRecord.findMany.mockResolvedValue([
+      { ...rescheduled, startDateTime: new Date('2026-04-01T07:30:00Z') },
+    ])
+    await unlinkMeterReadingsOfDeletedJobs(db as never, {
+      organizationId: 'org-1',
+      jobIds: ['job-1'],
+    })
+    expect(db.meterReading.updateMany).toHaveBeenCalledWith({
+      where: { organizationId: 'org-1', serviceRecordId: 'job-1' },
+      data: { serviceRecordId: null, readAt: new Date('2026-04-01T07:30:00Z') },
+    })
+  })
+
+  it('on a piece of equipment the job no longer works on keeps the job’s date too', async () => {
+    await unlinkItemMeterReadings(db as never, {
+      organizationId: 'org-1',
+      itemIds: ['item-1'],
+      jobIds: ['job-1'],
+    })
+    expect(db.meterReading.updateMany).toHaveBeenCalledWith({
+      where: {
+        organizationId: 'org-1',
+        vehicleMeter: { equipmentItemId: { in: ['item-1'] } },
+        serviceRecordId: 'job-1',
+      },
+      data: { serviceRecordId: null, readAt: new Date('2026-04-01T09:00:00Z') },
+    })
+  })
+
+  it('touches nothing when the job took no readings', async () => {
+    db.meterReading.findMany.mockResolvedValue([])
+    await unlinkMeterReadingsOfDeletedJobs(db as never, {
+      organizationId: 'org-1',
+      jobIds: ['job-1'],
+    })
+    expect(db.meterReading.updateMany).not.toHaveBeenCalled()
   })
 })
 

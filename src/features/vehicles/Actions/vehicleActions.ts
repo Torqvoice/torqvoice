@@ -25,6 +25,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
+import { unlinkMeterReadingsOfDeletedJobs } from '@/features/meters/Lib/jobMeterReading.server'
 import { assertOwnedCustomer } from '@/lib/owned-records'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -545,6 +546,13 @@ export async function deleteVehicle(vehicleId: string) {
       // on the work order's id alone and have to be removed by name.
       const workOrderIds = await workOrderIdsOfVehicles(organizationId, [vehicleId])
       await db.$transaction(async (tx) => {
+        // Readings its jobs took on equipment that has since moved to another
+        // vehicle stay in that item's history, at the date they count at now.
+        await unlinkMeterReadingsOfDeletedJobs(tx, {
+          organizationId,
+          jobIds: workOrderIds,
+          vehicleId,
+        })
         await tx.vehicle.deleteMany({ where: { id: vehicleId, organizationId } })
         await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', workOrderIds)
         // And the vehicle's own.
