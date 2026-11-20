@@ -541,6 +541,32 @@ describe('a reading let go of by its job', () => {
     })
   })
 
+  it('looks only at the jobs it was given, never at every job with a reading', async () => {
+    // Taking the crane off job 2's Work on detached the crane-hours reading
+    // job 1 had taken: the job filter was lost in the lookup.
+    await unlinkItemMeterReadings(db as never, {
+      organizationId: 'org-1',
+      itemIds: ['crane'],
+      jobIds: ['job-2'],
+    })
+    await unlinkMeterReadingsOfDeletedJobs(db as never, {
+      organizationId: 'org-1',
+      jobIds: ['job-2'],
+    })
+    await unlinkJobMeterReadingsFromOtherVehicles(db as never, {
+      organizationId: 'org-1',
+      jobId: 'job-2',
+      vehicleId: 'veh-B',
+    })
+    for (const [query] of db.meterReading.findMany.mock.calls) {
+      const where = (query as { where: { AND: Record<string, unknown>[] } }).where
+      expect(where.AND).toContainEqual({ organizationId: 'org-1', serviceRecordId: { not: null } })
+      // The caller's own condition, with the job it named, is kept whole.
+      expect(['job-2', { in: ['job-2'] }]).toContainEqual(where.AND[0].serviceRecordId)
+    }
+    expect(db.meterReading.findMany).toHaveBeenCalledTimes(3)
+  })
+
   it('touches nothing when the job took no readings', async () => {
     db.meterReading.findMany.mockResolvedValue([])
     await unlinkMeterReadingsOfDeletedJobs(db as never, {
