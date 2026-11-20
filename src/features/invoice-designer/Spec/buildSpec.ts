@@ -26,6 +26,7 @@ import {
 import { signatureBlock } from './signatureBlock'
 import { conditionMapBlock } from './conditionMapBlock'
 import type { EquipmentPrint } from '../Pdf/equipmentPrint'
+import { fadedPhotoInks } from '../Lib/photoContrast'
 import {
   DEFAULT_EQUIPMENT_COLUMNS,
   EQUIPMENT_COLUMNS,
@@ -383,9 +384,11 @@ export function panel(
   section: InvoiceSection,
   theme: DocumentTheme,
   data: DocumentData,
-  fields: string[]
+  fields: string[],
+  /** Inks set by the block itself: the Vehicle block over a faded photo. */
+  inks?: { muted?: string; label?: string }
 ): Node | null {
-  const look = lookOf(section, theme)
+  const look = { ...lookOf(section, theme), ...inks }
   const size = look.fontSize ?? theme.fontSize
   const boxed = section.boxed !== false
   const lines = fields
@@ -473,13 +476,21 @@ function vehicleBlock(
   blockWidth: number
 ): Node | null {
   const fields = sectionFields(section)
+  const photo = data.vehiclePhoto
+  if (fields.includes(VEHICLE_PHOTO_FIELD) && photoStyleOf(section) === 'faded' && photo?.faded) {
+    // Over the photo every line prints in the title ink (and the label in its
+    // own colour only while it still reads): the photo is toned for exactly
+    // these inks (vehicleBlockTone), so all of them keep AA.
+    const look = lookOf(section, theme)
+    const fill = look.fill || (section.boxed !== false ? PANEL_FILL : theme.background)
+    const inks = fadedPhotoInks(look.text, look.label, fill)
+    const faded = panel(section, theme, data, fields, { muted: inks.muted, label: inks.label })
+    if (!faded || faded.kind !== 'stack') return faded
+    return { ...faded, style: { ...faded.style, backgroundImage: photo.faded } }
+  }
   const base = panel(section, theme, data, fields)
   if (!base || base.kind !== 'stack' || !fields.includes(VEHICLE_PHOTO_FIELD)) return base
-  const photo = data.vehiclePhoto
-  if (photoStyleOf(section) === 'faded') {
-    if (!photo?.faded) return base
-    return { ...base, style: { ...base.style, backgroundImage: photo.faded } }
-  }
+  if (photoStyleOf(section) === 'faded') return base
   const beside = photo?.beside
   if (!beside || !(beside.aspect > 0)) return base
   // The picture's box at its own proportions, inside a third of the block

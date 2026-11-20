@@ -136,3 +136,41 @@ export function linearFor(tone: PhotoTone): { a: number; b: number } {
 export function withinTone(channel: number, tone: PhotoTone): boolean {
   return tone.mode === 'floor' ? channel >= tone.value : channel <= tone.value
 }
+
+/**
+ * The least of the photo's own range a faded photo keeps: below this it no
+ * longer reads as a photo at a glance, and the label gives way instead.
+ */
+export const MIN_PHOTO_STRENGTH = 0.35
+
+/**
+ * The inks a Vehicle block prints in over a faded photo, and the tone the
+ * photo is held to under them.
+ *
+ * The room for a photo a person recognises comes from the text, not from the
+ * photo: the detail lines (plate, mileage, fleet number, meters) print in the
+ * block's own title ink instead of its lighter detail ink, so the dark ink
+ * sets the limit and the photo can be far stronger while every line keeps AA.
+ * The label ("VEHICLE") keeps the design's colour while the photo can still
+ * be toned for it at MIN_PHOTO_STRENGTH or more; otherwise it prints in the
+ * title ink too. Either way every ink in the block reads at AA on the photo.
+ */
+export function fadedPhotoInks(
+  text: string,
+  label: string,
+  background: string
+): { muted: string; label: string; tone: PhotoTone } {
+  const textOnly = photoToneFor([text], background)
+  const labelRgb = parseColor(label)
+  const bg = relativeLuminance(parseColor(background) ?? [255, 255, 255])
+  if (labelRgb && contrastRatio(relativeLuminance(labelRgb), bg) >= AA_CONTRAST) {
+    const both = photoToneFor([text, label], background)
+    if (toneStrength(both) >= MIN_PHOTO_STRENGTH) return { muted: text, label, tone: both }
+  }
+  return { muted: text, label: text, tone: textOnly }
+}
+
+/** How much of the photo's own range the tone keeps, 0 to 1: its strength on the sheet. */
+export function toneStrength(tone: PhotoTone): number {
+  return tone.mode === 'floor' ? (255 - tone.value) / 255 : tone.value / 255
+}

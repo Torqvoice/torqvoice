@@ -322,6 +322,16 @@ describe('once placed', () => {
     }
   })
 
+  it('prints every line over the faded photo in the title ink, never the grey detail ink', () => {
+    const plain = JSON.stringify(
+      vehicleBlock(invoiceSpec(withPhoto(getDefaultInvoiceLayout())))?.content
+    )
+    const faded = JSON.stringify(vehicleBlock(specs('faded')[0])?.content)
+    // The grey detail ink of the plain block is gone over the photo.
+    expect(plain).toContain('#6b7280')
+    expect(faded).not.toContain('#6b7280')
+  })
+
   it('prints nothing for a vehicle without a photo', () => {
     for (const style of [undefined, 'faded'] as const) {
       const layout = withPhoto(getDefaultInvoiceLayout(), style)

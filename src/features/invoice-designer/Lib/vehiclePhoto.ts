@@ -12,7 +12,7 @@ import {
   VEHICLE_PHOTO_FIELD,
 } from '../Spec/buildSpec'
 import type { DocumentTheme } from '../Spec/buildSpec'
-import { photoToneFor, type PhotoTone } from './photoContrast'
+import { fadedPhotoInks, type PhotoTone } from './photoContrast'
 
 /**
  * Which photo a design prints in its Vehicle block, if any.
@@ -43,9 +43,10 @@ export interface PhotoTemplate {
 
 /**
  * How far the faded photo has to be washed out for this design's Vehicle
- * block: its body, label and muted inks against the block's own fill, worked
- * out the way the print builders resolve them (the same theme defaults and
- * `lookOf`), so the photo is faded for the colours it will actually sit under.
+ * block: the inks the block prints in over the photo (its title ink, and its
+ * label while that still reads) against the block's own fill, worked out the
+ * way the print builders resolve them (the same theme defaults and `lookOf`),
+ * so the photo is toned for the colours it will actually sit under.
  */
 export function vehicleBlockTone(
   layout: Partial<InvoiceLayoutConfig>,
@@ -63,11 +64,10 @@ export function vehicleBlockTone(
     accent: merged.document?.accentColor || primary,
     fontFamily: merged.document?.fontFamily || 'Helvetica',
   } as DocumentTheme
-  if (!vehicle) return photoToneFor([theme.text, theme.muted, theme.accent], background)
+  if (!vehicle) return fadedPhotoInks(theme.text, theme.accent, background).tone
   const look = lookOf(vehicle, theme)
   const fill = look.fill || (vehicle.boxed !== false ? PANEL_FILL : background)
-  return photoToneFor(
-    [look.text, look.muted, ...(vehicle.heading === false ? [] : [look.label])],
-    fill
-  )
+  // The same inks the print sets over the photo (buildSpec's vehicleBlock):
+  // the title ink everywhere, the label only while it still reads.
+  return fadedPhotoInks(look.text, look.label, fill).tone
 }

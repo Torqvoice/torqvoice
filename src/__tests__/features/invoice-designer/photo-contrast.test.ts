@@ -9,11 +9,14 @@ import {
   ceilingForLuminance,
   channelLuminance,
   contrastRatio,
+  fadedPhotoInks,
   floorForLuminance,
   linearFor,
+  MIN_PHOTO_STRENGTH,
   parseColor,
   photoToneFor,
   relativeLuminance,
+  toneStrength,
   withinTone,
 } from '@/features/invoice-designer/Lib/photoContrast'
 import { vehicleBlockTone } from '@/features/invoice-designer/Lib/vehiclePhoto'
@@ -134,5 +137,55 @@ describe('a design’s Vehicle block', () => {
     expect(vehicleBlockTone(dark, { textColor: '#ffffff', backgroundColor: '#111827' }).mode).toBe(
       'ceiling'
     )
+  })
+})
+
+describe('the inks over a faded photo', () => {
+  const SWATCHES = [
+    '#d97706',
+    '#2563eb',
+    '#059669',
+    '#dc2626',
+    '#7c3aed',
+    '#475569',
+    '#e11d48',
+    '#ee7623',
+  ]
+  const PANEL = '#f3f4f6'
+  const lum = (hex: string) => relativeLuminance(parseColor(hex) as [number, number, number])
+
+  it('print the detail lines in the title ink, so the photo keeps much of its strength', () => {
+    const inks = fadedPhotoInks('#111827', '#d97706', PANEL)
+    expect(inks.muted).toBe('#111827')
+    // Recognisable at a glance: well over the 25 to 30 percent asked for.
+    expect(toneStrength(inks.tone)).toBeGreaterThan(0.4)
+  })
+
+  it('keep every line and the label at AA on the darkest the photo can be, in every swatch', () => {
+    for (const swatch of SWATCHES) {
+      const inks = fadedPhotoInks('#111827', swatch, PANEL)
+      expect(inks.tone.mode).toBe('floor')
+      const darkest = relativeLuminance([inks.tone.value, inks.tone.value, inks.tone.value])
+      for (const ink of [inks.muted, inks.label]) {
+        expect(contrastRatio(lum(ink), darkest), `${swatch} ${ink}`).toBeGreaterThanOrEqual(
+          AA_CONTRAST
+        )
+      }
+      // A label never holds the photo under the strength that still reads as one.
+      expect(toneStrength(inks.tone), swatch).toBeGreaterThanOrEqual(MIN_PHOTO_STRENGTH)
+    }
+  })
+
+  it('keep a dark label in its own colour, and print a light one in the title ink', () => {
+    expect(fadedPhotoInks('#111827', '#1e293b', PANEL).label).toBe('#1e293b')
+    expect(fadedPhotoInks('#111827', '#d97706', PANEL).label).toBe('#111827')
+  })
+
+  it('mirror for light inks on a dark block', () => {
+    const inks = fadedPhotoInks('#f9fafb', '#fbbf24', '#111827')
+    expect(inks.tone.mode).toBe('ceiling')
+    const lightest = relativeLuminance([inks.tone.value, inks.tone.value, inks.tone.value])
+    expect(contrastRatio(lum(inks.muted), lightest)).toBeGreaterThanOrEqual(AA_CONTRAST)
+    expect(contrastRatio(lum(inks.label), lightest)).toBeGreaterThanOrEqual(AA_CONTRAST)
   })
 })

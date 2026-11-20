@@ -9,6 +9,7 @@ import type { DesignerWorkshop, DocumentType } from './types'
 import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { EquipmentPrint, EquipmentRow } from '../Pdf/equipmentPrint'
+import { fadedPhotoInks, linearFor } from '../Lib/photoContrast'
 
 /**
  * What the canvas prints for each field the layout can show.
@@ -718,7 +719,28 @@ const SAMPLE_VEHICLE_PHOTO: NonNullable<DocumentData['vehiclePhoto']> = {
     src: sampleLandscape(['#cbd5e1', '#e2e8f0'], '#64748b', '#94a3b8', '#f8fafc'),
     aspect: 4 / 3,
   },
-  faded: sampleLandscape(['#f3f4f6', '#f8fafc'], '#e5e7eb', '#eceef1', '#ffffff', 6),
+  // The beside picture blurred and toned the way the server tones a real
+  // photo for the default inks (the title ink over the photo), so the canvas
+  // previews the strength the print will have.
+  faded: (() => {
+    const tone = fadedPhotoInks('#111827', '#d97706', '#f3f4f6').tone
+    const { a, b } = linearFor(tone)
+    const t = (hex: string) => {
+      const n = Number.parseInt(hex.slice(1), 16)
+      const c = (v: number) =>
+        Math.round(a * v + b)
+          .toString(16)
+          .padStart(2, '0')
+      return `#${c((n >> 16) & 255)}${c((n >> 8) & 255)}${c(n & 255)}`
+    }
+    return sampleLandscape(
+      [t('#cbd5e1'), t('#e2e8f0')],
+      t('#64748b'),
+      t('#94a3b8'),
+      t('#f8fafc'),
+      6
+    )
+  })(),
 }
 
 /**
