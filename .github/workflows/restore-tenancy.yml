@@ -14,6 +14,12 @@ on:
       - 'src/__tests__/db/**'
       # Job numbering reads the database with a raw pattern query.
       - 'src/lib/job-number.ts'
+      # A vehicle's reading is moved and corrected in the database's own
+      # WHERE, under a row lock; the rule and every writer of it.
+      - 'src/features/vehicles/Lib/vehicleReading.ts'
+      - 'src/features/vehicles/Actions/serviceActions.ts'
+      - 'src/features/vehicles/Actions/vehicleActions.ts'
+      - 'src/app/api/v1/tech/jobs/*/checkin/route.ts'
       - 'prisma/**'
       - 'vitest.db.config.ts'
       - '.github/workflows/restore-tenancy.yml'

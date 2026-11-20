@@ -60,8 +60,9 @@ import { PlateChip } from '@/components/plate-chip'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
 import { cn } from '@/lib/utils'
 import { PhotoHandoffButton } from './service-page/PhotoHandoffButton'
-import { LowerReadingNotice } from './LowerReadingNotice'
-import { isLowerReading } from '../Lib/vehicleReading'
+import { ReadingNotice, useReadingNotice } from './ReadingNotice'
+import { ReadingConfirmDialog } from './ReadingConfirmDialog'
+import { readingNeedsAnswer } from '../Lib/vehicleReading'
 
 /**
  * How alike two names must read before the scanned keeper is offered as an
@@ -229,6 +230,10 @@ export function VehicleForm({
   // length and the colour swatch. The fields themselves stay uncontrolled:
   // scans and lookups write into them directly, then call readDrafts.
   const [mileageDraft, setMileageDraft] = useState(vehicle ? String(vehicle.mileage) : '')
+  /** A reading far above the saved one, waiting for the person's answer on Save. */
+  const [readingToConfirm, setReadingToConfirm] = useState<number | null>(null)
+  /** The reading they said yes to: not asked about again. */
+  const confirmedReadingRef = useRef<number | null>(null)
   // The mileage in the summary can be changed where it is read, without
   // going down to the field: a reading is the one thing changed every visit.
   const [editingMileage, setEditingMileage] = useState(false)
@@ -247,6 +252,9 @@ export function VehicleForm({
   const resetDrafts = () => {
     setEditingMileage(false)
     setMileageDraft(vehicle ? String(vehicle.mileage) : '')
+    // A yes was for that vehicle and that reading; the next one is asked again.
+    confirmedReadingRef.current = null
+    setReadingToConfirm(null)
     setInspectionDraft(openedInspectionDue)
     setVinDraft(vehicle?.vin ?? '')
     setColorDraft(vehicle?.color ?? '')
@@ -490,6 +498,22 @@ export function VehicleForm({
     e.preventDefault()
     // The save shortcut and Enter reach here past the disabled button
     if (ownerLookupPending) return
+    // A changed reading far above the saved one is asked about first; the
+    // answer Yes saves the form again with it, "Change it" saves nothing.
+    const typedReading = mileageDraft.trim() === '' ? null : Number(mileageDraft)
+    if (
+      vehicle &&
+      readingNeedsAnswer({
+        value: typedReading,
+        saved: vehicle.mileage,
+        last: vehicle.mileage,
+        kind: isMarine ? 'hours' : 'distance',
+        confirmed: confirmedReadingRef.current,
+      })
+    ) {
+      setReadingToConfirm(typedReading)
+      return
+    }
     const formData = new FormData(e.currentTarget)
 
     // Caught here rather than by the server, which could only answer in English.
@@ -703,6 +727,8 @@ export function VehicleForm({
   const mileageLabel = isMarine ? t('mileageMarine') : t('mileage')
   const unit = distanceUnit
   const mileageShown = mileageDraft.trim() === '' ? null : Number(mileageDraft)
+  const readingNotice = useReadingNotice(mileageDraft, vehicle?.mileage)
+  const mileageInputRef = useRef<HTMLInputElement>(null)
   const inspectionShown = inspectionDraft
     ? {
         // A date key, read at noon UTC so it names the same day everywhere.
@@ -768,6 +794,21 @@ export function VehicleForm({
             </div>
           </DialogHeader>
 
+          <ReadingConfirmDialog
+            entered={readingToConfirm}
+            last={vehicle?.mileage ?? 0}
+            unit={unit}
+            onConfirm={() => {
+              confirmedReadingRef.current = readingToConfirm
+              setReadingToConfirm(null)
+              formRef.current?.requestSubmit()
+            }}
+            onChange={() => setReadingToConfirm(null)}
+            focusField={() => {
+              mileageInputRef.current?.focus()
+              mileageInputRef.current?.select()
+            }}
+          />
           <form
             ref={formRef}
             onSubmit={handleSubmit}
@@ -962,7 +1003,7 @@ export function VehicleForm({
                           </button>
                         )}
                       </dd>
-                      <LowerReadingNotice
+                      <ReadingNotice
                         entered={mileageDraft}
                         last={vehicle?.mileage}
                         unit={unit}
@@ -1320,17 +1361,14 @@ export function VehicleForm({
                       <Label htmlFor="mileage">{mileageLabel}</Label>
                       <div className="relative">
                         <Input
+                          ref={mileageInputRef}
                           id="mileage"
                           name="mileage"
                           type="number"
                           placeholder="0"
                           value={mileageDraft}
                           onChange={(e) => setMileageDraft(e.target.value)}
-                          aria-describedby={
-                            isLowerReading(mileageDraft, vehicle?.mileage)
-                              ? 'mileage-notice'
-                              : undefined
-                          }
+                          aria-describedby={readingNotice ? 'mileage-notice' : undefined}
                           // No spinner: it would sit on top of the unit, and
                           // nobody steps an odometer reading one at a time.
                           className={cn(
@@ -1347,7 +1385,7 @@ export function VehicleForm({
                           </span>
                         )}
                       </div>
-                      <LowerReadingNotice
+                      <ReadingNotice
                         id="mileage-notice"
                         entered={mileageDraft}
                         last={vehicle?.mileage}

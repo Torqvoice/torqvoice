@@ -98,7 +98,11 @@ const NOT_IN_THE_MAP: Readonly<Record<string, Readonly<Record<string, string>>>>
     tireSetId: LINKED_LATER,
   },
   Customer: { importBatchId: IMPORT_BATCH },
-  Vehicle: { importBatchId: IMPORT_BATCH },
+  Vehicle: {
+    importBatchId: IMPORT_BATCH,
+    readingJobId: LINKED_LATER,
+    readingBeforeJob: LINKED_LATER,
+  },
 }
 
 describe.each([...layoutModels()].sort())('%s restore', (model) => {
@@ -159,6 +163,8 @@ describe('the links written after the rows they point at exist', () => {
     { link: 'inspectionId: q.inspectionId as string', created: 'tx.inspection.create(' },
     { link: 'tireSetId: sr.tireSetId as string', created: 'tx.tireSet.create(' },
     { link: 'tireSetId: q.tireSetId as string', created: 'tx.tireSet.create(' },
+    // The job whose reading the vehicle's is, once the vehicle's jobs are in.
+    { link: 'readingJobId: v.readingJobId as string', created: 'importServiceRecordTree(tx, sr' },
   ]
 
   it.each(links)('$link', ({ link, created }) => {

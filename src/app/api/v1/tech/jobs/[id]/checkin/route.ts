@@ -5,7 +5,11 @@ import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
 import { BODY_TYPES } from '@/features/condition-map/Lib/drawingTypes'
 import { loadCheckin } from '@/features/condition-map/Lib/checkin.server'
-import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
+import {
+  applyJobReading,
+  jobReadingDate,
+  lockJobReading,
+} from '@/features/vehicles/Lib/vehicleReading'
 import {
   appLocale,
   checkinJobFor,
@@ -67,27 +71,36 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       await noteArrival(ctx.organizationId, job)
 
       if (mileage !== undefined) {
-        const before = await db.serviceRecord.findFirst({
-          where: { id: job.id, organizationId: ctx.organizationId },
-          select: { mileage: true, startDateTime: true, serviceDate: true },
-        })
-        await db.serviceRecord.updateMany({
-          where: { id: job.id, organizationId: ctx.organizationId },
-          data: { mileage },
-        })
-        // A lower reading is kept on the job and never winds the vehicle
-        // back; whether a higher one moves it is the same rule as on the web
-        // (vehicleReading.ts).
-        if (before) {
-          await applyJobReading(db, {
+        // The same rule as on the web (vehicleReading.ts): a higher reading
+        // may move the vehicle on, a lower one is kept on the job, and a
+        // correction of the job that set the vehicle's reading brings the
+        // vehicle with it. Under the job's row lock, as the web save is.
+        await db.$transaction(async (tx) => {
+          const locked = await lockJobReading(tx, {
             organizationId: ctx.organizationId,
-            vehicleId: job.vehicleId,
             jobId: job.id,
-            jobDate: jobReadingDate(before),
-            reading: mileage,
-            previousReading: before.mileage,
           })
-        }
+          const before = await tx.serviceRecord.findFirst({
+            where: { id: job.id, organizationId: ctx.organizationId },
+            select: { startDateTime: true, serviceDate: true },
+          })
+          await tx.serviceRecord.updateMany({
+            where: { id: job.id, organizationId: ctx.organizationId },
+            data: { mileage },
+          })
+          // The vehicle the job is on now, under the lock: it may have been
+          // moved since the job was looked up.
+          if (locked?.vehicleId && before) {
+            await applyJobReading(tx, {
+              organizationId: ctx.organizationId,
+              vehicleId: locked.vehicleId,
+              jobId: job.id,
+              jobDate: jobReadingDate(before),
+              reading: mileage,
+              previousReading: locked.mileage,
+            })
+          }
+        })
       }
       if (bodyType) {
         await db.vehicle.updateMany({

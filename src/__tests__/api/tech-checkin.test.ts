@@ -67,6 +67,9 @@ const state = {
     licensePlate: 'AB12345',
     mileage: 120000,
     bodyType: null as string | null,
+    /** The job that set the reading, and what the vehicle read before it. */
+    readingJobId: null as string | null,
+    readingBeforeJob: null as number | null,
   },
   attachments: [] as {
     id: string
@@ -146,6 +149,13 @@ vi.mock('@/lib/db', () => {
           return { ...job }
         }
       ),
+      // The highest reading on the vehicle's other jobs.
+      aggregate: vi.fn(async ({ where }: { where: Record<string, unknown> }) => {
+        const readings = jobs
+          .filter((j) => matches(j as Record<string, unknown>, where))
+          .map((j) => j.mileage as number)
+        return { _max: { mileage: readings.length ? Math.max(...readings) : null } }
+      }),
       update: vi.fn(async ({ data }: { data: { mileage: number | null } }) => {
         JOB.mileage = data.mileage
         return JOB
@@ -166,6 +176,9 @@ vi.mock('@/lib/db', () => {
       ),
     },
     vehicle: {
+      findFirst: vi.fn(async ({ where }: { where: Record<string, unknown> }) =>
+        matches(state.vehicle as Record<string, unknown>, where) ? { ...state.vehicle } : null
+      ),
       updateMany: vi.fn(
         async ({
           where,
@@ -251,7 +264,12 @@ vi.mock('@/lib/db', () => {
       ),
     },
     $transaction: vi.fn(async (run: (tx: unknown) => Promise<unknown>) => run(db)),
-    $queryRaw: vi.fn(async () => []),
+    // The job's row lock: what the job read before this save.
+    $queryRaw: vi.fn(async (_sql: TemplateStringsArray, jobId: string) =>
+      jobs
+        .filter((j) => j.id === jobId)
+        .map((j) => ({ mileage: j.mileage, vehicleId: state.vehicle.id }))
+    ),
   }
   return { db }
 })
@@ -310,6 +328,8 @@ beforeEach(() => {
   state.attachments = []
   state.vehicle.mileage = 120000
   state.vehicle.bodyType = null
+  state.vehicle.readingJobId = null
+  state.vehicle.readingBeforeJob = null
   state.ctx = {
     userId: 'user-1',
     organizationId: 'org-1',
@@ -379,13 +399,25 @@ describe('a booking checked in', () => {
 })
 
 describe('mileage and body', () => {
-  it('records the mileage on the job and raises the vehicle’s, never lowers it', async () => {
+  it('records the mileage on the job and raises the vehicle’s', async () => {
     await PATCH(req({ mileage: 125400 }), job())
     expect(JOB.mileage).toBe(125400)
     expect(state.vehicle.mileage).toBe(125400)
+    // A typo corrected on the visit that raised it takes the vehicle back,
+    // never below what it read before.
+    await PATCH(req({ mileage: 1254000 }), job())
+    expect(state.vehicle.mileage).toBe(1254000)
+    await PATCH(req({ mileage: 125500 }), job())
+    expect(state.vehicle.mileage).toBe(125500)
     await PATCH(req({ mileage: 99 }), job())
     expect(JOB.mileage).toBe(99)
-    expect(state.vehicle.mileage).toBe(125400)
+    expect(state.vehicle.mileage).toBe(120000)
+  })
+
+  it('never lowers the vehicle from a visit that did not set its reading', async () => {
+    await PATCH(req({ mileage: 99 }), job())
+    expect(JOB.mileage).toBe(99)
+    expect(state.vehicle.mileage).toBe(120000)
   })
 
   it('keeps an equal reading without touching the vehicle', async () => {

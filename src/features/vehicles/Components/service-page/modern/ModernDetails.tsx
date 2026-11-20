@@ -329,6 +329,8 @@ export function ModernDetails(props: ModernDetailsProps) {
                     router.refresh()
                   }}
                   distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
+                  confirmedReading={formState.confirmedReading}
+                  onConfirmReading={formState.confirmReading}
                 />
 
                 <Lockable locked={locked}>

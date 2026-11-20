@@ -34,6 +34,7 @@ import { auditDetails } from '@/lib/audit'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
 import { searchWordsOf, typeKeySearchTerms } from '../Lib/typeKey'
 import { isTypeKeyEnabled } from '../Lib/typeKeySetting'
+import { READING_SET_BY_HAND } from '../Lib/vehicleReading'
 import { vehicleName } from '@/lib/vehicle-name'
 
 export async function getVehicles() {
@@ -402,6 +403,7 @@ export async function updateVehicle(input: unknown) {
           licensePlate: true,
           vin: true,
           imageUrl: true,
+          mileage: true,
         },
       })
       if (!before) throw new Error('Vehicle not found')
@@ -442,6 +444,12 @@ export async function updateVehicle(input: unknown) {
             customerId: data.customerId !== undefined ? data.customerId || null : undefined,
             // An emptied photo is no photo, not an empty address.
             imageUrl: data.imageUrl !== undefined ? data.imageUrl || null : undefined,
+            // A reading typed here is the vehicle's own, no longer a job's that
+            // a correction on the job could take back (vehicleReading.ts). The
+            // form sends the reading with every save; only a changed one counts.
+            ...(data.mileage !== undefined && data.mileage !== before.mileage
+              ? READING_SET_BY_HAND
+              : {}),
           },
         })
       // With its fields, in one transaction: both are saved or neither is.

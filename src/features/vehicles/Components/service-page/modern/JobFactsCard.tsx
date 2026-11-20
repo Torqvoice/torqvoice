@@ -1,7 +1,7 @@
 'use client'
 
 import { JobMeters } from '@/features/meters/Components/JobMeters'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Check, ChevronDown } from 'lucide-react'
@@ -23,8 +23,9 @@ import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { CustomerReferenceField } from '@/features/customer-reference/Components/CustomerReferenceField'
 import { setServiceRecordReference } from '@/features/customer-reference/Actions/setServiceRecordReference'
-import { LowerReadingNotice } from '../../LowerReadingNotice'
-import { isLowerReading } from '../../../Lib/vehicleReading'
+import { ReadingNotice, useReadingNotice } from '../../ReadingNotice'
+import { ReadingQuestion } from '../../ReadingQuestion'
+import { readingNeedsAnswer } from '../../../Lib/vehicleReading'
 
 interface JobFactsCardProps {
   record: ServiceDetail
@@ -42,6 +43,10 @@ interface JobFactsCardProps {
   techName: string
   /** "km" or "mi", for the notice under the reading. */
   distanceUnit?: string
+  /** The far-higher reading the person said yes to (useServiceFormState). */
+  confirmedReading?: number | null
+  /** Says yes to a far-higher reading: it is saved then. */
+  onConfirmReading?: (value: number) => void
   initialVehicle?: {
     id: string
     make: string
@@ -140,6 +145,8 @@ export function JobFactsCard({
   onReferenceChange,
   onReferenceSaved,
   distanceUnit,
+  confirmedReading = null,
+  onConfirmReading,
 }: JobFactsCardProps) {
   const referenceEnabled = useCustomerReferenceEnabled()
   const t = useTranslations('service')
@@ -154,6 +161,7 @@ export function JobFactsCard({
   const [changingVehicle, setChangingVehicle] = useState(false)
   // What was typed in the reading field since the page loaded; null until then.
   const [readingTyped, setReadingTyped] = useState<string | null>(null)
+  const readingInput = useRef<HTMLInputElement>(null)
 
   // Closed on the server and on the first paint, then as this browser left it:
   // localStorage is not readable before hydration.
@@ -180,10 +188,30 @@ export function JobFactsCard({
   // The picker can point the job at another vehicle before the save; the facts
   // on this card describe the saved one, so say which is which while they differ.
   const vehicleChanged = Boolean(vehicle && selectedVehicleId && selectedVehicleId !== vehicle.id)
-  const showReadingNotice =
+  // A reading typed on this visit, on the vehicle the last reading was read
+  // for: far above it is a question to answer before it is saved; below it
+  // is a quiet notice.
+  const readingKind = serviceType === 'marine' ? 'hours' : 'distance'
+  const typedValue =
+    readingTyped === null || readingTyped.trim() === '' ? null : Number(readingTyped)
+  const askReading =
     readingTyped !== null &&
     !vehicleChanged &&
-    isLowerReading(readingTyped, initialData.lastReading)
+    initialData.lastReading != null &&
+    readingNeedsAnswer({
+      value: typedValue,
+      saved: initialData.mileage,
+      last: initialData.lastReading,
+      kind: readingKind,
+      confirmed: confirmedReading,
+    })
+  const readingNotice = useReadingNotice(readingTyped ?? '', initialData.lastReading)
+  const showReadingNotice = readingTyped !== null && !vehicleChanged && readingNotice === 'lower'
+  const readingDescribedBy = askReading
+    ? 'reading-question'
+    : showReadingNotice
+      ? 'mileage-notice'
+      : undefined
 
   return (
     <section
@@ -379,14 +407,27 @@ export function JobFactsCard({
                     className="h-8 w-32"
                     defaultValue={initialData.mileage ?? ''}
                     onChange={(e) => setReadingTyped(e.target.value)}
-                    aria-describedby={showReadingNotice ? 'mileage-notice' : undefined}
+                    ref={readingInput}
+                    aria-describedby={readingDescribedBy}
                   />
                 </div>
                 {/* Only for a reading typed on this visit, on the vehicle
                     the last reading was read for. It stays after the page
                     saves by itself, or it would be gone in five seconds. */}
+                {askReading && typedValue != null && initialData.lastReading != null && (
+                  <ReadingQuestion
+                    entered={typedValue}
+                    last={initialData.lastReading}
+                    unit={distanceUnit}
+                    onConfirm={() => onConfirmReading?.(typedValue)}
+                    onChange={() => {
+                      readingInput.current?.focus()
+                      readingInput.current?.select()
+                    }}
+                  />
+                )}
                 {showReadingNotice && (
-                  <LowerReadingNotice
+                  <ReadingNotice
                     id="mileage-notice"
                     entered={readingTyped ?? ''}
                     last={initialData.lastReading}

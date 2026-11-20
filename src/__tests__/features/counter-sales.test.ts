@@ -198,7 +198,11 @@ describe('updateServiceRecord — counter sale semantics', () => {
     } as any)
     const txUpdate = vi.fn().mockResolvedValue({ id: 'sr-a', status: 'pending', title: 'x' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
-      fn({ serviceRecord: { update: txUpdate } })
+      fn({
+        $queryRaw: async () => [],
+        vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
+        serviceRecord: { update: txUpdate },
+      })
     )
 
     const result = await updateServiceRecord({ id: 'sr-a', vehicleId: null, title: 'x' })
@@ -249,7 +253,11 @@ describe('updateServiceRecord — counter sale semantics', () => {
     vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: 'veh-a' } as any)
     const txUpdate = vi.fn().mockResolvedValue({ id: 'sr-a', status: 'pending', title: 'x' })
     vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
-      fn({ serviceRecord: { update: txUpdate } })
+      fn({
+        $queryRaw: async () => [],
+        vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
+        serviceRecord: { update: txUpdate },
+      })
     )
 
     const result = await updateServiceRecord({ id: 'sr-a', vehicleId: 'veh-a' })

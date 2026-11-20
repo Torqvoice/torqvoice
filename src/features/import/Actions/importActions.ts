@@ -43,7 +43,11 @@ import {
   detectDecimalSeparator,
 } from '../Lib/normalize'
 import { releaseFiles } from '@/lib/files/manager'
-import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
+import {
+  applyJobReading,
+  jobReadingDate,
+  READING_SET_BY_HAND,
+} from '@/features/vehicles/Lib/vehicleReading'
 import { escapeHtml } from '@/features/email/Render/escape'
 import { organizationTranslator } from '@/i18n/organization-translator'
 import { serviceRecordFileUrls, vehicleFileUrls } from '@/lib/files/collect'
@@ -459,13 +463,16 @@ async function settleReadings(state: CommitState): Promise<void> {
         if (at > best || (at === best && (job.mileage ?? 0) > (newest.mileage ?? 0))) newest = job
       }
       if (!newest) continue
-      await applyJobReading(db, {
-        organizationId,
-        vehicleId,
-        jobId: newest.id,
-        jobDate: jobReadingDate(newest),
-        reading: newest.mileage,
-      })
+      const job = newest
+      await db.$transaction((tx) =>
+        applyJobReading(tx, {
+          organizationId,
+          vehicleId,
+          jobId: job.id,
+          jobDate: jobReadingDate(job),
+          reading: job.mileage,
+        })
+      )
     } catch {
       // The history is in; a reading that could not be settled stays as it was.
     }
@@ -531,25 +538,30 @@ async function writeRow(tx: Tx, state: CommitState, row: RowPlan): Promise<void>
       if (entity === 'vehicles' && row.action === 'update') {
         await tx.vehicle.update({
           where: { id: vehicleId },
-          data: definedOnly({
-            make: v.make,
-            model: v.model,
-            year: v.year,
-            vin: v.vin,
-            licensePlate: v.licensePlate,
-            color: v.color,
-            mileage: v.mileage,
-            fuelType: v.fuelType,
-            transmission: v.transmission,
-            engineSize: v.engineSize,
-            engineCode: v.engineCode,
-            hsn: v.hsn,
-            tsn: v.tsn,
-            fleetNumber: v.fleetNumber,
-            purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
-            purchasePrice: v.purchasePrice,
-            customerId,
-          }),
+          data: {
+            // A reading from the file is the vehicle's own, no longer a job's
+            // that a correction on the job could take back (vehicleReading.ts).
+            ...(v.mileage != null ? READING_SET_BY_HAND : {}),
+            ...definedOnly({
+              make: v.make,
+              model: v.model,
+              year: v.year,
+              vin: v.vin,
+              licensePlate: v.licensePlate,
+              color: v.color,
+              mileage: v.mileage,
+              fuelType: v.fuelType,
+              transmission: v.transmission,
+              engineSize: v.engineSize,
+              engineCode: v.engineCode,
+              hsn: v.hsn,
+              tsn: v.tsn,
+              fleetNumber: v.fleetNumber,
+              purchaseDate: v.purchaseDate ? new Date(v.purchaseDate) : null,
+              purchasePrice: v.purchasePrice,
+              customerId,
+            }),
+          },
         })
       } else if (customerId) {
         // A history row names the owner: attach it when the car has none.

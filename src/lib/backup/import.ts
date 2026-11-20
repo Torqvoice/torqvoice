@@ -1250,6 +1250,20 @@ export async function restoreBackup(
               }
             }
 
+            // The job whose reading the vehicle's is, once that job is in. Only
+            // one of this vehicle's own jobs from the file: anything else would
+            // let a correction on some other job move this vehicle.
+            if (v.readingJobId && serviceRecords?.some((sr) => sr.id === v.readingJobId)) {
+              await tx.vehicle.updateMany({
+                where: { id: v.id as string, organizationId: ctx.organizationId },
+                data: {
+                  readingJobId: v.readingJobId as string,
+                  readingBeforeJob: numberOr(v.readingBeforeJob, null),
+                  updatedAt: toSafeDate(v.updatedAt as string),
+                },
+              })
+            }
+
             // What else a vehicle owns. All of it is deleted with the vehicle,
             // so leaving any of it out makes a restore a one-way loss.
             await restoreRows(

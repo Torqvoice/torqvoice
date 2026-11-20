@@ -16,7 +16,11 @@ import {
 } from '@/features/signatures/Lib/memberSignature.server'
 import { liveCertificateDesign } from '../Pdf/certificateDesign'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
-import { applyJobReading, jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
+import {
+  applyJobReading,
+  jobReadingDate,
+  lockJobReading,
+} from '@/features/vehicles/Lib/vehicleReading'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import { OPEN_SERVICE_STATUSES } from '@/lib/service-record'
 import { defectLineText, defectsWorstFirst } from '../Lib/conversion'
@@ -1016,6 +1020,13 @@ export async function linkWorkOrderToInspection(
       const laborRate = Number(rate?.value) || 0
 
       await db.$transaction(async (tx) => {
+        // What the job read before, under its row lock (vehicleReading.ts).
+        const before = await lockJobReading(tx, { organizationId, jobId: job.id })
+        // Moved to another vehicle since it was looked up: it is no longer a
+        // job this inspection may land on.
+        if (!before || before.vehicleId !== inspection.vehicleId) {
+          throw new Error('Work order not found')
+        }
         await tx.serviceRecord.update({
           where: { id: job.id },
           data: { inspectionId: inspection.id, mileage: inspection.mileage ?? undefined },
@@ -1029,7 +1040,7 @@ export async function linkWorkOrderToInspection(
             jobId: job.id,
             jobDate: jobReadingDate(job),
             reading: inspection.mileage,
-            previousReading: job.mileage,
+            previousReading: before.mileage,
           })
         }
         const lines = [

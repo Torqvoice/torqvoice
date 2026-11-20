@@ -8,8 +8,18 @@ const { db, tx } = vi.hoisted(() => {
   const tx = {
     // findFirst: whether a later job on the vehicle already has a reading.
     serviceRecord: { update: vi.fn(), findFirst: vi.fn(async () => null) },
-    // The vehicle's reading, moved up when the job's is news to it.
-    vehicle: { updateMany: vi.fn(async () => ({ count: 1 })) },
+    // The vehicle's reading, moved up when the job's is news to it: read,
+    // then set only as it was read.
+    vehicle: {
+      findFirst: vi.fn(async () => ({
+        mileage: 100000,
+        readingJobId: null,
+        readingBeforeJob: null,
+      })),
+      updateMany: vi.fn(async () => ({ count: 1 })),
+    },
+    // The job's row lock, and what it read before.
+    $queryRaw: vi.fn(async () => [{ mileage: null, vehicleId: 'veh-1' }]),
     serviceLabor: { createMany: vi.fn() },
     // The workshop's tax rule for labor; none set, so the lines are taxed.
     appSetting: { findMany: vi.fn(async () => []) },
@@ -87,6 +97,25 @@ describe('the jobs an inspection can land on', () => {
 })
 
 describe('linking to a booked job', () => {
+  it('refuses a job that moved to another vehicle after it was looked up', async () => {
+    db.serviceRecord.findFirst.mockResolvedValue({
+      id: 'job-1',
+      vehicleId: 'veh-1',
+      invoiceNumber: '2026-1007',
+      inspectionId: null,
+      mileage: null,
+      startDateTime: new Date('2026-11-19T09:00:00Z'),
+      serviceDate: new Date('2026-11-19T09:00:00Z'),
+      laborItems: [],
+    })
+    // Under the row lock the job is on another vehicle now.
+    tx.$queryRaw.mockResolvedValueOnce([{ mileage: null, vehicleId: 'veh-2' }])
+    const result = await linkWorkOrderToInspection('insp-1', 'job-1', { includeDefects: true })
+    expect(result.success).toBe(false)
+    expect(tx.serviceRecord.update).not.toHaveBeenCalled()
+    expect(tx.vehicle.updateMany).not.toHaveBeenCalled()
+  })
+
   it('links the job and adds the inspection line and the defects, worst first', async () => {
     db.serviceRecord.findFirst.mockResolvedValue({
       id: 'job-1',
@@ -106,8 +135,8 @@ describe('linking to a booked job', () => {
     })
     // The inspection's reading reaches the vehicle with the link, upwards only.
     expect(tx.vehicle.updateMany).toHaveBeenCalledWith({
-      where: { id: 'veh-1', organizationId: 'org', mileage: { lt: 120000 } },
-      data: { mileage: 120000 },
+      where: { id: 'veh-1', organizationId: 'org', mileage: 100000, readingJobId: null },
+      data: { mileage: 120000, readingJobId: 'job-1', readingBeforeJob: 100000 },
     })
     expect(
       tx.serviceLabor.createMany.mock.calls[0][0].data.map(

@@ -23,6 +23,10 @@ export const HIDDEN_COLUMNS: readonly string[] = [
   'concernId',
   'telegramChatId',
   'bookingToken',
+  // Bookkeeping of the vehicle's reading rule (vehicleReading.ts), not a
+  // fact about the vehicle: the reading itself is `mileage`.
+  'readingJobId',
+  'readingBeforeJob',
 ]
 
 /**
