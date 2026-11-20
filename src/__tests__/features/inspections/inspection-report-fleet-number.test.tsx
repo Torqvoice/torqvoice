@@ -168,15 +168,28 @@ vi.mock('@/features/inspections/Components/QuoteRequestDialog', () => ({
 const FLEET_SWITCH = { key: 'vehicle.fleetNumberEnabled', value: 'true' }
 const LONG = 'NORDMANN-TRANSPORT-NORTH-DEPOT-UNIT-0042'
 
-/** What a PDF says, as text: the elements react-pdf would have drawn. */
-function pdfText(): string {
+/** The elements react-pdf would have drawn, as markup with their styles. */
+function pdfMarkup(): string {
   const element = state.rendered.at(-1) as ReactElement
   const errors = vi.spyOn(console, 'error').mockImplementation(() => undefined)
   try {
-    return renderToStaticMarkup(element).replace(/<[^>]+>/g, '\n')
+    return renderToStaticMarkup(element)
   } finally {
     errors.mockRestore()
   }
+}
+
+/** What a PDF says, as text. */
+function pdfText(): string {
+  return pdfMarkup().replace(/<[^>]+>/g, '\n')
+}
+
+/** The font size of the element that prints `text`. */
+function sizeOf(markup: string, text: string): number {
+  const at = markup.indexOf(`>${text}<`)
+  const open = markup.lastIndexOf('<', at)
+  const size = markup.slice(open, at).match(/font-size:([\d.]+)/)
+  return Number(size?.[1])
 }
 
 async function workshopPdf(): Promise<string> {
@@ -239,6 +252,27 @@ describe('the inspection report PDF', () => {
   it('prints a long fleet number whole', async () => {
     state.fleetNumber = LONG
     expect(await workshopPdf()).toContain(`Fleet no.: ${LONG}`)
+  })
+
+  it('prints an unbroken 40-character number smaller rather than past its box', async () => {
+    state.fleetNumber = 'NORDMANNTRANSPORTNORTHDEPOTUNIT0042WXYZ1'
+    await workshopPdf()
+    const markup = pdfMarkup()
+    const plate = sizeOf(markup, 'Plate: EL12345')
+    const fleet = sizeOf(markup, `Fleet no.: ${state.fleetNumber}`)
+    expect(fleet).toBeGreaterThan(0)
+    expect(fleet).toBeLessThan(plate * 0.8)
+    // Never a hyphen added to the number to break it.
+    expect(markup).toContain(`Fleet no.: ${state.fleetNumber}<`)
+  })
+
+  it('prints an ordinary or spaced-out number at the size of the lines around it', async () => {
+    for (const number of ['T-208', 'Unit 14 North depot Nordmann Transport']) {
+      state.fleetNumber = number
+      await workshopPdf()
+      const markup = pdfMarkup()
+      expect(sizeOf(markup, `Fleet no.: ${number}`)).toBe(sizeOf(markup, 'Plate: EL12345'))
+    }
   })
 
   it('prints no fleet line while the switch is off', async () => {
@@ -315,14 +349,11 @@ describe('the shared inspection page', () => {
     expect(screen.queryByText('Fleet no.')).not.toBeInTheDocument()
   })
 
-  it('leaves a designed certificate as it was, and sends no fleet number beside it', async () => {
+  it('sends no fleet number in the page’s own data when a designed certificate is shown', async () => {
+    // The certificate prints it only where its design asks; see
+    // certificate-fleet-number.test.tsx.
     state.designed = true
     const element = await sharePage()
     expect(element.props.inspection.vehicle).not.toHaveProperty('fleetNumber')
-    expect(JSON.stringify(element.props)).not.toContain('T-208')
-    const input = buildCertificatePrintSpec.mock.calls[0]?.[0] as {
-      data: { vehicle: Record<string, unknown> }
-    }
-    expect(input.data.vehicle).not.toHaveProperty('fleetNumber')
   })
 })

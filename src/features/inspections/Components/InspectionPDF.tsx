@@ -17,6 +17,19 @@ import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
 import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import { vehicleName } from '@/lib/vehicle-name'
 
+/**
+ * The style for the fleet number's line. A fleet number is the owner's own
+ * text, up to 40 characters that may have no space in them, and a run that
+ * long does not fit the vehicle box at the usual size. It prints smaller
+ * instead, in proportion: breaking it would insert a hyphen that is not part
+ * of the number.
+ */
+function fleetLineStyle<S extends { fontSize?: number | string }>(base: S, line: string): S {
+  const longestRun = Math.max(...line.split(/\s+/).map((word) => word.length))
+  if (longestRun <= 30 || typeof base.fontSize !== 'number') return base
+  return { ...base, fontSize: (base.fontSize * 30) / longestRun }
+}
+
 function fillTemplate(template: string, values: Record<string, string>): string {
   return Object.entries(values).reduce((str, [key, val]) => str.replace(`{${key}}`, val), template)
 }
@@ -162,6 +175,7 @@ export function InspectionPDF({
   const showLogo = template?.showLogo !== false
   const showCompanyName = template?.showCompanyName !== false
   const styles = createStyles(primaryColor, fontFamily)
+  const fleetLine = fleetNumberLine(data.vehicle, labels.fleetNumber)
   const fontBold = getFontBold(fontFamily)
 
   const df = dateFormat || DEFAULT_DATE_FORMAT
@@ -533,10 +547,8 @@ export function InspectionPDF({
                   : `Plate: ${data.vehicle.licensePlate}`}
               </Text>
             )}
-            {fleetNumberLine(data.vehicle, labels.fleetNumber) && (
-              <Text style={styles.infoTextSmall}>
-                {fleetNumberLine(data.vehicle, labels.fleetNumber)}
-              </Text>
+            {fleetLine && (
+              <Text style={fleetLineStyle(styles.infoTextSmall, fleetLine)}>{fleetLine}</Text>
             )}
             {typeKeyLine(data.vehicle, labels.typeKey) && (
               <Text style={styles.infoTextSmall}>{typeKeyLine(data.vehicle, labels.typeKey)}</Text>
