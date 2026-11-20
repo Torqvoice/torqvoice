@@ -2,7 +2,7 @@ import { expect, type Page, test } from '@playwright/test'
 import { Client } from 'pg'
 import { ownerOrganizationId } from '../../support/db'
 import { settle } from '../../support/hydration'
-import { openCustomFieldsTab } from '../../support/settings'
+import { addMeter, openCustomFieldsTab, setMeterRequired } from '../../support/settings'
 import { pdfContent } from '../../support/pdf'
 import { addLabor, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/work-order'
 
@@ -15,7 +15,10 @@ import { addLabor, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../s
  * first reading in decimals, a lower reading saved with a notice, marked as
  * wrong from the history and no longer counted, a reading taken on a work
  * order that saves on its own and is there after a reload, and the invoice
- * printing it only once the design asks for it.
+ * printing it only once the design asks for it. Last, the meter made
+ * required in Settings: a job on the vehicle saves and moves along without
+ * its reading, is not completed until the reading is typed, and says which
+ * meter it waits for.
  */
 
 test.describe.configure({ mode: 'serial' })
@@ -85,12 +88,12 @@ test.describe('meters', () => {
 
   test('a meter is defined in Settings, Custom Fields', async ({ page }) => {
     await openCustomFieldsTab(page)
-    const manager = page.getByTestId('meters-manager')
-    await expect(manager).toBeVisible()
-    await manager.locator('#meter-name').fill(METER)
-    await manager.locator('#meter-unit').fill('hrs')
-    await manager.getByRole('button', { name: 'Add meter' }).click()
-    await expect(manager.getByText(METER, { exact: true })).toBeVisible({ timeout: 30_000 })
+    await expect(page.getByTestId('meters-manager')).toBeVisible()
+    await addMeter(page, { name: METER, unit: 'hrs' })
+    // Not required until somebody says so.
+    await expect(
+      page.getByTestId('meters-manager').getByText('Required', { exact: true })
+    ).toHaveCount(0)
   })
 
   test('is fitted to a vehicle with a first reading in decimals', async ({ page }) => {
@@ -161,4 +164,56 @@ test.describe('meters', () => {
   test('the invoice prints the reading only once its design asks for it', async ({ page }) => {
     expect(await invoiceText(page)).not.toContain(METER)
   })
+
+  test('a meter made required in Settings says so in the list', async ({ page }) => {
+    await openCustomFieldsTab(page)
+    await setMeterRequired(page, METER, true)
+    await expect(
+      page.getByTestId('meters-manager').locator('[data-testid^="meter-type-"]', { hasText: METER })
+    ).toContainText('Required', { timeout: 30_000 })
+  })
+
+  test('a job is saved and moved along without the reading, and not completed until it is typed', async ({
+    page,
+  }) => {
+    const url = await newWorkOrder(page, vehicleUrl, `E2E required meter ${stamp}`)
+    await addLabor(page, { description: 'Service', hours: 1, rate: 100 })
+    await saveWorkOrder(page)
+    const box = page.getByTestId('job-meters').getByRole('textbox', { name: new RegExp(METER) })
+    await expect(box).toHaveAttribute('aria-required', 'true')
+    await setStage(page, 'In Progress')
+
+    // Completing it is refused, naming the meter, and the box is marked.
+    await expect(async () => {
+      await stage(page, 'Completed').click()
+      await expect(page.getByText(`Not completed. Fill in: ${METER}`)).toBeVisible({
+        timeout: 3_000,
+      })
+    }).toPass({ timeout: 30_000 })
+    await expect(box).toHaveAttribute('aria-invalid', 'true')
+    await expect(box).toBeFocused()
+    await expect(stage(page, 'In Progress')).toHaveAttribute('aria-current', 'step')
+
+    // Typed where the message was read, it completes.
+    await box.fill('4310')
+    await box.press('Enter')
+    await expect(page.getByTestId('job-meter-saved')).toBeVisible({ timeout: 30_000 })
+    await setStage(page, 'Completed')
+    await page.goto(url)
+    await settle(page)
+    await expect(stage(page, 'Completed')).toHaveAttribute('aria-current', 'step')
+  })
 })
+
+/** The status stepper in the page header: one button per stage. */
+function stage(page: Page, name: string) {
+  return page.getByTestId('status-stepper').getByRole('button', { name: new RegExp(name) })
+}
+
+/** Moves the job to a stage. A click before hydration does nothing, so it is repeated. */
+async function setStage(page: Page, name: string): Promise<void> {
+  await expect(async () => {
+    await stage(page, name).click()
+    await expect(stage(page, name)).toHaveAttribute('aria-current', 'step', { timeout: 2_000 })
+  }).toPass({ timeout: 30_000 })
+}

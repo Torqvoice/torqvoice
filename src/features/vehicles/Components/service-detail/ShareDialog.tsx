@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Check, Copy, Link2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import { generatePublicLink, revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 
 interface ShareDialogProps {
@@ -48,6 +49,10 @@ export function ShareDialog({
       setPublicToken(result.data.token)
       // Handing over a link is a way of sending the invoice.
       onSent?.()
+    } else if (result?.requiredMeters) {
+      // The readings the workshop requires come first, named.
+      toast.error(result.error)
+      revealRequiredMeters(recordId, result.requiredMeters)
     } else {
       toast.error(tc('shareLink.generateFailed'))
     }

@@ -18,6 +18,7 @@ import {
   updateServiceStatus,
 } from '@/features/vehicles/Actions/serviceActions'
 import { toast } from 'sonner'
+import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import { PaymentsSection } from '../../service-detail/PaymentsSection'
 import { ServiceFindingsSection } from '../../service-detail/ServiceFindingsSection'
 import { paymentStatusColors, paymentStatusLabels } from '../../service-detail/types'
@@ -174,9 +175,14 @@ export function ModernDetails(props: ModernDetailsProps) {
       })
       if (!ok) return
     }
+    // Completing a job the workshop asks meter readings of is saved on its
+    // own too: refused, it names the meters and marks their boxes, and the
+    // rest of the form is not held back with it.
+    const asksMeters =
+      next === 'completed' && (formState.initialData.meters ?? []).some((m) => m.required)
     // A plain move between stages, with none of the workshop's statuses on
     // either side of it, goes with the form as it always has.
-    if (!locked && !custom && !customStatus) {
+    if (!locked && !custom && !customStatus && !asksMeters) {
       formState.dirtySetStatus(next)
       return
     }
@@ -198,6 +204,7 @@ export function ModernDetails(props: ModernDetailsProps) {
       formState.setStatus(previous.status)
       setCustomStatus(previous.custom)
       toast.error(result.error || t('page.failedUpdate'))
+      revealRequiredMeters(record.id, result.requiredMeters)
     }
   }
 

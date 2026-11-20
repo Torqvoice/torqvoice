@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Check } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
@@ -12,6 +13,7 @@ import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
 import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import { meterReadingKind } from '../Lib/meterAsk'
+import { onRevealRequiredMeters } from '../Lib/requiredMetersReveal'
 import type { JobMeterView } from '../Lib/meters.server'
 
 /**
@@ -20,6 +22,11 @@ import type { JobMeterView } from '../Lib/meters.server'
  * Reference / PO box does. A reading below the last one before this job is
  * said under the box and saved all the same. Nothing is drawn for a vehicle
  * without meters, or while meters are off.
+ *
+ * A meter the workshop requires carries the required mark. When the job is
+ * refused for a missing reading (completing it, sending or paying its
+ * invoice), the boxes named are marked and the first takes the focus, so the
+ * reading is typed where the refusal was read.
  */
 export function JobMeters({
   jobId,
@@ -34,7 +41,54 @@ export function JobMeters({
 }) {
   if (meters.length === 0) return null
   return (
-    <div className="space-y-2" data-testid="job-meters">
+    <JobMeterList jobId={jobId} meters={meters} locked={locked} labelClassName={labelClassName} />
+  )
+}
+
+function JobMeterList({
+  jobId,
+  meters,
+  locked,
+  labelClassName,
+}: {
+  jobId: string
+  meters: JobMeterView[]
+  locked?: boolean
+  labelClassName?: string
+}) {
+  const router = useRouter()
+  const box = useRef<HTMLDivElement>(null)
+  // The boxes the last refusal named, and a count that moves the focus once per refusal.
+  const [flagged, setFlagged] = useState<{ ids: Set<string>; turn: number }>({
+    ids: new Set(),
+    turn: 0,
+  })
+  const shown = useRef(meters)
+  shown.current = meters
+  useEffect(
+    () =>
+      onRevealRequiredMeters(jobId, (ids) => {
+        setFlagged((prev) => ({ ids: new Set(ids), turn: prev.turn + 1 }))
+        // A meter the page does not show yet (made required, or its item
+        // picked, since the page was drawn): read the job again to draw it.
+        if (ids.some((id) => !shown.current.some((m) => m.vehicleMeterId === id))) router.refresh()
+      }),
+    [jobId, router]
+  )
+  // The focus moves once per refusal: to the first box it named, as soon as
+  // that box is drawn (after the refresh above, for one not shown yet).
+  const focusedTurn = useRef(0)
+  useEffect(() => {
+    if (flagged.turn === focusedTurn.current) return
+    const first = box.current?.querySelector<HTMLInputElement>('input[aria-invalid="true"]')
+    if (!first) return
+    focusedTurn.current = flagged.turn
+    first.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+    first.focus({ preventScroll: true })
+  }, [flagged, meters])
+
+  return (
+    <div className="space-y-2" data-testid="job-meters" ref={box}>
       {meters.map((meter) => (
         <JobMeterField
           key={meter.vehicleMeterId}
@@ -42,6 +96,7 @@ export function JobMeters({
           meter={meter}
           locked={locked}
           labelClassName={labelClassName}
+          flagged={flagged.ids.has(meter.vehicleMeterId)}
         />
       ))}
     </div>
@@ -53,11 +108,14 @@ function JobMeterField({
   meter,
   locked,
   labelClassName,
+  flagged = false,
 }: {
   jobId: string
   meter: JobMeterView
   locked?: boolean
   labelClassName?: string
+  /** A refusal named this meter: marked until a reading is typed. */
+  flagged?: boolean
 }) {
   const t = useTranslations('vehicles.meters')
   const format = useFormatter()
@@ -83,6 +141,7 @@ function JobMeterField({
 
   const id = `job-meter-${meter.vehicleMeterId}`
   const lower = isLowerMeterValue(typed, last)
+  const missing = flagged && meter.required && !locked && typed.trim() === ''
   const lastText =
     last == null
       ? ''
@@ -131,7 +190,19 @@ function JobMeterField({
           htmlFor={id}
           className={cn(labelClassName, meter.item && 'flex-col items-start gap-0')}
         >
-          {meter.name}
+          <span>
+            {meter.name}
+            {/* The mark required custom fields carry, with words for a screen reader. */}
+            {meter.required && (
+              <>
+                <span aria-hidden="true" className="ml-0.5 text-destructive">
+                  *
+                </span>
+                {/* A space of its own: inside the hidden span a reader may drop it. */}{' '}
+                <span className="sr-only">({t('requiredMark')})</span>
+              </>
+            )}
+          </span>
           {/* A meter of a piece of equipment the job works on: which one. */}
           {meter.item && (
             <span className="line-clamp-2 max-w-44 text-[11px] font-normal normal-case tracking-normal text-muted-foreground">
@@ -144,8 +215,13 @@ function JobMeterField({
             id={id}
             inputMode="decimal"
             autoComplete="off"
-            className="h-8 w-32"
+            className={cn(
+              'h-8 w-32',
+              missing && 'border-destructive focus-visible:ring-destructive'
+            )}
             value={typed}
+            aria-required={meter.required || undefined}
+            aria-invalid={missing || undefined}
             disabled={locked}
             onChange={(e) => setTyped(e.target.value)}
             // Saved here, on its own: not an unsaved change of the page's form.
@@ -157,7 +233,10 @@ function JobMeterField({
                 e.currentTarget.blur()
               }
             }}
-            aria-describedby={lower ? `${id}-lower` : undefined}
+            aria-describedby={
+              [missing && `${id}-required`, lower && `${id}-lower`].filter(Boolean).join(' ') ||
+              undefined
+            }
           />
           {meter.unit && <span className="text-xs text-muted-foreground">{meter.unit}</span>}
           {justSaved && (
@@ -172,6 +251,15 @@ function JobMeterField({
           )}
         </div>
       </div>
+      {missing && (
+        <p
+          id={`${id}-required`}
+          data-testid="job-meter-required"
+          className="text-xs text-destructive"
+        >
+          {t('requiredMissing')}
+        </p>
+      )}
       {asking && last != null && typedValue !== null && (
         <ReadingQuestion
           id={`${id}-question`}

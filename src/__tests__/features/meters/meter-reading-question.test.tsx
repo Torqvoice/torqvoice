@@ -9,6 +9,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const setJobMeterReading = vi.hoisted(() => vi.fn())
 vi.mock('@/features/meters/Actions/jobMeterActions', () => ({ setJobMeterReading }))
 vi.mock('sonner', () => ({ toast: { error: vi.fn(), success: vi.fn() } }))
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }))
 
 import { JobMeters } from '@/features/meters/Components/JobMeters'
 import { meterAskLimit } from '@/features/meters/Lib/meterAsk'
@@ -21,6 +22,7 @@ const METER = {
   unit: 'hrs',
   value: null,
   last: 4256.7,
+  required: false,
 }
 
 function typeAndLeave(value: string) {

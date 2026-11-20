@@ -70,6 +70,7 @@ import { ModernDetails } from './modern/ModernDetails'
 import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { referenceMissing } from '@/features/customer-reference/Lib/reference'
 import { ModernHero } from './modern/ModernHero'
+import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 import { vehicleName } from '@/lib/vehicle-name'
@@ -466,6 +467,9 @@ export function ServicePageClient({
       // form: the invoice may have locked on the same send.
       formState.setStatus('completed')
       router.refresh()
+    } else if (result.requiredMeters) {
+      toast.error(result.error)
+      revealRequiredMeters(record.id, result.requiredMeters)
     }
   }, [router, confirmComplete, formState, record.id, t])
 

@@ -190,6 +190,7 @@ export function WorkOrdersClient({
     Boolean
   ).length
   const t = useTranslations('workOrders.list')
+  const tc = useTranslations('common')
   const serviceLabel = useServiceLabels()
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
@@ -262,7 +263,14 @@ export function WorkOrdersClient({
   } = useDebouncedSearch(search, (term) => navigate({ search: term }))
 
   const handleStatusChange = async (workOrder: WorkOrder, newStatus: string) => {
-    await updateServiceStatus(workOrder.id, newStatus)
+    // An action that cannot reach the server throws instead of answering.
+    const result = await updateServiceStatus(workOrder.id, newStatus).catch(() => null)
+    if (!result?.success) {
+      // Refused (a required meter reading missing, named in the message) or
+      // failed: the row keeps its status, and nobody is offered a message.
+      toast.error(result?.error || tc('errors.unexpected'))
+      return
+    }
     toast.success(t('statusUpdated'))
     router.refresh()
 

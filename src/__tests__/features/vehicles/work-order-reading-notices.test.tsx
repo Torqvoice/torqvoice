@@ -10,6 +10,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 vi.mock('@/features/quotes/Components/VehicleCombobox', () => ({ VehicleCombobox: () => null }))
+// The meter rows read the job again when a refusal names a meter they do not show.
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }))
 
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { JobFactsCard } from '@/features/vehicles/Components/service-page/modern/JobFactsCard'

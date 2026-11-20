@@ -20,6 +20,7 @@ import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceF
 import { WARRANTY_NONE } from '@/lib/warranty'
 import { useServiceType } from '@/components/service-type-context'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
+import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { ServiceDetail } from '../service-detail/types'
 import type { useServiceFormState } from './useServiceFormState'
 
@@ -58,6 +59,7 @@ export function useServiceActions({
     selectedVehicleId,
     type,
     status,
+    setStatus,
     concerns,
     partItems,
     laborItems,
@@ -303,6 +305,14 @@ export function useServiceActions({
       } else {
         router.refresh()
       }
+    } else if (result.requiredMeters) {
+      // The save would have completed the job without readings the workshop
+      // requires. Back to the stage it is at, the rest saved by the next
+      // save, and the message names the meters whose boxes are marked.
+      setStatus(initialData.status)
+      if (editRevisionRef.current === revision) markDirty()
+      refuse(result.error || t('page.failedUpdate'))
+      revealRequiredMeters(initialData.id, result.requiredMeters)
     } else {
       const message = result.error || t('page.failedUpdate')
       refuse(message, () => modal.open('error', tc('errors.error'), message))
@@ -422,6 +432,7 @@ export function useServiceActions({
       return true
     }
     modal.open('error', tc('errors.error'), result?.error || t('payments.failedRecord'))
+    revealRequiredMeters(record.id, result?.requiredMeters)
     return false
   }
 
@@ -440,6 +451,7 @@ export function useServiceActions({
       }
     } else {
       modal.open('error', tc('errors.error'), result?.error || t('payments.failedStatus'))
+      revealRequiredMeters(record.id, result?.requiredMeters)
     }
   }
 

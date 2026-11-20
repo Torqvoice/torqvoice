@@ -25,11 +25,18 @@ import { track } from '@/lib/analytics'
 import type { GatedFeature } from '@/lib/with-auth'
 import type { ShareChannelStatus } from '../Actions/getShareChannels'
 import { sendInspectionLink, sendInvoiceLink, sendQuoteLink } from '../Actions/sendDocumentLink'
+import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import { useShareChannels, useWhatsappReach } from '../Lib/useShareChannels'
 
 export type SendDocumentKind = 'quote' | 'invoice' | 'inspection'
 
-type SendResult = { success: boolean; error?: string; gated?: GatedFeature }
+type SendResult = {
+  success: boolean
+  error?: string
+  gated?: GatedFeature
+  /** An invoice held back for readings the workshop requires on the job. */
+  requiredMeters?: { vehicleMeterId: string }[]
+}
 
 interface SendDocumentDialogProps {
   open: boolean
@@ -151,6 +158,7 @@ export function SendDocumentDialog({
       }
       failed = true
       if (!result || !handleGated(result)) toast.error(result?.error || fallback)
+      if (kind === 'invoice') revealRequiredMeters(documentId, result?.requiredMeters)
       return false
     }
 
