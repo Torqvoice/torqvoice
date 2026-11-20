@@ -485,6 +485,7 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
           {asking && meter.current != null && typedValue !== null && (
             <ReadingQuestion
               id="meter-reading-question"
+              onWorkOrder={false}
               entered={typedValue}
               last={meter.current}
               meterUnit={meter.unit}

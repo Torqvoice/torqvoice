@@ -125,3 +125,33 @@ describe('the limit a meter’s unit asks with', () => {
     }
   })
 })
+
+describe('the question on the vehicle page’s own reading dialog', () => {
+  it('says nothing about a work order, which is not there', async () => {
+    const { ReadingQuestion } = await import('@/features/vehicles/Components/ReadingQuestion')
+    const { unmount } = render(
+      <ReadingQuestion
+        entered={42567}
+        last={4256.7}
+        meterUnit="hrs"
+        onWorkOrder={false}
+        onConfirm={() => {}}
+        onChange={() => {}}
+      />
+    )
+    expect(screen.getByText(/much higher than the last reading/)).toBeInTheDocument()
+    expect(screen.queryByText(/work order/)).toBeNull()
+    unmount()
+
+    render(
+      <ReadingQuestion
+        entered={42567}
+        last={4256.7}
+        meterUnit="hrs"
+        onConfirm={() => {}}
+        onChange={() => {}}
+      />
+    )
+    expect(screen.getByText(/The rest of the work order saves as usual/)).toBeInTheDocument()
+  })
+})

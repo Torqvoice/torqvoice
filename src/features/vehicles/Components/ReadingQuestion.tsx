@@ -20,6 +20,12 @@ interface ReadingQuestionProps {
   meterUnit?: string
   onConfirm: () => void
   onChange: () => void
+  /**
+   * Off where nothing else saves alongside the reading (the vehicle page's
+   * own reading dialog): the note about the rest of the work order is for a
+   * work order only.
+   */
+  onWorkOrder?: boolean
   id?: string
   className?: string
 }
@@ -37,6 +43,7 @@ export function ReadingQuestion({
   meterUnit,
   onConfirm,
   onChange,
+  onWorkOrder = true,
   id = 'reading-question',
   className,
 }: ReadingQuestionProps) {
@@ -67,8 +74,8 @@ export function ReadingQuestion({
         {t(isMarine ? 'readingConfirmBodyMarine' : 'readingConfirmBody', {
           entered: withUnit(entered),
           last: withUnit(last),
-        })}{' '}
-        {t('readingConfirmHeld')}
+        })}
+        {onWorkOrder && ` ${t('readingConfirmHeld')}`}
       </p>
       <div className="flex flex-wrap gap-2">
         <Button type="button" size="sm" onClick={onConfirm} data-reading-confirm>
