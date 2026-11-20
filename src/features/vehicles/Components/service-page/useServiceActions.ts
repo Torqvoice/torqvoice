@@ -432,7 +432,6 @@ export function useServiceActions({
       return true
     }
     modal.open('error', tc('errors.error'), result?.error || t('payments.failedRecord'))
-    revealRequiredMeters(record.id, result?.requiredMeters)
     return false
   }
 
@@ -451,7 +450,6 @@ export function useServiceActions({
       }
     } else {
       modal.open('error', tc('errors.error'), result?.error || t('payments.failedStatus'))
-      revealRequiredMeters(record.id, result?.requiredMeters)
     }
   }
 

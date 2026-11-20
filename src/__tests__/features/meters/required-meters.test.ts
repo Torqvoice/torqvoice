@@ -220,7 +220,7 @@ describe('which meters a job is asked for', () => {
   it('leaves a job completed already alone', async () => {
     world.job = { ...JOB, status: 'completed' }
     expect(await names()).toEqual([])
-    expect(await names('payment')).toEqual([])
+    expect(await names('send')).toEqual([])
   })
 
   it('asks nothing on an invoice locked against new readings', async () => {
@@ -248,16 +248,16 @@ describe('which meters a job is asked for', () => {
 })
 
 describe('issuing the invoice', () => {
-  it('asks before an invoice is first issued, by sending, sharing or paying', async () => {
-    for (const occasion of ['send', 'share', 'payment', 'markPaid'] as const) {
+  it('asks before an invoice is first issued by sending or sharing it', async () => {
+    for (const occasion of ['send', 'share'] as const) {
       expect(await names(occasion)).toEqual(['PTO hours'])
     }
   })
 
-  it('asks nothing once the invoice is out: a payment or a re-send only follows it', async () => {
+  it('asks nothing once the invoice is out: a re-send or a new link only follows it', async () => {
     world.job = { ...JOB, issuedAt: new Date('2026-11-02T10:00:00Z') }
-    expect(await names('payment')).toEqual([])
     expect(await names('send')).toEqual([])
+    expect(await names('share')).toEqual([])
     // A completion is still a completion.
     expect(await names('complete')).toEqual(['PTO hours'])
   })
@@ -319,8 +319,8 @@ describe('the refusal', () => {
     await expect(assertRequiredMetersRead('org-1', 'job-1', 'send')).rejects.toThrow(
       'vehicles.meters.requiredNotSent: PTO hours'
     )
-    await expect(assertRequiredMetersRead('org-1', 'job-1', 'payment')).rejects.toThrow(
-      'vehicles.meters.requiredPaymentNotRecorded: PTO hours'
+    await expect(assertRequiredMetersRead('org-1', 'job-1', 'share')).rejects.toThrow(
+      'vehicles.meters.requiredNotShared: PTO hours'
     )
   })
 

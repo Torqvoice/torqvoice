@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Non completato. Compila: {meters}",
     "requiredNotSent": "Non inviata. Compila: {meters}",
     "requiredNotShared": "Nessun link creato. Compila: {meters}",
-    "requiredPaymentNotRecorded": "Pagamento non registrato. Compila: {meters}",
-    "requiredNotMarkedPaid": "Non segnata come pagata. Compila: {meters}",
     "history": "Cronologia",
     "historyTitle": "Cronologia {name}",
     "historyHint": "Una lettura segnata come errata resta qui ma non conta più.",

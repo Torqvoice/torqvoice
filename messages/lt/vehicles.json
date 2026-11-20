@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Neužbaigta. Užpildykite: {meters}",
     "requiredNotSent": "Neišsiųsta. Užpildykite: {meters}",
     "requiredNotShared": "Nuoroda nesukurta. Užpildykite: {meters}",
-    "requiredPaymentNotRecorded": "Mokėjimas neužregistruotas. Užpildykite: {meters}",
-    "requiredNotMarkedPaid": "Nepažymėta kaip apmokėta. Užpildykite: {meters}",
     "history": "Istorija",
     "historyTitle": "{name} istorija",
     "historyHint": "Kaip klaidingas pažymėtas rodmuo lieka čia, bet nebeskaičiuojamas.",

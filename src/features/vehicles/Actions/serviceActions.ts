@@ -1315,10 +1315,6 @@ export async function toggleManuallyPaid(recordId: string) {
       if (before.locked && !after.locked && before.reason) {
         throw new DocumentLockedError(before.reason)
       }
-      // Marking it paid issues the invoice, which waits for required meters.
-      if (!record.manuallyPaid) {
-        await assertRequiredMetersRead(organizationId, record.id, 'markPaid')
-      }
 
       await db.serviceRecord.update({
         where: { id: recordId },

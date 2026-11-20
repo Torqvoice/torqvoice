@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Tamamlanmadı. Doldurun: {meters}",
     "requiredNotSent": "Gönderilmedi. Doldurun: {meters}",
     "requiredNotShared": "Bağlantı oluşturulmadı. Doldurun: {meters}",
-    "requiredPaymentNotRecorded": "Ödeme kaydedilmedi. Doldurun: {meters}",
-    "requiredNotMarkedPaid": "Ödendi olarak işaretlenmedi. Doldurun: {meters}",
     "history": "Geçmiş",
     "historyTitle": "{name} geçmişi",
     "historyHint": "Hatalı olarak işaretlenen bir okuma burada kalır ama artık sayılmaz.",

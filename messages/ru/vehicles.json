@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Не завершено. Заполните: {meters}",
     "requiredNotSent": "Не отправлено. Заполните: {meters}",
     "requiredNotShared": "Ссылка не создана. Заполните: {meters}",
-    "requiredPaymentNotRecorded": "Платёж не зарегистрирован. Заполните: {meters}",
-    "requiredNotMarkedPaid": "Не отмечено как оплаченное. Заполните: {meters}",
     "history": "История",
     "historyTitle": "История: {name}",
     "historyHint": "Показание, отмеченное как ошибочное, остаётся здесь, но больше не учитывается.",

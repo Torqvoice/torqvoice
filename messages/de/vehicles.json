@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Nicht abgeschlossen. Bitte ausfüllen: {meters}",
     "requiredNotSent": "Nicht gesendet. Bitte ausfüllen: {meters}",
     "requiredNotShared": "Kein Link erstellt. Bitte ausfüllen: {meters}",
-    "requiredPaymentNotRecorded": "Zahlung nicht erfasst. Bitte ausfüllen: {meters}",
-    "requiredNotMarkedPaid": "Nicht als bezahlt markiert. Bitte ausfüllen: {meters}",
     "history": "Verlauf",
     "historyTitle": "Verlauf von {name}",
     "historyHint": "Ein als falsch markierter Stand bleibt hier, zählt aber nicht mehr.",

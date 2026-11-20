@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Não concluído. Preencha: {meters}",
     "requiredNotSent": "Não enviada. Preencha: {meters}",
     "requiredNotShared": "Nenhum link criado. Preencha: {meters}",
-    "requiredPaymentNotRecorded": "Pagamento não registrado. Preencha: {meters}",
-    "requiredNotMarkedPaid": "Não marcada como paga. Preencha: {meters}",
     "history": "Histórico",
     "historyTitle": "Histórico de {name}",
     "historyHint": "Uma leitura marcada como errada continua aqui, mas não conta mais.",

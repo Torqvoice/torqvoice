@@ -41,7 +41,7 @@ let vehicleId = ''
 let jobId = ''
 let ids: Record<string, string> = {}
 
-const missing = async (occasion: 'complete' | 'payment' = 'complete') =>
+const missing = async (occasion: 'complete' | 'send' = 'complete') =>
   (await check.missingRequiredMeters(organizationId, jobId, occasion)).map((m) => m.name)
 
 beforeAll(async () => {
@@ -162,7 +162,7 @@ describe('the meters a job is asked for', () => {
       where: { id: jobId },
       data: { status: 'in-progress', issuedAt: new Date() },
     })
-    expect(await missing('payment')).toEqual([])
+    expect(await missing('send')).toEqual([])
     expect(await missing('complete')).toEqual(['PTO hours'])
   })
 

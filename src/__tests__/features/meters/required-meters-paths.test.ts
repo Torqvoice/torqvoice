@@ -2,10 +2,11 @@
  * Every way a job is finished with asks for the readings the workshop
  * requires, and is refused naming them while one is missing: completing it
  * (the status, the work order's save, a job made completed), and handing its
- * invoice over (email, a texted or WhatsApp link, the share link, a payment,
- * marking it paid). Nothing is written, sent or issued when refused. And
- * nothing else is ever asked: an ordinary save, an earlier status, a job
- * already completed, taking a mark of paid off.
+ * invoice over (email, a texted or WhatsApp link, the share link). Nothing is
+ * written, sent or issued when refused. And nothing else is ever asked: an
+ * ordinary save, an earlier status, a job already completed, and never
+ * money: a payment or a mark of paid is recorded and issues the invoice as
+ * it always has, as for the customer's Reference / PO.
  *
  * Which meters are missing is the shared check's own test
  * (required-meters.test.ts); here it answers what a test sets.
@@ -291,26 +292,31 @@ describe('handing the invoice over', () => {
     expectRefused(await generatePublicLink('job-1'), 'requiredNotShared')
     expect(assertRequiredMetersRead).toHaveBeenCalledWith(ORG, 'job-1', 'share')
   })
+})
 
-  it('by a payment recorded at the desk is refused before the payment is written', async () => {
-    expectRefused(
-      await createPayment({
-        serviceRecordId: 'job-1',
-        amount: 100,
-        date: '2026-11-20',
-        method: 'cash',
-      }),
-      'requiredPaymentNotRecorded'
-    )
-    expect(db.payment.create).not.toHaveBeenCalled()
+describe('money, with a required reading missing', () => {
+  it('a payment recorded at the desk is taken and issues the invoice as before', async () => {
+    vi.mocked(db.payment.create).mockResolvedValue({ id: 'pay-1' } as never)
+    const result = await createPayment({
+      serviceRecordId: 'job-1',
+      amount: 100,
+      date: '2026-11-20',
+      method: 'cash',
+    })
+    expect(result.success).toBe(true)
+    expect(result.requiredMeters).toBeUndefined()
+    expect(db.payment.create).toHaveBeenCalled()
+    expect(issueInvoice).toHaveBeenCalledWith('job-1', ORG, 'paid')
+    expect(assertRequiredMetersRead).not.toHaveBeenCalled()
   })
 
-  it('by marking it paid is refused; taking the mark off never is', async () => {
-    expectRefused(await toggleManuallyPaid('job-1'), 'requiredNotMarkedPaid')
+  it('marking it paid is taken and issues the invoice as before, and so is taking the mark off', async () => {
+    const marked = await toggleManuallyPaid('job-1')
+    expect(marked.success).toBe(true)
+    expect(marked.data).toMatchObject({ manuallyPaid: true })
+    expect(issueInvoice).toHaveBeenCalledWith('job-1', ORG, 'paid')
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({ ...JOB, manuallyPaid: true } as never)
-    vi.mocked(assertRequiredMetersRead).mockClear()
-    const unmarked = await toggleManuallyPaid('job-1')
-    expect(unmarked.success).toBe(true)
+    expect((await toggleManuallyPaid('job-1')).success).toBe(true)
     expect(assertRequiredMetersRead).not.toHaveBeenCalled()
   })
 })

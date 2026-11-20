@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Niet afgerond. Vul in: {meters}",
     "requiredNotSent": "Niet verzonden. Vul in: {meters}",
     "requiredNotShared": "Geen link gemaakt. Vul in: {meters}",
-    "requiredPaymentNotRecorded": "Betaling niet geregistreerd. Vul in: {meters}",
-    "requiredNotMarkedPaid": "Niet als betaald gemarkeerd. Vul in: {meters}",
     "history": "Geschiedenis",
     "historyTitle": "Geschiedenis van {name}",
     "historyHint": "Een stand die als fout is gemarkeerd, blijft hier staan maar telt niet meer mee.",

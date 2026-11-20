@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Not completed. Fill in: {meters}",
     "requiredNotSent": "Not sent. Fill in: {meters}",
     "requiredNotShared": "No link made. Fill in: {meters}",
-    "requiredPaymentNotRecorded": "Payment not recorded. Fill in: {meters}",
-    "requiredNotMarkedPaid": "Not marked as paid. Fill in: {meters}",
     "history": "History",
     "historyTitle": "{name} history",
     "historyHint": "A reading marked as wrong stays here but no longer counts.",

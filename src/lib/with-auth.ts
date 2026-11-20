@@ -34,8 +34,8 @@ export type ActionResult<T = unknown> = {
    */
   customFieldErrors?: { fieldId: string; label: string; issue: string }[]
   /**
-   * Set when a job was not completed, or its invoice not sent, shared or
-   * paid, because a meter the workshop requires has no reading on it: which
+   * Set when a job was not completed, or its invoice not sent or shared,
+   * because a meter the workshop requires has no reading on it: which
    * ones, so the work order can mark each box. Nothing was written. `error`
    * already names them.
    */

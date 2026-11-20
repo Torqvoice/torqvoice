@@ -3,7 +3,7 @@ import 'server-only'
 import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { getInvoiceLockState } from '@/lib/document-lock.server'
-import { type IssueReason, shouldIssue } from '@/features/invoices/Lib/issuedInvoice'
+import { shouldIssue } from '@/features/invoices/Lib/issuedInvoice'
 import { jobReadingDate } from '@/features/vehicles/Lib/vehicleReading'
 import { itemsOnVehicle } from '@/features/equipment/Lib/equipmentGate.server'
 import { type JobMeterView, jobMeterViews } from './meters.server'
@@ -12,12 +12,14 @@ import { type JobMeterView, jobMeterViews } from './meters.server'
  * Meters a workshop has marked "Required on work orders", asked for before a
  * job is finished with.
  *
- * A job is not completed, and its invoice is not issued (sent, shared, paid),
+ * A job is not completed, and its invoice is not sent or shared by link,
  * while a required meter that applies to it has no reading on it. Every path
- * that completes a job or issues its invoice asks here first, before it
+ * that completes a job or sends its invoice asks here first, before it
  * writes or sends anything, and is refused with the meters named. Nothing
  * else is ever stopped: an ordinary save, a new or booked job, any status
- * before completed, a quote.
+ * before completed, a quote, and never money: a payment, or marking the
+ * invoice paid, is recorded and issues the invoice as it always has, as for
+ * the customer's Reference / PO.
  *
  * Which meters apply is what the work order shows (`jobMeterViews`): the
  * vehicle's own meters in use, and the meters of the pieces of equipment the
@@ -29,30 +31,20 @@ import { type JobMeterView, jobMeterViews } from './meters.server'
  * Left alone, so nothing turns against work already done:
  * - a job completed already: it was completed before the meter was required,
  *   or with its readings; reprints, payments and edits go on as before;
- * - an issue that issues nothing (the invoice is out already and a payment
- *   or a re-send only follows it);
+ * - a send that issues nothing (the invoice is out already and a re-send
+ *   only follows it);
  * - an invoice locked by the workshop's lock rule, on which no reading can be
  *   typed any more: asking for one there could never be answered.
  */
 
 /** Why a job is being finished with, which is what the refusal says. */
-export type RequiredMetersOccasion = 'complete' | 'send' | 'share' | 'payment' | 'markPaid'
-
-/** What issuing the invoice is called on each occasion that issues it. */
-const ISSUE_REASON: Record<Exclude<RequiredMetersOccasion, 'complete'>, IssueReason> = {
-  send: 'sent',
-  share: 'sent',
-  payment: 'paid',
-  markPaid: 'paid',
-}
+export type RequiredMetersOccasion = 'complete' | 'send' | 'share'
 
 /** The message on each occasion, in `vehicles.meters`. */
 const MESSAGE_KEY: Record<RequiredMetersOccasion, string> = {
   complete: 'requiredNotCompleted',
   send: 'requiredNotSent',
   share: 'requiredNotShared',
-  payment: 'requiredPaymentNotRecorded',
-  markPaid: 'requiredNotMarkedPaid',
 }
 
 /** A required meter the job has no reading of. */
@@ -124,7 +116,8 @@ export async function missingRequiredMeters(
   if (!job || job.status === 'completed') return []
   const vehicleId = options.vehicleId !== undefined ? options.vehicleId : job.vehicleId
   if (!vehicleId) return []
-  if (occasion !== 'complete' && !shouldIssue(job, ISSUE_REASON[occasion])) return []
+  // Sending and sharing issue the invoice the way any send does.
+  if (occasion !== 'complete' && !shouldIssue(job, 'sent')) return []
 
   let meters = await jobMeterViews(organizationId, {
     id: job.id,

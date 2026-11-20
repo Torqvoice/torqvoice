@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Non terminé. Renseignez : {meters}",
     "requiredNotSent": "Non envoyée. Renseignez : {meters}",
     "requiredNotShared": "Aucun lien créé. Renseignez : {meters}",
-    "requiredPaymentNotRecorded": "Paiement non enregistré. Renseignez : {meters}",
-    "requiredNotMarkedPaid": "Non marquée comme payée. Renseignez : {meters}",
     "history": "Historique",
     "historyTitle": "Historique {name}",
     "historyHint": "Un relevé marqué comme erroné reste ici mais n'est plus compté.",

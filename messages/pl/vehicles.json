@@ -714,8 +714,6 @@
     "requiredNotCompleted": "Nie zakończono. Uzupełnij: {meters}",
     "requiredNotSent": "Nie wysłano. Uzupełnij: {meters}",
     "requiredNotShared": "Nie utworzono linku. Uzupełnij: {meters}",
-    "requiredPaymentNotRecorded": "Nie zarejestrowano płatności. Uzupełnij: {meters}",
-    "requiredNotMarkedPaid": "Nie oznaczono jako opłacone. Uzupełnij: {meters}",
     "history": "Historia",
     "historyTitle": "Historia: {name}",
     "historyHint": "Odczyt oznaczony jako błędny zostaje tutaj, ale nie jest już liczony.",
