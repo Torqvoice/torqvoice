@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { SettingsNav } from '@/app/(authenticated)/settings/settings-nav'
 
 let pathname = '/settings/about'
@@ -15,11 +15,15 @@ vi.mock('next/navigation', () => ({
 describe('the settings menu and the page that is open', () => {
   const scrolled: string[] = []
   const original = Element.prototype.scrollIntoView
-  Element.prototype.scrollIntoView = function (this: Element) {
-    scrolled.push(this.getAttribute('href') ?? '')
-  }
-  afterEach(() => {
+  beforeEach(() => {
     scrolled.length = 0
+    Element.prototype.scrollIntoView = function (this: Element) {
+      scrolled.push(this.getAttribute('href') ?? '')
+    }
+  })
+  afterEach(() => {
+    Element.prototype.scrollIntoView = original
+    vi.unstubAllGlobals()
   })
 
   it('brings the open page into view and marks it as the current one', () => {
@@ -37,6 +41,35 @@ describe('the settings menu and the page that is open', () => {
     rerender(<SettingsNav isCloud supportEnabled />)
 
     expect(scrolled).toEqual(['/settings/about', '/settings/company'])
-    Element.prototype.scrollIntoView = original
+  })
+
+  it('looks again when the list appears after the window widens', () => {
+    let resized: () => void = () => undefined
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: () => void) {
+          resized = callback
+        }
+        observe() {
+          // nothing to watch in a test
+        }
+        disconnect() {
+          // nothing to release in a test
+        }
+      }
+    )
+    pathname = '/settings/about'
+    render(<SettingsNav isCloud supportEnabled />)
+    scrolled.length = 0
+    const nav = screen.getByRole('navigation')
+
+    // Hidden so far (no height); nothing to do while it stays hidden.
+    resized()
+    expect(scrolled).toEqual([])
+
+    Object.defineProperty(nav, 'offsetHeight', { configurable: true, value: 600 })
+    resized()
+    expect(scrolled).toEqual(['/settings/about'])
   })
 })
