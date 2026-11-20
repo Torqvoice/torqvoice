@@ -373,6 +373,25 @@ describe('the vehicle page', () => {
     expect(within(open).queryByRole('link')).not.toBeInTheDocument()
   })
 
+  it('offers no invoice for a finished job held for the customer reference / PO', async () => {
+    settings('automotive', 'metric')
+    vi.mocked(getPortalVehicleDetail).mockResolvedValue({
+      success: true,
+      data: {
+        ...vehicle,
+        serviceRecords: [{ ...vehicle.serviceRecords[0], invoiceHeld: true }],
+      },
+    } as never)
+    await renderPage()
+    const held = screen
+      .getAllByRole('listitem')
+      .find((r) => r.textContent?.includes('Yearly service')) as HTMLElement
+    expect(within(held).getByText('Completed')).toBeInTheDocument()
+    expect(within(held).queryByText(/1001/)).not.toBeInTheDocument()
+    expect(within(held).queryByText('kr 2500.00')).not.toBeInTheDocument()
+    expect(within(held).queryByRole('link')).not.toBeInTheDocument()
+  })
+
   it('lists the tyres the workshop stores for this car, when it shows tyres', async () => {
     settings('automotive', 'metric')
     vi.mocked(getPortalVehicleTires).mockResolvedValue({

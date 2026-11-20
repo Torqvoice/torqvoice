@@ -233,7 +233,10 @@ async function unlinkReadingsFromJobs(
   where: Prisma.MeterReadingWhereInput
 ): Promise<void> {
   const linked = await tx.meterReading.findMany({
-    where: { ...where, organizationId, serviceRecordId: { not: null } },
+    // AND, not a spread: the caller's `where` names the jobs, and a spread
+    // replaced that with "any job", which let one job's change take the
+    // readings of every other job with it.
+    where: { AND: [where, { organizationId, serviceRecordId: { not: null } }] },
     select: { serviceRecordId: true },
     distinct: ['serviceRecordId'],
   })

@@ -287,6 +287,26 @@ describe('printing the Equipment section', () => {
     }
   })
 
+  it('keeps its columns apart and wraps a long serial in its column; the parts table is as it was', () => {
+    const spec: any = invoiceSpec(withEquipmentOn(getDefaultInvoiceLayout()))
+    const tables = spec.blocks.flatMap((b: any) =>
+      (b.content.kind === 'table' ? [b.content] : (b.content.children ?? [])).filter(
+        (c: any) => c.kind === 'table'
+      )
+    )
+    const equipmentTable = spec.blocks
+      .find((b: any) => b.id === 'equipment')
+      .content.children.find((c: any) => c.kind === 'table')
+    expect(equipmentTable).toMatchObject({ columnGap: 6, breakLongWords: true })
+    // Every other table (parts, labour) prints exactly as before.
+    const others = tables.filter((t: any) => t !== equipmentTable)
+    expect(others.length).toBeGreaterThan(0)
+    for (const other of others) {
+      expect(other.columnGap).toBeUndefined()
+      expect(other.breakLongWords).toBeUndefined()
+    }
+  })
+
   it('lists only the items the job works on when the design asks for those', () => {
     const spec = invoiceSpec(withEquipmentOn(getDefaultInvoiceLayout(), { scope: 'job' }))
     expect(equipmentOf(spec)?.rows.map((row) => row[0])).toEqual(['Crane'])

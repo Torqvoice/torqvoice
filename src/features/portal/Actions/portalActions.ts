@@ -1,6 +1,9 @@
 'use server'
 
-import { notAwaitingReference } from '@/features/customer-reference/Lib/referenceSetting'
+import {
+  heldFromCustomerIds,
+  notAwaitingReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { getTranslations } from 'next-intl/server'
 import { zonedDayKey } from '@/lib/timezone'
@@ -117,9 +120,23 @@ export async function getPortalVehicleDetail(vehicleId: string) {
       throw new Error('Vehicle not found')
     }
 
+    // A finished job still waiting for the customer's reference / PO is in
+    // the history, but not yet as an invoice: no number, price or link.
+    const held = await heldFromCustomerIds(
+      organizationId,
+      vehicle.serviceRecords.filter((record) => record.status === 'completed').map((r) => r.id)
+    )
+    const withHeld = {
+      ...vehicle,
+      serviceRecords: vehicle.serviceRecords.map((record) => ({
+        ...record,
+        invoiceHeld: held.has(record.id),
+      })),
+    }
+
     // The type key and the fleet number each only for a workshop that uses it.
     return gateFleetNumber(
-      gateTypeKey(vehicle, await isTypeKeyEnabled(organizationId)),
+      gateTypeKey(withHeld, await isTypeKeyEnabled(organizationId)),
       await isFleetNumberEnabled(organizationId)
     )
   })

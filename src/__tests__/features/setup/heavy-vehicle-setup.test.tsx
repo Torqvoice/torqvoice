@@ -170,6 +170,34 @@ describe('the checklist', () => {
   })
 })
 
+describe('the checklist by keyboard', () => {
+  const state = {
+    reference: true,
+    fleetNumber: false,
+    customFields: false,
+    meters: false,
+    equipment: false,
+  }
+
+  it('takes the focus when it was just opened, and not on an ordinary visit', () => {
+    window.history.replaceState(null, '', '#heavy-vehicle-setup')
+    const { unmount } = render(<HeavyVehicleSetupCard state={state} />)
+    expect(screen.getByTestId('heavy-vehicle-setup')).toHaveFocus()
+    unmount()
+    window.history.replaceState(null, '', '#')
+    render(<HeavyVehicleSetupCard state={state} />)
+    expect(screen.getByTestId('heavy-vehicle-setup')).not.toHaveFocus()
+  })
+
+  it('draws a ring round the step that has the focus, not only a faint fill', () => {
+    render(<HeavyVehicleSetupCard state={state} />)
+    for (const link of screen.getAllByRole('link').filter((l) => l.closest('li'))) {
+      expect(link.className).toContain('focus-visible:ring-2')
+      expect(link.className).toContain('focus-visible:ring-ring')
+    }
+  })
+})
+
 describe('someone who may only read settings', () => {
   const state = {
     reference: false,

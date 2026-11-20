@@ -214,6 +214,9 @@ export default async function PortalVehicleDetailPage({
                   // Only a finished job has a price that holds and a PDF to
                   // fetch; one still in the workshop shows where it stands.
                   const finished = sr.status === 'completed'
+                  // Finished but held for the customer's reference / PO: not
+                  // an invoice yet, so no number, price or download.
+                  const billed = finished && !sr.invoiceHeld
                   const warranty = finished
                     ? getWarrantyStatus(
                         sr.warrantyExpiresAt,
@@ -229,7 +232,7 @@ export default async function PortalVehicleDetailPage({
                     >
                       <div className="min-w-0">
                         <p className="break-words text-base font-semibold">
-                          {finished && sr.invoiceNumber ? `#${sr.invoiceNumber} · ` : ''}
+                          {billed && sr.invoiceNumber ? `#${sr.invoiceNumber} · ` : ''}
                           {sr.title}
                         </p>
                         <p className="p-muted text-sm">{day(sr.startDateTime ?? sr.serviceDate)}</p>
@@ -244,7 +247,7 @@ export default async function PortalVehicleDetailPage({
                           )}
                         </div>
                       </div>
-                      {finished && (
+                      {billed && (
                         <div className="flex shrink-0 flex-wrap items-center gap-x-4 gap-y-1">
                           <span className="text-base font-bold">{fmt.money(sr.totalAmount)}</span>
                           <Link

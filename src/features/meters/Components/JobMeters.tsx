@@ -68,6 +68,19 @@ function JobMeterField({
   const [justSaved, setJustSaved] = useState(false)
   const savedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => () => void (savedTimer.current && clearTimeout(savedTimer.current)), [])
+
+  // The job changed underneath (a reading typed on this job in another tab or
+  // in the technician app, and the page refreshed): follow it, unless this
+  // box holds something not yet saved, as the Reference / PO box does.
+  const typedRef = useRef(typed)
+  typedRef.current = typed
+  useEffect(() => {
+    const incoming = meter.value == null ? '' : String(meter.value)
+    if (typedRef.current.trim() === saved.current.trim()) setTyped(incoming)
+    saved.current = incoming
+    setLast(meter.last)
+  }, [meter.value, meter.last])
+
   const id = `job-meter-${meter.vehicleMeterId}`
   const lower = isLowerMeterValue(typed, last)
   const lastText =

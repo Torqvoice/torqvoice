@@ -88,6 +88,21 @@ describe('a reading far above the last one', () => {
   })
 })
 
+describe('a reading typed on this job somewhere else', () => {
+  it('shows in the box when the page refreshes, unless the box holds an unsaved reading', async () => {
+    const { rerender } = render(<JobMeters jobId="job-1" meters={[METER]} />)
+    // Another tab saved 4,301.5 and this page refreshed.
+    rerender(<JobMeters jobId="job-1" meters={[{ ...METER, value: 4301.5 }]} />)
+    expect(screen.getByLabelText('Engine hours')).toHaveValue('4301.5')
+
+    // Something typed here and not yet saved is kept over the next refresh.
+    fireEvent.change(screen.getByLabelText('Engine hours'), { target: { value: '4310' } })
+    rerender(<JobMeters jobId="job-1" meters={[{ ...METER, value: 4305 }]} />)
+    expect(screen.getByLabelText('Engine hours')).toHaveValue('4310')
+    expect(setJobMeterReading).not.toHaveBeenCalled()
+  })
+})
+
 describe('the limit a meter’s unit asks with', () => {
   it('is the distance limit for distances, the hours limit for hours, and none otherwise', () => {
     for (const unit of ['km', ' KM ', 'Kilometres', 'mi', 'miles', 'nm', 'NMI', 'км']) {
