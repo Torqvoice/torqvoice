@@ -3297,6 +3297,12 @@
     "unit": "Vienetas",
     "unitPlaceholder": "pvz., val.",
     "add": "Pridėti skaitiklį",
+    "addTitle": "Pridėti skaitiklį",
+    "requiredBadge": "Privalomas",
+    "options": {
+      "required": "Privalomas darbo užsakymuose",
+      "requiredHint": "Prašomas užbaigiant darbą ir prieš išsiunčiant sąskaitą."
+    },
     "suggestions": "Pasiūlymai:",
     "suggestEngineHours": "Variklio valandos",
     "suggestPtoHours": "Galios ėmimo veleno valandos",

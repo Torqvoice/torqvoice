@@ -3297,6 +3297,12 @@
     "unit": "Unit",
     "unitPlaceholder": "e.g. hrs",
     "add": "Add meter",
+    "addTitle": "Add a meter",
+    "requiredBadge": "Required",
+    "options": {
+      "required": "Required on work orders",
+      "requiredHint": "Asked for when the job is completed, and before its invoice is sent."
+    },
     "suggestions": "Suggestions:",
     "suggestEngineHours": "Engine hours",
     "suggestPtoHours": "PTO hours",

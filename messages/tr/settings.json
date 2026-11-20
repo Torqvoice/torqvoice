@@ -3297,6 +3297,12 @@
     "unit": "Birim",
     "unitPlaceholder": "örn. sa",
     "add": "Sayaç ekle",
+    "addTitle": "Sayaç ekle",
+    "requiredBadge": "Zorunlu",
+    "options": {
+      "required": "İş emirlerinde zorunlu",
+      "requiredHint": "İş tamamlanırken ve faturası gönderilmeden önce sorulur."
+    },
     "suggestions": "Öneriler:",
     "suggestEngineHours": "Motor saatleri",
     "suggestPtoHours": "PTO saatleri",

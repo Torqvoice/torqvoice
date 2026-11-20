@@ -3297,6 +3297,12 @@
     "unit": "Eenheid",
     "unitPlaceholder": "bijv. u",
     "add": "Teller toevoegen",
+    "addTitle": "Een teller toevoegen",
+    "requiredBadge": "Verplicht",
+    "options": {
+      "required": "Verplicht op werkorders",
+      "requiredHint": "Wordt gevraagd bij het afronden van de werkorder en voordat de factuur wordt verzonden."
+    },
     "suggestions": "Suggesties:",
     "suggestEngineHours": "Motoruren",
     "suggestPtoHours": "Aftakasuren",

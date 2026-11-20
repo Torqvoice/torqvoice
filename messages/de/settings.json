@@ -3297,6 +3297,12 @@
     "unit": "Einheit",
     "unitPlaceholder": "z. B. Std.",
     "add": "Zähler hinzufügen",
+    "addTitle": "Einen Zähler hinzufügen",
+    "requiredBadge": "Erforderlich",
+    "options": {
+      "required": "Bei Arbeitsaufträgen erforderlich",
+      "requiredHint": "Wird beim Abschließen des Auftrags abgefragt und bevor die Rechnung gesendet wird."
+    },
     "suggestions": "Vorschläge:",
     "suggestEngineHours": "Betriebsstunden",
     "suggestPtoHours": "Zapfwellenstunden",

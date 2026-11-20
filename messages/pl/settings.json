@@ -3297,6 +3297,12 @@
     "unit": "Jednostka",
     "unitPlaceholder": "np. godz.",
     "add": "Dodaj licznik",
+    "addTitle": "Dodaj licznik",
+    "requiredBadge": "Wymagany",
+    "options": {
+      "required": "Wymagany w zleceniach",
+      "requiredHint": "Wymagany przy zakończeniu zlecenia i przed wysłaniem faktury."
+    },
     "suggestions": "Sugestie:",
     "suggestEngineHours": "Godziny pracy silnika",
     "suggestPtoHours": "Godziny pracy WOM",

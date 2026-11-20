@@ -3297,6 +3297,12 @@
     "unit": "Unidad",
     "unitPlaceholder": "p. ej. h",
     "add": "Añadir contador",
+    "addTitle": "Añadir un contador",
+    "requiredBadge": "Obligatorio",
+    "options": {
+      "required": "Obligatorio en las órdenes de trabajo",
+      "requiredHint": "Se pide al completar el trabajo y antes de enviar su factura."
+    },
     "suggestions": "Sugerencias:",
     "suggestEngineHours": "Horas de motor",
     "suggestPtoHours": "Horas de toma de fuerza",

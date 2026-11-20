@@ -3,9 +3,28 @@ import { z } from 'zod'
 export const METER_NAME_MAX_LENGTH = 60
 export const METER_UNIT_MAX_LENGTH = 20
 
-export const createMeterTypeSchema = z.object({
+/**
+ * What a workshop can choose for each of its meters besides its name and
+ * unit, as one object: the settings dialog sends all of them, and
+ * `meterTypeOptionColumns` (Lib/meterTypeOptions.ts) is the one place they
+ * become columns. A new option is a key here, a column, and a line there.
+ */
+export const meterTypeOptionsSchema = z.object({
+  /** Asked for on a job before it is completed or its invoice goes out. */
+  required: z.boolean(),
+})
+
+export type MeterTypeOptions = z.infer<typeof meterTypeOptionsSchema>
+
+/**
+ * A meter as the settings dialog saves it, new (no `id`) or edited: its name,
+ * its unit and every option.
+ */
+export const saveMeterTypeSchema = z.object({
+  id: z.string().min(1).optional(),
   name: z.string().trim().min(1).max(METER_NAME_MAX_LENGTH),
   unit: z.string().trim().max(METER_UNIT_MAX_LENGTH).default(''),
+  options: meterTypeOptionsSchema,
 })
 
 export const updateMeterTypeSchema = z.object({

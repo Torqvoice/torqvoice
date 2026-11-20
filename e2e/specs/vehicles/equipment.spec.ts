@@ -2,7 +2,7 @@ import { expect, type Page, test } from '@playwright/test'
 import { Client } from 'pg'
 import { ownerOrganizationId } from '../../support/db'
 import { settle } from '../../support/hydration'
-import { openCustomFieldsTab } from '../../support/settings'
+import { addMeter, openCustomFieldsTab } from '../../support/settings'
 import { pdfContent } from '../../support/pdf'
 import { addLabor, newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/work-order'
 
@@ -120,11 +120,7 @@ test.describe('equipment', () => {
     ).toContainText(TAIL_LIFT)
 
     // A meter for the crane to have.
-    const meters = page.getByTestId('meters-manager')
-    await meters.locator('#meter-name').fill(HOURS)
-    await meters.locator('#meter-unit').fill('hrs')
-    await meters.getByRole('button', { name: 'Add meter' }).click()
-    await expect(meters.getByText(HOURS, { exact: true })).toBeVisible({ timeout: 30_000 })
+    await addMeter(page, { name: HOURS, unit: 'hrs' })
   })
 
   test('a crane is added with its year of manufacture and an overdue examination', async ({

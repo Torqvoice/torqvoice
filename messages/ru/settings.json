@@ -3297,6 +3297,12 @@
     "unit": "Единица",
     "unitPlaceholder": "например, ч",
     "add": "Добавить счётчик",
+    "addTitle": "Добавить счётчик",
+    "requiredBadge": "Обязательный",
+    "options": {
+      "required": "Обязателен в заказ-нарядах",
+      "requiredHint": "Запрашивается при завершении заказ-наряда и перед отправкой счёта."
+    },
     "suggestions": "Варианты:",
     "suggestEngineHours": "Моточасы",
     "suggestPtoHours": "Моточасы ВОМ",

@@ -9,9 +9,19 @@ import { withAuth } from '@/lib/with-auth'
 import { organizationTranslator } from '@/i18n/organization-translator'
 import { locales } from '@/i18n/config'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { createMeterTypeSchema, updateMeterTypeSchema } from '../Schema/meterSchema'
+import { saveMeterTypeSchema, updateMeterTypeSchema } from '../Schema/meterSchema'
+import { meterTypeOptionColumns } from '../Lib/meterTypeOptions'
 
 const SETTINGS_UPDATE = [{ action: PermissionAction.UPDATE, subject: PermissionSubject.SETTINGS }]
+
+/** What a saved meter answers with, its options included. */
+const METER_TYPE_SAVED = {
+  id: true,
+  name: true,
+  unit: true,
+  isActive: true,
+  required: true,
+} as const
 
 const folded = (text: string) => text.trim().replace(/\s+/g, ' ').toLocaleLowerCase()
 
@@ -78,6 +88,8 @@ export async function getMeterTypes() {
           name: true,
           unit: true,
           isActive: true,
+          // The dialog edits every option, so every option is read.
+          required: true,
           _count: { select: { vehicleMeters: true } },
         },
       }),
@@ -122,28 +134,50 @@ function duplicateName(error: unknown): boolean {
   )
 }
 
-export async function createMeterType(input: unknown) {
+/**
+ * Adds a meter, or saves one being edited (`id`), from the settings dialog:
+ * its name, its unit and every option (meterTypeOptions.ts). Took over from
+ * `createMeterType`, which took a name and a unit only.
+ */
+export async function saveMeterType(input: unknown) {
   return withAuth(
     async ({ organizationId }) => {
       await requireFeature(organizationId, 'customFields')
-      const data = createMeterTypeSchema.parse(input)
-      await refuseOdometerName(organizationId, data.name)
-      await refuseDuplicateName(organizationId, data.name)
-      const last = await db.meterType.aggregate({
-        where: { organizationId },
-        _max: { sortOrder: true },
-      })
+      const { id, name, unit, options } = saveMeterTypeSchema.parse(input)
+      await refuseOdometerName(organizationId, name)
+      await refuseDuplicateName(organizationId, name, id)
+      const columns = meterTypeOptionColumns(options)
       try {
-        const meter = await db.meterType.create({
-          data: {
-            name: data.name,
-            unit: data.unit,
-            sortOrder: (last._max.sortOrder ?? -1) + 1,
-            organizationId,
-          },
-        })
+        if (id) {
+          const result = await db.meterType.updateMany({
+            where: { id, organizationId },
+            data: { name, unit, ...columns },
+          })
+          if (result.count === 0) throw new Error('Meter not found')
+        }
+        const meter = id
+          ? await db.meterType.findFirstOrThrow({
+              where: { id, organizationId },
+              select: METER_TYPE_SAVED,
+            })
+          : await db.meterType.create({
+              data: {
+                name,
+                unit,
+                ...columns,
+                sortOrder:
+                  ((
+                    await db.meterType.aggregate({
+                      where: { organizationId },
+                      _max: { sortOrder: true },
+                    })
+                  )._max.sortOrder ?? -1) + 1,
+                organizationId,
+              },
+              select: METER_TYPE_SAVED,
+            })
         revalidatePath('/settings/invoice')
-        return meter
+        return { ...meter, created: !id }
       } catch (error) {
         if (duplicateName(error)) {
           throw new Error((await getTranslations('settings.meters'))('duplicateName'))
@@ -153,13 +187,30 @@ export async function createMeterType(input: unknown) {
     },
     {
       requiredPermissions: SETTINGS_UPDATE,
-      audit: ({ result }) => ({
-        action: 'meterType.create',
-        entity: 'MeterType',
-        entityId: result.id,
-        details: { key: 'meterType_create', params: { name: result.name } },
-        metadata: { meterTypeId: result.id, name: result.name, unit: result.unit },
-      }),
+      audit: ({ result }) => {
+        const metadata = {
+          meterTypeId: result.id,
+          name: result.name,
+          unit: result.unit,
+          isActive: result.isActive,
+          required: result.required,
+        }
+        return result.created
+          ? {
+              action: 'meterType.create',
+              entity: 'MeterType',
+              entityId: result.id,
+              details: { key: 'meterType_create', params: { name: result.name } },
+              metadata,
+            }
+          : {
+              action: 'meterType.update',
+              entity: 'MeterType',
+              entityId: result.id,
+              details: { key: 'meterType_update', params: { name: result.name } },
+              metadata,
+            }
+      },
     }
   )
 }

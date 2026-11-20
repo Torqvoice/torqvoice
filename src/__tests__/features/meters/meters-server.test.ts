@@ -98,8 +98,8 @@ import {
   writeJobMeterReadings,
 } from '@/features/meters/Lib/jobMeterReading.server'
 import {
-  createMeterType,
   getMeterSuggestions,
+  saveMeterType,
   updateMeterType,
 } from '@/features/meters/Actions/meterTypeActions'
 import {
@@ -108,6 +108,7 @@ import {
 } from '@/features/meters/Actions/vehicleMeterActions'
 import { setJobMeterReading } from '@/features/meters/Actions/jobMeterActions'
 
+const NOT_REQUIRED = { required: false }
 const plan = (customFields: boolean) =>
   vi.mocked(getFeatures).mockResolvedValue({ customFields } as never)
 const TYPES = [
@@ -202,14 +203,16 @@ describe('what a document prints', () => {
 
 describe('the workshop’s list of meters', () => {
   it('will not take the odometer’s name', async () => {
-    const result = await createMeterType({ name: ' mileage ', unit: 'km' })
+    const result = await saveMeterType({ name: ' mileage ', unit: 'km', options: NOT_REQUIRED })
     expect(result).toEqual({ success: false, error: '"mileage" is the odometer' })
     expect(db.meterType.create).not.toHaveBeenCalled()
   })
 
   it('on a boat, keeps "Engine Hours" for the odometer, which is what a boat’s odometer is', async () => {
     db.appSetting.findFirst.mockResolvedValue({ value: 'marine' } as never)
-    expect((await createMeterType({ name: 'Engine hours', unit: 'hrs' })).success).toBe(false)
+    expect(
+      (await saveMeterType({ name: 'Engine hours', unit: 'hrs', options: NOT_REQUIRED })).success
+    ).toBe(false)
     db.meterType.findMany.mockResolvedValue([])
     const suggestions = await getMeterSuggestions()
     expect(suggestions.data).toEqual([{ name: 'PTO hours', unit: 'hrs' }])
@@ -226,13 +229,79 @@ describe('the workshop’s list of meters', () => {
       'isActive' in args.where ? TYPES : []
     )
     db.meterType.create.mockResolvedValue({ id: 't-new', name: 'Engine hours', unit: 'hrs' })
-    expect((await createMeterType({ name: 'Engine hours', unit: 'hrs' })).success).toBe(true)
+    expect(
+      (await saveMeterType({ name: 'Engine hours', unit: 'hrs', options: NOT_REQUIRED })).success
+    ).toBe(true)
     expect(db.meterType.create.mock.calls[0][0].data).toEqual({
       name: 'Engine hours',
       unit: 'hrs',
+      required: false,
       sortOrder: 2,
       organizationId: 'org-1',
     })
+  })
+
+  it('adds a meter marked required, and logs it with the option', async () => {
+    db.meterType.findMany.mockImplementation(async (args: { where: Record<string, unknown> }) =>
+      'isActive' in args.where ? TYPES : []
+    )
+    db.meterType.create.mockImplementation(async (args: { data: Record<string, unknown> }) => ({
+      id: 't-new',
+      isActive: true,
+      ...args.data,
+    }))
+    audits.length = 0
+    const result = await saveMeterType({
+      name: 'PTO hours',
+      unit: 'hrs',
+      options: { required: true },
+    })
+    expect(result.success).toBe(true)
+    expect(db.meterType.create.mock.calls[0][0].data).toMatchObject({ required: true })
+    expect(audits).toEqual([
+      expect.objectContaining({
+        action: 'meterType.create',
+        metadata: expect.objectContaining({ name: 'PTO hours', required: true }),
+      }),
+    ])
+  })
+
+  it('saves an edited meter’s name, unit and options together, in this workshop only', async () => {
+    db.meterType.findMany.mockImplementation(async (args: { where: Record<string, unknown> }) =>
+      'isActive' in args.where ? TYPES : []
+    )
+    db.meterType.findFirstOrThrow.mockResolvedValue({
+      id: 't-pto',
+      name: 'PTO hours',
+      unit: 'h',
+      isActive: true,
+      required: true,
+    })
+    audits.length = 0
+    const result = await saveMeterType({
+      id: 't-pto',
+      name: 'PTO hours',
+      unit: 'h',
+      options: { required: true },
+    })
+    expect(result.success).toBe(true)
+    expect(db.meterType.updateMany).toHaveBeenCalledWith({
+      where: { id: 't-pto', organizationId: 'org-1' },
+      data: { name: 'PTO hours', unit: 'h', required: true },
+    })
+    expect(db.meterType.create).not.toHaveBeenCalled()
+    expect(audits).toEqual([
+      expect.objectContaining({
+        action: 'meterType.update',
+        metadata: expect.objectContaining({ required: true }),
+      }),
+    ])
+  })
+
+  it('refuses a meter saved without its options', async () => {
+    const result = await saveMeterType({ name: 'PTO hours', unit: 'hrs' })
+    expect(result.success).toBe(false)
+    expect(db.meterType.create).not.toHaveBeenCalled()
   })
 })
 
@@ -620,8 +689,12 @@ describe('more of the review’s rules', () => {
 
   it('refuses the odometer’s name in every language the app ships', async () => {
     // A workshop in English typing the German odometer name.
-    expect((await createMeterType({ name: 'Kilometerstand', unit: 'km' })).success).toBe(false)
-    expect((await createMeterType({ name: 'Kilométrage', unit: 'km' })).success).toBe(false)
+    expect(
+      (await saveMeterType({ name: 'Kilometerstand', unit: 'km', options: NOT_REQUIRED })).success
+    ).toBe(false)
+    expect(
+      (await saveMeterType({ name: 'Kilométrage', unit: 'km', options: NOT_REQUIRED })).success
+    ).toBe(false)
     expect(db.meterType.create).not.toHaveBeenCalled()
   })
 
@@ -629,7 +702,9 @@ describe('more of the review’s rules', () => {
     db.meterType.findMany.mockImplementation(async (args: { where: Record<string, unknown> }) =>
       'isActive' in args.where ? TYPES : [{ name: 'PTO hours' }]
     )
-    expect(await createMeterType({ name: ' pto HOURS ', unit: 'hrs' })).toEqual({
+    expect(
+      await saveMeterType({ name: ' pto HOURS ', unit: 'hrs', options: NOT_REQUIRED })
+    ).toEqual({
       success: false,
       error: 'duplicateName',
     })
@@ -761,6 +836,35 @@ describe('a job whose item has moved to another vehicle since', () => {
         value: 812.5,
         item: { id: 'item-crane', label: 'Crane, HIAB' },
       }),
+    ])
+  })
+})
+
+describe('a meter the workshop requires', () => {
+  it('says so on the job, and only on the meter that is required', async () => {
+    db.meterType.findMany.mockResolvedValue([
+      { ...TYPES[0], required: false },
+      { ...TYPES[1], required: true },
+    ])
+    db.vehicleMeter.findMany.mockResolvedValueOnce([
+      { id: 'vm-engine', meterTypeId: 't-engine', readings: [] },
+      { id: 'vm-pto', meterTypeId: 't-pto', readings: [] },
+    ])
+    const views = await jobMeterViews('org-1', {
+      id: 'job-1',
+      vehicleId: 'veh-1',
+      readAt: new Date('2026-03-01T09:00:00Z'),
+    })
+    expect(views.map((v) => [v.name, v.required])).toEqual([
+      ['Engine hours', false],
+      ['PTO hours', true],
+    ])
+  })
+
+  it('leaves what forms and documents are given exactly as it was', async () => {
+    db.meterType.findMany.mockResolvedValue([{ ...TYPES[0], required: true }])
+    expect(await activeMeterTypes('org-1')).toEqual([
+      { id: 't-engine', name: 'Engine hours', unit: 'hrs' },
     ])
   })
 })

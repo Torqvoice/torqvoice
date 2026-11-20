@@ -3297,6 +3297,12 @@
     "unit": "Enhet",
     "unitPlaceholder": "f.eks. t",
     "add": "Legg til måler",
+    "addTitle": "Legg til en måler",
+    "requiredBadge": "Påkrevd",
+    "options": {
+      "required": "Påkrevd på arbeidsordre",
+      "requiredHint": "Spørres om når jobben fullføres, og før fakturaen sendes."
+    },
     "suggestions": "Forslag:",
     "suggestEngineHours": "Motortimer",
     "suggestPtoHours": "PTO-timer",

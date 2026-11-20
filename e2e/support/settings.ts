@@ -338,3 +338,41 @@ export async function setReadyMadeField(page: Page, id: string, on: boolean): Pr
   }).toPass({ timeout: 30_000 })
   await expect(page.getByText('Settings saved').first()).toBeVisible()
 }
+
+/**
+ * Settings, Custom Fields, Meters (the tab open): a meter added through its
+ * dialog, required on work orders when asked. The dialog is the one way in,
+ * for a typed meter and for a suggestion alike.
+ */
+export async function addMeter(
+  page: Page,
+  meter: { name: string; unit: string; required?: boolean }
+): Promise<void> {
+  const manager = page.getByTestId('meters-manager')
+  const dialog = page.getByRole('dialog')
+  await expect(async () => {
+    await manager.getByRole('button', { name: 'Add meter', exact: true }).click()
+    await expect(dialog).toBeVisible({ timeout: 3_000 })
+  }).toPass({ timeout: 30_000 })
+  await dialog.getByLabel('Name').fill(meter.name)
+  await dialog.getByLabel('Unit').fill(meter.unit)
+  if (meter.required) {
+    await setSwitch(dialog.getByRole('switch', { name: 'Required on work orders' }), true)
+  }
+  await dialog.getByRole('button', { name: 'Add meter' }).click()
+  await expect(dialog).toBeHidden({ timeout: 30_000 })
+  await expect(manager.getByText(meter.name, { exact: true })).toBeVisible({ timeout: 30_000 })
+}
+
+/** The same tab: an existing meter made required on work orders, or not, through its dialog. */
+export async function setMeterRequired(page: Page, name: string, on: boolean): Promise<void> {
+  const manager = page.getByTestId('meters-manager')
+  const dialog = page.getByRole('dialog')
+  await expect(async () => {
+    await manager.getByRole('button', { name: `Edit ${name}`, exact: true }).click()
+    await expect(dialog).toBeVisible({ timeout: 3_000 })
+  }).toPass({ timeout: 30_000 })
+  await setSwitch(dialog.getByRole('switch', { name: 'Required on work orders' }), on)
+  await dialog.getByRole('button', { name: 'Save' }).click()
+  await expect(dialog).toBeHidden({ timeout: 30_000 })
+}

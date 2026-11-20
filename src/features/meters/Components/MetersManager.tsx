@@ -20,22 +20,38 @@ import {
 } from '@/components/ui/dialog'
 import { useConfirm } from '@/components/confirm-dialog'
 import { useServiceType } from '@/components/service-type-context'
-import { createMeterType, deleteMeterType, updateMeterType } from '../Actions/meterTypeActions'
-import { METER_NAME_MAX_LENGTH, METER_UNIT_MAX_LENGTH } from '../Schema/meterSchema'
+import { deleteMeterType, saveMeterType, updateMeterType } from '../Actions/meterTypeActions'
+import {
+  METER_NAME_MAX_LENGTH,
+  METER_UNIT_MAX_LENGTH,
+  type MeterTypeOptions,
+} from '../Schema/meterSchema'
+import {
+  DEFAULT_METER_TYPE_OPTIONS,
+  METER_TYPE_OPTION_KEYS,
+  meterTypeOptionsOf,
+} from '../Lib/meterTypeOptions'
 
 export interface MeterTypeRow {
   id: string
   name: string
   unit: string
   isActive: boolean
+  required: boolean
   _count: { vehicleMeters: number }
 }
+
+/** What the dialog opens on: a meter being edited, or a new one, blank or from a suggestion. */
+type MeterDialogTarget =
+  | { kind: 'edit'; meter: MeterTypeRow }
+  | { kind: 'new'; name: string; unit: string }
 
 /**
  * The workshop's meters besides the odometer, on the Custom Fields page.
  * Defining the first one is what turns meters on: until then no vehicle,
- * job or document shows anything about them. Two suggestions are one click
- * away, in the workshop's language.
+ * job or document shows anything about them. A meter is added and edited in
+ * one dialog, with its options; a suggestion, in the workshop's language,
+ * opens that dialog filled in.
  */
 export function MetersManager({
   meters,
@@ -48,25 +64,7 @@ export function MetersManager({
   const isMarine = useServiceType() === 'marine'
   const router = useRouter()
   const confirm = useConfirm()
-  const [name, setName] = useState('')
-  const [unit, setUnit] = useState('')
-  const [saving, setSaving] = useState(false)
-  const [editing, setEditing] = useState<MeterTypeRow | null>(null)
-
-  const create = async (meter: { name: string; unit: string }) => {
-    if (!meter.name.trim()) return
-    setSaving(true)
-    const result = await createMeterType(meter)
-    setSaving(false)
-    if (!result.success) {
-      toast.error(result.error || t('saveError'))
-      return
-    }
-    toast.success(t('created', { name: meter.name.trim() }))
-    setName('')
-    setUnit('')
-    router.refresh()
-  }
+  const [dialog, setDialog] = useState<MeterDialogTarget | null>(null)
 
   const toggle = async (meter: MeterTypeRow, isActive: boolean) => {
     const result = await updateMeterType({ id: meter.id, isActive })
@@ -123,6 +121,11 @@ export function MetersManager({
                   {meter.unit && (
                     <span className="text-xs text-muted-foreground">{meter.unit}</span>
                   )}
+                  {meter.required && (
+                    <Badge variant="secondary" data-testid="meter-required-badge">
+                      {t('requiredBadge')}
+                    </Badge>
+                  )}
                   {!meter.isActive && <Badge variant="outline">{t('hidden')}</Badge>}
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -144,7 +147,7 @@ export function MetersManager({
                   variant="ghost"
                   size="icon"
                   className="h-7 w-7"
-                  onClick={() => setEditing(meter)}
+                  onClick={() => setDialog({ kind: 'edit', meter })}
                   aria-label={t('edit', { name: meter.name })}
                 >
                   <Pencil className="h-3 w-3" />
@@ -164,123 +167,142 @@ export function MetersManager({
         </div>
       )}
 
-      <form
-        className="flex flex-wrap items-end gap-2"
-        onSubmit={(e) => {
-          e.preventDefault()
-          void create({ name, unit })
-        }}
-      >
-        <div className="min-w-0 flex-1 space-y-1.5 sm:max-w-xs">
-          <Label htmlFor="meter-name">{t('name')}</Label>
-          <Input
-            id="meter-name"
-            value={name}
-            maxLength={METER_NAME_MAX_LENGTH}
-            placeholder={t('namePlaceholder')}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
-        <div className="w-28 space-y-1.5">
-          <Label htmlFor="meter-unit">{t('unit')}</Label>
-          <Input
-            id="meter-unit"
-            value={unit}
-            maxLength={METER_UNIT_MAX_LENGTH}
-            placeholder={t('unitPlaceholder')}
-            onChange={(e) => setUnit(e.target.value)}
-          />
-        </div>
-        <Button type="submit" size="sm" className="h-9" disabled={saving || !name.trim()}>
+      <div className="flex flex-wrap items-center gap-2">
+        <Button
+          type="button"
+          size="sm"
+          onClick={() => setDialog({ kind: 'new', name: '', unit: '' })}
+        >
           <Plus className="mr-1 h-3.5 w-3.5" />
           {t('add')}
         </Button>
-      </form>
+        {suggestions.length > 0 && (
+          <>
+            <span className="text-xs text-muted-foreground">{t('suggestions')}</span>
+            {suggestions.map((suggestion) => (
+              <Button
+                key={suggestion.name}
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 rounded-full px-3 text-xs"
+                onClick={() => setDialog({ kind: 'new', ...suggestion })}
+              >
+                <Plus className="mr-1 h-3 w-3" />
+                {suggestion.name}
+                {suggestion.unit && (
+                  <span className="ml-1 text-muted-foreground">({suggestion.unit})</span>
+                )}
+              </Button>
+            ))}
+          </>
+        )}
+      </div>
 
-      {suggestions.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs text-muted-foreground">{t('suggestions')}</span>
-          {suggestions.map((suggestion) => (
-            <Button
-              key={suggestion.name}
-              type="button"
-              variant="outline"
-              size="sm"
-              className="h-7 rounded-full px-3 text-xs"
-              disabled={saving}
-              onClick={() => create(suggestion)}
-            >
-              <Plus className="mr-1 h-3 w-3" />
-              {suggestion.name}
-              {suggestion.unit && (
-                <span className="ml-1 text-muted-foreground">({suggestion.unit})</span>
-              )}
-            </Button>
-          ))}
-        </div>
-      )}
-
-      {editing && <EditMeterDialog meter={editing} onClose={() => setEditing(null)} />}
+      {dialog && <MeterDialog target={dialog} onClose={() => setDialog(null)} />}
     </section>
   )
 }
 
-function EditMeterDialog({ meter, onClose }: { meter: MeterTypeRow; onClose: () => void }) {
+/**
+ * Adding a meter and editing one: its name, its unit and its options, one
+ * switch each (meterTypeOptions.ts), saved together.
+ */
+function MeterDialog({ target, onClose }: { target: MeterDialogTarget; onClose: () => void }) {
   const t = useTranslations('settings.meters')
   const tc = useTranslations('common.buttons')
   const router = useRouter()
-  const [name, setName] = useState(meter.name)
-  const [unit, setUnit] = useState(meter.unit)
+  const editing = target.kind === 'edit' ? target.meter : null
+  const [name, setName] = useState(
+    editing ? editing.name : target.kind === 'new' ? target.name : ''
+  )
+  const [unit, setUnit] = useState(
+    editing ? editing.unit : target.kind === 'new' ? target.unit : ''
+  )
+  const [options, setOptions] = useState<MeterTypeOptions>(
+    editing ? meterTypeOptionsOf(editing) : DEFAULT_METER_TYPE_OPTIONS
+  )
   const [saving, setSaving] = useState(false)
 
   const save = async () => {
+    if (!name.trim() || saving) return
     setSaving(true)
-    const result = await updateMeterType({ id: meter.id, name, unit })
+    const result = await saveMeterType({ id: editing?.id, name, unit, options })
     setSaving(false)
     if (!result.success) {
       toast.error(result.error || t('saveError'))
       return
     }
-    toast.success(t('updated', { name: name.trim() }))
+    toast.success(t(editing ? 'updated' : 'created', { name: name.trim() }))
     onClose()
     router.refresh()
   }
 
   return (
     <Dialog open onOpenChange={(next) => !next && onClose()}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>{t('editTitle')}</DialogTitle>
-        </DialogHeader>
-        <DialogBody className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-meter-name">{t('name')}</Label>
-            <Input
-              id="edit-meter-name"
-              value={name}
-              maxLength={METER_NAME_MAX_LENGTH}
-              onChange={(e) => setName(e.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="edit-meter-unit">{t('unit')}</Label>
-            <Input
-              id="edit-meter-unit"
-              value={unit}
-              maxLength={METER_UNIT_MAX_LENGTH}
-              onChange={(e) => setUnit(e.target.value)}
-            />
-          </div>
-          <p className="text-xs text-muted-foreground">{t('editHint')}</p>
-        </DialogBody>
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={onClose}>
-            {tc('cancel')}
-          </Button>
-          <Button type="button" onClick={save} disabled={saving || !name.trim()}>
-            {tc('save')}
-          </Button>
-        </DialogFooter>
+      <DialogContent className="sm:max-w-md" aria-describedby={undefined}>
+        <form
+          className="contents"
+          onSubmit={(e) => {
+            e.preventDefault()
+            void save()
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>{editing ? t('editTitle') : t('addTitle')}</DialogTitle>
+          </DialogHeader>
+          <DialogBody className="space-y-4">
+            <div className="grid grid-cols-[1fr_7rem] gap-3">
+              <div className="min-w-0 space-y-1.5">
+                <Label htmlFor="meter-name">{t('name')}</Label>
+                <Input
+                  id="meter-name"
+                  value={name}
+                  maxLength={METER_NAME_MAX_LENGTH}
+                  placeholder={t('namePlaceholder')}
+                  autoComplete="off"
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="meter-unit">{t('unit')}</Label>
+                <Input
+                  id="meter-unit"
+                  value={unit}
+                  maxLength={METER_UNIT_MAX_LENGTH}
+                  placeholder={t('unitPlaceholder')}
+                  autoComplete="off"
+                  onChange={(e) => setUnit(e.target.value)}
+                />
+              </div>
+            </div>
+            {METER_TYPE_OPTION_KEYS.map((key) => (
+              <div key={key} className="flex items-start justify-between gap-4">
+                <div className="space-y-0.5">
+                  <Label htmlFor={`meter-option-${key}`}>{t(`options.${key}`)}</Label>
+                  <p id={`meter-option-${key}-hint`} className="text-xs text-muted-foreground">
+                    {t(`options.${key}Hint`)}
+                  </p>
+                </div>
+                <Switch
+                  id={`meter-option-${key}`}
+                  checked={options[key]}
+                  aria-describedby={`meter-option-${key}-hint`}
+                  onCheckedChange={(checked) => setOptions((prev) => ({ ...prev, [key]: checked }))}
+                />
+              </div>
+            ))}
+            {editing && <p className="text-xs text-muted-foreground">{t('editHint')}</p>}
+          </DialogBody>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
+              {tc('cancel')}
+            </Button>
+            <Button type="submit" data-save-shortcut disabled={saving || !name.trim()}>
+              {editing ? tc('save') : t('add')}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   )

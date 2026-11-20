@@ -3297,6 +3297,12 @@
     "unit": "Unité",
     "unitPlaceholder": "ex. h",
     "add": "Ajouter un compteur",
+    "addTitle": "Ajouter un compteur",
+    "requiredBadge": "Obligatoire",
+    "options": {
+      "required": "Obligatoire sur les ordres de travail",
+      "requiredHint": "Demandé à la clôture de l'ordre de travail et avant l'envoi de sa facture."
+    },
     "suggestions": "Suggestions :",
     "suggestEngineHours": "Heures moteur",
     "suggestPtoHours": "Heures de prise de force",
