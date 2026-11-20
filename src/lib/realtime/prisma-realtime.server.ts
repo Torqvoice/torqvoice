@@ -72,6 +72,13 @@ const CHILD_MODELS: Record<
   // the moment somebody adds one from the board.
   ServiceRecordHelper: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'team' },
   Payment: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'payments' },
+  // A meter reading typed on a job (on the desk or in the technician app)
+  // and the equipment the job works on: the work order open elsewhere shows
+  // them at once. A reading typed on the vehicle page names no job, so it
+  // wakes no work order's page.
+  MeterReading: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'meters' },
+  ServiceRecordEquipment: { parent: 'serviceRecord', fk: 'serviceRecordId', hint: 'equipment' },
+  QuoteEquipment: { parent: 'quote', fk: 'quoteId', hint: 'equipment' },
   QuotePart: { parent: 'quote', fk: 'quoteId', hint: 'parts' },
   QuoteLabor: { parent: 'quote', fk: 'quoteId', hint: 'labor' },
   QuoteAttachment: { parent: 'quote', fk: 'quoteId', hint: 'attachments' },
