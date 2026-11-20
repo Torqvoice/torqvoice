@@ -103,6 +103,41 @@ export async function restoreInvoiceDesignState(state: InvoiceDesignState): Prom
   })
 }
 
+/** The workshop's tax settings, for a spec that sets its own and must hand them back. */
+export interface TaxSettingsState {
+  organizationId: string
+  settings: { key: string; value: string }[]
+}
+
+export async function taxSettingsState(): Promise<TaxSettingsState> {
+  const organizationId = await ownerOrganizationId()
+  return withDb(async (db) => {
+    const settings = await db.query<{ key: string; value: string }>(
+      `select key, value from app_settings where "organizationId" = $1 and key like 'workshop.tax%'`,
+      [organizationId]
+    )
+    return { organizationId, settings: settings.rows }
+  })
+}
+
+/** Puts the tax settings back exactly as `taxSettingsState` found them. */
+export async function restoreTaxSettings(state: TaxSettingsState): Promise<void> {
+  const keys = state.settings.map((row) => row.key)
+  await withDb(async (db) => {
+    await db.query(
+      `delete from app_settings
+        where "organizationId" = $1 and key like 'workshop.tax%' and not (key = any($2::text[]))`,
+      [state.organizationId, keys]
+    )
+    for (const row of state.settings) {
+      await db.query(
+        `update app_settings set value = $3 where "organizationId" = $1 and key = $2`,
+        [state.organizationId, row.key, row.value]
+      )
+    }
+  })
+}
+
 /**
  * Addresses of the seeded workshop's own records, for the tests that check a
  * different workshop cannot reach them. Read straight from the database

@@ -1,6 +1,14 @@
 import { expect, type Page, test } from '@playwright/test'
+import { setTax } from '../../support/settings'
 import Stripe from 'stripe'
-import { forgetConnections, ownerOrganizationId, paymentsFor } from '../../support/db'
+import {
+  forgetConnections,
+  ownerOrganizationId,
+  paymentsFor,
+  restoreTaxSettings,
+  type TaxSettingsState,
+  taxSettingsState,
+} from '../../support/db'
 import { settle } from '../../support/hydration'
 import {
   clearPaymentSink,
@@ -31,8 +39,10 @@ import {
  * a spec pays on. What it records is how the amount charged is checked against
  * the amount the invoice showed.
  *
- * Pinned on the seeded workshop's 25% exclusive tax in dollars: one part at
- * 800 makes a total of 1,000.00. 400 is paid by card, then 600 through PayPal.
+ * Pinned on a 25% exclusive tax in dollars, which this spec sets itself and
+ * hands back after: the seed's 25% is switched off by specs that run before
+ * this one in some shards. One part at 800 makes a total of 1,000.00. 400 is
+ * paid by card, then 600 through PayPal.
  */
 
 test.describe.configure({ mode: 'serial' })
@@ -96,6 +106,8 @@ function stripeNotification(session: unknown, secret = WEBHOOK_SECRET) {
   return { payload, signature }
 }
 
+let taxBefore: TaxSettingsState | undefined
+
 test.beforeAll(async ({ browser }) => {
   await clearPaymentSink()
   // A spec that failed halfway must not leave a connection behind, and this
@@ -103,7 +115,11 @@ test.beforeAll(async ({ browser }) => {
   await forgetConnections(['stripe', 'paypal'])
   organizationId = await ownerOrganizationId()
 
+  // The tax the amounts below are worked out with, set before the job takes
+  // it and handed back after: the other specs expect the workshop's own.
+  taxBefore = await taxSettingsState()
   const page = await browser.newPage({ storageState: 'e2e/.auth/owner.json' })
+  await setTax(page, { enabled: true, rate: 25, inclusive: false, label: '' })
   const vehicleUrl = await seededVehicleUrl(page)
   jobUrl = await newWorkOrder(page, vehicleUrl, `E2E paid online ${stamp}`)
   jobId = jobUrl.split('/').pop() ?? ''
@@ -116,6 +132,7 @@ test.afterAll(async () => {
   // Every other spec shares invoices, and a connected vendor would put a pay
   // button on all of them.
   await forgetConnections(['stripe', 'paypal'])
+  if (taxBefore) await restoreTaxSettings(taxBefore)
 })
 
 test.describe('connecting a vendor', () => {
