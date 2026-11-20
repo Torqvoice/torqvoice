@@ -7,6 +7,8 @@ import { toast } from 'sonner'
 import { FileText, Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { DateInput } from '@/components/ui/date-input'
+import { useDateSettings } from '@/components/date-settings-context'
+import { formatDate } from '@/lib/format'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -26,7 +28,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import type { EquipmentItemView, EquipmentTypeView } from '../Lib/equipment.server'
-import { manufactureText, parseManufacture } from '../Lib/equipmentDays'
+import { manufactureText, manufactureValue, parseManufacture } from '../Lib/equipmentDays'
 import {
   addEquipmentItem,
   discardEquipmentReport,
@@ -78,7 +80,12 @@ export function EquipmentItemDialog({
   const [report, setReport] = useState(item?.report ?? null)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
-  const manufactureInvalid = manufacture.trim() !== '' && parseManufacture(manufacture) === null
+  // Typed the workshop's way or as ISO; sent as the year or the ISO day.
+  const { dateFormat } = useDateSettings()
+  const manufactureInvalid =
+    manufacture.trim() !== '' && parseManufacture(manufacture, dateFormat) === null
+  // "14 May 2019" as this workshop writes it, for the hint and the placeholder.
+  const sampleDate = formatDate(new Date(2019, 4, 14), dateFormat)
   // A report uploaded here and not saved yet: the upload wrote it already, so
   // it is let go of when it is taken off or the dialog closes without saving.
   const unsaved = useRef<string | null>(null)
@@ -134,7 +141,7 @@ export function EquipmentItemDialog({
       make,
       model,
       serialNumber,
-      manufacture,
+      manufacture: manufactureValue(manufacture, dateFormat),
       installDate,
       ratedCapacity,
       lastExaminedAt,
@@ -215,9 +222,10 @@ export function EquipmentItemDialog({
               <Input
                 id="equipment-manufacture"
                 value={manufacture}
-                maxLength={10}
-                inputMode="numeric"
-                placeholder={t('manufacturePlaceholder')}
+                maxLength={20}
+                // Figures only, unless the workshop writes the month's name.
+                inputMode={dateFormat.includes('MMM') ? 'text' : 'numeric'}
+                placeholder={t('manufacturePlaceholder', { date: sampleDate })}
                 aria-invalid={manufactureInvalid || undefined}
                 aria-describedby="equipment-manufacture-hint"
                 onChange={(e) => setManufacture(e.target.value)}
@@ -228,7 +236,9 @@ export function EquipmentItemDialog({
                   manufactureInvalid ? 'text-xs text-destructive' : 'text-xs text-muted-foreground'
                 }
               >
-                {manufactureInvalid ? t('manufactureInvalid') : t('manufactureHint')}
+                {manufactureInvalid
+                  ? t('manufactureInvalid', { date: sampleDate })
+                  : t('manufactureHint', { date: sampleDate })}
               </p>
             </div>
             <div className="space-y-1.5">

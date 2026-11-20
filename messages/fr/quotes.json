@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "L'ordre de travail a gardé sa propre référence / n° de commande, {job}. Celle du devis, {quote}, n'a pas été reprise.",
     "convert": "Convertir",
     "convertToWorkOrder": "Convertir en ordre de travail",
     "cancel": "Annuler",

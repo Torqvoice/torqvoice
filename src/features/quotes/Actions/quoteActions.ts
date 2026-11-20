@@ -810,7 +810,9 @@ export async function getQuoteConversionConflicts(quoteId: string, serviceRecord
  * tax basis, the warranty) the caller has to say which the job keeps; the
  * dialog asked, and an answer missing here means the job changed since it
  * did, so nothing is done. The job's title and shop fee were decided when it
- * was created and are not the quote's to change.
+ * was created and are not the quote's to change, nor is its Reference / PO:
+ * a job without one takes the quote's, and one that has a different one keeps
+ * it and the answer names both (`referenceKept`) for the page to say.
  */
 export async function addQuoteToServiceRecord(
   quoteId: string,
@@ -868,6 +870,19 @@ export async function addQuoteToServiceRecord(
       if (!(OPEN_SERVICE_STATUSES as readonly string[]).includes(record.status)) {
         throw new Error('That work order is no longer open')
       }
+
+      // The job's own Reference / PO stands. One that differs from the
+      // quote's is said in the answer, with both, so the quote's is not lost
+      // without a word; only while the workshop uses the field.
+      const jobReference = record.customerReference?.trim() || null
+      const quoteReference = quote.customerReference?.trim() || null
+      const referenceKept =
+        jobReference &&
+        quoteReference &&
+        jobReference !== quoteReference &&
+        (await isCustomerReferenceEnabled(organizationId))
+          ? { job: jobReference, quote: quoteReference }
+          : null
 
       // Every disagreement needs an answer. One the dialog never showed
       // means the job or the quote changed in the meantime; the dialog
@@ -1006,6 +1021,8 @@ export async function addQuoteToServiceRecord(
         invoiceNumber: record.invoiceNumber,
         convertedFromQuoteId: quoteId,
         quoteRef: quote.quoteNumber ?? quoteId,
+        /** Both references, when the job kept its own over a different one on the quote. */
+        referenceKept,
       }
     },
     {

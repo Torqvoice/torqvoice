@@ -19,11 +19,11 @@
  * - `job-documents`: a PDF of up to 25 MB can be attached to a job, and is
  *   filed with the job's documents.
  * - `job-reference`: a job carries `customerReference`, the customer's own
- *   reference or purchase order number for it. Null when the job has none or
- *   the workshop does not use the field.
+ *   reference or purchase order number for it. Null when the job has none;
+ *   left out, key and all, when the workshop does not use the field.
  * - `vehicle-fleet-number`: a job's vehicle carries `fleetNumber`, the
  *   workshop's own fleet or unit number for it. Null when the vehicle has
- *   none or the workshop does not use the field.
+ *   none; left out, key and all, when the workshop does not use the field.
  * - `vehicle-meters`: a job carries `meters`, the vehicle's meters besides
  *   the odometer (engine hours, PTO hours) with this job's reading of each
  *   and the last one before it; empty when the workshop records none.

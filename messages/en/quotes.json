@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "The work order kept its own Reference / PO, {job}. The quote's, {quote}, was not copied to it.",
     "convert": "Convert",
     "convertToWorkOrder": "Convert to Work Order",
     "cancel": "Cancel",
