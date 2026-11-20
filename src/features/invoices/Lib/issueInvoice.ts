@@ -105,16 +105,25 @@ async function captureIssue(
   })
   if (!assembly) return false
 
-  const [issuedDesignSnapshotId, issuedLogoSnapshotId, issuedSignatureSnapshotId] =
-    await Promise.all([
-      ensureDesignSnapshot(organizationId, assembly.designSource),
-      assembly.logoDataUri
-        ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
-        : Promise.resolve(null),
-      assembly.signer.dataUri
-        ? ensureAssetSnapshot(organizationId, assembly.signer.dataUri)
-        : Promise.resolve(null),
-    ])
+  const [
+    issuedDesignSnapshotId,
+    issuedLogoSnapshotId,
+    issuedSignatureSnapshotId,
+    issuedVehiclePhotoSnapshotId,
+  ] = await Promise.all([
+    ensureDesignSnapshot(organizationId, assembly.designSource),
+    assembly.logoDataUri
+      ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
+      : Promise.resolve(null),
+    assembly.signer.dataUri
+      ? ensureAssetSnapshot(organizationId, assembly.signer.dataUri)
+      : Promise.resolve(null),
+    // The vehicle's photo, resized, where the design prints it: the sheet
+    // reprints with it unchanged whatever happens to the vehicle's photo.
+    assembly.vehiclePhotoSource
+      ? ensureAssetSnapshot(organizationId, assembly.vehiclePhotoSource)
+      : Promise.resolve(null),
+  ])
 
   await db.serviceRecord.update({
     where: { id: recordId },
@@ -123,6 +132,7 @@ async function captureIssue(
       issuedDesignSnapshotId,
       issuedLogoSnapshotId,
       issuedSignatureSnapshotId,
+      issuedVehiclePhotoSnapshotId,
       issuedData: buildIssuedInvoiceData(assembly) as unknown as Prisma.InputJsonValue,
     },
   })

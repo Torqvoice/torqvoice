@@ -60,6 +60,13 @@ import {
 } from '@/features/invoice-designer/Lib/designRules.server'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import {
+  photoSourceDataUri,
+  photoSourceFromSnapshot,
+  vehiclePhotoForDesign,
+  vehiclePhotoPrint,
+} from '@/features/invoice-designer/Lib/vehiclePhoto.server'
+import { vehicleBlockTone, vehiclePhotoStyleOf } from '@/features/invoice-designer/Lib/vehiclePhoto'
+import {
   readIssuedInvoiceData,
   rendersFromIssue,
   thawConditionMap,
@@ -126,6 +133,7 @@ const RECORD_INCLUDE = {
   issuedDesignSnapshot: true,
   issuedLogoSnapshot: true,
   issuedSignatureSnapshot: true,
+  issuedVehiclePhotoSnapshot: true,
   // Whoever opened the job signs it.
   createdBy: { select: { id: true, name: true } },
 }
@@ -152,6 +160,11 @@ export interface AssembleOptions {
    * work order, which prints from the same job by its own design.
    */
   inspectionResults?: 'print' | 'rows' | 'none'
+  /**
+   * Whether to read the vehicle's photo for a design that prints it. Off for
+   * the work order, which reads it for its own design.
+   */
+  vehiclePhoto?: boolean
 }
 
 export interface InvoicePrintAssembly {
@@ -188,6 +201,11 @@ export interface InvoicePrintAssembly {
    * invoice. Absent when the design prints neither or there is no inspection.
    */
   inspectionResults?: InspectionResults | null
+  /**
+   * The vehicle's photo as an issue keeps it: the resized, sharp copy, as a
+   * data URI. Set only on a live assembly whose design prints the photo.
+   */
+  vehiclePhotoSource?: string
 }
 
 export interface PrintSigner {
@@ -414,8 +432,10 @@ export async function assembleInvoicePrint(
     mode === 'auto' && rendersFromIssue(record) ? readIssuedInvoiceData(record.issuedData) : null
 
   const results = options.inspectionResults ?? 'print'
-  if (frozen) return assembleFrozen(record, organizationId, org, settingsMap, frozen, results)
-  return assembleLive(record, organizationId, org, settingsMap, results)
+  const photo = options.vehiclePhoto !== false
+  if (frozen)
+    return assembleFrozen(record, organizationId, org, settingsMap, frozen, results, photo)
+  return assembleLive(record, organizationId, org, settingsMap, results, photo)
 }
 
 async function assembleLive(
@@ -423,7 +443,8 @@ async function assembleLive(
   organizationId: string,
   org: InvoicePrintAssembly['org'],
   settingsMap: Record<string, string>,
-  results: NonNullable<AssembleOptions['inspectionResults']>
+  results: NonNullable<AssembleOptions['inspectionResults']>,
+  photo: boolean
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
   const [findings, customFields, look, signatureDataUri, conditionMap] = await Promise.all([
@@ -513,6 +534,16 @@ async function assembleLive(
   const equipment = record.vehicle
     ? await printableEquipment(organizationId, { jobId: record.id, vehicleId: record.vehicleId })
     : NO_EQUIPMENT
+  // The vehicle's photo, read only for a design that prints it.
+  const vehiclePhoto: Awaited<ReturnType<typeof vehiclePhotoForDesign>> =
+    photo && record.vehicle
+      ? await vehiclePhotoForDesign(
+          organizationId,
+          record.vehicleId,
+          template.layoutConfig,
+          template
+        )
+      : {}
 
   const data: InvoiceData = {
     ...record,
@@ -531,6 +562,7 @@ async function assembleLive(
     recordCustomFields,
     findings,
     equipment,
+    vehiclePhoto: vehiclePhoto.print,
   }
 
   return {
@@ -557,6 +589,7 @@ async function assembleLive(
     },
     conditionMap,
     inspectionResults,
+    vehiclePhotoSource: vehiclePhoto.source ? photoSourceDataUri(vehiclePhoto.source) : undefined,
   }
 }
 
@@ -566,7 +599,8 @@ async function assembleFrozen(
   org: InvoicePrintAssembly['org'],
   settingsMap: Record<string, string>,
   frozen: IssuedInvoiceData,
-  results: NonNullable<AssembleOptions['inspectionResults']>
+  results: NonNullable<AssembleOptions['inspectionResults']>,
+  photo: boolean
 ): Promise<InvoicePrintAssembly> {
   const snapshot = record.issuedDesignSnapshot
   // A snapshot that cannot be read falls back to the live look rather than
@@ -630,6 +664,18 @@ async function assembleFrozen(
     // The equipment it was issued with: none for one issued before equipment
     // was recorded, never today's.
     equipment: thawEquipment(frozen.equipment),
+    // The photo it was issued with, made ready for the design it prints
+    // with now. One issued before photos, or by a design that printed none,
+    // kept none and prints none: it never borrows the vehicle's photo of
+    // today, and a photo deleted since changes nothing.
+    vehiclePhoto:
+      photo && record.issuedVehiclePhotoSnapshot
+        ? await vehiclePhotoPrint(
+            await photoSourceFromSnapshot(record.issuedVehiclePhotoSnapshot),
+            vehiclePhotoStyleOf(template.layoutConfig),
+            () => vehicleBlockTone(template.layoutConfig ?? {}, template)
+          )
+        : undefined,
   }
 
   // The inspection's checks as they were when issued. An invoice issued

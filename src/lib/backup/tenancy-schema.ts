@@ -1263,6 +1263,11 @@ export const TENANCY_SCHEMA: SchemaGraph = {
         required: false,
         relation: 'issuedSignatureSnapshot',
       },
+      issuedVehiclePhotoSnapshotId: {
+        target: 'DocumentAssetSnapshot',
+        required: false,
+        relation: 'issuedVehiclePhotoSnapshot',
+      },
       tireSetId: {
         target: 'TireSet',
         required: false,

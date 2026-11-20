@@ -500,6 +500,10 @@ export function buildSampleData(
     // Two items on the sample vehicle, the first one the job works on, for
     // a workshop that records equipment; nothing for one that does not.
     equipment: sampleEquipment(workshop, format),
+    // A neutral stand-in for the vehicle's photo in both of its forms, so the
+    // canvas previews either style. It prints only where a design switches
+    // the photo on, like a real one.
+    vehiclePhoto: SAMPLE_VEHICLE_PHOTO,
   }
 }
 
@@ -697,6 +701,25 @@ const SAMPLE_SIGNATURE = `data:image/svg+xml;utf8,${encodeURIComponent(
 const SAMPLE_PHOTO = `data:image/svg+xml;utf8,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="158" height="119"><rect width="158" height="119" fill="#e5e7eb"/><path d="M40 84l28-32 22 26 14-16 24 22H40z" fill="#9ca3af"/><circle cx="112" cy="40" r="9" fill="#9ca3af"/></svg>'
 )}`
+
+/**
+ * A soft landscape in place of the vehicle's photo: neutral for a car and a
+ * boat alike, drawn here so the designer needs no asset. The faded form is
+ * the same picture washed out and blurred, the way the server prepares a real
+ * one for behind the Vehicle block.
+ */
+const sampleLandscape = (sky: [string, string], hill: string, far: string, sun: string, blur = 0) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient>${blur ? `<filter id="b"><feGaussianBlur stdDeviation="${blur}"/></filter>` : ''}</defs><g${blur ? ' filter="url(#b)"' : ''}><rect width="400" height="300" fill="url(#s)"/><circle cx="300" cy="92" r="30" fill="${sun}"/><path d="M0 210 L90 140 L170 200 L250 130 L400 220 V300 H0 Z" fill="${far}"/><path d="M0 250 Q120 200 220 238 T400 230 V300 H0 Z" fill="${hill}"/></g></svg>`
+  )}`
+
+const SAMPLE_VEHICLE_PHOTO: NonNullable<DocumentData['vehiclePhoto']> = {
+  beside: {
+    src: sampleLandscape(['#cbd5e1', '#e2e8f0'], '#64748b', '#94a3b8', '#f8fafc'),
+    aspect: 4 / 3,
+  },
+  faded: sampleLandscape(['#f3f4f6', '#f8fafc'], '#e5e7eb', '#eceef1', '#ffffff', 6),
+}
 
 /**
  * The certificate's own part of the sample: a car that passed with one

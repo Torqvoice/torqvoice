@@ -1,4 +1,5 @@
 import { getTranslations } from 'next-intl/server'
+import { vehiclePhotoForDocument } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
 import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
@@ -240,8 +241,16 @@ export default async function PublicQuotePage({
   // Whoever wrote the quote signs it.
   const signer = await documentSigner(orgId, quote.userId)
 
+  // The vehicle's photo, as a picture inside the sheet and only where the
+  // design prints it: the page never carries the file's address.
+  const vehiclePhoto = await vehiclePhotoForDocument(orgId, quote.vehicleId, layoutConfig, {
+    primaryColor,
+    backgroundColor: pick('backgroundColor') || undefined,
+    textColor: pick('textColor') || undefined,
+  })
+
   const spec = buildQuotePrintSpec({
-    data: shownQuote,
+    data: { ...shownQuote, vehiclePhoto },
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     workshop,
     currencyCode,

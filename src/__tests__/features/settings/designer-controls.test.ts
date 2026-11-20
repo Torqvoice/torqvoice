@@ -69,8 +69,15 @@ describe('the generator covers what a layout can express', () => {
     // `logo` comes from the workshop's upload and `portal_link` from the
     // sample portal URL, rather than from a sample field string. The payment
     // panel's terms and due date are rows of the panel itself, built with the
-    // rest of `payment` and switched by the same ids.
-    const fromElsewhere = new Set(['logo', 'portal_link', 'payment_terms', 'due_date'])
+    // rest of `payment` and switched by the same ids. The vehicle's photo is
+    // the sample's stand-in picture, not a line of text.
+    const fromElsewhere = new Set([
+      'logo',
+      'portal_link',
+      'payment_terms',
+      'due_date',
+      'vehicle_photo',
+    ])
     const missing = [...ids].filter((id) => !fromElsewhere.has(id) && !SAMPLE.includes(`${id}:`))
     expect(missing).toEqual([])
   })

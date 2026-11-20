@@ -6,12 +6,14 @@ import {
   isOptInField,
   unmentionedGrandfathered,
   isCustomFieldId,
+  photoStyleOf,
   type InvoiceLayoutConfig,
   type InvoiceSection,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
 import type { Block, DocumentSpec, Node, Placement, TextStyle } from './documentSpec'
 import { DEFAULT_LINE_HEIGHT } from '../Pdf/measure'
+import { BLOCK_GAP } from '../Render/layoutEngine'
 import type { CertificateData } from './certificateData'
 import type { ConditionMapPrint } from '@/features/condition-map/Lib/print'
 import {
@@ -150,6 +152,25 @@ export interface DocumentData {
    * section picks one and its columns. Absent when there is none to print.
    */
   equipment?: EquipmentPrint
+  /**
+   * The vehicle's photo, for a Vehicle section that prints it, as data URIs
+   * prepared on the server for the design's style. Absent when the vehicle
+   * has none or the design does not print it, and the block prints as if
+   * the option were off.
+   */
+  vehiclePhoto?: VehiclePhotoPrint
+}
+
+/**
+ * The vehicle's photo in the forms the Vehicle section draws it. The server
+ * prepares only the one the design asks for; the designer's sample carries
+ * both, so the canvas can preview either style.
+ */
+export interface VehiclePhotoPrint {
+  /** Sharp, for beside the lines, with its width over its height. */
+  beside?: { src: string; aspect: number }
+  /** Washed out and blurred, for behind the block. */
+  faded?: string
 }
 
 export interface DocumentSignature {
@@ -354,6 +375,9 @@ export function tableHead(look: ReturnType<typeof lookOf>, theme: DocumentTheme,
   }
 }
 
+/** The fill a boxed panel prints with when its section sets none. */
+export const PANEL_FILL = '#f3f4f6'
+
 /** A labelled panel: the customer, the vehicle, the service, the extras. */
 export function panel(
   section: InvoiceSection,
@@ -364,7 +388,11 @@ export function panel(
   const look = lookOf(section, theme)
   const size = look.fontSize ?? theme.fontSize
   const boxed = section.boxed !== false
-  const lines = fields.map((id) => ({ id, value: data.fields[id] })).filter((f) => !!f.value)
+  const lines = fields
+    // The photo is drawn by the Vehicle block itself, never as a line.
+    .filter((id) => id !== VEHICLE_PHOTO_FIELD)
+    .map((id) => ({ id, value: data.fields[id] }))
+    .filter((f) => !!f.value)
   if (!lines.length) return null
 
   const heading: TextStyle = {
@@ -380,7 +408,7 @@ export function panel(
     id: section.id,
     gap: 2,
     style: {
-      background: look.fill || (boxed ? '#f3f4f6' : undefined),
+      background: look.fill || (boxed ? PANEL_FILL : undefined),
       borderColor:
         look.border || (look.ruleWidth !== undefined ? look.muted : boxed ? '#e3e5e9' : undefined),
       borderWidth: boxed || look.border ? (look.ruleWidth ?? 0.75) : 0,
@@ -420,6 +448,73 @@ export function panel(
           },
         }
       }),
+    ],
+  }
+}
+
+/** The Vehicle section's field that prints the vehicle's photo. */
+export const VEHICLE_PHOTO_FIELD = 'vehicle_photo'
+
+/** The beside photo never takes more than this share of its block's width. */
+const PHOTO_WIDTH_SHARE = 0.32
+/** Nor more than this, so it reads as a small picture of the vehicle. */
+const PHOTO_MAX_WIDTH = 150
+const PHOTO_MAX_HEIGHT = 110
+
+/**
+ * The Vehicle panel, with the vehicle's photo where the design prints one:
+ * sharp beside the lines, or faded behind the whole block. A vehicle without
+ * a photo, or a design without the option, prints the plain panel.
+ */
+function vehicleBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData,
+  blockWidth: number
+): Node | null {
+  const fields = sectionFields(section)
+  const base = panel(section, theme, data, fields)
+  if (!base || base.kind !== 'stack' || !fields.includes(VEHICLE_PHOTO_FIELD)) return base
+  const photo = data.vehiclePhoto
+  if (photoStyleOf(section) === 'faded') {
+    if (!photo?.faded) return base
+    return { ...base, style: { ...base.style, backgroundImage: photo.faded } }
+  }
+  const beside = photo?.beside
+  if (!beside || !(beside.aspect > 0)) return base
+  // The picture's box at its own proportions, inside a third of the block
+  // (less the panel's own padding) and a modest height.
+  const pad = typeof base.style?.padding === 'number' ? base.style.padding : 0
+  let width = Math.min(PHOTO_MAX_WIDTH, Math.max(40, (blockWidth - pad * 2) * PHOTO_WIDTH_SHARE))
+  let height = width / beside.aspect
+  if (height > PHOTO_MAX_HEIGHT) {
+    height = PHOTO_MAX_HEIGHT
+    width = height * beside.aspect
+  }
+  width = Math.round(width * 10) / 10
+  height = Math.round(height * 10) / 10
+  return {
+    ...base,
+    children: [
+      {
+        kind: 'row',
+        gap: 10,
+        align: 'start',
+        children: [
+          { node: { kind: 'stack', gap: base.gap, children: base.children }, width: 'flex' },
+          {
+            node: {
+              kind: 'image',
+              id: `${section.id}.${VEHICLE_PHOTO_FIELD}`,
+              src: beside.src,
+              maxWidth: width,
+              maxHeight: height,
+              align: 'right',
+            },
+            width,
+          },
+        ],
+      },
     ],
   }
 }
@@ -2199,14 +2294,20 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
 }
 
 /** The block for one section, or nothing when the section draws nothing. */
-function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentData): Node | null {
+function blockFor(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData,
+  width: number
+): Node | null {
   switch (section.id) {
     case 'header':
       return letterhead(section, theme, data)
     case 'slogan':
       return sloganBlock(section, theme, data)
-    case 'customer':
     case 'vehicle':
+      return vehicleBlock(section, theme, data, width)
+    case 'customer':
     case 'service':
     case 'general':
       return panel(section, theme, data, sectionFields(section))
@@ -2303,10 +2404,17 @@ export function buildDocumentSpec(
   const framedTop = bandHeight + FRAMED_BAND_GAP
 
   const push = (section: InvoiceSection, placementOverride?: Placement, synthetic?: boolean) => {
-    const content = blockFor(section, theme, data)
+    const anchor = anchors[section.id]
+    // The width the block is laid out at, for a block that sizes a part of
+    // itself to it: the anchor's own, or its lane less its margins.
+    const blockWidth =
+      anchor?.width ??
+      (section.column ? (contentWidth - BLOCK_GAP) / 2 : contentWidth) -
+        (section.style?.marginLeft ?? 0) -
+        (section.style?.marginRight ?? 0)
+    const content = blockFor(section, theme, data, blockWidth)
     if (!content) return
 
-    const anchor = anchors[section.id]
     const placement: Placement =
       placementOverride ??
       (anchor

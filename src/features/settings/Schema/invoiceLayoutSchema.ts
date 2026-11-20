@@ -114,6 +114,12 @@ export const invoiceSectionSchema = z.object({
    * is `vehicle`, the attached equipment a fleet's paperwork asks for.
    */
   scope: z.enum(['job', 'vehicle']).optional(),
+  /**
+   * How the Vehicle section prints the vehicle's photo, once its
+   * `vehicle_photo` field is switched on: `beside` sets it sharp at the side
+   * of the lines, `faded` washes it out behind the block. Unset is `beside`.
+   */
+  photoStyle: z.enum(['beside', 'faded']).optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
@@ -393,6 +399,9 @@ export const BUILTIN_VEHICLE_FIELDS = [
   // The vehicle's meters besides the odometer, one line each ("Engine hours:
   // 4,256.7 hrs"). Opt-in like the fleet number.
   { id: 'meter_readings', name: 'Meter readings' },
+  // The vehicle's own photo, beside the lines or faded behind them (the
+  // section's photoStyle). Opt-in like the fleet number.
+  { id: 'vehicle_photo', name: 'Vehicle photo' },
 ] as const
 
 export const BUILTIN_SERVICE_FIELDS = [
@@ -574,6 +583,11 @@ export function equipmentScopeOf(section: Pick<InvoiceSection, 'scope'>): 'job' 
   return section.scope === 'job' ? 'job' : 'vehicle'
 }
 
+/** How a Vehicle section prints its photo; unset is beside the lines. */
+export function photoStyleOf(section: Pick<InvoiceSection, 'photoStyle'>): 'beside' | 'faded' {
+  return section.photoStyle === 'faded' ? 'faded' : 'beside'
+}
+
 /**
  * Fields that printed before they had a switch, by section.
  *
@@ -603,7 +617,7 @@ export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
  */
 export const OPT_IN_FIELDS: Record<string, readonly string[]> = {
   customer: ['customer_reference'],
-  vehicle: ['fleet_number', 'meter_readings'],
+  vehicle: ['fleet_number', 'meter_readings', 'vehicle_photo'],
 }
 
 /** Whether this field waits for a design to switch it on. */
@@ -723,6 +737,8 @@ export const FIXED_SLOT_FIELDS: Record<string, readonly string[]> = {
     'combined_table',
     'ungraded_checks',
   ],
+  // The photo sits beside the lines or behind them, never among them.
+  vehicle: ['vehicle_photo'],
 }
 
 /** Whether this field prints where the list puts it, or in a slot of its own. */

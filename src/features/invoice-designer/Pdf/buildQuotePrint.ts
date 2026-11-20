@@ -24,6 +24,7 @@ import {
   frameShadowWidth,
   mixColors,
   type DocumentData,
+  type VehiclePhotoPrint,
   type DocumentTheme,
   type TotalLine,
 } from '../Spec/buildSpec'
@@ -126,6 +127,11 @@ export interface QuotePrintData {
    * and everything on the vehicle now. Absent or empty while equipment is off.
    */
   equipment?: PrintableEquipmentLists
+  /**
+   * The vehicle's photo, prepared on the server as data URIs for the style
+   * the design prints it in. Absent when the design does not print it.
+   */
+  vehiclePhoto?: VehiclePhotoPrint
 }
 
 export interface QuotePrintInput {
@@ -451,6 +457,8 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
     // Both lists; the Equipment section picks one, where a design places it.
     equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
+    // Only where the design prints it; the Vehicle block places it.
+    vehiclePhoto: data.vehiclePhoto,
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
     signature: {

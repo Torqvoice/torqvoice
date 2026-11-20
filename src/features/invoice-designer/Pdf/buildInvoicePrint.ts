@@ -517,6 +517,8 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
     // Both lists; the Equipment section picks one, where a design places it.
     equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
+    // Only where the design prints it; the Vehicle block places it.
+    vehiclePhoto: data.vehiclePhoto,
     telegramQr: input.telegramQrDataUri
       ? {
           dataUri: input.telegramQrDataUri,

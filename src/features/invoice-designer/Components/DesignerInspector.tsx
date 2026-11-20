@@ -30,6 +30,7 @@ import {
   isOptInField,
   layoutDocumentType,
   NO_CUSTOM_FIELD_SECTIONS,
+  photoStyleOf,
   unmentionedGrandfathered,
   isCustomFieldId,
   toCustomFieldId,
@@ -417,6 +418,8 @@ export function DesignerInspector({
       return tField.has(key) ? tField(key) : (getBuiltinFieldName(fieldId) ?? fieldId)
     }
     if (!isCustomFieldId(fieldId)) {
+      // A field that names the vehicle says boat for a marine workshop.
+      if (isMarine && tField.has(`${fieldId}Marine`)) return tField(`${fieldId}Marine`)
       return tField.has(fieldId) ? tField(fieldId) : (getBuiltinFieldName(fieldId) ?? fieldId)
     }
     const definition = customFields.find((f) => f.id === fromCustomFieldId(fieldId))
@@ -494,6 +497,7 @@ export function DesignerInspector({
     // values bold by design, and the letterhead's built-in lines are display
     // typography of their own.
     const boldable = (id: string) =>
+      id !== 'vehicle_photo' &&
       section.id !== 'bank_account' &&
       section.id !== 'equipment' &&
       (section.id !== 'header' || isCustomFieldId(id))
@@ -515,7 +519,8 @@ export function DesignerInspector({
         return new Set(leads)
       }
       if (['customer', 'vehicle', 'service', 'general'].includes(section.id)) {
-        const first = resolvedFields.find((f) => f.visible)
+        // The photo is never a line, so never the one that leads.
+        const first = resolvedFields.find((f) => f.visible && f.id !== 'vehicle_photo')
         if (first && !isCustomFieldId(first.id)) return new Set([first.id])
       }
       return new Set<string>()
@@ -542,12 +547,27 @@ export function DesignerInspector({
     const fleetNumberOffered = fleetNumberEnabled && layoutDocumentType(layout) !== 'certificate'
     // Meter readings, for a workshop that has defined a meter.
     const metersOffered = metersDefined && layoutDocumentType(layout) !== 'certificate'
+    // The vehicle's photo, on the invoice, the quote and the work order.
+    const photoOffered = layoutDocumentType(layout) !== 'certificate'
+    // Off, or the style it prints in: the same switch the field list shows,
+    // so the two can never disagree.
+    const photoChoice = resolvedFields.some((f) => f.id === 'vehicle_photo' && f.visible)
+      ? photoStyleOf(section)
+      : 'off'
+    const setPhotoChoice = (choice: string) =>
+      onSection(section.id, {
+        fields: resolvedFields.map((f) =>
+          f.id === 'vehicle_photo' ? { ...f, visible: choice !== 'off' } : f
+        ),
+        photoStyle: choice === 'faded' ? 'faded' : undefined,
+      })
     const shownFields = resolvedFields.filter(
       (field) =>
         (typeKeyEnabled || field.id !== 'hsn_tsn') &&
         (referenceOffered || field.id !== 'customer_reference') &&
         (fleetNumberOffered || field.id !== 'fleet_number') &&
         (metersOffered || field.id !== 'meter_readings') &&
+        (photoOffered || field.id !== 'vehicle_photo') &&
         // An equipment item's meters, for a workshop that has defined a meter.
         (metersDefined || section.id !== 'equipment' || field.id !== 'meters')
     )
@@ -633,6 +653,25 @@ export function DesignerInspector({
                 {equipmentDefined
                   ? t(isMarine ? 'equipmentListHintMarine' : 'equipmentListHint')
                   : t(isMarine ? 'equipmentNoneHintMarine' : 'equipmentNoneHint')}
+              </p>
+            </Group>
+          )}
+
+          {/* The vehicle's own photo on the sheet: off, sharp beside the
+              lines, or washed out behind the block. */}
+          {section.id === 'vehicle' && photoOffered && (
+            <Group title={t(isMarine ? 'vehiclePhotoMarine' : 'vehiclePhoto')}>
+              <Choice
+                value={photoChoice}
+                options={[
+                  { value: 'off', label: t('vehiclePhotoOff') },
+                  { value: 'beside', label: t('vehiclePhotoBeside') },
+                  { value: 'faded', label: t('vehiclePhotoFaded') },
+                ]}
+                onChange={setPhotoChoice}
+              />
+              <p className="text-[11.5px] leading-snug text-[#8a8f97]">
+                {t(isMarine ? 'vehiclePhotoHintMarine' : 'vehiclePhotoHint')}
               </p>
             </Group>
           )}

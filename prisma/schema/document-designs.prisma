@@ -73,6 +73,7 @@ model DocumentAssetSnapshot {
 
   serviceRecords       ServiceRecord[] @relation("IssuedLogoSnapshot")
   signedServiceRecords ServiceRecord[] @relation("IssuedSignatureSnapshot")
+  photoServiceRecords  ServiceRecord[] @relation("IssuedVehiclePhotoSnapshot")
   signedInspections    Inspection[]
 
   @@unique([organizationId, hash])

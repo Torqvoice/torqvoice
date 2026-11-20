@@ -35,6 +35,12 @@ export interface BoxStyle {
   borderWidth?: number
   radius?: number
   padding?: number | { top: number; right: number; bottom: number; left: number }
+  /**
+   * A picture covering the box behind its content, cropped to fill it: the
+   * vehicle's photo faded behind its block. Always a data URI, never a URL,
+   * already washed out on the server so the text on it stays readable.
+   */
+  backgroundImage?: string
 }
 
 /**

@@ -1,6 +1,7 @@
 import type { PrintableCustomField } from '@/features/custom-fields/Lib/customFieldText'
 import type { PrintableEquipmentLists } from '@/features/equipment/Lib/equipmentPrint'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { VehiclePhotoPrint } from '@/features/invoice-designer/Spec/buildSpec'
 
 export interface TemplateConfig {
   primaryColor?: string
@@ -105,6 +106,12 @@ export interface InvoiceData {
    * from. Absent or empty while equipment is off.
    */
   equipment?: PrintableEquipmentLists
+  /**
+   * The vehicle's photo, prepared on the server as data URIs for the style
+   * the design prints it in. Absent when the design does not print it or the
+   * vehicle has none; never a file address.
+   */
+  vehiclePhoto?: VehiclePhotoPrint
   /** 'included', 'not_included' or null; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
   warrantyMonths?: number | null

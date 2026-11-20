@@ -1,6 +1,7 @@
 'use server'
 
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { vehiclePhotoForDocument } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
 import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { readFile } from 'node:fs/promises'
 import { headers } from 'next/headers'
@@ -134,8 +135,21 @@ export async function getPortalQuote(quoteId: string) {
       ? undefined
       : await getTorqvoiceLogoDataUri()
 
+    // The vehicle's photo, as a picture inside the sheet and only where the
+    // design prints it: the portal never carries the file's address.
+    const vehiclePhoto = await vehiclePhotoForDocument(
+      organizationId,
+      quote.vehicleId,
+      layoutConfig,
+      {
+        primaryColor: pick('primaryColor') || '#d97706',
+        backgroundColor: pick('backgroundColor') || undefined,
+        textColor: pick('textColor') || undefined,
+      }
+    )
+
     const spec = buildQuotePrintSpec({
-      data: shownQuote,
+      data: { ...shownQuote, vehiclePhoto },
       lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
       workshop,
       currencyCode: resolveCurrencyCode(settingsMap['workshop.currencyCode']),

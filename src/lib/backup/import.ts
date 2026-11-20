@@ -344,6 +344,10 @@ async function importServiceRecordTree(
       issuedDesignSnapshotId: keptReference(sr.issuedDesignSnapshotId, opts.designSnapshotIds),
       issuedLogoSnapshotId: keptReference(sr.issuedLogoSnapshotId, opts.assetSnapshotIds),
       issuedSignatureSnapshotId: keptReference(sr.issuedSignatureSnapshotId, opts.assetSnapshotIds),
+      issuedVehiclePhotoSnapshotId: keptReference(
+        sr.issuedVehiclePhotoSnapshotId,
+        opts.assetSnapshotIds
+      ),
       issuedData:
         sr.issuedData && typeof sr.issuedData === 'object'
           ? (withIssuedDataFileUrls(sr.issuedData, opts.organizationId) as Prisma.InputJsonValue)

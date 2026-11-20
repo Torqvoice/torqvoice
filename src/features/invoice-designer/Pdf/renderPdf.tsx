@@ -88,8 +88,32 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
       const children = node.children
         .map((child, i) => ({ child, i }))
         .filter(({ child }) => !(child.kind === 'text' && !child.text))
+      // A picture behind the content, cropped to cover the box. react-pdf has no background images, so it is an image
+      // laid under the children, clipped to the box's corners. Only the
+      // raster forms react-pdf can draw; anything else prints the plain box.
+      const backdrop = node.style?.backgroundImage
+      const drawBackdrop = !!backdrop && /^data:image\/(jpeg|png);base64,/.test(backdrop)
       return (
-        <View style={boxStylePdf(node.style)}>
+        <View
+          style={{
+            ...boxStylePdf(node.style),
+            ...(drawBackdrop ? { position: 'relative', overflow: 'hidden' } : {}),
+          }}
+        >
+          {drawBackdrop ? (
+            <Image
+              src={backdrop}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                objectFit: 'cover',
+                ...(node.style?.radius ? { borderRadius: node.style.radius } : {}),
+              }}
+            />
+          ) : null}
           {children.map(({ child, i }, index) => (
             <View key={child.id ?? i} style={index > 0 && gap ? { marginTop: gap } : {}}>
               <RenderNodePdf node={child} base={base} />

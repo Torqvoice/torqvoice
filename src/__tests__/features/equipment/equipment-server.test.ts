@@ -417,7 +417,7 @@ describe('what a work order works on', () => {
     db.equipmentItem.findMany.mockResolvedValue([])
     expect((await setJobEquipment({ id: 'job-1', itemIds: [] })).success).toBe(true)
     expect(order).toHaveLength(2)
-    expect(order[0]).toMatch(/^lock:true:.*"service_records".*FOR UPDATE/s)
+    expect(order[0]).toMatch(/^lock:true:[\s\S]*"service_records"[\s\S]*FOR UPDATE/)
     expect(order[1]).toBe('read:true')
   })
 
@@ -499,7 +499,7 @@ describe('a job that worked on an item moved or taken off since', () => {
       ])
     const view = await jobEquipmentView('org-1', { id: 'job-1', vehicleId: 'veh-A' })
     // Read by the job alone, not by where its items are now.
-    expect(db.serviceRecordEquipment.findMany.mock.calls[0][0]).toMatchObject({
+    expect((db.serviceRecordEquipment.findMany.mock.calls[0] as unknown[])[0]).toMatchObject({
       where: {
         organizationId: 'org-1',
         serviceRecordId: 'job-1',
@@ -535,7 +535,7 @@ describe('a quote’s equipment', () => {
       .mockResolvedValueOnce([itemRow('here')])
       .mockResolvedValueOnce([itemRow('moved', { vehicleId: 'veh-B' })])
     const view = await quoteEquipmentView('org-1', { id: 'q-1', vehicleId: 'veh-A' })
-    expect(db.quoteEquipment.findMany.mock.calls[0][0]).toMatchObject({
+    expect((db.quoteEquipment.findMany.mock.calls[0] as unknown[])[0]).toMatchObject({
       where: { organizationId: 'org-1', quoteId: 'q-1', item: { organizationId: 'org-1' } },
     })
     expect(view?.selected).toEqual(['moved'])
@@ -571,7 +571,7 @@ describe('a quote’s equipment', () => {
     const result = await setQuoteEquipment({ id: 'q-1', itemIds: ['item-2'] })
     expect(result).toMatchObject({ success: true, data: { itemIds: ['item-2'] } })
     expect(order).toHaveLength(2)
-    expect(order[0]).toMatch(/^lock:true:.*"quotes".*FOR UPDATE/s)
+    expect(order[0]).toMatch(/^lock:true:[\s\S]*"quotes"[\s\S]*FOR UPDATE/)
     expect(order[1]).toBe('read:true')
     expect(db.quoteEquipment.deleteMany).toHaveBeenCalledWith({
       where: { organizationId: 'org-1', quoteId: 'q-1', itemId: { in: ['item-1'] } },

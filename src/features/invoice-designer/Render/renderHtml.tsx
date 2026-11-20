@@ -24,10 +24,23 @@ function padding(style?: BoxStyle): CSSProperties {
 export function boxCss(style?: BoxStyle): CSSProperties {
   if (!style) return {}
   return {
-    background: style.background,
+    // The longhand when a picture rides along, so the two never conflict.
+    ...(style.backgroundImage
+      ? { backgroundColor: style.background }
+      : { background: style.background }),
     border: style.borderWidth ? `${style.borderWidth}px solid ${style.borderColor}` : undefined,
     borderRadius: style.radius,
     ...padding(style),
+    // A picture behind the box's content, cropped to cover it. Always a data
+    // URI the server prepared, so it is quoted rather than trusted as CSS.
+    ...(style.backgroundImage
+      ? {
+          backgroundImage: `url(${JSON.stringify(style.backgroundImage)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }
+      : {}),
   }
 }
 

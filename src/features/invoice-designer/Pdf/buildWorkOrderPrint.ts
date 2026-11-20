@@ -506,6 +506,8 @@ export function buildWorkOrderPrintSpec(input: WorkOrderPrintInput): DocumentSpe
     certificate: inspectionResultsForPrint(layout, job.linkedInspection, labels),
     // Both lists; the Equipment section picks one, where a design places it.
     equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
+    // Only where the design prints it; the Vehicle block places it.
+    vehiclePhoto: data.vehiclePhoto,
     workOrder: {
       concerns: job.concerns.map((concern) => ({
         description: concern.description,

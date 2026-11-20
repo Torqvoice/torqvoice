@@ -16,6 +16,7 @@
  */
 
 import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { vehiclePhotoForDocument } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
 import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'node:fs/promises'
@@ -184,6 +185,14 @@ export async function buildQuotePdfBuffer(
   // What the inspection the quote was raised from found, as it stands now and
   // only for a design that prints it: a quote keeps no copy of its own.
   const inspectionResults = await inspectionResultsFor(organizationId, quote, layoutConfig)
+  const template = templateFor(settingsMap)
+  // The vehicle's photo, only for a design that prints it.
+  const vehiclePhoto = await vehiclePhotoForDocument(
+    organizationId,
+    quote.vehicleId,
+    layoutConfig,
+    template
+  )
 
   const element = React.createElement(QuotePDF, {
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
@@ -205,6 +214,7 @@ export async function buildQuotePdfBuffer(
           quoteId: quote.id,
           vehicleId: quote.vehicleId,
         }),
+        vehiclePhoto,
       },
       customerReferenceEnabledIn(settingsMap, features)
     ),
@@ -225,7 +235,7 @@ export async function buildQuotePdfBuffer(
     timezone: settingsMap['workshop.timezone'] || undefined,
     // The same fallback the invoice prints its distances with.
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
-    template: templateFor(settingsMap),
+    template,
     imageAttachments,
     otherAttachments,
     pdfAttachmentNames: pdfAttachments.map((att) => att.fileName),

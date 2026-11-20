@@ -13,6 +13,7 @@ import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchem
 import { assembleInvoicePrint, designLook, type InvoicePrintAssembly } from './assembleInvoicePrint'
 import { loadVehicleConditionMarks } from '@/features/condition-map/Lib/loadMarks.server'
 import { inspectionResultsFor } from '@/features/inspections/Lib/linkedInspectionResults.server'
+import { vehiclePhotoForDocument } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
 
 /**
  * A job as the work order sheet prints it.
@@ -37,7 +38,11 @@ export async function assembleWorkOrderPrint(
 ): Promise<WorkOrderPrintAssembly | null> {
   // The invoice's design may print the inspection too; the work order reads
   // it for its own design below, so the invoice's reading is skipped.
-  const base = await assembleInvoicePrint(recordId, { mode: 'live', inspectionResults: 'none' })
+  const base = await assembleInvoicePrint(recordId, {
+    mode: 'live',
+    inspectionResults: 'none',
+    vehiclePhoto: false,
+  })
   if (!base) return null
   const { record, organizationId, settingsMap } = base
 
@@ -102,8 +107,14 @@ export async function assembleWorkOrderPrint(
     layoutConfig
   )
 
+  // The vehicle's photo, for a work order design that prints it.
+  const vehiclePhoto = record.vehicle
+    ? await vehiclePhotoForDocument(organizationId, record.vehicleId, layoutConfig, template)
+    : undefined
+
   return {
     ...base,
+    data: { ...base.data, vehiclePhoto },
     template,
     layoutConfig,
     logoDataUri: look.logoDataUri,
