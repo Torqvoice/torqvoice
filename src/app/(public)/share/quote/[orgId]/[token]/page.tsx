@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
+import { shareFileUrl } from '@/lib/share-file-url'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { db } from '@/lib/db'
 import { notFound } from 'next/navigation'
@@ -162,18 +163,14 @@ export default async function PublicQuotePage({
     settingsMap['workshop.currencyFormat']
   )
 
-  // Rewrite logo URL for public access
+  // The logo and the attachments, at addresses this link's token opens. A
+  // logo uploaded today is stored under the signed-in route, which a customer
+  // with no session cannot load.
+  const toPublicUrl = (url: string) => shareFileUrl(url, token)
   const rawLogoUrl = documentLogoPath(settingsMap, 'quote')
-  let logoUrl = ''
-  if (rawLogoUrl) {
-    const match = rawLogoUrl.match(/^\/api\/files\/[^/]+\/(.+)$/)
-    if (match) logoUrl = `/api/public/files/${token}/${match[1]}`
-    else logoUrl = rawLogoUrl
-  }
+  const logoUrl = rawLogoUrl ? toPublicUrl(rawLogoUrl) : ''
 
-  // Attachments, named field by field, with addresses this link's token opens.
-  const toPublicUrl = (url: string) =>
-    url.replace(/^\/api\/protected\/files\/[^/]+\//, `/api/public/files/${token}/`)
+  // Attachments, named field by field.
   const attachmentsOf = (category: string) =>
     quote.attachments
       .filter((file) => file.category === category)
