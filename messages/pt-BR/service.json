@@ -768,7 +768,7 @@
     "requiredToInvoice": "Este cliente precisa de uma referência ou número de pedido nas faturas. Preencha Referência / nº do pedido na ordem de serviço e depois envie a fatura.",
     "saveFailed": "Não foi possível salvar a referência",
     "saved": "Salvo",
-    "notSwitchedOn": "O campo Referência / nº do pedido está desativado para esta oficina. Ative-o em Configurações, Oficina."
+    "notSwitchedOn": "O campo Referência / nº do pedido está desativado para esta oficina. Ative-o em Configurações, Faturas e orçamentos, Campos personalizados."
   },
   "photoHandoff": {
     "button": "Adicionar pelo celular",

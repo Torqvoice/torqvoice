@@ -1229,7 +1229,26 @@
     "notSavedMissing": "Kaydedilmedi. Doldurun: {fields}",
     "notSavedInvalid": "Kaydedilmedi. Kontrol edin: {fields}",
     "valueYes": "Evet",
-    "valueNo": "Hayır"
+    "valueNo": "Hayır",
+    "readyMade": {
+      "title": "Hazır alanlar",
+      "description": "Torqvoice ile birlikte gelen alanlar. Her biri siz açana kadar kapalı kalır.",
+      "customerReferenceTitle": "Referans / sipariş no",
+      "customerReferenceEnabled": "İş emirlerinde ve tekliflerde müşteri referansı veya sipariş numarası kaydet",
+      "customerReferenceHint": "İş emirlerine, tezgâh satışlarına ve tekliflere, müşterinizin verdiği sipariş numarası veya referans için bir Referans / sipariş no alanı ekler. Belge tasarımcısından faturalara, tekliflere ve iş emirlerine basılabilir, aramada bulunabilir ve muhasebe sisteminize gönderilebilir. Bir müşteri Sipariş no zorunlu olarak işaretlenebilir; bu durumda faturaları referans doldurulana kadar bekler. Kapatıldığında alan yeniden gizlenir, girilen değerler korunur.",
+      "fleetNumberTitle": "Filo / birim numarası",
+      "fleetNumberEnabled": "Araçlara filo veya birim numarası kaydet",
+      "fleetNumberEnabledMarine": "Teknelere filo veya birim numarası kaydet",
+      "fleetNumberHint": "Araçlara, müşterinizin aracı kendi filosunda tanıdığı numara için bir Filo / birim numarası alanı ekler. Araçta ve iş emrinde gösterilir, araçlar aramada bu numarayla bulunabilir ve belge tasarımcısından faturalara, tekliflere ve iş emirlerine basılabilir. Kapatıldığında alan yeniden gizlenir, girilen değerler korunur.",
+      "fleetNumberHintMarine": "Teknelere, müşterinizin tekneyi kendi filosunda tanıdığı numara için bir Filo / birim numarası alanı ekler. Teknede ve iş emrinde gösterilir, tekneler aramada bu numarayla bulunabilir ve belge tasarımcısından faturalara, tekliflere ve iş emirlerine basılabilir. Kapatıldığında alan yeniden gizlenir, girilen değerler korunur.",
+      "saved": "Ayarlar kaydedildi",
+      "failedSave": "Ayarlar kaydedilemedi"
+    },
+    "ownFields": {
+      "title": "Kendi alanlarınız",
+      "description": "İş emirleri, teklifler, araçlar ve müşteriler için kendi tanımladığınız alanlar.",
+      "descriptionMarine": "İş emirleri, teklifler, tekneler ve müşteriler için kendi tanımladığınız alanlar."
+    }
   },
   "workshop": {
     "title": "Atölye Varsayılanları",
@@ -1253,14 +1272,6 @@
     "typeKeyTitle": "Alman tip anahtarı (HSN/TSN)",
     "typeKeyEnabled": "Araçlarda HSN/TSN kaydet",
     "typeKeyHint": "Araçlara Alman ruhsatındaki üretici ve tip kodunu (2.1 ve 2.2 alanları) ekler. Araçta, iş emrinde ve tüm basılı belgelerde görünür, arama da araçları bu kodla bulur. Kapatıldığında yeniden gizlenir, girilen değerler korunur.",
-    "customerReferenceTitle": "Referans / sipariş no",
-    "customerReferenceEnabled": "İş emirlerinde ve tekliflerde müşteri referansı veya sipariş numarası kaydet",
-    "customerReferenceHint": "İş emirlerine, tezgâh satışlarına ve tekliflere, müşterinizin verdiği sipariş numarası veya referans için bir Referans / sipariş no alanı ekler. Belge tasarımcısından faturalara, tekliflere ve iş emirlerine basılabilir, aramada bulunabilir ve muhasebe sisteminize gönderilebilir. Bir müşteri Sipariş no zorunlu olarak işaretlenebilir; bu durumda faturaları referans doldurulana kadar bekler. Kapatıldığında alan yeniden gizlenir, girilen değerler korunur.",
-    "fleetNumberTitle": "Filo / birim numarası",
-    "fleetNumberEnabled": "Araçlara filo veya birim numarası kaydet",
-    "fleetNumberEnabledMarine": "Teknelere filo veya birim numarası kaydet",
-    "fleetNumberHint": "Araçlara, müşterinizin aracı kendi filosunda tanıdığı numara için bir Filo / birim numarası alanı ekler. Araçta ve iş emrinde gösterilir, araçlar aramada bu numarayla bulunabilir ve belge tasarımcısından faturalara, tekliflere ve iş emirlerine basılabilir. Kapatıldığında alan yeniden gizlenir, girilen değerler korunur.",
-    "fleetNumberHintMarine": "Teknelere, müşterinizin tekneyi kendi filosunda tanıdığı numara için bir Filo / birim numarası alanı ekler. Teknede ve iş emrinde gösterilir, tekneler aramada bu numarayla bulunabilir ve belge tasarımcısından faturalara, tekliflere ve iş emirlerine basılabilir. Kapatıldığında alan yeniden gizlenir, girilen değerler korunur.",
     "unitsTitle": "Birimler",
     "unitsDescription": "Bu atölyede mesafelerin, sıvıların ve parçaların nasıl yazıldığı.",
     "unitSystem": "Birim Sistemi",

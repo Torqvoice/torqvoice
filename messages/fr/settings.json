@@ -1229,7 +1229,26 @@
     "notSavedMissing": "Non enregistré. Renseignez : {fields}",
     "notSavedInvalid": "Non enregistré. Vérifiez : {fields}",
     "valueYes": "Oui",
-    "valueNo": "Non"
+    "valueNo": "Non",
+    "readyMade": {
+      "title": "Champs prêts à l'emploi",
+      "description": "Des champs fournis avec Torqvoice. Chacun reste désactivé jusqu'à ce que vous l'activiez.",
+      "customerReferenceTitle": "Référence / n° de commande",
+      "customerReferenceEnabled": "Enregistrer une référence ou un numéro de commande client sur les ordres de travail et les devis",
+      "customerReferenceHint": "Ajoute un champ Référence / n° de commande aux ordres de travail, ventes au comptoir et devis, pour le numéro de commande ou la référence que vous donne votre client. Il peut être imprimé sur les factures, devis et ordres de travail depuis le concepteur de documents, retrouvé par la recherche et envoyé à votre logiciel comptable. Un client peut être marqué N° de commande obligatoire : ses factures attendent alors que la référence soit renseignée. Une fois désactivé, le champ est de nouveau masqué et les valeurs saisies sont conservées.",
+      "fleetNumberTitle": "N° de parc / d'unité",
+      "fleetNumberEnabled": "Enregistrer un numéro de parc ou d'unité sur les véhicules",
+      "fleetNumberEnabledMarine": "Enregistrer un numéro de parc ou d'unité sur les bateaux",
+      "fleetNumberHint": "Ajoute un champ N° de parc / d'unité aux véhicules, pour le numéro sous lequel votre client connaît le véhicule dans sa propre flotte. Il s'affiche sur le véhicule et l'ordre de travail, permet de retrouver les véhicules par la recherche et peut être imprimé sur les factures, devis et ordres de travail depuis le concepteur de documents. Une fois désactivé, le champ est de nouveau masqué et les valeurs saisies sont conservées.",
+      "fleetNumberHintMarine": "Ajoute un champ N° de parc / d'unité aux bateaux, pour le numéro sous lequel votre client connaît le bateau dans sa propre flotte. Il s'affiche sur le bateau et l'ordre de travail, permet de retrouver les bateaux par la recherche et peut être imprimé sur les factures, devis et ordres de travail depuis le concepteur de documents. Une fois désactivé, le champ est de nouveau masqué et les valeurs saisies sont conservées.",
+      "saved": "Paramètres enregistrés",
+      "failedSave": "Échec de l'enregistrement des paramètres"
+    },
+    "ownFields": {
+      "title": "Vos propres champs",
+      "description": "Les champs que vous créez vous-même, sur les ordres de travail, les devis, les véhicules et les clients.",
+      "descriptionMarine": "Les champs que vous créez vous-même, sur les ordres de travail, les devis, les bateaux et les clients."
+    }
   },
   "workshop": {
     "title": "Valeurs par défaut de l'atelier",
@@ -1253,14 +1272,6 @@
     "typeKeyTitle": "Code type allemand (HSN/TSN)",
     "typeKeyEnabled": "Enregistrer le HSN/TSN sur les véhicules",
     "typeKeyHint": "Ajoute aux véhicules le code constructeur et le code type du certificat d'immatriculation allemand (champs 2.1 et 2.2). Il s'affiche sur le véhicule, l'ordre de réparation et tous les documents imprimés, et la recherche retrouve les véhicules par ce code. Une fois désactivé, il est de nouveau masqué et les valeurs saisies sont conservées.",
-    "customerReferenceTitle": "Référence / n° de commande",
-    "customerReferenceEnabled": "Enregistrer une référence ou un numéro de commande client sur les ordres de travail et les devis",
-    "customerReferenceHint": "Ajoute un champ Référence / n° de commande aux ordres de travail, ventes au comptoir et devis, pour le numéro de commande ou la référence que vous donne votre client. Il peut être imprimé sur les factures, devis et ordres de travail depuis le concepteur de documents, retrouvé par la recherche et envoyé à votre logiciel comptable. Un client peut être marqué N° de commande obligatoire : ses factures attendent alors que la référence soit renseignée. Une fois désactivé, le champ est de nouveau masqué et les valeurs saisies sont conservées.",
-    "fleetNumberTitle": "N° de parc / d'unité",
-    "fleetNumberEnabled": "Enregistrer un numéro de parc ou d'unité sur les véhicules",
-    "fleetNumberEnabledMarine": "Enregistrer un numéro de parc ou d'unité sur les bateaux",
-    "fleetNumberHint": "Ajoute un champ N° de parc / d'unité aux véhicules, pour le numéro sous lequel votre client connaît le véhicule dans sa propre flotte. Il s'affiche sur le véhicule et l'ordre de travail, permet de retrouver les véhicules par la recherche et peut être imprimé sur les factures, devis et ordres de travail depuis le concepteur de documents. Une fois désactivé, le champ est de nouveau masqué et les valeurs saisies sont conservées.",
-    "fleetNumberHintMarine": "Ajoute un champ N° de parc / d'unité aux bateaux, pour le numéro sous lequel votre client connaît le bateau dans sa propre flotte. Il s'affiche sur le bateau et l'ordre de travail, permet de retrouver les bateaux par la recherche et peut être imprimé sur les factures, devis et ordres de travail depuis le concepteur de documents. Une fois désactivé, le champ est de nouveau masqué et les valeurs saisies sont conservées.",
     "unitsTitle": "Unités",
     "unitsDescription": "Comment les distances, les liquides et les pièces sont écrits dans cet atelier.",
     "unitSystem": "Système d'unités",

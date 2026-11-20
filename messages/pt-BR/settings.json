@@ -1229,7 +1229,26 @@
     "notSavedMissing": "Não salvo. Preencha: {fields}",
     "notSavedInvalid": "Não salvo. Verifique: {fields}",
     "valueYes": "Sim",
-    "valueNo": "Não"
+    "valueNo": "Não",
+    "readyMade": {
+      "title": "Campos prontos",
+      "description": "Campos que já vêm com o Torqvoice. Cada um fica desativado até você ativá-lo.",
+      "customerReferenceTitle": "Referência / nº do pedido",
+      "customerReferenceEnabled": "Registrar uma referência ou número de pedido do cliente nas ordens de serviço e orçamentos",
+      "customerReferenceHint": "Adiciona o campo Referência / nº do pedido às ordens de serviço, vendas no balcão e orçamentos, para o número de pedido ou a referência que o seu cliente informa. Ele pode ser impresso em faturas, orçamentos e ordens de serviço pelo designer de documentos, encontrado na busca e enviado ao seu sistema contábil. Um cliente pode ser marcado com Exige nº do pedido, e as faturas dele aguardam até que a referência seja preenchida. Ao desativar, o campo é ocultado de novo e o que foi digitado é mantido.",
+      "fleetNumberTitle": "Nº da frota / unidade",
+      "fleetNumberEnabled": "Registrar um número de frota ou de unidade nos veículos",
+      "fleetNumberEnabledMarine": "Registrar um número de frota ou de unidade nas embarcações",
+      "fleetNumberHint": "Adiciona o campo Nº da frota / unidade aos veículos, para o número pelo qual o seu cliente identifica o veículo na frota dele. Ele aparece no veículo e na ordem de serviço, permite encontrar veículos na busca e pode ser impresso em faturas, orçamentos e ordens de serviço pelo designer de documentos. Ao desativar, o campo é ocultado de novo e o que foi digitado é mantido.",
+      "fleetNumberHintMarine": "Adiciona o campo Nº da frota / unidade às embarcações, para o número pelo qual o seu cliente identifica a embarcação na frota dele. Ele aparece na embarcação e na ordem de serviço, permite encontrar embarcações na busca e pode ser impresso em faturas, orçamentos e ordens de serviço pelo designer de documentos. Ao desativar, o campo é ocultado de novo e o que foi digitado é mantido.",
+      "saved": "Configurações salvas",
+      "failedSave": "Falha ao salvar configurações"
+    },
+    "ownFields": {
+      "title": "Seus próprios campos",
+      "description": "Campos que você mesmo cria, em ordens de serviço, orçamentos, veículos e clientes.",
+      "descriptionMarine": "Campos que você mesmo cria, em ordens de serviço, orçamentos, embarcações e clientes."
+    }
   },
   "workshop": {
     "title": "Padrões da oficina",
@@ -1253,14 +1272,6 @@
     "typeKeyTitle": "Chave de tipo alemã (HSN/TSN)",
     "typeKeyEnabled": "Registrar HSN/TSN nos veículos",
     "typeKeyHint": "Adiciona aos veículos o código do fabricante e do tipo do documento de registro alemão (campos 2.1 e 2.2). Ele aparece no veículo, na ordem de serviço e em todos os documentos impressos, e a busca encontra veículos por ele. Ao desativar, ele é ocultado de novo e o que foi digitado é mantido.",
-    "customerReferenceTitle": "Referência / nº do pedido",
-    "customerReferenceEnabled": "Registrar uma referência ou número de pedido do cliente nas ordens de serviço e orçamentos",
-    "customerReferenceHint": "Adiciona o campo Referência / nº do pedido às ordens de serviço, vendas no balcão e orçamentos, para o número de pedido ou a referência que o seu cliente informa. Ele pode ser impresso em faturas, orçamentos e ordens de serviço pelo designer de documentos, encontrado na busca e enviado ao seu sistema contábil. Um cliente pode ser marcado com Exige nº do pedido, e as faturas dele aguardam até que a referência seja preenchida. Ao desativar, o campo é ocultado de novo e o que foi digitado é mantido.",
-    "fleetNumberTitle": "Nº da frota / unidade",
-    "fleetNumberEnabled": "Registrar um número de frota ou de unidade nos veículos",
-    "fleetNumberEnabledMarine": "Registrar um número de frota ou de unidade nas embarcações",
-    "fleetNumberHint": "Adiciona o campo Nº da frota / unidade aos veículos, para o número pelo qual o seu cliente identifica o veículo na frota dele. Ele aparece no veículo e na ordem de serviço, permite encontrar veículos na busca e pode ser impresso em faturas, orçamentos e ordens de serviço pelo designer de documentos. Ao desativar, o campo é ocultado de novo e o que foi digitado é mantido.",
-    "fleetNumberHintMarine": "Adiciona o campo Nº da frota / unidade às embarcações, para o número pelo qual o seu cliente identifica a embarcação na frota dele. Ele aparece na embarcação e na ordem de serviço, permite encontrar embarcações na busca e pode ser impresso em faturas, orçamentos e ordens de serviço pelo designer de documentos. Ao desativar, o campo é ocultado de novo e o que foi digitado é mantido.",
     "unitsTitle": "Unidades",
     "unitsDescription": "Como distâncias, fluidos e peças são escritos nesta oficina.",
     "unitSystem": "Sistema de unidades",

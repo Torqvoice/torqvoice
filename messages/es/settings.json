@@ -1229,7 +1229,26 @@
     "notSavedMissing": "No se ha guardado. Rellena: {fields}",
     "notSavedInvalid": "No se ha guardado. Revisa: {fields}",
     "valueYes": "Sí",
-    "valueNo": "No"
+    "valueNo": "No",
+    "readyMade": {
+      "title": "Campos predefinidos",
+      "description": "Campos que ya vienen con Torqvoice. Cada uno está desactivado hasta que lo actives.",
+      "customerReferenceTitle": "Referencia / n.º de pedido",
+      "customerReferenceEnabled": "Registrar una referencia o número de pedido del cliente en órdenes de trabajo y presupuestos",
+      "customerReferenceHint": "Añade un campo Referencia / n.º de pedido a las órdenes de trabajo, ventas de mostrador y presupuestos, para el número de pedido o la referencia que te da tu cliente. Se puede imprimir en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos, encontrar en la búsqueda y enviar a tu sistema contable. Un cliente se puede marcar con n.º de pedido obligatorio, y sus facturas esperan entonces hasta que se rellene la referencia. Al desactivarlo se oculta de nuevo y se conserva lo introducido.",
+      "fleetNumberTitle": "N.º de flota / unidad",
+      "fleetNumberEnabled": "Registrar un número de flota o de unidad en los vehículos",
+      "fleetNumberEnabledMarine": "Registrar un número de flota o de unidad en las embarcaciones",
+      "fleetNumberHint": "Añade un campo N.º de flota / unidad a los vehículos, para el número con el que tu cliente identifica el vehículo dentro de su propia flota. Se muestra en el vehículo y en la orden de trabajo, permite encontrar vehículos en la búsqueda y se puede imprimir en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos. Al desactivarlo se oculta de nuevo y se conserva lo introducido.",
+      "fleetNumberHintMarine": "Añade un campo N.º de flota / unidad a las embarcaciones, para el número con el que tu cliente identifica la embarcación dentro de su propia flota. Se muestra en la embarcación y en la orden de trabajo, permite encontrar embarcaciones en la búsqueda y se puede imprimir en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos. Al desactivarlo se oculta de nuevo y se conserva lo introducido.",
+      "saved": "Configuración guardada",
+      "failedSave": "Error al guardar la configuración"
+    },
+    "ownFields": {
+      "title": "Tus propios campos",
+      "description": "Campos que defines tú mismo, en órdenes de trabajo, presupuestos, vehículos y clientes.",
+      "descriptionMarine": "Campos que defines tú mismo, en órdenes de trabajo, presupuestos, embarcaciones y clientes."
+    }
   },
   "workshop": {
     "title": "Valores predeterminados del taller",
@@ -1253,14 +1272,6 @@
     "typeKeyTitle": "Clave de tipo alemana (HSN/TSN)",
     "typeKeyEnabled": "Registrar HSN/TSN en los vehículos",
     "typeKeyHint": "Añade a los vehículos la clave del fabricante y del tipo del permiso de circulación alemán (campos 2.1 y 2.2). Aparece en el vehículo, en la orden de trabajo y en todos los documentos impresos, y los vehículos se pueden encontrar por ella en la búsqueda. Al desactivarla se oculta de nuevo y se conserva lo introducido.",
-    "customerReferenceTitle": "Referencia / n.º de pedido",
-    "customerReferenceEnabled": "Registrar una referencia o número de pedido del cliente en órdenes de trabajo y presupuestos",
-    "customerReferenceHint": "Añade un campo Referencia / n.º de pedido a las órdenes de trabajo, ventas de mostrador y presupuestos, para el número de pedido o la referencia que te da tu cliente. Se puede imprimir en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos, encontrar en la búsqueda y enviar a tu sistema contable. Un cliente se puede marcar con n.º de pedido obligatorio, y sus facturas esperan entonces hasta que se rellene la referencia. Al desactivarlo se oculta de nuevo y se conserva lo introducido.",
-    "fleetNumberTitle": "N.º de flota / unidad",
-    "fleetNumberEnabled": "Registrar un número de flota o de unidad en los vehículos",
-    "fleetNumberEnabledMarine": "Registrar un número de flota o de unidad en las embarcaciones",
-    "fleetNumberHint": "Añade un campo N.º de flota / unidad a los vehículos, para el número con el que tu cliente identifica el vehículo dentro de su propia flota. Se muestra en el vehículo y en la orden de trabajo, permite encontrar vehículos en la búsqueda y se puede imprimir en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos. Al desactivarlo se oculta de nuevo y se conserva lo introducido.",
-    "fleetNumberHintMarine": "Añade un campo N.º de flota / unidad a las embarcaciones, para el número con el que tu cliente identifica la embarcación dentro de su propia flota. Se muestra en la embarcación y en la orden de trabajo, permite encontrar embarcaciones en la búsqueda y se puede imprimir en facturas, presupuestos y órdenes de trabajo desde el diseñador de documentos. Al desactivarlo se oculta de nuevo y se conserva lo introducido.",
     "unitsTitle": "Unidades",
     "unitsDescription": "Cómo se escriben las distancias, los líquidos y las piezas en este taller.",
     "unitSystem": "Sistema de unidades",

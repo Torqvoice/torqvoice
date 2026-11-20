@@ -768,7 +768,7 @@
     "requiredToInvoice": "Este cliente precisa de uma referência ou número de encomenda nas faturas. Preencha Referência / n.º de encomenda na ordem de serviço e depois envie a fatura.",
     "saveFailed": "Não foi possível guardar a referência",
     "saved": "Guardado",
-    "notSwitchedOn": "O campo Referência / n.º de encomenda está desativado para esta oficina. Ative-o em Definições, Oficina."
+    "notSwitchedOn": "O campo Referência / n.º de encomenda está desativado para esta oficina. Ative-o em Definições, Faturas e orçamentos, Campos personalizados."
   },
   "photoHandoff": {
     "button": "Adicionar pelo telemóvel",

@@ -142,7 +142,7 @@ describe('the switch', () => {
   })
 
   it('is tied to the same plan in the settings search', () => {
-    const entry = SETTINGS_SEARCH_INDEX.find((e) => e.id === 'workshop.fleetNumber')
+    const entry = SETTINGS_SEARCH_INDEX.find((e) => e.id === 'invoice.fleetNumber')
     expect(entry?.requires).toBe('customFields')
   })
 })

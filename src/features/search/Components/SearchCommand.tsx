@@ -1,6 +1,6 @@
 'use client'
 
-import { useOpenHeavyVehicleSetup } from '@/features/setup/Components/HeavyVehicleSetupCard'
+import { HEAVY_VEHICLE_DOCS_URL } from '@/features/custom-fields/Lib/settingsPath'
 
 import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -383,11 +383,6 @@ export function SearchCommand({
   const go = useGuardedPush()
   const t = useTranslations('search')
   const tSetup = useTranslations('setup.heavyVehicles')
-  // The fleet and heavy vehicle checklist, opened from here on request; a plan
-  // without custom fields gets the upgrade dialog instead.
-  const openHeavySetup = useOpenHeavyVehicleSetup()
-  const openHeavySetupRef = useRef(openHeavySetup)
-  openHeavySetupRef.current = openHeavySetup
   const tNav = useTranslations('navigation.sidebar')
   const tSettings = useTranslations('settings')
   const tIntegrations = useTranslations('integrations')
@@ -503,7 +498,8 @@ export function SearchCommand({
           href: '#',
           title,
           icon: isMarine ? Ship : Truck,
-          run: () => void openHeavySetupRef.current(),
+          // The guide for fleet and heavy vehicle workshops, in a new tab.
+          run: () => void window.open(HEAVY_VEHICLE_DOCS_URL, '_blank', 'noopener,noreferrer'),
         },
         prepared: prepareItem({
           title,

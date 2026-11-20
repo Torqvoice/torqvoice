@@ -8,3 +8,6 @@ export const CUSTOM_FIELDS_SETTINGS_PATH = '/settings/invoice?tab=customFields'
 export function customFieldsSettingsHref(anchor: string): string {
   return `${CUSTOM_FIELDS_SETTINGS_PATH}#${anchor}`
 }
+
+/** The guide for fleet and heavy vehicle workshops; the docs are in every language at this one address. */
+export const HEAVY_VEHICLE_DOCS_URL = 'https://torqvoice.com/docs/heavy-vehicles'

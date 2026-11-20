@@ -768,7 +768,7 @@
     "requiredToInvoice": "Šiam klientui sąskaitose reikia nuorodos arba užsakymo numerio. Darbo užsakyme užpildykite lauką Nuoroda / užsakymo nr., tada siųskite sąskaitą.",
     "saveFailed": "Nepavyko išsaugoti nuorodos",
     "saved": "Išsaugota",
-    "notSwitchedOn": "Laukas Nuoroda / užsakymo nr. šioms dirbtuvėms išjungtas. Įjunkite jį skiltyje Nustatymai, Dirbtuvės."
+    "notSwitchedOn": "Laukas Nuoroda / užsakymo nr. šioms dirbtuvėms išjungtas. Įjunkite jį skiltyje Nustatymai, Sąskaitos ir pasiūlymai, Pasirinktiniai laukai."
   },
   "photoHandoff": {
     "button": "Pridėti iš telefono",

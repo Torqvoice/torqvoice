@@ -768,7 +768,7 @@
     "requiredToInvoice": "Dieser Kunde braucht eine Referenz oder Bestellnummer auf seinen Rechnungen. Fülle Referenz / Bestellnr. am Arbeitsauftrag aus und sende dann die Rechnung.",
     "saveFailed": "Referenz konnte nicht gespeichert werden",
     "saved": "Gespeichert",
-    "notSwitchedOn": "Das Feld Referenz / Bestellnr. ist für diese Werkstatt ausgeschaltet. Schalte es unter Einstellungen, Werkstatt ein."
+    "notSwitchedOn": "Das Feld Referenz / Bestellnr. ist für diese Werkstatt ausgeschaltet. Schalte es unter Einstellungen, Rechnung & Angebote, Benutzerdefinierte Felder ein."
   },
   "photoHandoff": {
     "button": "Vom Handy hinzufügen",

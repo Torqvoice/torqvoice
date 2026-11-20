@@ -768,7 +768,7 @@
     "requiredToInvoice": "Denne kunden trenger en referanse eller et bestillingsnummer på fakturaene sine. Fyll ut Referanse / bestillingsnr. på arbeidsordren, og send deretter fakturaen.",
     "saveFailed": "Kunne ikke lagre referansen",
     "saved": "Lagret",
-    "notSwitchedOn": "Feltet Referanse / bestillingsnr. er slått av for dette verkstedet. Slå det på under Innstillinger, Verksted."
+    "notSwitchedOn": "Feltet Referanse / bestillingsnr. er slått av for dette verkstedet. Slå det på under Innstillinger, Faktura og tilbud, Egendefinerte felter."
   },
   "photoHandoff": {
     "button": "Legg til fra mobil",

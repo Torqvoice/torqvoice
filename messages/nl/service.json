@@ -768,7 +768,7 @@
     "requiredToInvoice": "Deze klant heeft een referentie of inkoopnummer op zijn facturen nodig. Vul Referentie / inkoopnummer in op de werkorder en verstuur daarna de factuur.",
     "saveFailed": "Kan de referentie niet opslaan",
     "saved": "Opgeslagen",
-    "notSwitchedOn": "Het veld Referentie / inkoopnummer staat uit voor deze werkplaats. Zet het aan via Instellingen, Werkplaats."
+    "notSwitchedOn": "Het veld Referentie / inkoopnummer staat uit voor deze werkplaats. Zet het aan via Instellingen, Facturen en offertes, Aangepaste velden."
   },
   "photoHandoff": {
     "button": "Toevoegen via telefoon",

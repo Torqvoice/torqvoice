@@ -768,7 +768,7 @@
     "requiredToInvoice": "This customer needs a reference or PO number on their invoices. Fill in Reference / PO on the work order, then send the invoice.",
     "saveFailed": "Could not save the reference",
     "saved": "Saved",
-    "notSwitchedOn": "The Reference / PO field is switched off for this workshop. Turn it on in Settings, Workshop."
+    "notSwitchedOn": "The Reference / PO field is switched off for this workshop. Turn it on in Settings, Invoice & Quotes, Custom Fields."
   },
   "photoHandoff": {
     "button": "Add from phone",

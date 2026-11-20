@@ -109,7 +109,7 @@ describe('integration settings', () => {
 
 describe('the settings search', () => {
   it('ties the entry to the plan the switch is drawn for', () => {
-    const entry = SETTINGS_SEARCH_INDEX.find((e) => e.id === 'workshop.customerReference')
+    const entry = SETTINGS_SEARCH_INDEX.find((e) => e.id === 'invoice.customerReference')
     expect(entry?.requires).toBe('customFields')
   })
 })

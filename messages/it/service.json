@@ -768,7 +768,7 @@
     "requiredToInvoice": "Questo cliente richiede un riferimento o un numero d'ordine sulle sue fatture. Compila Riferimento / n. ordine sull'ordine di lavoro, poi invia la fattura.",
     "saveFailed": "Impossibile salvare il riferimento",
     "saved": "Salvato",
-    "notSwitchedOn": "Il campo Riferimento / n. ordine è disattivato per questa officina. Attivalo in Impostazioni, Officina."
+    "notSwitchedOn": "Il campo Riferimento / n. ordine è disattivato per questa officina. Attivalo in Impostazioni, Fatture e preventivi, Campi personalizzati."
   },
   "photoHandoff": {
     "button": "Aggiungi dal telefono",

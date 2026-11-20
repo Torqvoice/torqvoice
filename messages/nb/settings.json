@@ -1229,7 +1229,26 @@
     "notSavedMissing": "Ikke lagret. Fyll ut: {fields}",
     "notSavedInvalid": "Ikke lagret. Sjekk: {fields}",
     "valueYes": "Ja",
-    "valueNo": "Nei"
+    "valueNo": "Nei",
+    "readyMade": {
+      "title": "Ferdige felter",
+      "description": "Felter som følger med Torqvoice. Hvert av dem er av til du slår det på.",
+      "customerReferenceTitle": "Referanse / bestillingsnr.",
+      "customerReferenceEnabled": "Registrer kundens referanse eller bestillingsnummer på arbeidsordrer og tilbud",
+      "customerReferenceHint": "Legger til feltet Referanse / bestillingsnr. på arbeidsordrer, disksalg og tilbud, for bestillingsnummeret eller referansen kunden gir deg. Det kan skrives ut på fakturaer, tilbud og arbeidsordrer fra dokumentdesigneren, finnes i søket og sendes til regnskapssystemet ditt. En kunde kan merkes med Krever bestillingsnr., og fakturaene deres venter da til referansen er fylt ut. Slås det av, skjules feltet igjen, og det som er lagt inn beholdes.",
+      "fleetNumberTitle": "Flåte- / enhetsnummer",
+      "fleetNumberEnabled": "Registrer et flåte- eller enhetsnummer på kjøretøy",
+      "fleetNumberEnabledMarine": "Registrer et flåte- eller enhetsnummer på fartøy",
+      "fleetNumberHint": "Legger til feltet Flåte- / enhetsnummer på kjøretøy, for nummeret kunden din bruker på kjøretøyet i sin egen flåte. Det vises på kjøretøyet og arbeidsordren, kjøretøy kan finnes på det i søket, og det kan skrives ut på fakturaer, tilbud og arbeidsordrer fra dokumentdesigneren. Slås det av, skjules feltet igjen, og det som er lagt inn beholdes.",
+      "fleetNumberHintMarine": "Legger til feltet Flåte- / enhetsnummer på fartøy, for nummeret kunden din bruker på fartøyet i sin egen flåte. Det vises på fartøyet og arbeidsordren, fartøy kan finnes på det i søket, og det kan skrives ut på fakturaer, tilbud og arbeidsordrer fra dokumentdesigneren. Slås det av, skjules feltet igjen, og det som er lagt inn beholdes.",
+      "saved": "Innstillinger lagret",
+      "failedSave": "Kunne ikke lagre innstillinger"
+    },
+    "ownFields": {
+      "title": "Dine egne felter",
+      "description": "Felter du lager selv, på arbeidsordrer, tilbud, kjøretøy og kunder.",
+      "descriptionMarine": "Felter du lager selv, på arbeidsordrer, tilbud, fartøy og kunder."
+    }
   },
   "workshop": {
     "title": "Verkstedstandarder",
@@ -1253,14 +1272,6 @@
     "typeKeyTitle": "Tysk typenøkkel (HSN/TSN)",
     "typeKeyEnabled": "Registrer HSN/TSN på kjøretøy",
     "typeKeyHint": "Legger til produsent- og typenøkkelen fra det tyske vognkortet (felt 2.1 og 2.2) på kjøretøy. Den vises på kjøretøyet, arbeidsordren og alle utskrevne dokumenter, og kjøretøy kan finnes med den i søket. Slås den av, skjules den igjen, og det som er lagt inn beholdes.",
-    "customerReferenceTitle": "Referanse / bestillingsnr.",
-    "customerReferenceEnabled": "Registrer kundens referanse eller bestillingsnummer på arbeidsordrer og tilbud",
-    "customerReferenceHint": "Legger til feltet Referanse / bestillingsnr. på arbeidsordrer, disksalg og tilbud, for bestillingsnummeret eller referansen kunden gir deg. Det kan skrives ut på fakturaer, tilbud og arbeidsordrer fra dokumentdesigneren, finnes i søket og sendes til regnskapssystemet ditt. En kunde kan merkes med Krever bestillingsnr., og fakturaene deres venter da til referansen er fylt ut. Slås det av, skjules feltet igjen, og det som er lagt inn beholdes.",
-    "fleetNumberTitle": "Flåte- / enhetsnummer",
-    "fleetNumberEnabled": "Registrer et flåte- eller enhetsnummer på kjøretøy",
-    "fleetNumberEnabledMarine": "Registrer et flåte- eller enhetsnummer på fartøy",
-    "fleetNumberHint": "Legger til feltet Flåte- / enhetsnummer på kjøretøy, for nummeret kunden din bruker på kjøretøyet i sin egen flåte. Det vises på kjøretøyet og arbeidsordren, kjøretøy kan finnes på det i søket, og det kan skrives ut på fakturaer, tilbud og arbeidsordrer fra dokumentdesigneren. Slås det av, skjules feltet igjen, og det som er lagt inn beholdes.",
-    "fleetNumberHintMarine": "Legger til feltet Flåte- / enhetsnummer på fartøy, for nummeret kunden din bruker på fartøyet i sin egen flåte. Det vises på fartøyet og arbeidsordren, fartøy kan finnes på det i søket, og det kan skrives ut på fakturaer, tilbud og arbeidsordrer fra dokumentdesigneren. Slås det av, skjules feltet igjen, og det som er lagt inn beholdes.",
     "unitsTitle": "Enheter",
     "unitsDescription": "Hvordan avstander, væsker og deler skrives i dette verkstedet.",
     "unitSystem": "Enhetssystem",

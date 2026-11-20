@@ -768,7 +768,7 @@
     "requiredToInvoice": "Bu müşteri faturalarında bir referans veya sipariş numarası istiyor. İş emrinde Referans / sipariş no alanını doldurun, ardından faturayı gönderin.",
     "saveFailed": "Referans kaydedilemedi",
     "saved": "Kaydedildi",
-    "notSwitchedOn": "Referans / sipariş no alanı bu atölye için kapalı. Ayarlar, Atölye bölümünden açın."
+    "notSwitchedOn": "Referans / sipariş no alanı bu atölye için kapalı. Ayarlar, Faturalar ve teklifler, Özel alanlar bölümünden açın."
   },
   "photoHandoff": {
     "button": "Telefondan ekle",

@@ -39,9 +39,6 @@ import {
   Plus,
   Tag,
   FileBadge,
-  Hash,
-  Ship,
-  Truck,
 } from 'lucide-react'
 import {
   Select,
@@ -71,12 +68,9 @@ interface TechnicianOption {
 export function WorkshopSettings({
   settings,
   technicians: initialTechnicians = [],
-  customerReferenceAvailable = false,
 }: {
   settings: Record<string, string>
   technicians?: TechnicianOption[]
-  /** The plan has the Reference / PO field; without it the switch is not drawn or saved. */
-  customerReferenceAvailable?: boolean
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
@@ -138,12 +132,6 @@ export function WorkshopSettings({
   )
   const [typeKeyEnabled, setTypeKeyEnabled] = useState(
     settings[SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED] === 'true'
-  )
-  const [customerReferenceEnabled, setCustomerReferenceEnabled] = useState(
-    settings[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] === 'true'
-  )
-  const [fleetNumberEnabled, setFleetNumberEnabled] = useState(
-    settings[SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED] === 'true'
   )
   const [markupAppliesToInventory, setMarkupAppliesToInventory] = useState(
     settings[SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY] === 'true'
@@ -212,14 +200,6 @@ export function WorkshopSettings({
       [SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT]: defaultMarkupPercent,
       [SETTING_KEYS.PARTS_MARKUP_APPLIES_TO_INVENTORY]: markupAppliesToInventory ? 'true' : 'false',
       [SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED]: typeKeyEnabled ? 'true' : 'false',
-      // Not written by a workshop whose plan has no such switch: what it chose
-      // before a downgrade is still there when it comes back.
-      ...(customerReferenceAvailable
-        ? {
-            [SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED]: customerReferenceEnabled ? 'true' : 'false',
-            [SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED]: fleetNumberEnabled ? 'true' : 'false',
-          }
-        : {}),
     })
     setSaving(false)
     router.refresh()
@@ -507,75 +487,6 @@ export function WorkshopSettings({
                     />
                   </Label>
                   <p className="text-sm text-muted-foreground">{t('workshop.typeKeyHint')}</p>
-                </div>
-              </div>
-            </>
-          )}
-
-          {customerReferenceAvailable && (
-            <>
-              <Separator />
-
-              <div className="space-y-4">
-                <div className="flex flex-row items-center gap-3">
-                  <Hash className="h-5 w-5 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold">{t('workshop.customerReferenceTitle')}</h3>
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="customerReferenceEnabled"
-                    className="flex items-center justify-between gap-3"
-                  >
-                    {/* Long enough to wrap on a phone, so it gets room between its lines. */}
-                    <span className="leading-snug">{t('workshop.customerReferenceEnabled')}</span>
-                    <Switch
-                      id="customerReferenceEnabled"
-                      checked={customerReferenceEnabled}
-                      onCheckedChange={setCustomerReferenceEnabled}
-                    />
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t('workshop.customerReferenceHint')}
-                  </p>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="space-y-4">
-                <div className="flex flex-row items-center gap-3">
-                  {serviceType === 'marine' ? (
-                    <Ship className="h-5 w-5 text-muted-foreground" />
-                  ) : (
-                    <Truck className="h-5 w-5 text-muted-foreground" />
-                  )}
-                  <h3 className="text-lg font-semibold">{t('workshop.fleetNumberTitle')}</h3>
-                </div>
-                <div className="space-y-2">
-                  <Label
-                    htmlFor="fleetNumberEnabled"
-                    className="flex items-center justify-between gap-3"
-                  >
-                    <span className="leading-snug">
-                      {t(
-                        serviceType === 'marine'
-                          ? 'workshop.fleetNumberEnabledMarine'
-                          : 'workshop.fleetNumberEnabled'
-                      )}
-                    </span>
-                    <Switch
-                      id="fleetNumberEnabled"
-                      checked={fleetNumberEnabled}
-                      onCheckedChange={setFleetNumberEnabled}
-                    />
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t(
-                      serviceType === 'marine'
-                        ? 'workshop.fleetNumberHintMarine'
-                        : 'workshop.fleetNumberHint'
-                    )}
-                  </p>
                 </div>
               </div>
             </>

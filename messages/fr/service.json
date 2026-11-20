@@ -768,7 +768,7 @@
     "requiredToInvoice": "Ce client exige une référence ou un numéro de commande sur ses factures. Remplissez Référence / n° de commande sur l'ordre de travail, puis envoyez la facture.",
     "saveFailed": "Impossible d'enregistrer la référence",
     "saved": "Enregistré",
-    "notSwitchedOn": "Le champ Référence / n° de commande est désactivé pour cet atelier. Activez-le dans Paramètres, Atelier."
+    "notSwitchedOn": "Le champ Référence / n° de commande est désactivé pour cet atelier. Activez-le dans Paramètres, Factures et devis, Champs personnalisés."
   },
   "photoHandoff": {
     "button": "Ajouter depuis le téléphone",

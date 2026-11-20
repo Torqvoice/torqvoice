@@ -1229,7 +1229,26 @@
     "notSavedMissing": "Nicht gespeichert. Bitte ausfüllen: {fields}",
     "notSavedInvalid": "Nicht gespeichert. Bitte prüfen: {fields}",
     "valueYes": "Ja",
-    "valueNo": "Nein"
+    "valueNo": "Nein",
+    "readyMade": {
+      "title": "Fertige Felder",
+      "description": "Felder, die Torqvoice schon mitbringt. Jedes bleibt aus, bis Sie es einschalten.",
+      "customerReferenceTitle": "Referenz / Bestellnr.",
+      "customerReferenceEnabled": "Kundenreferenz oder Bestellnummer an Arbeitsaufträgen und Angeboten erfassen",
+      "customerReferenceHint": "Ergänzt Arbeitsaufträge, Thekenverkäufe und Angebote um ein Feld Referenz / Bestellnr. für die Bestellnummer oder Referenz, die dir dein Kunde nennt. Sie lässt sich im Dokument-Designer auf Rechnungen, Angebote und Arbeitsaufträge drucken, über die Suche finden und an deine Buchhaltung senden. Ein Kunde kann als Bestellnr. erforderlich markiert werden, seine Rechnungen warten dann, bis die Referenz eingetragen ist. Beim Ausschalten wird das Feld wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
+      "fleetNumberTitle": "Fuhrpark- / Fahrzeugnummer",
+      "fleetNumberEnabled": "Fuhrpark- oder Fahrzeugnummer an Fahrzeugen erfassen",
+      "fleetNumberEnabledMarine": "Fuhrpark- oder Fahrzeugnummer an Wasserfahrzeugen erfassen",
+      "fleetNumberHint": "Ergänzt Fahrzeuge um ein Feld Fuhrpark- / Fahrzeugnummer, für die Nummer, unter der dein Kunde das Fahrzeug in seinem eigenen Fuhrpark führt. Sie wird am Fahrzeug und im Arbeitsauftrag angezeigt, Fahrzeuge lassen sich über die Suche danach finden, und sie lässt sich im Dokument-Designer auf Rechnungen, Angebote und Arbeitsaufträge drucken. Beim Ausschalten wird das Feld wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
+      "fleetNumberHintMarine": "Ergänzt Wasserfahrzeuge um ein Feld Fuhrpark- / Fahrzeugnummer, für die Nummer, unter der dein Kunde das Wasserfahrzeug in seiner eigenen Flotte führt. Sie wird am Wasserfahrzeug und im Arbeitsauftrag angezeigt, Wasserfahrzeuge lassen sich über die Suche danach finden, und sie lässt sich im Dokument-Designer auf Rechnungen, Angebote und Arbeitsaufträge drucken. Beim Ausschalten wird das Feld wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
+      "saved": "Einstellungen gespeichert",
+      "failedSave": "Einstellungen konnten nicht gespeichert werden"
+    },
+    "ownFields": {
+      "title": "Eigene Felder",
+      "description": "Felder, die Sie selbst anlegen, für Aufträge, Angebote, Fahrzeuge und Kunden.",
+      "descriptionMarine": "Felder, die Sie selbst anlegen, für Aufträge, Angebote, Wasserfahrzeuge und Kunden."
+    }
   },
   "workshop": {
     "title": "Werkstatt-Standards",
@@ -1253,14 +1272,6 @@
     "typeKeyTitle": "Deutsche Schlüsselnummer (HSN/TSN)",
     "typeKeyEnabled": "HSN/TSN an Fahrzeugen erfassen",
     "typeKeyHint": "Ergänzt Fahrzeuge um Hersteller- und Typschlüsselnummer aus der Zulassungsbescheinigung Teil I (Felder 2.1 und 2.2). Sie erscheint am Fahrzeug, am Arbeitsauftrag und auf allen gedruckten Dokumenten, und Fahrzeuge lassen sich über die Suche danach finden. Beim Ausschalten wird sie wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
-    "customerReferenceTitle": "Referenz / Bestellnr.",
-    "customerReferenceEnabled": "Kundenreferenz oder Bestellnummer an Arbeitsaufträgen und Angeboten erfassen",
-    "customerReferenceHint": "Ergänzt Arbeitsaufträge, Thekenverkäufe und Angebote um ein Feld Referenz / Bestellnr. für die Bestellnummer oder Referenz, die dir dein Kunde nennt. Sie lässt sich im Dokument-Designer auf Rechnungen, Angebote und Arbeitsaufträge drucken, über die Suche finden und an deine Buchhaltung senden. Ein Kunde kann als Bestellnr. erforderlich markiert werden, seine Rechnungen warten dann, bis die Referenz eingetragen ist. Beim Ausschalten wird das Feld wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
-    "fleetNumberTitle": "Fuhrpark- / Fahrzeugnummer",
-    "fleetNumberEnabled": "Fuhrpark- oder Fahrzeugnummer an Fahrzeugen erfassen",
-    "fleetNumberEnabledMarine": "Fuhrpark- oder Fahrzeugnummer an Wasserfahrzeugen erfassen",
-    "fleetNumberHint": "Ergänzt Fahrzeuge um ein Feld Fuhrpark- / Fahrzeugnummer, für die Nummer, unter der dein Kunde das Fahrzeug in seinem eigenen Fuhrpark führt. Sie wird am Fahrzeug und im Arbeitsauftrag angezeigt, Fahrzeuge lassen sich über die Suche danach finden, und sie lässt sich im Dokument-Designer auf Rechnungen, Angebote und Arbeitsaufträge drucken. Beim Ausschalten wird das Feld wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
-    "fleetNumberHintMarine": "Ergänzt Wasserfahrzeuge um ein Feld Fuhrpark- / Fahrzeugnummer, für die Nummer, unter der dein Kunde das Wasserfahrzeug in seiner eigenen Flotte führt. Sie wird am Wasserfahrzeug und im Arbeitsauftrag angezeigt, Wasserfahrzeuge lassen sich über die Suche danach finden, und sie lässt sich im Dokument-Designer auf Rechnungen, Angebote und Arbeitsaufträge drucken. Beim Ausschalten wird das Feld wieder ausgeblendet, eingegebene Werte bleiben erhalten.",
     "unitsTitle": "Einheiten",
     "unitsDescription": "Wie Strecken, Flüssigkeiten und Teile in dieser Werkstatt angegeben werden.",
     "unitSystem": "Einheitensystem",

@@ -1229,7 +1229,26 @@
     "notSavedMissing": "Nie zapisano. Uzupełnij: {fields}",
     "notSavedInvalid": "Nie zapisano. Sprawdź: {fields}",
     "valueYes": "Tak",
-    "valueNo": "Nie"
+    "valueNo": "Nie",
+    "readyMade": {
+      "title": "Gotowe pola",
+      "description": "Pola dostępne w Torqvoice od razu. Każde jest wyłączone, dopóki go nie włączysz.",
+      "customerReferenceTitle": "Referencja / nr zamówienia",
+      "customerReferenceEnabled": "Zapisuj referencję lub numer zamówienia klienta w zleceniach i wycenach",
+      "customerReferenceHint": "Dodaje pole Referencja / nr zamówienia do zleceń, sprzedaży przy ladzie i wycen, na numer zamówienia lub referencję podaną przez klienta. Można je drukować na fakturach, wycenach i zleceniach za pomocą kreatora dokumentów, wyszukiwać i wysyłać do systemu księgowego. Klienta można oznaczyć jako Wymagany nr zamówienia, a jego faktury czekają wtedy, aż referencja zostanie uzupełniona. Po wyłączeniu pole jest ponownie ukryte, a wprowadzone wartości zostają zachowane.",
+      "fleetNumberTitle": "Numer taborowy / wewnętrzny",
+      "fleetNumberEnabled": "Zapisuj numer taborowy lub wewnętrzny pojazdów",
+      "fleetNumberEnabledMarine": "Zapisuj numer taborowy lub wewnętrzny jednostek pływających",
+      "fleetNumberHint": "Dodaje do pojazdów pole Numer taborowy / wewnętrzny, na numer, pod którym klient prowadzi pojazd we własnej flocie. Jest widoczne przy pojeździe i w zleceniu, pozwala wyszukiwać pojazdy i można je drukować na fakturach, wycenach i zleceniach za pomocą kreatora dokumentów. Po wyłączeniu pole jest ponownie ukryte, a wprowadzone wartości zostają zachowane.",
+      "fleetNumberHintMarine": "Dodaje do jednostek pływających pole Numer taborowy / wewnętrzny, na numer, pod którym klient prowadzi jednostkę pływającą we własnej flocie. Jest widoczne przy jednostce pływającej i w zleceniu, pozwala wyszukiwać jednostki pływające i można je drukować na fakturach, wycenach i zleceniach za pomocą kreatora dokumentów. Po wyłączeniu pole jest ponownie ukryte, a wprowadzone wartości zostają zachowane.",
+      "saved": "Ustawienia zapisane",
+      "failedSave": "Nie udało się zapisać ustawień"
+    },
+    "ownFields": {
+      "title": "Twoje własne pola",
+      "description": "Pola, które tworzysz samodzielnie, dla zleceń, wycen, pojazdów i klientów.",
+      "descriptionMarine": "Pola, które tworzysz samodzielnie, dla zleceń, wycen, jednostek pływających i klientów."
+    }
   },
   "workshop": {
     "title": "Domyślne warsztatu",
@@ -1253,14 +1272,6 @@
     "typeKeyTitle": "Niemiecki klucz typu (HSN/TSN)",
     "typeKeyEnabled": "Zapisuj HSN/TSN przy pojazdach",
     "typeKeyHint": "Dodaje do pojazdów kod producenta i kod typu z niemieckiego dowodu rejestracyjnego (pola 2.1 i 2.2). Jest widoczny przy pojeździe, na zleceniu i na wszystkich drukowanych dokumentach, a wyszukiwarka znajduje po nim pojazdy. Po wyłączeniu jest ponownie ukryty, a wprowadzone wartości zostają zachowane.",
-    "customerReferenceTitle": "Referencja / nr zamówienia",
-    "customerReferenceEnabled": "Zapisuj referencję lub numer zamówienia klienta w zleceniach i wycenach",
-    "customerReferenceHint": "Dodaje pole Referencja / nr zamówienia do zleceń, sprzedaży przy ladzie i wycen, na numer zamówienia lub referencję podaną przez klienta. Można je drukować na fakturach, wycenach i zleceniach za pomocą kreatora dokumentów, wyszukiwać i wysyłać do systemu księgowego. Klienta można oznaczyć jako Wymagany nr zamówienia, a jego faktury czekają wtedy, aż referencja zostanie uzupełniona. Po wyłączeniu pole jest ponownie ukryte, a wprowadzone wartości zostają zachowane.",
-    "fleetNumberTitle": "Numer taborowy / wewnętrzny",
-    "fleetNumberEnabled": "Zapisuj numer taborowy lub wewnętrzny pojazdów",
-    "fleetNumberEnabledMarine": "Zapisuj numer taborowy lub wewnętrzny jednostek pływających",
-    "fleetNumberHint": "Dodaje do pojazdów pole Numer taborowy / wewnętrzny, na numer, pod którym klient prowadzi pojazd we własnej flocie. Jest widoczne przy pojeździe i w zleceniu, pozwala wyszukiwać pojazdy i można je drukować na fakturach, wycenach i zleceniach za pomocą kreatora dokumentów. Po wyłączeniu pole jest ponownie ukryte, a wprowadzone wartości zostają zachowane.",
-    "fleetNumberHintMarine": "Dodaje do jednostek pływających pole Numer taborowy / wewnętrzny, na numer, pod którym klient prowadzi jednostkę pływającą we własnej flocie. Jest widoczne przy jednostce pływającej i w zleceniu, pozwala wyszukiwać jednostki pływające i można je drukować na fakturach, wycenach i zleceniach za pomocą kreatora dokumentów. Po wyłączeniu pole jest ponownie ukryte, a wprowadzone wartości zostają zachowane.",
     "unitsTitle": "Jednostki",
     "unitsDescription": "Jak w tym warsztacie zapisuje się odległości, płyny i części.",
     "unitSystem": "System jednostek",
