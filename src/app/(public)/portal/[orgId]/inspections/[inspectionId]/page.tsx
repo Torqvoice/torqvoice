@@ -83,6 +83,7 @@ export default async function PortalInspectionPage({
   const vehicle = [inspection.vehicle.year, inspection.vehicle.make, inspection.vehicle.model]
     .filter(Boolean)
     .join(' ')
+  const fleetNumber = 'fleetNumber' in inspection.vehicle ? inspection.vehicle.fleetNumber : null
 
   const facts: PortalFact[] = [
     {
@@ -92,6 +93,11 @@ export default async function PortalInspectionPage({
           {vehicle}
           {inspection.vehicle.licensePlate && (
             <PortalPlate>{inspection.vehicle.licensePlate}</PortalPlate>
+          )}
+          {fleetNumber && (
+            <span className="p-muted basis-full text-sm wrap-anywhere">
+              {tVehicles('fleetNumber', { fleetNumber })}
+            </span>
           )}
         </span>
       ),

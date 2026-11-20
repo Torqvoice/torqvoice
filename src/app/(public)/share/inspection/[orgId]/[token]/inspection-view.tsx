@@ -91,6 +91,8 @@ export function InspectionView({
   const t = useTranslations('share.inspection')
   const locale = useLocale()
   const tc = useTranslations('share.common')
+  // The fleet number's caption is the one the invoice and the quote print.
+  const tPrint = useTranslations('pdf.common')
 
   const fmt = dateFormat || DEFAULT_DATE_FORMAT
   const tz = timezone || 'America/New_York'
@@ -340,6 +342,14 @@ export function InspectionView({
                   <div>
                     <dt className="text-xs text-gray-500">{t('plateLabel')}</dt>
                     <dd className="font-mono text-sm">{inspection.vehicle.licensePlate}</dd>
+                  </div>
+                )}
+                {inspection.vehicle.fleetNumber && (
+                  <div>
+                    <dt className="text-xs text-gray-500">{tPrint('fleetNumber')}</dt>
+                    <dd className="font-mono text-sm wrap-anywhere">
+                      {inspection.vehicle.fleetNumber}
+                    </dd>
                   </div>
                 )}
                 {(inspection.vehicle.hsn || inspection.vehicle.tsn) && (

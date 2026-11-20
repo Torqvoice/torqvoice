@@ -14,6 +14,7 @@ import {
   type Condition,
 } from '../Lib/conditions'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import { vehicleName } from '@/lib/vehicle-name'
 
 function fillTemplate(template: string, values: Record<string, string>): string {
@@ -60,6 +61,8 @@ interface InspectionData {
     /** Null unless the workshop records the German type key. */
     hsn?: string | null
     tsn?: string | null
+    /** Null unless the workshop records a fleet / unit number. */
+    fleetNumber?: string | null
     mileage: number | null
     customer?: {
       name: string
@@ -528,6 +531,11 @@ export function InspectionPDF({
                 {labels.plate
                   ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
                   : `Plate: ${data.vehicle.licensePlate}`}
+              </Text>
+            )}
+            {fleetNumberLine(data.vehicle, labels.fleetNumber) && (
+              <Text style={styles.infoTextSmall}>
+                {fleetNumberLine(data.vehicle, labels.fleetNumber)}
               </Text>
             )}
             {typeKeyLine(data.vehicle, labels.typeKey) && (

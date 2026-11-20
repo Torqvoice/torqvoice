@@ -28,6 +28,11 @@ import {
 } from '@/features/inspections/Pdf/certificateDesign'
 import { certificateDocuments } from '@/features/inspections/Lib/certificateDocuments'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  apiFleetNumber,
+  fleetNumberEnabledIn,
+  gateFleetNumber,
+} from '@/features/vehicles/Lib/fleetNumberSetting'
 
 export const revalidate = 60
 
@@ -82,6 +87,8 @@ export default async function PublicInspectionPage({
           hsn: true,
           tsn: true,
           licensePlate: true,
+          // Only the built-in report shows it, and only while the field is on.
+          fleetNumber: true,
           mileage: true,
           // Data minimisation (GDPR Art. 5(1)(c)): this page is reachable by
           // anyone holding the link, so the customer's contact details are
@@ -166,8 +173,22 @@ export default async function PublicInspectionPage({
   // carries the type key while the workshop has it switched off. What the
   // browser gets is named field by field, never the row: a prop of a client
   // component is readable by anyone holding the link, drawn or not.
-  const gatedVehicle = gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap))
-  const publicView = publicInspection({ ...inspection, vehicle: gatedVehicle }, toPublic)
+  //
+  // The fleet number is printed by the built-in report beside the plate, for
+  // a workshop that has the field on; a designed certificate does not print
+  // it, so neither the certificate nor the page carries it then.
+  const typeKeyGated = gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap))
+  const gatedVehicle = apiFleetNumber(typeKeyGated, false)
+  const source = await certificateDesignSource(orgId, inspection, settingsMap)
+  const publicView = publicInspection(
+    {
+      ...inspection,
+      vehicle: source
+        ? gatedVehicle
+        : gateFleetNumber(typeKeyGated, fleetNumberEnabledIn(settingsMap, features)),
+    },
+    toPublic
+  )
 
   const linkedQuote = inspection.quotes?.[0]
   const quoteShareUrl = linkedQuote?.publicToken
@@ -180,7 +201,6 @@ export default async function PublicInspectionPage({
   // before. Photos are the browser's to fetch, through the token's file
   // route, so nothing is embedded here.
   const isVideo = (url: string) => /\.(mp4|webm|mov)$/i.test(url)
-  const source = await certificateDesignSource(orgId, inspection, settingsMap)
   let spec: DocumentSpec | undefined
   if (source) {
     const acceptLanguage = (await headers()).get('accept-language')
