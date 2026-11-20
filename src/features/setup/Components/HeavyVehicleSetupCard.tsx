@@ -9,6 +9,7 @@ import { CheckCircle2, Circle, ExternalLink, Truck, Ship, X } from 'lucide-react
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useServiceType } from '@/components/service-type-context'
+import { useSettingsPermission } from '@/app/(authenticated)/settings/settings-permission-context'
 import { handleGated } from '@/components/upgrade-gate'
 import { cn } from '@/lib/utils'
 import type { HeavyVehicleSetupState } from '../Lib/heavyVehicleSetup.server'
@@ -33,6 +34,7 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
   const isMarine = useServiceType() === 'marine'
   const router = useRouter()
   const [closing, setClosing] = useState(false)
+  const { canEdit } = useSettingsPermission()
 
   const steps: { key: keyof HeavyVehicleSetupState; href: string; title: string; hint: string }[] =
     [
@@ -58,7 +60,7 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
         key: 'meters',
         href: '/settings/custom-fields#meters',
         title: t('metersTitle'),
-        hint: t('metersHint'),
+        hint: t(isMarine ? 'metersHintMarine' : 'metersHint'),
       },
       {
         key: 'equipment',
@@ -102,17 +104,19 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
               {t('progress', { done, total: steps.length })}
             </p>
           </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className="h-7 w-7 shrink-0"
-            onClick={dismiss}
-            disabled={closing}
-            aria-label={t('dismiss')}
-          >
-            <X className="h-4 w-4" />
-          </Button>
+          {canEdit && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 shrink-0"
+              onClick={dismiss}
+              disabled={closing}
+              aria-label={t('dismiss')}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
 
         <ol className="divide-y rounded-lg border">
@@ -153,7 +157,7 @@ export function HeavyVehicleSetupCard({ state }: { state: HeavyVehicleSetupState
           rel="noreferrer"
           className="inline-flex items-center gap-1 text-sm text-primary underline-offset-2 hover:underline"
         >
-          {t('docs')}
+          {t(isMarine ? 'docsMarine' : 'docs')}
           <ExternalLink className="h-3.5 w-3.5" aria-hidden />
         </a>
       </CardContent>
@@ -190,6 +194,9 @@ export function HeavyVehicleSetupLink() {
   const isMarine = useServiceType() === 'marine'
   const open = useOpenHeavyVehicleSetup()
   const [busy, setBusy] = useState(false)
+  // Opening it changes a setting: only for someone who may.
+  const { canEdit } = useSettingsPermission()
+  if (!canEdit) return null
   return (
     <p className="text-sm text-muted-foreground" data-testid="heavy-vehicle-setup-link">
       {t(isMarine ? 'linkLeadMarine' : 'linkLead')}{' '}

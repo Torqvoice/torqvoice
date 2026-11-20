@@ -56,6 +56,10 @@ vi.mock('@/components/upgrade-gate', () => ({
   },
 }))
 vi.mock('@/components/service-type-context', () => ({ useServiceType: () => 'automotive' }))
+const permission = vi.hoisted(() => ({ canEdit: true }))
+vi.mock('@/app/(authenticated)/settings/settings-permission-context', () => ({
+  useSettingsPermission: () => permission,
+}))
 
 import { heavyVehicleSetupState } from '@/features/setup/Lib/heavyVehicleSetup.server'
 import { openHeavyVehicleSetup } from '@/features/setup/Actions/heavyVehicleSetupActions'
@@ -67,6 +71,7 @@ import {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  permission.canEdit = true
   features.customFields = true
   db.appSetting.findFirst.mockResolvedValue(null)
 })
@@ -162,5 +167,28 @@ describe('the checklist', () => {
     expect(link(/guide/)).toHaveAttribute('href', HEAVY_VEHICLE_DOCS_URL)
     // The docs are linked without a language or an anchor.
     expect(HEAVY_VEHICLE_DOCS_URL).toBe('https://torqvoice.com/docs/heavy-vehicles')
+  })
+})
+
+describe('someone who may only read settings', () => {
+  const state = {
+    reference: false,
+    fleetNumber: false,
+    customFields: false,
+    meters: false,
+    equipment: false,
+  }
+
+  it('is not offered the line that opens it', () => {
+    permission.canEdit = false
+    const { container } = render(<HeavyVehicleSetupLink />)
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('sees an open checklist but cannot put it away', () => {
+    permission.canEdit = false
+    render(<HeavyVehicleSetupCard state={state} />)
+    expect(screen.queryByRole('button', { name: 'Close the setup checklist' })).toBeNull()
+    expect(screen.getByRole('link', { name: /Reference \/ PO/ })).toBeInTheDocument()
   })
 })

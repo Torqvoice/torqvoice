@@ -207,6 +207,8 @@ type RecentCustomer = {
 export type SearchConnector = { id: string; name: string; category: string; logo: string }
 
 export type SearchCommandProps = CommandContext & {
+  /** May change settings: the setup checklist command opens on that. */
+  canEditSettings?: boolean
   isCloud?: boolean
   supportEnabled?: boolean
   isMarine?: boolean
@@ -371,6 +373,7 @@ export function SearchCommand({
   tireHotelEnabled,
   aiEnabled,
   isAdminOrOwner,
+  canEditSettings = false,
   isCloud,
   supportEnabled,
   isMarine,
@@ -491,7 +494,7 @@ export function SearchCommand({
       })
     }
 
-    if (canSettings) {
+    if (canSettings && canEditSettings) {
       const title = tSetup(isMarine ? 'commandMarine' : 'command')
       out.push({
         item: {
@@ -518,6 +521,8 @@ export function SearchCommand({
           ],
         }),
       })
+    }
+    if (canSettings) {
       for (const { item, prepared } of settingsItems) {
         const subtitle = item.description
           ? `${item.breadcrumb} · ${item.description}`
@@ -573,6 +578,7 @@ export function SearchCommand({
     tPlate,
     tShortcuts,
     tSetup,
+    canEditSettings,
     openShortcutsHelp,
   ])
 

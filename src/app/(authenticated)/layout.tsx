@@ -145,6 +145,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   let canBook = true
   /** Whether a booking may offer to add the customer it is for. */
   let canAddCustomer = true
+  /** Whether settings can be changed, which the setup checklist command does. */
+  let canEditSettings = true
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
@@ -168,8 +170,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
       canBook = false
       canAddCustomer = false
       hasAnyAccess = false
+      canEditSettings = false
     } else {
       const userPermissions = membership?.customRole?.permissions ?? []
+      canEditSettings = hasPermission(userPermissions, {
+        action: PermissionAction.UPDATE,
+        subject: PermissionSubject.SETTINGS,
+      })
       visibleSubjects = allSubjects.filter((subject) =>
         hasPermission(userPermissions, {
           action: PermissionAction.READ,
@@ -491,6 +498,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                       tireHotelEnabled={tireHotelEnabled}
                                       aiEnabled={aiEnabled}
                                       isAdminOrOwner={isOwnerOrAdmin}
+                                      canEditSettings={canEditSettings}
                                       isCloud={cloudLinked}
                                       supportEnabled={supportEnabled}
                                       isMarine={data.serviceType === 'marine'}
