@@ -1,5 +1,6 @@
 import 'server-only'
 
+import bg from '../../../../messages/bg/portal.json'
 import de from '../../../../messages/de/portal.json'
 import en from '../../../../messages/en/portal.json'
 import es from '../../../../messages/es/portal.json'
@@ -28,7 +29,7 @@ import tr from '../../../../messages/tr/portal.json'
  * Server only: this pulls every locale's portal messages in, which must
  * never reach a browser.
  */
-const PORTAL_MESSAGES = [de, en, es, fr, it, lt, nb, nl, pl, ptBR, ptPT, ru, tr]
+const PORTAL_MESSAGES = [bg, de, en, es, fr, it, lt, nb, nl, pl, ptBR, ptPT, ru, tr]
 
 export const REQUEST_TOPIC_LABELS: ReadonlySet<string> = new Set(
   PORTAL_MESSAGES.flatMap((messages) => Object.values(messages.book.topics)).map((label) =>
