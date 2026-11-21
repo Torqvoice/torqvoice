@@ -3,7 +3,7 @@ import { Circle, Image, Path, Svg, Text, View } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import type { BoxStyle, Node, TextStyle } from '../Spec/documentSpec'
-import { DEFAULT_LINE_HEIGHT, widthOf } from './measure'
+import { DEFAULT_LINE_HEIGHT, type IsLong, longByLength, widthOf, wrapPieces } from './measure'
 
 /**
  * The document model drawn in react-pdf.
@@ -81,26 +81,9 @@ const ALIGN = { start: 'flex-start', center: 'center', end: 'flex-end' } as cons
  * Draw one node. `base` is the block's inherited text look; react-pdf has no
  * style cascade across views, so it is carried down by hand.
  */
-/** Longer than this, a word is one a narrow table column may not hold. */
-const LONG_WORD = 16
-
-type IsLong = (word: string) => boolean
-const longByLength: IsLong = (word) => word.length > LONG_WORD
-
-/**
- * A cell's text as the pieces a wrapping row may break between: each word
- * with the space after it, and a long word one character at a time.
- */
-export function wrapPieces(text: string, isLong: IsLong = longByLength): string[] {
-  const pieces: string[] = []
-  text.split(' ').forEach((word, i) => {
-    // The space between two words stays with the first of them.
-    if (i > 0 && pieces.length) pieces[pieces.length - 1] += ' '
-    if (isLong(word)) pieces.push(...Array.from(word))
-    else if (word) pieces.push(word)
-  })
-  return pieces
-}
+// What counts as a long word, and the pieces it breaks into, are shared with
+// the measuring (measure.ts), so the height estimated is the height drawn.
+export { wrapPieces }
 
 /**
  * Text that may wrap inside a word. react-pdf breaks lines only at spaces,
