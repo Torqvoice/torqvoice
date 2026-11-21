@@ -126,7 +126,7 @@ const ENGINE_HOURS = { id: 'm1', name: 'Engine hours', unit: 'hrs', required: fa
 async function quotePdf() {
   state.rendered = undefined
   await buildQuotePdfBuffer('quote-0000abcd', 'org-1', 'en')
-  const props = state.rendered as Record<string, unknown> & {
+  const props = state.rendered as unknown as Record<string, unknown> & {
     data: { customerReference?: string | null; vehicle: Record<string, unknown> }
   }
   const sheet = JSON.stringify(buildQuotePrintSpec({ ...props, otherAttachmentNames: [] } as never))
