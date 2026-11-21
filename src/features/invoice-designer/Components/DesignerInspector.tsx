@@ -3,7 +3,7 @@
 import { useServiceType } from '@/components/service-type-context'
 import { useMeterTypes } from '@/components/meter-types-context'
 import { useEquipmentTypes } from '@/components/equipment-types-context'
-import { useRef, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useTranslations } from 'next-intl'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
@@ -24,20 +24,23 @@ import {
   FOOTER_SPECIAL_FIELD_IDS,
   SECTIONS_WITH_FIELDS,
   footerColumnsOf,
-  fromCustomFieldId,
-  getBuiltinFieldName,
-  getBuiltinFieldsForSection,
-  fieldShownUnasked,
   layoutDocumentType,
-  NO_CUSTOM_FIELD_SECTIONS,
   photoStyleOf,
-  unmentionedShownFields,
   isCustomFieldId,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { BASE_FONT_SIZE } from '@/features/vehicles/Components/invoice-pdf/styles'
 import { FONT_OPTIONS, fontStack } from './types'
 import { RAIL_FOCUS, railArrow } from './railKeys'
+import {
+  designerFieldName,
+  type FieldGates,
+  type FieldSetting,
+  fieldOffered,
+  fieldWaitingOnSetting,
+  resolveSectionFields,
+} from '../Lib/sectionFields'
+import { type StylingGroupId, stylingGroupTitleKey } from '../Lib/designerSearch'
 import type { DesignerTemplate } from './types'
 
 /** Sections whose body is a table, and so offer line controls. */
@@ -82,9 +85,40 @@ const SWATCHES = [
   '#ee7623',
 ]
 
-function Group({ title, children }: { title: string; children: ReactNode }) {
+/**
+ * How the thing a search led to is pointed out: a pale wash with a blue line
+ * around it, drawn as a shadow so nothing in the panel moves when it fades.
+ */
+const FOUND_MARK = 'rounded-[3px] bg-[#eef2ff] shadow-[0_0_0_5px_#eef2ff,0_0_0_7px_#2563eb]'
+const FOUND_FADE =
+  'transition-[background-color,box-shadow] duration-500 motion-reduce:transition-none'
+
+/** Where a workshop switches on a field the designer cannot offer yet. */
+const SETTING_HREF: Record<FieldSetting, string> = {
+  customerReference: '/settings/invoice?tab=customFields#reference-po',
+  fleetNumber: '/settings/invoice?tab=customFields#fleet-number',
+  meters: '/settings/invoice?tab=customFields#meters',
+}
+
+function Group({
+  title,
+  children,
+  target,
+  marked,
+}: {
+  title: string
+  children: ReactNode
+  /** What the designer's search calls this group, when it can lead here. */
+  target?: string
+  /** A search just led here. */
+  marked?: boolean
+}) {
   return (
-    <div className="border-t border-[#eceef1] pt-2">
+    <div
+      data-search-target={target}
+      data-search-marked={marked || undefined}
+      className={`border-t border-[#eceef1] pt-2 ${FOUND_FADE} ${marked ? FOUND_MARK : ''}`}
+    >
       <div className="pb-2 text-[11.5px] font-semibold uppercase tracking-[0.07em] text-[#8a8f97]">
         {title}
       </div>
@@ -106,9 +140,12 @@ function Toggle({
   on,
   onChange,
   testId,
+  label,
 }: {
   on: boolean
   onChange: (on: boolean) => void
+  /** What the switch turns on or off, for a reader who cannot see the row. */
+  label?: string
   /** Named where it matters, so a test can reach this one rather than the
    *  fifth switch in the panel. */
   testId?: string
@@ -120,9 +157,10 @@ function Toggle({
       // state, and it can be found by role rather than by shape.
       role="switch"
       aria-checked={on}
+      aria-label={label}
       data-testid={testId}
       onClick={() => onChange(!on)}
-      className="relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors"
+      className={`relative h-[22px] w-[38px] shrink-0 rounded-full transition-colors ${RAIL_FOCUS} focus-visible:ring-offset-2`}
       style={{ background: on ? '#2563eb' : '#d7dade' }}
     >
       <span
@@ -370,6 +408,7 @@ export function DesignerInspector({
   onOrgNumberLabel,
   telegramBotLink,
   signatureSet,
+  found,
 }: {
   layout: InvoiceLayoutConfig
   template: DesignerTemplate
@@ -404,29 +443,52 @@ export function DesignerInspector({
   telegramBotLink?: string
   /** Whether the person designing has saved a signature, or the canvas shows a stand-in. */
   signatureSet: boolean
+  /**
+   * What the designer's search just led to: the `data-search-target` of a
+   * row, note, chip or group in this panel. A new `nonce` is a new arrival,
+   * so choosing the same result twice points it out twice.
+   */
+  found?: { target: string; nonce: number } | null
 }) {
   const t = useTranslations('settings.designer')
   const isMarine = useServiceType() === 'marine'
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tField = useTranslations('settings.layoutEditor.fields')
   /** A field's name, whether it is one of ours or one the workshop defined. */
-  const fieldName = (fieldId: string, sectionId?: string) => {
-    // The Equipment section's fields are its columns, named on their own so
-    // "Type" or "Notes" there cannot be mistaken for another section's line.
-    if (sectionId === 'equipment') {
-      const key = `equipment_${fieldId}`
-      return tField.has(key) ? tField(key) : (getBuiltinFieldName(fieldId) ?? fieldId)
-    }
-    if (!isCustomFieldId(fieldId)) {
-      // A field that names the vehicle says boat for a marine workshop.
-      if (isMarine && tField.has(`${fieldId}Marine`)) return tField(`${fieldId}Marine`)
-      return tField.has(fieldId) ? tField(fieldId) : (getBuiltinFieldName(fieldId) ?? fieldId)
-    }
-    const definition = customFields.find((f) => f.id === fromCustomFieldId(fieldId))
-    return definition?.label ?? definition?.name ?? fieldId
-  }
+  const fieldName = (fieldId: string, sectionId?: string) =>
+    designerFieldName(tField, isMarine, customFields, fieldId, sectionId)
   /** A section's name, or its id spaced out when nothing has named it. */
   const sectionName = (id: string) => (tSection.has(id) ? tSection(id) : id.replace(/_/g, ' '))
+  /** The panel, to find and scroll to what a search led to. */
+  const panelRef = useRef<HTMLDivElement>(null)
+  /** The target wearing the mark. It fades after a moment. */
+  const [marked, setMarked] = useState<string | null>(null)
+  const foundTarget = found?.target ?? null
+  const foundNonce = found?.nonce ?? 0
+  // The nonce is the arrival: the same target chosen again is pointed out again.
+  useEffect(() => {
+    setMarked(foundTarget)
+    if (!foundTarget) return
+    const el = panelRef.current?.querySelector<HTMLElement>(`[data-search-target="${foundTarget}"]`)
+    if (el) {
+      el.scrollIntoView({ block: 'center' })
+      // The keyboard lands on what the row is for: its switch, or the first
+      // thing in it that can be pressed.
+      const control = el.matches('button, a')
+        ? el
+        : (el.querySelector<HTMLElement>('[role="switch"]') ??
+          el.querySelector<HTMLElement>('a, button, input, select'))
+      control?.focus({ preventScroll: true })
+    }
+    const timer = window.setTimeout(() => setMarked(null), 4000)
+    return () => window.clearTimeout(timer)
+  }, [foundTarget, foundNonce])
+  /** A Document styling group's title and its name for the search, from one list. */
+  const styling = (id: StylingGroupId) => ({
+    title: t(stylingGroupTitleKey(id)),
+    target: `styling:${id}`,
+    marked: marked === `styling:${id}`,
+  })
   /**
    * The caption printed before the organisation number. Offered wherever the
    * number is looked at, in the header and in the payment panel, and again
@@ -434,7 +496,7 @@ export function DesignerInspector({
    * somebody approaches it. One value: it is the company's, not the block's.
    */
   const orgNumberLabelGroup = (
-    <Group title={t('orgNumberLabel')}>
+    <Group {...styling('orgNumberLabel')}>
       <input
         type="text"
         maxLength={40}
@@ -463,37 +525,11 @@ export function DesignerInspector({
      * them: no list of its own means every built-in field, visible.
      */
     const documentType = layoutDocumentType(layout)
-    const builtins = getBuiltinFieldsForSection(section.id, documentType)
-    const builtinIds = new Set(builtins.map((f) => f.id))
-    const stored = (
-      section.fields ??
-      builtins.map((f) => ({
-        id: f.id,
-        visible: fieldShownUnasked(section.id, f.id, documentType),
-      }))
-    ) // A stored id no builtin list carries any more is a leftover, not a field.
-      .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
-    // A field added after this layout was written still needs its switch.
-    // Without this a saved design, which is loaded as it was stored, can never
-    // reach anything built since, and the option looks simply missing. It
-    // arrives off, except for what the sheet already prints unasked: the rows
-    // that printed before they had a switch, and the ones behind a workshop
-    // switch. The print asks the same question, so the two agree.
-    const shownUnmentioned = new Set(unmentionedShownFields(section.id, stored, documentType))
-    const resolvedFields: InvoiceFieldConfig[] = [
-      ...stored,
-      ...builtins
-        .filter((f) => !stored.some((existing) => existing.id === f.id))
-        .map((f) => ({ id: f.id, visible: shownUnmentioned.has(f.id) })),
-    ]
-    // Workshop-defined fields wait as chips below the list until they are
-    // added, so the list only carries what this section actually uses. The
-    // same field can still be added to several sections.
-    const availableCustomFields = NO_CUSTOM_FIELD_SECTIONS.has(section.id)
-      ? []
-      : customFields.filter(
-          (f) => f.isActive && !stored.some((existing) => existing.id === toCustomFieldId(f.id))
-        )
+    const { resolvedFields, availableCustomFields } = resolveSectionFields(
+      section,
+      documentType,
+      customFields
+    )
     // The footer prints its mark only when the field is switched on, and the
     // controls that dress that mark follow it.
     const footerLogoOn = resolvedFields.some((f) => f.id === 'logo' && f.visible)
@@ -544,18 +580,15 @@ export function DesignerInspector({
     const dragFieldOver = (overId: string) => {
       if (dragFieldId) moveField(dragFieldId, overId)
     }
-    // The rows on screen: the type key's only for a workshop that records it,
-    // and the customer's reference / PO only for one that uses that field, on
-    // the documents that have a job or a quote to take it from.
-    const referenceOffered =
-      customerReferenceEnabled && layoutDocumentType(layout) !== 'certificate'
-    // The fleet number on every document, the certificate included, for a
-    // workshop that records one.
-    const fleetNumberOffered = fleetNumberEnabled
-    // Meter readings, for a workshop that has defined a meter.
-    const metersOffered = metersDefined && layoutDocumentType(layout) !== 'certificate'
+    // The rows on screen: what the workshop has switched on decides which.
+    const gates: FieldGates = {
+      typeKeyEnabled,
+      customerReferenceEnabled,
+      fleetNumberEnabled,
+      metersDefined,
+    }
     // The vehicle's photo, on the invoice, the quote and the work order.
-    const photoOffered = layoutDocumentType(layout) !== 'certificate'
+    const photoOffered = fieldOffered('vehicle', 'vehicle_photo', documentType, gates)
     // Off, or the style it prints in: the same switch the field list shows,
     // so the two can never disagree.
     const photoChoice = resolvedFields.some((f) => f.id === 'vehicle_photo' && f.visible)
@@ -568,16 +601,19 @@ export function DesignerInspector({
         ),
         photoStyle: choice === 'faded' ? 'faded' : undefined,
       })
-    const shownFields = resolvedFields.filter(
-      (field) =>
-        (typeKeyEnabled || field.id !== 'hsn_tsn') &&
-        (referenceOffered || field.id !== 'customer_reference') &&
-        (fleetNumberOffered || field.id !== 'fleet_number') &&
-        (metersOffered || field.id !== 'meter_readings') &&
-        (photoOffered || field.id !== 'vehicle_photo') &&
-        // An equipment item's meters, for a workshop that has defined a meter.
-        (metersDefined || section.id !== 'equipment' || field.id !== 'meters')
+    const shownFields = resolvedFields.filter((field) =>
+      fieldOffered(section.id, field.id, documentType, gates)
     )
+    // The field a search led to that the workshop has not switched on. Asked
+    // again here, so the note is only there while it is true.
+    const settingFieldId = foundTarget?.startsWith('setting:')
+      ? foundTarget.slice('setting:'.length)
+      : null
+    const settingFor = settingFieldId
+      ? fieldWaitingOnSetting(section.id, settingFieldId, documentType, gates)
+      : null
+    const settingNote =
+      settingFieldId && settingFor ? { fieldId: settingFieldId, setting: settingFor } : null
     /**
      * The keyboard's reorder: past the next row up or down that can move, as
      * a drag would. A row printed in a place of its own is stepped over, the
@@ -600,7 +636,10 @@ export function DesignerInspector({
     }
 
     return (
-      <div className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4">
+      <div
+        ref={panelRef}
+        className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4"
+      >
         <button
           type="button"
           onClick={() => onSelect(null)}
@@ -1120,6 +1159,8 @@ export function DesignerInspector({
                 <div
                   key={field.id}
                   data-testid={`field-row-${field.id}`}
+                  data-search-target={`field:${field.id}`}
+                  data-search-marked={marked === `field:${field.id}` || undefined}
                   data-fixed-slot={fieldHasFixedSlot(section.id, field.id) || undefined}
                   // A field the sheet prints in a place of its own offers no
                   // drag, and is no place to drop one either: the position it
@@ -1148,9 +1189,9 @@ export function DesignerInspector({
                     e.preventDefault()
                     stepField(field.id, direction)
                   }}
-                  className={`flex items-center justify-between gap-2 ${
+                  className={`flex items-center justify-between gap-2 ${FOUND_FADE} ${
                     dragFieldId === field.id ? 'opacity-50' : ''
-                  }`}
+                  } ${marked === `field:${field.id}` ? FOUND_MARK : ''}`}
                 >
                   {fieldHasFixedSlot(section.id, field.id) ? (
                     <span
@@ -1217,6 +1258,7 @@ export function DesignerInspector({
                   )}
                   <Toggle
                     testId={`field-${field.id}`}
+                    label={fieldName(field.id, section.id)}
                     on={field.visible}
                     onChange={(visible) =>
                       setFields(
@@ -1226,6 +1268,28 @@ export function DesignerInspector({
                   />
                 </div>
               ))}
+              {settingNote && (
+                // A field the workshop has not switched on has no row to show.
+                // The search still leads here, and this says where the switch is.
+                <div
+                  data-testid="field-needs-setting"
+                  data-search-target={`setting:${settingNote.fieldId}`}
+                  className="rounded-md bg-[#fffbeb] px-2.5 py-2 text-[12.5px] leading-snug text-[#78350f] shadow-[0_0_0_2px_#f59e0b]"
+                >
+                  <div className="text-[13px] font-semibold text-[#1a1d21]">
+                    {fieldName(settingNote.fieldId, section.id)}
+                  </div>
+                  {t('search.needsSettingNote')}{' '}
+                  <a
+                    href={SETTING_HREF[settingNote.setting]}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={`rounded font-semibold text-[#2563eb] underline underline-offset-2 ${RAIL_FOCUS}`}
+                  >
+                    {t('search.openSettings')}
+                  </a>
+                </div>
+              )}
               {availableCustomFields.length > 0 && (
                 <div className="pt-1">
                   <div className="pb-1.5 text-[11.5px] text-[#8a8f97]">{t('yourCustomFields')}</div>
@@ -1234,13 +1298,19 @@ export function DesignerInspector({
                       <button
                         key={field.id}
                         type="button"
+                        data-search-target={`chip:${field.id}`}
+                        data-search-marked={marked === `chip:${field.id}` || undefined}
                         onClick={() =>
                           setFields([
                             ...resolvedFields,
                             { id: toCustomFieldId(field.id), visible: true },
                           ])
                         }
-                        className="rounded-md border border-dashed border-[#c9ccd1] px-2 py-1 text-[12px] text-[#5b6068] hover:border-[#2563eb] hover:text-[#2563eb]"
+                        className={`rounded-md border border-dashed px-2 py-1 text-[12px] hover:border-[#2563eb] hover:text-[#2563eb] ${RAIL_FOCUS} ${
+                          marked === `chip:${field.id}`
+                            ? 'border-[#2563eb] bg-[#eef2ff] text-[#2563eb]'
+                            : 'border-[#c9ccd1] text-[#5b6068]'
+                        }`}
                       >
                         + {field.label || field.name}
                       </button>
@@ -1352,12 +1422,15 @@ export function DesignerInspector({
   }
 
   return (
-    <div className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4">
+    <div
+      ref={panelRef}
+      className="w-[296px] shrink-0 overflow-y-auto border-l border-[#e3e5e9] bg-white p-4"
+    >
       <div className="text-[15px] font-bold">{t('document')}</div>
       <div className="mb-4 text-xs text-[#8a8f97]">{t('documentSubtitle')}</div>
 
       <div className="space-y-3">
-        <Group title={t('headerStyleTitle')}>
+        <Group {...styling('headerStyle')}>
           {/* Not a property of the header section: it decides whether the sheet
               has a band and a rail at all, and what the page's insets are. */}
           <div className="flex flex-col gap-1">
@@ -1382,7 +1455,7 @@ export function DesignerInspector({
           </div>
         </Group>
 
-        <Group title={t('colors')}>
+        <Group {...styling('colors')}>
           <Color
             label={t('primary')}
             value={template.primaryColor}
@@ -1432,7 +1505,7 @@ export function DesignerInspector({
         </Group>
 
         {template.headerStyle === 'framed' && (
-          <Group title={t('frame')}>
+          <Group {...styling('frame')}>
             <div>
               <div className="mb-1.5 text-[13px] font-medium">{t('rail')}</div>
               <Choice
@@ -1480,7 +1553,7 @@ export function DesignerInspector({
           </Group>
         )}
 
-        <Group title={t('typography')}>
+        <Group {...styling('typography')}>
           <select
             value={template.fontFamily}
             onChange={(e) => onTemplate({ fontFamily: e.target.value })}
@@ -1509,7 +1582,7 @@ export function DesignerInspector({
 
         {orgNumberLabelGroup}
 
-        <Group title={t('page')}>
+        <Group {...styling('page')}>
           <Slider
             label={t('margins')}
             value={doc.margin ?? 40}
