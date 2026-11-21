@@ -166,6 +166,37 @@ describe('the meters a job is asked for', () => {
     expect(await missing('complete')).toEqual(['PTO hours'])
   })
 
+  it('are the new vehicle’s for a completed job moved to it, its readings left behind', async () => {
+    // Completed with its reading, on the vehicle it is on.
+    await db.meterReading.create({
+      data: {
+        vehicleMeterId: ids.pto,
+        serviceRecordId: jobId,
+        value: '812.5',
+        readAt: new Date('2026-11-01T10:00:00Z'),
+        organizationId,
+      },
+    })
+    await db.serviceRecord.update({ where: { id: jobId }, data: { status: 'completed' } })
+    const van = await db.vehicle.create({
+      data: { make: 'Ford', model: 'Transit', year: 2021, userId, organizationId },
+    })
+    const pto = await db.meterType.findFirstOrThrow({
+      where: { organizationId, name: 'PTO hours' },
+    })
+    const vanPto = await db.vehicleMeter.create({
+      data: { meterTypeId: pto.id, vehicleId: van.id, organizationId },
+    })
+    const moved = await check.missingRequiredMeters(organizationId, jobId, 'move', {
+      vehicleId: van.id,
+    })
+    expect(moved.map((m) => m.vehicleMeterId)).toEqual([vanPto.id])
+    // Left on its own vehicle, nothing is asked.
+    expect(await check.missingRequiredMeters(organizationId, jobId, 'move', { vehicleId })).toEqual(
+      []
+    )
+  })
+
   it('are none for a job of another workshop asked about by id', async () => {
     expect(await check.missingRequiredMeters(otherOrganizationId, jobId, 'complete')).toEqual([])
   })
