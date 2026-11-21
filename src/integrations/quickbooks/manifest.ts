@@ -61,6 +61,33 @@ export const manifest: ConnectorManifest = {
       showWhen: { key: 'pushInvoices', equals: true },
     },
     {
+      // The customer's own reference / PO from the work order. QuickBooks has
+      // no purchase order number on an invoice, so the workshop says where
+      // it goes: nowhere, the message the customer reads, or one of the
+      // company's own custom fields on sales forms.
+      key: 'customerReference',
+      type: 'select',
+      label: 'customerReference',
+      help: 'customerReferenceHelp',
+      default: 'none',
+      options: [
+        { value: 'none', label: 'customerReferenceNone' },
+        { value: 'memo', label: 'customerReferenceMemo' },
+        { value: 'customField', label: 'customerReferenceCustomField' },
+      ],
+      showWhen: { key: 'pushInvoices', equals: true },
+      requires: 'customerReference',
+    },
+    {
+      key: 'customerReferenceField',
+      type: 'remote-select',
+      label: 'customerReferenceField',
+      help: 'customerReferenceFieldHelp',
+      source: 'salesCustomFields',
+      showWhen: { key: 'customerReference', equals: 'customField' },
+      requires: 'customerReference',
+    },
+    {
       key: 'laborItemId',
       type: 'remote-select',
       label: 'laborItemId',

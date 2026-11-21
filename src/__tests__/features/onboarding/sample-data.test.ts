@@ -141,6 +141,15 @@ describe('removeSampleData', () => {
         field: { organizationId: ORG },
       },
     })
+    // And the ones filled in on a sample vehicle or customer.
+    for (const [entityType, ids] of [
+      ['vehicle', SAMPLE_IDS.vehicles],
+      ['customer', SAMPLE_IDS.customers],
+    ] as const) {
+      expect(db.customFieldValue.deleteMany).toHaveBeenCalledWith({
+        where: { entityType, entityId: { in: ids }, field: { organizationId: ORG } },
+      })
+    }
 
     expect(db.serviceRecord.deleteMany).toHaveBeenCalledWith({
       where: { organizationId: ORG, id: { in: SAMPLE_IDS.serviceRecords } },

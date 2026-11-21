@@ -1,5 +1,7 @@
 'use server'
 
+import { fleetNumberMatch, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { Prisma } from '@/generated/prisma/client'
 import { withAuth } from '@/lib/with-auth'
@@ -12,6 +14,9 @@ import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
 import { accessFor } from '@/lib/viewer-access'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { listAppointments } from '@/features/calendar/Lib/appointmentList.server'
+import { equipmentEnabled } from '@/features/equipment/Lib/equipmentGate.server'
+import { equipmentSerialMatch } from '@/features/equipment/Lib/equipmentSearch'
+import { withMatchedEquipment } from '@/features/equipment/Lib/equipmentSearch.server'
 
 export async function getRecentCustomers() {
   return withAuth(
@@ -72,6 +77,23 @@ export async function globalSearch(query: string) {
       const typeKeyMatch = (word: string): Prisma.VehicleWhereInput[] =>
         typeKeyOn ? typeKeySearchTerms(word) : []
 
+      // The customer's reference / PO finds its work order or quote, for a
+      // workshop that uses the field. Off, it neither matches nor comes back.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
+      const referenceMatch = (
+        word: string
+      ): { customerReference: Prisma.StringNullableFilter }[] =>
+        referenceOn ? [{ customerReference: { contains: word, mode } }] : []
+
+      // The fleet / unit number finds its vehicle, for a workshop that uses
+      // it. Off, it neither matches nor comes back.
+      const fleetNumberOn = await isFleetNumberEnabled(organizationId)
+
+      // A serial number of equipment fitted to a vehicle (a crane, a tail
+      // lift) finds the vehicle it is on now, for a workshop that records
+      // equipment. Off, the query is what it always was.
+      const equipmentOn = await equipmentEnabled(organizationId)
+
       const vehicleWhere: Prisma.VehicleWhereInput = {
         organizationId,
         AND: words.map((word) => {
@@ -81,6 +103,8 @@ export async function globalSearch(query: string) {
             { licensePlate: { contains: word, mode } },
             { vin: { contains: word, mode } },
             ...typeKeyMatch(word),
+            ...fleetNumberMatch(word, fleetNumberOn),
+            ...equipmentSerialMatch(organizationId, word, equipmentOn),
             { customer: { name: { contains: word, mode } } },
           ]
           const year = searchYear(word)
@@ -121,6 +145,7 @@ export async function globalSearch(query: string) {
             licensePlate: true,
             hsn: true,
             tsn: true,
+            ...(fleetNumberOn ? { fleetNumber: true } : {}),
           },
           take: 10,
         }),
@@ -211,6 +236,7 @@ export async function globalSearch(query: string) {
                 { title: { contains: word, mode } },
                 { invoiceNumber: { contains: word, mode } },
                 { techName: { contains: word, mode } },
+                ...referenceMatch(word),
               ],
             })),
           },
@@ -218,6 +244,7 @@ export async function globalSearch(query: string) {
             id: true,
             title: true,
             invoiceNumber: true,
+            customerReference: referenceOn,
             vehicle: {
               select: {
                 id: true,
@@ -271,6 +298,7 @@ export async function globalSearch(query: string) {
                 { title: { contains: word, mode } },
                 { quoteNumber: { contains: word, mode } },
                 { customer: { name: { contains: word, mode } } },
+                ...referenceMatch(word),
               ],
             })),
           },
@@ -279,6 +307,7 @@ export async function globalSearch(query: string) {
             title: true,
             quoteNumber: true,
             status: true,
+            customerReference: referenceOn,
           },
           take: 10,
         }),
@@ -415,7 +444,9 @@ export async function globalSearch(query: string) {
       ])
 
       return {
-        vehicles,
+        vehicles: equipmentOn
+          ? await withMatchedEquipment(organizationId, vehicles, words)
+          : vehicles,
         customers,
         services,
         parts,

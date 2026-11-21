@@ -26,6 +26,8 @@ const NOT_FILES: Record<string, string> = {
   'DocumentDesign.layout': 'section order and switches; the logo is in `template`',
   'DocumentDesignSnapshot.layout': 'the same, frozen',
   'Inspection.markTypesSnapshot': 'the kinds of mark at completion: names, shapes and colours',
+  'EquipmentItem.reportFileName':
+    'the name the examination report was uploaded with; the file is `reportFileUrl`',
   'ExternalCalendarEvent.remoteUrl': 'a link into the calendar provider',
   'ImportBatch.fileName': 'the name of a spreadsheet staged in the temp folder',
   'ImportBatch.mapping': 'column mapping of an import',
@@ -45,6 +47,8 @@ const NOT_FILES: Record<string, string> = {
   'ServiceRecord.issuedData':
     'frozen issuer and customer details; the issued logo is bytes in DocumentAssetSnapshot. The linked inspection results in it remember where a defect photo was, as a note and not a use: the photo belongs to the inspection, and a print leaves out one that has gone',
   'ServiceRecord.issuedLogoSnapshotId': 'the id of a row holding the logo bytes',
+  'ServiceRecord.issuedVehiclePhotoSnapshotId':
+    'the id of a row holding the vehicle photo bytes as issued; the vehicle’s own file is Vehicle.imageUrl',
   'ServiceAttachment.fileName': 'a label',
   'ServiceAttachment.scan':
     'what a fault code scan read out of the file: codes, VIN, odometer; the file is the row itself',

@@ -109,6 +109,7 @@ describe('files that go with a delete', () => {
         findings: [{ imageUrls: ['services/f.jpg'] }],
         conditionMarks: [{ imageUrls: ['services/dent.jpg'] }],
         serviceRequests: [{ attachments: ['portal-uploads/noise.mp4'] }],
+        equipment: [{ reportFileUrl: 'vehicles/crane-report.pdf' }, { reportFileUrl: null }],
       },
     ] as never)
 
@@ -119,6 +120,9 @@ describe('files that go with a delete', () => {
       'services/f.jpg',
       'services/dent.jpg',
       'portal-uploads/noise.mp4',
+      // The examination reports of the equipment on it.
+      'vehicles/crane-report.pdf',
+      null,
       'services/a.jpg',
       'tire-hotel/shared.jpg',
       'services/v.mp4',

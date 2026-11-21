@@ -1,5 +1,9 @@
 'use client'
 
+import {
+  type RecordCustomField,
+  RecordCustomFields,
+} from '@/features/custom-fields/Components/RecordCustomFields'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useCallback, useMemo, useState, useTransition } from 'react'
@@ -73,6 +77,7 @@ import {
 import { SendSmsDialog } from '@/features/sms/Components/SendSmsDialog'
 import { TelegramQrCode } from '@/features/telegram/Components/TelegramQrCode'
 import { useServiceType } from '@/components/service-type-context'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { toast } from 'sonner'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 import { ServiceRequestFiles } from '@/features/portal/Components/ServiceRequestFiles'
@@ -124,6 +129,8 @@ interface QuoteRow {
 }
 
 interface CustomerDetail {
+  /** The workshop's own fields for the customer; none unless it defined some. */
+  customFields?: RecordCustomField[]
   id: string
   customerNumber: string | null
   name: string
@@ -133,6 +140,7 @@ interface CustomerDetail {
   company: string | null
   taxId: string | null
   taxExempt: boolean
+  poRequired?: boolean
   notes: string | null
   invoiceDesignId?: string | null
   /** The design the customer's invoices print with, when one was chosen. */
@@ -215,6 +223,8 @@ export function CustomerDetailClient({
 }) {
   const t = useTranslations('customers.detail')
   const tVehicles = useTranslations('vehicles.list')
+  const tForm = useTranslations('customers.form')
+  const referenceEnabled = useCustomerReferenceEnabled()
   const serviceLabel = useServiceLabels()
   const tQuoteStatus = useTranslations('quotes.statusLabels')
   const quoteStatusLabel = useCallback(
@@ -407,6 +417,14 @@ export function CustomerDetailClient({
                     {t('taxExemptBadge')}
                   </span>
                 )}
+                {referenceEnabled && customer.poRequired && (
+                  <span
+                    data-testid="po-required-badge"
+                    className="rounded-full border border-amber-500/40 bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-700 dark:text-amber-400"
+                  >
+                    {tForm('poRequiredBadge')}
+                  </span>
+                )}
                 {/* A customer on another design is easy to forget about when
                     the workshop redesigns its paper, so it is said up front. */}
                 {customer.invoiceDesign && (
@@ -426,6 +444,7 @@ export function CustomerDetailClient({
                 {customer.notes}
               </p>
             )}
+            <RecordCustomFields fields={customer.customFields} className="mt-2" />
           </div>
           <div className="flex items-center gap-2 shrink-0">
             {aiEnabled && (

@@ -24,6 +24,7 @@ import {
   type CustomFieldIssue,
 } from '@/features/custom-fields/Lib/customFieldValueRules'
 import { Loader2 } from 'lucide-react'
+import type { EntityType } from '@/features/custom-fields/Schema/customFieldSchema'
 import { cn } from '@/lib/utils'
 
 interface FieldWithValue {
@@ -45,7 +46,8 @@ interface FieldWithValue {
  * refused the whole save (a locked document, a missing permission).
  */
 export type CustomFieldsSaveOutcome =
-  | { valid: true }
+  /** `values` is set when they were asked for (`collect`): every field the form shows. */
+  | { valid: true; values?: Record<string, string> }
   | { valid: false; problem?: 'required' | 'invalid'; fields?: string[]; error?: string }
 
 /**
@@ -54,7 +56,29 @@ export type CustomFieldsSaveOutcome =
  * and the scroll position alone; a save they asked for takes them to the
  * first field at fault.
  */
-export type CustomFieldsSave = (options?: { reveal?: boolean }) => Promise<CustomFieldsSaveOutcome>
+export type CustomFieldsSave = (options?: {
+  reveal?: boolean
+  /**
+   * Check what is on the form and write nothing. For a record that does not
+   * exist yet: its dialog checks first, creates the record, then saves the
+   * values under the new id.
+   */
+  checkOnly?: boolean
+  /** The record to save under, when the form was drawn before it existed. */
+  entityId?: string
+  /**
+   * Check what is on the form, write nothing, and hand back every value it
+   * shows. For a form whose record's own save carries the values (the
+   * vehicle's and the customer's): the server checks them again and writes
+   * them with the record, all or nothing.
+   */
+  collect?: boolean
+  /**
+   * The fields the server refused when the record's own save carried the
+   * values: marked on the form like the form's own refusals.
+   */
+  refuse?: CustomFieldError[]
+}) => Promise<CustomFieldsSaveOutcome>
 
 /**
  * A field at fault: the red border, and room kept under it when the browser
@@ -78,11 +102,21 @@ export function CustomFieldsForm({
   onValuesReady,
   onChange,
   locked = false,
+  embedded = false,
 }: {
   entityId?: string
-  entityType: 'service_record' | 'quote'
+  entityType: EntityType
   onValuesReady?: (save: CustomFieldsSave) => void
   onChange?: () => void
+  /**
+   * Drawn inside another form (the vehicle's and the customer's dialogs), laid
+   * out like that form's own fields: side by side in columns, a long text
+   * across the whole row. `true` is a heading and the fields for a form
+   * without cards (the customer's); `'card'` is a card like the ones beside it
+   * (the vehicle's). Nothing is drawn while the fields load, so a dialog that
+   * turns out to have none never flickers.
+   */
+  embedded?: boolean | 'card'
   /**
    * The document is locked and the fields are drawn read-only. Saving them is
    * then no step of the page's save at all: nothing can have changed, and a
@@ -99,6 +133,15 @@ export function CustomFieldsForm({
   // What the server holds for each field, as last loaded or saved. A value
   // left as it was is never re-checked for its type: see the save action.
   const savedValues = useRef<Record<string, string>>({})
+  // The fields and values as they are now, for a save that waited for the
+  // fields to load: its own copy of the state is from before.
+  const fieldsRef = useRef<FieldWithValue[]>([])
+  const valuesRef = useRef<Record<string, string>>({})
+  fieldsRef.current = fields
+  valuesRef.current = values
+  // Settles once the fields have loaded. A save pressed before that waits for
+  // them: checked against no fields at all, a required one would pass unseen.
+  const loaded = useRef<Promise<void>>(Promise.resolve())
   const card = useRef<HTMLDivElement>(null)
   // The field to take the person to, and a count so asking twice for the same
   // field (Save pressed again with nothing fixed) takes them there again.
@@ -119,8 +162,20 @@ export function CustomFieldsForm({
     // header above and of a phone's keyboard below.
     control?.focus({ preventScroll: true })
     const target = wrapper.querySelector<HTMLElement>('[role="alert"]') ?? wrapper
-    target.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
-  }, [reveal])
+    // Inside a dialog only its scrolling body moves: the fields can sit at the
+    // end of it, where the browser would otherwise scroll the dialog itself
+    // to centre them and push its header out of sight.
+    const body = embedded ? target.closest<HTMLElement>('[data-slot="dialog-body"]') : null
+    if (body) {
+      const offset = target.getBoundingClientRect().top - body.getBoundingClientRect().top
+      body.scrollTo?.({
+        top: body.scrollTop + offset - (body.clientHeight - target.offsetHeight) / 2,
+        behavior: 'smooth',
+      })
+    } else {
+      target.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+    }
+  }, [reveal, embedded])
 
   useEffect(() => {
     async function load() {
@@ -129,30 +184,32 @@ export function CustomFieldsForm({
         const result = await getCustomFieldValues(entityId, entityType)
         if (result.success && result.data) {
           setFields(result.data)
+          fieldsRef.current = result.data
           const v: Record<string, string> = {}
           for (const f of result.data) v[f.id] = f.value
           setValues(v)
+          valuesRef.current = v
           savedValues.current = v
         }
       } else {
         const result = await getFieldDefinitions(entityType)
         if (result.success && result.data) {
-          setFields(
-            result.data
-              .filter((d) => d.isActive)
-              .map((d) => ({ ...d, value: d.defaultValue ?? '' }))
-          )
+          const drawn = result.data
+            .filter((d) => d.isActive)
+            .map((d) => ({ ...d, value: d.defaultValue ?? '' }))
+          setFields(drawn)
+          fieldsRef.current = drawn
         }
       }
       setLoading(false)
     }
-    load()
+    loaded.current = load()
   }, [entityId, entityType])
 
   const validate = useCallback((): CustomFieldError[] => {
     const found: CustomFieldError[] = []
-    for (const field of fields) {
-      const val = values[field.id] ?? field.value ?? ''
+    for (const field of fieldsRef.current) {
+      const val = valuesRef.current[field.id] ?? field.value ?? ''
       if (isMissingRequiredValue(field, val)) {
         found.push({ fieldId: field.id, label: field.label, issue: 'required' })
         continue
@@ -162,7 +219,7 @@ export function CustomFieldsForm({
       if (issue) found.push({ fieldId: field.id, label: field.label, issue })
     }
     return found
-  }, [fields, values])
+  }, [])
 
   useEffect(() => {
     if (onValuesReady) {
@@ -184,12 +241,61 @@ export function CustomFieldsForm({
           }
         }
 
+        // Fields not drawn yet: wait for them, then judge what they show.
+        await loaded.current
+        const fields = fieldsRef.current
+        const values = valuesRef.current
+
+        // Refused by the record's own save: a field the form does not show
+        // (added, or made required, while it was open) is drawn first, so
+        // the message has a field to sit under.
+        if (options?.refuse) {
+          const fieldErrors = options.refuse
+          const missing = fieldErrors.some((error) => !fields.some((f) => f.id === error.fieldId))
+          if (missing && entityId) {
+            const fresh = await getCustomFieldValues(entityId, entityType)
+            if (fresh.success && fresh.data) {
+              const current = fresh.data
+              setFields(current)
+              fieldsRef.current = current
+              setValues((typed) => {
+                const next = { ...typed }
+                for (const f of current) if (!(f.id in next)) next[f.id] = f.value
+                return next
+              })
+            }
+          } else if (missing) {
+            const fresh = await getFieldDefinitions(entityType)
+            if (fresh.success && fresh.data) {
+              const current = fresh.data
+                .filter((d) => d.isActive)
+                .map((d) => ({ ...d, value: values[d.id] ?? d.defaultValue ?? '' }))
+              setFields(current)
+              fieldsRef.current = current
+            }
+          }
+          return refused(fieldErrors)
+        }
+
         const found = validate()
         if (found.length > 0) return refused(found)
         setErrors({})
-        if (entityId && Object.keys(values).length > 0) {
+        if (options?.collect) {
+          return {
+            valid: true,
+            values: Object.fromEntries(fields.map((f) => [f.id, values[f.id] ?? f.value ?? ''])),
+          }
+        }
+        if (options?.checkOnly) return { valid: true }
+        const saveUnder = options?.entityId ?? entityId
+        // A record made a moment ago has no stored values: what the form shows
+        // (the defaults, and what was typed over them) is what is saved.
+        const toSave = options?.entityId
+          ? Object.fromEntries(fields.map((f) => [f.id, values[f.id] ?? f.value ?? '']))
+          : values
+        if (saveUnder && Object.keys(toSave).length > 0) {
           // The server checks the same rules again: it is the one that decides.
-          const result = await saveValidatedCustomFieldValues(entityId, entityType, values)
+          const result = await saveValidatedCustomFieldValues(saveUnder, entityType, toSave)
           if (!result.success || !result.data) return { valid: false, error: result.error }
           if (!result.data.saved) {
             const { fieldErrors } = result.data
@@ -197,7 +303,7 @@ export function CustomFieldsForm({
             // while the form was open. Draw the fields as they are now, keeping
             // what was typed, so the message has a field to sit under.
             if (fieldErrors.some((error) => !fields.some((f) => f.id === error.fieldId))) {
-              const fresh = await getCustomFieldValues(entityId, entityType)
+              const fresh = await getCustomFieldValues(saveUnder, entityType)
               if (fresh.success && fresh.data) {
                 const current = fresh.data
                 setFields(current)
@@ -213,12 +319,12 @@ export function CustomFieldsForm({
             }
             return refused(fieldErrors)
           }
-          savedValues.current = { ...savedValues.current, ...values }
+          savedValues.current = { ...savedValues.current, ...toSave }
         }
         return { valid: true }
       })
     }
-  }, [onValuesReady, entityId, entityType, fields, values, validate, locked])
+  }, [onValuesReady, entityId, entityType, validate, locked])
 
   const updateValue = (fieldId: string, value: string) => {
     setValues((prev) => ({ ...prev, [fieldId]: value }))
@@ -234,6 +340,7 @@ export function CustomFieldsForm({
   }
 
   if (loading) {
+    if (embedded) return null
     return (
       <Card>
         <CardContent className="flex items-center justify-center py-6">
@@ -245,108 +352,166 @@ export function CustomFieldsForm({
 
   if (fields.length === 0) return null
 
-  return (
-    <AppCard title={tSettings('formTitle')} contentClassName="space-y-4">
-      <div ref={card} className="space-y-4">
-        {fields.map((field) => {
-          const val = values[field.id] ?? field.value ?? ''
-          const issue = errors[field.id]
-          const hasError = !!issue
-          const errorId = `custom-field-error-${field.id}`
-          const inputId = `custom-field-input-${field.id}`
-          const invalid = {
-            id: inputId,
-            'aria-invalid': hasError || undefined,
-            'aria-describedby': hasError ? errorId : undefined,
-          }
-          return (
-            <div key={field.id} data-testid={`custom-field-${field.id}`} className="space-y-1.5">
-              {field.fieldType !== 'checkbox' && (
+  const list = (
+    <div
+      ref={card}
+      className={cn(
+        embedded === 'card'
+          ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-4'
+          : embedded
+            ? 'grid gap-x-8 gap-y-4 md:grid-cols-2'
+            : 'space-y-4'
+      )}
+    >
+      {fields.map((field) => {
+        const val = values[field.id] ?? field.value ?? ''
+        const issue = errors[field.id]
+        const hasError = !!issue
+        const errorId = `custom-field-error-${field.id}`
+        const inputId = `custom-field-input-${field.id}`
+        const invalid = {
+          id: inputId,
+          'aria-invalid': hasError || undefined,
+          'aria-describedby': hasError ? errorId : undefined,
+        }
+        return (
+          <div
+            key={field.id}
+            data-testid={`custom-field-${field.id}`}
+            className={cn(
+              'min-w-0',
+              embedded ? 'space-y-2' : 'space-y-1.5',
+              embedded && field.fieldType === 'textarea' && 'col-span-full',
+              // Alone in its cell, a tick box lines up with the boxes beside it.
+              embedded && field.fieldType === 'checkbox' && 'flex min-h-9 items-center self-end'
+            )}
+          >
+            {field.fieldType !== 'checkbox' &&
+              (embedded ? (
+                // The star sits against the label, as on the form's own fields.
+                <Label htmlFor={inputId} className={cn(hasError && 'text-destructive')}>
+                  <span>
+                    {field.label}
+                    {field.required && ' *'}
+                  </span>
+                </Label>
+              ) : (
                 <Label htmlFor={inputId} className={cn(hasError && 'text-destructive')}>
                   {field.label}
                   {field.required && <span className="text-destructive ml-1">*</span>}
                 </Label>
-              )}
+              ))}
 
-              {field.fieldType === 'text' && (
-                <Input
-                  value={val}
-                  onChange={(e) => updateValue(field.id, e.target.value)}
-                  className={cn(hasError && INVALID_CLASS)}
-                  {...invalid}
+            {field.fieldType === 'text' && (
+              <Input
+                value={val}
+                onChange={(e) => updateValue(field.id, e.target.value)}
+                className={cn(hasError && INVALID_CLASS)}
+                {...invalid}
+              />
+            )}
+
+            {field.fieldType === 'number' && (
+              <Input
+                type="number"
+                value={val}
+                onChange={(e) => updateValue(field.id, e.target.value)}
+                className={cn(hasError && INVALID_CLASS)}
+                {...invalid}
+              />
+            )}
+
+            {field.fieldType === 'date' && (
+              <DateInput
+                value={val}
+                onChange={(v) => updateValue(field.id, v)}
+                className={cn(hasError && INVALID_CLASS)}
+                {...invalid}
+              />
+            )}
+
+            {field.fieldType === 'textarea' && (
+              <Textarea
+                value={val}
+                onChange={(e) => updateValue(field.id, e.target.value)}
+                rows={3}
+                className={cn(hasError && INVALID_CLASS)}
+                {...invalid}
+              />
+            )}
+
+            {field.fieldType === 'checkbox' && (
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={inputId}
+                  checked={val === 'true'}
+                  onCheckedChange={(checked) => updateValue(field.id, String(checked))}
                 />
-              )}
+                <Label htmlFor={inputId}>{field.label}</Label>
+              </div>
+            )}
 
-              {field.fieldType === 'number' && (
-                <Input
-                  type="number"
-                  value={val}
-                  onChange={(e) => updateValue(field.id, e.target.value)}
-                  className={cn(hasError && INVALID_CLASS)}
-                  {...invalid}
-                />
-              )}
+            {field.fieldType === 'select' && (
+              <SearchableSelect
+                value={val || (field.required ? null : 'none')}
+                onValueChange={(v) => updateValue(field.id, v === 'none' ? '' : v)}
+                className={cn(hasError && 'scroll-mb-10')}
+                {...invalid}
+                options={[
+                  ...(field.required
+                    ? []
+                    : [{ value: 'none', label: tSettings('defaultValueNone') }]),
+                  ...customFieldOptions(field.options).map((option) => ({
+                    value: option,
+                    label: option,
+                  })),
+                ]}
+              />
+            )}
 
-              {field.fieldType === 'date' && (
-                <DateInput
-                  value={val}
-                  onChange={(v) => updateValue(field.id, v)}
-                  className={cn(hasError && INVALID_CLASS)}
-                  {...invalid}
-                />
-              )}
+            {issue && (
+              <p id={errorId} role="alert" className="text-xs text-destructive">
+                {tSettings(ISSUE_MESSAGE[issue], {
+                  label: field.label,
+                  max: CUSTOM_FIELD_VALUE_MAX_LENGTH,
+                })}
+              </p>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
 
-              {field.fieldType === 'textarea' && (
-                <Textarea
-                  value={val}
-                  onChange={(e) => updateValue(field.id, e.target.value)}
-                  rows={3}
-                  className={cn(hasError && INVALID_CLASS)}
-                  {...invalid}
-                />
-              )}
+  if (embedded === 'card') {
+    return (
+      <section
+        className="min-w-0 rounded-xl border bg-card"
+        data-testid={`custom-fields-${entityType}`}
+      >
+        <h3 className="border-b px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
+          {tSettings('formTitle')}
+        </h3>
+        <div className="p-4">{list}</div>
+      </section>
+    )
+  }
 
-              {field.fieldType === 'checkbox' && (
-                <div className="flex items-center gap-2">
-                  <Checkbox
-                    id={inputId}
-                    checked={val === 'true'}
-                    onCheckedChange={(checked) => updateValue(field.id, String(checked))}
-                  />
-                  <Label htmlFor={inputId}>{field.label}</Label>
-                </div>
-              )}
-
-              {field.fieldType === 'select' && (
-                <SearchableSelect
-                  value={val || (field.required ? null : 'none')}
-                  onValueChange={(v) => updateValue(field.id, v === 'none' ? '' : v)}
-                  className={cn(hasError && 'scroll-mb-10')}
-                  {...invalid}
-                  options={[
-                    ...(field.required
-                      ? []
-                      : [{ value: 'none', label: tSettings('defaultValueNone') }]),
-                    ...customFieldOptions(field.options).map((option) => ({
-                      value: option,
-                      label: option,
-                    })),
-                  ]}
-                />
-              )}
-
-              {issue && (
-                <p id={errorId} role="alert" className="text-xs text-destructive">
-                  {tSettings(ISSUE_MESSAGE[issue], {
-                    label: field.label,
-                    max: CUSTOM_FIELD_VALUE_MAX_LENGTH,
-                  })}
-                </p>
-              )}
-            </div>
-          )
-        })}
+  if (embedded) {
+    return (
+      <div className="space-y-4 border-t pt-4" data-testid={`custom-fields-${entityType}`}>
+        {/* Worded and set like the dialog's own headings ("Contact", "Billing"). */}
+        <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {tSettings('formTitle')}
+        </h3>
+        {list}
       </div>
+    )
+  }
+
+  return (
+    <AppCard title={tSettings('formTitle')} contentClassName="space-y-4">
+      {list}
     </AppCard>
   )
 }

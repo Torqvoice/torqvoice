@@ -43,6 +43,10 @@ vi.mock('@/features/inventory/Lib/onInventoryChanged', () => ({
 }))
 vi.mock('@/lib/files/manager', () => ({ releaseFiles: vi.fn().mockResolvedValue(undefined) }))
 
+// The job's meter readings, which these jobs have none of.
+vi.mock('@/features/meters/Lib/jobMeterReading.server', () => ({
+  unlinkJobMeterReadingsFromOtherVehicles: vi.fn(async () => undefined),
+}))
 vi.mock('@/lib/db', () => ({
   db: {
     // Nothing yet in the workshop's number format (src/lib/job-number.ts). A plain
@@ -112,6 +116,7 @@ function transaction(extra: Record<string, unknown> = {}) {
     labor: vi.fn().mockResolvedValue({ count: 0 }),
   }
   const tx = {
+    serviceRecordEquipment: { deleteMany: vi.fn().mockResolvedValue({ count: 0 }) },
     serviceRecord: { create: written.record, update: written.record },
     quote: { create: written.record, update: written.record },
     servicePart: {

@@ -364,6 +364,7 @@
     "summaryPaid": "Zapłacono",
     "summaryLeft": "Do zapłaty",
     "summaryDue": "Termin płatności",
+    "summaryReference": "Państwa referencja / nr zamówienia",
     "summaryDate": "Data",
     "fullInvoice": "Cała faktura"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Nr taborowy: {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mil",
     "engineHours": "Motogodziny: {value}",
@@ -598,6 +600,7 @@
     "number": "Numer wyceny",
     "date": "Data",
     "validUntil": "Ważna do",
+    "reference": "Państwa referencja / nr zamówienia",
     "vehicle": "Pojazd",
     "fullQuote": "Cała wycena",
     "answerTitle": "Warsztat czeka na Twoją odpowiedź",

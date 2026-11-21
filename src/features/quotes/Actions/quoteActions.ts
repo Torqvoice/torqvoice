@@ -1,5 +1,10 @@
 'use server'
 
+import { copyQuoteEquipmentToJob } from '@/features/equipment/Lib/equipmentWorkOn.server'
+import {
+  gateCustomerReference,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { ATTENTION_STATUSES } from '@/features/quotes/Lib/quoteStatus'
 import {
   assertInvoiceEditable,
@@ -85,11 +90,16 @@ export async function getQuotesPaginated(params: {
         where.status = params.status
       }
 
+      // The customer's reference / PO, for a workshop that uses the field.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
       if (params.search) {
         where.OR = [
           { title: { contains: params.search, mode: 'insensitive' } },
           { quoteNumber: { contains: params.search, mode: 'insensitive' } },
           { customer: { name: { contains: params.search, mode: 'insensitive' } } },
+          ...(referenceOn
+            ? [{ customerReference: { contains: params.search, mode: 'insensitive' } }]
+            : []),
         ]
       }
 
@@ -147,7 +157,7 @@ export async function getQuotesPaginated(params: {
       counts.attention = ATTENTION_STATUSES.reduce((sum, status) => sum + (counts[status] ?? 0), 0)
 
       return {
-        records,
+        records: records.map((record) => gateCustomerReference(record, referenceOn)),
         total,
         page,
         pageSize,
@@ -221,9 +231,11 @@ export async function getQuote(quoteId: string) {
       // Missing or foreign-org quote yields null rather than an error: the page
       // renders its not-found state, and this also runs during the post-delete
       // re-render of the quote route.
-      if (!quote?.vehicle) return quote
+      if (!quote) return quote
+      const shown = gateCustomerReference(quote, await isCustomerReferenceEnabled(organizationId))
+      if (!shown.vehicle) return shown
       const enabled = await isTypeKeyEnabled(organizationId)
-      return { ...quote, vehicle: gateTypeKey(quote.vehicle, enabled) }
+      return { ...shown, vehicle: gateTypeKey(shown.vehicle, enabled) }
     },
     { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.QUOTES }] }
   )
@@ -372,6 +384,19 @@ export async function updateQuote(input: unknown) {
             discountType: quoteData.discountType === 'none' ? null : quoteData.discountType,
           },
         })
+
+        // A quote moved to another vehicle (or to none) no longer works on the
+        // old vehicle's equipment, as a job does when it moves. An item that
+        // moved on its own while the quote stayed is still the quote's.
+        if (updated.vehicleId !== existing.vehicleId) {
+          await tx.quoteEquipment.deleteMany({
+            where: {
+              organizationId,
+              quoteId: id,
+              ...(updated.vehicleId ? { item: { vehicleId: { not: updated.vehicleId } } } : {}),
+            },
+          })
+        }
 
         if (partItems !== undefined) {
           await tx.quotePart.deleteMany({ where: { quoteId: id } })
@@ -568,6 +593,8 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
             // would put the technician back to asking.
             tireSetId: quote.tireSetId,
             inspectionId: inspection?.id ?? null,
+            // The customer's reference / PO goes with the work it was given for.
+            customerReference: quote.customerReference,
             shopName: org?.name || undefined,
             invoiceNumber,
             subtotal: quote.subtotal,
@@ -620,6 +647,13 @@ export async function convertQuoteToServiceRecord(quoteId: string, vehicleId: st
 
         // Copy attachments from quote to service record
         await copyQuoteAttachmentsToJob(tx, organizationId, created.id, quote.attachments)
+        // And the equipment it is for.
+        await copyQuoteEquipmentToJob(tx, {
+          organizationId,
+          quoteId: quote.id,
+          jobId: created.id,
+          vehicleId,
+        })
 
         // Marking it converted is what claims it: two clicks at once cannot
         // both raise a job, since the second finds nothing left to claim and
@@ -776,7 +810,9 @@ export async function getQuoteConversionConflicts(quoteId: string, serviceRecord
  * tax basis, the warranty) the caller has to say which the job keeps; the
  * dialog asked, and an answer missing here means the job changed since it
  * did, so nothing is done. The job's title and shop fee were decided when it
- * was created and are not the quote's to change.
+ * was created and are not the quote's to change, nor is its Reference / PO:
+ * a job without one takes the quote's, and one that has a different one keeps
+ * it and the answer names both (`referenceKept`) for the page to say.
  */
 export async function addQuoteToServiceRecord(
   quoteId: string,
@@ -823,6 +859,7 @@ export async function addQuoteToServiceRecord(
           inspectionId: true,
           tireSetId: true,
           serviceDate: true,
+          customerReference: true,
           ...CONFLICT_JOB_SELECT,
         },
       })
@@ -833,6 +870,19 @@ export async function addQuoteToServiceRecord(
       if (!(OPEN_SERVICE_STATUSES as readonly string[]).includes(record.status)) {
         throw new Error('That work order is no longer open')
       }
+
+      // The job's own Reference / PO stands. One that differs from the
+      // quote's is said in the answer, with both, so the quote's is not lost
+      // without a word; only while the workshop uses the field.
+      const jobReference = record.customerReference?.trim() || null
+      const quoteReference = quote.customerReference?.trim() || null
+      const referenceKept =
+        jobReference &&
+        quoteReference &&
+        jobReference !== quoteReference &&
+        (await isCustomerReferenceEnabled(organizationId))
+          ? { job: jobReference, quote: quoteReference }
+          : null
 
       // Every disagreement needs an answer. One the dialog never showed
       // means the job or the quote changed in the meantime; the dialog
@@ -929,12 +979,22 @@ export async function addQuoteToServiceRecord(
         )
 
         await copyQuoteAttachmentsToJob(tx, organizationId, record.id, quote.attachments)
+        await copyQuoteEquipmentToJob(tx, {
+          organizationId,
+          quoteId: quote.id,
+          jobId: record.id,
+          vehicleId: record.vehicleId,
+        })
 
         // Links the job did not have, and the answers to the conflicts. A
         // link it has is never rewritten.
         const changes = {
           ...(inspection ? { inspectionId: inspection.id } : {}),
           ...(!record.tireSetId && quote.tireSetId ? { tireSetId: quote.tireSetId } : {}),
+          // The job's own reference / PO stands; one it lacks comes from the quote.
+          ...(!record.customerReference && quote.customerReference
+            ? { customerReference: quote.customerReference }
+            : {}),
           ...(carriedDiscount !== null
             ? { discountType: 'fixed', discountValue: carriedDiscount }
             : {}),
@@ -961,6 +1021,8 @@ export async function addQuoteToServiceRecord(
         invoiceNumber: record.invoiceNumber,
         convertedFromQuoteId: quoteId,
         quoteRef: quote.quoteNumber ?? quoteId,
+        /** Both references, when the job kept its own over a different one on the quote. */
+        referenceKept,
       }
     },
     {

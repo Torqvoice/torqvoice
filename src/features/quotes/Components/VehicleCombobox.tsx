@@ -22,6 +22,8 @@ interface VehicleOption {
   model: string
   year: number
   licensePlate: string | null
+  /** Null unless the workshop uses the fleet / unit number. */
+  fleetNumber?: string | null
   customerId: string | null
   customer: { id: string; name: string } | null
 }
@@ -42,6 +44,8 @@ interface VehicleComboboxProps {
   emptyLabel?: string
   /** When set, only this customer's vehicles are offered */
   customerId?: string
+  /** A vehicle left out of the list, such as the one something moves away from */
+  excludeId?: string
   /**
    * Shown under the list, e.g. a way to add a vehicle; `close` shuts the
    * list, and `search` is what was typed, for a form that starts from it
@@ -65,6 +69,7 @@ export function VehicleCombobox({
   allowNone = true,
   emptyLabel = 'No vehicles found.',
   customerId,
+  excludeId,
   footer,
   disabled = false,
 }: VehicleComboboxProps) {
@@ -89,6 +94,7 @@ export function VehicleCombobox({
     model: v.model,
     year: v.year,
     licensePlate: v.licensePlate,
+    fleetNumber: v.fleetNumber ?? null,
     customerId: v.customerId,
     customer: v.customer,
   })
@@ -222,7 +228,7 @@ export function VehicleCombobox({
                   {noneLabel}
                 </CommandItem>
               )}
-              {options.map((v) => (
+              {(excludeId ? options.filter((v) => v.id !== excludeId) : options).map((v) => (
                 <CommandItem
                   key={v.id}
                   onSelect={() => {
@@ -239,6 +245,9 @@ export function VehicleCombobox({
                       {vehicleName(v)}
                       {v.licensePlate && (
                         <span className="ml-1.5 text-muted-foreground">· {v.licensePlate}</span>
+                      )}
+                      {v.fleetNumber && (
+                        <span className="ml-1.5 text-muted-foreground">· {v.fleetNumber}</span>
                       )}
                     </p>
                     {v.customer?.name && (

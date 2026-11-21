@@ -364,6 +364,7 @@
     "summaryPaid": "Payé",
     "summaryLeft": "Reste à payer",
     "summaryDue": "Échéance",
+    "summaryReference": "Votre référence / n° de commande",
     "summaryDate": "Date",
     "fullInvoice": "La facture complète"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN : {vin}",
     "vinMarine": "HIN : {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "N° de parc : {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mi",
     "engineHours": "{value} heures moteur",
@@ -598,6 +600,7 @@
     "number": "Numéro de devis",
     "date": "Date",
     "validUntil": "Valable jusqu'au",
+    "reference": "Votre référence / n° de commande",
     "vehicle": "Véhicule",
     "fullQuote": "Le devis complet",
     "answerTitle": "L'atelier attend votre réponse",

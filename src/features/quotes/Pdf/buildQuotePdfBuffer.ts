@@ -15,13 +15,20 @@
  * appended whole where they are PDFs.
  */
 
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { vehiclePhotoForDocument } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
+import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'node:fs/promises'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import { PDFDocument } from 'pdf-lib'
 import React from 'react'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
 import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
@@ -34,6 +41,10 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  customerReferenceEnabledIn,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 
 /** What the quote number is when the workshop's numbering never gave it one. */
 export function quoteNumberOf(quote: { id: string; quoteNumber?: string | null }): string {
@@ -57,6 +68,7 @@ const QUOTE_INCLUDE = {
       licensePlate: true,
       hsn: true,
       tsn: true,
+      fleetNumber: true,
     },
   },
 } as const
@@ -173,13 +185,39 @@ export async function buildQuotePdfBuffer(
   // What the inspection the quote was raised from found, as it stands now and
   // only for a design that prints it: a quote keeps no copy of its own.
   const inspectionResults = await inspectionResultsFor(organizationId, quote, layoutConfig)
+  const template = templateFor(settingsMap)
+  // The vehicle's photo, only for a design that prints it.
+  const vehiclePhoto = await vehiclePhotoForDocument(
+    organizationId,
+    quote.vehicleId,
+    layoutConfig,
+    template
+  )
 
   const element = React.createElement(QuotePDF, {
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
-    data: {
-      ...quote,
-      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
-    },
+    data: gateCustomerReference(
+      {
+        ...quote,
+        vehicle: quote.vehicle && {
+          ...gateFleetNumber(
+            gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+            fleetNumberEnabledIn(settingsMap, features)
+          ),
+          // The vehicle's current meter readings, for a workshop that has meters.
+          meterReadings: await printableMeterReadings(organizationId, {
+            vehicleId: quote.vehicleId,
+          }),
+        },
+        // What is fitted to the vehicle, and the items the quote works on.
+        equipment: await printableEquipment(organizationId, {
+          quoteId: quote.id,
+          vehicleId: quote.vehicleId,
+        }),
+        vehiclePhoto,
+      },
+      customerReferenceEnabledIn(settingsMap, features)
+    ),
     workshop: {
       name: org?.name || '',
       address: settingsMap['workshop.address'] || '',
@@ -197,11 +235,12 @@ export async function buildQuotePdfBuffer(
     timezone: settingsMap['workshop.timezone'] || undefined,
     // The same fallback the invoice prints its distances with.
     unitSystem: settingsMap['workshop.unitSystem'] || 'imperial',
-    template: templateFor(settingsMap),
+    template,
     imageAttachments,
     otherAttachments,
     pdfAttachmentNames: pdfAttachments.map((att) => att.fileName),
     customFields,
+    recordCustomFields: await getRecordCustomFieldsForPrint(organizationId, quote),
     labels,
     locale,
     layoutConfig,

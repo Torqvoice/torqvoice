@@ -1,3 +1,4 @@
+import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { NextRequest, NextResponse } from 'next/server'
 import { canImportAnything } from '@/features/import/Lib/importAccess.server'
 import { getAuthContext } from '@/lib/get-auth-context'
@@ -19,6 +20,7 @@ import { IMPORT_PRESETS, presetById } from '@/features/import/Lib/presets'
 import { stageImport } from '@/features/import/Lib/staging'
 import { suggestMapping } from '@/features/import/Lib/suggest'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 
 export const maxDuration = 120
 
@@ -91,7 +93,10 @@ export async function POST(request: NextRequest) {
   })
 
   const typeKey = await isTypeKeyEnabled(organizationId)
-  const suggestion = suggestMapping(sheet.columns, sheet.rows, entity, presetId, { typeKey })
+  const customerReference = await isCustomerReferenceEnabled(organizationId)
+  const fleetNumber = await isFleetNumberEnabled(organizationId)
+  const offered = { typeKey, customerReference, fleetNumber }
+  const suggestion = suggestMapping(sheet.columns, sheet.rows, entity, presetId, offered)
 
   const [countrySetting, features, aiConfigured] = await Promise.all([
     db.appSetting.findUnique({
@@ -118,7 +123,7 @@ export async function POST(request: NextRequest) {
     sampleRows: sheet.rows.slice(0, SAMPLE_ROWS),
     totalRows: sheet.rows.length,
     suggestion,
-    fields: fieldsFor(entity, { typeKey }).map((f) => ({
+    fields: fieldsFor(entity, offered).map((f) => ({
       key: f.key,
       group: f.group,
       type: f.type,

@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Las facturas de este cliente se imprimen con este diseño en lugar del predeterminado del taller. Una factura puede elegir el suyo.",
     "reminderOptOut": "Sin recordatorios",
     "reminderOptOutHint": "No incluir a este cliente en recordatorios de inspección ni otras campañas.",
+    "poRequired": "N.º de pedido obligatorio",
+    "poRequiredHint": "Las facturas de este cliente esperan hasta que se rellene Referencia / n.º de pedido en la orden de trabajo.",
+    "poRequiredBadge": "Requiere n.º de pedido",
     "bookAppointment": "Reservar cita"
   },
   "serviceRequests": {

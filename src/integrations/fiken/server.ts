@@ -109,6 +109,7 @@ function settingsOf(ctx: ConnectorContext) {
     pushOnComplete: s.pushOnComplete === true,
     startDate: startDate && /^\d{4}-\d{2}-\d{2}$/.test(startDate) ? startDate : null,
     attachPdf: s.attachPdf !== false,
+    customerReferenceInText: s.customerReferenceInText === true,
     laborAccount: str('laborAccount') ?? DEFAULT_INCOME_ACCOUNT,
     partsAccount: str('partsAccount') ?? DEFAULT_INCOME_ACCOUNT,
     zeroVatType: isZeroVatType(zeroVatType) ? zeroVatType : null,
@@ -422,6 +423,10 @@ function whyNotEligible(
   if (!inv.invoiceNumber) return 'no invoice number'
   const issued = Boolean(inv.issuedAt) || (s.pushOnComplete && inv.status === 'completed')
   if (!issued) return 'not issued yet'
+  // Completed, but its customer's invoices need a reference / PO this job
+  // does not have yet. It waits here as it waits in the app; once it has
+  // gone out some other way (sent, paid) it is the ledger's like any other.
+  if (!inv.issuedAt && inv.awaitingReference) return 'waiting for the customer reference / PO'
   if (s.startDate && zonedDayKey(inv.invoiceDate, tz) < s.startDate) {
     return 'dated before the start date'
   }
@@ -648,6 +653,8 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
     vatType,
     zeroVatType: zeroVatType ?? 'NONE',
     timezone: ctx.timezone,
+    // Left out altogether unless switched on, so no other sale's body moves.
+    ...(settings.customerReferenceInText && { customerReferenceInText: true }),
   })
   const checksum = checksumOf(body)
   let link = await linkFor(ctx, slug, INVOICE_ENTITY, serviceRecordId)

@@ -1,4 +1,5 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
+import { meterLine } from '@/features/meters/Lib/meterValue'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { documentNumbers } from '@/lib/document-numbers'
@@ -23,12 +24,16 @@ import {
   frameShadowWidth,
   mixColors,
   type DocumentData,
+  type VehiclePhotoPrint,
   type DocumentTheme,
   type TotalLine,
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { equipmentForPrint } from './equipmentPrint'
+import type { PrintableEquipmentLists } from '@/features/equipment/Lib/equipmentPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import {
   type VisitConditionMap,
   visitConditionMapForPrint,
@@ -63,6 +68,8 @@ export interface QuotePrintData {
   totalAmount: number
   /** The workshop's own note. Never printed: the sheet's note is `description`. */
   notes?: string | null
+  /** The customer's reference / PO, already null for a workshop that has the field off. */
+  customerReference?: string | null
   /** The warranty the customer is offered; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
   warrantyMonths?: number | null
@@ -107,7 +114,24 @@ export interface QuotePrintData {
     licensePlate: string | null
     hsn?: string | null
     tsn?: string | null
+    fleetNumber?: string | null
+    /**
+     * The vehicle's meters besides the odometer as this document prints them,
+     * unformatted: the job's readings on an invoice or work order, the
+     * vehicle's current ones on a quote. Empty while meters are off.
+     */
+    meterReadings?: { name: string; unit: string; value: number }[]
   } | null
+  /**
+   * What is fitted to the vehicle, unformatted: the items the quote works on
+   * and everything on the vehicle now. Absent or empty while equipment is off.
+   */
+  equipment?: PrintableEquipmentLists
+  /**
+   * The vehicle's photo, prepared on the server as data URIs for the style
+   * the design prints it in. Absent when the design does not print it.
+   */
+  vehiclePhoto?: VehiclePhotoPrint
 }
 
 export interface QuotePrintInput {
@@ -128,6 +152,11 @@ export interface QuotePrintInput {
   pdfAttachmentNames?: string[]
   otherAttachmentNames?: string[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
+  /**
+   * The vehicle's and the customer's own custom fields. They print only where
+   * a design places one, and are never added to the extras panel on their own.
+   */
+  recordCustomFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
   /** The document's language, the one its labels are in; numbers are written its way. */
   locale?: string
@@ -219,6 +248,11 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     customer_tax_id: data.customer?.taxId
       ? `${L('customerTaxId', 'Tax ID')}: ${data.customer.taxId}`
       : '',
+    // Empty for a quote without one, and for a workshop that has the field
+    // off: the value is taken away before it reaches here.
+    customer_reference: data.customerReference
+      ? `${L('customerReference', 'Your reference / PO')}: ${data.customerReference}`
+      : '',
     vehicle_name: data.vehicle ? `${vehicleName(data.vehicle)}` : '',
     vin: data.vehicle?.vin
       ? labels.vin
@@ -226,6 +260,12 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
         : `VIN: ${data.vehicle.vin}`
       : '',
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
+    // Empty for a vehicle without one, and for a workshop that has the field off.
+    fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
+    // One line per meter, in the workshop's order; empty without readings.
+    meter_readings: (data.vehicle?.meterReadings ?? [])
+      .map((meter) => meterLine(meter, nums.meter))
+      .join('\n'),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
@@ -252,7 +292,7 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
         : L('validityFooter30', 'This quote is valid for 30 days')
     } · ${shopName}`,
   }
-  for (const cfEntry of input.customFields ?? []) {
+  for (const cfEntry of [...(input.customFields ?? []), ...(input.recordCustomFields ?? [])]) {
     if (cfEntry.value === '' || cfEntry.value == null) continue
     fields[toCustomFieldId(cfEntry.fieldId)] = customFieldLine(cfEntry, {
       labels,
@@ -415,6 +455,10 @@ export function buildQuotePrintSpec(input: QuotePrintInput): DocumentSpec {
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     // What the inspection found, through the certificate's own blocks.
     certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
+    // Both lists; the Equipment section picks one, where a design places it.
+    equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
+    // Only where the design prints it; the Vehicle block places it.
+    vehiclePhoto: data.vehiclePhoto,
     branding: input.torqvoiceLogoDataUri ? { logoDataUri: input.torqvoiceLogoDataUri } : undefined,
     portalUrl: input.portalUrl,
     signature: {

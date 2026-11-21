@@ -109,6 +109,8 @@ vi.mock('@/lib/db', () => ({
     },
     technician: { findFirst: vi.fn(async () => ({ name: 'Andy' })) },
     appSetting: { findFirst: vi.fn(async () => ({ value: 'false' })) },
+    // No meter of the workshop's is required: finishing asks nothing more.
+    meterType: { findFirst: vi.fn(async () => null) },
   },
 }))
 

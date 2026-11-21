@@ -1,8 +1,15 @@
 'use server'
 
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { vehiclePhotoForDocument } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
+import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { readFile } from 'node:fs/promises'
 import { headers } from 'next/headers'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { quoteConditionMap } from '@/features/condition-map/Lib/loadMarks.server'
 import { inspectionResultsFor } from '@/features/inspections/Lib/linkedInspectionResults.server'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
@@ -14,6 +21,10 @@ import { mergeWithDefaults } from '@/features/settings/Schema/invoiceLayoutSchem
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  customerReferenceEnabledIn,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { db } from '@/lib/db'
@@ -71,10 +82,31 @@ export async function getPortalQuote(quoteId: string) {
     const settingsMap: Record<string, string> = {}
     for (const s of settings) settingsMap[s.key] = s.value
 
-    const shownQuote = {
-      ...quote,
-      vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
-    }
+    // Without the type key and without the customer's reference / PO, for a
+    // workshop that has those fields off.
+    const shownQuote = gateCustomerReference(
+      {
+        ...quote,
+        vehicle: quote.vehicle && {
+          ...gateFleetNumber(
+            gateTypeKey(quote.vehicle, typeKeyEnabledIn(settingsMap)),
+            fleetNumberEnabledIn(settingsMap, features)
+          ),
+          // The vehicle's current meter readings, for a workshop that has meters.
+          meterReadings: await printableMeterReadings(organizationId, {
+            vehicleId: quote.vehicleId,
+          }),
+        },
+        // What is fitted to the vehicle, and the items the quote works on.
+        // Only the finished sheet leaves the server, so it prints only where
+        // the design places the Equipment section.
+        equipment: await printableEquipment(organizationId, {
+          quoteId: quote.id,
+          vehicleId: quote.vehicleId,
+        }),
+      },
+      customerReferenceEnabledIn(settingsMap, features)
+    )
     const workshop = {
       name: org?.name || '',
       address: settingsMap['workshop.address'] || '',
@@ -103,8 +135,21 @@ export async function getPortalQuote(quoteId: string) {
       ? undefined
       : await getTorqvoiceLogoDataUri()
 
+    // The vehicle's photo, as a picture inside the sheet and only where the
+    // design prints it: the portal never carries the file's address.
+    const vehiclePhoto = await vehiclePhotoForDocument(
+      organizationId,
+      quote.vehicleId,
+      layoutConfig,
+      {
+        primaryColor: pick('primaryColor') || '#d97706',
+        backgroundColor: pick('backgroundColor') || undefined,
+        textColor: pick('textColor') || undefined,
+      }
+    )
+
     const spec = buildQuotePrintSpec({
-      data: shownQuote,
+      data: { ...shownQuote, vehiclePhoto },
       lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
       workshop,
       currencyCode: resolveCurrencyCode(settingsMap['workshop.currencyCode']),
@@ -129,6 +174,7 @@ export async function getPortalQuote(quoteId: string) {
         logoSize: Number(settingsMap['quote.logoSize']) || 100,
       },
       customFields,
+      recordCustomFields: await getRecordCustomFieldsForPrint(organizationId, quote),
       labels,
       locale,
       layoutConfig,
@@ -140,6 +186,8 @@ export async function getPortalQuote(quoteId: string) {
       id: quote.id,
       title: quote.title,
       quoteNumber: quote.quoteNumber,
+      // The customer's own reference / PO; null for a workshop with the field off.
+      customerReference: shownQuote.customerReference ?? null,
       status: quote.status,
       totalAmount: quote.totalAmount,
       validUntil: quote.validUntil?.toISOString() ?? null,

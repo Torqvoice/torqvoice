@@ -108,6 +108,8 @@ describe('the sections a default sheet prints', () => {
       'condition_map',
       'defects',
       'results_table',
+      // For a workshop that records equipment; equipment-print.test.ts.
+      'equipment',
     ]
     expect([...DEFAULT_SHEET, ...offByDefault].sort()).toEqual(
       BUILTIN_SECTIONS.map((section) => section.id).sort()
@@ -131,7 +133,11 @@ describe('the sections a default sheet prints', () => {
     expect(printed(spec)).toContain('signature')
   })
 
-  it.each(['telegram_qr', 'general'])('leaves %s off the sheet with nothing to print', (id) => {
+  it.each([
+    'telegram_qr',
+    'general',
+    'equipment',
+  ])('leaves %s off the sheet with nothing to print', (id) => {
     // Visible and empty is a real state — a QR code with no bot connected, a
     // custom-fields block with no fields — and the designer's rail says
     // "empty" beside it rather than printing a blank panel.

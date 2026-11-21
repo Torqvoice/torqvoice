@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "İş emri kendi referans / sipariş no bilgisini korudu: {job}. Teklifteki {quote} kopyalanmadı.",
     "convert": "Dönüştür",
     "convertToWorkOrder": "İş Emrine Dönüştür",
     "cancel": "İptal",

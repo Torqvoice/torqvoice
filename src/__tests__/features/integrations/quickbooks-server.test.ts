@@ -40,6 +40,7 @@ vi.mock('@/features/integrations/Lib/accounting-sync', () => ({
   recordPulledPayment: (...args: unknown[]) => recordPulledPayment(...args),
   removePulledPayment: (...args: unknown[]) => removePulledPayment(...args),
   workshopCurrency: () => workshopCurrency(),
+  customerReferenceLabel: async () => 'Your reference / PO',
 }))
 
 const { connector } = await import('@/integrations/quickbooks/server')
@@ -402,6 +403,77 @@ describe('QuickBooks: pushing an invoice', () => {
     const invoiceUpdate = t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))
     expect(invoiceUpdate?.body).toMatchObject({ Id: '100', SyncToken: '4', sparse: true })
     expect((invoiceUpdate?.body?.Line as unknown[]).length).toBe(3)
+  })
+
+  describe('a reference taken off the work order after it was sent', () => {
+    /** Pushes the job with a reference, then again without one, and returns the update sent. */
+    async function removeReference(input: {
+      settings: Record<string, unknown>
+      /** The invoice as QuickBooks holds it when the second push reads it. */
+      held: Record<string, unknown>
+      notes?: string | null
+    }) {
+      const t = makeCtx({
+        settings: input.settings,
+        answer: (call) => {
+          if (call.method === 'GET' && call.path.endsWith('/invoice/100'))
+            return { Invoice: { Id: '100', SyncToken: '4', TotalAmt: 360, ...input.held } }
+          return emptyCompany()(call)
+        },
+      })
+      loadInvoice.mockResolvedValue({ ...invoice, customerReference: 'PO-48213' })
+      await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+      loadInvoice.mockResolvedValue({
+        ...invoice,
+        customerReference: null,
+        notes: input.notes ?? null,
+      })
+      t.calls.length = 0
+      const out = await connector.jobs['accounting.invoice'](t.ctx, { entityId: 'svc1' })
+      expect(out?.summary).toBe('invoice INV-1001 updated')
+      return t.calls.find((c) => c.method === 'POST' && c.path.endsWith('/invoice'))?.body ?? {}
+    }
+
+    it('clears the message the connector wrote, still as it wrote it', async () => {
+      const body = await removeReference({
+        settings: { customerReference: 'memo' },
+        held: { CustomerMemo: { value: 'Your reference / PO: PO-48213' } },
+      })
+      expect(body).toMatchObject({ sparse: true, CustomerMemo: { value: '' } })
+    })
+
+    it('leaves a message the bookkeeper changed in QuickBooks since', async () => {
+      const body = await removeReference({
+        settings: { customerReference: 'memo' },
+        held: { CustomerMemo: { value: 'Your reference / PO: PO-48213\nPaid by bank transfer' } },
+      })
+      expect(body).not.toHaveProperty('CustomerMemo')
+    })
+
+    it('writes the notes in its place when the job has notes', async () => {
+      const body = await removeReference({
+        settings: { customerReference: 'memo' },
+        held: { CustomerMemo: { value: 'Your reference / PO: PO-48213' } },
+        notes: 'Thank you',
+      })
+      expect(body.CustomerMemo).toEqual({ value: 'Thank you' })
+    })
+
+    it('clears the custom field it filled, still as it filled it', async () => {
+      const body = await removeReference({
+        settings: { customerReference: 'customField', customerReferenceField: '2' },
+        held: { CustomField: [{ DefinitionId: '2', Name: 'PO', StringValue: 'PO-48213' }] },
+      })
+      expect(body.CustomField).toEqual([{ DefinitionId: '2', Type: 'StringType', StringValue: '' }])
+    })
+
+    it('leaves a custom field the bookkeeper typed into since', async () => {
+      const body = await removeReference({
+        settings: { customerReference: 'customField', customerReferenceField: '2' },
+        held: { CustomField: [{ DefinitionId: '2', Name: 'PO', StringValue: 'PO-99' }] },
+      })
+      expect(body).not.toHaveProperty('CustomField')
+    })
   })
 
   it('recreates an invoice QuickBooks no longer has', async () => {

@@ -3,6 +3,10 @@ import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
 import type { InspectionResults } from '@/features/inspections/Lib/inspectionResults'
 import { isDefect } from '@/features/inspections/Lib/conditions'
+import type {
+  PrintableEquipment,
+  PrintableEquipmentLists,
+} from '@/features/equipment/Lib/equipmentPrint'
 
 /**
  * What an issued invoice carries with it, beyond its own rows.
@@ -77,6 +81,12 @@ export const issuedInvoiceDataSchema = z
         // Absent on invoices issued before the type key was recorded.
         hsn: z.string().nullable().optional(),
         tsn: z.string().nullable().optional(),
+        // Absent on invoices issued before the fleet number was recorded.
+        fleetNumber: z.string().nullable().optional(),
+        // Absent on invoices issued before meters were recorded.
+        meterReadings: z
+          .array(z.object({ name: z.string(), unit: z.string(), value: z.number() }))
+          .optional(),
         mileage: z.number().optional(),
       })
       .passthrough()
@@ -115,6 +125,23 @@ export const issuedInvoiceDataSchema = z
              * date format. Absent on invoices issued while every document
              * printed "Yes"/"No" and a US long date; those keep that wording.
              */
+            format: z.string().optional(),
+          })
+          .passthrough()
+      )
+      .optional(),
+    /**
+     * The vehicle's and the customer's own custom fields as they stood when
+     * issued. Absent on invoices issued before they could be printed.
+     */
+    recordCustomFields: z
+      .array(
+        z
+          .object({
+            fieldId: z.string(),
+            label: z.string(),
+            value: z.string(),
+            fieldType: z.string(),
             format: z.string().optional(),
           })
           .passthrough()
@@ -204,8 +231,96 @@ export const issuedInvoiceDataSchema = z
       .nullable()
       .optional()
       .catch(null),
+    /**
+     * What was fitted to the vehicle when issued, both lists, unformatted:
+     * the items the job worked on and everything on the vehicle. Absent on
+     * invoices issued before equipment was recorded, which print none and
+     * never borrow today's. Read leniently like the results: a list that
+     * will not read costs only the equipment.
+     */
+    equipment: z
+      .object({
+        job: z.array(frozenEquipmentSchema()),
+        vehicle: z.array(frozenEquipmentSchema()),
+      })
+      .passthrough()
+      .nullable()
+      .optional()
+      .catch(null),
   })
   .passthrough()
+
+/** One item of the frozen equipment, read leniently. */
+function frozenEquipmentSchema() {
+  return z
+    .object({
+      type: z.string(),
+      make: z.string().nullable().optional(),
+      model: z.string().nullable().optional(),
+      serialNumber: z.string().nullable().optional(),
+      manufactureYear: z.number().nullable().optional(),
+      installDate: z.string().nullable().optional(),
+      ratedCapacity: z.string().nullable().optional(),
+      nextExaminationDue: z.string().nullable().optional(),
+      lastExaminedAt: z.string().nullable().optional(),
+      certificateReference: z.string().nullable().optional(),
+      notes: z.string().nullable().optional(),
+      meters: z
+        .array(z.object({ name: z.string(), unit: z.string(), value: z.number() }))
+        .optional(),
+    })
+    .passthrough()
+}
+
+type FrozenEquipment = NonNullable<z.infer<typeof issuedInvoiceDataSchema>['equipment']>
+
+/**
+ * The equipment as the snapshot keeps it, field by field: an item edited or
+ * taken off the vehicle later leaves a sent invoice as it went out. Null when
+ * there was none, so an invoice without equipment stores nothing for it.
+ */
+export function freezeEquipment(
+  lists: PrintableEquipmentLists | null | undefined
+): FrozenEquipment | null {
+  if (!lists || (lists.job.length === 0 && lists.vehicle.length === 0)) return null
+  const item = (e: PrintableEquipment): FrozenEquipment['job'][number] => ({
+    type: e.type,
+    make: e.make,
+    model: e.model,
+    serialNumber: e.serialNumber,
+    manufactureYear: e.manufactureYear,
+    installDate: e.installDate,
+    ratedCapacity: e.ratedCapacity,
+    nextExaminationDue: e.nextExaminationDue,
+    lastExaminedAt: e.lastExaminedAt,
+    certificateReference: e.certificateReference,
+    notes: e.notes,
+    meters: e.meters.map((m) => ({ name: m.name, unit: m.unit, value: m.value })),
+  })
+  return { job: lists.job.map(item), vehicle: lists.vehicle.map(item) }
+}
+
+/**
+ * The frozen equipment in the shape the print reads. An invoice issued
+ * before equipment was recorded has none, and never borrows today's.
+ */
+export function thawEquipment(frozen: FrozenEquipment | null | undefined): PrintableEquipmentLists {
+  const item = (e: FrozenEquipment['job'][number]): PrintableEquipment => ({
+    type: e.type,
+    make: e.make ?? null,
+    model: e.model ?? null,
+    serialNumber: e.serialNumber ?? null,
+    manufactureYear: e.manufactureYear ?? null,
+    installDate: e.installDate ?? null,
+    ratedCapacity: e.ratedCapacity ?? null,
+    nextExaminationDue: e.nextExaminationDue ?? null,
+    lastExaminedAt: e.lastExaminedAt ?? null,
+    certificateReference: e.certificateReference ?? null,
+    notes: e.notes ?? null,
+    meters: e.meters ?? [],
+  })
+  return { job: (frozen?.job ?? []).map(item), vehicle: (frozen?.vehicle ?? []).map(item) }
+}
 
 /** The car's condition this visit, as an invoice prints it, and whether this job asked for it. */
 export type InvoiceConditionMap = {

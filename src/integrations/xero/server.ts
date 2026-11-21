@@ -99,7 +99,7 @@ class XeroError extends Error {
 
 /* ---------- settings and state ---------- */
 
-type ReferenceChoice = 'vehicle' | 'title' | 'invoiceNumber' | 'none'
+type ReferenceChoice = 'vehicle' | 'title' | 'invoiceNumber' | 'customerReference' | 'none'
 
 function settingsOf(ctx: ConnectorContext) {
   const s = ctx.connection.settings
@@ -116,7 +116,10 @@ function settingsOf(ctx: ConnectorContext) {
       ? status
       : 'AUTHORISED') as InvoiceStatus,
     xeroNumbers: s.invoiceNumbers === 'xero',
-    reference: (reference === 'title' || reference === 'invoiceNumber' || reference === 'none'
+    reference: (reference === 'title' ||
+    reference === 'invoiceNumber' ||
+    reference === 'customerReference' ||
+    reference === 'none'
       ? reference
       : 'vehicle') as ReferenceChoice,
     includeVehicle: s.includeVehicle !== false,
@@ -681,6 +684,10 @@ function whyNotEligible(inv: AccountingInvoice, s: Settings, tz: string): string
   if (!inv.invoiceNumber) return 'no invoice number'
   const issued = Boolean(inv.issuedAt) || (s.pushOnComplete && inv.status === 'completed')
   if (!issued) return 'not issued yet'
+  // Completed, but its customer's invoices need a reference / PO this job
+  // does not have yet. It waits here as it waits in the app; once it has
+  // gone out some other way (sent, paid) it is the ledger's like any other.
+  if (!inv.issuedAt && inv.awaitingReference) return 'waiting for the customer reference / PO'
   if (s.startDate && zonedDayKey(inv.invoiceDate, tz) < s.startDate) {
     return 'dated before the start date'
   }

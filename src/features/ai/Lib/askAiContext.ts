@@ -1,5 +1,12 @@
 import 'server-only'
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import {
+  type EquipmentItemView,
+  vehicleEquipmentView,
+} from '@/features/equipment/Lib/equipment.server'
+import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { db } from '@/lib/db'
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 import { zonedDayKey } from '@/lib/timezone'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
@@ -30,6 +37,12 @@ export interface AskAiContextOptions {
   currencyCode: string
   unitSystem: 'metric' | 'imperial'
   timeZone: string
+  /**
+   * Whether the workshop uses the Reference / PO field. Worked out here, by
+   * buildAskAiContext, so no caller has to know to ask: off, the model is
+   * told nothing about a reference or about "PO required".
+   */
+  customerReference?: boolean
 }
 
 export interface AskAiContext {
@@ -56,6 +69,7 @@ const MAX_CUSTOMER_VEHICLES = 40
 const MAX_CUSTOMER_JOBS = 60
 const MAX_MESSAGES = 40
 const MAX_FREE_TEXT = 400
+const MAX_EQUIPMENT_HISTORY = 30
 
 /** Lines are appended in order of usefulness until the budget runs out. */
 class Budget {
@@ -123,6 +137,7 @@ type JobRow = {
   serviceDate: Date
   startDateTime: Date | null
   invoiceNumber: string | null
+  customerReference: string | null
   manuallyPaid: boolean
   technician: { name: string } | null
   vehicle: {
@@ -150,6 +165,7 @@ const jobSelect = {
   serviceDate: true,
   startDateTime: true,
   invoiceNumber: true,
+  customerReference: true,
   manuallyPaid: true,
   technician: { select: { name: true } },
   vehicle: { select: { id: true, year: true, make: true, model: true, licensePlate: true } },
@@ -188,6 +204,7 @@ function jobOneLine(job: JobRow, o: AskAiContextOptions, withVehicle: boolean): 
     ['status', job.status],
     ['type', job.type],
     ['invoice', job.invoiceNumber],
+    ['customer reference / PO', o.customerReference ? job.customerReference : undefined],
     ['mileage', job.mileage],
   ]
   if (o.showMoney) {
@@ -240,6 +257,27 @@ function jobDetail(job: JobRow, o: AskAiContextOptions, withVehicle: boolean): s
   return lines
 }
 
+/** One piece of equipment, with what it is and when it is next examined. */
+function equipmentLine(item: EquipmentItemView): string {
+  const meters = item.meters
+    .filter((m) => m.current !== null)
+    .map(
+      (m) => [`meter: ${m.name}`, `${m.current}${m.unit ? ` ${m.unit}` : ''}`] as [string, string]
+    )
+  return `- ${item.typeName} [${fields([
+    ['make', item.make],
+    ['model', item.model],
+    ['serial number', item.serialNumber],
+    ['manufactured', item.manufactureDay ?? item.manufactureYear],
+    ['installed', item.installDate],
+    ['rated capacity', item.ratedCapacity],
+    ['last examined', item.lastExaminedAt],
+    ['next examination due', item.nextExaminationDue],
+    ['certificate', item.certificateReference],
+    ...meters,
+  ])}]${item.notes ? ` notes: ${clip(item.notes, 200)}` : ''}`
+}
+
 async function vehicleContext(
   organizationId: string,
   vehicleId: string,
@@ -263,6 +301,7 @@ async function vehicleContext(
       engineCode: true,
       hsn: true,
       tsn: true,
+      fleetNumber: true,
       purchaseDate: true,
       purchasePrice: true,
       isArchived: true,
@@ -350,9 +389,22 @@ async function vehicleContext(
           ? formatTypeKey(vehicle.hsn, vehicle.tsn) || undefined
           : undefined,
       ],
+      [
+        'fleet / unit number',
+        (await isFleetNumberEnabled(organizationId)) ? vehicle.fleetNumber : undefined,
+      ],
       ['purchased', dayOf(vehicle.purchaseDate, o.timeZone)],
       ['purchase price', o.showMoney ? money(vehicle.purchasePrice, o.currencyCode) : undefined],
       ['archived', vehicle.isArchived ? (vehicle.archiveReason ?? 'yes') : undefined],
+      // The vehicle's other meters as they read now, for a workshop that has
+      // meters; nothing is said about them otherwise.
+      ...(await printableMeterReadings(organizationId, { vehicleId: vehicle.id })).map(
+        (meter) =>
+          [`meter: ${meter.name}`, `${meter.value}${meter.unit ? ` ${meter.unit}` : ''}`] as [
+            string,
+            string,
+          ]
+      ),
     ])
   )
   if (vehicle.customer) {
@@ -367,6 +419,24 @@ async function vehicleContext(
     )
   } else {
     b.add('owner: none recorded')
+  }
+
+  // Equipment fitted to the vehicle (a crane, a tail lift), for a workshop
+  // that records it; nothing is said about it otherwise.
+  const equipment = await vehicleEquipmentView(organizationId, vehicle.id)
+  if (equipment) {
+    b.section('Equipment fitted now', equipment.items.map(equipmentLine))
+    b.section(
+      'Equipment no longer on this vehicle, most recent first',
+      equipment.history.slice(0, MAX_EQUIPMENT_HISTORY).map(
+        (h) =>
+          `${equipmentLine(h.item)} (${fields([
+            ['fitted', dayOf(new Date(h.fittedAt), o.timeZone)],
+            [h.endReason === 'moved' ? 'moved' : 'removed', dayOf(new Date(h.endedAt), o.timeZone)],
+            ['moved to', h.movedTo?.name],
+          ])})`
+      )
+    )
   }
 
   const recent = vehicle.serviceRecords.slice(0, RECENT_JOBS_IN_DETAIL)
@@ -471,6 +541,7 @@ async function customerContext(
       address: true,
       taxExempt: true,
       reminderOptOut: true,
+      poRequired: true,
       notes: true,
       createdAt: true,
       vehicles: {
@@ -548,6 +619,10 @@ async function customerContext(
       ['address', clip(customer.address, 200)],
       ['tax exempt', customer.taxExempt ? 'yes' : undefined],
       ['opted out of reminders and campaigns', customer.reminderOptOut ? 'yes' : undefined],
+      [
+        'invoices need a reference / PO',
+        o.customerReference && customer.poRequired ? 'yes' : undefined,
+      ],
       ['customer since', dayOf(customer.createdAt, o.timeZone)],
     ])
   )
@@ -615,9 +690,13 @@ export async function buildAskAiContext(
   subject: AskAiSubject,
   options: AskAiContextOptions
 ): Promise<AskAiContext | null> {
+  const o = {
+    ...options,
+    customerReference: await isCustomerReferenceEnabled(organizationId),
+  }
   return subject.type === 'vehicle'
-    ? vehicleContext(organizationId, subject.id, options)
-    : customerContext(organizationId, subject.id, options)
+    ? vehicleContext(organizationId, subject.id, o)
+    : customerContext(organizationId, subject.id, o)
 }
 
 /**

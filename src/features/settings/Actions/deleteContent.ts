@@ -82,6 +82,8 @@ export async function deleteContent(input: unknown) {
         )
 
         await db.vehicle.deleteMany({ where: { organizationId } })
+        // The vehicles' own values go the same way, by the ids read above.
+        await deleteCustomFieldValuesOf(db, organizationId, 'vehicle', vehicleIds)
         // Counter sales have no vehicle so the cascade above misses them, but
         // their attachment files were already collected for cleanup — delete the
         // records too so no orphaned work orders survive.
@@ -109,7 +111,11 @@ export async function deleteContent(input: unknown) {
       // Vehicles with this customer get customerId set to null (SetNull).
       // Quotes with this customer get customerId set to null (SetNull).
       if (selections.customers) {
+        const customerIds = await idsOf(
+          db.customer.findMany({ where: { organizationId }, select: { id: true } })
+        )
         await db.customer.deleteMany({ where: { organizationId } })
+        await deleteCustomFieldValuesOf(db, organizationId, 'customer', customerIds)
         deleted.push('customers')
       }
 

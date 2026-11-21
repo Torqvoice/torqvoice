@@ -1,51 +1,57 @@
 model ServiceRecord {
-  id              String    @id @default(cuid())
-  title           String
-  description     String?
-  type            String    @default("maintenance")
-  status          String    @default("completed")
-  cost            Float     @default(0)
-  mileage         Int?
-  serviceDate     DateTime  @default(now())
-  startDateTime   DateTime?
-  endDateTime     DateTime?
+  id                String    @id @default(cuid())
+  title             String
+  description       String?
+  type              String    @default("maintenance")
+  status            String    @default("completed")
+  cost              Float     @default(0)
+  mileage           Int?
+  serviceDate       DateTime  @default(now())
+  startDateTime     DateTime?
+  endDateTime       DateTime?
   /// When the customer was told the vehicle would be ready. Not the booking:
   /// `endDateTime` is when the work is planned to finish, this is the promise.
-  promisedAt      DateTime?
-  shopName        String?
-  techName        String?
-  parts           String?
-  laborHours      Float?
-  diagnosticNotes String?
-  invoiceNotes    String?
-  subtotal        Float     @default(0)
-  taxRate         Float     @default(0)
-  taxAmount       Float     @default(0)
-  taxInclusive    Boolean   @default(false)
+  promisedAt        DateTime?
+  shopName          String?
+  techName          String?
+  parts             String?
+  laborHours        Float?
+  diagnosticNotes   String?
+  invoiceNotes      String?
+  subtotal          Float     @default(0)
+  taxRate           Float     @default(0)
+  taxAmount         Float     @default(0)
+  taxInclusive      Boolean   @default(false)
   /// The taxes this document was totalled with, when the workshop splits
   /// its tax into more than one (Québec GST and QST, Indian CGST and SGST).
   /// Null on single-rate documents. taxRate stays the combined rate and
   /// taxAmount the combined amount, so anything that does not itemise needs
   /// no change. Shape in src/lib/tax-components.ts; read leniently so an old
   /// row renders on new code.
-  taxComponents   Json?
+  taxComponents     Json?
   /// The sum of the lines the tax is charged on, before the discount and in
   /// the same terms as subtotal. Null when every line is taxable, which is
   /// every document written before a line could be left untaxed. Written
   /// with the totals by documentTotals; see src/lib/taxable-lines.ts.
-  taxableSubtotal Float?
-  totalAmount     Float     @default(0)
-  invoiceNumber   String?
-  invoiceDate     DateTime?
-  invoiceDueDate  DateTime?
-  discountType    String?
-  discountValue   Float     @default(0)
-  discountAmount  Float     @default(0)
-  manuallyPaid    Boolean   @default(false)
+  taxableSubtotal   Float?
+  totalAmount       Float     @default(0)
+  invoiceNumber     String?
+  invoiceDate       DateTime?
+  invoiceDueDate    DateTime?
+  /// The customer's own reference for this job: a purchase order number, a
+  /// requisition, a name. Free text, shown and sent only while the workshop
+  /// has the field switched on (src/features/customer-reference). Never part
+  /// of an issued invoice's frozen copy: it prints from here, so one typed
+  /// after the invoice went out shows on it at once.
+  customerReference String?
+  discountType      String?
+  discountValue     Float     @default(0)
+  discountAmount    Float     @default(0)
+  manuallyPaid      Boolean   @default(false)
   /// When the workshop marked the invoice paid by hand, which is the day a
   /// share link set to expire "after payment" starts counting from. Null on
   /// invoices marked before this column, and on ones paid through payments.
-  manuallyPaidAt  DateTime?
+  manuallyPaidAt    DateTime?
 
   // Warranty tracking
   /// What the workshop tells the customer about its own warranty on this job:
@@ -63,10 +69,10 @@ model ServiceRecord {
   /// design, which answers for every invoice.
   conditionMapOnInvoice Boolean?
 
-  publicToken  String?   @unique
-  sharedAt     DateTime?
-  viewCount    Int       @default(0)
-  lastViewedAt DateTime?
+  publicToken       String?   @unique
+  sharedAt          DateTime?
+  viewCount         Int       @default(0)
+  lastViewedAt      DateTime?
   /// When the share link stops working, for this document only. Both null
   /// and false means the workshop's rule decides (src/lib/share-expiry.ts).
   /// shareRenewedAt is the last time the link was sent again or reopened,
@@ -74,8 +80,8 @@ model ServiceRecord {
   shareExpiresAt    DateTime?
   shareNeverExpires Boolean   @default(false)
   shareRenewedAt    DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
   /// Who opened the job, when a person did. Null for work the system made
   /// (a customer's online booking, a recurring invoice, an import) and for
@@ -101,22 +107,27 @@ model ServiceRecord {
   /// title cannot rewrite paper already issued, and a preview and a re-send
   /// always show the same sheet. Only an owner's unlock followed by a send
   /// captures a fresh copy: the corrected one.
-  issuedAt                  DateTime?
+  issuedAt                     DateTime?
   /// The look at issue. Restrict: a snapshot referenced by an invoice is a
   /// record and cannot be removed.
-  issuedDesignSnapshotId    String?
-  issuedDesignSnapshot      DocumentDesignSnapshot? @relation(fields: [issuedDesignSnapshotId], references: [id], onDelete: Restrict)
-  issuedLogoSnapshotId      String?
-  issuedLogoSnapshot        DocumentAssetSnapshot?  @relation("IssuedLogoSnapshot", fields: [issuedLogoSnapshotId], references: [id], onDelete: Restrict)
+  issuedDesignSnapshotId       String?
+  issuedDesignSnapshot         DocumentDesignSnapshot? @relation(fields: [issuedDesignSnapshotId], references: [id], onDelete: Restrict)
+  issuedLogoSnapshotId         String?
+  issuedLogoSnapshot           DocumentAssetSnapshot?  @relation("IssuedLogoSnapshot", fields: [issuedLogoSnapshotId], references: [id], onDelete: Restrict)
   /// The signature of whoever opened the job, as it was at issue. Null when
   /// they had none, or the invoice was issued before signatures existed.
-  issuedSignatureSnapshotId String?
-  issuedSignatureSnapshot   DocumentAssetSnapshot?  @relation("IssuedSignatureSnapshot", fields: [issuedSignatureSnapshotId], references: [id], onDelete: Restrict)
+  issuedSignatureSnapshotId    String?
+  issuedSignatureSnapshot      DocumentAssetSnapshot?  @relation("IssuedSignatureSnapshot", fields: [issuedSignatureSnapshotId], references: [id], onDelete: Restrict)
+  /// The vehicle's photo as it printed at issue, resized. Null when the design
+  /// printed no photo, the vehicle had none, or the invoice was issued before
+  /// photos could be printed.
+  issuedVehiclePhotoSnapshotId String?
+  issuedVehiclePhotoSnapshot   DocumentAssetSnapshot?  @relation("IssuedVehiclePhotoSnapshot", fields: [issuedVehiclePhotoSnapshotId], references: [id], onDelete: Restrict)
   /// Everything else the sheet printed that the record does not own: the
   /// workshop's details and payment settings, the customer, the vehicle, the
   /// technician's name, the findings and the custom fields. Shape in
   /// issuedInvoice.ts; read leniently so old snapshots render on new code.
-  issuedData                Json?
+  issuedData                   Json?
 
   /// Set when an owner or admin deliberately reopens a locked document.
   /// Nullable rather than a boolean so the audit trail can show when, and the
@@ -145,8 +156,8 @@ model ServiceRecord {
 
   /// Null for parts-only / counter sales; such records use customerId
   /// (or neither, for anonymous walk-in sales)
-  vehicleId String?
-  vehicle   Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  vehicleId        String?
+  vehicle          Vehicle? @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
   /// The vehicle whose current reading this job set, if it still is.
   readingOfVehicle Vehicle? @relation("VehicleReadingJob")
 
@@ -191,6 +202,9 @@ model ServiceRecord {
   /// Alerts before a booked job, set when it was booked or edited from the calendar.
   appointmentNotifications AppointmentNotification[]
   conditionMarks           ConditionMark[]
+  meterReadings            MeterReading[]
+  /// The equipment it works on ("Work on").
+  equipment                ServiceRecordEquipment[]
   discoveredFindings       VehicleFinding[]          @relation("FindingDiscoveredIn")
   resolvedFindings         VehicleFinding[]          @relation("FindingResolvedIn")
 
@@ -210,6 +224,7 @@ model ServiceRecord {
   @@index([issuedDesignSnapshotId])
   @@index([issuedLogoSnapshotId])
   @@index([issuedSignatureSnapshotId])
+  @@index([issuedVehiclePhotoSnapshotId])
   @@index([organizationId])
   @@index([customerId])
   @@index([inspectionId])

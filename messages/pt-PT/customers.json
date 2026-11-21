@@ -104,6 +104,9 @@
     "invoiceDesignHint": "As faturas deste cliente são impressas com este design em vez do design predefinido da oficina. Cada fatura pode continuar a escolher o seu.",
     "reminderOptOut": "Sem lembretes",
     "reminderOptOutHint": "Não incluir este cliente nos lembretes de inspeção nem noutras campanhas.",
+    "poRequired": "N.º de encomenda obrigatório",
+    "poRequiredHint": "As faturas deste cliente ficam a aguardar até que Referência / n.º de encomenda esteja preenchido na ordem de serviço.",
+    "poRequiredBadge": "Encomenda obrigatória",
     "bookAppointment": "Fazer marcação"
   },
   "serviceRequests": {

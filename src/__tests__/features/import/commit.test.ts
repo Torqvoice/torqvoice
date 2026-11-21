@@ -162,6 +162,17 @@ vi.mock('@/lib/files/collect', () => ({
   vehicleFileUrls: vi.fn(),
 }))
 vi.mock('@/features/vehicles/Lib/typeKeySetting', () => ({ isTypeKeyEnabled: async () => false }))
+// The Reference / PO field is off here, as it is for every workshop that has
+// not asked for it; the rest of the module is the real one.
+vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) => ({
+  ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
+  isCustomerReferenceEnabled: vi.fn(async () => false),
+}))
+// Nor does it record a fleet number.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
 vi.mock('@/i18n/organization-translator', () => ({
   organizationTranslator: async () => () => 'Imported service',
 }))

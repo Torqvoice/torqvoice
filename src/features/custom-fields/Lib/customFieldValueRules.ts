@@ -87,3 +87,58 @@ export function customFieldValueIssue(
   if (isMissingRequiredValue(field, value)) return 'required'
   return customFieldTypeIssue(field, value)
 }
+
+/** One refused field: which, what the workshop calls it, and what is wrong. */
+export interface CustomFieldError {
+  fieldId: string
+  label: string
+  issue: CustomFieldIssue
+}
+
+/**
+ * What a set of values sent with a save comes to, judged against the fields
+ * as they are defined now, in the order the form draws them.
+ *
+ * - A required field refuses an empty value. One the request leaves out is
+ *   judged by what the record shows for it (the stored value, else the
+ *   field's default), so leaving a field out is no way around the rule.
+ * - A value has to suit its type, unless it is the value already stored for
+ *   that field: that one is left alone and not written again.
+ * - A field that is unknown or switched off is not in `definitions`, so it
+ *   is skipped.
+ */
+export function judgeCustomFieldValues(
+  definitions: (CustomFieldRuleInput & {
+    id: string
+    label: string
+    defaultValue: string | null
+  })[],
+  storedValue: Map<string, string>,
+  values: Record<string, string>
+): { fieldErrors: CustomFieldError[]; changed: { fieldId: string; value: string }[] } {
+  const fieldErrors: CustomFieldError[] = []
+  const changed: { fieldId: string; value: string }[] = []
+  const refuse = (definition: { id: string; label: string }, issue: CustomFieldIssue) =>
+    fieldErrors.push({ fieldId: definition.id, label: definition.label, issue })
+  for (const definition of definitions) {
+    // Only own keys: the object came through JSON and zod, so it has no
+    // inherited ones a field id could collide with.
+    const value: string | undefined = Object.hasOwn(values, definition.id)
+      ? values[definition.id]
+      : undefined
+    if (value === undefined) {
+      const shown = storedValue.get(definition.id) ?? definition.defaultValue ?? ''
+      if (isMissingRequiredValue(definition, shown)) refuse(definition, 'required')
+      continue
+    }
+    if (isMissingRequiredValue(definition, value)) {
+      refuse(definition, 'required')
+      continue
+    }
+    if (storedValue.get(definition.id) === value) continue
+    const issue = customFieldTypeIssue(definition, value)
+    if (issue) refuse(definition, issue)
+    else changed.push({ fieldId: definition.id, value })
+  }
+  return { fieldErrors, changed }
+}

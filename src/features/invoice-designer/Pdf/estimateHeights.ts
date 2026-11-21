@@ -1,6 +1,6 @@
 import type { Block, BoxStyle, DocumentSpec, Node, TextStyle } from '../Spec/documentSpec'
 import { BLOCK_GAP, marginOf } from '../Render/layoutEngine'
-import { DEFAULT_LINE_HEIGHT, lineCount, textHeight } from './measure'
+import { DEFAULT_LINE_HEIGHT, lineCount, longByLength, textHeight } from './measure'
 
 /**
  * How tall each block will print, computed from the spec alone.
@@ -13,7 +13,7 @@ import { DEFAULT_LINE_HEIGHT, lineCount, textHeight } from './measure'
  * PDF still lets every block be as tall as its content.
  */
 
-interface Inherited {
+export interface Inherited {
   fontFamily?: string
   fontSize: number
   lineHeight?: number
@@ -53,7 +53,8 @@ export function plainTextOf(html: string): { text: string; paragraphs: number } 
   return { text: text.replace(/\n{2,}/g, '\n').trim(), paragraphs: Math.max(1, paragraphs) }
 }
 
-function nodeHeight(node: Node, width: number, inherited: Inherited): number {
+/** One node's printed height at a width; exported for the tests that print it to compare. */
+export function nodeHeight(node: Node, width: number, inherited: Inherited): number {
   switch (node.kind) {
     case 'text': {
       if (!node.text) return 0
@@ -112,8 +113,10 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
     }
 
     case 'table': {
+      // Measured the way renderPdf.tsx draws it: the same widths, the same
+      // faces (a group heading and an emphasised row are bold) and, with
+      // breakLongWords, the same test of which words break inside themselves.
       const headerSize = node.headerStyle?.fontSize ?? inherited.fontSize
-      const headerHeight = headerSize * DEFAULT_LINE_HEIGHT + (node.headerPadding ?? 6) * 2
       const rowPadding = node.rowPadding ?? 5
       const inner = width - 16
       const gap = 0
@@ -124,29 +127,61 @@ function nodeHeight(node: Node, width: number, inherited: Inherited): number {
       const flexCount = node.columns.filter((column) => column.width === 'flex').length
       const flexWidth = flexCount > 0 ? Math.max(20, (inner - fixed - gap) / flexCount) : 0
       const cellStyle = merge(inherited, undefined)
+      const boldStyle = merge(inherited, { bold: true })
+      const lastColumn = node.columns[node.columns.length - 1]
+      // A column gap is padding inside every cell but the last, so it comes
+      // off the room the text has, not off the table.
+      const roomOf = (column: (typeof node.columns)[number]) =>
+        (column.width === 'flex' ? flexWidth : column.width) -
+        (column === lastColumn ? 0 : (node.columnGap ?? 0))
+      // A fixed column breaks a word wider than itself, a shared one a word
+      // longer than LONG_WORD characters, as the PDF does.
+      const breaks = (column: (typeof node.columns)[number]) =>
+        node.breakLongWords ? (column.width === 'flex' ? longByLength : true) : false
 
+      // A heading wraps in its column with breakLongWords; without, it is one line.
+      let headerLines = 1
+      if (node.breakLongWords) {
+        const headerStyle = merge(inherited, node.headerStyle)
+        for (const column of node.columns) {
+          headerLines = Math.max(
+            headerLines,
+            lineCount(column.label, roomOf(column), headerStyle, headerSize, breaks(column))
+          )
+        }
+      }
+      const headerHeight =
+        headerLines * headerSize * DEFAULT_LINE_HEIGHT + (node.headerPadding ?? 6) * 2
+
+      const lineHeight = inherited.fontSize * DEFAULT_LINE_HEIGHT
+      const subSize = inherited.fontSize * 0.85
+      const subStyle = merge(inherited, { fontSize: subSize })
       let body = 0
       for (const row of node.rows) {
-        let lines = 1
-        // A group heading is one run of text across the whole row.
+        // A group heading is one run of bold text across the whole row.
         const heading = node.groupKey ? row[node.groupKey] : undefined
-        if (heading) lines = lineCount(heading, inner, cellStyle, inherited.fontSize)
-        for (const column of node.columns) {
+        let rowHeight = heading
+          ? lineCount(heading, inner, boldStyle, inherited.fontSize) * lineHeight
+          : lineHeight
+        const style = node.emphasisKey && row[node.emphasisKey] ? boldStyle : cellStyle
+        const sub = node.subKey ? row[node.subKey] : undefined
+        for (const column of heading ? [] : node.columns) {
           const value = row[column.key]
-          if (!value) continue
-          const columnWidth = column.width === 'flex' ? flexWidth : column.width
           // lineCount and not width-over-width: a part described over three
           // lines is three lines however narrow each one is, and dividing the
           // whole run by the column width counted it as one. The table then
           // measured shorter than it prints, and whatever the engine placed
           // after it landed on top of the last rows.
-          lines = Math.max(lines, lineCount(value, columnWidth, cellStyle, inherited.fontSize))
-        }
-        let rowHeight = lines * inherited.fontSize * DEFAULT_LINE_HEIGHT
-        const sub = node.subKey ? row[node.subKey] : undefined
-        if (sub) {
-          const subSize = inherited.fontSize * 0.85
-          rowHeight += lineCount(sub, flexWidth, cellStyle, subSize) * subSize * DEFAULT_LINE_HEIGHT
+          let cell = value
+            ? lineCount(value, roomOf(column), style, inherited.fontSize, breaks(column)) *
+              lineHeight
+            : 0
+          // The smaller line under the text of every shared column.
+          if (sub && column.width === 'flex') {
+            cell +=
+              lineCount(sub, roomOf(column), subStyle, subSize) * subSize * DEFAULT_LINE_HEIGHT
+          }
+          rowHeight = Math.max(rowHeight, cell)
         }
         body += rowHeight + rowPadding * 2 + (node.ruleWidth ?? 0.75)
       }

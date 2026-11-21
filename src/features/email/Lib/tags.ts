@@ -51,6 +51,9 @@ export const TAGS = {
 
   document_number: { group: 'document', sample: 'INV-1042' },
   document_title: { group: 'document', sample: 'Brake service', optional: true },
+  // The customer's own reference / PO. Offered and filled only for a workshop
+  // that uses the field; blank in everybody else's mail.
+  customer_reference: { group: 'document', sample: 'PO-48213', optional: true },
   total: { group: 'document', sample: '1 250,00', optional: true },
   balance_due: { group: 'document', sample: '250,00', optional: true },
   due_date: { group: 'document', sample: '30 Sep 2026', optional: true },

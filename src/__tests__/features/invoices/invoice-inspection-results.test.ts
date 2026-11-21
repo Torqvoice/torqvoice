@@ -18,9 +18,20 @@ const db = {
   documentDesign: { findFirst: vi.fn() },
   inspection: { findFirst: vi.fn() },
 }
+// No meters in this workshop.
+vi.mock('@/features/meters/Lib/meters.server', () => ({
+  printableMeterReadings: async () => [],
+  activeMeterTypes: async () => [],
+}))
+// What is fitted to the vehicle; none here.
+vi.mock('@/features/equipment/Lib/equipmentPrint.server', () => ({
+  NO_EQUIPMENT: { job: [], vehicle: [] },
+  printableEquipment: async () => ({ job: [], vehicle: [] }),
+}))
 vi.mock('@/lib/db', () => ({ db }))
 vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
   getCustomFieldsForPrint: async () => [],
+  getRecordCustomFieldsForPrint: async () => [],
 }))
 vi.mock('@/features/invoice-designer/Lib/designRules.server', () => ({
   designRuleSubjectOf: () => ({}),

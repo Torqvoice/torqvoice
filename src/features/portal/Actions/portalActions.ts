@@ -1,5 +1,9 @@
 'use server'
 
+import {
+  heldFromCustomerIds,
+  notAwaitingReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { getTranslations } from 'next-intl/server'
 import { zonedDayKey } from '@/lib/timezone'
@@ -25,6 +29,7 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
+import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { loadPortalLook } from '@/features/portal/Lib/portalLook.server'
 import { PORTAL_REQUEST_MAX_FILES } from '@/features/portal/Lib/portalUploads'
 import { ownPortalUploadUrl } from '@/features/portal/Lib/portalUploadOwner.server'
@@ -73,6 +78,7 @@ export async function getPortalVehicleDetail(vehicleId: string) {
         licensePlate: true,
         hsn: true,
         tsn: true,
+        fleetNumber: true,
         color: true,
         mileage: true,
         fuelType: true,
@@ -114,7 +120,25 @@ export async function getPortalVehicleDetail(vehicleId: string) {
       throw new Error('Vehicle not found')
     }
 
-    return gateTypeKey(vehicle, await isTypeKeyEnabled(organizationId))
+    // A finished job still waiting for the customer's reference / PO is in
+    // the history, but not yet as an invoice: no number, price or link.
+    const held = await heldFromCustomerIds(
+      organizationId,
+      vehicle.serviceRecords.filter((record) => record.status === 'completed').map((r) => r.id)
+    )
+    const withHeld = {
+      ...vehicle,
+      serviceRecords: vehicle.serviceRecords.map((record) => ({
+        ...record,
+        invoiceHeld: held.has(record.id),
+      })),
+    }
+
+    // The type key and the fleet number each only for a workshop that uses it.
+    return gateFleetNumber(
+      gateTypeKey(withHeld, await isTypeKeyEnabled(organizationId)),
+      await isFleetNumberEnabled(organizationId)
+    )
   })
 }
 
@@ -163,6 +187,8 @@ export async function getPortalInvoices() {
         organizationId,
         OR: [{ vehicle: { customerId } }, { customerId }],
         status: 'completed',
+        // Not the ones still waiting for the customer's reference / PO.
+        ...(await notAwaitingReference(organizationId)),
       },
       select: {
         id: true,
@@ -200,6 +226,7 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
         organizationId,
         OR: [{ vehicle: { customerId } }, { customerId }],
         status: 'completed',
+        ...(await notAwaitingReference(organizationId)),
       },
       select: { id: true, title: true, invoiceNumber: true, publicToken: true },
     })
@@ -247,6 +274,9 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
       title: record.title,
       invoiceNumber: record.invoiceNumber,
       publicToken: record.publicToken,
+      // The customer's own reference / PO for the job; null for a workshop
+      // that has the field off, which the assembly has already seen to.
+      customerReference: assembly.record.customerReference ?? null,
       spec,
       // The finished inspection linked to the job, whose certificate goes with it.
       hasCertificate: certificateInspection !== null,

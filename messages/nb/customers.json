@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Fakturaer til denne kunden skrives ut med dette designet i stedet for verkstedets standard. En faktura kan fortsatt velge sitt eget.",
     "reminderOptOut": "Ingen påminnelser",
     "reminderOptOutHint": "Ikke ta med denne kunden i påminnelser om EU-kontroll eller andre utsendinger.",
+    "poRequired": "Krever bestillingsnr.",
+    "poRequiredHint": "Fakturaer til denne kunden venter til Referanse / bestillingsnr. er fylt ut på arbeidsordren.",
+    "poRequiredBadge": "Krever bestillingsnr.",
     "bookAppointment": "Book time"
   },
   "serviceRequests": {

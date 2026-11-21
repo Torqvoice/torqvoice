@@ -81,6 +81,17 @@ interface Dataset {
   pageSize?: number
   /** Applied to each row before it is written. */
   map?: (row: Row, options: BuildDataOptions) => unknown
+  /**
+   * A relation too large to load with its row: one meter type holds every
+   * meter in the fleet. It is read in pages of its own, by id, and written
+   * inside the row under `key`, where an `include` would have put it, so the
+   * file reads the same to the import.
+   */
+  children?: {
+    key: string
+    pageSize: number
+    read: (organizationId: string, parentId: string, page: Page) => Promise<Row[]>
+  }
 }
 
 const serviceRecordTree = {
@@ -145,6 +156,40 @@ const DATASETS: readonly Dataset[] = [
         where: { organizationId },
         include: { values: true },
       }),
+  },
+  {
+    key: 'meterTypes',
+    option: 'vehicles',
+    read: (organizationId, page) => db.meterType.findMany({ ...page, where: { organizationId } }),
+    // A vehicle's meters and an equipment item's alike, each with its readings.
+    children: {
+      key: 'vehicleMeters',
+      pageSize: 100,
+      read: (organizationId, meterTypeId, page) =>
+        db.vehicleMeter.findMany({
+          ...page,
+          where: { organizationId, meterTypeId },
+          include: { readings: true },
+        }),
+    },
+  },
+  // The equipment fitted to vehicles, under its kind: each item with where it
+  // has been and the jobs and quotes that worked on it.
+  {
+    key: 'equipmentTypes',
+    option: 'vehicles',
+    read: (organizationId, page) =>
+      db.equipmentType.findMany({ ...page, where: { organizationId } }),
+    children: {
+      key: 'items',
+      pageSize: 50,
+      read: (organizationId, typeId, page) =>
+        db.equipmentItem.findMany({
+          ...page,
+          where: { organizationId, typeId },
+          include: { fittings: true, jobs: true, quotes: true },
+        }),
+    },
   },
   {
     key: 'inventoryParts',
@@ -407,6 +452,13 @@ const DATASETS: readonly Dataset[] = [
 /** Every dataset key the writer can emit, in file order. */
 export const BACKUP_DATASET_KEYS: readonly string[] = DATASETS.map((d) => d.key)
 
+/** The next page after `cursor`, ordered by id. */
+function pageAfter(take: number, cursor: string | undefined): Page {
+  return cursor
+    ? { take, orderBy: { id: 'asc' }, cursor: { id: cursor }, skip: 1 }
+    : { take, orderBy: { id: 'asc' } }
+}
+
 /** Writes one chunk, waiting for the stream to drain when it asks to. */
 function write(out: NodeJS.WritableStream, chunk: string): Promise<void> {
   if (out.write(chunk)) return Promise.resolve()
@@ -451,17 +503,43 @@ export async function writeBackupData(
     let cursor: string | undefined
     let first = true
     for (;;) {
-      const page: Page = cursor
-        ? { take, orderBy: { id: 'asc' }, cursor: { id: cursor }, skip: 1 }
-        : { take, orderBy: { id: 'asc' } }
-      const batch = await dataset.read(organizationId, page)
+      const batch = await dataset.read(organizationId, pageAfter(take, cursor))
       if (batch.length === 0) break
 
       let chunk = ''
       for (const row of batch) {
         const value = dataset.map ? dataset.map(row, options) : row
-        chunk += `${first ? '' : ','}${JSON.stringify(value)}`
+        const json = JSON.stringify(value)
+        const comma = first ? '' : ','
         first = false
+        if (!dataset.children) {
+          chunk += `${comma}${json}`
+          continue
+        }
+        // The row without its closing brace, then its children page by page.
+        const { children } = dataset
+        await write(out, `${chunk}${comma}${json.slice(0, -1)},${JSON.stringify(children.key)}:[`)
+        chunk = ''
+        let childCursor: string | undefined
+        let firstChild = true
+        for (;;) {
+          const kids = await children.read(
+            organizationId,
+            row.id,
+            pageAfter(children.pageSize, childCursor)
+          )
+          if (kids.length === 0) break
+          await write(
+            out,
+            kids
+              .map((kid, i) => `${firstChild && i === 0 ? '' : ','}${JSON.stringify(kid)}`)
+              .join('')
+          )
+          firstChild = false
+          if (kids.length < children.pageSize) break
+          childCursor = kids[kids.length - 1].id
+        }
+        await write(out, ']}')
       }
       await write(out, chunk)
       rows += batch.length

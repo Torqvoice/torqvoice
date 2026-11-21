@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Filolar ve ağır vasıtalar için kurulum",
+    "commandMarine": "Filolar ve ticari tekneler için kurulum",
+    "docs": "Filolar ve ağır vasıtalar rehberini oku",
+    "docsMarine": "Filolar ve ticari tekneler rehberini oku"
+  }
+}

@@ -761,6 +761,15 @@
     "fromQuote": "Z wyceny {ref}",
     "startInspection": "Rozpocznij przegląd"
   },
+  "reference": {
+    "label": "Referencja / nr zamówienia",
+    "placeholder": "Nr zamówienia lub referencja",
+    "requiredNotice": "Ten klient wymaga referencji lub numeru zamówienia na fakturach. Uzupełnij je przed wysłaniem faktury.",
+    "requiredToInvoice": "Ten klient wymaga referencji lub numeru zamówienia na fakturach. Uzupełnij pole Referencja / nr zamówienia w zleceniu, a potem wyślij fakturę.",
+    "saveFailed": "Nie udało się zapisać referencji",
+    "saved": "Zapisano",
+    "notSwitchedOn": "Pole Referencja / nr zamówienia jest wyłączone w tym warsztacie. Włącz je w Ustawienia, Faktury i wyceny, Pola niestandardowe."
+  },
   "photoHandoff": {
     "button": "Dodaj z telefonu",
     "dialogTitle": "Dodaj zdjęcia i dokumenty z telefonu",

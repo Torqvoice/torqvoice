@@ -21,6 +21,7 @@ import { getFeatures } from '@/lib/features'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { buildCertificatePdfBuffer } from '@/features/inspections/Pdf/buildCertificatePdfBuffer'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -72,6 +73,8 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
               hsn: true,
               tsn: true,
               licensePlate: true,
+              // Taken away again below for a workshop that has the field off.
+              fleetNumber: true,
               mileage: true,
               customer: { select: { name: true, email: true, phone: true } },
             },
@@ -161,7 +164,11 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     const element = React.createElement(InspectionPDF, {
       data: {
         ...inspection,
-        vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+        // The type key and the fleet number each only for a workshop that uses it.
+        vehicle: gateFleetNumber(
+          gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+          fleetNumberEnabledIn(settingsMap, features)
+        ),
       },
       workshop: {
         name: org?.name || '',

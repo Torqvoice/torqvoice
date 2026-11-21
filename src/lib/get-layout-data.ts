@@ -3,6 +3,9 @@ import { db } from './db'
 import { sessionOrganizationScope } from './session-scope'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { customerReferenceEnabledIn } from '@/features/customer-reference/Lib/referenceSetting'
+import { fleetNumberEnabledIn } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { getFeatures } from './features'
 import { type EngineSizeUnit, engineSizeUnitOf } from '@/lib/engine-size'
 
 type AuthResult =
@@ -33,6 +36,12 @@ type AuthResult =
       serviceType: string | undefined
       /** Whether vehicles carry the German type key (HSN/TSN). */
       typeKeyEnabled: boolean
+      /** Whether work orders and quotes carry the customer's reference / PO. */
+      customerReferenceEnabled: boolean
+      /** Whether vehicles carry a Fleet / unit number. */
+      fleetNumberEnabled: boolean
+      /** Whether the workshop has defined custom fields for vehicles and for customers. */
+      recordCustomFields: { vehicle: boolean; customer: boolean }
       /** The unit a plate lookup writes engine size in. */
       engineSizeUnit: EngineSizeUnit
       currencyCode: string | undefined
@@ -70,7 +79,10 @@ export async function getLayoutData(): Promise<AuthResult> {
 
   if (!membership && !isSuperAdmin) return { status: 'no-organization' }
 
-  const [orgSettings, memberships] = await Promise.all([
+  // The plan is read alongside: the layout asks for it in this same request
+  // anyway (getFeatures is cached per request), so it costs no extra query
+  // and no extra wait.
+  const [orgSettings, memberships, plan] = await Promise.all([
     membership
       ? db.appSetting.findMany({
           where: {
@@ -84,6 +96,8 @@ export async function getLayoutData(): Promise<AuthResult> {
                 SETTING_KEYS.WORKBOARD_WEEK_START_DAY,
                 SETTING_KEYS.SERVICE_TYPE,
                 SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
+                SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED,
+                SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED,
                 SETTING_KEYS.ENGINE_SIZE_UNIT,
                 SETTING_KEYS.CURRENCY_CODE,
                 SETTING_KEYS.CURRENCY_FORMAT,
@@ -100,9 +114,39 @@ export async function getLayoutData(): Promise<AuthResult> {
         organization: { select: { id: true, name: true, createdAt: true } },
       },
     }),
+    membership ? getFeatures(membership.organizationId) : null,
   ])
 
   const orgMap = new Map(orgSettings?.map((s) => [s.key, s.value]) ?? [])
+  // The plan is only asked about by a workshop that turned the field on.
+  const customerReferenceEnabled =
+    membership && orgMap.get(SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED) === 'true'
+      ? customerReferenceEnabledIn(Object.fromEntries(orgMap), plan ?? { customFields: false })
+      : false
+  // Which of its vehicles and customers carry custom fields: none for a
+  // workshop that has defined none, or whose plan has no custom fields. Only
+  // a plan with custom fields asks at all, and the answer is at most two
+  // rows off the workshop's own index.
+  const recordKinds =
+    membership && plan?.customFields
+      ? await db.customFieldDefinition.findMany({
+          where: {
+            organizationId: membership.organizationId,
+            isActive: true,
+            entityType: { in: ['vehicle', 'customer'] },
+          },
+          select: { entityType: true },
+          distinct: ['entityType'],
+        })
+      : []
+  const recordCustomFields = {
+    vehicle: recordKinds.some((row) => row.entityType === 'vehicle'),
+    customer: recordKinds.some((row) => row.entityType === 'customer'),
+  }
+  const fleetNumberEnabled =
+    membership && orgMap.get(SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED) === 'true'
+      ? fleetNumberEnabledIn(Object.fromEntries(orgMap), plan ?? { customFields: false })
+      : false
 
   return {
     status: 'ok',
@@ -127,6 +171,9 @@ export async function getLayoutData(): Promise<AuthResult> {
     weekStartDay: parseInt(orgMap.get(SETTING_KEYS.WORKBOARD_WEEK_START_DAY) || '1', 10),
     serviceType: orgMap.get(SETTING_KEYS.SERVICE_TYPE) || undefined,
     typeKeyEnabled: typeKeyEnabledIn(Object.fromEntries(orgMap)),
+    customerReferenceEnabled,
+    fleetNumberEnabled,
+    recordCustomFields,
     engineSizeUnit: engineSizeUnitOf(orgMap.get(SETTING_KEYS.ENGINE_SIZE_UNIT)),
     currencyCode: orgMap.get(SETTING_KEYS.CURRENCY_CODE) || undefined,
     currencyFormat: orgMap.get(SETTING_KEYS.CURRENCY_FORMAT) || undefined,

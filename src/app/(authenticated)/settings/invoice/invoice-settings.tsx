@@ -27,6 +27,7 @@ import {
   ChevronUp,
   FileText,
   Hash,
+  ListPlus,
   Loader2,
   Lock,
   Palette,
@@ -41,6 +42,7 @@ import {
   getDefaultInvoiceLayout,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { CustomFieldsManager } from '@/features/custom-fields/Components/CustomFieldsManager'
+import { useServiceType } from '@/components/service-type-context'
 
 type TabType = 'general' | 'customFields'
 
@@ -69,6 +71,10 @@ interface InvoiceSettingsProps {
   initialQuoteLayout?: InvoiceLayoutConfig
   customFields: FieldDef[]
   customFieldsEnabled: boolean
+  /** Shown above the fields list on the Custom Fields tab: the guide and the ready-made fields. */
+  customFieldsTop?: React.ReactNode
+  /** Shown below it: the workshop's meters and equipment. */
+  customFieldsBottom?: React.ReactNode
   telegramEnabled?: boolean
 }
 
@@ -126,13 +132,18 @@ export function InvoiceSettings({
   initialQuoteLayout,
   customFields,
   customFieldsEnabled,
+  customFieldsTop,
+  customFieldsBottom,
 }: InvoiceSettingsProps) {
   const router = useRouter()
+  const serviceType = useServiceType()
   const searchParams = useSearchParams()
   const t = useTranslations('settings')
   const [saving, setSaving] = useState(false)
 
-  const tab = (searchParams.get('tab') as TabType) || 'general'
+  // Without custom fields on the plan there is no such tab, whatever the address says.
+  const tab: TabType =
+    customFieldsEnabled && searchParams.get('tab') === 'customFields' ? 'customFields' : 'general'
   const setTab = useCallback(
     (newTab: TabType) => {
       const params = new URLSearchParams(searchParams.toString())
@@ -753,11 +764,30 @@ export function InvoiceSettings({
           </div>
         </ReadOnlyWrapper>
       ) : (
-        <CustomFieldsManager
-          initialFields={customFields}
-          layoutConfig={initialInvoiceLayout ?? getDefaultInvoiceLayout()}
-          quoteLayoutConfig={initialQuoteLayout ?? getDefaultInvoiceLayout()}
-        />
+        <div className="space-y-8">
+          {customFieldsTop}
+          <section className="space-y-3" data-testid="own-custom-fields">
+            <div className="space-y-1">
+              <h2 className="flex items-center gap-2 text-sm font-semibold">
+                <ListPlus className="h-4 w-4 text-muted-foreground" />
+                {t('customFields.ownFields.title')}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {t(
+                  serviceType === 'marine'
+                    ? 'customFields.ownFields.descriptionMarine'
+                    : 'customFields.ownFields.description'
+                )}
+              </p>
+            </div>
+            <CustomFieldsManager
+              initialFields={customFields}
+              layoutConfig={initialInvoiceLayout ?? getDefaultInvoiceLayout()}
+              quoteLayoutConfig={initialQuoteLayout ?? getDefaultInvoiceLayout()}
+            />
+          </section>
+          {customFieldsBottom}
+        </div>
       )}
     </div>
   )

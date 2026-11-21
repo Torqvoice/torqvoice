@@ -1,3 +1,4 @@
+import { invoiceHeldFromCustomer } from '@/features/customer-reference/Lib/referenceSetting'
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { db } from '@/lib/db'
@@ -60,6 +61,10 @@ export async function GET(
     }
     // The same rule as the invoice itself: only a finished job is an invoice.
     if (record.status !== 'completed') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    // And not one the portal holds back while it waits for a reference / PO.
+    if (await invoiceHeldFromCustomer(session.organizationId, invoiceId)) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 

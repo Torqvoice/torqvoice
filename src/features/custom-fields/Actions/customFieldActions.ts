@@ -5,6 +5,7 @@ import { withAuth } from '@/lib/with-auth'
 import { z } from 'zod'
 import {
   createFieldDefinitionSchema,
+  recordEntityTypes,
   updateFieldDefinitionSchema,
 } from '../Schema/customFieldSchema'
 import { revalidatePath } from 'next/cache'
@@ -15,13 +16,10 @@ import {
   assertOwnRecord,
   recordLockError,
   isEntityType,
+  kindOffered,
   recordSubject,
 } from '../Lib/customFieldRecords.server'
-import {
-  customFieldTypeIssue,
-  isMissingRequiredValue,
-  type CustomFieldIssue,
-} from '../Lib/customFieldValueRules'
+import { type CustomFieldError, judgeCustomFieldValues } from '../Lib/customFieldValueRules'
 
 /**
  * Whose permission a record's custom fields fall under: the record's own.
@@ -44,6 +42,13 @@ export async function getFieldDefinitions(entityType?: string) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
       if (entityType) where.entityType = entityType
+      // A vehicle's or a customer's fields are not drawn on a plan without them.
+      if (isEntityType(entityType) && !(await kindOffered(entityType, organizationId))) return []
+      // Nor are they in the whole list (the designer's chips, the settings
+      // screen) on such a plan: hidden there too, and kept.
+      if (!entityType && !(await kindOffered('vehicle', organizationId))) {
+        where.entityType = { notIn: [...recordEntityTypes] }
+      }
 
       return db.customFieldDefinition.findMany({
         where,
@@ -82,7 +87,7 @@ export async function createFieldDefinition(input: unknown) {
         },
       })
 
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return field
     },
     {
@@ -121,7 +126,7 @@ export async function updateFieldDefinition(input: unknown) {
         },
       })
 
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return field
     },
     {
@@ -153,7 +158,7 @@ export async function deleteFieldDefinition(fieldId: string) {
         db.customFieldDefinition.delete({ where: { id: fieldId } }),
       ])
 
-      revalidatePath('/settings/custom-fields')
+      revalidatePath('/settings/invoice')
       return { fieldId, fieldName: field.name }
     },
     {
@@ -176,6 +181,7 @@ export async function getCustomFieldValues(entityId: string, entityType: string)
     async ({ organizationId }) => {
       if (!isEntityType(entityType)) throw new Error('Unknown record type')
       await assertOwnRecord(entityId, entityType, organizationId)
+      if (!(await kindOffered(entityType, organizationId))) return []
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
@@ -214,11 +220,7 @@ const saveValuesSchema = z.object({
  * The label comes from the server so a form that has never heard of the
  * field (it was added while the form was open) can still name it.
  */
-export interface CustomFieldError {
-  fieldId: string
-  label: string
-  issue: CustomFieldIssue
-}
+export type { CustomFieldError } from '../Lib/customFieldValueRules'
 
 /** What a save of a record's values comes back with. */
 export type SaveCustomFieldValuesResult =
@@ -265,6 +267,9 @@ export async function saveValidatedCustomFieldValues(
       if (!isEntityType(entityType)) throw new Error('Unknown record type')
       const input = saveValuesSchema.parse({ entityId, values })
       await assertOwnRecord(input.entityId, entityType, organizationId)
+      // Hidden by the plan: there is no form to have sent this, nothing is
+      // asked for and nothing is written.
+      if (!(await kindOffered(entityType, organizationId))) return { saved: true }
 
       const definitions = await db.customFieldDefinition.findMany({
         where: { organizationId, entityType, isActive: true },
@@ -297,32 +302,11 @@ export async function saveValidatedCustomFieldValues(
         return { saved: true }
       }
 
-      const fieldErrors: CustomFieldError[] = []
-      const refuse = (definition: { id: string; label: string }, issue: CustomFieldIssue) =>
-        fieldErrors.push({ fieldId: definition.id, label: definition.label, issue })
-      const changed: { fieldId: string; value: string }[] = []
-      for (const definition of definitions) {
-        // Only own keys: the object came through JSON and zod, so it has no
-        // inherited ones a field id could collide with.
-        const value: string | undefined = input.values[definition.id]
-        if (value === undefined) {
-          // Not sent, so nothing is written. What the record shows for it
-          // still has to satisfy "required".
-          const shown = storedValue.get(definition.id) ?? definition.defaultValue ?? ''
-          if (isMissingRequiredValue(definition, shown)) refuse(definition, 'required')
-          continue
-        }
-
-        if (isMissingRequiredValue(definition, value)) {
-          refuse(definition, 'required')
-          continue
-        }
-        if (storedValue.get(definition.id) === value) continue
-
-        const issue = customFieldTypeIssue(definition, value)
-        if (issue) refuse(definition, issue)
-        else changed.push({ fieldId: definition.id, value })
-      }
+      const { fieldErrors, changed } = judgeCustomFieldValues(
+        definitions,
+        storedValue,
+        input.values
+      )
 
       if (fieldErrors.length > 0) return { saved: false, fieldErrors }
 

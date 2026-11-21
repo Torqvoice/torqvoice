@@ -104,6 +104,76 @@ export async function restoreInvoiceDesignState(state: InvoiceDesignState): Prom
 }
 
 /**
+ * Every setting Settings > Tax saves (`setTax` in support/settings.ts goes
+ * through that page), by its key in SETTING_KEYS: the tax keys, the default
+ * rate, which is not named `workshop.tax…`, and whether invoice lines show
+ * prices with tax.
+ */
+const TAX_SETTING_KEYS = [
+  'workshop.taxEnabled',
+  'workshop.defaultTaxRate',
+  'workshop.taxInclusive',
+  'workshop.taxLabel',
+  'workshop.taxMode',
+  'workshop.taxComponents',
+  'workshop.taxSelective',
+  'workshop.taxAppliesToParts',
+  'workshop.taxAppliesToLabor',
+  'workshop.taxAppliesToShopFee',
+  'invoice.lineItemsInclTax',
+] as const
+
+/** The workshop's tax settings, for a spec that sets its own and must hand them back. */
+export interface TaxSettingsState {
+  organizationId: string
+  /** The rows as they were, whole: a key missing here had no row. */
+  settings: { id: string; key: string; value: string; userId: string }[]
+}
+
+export async function taxSettingsState(): Promise<TaxSettingsState> {
+  const organizationId = await ownerOrganizationId()
+  return withDb(async (db) => {
+    const settings = await db.query<{ id: string; key: string; value: string; userId: string }>(
+      `select id, key, value, "userId" from app_settings
+        where "organizationId" = $1 and key = any($2::text[])`,
+      [organizationId, [...TAX_SETTING_KEYS]]
+    )
+    return { organizationId, settings: settings.rows }
+  })
+}
+
+/**
+ * Puts the tax settings back exactly as `taxSettingsState` found them: a row
+ * the spec added is deleted, a row it changed gets its value back, and a row
+ * it deleted is put back as it was, id and owner included.
+ */
+export async function restoreTaxSettings(state: TaxSettingsState): Promise<void> {
+  const kept = state.settings.map((row) => row.key)
+  await withDb(async (db) => {
+    await db.query('begin')
+    try {
+      await db.query(
+        `delete from app_settings
+          where "organizationId" = $1 and key = any($2::text[]) and not (key = any($3::text[]))`,
+        [state.organizationId, [...TAX_SETTING_KEYS], kept]
+      )
+      for (const row of state.settings) {
+        await db.query(
+          `insert into app_settings (id, key, value, "userId", "organizationId")
+           values ($1, $2, $3, $4, $5)
+           on conflict ("organizationId", key) do update set value = excluded.value`,
+          [row.id, row.key, row.value, row.userId, state.organizationId]
+        )
+      }
+      await db.query('commit')
+    } catch (error) {
+      await db.query('rollback')
+      throw error
+    }
+  })
+}
+
+/**
  * Addresses of the seeded workshop's own records, for the tests that check a
  * different workshop cannot reach them. Read straight from the database
  * because the point is to ask for them as an outsider: going through the app

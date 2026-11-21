@@ -81,6 +81,13 @@ async function assertPlanAllowsSetting(organizationId: string, entries: Record<s
   if (entries[SETTING_KEYS.PORTAL_ENABLED] === 'true') {
     await requireFeature(organizationId, 'customerPortal')
   }
+  // The ready-made fields belong to the plans that have custom fields.
+  if (
+    entries[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] === 'true' ||
+    entries[SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED] === 'true'
+  ) {
+    await requireFeature(organizationId, 'customFields')
+  }
 }
 
 export async function setSetting(key: SettingKey, value: string) {

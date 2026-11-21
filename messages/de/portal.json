@@ -364,6 +364,7 @@
     "summaryPaid": "Bezahlt",
     "summaryLeft": "Noch offen",
     "summaryDue": "Fälligkeitsdatum",
+    "summaryReference": "Ihre Referenz / Bestellnr.",
     "summaryDate": "Datum",
     "fullInvoice": "Die vollständige Rechnung"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Fuhrpark-Nr.: {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mi",
     "engineHours": "{value} Betriebsstunden",
@@ -598,6 +600,7 @@
     "number": "Angebotsnummer",
     "date": "Datum",
     "validUntil": "Gültig bis",
+    "reference": "Ihre Referenz / Bestellnr.",
     "vehicle": "Fahrzeug",
     "fullQuote": "Das vollständige Angebot",
     "answerTitle": "Die Werkstatt wartet auf Ihre Antwort",

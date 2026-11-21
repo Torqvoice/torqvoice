@@ -3,7 +3,7 @@ import { Circle, Image, Path, Svg, Text, View } from '@react-pdf/renderer'
 import type { Style } from '@react-pdf/types'
 import { HtmlToPdf } from '@/features/vehicles/Components/invoice-pdf/Notes'
 import type { BoxStyle, Node, TextStyle } from '../Spec/documentSpec'
-import { DEFAULT_LINE_HEIGHT } from './measure'
+import { DEFAULT_LINE_HEIGHT, type IsLong, longByLength, widthOf, wrapPieces } from './measure'
 
 /**
  * The document model drawn in react-pdf.
@@ -81,6 +81,37 @@ const ALIGN = { start: 'flex-start', center: 'center', end: 'flex-end' } as cons
  * Draw one node. `base` is the block's inherited text look; react-pdf has no
  * style cascade across views, so it is carried down by hand.
  */
+// What counts as a long word, and the pieces it breaks into, are shared with
+// the measuring (measure.ts), so the height estimated is the height drawn.
+export { wrapPieces }
+
+/**
+ * Text that may wrap inside a word. react-pdf breaks lines only at spaces,
+ * and a break it makes inside a word prints a hyphen that is not in a serial
+ * number. Each piece is its own text in a wrapping row instead: words whole,
+ * a long word one character at a time, so it wraps where the column ends and
+ * reads exactly as typed. Text without a long word prints as plain text.
+ */
+function BreakableText({ text, style, isLong }: { text: string; style: Style; isLong: IsLong }) {
+  if (!text || !text.split(/\s+/).some(isLong)) return <Text style={style}>{text}</Text>
+  return (
+    <View>
+      {text.split('\n').map((paragraph, l) => {
+        const pieces = wrapPieces(paragraph, isLong)
+        return (
+          <View key={l} style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            {(pieces.length ? pieces : [' ']).map((piece, p) => (
+              <Text key={p} style={style}>
+                {piece}
+              </Text>
+            ))}
+          </View>
+        )
+      })}
+    </View>
+  )
+}
+
 export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): React.ReactNode {
   switch (node.kind) {
     case 'stack': {
@@ -88,8 +119,32 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
       const children = node.children
         .map((child, i) => ({ child, i }))
         .filter(({ child }) => !(child.kind === 'text' && !child.text))
+      // A picture behind the content, cropped to cover the box. react-pdf has no background images, so it is an image
+      // laid under the children, clipped to the box's corners. Only the
+      // raster forms react-pdf can draw; anything else prints the plain box.
+      const backdrop = node.style?.backgroundImage
+      const drawBackdrop = !!backdrop && /^data:image\/(jpeg|png);base64,/.test(backdrop)
       return (
-        <View style={boxStylePdf(node.style)}>
+        <View
+          style={{
+            ...boxStylePdf(node.style),
+            ...(drawBackdrop ? { position: 'relative', overflow: 'hidden' } : {}),
+          }}
+        >
+          {drawBackdrop ? (
+            <Image
+              src={backdrop}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                objectFit: 'cover',
+                ...(node.style?.radius ? { borderRadius: node.style.radius } : {}),
+              }}
+            />
+          ) : null}
           {children.map(({ child, i }, index) => (
             <View key={child.id ?? i} style={index > 0 && gap ? { marginTop: gap } : {}}>
               <RenderNodePdf node={child} base={base} />
@@ -234,13 +289,30 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
       )
 
     case 'table': {
-      const cell = (width: number | 'flex'): Style => (width === 'flex' ? { flex: 1 } : { width })
+      const last = node.columns.length - 1
+      const cell = (width: number | 'flex', index: number): Style => ({
+        ...(width === 'flex' ? { flex: 1 } : { width }),
+        // The gap is padding inside every cell but the last, so the columns
+        // keep their widths and the text keeps clear of its neighbour.
+        ...(node.columnGap && index < last ? { paddingRight: node.columnGap } : {}),
+      })
       const headerText = textStylePdf(node.headerStyle, base)
+      // Whether a word is wider than the column it is in: measured for a
+      // column of fixed width, by its length for one that shares the rest.
+      const longIn =
+        (index: number, style: TextStyle | undefined): IsLong =>
+        (word) => {
+          const width = node.columns[index].width
+          if (width === 'flex') return longByLength(word)
+          const room = width - (node.columnGap && index < last ? node.columnGap : 0)
+          return widthOf(word, { ...base, ...style }, base.fontSize ?? 9) > room
+        }
       const borderColor = node.style?.borderColor ?? '#eceef1'
       let band = 0
       return (
         <View style={boxStylePdf(node.style)}>
           <View
+            fixed={node.repeatHeader || undefined}
             style={{
               flexDirection: 'row',
               paddingVertical: node.headerPadding ?? 6,
@@ -250,14 +322,26 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                 : {}),
             }}
           >
-            {node.columns.map((column) => (
-              <Text
-                key={column.key}
-                style={{ ...headerText, ...cell(column.width), textAlign: column.align }}
-              >
-                {column.label}
-              </Text>
-            ))}
+            {node.columns.map((column, index) =>
+              node.breakLongWords ? (
+                // A heading in a long language ("Produksjonsår" over a year)
+                // wraps in its column rather than over the next one.
+                <View key={column.key} style={cell(column.width, index)}>
+                  <BreakableText
+                    text={column.label}
+                    style={{ ...headerText, textAlign: column.align }}
+                    isLong={longIn(index, node.headerStyle)}
+                  />
+                </View>
+              ) : (
+                <Text
+                  key={column.key}
+                  style={{ ...headerText, ...cell(column.width, index), textAlign: column.align }}
+                >
+                  {column.label}
+                </Text>
+              )
+            )}
           </View>
           {node.rows.flatMap((row, i) => {
             const struck = node.strikeKey ? !!row[node.strikeKey] : false
@@ -314,30 +398,38 @@ export function RenderNodePdf({ node, base }: { node: Node; base: TextStyle }): 
                 ) : null}
                 {heading
                   ? null
-                  : node.columns.map((column) => (
-                      <View key={column.key} style={cell(column.width)}>
-                        <Text
-                          style={{
-                            ...textStylePdf(emphasis ? { bold: true } : undefined, base),
-                            textAlign: column.align,
-                            ...(struck ? { textDecoration: 'line-through' as const } : {}),
-                          }}
-                        >
-                          {row[column.key]}
-                        </Text>
-                        {node.subKey && column.width === 'flex' && row[node.subKey] ? (
-                          <Text
-                            style={{
-                              ...textStylePdf(undefined, base),
-                              fontSize: (base.fontSize ?? 9) * 0.85,
-                              opacity: 0.6,
-                            }}
-                          >
-                            {row[node.subKey]}
-                          </Text>
-                        ) : null}
-                      </View>
-                    ))}
+                  : node.columns.map((column, index) => {
+                      const textStyle = {
+                        ...textStylePdf(emphasis ? { bold: true } : undefined, base),
+                        textAlign: column.align,
+                        ...(struck ? { textDecoration: 'line-through' as const } : {}),
+                      }
+                      const value = row[column.key]
+                      return (
+                        <View key={column.key} style={cell(column.width, index)}>
+                          {node.breakLongWords ? (
+                            <BreakableText
+                              text={value}
+                              style={textStyle}
+                              isLong={longIn(index, emphasis ? { bold: true } : undefined)}
+                            />
+                          ) : (
+                            <Text style={textStyle}>{value}</Text>
+                          )}
+                          {node.subKey && column.width === 'flex' && row[node.subKey] ? (
+                            <Text
+                              style={{
+                                ...textStylePdf(undefined, base),
+                                fontSize: (base.fontSize ?? 9) * 0.85,
+                                opacity: 0.6,
+                              }}
+                            >
+                              {row[node.subKey]}
+                            </Text>
+                          ) : null}
+                        </View>
+                      )
+                    })}
               </View>
             )
             return rule ? [body, rule] : [body]

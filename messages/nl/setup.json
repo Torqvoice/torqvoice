@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Instellen voor wagenparken en zware voertuigen",
+    "commandMarine": "Instellen voor vloten en beroepsvaartuigen",
+    "docs": "Lees de handleiding voor wagenparken en zware voertuigen",
+    "docsMarine": "Lees de handleiding voor vloten en beroepsvaartuigen"
+  }
+}

@@ -21,6 +21,7 @@ import {
   loadVehicleConditionMarks,
 } from '@/features/condition-map/Lib/loadMarks.server'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
 
 export { certificateDesignSource, liveCertificateDesign } from './certificateDesign'
@@ -90,6 +91,8 @@ export async function buildCertificatePdfBuffer({
             hsn: true,
             tsn: true,
             licensePlate: true,
+            // Taken away again below for a workshop that has the field off.
+            fleetNumber: true,
             mileage: true,
             customer: {
               select:
@@ -150,7 +153,12 @@ export async function buildCertificatePdfBuffer({
   const element = React.createElement(CertificatePDF, {
     data: {
       ...inspection,
-      vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+      // The type key and the fleet number each only for a workshop that uses
+      // it; the design then decides whether the fleet number prints.
+      vehicle: gateFleetNumber(
+        gateTypeKey(inspection.vehicle, typeKeyEnabledIn(settingsMap)),
+        fleetNumberEnabledIn(settingsMap, features)
+      ),
     },
     workshop: {
       name: org?.name || '',

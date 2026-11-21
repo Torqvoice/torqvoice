@@ -130,6 +130,55 @@ describe('a row that belongs to a record', () => {
       'clock',
     ])
   })
+  it('shows a meter reading typed on a job, and the equipment it works on, on that job', async () => {
+    const org = async () => 'org-1'
+    // A reading saved from the job's box: an upsert keyed by meter and job.
+    await write(
+      'MeterReading',
+      'upsert',
+      {
+        where: {
+          vehicleMeterId_serviceRecordId: { vehicleMeterId: 'm-1', serviceRecordId: 'job-1' },
+        },
+        create: { vehicleMeterId: 'm-1', serviceRecordId: 'job-1', value: 4301.5 },
+        update: { value: 4301.5 },
+      },
+      { id: 'r-1', vehicleMeterId: 'm-1', serviceRecordId: 'job-1' },
+      org
+    )
+    await write(
+      'ServiceRecordEquipment',
+      'create',
+      { data: { serviceRecordId: 'job-1', itemId: 'crane' } },
+      { serviceRecordId: 'job-1', itemId: 'crane' },
+      org
+    )
+    await write(
+      'QuoteEquipment',
+      'create',
+      { data: { quoteId: 'q-1', itemId: 'crane' } },
+      { quoteId: 'q-1', itemId: 'crane' },
+      org
+    )
+
+    expect(published).toEqual([
+      { kind: 'serviceRecord', id: 'job-1', organizationId: 'org-1', hint: 'meters' },
+      { kind: 'serviceRecord', id: 'job-1', organizationId: 'org-1', hint: 'equipment' },
+      { kind: 'quote', id: 'q-1', organizationId: 'org-1', hint: 'equipment' },
+    ])
+  })
+
+  it('wakes no job for a reading typed on the vehicle page', async () => {
+    await write(
+      'MeterReading',
+      'create',
+      { data: { vehicleMeterId: 'm-1', value: 10, organizationId: 'org-1' } },
+      { id: 'r-2', vehicleMeterId: 'm-1', serviceRecordId: null, organizationId: 'org-1' },
+      async () => 'org-1'
+    )
+    expect(published.every((p) => (p as { id: string | null }).id === null)).toBe(true)
+  })
+
   it('redraws the map on the job or inspection a damage mark is drawn on', async () => {
     const org = async () => 'org-1'
     // A mark changed by id names its sheet only in the row the write returns.

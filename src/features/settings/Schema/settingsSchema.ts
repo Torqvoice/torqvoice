@@ -297,6 +297,14 @@ export const SETTING_KEYS = {
   /// them. Off until a workshop turns it on: outside Germany it is two empty
   /// boxes on every vehicle. Turning it off hides it and keeps what was typed.
   VEHICLE_TYPE_KEY_ENABLED: 'vehicle.typeKeyEnabled',
+  /// The customer's reference or purchase order number on work orders and
+  /// quotes, and "PO required" on customers. Off until a workshop turns it
+  /// on; turning it off hides it everywhere and keeps what was typed.
+  CUSTOMER_REFERENCE_ENABLED: 'documents.customerReferenceEnabled',
+  /// The Fleet / unit number on vehicles: the number the owner knows the
+  /// vehicle by. Off until a workshop turns it on; turning it off hides it
+  /// everywhere and keeps what was typed.
+  VEHICLE_FLEET_NUMBER_ENABLED: 'vehicle.fleetNumberEnabled',
   /// Tread depth below which a summer tire is flagged for replacement, in mm.
   /// Legal minimums differ by country, so the workshop sets its own.
   TIRE_HOTEL_SUMMER_REPLACE_MM: 'tireHotel.summerReplaceMm',

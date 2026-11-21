@@ -25,6 +25,12 @@ vi.mock('@/lib/db', () => ({
     },
   },
 }))
+// The Reference / PO field is off here, as it is for every workshop that has
+// not asked for it; the rest of the module is the real one.
+vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) => ({
+  ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
+  isCustomerReferenceEnabled: vi.fn(async () => false),
+}))
 vi.mock('@/lib/workshop-timezone', () => ({
   workshopTimeZone: vi.fn(async () => 'Pacific/Auckland'),
 }))

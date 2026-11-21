@@ -36,6 +36,15 @@ vi.mock('@/lib/files/manager', () => ({
   parseStoredFileUrl: vi.fn(() => null),
 }))
 
+// No fleet number and no fields of the workshop's own, as for every workshop
+// that has asked for neither.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
+vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
+  getRecordCustomFieldsForPrint: vi.fn(async () => []),
+}))
 vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
@@ -57,6 +66,8 @@ vi.mock('@/lib/db', () => ({
       delete: vi.fn(),
     },
     servicePart: { findMany: vi.fn() },
+    // A deleted job's meter readings stay in the history; none here.
+    meterReading: { findMany: vi.fn(async () => []), updateMany: vi.fn() },
     // A deleted work order or quote takes its custom field values with it.
     customFieldValue: { deleteMany: vi.fn() },
     inventoryPart: { updateMany: vi.fn() },

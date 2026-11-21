@@ -85,10 +85,12 @@ it("captures today's rows again and dates the issue to now", async () => {
   expect(await reissueInvoice('rec-1', 'org-1')).toBe(true)
 
   // Live rows, and the linked inspection's checks without their photographs:
-  // a snapshot keeps where the pictures are, not the pictures.
+  // a snapshot keeps where the pictures are, not the pictures. The
+  // vehicle's photo is kept for good, so issuing waits 15 s for it.
   expect(assembleInvoicePrint).toHaveBeenCalledWith('rec-1', {
     mode: 'live',
     inspectionResults: 'rows',
+    photoWaitMs: 15_000,
   })
   const data = serviceRecord.update.mock.calls[0]?.[0]?.data
   expect(data.issuedAt.getTime()).toBeGreaterThanOrEqual(before)

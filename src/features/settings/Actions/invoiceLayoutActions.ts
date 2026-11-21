@@ -1,5 +1,6 @@
 'use server'
 
+import { isRecordEntityType } from '@/features/custom-fields/Schema/customFieldSchema'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
@@ -167,6 +168,10 @@ export async function setCustomFieldPlacement(input: {
     async ({ userId, organizationId }) => {
       const { definitionId, entityType, placement } = input
 
+      // A vehicle's or a customer's field has no place in the workshop-wide
+      // arrangement: it prints only where a design puts it.
+      if (isRecordEntityType(entityType)) throw new Error('Invalid placement')
+
       if (
         placement !== 'hidden' &&
         (!SECTIONS_WITH_FIELDS.has(placement) || NO_CUSTOM_FIELD_SECTIONS.has(placement))
@@ -204,7 +209,6 @@ export async function setCustomFieldPlacement(input: {
       // graduate a classic layout to designer rendering (isDesignerLayout).
       await persistLayoutConfig(userId, organizationId, key, { ...config, sections })
 
-      revalidatePath('/settings/custom-fields')
       revalidatePath('/settings/invoice')
       return { definitionId, placement }
     },

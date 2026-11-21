@@ -5,8 +5,10 @@ import {
   ensureDesignSnapshot,
 } from '@/features/invoice-designer/Lib/designSnapshots'
 import { assembleInvoicePrint, type InvoicePrintAssembly } from './assembleInvoicePrint'
+import { ISSUE_PHOTO_WAIT_MS } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
 import {
   freezeConditionMap,
+  freezeEquipment,
   freezeInspectionResults,
   ISSUED_INVOICE_VERSION,
   shouldIssue,
@@ -43,6 +45,14 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
           licensePlate: a.data.vehicle.licensePlate,
           hsn: a.data.vehicle.hsn ?? null,
           tsn: a.data.vehicle.tsn ?? null,
+          fleetNumber: a.data.vehicle.fleetNumber ?? null,
+          // Raw values: they print in the workshop's number format as it is
+          // at print time, like the custom fields frozen beside them.
+          meterReadings: (a.data.vehicle.meterReadings ?? []).map((meter) => ({
+            name: meter.name,
+            unit: meter.unit,
+            value: meter.value,
+          })),
           mileage: a.data.vehicle.mileage,
         }
       : null,
@@ -63,8 +73,17 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
       fieldType: cf.fieldType,
       format: 'workshop',
     })),
+    recordCustomFields: (a.data.recordCustomFields ?? []).map((cf) => ({
+      fieldId: cf.fieldId,
+      label: cf.label,
+      value: cf.value,
+      fieldType: cf.fieldType,
+      format: 'workshop',
+    })),
     conditionMap: freezeConditionMap(a.conditionMap),
     inspectionResults: freezeInspectionResults(a.inspectionResults),
+    // Both lists as they stood, so a design reapplied later can print either.
+    equipment: freezeEquipment(a.data.equipment),
   }
 }
 
@@ -81,22 +100,35 @@ async function captureIssue(
 ): Promise<boolean> {
   // The inspection's rows are frozen, never its photographs, so they are not
   // decoded here only to be thrown away.
+  // The photo is kept for good, so issuing waits longer for it than a
+  // redraw does, sharing any decode already under way. Still nothing: the
+  // invoice issues without it.
   const assembly = await assembleInvoicePrint(recordId, {
     mode: 'live',
     inspectionResults: 'rows',
+    photoWaitMs: ISSUE_PHOTO_WAIT_MS,
   })
   if (!assembly) return false
 
-  const [issuedDesignSnapshotId, issuedLogoSnapshotId, issuedSignatureSnapshotId] =
-    await Promise.all([
-      ensureDesignSnapshot(organizationId, assembly.designSource),
-      assembly.logoDataUri
-        ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
-        : Promise.resolve(null),
-      assembly.signer.dataUri
-        ? ensureAssetSnapshot(organizationId, assembly.signer.dataUri)
-        : Promise.resolve(null),
-    ])
+  const [
+    issuedDesignSnapshotId,
+    issuedLogoSnapshotId,
+    issuedSignatureSnapshotId,
+    issuedVehiclePhotoSnapshotId,
+  ] = await Promise.all([
+    ensureDesignSnapshot(organizationId, assembly.designSource),
+    assembly.logoDataUri
+      ? ensureAssetSnapshot(organizationId, assembly.logoDataUri)
+      : Promise.resolve(null),
+    assembly.signer.dataUri
+      ? ensureAssetSnapshot(organizationId, assembly.signer.dataUri)
+      : Promise.resolve(null),
+    // The vehicle's photo, resized, where the design prints it: the sheet
+    // reprints with it unchanged whatever happens to the vehicle's photo.
+    assembly.vehiclePhotoSource
+      ? ensureAssetSnapshot(organizationId, assembly.vehiclePhotoSource)
+      : Promise.resolve(null),
+  ])
 
   await db.serviceRecord.update({
     where: { id: recordId },
@@ -105,6 +137,7 @@ async function captureIssue(
       issuedDesignSnapshotId,
       issuedLogoSnapshotId,
       issuedSignatureSnapshotId,
+      issuedVehiclePhotoSnapshotId,
       issuedData: buildIssuedInvoiceData(assembly) as unknown as Prisma.InputJsonValue,
     },
   })

@@ -9,6 +9,7 @@ import {
   BUILTIN_FOOTER_FIELDS,
   BUILTIN_SECTIONS,
   invoiceLayoutConfigSchema,
+  isOptInField,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 
 const LOCALES = readdirSync('messages')
@@ -61,10 +62,15 @@ describe('layout presets', () => {
     for (const id of ['customer', 'vehicle', 'service', 'bank_account']) {
       const fields = config.sections.find((s) => s.id === id)?.fields
       expect(fields?.length, id).toBeGreaterThan(0)
+      // All but the opt-in ones, which no starting point switches on.
       expect(
-        fields?.every((f) => f.visible),
+        fields?.filter((f) => !isOptInField(id, f.id)).every((f) => f.visible),
         id
       ).toBe(true)
+      expect(
+        fields?.filter((f) => isOptInField(id, f.id)).some((f) => f.visible),
+        id
+      ).toBe(false)
     }
   })
 

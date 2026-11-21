@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "Zlecenie zachowało własną referencję / nr zamówienia, {job}. Referencja z oferty, {quote}, nie została skopiowana.",
     "convert": "Przekonwertuj",
     "convertToWorkOrder": "Przekonwertuj na zlecenie",
     "cancel": "Anuluj",

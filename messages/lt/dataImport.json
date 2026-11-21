@@ -192,6 +192,7 @@
       "engineCode": "Variklio kodas",
       "hsn": "HSN (gamintojo kodas)",
       "tsn": "TSN (tipo kodas)",
+      "fleetNumber": "Autoparko / vieneto numeris",
       "purchaseDate": "Pirkimo data",
       "purchasePrice": "Pirkimo kaina"
     },
@@ -202,6 +203,7 @@
       "total": "Bendra suma",
       "mileage": "Rida paslaugos metu",
       "invoiceNumber": "Sąskaitos numeris",
+      "customerReference": "Nuoroda / užsakymo nr.",
       "notes": "Paslaugos pastabos",
       "technician": "Technikas"
     }
@@ -211,6 +213,7 @@
     "invalid_email": "El. paštas \"{value}\" netinkamas ir buvo praleistas",
     "invalid_vin": "VIN \"{value}\" nėra 17 simbolių; paliktas kaip įvestas",
     "invalid_type_key": "{field} „{value}“ nėra tinkamas HSN ar TSN; praleista",
+    "fleet_number_too_long": "Autoparko / vieneto numeris \"{value}\" ilgesnis nei 40 simbolių; praleista",
     "vehicle_make_model_required": "Trūksta markės ir modelio",
     "vehicle_year_required": "Trūksta metų",
     "vehicle_year_invalid": "Metai \"{value}\" nėra tinkami metai",

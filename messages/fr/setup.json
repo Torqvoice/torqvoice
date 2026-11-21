@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Configurer pour les flottes et les poids lourds",
+    "commandMarine": "Configurer pour les flottes et les navires professionnels",
+    "docs": "Lire le guide pour les flottes et les poids lourds",
+    "docsMarine": "Lire le guide pour les flottes et les navires professionnels"
+  }
+}

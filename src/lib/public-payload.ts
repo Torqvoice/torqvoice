@@ -12,6 +12,8 @@
  * row with a marker and fail when one shows up in what a page sends.
  */
 
+import { normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
+
 /**
  * Turns a stored upload address into the one this link's token opens. Each
  * page brings its own, because each has rewritten a different set of forms.
@@ -128,6 +130,9 @@ export const PUBLIC_QUOTE_SELECT = {
   validUntil: true,
   createdAt: true,
   sentAt: true,
+  // The customer's own reference / PO. Their number, so theirs to see; taken
+  // away again by the caller for a workshop that has the field off.
+  customerReference: true,
   subtotal: true,
   taxRate: true,
   taxAmount: true,
@@ -145,6 +150,8 @@ export const PUBLIC_QUOTE_SELECT = {
   // Whose signature the sheet carries, and which car and inspection it reads.
   userId: true,
   vehicleId: true,
+  // Whose custom fields a design may place on the sheet; never sent as it is.
+  customerId: true,
   inspectionId: true,
   partItems: {
     select: {
@@ -186,6 +193,8 @@ export const PUBLIC_QUOTE_SELECT = {
       licensePlate: true,
       hsn: true,
       tsn: true,
+      // Taken away again by the caller for a workshop that has the field off.
+      fleetNumber: true,
     },
   },
 } as const
@@ -238,6 +247,11 @@ export interface PublicInspectionVehicle {
   /** Null unless the workshop records the German type key. */
   hsn?: string | null
   tsn?: string | null
+  /**
+   * Only on a vehicle that has one, for a workshop that has the field on (the
+   * caller gates it): otherwise there is no key at all.
+   */
+  fleetNumber?: string | null
   mileage: number
   customer: { name: string } | null
 }
@@ -276,6 +290,7 @@ export function publicInspection(
   toPublicUrl: ToPublicUrl
 ): PublicInspection & { attachments: PublicAttachment[] } {
   const { vehicle, template } = inspection
+  const fleetNumber = normalizeFleetNumber(vehicle.fleetNumber)
   return {
     id: inspection.id,
     mileage: inspection.mileage,
@@ -297,6 +312,7 @@ export function publicInspection(
       licensePlate: vehicle.licensePlate,
       hsn: vehicle.hsn ?? null,
       tsn: vehicle.tsn ?? null,
+      ...(fleetNumber ? { fleetNumber } : {}),
       mileage: vehicle.mileage,
       customer: vehicle.customer ? { name: vehicle.customer.name } : null,
     },

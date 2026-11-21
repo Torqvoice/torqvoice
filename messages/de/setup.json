@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Für Fuhrparks und Nutzfahrzeuge einrichten",
+    "commandMarine": "Für Fuhrparks und Berufsschiffe einrichten",
+    "docs": "Leitfaden für Fuhrparks und Nutzfahrzeuge lesen",
+    "docsMarine": "Leitfaden für Fuhrparks und Berufsschiffe lesen"
+  }
+}

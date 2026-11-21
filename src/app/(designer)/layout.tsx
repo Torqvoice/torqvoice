@@ -5,6 +5,9 @@ import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { TypeKeyProvider } from '@/components/type-key-context'
+import { CustomerReferenceProvider } from '@/components/customer-reference-context'
+import { FleetNumberProvider } from '@/components/fleet-number-context'
+import { RecordCustomFieldsProvider } from '@/components/record-custom-fields-context'
 import { ConfirmProvider } from '@/components/confirm-dialog'
 import { CurrencySettingsProvider } from '@/components/currency-settings-context'
 import { DateSettingsProvider } from '@/components/date-settings-context'
@@ -42,7 +45,7 @@ export default async function DesignerLayout({ children }: { children: React.Rea
     }
   }
 
-  return (
+  const page = (
     <ServiceTypeProvider serviceType={data.serviceType ?? 'automotive'}>
       <TypeKeyProvider enabled={data.typeKeyEnabled}>
         {/* The workshop's money and dates, which the sample sheet is written in. */}
@@ -64,5 +67,17 @@ export default async function DesignerLayout({ children }: { children: React.Rea
         </DateSettingsProvider>
       </TypeKeyProvider>
     </ServiceTypeProvider>
+  )
+
+  // Around the whole page rather than nested in it: every screen under this
+  // layout asks whether the workshop uses the Reference / PO field.
+  return (
+    <CustomerReferenceProvider enabled={data.customerReferenceEnabled}>
+      <FleetNumberProvider enabled={data.fleetNumberEnabled}>
+        <RecordCustomFieldsProvider value={data.recordCustomFields}>
+          {page}
+        </RecordCustomFieldsProvider>
+      </FleetNumberProvider>
+    </CustomerReferenceProvider>
   )
 }

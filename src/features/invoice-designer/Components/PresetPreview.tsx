@@ -1,5 +1,7 @@
 'use client'
 
+import { useMeterTypes } from '@/components/meter-types-context'
+import { useEquipmentTypes } from '@/components/equipment-types-context'
 import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
 import { invoiceLabels } from '../Lib/invoiceLabels'
 import { workOrderLabels } from '../Lib/workOrderLabels'
@@ -7,6 +9,8 @@ import { workOrderLabels } from '../Lib/workOrderLabels'
 import { useMemo } from 'react'
 import { useMessages, useTranslations } from 'next-intl'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
+import { useFleetNumberEnabled } from '@/components/fleet-number-context'
 import type { LayoutPreset } from '@/features/settings/Schema/layoutPresets'
 import type { TaxComponentDefinition } from '@/lib/tax'
 import { SpecThumbnail } from '../Render/SpecThumbnail'
@@ -37,6 +41,10 @@ interface PreviewWorkshop {
 function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUrl?: string) {
   const t = useTranslations('settings.designer')
   const typeKeyEnabled = useTypeKeyEnabled()
+  const customerReferenceEnabled = useCustomerReferenceEnabled()
+  const fleetNumberEnabled = useFleetNumberEnabled()
+  const meterTypes = useMeterTypes()
+  const equipmentTypes = useEquipmentTypes()
   const messages = useMessages() as { pdf?: Record<string, Record<string, string>> }
   const sampleFormat = useSampleFormat()
 
@@ -60,6 +68,10 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
         orgNumber: '',
         paymentTerms: '',
         typeKeyEnabled,
+        customerReferenceEnabled,
+        fleetNumberEnabled,
+        meterTypes,
+        equipmentTypes,
         logoUrl: logoUrl ?? '',
         taxComponents: workshop?.taxComponents ?? null,
         unitSystem: workshop?.unitSystem,
@@ -70,7 +82,19 @@ function useSampleData(docType: DocumentType, workshop?: PreviewWorkshop, logoUr
       docType,
       sampleFormat
     )
-  }, [docType, workshop, logoUrl, t, messages, typeKeyEnabled, sampleFormat])
+  }, [
+    docType,
+    workshop,
+    logoUrl,
+    t,
+    messages,
+    typeKeyEnabled,
+    customerReferenceEnabled,
+    fleetNumberEnabled,
+    meterTypes,
+    equipmentTypes,
+    sampleFormat,
+  ])
 }
 
 export function PresetPreview({

@@ -1,4 +1,8 @@
 import { z } from 'zod'
+import {
+  DEFAULT_EQUIPMENT_COLUMNS,
+  EQUIPMENT_COLUMNS,
+} from '@/features/equipment/Lib/equipmentPrint'
 
 // ---------------------------------------------------------------------------
 // Zod schemas
@@ -93,6 +97,7 @@ export const invoiceSectionSchema = z.object({
    * a matter of local law and local habit, not of translation, and a business
    * that has to print "Tax Invoice" cannot wait for a release to do it.
    * Blank or unset prints the document's own name in the reader's language.
+   * The Equipment section reads it the same way, as its heading.
    */
   text: z.string().max(60).optional(),
   /**
@@ -103,6 +108,18 @@ export const invoiceSectionSchema = z.object({
    * and print after the parts in their own group. Unset prints one flat list.
    */
   groupBy: z.enum(['category']).optional(),
+  /**
+   * Which list the Equipment section prints: `job` is the items the job or
+   * the quote works on, `vehicle` everything fitted to the vehicle now. Unset
+   * is `vehicle`, the attached equipment a fleet's paperwork asks for.
+   */
+  scope: z.enum(['job', 'vehicle']).optional(),
+  /**
+   * How the Vehicle section prints the vehicle's photo, once its
+   * `vehicle_photo` field is switched on: `beside` sets it sharp at the side
+   * of the lines, `faded` washes it out behind the block. Unset is `beside`.
+   */
+  photoStyle: z.enum(['beside', 'faded']).optional(),
   /** Appearance overrides for this section. Unset uses the document's own. */
   style: invoiceSectionStyleSchema.optional(),
   /** Controls which fields are shown within this section. */
@@ -238,6 +255,9 @@ export const BUILTIN_SECTIONS = [
   { id: 'customer', name: 'Customer' },
   { id: 'vehicle', name: 'Vehicle' },
   { id: 'service', name: 'Service' },
+  // What is fitted to the vehicle (a crane, a tail lift), as a table. Off
+  // until a workshop that records equipment switches it on.
+  { id: 'equipment', name: 'Equipment' },
   { id: 'items_table', name: 'Items Table' },
   { id: 'parts_table', name: 'Parts Table' },
   { id: 'labor_table', name: 'Labor Table' },
@@ -308,6 +328,7 @@ export const WORK_ORDER_SECTIONS = [
   { id: 'service', name: 'Service' },
   { id: 'job_details', name: 'Job Details' },
   { id: 'job_qr', name: 'Open on Phone' },
+  { id: 'equipment', name: 'Equipment' },
   { id: 'concerns', name: 'Customer Concerns' },
   { id: 'job_description', name: 'Work Requested' },
   { id: 'condition_map', name: 'Vehicle Condition' },
@@ -359,6 +380,9 @@ export const BUILTIN_CUSTOMER_FIELDS = [
   { id: 'customer_email', name: 'Customer Email' },
   { id: 'customer_phone', name: 'Customer Phone' },
   { id: 'customer_tax_id', name: 'Customer Tax ID' },
+  // The customer's own reference or purchase order number for the job. Behind
+  // the workshop's switch (SWITCH_GATED_FIELDS): on unless a design says not.
+  { id: 'customer_reference', name: 'Your reference / PO' },
 ] as const
 
 export const BUILTIN_VEHICLE_FIELDS = [
@@ -369,6 +393,16 @@ export const BUILTIN_VEHICLE_FIELDS = [
   // The German type approval key. On by default: it prints nothing until a
   // vehicle has one, and a workshop that records it wants it on the paper.
   { id: 'hsn_tsn', name: 'HSN/TSN' },
+  // The owner's own number for the vehicle. Behind the workshop's switch
+  // (SWITCH_GATED_FIELDS): on unless a design says not, except on a certificate.
+  { id: 'fleet_number', name: 'Fleet / unit number' },
+  // The vehicle's meters besides the odometer, one line each ("Engine hours:
+  // 4,256.7 hrs"), for a workshop that has defined a meter. Switch-gated like
+  // the fleet number.
+  { id: 'meter_readings', name: 'Meter readings' },
+  // The vehicle's own photo, beside the lines or faded behind them (the
+  // section's photoStyle). Opt-in (OPT_IN_FIELDS): off until a design asks.
+  { id: 'vehicle_photo', name: 'Vehicle photo' },
 ] as const
 
 export const BUILTIN_SERVICE_FIELDS = [
@@ -522,6 +556,40 @@ export const BUILTIN_RESULTS_TABLE_FIELDS = [
 ] as const
 
 /**
+ * The Equipment section's columns, in their default order. A field each, so
+ * the designer's switches and drag order choose which columns print and in
+ * what order, the way they choose a panel's lines.
+ */
+export const BUILTIN_EQUIPMENT_FIELDS: ReadonlyArray<{ id: string; name: string }> =
+  EQUIPMENT_COLUMNS.map((id) => ({
+    id,
+    name: {
+      type: 'Type',
+      make: 'Make',
+      model: 'Model',
+      manufacture_year: 'Year of manufacture',
+      serial_number: 'Serial number',
+      install_date: 'Installed',
+      rated_capacity: 'Rated capacity',
+      last_examined: 'Last examined',
+      next_examination: 'Next examination due',
+      certificate_reference: 'Certificate reference',
+      meters: 'Meter readings',
+      notes: 'Notes',
+    }[id],
+  }))
+
+/** Which list an Equipment section prints; unset is the vehicle's. */
+export function equipmentScopeOf(section: Pick<InvoiceSection, 'scope'>): 'job' | 'vehicle' {
+  return section.scope === 'job' ? 'job' : 'vehicle'
+}
+
+/** How a Vehicle section prints its photo; unset is beside the lines. */
+export function photoStyleOf(section: Pick<InvoiceSection, 'photoStyle'>): 'beside' | 'faded' {
+  return section.photoStyle === 'faded' ? 'faded' : 'beside'
+}
+
+/**
  * Fields that printed before they had a switch, by section.
  *
  * A field added to a section is off in every layout saved before it existed,
@@ -539,6 +607,73 @@ export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
   defects: ['no_defects_note'],
 }
 
+/**
+ * Fields no sheet prints until a design switches them on, by section.
+ *
+ * The opposite of a grandfathered field: one that arrived for the workshops
+ * that asked for it, and must change nothing for anyone else. It is off in
+ * the default layouts, off in a saved layout that does not mention it, and
+ * left out where a section with no field list of its own is read as showing
+ * everything, so no design made before the field existed starts printing it.
+ */
+export const OPT_IN_FIELDS: Record<string, readonly string[]> = {
+  vehicle: ['vehicle_photo'],
+}
+
+/** Whether this field waits for a design to switch it on. */
+export function isOptInField(sectionId: string, fieldId: string): boolean {
+  return (OPT_IN_FIELDS[sectionId] ?? []).includes(fieldId)
+}
+
+/**
+ * Fields behind a workshop switch, by section: the customer's Reference / PO
+ * (`documents.customerReferenceEnabled`), the Fleet / unit number
+ * (`vehicle.fleetNumberEnabled`) and the meter readings (a workshop that has
+ * defined a meter). All three also need a plan with custom fields.
+ *
+ * Neither grandfathered nor opt-in. The switch is what decides whether one
+ * prints: while it is off, the value never reaches the document's data, so
+ * the line prints nothing whatever the design says. A workshop that turns the
+ * switch on wants the line on its paper, so a design shows these unless it
+ * says otherwise: on in the default layouts and starting points, on in a
+ * saved design that does not mention them (after the lines it lists, in this
+ * order), on where a section has no field list. A design that stores one as
+ * off keeps it off.
+ *
+ * Not on a certificate. A certificate's design is frozen when the inspection
+ * is completed while its vehicle is read as it stands, so a fleet number
+ * switched on later would appear on certificates already handed over. There
+ * these fields stay off until the certificate's own design switches them on.
+ */
+export const SWITCH_GATED_FIELDS: Record<string, readonly string[]> = {
+  customer: ['customer_reference'],
+  vehicle: ['fleet_number', 'meter_readings'],
+}
+
+/** Whether this field prints only for a workshop that has switched it on. */
+export function isSwitchGatedField(sectionId: string, fieldId: string): boolean {
+  return (SWITCH_GATED_FIELDS[sectionId] ?? []).includes(fieldId)
+}
+
+/** Whether a switch-gated field shows unasked on this document. */
+function switchGatedShownOn(documentType: LayoutDocumentType): boolean {
+  return documentType !== 'certificate'
+}
+
+/**
+ * Whether a section that has no say about this field shows it: false for an
+ * opt-in field, and for a switch-gated one on a certificate.
+ */
+export function fieldShownUnasked(
+  sectionId: string,
+  fieldId: string,
+  documentType: LayoutDocumentType = 'invoice'
+): boolean {
+  if (isOptInField(sectionId, fieldId)) return false
+  if (isSwitchGatedField(sectionId, fieldId)) return switchGatedShownOn(documentType)
+  return true
+}
+
 /** The ids of `sectionId`'s grandfathered fields that `fields` never mentions. */
 export function unmentionedGrandfathered(
   sectionId: string,
@@ -547,6 +682,58 @@ export function unmentionedGrandfathered(
   const ids = GRANDFATHERED_FIELDS[sectionId]
   if (!ids || !fields) return []
   return ids.filter((id) => !fields.some((f) => f.id === id))
+}
+
+/**
+ * The fields a saved list never mentions that its section shows anyway, in
+ * the order they print after the listed ones: the grandfathered rows, then
+ * the switch-gated ones (not on a certificate). The print and the designer's
+ * field list both ask this, so the two cannot disagree about a design saved
+ * before a field existed.
+ */
+export function unmentionedShownFields(
+  sectionId: string,
+  fields: ReadonlyArray<{ id: string }> | undefined,
+  documentType: LayoutDocumentType = 'invoice'
+): string[] {
+  if (!fields) return []
+  const gated = switchGatedShownOn(documentType)
+    ? (SWITCH_GATED_FIELDS[sectionId] ?? []).filter((id) => !fields.some((f) => f.id === id))
+    : []
+  return [...unmentionedGrandfathered(sectionId, fields), ...gated]
+}
+
+/**
+ * A layout frozen onto an issued document, with every switch-gated field it
+ * never mentions written in as off.
+ *
+ * Frozen layouts are stored with every default written out, so one that does
+ * not mention a switch-gated field was frozen before the field existed and
+ * did not print it. Without this, the on-by-default rule would add the line
+ * when the copy is printed again: a sent copy never changes.
+ */
+export function withUnmentionedSwitchGatedOff<T extends Partial<InvoiceLayoutConfig>>(
+  layout: T
+): T {
+  if (!layout.sections) return layout
+  return {
+    ...layout,
+    sections: layout.sections.map((section) => {
+      const gated = SWITCH_GATED_FIELDS[section.id]
+      if (!gated) return section
+      // A section with no list of its own shows every line it has. Writing
+      // only the gated ones in would turn that into a list of nothing else,
+      // so its other lines are written in as they print: on, bar the opt-in.
+      const fields =
+        section.fields ??
+        getBuiltinFieldsForSection(section.id)
+          .filter((f) => !gated.includes(f.id))
+          .map((f) => ({ id: f.id, visible: !isOptInField(section.id, f.id) }))
+      const missing = gated.filter((id) => !fields.some((f) => f.id === id))
+      if (missing.length === 0) return section
+      return { ...section, fields: [...fields, ...missing.map((id) => ({ id, visible: false }))] }
+    }),
+  }
 }
 
 /** The footer's rows that are not detail lines: the mark, the portal link and the closing note. */
@@ -594,10 +781,11 @@ export const SECTIONS_WITH_FIELDS = new Set<string>([
   'results_table',
   'job_details',
   'condition_map',
+  'equipment',
 ])
 
 /** Sections with fields of their own that print no workshop-defined fields. */
-export const NO_CUSTOM_FIELD_SECTIONS = new Set<string>(['condition_map'])
+export const NO_CUSTOM_FIELD_SECTIONS = new Set<string>(['condition_map', 'equipment'])
 
 /** Sections that print inside a panel and can have it taken away. */
 export const BOXED_ELIGIBLE_SECTIONS = new Set<string>([
@@ -650,6 +838,8 @@ export const FIXED_SLOT_FIELDS: Record<string, readonly string[]> = {
     'combined_table',
     'ungraded_checks',
   ],
+  // The photo sits beside the lines or behind them, never among them.
+  vehicle: ['vehicle_photo'],
 }
 
 /** Whether this field prints where the list puts it, or in a slot of its own. */
@@ -690,6 +880,7 @@ export const FULL_WIDTH_ONLY_SECTIONS = new Set<string>([
   'job_description',
   'work_checklist',
   'condition_map',
+  'equipment',
 ])
 
 /** Default column assignment for column-eligible sections */
@@ -715,14 +906,24 @@ function getDefaultFieldsForSection(
     // A work order says only what the technician and the customer need: who
     // the car belongs to and how to reach them, which car, and the job.
     case 'customer':
+      // A switch-gated field is on wherever it shows unasked: a work order
+      // carries the customer's PO as an invoice does.
       return BUILTIN_CUSTOMER_FIELDS.map((f) => ({
         id: f.id,
-        visible: workOrder ? f.id === 'customer_name' || f.id === 'customer_phone' : true,
+        visible: isSwitchGatedField('customer', f.id)
+          ? fieldShownUnasked('customer', f.id, documentType)
+          : workOrder
+            ? f.id === 'customer_name' || f.id === 'customer_phone'
+            : true,
       }))
     case 'vehicle':
       return BUILTIN_VEHICLE_FIELDS.map((f) => ({
         id: f.id,
-        visible: workOrder ? f.id !== 'vin' : true,
+        visible: !fieldShownUnasked('vehicle', f.id, documentType)
+          ? false
+          : workOrder
+            ? f.id !== 'vin'
+            : true,
       }))
     case 'service':
       return BUILTIN_SERVICE_FIELDS.map((f) => ({ id: f.id, visible: true }))
@@ -773,6 +974,12 @@ function getDefaultFieldsForSection(
       }))
     case 'defects':
       return BUILTIN_DEFECTS_FIELDS.map((f) => ({ id: f.id, visible: true }))
+    case 'equipment':
+      // The sample invoice's columns; the rest wait to be switched on.
+      return BUILTIN_EQUIPMENT_FIELDS.map((f) => ({
+        id: f.id,
+        visible: (DEFAULT_EQUIPMENT_COLUMNS as readonly string[]).includes(f.id),
+      }))
     case 'results_table':
       // Only the checks that were not OK, with their notes, a table per
       // section: what a reader wants to know. Passed, not-applicable and
@@ -802,6 +1009,8 @@ const HIDDEN_BY_DEFAULT_SECTIONS = new Set<string>([
   'condition_map',
   'defects',
   'results_table',
+  // For a workshop that records equipment, and only where its design asks.
+  'equipment',
 ])
 /**
  * Sections that join a saved invoice or quote design in front of the ones
@@ -854,6 +1063,8 @@ const HIDDEN_BY_DEFAULT_WORK_ORDER_SECTIONS = new Set<string>([
   // certificate. They join the work order only where a workshop asks.
   'defects',
   'results_table',
+  // What is fitted to the vehicle, for a workshop whose design asks for it.
+  'equipment',
 ])
 
 /** The work order's panels print as bare lines: no fills, no boxes, no colour. */
@@ -1031,6 +1242,8 @@ export function getBuiltinFieldsForSection(
       return BUILTIN_JOB_DETAILS_FIELDS
     case 'condition_map':
       return builtinConditionMapFields(documentType)
+    case 'equipment':
+      return BUILTIN_EQUIPMENT_FIELDS
     default:
       return []
   }
@@ -1053,6 +1266,8 @@ export function getBuiltinFieldName(fieldId: string): string | undefined {
     ...BUILTIN_RESULTS_TABLE_FIELDS,
     ...BUILTIN_JOB_DETAILS_FIELDS,
     ...BUILTIN_CONDITION_MAP_FIELDS,
+    // Last, so a column never names another section's field of the same id.
+    ...BUILTIN_EQUIPMENT_FIELDS,
   ]
   return allFields.find((f) => f.id === fieldId)?.name
 }

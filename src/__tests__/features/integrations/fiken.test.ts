@@ -24,6 +24,7 @@ import {
   organizationNumber,
   toCents,
   vatTypeForRate,
+  withCustomerReference,
 } from '@/integrations/fiken/mapping'
 
 const customer: AccountingCustomer = {
@@ -592,5 +593,50 @@ describe('Fiken manifest', () => {
       tokenAuth: 'basic',
       stateOnExchange: true,
     })
+  })
+})
+
+/**
+ * The customer's reference / PO from the work order. A Fiken sale has no
+ * field for it, so it can only lead the first line's text, and only when the
+ * workshop switches that on.
+ */
+describe('Fiken and the customer reference / PO', () => {
+  const withPo: AccountingInvoice = { ...invoice, customerReference: 'PO-48213' }
+
+  it('sends the same sale, to the byte, until the workshop switches it on', () => {
+    const before = JSON.stringify(buildSale(invoice, options))
+    expect(JSON.stringify(buildSale(withPo, options))).toBe(before)
+    expect(JSON.stringify(buildSale(withPo, { ...options, customerReferenceInText: false }))).toBe(
+      before
+    )
+  })
+
+  it('leaves a job without a reference alone when it is on', () => {
+    expect(JSON.stringify(buildSale(invoice, { ...options, customerReferenceInText: true }))).toBe(
+      JSON.stringify(buildSale(invoice, options))
+    )
+  })
+
+  it('leads the first line with it, and touches no amount, account or other line', () => {
+    const plain = buildSale(invoice, options) as { lines: Line[] }
+    const body = buildSale(withPo, { ...options, customerReferenceInText: true }) as {
+      lines: Line[]
+    }
+    expect(body.lines[0].description).toBe('Deres ref.: PO-48213. Brake service')
+    expect({ ...body.lines[0], description: plain.lines[0].description }).toEqual(plain.lines[0])
+    expect(body.lines.slice(1)).toEqual(plain.lines.slice(1))
+  })
+
+  it('keeps the line within the 200 characters Fiken takes', () => {
+    const long = withCustomerReference('Brake service', 'P'.repeat(300))
+    expect(long).toHaveLength(200)
+    expect(long.startsWith('Deres ref.: PPP')).toBe(true)
+  })
+
+  it('is off until asked for', () => {
+    const setting = manifest.settings.find((s) => s.key === 'customerReferenceInText')
+    expect(setting?.type).toBe('boolean')
+    expect(setting?.default).toBe(false)
   })
 })

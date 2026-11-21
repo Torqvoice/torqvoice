@@ -4,7 +4,8 @@ import { db } from '@/lib/db'
 import { DocumentLockedError } from '@/lib/document-lock'
 import { assertInvoiceEditable, assertQuoteEditable } from '@/lib/document-lock.server'
 import { PermissionSubject } from '@/lib/permissions'
-import { entityTypes, type EntityType } from '../Schema/customFieldSchema'
+import { getFeatures } from '@/lib/features'
+import { entityTypes, isRecordEntityType, type EntityType } from '../Schema/customFieldSchema'
 
 /**
  * What the custom field actions need to know about each kind of record that
@@ -25,6 +26,11 @@ interface CustomFieldRecordKind {
   assertEditable: (entityId: string, organizationId: string) => Promise<void>
 }
 
+/** A vehicle or a customer is never locked. */
+const neverLocked = async () => {
+  // Nothing to refuse.
+}
+
 const RECORD_KINDS: Record<EntityType, CustomFieldRecordKind> = {
   service_record: {
     subject: PermissionSubject.SERVICES,
@@ -38,6 +44,32 @@ const RECORD_KINDS: Record<EntityType, CustomFieldRecordKind> = {
       (await db.quote.count({ where: { id, organizationId } })) > 0,
     assertEditable: assertQuoteEditable,
   },
+  vehicle: {
+    subject: PermissionSubject.VEHICLES,
+    exists: async (id, organizationId) =>
+      (await db.vehicle.count({ where: { id, organizationId } })) > 0,
+    assertEditable: neverLocked,
+  },
+  customer: {
+    subject: PermissionSubject.CUSTOMERS,
+    exists: async (id, organizationId) =>
+      (await db.customer.count({ where: { id, organizationId } })) > 0,
+    assertEditable: neverLocked,
+  },
+}
+
+/**
+ * Whether this workshop is shown the fields of this kind at all. The fields
+ * of a work order or a quote always are, as they always were. A vehicle's
+ * and a customer's are part of the plan's custom fields: after a downgrade
+ * they are hidden and kept.
+ */
+export async function kindOffered(
+  entityType: EntityType,
+  organizationId: string
+): Promise<boolean> {
+  if (!isRecordEntityType(entityType)) return true
+  return (await getFeatures(organizationId)).customFields
 }
 
 export function isEntityType(value: unknown): value is EntityType {

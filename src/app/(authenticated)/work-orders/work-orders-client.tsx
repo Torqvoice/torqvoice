@@ -84,6 +84,8 @@ interface WorkOrder {
   promisedAt: Date | null
   techName: string | null
   invoiceNumber: string | null
+  /** The customer's reference / PO; null unless the workshop uses the field. */
+  customerReference?: string | null
   customer: { id: string; name: string; email: string | null; phone: string | null } | null
   vehicle: {
     id: string
@@ -188,6 +190,7 @@ export function WorkOrdersClient({
     Boolean
   ).length
   const t = useTranslations('workOrders.list')
+  const tc = useTranslations('common')
   const serviceLabel = useServiceLabels()
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [showPicker, setShowPicker] = useState(false)
@@ -260,7 +263,14 @@ export function WorkOrdersClient({
   } = useDebouncedSearch(search, (term) => navigate({ search: term }))
 
   const handleStatusChange = async (workOrder: WorkOrder, newStatus: string) => {
-    await updateServiceStatus(workOrder.id, newStatus)
+    // An action that cannot reach the server throws instead of answering.
+    const result = await updateServiceStatus(workOrder.id, newStatus).catch(() => null)
+    if (!result?.success) {
+      // Refused (a required meter reading missing, named in the message) or
+      // failed: the row keeps its status, and nobody is offered a message.
+      toast.error(result?.error || tc('errors.unexpected'))
+      return
+    }
     toast.success(t('statusUpdated'))
     router.refresh()
 
@@ -455,6 +465,11 @@ export function WorkOrdersClient({
                       {formatDate(new Date(r.startDateTime ?? r.serviceDate))}
                     </span>
                     {r.invoiceNumber && <span className="font-mono">{r.invoiceNumber}</span>}
+                    {r.customerReference && (
+                      <span className="max-w-full truncate font-mono" data-testid="row-reference">
+                        {r.customerReference}
+                      </span>
+                    )}
                     {r.techName && <span className="truncate">{r.techName}</span>}
                     {/* On a phone there is no room for every promise, so only
                         a broken one earns a line. */}
@@ -649,6 +664,15 @@ export function WorkOrdersClient({
                         )}
                         <TableCell className="truncate">
                           <span className="font-medium">{r.title}</span>
+                          {/* What a search by PO number matched, beside the job it found. */}
+                          {r.customerReference && (
+                            <span
+                              className="ml-2 font-mono text-xs text-muted-foreground"
+                              data-testid="row-reference"
+                            >
+                              {r.customerReference}
+                            </span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-wrap items-center gap-1">

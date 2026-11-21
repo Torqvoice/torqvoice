@@ -1,5 +1,7 @@
 'use client'
 
+import { JobMeters } from '@/features/meters/Components/JobMeters'
+import { WorkOnPicker } from '@/features/equipment/Components/WorkOnPicker'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
@@ -19,6 +21,9 @@ import type { InitialData } from '../../service-edit/form-types'
 import { formatTypeKey } from '../../../Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
+import { CustomerReferenceField } from '@/features/customer-reference/Components/CustomerReferenceField'
+import { setServiceRecordReference } from '@/features/customer-reference/Actions/setServiceRecordReference'
 import { ReadingNotice, useReadingNotice } from '../../ReadingNotice'
 import { ReadingQuestion } from '../../ReadingQuestion'
 import { readingNeedsAnswer } from '../../../Lib/vehicleReading'
@@ -50,6 +55,9 @@ interface JobFactsCardProps {
     year: number
     licensePlate: string | null
   } | null
+  /** The Reference / PO box, as it is typed and once it has saved. */
+  onReferenceChange?: (reference: string) => void
+  onReferenceSaved?: () => void
 }
 
 function initials(name: string): string {
@@ -135,10 +143,13 @@ export function JobFactsCard({
   setSelectedVehicleId,
   techName,
   initialVehicle,
+  onReferenceChange,
+  onReferenceSaved,
   distanceUnit,
   confirmedReading = null,
   onConfirmReading,
 }: JobFactsCardProps) {
+  const referenceEnabled = useCustomerReferenceEnabled()
   const t = useTranslations('service')
   const tv = useTranslations('vehicles.form')
   const tInfo = useTranslations('service.modern.vehicleInfo')
@@ -178,6 +189,11 @@ export function JobFactsCard({
   // The picker can point the job at another vehicle before the save; the facts
   // on this card describe the saved one, so say which is which while they differ.
   const vehicleChanged = Boolean(vehicle && selectedVehicleId && selectedVehicleId !== vehicle.id)
+  // With "Work on" or meter rows under the mileage, the labels share one
+  // width so the fields line up. Without them the mileage row is as it was.
+  const extraRows =
+    !vehicleChanged && (Boolean(initialData.equipment) || (initialData.meters?.length ?? 0) > 0)
+  const rowLabel = extraRows ? cn(factLabel, 'w-28 shrink-0') : factLabel
   // A reading typed on this visit, on the vehicle the last reading was read
   // for: far above it is a question to answer before it is saved; below it
   // is a quiet notice.
@@ -282,6 +298,19 @@ export function JobFactsCard({
           ) : (
             <p className="text-sm text-muted-foreground">{t('modern.noCustomer')}</p>
           )}
+          {/* Under the customer, whose number it is. Not inside a locked
+              fieldset: a PO that arrives after the invoice went out is typed
+              here all the same, and saves on its own. */}
+          {referenceEnabled && (
+            <CustomerReferenceField
+              value={record.customerReference ?? null}
+              required={Boolean(customer?.poRequired)}
+              labelClassName={factLabel}
+              onSave={(reference) => setServiceRecordReference(record.id, reference)}
+              onValueChange={onReferenceChange}
+              onSaved={onReferenceSaved}
+            />
+          )}
         </div>
 
         {/* A counter sale has no vehicle and nothing to pick, but choosing one
@@ -334,6 +363,14 @@ export function JobFactsCard({
                     <CopyValue value={vehicle.vin} label={isMarine ? tv('vinMarine') : tv('vin')} />
                   </p>
                 )}
+                {/* The owner's own number for it, where the workshop uses one:
+                    the read leaves it null otherwise. */}
+                {vehicle.fleetNumber && (
+                  <p className="truncate text-xs text-muted-foreground">
+                    {tv('fleetNumber')}:{' '}
+                    <span className="font-mono text-foreground">{vehicle.fleetNumber}</span>
+                  </p>
+                )}
               </div>
             </div>
           )}
@@ -363,7 +400,7 @@ export function JobFactsCard({
             {selectedVehicleId && (
               <div className="space-y-1">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="mileage" className={factLabel}>
+                  <Label htmlFor="mileage" className={rowLabel}>
                     {serviceType === 'marine'
                       ? t('basicInfo.mileageMarine')
                       : t('basicInfo.mileage')}
@@ -401,6 +438,25 @@ export function JobFactsCard({
                     entered={readingTyped ?? ''}
                     last={initialData.lastReading}
                     unit={distanceUnit}
+                  />
+                )}
+                {/* The equipment the job works on, whose meters follow. */}
+                {!vehicleChanged && initialData.equipment && (
+                  <WorkOnPicker
+                    target={{ kind: 'job', id: initialData.id }}
+                    equipment={initialData.equipment}
+                    locked={locked}
+                    labelClassName={rowLabel}
+                  />
+                )}
+                {/* The vehicle's other meters, read on this job. Only on the
+                    vehicle they were loaded for. */}
+                {!vehicleChanged && (
+                  <JobMeters
+                    jobId={initialData.id}
+                    meters={initialData.meters ?? []}
+                    locked={locked}
+                    labelClassName={rowLabel}
                   />
                 )}
               </div>
@@ -529,6 +585,13 @@ function VehicleDetails({
     },
     { key: 'color', label: tv('color'), value: vehicle.color ?? null },
     { key: 'engineCode', label: tv('engineCode'), value: vehicle.engineCode ?? null, copy: true },
+    // Null for a workshop that has the fleet number off: the read gates it.
+    {
+      key: 'fleetNumber',
+      label: tv('fleetNumber'),
+      value: vehicle.fleetNumber ?? null,
+      copy: true,
+    },
     {
       key: 'typeKey',
       label: tv('typeKey'),
@@ -615,6 +678,7 @@ function CustomerDetails({
   const tForm = useTranslations('customers.form')
   const tDetail = useTranslations('customers.detail')
   const tCommon = useTranslations('common.form')
+  const referenceEnabled = useCustomerReferenceEnabled()
 
   const rows: {
     key: string
@@ -648,6 +712,7 @@ function CustomerDetails({
   const badges = [
     customer.taxExempt ? tDetail('taxExemptBadge') : null,
     customer.reminderOptOut ? tForm('reminderOptOut') : null,
+    referenceEnabled && customer.poRequired ? tForm('poRequiredBadge') : null,
   ].filter((badge): badge is string => Boolean(badge))
 
   return (

@@ -1,4 +1,5 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
+import { meterLine } from '@/features/meters/Lib/meterValue'
 import { DEFAULT_DATE_FORMAT, formatCurrency, formatDateForPdf } from '@/lib/format'
 import { documentLaborLines, isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { documentNumbers, serviceTypeName } from '@/lib/document-numbers'
@@ -34,7 +35,9 @@ import {
 } from '../Spec/buildSpec'
 import type { DocumentSpec } from '../Spec/documentSpec'
 import { warrantyForPrint } from './warrantyPrint'
+import { equipmentForPrint } from './equipmentPrint'
 import { typeKeyLine } from '@/features/vehicles/Lib/typeKey'
+import { fleetNumberLine } from '@/features/vehicles/Lib/fleetNumber'
 import {
   type VisitConditionMap,
   visitConditionMapForPrint,
@@ -222,6 +225,11 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     customer_email: customer?.email || '',
     customer_phone: customer?.phone || '',
     customer_tax_id: customer?.taxId ? `${L('customerTaxId', 'Tax ID')}: ${customer.taxId}` : '',
+    // Empty for a job without one, and for a workshop that has the field off:
+    // the value is taken away before it reaches here.
+    customer_reference: data.customerReference
+      ? `${L('customerReference', 'Your reference / PO')}: ${data.customerReference}`
+      : '',
     vehicle_name: vehicleName,
     vin: data.vehicle?.vin
       ? labels.vin
@@ -229,6 +237,12 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
         : `VIN: ${data.vehicle.vin}`
       : '',
     hsn_tsn: typeKeyLine(data.vehicle, labels.typeKey),
+    // Empty for a vehicle without one, and for a workshop that has the field off.
+    fleet_number: fleetNumberLine(data.vehicle, labels.fleetNumber),
+    // One line per meter, in the workshop's order; empty without readings.
+    meter_readings: (data.vehicle?.meterReadings ?? [])
+      .map((meter) => meterLine(meter, nums.meter))
+      .join('\n'),
     license_plate: data.vehicle?.licensePlate
       ? labels.plate
         ? fillTemplate(labels.plate, { plate: data.vehicle.licensePlate })
@@ -267,7 +281,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     bank_account: invoiceSettings?.bankAccount?.split(/\r?\n/).filter(Boolean).join(' · ') || '',
     footer_note: invoiceSettings?.footerNote || `${shopDisplayName} · ${serviceDate}`,
   }
-  for (const cfEntry of data.customFields ?? []) {
+  for (const cfEntry of [...(data.customFields ?? []), ...(data.recordCustomFields ?? [])]) {
     if (cfEntry.value === '' || cfEntry.value == null) continue
     fields[toCustomFieldId(cfEntry.fieldId)] = customFieldLine(cfEntry, {
       labels,
@@ -501,6 +515,10 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     conditionMap: visitConditionMapForPrint(input.conditionMap, doc.margin) ?? undefined,
     // The linked inspection's findings, through the certificate's own blocks.
     certificate: inspectionResultsForPrint(layout, input.inspectionResults, labels),
+    // Both lists; the Equipment section picks one, where a design places it.
+    equipment: equipmentForPrint(data.equipment, { dateFormat: df, locale: input.locale }),
+    // Only where the design prints it; the Vehicle block places it.
+    vehiclePhoto: data.vehiclePhoto,
     telegramQr: input.telegramQrDataUri
       ? {
           dataUri: input.telegramQrDataUri,

@@ -1,5 +1,13 @@
 'use client'
 
+import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
+import { VehicleEquipment } from '@/features/equipment/Components/VehicleEquipment'
+import type { VehicleEquipmentView } from '@/features/equipment/Lib/equipment.server'
+import type { MeterTypeView, VehicleMeterView } from '@/features/meters/Lib/meters.server'
+import {
+  type RecordCustomField,
+  RecordCustomFields,
+} from '@/features/custom-fields/Components/RecordCustomFields'
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
@@ -177,6 +185,10 @@ interface VehicleDetail {
   engineCode: string | null
   hsn: string | null
   tsn: string | null
+  /** Null for a workshop that has the fleet number switched off. */
+  fleetNumber?: string | null
+  /** The workshop's own fields for the vehicle; none unless it defined some. */
+  customFields?: RecordCustomField[]
   purchaseDate: Date | null
   purchasePrice: number | null
   imageUrl: string | null
@@ -282,6 +294,10 @@ export function VehicleDetailClassic({
   safetyAvailable = false,
   paginatedFindings,
   tireSets = [],
+  meterTypes = [],
+  vehicleMeters = [],
+  equipment = null,
+  today = '',
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
@@ -289,6 +305,13 @@ export function VehicleDetailClassic({
   paginatedFindings: PaginatedFindings
   /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
   tireSets?: VehicleTireSet[]
+  /** The workshop's meters in use (empty while meters are off) and this vehicle's. */
+  meterTypes?: MeterTypeView[]
+  vehicleMeters?: VehicleMeterView[]
+  /** The vehicle's equipment; null while equipment is off. */
+  equipment?: VehicleEquipmentView | null
+  /** Today on the workshop's calendar. */
+  today?: string
   serviceSearch: string
   serviceRecordType: string
   currencyCode?: string
@@ -716,8 +739,20 @@ export function VehicleDetailClassic({
                     </span>
                   </>
                 )}
+                {vehicle.fleetNumber && (
+                  <>
+                    {(vehicle.licensePlate ||
+                      vehicle.vin ||
+                      vehicle.engineCode ||
+                      (typeKeyEnabled && (vehicle.hsn || vehicle.tsn))) && <span>&middot;</span>}
+                    <span>
+                      {t('fleetNumber')} <span className="font-mono">{vehicle.fleetNumber}</span>
+                    </span>
+                  </>
+                )}
               </div>
             </div>
+            <RecordCustomFields fields={vehicle.customFields} className="mt-1 text-xs" />
             <div className="mt-1 flex flex-wrap items-center gap-1.5">
               {vehicle.fuelType && (
                 <Badge variant="secondary" className="text-xs px-1.5 py-0">
@@ -1260,6 +1295,24 @@ export function VehicleDetailClassic({
           year={vehicle.year}
           existingFindings={paginatedFindings.records.map((f) => f.description)}
         />
+      )}
+
+      {/* The meters besides the odometer: engine hours and the like. */}
+      {meterTypes.length > 0 && (
+        <Card className="py-0">
+          <CardContent className="p-4">
+            <VehicleMeters vehicleId={vehicle.id} types={meterTypes} meters={vehicleMeters} />
+          </CardContent>
+        </Card>
+      )}
+
+      {/* The equipment fitted to it: crane, tail lift and the like. */}
+      {equipment && (
+        <Card className="py-0">
+          <CardContent className="p-4">
+            <VehicleEquipment vehicleId={vehicle.id} equipment={equipment} today={today} />
+          </CardContent>
+        </Card>
       )}
 
       {/* Tabs */}

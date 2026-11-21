@@ -64,6 +64,8 @@ export interface WorkOrderJobProps {
   locked?: boolean
   /** The pay code button, when online payment is connected. Drawn where payments are taken. */
   payCode?: ReactNode
+  /** What the Reference / PO box holds, as it is typed: the page stops a send on it. */
+  onReferenceChange?: (reference: string) => void
 }
 
 export interface WorkOrderSidebarProps {

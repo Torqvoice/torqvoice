@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Konfiguracja dla flot i pojazdów ciężarowych",
+    "commandMarine": "Konfiguracja dla flot i jednostek komercyjnych",
+    "docs": "Przeczytaj przewodnik dla flot i pojazdów ciężarowych",
+    "docsMarine": "Przeczytaj przewodnik dla flot i jednostek komercyjnych"
+  }
+}

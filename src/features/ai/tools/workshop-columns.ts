@@ -29,6 +29,33 @@ export const HIDDEN_COLUMNS: readonly string[] = [
   'readingBeforeJob',
 ]
 
+/**
+ * Columns that belong to a field a workshop switches on for itself. They are
+ * in the lists below, and left out of the views of a workshop that has the
+ * field off (or a plan without it): off means hidden, from the model too.
+ */
+export const REFERENCE_COLUMNS: readonly string[] = ['customerReference', 'poRequired']
+
+/** The vehicle's fleet / unit number: the same rule, its own switch. */
+export const FLEET_NUMBER_COLUMNS: readonly string[] = ['fleetNumber']
+
+/** Which of the switched-on fields this workshop uses. */
+export interface ShownColumns {
+  customerReference: boolean
+  fleetNumber: boolean
+}
+
+/** The columns of one table as this workshop's view shows them. */
+export function columnsFor(table: string, options: ShownColumns): string[] {
+  const columns = TABLE_COLUMNS[table]
+  if (!columns) throw new Error(`No column list for table ${table}`)
+  return columns.filter(
+    (column) =>
+      (options.customerReference || !REFERENCE_COLUMNS.includes(column)) &&
+      (options.fleetNumber || !FLEET_NUMBER_COLUMNS.includes(column))
+  )
+}
+
 export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
   vehicles: [
     'id',
@@ -45,6 +72,8 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'engineCode',
     'hsn',
     'tsn',
+    // The workshop's own number for the vehicle (Settings, Workshop); see FLEET_NUMBER_COLUMNS.
+    'fleetNumber',
     'purchaseDate',
     'purchasePrice',
     'imageUrl',
@@ -76,6 +105,8 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'startDateTime',
     'endDateTime',
     'promisedAt',
+    // The customer's reference / PO for the job (Settings, Workshop); see REFERENCE_COLUMNS.
+    'customerReference',
     'shopName',
     'techName',
     'parts',
@@ -116,6 +147,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'issuedDesignSnapshotId',
     'issuedLogoSnapshotId',
     'issuedSignatureSnapshotId',
+    'issuedVehiclePhotoSnapshotId',
     'bookingSource',
     'editUnlockedAt',
     'tireSetId',
@@ -190,6 +222,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'taxId',
     'taxExempt',
     'reminderOptOut',
+    'poRequired',
     'notes',
     'createdAt',
     'updatedAt',
@@ -244,6 +277,7 @@ export const TABLE_COLUMNS: Readonly<Record<string, readonly string[]>> = {
     'shareNeverExpires',
     'shareRenewedAt',
     'customerMessage',
+    'customerReference',
     'convertedToId',
     'createdAt',
     'updatedAt',

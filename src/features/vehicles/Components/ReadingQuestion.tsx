@@ -12,8 +12,20 @@ interface ReadingQuestionProps {
   last: number
   /** "km" or "mi", where the caller knows it. */
   unit?: string
+  /**
+   * For one of the vehicle's other meters (engine hours, PTO hours): its own
+   * unit, printed with both numbers whatever the workshop's service type,
+   * since it is not the odometer a boat counts in hours.
+   */
+  meterUnit?: string
   onConfirm: () => void
   onChange: () => void
+  /**
+   * Off where nothing else saves alongside the reading (the vehicle page's
+   * own reading dialog): the note about the rest of the work order is for a
+   * work order only.
+   */
+  onWorkOrder?: boolean
   id?: string
   className?: string
 }
@@ -28,16 +40,21 @@ export function ReadingQuestion({
   entered,
   last,
   unit,
+  meterUnit,
   onConfirm,
   onChange,
+  onWorkOrder = true,
   id = 'reading-question',
   className,
 }: ReadingQuestionProps) {
   const t = useTranslations('vehicles.form')
   const format = useFormatter()
-  const isMarine = useServiceType() === 'marine'
+  const isMarine = useServiceType() === 'marine' && meterUnit === undefined
+  const shownUnit = meterUnit ?? unit
   const withUnit = (value: number) =>
-    unit && !isMarine ? `${format.number(value)} ${unit}` : format.number(value)
+    shownUnit && !isMarine
+      ? `${format.number(value, { maximumFractionDigits: 2 })} ${shownUnit}`
+      : format.number(value)
   return (
     <div
       id={id}
@@ -57,8 +74,8 @@ export function ReadingQuestion({
         {t(isMarine ? 'readingConfirmBodyMarine' : 'readingConfirmBody', {
           entered: withUnit(entered),
           last: withUnit(last),
-        })}{' '}
-        {t('readingConfirmHeld')}
+        })}
+        {onWorkOrder && ` ${t('readingConfirmHeld')}`}
       </p>
       <div className="flex flex-wrap gap-2">
         <Button type="button" size="sm" onClick={onConfirm} data-reading-confirm>

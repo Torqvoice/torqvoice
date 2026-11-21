@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Bu müşterinin faturaları atölye varsayılanı yerine bu tasarımla yazdırılır. Bir fatura yine de kendi tasarımını seçebilir.",
     "reminderOptOut": "Hatırlatma yok",
     "reminderOptOutHint": "Bu müşteriyi muayene hatırlatmalarına veya diğer kampanyalara dahil etme.",
+    "poRequired": "Sipariş no zorunlu",
+    "poRequiredHint": "Bu müşterinin faturaları, iş emrinde Referans / sipariş no alanı doldurulana kadar bekler.",
+    "poRequiredBadge": "Sipariş no zorunlu",
     "bookAppointment": "Randevu oluştur"
   },
   "serviceRequests": {

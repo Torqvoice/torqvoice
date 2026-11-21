@@ -1,6 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useMeterTypes } from '@/components/meter-types-context'
+import { useEquipmentTypes } from '@/components/equipment-types-context'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Eye, EyeOff, PenLine, Trash2 } from 'lucide-react'
 import { useMessages, useTranslations } from 'next-intl'
 import { withOrgNumberLabel } from '../Lib/labelOverrides'
@@ -30,6 +32,7 @@ import { certificateLabels } from '@/features/inspections/Lib/certificateLabels'
 import {
   COLUMN_ELIGIBLE_SECTIONS,
   DESIGNER_LAYOUT_VERSION,
+  layoutDocumentType,
   getDefaultInvoiceLayout,
   getDefaultLayout,
   materializeHiddenSection,
@@ -60,11 +63,22 @@ import { buildDocumentSpec, type DocumentData } from '../Spec/buildSpec'
 import { buildSampleData, type PrintLabels } from './sample'
 import { useSampleFormat } from './useSampleFormat'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
+import { useFleetNumberEnabled } from '@/components/fleet-number-context'
+import { useServiceType } from '@/components/service-type-context'
 import { specForPreset } from './presetSpec'
 import { themeOf } from './designTheme'
 import type { InvoiceAnchor } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { DesignerInspector, type DesignerFieldDef } from './DesignerInspector'
 import type { DesignerTemplate, DesignerWorkshop, DocumentType, SavedDesign } from './types'
+import { DesignerSearch } from './DesignerSearch'
+import {
+  buildDesignerSearchIndex,
+  customFieldHome,
+  type DesignerSearchEntry,
+  stylingGroupTitleKey,
+} from '../Lib/designerSearch'
+import { designerFieldName } from '../Lib/sectionFields'
 
 /** The template fields a preset carries, over whatever is already set. */
 function presetTemplatePatch(preset: (typeof layoutPresets)[number]) {
@@ -126,8 +140,15 @@ export function InvoiceDesigner({
   const router = useRouter()
   const t = useTranslations('settings.designer')
   const typeKeyEnabled = useTypeKeyEnabled()
+  const customerReferenceEnabled = useCustomerReferenceEnabled()
+  const fleetNumberEnabled = useFleetNumberEnabled()
+  const meterTypes = useMeterTypes()
+  const equipmentTypes = useEquipmentTypes()
   const tSection = useTranslations('settings.layoutEditor.sections')
   const tPreset = useTranslations('settings.layoutEditor.presets')
+  const tField = useTranslations('settings.layoutEditor.fields')
+  const tAlias = useTranslations('settings.designer.search.aliases')
+  const isMarine = useServiceType() === 'marine'
   const { formatDate } = useFormatDate()
   const messages = useMessages() as {
     pdf?: Record<string, Record<string, string>>
@@ -354,7 +375,14 @@ export function InvoiceDesigner({
   const data: DocumentData = useMemo(
     () => ({
       ...buildSampleData(
-        { ...workshop, typeKeyEnabled },
+        {
+          ...workshop,
+          typeKeyEnabled,
+          customerReferenceEnabled,
+          fleetNumberEnabled,
+          meterTypes,
+          equipmentTypes,
+        },
         customFields,
         t,
         printLabels,
@@ -369,6 +397,10 @@ export function InvoiceDesigner({
     [
       workshop,
       typeKeyEnabled,
+      customerReferenceEnabled,
+      fleetNumberEnabled,
+      meterTypes,
+      equipmentTypes,
       customFields,
       t,
       printLabels,
@@ -763,6 +795,99 @@ export function InvoiceDesigner({
     setSaving(false)
   }
 
+  // The Equipment section only for a workshop that records equipment: for
+  // anyone else it could never print a thing.
+  const rail = useMemo(
+    () =>
+      [...layout.sections]
+        .sort((a, b) => a.order - b.order)
+        .filter((s) => s.id !== 'equipment' || equipmentTypes.length > 0),
+    [layout.sections, equipmentTypes.length]
+  )
+
+  /**
+   * What the search can find: read off the rail and the rules the inspector
+   * lists a section's fields by, so it never has a list of its own to keep.
+   */
+  const searchIndex = useMemo(
+    () =>
+      buildDesignerSearchIndex({
+        rail,
+        documentType: layoutDocumentType(layout),
+        customFields,
+        gates: {
+          typeKeyEnabled,
+          customerReferenceEnabled,
+          fleetNumberEnabled,
+          metersDefined: meterTypes.length > 0,
+        },
+        framed: template.headerStyle === 'framed',
+        sectionName,
+        fieldName: (fieldId, sectionId) =>
+          designerFieldName(tField, isMarine, customFields, fieldId, sectionId),
+        stylingName: (id) => t(stylingGroupTitleKey(id)),
+        stylingContext: t('documentStyling'),
+        customFieldContext: t('yourCustomFields'),
+        // The extra words a thing is also found by, in the reader's language.
+        aliases: (key) => (tAlias.has(key) ? tAlias(key) : undefined),
+      }),
+    [
+      rail,
+      layout,
+      customFields,
+      typeKeyEnabled,
+      customerReferenceEnabled,
+      fleetNumberEnabled,
+      meterTypes.length,
+      template.headerStyle,
+      sectionName,
+      tField,
+      isMarine,
+      t,
+      tAlias,
+    ]
+  )
+
+  /**
+   * What a search led to, for the inspector to point out. It belongs to the
+   * section and the document it was found on, and goes when either changes.
+   */
+  const [found, setFound] = useState<{
+    sectionId: string | null
+    docType: DocumentType
+    target: string
+    nonce: number
+  } | null>(null)
+  const foundCount = useRef(0)
+  /** Takes the designer to a search result. It only shows the way: nothing is switched. */
+  const chooseResult = useCallback(
+    (entry: DesignerSearchEntry) => {
+      const sectionId =
+        entry.kind === 'customField' ? customFieldHome(rail, selected) : entry.sectionId
+      foundCount.current += 1
+      setSelected(sectionId)
+      setFound({ sectionId, docType, target: entry.target, nonce: foundCount.current })
+    },
+    [rail, selected, docType]
+  )
+  useEffect(() => {
+    if (found && (found.sectionId !== selected || found.docType !== docType)) setFound(null)
+  }, [found, selected, docType])
+  // The section's place on the page and in the list, brought into view. The
+  // inspector does the same for the row, and takes the keyboard to it.
+  useEffect(() => {
+    if (!found?.sectionId) return
+    const calm = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+    document
+      .querySelector(`[data-node-id="${found.sectionId}"]`)
+      ?.scrollIntoView({ block: 'center', behavior: calm ? 'auto' : 'smooth' })
+    const row = document.querySelector(`[data-testid="rail-${found.sectionId}"]`)
+    row?.scrollIntoView({ block: 'nearest' })
+    if (found.target === 'section') {
+      row?.querySelector<HTMLElement>('button[aria-current]')?.focus({ preventScroll: true })
+    }
+  }, [found])
+
   useSaveShortcut(
     () => {
       if (dirty[docType] && !saving) return save()
@@ -890,7 +1015,6 @@ export function InvoiceDesigner({
     )
   }
 
-  const rail = [...layout.sections].sort((a, b) => a.order - b.order)
   /** The keyboard's reorder: one step up or down the rail from where the section is. */
   const stepSection = (index: number, direction: -1 | 1) => {
     const over = rail[index + direction]
@@ -1056,7 +1180,8 @@ export function InvoiceDesigner({
 
       <div className="relative flex min-h-0 flex-1">
         <div className="flex w-[252px] flex-none flex-col border-r border-[#e3e5e9] bg-white">
-          <div className="px-2 pt-2.5">
+          <DesignerSearch index={searchIndex} onChoose={chooseResult} />
+          <div className="px-2 pt-1.5">
             {/* Colors, typeface and page setup used to hide behind clicking
                 empty paper; this puts them one click away, always. */}
             <button
@@ -1208,11 +1333,13 @@ export function InvoiceDesigner({
           sloganSet={!!companyWorkshop.slogan?.trim()}
           paymentTermsSet={!!companyWorkshop.paymentTerms?.trim()}
           documentTitleDefault={data.meta.title}
+          equipmentTitleDefault={L('equipmentTitle', 'Equipment')}
           orgNumberLabel={orgNumberLabel}
           orgNumberLabelDefault={messages.pdf?.invoice?.orgNumberLabel ?? 'Org. Number'}
           onOrgNumberLabel={setOrgNumberLabel}
           telegramBotLink={telegramBotLink}
           signatureSet={Boolean(companyWorkshop.signatureUrl)}
+          found={found}
           onLogo={(url) => setTemplate({ logoUrl: url })}
         />
       </div>

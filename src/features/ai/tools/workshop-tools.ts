@@ -2,7 +2,9 @@ import 'server-only'
 import { db } from '@/lib/db'
 import type OpenAI from 'openai'
 import { hasPermission, PermissionAction } from '@/lib/permissions'
-import { TABLE_COLUMNS, TABLE_SUBJECTS } from './workshop-columns'
+import { type ShownColumns, TABLE_SUBJECTS, columnsFor } from './workshop-columns'
+import { isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { isCustomerReferenceEnabled } from '@/features/customer-reference/Lib/referenceSetting'
 
 const MAX_ROWS = 100
 
@@ -563,10 +565,10 @@ export const CHILD_TABLES: { tables: string[]; parent: string; key: string }[] =
  *    pool, and the rest of the app qualifies its raw queries as
  *    "public"."table" so a stray view could never be picked up by mistake
  */
-function columnList(table: string, alias = ''): string {
-  const columns = TABLE_COLUMNS[table]
-  if (!columns) throw new Error(`No column list for table ${table}`)
-  return columns.map((c) => `${alias}"${c}"`).join(', ')
+function columnList(table: string, shown: ShownColumns, alias = ''): string {
+  return columnsFor(table, shown)
+    .map((c) => `${alias}"${c}"`)
+    .join(', ')
 }
 
 async function executeOrgScopedQuery(
@@ -577,6 +579,13 @@ async function executeOrgScopedQuery(
   // Defense-in-depth: the orgId is interpolated below, so it must be a plain CUID
   if (!/^[a-zA-Z0-9_-]+$/.test(orgId)) {
     throw new Error('Invalid organization ID')
+  }
+
+  // The Reference / PO columns exist in this workshop's views only while it
+  // has that field switched on.
+  const shown: ShownColumns = {
+    customerReference: await isCustomerReferenceEnabled(orgId),
+    fleetNumber: await isFleetNumberEnabled(orgId),
   }
 
   return db.$transaction(
@@ -594,14 +603,14 @@ async function executeOrgScopedQuery(
       for (const table of ORG_DIRECT_TABLES) {
         if (!visible.has(table)) continue
         await tx.$executeRawUnsafe(
-          `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT ${columnList(table)} FROM "public"."${table}" WHERE "organizationId" = '${orgId}'`
+          `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT ${columnList(table, shown)} FROM "public"."${table}" WHERE "organizationId" = '${orgId}'`
         )
       }
       for (const { tables, parent, key } of CHILD_TABLES) {
         for (const table of tables) {
           if (!visible.has(table)) continue
           await tx.$executeRawUnsafe(
-            `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT ${columnList(table, 't.')} FROM "public"."${table}" t INNER JOIN pg_temp."${parent}" p ON t."${key}" = p.id`
+            `CREATE OR REPLACE TEMPORARY VIEW "${table}" AS SELECT ${columnList(table, shown, 't.')} FROM "public"."${table}" t INNER JOIN pg_temp."${parent}" p ON t."${key}" = p.id`
           )
         }
       }

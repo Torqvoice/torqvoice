@@ -20,6 +20,7 @@ import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceF
 import { WARRANTY_NONE } from '@/lib/warranty'
 import { useServiceType } from '@/components/service-type-context'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
+import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { ServiceDetail } from '../service-detail/types'
 import type { useServiceFormState } from './useServiceFormState'
 
@@ -58,6 +59,7 @@ export function useServiceActions({
     selectedVehicleId,
     type,
     status,
+    setStatus,
     concerns,
     partItems,
     laborItems,
@@ -303,6 +305,27 @@ export function useServiceActions({
       } else {
         router.refresh()
       }
+    } else if (result.requiredMeters) {
+      // The save would have completed the job, or moved a completed one,
+      // without readings the workshop requires. Back to the stage it is at,
+      // the rest saved by the next save, and the message names the meters
+      // whose boxes are marked. Only if the stage is still the one this save
+      // sent: one picked while it ran is newer, and is what the next save
+      // sends.
+      setStatus((current) => (current === payload.status ? initialData.status : current))
+      // The next save is queued only when it can go through: with the stage
+      // put back. A completed job moved to another vehicle stays refused
+      // until the person moves it back or reopens it, and a save every five
+      // seconds would only say so again.
+      if (editRevisionRef.current === revision && payload.status !== initialData.status) {
+        markDirty()
+      }
+      refuse(result.error || t('page.failedUpdate'))
+      // A save they asked for takes them to the first empty box; an autosave,
+      // or one a link is waiting on, only marks the boxes.
+      revealRequiredMeters(initialData.id, result.requiredMeters, {
+        focus: !autosave && !leavingRef.current,
+      })
     } else {
       const message = result.error || t('page.failedUpdate')
       refuse(message, () => modal.open('error', tc('errors.error'), message))

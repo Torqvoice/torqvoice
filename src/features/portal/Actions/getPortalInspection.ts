@@ -2,6 +2,8 @@
 
 import { withPortalAuth } from '@/features/portal/Lib/portalAuth'
 import { gateTypeKey, isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
+import { apiFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { normalizeFleetNumber } from '@/features/vehicles/Lib/fleetNumber'
 import { db } from '@/lib/db'
 
 /**
@@ -41,6 +43,7 @@ export async function getPortalInspection(inspectionId: string) {
             licensePlate: true,
             hsn: true,
             tsn: true,
+            fleetNumber: true,
           },
         },
         template: { select: { name: true, severityScale: true, country: true } },
@@ -67,8 +70,9 @@ export async function getPortalInspection(inspectionId: string) {
     })
     if (!inspection) return null
 
-    const [typeKeyEnabled, serviceTypeRow] = await Promise.all([
+    const [typeKeyEnabled, fleetNumberEnabled, serviceTypeRow] = await Promise.all([
       isTypeKeyEnabled(organizationId),
+      isFleetNumberEnabled(organizationId),
       db.appSetting.findFirst({
         where: { organizationId, key: 'workshop.serviceType' },
         select: { value: true },
@@ -82,7 +86,12 @@ export async function getPortalInspection(inspectionId: string) {
       completedAt: inspection.completedAt?.toISOString() ?? null,
       createdAt: inspection.createdAt.toISOString(),
       nextTestDue: inspection.nextTestDue?.toISOString() ?? null,
-      vehicle: gateTypeKey(inspection.vehicle, typeKeyEnabled),
+      // The fleet number only on a vehicle that has one, for a workshop that
+      // has the field on; otherwise the answer has no key for it at all.
+      vehicle: apiFleetNumber(
+        gateTypeKey(inspection.vehicle, typeKeyEnabled),
+        fleetNumberEnabled && normalizeFleetNumber(inspection.vehicle.fleetNumber) !== null
+      ),
     }
   })
 }

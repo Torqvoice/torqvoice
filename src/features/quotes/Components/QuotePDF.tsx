@@ -44,6 +44,7 @@ export function QuotePDF({
   otherAttachments = [],
   pdfAttachmentNames = [],
   customFields = [],
+  recordCustomFields = [],
   labels = {},
   locale,
   layoutConfig,
@@ -67,6 +68,8 @@ export function QuotePDF({
   otherAttachments?: OtherAttachmentPDF[]
   pdfAttachmentNames?: string[]
   customFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
+  /** The vehicle's and the customer's own custom fields; printed only where a design places one. */
+  recordCustomFields?: Array<{ fieldId: string; label: string; value: string; fieldType: string }>
   labels?: Record<string, string>
   /** The document's language; numbers are written its way. */
   locale?: string
@@ -92,6 +95,7 @@ export function QuotePDF({
     pdfAttachmentNames,
     otherAttachmentNames: otherAttachments.map((att) => att.fileName),
     customFields,
+    recordCustomFields,
     labels,
     locale,
     layoutConfig,

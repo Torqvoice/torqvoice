@@ -761,6 +761,15 @@
     "fromQuote": "Uit offerte {ref}",
     "startInspection": "Inspectie starten"
   },
+  "reference": {
+    "label": "Referentie / inkoopnummer",
+    "placeholder": "Inkoopnummer of referentie",
+    "requiredNotice": "Deze klant heeft een referentie of inkoopnummer op zijn facturen nodig. Vul het in voordat de factuur wordt verstuurd.",
+    "requiredToInvoice": "Deze klant heeft een referentie of inkoopnummer op zijn facturen nodig. Vul Referentie / inkoopnummer in op de werkorder en verstuur daarna de factuur.",
+    "saveFailed": "Kan de referentie niet opslaan",
+    "saved": "Opgeslagen",
+    "notSwitchedOn": "Het veld Referentie / inkoopnummer staat uit voor deze werkplaats. Zet het aan via Instellingen, Facturen en offertes, Aangepaste velden."
+  },
   "photoHandoff": {
     "button": "Toevoegen via telefoon",
     "dialogTitle": "Foto’s en documenten toevoegen met een telefoon",

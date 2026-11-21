@@ -192,6 +192,7 @@
       "engineCode": "Engine code",
       "hsn": "HSN (manufacturer key)",
       "tsn": "TSN (type key)",
+      "fleetNumber": "Fleet / unit number",
       "purchaseDate": "Purchase date",
       "purchasePrice": "Purchase price"
     },
@@ -202,6 +203,7 @@
       "total": "Total amount",
       "mileage": "Mileage at service",
       "invoiceNumber": "Invoice number",
+      "customerReference": "Reference / PO",
       "notes": "Service notes",
       "technician": "Technician"
     }
@@ -211,6 +213,7 @@
     "invalid_email": "Email \"{value}\" is not valid and was left out",
     "invalid_vin": "VIN \"{value}\" is not 17 characters; kept as typed",
     "invalid_type_key": "{field} \"{value}\" is not a valid HSN or TSN; left out",
+    "fleet_number_too_long": "Fleet / unit number \"{value}\" is longer than 40 characters; left out",
     "vehicle_make_model_required": "Make and model are missing",
     "vehicle_year_required": "Year is missing",
     "vehicle_year_invalid": "Year \"{value}\" is not a valid year",

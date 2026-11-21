@@ -88,6 +88,8 @@ interface Vehicle {
   engineCode: string | null
   hsn: string | null
   tsn: string | null
+  /** Null for a workshop that has the fleet number switched off. */
+  fleetNumber?: string | null
   imageUrl: string | null
   customerId: string | null
   customer: { id: string; name: string; company: string | null } | null
@@ -473,6 +475,11 @@ export function VehiclesClient({
                     )}
                   </div>
                   <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    {v.fleetNumber && (
+                      <span className="font-mono" title={t('fleetNumber')}>
+                        {v.fleetNumber}
+                      </span>
+                    )}
                     {v.customer && <span className="truncate">{v.customer.name}</span>}
                     <span className="font-mono">
                       {new Intl.NumberFormat('en-US').format(v.mileage)}
@@ -614,6 +621,14 @@ export function VehiclesClient({
                         <TableCell className="font-mono text-sm">{v.licensePlate || '-'}</TableCell>
                         <TableCell className="truncate">
                           <span className="font-medium">{vehicleName(v)}</span>
+                          {v.fleetNumber && (
+                            <span
+                              className="ml-2 font-mono text-xs text-muted-foreground"
+                              title={t('fleetNumber')}
+                            >
+                              {v.fleetNumber}
+                            </span>
+                          )}
                           {v.inspectionStatus?.dueAt && (
                             <span
                               className={`ml-2 rounded border px-1.5 py-0.5 font-sans text-xs ${INSPECTION_TONE_CLASS[inspectionTone(v.inspectionStatus.dueAt)]}`}
@@ -803,6 +818,14 @@ export function VehiclesClient({
                             className={`font-mono text-white/80 ${view === 'grid6' ? 'text-[10px]' : 'mt-0.5 text-xs'}`}
                           >
                             {v.licensePlate}
+                          </p>
+                        )}
+                        {v.fleetNumber && (
+                          <p
+                            className={`font-mono text-white/80 ${view === 'grid6' ? 'text-[10px]' : 'text-xs'}`}
+                            title={t('fleetNumber')}
+                          >
+                            {v.fleetNumber}
                           </p>
                         )}
                       </div>

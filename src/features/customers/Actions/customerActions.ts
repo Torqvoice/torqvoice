@@ -1,5 +1,13 @@
 'use server'
 
+import { prepareRecordCustomFields } from '@/features/custom-fields/Lib/recordCustomFieldValues.server'
+import { getRecordCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
+import {
+  gatePoRequired,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { createCustomerSchema, updateCustomerSchema } from '../Schema/customerSchema'
@@ -29,16 +37,31 @@ async function assertInvoiceDesign(organizationId: string, designId: string | nu
   if (!design) throw new Error('Design not found')
 }
 
+/**
+ * "PO required" belongs to the Reference / PO field. A workshop that has the
+ * field off has no such switch, so the value is neither set nor cleared for
+ * it: what was chosen while the field was on is still there when it returns.
+ */
+async function dropPoRequiredWhenOff(
+  organizationId: string,
+  data: { poRequired?: boolean }
+): Promise<void> {
+  if (data.poRequired === undefined) return
+  if (!(await isCustomerReferenceEnabled(organizationId))) delete data.poRequired
+}
+
 export async function getCustomers() {
   return withAuth(
     async ({ userId, organizationId }) => {
-      return db.customer.findMany({
+      const customers = await db.customer.findMany({
         where: { organizationId },
         include: {
           _count: { select: { vehicles: true } },
         },
         orderBy: { updatedAt: 'desc' },
       })
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
+      return customers.map((customer) => gatePoRequired(customer, referenceOn))
     },
     {
       requiredPermissions: [
@@ -76,7 +99,18 @@ export async function getCustomer(customerId: string) {
       // Missing or foreign-org customer yields null rather than an error: the
       // page renders its not-found state, and this also runs during the
       // post-delete re-render of the customer route.
-      return customer
+      if (!customer) return customer
+      // Never "PO required" for a workshop that has the Reference / PO field
+      // off, and no fleet number on its vehicles where that is off.
+      const fleetNumberOn = await isFleetNumberEnabled(organizationId)
+      return {
+        ...gatePoRequired(customer, await isCustomerReferenceEnabled(organizationId)),
+        vehicles: customer.vehicles.map((vehicle) => gateFleetNumber(vehicle, fleetNumberOn)),
+        // The workshop's own fields for this customer: none unless it defined some.
+        customFields: await getRecordCustomFieldsForPrint(organizationId, {
+          customerId: customer.id,
+        }),
+      }
     },
     {
       requiredPermissions: [
@@ -99,8 +133,17 @@ export async function createCustomer(input: unknown) {
         )
       }
 
-      const data = createCustomerSchema.parse(input)
+      const { customFields, ...data } = createCustomerSchema.parse(input)
       await assertInvoiceDesign(organizationId, data.invoiceDesignId)
+      // The workshop's own fields, when the form sent them: checked first, so
+      // a required one left empty stops the customer being made at all.
+      const writeCustomFields = await prepareRecordCustomFields(
+        organizationId,
+        'customer',
+        null,
+        customFields
+      )
+      await dropPoRequiredWhenOff(organizationId, data)
 
       // Auto-assign the next sequential number when none was provided; the
       // per-org unique index guards against races and manual duplicates.
@@ -118,15 +161,24 @@ export async function createCustomer(input: unknown) {
       }
 
       try {
-        const customer = await db.customer.create({
-          data: {
-            ...data,
-            customerNumber,
-            email: data.email || null,
-            userId,
-            organizationId,
-          },
-        })
+        const createWith = (store: Pick<typeof db, 'customer'>) =>
+          store.customer.create({
+            data: {
+              ...data,
+              customerNumber,
+              email: data.email || null,
+              userId,
+              organizationId,
+            },
+          })
+        // With its fields, in one transaction: both are saved or neither is.
+        const customer = writeCustomFields
+          ? await db.$transaction(async (tx) => {
+              const made = await createWith(tx)
+              await writeCustomFields(tx, made.id)
+              return made
+            })
+          : await createWith(db)
         // Someone added from an unknown WhatsApp number or email address
         // keeps the thread that prompted it.
         await claimWhatsappMessagesForCustomer(organizationId, customer.id, customer.phone)
@@ -159,11 +211,18 @@ export async function createCustomer(input: unknown) {
 export async function updateCustomer(input: unknown) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const { id, ...data } = updateCustomerSchema.parse(input)
+      const { id, customFields, ...data } = updateCustomerSchema.parse(input)
       await assertInvoiceDesign(organizationId, data.invoiceDesignId)
-      let result
-      try {
-        result = await db.customer.updateMany({
+      await dropPoRequiredWhenOff(organizationId, data)
+      // The workshop's own fields, when the form sent them: checked before
+      // anything is written. The customer has to be this workshop's first.
+      const writeCustomFields =
+        customFields !== undefined &&
+        (await db.customer.count({ where: { id, organizationId } })) > 0
+          ? await prepareRecordCustomFields(organizationId, 'customer', id, customFields)
+          : null
+      const updateWith = (store: Pick<typeof db, 'customer'>) =>
+        store.customer.updateMany({
           where: { id, organizationId },
           // Fields left out of the input stay as they are; an emptied one
           // ('') is cleared.
@@ -178,6 +237,17 @@ export async function updateCustomer(input: unknown) {
             notes: clearedToNull(data.notes),
           },
         })
+      let result
+      try {
+        // With its fields, in one transaction: both are saved or neither is.
+        result = writeCustomFields
+          ? await db.$transaction(async (tx) => {
+              const updated = await updateWith(tx)
+              if (updated.count === 0) throw new Error('Customer not found')
+              await writeCustomFields(tx, id)
+              return updated
+            })
+          : await updateWith(db)
       } catch (err: unknown) {
         if (err && typeof err === 'object' && (err as { code?: string }).code === 'P2002') {
           throw new Error('Customer number is already in use')
@@ -209,7 +279,13 @@ export async function updateCustomer(input: unknown) {
 export async function deleteCustomer(customerId: string) {
   return withAuth(
     async ({ userId, organizationId }) => {
-      const result = await db.customer.deleteMany({ where: { id: customerId, organizationId } })
+      // The customer's custom field values hang on their id alone, with no
+      // foreign key, so they are removed by name with the row.
+      const result = await db.$transaction(async (tx) => {
+        const deleted = await tx.customer.deleteMany({ where: { id: customerId, organizationId } })
+        await deleteCustomFieldValuesOf(tx, organizationId, 'customer', [customerId])
+        return deleted
+      })
       if (result.count === 0) throw new Error('Customer not found')
       revalidatePath('/customers')
       return { customerId }
@@ -233,8 +309,19 @@ export async function deleteCustomers(customerIds: string[]) {
   return withAuth(
     async ({ userId, organizationId }) => {
       if (customerIds.length === 0) throw new Error('No customers selected')
-      const result = await db.customer.deleteMany({
+      // Only the ones that are this workshop's: an id from elsewhere must not
+      // take another workshop's values with it.
+      const own = await db.customer.findMany({
         where: { id: { in: customerIds }, organizationId },
+        select: { id: true },
+      })
+      const ownIds = own.map((customer) => customer.id)
+      const result = await db.$transaction(async (tx) => {
+        const deleted = await tx.customer.deleteMany({
+          where: { id: { in: ownIds }, organizationId },
+        })
+        await deleteCustomFieldValuesOf(tx, organizationId, 'customer', ownIds)
+        return deleted
       })
       revalidatePath('/customers')
       return { deleted: result.count }
@@ -383,8 +470,9 @@ export async function getCustomersPaginated(params: {
         db.customer.count({ where }),
       ])
 
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
       return {
-        customers,
+        customers: customers.map((customer) => gatePoRequired(customer, referenceOn)),
         total,
         page,
         pageSize,

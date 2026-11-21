@@ -8,6 +8,8 @@ import { getAppBaseUrl } from '@/lib/app-url'
 import type { AuditEvent } from '@/lib/audit'
 import { db } from '@/lib/db'
 import { demoGuard } from '@/lib/demo'
+import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
+import { assertRequiredMetersRead } from '@/features/meters/Lib/requiredMeters.server'
 import { markInvoiceSent, markQuoteSent } from '@/lib/document-lock.server'
 import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -85,6 +87,10 @@ async function documentWithLink(
     })
     notFound = 'Service record not found'
     if (!record) throw new Error(notFound)
+    // A customer who needs their PO on the invoice does not get one without it.
+    await assertInvoiceHasRequiredReference(organizationId, id)
+    // Nor before the readings the workshop requires are on the job.
+    await assertRequiredMetersRead(organizationId, id, 'send')
     // Issued before the link exists, so what it shows is the copy that is kept.
     const { issueInvoice } = await import('@/features/invoices/Lib/issueInvoice')
     await issueInvoice(id, organizationId, 'sent')

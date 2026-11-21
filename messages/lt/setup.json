@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Nustatyti autoparkams ir sunkiasvorėms transporto priemonėms",
+    "commandMarine": "Nustatyti autoparkams ir komerciniams laivams",
+    "docs": "Skaityti vadovą autoparkams ir sunkiasvorėms transporto priemonėms",
+    "docsMarine": "Skaityti vadovą autoparkams ir komerciniams laivams"
+  }
+}

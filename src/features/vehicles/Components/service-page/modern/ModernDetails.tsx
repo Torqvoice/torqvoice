@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState, type ComponentProps, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Receipt } from 'lucide-react'
@@ -18,6 +19,7 @@ import {
   updateServiceStatus,
 } from '@/features/vehicles/Actions/serviceActions'
 import { toast } from 'sonner'
+import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import { PaymentsSection } from '../../service-detail/PaymentsSection'
 import { ServiceFindingsSection } from '../../service-detail/ServiceFindingsSection'
 import { paymentStatusColors, paymentStatusLabels } from '../../service-detail/types'
@@ -174,10 +176,43 @@ export function ModernDetails(props: ModernDetailsProps) {
       })
       if (!ok) return
     }
+    // Completing a job whose vehicle is being changed goes with the form's
+    // save, and at once: the server asks for the required readings of the
+    // vehicle the save moves it to. Completed on its own, it was asked about
+    // the vehicle it is leaving, and the save after it moved a completed job
+    // that nothing had asked about.
+    if (next === 'completed' && formState.selectedVehicleId !== (vehicleId ?? null)) {
+      formState.lastSaveErrorRef.current = null
+      // Drawn before the save reads it: the form's submit handler sends the
+      // stage it was rendered with.
+      flushSync(() => formState.dirtySetStatus(next))
+      await formState.saveNow()
+      // One of the workshop's own statuses is set once the job is completed
+      // on its new vehicle, never before: refused, it is still on the old one.
+      if (custom && formState.lastSaveErrorRef.current === null) {
+        const result = await updateServiceStatus(record.id, next, custom.id)
+        if (result.success) setCustomStatus(custom)
+        else toast.error(result.error || t('page.failedUpdate'))
+      }
+      return
+    }
+    // Completing a job the workshop asks meter readings of is saved on its
+    // own too: refused, it names the meters and marks their boxes, and the
+    // rest of the form is not held back with it.
+    const asksMeters =
+      next === 'completed' && (formState.initialData.meters ?? []).some((m) => m.required)
     // A plain move between stages, with none of the workshop's statuses on
-    // either side of it, goes with the form as it always has.
-    if (!locked && !custom && !customStatus) {
-      formState.dirtySetStatus(next)
+    // either side of it, goes with the form as it always has. Completing is
+    // saved at once, as a save the person asked for: a refusal for a reading
+    // (a meter made required since the page was opened) then takes them to
+    // the box, where an autosave five seconds later could only mark it.
+    if (!locked && !custom && !customStatus && !asksMeters) {
+      if (next !== 'completed') {
+        formState.dirtySetStatus(next)
+        return
+      }
+      flushSync(() => formState.dirtySetStatus(next))
+      void formState.saveNow()
       return
     }
     // Everything else is saved on its own, the way the work board moves a
@@ -195,9 +230,13 @@ export function ModernDetails(props: ModernDetailsProps) {
       // Asked, never sent: the desk decides whether this customer hears.
       if (custom?.notifyCustomer) props.onNotifyForStatus?.(custom)
     } else {
-      formState.setStatus(previous.status)
-      setCustomStatus(previous.custom)
+      // Back to where it was, unless another stage was picked while this one
+      // was on its way: that choice is newer and stays.
+      formState.setStatus((current) => (current === next ? previous.status : current))
+      setCustomStatus((current) => (current === custom ? previous.custom : current))
       toast.error(result.error || t('page.failedUpdate'))
+      // Pressed by the person: the first empty box takes the focus.
+      revealRequiredMeters(record.id, result.requiredMeters, { focus: true })
     }
   }
 
@@ -323,6 +362,11 @@ export function ModernDetails(props: ModernDetailsProps) {
                   setSelectedVehicleId={formState.dirtySetSelectedVehicleId}
                   techName={formState.techName}
                   initialVehicle={props.initialVehicle}
+                  onReferenceChange={props.onReferenceChange}
+                  onReferenceSaved={() => {
+                    formState.flashSaved()
+                    router.refresh()
+                  }}
                   distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
                   confirmedReading={formState.confirmedReading}
                   onConfirmReading={formState.confirmReading}

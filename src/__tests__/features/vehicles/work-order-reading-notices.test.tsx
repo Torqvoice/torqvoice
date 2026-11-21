@@ -10,6 +10,8 @@ import { describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 
 vi.mock('@/features/quotes/Components/VehicleCombobox', () => ({ VehicleCombobox: () => null }))
+// The meter rows read the job again when a refusal names a meter they do not show.
+vi.mock('next/navigation', () => ({ useRouter: () => ({ refresh: vi.fn() }) }))
 
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { JobFactsCard } from '@/features/vehicles/Components/service-page/modern/JobFactsCard'
@@ -28,12 +30,18 @@ const VEHICLE = {
 }
 
 function renderCard(
-  over: { mileage?: number | null; lastReading?: number | null; marine?: boolean } = {}
+  over: {
+    mileage?: number | null
+    lastReading?: number | null
+    marine?: boolean
+    meters?: Props['initialData']['meters']
+  } = {}
 ) {
   const initialData = {
     id: 'job-1',
     mileage: over.mileage === undefined ? null : over.mileage,
     lastReading: over.lastReading === undefined ? 412380 : over.lastReading,
+    meters: over.meters,
   } as Props['initialData']
   const card = (
     <JobFactsCard
@@ -239,5 +247,31 @@ describe('a reading far above the last one on a work order', () => {
     expect(screen.getByTestId('reading-question')).toHaveTextContent(
       '12,400 hours is much higher than the last reading, 1,240 hours.'
     )
+  })
+})
+
+describe('the rows under the vehicle', () => {
+  const METER = {
+    vehicleMeterId: 'vm-1',
+    meterTypeId: 'mt-1',
+    name: 'Engine hours',
+    unit: 'hrs',
+    value: null,
+    last: null,
+    askAbove: null,
+    item: null,
+  } as unknown as NonNullable<Props['initialData']['meters']>[number]
+
+  it('give the mileage label the width the meter labels have, so the fields line up', () => {
+    renderCard({ meters: [METER] })
+    const mileage = screen.getByText('Mileage', { selector: 'label' })
+    const meter = screen.getByText('Engine hours', { selector: 'label, label *' }).closest('label')
+    expect(mileage.className).toContain('w-28')
+    expect(meter?.className).toContain('w-28')
+  })
+
+  it('leave the mileage row as it was on a workshop without meters or equipment', () => {
+    renderCard()
+    expect(screen.getByText('Mileage', { selector: 'label' }).className).not.toContain('w-28')
   })
 })

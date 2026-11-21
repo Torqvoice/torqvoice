@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Sett opp for flåter og tunge kjøretøy",
+    "commandMarine": "Sett opp for flåter og yrkesfartøy",
+    "docs": "Les veiledningen for flåter og tunge kjøretøy",
+    "docsMarine": "Les veiledningen for flåter og yrkesfartøy"
+  }
+}

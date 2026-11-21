@@ -416,6 +416,101 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [],
   },
+  EquipmentType: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  EquipmentItem: {
+    organizationId: true,
+    foreignKeys: {
+      typeId: {
+        target: 'EquipmentType',
+        required: true,
+        relation: 'type',
+      },
+      vehicleId: {
+        target: 'Vehicle',
+        required: true,
+        relation: 'vehicle',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  EquipmentFitting: {
+    organizationId: true,
+    foreignKeys: {
+      itemId: {
+        target: 'EquipmentItem',
+        required: true,
+        relation: 'item',
+      },
+      vehicleId: {
+        target: 'Vehicle',
+        required: true,
+        relation: 'vehicle',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  ServiceRecordEquipment: {
+    organizationId: true,
+    foreignKeys: {
+      serviceRecordId: {
+        target: 'ServiceRecord',
+        required: true,
+        relation: 'serviceRecord',
+      },
+      itemId: {
+        target: 'EquipmentItem',
+        required: true,
+        relation: 'item',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  QuoteEquipment: {
+    organizationId: true,
+    foreignKeys: {
+      quoteId: {
+        target: 'Quote',
+        required: true,
+        relation: 'quote',
+      },
+      itemId: {
+        target: 'EquipmentItem',
+        required: true,
+        relation: 'item',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
   ImportBatch: {
     organizationId: true,
     foreignKeys: {
@@ -859,6 +954,64 @@ export const TENANCY_SCHEMA: SchemaGraph = {
     },
     ownerPaths: [],
   },
+  MeterType: {
+    organizationId: true,
+    foreignKeys: {
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  VehicleMeter: {
+    organizationId: true,
+    foreignKeys: {
+      vehicleId: {
+        target: 'Vehicle',
+        required: false,
+        relation: 'vehicle',
+      },
+      equipmentItemId: {
+        target: 'EquipmentItem',
+        required: false,
+        relation: 'equipmentItem',
+      },
+      meterTypeId: {
+        target: 'MeterType',
+        required: true,
+        relation: 'meterType',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
+  MeterReading: {
+    organizationId: true,
+    foreignKeys: {
+      vehicleMeterId: {
+        target: 'VehicleMeter',
+        required: true,
+        relation: 'vehicleMeter',
+      },
+      serviceRecordId: {
+        target: 'ServiceRecord',
+        required: false,
+        relation: 'serviceRecord',
+      },
+      organizationId: {
+        target: 'Organization',
+        required: true,
+        relation: 'organization',
+      },
+    },
+    ownerPaths: [],
+  },
   AppSetting: {
     organizationId: true,
     foreignKeys: {
@@ -1109,6 +1262,11 @@ export const TENANCY_SCHEMA: SchemaGraph = {
         target: 'DocumentAssetSnapshot',
         required: false,
         relation: 'issuedSignatureSnapshot',
+      },
+      issuedVehiclePhotoSnapshotId: {
+        target: 'DocumentAssetSnapshot',
+        required: false,
+        relation: 'issuedVehiclePhotoSnapshot',
       },
       tireSetId: {
         target: 'TireSet',

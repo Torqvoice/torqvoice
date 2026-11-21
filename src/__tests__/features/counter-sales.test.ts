@@ -22,6 +22,10 @@ vi.mock('@/lib/notification-bus', () => ({
 vi.mock('@/features/inventory/Lib/onInventoryChanged', () => ({
   onInventoryChanged: vi.fn(),
 }))
+// The job's meter readings, which these jobs have none of.
+vi.mock('@/features/meters/Lib/jobMeterReading.server', () => ({
+  unlinkJobMeterReadingsFromOtherVehicles: vi.fn(async () => undefined),
+}))
 vi.mock('@/lib/db', () => ({
   db: {
     // Nothing yet in the workshop's number format (src/lib/job-number.ts). A plain
@@ -202,6 +206,7 @@ describe('updateServiceRecord — counter sale semantics', () => {
         $queryRaw: async () => [],
         vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
         serviceRecord: { update: txUpdate },
+        serviceRecordEquipment: { deleteMany: async () => ({ count: 0 }) },
       })
     )
 
@@ -257,6 +262,7 @@ describe('updateServiceRecord — counter sale semantics', () => {
         $queryRaw: async () => [],
         vehicle: { findFirst: async () => null, updateMany: async () => ({ count: 0 }) },
         serviceRecord: { update: txUpdate },
+        serviceRecordEquipment: { deleteMany: async () => ({ count: 0 }) },
       })
     )
 

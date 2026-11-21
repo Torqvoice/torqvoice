@@ -364,6 +364,7 @@
     "summaryPaid": "Pagado",
     "summaryLeft": "Por pagar",
     "summaryDue": "Vencimiento",
+    "summaryReference": "Su referencia / n.º de pedido",
     "summaryDate": "Fecha",
     "fullInvoice": "La factura completa"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "N.º flota: {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mi",
     "engineHours": "{value} horas de motor",
@@ -598,6 +600,7 @@
     "number": "Número de presupuesto",
     "date": "Fecha",
     "validUntil": "Válido hasta",
+    "reference": "Su referencia / n.º de pedido",
     "vehicle": "Vehículo",
     "fullQuote": "El presupuesto completo",
     "answerTitle": "El taller espera tu respuesta",

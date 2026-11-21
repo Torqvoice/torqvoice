@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "Der Auftrag hat seine eigene Referenz / Bestellnr. behalten, {job}. Die des Angebots, {quote}, wurde nicht übernommen.",
     "convert": "Umwandeln",
     "convertToWorkOrder": "In Arbeitsauftrag umwandeln",
     "cancel": "Abbrechen",

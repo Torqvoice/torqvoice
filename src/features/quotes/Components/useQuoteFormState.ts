@@ -764,6 +764,13 @@ export function useQuoteFormState({
         )
       : await convertQuoteToServiceRecord(quote.id, convertVehicleId)
     if (result.success && result.data) {
+      // The job kept its own Reference / PO over the quote's: said, with both.
+      const kept = 'referenceKept' in result.data ? result.data.referenceKept : null
+      if (kept) {
+        toast.info(t('page.convertReferenceKept', { job: kept.job, quote: kept.quote }), {
+          duration: 15000,
+        })
+      }
       router.push(`/vehicles/${convertVehicleId}/service/${result.data.id}`)
       router.refresh()
     } else {

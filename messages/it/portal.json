@@ -364,6 +364,7 @@
     "summaryPaid": "Pagato",
     "summaryLeft": "Da pagare",
     "summaryDue": "Scadenza",
+    "summaryReference": "Vostro riferimento / n. ordine",
     "summaryDate": "Data",
     "fullInvoice": "La fattura completa"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "N. flotta: {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mi",
     "engineHours": "{value} ore motore",
@@ -598,6 +600,7 @@
     "number": "Numero preventivo",
     "date": "Data",
     "validUntil": "Valido fino al",
+    "reference": "Vostro riferimento / n. ordine",
     "vehicle": "Veicolo",
     "fullQuote": "Il preventivo completo",
     "answerTitle": "L'officina aspetta la tua risposta",

@@ -1,15 +1,21 @@
 import {
+  equipmentScopeOf,
   FOOTER_SPECIAL_FIELD_IDS,
   footerColumnsOf,
+  fieldShownUnasked,
   getBuiltinFieldsForSection,
-  unmentionedGrandfathered,
   isCustomFieldId,
+  layoutDocumentType,
+  photoStyleOf,
+  unmentionedShownFields,
   type InvoiceLayoutConfig,
   type InvoiceSection,
+  type LayoutDocumentType,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
 import type { Block, DocumentSpec, Node, Placement, TextStyle } from './documentSpec'
 import { DEFAULT_LINE_HEIGHT } from '../Pdf/measure'
+import { BLOCK_GAP } from '../Render/layoutEngine'
 import type { CertificateData } from './certificateData'
 import type { ConditionMapPrint } from '@/features/condition-map/Lib/print'
 import {
@@ -21,6 +27,13 @@ import {
 } from './certificateBlocks'
 import { signatureBlock } from './signatureBlock'
 import { conditionMapBlock } from './conditionMapBlock'
+import type { EquipmentPrint } from '../Pdf/equipmentPrint'
+import { fadedPhotoInks } from '../Lib/photoContrast'
+import {
+  DEFAULT_EQUIPMENT_COLUMNS,
+  EQUIPMENT_COLUMNS,
+  type EquipmentColumn,
+} from '@/features/equipment/Lib/equipmentPrint'
 
 /**
  * The single description of a document.
@@ -137,6 +150,30 @@ export interface DocumentData {
    * has no Signature section to fill, and the section draws nothing.
    */
   signature?: DocumentSignature
+  /**
+   * What is fitted to the vehicle, both lists worded as rows; the Equipment
+   * section picks one and its columns. Absent when there is none to print.
+   */
+  equipment?: EquipmentPrint
+  /**
+   * The vehicle's photo, for a Vehicle section that prints it, as data URIs
+   * prepared on the server for the design's style. Absent when the vehicle
+   * has none or the design does not print it, and the block prints as if
+   * the option were off.
+   */
+  vehiclePhoto?: VehiclePhotoPrint
+}
+
+/**
+ * The vehicle's photo in the forms the Vehicle section draws it. The server
+ * prepares only the one the design asks for; the designer's sample carries
+ * both, so the canvas can preview either style.
+ */
+export interface VehiclePhotoPrint {
+  /** Sharp, for beside the lines, with its width over its height. */
+  beside?: { src: string; aspect: number }
+  /** Washed out and blurred, for behind the block. */
+  faded?: string
 }
 
 export interface DocumentSignature {
@@ -265,15 +302,24 @@ export function lookOf(section: InvoiceSection, theme: DocumentTheme) {
 /**
  * The fields a section shows, in the order it shows them. A section with no
  * list of its own shows all of them, which is what a layout written before the
- * choice existed means.
+ * choice existed means; all but the opt-in ones, which wait to be asked for,
+ * and on a certificate the switch-gated ones (see SWITCH_GATED_FIELDS).
  */
-export function sectionFields(section: InvoiceSection): string[] {
-  if (!section.fields) return getBuiltinFieldsForSection(section.id).map((f) => f.id)
+export function sectionFields(
+  section: InvoiceSection,
+  documentType: LayoutDocumentType = 'invoice'
+): string[] {
+  if (!section.fields) {
+    return getBuiltinFieldsForSection(section.id)
+      .map((f) => f.id)
+      .filter((id) => fieldShownUnasked(section.id, id, documentType))
+  }
   return [
     ...section.fields.filter((f) => f.visible).map((f) => f.id),
     // A row that printed before it had a switch keeps printing until somebody
-    // uses the switch, so adding one takes nothing off a saved layout.
-    ...unmentionedGrandfathered(section.id, section.fields),
+    // uses the switch, so adding one takes nothing off a saved layout; and a
+    // row behind the workshop's own switch shows until a design says not.
+    ...unmentionedShownFields(section.id, section.fields, documentType),
   ]
 }
 
@@ -337,17 +383,26 @@ export function tableHead(look: ReturnType<typeof lookOf>, theme: DocumentTheme,
   }
 }
 
+/** The fill a boxed panel prints with when its section sets none. */
+export const PANEL_FILL = '#f3f4f6'
+
 /** A labelled panel: the customer, the vehicle, the service, the extras. */
 export function panel(
   section: InvoiceSection,
   theme: DocumentTheme,
   data: DocumentData,
-  fields: string[]
+  fields: string[],
+  /** Inks set by the block itself: the Vehicle block over a faded photo. */
+  inks?: { muted?: string; label?: string }
 ): Node | null {
-  const look = lookOf(section, theme)
+  const look = { ...lookOf(section, theme), ...inks }
   const size = look.fontSize ?? theme.fontSize
   const boxed = section.boxed !== false
-  const lines = fields.map((id) => ({ id, value: data.fields[id] })).filter((f) => !!f.value)
+  const lines = fields
+    // The photo is drawn by the Vehicle block itself, never as a line.
+    .filter((id) => id !== VEHICLE_PHOTO_FIELD)
+    .map((id) => ({ id, value: data.fields[id] }))
+    .filter((f) => !!f.value)
   if (!lines.length) return null
 
   const heading: TextStyle = {
@@ -363,7 +418,7 @@ export function panel(
     id: section.id,
     gap: 2,
     style: {
-      background: look.fill || (boxed ? '#f3f4f6' : undefined),
+      background: look.fill || (boxed ? PANEL_FILL : undefined),
       borderColor:
         look.border || (look.ruleWidth !== undefined ? look.muted : boxed ? '#e3e5e9' : undefined),
       borderWidth: boxed || look.border ? (look.ruleWidth ?? 0.75) : 0,
@@ -403,6 +458,82 @@ export function panel(
           },
         }
       }),
+    ],
+  }
+}
+
+/** The Vehicle section's field that prints the vehicle's photo. */
+export const VEHICLE_PHOTO_FIELD = 'vehicle_photo'
+
+/** The beside photo never takes more than this share of its block's width. */
+const PHOTO_WIDTH_SHARE = 0.32
+/** Nor more than this, so it reads as a small picture of the vehicle. */
+const PHOTO_MAX_WIDTH = 150
+const PHOTO_MAX_HEIGHT = 110
+
+/**
+ * The Vehicle panel, with the vehicle's photo where the design prints one:
+ * sharp beside the lines, or faded behind the whole block. A vehicle without
+ * a photo, or a design without the option, prints the plain panel.
+ */
+function vehicleBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData,
+  blockWidth: number,
+  documentType: LayoutDocumentType
+): Node | null {
+  const fields = sectionFields(section, documentType)
+  const photo = data.vehiclePhoto
+  if (fields.includes(VEHICLE_PHOTO_FIELD) && photoStyleOf(section) === 'faded' && photo?.faded) {
+    // Over the photo every line prints in the title ink (and the label in its
+    // own colour only while it still reads): the photo is toned for exactly
+    // these inks (vehicleBlockTone), so all of them keep AA.
+    const look = lookOf(section, theme)
+    const fill = look.fill || (section.boxed !== false ? PANEL_FILL : theme.background)
+    const inks = fadedPhotoInks(look.text, look.label, fill)
+    const faded = panel(section, theme, data, fields, { muted: inks.muted, label: inks.label })
+    if (!faded || faded.kind !== 'stack') return faded
+    return { ...faded, style: { ...faded.style, backgroundImage: photo.faded } }
+  }
+  const base = panel(section, theme, data, fields)
+  if (!base || base.kind !== 'stack' || !fields.includes(VEHICLE_PHOTO_FIELD)) return base
+  if (photoStyleOf(section) === 'faded') return base
+  const beside = photo?.beside
+  if (!beside || !(beside.aspect > 0)) return base
+  // The picture's box at its own proportions, inside a third of the block
+  // (less the panel's own padding) and a modest height.
+  const pad = typeof base.style?.padding === 'number' ? base.style.padding : 0
+  let width = Math.min(PHOTO_MAX_WIDTH, Math.max(40, (blockWidth - pad * 2) * PHOTO_WIDTH_SHARE))
+  let height = width / beside.aspect
+  if (height > PHOTO_MAX_HEIGHT) {
+    height = PHOTO_MAX_HEIGHT
+    width = height * beside.aspect
+  }
+  width = Math.round(width * 10) / 10
+  height = Math.round(height * 10) / 10
+  return {
+    ...base,
+    children: [
+      {
+        kind: 'row',
+        gap: 10,
+        align: 'start',
+        children: [
+          { node: { kind: 'stack', gap: base.gap, children: base.children }, width: 'flex' },
+          {
+            node: {
+              kind: 'image',
+              id: `${section.id}.${VEHICLE_PHOTO_FIELD}`,
+              src: beside.src,
+              maxWidth: width,
+              maxHeight: height,
+              align: 'right',
+            },
+            width,
+          },
+        ],
+      },
     ],
   }
 }
@@ -1249,6 +1380,86 @@ function findingsBlock(
       })),
     }
   )
+}
+
+/** The Equipment section's column heads, with the English the sheet falls back to. */
+const EQUIPMENT_COLUMN_LABELS: Record<EquipmentColumn, [key: string, fallback: string]> = {
+  type: ['equipmentType', 'Type'],
+  make: ['equipmentMake', 'Make'],
+  model: ['equipmentModel', 'Model'],
+  manufacture_year: ['equipmentManufactureYear', 'Year'],
+  serial_number: ['equipmentSerialNumber', 'Serial no.'],
+  install_date: ['equipmentInstallDate', 'Installed'],
+  rated_capacity: ['equipmentRatedCapacity', 'Rated capacity'],
+  last_examined: ['equipmentLastExamined', 'Last examined'],
+  next_examination: ['equipmentNextExamination', 'Next examination'],
+  certificate_reference: ['equipmentCertificateReference', 'Certificate'],
+  meters: ['equipmentMeters', 'Meter readings'],
+  notes: ['equipmentNotes', 'Notes'],
+}
+
+/** Narrow columns keep a width of their own; the rest share what is left. */
+const EQUIPMENT_COLUMN_WIDTHS: Partial<Record<EquipmentColumn, number>> = {
+  manufacture_year: 44,
+  install_date: 66,
+  last_examined: 66,
+  next_examination: 66,
+}
+
+/**
+ * The columns an Equipment section prints, in its order. A section with no
+ * list of its own prints the default columns rather than every one there is.
+ */
+export function equipmentColumnsOf(section: InvoiceSection): EquipmentColumn[] {
+  const known = new Set<string>(EQUIPMENT_COLUMNS)
+  if (!section.fields) return [...DEFAULT_EQUIPMENT_COLUMNS]
+  return section.fields
+    .filter((f) => f.visible && known.has(f.id))
+    .map((f) => f.id as EquipmentColumn)
+}
+
+/**
+ * What is fitted to the vehicle, one row per item, the columns the design
+ * chose. The table is the parts table's: rows never split, so a long list
+ * breaks between items, and the PDF prints the headings again on each page
+ * it runs onto. An empty list prints nothing, not even its title.
+ */
+function equipmentBlock(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData
+): Node | null {
+  const rows = data.equipment?.[equipmentScopeOf(section)] ?? []
+  const columns = equipmentColumnsOf(section)
+  if (!rows.length || !columns.length) return null
+  const look = lookOf(section, theme)
+  const size = look.fontSize ?? theme.fontSize
+  // The workshop's own heading, or the document's word for it.
+  const title = section.text?.trim() || label(data, 'equipmentTitle', 'Equipment')
+  return titledTable(section, theme, title, undefined, {
+    kind: 'table',
+    // A fleet's list can run over a page: its headings follow it.
+    repeatHeader: true,
+    // Seven narrow columns side by side: keep them apart, and let a long
+    // serial number or model wrap in its own column.
+    columnGap: 6,
+    breakLongWords: true,
+    rowPadding: theme.rowPadding,
+    ruleWidth: look.ruleWidth,
+    rowBackground: theme.background || '#ffffff',
+    stripe: (look.stripes ?? theme.stripes) ? theme.stripeColor : undefined,
+    style: {
+      borderColor: look.border || (look.ruleWidth !== undefined ? look.muted : '#eceef1'),
+      borderWidth: look.outerBorder ? (look.ruleWidth ?? 0.75) : 0,
+    },
+    headerStyle: tableHead(look, theme, size),
+    columns: columns.map((key) => ({
+      key,
+      label: label(data, ...EQUIPMENT_COLUMN_LABELS[key]),
+      width: EQUIPMENT_COLUMN_WIDTHS[key] ?? 'flex',
+    })),
+    rows: rows.map((row) => Object.fromEntries(columns.map((key) => [key, row[key] || '-']))),
+  })
 }
 
 function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentData): Node | null {
@@ -2106,17 +2317,24 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
 }
 
 /** The block for one section, or nothing when the section draws nothing. */
-function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentData): Node | null {
+function blockFor(
+  section: InvoiceSection,
+  theme: DocumentTheme,
+  data: DocumentData,
+  width: number,
+  documentType: LayoutDocumentType
+): Node | null {
   switch (section.id) {
     case 'header':
       return letterhead(section, theme, data)
     case 'slogan':
       return sloganBlock(section, theme, data)
-    case 'customer':
     case 'vehicle':
+      return vehicleBlock(section, theme, data, width, documentType)
+    case 'customer':
     case 'service':
     case 'general':
-      return panel(section, theme, data, sectionFields(section))
+      return panel(section, theme, data, sectionFields(section, documentType))
     case 'document_title':
       return documentTitle(section, theme, data)
     case 'items_table':
@@ -2127,6 +2345,8 @@ function blockFor(section: InvoiceSection, theme: DocumentTheme, data: DocumentD
       return laborTable(section, theme, data)
     case 'findings':
       return findingsBlock(section, theme, data)
+    case 'equipment':
+      return equipmentBlock(section, theme, data)
     case 'totals':
       return totals(section, theme, data)
     case 'notes':
@@ -2192,6 +2412,7 @@ export function buildDocumentSpec(
   const titleText = layout.sections.find((s) => s.id === 'document_title')?.text?.trim()
   const data = titleText ? { ...input, meta: { ...input.meta, title: titleText } } : input
   const anchors = layout.anchors ?? {}
+  const documentType = layoutDocumentType(layout)
   const contentWidth =
     595 - (framed ? FRAMED.padLeft + FRAMED.railWidth + theme.margin : theme.margin * 2)
 
@@ -2208,10 +2429,17 @@ export function buildDocumentSpec(
   const framedTop = bandHeight + FRAMED_BAND_GAP
 
   const push = (section: InvoiceSection, placementOverride?: Placement, synthetic?: boolean) => {
-    const content = blockFor(section, theme, data)
+    const anchor = anchors[section.id]
+    // The width the block is laid out at, for a block that sizes a part of
+    // itself to it: the anchor's own, or its lane less its margins.
+    const blockWidth =
+      anchor?.width ??
+      (section.column ? (contentWidth - BLOCK_GAP) / 2 : contentWidth) -
+        (section.style?.marginLeft ?? 0) -
+        (section.style?.marginRight ?? 0)
+    const content = blockFor(section, theme, data, blockWidth, documentType)
     if (!content) return
 
-    const anchor = anchors[section.id]
     const placement: Placement =
       placementOverride ??
       (anchor

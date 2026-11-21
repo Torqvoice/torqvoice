@@ -410,3 +410,78 @@ describe('the portal chat when the file replaces customers without carrying it',
     expect(restored?.args.data.map((r: { id: string }) => r.id)).toEqual(['msg-from-file'])
   })
 })
+
+describe('the fleet number and the vehicle’s and customer’s own fields', () => {
+  it('come back from a backup as they went in', async () => {
+    const data = file()
+    Object.assign(data.vehicles[0], { fleetNumber: 'T-208' })
+    const response = await importJson({
+      ...data,
+      customFieldDefinitions: [
+        {
+          id: 'def-vehicle',
+          name: 'tacho',
+          label: 'Tachograph due',
+          fieldType: 'text',
+          entityType: 'vehicle',
+          required: true,
+          values: [{ id: 'val-1', value: 'March', entityId: 'veh-a', entityType: 'vehicle' }],
+        },
+        {
+          id: 'def-customer',
+          name: 'centre',
+          label: 'Cost centre',
+          fieldType: 'text',
+          entityType: 'customer',
+          values: [{ id: 'val-2', value: 'CC-7741', entityId: 'cust-a', entityType: 'customer' }],
+        },
+      ],
+    })
+    expect(response.status).toBe(200)
+
+    const vehicle = state.calls.find((c) => c.model === 'vehicle' && c.method === 'create')
+    expect(vehicle?.args.data).toMatchObject({ id: 'veh-a', fleetNumber: 'T-208' })
+
+    const definitions = state.calls
+      .filter((c) => c.model === 'customFieldDefinition' && c.method === 'create')
+      .map((c) => c.args.data)
+    expect(definitions).toEqual([
+      expect.objectContaining({
+        id: 'def-vehicle',
+        entityType: 'vehicle',
+        required: true,
+        organizationId: 'org-a',
+      }),
+      expect.objectContaining({
+        id: 'def-customer',
+        entityType: 'customer',
+        organizationId: 'org-a',
+      }),
+    ])
+    const values = state.calls
+      .filter((c) => c.model === 'customFieldValue' && c.method === 'createMany')
+      .flatMap((c) => c.args.data)
+    expect(values).toEqual([
+      {
+        id: 'val-1',
+        value: 'March',
+        entityId: 'veh-a',
+        entityType: 'vehicle',
+        fieldId: 'def-vehicle',
+      },
+      {
+        id: 'val-2',
+        value: 'CC-7741',
+        entityId: 'cust-a',
+        entityType: 'customer',
+        fieldId: 'def-customer',
+      },
+    ])
+  })
+
+  it('leaves a vehicle from an older backup without a fleet number', async () => {
+    await importJson(file())
+    const vehicle = state.calls.find((c) => c.model === 'vehicle' && c.method === 'create')
+    expect(vehicle?.args.data.fleetNumber).toBeNull()
+  })
+})

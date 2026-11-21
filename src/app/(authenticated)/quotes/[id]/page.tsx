@@ -17,6 +17,7 @@ import { getFeatures } from '@/lib/features'
 import { PageHeader } from '@/components/page-header'
 import { readLineTaxSettings, TAX_APPLIES_SETTING_KEYS } from '@/features/settings/Lib/workshopTax'
 import { QuotePageClient } from '@/features/quotes/Components/QuotePageClient'
+import { quoteEquipmentView } from '@/features/equipment/Lib/equipment.server'
 import { pageTitle } from '@/lib/page-title'
 
 export function generateMetadata() {
@@ -76,11 +77,15 @@ export default async function QuoteDetailPage({ params }: { params: Promise<{ id
   const documentAttachments = allAttachments.filter(
     (a: { category: string }) => a.category === 'document'
   )
+  // The equipment it is for ("Work on"); null while equipment is off.
+  const equipment = orgId
+    ? await quoteEquipmentView(orgId, { id, vehicleId: result.data.vehicleId ?? null })
+    : null
   return (
     <div className="flex h-svh flex-col overflow-hidden">
       <PageHeader />
       <QuotePageClient
-        quote={result.data}
+        quote={{ ...result.data, equipment }}
         organizationId={organizationId}
         lockState={lockState}
         canUnlock={authContext?.isAdmin ?? false}

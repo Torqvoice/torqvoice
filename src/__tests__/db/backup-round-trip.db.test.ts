@@ -74,7 +74,7 @@ function readModels(): { fields: Map<string, Field[]>; tables: Map<string, strin
     const list: Field[] = []
     for (const line of block[2].split('\n')) {
       const field =
-        /^\s+(\w+)\s+(String|Int|Float|Boolean|DateTime|Json|Bytes|BigInt)(\?|\[\])?(\s.*)?$/.exec(
+        /^\s+(\w+)\s+(String|Int|Float|Decimal|Boolean|DateTime|Json|Bytes|BigInt)(\?|\[\])?(\s.*)?$/.exec(
           line
         )
       if (!field || line.trim().startsWith('//')) continue
@@ -162,6 +162,10 @@ const OVERRIDES: Readonly<Record<string, Readonly<Record<string, Override>>>> = 
   // The newer mark a dent was recorded again as. The seed has one mark per
   // place, so it names itself: what matters is that the link comes back.
   ConditionMark: { carriedToId: (position: Position) => position.id },
+  // A meter is on a vehicle or on an equipment item, never both (a check in
+  // the database). The seed's one meter is the item's; a vehicle's meter
+  // through a restore is in meters-backup.db.test.ts.
+  VehicleMeter: { vehicleId: null },
 }
 
 /** How much of their place in the file two positions share, for choosing a row in the same tree. */
@@ -191,6 +195,9 @@ function generic(field: Field, position: Position, index: number, variant: Varia
       return BigInt(variant === 'zeros' ? 0 : 1000 + index)
     case 'Float':
       return variant === 'zeros' ? 0 : 12.5 + index
+    case 'Decimal':
+      // As text, which is how a decimal goes into Prisma and comes out of JSON.
+      return variant === 'zeros' ? '0' : `${4256 + index}.75`
     case 'Boolean':
       return field.fallback !== 'true'
     case 'DateTime':
@@ -520,6 +527,7 @@ const LEFT_EMPTY: Readonly<Record<string, string>> = {
   'StatusReport.serviceRecordId': ONE_PARENT,
   'StoredImage.inventoryPartId': ONE_PARENT,
   'StoredImage.tireMeasurementId': ONE_PARENT,
+  'VehicleMeter.vehicleId': ONE_PARENT,
 }
 
 const describeDb = url ? describe : describe.skip

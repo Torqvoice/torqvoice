@@ -192,6 +192,7 @@
       "engineCode": "Code moteur",
       "hsn": "HSN (code constructeur)",
       "tsn": "TSN (code type)",
+      "fleetNumber": "N° de parc / d'unité",
       "purchaseDate": "Date d'achat",
       "purchasePrice": "Prix d'achat"
     },
@@ -202,6 +203,7 @@
       "total": "Montant total",
       "mileage": "Kilométrage au moment du service",
       "invoiceNumber": "Numéro de facture",
+      "customerReference": "Référence / n° de commande",
       "notes": "Notes de service",
       "technician": "Technicien"
     }
@@ -211,6 +213,7 @@
     "invalid_email": "L'e-mail \"{value}\" n'est pas valide et a été ignoré",
     "invalid_vin": "Le NIV \"{value}\" ne fait pas 17 caractères ; conservé tel quel",
     "invalid_type_key": "{field} « {value} » n'est pas un HSN ou TSN valide ; ignoré",
+    "fleet_number_too_long": "N° de parc / d'unité \"{value}\" dépasse 40 caractères ; ignoré",
     "vehicle_make_model_required": "La marque et le modèle sont manquants",
     "vehicle_year_required": "L'année est manquante",
     "vehicle_year_invalid": "L'année \"{value}\" n'est pas une année valide",

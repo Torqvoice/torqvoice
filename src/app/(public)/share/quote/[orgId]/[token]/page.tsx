@@ -1,4 +1,7 @@
 import { getTranslations } from 'next-intl/server'
+import { vehiclePhotoForDocument } from '@/features/invoice-designer/Lib/vehiclePhoto.server'
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { shareFileUrl } from '@/lib/share-file-url'
 import { documentLogoPath } from '@/features/invoice-designer/Lib/documentLogo'
@@ -16,7 +19,11 @@ import { resolveCustomerLocale } from '@/i18n/locale-from-request'
 import { getTorqvoiceLogoDataUri } from '@/lib/torqvoice-branding'
 import { headers } from 'next/headers'
 import type { Metadata } from 'next'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
 import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
@@ -25,6 +32,10 @@ import { lookUpShareLink } from '@/lib/share-link.server'
 import { documentSigner } from '@/features/signatures/Lib/memberSignature.server'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  customerReferenceEnabledIn,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
 
 export const revalidate = 60
 
@@ -101,6 +112,8 @@ export default async function PublicQuotePage({
             'workshop.timezone',
             'workshop.unitSystem',
             SETTING_KEYS.VEHICLE_TYPE_KEY_ENABLED,
+            SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED,
+            SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED,
             'quote.primaryColor',
             'quote.backgroundColor',
             'quote.textColor',
@@ -145,10 +158,26 @@ export default async function PublicQuotePage({
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
   const typeKeyEnabled = typeKeyEnabledIn(settingsMap)
-  const shownQuote = {
-    ...quote,
-    vehicle: quote.vehicle && gateTypeKey(quote.vehicle, typeKeyEnabled),
-  }
+  // Without the type key and without the customer's reference / PO, for a
+  // workshop that has those fields off.
+  const shownQuote = gateCustomerReference(
+    {
+      ...quote,
+      vehicle: quote.vehicle && {
+        ...gateFleetNumber(
+          gateTypeKey(quote.vehicle, typeKeyEnabled),
+          fleetNumberEnabledIn(settingsMap, features)
+        ),
+        // The vehicle's current meter readings, for a workshop that has meters.
+        meterReadings: await printableMeterReadings(orgId, { vehicleId: quote.vehicleId }),
+      },
+      // What is fitted to the vehicle, and the items the quote works on.
+      // Only the finished sheet leaves the server, so it prints only where
+      // the design places the Equipment section.
+      equipment: await printableEquipment(orgId, { quoteId: quote.id, vehicleId: quote.vehicleId }),
+    },
+    customerReferenceEnabledIn(settingsMap, features)
+  )
 
   const workshop = {
     name: org?.name || '',
@@ -209,8 +238,16 @@ export default async function PublicQuotePage({
   // Whoever wrote the quote signs it.
   const signer = await documentSigner(orgId, quote.userId)
 
+  // The vehicle's photo, as a picture inside the sheet and only where the
+  // design prints it: the page never carries the file's address.
+  const vehiclePhoto = await vehiclePhotoForDocument(orgId, quote.vehicleId, layoutConfig, {
+    primaryColor,
+    backgroundColor: pick('backgroundColor') || undefined,
+    textColor: pick('textColor') || undefined,
+  })
+
   const spec = buildQuotePrintSpec({
-    data: shownQuote,
+    data: { ...shownQuote, vehiclePhoto },
     lineItemsInclTax: settingsMap['invoice.lineItemsInclTax'] === 'true',
     workshop,
     currencyCode,
@@ -235,6 +272,7 @@ export default async function PublicQuotePage({
       logoSize: Number(settingsMap['quote.logoSize']) || 100,
     },
     customFields,
+    recordCustomFields: await getRecordCustomFieldsForPrint(orgId, quote),
     labels,
     locale,
     layoutConfig,

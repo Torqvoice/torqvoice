@@ -1,5 +1,6 @@
 'use server'
 
+import { notAwaitingReference } from '@/features/customer-reference/Lib/referenceSetting'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { getPortalThreadPreview } from '@/features/portal/Lib/chat.server'
 import { EMPTY_THREAD_PREVIEW } from '@/features/portal/Lib/chatTypes'
@@ -48,6 +49,7 @@ export async function getPortalHome(orgParam: string): Promise<PortalResult<Port
 
     const now = new Date()
     const mine = { organizationId, OR: [{ vehicle: { customerId } }, { customerId }] }
+    const held = await notAwaitingReference(organizationId)
     const look = await loadPortalLook(organizationId)
 
     const [
@@ -107,7 +109,9 @@ export async function getPortalHome(orgParam: string): Promise<PortalResult<Port
       // Finished work that may still be owed on. Which of it is paid is
       // worked out from the payments, which a query cannot sum per row.
       db.serviceRecord.findMany({
-        where: { ...mine, status: 'completed', manuallyPaid: false },
+        // Not what is still waiting for the customer's reference / PO: that is
+        // no invoice of theirs yet, so it is not something they owe on.
+        where: { ...mine, status: 'completed', manuallyPaid: false, ...held },
         select: {
           id: true,
           title: true,

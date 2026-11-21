@@ -215,7 +215,12 @@ describe('the routes implement the manifest', () => {
     const missing = BACKUP_ENTITIES.filter((entity) => entity.nestedUnder)
       .filter((entity) => {
         const fields = relationFieldsOf(entity.nestedUnder as string, entity.model)
-        return !fields.some((field) => new RegExp(`\\b${field}:\\s*(true|\\{)`).test(exportRoute))
+        // Included with the parent, or streamed under it as its `children`.
+        return !fields.some(
+          (field) =>
+            new RegExp(`\\b${field}:\\s*(true|\\{)`).test(exportRoute) ||
+            exportRoute.includes(`children: {\n      key: '${field}'`)
+        )
       })
       .map((entity) => `${entity.nestedUnder}.${entity.model}`)
 

@@ -72,6 +72,18 @@ export const manifest: ConnectorManifest = {
       showWhen: { key: 'pushInvoices', equals: true },
     },
     {
+      // A Fiken sale has no reference field and cannot be changed once it is
+      // entered, so the customer's reference / PO can only go into the text
+      // of its first line, at the moment the sale is made.
+      key: 'customerReferenceInText',
+      type: 'boolean',
+      label: 'customerReferenceInText',
+      help: 'customerReferenceInTextHelp',
+      default: false,
+      showWhen: { key: 'pushInvoices', equals: true },
+      requires: 'customerReference',
+    },
+    {
       key: 'laborAccount',
       type: 'remote-select',
       label: 'laborAccount',

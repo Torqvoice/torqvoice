@@ -7,6 +7,7 @@ import {
   INVOICE_ENTITY,
   PAYMENT_ENTITY,
   invoiceUrl as appInvoiceUrl,
+  customerReferenceLabel,
   loadCustomerForAccounting,
   loadInvoiceForAccounting,
   loadPaymentForAccounting,
@@ -28,6 +29,7 @@ import {
   DUPLICATE_DOCNUMBER_CODE,
   DUPLICATE_NAME_CODE,
   type Environment,
+  type InvoiceOptions,
   MINOR_VERSION,
   NOTE_MARK,
   NOT_FOUND_CODE,
@@ -36,14 +38,19 @@ import {
   type QboInvoice,
   type QboItem,
   type QboPayment,
+  type QboPreferenceField,
   type QboTaxCode,
   type QboTaxRate,
   realmRef,
+  salesCustomFields,
   REVOKE_URL,
   WALK_IN_NAME,
   apiHost,
   buildCustomer,
   buildInvoice,
+  clearWrittenText,
+  writtenText,
+  writtenTextOf,
   buildPayment,
   checksumOf,
   customerDisplayName,
@@ -137,6 +144,14 @@ function settingsOf(ctx: ConnectorContext) {
     pushOnComplete: s.pushOnComplete === true,
     startDate: startDate && /^\d{4}-\d{2}-\d{2}$/.test(startDate) ? startDate : null,
     includeVehicle: s.includeVehicle !== false,
+    /** Where the customer's reference / PO goes; `none` sends it nowhere. */
+    customerReference:
+      s.customerReference === 'memo'
+        ? ('memo' as const)
+        : s.customerReference === 'customField'
+          ? ('customField' as const)
+          : ('none' as const),
+    customerReferenceField: str('customerReferenceField'),
     laborItemId: str('laborItemId'),
     partsItemId: str('partsItemId'),
     taxCodeId: str('taxCodeId'),
@@ -210,7 +225,10 @@ interface CompanyInfo {
 interface Preferences {
   Preferences: {
     CurrencyPrefs?: { HomeCurrency?: { value?: string }; MultiCurrencyEnabled?: boolean }
-    SalesFormsPrefs?: { CustomTxnNumbers?: boolean }
+    SalesFormsPrefs?: {
+      CustomTxnNumbers?: boolean
+      CustomField?: { CustomField?: QboPreferenceField[] }[]
+    }
     TaxPrefs?: { UsingSalesTax?: boolean; PartnerTaxEnabled?: boolean }
   }
 }
@@ -510,6 +528,10 @@ function whyNotEligible(
   if (!inv.invoiceNumber) return 'no invoice number'
   const issued = Boolean(inv.issuedAt) || (s.pushOnComplete && inv.status === 'completed')
   if (!issued) return 'not issued yet'
+  // Completed, but its customer's invoices need a reference / PO this job
+  // does not have yet. It waits here as it waits in the app; once it has
+  // gone out some other way (sent, paid) it is the ledger's like any other.
+  if (!inv.issuedAt && inv.awaitingReference) return 'waiting for the customer reference / PO'
   if (s.startDate && zonedDayKey(inv.invoiceDate, tz) < s.startDate) {
     return 'dated before the start date'
   }
@@ -544,6 +566,37 @@ async function retireInvoice(ctx: ConnectorContext, serviceRecordId: string): Pr
   }
 }
 
+/**
+ * Where this workshop's QuickBooks takes the customer's reference / PO, as
+ * the option the invoice is built with; nothing when it is not to be sent.
+ */
+async function referencePlace(
+  ctx: ConnectorContext,
+  settings: ReturnType<typeof settingsOf>
+): Promise<Pick<InvoiceOptions, 'customerReference'> | null> {
+  if (settings.customerReference === 'memo') {
+    return {
+      customerReference: {
+        place: 'memo',
+        label: await customerReferenceLabel(ctx.connection.organizationId),
+      },
+    }
+  }
+  if (settings.customerReference === 'customField') {
+    if (!settings.customerReferenceField) {
+      await ctx.log(
+        'warn',
+        'The customer reference / PO is set to go to a QuickBooks custom field, but no field is chosen in the integration settings; it was left off the invoice.'
+      )
+      return null
+    }
+    return {
+      customerReference: { place: 'customField', definitionId: settings.customerReferenceField },
+    }
+  }
+  return null
+}
+
 async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Promise<JobOutcome> {
   const settings = settingsOf(ctx)
   const state = stateOf(ctx)
@@ -570,6 +623,9 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
     taxExempt: customer.taxExempt,
     includeVehicle: settings.includeVehicle,
     customTxnNumbers: state.customTxnNumbers,
+    // Left out altogether unless the workshop chose a place and the job has
+    // a reference, so nothing about any other invoice moves.
+    ...(inv.customerReference && (await referencePlace(ctx, settings))),
   })
   const checksum = checksumOf(body)
   const link = await ctx.links.get(INVOICE_ENTITY, serviceRecordId)
@@ -583,6 +639,9 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
         const res = await api<{ Invoice: QboInvoice }>(ctx, 'invoice', {
           body: {
             ...body,
+            // A reference taken off the job is taken off the invoice too,
+            // where it is still as this connector wrote it.
+            ...clearWrittenText(body, current.Invoice, writtenTextOf(link.metadata)),
             Id: current.Invoice.Id,
             SyncToken: current.Invoice.SyncToken,
             sparse: true,
@@ -603,7 +662,12 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
       remoteId: saved.Id,
       remoteUrl: invoiceUrl(state.environment, saved.Id),
       checksum,
-      metadata: { docNumber: saved.DocNumber ?? null, customerId: customer.id },
+      metadata: {
+        docNumber: saved.DocNumber ?? null,
+        customerId: customer.id,
+        // What it wrote in the message and the custom field, to take back later.
+        written: writtenText(body),
+      },
     })
     const theirs = saved.TotalAmt ?? 0
     if (Math.abs(theirs - inv.totalAmount) > TOTAL_TOLERANCE) {
@@ -964,6 +1028,14 @@ export const connector: ConnectorServer = {
     }
   },
   remoteOptions: {
+    /** The company's own custom fields on sales forms, which only QuickBooks can create. */
+    async salesCustomFields(ctx) {
+      const prefs = await api<Preferences>(ctx, 'preferences')
+      return salesCustomFields(prefs.Preferences.SalesFormsPrefs?.CustomField).map((field) => ({
+        value: field.definitionId,
+        label: field.name,
+      }))
+    },
     async items(ctx) {
       const items = await query<QboItem>(
         ctx,

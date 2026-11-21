@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { unlinkMeterReadingsOfDeletedJobs } from '@/features/meters/Lib/jobMeterReading.server'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { revalidatePath } from 'next/cache'
@@ -21,10 +22,19 @@ export async function deleteVehicle(vehicleId: string) {
       // on the work order's id alone and have to be removed by name.
       const workOrderIds = await workOrderIdsOfVehicles(organizationId, [vehicleId])
       const result = await db.$transaction(async (tx) => {
+        // Readings its jobs took on equipment that has since moved to another
+        // vehicle stay in that item's history, at the date they count at now.
+        await unlinkMeterReadingsOfDeletedJobs(tx, {
+          organizationId,
+          jobIds: workOrderIds,
+          vehicleId,
+        })
         const deleted = await tx.vehicle.deleteMany({
           where: { id: vehicleId, organizationId },
         })
         await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', workOrderIds)
+        // And the vehicle's own.
+        await deleteCustomFieldValuesOf(tx, organizationId, 'vehicle', [vehicleId])
         return deleted
       })
       if (result.count === 0) throw new Error('Vehicle not found')

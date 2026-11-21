@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "De werkorder hield zijn eigen referentie / inkoopnummer, {job}. Die van de offerte, {quote}, is niet overgenomen.",
     "convert": "Omzetten",
     "convertToWorkOrder": "Omzetten naar werkorder",
     "cancel": "Annuleren",

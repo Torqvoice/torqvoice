@@ -104,6 +104,9 @@
     "invoiceDesignHint": "Facturen voor deze klant worden met dit ontwerp afgedrukt in plaats van de standaard van de werkplaats. Een factuur kan nog steeds een eigen ontwerp kiezen.",
     "reminderOptOut": "Geen herinneringen",
     "reminderOptOutHint": "Deze klant niet opnemen in keuringsherinneringen of andere campagnes.",
+    "poRequired": "Inkoopnummer verplicht",
+    "poRequiredHint": "Facturen voor deze klant wachten tot Referentie / inkoopnummer op de werkorder is ingevuld.",
+    "poRequiredBadge": "Inkoopnr. verplicht",
     "bookAppointment": "Afspraak inplannen"
   },
   "serviceRequests": {

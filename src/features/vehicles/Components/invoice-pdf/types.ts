@@ -1,5 +1,7 @@
 import type { PrintableCustomField } from '@/features/custom-fields/Lib/customFieldText'
+import type { PrintableEquipmentLists } from '@/features/equipment/Lib/equipmentPrint'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
+import type { VehiclePhotoPrint } from '@/features/invoice-designer/Spec/buildSpec'
 
 export interface TemplateConfig {
   primaryColor?: string
@@ -64,6 +66,8 @@ export interface InvoiceData {
   totalAmount: number
   cost: number
   invoiceNumber: string | null
+  /** The customer's reference / PO, already null for a workshop that has the field off. */
+  customerReference?: string | null
   discountType?: string | null
   discountValue?: number
   discountAmount?: number
@@ -89,7 +93,25 @@ export interface InvoiceData {
     taxable?: boolean | null
   }[]
   customFields?: PrintableCustomField[]
+  /**
+   * The vehicle's and the customer's own custom fields. They print only where
+   * a design places one; unlike `customFields` they are never added to the
+   * extras panel on their own.
+   */
+  recordCustomFields?: PrintableCustomField[]
   findings?: Array<{ description: string; severity: string; notes: string | null }>
+  /**
+   * What is fitted to the vehicle, unformatted: the items the job works on
+   * and everything on the vehicle, for a design's Equipment section to pick
+   * from. Absent or empty while equipment is off.
+   */
+  equipment?: PrintableEquipmentLists
+  /**
+   * The vehicle's photo, prepared on the server as data URIs for the style
+   * the design prints it in. Absent when the design does not print it or the
+   * vehicle has none; never a file address.
+   */
+  vehiclePhoto?: VehiclePhotoPrint
   /** 'included', 'not_included' or null; see src/lib/warranty.ts. */
   warrantyStatus?: string | null
   warrantyMonths?: number | null
@@ -114,6 +136,14 @@ export interface InvoiceData {
     /** German type approval key. Absent where a caller predates it. */
     hsn?: string | null
     tsn?: string | null
+    /** The owner's fleet / unit number; null for a workshop that has the field off. */
+    fleetNumber?: string | null
+    /**
+     * The vehicle's meters besides the odometer as this document prints them,
+     * unformatted: the job's readings on an invoice or work order, the
+     * vehicle's current ones on a quote. Empty while meters are off.
+     */
+    meterReadings?: { name: string; unit: string; value: number }[]
     mileage: number
     customer: {
       name: string

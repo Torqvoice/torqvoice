@@ -1,3 +1,4 @@
+import type { JobEquipmentView } from '@/features/equipment/Lib/equipment.server'
 import type { QuotePartInput, QuoteLaborInput } from '@/features/quotes/Schema/quoteSchema'
 
 export type { QuotePartInput, QuoteLaborInput }
@@ -39,6 +40,10 @@ export interface QuoteRecord {
   warrantyMileage?: number | null
   warrantyNotes?: string | null
   customerMessage: string | null
+  /** The customer's reference / PO. Null while the workshop has the field off. */
+  customerReference?: string | null
+  /** The vehicle's equipment and what the quote is for; null while equipment is off. */
+  equipment?: JobEquipmentView | null
   responseDismissedAt?: Date | null
   publicToken: string | null
   sharedAt: Date | null

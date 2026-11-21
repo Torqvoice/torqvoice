@@ -1,5 +1,7 @@
 'use client'
 
+import { HEAVY_VEHICLE_DOCS_URL } from '@/features/custom-fields/Lib/settingsPath'
+
 import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
@@ -16,6 +18,8 @@ import {
   Plug,
   Keyboard,
   ScanLine,
+  Ship,
+  Truck,
   Search,
   Users,
   Wrench,
@@ -73,6 +77,10 @@ type Vehicle = {
   licensePlate: string | null
   hsn?: string | null
   tsn?: string | null
+  /** Only sent by a workshop that uses the fleet number. */
+  fleetNumber?: string | null
+  /** The equipment a serial number search matched; only sent while equipment is on. */
+  equipment?: string[]
 }
 
 interface SearchResult {
@@ -89,6 +97,8 @@ interface SearchResult {
     id: string
     title: string
     invoiceNumber: string | null
+    /** The customer's reference / PO; only sent for a workshop that uses the field. */
+    customerReference?: string | null
     vehicle: Vehicle | null
   }[]
   parts: {
@@ -105,6 +115,8 @@ interface SearchResult {
     title: string
     quoteNumber: string | null
     status: string
+    /** The customer's reference / PO; only sent for a workshop that uses the field. */
+    customerReference?: string | null
   }[]
   reminders: {
     id: string
@@ -195,6 +207,8 @@ type RecentCustomer = {
 export type SearchConnector = { id: string; name: string; category: string; logo: string }
 
 export type SearchCommandProps = CommandContext & {
+  /** May change settings: the setup checklist command opens on that. */
+  canEditSettings?: boolean
   isCloud?: boolean
   supportEnabled?: boolean
   isMarine?: boolean
@@ -359,6 +373,7 @@ export function SearchCommand({
   tireHotelEnabled,
   aiEnabled,
   isAdminOrOwner,
+  canEditSettings = false,
   isCloud,
   supportEnabled,
   isMarine,
@@ -367,6 +382,7 @@ export function SearchCommand({
 }: SearchCommandProps) {
   const go = useGuardedPush()
   const t = useTranslations('search')
+  const tSetup = useTranslations('setup.heavyVehicles')
   const tNav = useTranslations('navigation.sidebar')
   const tSettings = useTranslations('settings')
   const tIntegrations = useTranslations('integrations')
@@ -473,6 +489,35 @@ export function SearchCommand({
       })
     }
 
+    if (canSettings && canEditSettings) {
+      const title = tSetup(isMarine ? 'commandMarine' : 'command')
+      out.push({
+        item: {
+          kind: 'action',
+          id: 'action:heavy-vehicle-setup',
+          href: '#',
+          title,
+          icon: isMarine ? Ship : Truck,
+          // The guide for fleet and heavy vehicle workshops, in a new tab.
+          run: () => void window.open(HEAVY_VEHICLE_DOCS_URL, '_blank', 'noopener,noreferrer'),
+        },
+        prepared: prepareItem({
+          title,
+          keywords: [
+            'fleet',
+            'heavy vehicle',
+            'truck',
+            'lorry',
+            'hgv',
+            'equipment',
+            'meters',
+            'engine hours',
+            'purchase order',
+            'setup',
+          ],
+        }),
+      })
+    }
     if (canSettings) {
       for (const { item, prepared } of settingsItems) {
         const subtitle = item.description
@@ -528,6 +573,8 @@ export function SearchCommand({
     tIntegrations,
     tPlate,
     tShortcuts,
+    tSetup,
+    canEditSettings,
     openShortcutsHelp,
   ])
 
@@ -1017,7 +1064,13 @@ export function SearchCommand({
                 icon={Car}
                 title={vehicleLine(v)}
                 subtitle={
-                  typeKeyEnabled && (v.hsn || v.tsn) ? formatTypeKey(v.hsn, v.tsn) : undefined
+                  [
+                    v.fleetNumber,
+                    typeKeyEnabled && (v.hsn || v.tsn) ? formatTypeKey(v.hsn, v.tsn) : null,
+                    ...(v.equipment ?? []),
+                  ]
+                    .filter(Boolean)
+                    .join(' · ') || undefined
                 }
                 trailing={v.licensePlate}
               />
@@ -1030,7 +1083,12 @@ export function SearchCommand({
               const href = s.vehicle
                 ? `/vehicles/${s.vehicle.id}/service/${s.id}`
                 : `/sales/${s.id}`
-              const subtitle = [s.vehicle ? vehicleLine(s.vehicle) : null, s.vehicle?.licensePlate]
+              const subtitle = [
+                s.vehicle ? vehicleLine(s.vehicle) : null,
+                s.vehicle?.licensePlate,
+                // What a search by PO number matched, said on the row it found.
+                s.customerReference,
+              ]
                 .filter(Boolean)
                 .join(' · ')
               return (
@@ -1083,7 +1141,7 @@ export function SearchCommand({
                 onSelect={() => pickRecord(`/quotes/${q.id}`, q.title, q.quoteNumber ?? undefined)}
                 icon={FileText}
                 title={q.title}
-                subtitle={q.status}
+                subtitle={[q.status, q.customerReference].filter(Boolean).join(' · ')}
                 trailing={q.quoteNumber}
               />
             ))}

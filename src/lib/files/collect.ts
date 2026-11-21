@@ -66,7 +66,8 @@ export async function inspectionFileUrls(organizationId: string, inspectionIds: 
 /**
  * A vehicle: its own image, and everything that cascades with it: its work
  * orders (with their attachments and status reports), its inspections, its
- * findings and the photos sent with requests for a visit.
+ * findings, the photos sent with requests for a visit and the examination
+ * reports of the equipment on it.
  */
 export async function vehicleFileUrls(organizationId: string, vehicleIds: string[]) {
   if (vehicleIds.length === 0) return []
@@ -80,6 +81,8 @@ export async function vehicleFileUrls(organizationId: string, vehicleIds: string
       conditionMarks: { select: { imageUrls: true } },
       // What the customer sent from the portal with a request for a visit.
       serviceRequests: { select: { attachments: true } },
+      // The equipment on it goes with it, examination reports and all.
+      equipment: { select: { reportFileUrl: true } },
     },
   })
   const serviceRecordIds = vehicles.flatMap((v) => v.serviceRecords.map((s) => s.id))
@@ -93,6 +96,7 @@ export async function vehicleFileUrls(organizationId: string, vehicleIds: string
     ...vehicles.flatMap((v) => v.findings.flatMap((f) => f.imageUrls)),
     ...vehicles.flatMap((v) => v.conditionMarks.flatMap((m) => m.imageUrls)),
     ...vehicles.flatMap((v) => v.serviceRequests.flatMap((r) => r.attachments)),
+    ...vehicles.flatMap((v) => v.equipment.map((item) => item.reportFileUrl)),
     ...serviceFiles,
     ...inspectionFiles,
   ] as Urls

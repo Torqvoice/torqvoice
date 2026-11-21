@@ -10,7 +10,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const quote = { findFirst: vi.fn(), update: vi.fn().mockResolvedValue({}) }
 const serviceRecord = { findFirst: vi.fn(), update: vi.fn().mockResolvedValue({}) }
 const inspection = { findFirst: vi.fn(), update: vi.fn().mockResolvedValue({}) }
-const appSetting = { findFirst: vi.fn() }
+// findMany answers the Reference / PO switch, which is off: no rows.
+const appSetting = { findFirst: vi.fn(), findMany: vi.fn().mockResolvedValue([]) }
 vi.mock('@/lib/db', () => ({
   db: {
     quote,
@@ -18,6 +19,8 @@ vi.mock('@/lib/db', () => ({
     inspection,
     appSetting,
     organization: { findUnique: async () => ({ name: 'Fjord Auto' }) },
+    // No meter of the workshop's is required.
+    meterType: { findFirst: async () => null },
     user: { findUnique: async () => ({ name: 'Kari' }) },
   },
 }))
@@ -87,6 +90,13 @@ vi.mock('@/features/invoices/Lib/issueInvoice', () => ({
   issueInvoice: (...args: unknown[]) => issueInvoice(...args),
 }))
 
+// Off unless a test says the invoice waits for the customer's reference / PO.
+const assertInvoiceHasRequiredReference = vi.fn()
+vi.mock('@/features/customer-reference/Lib/invoiceGuard.server', () => ({
+  assertInvoiceHasRequiredReference: (...args: unknown[]) =>
+    assertInvoiceHasRequiredReference(...args),
+}))
+
 const { sendQuoteLink, sendInvoiceLink, sendInspectionLink } = await import(
   '@/features/messaging/Actions/sendDocumentLink'
 )
@@ -102,6 +112,7 @@ beforeEach(() => {
   ensureShareToken.mockResolvedValue('held')
   getWhatsappConfig.mockResolvedValue({ template: null })
   isWithinServiceWindow.mockResolvedValue(true)
+  assertInvoiceHasRequiredReference.mockResolvedValue(undefined)
 })
 
 describe('texting a quote', () => {
@@ -279,6 +290,26 @@ describe('invoices and inspections', () => {
     expect(sendOrgWhatsapp.mock.calls[0][1].body).toContain('/share/invoice/org1/held')
     expect(sendOrgWhatsapp.mock.calls[0][1].customerId).toBe('c1')
     expect(markInvoiceSent).toHaveBeenCalledWith('r1', 'org1', { alreadyIssued: true })
+  })
+
+  it.each([
+    'sms',
+    'whatsapp',
+  ] as const)('sends no %s for an invoice waiting for its reference / PO, and says why', async (channel) => {
+    serviceRecord.findFirst.mockResolvedValue({ vehicleId: 'v1', customer: OLA, vehicle: null })
+    const why =
+      'This customer needs a reference or PO number on their invoices. Fill in Reference / PO on the work order, then send the invoice.'
+    assertInvoiceHasRequiredReference.mockRejectedValue(new Error(why))
+
+    const result = await sendInvoiceLink({ id: 'r1', channel, to: '+47 900 00 000' })
+
+    expect(assertInvoiceHasRequiredReference).toHaveBeenCalledWith('org1', 'r1')
+    expect(result).toMatchObject({ success: false, error: why })
+    expect(issueInvoice).not.toHaveBeenCalled()
+    expect(ensureShareToken).not.toHaveBeenCalled()
+    expect(deliverSms).not.toHaveBeenCalled()
+    expect(sendOrgWhatsapp).not.toHaveBeenCalled()
+    expect(markInvoiceSent).not.toHaveBeenCalled()
   })
 
   it('texts an inspection’s link', async () => {

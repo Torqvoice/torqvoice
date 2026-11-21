@@ -16,8 +16,23 @@ vi.mock('@/lib/workshop-timezone', () => ({
 vi.mock('@/features/tire-hotel/Lib/tireHotelSettings', () => ({
   isTireHotelEnabled: vi.fn(async () => false),
 }))
+// No fleet number either, as for every workshop that has not switched it on.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
+// Nor equipment.
+vi.mock('@/features/equipment/Lib/equipmentGate.server', () => ({
+  equipmentEnabled: vi.fn(async () => false),
+}))
 vi.mock('@/features/vehicles/Lib/typeKeySetting', () => ({
   isTypeKeyEnabled: vi.fn(async () => false),
+}))
+// The Reference / PO field is off here, as it is for every workshop that has
+// not asked for it; the rest of the module is the real one.
+vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) => ({
+  ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
+  isCustomerReferenceEnabled: vi.fn(async () => false),
 }))
 vi.mock('@/features/inventory/Lib/tagSearch.server', () => ({
   partIdsWithTagContaining: vi.fn(async () => []),

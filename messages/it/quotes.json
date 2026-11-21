@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "L'ordine di lavoro ha mantenuto il proprio riferimento / n. ordine, {job}. Quello del preventivo, {quote}, non è stato copiato.",
     "convert": "Converti",
     "convertToWorkOrder": "Converti in ordine di lavoro",
     "cancel": "Annulla",

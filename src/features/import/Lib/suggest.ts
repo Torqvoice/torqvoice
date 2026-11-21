@@ -9,7 +9,7 @@
  * it; the aim is that they rarely have to.
  */
 
-import { type ImportEntity, type ImportField, fieldsFor } from './fields'
+import { type ImportEntity, type ImportField, type ImportFieldOptions, fieldsFor } from './fields'
 import {
   type DateFormat,
   type DecimalSeparator,
@@ -159,7 +159,7 @@ export function suggestMapping(
   rows: readonly string[][],
   entity: ImportEntity,
   presetId?: string | null,
-  opts: { typeKey?: boolean } = {}
+  opts: ImportFieldOptions = {}
 ): MappingSuggestion {
   const fields = fieldsFor(entity, opts)
   const byKey = new Map(fields.map((f) => [f.key, f]))

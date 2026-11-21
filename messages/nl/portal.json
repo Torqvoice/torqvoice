@@ -364,6 +364,7 @@
     "summaryPaid": "Betaald",
     "summaryLeft": "Nog te betalen",
     "summaryDue": "Vervaldatum",
+    "summaryReference": "Uw referentie / inkoopnummer",
     "summaryDate": "Datum",
     "fullInvoice": "De volledige factuur"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Vlootnr.: {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mijl",
     "engineHours": "{value} motoruren",
@@ -598,6 +600,7 @@
     "number": "Offertenummer",
     "date": "Datum",
     "validUntil": "Geldig tot",
+    "reference": "Uw referentie / inkoopnummer",
     "vehicle": "Voertuig",
     "fullQuote": "De volledige offerte",
     "answerTitle": "De werkplaats wacht op uw antwoord",

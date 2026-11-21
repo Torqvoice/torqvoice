@@ -48,12 +48,31 @@ vi.mock('@/lib/files/manager', () => ({
   parseStoredFileUrl: vi.fn(() => null),
 }))
 
+// The Reference / PO field is off here, as it is for every workshop that has
+// not asked for it; the rest of the module is the real one.
+vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) => ({
+  ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
+  isCustomerReferenceEnabled: vi.fn(async () => false),
+}))
+
+// No fleet number and no fields of the workshop's own, as for every workshop
+// that has asked for neither.
+vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
+  ...(await original<typeof import('@/features/vehicles/Lib/fleetNumberSetting')>()),
+  isFleetNumberEnabled: vi.fn(async () => false),
+}))
+vi.mock('@/features/custom-fields/Lib/getCustomFieldsForPrint', () => ({
+  getRecordCustomFieldsForPrint: vi.fn(async () => []),
+}))
 vi.mock('@/lib/db', () => ({
   db: {
     // The gallery is rewritten in one transaction; its steps are the mocks below.
-    $transaction: vi.fn(async (steps: unknown) =>
-      Array.isArray(steps) ? Promise.all(steps) : steps
-    ),
+    // Deleting a customer runs as a callback, so its values go with it.
+    $transaction: vi.fn(async (steps: unknown): Promise<unknown> => {
+      if (typeof steps === 'function') return steps((await import('@/lib/db')).db)
+      return Array.isArray(steps) ? Promise.all(steps) : steps
+    }),
+    customFieldValue: { deleteMany: vi.fn(async () => ({ count: 0 })) },
     user: { findUnique: vi.fn() },
     customer: {
       findFirst: vi.fn(),

@@ -1,5 +1,21 @@
 'use server'
 
+import {
+  unlinkJobMeterReadingsFromOtherVehicles,
+  unlinkMeterReadingsOfDeletedJobs,
+} from '@/features/meters/Lib/jobMeterReading.server'
+import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
+import { assertInvoiceHasRequiredReference } from '@/features/customer-reference/Lib/invoiceGuard.server'
+import {
+  assertRequiredMetersRead,
+  missingRequiredMetersForNewJob,
+  requiredMetersRefusal,
+} from '@/features/meters/Lib/requiredMeters.server'
+import {
+  gateCustomerReference,
+  gatePoRequired,
+  isCustomerReferenceEnabled,
+} from '@/features/customer-reference/Lib/referenceSetting'
 import { db } from '@/lib/db'
 import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
 import {
@@ -303,6 +319,7 @@ export async function getServiceRecord(recordId: string) {
               taxId: true,
               taxExempt: true,
               reminderOptOut: true,
+              poRequired: true,
               notes: true,
               createdAt: true,
             },
@@ -328,6 +345,7 @@ export async function getServiceRecord(recordId: string) {
               engineCode: true,
               hsn: true,
               tsn: true,
+              fleetNumber: true,
               purchaseDate: true,
               purchasePrice: true,
               inspectionStatus: {
@@ -347,6 +365,7 @@ export async function getServiceRecord(recordId: string) {
                   taxId: true,
                   taxExempt: true,
                   reminderOptOut: true,
+                  poRequired: true,
                   notes: true,
                   createdAt: true,
                 },
@@ -366,7 +385,20 @@ export async function getServiceRecord(recordId: string) {
         select: { id: true, quoteNumber: true, title: true },
       })
 
-      return { ...record, quotes }
+      // Without the customer's reference / PO, and without "PO required" on
+      // its customer, for a workshop that has the field off: the page has no
+      // box and no notice for them, so they are not sent there either.
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
+      return {
+        ...gateCustomerReference(record, referenceOn),
+        customer: record.customer && gatePoRequired(record.customer, referenceOn),
+        // And without the vehicle's fleet number where that is switched off.
+        vehicle: record.vehicle && {
+          ...gateFleetNumber(record.vehicle, await isFleetNumberEnabled(organizationId)),
+          customer: record.vehicle.customer && gatePoRequired(record.vehicle.customer, referenceOn),
+        },
+        quotes,
+      }
     },
     {
       requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.SERVICES }],
@@ -398,6 +430,13 @@ export async function createServiceRecord(input: unknown) {
           select: { id: true, taxExempt: true },
         })
         if (!directCustomer) throw new Error('Customer not found')
+      }
+      // Made completed straight away: a job that does not exist yet has no
+      // reading of the vehicle's required meters, so it is refused, naming
+      // them. Made open, it is completed once they are read.
+      if (data.status === 'completed' && vehicle) {
+        const missing = await missingRequiredMetersForNewJob(organizationId, vehicle.id)
+        if (missing.length > 0) throw await requiredMetersRefusal('complete', missing)
       }
 
       // Auto-populate shop name and invoice prefix from settings
@@ -681,6 +720,23 @@ export async function updateServiceRecord(input: unknown) {
         },
       })
       if (!existing) throw new Error('Service record not found')
+      // A save that leaves the job completed asks for its required meters
+      // first, on the vehicle it will be on, when it completes the job or
+      // moves a completed one to another vehicle; nothing of the save is
+      // written without them. Any other save is never asked.
+      const vehicleAfter = data.vehicleId !== undefined ? data.vehicleId : existing.vehicleId
+      const statusAfter = data.status ?? existing.status
+      if (
+        statusAfter === 'completed' &&
+        (existing.status !== 'completed' || vehicleAfter !== existing.vehicleId)
+      ) {
+        await assertRequiredMetersRead(
+          organizationId,
+          existing.id,
+          existing.status === 'completed' ? 'move' : 'complete',
+          { vehicleId: vehicleAfter }
+        )
+      }
 
       const {
         id,
@@ -998,6 +1054,20 @@ export async function updateServiceRecord(input: unknown) {
         const sameVehicle = updated.vehicleId === vehicleBefore
         if (!sameVehicle && vehicleBefore) {
           await forgetJobReading(tx, { organizationId, jobId: id })
+          // Its meter readings stay in the old vehicle's history, no longer the job's.
+          await unlinkJobMeterReadingsFromOtherVehicles(tx, {
+            organizationId,
+            jobId: id,
+            vehicleId: updated.vehicleId,
+          })
+          // And it no longer works on the old vehicle's equipment.
+          await tx.serviceRecordEquipment.deleteMany({
+            where: {
+              organizationId,
+              serviceRecordId: id,
+              ...(updated.vehicleId ? { item: { vehicleId: { not: updated.vehicleId } } } : {}),
+            },
+          })
         }
         if (updated.vehicleId && (recordData.mileage !== undefined || !sameVehicle)) {
           await applyJobReading(tx, {
@@ -1098,6 +1168,9 @@ export async function updateServiceStatus(
         },
       })
       if (!record) throw new Error('Record not found')
+      if (status === 'completed' && record.status !== 'completed') {
+        await assertRequiredMetersRead(organizationId, record.id, 'complete')
+      }
 
       await db.serviceRecord.update({
         where: { id: recordId },
@@ -1301,6 +1374,7 @@ export async function getWorkOrders(params: {
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const where: any = { organizationId }
+      const referenceOn = await isCustomerReferenceEnabled(organizationId)
 
       // Promised to a customer for today or earlier, and not handed over.
       // Anything already late belongs to the same answer: it was due before
@@ -1330,6 +1404,10 @@ export async function getWorkOrders(params: {
           ...(await typeKeySearch(organizationId, params.search)).map((vehicle) => ({ vehicle })),
           { vehicle: { customer: { name: { contains: params.search, mode: 'insensitive' } } } },
           { customer: { name: { contains: params.search, mode: 'insensitive' } } },
+          // The customer's reference / PO, for a workshop that uses the field.
+          ...(referenceOn
+            ? [{ customerReference: { contains: params.search, mode: 'insensitive' } }]
+            : []),
         ]
       }
 
@@ -1402,7 +1480,7 @@ export async function getWorkOrders(params: {
       }
 
       return {
-        records,
+        records: records.map((record) => gateCustomerReference(record, referenceOn)),
         total,
         page,
         pageSize,
@@ -1449,6 +1527,8 @@ export async function deleteServiceRecord(recordId: string) {
           // preserves "this stock came back from job X".
           serviceRecordLabel: record.invoiceNumber || record.title,
         })
+        // Its meter readings stay in the history, at the date they count at now.
+        await unlinkMeterReadingsOfDeletedJobs(tx, { organizationId, jobIds: [recordId] })
         await tx.serviceRecord.delete({ where: { id: recordId } })
         // Its custom field values hang on its id alone, so nothing cascades.
         await deleteCustomFieldValuesOf(tx, organizationId, 'service_record', [recordId])
@@ -1514,6 +1594,10 @@ export async function generatePublicLink(serviceRecordId: string) {
         where: { id: serviceRecordId, organizationId },
       })
       if (!record) throw new Error('Record not found')
+      // A customer who needs their PO on the invoice does not get one without it.
+      await assertInvoiceHasRequiredReference(organizationId, serviceRecordId)
+      // Nor before the readings the workshop requires are on the job.
+      await assertRequiredMetersRead(organizationId, serviceRecordId, 'share')
 
       // The link is a way of sending the invoice, so what it shows is frozen
       // now, before the stamp below locks it.

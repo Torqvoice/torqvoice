@@ -32,6 +32,9 @@ import { SupportBubble } from '@/features/support/Components/SupportBubble'
 import { isSupportEnabled } from '@/lib/support'
 import { ServiceTypeProvider } from '@/components/service-type-context'
 import { TypeKeyProvider } from '@/components/type-key-context'
+import { CustomerReferenceProvider } from '@/components/customer-reference-context'
+import { FleetNumberProvider } from '@/components/fleet-number-context'
+import { RecordCustomFieldsProvider } from '@/components/record-custom-fields-context'
 import { EngineSizeUnitProvider } from '@/components/engine-size-context'
 import { LicenseExpiryProvider } from '@/components/license-expiry-context'
 import {
@@ -142,6 +145,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   let canBook = true
   /** Whether a booking may offer to add the customer it is for. */
   let canAddCustomer = true
+  /** Whether settings can be changed, which the setup checklist command does. */
+  let canEditSettings = true
 
   if (!isOwnerOrAdmin) {
     const membership = await getCachedMembership(data.userId)
@@ -165,8 +170,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
       canBook = false
       canAddCustomer = false
       hasAnyAccess = false
+      canEditSettings = false
     } else {
       const userPermissions = membership?.customRole?.permissions ?? []
+      canEditSettings = hasPermission(userPermissions, {
+        action: PermissionAction.UPDATE,
+        subject: PermissionSubject.SETTINGS,
+      })
       visibleSubjects = allSubjects.filter((subject) =>
         hasPermission(userPermissions, {
           action: PermissionAction.READ,
@@ -343,7 +353,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
 
-  return (
+  const page = (
     <ServiceTypeProvider serviceType={data.serviceType}>
       <TypeKeyProvider enabled={data.typeKeyEnabled}>
         <EngineSizeUnitProvider unit={data.engineSizeUnit}>
@@ -488,6 +498,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                       tireHotelEnabled={tireHotelEnabled}
                                       aiEnabled={aiEnabled}
                                       isAdminOrOwner={isOwnerOrAdmin}
+                                      canEditSettings={canEditSettings}
                                       isCloud={cloudLinked}
                                       supportEnabled={supportEnabled}
                                       isMarine={data.serviceType === 'marine'}
@@ -526,5 +537,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </EngineSizeUnitProvider>
       </TypeKeyProvider>
     </ServiceTypeProvider>
+  )
+
+  // Around the whole page rather than nested in it: every screen under this
+  // layout asks whether the workshop uses the Reference / PO field.
+  return (
+    <CustomerReferenceProvider enabled={data.customerReferenceEnabled}>
+      <FleetNumberProvider enabled={data.fleetNumberEnabled}>
+        <RecordCustomFieldsProvider value={data.recordCustomFields}>
+          {page}
+        </RecordCustomFieldsProvider>
+      </FleetNumberProvider>
+    </CustomerReferenceProvider>
   )
 }

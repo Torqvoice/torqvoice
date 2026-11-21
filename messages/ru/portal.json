@@ -364,6 +364,7 @@
     "summaryPaid": "Оплачено",
     "summaryLeft": "Осталось оплатить",
     "summaryDue": "Срок оплаты",
+    "summaryReference": "Ваш референс / № заказа",
     "summaryDate": "Дата",
     "fullInvoice": "Полный счёт"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Гаражный №: {fleetNumber}",
     "distanceKm": "{value} км",
     "distanceMi": "{value} миль",
     "engineHours": "{value} моточ.",
@@ -598,6 +600,7 @@
     "number": "Номер предложения",
     "date": "Дата",
     "validUntil": "Действует до",
+    "reference": "Ваш референс / № заказа",
     "vehicle": "Транспортное средство",
     "fullQuote": "Полное предложение",
     "answerTitle": "Мастерская ждёт вашего ответа",

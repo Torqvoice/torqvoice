@@ -24,10 +24,23 @@ function padding(style?: BoxStyle): CSSProperties {
 export function boxCss(style?: BoxStyle): CSSProperties {
   if (!style) return {}
   return {
-    background: style.background,
+    // Always the longhand: a box that gains or loses its picture (a photo
+    // switched on or off in the designer) then never mixes the shorthand
+    // with the picture's own longhands, which React warns about.
+    backgroundColor: style.background,
     border: style.borderWidth ? `${style.borderWidth}px solid ${style.borderColor}` : undefined,
     borderRadius: style.radius,
     ...padding(style),
+    // A picture behind the box's content, cropped to cover it. Always a data
+    // URI the server prepared, so it is quoted rather than trusted as CSS.
+    ...(style.backgroundImage
+      ? {
+          backgroundImage: `url(${JSON.stringify(style.backgroundImage)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }
+      : {}),
   }
 }
 
@@ -268,12 +281,20 @@ function NodeBody({ node }: { node: Node }): ReactNode {
       )
 
     case 'table': {
-      const cell = (width: number | 'flex'): CSSProperties =>
-        width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }
-      let band = 0
+      const last = node.columns.length - 1
+      const cell = (width: number | 'flex', index: number): CSSProperties => ({
+        ...(width === 'flex' ? { flex: 1, minWidth: 0 } : { width, flex: 'none' }),
+        // As in the PDF: padding inside every cell but the last.
+        ...(node.columnGap && index < last
+          ? { paddingRight: node.columnGap, boxSizing: 'border-box' as const }
+          : {}),
+        ...(node.breakLongWords ? { overflowWrap: 'anywhere' as const } : {}),
+      })
+      let band = node.bandStart ?? 0
       return (
         <div {...id} style={boxCss(node.style)}>
           <div
+            data-table-head=""
             style={{
               display: 'flex',
               ...boxCss(node.headerStyle),
@@ -281,8 +302,11 @@ function NodeBody({ node }: { node: Node }): ReactNode {
               padding: `${node.headerPadding ?? 6}px 8px`,
             }}
           >
-            {node.columns.map((column) => (
-              <span key={column.key} style={{ ...cell(column.width), textAlign: column.align }}>
+            {node.columns.map((column, index) => (
+              <span
+                key={column.key}
+                style={{ ...cell(column.width, index), textAlign: column.align }}
+              >
                 {column.label}
               </span>
             ))}
@@ -315,6 +339,7 @@ function NodeBody({ node }: { node: Node }): ReactNode {
             const body = (
               <div
                 key={`${row[node.columns[0].key]}-${i}`}
+                data-table-row=""
                 style={{
                   display: 'flex',
                   alignItems: 'flex-start',
@@ -330,11 +355,11 @@ function NodeBody({ node }: { node: Node }): ReactNode {
                 ) : null}
                 {heading
                   ? null
-                  : node.columns.map((column) => (
+                  : node.columns.map((column, index) => (
                       <span
                         key={column.key}
                         style={{
-                          ...cell(column.width),
+                          ...cell(column.width, index),
                           textAlign: column.align,
                           whiteSpace: 'pre-line',
                         }}

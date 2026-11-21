@@ -46,6 +46,15 @@ import type { CreateVehicleInput } from '../Schema/vehicleSchema'
 import { clearableInput } from '@/lib/clearable'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
+import { FLEET_NUMBER_MAX_LENGTH, fleetNumberTooLong } from '../Lib/fleetNumber'
+import { useFleetNumberEnabled } from '@/components/fleet-number-context'
+import { useHasRecordCustomFields } from '@/components/record-custom-fields-context'
+import {
+  CustomFieldsForm,
+  type CustomFieldsSave,
+} from '@/features/custom-fields/Components/CustomFieldsForm'
+import { customFieldsRefusal } from '@/features/custom-fields/Lib/customFieldsRefusal'
+import type { CustomFieldError } from '@/features/custom-fields/Lib/customFieldValueRules'
 import { handleGated } from '@/components/upgrade-gate'
 import { PlateChip } from '@/components/plate-chip'
 import { StatusLamp, type LampTone } from '@/components/status-lamp'
@@ -90,6 +99,7 @@ interface VehicleFormProps {
     engineCode?: string | null
     hsn?: string | null
     tsn?: string | null
+    fleetNumber?: string | null
     imageUrl?: string | null
     customerId?: string | null
     /** The owner, so the selector can name them without loading every customer */
@@ -130,6 +140,12 @@ interface VehicleFormProps {
    * to a job that already has its customer has to belong to that customer.
    */
   ownerLocked?: boolean
+  /**
+   * The id of the box to put the cursor in when the form opens, for a caller
+   * that opens it from one detail of the vehicle. Without it the form opens
+   * as it always has.
+   */
+  focusField?: string | null
 }
 
 export function VehicleForm({
@@ -144,6 +160,7 @@ export function VehicleForm({
   distanceUnit,
   onCreated,
   ownerLocked = false,
+  focusField = null,
 }: VehicleFormProps) {
   const { canBook } = useBookingAccess()
   const serviceType = useServiceType()
@@ -151,9 +168,20 @@ export function VehicleForm({
   // Only a workshop that switched the type key on sees the two boxes; a hidden
   // pair is left out of the save, so what a vehicle already has is kept.
   const showTypeKey = useTypeKeyEnabled() && !isMarine
+  const showFleetNumber = useFleetNumberEnabled()
+  // The workshop's own fields for a vehicle, when it has defined any. They
+  // save through their own action: checked before the vehicle is written,
+  // saved under its id once it has one.
+  const hasCustomFields = useHasRecordCustomFields('vehicle')
+  const customFieldsSave = useRef<CustomFieldsSave | null>(null)
+  // A closed dialog holds no fields: the next one registers its own save.
+  useEffect(() => {
+    if (!open) customFieldsSave.current = null
+  }, [open])
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('vehicles.form')
+  const tCustom = useTranslations('settings.customFields')
   const tDetail = useTranslations('vehicles.detail')
   const { timezone } = useDateSettings()
   const tc = useTranslations('common.buttons')
@@ -455,6 +483,43 @@ export function VehicleForm({
     })
     return () => cancelAnimationFrame(frame)
   }, [open, vehicle, initialPlate])
+  // Opened from one detail on the vehicle's page: the cursor goes to its box,
+  // scrolled into view, once the dialog has drawn it. The workshop's own
+  // fields are fetched after the dialog opens, so theirs is looked for a
+  // little longer before giving up.
+  useEffect(() => {
+    if (!open || !focusField) return
+    let tries = 0
+    let frame = 0
+    const look = () => {
+      const field = formRef.current?.querySelector<HTMLElement>(`#${CSS.escape(focusField)}`)
+      if (!field) {
+        if (++tries < 120) frame = requestAnimationFrame(look)
+        return
+      }
+      // Only the dialog's scrolling body moves: a box at its very end would
+      // otherwise have the browser scroll the dialog itself to centre it,
+      // pushing the header out of sight.
+      const body = field.closest<HTMLElement>('[data-slot="dialog-body"]')
+      if (body?.scrollTo) {
+        const offset = field.getBoundingClientRect().top - body.getBoundingClientRect().top
+        body.scrollTo({
+          top: body.scrollTop + offset - (body.clientHeight - field.offsetHeight) / 2,
+        })
+      } else {
+        field.scrollIntoView?.({ block: 'center' })
+      }
+      // Fuel and gearbox are a row of choices: the cursor goes to the one
+      // picked (or the first), the stop the keyboard reaches.
+      const target =
+        field.getAttribute('role') === 'radiogroup'
+          ? (field.querySelector<HTMLElement>('[tabindex="0"]') ?? field)
+          : field
+      target.focus({ preventScroll: true, focusVisible: true } as FocusOptions)
+    }
+    frame = requestAnimationFrame(look)
+    return () => cancelAnimationFrame(frame)
+  }, [open, focusField])
   useEffect(() => {
     if (!open) {
       appliedLookupRef.current = null
@@ -507,6 +572,28 @@ export function VehicleForm({
         toast.error(t('tsnInvalid'))
         return
       }
+    }
+
+    // A fleet number longer than the field takes is refused here and said
+    // why, never cut: a cut number names another vehicle.
+    if (showFleetNumber && fleetNumberTooLong(String(formData.get('fleetNumber') ?? ''))) {
+      toast.error(t('fleetNumberTooLong', { max: FLEET_NUMBER_MAX_LENGTH }))
+      document.getElementById('fleetNumber')?.focus()
+      return
+    }
+
+    // The workshop's own fields first: one left empty that must not be stops
+    // the save here, marked and named on the form. The values then go with
+    // the vehicle's own save, which checks them again and writes both or
+    // neither.
+    let customFields: Record<string, string> | undefined
+    if (hasCustomFields && customFieldsSave.current) {
+      const checked = await customFieldsSave.current({ collect: true })
+      if (!checked.valid) {
+        toast.error(customFieldsRefusal(checked, tCustom))
+        return
+      }
+      customFields = checked.values
     }
 
     setLoading(true)
@@ -574,6 +661,12 @@ export function VehicleForm({
         engineCode: optional('engineCode'),
         hsn: showTypeKey ? optional('hsn') : undefined,
         tsn: showTypeKey ? optional('tsn') : undefined,
+        // Sent only where the box is drawn, and when editing only if the
+        // vehicle came with its value: a save never clears what it did not show.
+        fleetNumber:
+          showFleetNumber && (!vehicle || vehicle.fleetNumber !== undefined)
+            ? optional('fleetNumber')
+            : undefined,
         // An empty string clears a hand-typed date; undefined leaves the stored
         // date alone, so saving another field, or a lookup that brought no
         // date, does not turn a registry's date into one typed by hand.
@@ -583,11 +676,22 @@ export function VehicleForm({
         customerId,
       }
 
-      const payload = imageUrl !== undefined ? { ...data, imageUrl } : data
+      const payload = {
+        ...(imageUrl !== undefined ? { ...data, imageUrl } : data),
+        ...(customFields ? { customFields } : {}),
+      }
 
       const result = vehicle
         ? await updateVehicle({ ...payload, id: vehicle.id })
         : await createVehicle(payload)
+
+      // Refused by the workshop's own fields: nothing was saved. The fields
+      // are marked where they are and the dialog stays open on what was typed.
+      if (!result.success && result.customFieldErrors && customFieldsSave.current) {
+        await customFieldsSave.current({ refuse: result.customFieldErrors as CustomFieldError[] })
+        toast.error(result.error || t('saveError'))
+        return
+      }
 
       if (result.success) {
         // The vehicle as a picker shows it, with the owner it was saved under:
@@ -1155,6 +1259,20 @@ export function VehicleForm({
                     </div>
                   )}
 
+                  {showFleetNumber && (
+                    <div className="space-y-2">
+                      <Label htmlFor="fleetNumber">{t('fleetNumber')}</Label>
+                      <Input
+                        id="fleetNumber"
+                        name="fleetNumber"
+                        placeholder={t('fleetNumberPlaceholder')}
+                        autoComplete="off"
+                        className="w-full sm:w-48"
+                        defaultValue={vehicle?.fleetNumber ?? ''}
+                      />
+                    </div>
+                  )}
+
                   {!isMarine && (
                     <div className="space-y-2">
                       <Label htmlFor="inspectionDueAt">{t('inspectionDue')}</Label>
@@ -1321,6 +1439,17 @@ export function VehicleForm({
                   </div>
                 </FormCard>
               </div>
+
+              {hasCustomFields && open && (
+                <CustomFieldsForm
+                  embedded="card"
+                  entityType="vehicle"
+                  entityId={vehicle?.id}
+                  onValuesReady={(save) => {
+                    customFieldsSave.current = save
+                  }}
+                />
+              )}
             </DialogBody>
 
             <DialogFooter className="sm:items-center">

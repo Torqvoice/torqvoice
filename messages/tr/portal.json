@@ -151,6 +151,7 @@
     "summaryPaid": "Ödenen",
     "summaryLeft": "Kalan",
     "summaryDue": "Son ödeme tarihi",
+    "summaryReference": "Referansınız / sipariş no",
     "summaryDate": "Tarih",
     "fullInvoice": "Faturanın tamamı"
   },
@@ -195,6 +196,7 @@
     "plate": "Plaka: {plate}",
     "vin": "VIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Filo no: {fleetNumber}",
     "serviceCount": "{count, plural, one {# ziyaret} other {# ziyaret}}",
     "inspectionCount": "{count, plural, one {# muayene} other {# muayene}}",
     "serviceHistory": "Servis geçmişi ({count})",
@@ -624,6 +626,7 @@
     "number": "Teklif numarası",
     "date": "Tarih",
     "validUntil": "Son geçerlilik",
+    "reference": "Referansınız / sipariş no",
     "vehicle": "Araç",
     "fullQuote": "Teklifin tamamı",
     "answerTitle": "Servis yanıtınızı bekliyor",

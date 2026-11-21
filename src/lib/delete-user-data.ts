@@ -42,9 +42,12 @@ export async function deleteOrganizationWithData(organizationId: string, userId?
   // quotes, inventory, custom fields, settings, roles, invitations,
   // subscription). Inspections must go first: their templateId FK is
   // ON DELETE RESTRICT, which blocks the cascade from resolving templates
-  // and inspections in one statement.
+  // and inspections in one statement. Equipment items go first too: their
+  // kind is RESTRICT as well, and the cascade reaching every item before its
+  // kind is down to the order Postgres happens to fire them in.
   await db.$transaction([
     db.inspection.deleteMany({ where: { organizationId } }),
+    db.equipmentItem.deleteMany({ where: { organizationId } }),
     db.organization.delete({ where: { id: organizationId } }),
   ])
 

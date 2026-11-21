@@ -192,6 +192,7 @@
       "engineCode": "Motor kodu",
       "hsn": "HSN (üretici kodu)",
       "tsn": "TSN (tip kodu)",
+      "fleetNumber": "Filo / birim numarası",
       "purchaseDate": "Satın alma tarihi",
       "purchasePrice": "Satın alma fiyatı"
     },
@@ -202,6 +203,7 @@
       "total": "Toplam tutar",
       "mileage": "Servisteki kilometre",
       "invoiceNumber": "Fatura numarası",
+      "customerReference": "Referans / sipariş no",
       "notes": "Servis notları",
       "technician": "Teknisyen"
     }
@@ -211,6 +213,7 @@
     "invalid_email": "\"{value}\" e-postası geçerli değil ve dışarıda bırakıldı",
     "invalid_vin": "\"{value}\" VIN'i 17 karakter değil; yazıldığı gibi tutuldu",
     "invalid_type_key": "{field} \"{value}\" geçerli bir HSN veya TSN değil; atlandı",
+    "fleet_number_too_long": "Filo / birim numarası \"{value}\" 40 karakterden uzun; atlandı",
     "vehicle_make_model_required": "Marka ve model eksik",
     "vehicle_year_required": "Yıl eksik",
     "vehicle_year_invalid": "\"{value}\" geçerli bir yıl değil",

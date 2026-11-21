@@ -14,6 +14,10 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+// The equipment a quote is for goes with it; nothing of it here.
+vi.mock('@/features/equipment/Lib/equipmentWorkOn.server', () => ({
+  copyQuoteEquipmentToJob: vi.fn(),
+}))
 vi.mock('@/lib/cached-session', () => ({
   getCachedSession: vi.fn(),
   getCachedMembership: vi.fn(),
@@ -269,5 +273,47 @@ describe('convertQuoteToServiceRecord — once only', () => {
     // The transaction threw after the lines were written, so the whole of it
     // rolls back; the stock movement must not be left standing on its own.
     expect(stockMovementCreateMany).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('convertQuoteToServiceRecord: the customer reference / PO', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    setupAuth()
+  })
+
+  /** The row the conversion writes for the new job. */
+  async function createdJob(quote: Record<string, unknown>) {
+    setupConversion([])
+    const stored = await vi.mocked(db.quote.findFirst).getMockImplementation()?.()
+    vi.mocked(db.quote.findFirst).mockResolvedValue({ ...(stored as object), ...quote } as any)
+    const create = vi.fn().mockResolvedValue({
+      id: 'sr-1',
+      title: 'Brake job',
+      invoiceNumber: '1001',
+      vehicleId: VEHICLE_ID,
+    })
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        quote: { updateMany: vi.fn().mockResolvedValue({ count: 1 }) },
+        stockMovement: { createMany: vi.fn() },
+        $queryRaw: vi.fn(),
+      })
+    )
+    const result = await convertQuoteToServiceRecord(QUOTE_ID, VEHICLE_ID)
+    expect(result.success).toBe(true)
+    return create.mock.calls[0][0].data
+  }
+
+  it('goes with the work it was given for, onto the new job', async () => {
+    expect((await createdJob({ customerReference: 'PO-48213' })).customerReference).toBe('PO-48213')
+  })
+
+  it('is left empty on the job of a quote that had none', async () => {
+    expect((await createdJob({ customerReference: null })).customerReference).toBeNull()
   })
 })

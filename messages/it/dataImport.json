@@ -192,6 +192,7 @@
       "engineCode": "Codice motore",
       "hsn": "HSN (codice costruttore)",
       "tsn": "TSN (codice tipo)",
+      "fleetNumber": "N. flotta / unità",
       "purchaseDate": "Data di acquisto",
       "purchasePrice": "Prezzo di acquisto"
     },
@@ -202,6 +203,7 @@
       "total": "Importo totale",
       "mileage": "Chilometraggio all'intervento",
       "invoiceNumber": "Numero fattura",
+      "customerReference": "Riferimento / n. ordine",
       "notes": "Note intervento",
       "technician": "Tecnico"
     }
@@ -211,6 +213,7 @@
     "invalid_email": "L'email \"{value}\" non è valida ed è stata omessa",
     "invalid_vin": "Il VIN \"{value}\" non è di 17 caratteri; conservato così com'è",
     "invalid_type_key": "{field} \"{value}\" non è un HSN o TSN valido; omesso",
+    "fleet_number_too_long": "N. flotta / unità \"{value}\" supera i 40 caratteri; omesso",
     "vehicle_make_model_required": "Mancano marca e modello",
     "vehicle_year_required": "Manca l'anno",
     "vehicle_year_invalid": "L'anno \"{value}\" non è un anno valido",

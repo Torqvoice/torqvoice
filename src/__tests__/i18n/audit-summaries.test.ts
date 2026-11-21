@@ -179,12 +179,17 @@ describe('audit summaries', () => {
     // production because nobody tests in Lithuanian.
     const sample: Record<string, string | number> = {
       name: 'X',
+      oldEnd: '9800',
+      value: '4256.7',
+      newStart: '0',
       kind: 'invoice',
       date: '2026-12-14',
       id: 'X',
       ref: 'X',
       code: 'X',
       from: 'A',
+      vehicle: 'V',
+      meter: 'M',
       to: 'B',
       jobRef: 'J',
       title: 'T',

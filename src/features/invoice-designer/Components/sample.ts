@@ -1,4 +1,5 @@
 import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
+import { meterLine } from '@/features/meters/Lib/meterValue'
 import { formatCurrency, formatDateForPdf } from '@/lib/format'
 import { calculateTotals } from '@/lib/tax'
 import { taxComponentLabel } from '@/lib/tax-components'
@@ -7,6 +8,8 @@ import { LABOR_GROUP, OTHER_PARTS_GROUP, partGroupKey } from '../Pdf/lineGroups'
 import type { DesignerWorkshop, DocumentType } from './types'
 import { conditionMapForPrint } from '@/features/condition-map/Lib/print'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
+import type { EquipmentPrint, EquipmentRow } from '../Pdf/equipmentPrint'
+import { fadedPhotoInks, linearFor } from '../Lib/photoContrast'
 
 /**
  * What the canvas prints for each field the layout can show.
@@ -190,6 +193,10 @@ export function fieldValues(
     customer_email: 'alex@example.com',
     customer_phone: '+1 555 0134',
     customer_tax_id: `${L('customerTaxId', 'Tax ID')}: 000 000 000`,
+    // Only for a workshop that uses the field, since nobody else's sheet prints it.
+    customer_reference: workshop.customerReferenceEnabled
+      ? `${L('customerReference', 'Your reference / PO')}: PO-48213`
+      : '',
     // A made-up vehicle.
     vehicle_name: '2020 Volvo V60',
     vin: fillTemplate(L('vin', 'VIN: {vin}'), { vin: 'YV1AA0000L0000000' }),
@@ -199,6 +206,18 @@ export function fieldValues(
     hsn_tsn: workshop.typeKeyEnabled
       ? fillTemplate(L('typeKey', 'HSN/TSN: {typeKey}'), { typeKey: '9101 / ABC' })
       : '',
+    // Only for a workshop that records one.
+    fleet_number: workshop.fleetNumberEnabled ? `${L('fleetNumber', 'Fleet no.')}: T-208` : '',
+    // One made-up reading per meter the workshop has, in its number format.
+    meter_readings: (workshop.meterTypes ?? [])
+      .map((meter, i) =>
+        // Written as the sample's mileage is ("84,120").
+        meterLine(
+          { name: meter.name, unit: meter.unit, value: [4256.7, 2984.3][i] ?? 812.5 },
+          (v) => v.toLocaleString('en-US', { maximumFractionDigits: 2 })
+        )
+      )
+      .join('\n'),
     mileage: fillTemplate(L('mileage', 'Mileage: {mileage}'), {
       // In the workshop's unit; unset prints miles, as its invoices do.
       mileage: `84,120 ${workshop.unitSystem === 'metric' ? L('km', 'km') : L('mi', 'mi')}`,
@@ -479,7 +498,62 @@ export function buildSampleData(
     // invoice or a quote prints this visit's marks only.
     conditionMap:
       sampleConditionMap(t, docType === 'certificate' || docType === 'work_order') ?? undefined,
+    // Two items on the sample vehicle, the first one the job works on, for
+    // a workshop that records equipment; nothing for one that does not.
+    equipment: sampleEquipment(workshop, format),
+    // A neutral stand-in for the vehicle's photo in both of its forms, so the
+    // canvas previews either style. It prints only where a design switches
+    // the photo on, like a real one.
+    vehiclePhoto: SAMPLE_VEHICLE_PHOTO,
   }
+}
+
+/**
+ * Two items under the workshop's own names for its first two kinds of
+ * equipment. The makes, models and serials are made up and belong to no kind
+ * in particular, so a workshop whose first type is a tail lift never sees a
+ * crane maker's name on it. Dates go through the workshop's date format like
+ * the rest of the sample.
+ */
+function sampleEquipment(
+  workshop: DesignerWorkshop,
+  format: SampleFormat
+): EquipmentPrint | undefined {
+  const types = workshop.equipmentTypes ?? []
+  if (types.length === 0) return undefined
+  const day = (key: string) => format.date(new Date(`${key}T12:00:00Z`))
+  const number = (v: number) => v.toLocaleString('en-US', { maximumFractionDigits: 2 })
+  const meter = workshop.meterTypes?.[0]
+  const first: EquipmentRow = {
+    type: types[0],
+    make: 'Northline',
+    model: 'NL 192',
+    manufacture_year: '2019',
+    serial_number: 'NL-19-04412',
+    install_date: day('2019-06-03'),
+    rated_capacity: '2,000 kg',
+    last_examined: day('2026-02-10'),
+    next_examination: day('2027-02-10'),
+    certificate_reference: 'EX-2026-0117',
+    // Written as the sample's other meter readings are ("4,256.7").
+    meters: meter ? meterLine({ name: meter.name, unit: meter.unit, value: 812.5 }, number) : '',
+    notes: '',
+  }
+  const second: EquipmentRow = {
+    type: types[1] ?? types[0],
+    make: 'Fjordmax',
+    model: 'FM 15',
+    manufacture_year: '2021',
+    serial_number: 'FM-21-88310',
+    install_date: day('2021-09-20'),
+    rated_capacity: '1,500 kg',
+    last_examined: day('2026-05-02'),
+    next_examination: day('2026-11-02'),
+    certificate_reference: 'EX-2026-0342',
+    meters: '',
+    notes: '',
+  }
+  return { job: [first], vehicle: [first, second] }
 }
 
 /** Three marks on a sedan, one of them from last time. */
@@ -628,6 +702,46 @@ const SAMPLE_SIGNATURE = `data:image/svg+xml;utf8,${encodeURIComponent(
 const SAMPLE_PHOTO = `data:image/svg+xml;utf8,${encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="158" height="119"><rect width="158" height="119" fill="#e5e7eb"/><path d="M40 84l28-32 22 26 14-16 24 22H40z" fill="#9ca3af"/><circle cx="112" cy="40" r="9" fill="#9ca3af"/></svg>'
 )}`
+
+/**
+ * A soft landscape in place of the vehicle's photo: neutral for a car and a
+ * boat alike, drawn here so the designer needs no asset. The faded form is
+ * the same picture washed out and blurred, the way the server prepares a real
+ * one for behind the Vehicle block.
+ */
+const sampleLandscape = (sky: [string, string], hill: string, far: string, sun: string, blur = 0) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky[0]}"/><stop offset="1" stop-color="${sky[1]}"/></linearGradient>${blur ? `<filter id="b"><feGaussianBlur stdDeviation="${blur}"/></filter>` : ''}</defs><g${blur ? ' filter="url(#b)"' : ''}><rect width="400" height="300" fill="url(#s)"/><circle cx="300" cy="92" r="30" fill="${sun}"/><path d="M0 210 L90 140 L170 200 L250 130 L400 220 V300 H0 Z" fill="${far}"/><path d="M0 250 Q120 200 220 238 T400 230 V300 H0 Z" fill="${hill}"/></g></svg>`
+  )}`
+
+const SAMPLE_VEHICLE_PHOTO: NonNullable<DocumentData['vehiclePhoto']> = {
+  beside: {
+    src: sampleLandscape(['#cbd5e1', '#e2e8f0'], '#64748b', '#94a3b8', '#f8fafc'),
+    aspect: 4 / 3,
+  },
+  // The beside picture blurred and toned the way the server tones a real
+  // photo for the default inks (the title ink over the photo), so the canvas
+  // previews the strength the print will have.
+  faded: (() => {
+    const tone = fadedPhotoInks('#111827', '#d97706', '#f3f4f6').tone
+    const { a, b } = linearFor(tone)
+    const t = (hex: string) => {
+      const n = Number.parseInt(hex.slice(1), 16)
+      const c = (v: number) =>
+        Math.round(a * v + b)
+          .toString(16)
+          .padStart(2, '0')
+      return `#${c((n >> 16) & 255)}${c((n >> 8) & 255)}${c(n & 255)}`
+    }
+    return sampleLandscape(
+      [t('#cbd5e1'), t('#e2e8f0')],
+      t('#64748b'),
+      t('#94a3b8'),
+      t('#f8fafc'),
+      6
+    )
+  })(),
+}
 
 /**
  * The certificate's own part of the sample: a car that passed with one

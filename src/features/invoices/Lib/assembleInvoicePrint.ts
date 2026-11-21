@@ -19,6 +19,8 @@
  * the reader's translations.
  */
 
+import { printableMeterReadings } from '@/features/meters/Lib/meters.server'
+import { NO_EQUIPMENT, printableEquipment } from '@/features/equipment/Lib/equipmentPrint.server'
 import { findingLine } from '@/features/fault-codes/Lib/codes'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'fs/promises'
@@ -28,10 +30,15 @@ import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { isOwnUploadUrl } from '@/lib/upload-url'
 import { formatDateForPdf } from '@/lib/format'
 import { legacyCustomFieldText } from '@/features/custom-fields/Lib/customFieldText'
-import { getCustomFieldsForPrint } from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import {
+  getCustomFieldsForPrint,
+  getRecordCustomFieldsForPrint,
+} from '@/features/custom-fields/Lib/getCustomFieldsForPrint'
+import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/fleetNumberSetting'
 import {
   type InvoiceLayoutConfig,
   mergeWithDefaults,
+  withUnmentionedSwitchGatedOff,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   InvoiceData,
@@ -54,14 +61,27 @@ import {
 } from '@/features/invoice-designer/Lib/designRules.server'
 import { memberSignatureDataUri } from '@/features/signatures/Lib/memberSignature.server'
 import {
+  photoSourceDataUri,
+  photoSourceFromSnapshot,
+  vehiclePhotoForDesign,
+  vehiclePhotoPrint,
+} from '@/features/invoice-designer/Lib/vehiclePhoto.server'
+import { vehicleBlockTone, vehiclePhotoStyleOf } from '@/features/invoice-designer/Lib/vehiclePhoto'
+import {
   readIssuedInvoiceData,
   rendersFromIssue,
   thawConditionMap,
+  thawEquipment,
   thawInspectionResults,
   type InvoiceConditionMap,
   type IssuedInvoiceData,
 } from './issuedInvoice'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
+import {
+  invoiceReferencePrints,
+  gateCustomerReference,
+} from '@/features/customer-reference/Lib/referenceSetting'
+import { getFeatures } from '@/lib/features'
 import {
   loadMarkTypeRows,
   loadVisitConditionMap,
@@ -106,6 +126,7 @@ const RECORD_INCLUDE = {
       licensePlate: true,
       hsn: true,
       tsn: true,
+      fleetNumber: true,
       mileage: true,
       customer: { select: PARTY_SELECT },
     },
@@ -113,6 +134,7 @@ const RECORD_INCLUDE = {
   issuedDesignSnapshot: true,
   issuedLogoSnapshot: true,
   issuedSignatureSnapshot: true,
+  issuedVehiclePhotoSnapshot: true,
   // Whoever opened the job signs it.
   createdBy: { select: { id: true, name: true } },
 }
@@ -139,6 +161,17 @@ export interface AssembleOptions {
    * work order, which prints from the same job by its own design.
    */
   inspectionResults?: 'print' | 'rows' | 'none'
+  /**
+   * Whether to read the vehicle's photo for a design that prints it. Off for
+   * the work order, which reads it for its own design.
+   */
+  vehiclePhoto?: boolean
+  /**
+   * How long to wait for the vehicle's photo before the sheet goes without
+   * it. Issuing waits longer (ISSUE_PHOTO_WAIT_MS), since it keeps the photo
+   * for good; every other sheet waits the usual few seconds.
+   */
+  photoWaitMs?: number
 }
 
 export interface InvoicePrintAssembly {
@@ -175,6 +208,11 @@ export interface InvoicePrintAssembly {
    * invoice. Absent when the design prints neither or there is no inspection.
    */
   inspectionResults?: InspectionResults | null
+  /**
+   * The vehicle's photo as an issue keeps it: the resized, sharp copy, as a
+   * data URI. Set only on a live assembly whose design prints the photo.
+   */
+  vehiclePhotoSource?: string
 }
 
 export interface PrintSigner {
@@ -372,9 +410,9 @@ export async function assembleInvoicePrint(
   options: AssembleOptions = {}
 ): Promise<InvoicePrintAssembly | null> {
   const mode = options.mode ?? 'auto'
-  const record = await loadRecord(recordId)
-  if (!record?.organizationId) return null
-  const organizationId = record.organizationId
+  const loaded = await loadRecord(recordId)
+  if (!loaded?.organizationId) return null
+  const organizationId = loaded.organizationId
 
   const [settings, org] = await Promise.all([
     db.appSetting.findMany({ where: { organizationId }, select: { key: true, value: true } }),
@@ -386,12 +424,27 @@ export async function assembleInvoicePrint(
   const settingsMap: Record<string, string> = {}
   for (const s of settings) settingsMap[s.key] = s.value
 
+  // The customer's reference / PO is the job's own, never part of what an
+  // issue freezes: an issued invoice reads it from the row like a draft, so
+  // a number that arrives after the invoice went out is on it at once. A
+  // workshop that has the field off gets the job without it, here, before
+  // any sheet, mail or share page is built from the assembly.
+  // An invoice already issued keeps printing its reference after the plan
+  // loses the field.
+  const record = gateCustomerReference(
+    loaded,
+    settingsMap[SETTING_KEYS.CUSTOMER_REFERENCE_ENABLED] === 'true' &&
+      invoiceReferencePrints(settingsMap, await getFeatures(organizationId), loaded)
+  )
+
   const frozen: IssuedInvoiceData | null =
     mode === 'auto' && rendersFromIssue(record) ? readIssuedInvoiceData(record.issuedData) : null
 
   const results = options.inspectionResults ?? 'print'
-  if (frozen) return assembleFrozen(record, organizationId, org, settingsMap, frozen, results)
-  return assembleLive(record, organizationId, org, settingsMap, results)
+  const photo = options.vehiclePhoto !== false
+  if (frozen)
+    return assembleFrozen(record, organizationId, org, settingsMap, frozen, results, photo)
+  return assembleLive(record, organizationId, org, settingsMap, results, photo, options.photoWaitMs)
 }
 
 async function assembleLive(
@@ -399,7 +452,9 @@ async function assembleLive(
   organizationId: string,
   org: InvoicePrintAssembly['org'],
   settingsMap: Record<string, string>,
-  results: NonNullable<AssembleOptions['inspectionResults']>
+  results: NonNullable<AssembleOptions['inspectionResults']>,
+  photo: boolean,
+  photoWaitMs: number | undefined
 ): Promise<InvoicePrintAssembly> {
   const customerRow = record.customer ?? record.vehicle?.customer ?? null
   const [findings, customFields, look, signatureDataUri, conditionMap] = await Promise.all([
@@ -466,17 +521,59 @@ async function assembleLive(
           { photos: results === 'print' }
         )
 
+  // The fleet number for a workshop that has that field on, and the vehicle's
+  // and customer's own custom fields for one that has defined any.
+  const fleetNumberOn =
+    settingsMap[SETTING_KEYS.VEHICLE_FLEET_NUMBER_ENABLED] === 'true' &&
+    fleetNumberEnabledIn(settingsMap, await getFeatures(organizationId))
+  const recordCustomFields = await getRecordCustomFieldsForPrint(organizationId, {
+    vehicleId: record.vehicleId,
+    customerId: record.customerId ?? record.vehicle?.customerId,
+  })
+  // The readings taken on this job of the vehicle's other meters, for a
+  // workshop that has meters; a design prints them only where it places them.
+  const meterReadings = record.vehicle
+    ? await printableMeterReadings(organizationId, {
+        jobId: record.id,
+        vehicleId: record.vehicleId,
+      })
+    : []
+  // What is fitted to the vehicle, both the items this job works on and
+  // everything on it, for a workshop that records equipment; a design
+  // prints one list only where it places the Equipment section.
+  const equipment = record.vehicle
+    ? await printableEquipment(organizationId, { jobId: record.id, vehicleId: record.vehicleId })
+    : NO_EQUIPMENT
+  // The vehicle's photo, read only for a design that prints it.
+  const vehiclePhoto: Awaited<ReturnType<typeof vehiclePhotoForDesign>> =
+    photo && record.vehicle
+      ? await vehiclePhotoForDesign(
+          organizationId,
+          record.vehicleId,
+          template.layoutConfig,
+          template,
+          { waitMs: photoWaitMs }
+        )
+      : {}
+
   const data: InvoiceData = {
     ...record,
     customer: partyOf(record.customer),
     vehicle: record.vehicle
       ? {
-          ...gateTypeKey(record.vehicle, typeKeyEnabledIn(settingsMap)),
+          ...gateFleetNumber(
+            gateTypeKey(record.vehicle, typeKeyEnabledIn(settingsMap)),
+            fleetNumberOn
+          ),
+          meterReadings,
           customer: partyOf(record.vehicle.customer),
         }
       : null,
     customFields,
+    recordCustomFields,
     findings,
+    equipment,
+    vehiclePhoto: vehiclePhoto.print,
   }
 
   return {
@@ -503,6 +600,7 @@ async function assembleLive(
     },
     conditionMap,
     inspectionResults,
+    vehiclePhotoSource: vehiclePhoto.source ? photoSourceDataUri(vehiclePhoto.source) : undefined,
   }
 }
 
@@ -512,14 +610,19 @@ async function assembleFrozen(
   org: InvoicePrintAssembly['org'],
   settingsMap: Record<string, string>,
   frozen: IssuedInvoiceData,
-  results: NonNullable<AssembleOptions['inspectionResults']>
+  results: NonNullable<AssembleOptions['inspectionResults']>,
+  photo: boolean
 ): Promise<InvoicePrintAssembly> {
   const snapshot = record.issuedDesignSnapshot
+  const frozenSource = snapshot && designSourceFromSnapshot(snapshot.layout, snapshot.template)
   // A snapshot that cannot be read falls back to the live look rather than
-  // to nothing: the words on the sheet are still the frozen ones.
-  const designSource =
-    (snapshot && designSourceFromSnapshot(snapshot.layout, snapshot.template)) ||
-    designSourceFromSettings(settingsMap, 'invoice')
+  // to nothing: the words on the sheet are still the frozen ones. A frozen
+  // look that never mentions a field behind a workshop switch was frozen
+  // before that field existed and printed none: the reference, read from the
+  // job as it stands, never joins a copy that went out without the line.
+  const designSource = frozenSource
+    ? { ...frozenSource, layout: withUnmentionedSwitchGatedOff(frozenSource.layout) }
+    : designSourceFromSettings(settingsMap, 'invoice')
   const template = templateConfigFromSource(designSource)
   const logoDataUri = record.issuedLogoSnapshot
     ? assetDataUri(record.issuedLogoSnapshot)
@@ -552,6 +655,12 @@ async function assembleFrozen(
           licensePlate: frozen.vehicle.licensePlate ?? null,
           hsn: frozen.vehicle.hsn ?? null,
           tsn: frozen.vehicle.tsn ?? null,
+          // As issued. An invoice issued before the field existed has none
+          // and prints none: it never borrows the vehicle's number of today.
+          fleetNumber: frozen.vehicle.fleetNumber ?? null,
+          // Likewise the meter readings it was issued with: none for one
+          // issued before meters, never today's.
+          meterReadings: frozen.vehicle.meterReadings ?? [],
           mileage: frozen.vehicle.mileage ?? record.vehicle?.mileage ?? 0,
           customer: null,
         }
@@ -563,7 +672,25 @@ async function assembleFrozen(
         ? cf
         : { ...cf, display: legacyCustomFieldText(cf.value, cf.fieldType) }
     ),
+    // The vehicle's and customer's fields as they stood at issue; none on an
+    // invoice issued before they could be printed.
+    recordCustomFields: frozen.recordCustomFields ?? [],
     findings: (frozen.findings ?? []).map((f) => ({ ...f, notes: f.notes ?? null })),
+    // The equipment it was issued with: none for one issued before equipment
+    // was recorded, never today's.
+    equipment: thawEquipment(frozen.equipment),
+    // The photo it was issued with, made ready for the design it prints
+    // with now. One issued before photos, or by a design that printed none,
+    // kept none and prints none: it never borrows the vehicle's photo of
+    // today, and a photo deleted since changes nothing.
+    vehiclePhoto:
+      photo && record.issuedVehiclePhotoSnapshot
+        ? await vehiclePhotoPrint(
+            await photoSourceFromSnapshot(record.issuedVehiclePhotoSnapshot),
+            vehiclePhotoStyleOf(template.layoutConfig),
+            () => vehicleBlockTone(template.layoutConfig ?? {}, template)
+          )
+        : undefined,
   }
 
   // The inspection's checks as they were when issued. An invoice issued

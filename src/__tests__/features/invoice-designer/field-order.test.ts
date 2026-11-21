@@ -58,6 +58,11 @@ function texts(node: any): string[] {
   const walk = (n: any) => {
     if (!n || typeof n !== 'object') return
     if (n.kind === 'text' && n.text) out.push(n.text)
+    // A table prints its column heads, then its cells row by row.
+    if (n.kind === 'table') {
+      for (const column of n.columns) out.push(column.label)
+      for (const row of n.rows) for (const column of n.columns) out.push(row[column.key])
+    }
     for (const child of n.children ?? []) walk(child.node ?? child)
   }
   walk(node)
@@ -150,6 +155,8 @@ describe('every section with a field list follows its order', () => {
         phone: '555',
         email: 'shop@example.com',
         logoUrl: null,
+        // Kinds of equipment, so the Equipment table has rows to print.
+        equipmentTypes: ['Crane', 'Tail lift'],
       } as any,
       [],
       ((key: string) => key) as any,
@@ -160,7 +167,10 @@ describe('every section with a field list follows its order', () => {
   const specOf = (sectionId: string, fields: InvoiceFieldConfig[]) => {
     const layout = mergeWithDefaults({})
     layout.sections = layout.sections.map((section) =>
-      section.id === sectionId ? { ...section, fields } : section
+      section.id === sectionId
+        ? // Equipment is off until a design asks for it; on here.
+          { ...section, ...(sectionId === 'equipment' ? { visible: true } : {}), fields }
+        : section
     )
     return buildDocumentSpec(layout, themeOf({} as any, layout), filled())
   }
@@ -174,6 +184,8 @@ describe('every section with a field list follows its order', () => {
     service: ['service_title', 'service_type'],
     bank_account: ['bank_account', 'org_number'],
     footer: ['company_name', 'company_address'],
+    // The Equipment section's fields are its table's columns.
+    equipment: ['make', 'model'],
   }
 
   it('has a pair named for every section that offers a list', () => {

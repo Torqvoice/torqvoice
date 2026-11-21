@@ -1,0 +1,8 @@
+{
+  "heavyVehicles": {
+    "command": "Set up for fleets and heavy vehicles",
+    "commandMarine": "Set up for fleets and commercial vessels",
+    "docs": "Read the guide for fleets and heavy vehicles",
+    "docsMarine": "Read the guide for fleets and commercial vessels"
+  }
+}
