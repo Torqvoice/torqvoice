@@ -161,8 +161,10 @@ test.describe('meters', () => {
     await expect(page.getByText('Unsaved changes')).toHaveCount(0)
   })
 
-  test('the invoice prints the reading only once its design asks for it', async ({ page }) => {
-    expect(await invoiceText(page)).not.toContain(METER)
+  test('the invoice prints the reading without a visit to the designer', async ({ page }) => {
+    // A workshop that defined a meter wants it on its paper: the line is on
+    // in every design until one switches it off.
+    expect(await invoiceText(page)).toContain(METER)
   })
 
   test('a meter made required in Settings says so in the list', async ({ page }) => {
