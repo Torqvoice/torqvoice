@@ -186,15 +186,74 @@ describe('The support button when the window changes size', () => {
     expect(place()).toEqual(chosen)
   })
 
-  it('still honours a place saved before this change', () => {
-    window.localStorage.setItem('torqvoice.support.position', JSON.stringify({ x: 1200, y: 200 }))
-    render(<SupportBubble userId="anna" />)
-    expect(place()).toMatchObject({ left: 1200, top: 200 })
+  describe('with a place saved before this change, as pixels from the top-left', () => {
+    function savedByAnEarlierBuild(x: number, y: number) {
+      window.localStorage.setItem('torqvoice.support.position', JSON.stringify({ x, y }))
+    }
 
-    resizeWindowTo(SMALL)
-    resizeWindowTo(LARGE)
+    it('is still where it was, and comes back there after a small window', () => {
+      savedByAnEarlierBuild(1200, 200)
+      render(<SupportBubble userId="anna" />)
+      expect(place()).toMatchObject({ left: 1200, top: 200 })
 
-    expect(place()).toMatchObject({ left: 1200, top: 200 })
+      resizeWindowTo(SMALL)
+      resizeWindowTo(LARGE)
+
+      expect(place()).toMatchObject({ left: 1200, top: 200 })
+    })
+
+    it('goes back to it when the tab was first opened in a window too small for it', () => {
+      savedByAnEarlierBuild(1200, 700)
+      windowIs(SHORT)
+      render(<SupportBubble userId="anna" />)
+      expectFullyOnScreen()
+
+      resizeWindowTo(LARGE)
+
+      expect(place()).toMatchObject({ left: 1200, top: 700 })
+    })
+
+    it('is not lost by a reload in a window too small for it', () => {
+      savedByAnEarlierBuild(1200, 700)
+      windowIs(SHORT)
+      const first = render(<SupportBubble userId="anna" />)
+      first.unmount()
+      windowIs(SMALL)
+      const second = render(<SupportBubble userId="anna" />)
+      second.unmount()
+
+      windowIs(LARGE)
+      render(<SupportBubble userId="anna" />)
+
+      expect(place()).toMatchObject({ left: 1200, top: 700 })
+    })
+
+    it('keeps its distance to the corner after a resize followed by a reload', () => {
+      savedByAnEarlierBuild(1200, 700)
+      const first = render(<SupportBubble userId="anna" />)
+      const chosen = place()
+      resizeWindowTo(SHORT)
+      first.unmount()
+
+      render(<SupportBubble userId="anna" />)
+      expectFullyOnScreen()
+      resizeWindowTo(LARGE)
+      expect(place()).toEqual(chosen)
+
+      resizeWindowTo({ width: 1920, height: 1080 })
+      expect(place()).toMatchObject({ right: chosen.right, bottom: chosen.bottom })
+    })
+
+    it('gives way to a new place the moment the button is dragged', () => {
+      savedByAnEarlierBuild(1200, 700)
+      windowIs(SHORT)
+      render(<SupportBubble userId="anna" />)
+      dragButtonTo(40, 100)
+
+      resizeWindowTo(LARGE)
+
+      expect(place()).toMatchObject({ left: 40, top: 100 })
+    })
   })
 
   it('opens the form on the click after a resize, not a drag', () => {

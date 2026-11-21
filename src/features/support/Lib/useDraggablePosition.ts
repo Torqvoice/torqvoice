@@ -98,6 +98,11 @@ function anchorFor(position: SupportPosition, size: number, viewport: Viewport):
 export function useDraggablePosition(size: number) {
   // Null until dragged: the default corner, which depends on the window width.
   const [anchor, setAnchor] = useState<SupportAnchor | null>(null)
+  // A place saved as pixels from the top-left by an earlier build, kept as it
+  // is until a window comes along that it fits in. The window it was measured
+  // in is not known, only that it was at least that large, so anchoring it to
+  // a smaller one would tie it to the wrong distance from the edges.
+  const [legacy, setLegacy] = useState<SupportPosition | null>(null)
   // Null until the window has been measured, which only the browser can do.
   const [viewport, setViewport] = useState<Viewport | null>(null)
   const [dragging, setDragging] = useState(false)
@@ -111,16 +116,25 @@ export function useDraggablePosition(size: number) {
   const draggedAnchorRef = useRef<SupportAnchor | null>(null)
 
   useEffect(() => {
-    const current = readViewport()
-    const legacy = readLegacySupportPosition()
-    setAnchor(
-      readSupportAnchor() ??
-        // Saved as pixels from the top-left by an earlier build. The window it
-        // was measured in is not known, so this one stands in for it.
-        (legacy ? anchorFor(clampToViewport(legacy, size, current), size, current) : null)
-    )
-    setViewport(current)
-  }, [size])
+    const stored = readSupportAnchor()
+    setAnchor(stored)
+    setLegacy(stored ? null : readLegacySupportPosition())
+    setViewport(readViewport())
+  }, [])
+
+  // The first window the old place fits in stands in for the one it was
+  // measured in: the button is drawn exactly where the earlier build drew it,
+  // and from then on it is saved relative to that window's edges, so a reload
+  // at another size no longer reads the old pixels again.
+  useEffect(() => {
+    if (!legacy || !viewport) return
+    const shown = clampToViewport(legacy, size, viewport)
+    if (shown.x !== legacy.x || shown.y !== legacy.y) return
+    const converted = anchorFor(legacy, size, viewport)
+    writeSupportAnchor(converted)
+    setAnchor(converted)
+    setLegacy(null)
+  }, [legacy, viewport, size])
 
   useEffect(() => {
     const onResize = () => setViewport(readViewport())
@@ -132,10 +146,12 @@ export function useDraggablePosition(size: number) {
     }
   }, [])
 
-  const position = useMemo(
-    () => (viewport ? resolveAnchor(anchor ?? defaultAnchor(viewport), size, viewport) : null),
-    [anchor, viewport, size]
-  )
+  const position = useMemo(() => {
+    if (!viewport) return null
+    if (anchor) return resolveAnchor(anchor, size, viewport)
+    if (legacy) return clampToViewport(legacy, size, viewport)
+    return resolveAnchor(defaultAnchor(viewport), size, viewport)
+  }, [anchor, legacy, viewport, size])
 
   const onPointerDown = useCallback(
     (event: React.PointerEvent) => {
@@ -180,6 +196,8 @@ export function useDraggablePosition(size: number) {
       )
       draggedAnchorRef.current = next
       setAnchor(next)
+      // Moved by hand: wherever an earlier build had it no longer matters.
+      setLegacy(null)
     },
     [size]
   )
