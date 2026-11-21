@@ -7,10 +7,7 @@ import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { useCallback, useTransition } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { toast } from 'sonner'
-import { useConfirm } from '@/components/confirm-dialog'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -20,28 +17,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
 import { DataTablePagination } from '@/components/data-table-pagination'
 import {
   ArrowDown,
   ArrowUp,
   ArrowUpDown,
   BadgeCheck,
+  ChevronRight,
   Loader2,
-  MoreHorizontal,
   Search,
   ShieldCheck,
-  ShieldOff,
-  Trash2,
 } from 'lucide-react'
 import { useFormatDate } from '@/lib/use-format-date'
-import { toggleSuperAdmin } from '../Actions/toggleSuperAdmin'
-import { deleteUser } from '../Actions/deleteUser'
 
 type UserRow = {
   id: string
@@ -89,7 +76,6 @@ export function AdminUsers({
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const confirm = useConfirm()
   const { formatDate, formatDateTime } = useFormatDate()
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
@@ -139,59 +125,6 @@ export function AdminUsers({
     )
   }
 
-  const handleToggleSuperAdmin = async (user: UserRow) => {
-    const action = user.isSuperAdmin ? 'demote' : 'promote'
-    const confirmed = await confirm({
-      title: action === 'promote' ? t('users.promoteTitle') : t('users.demoteTitle'),
-      description:
-        action === 'promote'
-          ? t('users.promoteConfirm', { name: user.name })
-          : t('users.demoteConfirm', { name: user.name }),
-      confirmLabel: action === 'promote' ? t('users.promote') : t('users.demote'),
-      destructive: action === 'demote',
-    })
-
-    if (!confirmed) return
-
-    startTransition(async () => {
-      // An action that cannot reach the server throws instead of answering, so
-      // it is caught and reported the way a refusal is.
-      const result = await toggleSuperAdmin({
-        userId: user.id,
-        isSuperAdmin: !user.isSuperAdmin,
-      }).catch(() => null)
-
-      if (result?.success) {
-        toast.success(action === 'promote' ? t('users.promotedSuccess') : t('users.demotedSuccess'))
-        router.refresh()
-      } else {
-        toast.error(result?.error ?? t('users.failedUpdate'))
-      }
-    })
-  }
-
-  const handleDeleteUser = async (user: UserRow) => {
-    const confirmed = await confirm({
-      title: t('users.deleteTitle'),
-      description: t('users.deleteConfirm', { name: user.name, email: user.email }),
-      confirmLabel: t('users.delete'),
-      icon: Trash2,
-      destructive: true,
-    })
-
-    if (!confirmed) return
-
-    startTransition(async () => {
-      const result = await deleteUser({ userId: user.id }).catch(() => null)
-      if (result?.success) {
-        toast.success(t('users.deletedSuccess'))
-        router.refresh()
-      } else {
-        toast.error(result?.error ?? t('users.failedDelete'))
-      }
-    })
-  }
-
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div className="flex shrink-0 items-center gap-2">
@@ -217,13 +150,16 @@ export function AdminUsers({
           </div>
         ) : (
           data.users.map((user) => (
-            <div key={user.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
-              <button
-                type="button"
-                className="min-w-0 flex-1 text-left"
-                onClick={() => router.push(`/admin/users/${user.id}`)}
-              >
-                <div className="flex items-start justify-between gap-3">
+            // The card only ever opens the user. Nothing that changes an
+            // account is one tap away from a list scrolled with a thumb.
+            <button
+              key={user.id}
+              type="button"
+              className="flex w-full items-center gap-2 rounded-lg border bg-card p-3 text-left"
+              onClick={() => router.push(`/admin/users/${user.id}`)}
+            >
+              <div className="min-w-0 flex-1">
+                <span className="flex items-start justify-between gap-3">
                   <span className="min-w-0 flex-1 truncate font-medium">{user.name}</span>
                   {user.isSuperAdmin ? (
                     <Badge variant="default" className="shrink-0 gap-1">
@@ -235,7 +171,7 @@ export function AdminUsers({
                       {t('users.user')}
                     </Badge>
                   )}
-                </div>
+                </span>
                 <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="truncate">{user.email}</span>
                   {user.emailVerified && (
@@ -261,43 +197,9 @@ export function AdminUsers({
                     user.lastSeen && <span>{formatDateTime(user.lastSeen)}</span>
                   )}
                 </div>
-              </button>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="-mr-1 h-9 w-9 shrink-0"
-                    disabled={isPending}
-                    aria-label={t('common.openMenu')}
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => handleToggleSuperAdmin(user)}>
-                    {user.isSuperAdmin ? (
-                      <>
-                        <ShieldOff className="mr-2 h-4 w-4" />
-                        {t('users.demoteFromSuperAdmin')}
-                      </>
-                    ) : (
-                      <>
-                        <ShieldCheck className="mr-2 h-4 w-4" />
-                        {t('users.promoteToSuperAdmin')}
-                      </>
-                    )}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => handleDeleteUser(user)}
-                    className="text-destructive focus:text-destructive"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    {t('users.deleteUser')}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+              </div>
+              <ChevronRight aria-hidden="true" className="h-4 w-4 shrink-0 text-muted-foreground" />
+            </button>
           ))
         )}
       </div>
@@ -361,13 +263,12 @@ export function AdminUsers({
                   <SortIcon column="lastSeen" />
                 </button>
               </TableHead>
-              <TableHead className="w-10" />
             </TableRow>
           </TableHeader>
           <TableBody>
             {data.users.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
                   {search ? t('users.noResults') : t('users.noUsers')}
                 </TableCell>
               </TableRow>
@@ -415,43 +316,6 @@ export function AdminUsers({
                         {user.lastSeen ? formatDateTime(user.lastSeen) : '—'}
                       </span>
                     )}
-                  </TableCell>
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8"
-                          disabled={isPending}
-                          aria-label={t('common.openMenu')}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleToggleSuperAdmin(user)}>
-                          {user.isSuperAdmin ? (
-                            <>
-                              <ShieldOff className="mr-2 h-4 w-4" />
-                              {t('users.demoteFromSuperAdmin')}
-                            </>
-                          ) : (
-                            <>
-                              <ShieldCheck className="mr-2 h-4 w-4" />
-                              {t('users.promoteToSuperAdmin')}
-                            </>
-                          )}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDeleteUser(user)}
-                          className="text-destructive focus:text-destructive"
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          {t('users.deleteUser')}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               ))

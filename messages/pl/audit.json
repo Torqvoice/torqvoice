@@ -229,7 +229,10 @@
     "equipment_move": "Przeniesiono wyposażenie",
     "equipment_remove": "Zdemontowano wyposażenie",
     "equipment_refit": "Ponownie zamontowano wyposażenie",
-    "equipment_delete": "Usunięto wyposażenie"
+    "equipment_delete": "Usunięto wyposażenie",
+    "platform_deleteUser": "Usunięto użytkownika",
+    "platform_grantSuperAdmin": "Nadano superadmina",
+    "platform_revokeSuperAdmin": "Odebrano superadmina"
   },
   "summary": {
     "auth_twoFactorEnabled": "Włączono logowanie dwuskładnikowe",
@@ -418,6 +421,9 @@
     "equipment_remove": "Zdemontowano {name} z {vehicle}",
     "equipment_refit": "Ponownie zamontowano {name} w {vehicle}",
     "equipment_delete": "Usunięto {name} z {vehicle}",
-    "equipment_meter": "Dodano licznik {meter} do {name} w {vehicle}"
+    "equipment_meter": "Dodano licznik {meter} do {name} w {vehicle}",
+    "platform_deleteUser": "Usunięto użytkownika {name} ({email})",
+    "platform_grantSuperAdmin": "Nadano uprawnienia superadmina: {name} ({email})",
+    "platform_revokeSuperAdmin": "Odebrano uprawnienia superadmina: {name} ({email})"
   }
 }

@@ -229,7 +229,10 @@
     "equipment_move": "Attrezzatura spostata",
     "equipment_remove": "Attrezzatura smontata",
     "equipment_refit": "Attrezzatura rimontata",
-    "equipment_delete": "Attrezzatura eliminata"
+    "equipment_delete": "Attrezzatura eliminata",
+    "platform_deleteUser": "Utente eliminato",
+    "platform_grantSuperAdmin": "Super amministratore concesso",
+    "platform_revokeSuperAdmin": "Super amministratore rimosso"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ha attivato l'accesso a due fattori",
@@ -418,6 +421,9 @@
     "equipment_remove": "Ha smontato {name} da {vehicle}",
     "equipment_refit": "Ha rimontato {name} su {vehicle}",
     "equipment_delete": "Ha eliminato {name} da {vehicle}",
-    "equipment_meter": "Ha aggiunto il contatore {meter} a {name} su {vehicle}"
+    "equipment_meter": "Ha aggiunto il contatore {meter} a {name} su {vehicle}",
+    "platform_deleteUser": "Utente {name} ({email}) eliminato",
+    "platform_grantSuperAdmin": "{name} ({email}) reso super amministratore",
+    "platform_revokeSuperAdmin": "Ruolo di super amministratore rimosso da {name} ({email})"
   }
 }

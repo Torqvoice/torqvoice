@@ -1,3 +1,5 @@
+import { headers } from 'next/headers'
+import { type AuditEvent, logAudit } from './audit'
 import { getCachedSession } from './cached-session'
 import { db } from './db'
 import { sessionOrganizationScope } from './session-scope'
@@ -8,8 +10,30 @@ type SuperAdminContext = {
   userId: string
 }
 
+type SuperAdminOptions<T> = {
+  /**
+   * Written after the action succeeds. A platform action belongs to no
+   * workshop, so the row carries the acting account and no organization.
+   */
+  audit?: (result: T) => AuditEvent
+}
+
+async function requestMeta() {
+  try {
+    const h = await headers()
+    const forwarded = h.get('x-forwarded-for')
+    return {
+      ip: forwarded?.split(',')[0]?.trim() || h.get('x-real-ip') || null,
+      userAgent: h.get('user-agent') || null,
+    }
+  } catch {
+    return { ip: null, userAgent: null }
+  }
+}
+
 export async function withSuperAdmin<T>(
-  action: (ctx: SuperAdminContext) => Promise<T>
+  action: (ctx: SuperAdminContext) => Promise<T>,
+  options: SuperAdminOptions<T> = {}
 ): Promise<ActionResult<T>> {
   try {
     const session = await getCachedSession()
@@ -30,6 +54,17 @@ export async function withSuperAdmin<T>(
     }
 
     const data = await action({ userId: session.user.id })
+
+    if (options.audit) {
+      // Awaited, unlike withAuth's: these are rare, and the record of who
+      // did it matters more than the few milliseconds. logAudit never throws.
+      const meta = await requestMeta()
+      await logAudit(
+        { userId: session.user.id, organizationId: '' },
+        { ...meta, ...options.audit(data) }
+      )
+    }
+
     return { success: true, data }
   } catch (error) {
     // See withAuth: logged in full, shown only when it is the action's own.
