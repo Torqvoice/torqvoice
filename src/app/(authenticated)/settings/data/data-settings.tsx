@@ -1297,7 +1297,7 @@ function ImportSourceRow({
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
       {/* A label longer than the row breaks inside its button, not out of the card. */}
-      <div className="flex max-w-full flex-wrap gap-2 [&>*]:h-auto [&>*]:min-h-8 [&>*]:max-w-full [&>*]:whitespace-normal">
+      <div className="flex max-w-full flex-wrap gap-2 [&>*]:h-auto [&>*]:min-h-8 [&>*]:max-w-full [&>*]:whitespace-normal [&>*]:[overflow-wrap:anywhere]">
         {children}
       </div>
     </li>
