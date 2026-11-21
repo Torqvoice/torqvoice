@@ -3,7 +3,6 @@
 import { AppCard } from '@/components/app-card'
 import { useRef, useState } from 'react'
 import { useFormatter, useNow, useTranslations } from 'next-intl'
-import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card'
@@ -16,21 +15,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { useGlassModal } from '@/components/glass-modal'
 import {
   AlertTriangle,
+  ArrowLeftRight,
+  ChevronDown,
   ChevronRight,
   DatabaseBackup,
   Download,
   FileArchive,
   FileSpreadsheet,
   Loader2,
-  Receipt,
   ShieldCheck,
   Trash2,
   Upload,
-  Wrench,
 } from 'lucide-react'
 import { ReadOnlyBanner, ReadOnlyWrapper } from '../read-only-guard'
 import {
@@ -265,6 +270,13 @@ export function DataSettings({
 
   // ── LubeLog import dialog ──────────────────────────────────────────────
   const lubelogInputRef = useRef<HTMLInputElement>(null)
+  // The menu item that opened an import dialog is gone when the dialog closes,
+  // so focus goes back to the button that opened the menu.
+  const chooseAppRef = useRef<HTMLButtonElement>(null)
+  const returnFocusToChooseApp = (event: Event) => {
+    event.preventDefault()
+    chooseAppRef.current?.focus()
+  }
   const [lubelogOpen, setLubelogOpen] = useState(false)
   const [lubelogFile, setLubelogFile] = useState<File | null>(null)
   const [importingLubelog, setImportingLubelog] = useState(false)
@@ -550,43 +562,29 @@ export function DataSettings({
                 </Button>
               ))}
             </ImportSourceRow>
+            {/* The importers for other apps sit behind one menu: the page names no other product. */}
             <ImportSourceRow
-              id="data-import-lubelog"
-              icon={Wrench}
-              title={
-                <Image
-                  src="/images/import/lubelog.png"
-                  alt="LubeLog"
-                  width={120}
-                  height={30}
-                  className="h-5 w-auto object-contain"
-                  unoptimized
-                />
-              }
-              description={t('data.sourceLubelogDesc')}
+              id="data-import-other"
+              icon={ArrowLeftRight}
+              title={t('data.sourceOtherApp')}
+              description={t('data.sourceOtherAppDesc')}
             >
-              <Button variant="outline" size="sm" onClick={() => setLubelogOpen(true)}>
-                {t('data.import')}
-              </Button>
-            </ImportSourceRow>
-            <ImportSourceRow
-              id="data-import-invoice-ninja"
-              icon={Receipt}
-              title={
-                <Image
-                  src="/images/import/invoice_ninja.png"
-                  alt="Invoice Ninja"
-                  width={140}
-                  height={30}
-                  className="h-5 w-auto object-contain"
-                  unoptimized
-                />
-              }
-              description={t('data.sourceInvoiceNinjaDesc')}
-            >
-              <Button variant="outline" size="sm" onClick={() => setInvoiceNinjaOpen(true)}>
-                {t('data.import')}
-              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button ref={chooseAppRef} variant="outline" size="sm">
+                    {t('data.chooseApp')}
+                    <ChevronDown className="h-4 w-4" aria-hidden />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" collisionPadding={8}>
+                  <DropdownMenuItem onSelect={() => setLubelogOpen(true)}>
+                    {t('data.lubelogTitle')}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onSelect={() => setInvoiceNinjaOpen(true)}>
+                    {t('data.invoiceNinjaTitle')}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </ImportSourceRow>
             <ImportSourceRow
               id="data-import-backup"
@@ -748,19 +746,13 @@ export function DataSettings({
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
+        <DialogContent
+          className="sm:max-w-lg"
+          aria-describedby={undefined}
+          onCloseAutoFocus={returnFocusToChooseApp}
+        >
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <Image
-                src="/images/import/lubelog.png"
-                alt="LubeLog"
-                width={24}
-                height={24}
-                className="object-contain"
-                unoptimized
-              />
-              {t('data.lubelogTitle')}
-            </DialogTitle>
+            <DialogTitle className="flex items-center gap-3">{t('data.lubelogTitle')}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -1181,17 +1173,13 @@ export function DataSettings({
           }
         }}
       >
-        <DialogContent className="sm:max-w-lg" aria-describedby={undefined}>
+        <DialogContent
+          className="sm:max-w-lg"
+          aria-describedby={undefined}
+          onCloseAutoFocus={returnFocusToChooseApp}
+        >
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
-              <Image
-                src="/images/import/invoice_ninja.png"
-                alt="Invoice Ninja"
-                width={28}
-                height={28}
-                className="object-contain"
-                unoptimized
-              />
               {t('data.invoiceNinjaTitle')}
             </DialogTitle>
           </DialogHeader>

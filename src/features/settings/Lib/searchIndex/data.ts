@@ -59,7 +59,7 @@ export const dataEntries: SettingsEntry[] = [
     page: 'data',
     title: 'data.lubelogTitle',
     description: 'data.sourceLubelogDesc',
-    anchor: 'data-import-lubelog',
+    anchor: 'data-import-other',
     keywords: ['lubelog', 'lube log', 'import lubelog', 'service records import'],
   },
   {
@@ -67,7 +67,7 @@ export const dataEntries: SettingsEntry[] = [
     page: 'data',
     title: 'data.invoiceNinjaTitle',
     description: 'data.sourceInvoiceNinjaDesc',
-    anchor: 'data-import-invoice-ninja',
+    anchor: 'data-import-other',
     keywords: ['invoice ninja', 'invoiceninja', 'import invoices', 'import clients'],
   },
   {
