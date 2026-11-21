@@ -140,6 +140,20 @@ describe('a completion refused for readings', () => {
     expect(form.markSaved).not.toHaveBeenCalled()
   })
 
+  it('keeps a stage picked while the save was on its way', async () => {
+    const { form, save, stage } = page('completed', 'in-progress')
+    updateServiceRecord.mockImplementationOnce(async () => {
+      // The person picks "Waiting for parts" while the save runs.
+      stage.current = 'waiting-parts'
+      form.editRevisionRef.current += 1
+      return REFUSED
+    })
+    await save({ autosave: true })
+    expect(stage.current).toBe('waiting-parts')
+    // That pick queued its own save already.
+    expect(form.markDirty).not.toHaveBeenCalled()
+  })
+
   it('takes the person to the first empty box for a save they asked for', async () => {
     const { save } = page('completed', 'in-progress')
     await save()

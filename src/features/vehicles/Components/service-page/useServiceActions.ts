@@ -309,8 +309,10 @@ export function useServiceActions({
       // The save would have completed the job, or moved a completed one,
       // without readings the workshop requires. Back to the stage it is at,
       // the rest saved by the next save, and the message names the meters
-      // whose boxes are marked.
-      setStatus(initialData.status)
+      // whose boxes are marked. Only if the stage is still the one this save
+      // sent: one picked while it ran is newer, and is what the next save
+      // sends.
+      setStatus((current) => (current === payload.status ? initialData.status : current))
       // The next save is queued only when it can go through: with the stage
       // put back. A completed job moved to another vehicle stays refused
       // until the person moves it back or reopens it, and a save every five

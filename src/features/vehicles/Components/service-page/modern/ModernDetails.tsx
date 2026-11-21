@@ -230,8 +230,10 @@ export function ModernDetails(props: ModernDetailsProps) {
       // Asked, never sent: the desk decides whether this customer hears.
       if (custom?.notifyCustomer) props.onNotifyForStatus?.(custom)
     } else {
-      formState.setStatus(previous.status)
-      setCustomStatus(previous.custom)
+      // Back to where it was, unless another stage was picked while this one
+      // was on its way: that choice is newer and stays.
+      formState.setStatus((current) => (current === next ? previous.status : current))
+      setCustomStatus((current) => (current === custom ? previous.custom : current))
       toast.error(result.error || t('page.failedUpdate'))
       // Pressed by the person: the first empty box takes the focus.
       revealRequiredMeters(record.id, result.requiredMeters, { focus: true })
