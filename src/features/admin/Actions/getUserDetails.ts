@@ -4,7 +4,7 @@ import { withSuperAdmin } from '@/lib/with-super-admin'
 import { db } from '@/lib/db'
 
 export async function getUserDetails(userId: string) {
-  return withSuperAdmin(async () => {
+  return withSuperAdmin(async (ctx) => {
     const user = await db.user.findUnique({
       where: { id: userId },
       select: {
@@ -44,6 +44,7 @@ export async function getUserDetails(userId: string) {
       email: user.email,
       emailVerified: user.emailVerified,
       isSuperAdmin: user.isSuperAdmin,
+      isSelf: user.id === ctx.userId,
       image: user.image,
       createdAt: user.createdAt.toISOString(),
       lastSeen: user.lastSeen?.toISOString() ?? null,

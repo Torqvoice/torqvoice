@@ -229,7 +229,10 @@
     "equipment_move": "Ekipman Taşındı",
     "equipment_remove": "Ekipman Söküldü",
     "equipment_refit": "Ekipman Geri Takıldı",
-    "equipment_delete": "Ekipman Silindi"
+    "equipment_delete": "Ekipman Silindi",
+    "platform_deleteUser": "Kullanıcı silindi",
+    "platform_grantSuperAdmin": "Süper yönetici yetkisi verildi",
+    "platform_revokeSuperAdmin": "Süper yönetici yetkisi kaldırıldı"
   },
   "summary": {
     "auth_twoFactorEnabled": "İki adımlı giriş açıldı",
@@ -418,6 +421,9 @@
     "equipment_remove": "{name}, {vehicle} üzerinden söküldü",
     "equipment_refit": "{name}, {vehicle} üzerine geri takıldı",
     "equipment_delete": "{name}, {vehicle} üzerinden silindi",
-    "equipment_meter": "{vehicle} üzerindeki {name} için {meter} sayacı eklendi"
+    "equipment_meter": "{vehicle} üzerindeki {name} için {meter} sayacı eklendi",
+    "platform_deleteUser": "{name} ({email}) kullanıcısı silindi",
+    "platform_grantSuperAdmin": "{name} ({email}) süper yönetici yapıldı",
+    "platform_revokeSuperAdmin": "{name} ({email}) kullanıcısının süper yöneticiliği kaldırıldı"
   }
 }

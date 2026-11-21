@@ -229,7 +229,10 @@
     "equipment_move": "Flyttet utstyr",
     "equipment_remove": "Demonterte utstyr",
     "equipment_refit": "Satte på utstyr igjen",
-    "equipment_delete": "Slettet utstyr"
+    "equipment_delete": "Slettet utstyr",
+    "platform_deleteUser": "Slettet bruker",
+    "platform_grantSuperAdmin": "Ga superadmin",
+    "platform_revokeSuperAdmin": "Fjernet superadmin"
   },
   "summary": {
     "auth_twoFactorEnabled": "Slo på tofaktorinnlogging",
@@ -418,6 +421,9 @@
     "equipment_remove": "Demonterte {name} fra {vehicle}",
     "equipment_refit": "Satte {name} på {vehicle} igjen",
     "equipment_delete": "Slettet {name} fra {vehicle}",
-    "equipment_meter": "La til måleren {meter} på {name} på {vehicle}"
+    "equipment_meter": "La til måleren {meter} på {name} på {vehicle}",
+    "platform_deleteUser": "Slettet brukeren {name} ({email})",
+    "platform_grantSuperAdmin": "Gjorde {name} ({email}) til superadmin",
+    "platform_revokeSuperAdmin": "Fjernet superadmin fra {name} ({email})"
   }
 }

@@ -229,7 +229,10 @@
     "equipment_move": "Perkelta įranga",
     "equipment_remove": "Nuimta įranga",
     "equipment_refit": "Įranga sumontuota atgal",
-    "equipment_delete": "Ištrinta įranga"
+    "equipment_delete": "Ištrinta įranga",
+    "platform_deleteUser": "Ištrintas naudotojas",
+    "platform_grantSuperAdmin": "Suteiktos vyriausiojo administratoriaus teisės",
+    "platform_revokeSuperAdmin": "Atimtos vyriausiojo administratoriaus teisės"
   },
   "summary": {
     "auth_twoFactorEnabled": "Įjungtas dviejų veiksnių prisijungimas",
@@ -418,6 +421,9 @@
     "equipment_remove": "{name} nuimta nuo {vehicle}",
     "equipment_refit": "{name} sumontuota atgal ant {vehicle}",
     "equipment_delete": "{name} ištrinta iš {vehicle}",
-    "equipment_meter": "Skaitiklis {meter} pridėtas prie {name} ({vehicle})"
+    "equipment_meter": "Skaitiklis {meter} pridėtas prie {name} ({vehicle})",
+    "platform_deleteUser": "Ištrintas naudotojas {name} ({email})",
+    "platform_grantSuperAdmin": "{name} ({email}) tapo vyriausiuoju administratoriumi",
+    "platform_revokeSuperAdmin": "Atimtos vyriausiojo administratoriaus teisės iš {name} ({email})"
   }
 }

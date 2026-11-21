@@ -14,6 +14,7 @@ import {
   Users,
 } from 'lucide-react'
 import { useFormatDate } from '@/lib/use-format-date'
+import { AccountActions } from './AccountActions'
 
 type Organization = {
   id: string
@@ -30,6 +31,7 @@ type UserDetails = {
   email: string
   emailVerified: boolean
   isSuperAdmin: boolean
+  isSelf: boolean
   image: string | null
   createdAt: string
   lastSeen: string | null
@@ -158,6 +160,8 @@ export function AdminUserDetails({ user }: { user: UserDetails }) {
           </div>
         )}
       </div>
+
+      <AccountActions user={user} />
     </div>
   )
 }

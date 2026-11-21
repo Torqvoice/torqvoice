@@ -229,7 +229,10 @@
     "equipment_move": "Ausrüstung umgesetzt",
     "equipment_remove": "Ausrüstung abgebaut",
     "equipment_refit": "Ausrüstung wieder angebaut",
-    "equipment_delete": "Ausrüstung gelöscht"
+    "equipment_delete": "Ausrüstung gelöscht",
+    "platform_deleteUser": "Benutzer gelöscht",
+    "platform_grantSuperAdmin": "Super-Admin erteilt",
+    "platform_revokeSuperAdmin": "Super-Admin entzogen"
   },
   "summary": {
     "auth_twoFactorEnabled": "Zwei-Faktor-Anmeldung aktiviert",
@@ -418,6 +421,9 @@
     "equipment_remove": "{name} von {vehicle} abgebaut",
     "equipment_refit": "{name} wieder an {vehicle} angebaut",
     "equipment_delete": "{name} von {vehicle} gelöscht",
-    "equipment_meter": "Zähler {meter} zu {name} an {vehicle} hinzugefügt"
+    "equipment_meter": "Zähler {meter} zu {name} an {vehicle} hinzugefügt",
+    "platform_deleteUser": "Benutzer {name} ({email}) gelöscht",
+    "platform_grantSuperAdmin": "{name} ({email}) zum Super-Admin gemacht",
+    "platform_revokeSuperAdmin": "{name} ({email}) den Super-Admin entzogen"
   }
 }

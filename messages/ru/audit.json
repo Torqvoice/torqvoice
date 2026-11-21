@@ -229,7 +229,10 @@
     "equipment_move": "Перенесено оборудование",
     "equipment_remove": "Демонтировано оборудование",
     "equipment_refit": "Оборудование установлено обратно",
-    "equipment_delete": "Удалено оборудование"
+    "equipment_delete": "Удалено оборудование",
+    "platform_deleteUser": "Удалён пользователь",
+    "platform_grantSuperAdmin": "Назначен суперадмин",
+    "platform_revokeSuperAdmin": "Сняты права суперадмина"
   },
   "summary": {
     "auth_twoFactorEnabled": "Включён двухфакторный вход",
@@ -418,6 +421,9 @@
     "equipment_remove": "{name} демонтировано с {vehicle}",
     "equipment_refit": "{name} установлено обратно на {vehicle}",
     "equipment_delete": "{name} удалено с {vehicle}",
-    "equipment_meter": "Счётчик {meter} добавлен к {name} на {vehicle}"
+    "equipment_meter": "Счётчик {meter} добавлен к {name} на {vehicle}",
+    "platform_deleteUser": "Удалён пользователь {name} ({email})",
+    "platform_grantSuperAdmin": "{name} ({email}) назначен суперадмином",
+    "platform_revokeSuperAdmin": "С {name} ({email}) сняты права суперадмина"
   }
 }

@@ -229,7 +229,10 @@
     "equipment_move": "Uitrusting verplaatst",
     "equipment_remove": "Uitrusting gedemonteerd",
     "equipment_refit": "Uitrusting teruggeplaatst",
-    "equipment_delete": "Uitrusting verwijderd"
+    "equipment_delete": "Uitrusting verwijderd",
+    "platform_deleteUser": "Gebruiker verwijderd",
+    "platform_grantSuperAdmin": "Superbeheerder toegekend",
+    "platform_revokeSuperAdmin": "Superbeheerder ingetrokken"
   },
   "summary": {
     "auth_twoFactorEnabled": "Inloggen in twee stappen ingeschakeld",
@@ -418,6 +421,9 @@
     "equipment_remove": "{name} gedemonteerd van {vehicle}",
     "equipment_refit": "{name} teruggeplaatst op {vehicle}",
     "equipment_delete": "{name} verwijderd van {vehicle}",
-    "equipment_meter": "Teller {meter} toegevoegd aan {name} op {vehicle}"
+    "equipment_meter": "Teller {meter} toegevoegd aan {name} op {vehicle}",
+    "platform_deleteUser": "Gebruiker {name} ({email}) verwijderd",
+    "platform_grantSuperAdmin": "{name} ({email}) superbeheerder gemaakt",
+    "platform_revokeSuperAdmin": "Superbeheerder ingetrokken voor {name} ({email})"
   }
 }

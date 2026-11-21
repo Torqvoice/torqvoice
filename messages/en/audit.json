@@ -229,7 +229,10 @@
     "equipment_move": "Moved Equipment",
     "equipment_remove": "Removed Equipment",
     "equipment_refit": "Put Equipment Back",
-    "equipment_delete": "Deleted Equipment"
+    "equipment_delete": "Deleted Equipment",
+    "platform_deleteUser": "Deleted User",
+    "platform_grantSuperAdmin": "Granted Super Admin",
+    "platform_revokeSuperAdmin": "Removed Super Admin"
   },
   "summary": {
     "auth_twoFactorEnabled": "Turned on two-factor sign-in",
@@ -418,6 +421,9 @@
     "equipment_remove": "Removed {name} from {vehicle}",
     "equipment_refit": "Put {name} back on {vehicle}",
     "equipment_delete": "Deleted {name} from {vehicle}",
-    "equipment_meter": "Added meter {meter} to {name} on {vehicle}"
+    "equipment_meter": "Added meter {meter} to {name} on {vehicle}",
+    "platform_deleteUser": "Deleted the user {name} ({email})",
+    "platform_grantSuperAdmin": "Made {name} ({email}) a super admin",
+    "platform_revokeSuperAdmin": "Removed super admin from {name} ({email})"
   }
 }

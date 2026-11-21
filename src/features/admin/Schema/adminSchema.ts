@@ -1,12 +1,12 @@
 import { z } from 'zod'
 
-export const toggleSuperAdminSchema = z.object({
+export const userIdSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
-  isSuperAdmin: z.boolean(),
 })
 
-export const deleteUserSchema = z.object({
-  userId: z.string().min(1, 'User ID is required'),
+export const confirmedUserSchema = userIdSchema.extend({
+  /** The address the admin typed to confirm. */
+  confirmEmail: z.string().min(1).max(320),
 })
 
 export const deleteOrganizationSchema = z.object({
@@ -24,7 +24,5 @@ export const adminSearchSchema = z.object({
   sortOrder: z.enum(['asc', 'desc']).default('desc'),
 })
 
-export type ToggleSuperAdminInput = z.infer<typeof toggleSuperAdminSchema>
-export type DeleteUserInput = z.infer<typeof deleteUserSchema>
 export type DeleteOrganizationInput = z.infer<typeof deleteOrganizationSchema>
 export type AdminSearchInput = z.infer<typeof adminSearchSchema>
