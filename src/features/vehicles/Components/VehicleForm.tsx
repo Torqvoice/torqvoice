@@ -140,6 +140,12 @@ interface VehicleFormProps {
    * to a job that already has its customer has to belong to that customer.
    */
   ownerLocked?: boolean
+  /**
+   * The id of the box to put the cursor in when the form opens, for a caller
+   * that opens it from one detail of the vehicle. Without it the form opens
+   * as it always has.
+   */
+  focusField?: string | null
 }
 
 export function VehicleForm({
@@ -154,6 +160,7 @@ export function VehicleForm({
   distanceUnit,
   onCreated,
   ownerLocked = false,
+  focusField = null,
 }: VehicleFormProps) {
   const { canBook } = useBookingAccess()
   const serviceType = useServiceType()
@@ -476,6 +483,43 @@ export function VehicleForm({
     })
     return () => cancelAnimationFrame(frame)
   }, [open, vehicle, initialPlate])
+  // Opened from one detail on the vehicle's page: the cursor goes to its box,
+  // scrolled into view, once the dialog has drawn it. The workshop's own
+  // fields are fetched after the dialog opens, so theirs is looked for a
+  // little longer before giving up.
+  useEffect(() => {
+    if (!open || !focusField) return
+    let tries = 0
+    let frame = 0
+    const look = () => {
+      const field = formRef.current?.querySelector<HTMLElement>(`#${CSS.escape(focusField)}`)
+      if (!field) {
+        if (++tries < 120) frame = requestAnimationFrame(look)
+        return
+      }
+      // Only the dialog's scrolling body moves: a box at its very end would
+      // otherwise have the browser scroll the dialog itself to centre it,
+      // pushing the header out of sight.
+      const body = field.closest<HTMLElement>('[data-slot="dialog-body"]')
+      if (body?.scrollTo) {
+        const offset = field.getBoundingClientRect().top - body.getBoundingClientRect().top
+        body.scrollTo({
+          top: body.scrollTop + offset - (body.clientHeight - field.offsetHeight) / 2,
+        })
+      } else {
+        field.scrollIntoView?.({ block: 'center' })
+      }
+      // Fuel and gearbox are a row of choices: the cursor goes to the one
+      // picked (or the first), the stop the keyboard reaches.
+      const target =
+        field.getAttribute('role') === 'radiogroup'
+          ? (field.querySelector<HTMLElement>('[tabindex="0"]') ?? field)
+          : field
+      target.focus({ preventScroll: true, focusVisible: true } as FocusOptions)
+    }
+    frame = requestAnimationFrame(look)
+    return () => cancelAnimationFrame(frame)
+  }, [open, focusField])
   useEffect(() => {
     if (!open) {
       appliedLookupRef.current = null
@@ -1398,7 +1442,7 @@ export function VehicleForm({
 
               {hasCustomFields && open && (
                 <CustomFieldsForm
-                  embedded
+                  embedded="card"
                   entityType="vehicle"
                   entityId={vehicle?.id}
                   onValuesReady={(save) => {

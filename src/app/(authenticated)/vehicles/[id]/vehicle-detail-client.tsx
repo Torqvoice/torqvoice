@@ -10,7 +10,15 @@ import {
 } from '@/features/custom-fields/Components/RecordCustomFields'
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
-import { Fragment, useCallback, useEffect, useRef, useState, useTransition } from 'react'
+import {
+  Fragment,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -106,6 +114,7 @@ import { useConfirm } from '@/components/confirm-dialog'
 import { useServiceType } from '@/components/service-type-context'
 import { formatTypeKey } from '@/features/vehicles/Lib/typeKey'
 import { useTypeKeyEnabled } from '@/components/type-key-context'
+import { useFleetNumberEnabled } from '@/components/fleet-number-context'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 import { PlateChip } from '@/components/plate-chip'
 import {
@@ -362,6 +371,64 @@ const RAIL_LINK =
 /** How many notes the panel lists before it points at the full list. */
 const NOTES_IN_RAIL = 8
 
+/**
+ * One line of the vehicle's details. Where the vehicle can be edited the whole
+ * line opens the edit form on that detail: the value is the button a keyboard
+ * reaches, and a click anywhere on the line does the same. What sits in
+ * `after` (the copy button) keeps its own click.
+ */
+function DetailRow({
+  label,
+  onEdit,
+  editTitle,
+  after,
+  children,
+}: {
+  label: string
+  onEdit?: () => void
+  editTitle: string
+  after?: ReactNode
+  children: ReactNode
+}) {
+  if (!onEdit) {
+    return (
+      <>
+        <dt className="text-muted-foreground">{label}</dt>
+        <dd className="flex min-w-0 items-center gap-1">
+          {children}
+          {after}
+        </dd>
+      </>
+    )
+  }
+  return (
+    <div
+      className="col-span-2 -mx-1.5 -my-1 grid cursor-pointer grid-cols-subgrid rounded-md px-1.5 py-1 transition-colors hover:bg-muted/60"
+      onClick={onEdit}
+    >
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="flex min-w-0 items-center gap-1">
+        <button
+          type="button"
+          title={editTitle}
+          onClick={(e) => {
+            e.stopPropagation()
+            onEdit()
+          }}
+          className="flex min-w-0 cursor-pointer rounded text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {children}
+        </button>
+        {after && (
+          <span className="flex items-center" onClick={(e) => e.stopPropagation()}>
+            {after}
+          </span>
+        )}
+      </dd>
+    </div>
+  )
+}
+
 export function VehicleDetailClient({
   vehicle,
   paginatedServices,
@@ -448,6 +515,7 @@ export function VehicleDetailClient({
   const { formatDate, formatDateTime } = useFormatDate()
   const t = useTranslations('vehicles.detail')
   const typeKeyEnabled = useTypeKeyEnabled()
+  const fleetNumberEnabled = useFleetNumberEnabled()
   const ti = useTranslations('vehicles.inspections')
   const tr = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
@@ -514,6 +582,12 @@ export function VehicleDetailClient({
   )
   const modal = useGlassModal()
   const [showEditForm, setShowEditForm] = useState(false)
+  // The box the edit form opens on, when it is opened from one of the details.
+  const [editFocus, setEditFocus] = useState<string | null>(null)
+  const editDetail = (field: string | null) => {
+    setEditFocus(field)
+    setShowEditForm(true)
+  }
   const [showNoteForm, setShowNoteForm] = useState(false)
   const [editingNote, setEditingNote] = useState<PaginatedNotes['records'][number] | undefined>()
   const [showReminderForm, setShowReminderForm] = useState(false)
@@ -658,23 +732,30 @@ export function VehicleDetailClient({
   }
   const fuelLabel = optionLabel(vehicle.fuelType, FUEL_VALUES)
   const transmissionLabel = optionLabel(vehicle.transmission, TRANSMISSION_VALUES)
+  // An archived vehicle is not edited, so its details are only read.
+  const canEditDetails = !vehicle.isArchived
+  // A workshop that uses the fleet number sees its line on every vehicle, with
+  // "Add" while it is empty, so the number has an obvious place to go.
+  const offerFleetNumber = fleetNumberEnabled && canEditDetails
+  // Label, value, monospace, and the id of the box in the edit form.
   const specs = (
     [
-      [tPlate('engine'), vehicle.engineSize, false],
-      [tPlate('engineCode'), vehicle.engineCode, true],
-      [tPlate('fuel'), fuelLabel, false],
-      [tPlate('transmission'), transmissionLabel, false],
-      [tPlate('color'), vehicle.color, false],
-      [t('fleetNumber'), vehicle.fleetNumber ?? null, true],
+      [tPlate('engine'), vehicle.engineSize, false, 'engineSize'],
+      [tPlate('engineCode'), vehicle.engineCode, true, 'engineCode'],
+      [tPlate('fuel'), fuelLabel, false, 'fuelType'],
+      [tPlate('transmission'), transmissionLabel, false, 'transmission'],
+      [tPlate('color'), vehicle.color, false, 'color'],
+      [t('fleetNumber'), vehicle.fleetNumber ?? null, true, 'fleetNumber'],
       [
         t('typeKey'),
         typeKeyEnabled && (vehicle.hsn || vehicle.tsn)
           ? formatTypeKey(vehicle.hsn, vehicle.tsn)
           : null,
         true,
+        'hsn',
       ],
-    ] as [string, string | null, boolean][]
-  ).filter(([, value]) => Boolean(value))
+    ] as [string, string | null, boolean, string][]
+  ).filter(([, value, , field]) => Boolean(value) || (field === 'fleetNumber' && offerFleetNumber))
   // The workshop's own fields for the vehicle, under the built-in ones.
   const customRows = useRecordCustomFieldRows(vehicle.customFields)
 
@@ -1435,21 +1516,33 @@ export function VehicleDetailClient({
                   <h2 className="px-1.5 pb-1.5 text-[13px] font-semibold">{t('vehicleFacts')}</h2>
                   <dl className="grid grid-cols-[7.75rem_minmax(0,1fr)] gap-x-4 gap-y-2 px-1.5 text-[13px]">
                     {vehicle.vin && (
-                      <>
-                        <dt className="text-muted-foreground">{tPlate('vin')}</dt>
-                        <dd className="flex min-w-0 items-center gap-1">
-                          <span className="min-w-0 break-all font-mono text-[11.5px] leading-5">
-                            {vehicle.vin}
-                          </span>
+                      <DetailRow
+                        label={tPlate('vin')}
+                        onEdit={canEditDetails ? () => editDetail('vin') : undefined}
+                        editTitle={t('editVehicle')}
+                        after={
                           <CopyValue value={vehicle.vin} label={tPlate('vin')} className="-my-1" />
-                        </dd>
-                      </>
+                        }
+                      >
+                        <span className="min-w-0 break-all font-mono text-[11.5px] leading-5">
+                          {vehicle.vin}
+                        </span>
+                      </DetailRow>
                     )}
 
-                    {specs.map(([label, value, mono]) => (
-                      <Fragment key={label}>
-                        <dt className="text-muted-foreground">{label}</dt>
-                        <dd className="flex min-w-0 items-center gap-1">
+                    {specs.map(([label, value, mono, field]) => (
+                      <DetailRow
+                        key={label}
+                        label={label}
+                        onEdit={canEditDetails ? () => editDetail(field) : undefined}
+                        editTitle={t('editVehicle')}
+                        after={
+                          mono && value ? (
+                            <CopyValue value={value} label={label} className="-my-1" />
+                          ) : null
+                        }
+                      >
+                        {value ? (
                           <span
                             className={cn(
                               'min-w-0 break-words',
@@ -1458,18 +1551,28 @@ export function VehicleDetailClient({
                           >
                             {value}
                           </span>
-                          {mono && value && (
-                            <CopyValue value={value} label={label} className="-my-1" />
-                          )}
-                        </dd>
-                      </Fragment>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-primary">
+                            <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                            {tc('add')}
+                          </span>
+                        )}
+                      </DetailRow>
                     ))}
 
                     {customRows.map((row) => (
-                      <Fragment key={row.id}>
-                        <dt className="text-muted-foreground">{row.label}</dt>
-                        <dd className="min-w-0 whitespace-pre-wrap break-words">{row.text}</dd>
-                      </Fragment>
+                      <DetailRow
+                        key={row.id}
+                        label={row.label}
+                        onEdit={
+                          canEditDetails
+                            ? () => editDetail(`custom-field-input-${row.id}`)
+                            : undefined
+                        }
+                        editTitle={t('editVehicle')}
+                      >
+                        <span className="min-w-0 whitespace-pre-wrap break-words">{row.text}</span>
+                      </DetailRow>
                     ))}
 
                     {tireSets.some((set) => set.status === 'stored') && (
@@ -2472,7 +2575,11 @@ export function VehicleDetailClient({
       />
       <VehicleForm
         open={showEditForm}
-        onOpenChange={setShowEditForm}
+        onOpenChange={(next) => {
+          setShowEditForm(next)
+          if (!next) setEditFocus(null)
+        }}
+        focusField={editFocus}
         vehicle={vehicle}
         distanceUnit={distUnit}
         // The page's own confirmation does the deleting.
