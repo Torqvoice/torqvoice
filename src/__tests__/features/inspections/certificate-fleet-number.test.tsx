@@ -255,6 +255,18 @@ describe('the certificate design', () => {
     }
   })
 
+  it('keeps it off where the vehicle block never listed its fields, though invoices show it unasked', () => {
+    const layout = getDefaultLayout('certificate')
+    const unlisted = {
+      ...layout,
+      sections: layout.sections.map((s) =>
+        s.id === 'vehicle' ? { ...s, visible: true, fields: undefined } : s
+      ),
+    }
+    expect(certificate(unlisted)).not.toContain('T-208')
+    expect(certificate(unlisted)).toContain('EL12345')
+  })
+
   it('prints the fleet number once the design switches the field on', () => {
     expect(certificate(designed(true).layout)).toContain(LINE)
   })

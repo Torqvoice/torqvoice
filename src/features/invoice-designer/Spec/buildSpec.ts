@@ -2,13 +2,15 @@ import {
   equipmentScopeOf,
   FOOTER_SPECIAL_FIELD_IDS,
   footerColumnsOf,
+  fieldShownUnasked,
   getBuiltinFieldsForSection,
-  isOptInField,
-  unmentionedGrandfathered,
   isCustomFieldId,
+  layoutDocumentType,
   photoStyleOf,
+  unmentionedShownFields,
   type InvoiceLayoutConfig,
   type InvoiceSection,
+  type LayoutDocumentType,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import { FRAMED } from '@/features/vehicles/Components/invoice-pdf/frame'
 import type { Block, DocumentSpec, Node, Placement, TextStyle } from './documentSpec'
@@ -300,19 +302,24 @@ export function lookOf(section: InvoiceSection, theme: DocumentTheme) {
 /**
  * The fields a section shows, in the order it shows them. A section with no
  * list of its own shows all of them, which is what a layout written before the
- * choice existed means; all but the opt-in ones, which wait to be asked for.
+ * choice existed means; all but the opt-in ones, which wait to be asked for,
+ * and on a certificate the switch-gated ones (see SWITCH_GATED_FIELDS).
  */
-export function sectionFields(section: InvoiceSection): string[] {
+export function sectionFields(
+  section: InvoiceSection,
+  documentType: LayoutDocumentType = 'invoice'
+): string[] {
   if (!section.fields) {
     return getBuiltinFieldsForSection(section.id)
       .map((f) => f.id)
-      .filter((id) => !isOptInField(section.id, id))
+      .filter((id) => fieldShownUnasked(section.id, id, documentType))
   }
   return [
     ...section.fields.filter((f) => f.visible).map((f) => f.id),
     // A row that printed before it had a switch keeps printing until somebody
-    // uses the switch, so adding one takes nothing off a saved layout.
-    ...unmentionedGrandfathered(section.id, section.fields),
+    // uses the switch, so adding one takes nothing off a saved layout; and a
+    // row behind the workshop's own switch shows until a design says not.
+    ...unmentionedShownFields(section.id, section.fields, documentType),
   ]
 }
 
@@ -473,9 +480,10 @@ function vehicleBlock(
   section: InvoiceSection,
   theme: DocumentTheme,
   data: DocumentData,
-  blockWidth: number
+  blockWidth: number,
+  documentType: LayoutDocumentType
 ): Node | null {
-  const fields = sectionFields(section)
+  const fields = sectionFields(section, documentType)
   const photo = data.vehiclePhoto
   if (fields.includes(VEHICLE_PHOTO_FIELD) && photoStyleOf(section) === 'faded' && photo?.faded) {
     // Over the photo every line prints in the title ink (and the label in its
@@ -2313,7 +2321,8 @@ function blockFor(
   section: InvoiceSection,
   theme: DocumentTheme,
   data: DocumentData,
-  width: number
+  width: number,
+  documentType: LayoutDocumentType
 ): Node | null {
   switch (section.id) {
     case 'header':
@@ -2321,11 +2330,11 @@ function blockFor(
     case 'slogan':
       return sloganBlock(section, theme, data)
     case 'vehicle':
-      return vehicleBlock(section, theme, data, width)
+      return vehicleBlock(section, theme, data, width, documentType)
     case 'customer':
     case 'service':
     case 'general':
-      return panel(section, theme, data, sectionFields(section))
+      return panel(section, theme, data, sectionFields(section, documentType))
     case 'document_title':
       return documentTitle(section, theme, data)
     case 'items_table':
@@ -2403,6 +2412,7 @@ export function buildDocumentSpec(
   const titleText = layout.sections.find((s) => s.id === 'document_title')?.text?.trim()
   const data = titleText ? { ...input, meta: { ...input.meta, title: titleText } } : input
   const anchors = layout.anchors ?? {}
+  const documentType = layoutDocumentType(layout)
   const contentWidth =
     595 - (framed ? FRAMED.padLeft + FRAMED.railWidth + theme.margin : theme.margin * 2)
 
@@ -2427,7 +2437,7 @@ export function buildDocumentSpec(
       (section.column ? (contentWidth - BLOCK_GAP) / 2 : contentWidth) -
         (section.style?.marginLeft ?? 0) -
         (section.style?.marginRight ?? 0)
-    const content = blockFor(section, theme, data, blockWidth)
+    const content = blockFor(section, theme, data, blockWidth, documentType)
     if (!content) return
 
     const placement: Placement =

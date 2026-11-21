@@ -2,9 +2,11 @@
  * @vitest-environment node
  *
  * The vehicle's fleet / unit number, and the workshop's own fields on
- * vehicles and customers, on paper. Both are opt-in, and most of what is
- * tested here is that half: a workshop that never asked for either gets the
- * documents, import columns and views it always got, to the byte.
+ * vehicles and customers, on paper. The number is behind a workshop switch
+ * and shows on a design unless it says not; the own fields wait for a design
+ * to place them. Most of what is tested here is that a workshop that never
+ * asked for either gets the documents, import columns and views it always
+ * got, to the byte.
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
@@ -39,6 +41,7 @@ import {
   getDefaultInvoiceLayout,
   getDefaultLayout,
   isOptInField,
+  isSwitchGatedField,
   mergeWithDefaults,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -270,7 +273,6 @@ const job = {
 
 const labels = { fleetNumber: 'Fleet no.' }
 const LINE = 'Fleet no.: T-208'
-const NEW = ['T-208', 'TACHO-MARCH', 'CC-7741', 'Tachograph due', 'Cost centre']
 
 /** The layout as the designer saves it with the new lines switched on in the vehicle block. */
 function withNewLinesOn(layout: InvoiceLayoutConfig): InvoiceLayoutConfig {
@@ -291,6 +293,42 @@ function withNewLinesOn(layout: InvoiceLayoutConfig): InvoiceLayoutConfig {
             ],
           }
         : section
+    ),
+  }
+}
+
+/** The layout with the fleet number stored as off, as a workshop that switched it off saves it. */
+function withFleetNumberOff(layout: InvoiceLayoutConfig): InvoiceLayoutConfig {
+  return {
+    ...layout,
+    sections: layout.sections.map((section) =>
+      section.id === 'vehicle'
+        ? {
+            ...section,
+            fields: (section.fields ?? []).map((field) =>
+              field.id === 'fleet_number' ? { ...field, visible: false } : field
+            ),
+          }
+        : section
+    ),
+  }
+}
+
+/** A design saved before the switch-gated lines existed: every vehicle line on, none of them mentioned. */
+function savedBeforeTheField(layout: InvoiceLayoutConfig): InvoiceLayoutConfig {
+  return {
+    ...layout,
+    version: DESIGNER_LAYOUT_VERSION,
+    sections: layout.sections.map((s) =>
+      s.id === 'vehicle'
+        ? {
+            ...s,
+            visible: true,
+            fields: s.fields
+              ?.filter((f) => f.id !== 'fleet_number' && f.id !== 'meter_readings')
+              .map((f) => ({ ...f, visible: f.id !== 'vehicle_photo' })),
+          }
+        : s
     ),
   }
 }
@@ -318,71 +356,92 @@ describe('printing the fleet number and the vehicle’s and customer’s own fie
     expect(fleetNumberLine(null, 'Fleet no.')).toBe('')
   })
 
-  it('is an opt-in field, never a grandfathered one', () => {
-    expect(isOptInField('vehicle', 'fleet_number')).toBe(true)
+  it('is behind the workshop switch, neither opt-in nor grandfathered', () => {
+    expect(isSwitchGatedField('vehicle', 'fleet_number')).toBe(true)
+    expect(isOptInField('vehicle', 'fleet_number')).toBe(false)
     expect(Object.values(GRANDFATHERED_FIELDS).flat()).not.toContain('fleet_number')
   })
 
-  it('is off in every default layout', () => {
-    for (const type of ['invoice', 'work_order', 'certificate'] as const) {
+  it('is on in the invoice and work order defaults, and off on the certificate', () => {
+    for (const type of ['invoice', 'work_order'] as const) {
       const vehicle = getDefaultLayout(type).sections.find((s) => s.id === 'vehicle')
-      const field = vehicle?.fields?.find((f) => f.id === 'fleet_number')
-      if (vehicle?.fields) expect(field?.visible, type).toBe(false)
+      expect(vehicle?.fields?.find((f) => f.id === 'fleet_number')?.visible, type).toBe(true)
+    }
+    // A certificate's design is frozen at completion while its vehicle is
+    // read as it stands: a number switched on later must not join it.
+    const certificate = getDefaultLayout('certificate').sections.find((s) => s.id === 'vehicle')
+    expect(certificate?.fields?.find((f) => f.id === 'fleet_number')?.visible).toBe(false)
+  })
+
+  it('prints on every default sheet and starting point for a workshop with the switch on', () => {
+    for (const layout of [getDefaultInvoiceLayout(), ...layoutPresets.map(buildLayoutFromPreset)]) {
+      expect(invoiceSpec(layout)).toContain(LINE)
+      expect(quoteSpec(layout)).toContain(LINE)
+    }
+    for (const layout of [
+      getDefaultLayout('work_order'),
+      ...workOrderPresets.map(buildLayoutFromPreset),
+    ]) {
+      expect(workOrderSpec(layout)).toContain(LINE)
     }
   })
 
-  it('print on no default sheet, though the vehicle and the customer carry them', () => {
-    for (const text of NEW) {
+  it('leaves the vehicle’s and customer’s own fields off until a design places them', () => {
+    for (const text of ['TACHO-MARCH', 'CC-7741', 'Tachograph due', 'Cost centre']) {
       expect(invoiceSpec(getDefaultInvoiceLayout())).not.toContain(text)
       expect(quoteSpec(getDefaultInvoiceLayout())).not.toContain(text)
       expect(workOrderSpec(getDefaultLayout('work_order'))).not.toContain(text)
     }
   })
 
-  it('print the same sheet with them as without, on every starting point a workshop can pick', () => {
-    for (const layout of [getDefaultInvoiceLayout(), ...layoutPresets.map(buildLayoutFromPreset)]) {
-      expect(invoiceSpec(layout)).toBe(invoiceSpec(layout, bare))
-      expect(quoteSpec(layout)).toBe(quoteSpec(layout, bare))
+  it('with the switch off, every sheet prints exactly what it printed with the line off', () => {
+    // What the print assembly hands over while the switch is off.
+    const switchedOff = {
+      ...invoiceData,
+      vehicle: gateFleetNumber(invoiceData.vehicle as { fleetNumber: string | null }, false),
+    } as unknown as InvoiceData
+    for (const layout of [
+      getDefaultInvoiceLayout(),
+      mergeWithDefaults(savedBeforeTheField(getDefaultInvoiceLayout())),
+      ...layoutPresets.map(buildLayoutFromPreset),
+    ]) {
+      expect(invoiceSpec(layout, switchedOff)).toBe(invoiceSpec(withFleetNumberOff(layout)))
+      expect(quoteSpec(layout, switchedOff)).toBe(quoteSpec(withFleetNumberOff(layout)))
     }
     for (const layout of [
       getDefaultLayout('work_order'),
+      mergeWithDefaults(savedBeforeTheField(getDefaultLayout('work_order'))),
       ...workOrderPresets.map(buildLayoutFromPreset),
     ]) {
-      expect(workOrderSpec(layout)).toBe(workOrderSpec(layout, bare))
+      expect(workOrderSpec(layout, switchedOff)).toBe(workOrderSpec(withFleetNumberOff(layout)))
     }
   })
 
-  it('stay off in a design saved before they existed', () => {
+  it('prints in a design saved before it existed, after the lines the design lists', () => {
     for (const layout of [getDefaultInvoiceLayout(), getDefaultLayout('work_order')]) {
-      const saved = {
-        ...layout,
-        version: DESIGNER_LAYOUT_VERSION,
-        sections: layout.sections.map((s) =>
-          s.id === 'vehicle'
-            ? {
-                ...s,
-                visible: true,
-                // Every vehicle line on, as an old design has them, and no
-                // mention of the new one.
-                fields: s.fields
-                  ?.filter((f) => f.id !== 'fleet_number')
-                  .map((f) => ({ ...f, visible: true })),
-              }
-            : s
-        ),
-      }
+      const saved = savedBeforeTheField(layout)
       const merged = mergeWithDefaults(saved)
       const vehicle = merged.sections.find((s) => s.id === 'vehicle')
-      expect(vehicle?.fields?.find((f) => f.id === 'fleet_number')?.visible).toBe(false)
-      expect(invoiceSpec(merged)).toBe(invoiceSpec(merged, bare))
+      expect(vehicle?.fields?.find((f) => f.id === 'fleet_number')?.visible).toBe(true)
+      expect(invoiceSpec(merged)).toContain(LINE)
+      const raw = saved.sections.find((s) => s.id === 'vehicle')
+      if (!raw) throw new Error('no vehicle section')
+      expect(sectionFields(raw).slice(-2)).toEqual(['fleet_number', 'meter_readings'])
     }
   })
 
-  it('stay off in a vehicle block that never listed its fields at all', () => {
+  it('keeps off in a design that switched it off', () => {
+    expect(invoiceSpec(withFleetNumberOff(getDefaultInvoiceLayout()))).not.toContain('T-208')
+    expect(quoteSpec(withFleetNumberOff(getDefaultInvoiceLayout()))).not.toContain('T-208')
+    expect(workOrderSpec(withFleetNumberOff(getDefaultLayout('work_order')))).not.toContain('T-208')
+  })
+
+  it('shows in a vehicle block that never listed its fields, except on a certificate', () => {
     const vehicle = getDefaultInvoiceLayout().sections.find((s) => s.id === 'vehicle')
     if (!vehicle) throw new Error('no vehicle section')
     const { fields: _fields, ...unlisted } = vehicle
-    expect(sectionFields(unlisted)).not.toContain('fleet_number')
+    expect(sectionFields(unlisted)).toContain('fleet_number')
+    expect(sectionFields(unlisted, 'certificate')).not.toContain('fleet_number')
   })
 
   it('print on the invoice, the quote and the work order once a design places them', () => {

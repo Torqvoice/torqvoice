@@ -27,11 +27,11 @@ import {
   fromCustomFieldId,
   getBuiltinFieldName,
   getBuiltinFieldsForSection,
-  isOptInField,
+  fieldShownUnasked,
   layoutDocumentType,
   NO_CUSTOM_FIELD_SECTIONS,
   photoStyleOf,
-  unmentionedGrandfathered,
+  unmentionedShownFields,
   isCustomFieldId,
   toCustomFieldId,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -462,24 +462,29 @@ export function DesignerInspector({
      * The fields this section shows, resolved the way the generator resolves
      * them: no list of its own means every built-in field, visible.
      */
-    const builtins = getBuiltinFieldsForSection(section.id, layoutDocumentType(layout))
+    const documentType = layoutDocumentType(layout)
+    const builtins = getBuiltinFieldsForSection(section.id, documentType)
     const builtinIds = new Set(builtins.map((f) => f.id))
     const stored = (
       section.fields ??
-      builtins.map((f) => ({ id: f.id, visible: !isOptInField(section.id, f.id) }))
+      builtins.map((f) => ({
+        id: f.id,
+        visible: fieldShownUnasked(section.id, f.id, documentType),
+      }))
     ) // A stored id no builtin list carries any more is a leftover, not a field.
       .filter((f) => isCustomFieldId(f.id) || builtinIds.has(f.id))
     // A field added after this layout was written still needs its switch.
     // Without this a saved design, which is loaded as it was stored, can never
     // reach anything built since, and the option looks simply missing. It
-    // arrives off, except for the rows that printed before they had a switch:
-    // those show what the sheet is already doing.
-    const grandfathered = new Set(unmentionedGrandfathered(section.id, stored))
+    // arrives off, except for what the sheet already prints unasked: the rows
+    // that printed before they had a switch, and the ones behind a workshop
+    // switch. The print asks the same question, so the two agree.
+    const shownUnmentioned = new Set(unmentionedShownFields(section.id, stored, documentType))
     const resolvedFields: InvoiceFieldConfig[] = [
       ...stored,
       ...builtins
         .filter((f) => !stored.some((existing) => existing.id === f.id))
-        .map((f) => ({ id: f.id, visible: grandfathered.has(f.id) })),
+        .map((f) => ({ id: f.id, visible: shownUnmentioned.has(f.id) })),
     ]
     // Workshop-defined fields wait as chips below the list until they are
     // added, so the list only carries what this section actually uses. The

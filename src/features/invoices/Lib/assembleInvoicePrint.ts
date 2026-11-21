@@ -38,6 +38,7 @@ import { fleetNumberEnabledIn, gateFleetNumber } from '@/features/vehicles/Lib/f
 import {
   type InvoiceLayoutConfig,
   mergeWithDefaults,
+  withUnmentionedSwitchGatedOff,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type {
   InvoiceData,
@@ -613,11 +614,15 @@ async function assembleFrozen(
   photo: boolean
 ): Promise<InvoicePrintAssembly> {
   const snapshot = record.issuedDesignSnapshot
+  const frozenSource = snapshot && designSourceFromSnapshot(snapshot.layout, snapshot.template)
   // A snapshot that cannot be read falls back to the live look rather than
-  // to nothing: the words on the sheet are still the frozen ones.
-  const designSource =
-    (snapshot && designSourceFromSnapshot(snapshot.layout, snapshot.template)) ||
-    designSourceFromSettings(settingsMap, 'invoice')
+  // to nothing: the words on the sheet are still the frozen ones. A frozen
+  // look that never mentions a field behind a workshop switch was frozen
+  // before that field existed and printed none: the reference, read from the
+  // job as it stands, never joins a copy that went out without the line.
+  const designSource = frozenSource
+    ? { ...frozenSource, layout: withUnmentionedSwitchGatedOff(frozenSource.layout) }
+    : designSourceFromSettings(settingsMap, 'invoice')
   const template = templateConfigFromSource(designSource)
   const logoDataUri = record.issuedLogoSnapshot
     ? assetDataUri(record.issuedLogoSnapshot)

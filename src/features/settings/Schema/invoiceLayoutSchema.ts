@@ -380,8 +380,8 @@ export const BUILTIN_CUSTOMER_FIELDS = [
   { id: 'customer_email', name: 'Customer Email' },
   { id: 'customer_phone', name: 'Customer Phone' },
   { id: 'customer_tax_id', name: 'Customer Tax ID' },
-  // The customer's own reference or purchase order number for the job. Opt-in
-  // (OPT_IN_FIELDS): off in the defaults and in every saved design.
+  // The customer's own reference or purchase order number for the job. Behind
+  // the workshop's switch (SWITCH_GATED_FIELDS): on unless a design says not.
   { id: 'customer_reference', name: 'Your reference / PO' },
 ] as const
 
@@ -393,14 +393,15 @@ export const BUILTIN_VEHICLE_FIELDS = [
   // The German type approval key. On by default: it prints nothing until a
   // vehicle has one, and a workshop that records it wants it on the paper.
   { id: 'hsn_tsn', name: 'HSN/TSN' },
-  // The owner's own number for the vehicle. Opt-in (OPT_IN_FIELDS): off in the
-  // defaults and in every saved design.
+  // The owner's own number for the vehicle. Behind the workshop's switch
+  // (SWITCH_GATED_FIELDS): on unless a design says not, except on a certificate.
   { id: 'fleet_number', name: 'Fleet / unit number' },
   // The vehicle's meters besides the odometer, one line each ("Engine hours:
-  // 4,256.7 hrs"). Opt-in like the fleet number.
+  // 4,256.7 hrs"), for a workshop that has defined a meter. Switch-gated like
+  // the fleet number.
   { id: 'meter_readings', name: 'Meter readings' },
   // The vehicle's own photo, beside the lines or faded behind them (the
-  // section's photoStyle). Opt-in like the fleet number.
+  // section's photoStyle). Opt-in (OPT_IN_FIELDS): off until a design asks.
   { id: 'vehicle_photo', name: 'Vehicle photo' },
 ] as const
 
@@ -616,13 +617,61 @@ export const GRANDFATHERED_FIELDS: Record<string, readonly string[]> = {
  * everything, so no design made before the field existed starts printing it.
  */
 export const OPT_IN_FIELDS: Record<string, readonly string[]> = {
-  customer: ['customer_reference'],
-  vehicle: ['fleet_number', 'meter_readings', 'vehicle_photo'],
+  vehicle: ['vehicle_photo'],
 }
 
 /** Whether this field waits for a design to switch it on. */
 export function isOptInField(sectionId: string, fieldId: string): boolean {
   return (OPT_IN_FIELDS[sectionId] ?? []).includes(fieldId)
+}
+
+/**
+ * Fields behind a workshop switch, by section: the customer's Reference / PO
+ * (`documents.customerReferenceEnabled`), the Fleet / unit number
+ * (`vehicle.fleetNumberEnabled`) and the meter readings (a workshop that has
+ * defined a meter). All three also need a plan with custom fields.
+ *
+ * Neither grandfathered nor opt-in. The switch is what decides whether one
+ * prints: while it is off, the value never reaches the document's data, so
+ * the line prints nothing whatever the design says. A workshop that turns the
+ * switch on wants the line on its paper, so a design shows these unless it
+ * says otherwise: on in the default layouts and starting points, on in a
+ * saved design that does not mention them (after the lines it lists, in this
+ * order), on where a section has no field list. A design that stores one as
+ * off keeps it off.
+ *
+ * Not on a certificate. A certificate's design is frozen when the inspection
+ * is completed while its vehicle is read as it stands, so a fleet number
+ * switched on later would appear on certificates already handed over. There
+ * these fields stay off until the certificate's own design switches them on.
+ */
+export const SWITCH_GATED_FIELDS: Record<string, readonly string[]> = {
+  customer: ['customer_reference'],
+  vehicle: ['fleet_number', 'meter_readings'],
+}
+
+/** Whether this field prints only for a workshop that has switched it on. */
+export function isSwitchGatedField(sectionId: string, fieldId: string): boolean {
+  return (SWITCH_GATED_FIELDS[sectionId] ?? []).includes(fieldId)
+}
+
+/** Whether a switch-gated field shows unasked on this document. */
+function switchGatedShownOn(documentType: LayoutDocumentType): boolean {
+  return documentType !== 'certificate'
+}
+
+/**
+ * Whether a section that has no say about this field shows it: false for an
+ * opt-in field, and for a switch-gated one on a certificate.
+ */
+export function fieldShownUnasked(
+  sectionId: string,
+  fieldId: string,
+  documentType: LayoutDocumentType = 'invoice'
+): boolean {
+  if (isOptInField(sectionId, fieldId)) return false
+  if (isSwitchGatedField(sectionId, fieldId)) return switchGatedShownOn(documentType)
+  return true
 }
 
 /** The ids of `sectionId`'s grandfathered fields that `fields` never mentions. */
@@ -633,6 +682,51 @@ export function unmentionedGrandfathered(
   const ids = GRANDFATHERED_FIELDS[sectionId]
   if (!ids || !fields) return []
   return ids.filter((id) => !fields.some((f) => f.id === id))
+}
+
+/**
+ * The fields a saved list never mentions that its section shows anyway, in
+ * the order they print after the listed ones: the grandfathered rows, then
+ * the switch-gated ones (not on a certificate). The print and the designer's
+ * field list both ask this, so the two cannot disagree about a design saved
+ * before a field existed.
+ */
+export function unmentionedShownFields(
+  sectionId: string,
+  fields: ReadonlyArray<{ id: string }> | undefined,
+  documentType: LayoutDocumentType = 'invoice'
+): string[] {
+  if (!fields) return []
+  const gated = switchGatedShownOn(documentType)
+    ? (SWITCH_GATED_FIELDS[sectionId] ?? []).filter((id) => !fields.some((f) => f.id === id))
+    : []
+  return [...unmentionedGrandfathered(sectionId, fields), ...gated]
+}
+
+/**
+ * A layout frozen onto an issued document, with every switch-gated field it
+ * never mentions written in as off.
+ *
+ * Frozen layouts are stored with every default written out, so one that does
+ * not mention a switch-gated field was frozen before the field existed and
+ * did not print it. Without this, the on-by-default rule would add the line
+ * when the copy is printed again: a sent copy never changes.
+ */
+export function withUnmentionedSwitchGatedOff<T extends Partial<InvoiceLayoutConfig>>(
+  layout: T
+): T {
+  if (!layout.sections) return layout
+  return {
+    ...layout,
+    sections: layout.sections.map((section) => {
+      const gated = SWITCH_GATED_FIELDS[section.id]
+      if (!gated) return section
+      const fields = section.fields ?? []
+      const missing = gated.filter((id) => !fields.some((f) => f.id === id))
+      if (missing.length === 0) return section
+      return { ...section, fields: [...fields, ...missing.map((id) => ({ id, visible: false }))] }
+    }),
+  }
 }
 
 /** The footer's rows that are not detail lines: the mark, the portal link and the closing note. */
@@ -805,10 +899,12 @@ function getDefaultFieldsForSection(
     // A work order says only what the technician and the customer need: who
     // the car belongs to and how to reach them, which car, and the job.
     case 'customer':
+      // A switch-gated field is on wherever it shows unasked: a work order
+      // carries the customer's PO as an invoice does.
       return BUILTIN_CUSTOMER_FIELDS.map((f) => ({
         id: f.id,
-        visible: isOptInField('customer', f.id)
-          ? false
+        visible: isSwitchGatedField('customer', f.id)
+          ? fieldShownUnasked('customer', f.id, documentType)
           : workOrder
             ? f.id === 'customer_name' || f.id === 'customer_phone'
             : true,
@@ -816,7 +912,11 @@ function getDefaultFieldsForSection(
     case 'vehicle':
       return BUILTIN_VEHICLE_FIELDS.map((f) => ({
         id: f.id,
-        visible: isOptInField('vehicle', f.id) ? false : workOrder ? f.id !== 'vin' : true,
+        visible: !fieldShownUnasked('vehicle', f.id, documentType)
+          ? false
+          : workOrder
+            ? f.id !== 'vin'
+            : true,
       }))
     case 'service':
       return BUILTIN_SERVICE_FIELDS.map((f) => ({ id: f.id, visible: true }))

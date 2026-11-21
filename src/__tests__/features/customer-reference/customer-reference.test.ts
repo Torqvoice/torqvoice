@@ -1,10 +1,11 @@
 /**
  * @vitest-environment node
  *
- * The customer's reference / PO on work orders and quotes: an opt-in field.
- * Most of what is tested here is the "opt-in" half: that a workshop which
- * never switched it on gets the documents, import columns, mail tags and
- * ledger payloads it always got, to the byte.
+ * The customer's reference / PO on work orders and quotes, behind a workshop
+ * switch. Most of what is tested here is that a workshop which never switched
+ * it on gets the documents, import columns, mail tags and ledger payloads it
+ * always got, to the byte; and that one which did gets the line on its paper
+ * without a trip to the designer.
  */
 import { describe, expect, it } from 'vitest'
 import {
@@ -30,6 +31,7 @@ import {
   getDefaultInvoiceLayout,
   getDefaultLayout,
   isOptInField,
+  isSwitchGatedField,
   mergeWithDefaults,
 } from '@/features/settings/Schema/invoiceLayoutSchema'
 import {
@@ -221,86 +223,143 @@ function withReferenceOn(layout: InvoiceLayoutConfig): InvoiceLayoutConfig {
 
 const invoiceSpec = (layoutConfig: InvoiceLayoutConfig, data: InvoiceData = invoiceData) =>
   JSON.stringify(buildInvoicePrintSpec({ data, labels, template: { layoutConfig } as never }))
-const quoteSpec = (layoutConfig: InvoiceLayoutConfig) =>
-  JSON.stringify(buildQuotePrintSpec({ data: quoteData, labels, layoutConfig }))
-const workOrderSpec = (layoutConfig: InvoiceLayoutConfig) =>
+const quoteSpec = (layoutConfig: InvoiceLayoutConfig, data: InvoiceData = invoiceData) =>
+  JSON.stringify(
+    buildQuotePrintSpec({
+      data: { ...(quoteData as Record<string, unknown>), ...data, quoteNumber: 'Q-1' } as never,
+      labels,
+      layoutConfig,
+    })
+  )
+const workOrderSpec = (layoutConfig: InvoiceLayoutConfig, data: InvoiceData = invoiceData) =>
   JSON.stringify(
     buildWorkOrderPrintSpec({
-      data: invoiceData,
+      data,
       job,
       labels,
       template: { layoutConfig } as never,
     })
   )
 
+/** The layout with the field stored as off in the customer block, as a workshop that switched it off saves it. */
+function withReferenceOff(layout: InvoiceLayoutConfig): InvoiceLayoutConfig {
+  return {
+    ...layout,
+    sections: layout.sections.map((section) =>
+      section.id === 'customer'
+        ? {
+            ...section,
+            fields: (section.fields ?? []).map((field) =>
+              field.id === 'customer_reference' ? { ...field, visible: false } : field
+            ),
+          }
+        : section
+    ),
+  }
+}
+
+/** A design saved before the field existed: every customer line on, and no mention of it. */
+function savedBeforeTheField(layout: InvoiceLayoutConfig): InvoiceLayoutConfig {
+  return {
+    ...layout,
+    version: DESIGNER_LAYOUT_VERSION,
+    sections: layout.sections.map((s) =>
+      s.id === 'customer'
+        ? {
+            ...s,
+            visible: true,
+            fields: s.fields
+              ?.filter((f) => f.id !== 'customer_reference')
+              .map((f) => ({ ...f, visible: true })),
+          }
+        : s
+    ),
+  }
+}
+
+/** The job as the print assembly hands it over: without the reference while the switch is off. */
+const switchedOff = gateCustomerReference(invoiceData, false)
+
 describe('printing the reference', () => {
-  it('is an opt-in field, never a grandfathered one', () => {
-    expect(isOptInField('customer', 'customer_reference')).toBe(true)
+  it('is behind the workshop switch, neither opt-in nor grandfathered', () => {
+    expect(isSwitchGatedField('customer', 'customer_reference')).toBe(true)
+    expect(isOptInField('customer', 'customer_reference')).toBe(false)
     expect(Object.values(GRANDFATHERED_FIELDS).flat()).not.toContain('customer_reference')
   })
 
-  it('is off in every default layout', () => {
-    for (const type of ['invoice', 'work_order', 'certificate'] as const) {
+  it('is on in the invoice and work order defaults, and off on the certificate', () => {
+    for (const type of ['invoice', 'work_order'] as const) {
       const customer = getDefaultLayout(type).sections.find((s) => s.id === 'customer')
       const field = customer?.fields?.find((f) => f.id === 'customer_reference')
-      expect(field?.visible, type).toBe(false)
+      expect(field?.visible, type).toBe(true)
     }
+    const certificate = getDefaultLayout('certificate').sections.find((s) => s.id === 'customer')
+    expect(certificate?.fields?.find((f) => f.id === 'customer_reference')?.visible).toBe(false)
   })
 
-  it('prints on no default sheet, though the job carries one', () => {
-    expect(invoiceSpec(getDefaultInvoiceLayout())).not.toContain('PO-48213')
-    expect(quoteSpec(getDefaultInvoiceLayout())).not.toContain('PO-48213')
-    expect(workOrderSpec(getDefaultLayout('work_order'))).not.toContain('PO-48213')
+  it('prints on every default sheet for a workshop with the switch on', () => {
+    expect(invoiceSpec(getDefaultInvoiceLayout())).toContain(LINE)
+    expect(quoteSpec(getDefaultInvoiceLayout())).toContain(LINE)
+    expect(workOrderSpec(getDefaultLayout('work_order'))).toContain(LINE)
   })
 
-  it('prints on no starting point a workshop can pick', () => {
+  it('prints on every starting point a workshop can pick, with the switch on', () => {
     for (const preset of layoutPresets) {
       const layout = buildLayoutFromPreset(preset)
-      expect(invoiceSpec(layout), preset.id).not.toContain('PO-48213')
-      expect(quoteSpec(layout), preset.id).not.toContain('PO-48213')
+      expect(invoiceSpec(layout), preset.id).toContain(LINE)
+      expect(quoteSpec(layout), preset.id).toContain(LINE)
     }
     for (const preset of workOrderPresets) {
-      expect(workOrderSpec(buildLayoutFromPreset(preset)), preset.id).not.toContain('PO-48213')
+      expect(workOrderSpec(buildLayoutFromPreset(preset)), preset.id).toContain(LINE)
     }
   })
 
-  it('stays off in a design saved before the field existed', () => {
+  it('prints in a design saved before the field existed, after the lines it lists', () => {
     for (const layout of [getDefaultInvoiceLayout(), getDefaultLayout('work_order')]) {
-      const saved = {
-        ...layout,
-        version: DESIGNER_LAYOUT_VERSION,
-        sections: layout.sections.map((s) =>
-          s.id === 'customer'
-            ? {
-                ...s,
-                // Every customer line on, as an old design has them, and no
-                // mention of the new one.
-                fields: s.fields
-                  ?.filter((f) => f.id !== 'customer_reference')
-                  .map((f) => ({ ...f, visible: true })),
-              }
-            : s
-        ),
-      }
-      const merged = mergeWithDefaults(saved)
+      const merged = mergeWithDefaults(savedBeforeTheField(layout))
       const customer = merged.sections.find((s) => s.id === 'customer')
-      expect(customer?.fields?.find((f) => f.id === 'customer_reference')?.visible).toBe(false)
-      expect(invoiceSpec(merged)).not.toContain('PO-48213')
+      expect(customer?.fields?.find((f) => f.id === 'customer_reference')?.visible).toBe(true)
+      expect(invoiceSpec(merged)).toContain(LINE)
+      // Unmerged too, as the generator reads it: the listed lines first.
+      const raw = savedBeforeTheField(layout).sections.find((s) => s.id === 'customer')
+      if (!raw) throw new Error('no customer section')
+      expect(sectionFields(raw).at(-1)).toBe('customer_reference')
     }
   })
 
-  it('stays off in a customer block that never listed its fields at all', () => {
+  it('keeps off in a design that switched it off', () => {
+    expect(invoiceSpec(withReferenceOff(getDefaultInvoiceLayout()))).not.toContain('PO-48213')
+    expect(quoteSpec(withReferenceOff(getDefaultInvoiceLayout()))).not.toContain('PO-48213')
+    expect(workOrderSpec(withReferenceOff(getDefaultLayout('work_order')))).not.toContain(
+      'PO-48213'
+    )
+  })
+
+  it('shows in a customer block that never listed its fields at all', () => {
     const customer = getDefaultInvoiceLayout().sections.find((s) => s.id === 'customer')
     if (!customer) throw new Error('no customer section')
     const { fields: _fields, ...bare } = customer
-    expect(sectionFields(bare)).not.toContain('customer_reference')
+    expect(sectionFields(bare)).toContain('customer_reference')
     expect(sectionFields(bare)).toContain('customer_name')
+    expect(sectionFields(bare, 'certificate')).not.toContain('customer_reference')
   })
 
-  it('prints the same sheet with a reference as without, until a design asks for it', () => {
-    for (const layout of [getDefaultInvoiceLayout(), ...layoutPresets.map(buildLayoutFromPreset)]) {
-      const without = { ...invoiceData, customerReference: null } as InvoiceData
-      expect(invoiceSpec(layout, invoiceData)).toBe(invoiceSpec(layout, without))
+  it('with the switch off, every sheet prints exactly what it printed with the line off', () => {
+    const layouts = [
+      getDefaultInvoiceLayout(),
+      mergeWithDefaults(savedBeforeTheField(getDefaultInvoiceLayout())),
+      ...layoutPresets.map(buildLayoutFromPreset),
+    ]
+    for (const layout of layouts) {
+      expect(invoiceSpec(layout, switchedOff)).toBe(invoiceSpec(withReferenceOff(layout)))
+      expect(quoteSpec(layout, switchedOff)).toBe(quoteSpec(withReferenceOff(layout)))
+    }
+    for (const layout of [
+      getDefaultLayout('work_order'),
+      mergeWithDefaults(savedBeforeTheField(getDefaultLayout('work_order'))),
+      ...workOrderPresets.map(buildLayoutFromPreset),
+    ]) {
+      expect(workOrderSpec(layout, switchedOff)).toBe(workOrderSpec(withReferenceOff(layout)))
     }
   })
 

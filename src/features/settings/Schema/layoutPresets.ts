@@ -4,7 +4,7 @@ import {
   type InvoiceSectionStyle,
   type LayoutDocumentType,
   BUILTIN_CUSTOMER_FIELDS,
-  isOptInField,
+  fieldShownUnasked,
   BUILTIN_FOOTER_FIELDS,
   BUILTIN_HEADER_FIELDS,
   BUILTIN_JOB_DETAILS_FIELDS,
@@ -447,8 +447,17 @@ export const workOrderPresets: LayoutPreset[] = [
       'signature',
     ],
     fields: {
-      customer: ['customer_name', 'customer_phone'],
-      vehicle: ['vehicle_name', 'license_plate', 'mileage', 'hsn_tsn'],
+      // The lines behind a workshop switch too: they print only for a
+      // workshop that has switched them on, which wants them on the sheet.
+      customer: ['customer_name', 'customer_phone', 'customer_reference'],
+      vehicle: [
+        'vehicle_name',
+        'license_plate',
+        'mileage',
+        'hsn_tsn',
+        'fleet_number',
+        'meter_readings',
+      ],
       document_title: ['title', 'invoice_number', 'date', 'license_plate'],
       job_details: ['status', 'technician', 'scheduled', 'promised'],
       signature: ['inspector_line', 'inspector_name', 'date_line', 'customer_line'],
@@ -497,11 +506,11 @@ export const workOrderPresets: LayoutPreset[] = [
     },
     fields: {
       // Every customer line a design shows unasked; the opt-in ones stay off.
-      customer: BUILTIN_CUSTOMER_FIELDS.map((f) => f.id as string).filter(
-        (id) => !isOptInField('customer', id)
+      customer: BUILTIN_CUSTOMER_FIELDS.map((f) => f.id as string).filter((id) =>
+        fieldShownUnasked('customer', id, 'work_order')
       ),
-      vehicle: BUILTIN_VEHICLE_FIELDS.map((f) => f.id as string).filter(
-        (id) => !isOptInField('vehicle', id)
+      vehicle: BUILTIN_VEHICLE_FIELDS.map((f) => f.id as string).filter((id) =>
+        fieldShownUnasked('vehicle', id, 'work_order')
       ),
       job_details: BUILTIN_JOB_DETAILS_FIELDS.map((f) => f.id as string),
     },
