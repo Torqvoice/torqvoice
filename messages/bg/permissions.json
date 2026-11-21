@@ -1,0 +1,28 @@
+{
+  "subjects": {
+    "dashboard": "Табло",
+    "vehicles": "Превозни средства",
+    "customers": "Клиенти",
+    "work_orders": "Работни поръчки",
+    "quotes": "Оферти",
+    "services": "Обслужвания",
+    "billing": "Фактуриране",
+    "inventory": "Склад",
+    "labor_presets": "Шаблони за труд",
+    "inspections": "Инспекции",
+    "tire_hotel": "Хотел за гуми",
+    "reports": "Отчети",
+    "time_tracking": "Отчитане на времето",
+    "work_board": "Работно табло",
+    "ai_assistant": "AI асистент",
+    "settings": "Настройки"
+  },
+  "actions": {
+    "create": "Създаване",
+    "read": "Преглед",
+    "update": "Редактиране",
+    "delete": "Изтриване",
+    "manage": "Управление",
+    "manage_storage": "Управление на разположението за съхранение"
+  }
+}

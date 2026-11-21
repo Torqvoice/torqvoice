@@ -1,0 +1,76 @@
+{
+  "searchPlaceholder": "Търсене на пакети за труд...",
+  "addPackage": "Добави шаблон за труд",
+  "table": {
+    "name": "Име",
+    "description": "Описание",
+    "itemCount": "Позиции",
+    "type": "Тип",
+    "hrs": "ч",
+    "units": "ед."
+  },
+  "empty": {
+    "noMatch": "Няма пакети, съответстващи на търсенето.",
+    "noPresets": "Все още няма пакети за труд. Щракнете върху „Добави шаблон за труд“, за да създадете пакет."
+  },
+  "actions": {
+    "edit": "Редактирай",
+    "delete": "Изтрий",
+    "openMenu": "Отвори менюто"
+  },
+  "deletePreset": {
+    "title": "Изтриване на пакет за труд",
+    "description": "„{name}“ и всички позиции в него ще бъдат изтрити окончателно. Това действие не може да бъде отменено.",
+    "confirm": "Изтрий"
+  },
+  "form": {
+    "singleItem": "Единична позиция",
+    "package": "Пакет",
+    "addPackage": "Добавяне на шаблон за труд",
+    "editPackage": "Редактиране на шаблон за труд",
+    "singleNameLabel": "Име",
+    "singleNamePlaceholder": "напр. Смяна на масло",
+    "nameLabel": "Име на пакета",
+    "namePlaceholder": "напр. Пакет за смяна на масло",
+    "descriptionLabel": "Описание",
+    "descriptionPlaceholder": "Описание по избор...",
+    "itemsTitle": "Позиции за труд",
+    "itemDescription": "Описание",
+    "itemHours": "Часове",
+    "itemQty": "Кол.",
+    "itemQtyOrHours": "Мерна единица / часове",
+    "itemRate": "Ставка",
+    "itemDescriptionPlaceholder": "Описание *",
+    "addItem": "Добави позиция",
+    "cancel": "Отказ",
+    "create": "Създай пакет",
+    "saveChanges": "Запази промените",
+    "hourlyTag": "HR",
+    "serviceTag": "SVC",
+    "partsTitle": "Резервни части",
+    "addPart": "Добави резервна част",
+    "partName": "Име на резервната част",
+    "partNumber": "№ на резервната част",
+    "partQty": "Кол.",
+    "partPrice": "Единична цена",
+    "importFromInventory": "Импортирай от склада",
+    "searchInventory": "Търсене в склада...",
+    "noPartsFound": "Няма намерени резервни части"
+  },
+  "picker": {
+    "title": "Избор на пакет за труд",
+    "search": "Търсене на пакети...",
+    "noPackages": "Няма намерени пакети за труд.",
+    "items": "{count} позиции",
+    "totalHours": "Общо {hours} ч",
+    "totalUnits": "Общо {units} ед.",
+    "totalParts": "{count} резервни части"
+  },
+  "errors": {
+    "error": "Грешка",
+    "saveFailed": "Пакетът за труд не можа да бъде запазен",
+    "deleteFailed": "Пакетът за труд не можа да бъде изтрит",
+    "loadFailed": "Пакетът за труд не можа да бъде зареден",
+    "noItems": "Необходима е поне една позиция"
+  }
+}
