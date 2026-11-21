@@ -1285,15 +1285,21 @@ function ImportSourceRow({
   children: React.ReactNode
 }) {
   return (
-    <li id={id} className="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+    // Wraps by the room the row really has, not the window: the settings menu
+    // takes a column of its own, so a long set of buttons drops below the text
+    // instead of squeezing it to a word a line.
+    <li id={id} className="flex flex-wrap items-center gap-3 px-5 py-4">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
         <Icon className="h-5 w-5" />
       </div>
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 basis-64">
         <div className="flex items-center text-sm font-medium">{title}</div>
         <p className="text-xs text-muted-foreground">{description}</p>
       </div>
-      <div className="flex flex-wrap gap-2 sm:justify-end">{children}</div>
+      {/* A label longer than the row breaks inside its button, not out of the card. */}
+      <div className="flex max-w-full flex-wrap gap-2 [&>*]:h-auto [&>*]:min-h-8 [&>*]:max-w-full [&>*]:whitespace-normal">
+        {children}
+      </div>
     </li>
   )
 }
