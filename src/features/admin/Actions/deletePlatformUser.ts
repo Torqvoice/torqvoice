@@ -7,6 +7,7 @@ import { deleteUserOrganizations } from '@/lib/delete-user-data'
 import { demoGuard } from '@/lib/demo'
 import { withSuperAdmin } from '@/lib/with-super-admin'
 import { emailMatches } from '../Lib/emailMatches'
+import { withPlatformAccountLock } from '../Lib/platformAccountLock'
 import { confirmedUserSchema } from '../Schema/adminSchema'
 
 /**
@@ -27,25 +28,31 @@ export async function deletePlatformUser(input: { userId: string; confirmEmail: 
 
       if (userId === ctx.userId) throw new Error(t('deleteSelf'))
 
-      const user = await db.user.findUnique({
-        where: { id: userId },
-        select: { id: true, name: true, email: true, isSuperAdmin: true },
-      })
-      if (!user) throw new Error(t('notFound'))
-      // Two deliberate steps to remove somebody who runs the platform.
-      if (user.isSuperAdmin) throw new Error(t('deleteSuperAdmin'))
-      if (!emailMatches(confirmEmail, user.email)) throw new Error(t('emailMismatch'))
-      target = { id: user.id, name: user.name, email: user.email }
+      return withPlatformAccountLock(
+        ctx.userId,
+        async () => {
+          const user = await db.user.findUnique({
+            where: { id: userId },
+            select: { id: true, name: true, email: true, isSuperAdmin: true },
+          })
+          if (!user) throw new Error(t('notFound'))
+          // Two deliberate steps to remove somebody who runs the platform.
+          if (user.isSuperAdmin) throw new Error(t('deleteSuperAdmin'))
+          if (!emailMatches(confirmEmail, user.email)) throw new Error(t('emailMismatch'))
+          target = { id: user.id, name: user.name, email: user.email }
 
-      // Handle all org cleanup (delete empty orgs, reassign data in shared orgs)
-      await deleteUserOrganizations(userId)
+          // Handle all org cleanup (delete empty orgs, reassign data in shared orgs)
+          await deleteUserOrganizations(userId)
 
-      // Delete the user: cascades sessions, accounts, 2FA
-      await db.user.delete({ where: { id: userId } })
+          // Delete the user: cascades sessions, accounts, 2FA
+          await db.user.delete({ where: { id: userId } })
 
-      await db.teamInvitation.deleteMany({ where: { email: user.email } })
+          await db.teamInvitation.deleteMany({ where: { email: user.email } })
 
-      return { deleted: true }
+          return { deleted: true }
+        },
+        120_000
+      )
     },
     {
       audit: () => ({

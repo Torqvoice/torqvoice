@@ -5,6 +5,7 @@ import { auditDetails } from '@/lib/audit'
 import { db } from '@/lib/db'
 import { withSuperAdmin } from '@/lib/with-super-admin'
 import { emailMatches } from '../Lib/emailMatches'
+import { withPlatformAccountLock } from '../Lib/platformAccountLock'
 import { confirmedUserSchema } from '../Schema/adminSchema'
 
 /**
@@ -20,16 +21,18 @@ export async function grantSuperAdmin(input: { userId: string; confirmEmail: str
 
       if (userId === ctx.userId) throw new Error(t('changeSelf'))
 
-      const user = await db.user.findUnique({
-        where: { id: userId },
-        select: { id: true, name: true, email: true },
+      return withPlatformAccountLock(ctx.userId, async () => {
+        const user = await db.user.findUnique({
+          where: { id: userId },
+          select: { id: true, name: true, email: true },
+        })
+        if (!user) throw new Error(t('notFound'))
+        if (!emailMatches(confirmEmail, user.email)) throw new Error(t('emailMismatch'))
+
+        await db.user.update({ where: { id: userId }, data: { isSuperAdmin: true } })
+
+        return user
       })
-      if (!user) throw new Error(t('notFound'))
-      if (!emailMatches(confirmEmail, user.email)) throw new Error(t('emailMismatch'))
-
-      await db.user.update({ where: { id: userId }, data: { isSuperAdmin: true } })
-
-      return user
     },
     {
       audit: (user) => ({

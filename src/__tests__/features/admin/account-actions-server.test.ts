@@ -36,6 +36,9 @@ vi.mock('@/lib/db', () => ({
     user: { findUnique: vi.fn(), update: vi.fn(), delete: vi.fn(), count: vi.fn() },
     teamInvitation: { deleteMany: vi.fn() },
     auditLog: { create: vi.fn() },
+    $executeRaw: vi.fn(),
+    // The lock's transaction, run straight through: one request at a time here.
+    $transaction: vi.fn(),
   },
 }))
 
@@ -65,7 +68,9 @@ function accounts(...others: Account[]) {
 
 function signInAs(userId: string | null) {
   vi.mocked(getCachedSession).mockResolvedValue(
-    (userId ? { user: { id: userId }, session: {} } : null) as never
+    (userId
+      ? { user: { id: userId, name: 'Admin', email: 'admin@example.com' }, session: {} }
+      : null) as never
   )
 }
 
@@ -75,6 +80,8 @@ function auditRows() {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(db.$transaction).mockImplementation(((work: (tx: typeof db) => unknown) =>
+    work(db)) as never)
   signInAs(ADMIN)
   accounts({ ...OLA, isSuperAdmin: false })
 })
@@ -97,6 +104,7 @@ describe('deleting an account', () => {
         entity: 'user',
         entityId: OLA.id,
         metadata: {
+          actor: { id: ADMIN, name: 'Admin', email: 'admin@example.com' },
           details: {
             key: 'platform_deleteUser',
             params: { name: 'Ola Nordmann', email: 'ola@nordmann-bil.example' },
@@ -176,6 +184,7 @@ describe('super admin access', () => {
         action: 'platform.grantSuperAdmin',
         entityId: OLA.id,
         metadata: {
+          actor: { id: ADMIN, name: 'Admin', email: 'admin@example.com' },
           details: {
             key: 'platform_grantSuperAdmin',
             params: { name: 'Ola Nordmann', email: 'ola@nordmann-bil.example' },
@@ -224,6 +233,51 @@ describe('super admin access', () => {
     expect(db.user.update).not.toHaveBeenCalled()
   })
 
+  it('is not removed by an admin who lost the rights while waiting their turn', async () => {
+    // Two admins remove each other at the same moment. Both pass the gate;
+    // the one that waited finds, once it holds the lock, that it is no
+    // longer an admin, and the platform keeps the other.
+    accounts({ ...OLA, isSuperAdmin: true })
+    const lookups = vi.mocked(db.user.findUnique)
+    const answer = lookups.getMockImplementation() as (args: unknown) => Promise<unknown>
+    let asked = 0
+    lookups.mockImplementation(((args: { where: { id: string } }) => {
+      if (args.where.id === ADMIN && ++asked > 1) {
+        return Promise.resolve({ id: ADMIN, isSuperAdmin: false })
+      }
+      return answer(args)
+    }) as never)
+
+    const result = await revokeSuperAdmin({ userId: OLA.id })
+
+    expect(result).toEqual({ success: false, error: 'Forbidden' })
+    expect(db.user.update).not.toHaveBeenCalled()
+    expect(auditRows()).toEqual([])
+  })
+
+  it('waits its turn behind any other account change', async () => {
+    const order: string[] = []
+    vi.mocked(db.$executeRaw).mockImplementation((() => {
+      order.push('lock')
+      return Promise.resolve(1)
+    }) as never)
+    vi.mocked(db.user.update).mockImplementation((() => {
+      order.push('write')
+      return Promise.resolve({})
+    }) as never)
+    vi.mocked(db.user.delete).mockImplementation((() => {
+      order.push('write')
+      return Promise.resolve({})
+    }) as never)
+
+    await grantSuperAdmin({ userId: OLA.id, confirmEmail: OLA.email })
+    await deletePlatformUser({ userId: OLA.id, confirmEmail: OLA.email })
+    accounts({ ...OLA, isSuperAdmin: true })
+    await revokeSuperAdmin({ userId: OLA.id })
+
+    expect(order).toEqual(['lock', 'write', 'lock', 'write', 'lock', 'write'])
+  })
+
   it('is removed from another super admin, and recorded', async () => {
     accounts({ ...OLA, isSuperAdmin: true })
     const result = await revokeSuperAdmin({ userId: OLA.id })
@@ -238,6 +292,8 @@ describe('super admin access', () => {
         action: 'platform.revokeSuperAdmin',
         entityId: OLA.id,
         metadata: {
+          // Who did it stays in the row even if that account is later deleted.
+          actor: { id: ADMIN, name: 'Admin', email: 'admin@example.com' },
           details: {
             key: 'platform_revokeSuperAdmin',
             params: { name: 'Ola Nordmann', email: 'ola@nordmann-bil.example' },

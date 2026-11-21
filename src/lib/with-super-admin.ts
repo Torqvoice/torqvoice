@@ -59,9 +59,17 @@ export async function withSuperAdmin<T>(
       // Awaited, unlike withAuth's: these are rare, and the record of who
       // did it matters more than the few milliseconds. logAudit never throws.
       const meta = await requestMeta()
+      const event = options.audit(data)
+      // The row's link to the acting account is cleared if that account is
+      // ever deleted, so who it was is written into the row as well.
+      const actor = {
+        id: session.user.id,
+        name: session.user.name ?? null,
+        email: session.user.email ?? null,
+      }
       await logAudit(
         { userId: session.user.id, organizationId: '' },
-        { ...meta, ...options.audit(data) }
+        { ...meta, ...event, metadata: { ...(event.metadata ?? {}), actor } }
       )
     }
 
