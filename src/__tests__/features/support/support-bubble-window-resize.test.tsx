@@ -4,10 +4,14 @@ import { SupportBubble } from '@/features/support/Components/SupportBubble'
 
 // The support button belongs to a corner of the window. A tab that had been in
 // a small window kept the place the small window forced on it, so making the
-// window large again left the button in the middle of the screen.
+// window large again left the button in the middle of the screen. Below a
+// laptop's width the button is not drawn at all, which is why nobody saw it
+// move until the window was large again.
 
 const LARGE = { width: 1440, height: 900 }
 const SMALL = { width: 390, height: 600 }
+/** Wide enough to keep the button, too short for where it was. */
+const SHORT = { width: 1100, height: 420 }
 const BUTTON = 48
 
 function windowIs(size: { width: number; height: number }) {
@@ -15,15 +19,23 @@ function windowIs(size: { width: number; height: number }) {
   Object.defineProperty(window, 'innerHeight', { configurable: true, value: size.height })
 }
 
+/** Listeners the page has on its media queries, told when the window changes. */
+const mediaListeners = new Set<() => void>()
+
 function resizeWindowTo(size: { width: number; height: number }) {
   act(() => {
     windowIs(size)
     window.dispatchEvent(new Event('resize'))
+    for (const listener of mediaListeners) listener()
   })
 }
 
 function button() {
   return screen.getByRole('button', { name: 'Contact support' })
+}
+
+function expectNoButton() {
+  expect(screen.queryByRole('button', { name: 'Contact support' })).not.toBeInTheDocument()
 }
 
 /** Where the button is, as its distance to each edge of the window. */
@@ -78,19 +90,24 @@ beforeEach(() => {
   window.localStorage.clear()
   vi.stubGlobal(
     'matchMedia',
+    // A computer with a mouse: the only thing that hides the button is a
+    // window narrower than a laptop's.
     vi.fn().mockImplementation((query: string) => ({
-      matches: false,
+      get matches() {
+        return query.includes('max-width: 1023px') && window.innerWidth < 1024
+      },
       media: query,
       addListener: vi.fn(),
       removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
+      addEventListener: (_: string, listener: () => void) => mediaListeners.add(listener),
+      removeEventListener: (_: string, listener: () => void) => mediaListeners.delete(listener),
     }))
   )
   windowIs(LARGE)
 })
 
 afterEach(() => {
+  mediaListeners.clear()
   vi.unstubAllGlobals()
   windowIs({ width: 1024, height: 768 })
 })
@@ -101,7 +118,7 @@ describe('The support button when the window changes size', () => {
     expect(place()).toMatchObject({ right: 24, bottom: 24 })
 
     resizeWindowTo(SMALL)
-    expectFullyOnScreen()
+    expectNoButton()
 
     resizeWindowTo(LARGE)
     expect(place()).toMatchObject({ right: 24, bottom: 24 })
@@ -110,18 +127,20 @@ describe('The support button when the window changes size', () => {
   it('goes to the corner of the large window when the tab was opened in a small one', () => {
     windowIs(SMALL)
     render(<SupportBubble userId="anna" />)
-    expectFullyOnScreen()
+    expectNoButton()
 
     resizeWindowTo(LARGE)
     expect(place()).toMatchObject({ right: 24, bottom: 24 })
   })
 
-  it('stays clear of the bottom navigation in a narrow window, as before', () => {
+  it('stays in its corner, fully on screen, in a window that is only made shorter', () => {
     render(<SupportBubble userId="anna" />)
 
-    resizeWindowTo(SMALL)
+    resizeWindowTo(SHORT)
+    expect(place()).toMatchObject({ right: 24, bottom: 24 })
 
-    expect(place()).toMatchObject({ right: 16, bottom: 72 })
+    resizeWindowTo(LARGE)
+    expect(place()).toMatchObject({ right: 24, bottom: 24 })
   })
 
   it('keeps a dragged button the same distance from the corner it was left near', () => {
@@ -130,8 +149,11 @@ describe('The support button when the window changes size', () => {
     expect(place()).toMatchObject({ left: 1200, top: 200 })
     const chosen = place()
 
-    resizeWindowTo(SMALL)
+    // Too short and too narrow for where it was: pushed inward, not lost.
+    resizeWindowTo(SHORT)
     expectFullyOnScreen()
+    resizeWindowTo(SMALL)
+    expectNoButton()
 
     resizeWindowTo(LARGE)
     expect(place()).toEqual(chosen)
@@ -150,13 +172,13 @@ describe('The support button when the window changes size', () => {
     expect(place()).toMatchObject({ left: 40, bottom: 900 - 700 - BUTTON })
   })
 
-  it('remembers where it was dragged after a reload, also one made in a small window', () => {
+  it('remembers where it was dragged after a reload, also one made in a smaller window', () => {
     const first = render(<SupportBubble userId="anna" />)
     dragButtonTo(1200, 200)
     const chosen = place()
     first.unmount()
 
-    windowIs(SMALL)
+    windowIs(SHORT)
     render(<SupportBubble userId="anna" />)
     expectFullyOnScreen()
 
