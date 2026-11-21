@@ -90,6 +90,24 @@ describe('the rule', () => {
       'customer_reference'
     )
   })
+
+  it('keeps every other line of a frozen block that never listed its lines', () => {
+    const layout = getDefaultInvoiceLayout()
+    const bare = {
+      ...layout,
+      sections: layout.sections.map((s) =>
+        s.id === 'vehicle' || s.id === 'customer' ? { ...s, fields: undefined } : s
+      ),
+    }
+    const frozen = withUnmentionedSwitchGatedOff(bare)
+    for (const id of ['vehicle', 'customer']) {
+      const before = sectionFields(bare.sections.find((s) => s.id === id)!)
+      const after = sectionFields(frozen.sections.find((s) => s.id === id)!)
+      const gated = ['customer_reference', 'fleet_number', 'meter_readings']
+      expect(after).toEqual(before.filter((field) => !gated.includes(field)))
+      expect(after.length).toBeGreaterThan(2)
+    }
+  })
 })
 
 describe('the designer’s field list', () => {

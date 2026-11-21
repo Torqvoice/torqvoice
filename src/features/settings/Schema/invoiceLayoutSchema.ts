@@ -721,7 +721,14 @@ export function withUnmentionedSwitchGatedOff<T extends Partial<InvoiceLayoutCon
     sections: layout.sections.map((section) => {
       const gated = SWITCH_GATED_FIELDS[section.id]
       if (!gated) return section
-      const fields = section.fields ?? []
+      // A section with no list of its own shows every line it has. Writing
+      // only the gated ones in would turn that into a list of nothing else,
+      // so its other lines are written in as they print: on, bar the opt-in.
+      const fields =
+        section.fields ??
+        getBuiltinFieldsForSection(section.id)
+          .filter((f) => !gated.includes(f.id))
+          .map((f) => ({ id: f.id, visible: !isOptInField(section.id, f.id) }))
       const missing = gated.filter((id) => !fields.some((f) => f.id === id))
       if (missing.length === 0) return section
       return { ...section, fields: [...fields, ...missing.map((id) => ({ id, visible: false }))] }
