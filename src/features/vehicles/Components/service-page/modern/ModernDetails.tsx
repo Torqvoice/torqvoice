@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState, type ComponentProps, type ReactNode } from 'react'
+import { flushSync } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Receipt } from 'lucide-react'
@@ -175,15 +176,43 @@ export function ModernDetails(props: ModernDetailsProps) {
       })
       if (!ok) return
     }
+    // Completing a job whose vehicle is being changed goes with the form's
+    // save, and at once: the server asks for the required readings of the
+    // vehicle the save moves it to. Completed on its own, it was asked about
+    // the vehicle it is leaving, and the save after it moved a completed job
+    // that nothing had asked about.
+    if (next === 'completed' && formState.selectedVehicleId !== (vehicleId ?? null)) {
+      formState.lastSaveErrorRef.current = null
+      // Drawn before the save reads it: the form's submit handler sends the
+      // stage it was rendered with.
+      flushSync(() => formState.dirtySetStatus(next))
+      await formState.saveNow()
+      // One of the workshop's own statuses is set once the job is completed
+      // on its new vehicle, never before: refused, it is still on the old one.
+      if (custom && formState.lastSaveErrorRef.current === null) {
+        const result = await updateServiceStatus(record.id, next, custom.id)
+        if (result.success) setCustomStatus(custom)
+        else toast.error(result.error || t('page.failedUpdate'))
+      }
+      return
+    }
     // Completing a job the workshop asks meter readings of is saved on its
     // own too: refused, it names the meters and marks their boxes, and the
     // rest of the form is not held back with it.
     const asksMeters =
       next === 'completed' && (formState.initialData.meters ?? []).some((m) => m.required)
     // A plain move between stages, with none of the workshop's statuses on
-    // either side of it, goes with the form as it always has.
+    // either side of it, goes with the form as it always has. Completing is
+    // saved at once, as a save the person asked for: a refusal for a reading
+    // (a meter made required since the page was opened) then takes them to
+    // the box, where an autosave five seconds later could only mark it.
     if (!locked && !custom && !customStatus && !asksMeters) {
-      formState.dirtySetStatus(next)
+      if (next !== 'completed') {
+        formState.dirtySetStatus(next)
+        return
+      }
+      flushSync(() => formState.dirtySetStatus(next))
+      void formState.saveNow()
       return
     }
     // Everything else is saved on its own, the way the work board moves a

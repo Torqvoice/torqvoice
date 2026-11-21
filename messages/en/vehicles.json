@@ -712,6 +712,7 @@
     "requiredMark": "required",
     "requiredMissing": "Required before the job is completed.",
     "requiredNotCompleted": "Not completed. Fill in: {meters}",
+    "requiredNotMoved": "Not moved. A completed job needs readings on the new vehicle: {meters}. Reopen the job to move it.",
     "requiredNotSent": "Not sent. Fill in: {meters}",
     "requiredNotShared": "No link made. Fill in: {meters}",
     "history": "History",

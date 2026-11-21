@@ -712,6 +712,7 @@
     "requiredMark": "erforderlich",
     "requiredMissing": "Erforderlich, bevor der Auftrag abgeschlossen wird.",
     "requiredNotCompleted": "Nicht abgeschlossen. Bitte ausfüllen: {meters}",
+    "requiredNotMoved": "Nicht verschoben. Ein abgeschlossener Auftrag braucht Zählerstände am neuen Fahrzeug: {meters}. Öffnen Sie den Auftrag wieder, um ihn zu verschieben.",
     "requiredNotSent": "Nicht gesendet. Bitte ausfüllen: {meters}",
     "requiredNotShared": "Kein Link erstellt. Bitte ausfüllen: {meters}",
     "history": "Verlauf",

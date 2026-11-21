@@ -712,6 +712,7 @@
     "requiredMark": "privalomas",
     "requiredMissing": "Privalomas prieš užbaigiant darbą.",
     "requiredNotCompleted": "Neužbaigta. Užpildykite: {meters}",
+    "requiredNotMoved": "Neperkelta. Užbaigtam darbui reikia naujos transporto priemonės rodmenų: {meters}. Atidarykite darbą iš naujo, kad jį perkeltumėte.",
     "requiredNotSent": "Neišsiųsta. Užpildykite: {meters}",
     "requiredNotShared": "Nuoroda nesukurta. Užpildykite: {meters}",
     "history": "Istorija",

@@ -712,6 +712,7 @@
     "requiredMark": "verplicht",
     "requiredMissing": "Verplicht voordat de werkorder wordt afgerond.",
     "requiredNotCompleted": "Niet afgerond. Vul in: {meters}",
+    "requiredNotMoved": "Niet verplaatst. Een afgeronde opdracht heeft standen op het nieuwe voertuig nodig: {meters}. Heropen de opdracht om hem te verplaatsen.",
     "requiredNotSent": "Niet verzonden. Vul in: {meters}",
     "requiredNotShared": "Geen link gemaakt. Vul in: {meters}",
     "history": "Geschiedenis",

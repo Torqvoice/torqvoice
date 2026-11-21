@@ -712,6 +712,7 @@
     "requiredMark": "zorunlu",
     "requiredMissing": "İş tamamlanmadan önce zorunludur.",
     "requiredNotCompleted": "Tamamlanmadı. Doldurun: {meters}",
+    "requiredNotMoved": "Taşınmadı. Tamamlanmış bir iş, yeni araçta okumalar gerektirir: {meters}. Taşımak için işi yeniden açın.",
     "requiredNotSent": "Gönderilmedi. Doldurun: {meters}",
     "requiredNotShared": "Bağlantı oluşturulmadı. Doldurun: {meters}",
     "history": "Geçmiş",

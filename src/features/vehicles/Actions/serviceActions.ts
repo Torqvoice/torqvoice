@@ -720,13 +720,22 @@ export async function updateServiceRecord(input: unknown) {
         },
       })
       if (!existing) throw new Error('Service record not found')
-      // A save that completes the job asks for its required meters first,
-      // on the vehicle it will be on; nothing of the save is written without
-      // them. Any other save is never asked.
-      if (data.status === 'completed' && existing.status !== 'completed') {
-        await assertRequiredMetersRead(organizationId, existing.id, 'complete', {
-          vehicleId: data.vehicleId ?? existing.vehicleId,
-        })
+      // A save that leaves the job completed asks for its required meters
+      // first, on the vehicle it will be on, when it completes the job or
+      // moves a completed one to another vehicle; nothing of the save is
+      // written without them. Any other save is never asked.
+      const vehicleAfter = data.vehicleId !== undefined ? data.vehicleId : existing.vehicleId
+      const statusAfter = data.status ?? existing.status
+      if (
+        statusAfter === 'completed' &&
+        (existing.status !== 'completed' || vehicleAfter !== existing.vehicleId)
+      ) {
+        await assertRequiredMetersRead(
+          organizationId,
+          existing.id,
+          existing.status === 'completed' ? 'move' : 'complete',
+          { vehicleId: vehicleAfter }
+        )
       }
 
       const {

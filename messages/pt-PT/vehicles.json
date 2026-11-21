@@ -712,6 +712,7 @@
     "requiredMark": "obrigatório",
     "requiredMissing": "Obrigatório antes de concluir o serviço.",
     "requiredNotCompleted": "Não concluído. Preencha: {meters}",
+    "requiredNotMoved": "Não movido. Um trabalho concluído precisa de leituras no novo veículo: {meters}. Reabra o trabalho para o mover.",
     "requiredNotSent": "Não enviada. Preencha: {meters}",
     "requiredNotShared": "Nenhum link criado. Preencha: {meters}",
     "history": "Histórico",

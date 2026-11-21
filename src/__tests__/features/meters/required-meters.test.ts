@@ -289,6 +289,36 @@ describe('a save that moves the job to another vehicle and completes it', () => 
   })
 })
 
+describe('a completed job moved to another vehicle', () => {
+  it('is asked for the new vehicle’s required meters, its readings having stayed behind', async () => {
+    world.job = { ...JOB, status: 'completed' }
+    // Read on the old vehicle when it was completed.
+    world.meters[0].readings = [{ id: 'r1', value: 812.5, job: 'job-1' }]
+    world.meters.push({
+      id: 'vm-pto-2',
+      meterTypeId: 't-pto',
+      vehicleId: 'veh-2',
+      equipmentItemId: null,
+      readings: [],
+    })
+    const moved = await missingRequiredMeters('org-1', 'job-1', 'move', { vehicleId: 'veh-2' })
+    expect(moved.map((m) => m.vehicleMeterId)).toEqual(['vm-pto-2'])
+    // An invoice sent already does not let it off: a move is asked as a completion.
+    world.job = { ...JOB, status: 'completed', issuedAt: new Date('2026-11-02T10:00:00Z') }
+    const sent = await missingRequiredMeters('org-1', 'job-1', 'move', { vehicleId: 'veh-2' })
+    expect(sent.map((m) => m.vehicleMeterId)).toEqual(['vm-pto-2'])
+    // Left where it is, it is still left alone.
+    const kept = await missingRequiredMeters('org-1', 'job-1', 'move', { vehicleId: 'veh-1' })
+    expect(kept).toEqual([])
+  })
+
+  it('is let go when the new vehicle asks for nothing', async () => {
+    world.job = { ...JOB, status: 'completed' }
+    const moved = await missingRequiredMeters('org-1', 'job-1', 'move', { vehicleId: 'veh-3' })
+    expect(moved).toEqual([])
+  })
+})
+
 describe('a job made completed', () => {
   it('is asked for every required meter of its vehicle', async () => {
     world.meters[0].readings = [{ id: 'r0', value: 700, job: 'job-0' }]
@@ -322,6 +352,9 @@ describe('the refusal', () => {
     await expect(assertRequiredMetersRead('org-1', 'job-1', 'share')).rejects.toThrow(
       'vehicles.meters.requiredNotShared: PTO hours'
     )
+    await expect(
+      assertRequiredMetersRead('org-1', 'job-1', 'move', { vehicleId: 'veh-1' })
+    ).rejects.toThrow('vehicles.meters.requiredNotMoved: PTO hours')
   })
 
   it('passes when every required reading is there', async () => {

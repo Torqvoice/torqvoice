@@ -712,6 +712,7 @@
     "requiredMark": "obligatoire",
     "requiredMissing": "Obligatoire avant de terminer l'ordre de travail.",
     "requiredNotCompleted": "Non terminé. Renseignez : {meters}",
+    "requiredNotMoved": "Non déplacé. Un travail terminé a besoin de relevés sur le nouveau véhicule : {meters}. Rouvrez le travail pour le déplacer.",
     "requiredNotSent": "Non envoyée. Renseignez : {meters}",
     "requiredNotShared": "Aucun lien créé. Renseignez : {meters}",
     "history": "Historique",

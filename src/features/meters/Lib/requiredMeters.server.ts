@@ -30,19 +30,25 @@ import { type JobMeterView, jobMeterViews } from './meters.server'
  *
  * Left alone, so nothing turns against work already done:
  * - a job completed already: it was completed before the meter was required,
- *   or with its readings; reprints, payments and edits go on as before;
+ *   or with its readings; reprints, payments and edits go on as before. Not
+ *   once a save moves it to another vehicle, whose meters it was never asked
+ *   for: a completed job is moved only with the new vehicle's readings;
  * - a send that issues nothing (the invoice is out already and a re-send
  *   only follows it);
  * - an invoice locked by the workshop's lock rule, on which no reading can be
  *   typed any more: asking for one there could never be answered.
  */
 
-/** Why a job is being finished with, which is what the refusal says. */
-export type RequiredMetersOccasion = 'complete' | 'send' | 'share'
+/**
+ * Why a job is being finished with, which is what the refusal says. `move`
+ * is a completed job being moved to another vehicle, asked as a completion.
+ */
+export type RequiredMetersOccasion = 'complete' | 'move' | 'send' | 'share'
 
 /** The message on each occasion, in `vehicles.meters`. */
 const MESSAGE_KEY: Record<RequiredMetersOccasion, string> = {
   complete: 'requiredNotCompleted',
+  move: 'requiredNotMoved',
   send: 'requiredNotSent',
   share: 'requiredNotShared',
 }
@@ -113,11 +119,15 @@ export async function missingRequiredMeters(
       editUnlockedAt: true,
     },
   })
-  if (!job || job.status === 'completed') return []
+  if (!job) return []
   const vehicleId = options.vehicleId !== undefined ? options.vehicleId : job.vehicleId
+  // A job completed already is left alone on the vehicle it was completed
+  // on. Moved to another one, it is asked again: the new vehicle's required
+  // meters were never asked of it, and its readings stayed with the old one.
+  if (job.status === 'completed' && vehicleId === job.vehicleId) return []
   if (!vehicleId) return []
   // Sending and sharing issue the invoice the way any send does.
-  if (occasion !== 'complete' && !shouldIssue(job, 'sent')) return []
+  if ((occasion === 'send' || occasion === 'share') && !shouldIssue(job, 'sent')) return []
 
   let meters = await jobMeterViews(organizationId, {
     id: job.id,

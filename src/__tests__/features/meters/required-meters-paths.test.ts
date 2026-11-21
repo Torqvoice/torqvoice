@@ -212,6 +212,32 @@ describe('completing a job', () => {
     })
   })
 
+  it('by a save that moves a completed job asks about the vehicle it moves to, and is refused whole', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue({
+      ...JOB,
+      status: 'completed',
+    } as never)
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: 'veh-2' } as never)
+    // The status the page sends with it, or none at all: completed either way.
+    for (const input of [
+      { id: 'job-1', vehicleId: 'veh-2', status: 'completed' },
+      { id: 'job-1', vehicleId: 'veh-2' },
+    ]) {
+      // Said as a move: the job stays completed where it is.
+      expectRefused(await updateServiceRecord(input), 'requiredNotMoved')
+      expect(assertRequiredMetersRead).toHaveBeenLastCalledWith(ORG, 'job-1', 'move', {
+        vehicleId: 'veh-2',
+      })
+    }
+  })
+
+  it('never asks a save that moves a job and leaves it short of completed', async () => {
+    vi.mocked(db.vehicle.findFirst).mockResolvedValue({ id: 'veh-2' } as never)
+    const moved = await updateServiceRecord({ id: 'job-1', vehicleId: 'veh-2', status: 'pending' })
+    expect(moved.requiredMeters).toBeUndefined()
+    expect(assertRequiredMetersRead).not.toHaveBeenCalled()
+  })
+
   it('never stops an ordinary save, or one that keeps a completed job completed', async () => {
     const plain = await updateServiceRecord({
       id: 'job-1',

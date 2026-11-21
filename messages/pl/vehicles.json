@@ -712,6 +712,7 @@
     "requiredMark": "wymagane",
     "requiredMissing": "Wymagane przed zakończeniem zlecenia.",
     "requiredNotCompleted": "Nie zakończono. Uzupełnij: {meters}",
+    "requiredNotMoved": "Nie przeniesiono. Zakończone zlecenie wymaga odczytów na nowym pojeździe: {meters}. Otwórz zlecenie ponownie, aby je przenieść.",
     "requiredNotSent": "Nie wysłano. Uzupełnij: {meters}",
     "requiredNotShared": "Nie utworzono linku. Uzupełnij: {meters}",
     "history": "Historia",

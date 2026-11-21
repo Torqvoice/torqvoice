@@ -712,6 +712,7 @@
     "requiredMark": "obligatorio",
     "requiredMissing": "Obligatorio antes de completar el trabajo.",
     "requiredNotCompleted": "No se ha completado. Rellena: {meters}",
+    "requiredNotMoved": "No se ha movido. Un trabajo completado necesita lecturas en el vehículo nuevo: {meters}. Reabre el trabajo para moverlo.",
     "requiredNotSent": "No se ha enviado. Rellena: {meters}",
     "requiredNotShared": "No se ha creado el enlace. Rellena: {meters}",
     "history": "Historial",

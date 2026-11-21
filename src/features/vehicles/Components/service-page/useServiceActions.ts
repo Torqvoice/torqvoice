@@ -306,11 +306,18 @@ export function useServiceActions({
         router.refresh()
       }
     } else if (result.requiredMeters) {
-      // The save would have completed the job without readings the workshop
-      // requires. Back to the stage it is at, the rest saved by the next
-      // save, and the message names the meters whose boxes are marked.
+      // The save would have completed the job, or moved a completed one,
+      // without readings the workshop requires. Back to the stage it is at,
+      // the rest saved by the next save, and the message names the meters
+      // whose boxes are marked.
       setStatus(initialData.status)
-      if (editRevisionRef.current === revision) markDirty()
+      // The next save is queued only when it can go through: with the stage
+      // put back. A completed job moved to another vehicle stays refused
+      // until the person moves it back or reopens it, and a save every five
+      // seconds would only say so again.
+      if (editRevisionRef.current === revision && payload.status !== initialData.status) {
+        markDirty()
+      }
       refuse(result.error || t('page.failedUpdate'))
       revealRequiredMeters(initialData.id, result.requiredMeters)
     } else {

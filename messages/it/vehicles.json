@@ -712,6 +712,7 @@
     "requiredMark": "obbligatorio",
     "requiredMissing": "Obbligatorio prima di completare il lavoro.",
     "requiredNotCompleted": "Non completato. Compila: {meters}",
+    "requiredNotMoved": "Non spostato. Un lavoro completato richiede letture sul nuovo veicolo: {meters}. Riapri il lavoro per spostarlo.",
     "requiredNotSent": "Non inviata. Compila: {meters}",
     "requiredNotShared": "Nessun link creato. Compila: {meters}",
     "history": "Cronologia",

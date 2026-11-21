@@ -712,6 +712,7 @@
     "requiredMark": "påkrevd",
     "requiredMissing": "Påkrevd før jobben fullføres.",
     "requiredNotCompleted": "Ikke fullført. Fyll ut: {meters}",
+    "requiredNotMoved": "Ikke flyttet. En fullført jobb trenger avlesninger på det nye kjøretøyet: {meters}. Åpne jobben igjen for å flytte den.",
     "requiredNotSent": "Ikke sendt. Fyll ut: {meters}",
     "requiredNotShared": "Ingen lenke laget. Fyll ut: {meters}",
     "history": "Historikk",
