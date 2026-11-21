@@ -109,11 +109,14 @@ export function CustomFieldsForm({
   onValuesReady?: (save: CustomFieldsSave) => void
   onChange?: () => void
   /**
-   * Drawn inside another form (the vehicle's and the customer's dialogs): a
-   * heading and the fields, no card of its own, and nothing at all while the
-   * fields load, so a dialog that turns out to have none never flickers.
+   * Drawn inside another form (the vehicle's and the customer's dialogs), laid
+   * out like that form's own fields: side by side in columns, a long text
+   * across the whole row. `true` is a heading and the fields for a form
+   * without cards (the customer's); `'card'` is a card like the ones beside it
+   * (the vehicle's). Nothing is drawn while the fields load, so a dialog that
+   * turns out to have none never flickers.
    */
-  embedded?: boolean
+  embedded?: boolean | 'card'
   /**
    * The document is locked and the fields are drawn read-only. Saving them is
    * then no step of the page's save at all: nothing can have changed, and a
@@ -159,8 +162,20 @@ export function CustomFieldsForm({
     // header above and of a phone's keyboard below.
     control?.focus({ preventScroll: true })
     const target = wrapper.querySelector<HTMLElement>('[role="alert"]') ?? wrapper
-    target.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
-  }, [reveal])
+    // Inside a dialog only its scrolling body moves: the fields can sit at the
+    // end of it, where the browser would otherwise scroll the dialog itself
+    // to centre them and push its header out of sight.
+    const body = embedded ? target.closest<HTMLElement>('[data-slot="dialog-body"]') : null
+    if (body) {
+      const offset = target.getBoundingClientRect().top - body.getBoundingClientRect().top
+      body.scrollTo?.({
+        top: body.scrollTop + offset - (body.clientHeight - target.offsetHeight) / 2,
+        behavior: 'smooth',
+      })
+    } else {
+      target.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+    }
+  }, [reveal, embedded])
 
   useEffect(() => {
     async function load() {
@@ -338,7 +353,16 @@ export function CustomFieldsForm({
   if (fields.length === 0) return null
 
   const list = (
-    <div ref={card} className="space-y-4">
+    <div
+      ref={card}
+      className={cn(
+        embedded === 'card'
+          ? 'grid gap-4 sm:grid-cols-2 lg:grid-cols-4'
+          : embedded
+            ? 'grid gap-x-8 gap-y-4 md:grid-cols-2'
+            : 'space-y-4'
+      )}
+    >
       {fields.map((field) => {
         const val = values[field.id] ?? field.value ?? ''
         const issue = errors[field.id]
@@ -351,13 +375,32 @@ export function CustomFieldsForm({
           'aria-describedby': hasError ? errorId : undefined,
         }
         return (
-          <div key={field.id} data-testid={`custom-field-${field.id}`} className="space-y-1.5">
-            {field.fieldType !== 'checkbox' && (
-              <Label htmlFor={inputId} className={cn(hasError && 'text-destructive')}>
-                {field.label}
-                {field.required && <span className="text-destructive ml-1">*</span>}
-              </Label>
+          <div
+            key={field.id}
+            data-testid={`custom-field-${field.id}`}
+            className={cn(
+              'min-w-0',
+              embedded ? 'space-y-2' : 'space-y-1.5',
+              embedded && field.fieldType === 'textarea' && 'col-span-full',
+              // Alone in its cell, a tick box lines up with the boxes beside it.
+              embedded && field.fieldType === 'checkbox' && 'flex min-h-9 items-center self-end'
             )}
+          >
+            {field.fieldType !== 'checkbox' &&
+              (embedded ? (
+                // The star sits against the label, as on the form's own fields.
+                <Label htmlFor={inputId} className={cn(hasError && 'text-destructive')}>
+                  <span>
+                    {field.label}
+                    {field.required && ' *'}
+                  </span>
+                </Label>
+              ) : (
+                <Label htmlFor={inputId} className={cn(hasError && 'text-destructive')}>
+                  {field.label}
+                  {field.required && <span className="text-destructive ml-1">*</span>}
+                </Label>
+              ))}
 
             {field.fieldType === 'text' && (
               <Input
@@ -440,10 +483,27 @@ export function CustomFieldsForm({
     </div>
   )
 
+  if (embedded === 'card') {
+    return (
+      <section
+        className="min-w-0 rounded-xl border bg-card"
+        data-testid={`custom-fields-${entityType}`}
+      >
+        <h3 className="border-b px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.07em] text-muted-foreground">
+          {tSettings('formTitle')}
+        </h3>
+        <div className="p-4">{list}</div>
+      </section>
+    )
+  }
+
   if (embedded) {
     return (
-      <div className="space-y-4" data-testid={`custom-fields-${entityType}`}>
-        <h3 className="text-sm font-semibold">{tSettings('formTitle')}</h3>
+      <div className="space-y-4 border-t pt-4" data-testid={`custom-fields-${entityType}`}>
+        {/* Worded and set like the dialog's own headings ("Contact", "Billing"). */}
+        <h3 className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {tSettings('formTitle')}
+        </h3>
         {list}
       </div>
     )
