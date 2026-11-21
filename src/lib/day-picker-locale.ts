@@ -1,5 +1,5 @@
 import type { DayPickerProps } from 'react-day-picker'
-import { de, enUS, es, fr, it, lt, nb, nl, pl, pt, ptBR, ru, tr } from 'react-day-picker/locale'
+import { bg, de, enUS, es, fr, it, lt, nb, nl, pl, pt, ptBR, ru, tr } from 'react-day-picker/locale'
 
 /**
  * The day picker's own locale for each language the app ships. These carry
@@ -11,6 +11,7 @@ import { de, enUS, es, fr, it, lt, nb, nl, pl, pt, ptBR, ru, tr } from 'react-da
 type DayPickerLocale = NonNullable<DayPickerProps['locale']>
 
 const LOCALES: Record<string, DayPickerLocale> = {
+  bg,
   de,
   en: enUS,
   es,
