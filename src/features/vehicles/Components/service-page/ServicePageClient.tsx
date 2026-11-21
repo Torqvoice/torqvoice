@@ -469,7 +469,8 @@ export function ServicePageClient({
       router.refresh()
     } else if (result.requiredMeters) {
       toast.error(result.error)
-      revealRequiredMeters(record.id, result.requiredMeters)
+      // Answered by the person; the box takes the focus once the question has closed.
+      revealRequiredMeters(record.id, result.requiredMeters, { focus: true })
     }
   }, [router, confirmComplete, formState, record.id, t])
 

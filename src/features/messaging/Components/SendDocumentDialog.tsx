@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Check, Copy, Link2, Loader2, Mail, MessageCircle, MessageSquare, Send } from 'lucide-react'
@@ -25,7 +25,10 @@ import { track } from '@/lib/analytics'
 import type { GatedFeature } from '@/lib/with-auth'
 import type { ShareChannelStatus } from '../Actions/getShareChannels'
 import { sendInspectionLink, sendInvoiceLink, sendQuoteLink } from '../Actions/sendDocumentLink'
-import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
+import {
+  canRevealRequiredMeters,
+  revealRequiredMeters,
+} from '@/features/meters/Lib/requiredMetersReveal'
 import { useShareChannels, useWhatsappReach } from '../Lib/useShareChannels'
 
 export type SendDocumentKind = 'quote' | 'invoice' | 'inspection'
@@ -103,6 +106,11 @@ export function SendDocumentDialog({
   const [message, setMessage] = useState('')
   const [sending, setSending] = useState(false)
   const [copied, setCopied] = useState(false)
+  // The boxes a refusal named, shown once the dialog has closed for them.
+  const metersToReveal = useRef<{ vehicleMeterId: string }[] | null>(null)
+  // Read when the answer comes back: the person may have closed it meanwhile.
+  const openRef = useRef(open)
+  openRef.current = open
 
   // Filled from the customer each time the dialog opens, so a number typed
   // for one send is not still there for the next.
@@ -149,6 +157,9 @@ export function SendDocumentDialog({
 
     const sent: string[] = []
     let failed = false
+    // Readings the workshop requires on the job, named by a refusal. Every
+    // channel asks the same of the same invoice, so the rest are not tried.
+    let missingMeters: { vehicleMeterId: string }[] | null = null
     // An action that cannot reach the server throws instead of answering, and
     // is told like any other failure so the other channels still get their go.
     const settle = (result: SendResult | null, done: string, fallback: string) => {
@@ -158,7 +169,8 @@ export function SendDocumentDialog({
       }
       failed = true
       if (!result || !handleGated(result)) toast.error(result?.error || fallback)
-      if (kind === 'invoice') revealRequiredMeters(documentId, result?.requiredMeters)
+      if (kind === 'invoice' && result?.requiredMeters?.length)
+        missingMeters = result.requiredMeters
       return false
     }
 
@@ -171,7 +183,7 @@ export function SendDocumentDialog({
         setEmailOn(false)
       }
     }
-    if (wantsSms) {
+    if (wantsSms && !missingMeters) {
       const result = await SEND_LINK[kind]({
         id: documentId,
         channel: 'sms',
@@ -179,7 +191,7 @@ export function SendDocumentDialog({
       }).catch(() => null)
       if (settle(result, t('smsSent'), t('failedSms'))) setSmsOn(false)
     }
-    if (wantsWhatsapp) {
+    if (wantsWhatsapp && !missingMeters) {
       const result = await SEND_LINK[kind]({
         id: documentId,
         channel: 'whatsapp',
@@ -196,11 +208,32 @@ export function SendDocumentDialog({
     // Done once everything ticked has gone. A channel that failed stays ticked
     // and the dialog stays open, so it can be tried again.
     if (sent.length > 0 && !failed) onOpenChange(false)
+    // Held back for readings: with sending over, the dialog closes to show
+    // their boxes, which take the focus once it has gone (onCloseAutoFocus);
+    // open, it holds the focus inside itself. On a page without the boxes it
+    // stays open with the message. Closed by the person while it was sending,
+    // they have moved on: the boxes are marked and the cursor left alone.
+    else if (missingMeters && !openRef.current) {
+      revealRequiredMeters(documentId, missingMeters, { focus: false })
+    } else if (missingMeters && canRevealRequiredMeters(documentId)) {
+      metersToReveal.current = missingMeters
+      onOpenChange(false)
+    }
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent
+        className="max-w-md"
+        onCloseAutoFocus={(event) => {
+          const meters = metersToReveal.current
+          if (!meters) return
+          metersToReveal.current = null
+          // The focus goes to the first empty box, not back to the button.
+          event.preventDefault()
+          revealRequiredMeters(documentId, meters, { focus: true })
+        }}
+      >
         <form onSubmit={handleSend} className="contents">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">

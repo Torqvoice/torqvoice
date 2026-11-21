@@ -233,7 +233,8 @@ export function ModernDetails(props: ModernDetailsProps) {
       formState.setStatus(previous.status)
       setCustomStatus(previous.custom)
       toast.error(result.error || t('page.failedUpdate'))
-      revealRequiredMeters(record.id, result.requiredMeters)
+      // Pressed by the person: the first empty box takes the focus.
+      revealRequiredMeters(record.id, result.requiredMeters, { focus: true })
     }
   }
 

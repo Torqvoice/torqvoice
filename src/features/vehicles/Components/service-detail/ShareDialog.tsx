@@ -1,13 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Check, Copy, Link2, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
+import {
+  canRevealRequiredMeters,
+  revealRequiredMeters,
+} from '@/features/meters/Lib/requiredMetersReveal'
 import { generatePublicLink, revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
 
 interface ShareDialogProps {
@@ -34,6 +37,11 @@ export function ShareDialog({
   const [generatingLink, setGeneratingLink] = useState(false)
   const [revoking, setRevoking] = useState(false)
   const [copied, setCopied] = useState(false)
+  // The boxes a refusal named, shown once the dialog has closed for them.
+  const metersToReveal = useRef<{ vehicleMeterId: string }[] | null>(null)
+  // Read when the answer comes back: the person may have closed it meanwhile.
+  const openRef = useRef(open)
+  openRef.current = open
 
   const publicUrl =
     publicToken && organizationId
@@ -50,9 +58,19 @@ export function ShareDialog({
       // Handing over a link is a way of sending the invoice.
       onSent?.()
     } else if (result?.requiredMeters) {
-      // The readings the workshop requires come first, named.
+      // The readings the workshop requires come first, named. The dialog
+      // closes to show their boxes, which take the focus once it has gone
+      // (onCloseAutoFocus): open, it holds the focus inside itself. On a page
+      // without the boxes it stays open with the message.
       toast.error(result.error)
-      revealRequiredMeters(recordId, result.requiredMeters)
+      // Closed by the person while the link was being made, they have moved
+      // on: the boxes are marked and the cursor left alone.
+      if (!openRef.current) {
+        revealRequiredMeters(recordId, result.requiredMeters, { focus: false })
+      } else if (canRevealRequiredMeters(recordId)) {
+        metersToReveal.current = result.requiredMeters
+        onOpenChange(false)
+      }
     } else {
       toast.error(tc('shareLink.generateFailed'))
     }
@@ -84,7 +102,18 @@ export function ShareDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md" aria-describedby={undefined}>
+      <DialogContent
+        className="max-w-md"
+        aria-describedby={undefined}
+        onCloseAutoFocus={(event) => {
+          const meters = metersToReveal.current
+          if (!meters) return
+          metersToReveal.current = null
+          // The focus goes to the first empty box, not back to the button.
+          event.preventDefault()
+          revealRequiredMeters(recordId, meters, { focus: true })
+        }}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Link2 className="h-5 w-5" />

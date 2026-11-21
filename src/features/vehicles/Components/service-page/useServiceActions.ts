@@ -319,7 +319,11 @@ export function useServiceActions({
         markDirty()
       }
       refuse(result.error || t('page.failedUpdate'))
-      revealRequiredMeters(initialData.id, result.requiredMeters)
+      // A save they asked for takes them to the first empty box; an autosave,
+      // or one a link is waiting on, only marks the boxes.
+      revealRequiredMeters(initialData.id, result.requiredMeters, {
+        focus: !autosave && !leavingRef.current,
+      })
     } else {
       const message = result.error || t('page.failedUpdate')
       refuse(message, () => modal.open('error', tc('errors.error'), message))

@@ -13,7 +13,7 @@ import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
 import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import { meterReadingKind } from '../Lib/meterAsk'
-import { onRevealRequiredMeters } from '../Lib/requiredMetersReveal'
+import { onRevealRequiredMeters, whenFocusIsFree } from '../Lib/requiredMetersReveal'
 import type { JobMeterView } from '../Lib/meters.server'
 
 /**
@@ -24,9 +24,12 @@ import type { JobMeterView } from '../Lib/meters.server'
  * without meters, or while meters are off.
  *
  * A meter the workshop requires carries the required mark. When the job is
- * refused for a missing reading (completing it, sending or paying its
- * invoice), the boxes named are marked and the first takes the focus, so the
- * reading is typed where the refusal was read.
+ * refused for a missing reading (completing it, sending or sharing its
+ * invoice), the boxes named are marked, and for something the person did the
+ * first takes the focus, so the reading is typed where the refusal was read
+ * (the rule is in requiredMetersReveal.ts). It listens while it draws
+ * nothing too: a meter made required since the page was opened is named by
+ * the refusal, read in by a refresh, and marked when it appears.
  */
 export function JobMeters({
   jobId,
@@ -39,26 +42,10 @@ export function JobMeters({
   locked?: boolean
   labelClassName?: string
 }) {
-  if (meters.length === 0) return null
-  return (
-    <JobMeterList jobId={jobId} meters={meters} locked={locked} labelClassName={labelClassName} />
-  )
-}
-
-function JobMeterList({
-  jobId,
-  meters,
-  locked,
-  labelClassName,
-}: {
-  jobId: string
-  meters: JobMeterView[]
-  locked?: boolean
-  labelClassName?: string
-}) {
   const router = useRouter()
   const box = useRef<HTMLDivElement>(null)
-  // The boxes the last refusal named, and a count that moves the focus once per refusal.
+  // The boxes the last refusal named, and a count that moves the focus once
+  // per refusal the person caused; an autosave's refusal marks without it.
   const [flagged, setFlagged] = useState<{ ids: Set<string>; turn: number }>({
     ids: new Set(),
     turn: 0,
@@ -67,26 +54,37 @@ function JobMeterList({
   shown.current = meters
   useEffect(
     () =>
-      onRevealRequiredMeters(jobId, (ids) => {
-        setFlagged((prev) => ({ ids: new Set(ids), turn: prev.turn + 1 }))
+      onRevealRequiredMeters(jobId, (ids, { focus }) => {
+        setFlagged((prev) => ({ ids: new Set(ids), turn: focus ? prev.turn + 1 : prev.turn }))
         // A meter the page does not show yet (made required, or its item
         // picked, since the page was drawn): read the job again to draw it.
         if (ids.some((id) => !shown.current.some((m) => m.vehicleMeterId === id))) router.refresh()
       }),
     [jobId, router]
   )
-  // The focus moves once per refusal: to the first box it named, as soon as
-  // that box is drawn (after the refresh above, for one not shown yet).
+  // The focus moves once per such refusal: to the first box it named, as soon
+  // as that box is drawn (after the refresh above, for one not shown yet) and
+  // no dialog stands between the person and it.
   const focusedTurn = useRef(0)
+  // Waiting for a dialog to close; dropped only for a newer refusal or when
+  // the list goes, not by the page re-reading the job meanwhile.
+  const pendingFocus = useRef<(() => void) | null>(null)
+  useEffect(() => () => pendingFocus.current?.(), [])
   useEffect(() => {
     if (flagged.turn === focusedTurn.current) return
-    const first = box.current?.querySelector<HTMLInputElement>('input[aria-invalid="true"]')
-    if (!first) return
+    if (!box.current?.querySelector('input[aria-invalid="true"]')) return
     focusedTurn.current = flagged.turn
-    first.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
-    first.focus({ preventScroll: true })
+    pendingFocus.current?.()
+    pendingFocus.current = whenFocusIsFree(() => {
+      pendingFocus.current = null
+      const first = box.current?.querySelector<HTMLInputElement>('input[aria-invalid="true"]')
+      if (!first) return
+      first.scrollIntoView?.({ block: 'center', behavior: 'smooth' })
+      first.focus({ preventScroll: true })
+    })
   }, [flagged, meters])
 
+  if (meters.length === 0) return null
   return (
     <div className="space-y-2" data-testid="job-meters" ref={box}>
       {meters.map((meter) => (
