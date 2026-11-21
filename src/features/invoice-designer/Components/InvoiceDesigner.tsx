@@ -1098,10 +1098,7 @@ export function InvoiceDesigner({
                   stepSection(index, direction)
                 }}
                 className="flex cursor-pointer items-center gap-2 rounded-[7px] py-0.5 pl-1 pr-2 hover:bg-[#f4f5f7]"
-                style={{
-                  background: selected === section.id ? '#eef2ff' : undefined,
-                  opacity: section.visible ? 1 : 0.45,
-                }}
+                style={{ background: selected === section.id ? '#eef2ff' : undefined }}
               >
                 <button
                   type="button"
@@ -1124,6 +1121,11 @@ export function InvoiceDesigner({
                   aria-current={selected === section.id ? 'true' : undefined}
                   onClick={() => setSelected(section.id)}
                   className={`min-w-0 flex-1 truncate rounded py-1.5 text-left text-[13.5px] ${RAIL_FOCUS}`}
+                  // A hidden section is told by its greyed name and its crossed
+                  // eye. The row is not faded as a whole: that took the eye,
+                  // the one thing to click to bring it back, out of sight. The
+                  // grey is dark enough to read on a selected or hovered row.
+                  style={{ color: section.visible ? undefined : '#656a72' }}
                 >
                   {sectionName(section.id)}
                 </button>
@@ -1155,7 +1157,7 @@ export function InvoiceDesigner({
                     patchSection(section.id, { visible: !section.visible })
                   }}
                   className={`rounded px-0.5 ${RAIL_FOCUS}`}
-                  style={{ color: section.visible ? '#5b6068' : '#c9ccd1' }}
+                  style={{ color: '#5b6068' }}
                   title={section.visible ? t('sectionShownHint') : t('sectionHiddenHint')}
                 >
                   {section.visible ? <Eye size={14} /> : <EyeOff size={14} />}
