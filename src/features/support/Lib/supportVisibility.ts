@@ -53,23 +53,43 @@ export function isSupportBubbleHidden(): boolean {
   }
 }
 
-/** Where this person dragged the button to, as the trigger's top-left corner. */
+/**
+ * Where the button sat before its place was kept relative to a corner: the
+ * trigger's top-left corner in pixels. Still read, so a place chosen before
+ * that change is not lost, and never written.
+ */
 export const SUPPORT_POSITION_STORAGE_KEY = 'torqvoice.support.position'
 
+/** The trigger's top-left corner, in pixels from the top-left of the window. */
 export interface SupportPosition {
   x: number
   y: number
 }
 
-export function readSupportPosition(): SupportPosition | null {
+/** Where this person dragged the button to. */
+export const SUPPORT_ANCHOR_STORAGE_KEY = 'torqvoice.support.anchor'
+
+/**
+ * The button's place as a distance to the two window edges it was left
+ * nearest to. Pixels from the top-left only mean something in the window they
+ * were measured in: a place near the bottom right of a large window is off
+ * screen in a small one, and what a small window allows is the middle of a
+ * large one.
+ */
+export interface SupportAnchor {
+  horizontal: 'left' | 'right'
+  /** Distance from that side of the window to the same side of the button. */
+  x: number
+  vertical: 'top' | 'bottom'
+  /** Distance from that edge of the window to the same edge of the button. */
+  y: number
+}
+
+function readStored(key: string): unknown {
   if (typeof window === 'undefined') return null
   try {
-    const raw = window.localStorage.getItem(SUPPORT_POSITION_STORAGE_KEY)
-    if (!raw) return null
-    const parsed = JSON.parse(raw)
-    if (typeof parsed?.x !== 'number' || typeof parsed?.y !== 'number') return null
-    if (!Number.isFinite(parsed.x) || !Number.isFinite(parsed.y)) return null
-    return { x: parsed.x, y: parsed.y }
+    const raw = window.localStorage.getItem(key)
+    return raw ? JSON.parse(raw) : null
   } catch {
     // Corrupt or unreadable storage falls back to the default corner rather
     // than leaving the button unrenderable.
@@ -77,14 +97,33 @@ export function readSupportPosition(): SupportPosition | null {
   }
 }
 
-export function writeSupportPosition(position: SupportPosition | null): void {
+function isDistance(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value)
+}
+
+export function readSupportAnchor(): SupportAnchor | null {
+  const parsed = readStored(SUPPORT_ANCHOR_STORAGE_KEY) as Partial<SupportAnchor> | null
+  if (!parsed || typeof parsed !== 'object') return null
+  if (parsed.horizontal !== 'left' && parsed.horizontal !== 'right') return null
+  if (parsed.vertical !== 'top' && parsed.vertical !== 'bottom') return null
+  if (!isDistance(parsed.x) || !isDistance(parsed.y)) return null
+  return { horizontal: parsed.horizontal, x: parsed.x, vertical: parsed.vertical, y: parsed.y }
+}
+
+/** A place saved by a build that kept pixels from the top-left. */
+export function readLegacySupportPosition(): SupportPosition | null {
+  const parsed = readStored(SUPPORT_POSITION_STORAGE_KEY) as Partial<SupportPosition> | null
+  if (!parsed || typeof parsed !== 'object') return null
+  if (!isDistance(parsed.x) || !isDistance(parsed.y)) return null
+  return { x: parsed.x, y: parsed.y }
+}
+
+export function writeSupportAnchor(anchor: SupportAnchor): void {
   if (typeof window === 'undefined') return
   try {
-    if (position) {
-      window.localStorage.setItem(SUPPORT_POSITION_STORAGE_KEY, JSON.stringify(position))
-    } else {
-      window.localStorage.removeItem(SUPPORT_POSITION_STORAGE_KEY)
-    }
+    window.localStorage.setItem(SUPPORT_ANCHOR_STORAGE_KEY, JSON.stringify(anchor))
+    // Superseded, and would otherwise come back if the new key were cleared.
+    window.localStorage.removeItem(SUPPORT_POSITION_STORAGE_KEY)
     window.dispatchEvent(new Event(SUPPORT_VISIBILITY_EVENT))
   } catch {
     // The position simply will not persist.
