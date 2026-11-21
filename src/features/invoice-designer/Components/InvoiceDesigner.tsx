@@ -1123,8 +1123,9 @@ export function InvoiceDesigner({
                   className={`min-w-0 flex-1 truncate rounded py-1.5 text-left text-[13.5px] ${RAIL_FOCUS}`}
                   // A hidden section is told by its greyed name and its crossed
                   // eye. The row is not faded as a whole: that took the eye,
-                  // the one thing to click to bring it back, out of sight.
-                  style={{ color: section.visible ? undefined : '#6b7078' }}
+                  // the one thing to click to bring it back, out of sight. The
+                  // grey is dark enough to read on a selected or hovered row.
+                  style={{ color: section.visible ? undefined : '#656a72' }}
                 >
                   {sectionName(section.id)}
                 </button>
