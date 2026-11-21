@@ -192,6 +192,7 @@
       "engineCode": "Код на двигателя",
       "hsn": "HSN (ключ на производителя)",
       "tsn": "TSN (ключ на типа)",
+      "fleetNumber": "Гаражен / инвентарен номер",
       "purchaseDate": "Дата на покупка",
       "purchasePrice": "Покупна цена"
     },
@@ -202,6 +203,7 @@
       "total": "Обща сума",
       "mileage": "Пробег при обслужването",
       "invoiceNumber": "Номер на фактурата",
+      "customerReference": "Референция / № на поръчка",
       "notes": "Бележки към обслужването",
       "technician": "Техник"
     }
@@ -211,6 +213,7 @@
     "invalid_email": "Имейл адресът „{value}“ е невалиден и е пропуснат",
     "invalid_vin": "VIN „{value}“ не съдържа 17 знака и е запазен във въведения вид",
     "invalid_type_key": "{field} „{value}“ не е валиден HSN или TSN и е пропуснат",
+    "fleet_number_too_long": "Гаражният / инвентарният номер „{value}“ е по-дълъг от 40 знака; пропуснат е",
     "vehicle_make_model_required": "Липсват марка и модел",
     "vehicle_year_required": "Липсва година",
     "vehicle_year_invalid": "„{value}“ не е валидна година",

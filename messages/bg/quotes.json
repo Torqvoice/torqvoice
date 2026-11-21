@@ -75,6 +75,7 @@
         "mileage": "{count} {unit}"
       }
     },
+    "convertReferenceKept": "Работната поръчка запази собствената си референция / № на поръчка, {job}. Тази от офертата, {quote}, не беше копирана в нея.",
     "convert": "Преобразувай",
     "convertToWorkOrder": "Преобразувай в работна поръчка",
     "cancel": "Отказ",
@@ -89,9 +90,9 @@
       "images": "Изображения",
       "documents": "Документи"
     },
-    "customFieldsSaveFailed": "Персонализираните полета не можаха да бъдат запазени",
     "customFieldsMissing": "Не е запазено. Попълнете: {fields}",
-    "customFieldsNotValid": "Не е запазено. Проверете: {fields}"
+    "customFieldsNotValid": "Не е запазено. Проверете: {fields}",
+    "customFieldsSaveFailed": "Персонализираните полета не можаха да бъдат запазени"
   },
   "form": {
     "newQuote": "Нова оферта",

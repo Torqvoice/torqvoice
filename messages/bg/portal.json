@@ -364,6 +364,7 @@
     "summaryPaid": "Платено",
     "summaryLeft": "Остава за плащане",
     "summaryDue": "Падеж",
+    "summaryReference": "Ваша референция / № на поръчка",
     "summaryDate": "Дата",
     "fullInvoice": "Пълна фактура"
   },
@@ -420,6 +421,7 @@
     "vin": "VIN: {vin}",
     "vinMarine": "HIN: {vin}",
     "typeKey": "HSN/TSN: {typeKey}",
+    "fleetNumber": "Гаражен №: {fleetNumber}",
     "distanceKm": "{value} km",
     "distanceMi": "{value} mi",
     "engineHours": "{value} моточаса",
@@ -598,6 +600,7 @@
     "number": "Номер на офертата",
     "date": "Дата",
     "validUntil": "Валидна до",
+    "reference": "Ваша референция / № на поръчка",
     "vehicle": "Превозно средство",
     "fullQuote": "Пълна оферта",
     "answerTitle": "Сервизът очаква вашия отговор",
