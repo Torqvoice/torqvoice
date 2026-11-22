@@ -5,7 +5,7 @@ import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { Fragment, useState, type ReactNode } from 'react'
-import { ArrowLeft, CalendarClock, ClipboardCheck, Pencil, Shield } from 'lucide-react'
+import { ArrowLeft, CalendarClock, ClipboardCheck, CreditCard, Pencil, Shield } from 'lucide-react'
 import {
   Select,
   SelectContent,
@@ -40,6 +40,12 @@ interface ModernHeroProps {
   onTypeChange?: (type: string) => void
   /** A locked invoice shows the title and type and edits neither. */
   locked?: boolean
+  /**
+   * The page's "Take payment", for somebody who may record one. Given, an
+   * unpaid or part-paid job's payment pill is a button that opens the payment
+   * form; absent (no permission, a locked invoice), the pill only reads.
+   */
+  onTakePayment?: () => void
 }
 
 /** How much of a title the header shows before it is cut. */
@@ -172,6 +178,14 @@ const pill =
   'inline-flex h-6 items-center gap-1 whitespace-nowrap rounded-md border px-2.5 text-xs font-semibold leading-none'
 
 /**
+ * A pill that only says something: its tint and no outline, and the ordinary
+ * arrow. The type dropdown beside it is the box with a border and a chevron,
+ * and the pills that looked like it drew clicks that did nothing. The tint
+ * comes first so the transparent border wins over the one in its colour.
+ */
+const plainPill = (tint: string) => cn(pill, tint, 'cursor-default border-transparent')
+
+/**
  * The top of the overhauled page, and the only header it has: the work order
  * number and how far along the job is, then what the job is and who and what
  * it is for, with everything that can be done to the job beside it. It stays
@@ -191,6 +205,7 @@ export function ModernHero({
   type,
   onTypeChange,
   locked = false,
+  onTakePayment,
 }: ModernHeroProps) {
   const t = useTranslations('service')
   const { formatDate, formatDateTime } = useFormatDate()
@@ -219,6 +234,8 @@ export function ModernHero({
   const promisedAt = record.promisedAt ? new Date(record.promisedAt) : null
   // One rule for the header, the work order list and the board card.
   const promiseOverdue = isPromiseOverdue(record.promisedAt, status)
+
+  const paymentLabel = paymentStatusLabels[paymentStatus] || t('header.unpaid')
 
   const warrantyLabel =
     warranty.warrantyStatus === 'included'
@@ -258,9 +275,11 @@ export function ModernHero({
                   {number ?? titleEditor}
                 </h1>
                 <div className="flex flex-wrap items-center gap-1.5">
+                  {/* Read only. Its stage is changed on the status stepper below,
+                    which has the menus. */}
                   <span
                     // The status's own colour, the one it has in every list.
-                    className={cn(pill, statusBadgeClass('workOrder', status))}
+                    className={plainPill(statusBadgeClass('workOrder', status))}
                     data-status={status}
                     data-testid="service-status"
                   >
@@ -268,9 +287,32 @@ export function ModernHero({
                       ? t(`basicInfo.statusOptions.${statusMessageKeys[status]}`)
                       : status}
                   </span>
-                  <span className={cn(pill, paymentStatusColors[paymentStatus])}>
-                    {paymentStatusLabels[paymentStatus] || t('header.unpaid')}
-                  </span>
+                  {onTakePayment && paymentStatus !== 'paid' ? (
+                    // What is owed is the thing to do something about: the
+                    // same "Take payment" as the money bar along the bottom.
+                    <button
+                      type="button"
+                      data-testid="service-payment"
+                      aria-label={`${paymentLabel}: ${t('modern.moneyBar.takePayment')}`}
+                      title={t('modern.moneyBar.takePayment')}
+                      onClick={onTakePayment}
+                      className={cn(
+                        pill,
+                        paymentStatusColors[paymentStatus],
+                        'cursor-pointer transition-colors hover:border-primary hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+                      )}
+                    >
+                      <CreditCard className="h-3 w-3" aria-hidden="true" />
+                      {paymentLabel}
+                    </button>
+                  ) : (
+                    <span
+                      data-testid="service-payment"
+                      className={plainPill(paymentStatusColors[paymentStatus] ?? '')}
+                    >
+                      {paymentLabel}
+                    </span>
+                  )}
                   {type && onTypeChange && (
                     <Select value={type} onValueChange={onTypeChange} disabled={locked}>
                       <SelectTrigger
@@ -295,11 +337,10 @@ export function ModernHero({
                     <span
                       data-testid="service-promised"
                       suppressHydrationWarning
-                      className={cn(
-                        pill,
+                      className={plainPill(
                         promiseOverdue
-                          ? 'border-amber-500/40 bg-amber-500/15 text-amber-700 dark:text-amber-300'
-                          : 'border-border text-muted-foreground'
+                          ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300'
+                          : 'bg-muted text-muted-foreground'
                       )}
                     >
                       <CalendarClock className="h-3 w-3" aria-hidden="true" />
@@ -309,12 +350,7 @@ export function ModernHero({
                     </span>
                   )}
                   {warrantyLabel && (
-                    <span
-                      className={cn(
-                        pill,
-                        'border-teal-600/25 bg-teal-600/10 text-teal-700 dark:text-teal-300'
-                      )}
-                    >
+                    <span className={plainPill('bg-teal-600/10 text-teal-700 dark:text-teal-300')}>
                       <Shield className="h-3 w-3" aria-hidden="true" />
                       {t('warranty.title')} · {warrantyLabel}
                     </span>
