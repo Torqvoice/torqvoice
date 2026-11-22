@@ -37,6 +37,7 @@
     "placeholder": "Ayarlarda ara…",
     "label": "Ayarlarda ara",
     "empty": "\"{query}\" ile eşleşen ayar yok",
-    "shortcutHint": "Aramak için herhangi bir yerde {shortcut} tuşuna basın"
+    "shortcutHint": "Aramak için herhangi bir yerde {shortcut} tuşuna basın",
+    "resultsHint": "{count, plural, one {# sonuç} other {# sonuç}} · Gezinmek için ↑↓ · Temizlemek için Esc"
   }
 }

@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { PlanFeatures } from '@/lib/features'
 import {
   Select,
@@ -22,6 +23,8 @@ import {
 import { SETTINGS_PAGE_ICONS } from '@/features/settings/Lib/settingsPageIcons'
 import { requestSpotlight } from '@/features/settings/Components/SettingsSpotlight'
 import { useSettingsSearchItems } from '@/features/search/Lib/settingsItems'
+import { useShortcuts } from '@/features/shortcuts/Components/ShortcutsProvider'
+import { claimsPlainKeys } from '@/features/shortcuts/Lib/keys'
 import { prepareQuery, rank, splitByRanges } from '@/features/search/Lib/matcher'
 
 type NavProps = {
@@ -43,12 +46,23 @@ const RESULT_LIMIT = 12
  * fields included, to a short list that opens the page and lands on the
  * thing, so nobody has to guess which page "logo" or "due days" is under.
  * Arrow keys move, Enter opens, Escape clears.
+ *
+ * Beside the content it is given the menu as `children`: the box stays put
+ * while the menu scrolls, a bare slash puts the cursor in it, and what is
+ * found takes the menu's place. Above the content, on a narrow window, the
+ * results open under the box instead.
  */
 function SettingsSearch({
   features,
   isCloud,
   supportEnabled,
-}: Pick<NavProps, 'features' | 'isCloud' | 'supportEnabled'>) {
+  children,
+}: Pick<NavProps, 'features' | 'isCloud' | 'supportEnabled'> & { children?: React.ReactNode }) {
+  const inMenu = children !== undefined
+  // Somebody who switched shortcuts off, or the ones made of a single key,
+  // gets no slash key and no hint of one.
+  const { prefs } = useShortcuts()
+  const slashKey = inMenu && prefs.enabled && prefs.singleKeys
   const t = useTranslations('search.settingsSearch')
   const tSettings = useTranslations('settings')
   const router = useRouter()
@@ -91,12 +105,34 @@ function SettingsSearch({
     }
   }
 
+  // A bare slash from anywhere that is not being typed into. Only the box
+  // beside the content listens, and only while it can be seen.
+  useEffect(() => {
+    if (!slashKey) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || claimsPlainKeys(e)) return
+      if (document.querySelector('[role="dialog"], [role="alertdialog"]')) return
+      const input = inputRef.current
+      if (!input || input.checkVisibility?.() === false) return
+      e.preventDefault()
+      input.focus()
+      input.select()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [slashKey])
+
   const searching = query.trim().length > 0
 
   return (
-    <div className="relative">
-      <div className="relative">
-        <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+    <div className={cn('relative', inMenu && 'flex flex-col')}>
+      <div className={cn('relative', inMenu && 'sticky top-0 z-10 bg-background pb-2')}>
+        <Search
+          className={cn(
+            'pointer-events-none absolute left-3 h-4 w-4 text-muted-foreground',
+            inMenu ? 'top-2.5' : 'top-1/2 -translate-y-1/2'
+          )}
+        />
         <input
           ref={inputRef}
           type="search"
@@ -111,8 +147,21 @@ function SettingsSearch({
           onKeyDown={onKeyDown}
           placeholder={t('placeholder')}
           data-testid="settings-search"
-          className="h-9 w-full rounded-lg border bg-background pr-8 pl-9 text-sm shadow-xs outline-none transition-[border-color,box-shadow] placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/15 [&::-webkit-search-cancel-button]:hidden"
+          className={cn(
+            'peer h-9 w-full rounded-lg border pr-8 pl-9 text-sm outline-none transition-[background-color,border-color,box-shadow] placeholder:text-muted-foreground focus:border-primary/50 focus:ring-2 focus:ring-primary/15 [&::-webkit-search-cancel-button]:hidden',
+            inMenu
+              ? 'border-transparent bg-muted focus:bg-background focus:ring-inset'
+              : 'bg-background shadow-xs'
+          )}
         />
+        {slashKey && !searching && (
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute top-2 right-2 flex h-5 min-w-5 peer-focus:hidden items-center justify-center rounded border bg-background px-1 font-sans text-[11px] font-medium text-muted-foreground"
+          >
+            /
+          </span>
+        )}
         {searching && (
           <button
             type="button"
@@ -120,7 +169,10 @@ function SettingsSearch({
               setQuery('')
               inputRef.current?.focus()
             }}
-            className="absolute top-1/2 right-2 flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+            className={cn(
+              'absolute right-2 flex h-5 w-5 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground',
+              inMenu ? 'top-2' : 'top-1/2 -translate-y-1/2'
+            )}
             aria-label={t('label')}
           >
             <X className="h-3.5 w-3.5" />
@@ -132,14 +184,16 @@ function SettingsSearch({
         <div
           id="settings-search-results"
           role="listbox"
-          className="mt-2 overflow-hidden rounded-lg border bg-popover shadow-md"
+          className={cn(!inMenu && 'mt-2 overflow-hidden rounded-lg border bg-popover shadow-md')}
         >
           {results.length === 0 ? (
-            <p className="px-3 py-4 text-center text-xs text-muted-foreground">
+            <p className="px-3 py-4 text-center text-xs text-muted-foreground" role="status">
               {t('empty', { query: query.trim() })}
             </p>
           ) : (
-            <ul className="max-h-[60vh] overflow-y-auto py-1">
+            <ul
+              className={cn(inMenu ? 'flex flex-col gap-0.5' : 'max-h-[60vh] overflow-y-auto py-1')}
+            >
               {results.map(({ item, match }, i) => {
                 const Icon = item.icon
                 return (
@@ -152,6 +206,7 @@ function SettingsSearch({
                       onClick={() => open(item.href, item.anchor)}
                       className={cn(
                         'flex w-full cursor-pointer items-center gap-3 px-3 py-2 text-left text-sm transition-colors',
+                        inMenu && 'rounded-lg',
                         i === active ? 'bg-primary/10 text-foreground' : 'hover:bg-muted'
                       )}
                     >
@@ -178,14 +233,29 @@ function SettingsSearch({
                           {item.locked ? ` · ${tSettings('nav.pro')}` : ''}
                         </span>
                       </span>
+                      {inMenu && i === active && (
+                        <span
+                          aria-hidden="true"
+                          className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded border bg-background px-1 text-[11px] font-medium text-muted-foreground"
+                        >
+                          ↵
+                        </span>
+                      )}
                     </button>
                   </li>
                 )
               })}
             </ul>
           )}
+          {inMenu && results.length > 0 && (
+            <p className="px-3 pt-3 text-[11px] text-muted-foreground" role="status">
+              {t('resultsHint', { count: results.length })}
+            </p>
+          )}
         </div>
       )}
+      {/* Kept in the page while results show, so it is found again as it was. */}
+      {inMenu && <div hidden={searching}>{children}</div>}
     </div>
   )
 }
@@ -261,60 +331,69 @@ export function SettingsNav({
   }
 
   return (
-    <nav ref={navRef} className="flex flex-col gap-4">
-      <SettingsSearch features={features} isCloud={isCloud} supportEnabled={supportEnabled} />
-      {SETTINGS_CATEGORIES.map((category) => {
-        const visibleItems = pages.filter((p) => p.category === category)
-        if (visibleItems.length === 0) return null
-        return (
-          <div key={category}>
-            <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground/60">
-              {t(`nav.categories.${category}`)}
-            </p>
-            <div className="flex flex-col gap-0.5">
-              {visibleItems.map((item) => {
-                const isActive = pathname === item.href
-                const isLocked = !!(item.gate && features && !features[item.gate])
-                const Icon = SETTINGS_PAGE_ICONS[item.key]
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={isActive ? 'page' : undefined}
-                    className={cn(
-                      'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors',
-                      isActive
-                        ? 'bg-primary/10 text-primary font-medium'
-                        : isLocked
-                          ? 'text-muted-foreground/50 hover:bg-muted/50 hover:text-muted-foreground'
-                          : 'text-muted-foreground hover:bg-muted hover:text-foreground'
-                    )}
-                  >
-                    <Icon className="h-4 w-4 shrink-0" />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        {/* Two lines at most: a long title wraps instead of being cut. */}
-                        <p className={cn('line-clamp-2 min-w-0', isActive && 'font-medium')}>
-                          {t(`nav.items.${item.key}.title`)}
-                        </p>
-                        {isLocked && (
-                          <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
-                            {t('nav.pro')}
-                          </span>
-                        )}
-                        {newPill(item)}
-                      </div>
-                      <p className="hidden text-xs text-muted-foreground lg:line-clamp-2">
-                        {t(`nav.items.${item.key}.description`)}
-                      </p>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          </div>
-        )
-      })}
-    </nav>
+    <SettingsSearch features={features} isCloud={isCloud} supportEnabled={supportEnabled}>
+      <TooltipProvider delayDuration={500}>
+        <nav ref={navRef} className="flex flex-col gap-4 pt-1">
+          {SETTINGS_CATEGORIES.map((category) => {
+            const visibleItems = pages.filter((p) => p.category === category)
+            if (visibleItems.length === 0) return null
+            return (
+              <div key={category}>
+                <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t(`nav.categories.${category}`)}
+                </p>
+                <div className="flex flex-col gap-0.5">
+                  {visibleItems.map((item) => {
+                    const isActive = pathname === item.href
+                    const isLocked = !!(item.gate && features && !features[item.gate])
+                    const Icon = SETTINGS_PAGE_ICONS[item.key]
+                    return (
+                      // What the page is for, on hover and on keyboard focus.
+                      <Tooltip key={item.href}>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href={item.href}
+                            aria-current={isActive ? 'page' : undefined}
+                            className={cn(
+                              // Room above for the search box that stays on top.
+                              'group flex min-h-8 scroll-mt-12 items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors',
+                              isActive
+                                ? 'bg-primary/10 font-semibold text-primary'
+                                : isLocked
+                                  ? 'text-muted-foreground/70 hover:bg-muted/50 hover:text-muted-foreground'
+                                  : 'text-foreground hover:bg-muted'
+                            )}
+                          >
+                            <Icon
+                              className={cn(
+                                'h-4 w-4 shrink-0',
+                                !isActive && 'text-muted-foreground group-hover:text-foreground'
+                              )}
+                            />
+                            {/* Two lines at most: a long title wraps instead of being cut. */}
+                            <span className="line-clamp-2 min-w-0 flex-1">
+                              {t(`nav.items.${item.key}.title`)}
+                            </span>
+                            {isLocked && (
+                              <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
+                                {t('nav.pro')}
+                              </span>
+                            )}
+                            {newPill(item)}
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          {t(`nav.items.${item.key}.description`)}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  })}
+                </div>
+              </div>
+            )
+          })}
+        </nav>
+      </TooltipProvider>
+    </SettingsSearch>
   )
 }

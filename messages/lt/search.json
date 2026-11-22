@@ -37,6 +37,7 @@
     "placeholder": "Ieškoti nustatymų…",
     "label": "Ieškoti nustatymų",
     "empty": "Joks nustatymas neatitinka „{query}“",
-    "shortcutHint": "Paspauskite {shortcut} bet kur, kad ieškotumėte"
+    "shortcutHint": "Paspauskite {shortcut} bet kur, kad ieškotumėte",
+    "resultsHint": "{count, plural, one {# rezultatas} few {# rezultatai} many {# rezultato} other {# rezultatų}} · ↑↓ naršyti · Esc išvalyti"
   }
 }

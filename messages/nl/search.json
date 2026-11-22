@@ -37,6 +37,7 @@
     "placeholder": "Instellingen zoeken…",
     "label": "Instellingen zoeken",
     "empty": "Geen instelling komt overeen met \"{query}\"",
-    "shortcutHint": "Druk overal op {shortcut} om te zoeken"
+    "shortcutHint": "Druk overal op {shortcut} om te zoeken",
+    "resultsHint": "{count, plural, one {# resultaat} other {# resultaten}} · ↑↓ om te navigeren · Esc om te wissen"
   }
 }

@@ -37,6 +37,7 @@
     "placeholder": "Pesquisar definições…",
     "label": "Pesquisar definições",
     "empty": "Nenhuma definição corresponde a \"{query}\"",
-    "shortcutHint": "Prima {shortcut} em qualquer lado para pesquisar"
+    "shortcutHint": "Prima {shortcut} em qualquer lado para pesquisar",
+    "resultsHint": "{count, plural, one {# resultado} other {# resultados}} · ↑↓ para navegar · Esc para limpar"
   }
 }
