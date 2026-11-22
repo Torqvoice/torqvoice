@@ -150,6 +150,25 @@ describe('BarcodeScannerDialog', () => {
     expect(start.mock.calls[1][0]).toBe('usb-cam')
   })
 
+  it('shows the camera error, not a crash, when the scanner fails to start', async () => {
+    start.mockRejectedValue(new Error('NotReadableError: Could not start video source'))
+    getCameras.mockRejectedValue(new Error('NotReadableError: Could not start video source'))
+    renderDialog()
+
+    expect(await screen.findByText('The camera could not start')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Try again' })).toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Enter barcode...' })).toBeInTheDocument()
+  })
+
+  it('hands the scanner a box that fits a short viewfinder', async () => {
+    start.mockResolvedValue(null)
+    renderDialog()
+
+    await vi.waitFor(() => expect(start).toHaveBeenCalledTimes(1))
+    const { qrbox } = start.mock.calls[0][1]
+    expect(qrbox(382, 150)).toEqual({ width: 120, height: 50 })
+  })
+
   it('explains HTTPS without asking for the camera on an insecure page', async () => {
     setSecure(false)
     renderDialog()
