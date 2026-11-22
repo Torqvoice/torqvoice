@@ -1,15 +1,18 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useId, useState } from 'react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Loader2, Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { handleGated } from '@/components/upgrade-gate'
 import {
-  isVehicleLookupAvailable,
+  getVehicleLookupAvailability,
   lookupVehicle,
   type VehicleLookup,
+  type VehicleLookupAvailability,
 } from '@/features/integrations/Actions/vehicleLookupActions'
 
 interface VehicleLookupButtonProps {
@@ -38,6 +41,10 @@ interface VehicleLookupButtonProps {
  * registries exist. The plate button stays visible but disabled without a
  * registry, so a workshop learns one can be connected; the VIN button only
  * appears once something that decodes VINs is.
+ *
+ * The disabled plate button says why on a line of its own, which the row
+ * around it wraps under the field (`flex-wrap`): a tooltip on a disabled
+ * button never appears on a phone.
  */
 export function VehicleLookupButton({
   by,
@@ -49,12 +56,19 @@ export function VehicleLookupButton({
   const t = useTranslations('vehicles.form')
   const [busy, setBusy] = useState(false)
   /** null while the availability check is still in flight. */
-  const [available, setAvailable] = useState<boolean | null>(null)
+  const [availability, setAvailability] = useState<VehicleLookupAvailability | null>(null)
+  const available = availability ? availability[by] : null
+  const reasonId = useId()
 
   useEffect(() => {
     let active = true
-    isVehicleLookupAvailable().then((result) => {
-      if (active) setAvailable(result.success && result.data?.[by] === true)
+    getVehicleLookupAvailability().then((result) => {
+      if (!active) return
+      setAvailability(
+        result.success && result.data
+          ? result.data
+          : { plate: false, vin: false, reason: 'notConnected', canEditSettings: false }
+      )
     })
     return () => {
       active = false
@@ -93,29 +107,87 @@ export function VehicleLookupButton({
   if (by === 'vin' && !available) return null
 
   const label = by === 'vin' ? t('lookupVin') : t('lookupPlate')
+  const unavailable = availability !== null && !available
+  const button = (
+    <Button
+      type="button"
+      variant="outline"
+      size={text ? 'default' : 'icon'}
+      aria-label={label}
+      aria-describedby={unavailable ? reasonId : undefined}
+      data-lookup={by}
+      data-busy={busy || undefined}
+      onClick={handleClick}
+      disabled={busy || !available}
+      className={text ? 'gap-1.5 px-3' : undefined}
+    >
+      {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
+      {text && <span aria-hidden>{text}</span>}
+    </Button>
+  )
+
+  if (unavailable && availability) {
+    return (
+      <>
+        {button}
+        <p id={reasonId} className="basis-full text-xs text-muted-foreground">
+          <LookupUnavailableReason availability={availability} />
+        </p>
+      </>
+    )
+  }
+
   return (
     <Tooltip>
       {/* A disabled button swallows pointer events, so the trigger has to be
           the wrapper rather than the button itself. */}
       <TooltipTrigger asChild>
-        <span className="block">
-          <Button
-            type="button"
-            variant="outline"
-            size={text ? 'default' : 'icon'}
-            aria-label={label}
-            data-lookup={by}
-            data-busy={busy || undefined}
-            onClick={handleClick}
-            disabled={busy || !available}
-            className={text ? 'gap-1.5 px-3' : undefined}
-          >
-            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
-            {text && <span aria-hidden>{text}</span>}
-          </Button>
-        </span>
+        <span className="block">{button}</span>
       </TooltipTrigger>
-      <TooltipContent>{available === false ? t('lookupUnavailable') : label}</TooltipContent>
+      <TooltipContent>{label}</TooltipContent>
     </Tooltip>
+  )
+}
+
+const linkClass = 'font-medium text-primary underline-offset-2 hover:underline'
+
+/**
+ * Why the plate lookup is off, with the way to switch it on for whoever may:
+ * the registry connectors in the integrations catalog, or the plans when the
+ * plan leaves integrations out. No registry is named, since which one fits
+ * depends on the country. Someone who cannot change settings gets the reason
+ * alone.
+ */
+function LookupUnavailableReason({ availability }: { availability: VehicleLookupAvailability }) {
+  const t = useTranslations('vehicles.form')
+  const ts = useTranslations('common.shared')
+  const { reason, canEditSettings } = availability
+  if (reason === 'notInPlan') {
+    return (
+      <>
+        {t('lookupNotInPlan')}
+        {canEditSettings && (
+          <>
+            {' '}
+            <button
+              type="button"
+              className={linkClass}
+              onClick={() => handleGated({ gated: { feature: 'integrations' } })}
+            >
+              {ts('viewPlans')}
+            </button>
+          </>
+        )}
+      </>
+    )
+  }
+  if (!canEditSettings) return <>{t('lookupNeedsRegistryAsk')}</>
+  return (
+    <>
+      {t('lookupNeedsRegistry')}{' '}
+      <Link href="/settings/integrations?category=registry" className={linkClass}>
+        {t('lookupConnectRegistry')}
+      </Link>
+    </>
   )
 }

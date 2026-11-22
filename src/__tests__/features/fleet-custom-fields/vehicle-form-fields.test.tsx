@@ -30,12 +30,12 @@ vi.mock('@/features/customers/Actions/customerActions', () => ({
 }))
 vi.mock('@/features/vehicles/Actions/aiAnalyzeVehicleDocument', () => ({
   aiAnalyzeVehicleDocument: vi.fn(),
-  isVehicleScanAvailable: vi.fn(async () => ({ success: true, data: false })),
+  getVehicleScanAvailability: vi.fn(async () => ({ success: true, data: false })),
 }))
-const isVehicleLookupAvailable = vi.hoisted(() => vi.fn())
+const getVehicleLookupAvailability = vi.hoisted(() => vi.fn())
 const lookupVehicle = vi.hoisted(() => vi.fn())
 vi.mock('@/features/integrations/Actions/vehicleLookupActions', () => ({
-  isVehicleLookupAvailable,
+  getVehicleLookupAvailability,
   lookupVehicle,
 }))
 vi.mock('@/features/vehicles/Actions/photoHandoffActions', () => ({
@@ -128,7 +128,7 @@ const pressSave = async () => {
 
 beforeEach(() => {
   vi.clearAllMocks()
-  isVehicleLookupAvailable.mockResolvedValue({ success: true, data: {} })
+  getVehicleLookupAvailability.mockResolvedValue({ success: true, data: {} })
   vi.mocked(updateVehicle).mockResolvedValue({ success: true } as never)
   save.mockResolvedValue({ success: true, data: { saved: true } })
   loadValues.mockResolvedValue({ success: true, data: FIELDS })

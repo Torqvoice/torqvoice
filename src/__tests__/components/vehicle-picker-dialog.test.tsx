@@ -55,10 +55,10 @@ vi.mock('@/features/customers/Actions/customerActions', () => ({
 }))
 vi.mock('@/features/vehicles/Actions/aiAnalyzeVehicleDocument', () => ({
   aiAnalyzeVehicleDocument: vi.fn(),
-  isVehicleScanAvailable: vi.fn(async () => ({ success: true, data: false })),
+  getVehicleScanAvailability: vi.fn(async () => ({ success: true, data: false })),
 }))
 vi.mock('@/features/integrations/Actions/vehicleLookupActions', () => ({
-  isVehicleLookupAvailable: vi.fn(async () => ({ success: true, data: {} })),
+  getVehicleLookupAvailability: vi.fn(async () => ({ success: true, data: {} })),
   lookupVehicle: vi.fn(),
 }))
 vi.mock('@/features/vehicles/Actions/photoHandoffActions', () => ({
