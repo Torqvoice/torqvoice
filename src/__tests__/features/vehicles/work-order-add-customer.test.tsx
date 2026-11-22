@@ -9,6 +9,7 @@
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { createPortal } from 'react-dom'
 
 // Radix measures the popover's anchor; jsdom has no ResizeObserver, and
 // nothing here needs measuring.
@@ -37,7 +38,8 @@ vi.mock('@/features/customers/Actions/customerActions', () => ({
   createCustomer: vi.fn(),
 }))
 // The new-customer form is its own screen with its own tests; here it stands
-// in as a button that reports the customer it made.
+// in as what it is to the page around it: a form in a portal, outside the
+// work order's form in the document and inside it in React's tree.
 vi.mock('@/features/customers/Components/CustomerForm', () => ({
   CustomerForm: ({
     open,
@@ -48,14 +50,20 @@ vi.mock('@/features/customers/Components/CustomerForm', () => ({
     defaults?: { name?: string }
     onCreated?: (c: { id: string; name: string; company: string | null }) => void
   }) =>
-    open ? (
-      <button
-        type="button"
-        onClick={() => onCreated?.({ id: 'cus-new', name: defaults?.name ?? '', company: null })}
-      >
-        save new customer
-      </button>
-    ) : null,
+    open
+      ? createPortal(
+          <form
+            aria-label="new customer"
+            onSubmit={(e) => {
+              e.preventDefault()
+              onCreated?.({ id: 'cus-new', name: defaults?.name ?? '', company: null })
+            }}
+          >
+            <button type="submit">save new customer</button>
+          </form>,
+          document.body
+        )
+      : null,
 }))
 
 import { BookingAccessProvider } from '@/components/booking-launcher'
@@ -76,35 +84,57 @@ const VEHICLE = {
   customer: null,
 }
 
-function renderCard(
-  over: Partial<Props> & { marine?: boolean; canAddCustomer?: boolean; noVehicle?: boolean } = {}
-) {
-  const { marine, canAddCustomer = true, noVehicle, ...props } = over
+type Over = Partial<Props> & {
+  marine?: boolean
+  canAddCustomer?: boolean
+  noVehicle?: boolean
+  /** The customer the saved vehicle has, as the page read it. */
+  owner?: { id: string; name: string } | null
+}
+
+/** The card inside the work order's form, as the page mounts it. */
+function renderCard(over: Over = {}) {
   const onCustomerAdded = vi.fn()
-  const card = (
-    <BookingAccessProvider value={{ canBook: true, canAddCustomer }}>
-      <JobFactsCard
-        record={
-          {
-            id: 'job-1',
-            vehicle: noVehicle ? null : VEHICLE,
-            customer: null,
-          } as unknown as Props['record']
-        }
-        currencyCode="EUR"
-        initialData={{ id: 'job-1', mileage: 50000, lastReading: 50000 } as Props['initialData']}
-        vehicleName="2013 Land Rover Evoque"
-        selectedVehicleId={noVehicle ? null : 'veh-1'}
-        setSelectedVehicleId={vi.fn()}
-        techName=""
-        canSetCustomer
-        onCustomerAdded={onCustomerAdded}
-        {...props}
-      />
-    </BookingAccessProvider>
-  )
-  render(marine ? <ServiceTypeProvider serviceType="marine">{card}</ServiceTypeProvider> : card)
-  return { onCustomerAdded }
+  const onFormSubmit = vi.fn((e: React.FormEvent) => e.preventDefault())
+  const onFormInput = vi.fn()
+  const tree = (now: Over) => {
+    const { marine, canAddCustomer = true, noVehicle, owner = null, ...props } = now
+    const card = (
+      <BookingAccessProvider value={{ canBook: true, canAddCustomer }}>
+        <form aria-label="work order" onSubmit={onFormSubmit} onInput={onFormInput}>
+          <JobFactsCard
+            record={
+              {
+                id: 'job-1',
+                vehicle: noVehicle ? null : { ...VEHICLE, customer: owner },
+                customer: null,
+              } as unknown as Props['record']
+            }
+            currencyCode="EUR"
+            initialData={
+              { id: 'job-1', mileage: 50000, lastReading: 50000 } as Props['initialData']
+            }
+            vehicleName="2013 Land Rover Evoque"
+            selectedVehicleId={noVehicle ? null : 'veh-1'}
+            setSelectedVehicleId={vi.fn()}
+            techName=""
+            canSetCustomer
+            onCustomerAdded={onCustomerAdded}
+            {...props}
+          />
+        </form>
+      </BookingAccessProvider>
+    )
+    return marine ? <ServiceTypeProvider serviceType="marine">{card}</ServiceTypeProvider> : card
+  }
+  const view = render(tree(over))
+  return {
+    onCustomerAdded,
+    onFormSubmit,
+    onFormInput,
+    /** The page read the job again and hands the card what it found. */
+    reread: (next: Over) => view.rerender(tree({ ...over, ...next })),
+  }
 }
 
 beforeEach(() => {
@@ -154,7 +184,7 @@ describe('a work order whose vehicle has no customer', () => {
       target: { value: 'Karim' },
     })
     fireEvent.click(screen.getByRole('button', { name: 'Add Customer' }))
-    fireEvent.click(screen.getByRole('button', { name: 'save new customer' }))
+    fireEvent.submit(screen.getByRole('form', { name: 'new customer' }))
 
     await waitFor(() =>
       expect(updateVehicle).toHaveBeenCalledWith({ id: 'veh-1', customerId: 'cus-new' })
@@ -179,6 +209,68 @@ describe('a work order whose vehicle has no customer', () => {
     expect(await screen.findByText(SENTENCE)).toBeInTheDocument()
     expect(screen.queryByRole('link', { name: 'Yacine Benali' })).not.toBeInTheDocument()
     expect(onCustomerAdded).not.toHaveBeenCalled()
+  })
+
+  it('leaves the work order alone while a customer is searched for and added', async () => {
+    const { onFormSubmit, onFormInput } = renderCard()
+    fireEvent.click(screen.getByRole('button', { name: 'Add customer' }))
+    // Typing in the search is not an edit of the work order.
+    fireEvent.input(await screen.findByPlaceholderText('Search customers...'), {
+      target: { value: 'Karim' },
+    })
+    expect(onFormInput).not.toHaveBeenCalled()
+
+    // Saving the new customer's form does not submit the work order's.
+    fireEvent.click(screen.getByRole('button', { name: 'Add Customer' }))
+    fireEvent.submit(screen.getByRole('form', { name: 'new customer' }))
+    await waitFor(() =>
+      expect(updateVehicle).toHaveBeenCalledWith({ id: 'veh-1', customerId: 'cus-new' })
+    )
+    expect(onFormSubmit).not.toHaveBeenCalled()
+    expect(onFormInput).not.toHaveBeenCalled()
+  })
+
+  it('still counts a reading typed in the same card as an edit of the work order', () => {
+    const { onFormInput } = renderCard()
+    fireEvent.input(screen.getByLabelText('Mileage'), { target: { value: '50100' } })
+    expect(onFormInput).toHaveBeenCalled()
+  })
+
+  it('offers to add a customer again when the owner is later taken off the vehicle', async () => {
+    const { reread } = renderCard()
+    fireEvent.click(screen.getByRole('button', { name: 'Add customer' }))
+    fireEvent.click(await screen.findByText('Yacine Benali'))
+    expect(await screen.findByRole('link', { name: 'Yacine Benali' })).toBeInTheDocument()
+
+    // The page reads the job again and has the saved owner; later the owner is
+    // removed on the vehicle's own page, and the next read finds none.
+    reread({ owner: { id: 'cus-1', name: 'Yacine Benali' } })
+    expect(screen.getByRole('link', { name: 'Yacine Benali' })).toBeInTheDocument()
+    reread({ owner: null })
+    await waitFor(() => expect(screen.getByText(SENTENCE)).toBeInTheDocument())
+    expect(screen.queryByRole('link', { name: 'Yacine Benali' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add customer' })).toBeInTheDocument()
+  })
+
+  it('does not show the customer added to one vehicle on another', async () => {
+    const { reread } = renderCard()
+    fireEvent.click(screen.getByRole('button', { name: 'Add customer' }))
+    fireEvent.click(await screen.findByText('Yacine Benali'))
+    expect(await screen.findByRole('link', { name: 'Yacine Benali' })).toBeInTheDocument()
+
+    // The job was saved onto another vehicle, one with no owner.
+    reread({
+      record: {
+        id: 'job-1',
+        vehicle: { ...VEHICLE, id: 'veh-2', customer: null },
+        customer: null,
+      } as unknown as Props['record'],
+    })
+    await waitFor(() => expect(screen.getByText(SENTENCE)).toBeInTheDocument())
+    // And back: what was added the first time is not brought out again.
+    reread({})
+    expect(screen.getByText(SENTENCE)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Yacine Benali' })).not.toBeInTheDocument()
   })
 
   it('speaks of the vessel in a marine workshop', () => {

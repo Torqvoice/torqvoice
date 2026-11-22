@@ -191,7 +191,7 @@ export async function ServiceRecordPage({
   // cannot change settings is better off not seeing a link that turns them away.
   const canAddStatus = await canEditSettings(session?.user?.id ?? '', membership?.role)
   // Whether a job whose vehicle has no owner offers to add one.
-  const canSetCustomer = await canEditVehicles(session?.user?.id ?? '', membership?.role)
+  const canSetCustomer = await canEditVehicles(authContext)
 
   const [currentUser, features, aiProvider, dictation, tireHotel] = await Promise.all([
     session?.user?.id

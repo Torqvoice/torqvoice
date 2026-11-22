@@ -197,10 +197,20 @@ export function JobFactsCard({
   // The customer just added here, shown until the page has read the job again.
   const [addedCustomer, setAddedCustomer] = useState<AddedCustomer | null>(null)
   const vehicle = record.vehicle
+  const savedCustomer = record.customer ?? vehicle?.customer ?? null
   const customer =
-    record.customer ??
-    vehicle?.customer ??
+    savedCustomer ??
     (addedCustomer?.vehicleId === vehicle?.id ? (addedCustomer?.customer ?? null) : null)
+  // It stands in only until the page has the saved one, and only for the
+  // vehicle it was put on. Kept past that, an owner removed elsewhere would
+  // come back here on the next read and hide "Add customer".
+  const savedCustomerId = savedCustomer?.id ?? null
+  const savedVehicleId = vehicle?.id ?? null
+  useEffect(() => {
+    setAddedCustomer((added) =>
+      added && (savedCustomerId || added.vehicleId !== savedVehicleId) ? null : added
+    )
+  }, [savedCustomerId, savedVehicleId])
   // The picker can point the job at another vehicle before the save; the facts
   // on this card describe the saved one, so say which is which while they differ.
   const vehicleChanged = Boolean(vehicle && selectedVehicleId && selectedVehicleId !== vehicle.id)

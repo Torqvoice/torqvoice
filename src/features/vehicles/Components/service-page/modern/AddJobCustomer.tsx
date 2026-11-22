@@ -77,7 +77,15 @@ export function AddJobCustomer({
   }
 
   return (
-    <div className="space-y-2">
+    // Its own island inside the work order's form, as the files card is: the
+    // picker's search and the new customer's form are portalled out of the
+    // document's form but still bubble to it in React, where typing would
+    // mark the work order edited and saving the customer would submit it.
+    <div
+      className="space-y-2"
+      onInput={(e) => e.stopPropagation()}
+      onSubmit={(e) => e.stopPropagation()}
+    >
       {/* A second way in for the mouse: the sentence is where people clicked.
           The button under it is the control the keyboard reaches. */}
       <p

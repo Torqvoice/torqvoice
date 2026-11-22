@@ -1,26 +1,26 @@
 import { getCachedMembership } from '@/lib/cached-session'
-import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { hasAllPermissions, PermissionAction, PermissionSubject } from '@/lib/permissions'
+import type { AuthContext } from '@/lib/with-auth'
 
 /**
- * Whether this user may edit vehicles, which is what putting a customer on
- * one is. The same rule `withAuth` applies to `updateVehicle`, asked ahead of
- * time so a page does not offer a button that would be refused.
+ * Whether this person may edit vehicles, which is what putting a customer on
+ * one is. The answer `withAuth` gives `updateVehicle`, asked ahead of time so
+ * a page does not offer a button that would be refused.
  *
- * Owners, admins and super admins always qualify. A member with a custom role
- * needs UPDATE on vehicles; a member with no custom role keeps full access.
+ * Takes the page's auth context (`getAuthContext`), which already knows a
+ * super admin from a session bound to one workshop. As in `withAuth`: super
+ * admins, owners, admins and custom roles marked as admin always pass,
+ * whatever else their role says. Everyone else needs UPDATE on vehicles from
+ * their custom role, and a member with no custom role has no permissions.
  */
 export async function canEditVehicles(
-  userId: string,
-  role: string | null | undefined
+  context: Pick<AuthContext, 'userId' | 'isAdmin'> | null | undefined
 ): Promise<boolean> {
-  if (role === 'owner' || role === 'admin' || role === 'super_admin') return true
-  if (!userId) return false
+  if (!context) return false
+  if (context.isAdmin) return true
 
-  const membership = await getCachedMembership(userId)
-  if (!membership?.roleId) return true
-
-  return hasPermission(membership.customRole?.permissions ?? [], {
-    action: PermissionAction.UPDATE,
-    subject: PermissionSubject.VEHICLES,
-  })
+  const membership = await getCachedMembership(context.userId)
+  return hasAllPermissions(membership?.customRole?.permissions ?? [], [
+    { action: PermissionAction.UPDATE, subject: PermissionSubject.VEHICLES },
+  ])
 }
