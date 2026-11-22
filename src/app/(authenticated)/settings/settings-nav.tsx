@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Search, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import type { PlanFeatures } from '@/lib/features'
 import {
   Select,
@@ -22,6 +23,7 @@ import {
 import { SETTINGS_PAGE_ICONS } from '@/features/settings/Lib/settingsPageIcons'
 import { requestSpotlight } from '@/features/settings/Components/SettingsSpotlight'
 import { useSettingsSearchItems } from '@/features/search/Lib/settingsItems'
+import { useShortcuts } from '@/features/shortcuts/Components/ShortcutsProvider'
 import { claimsPlainKeys } from '@/features/shortcuts/Lib/keys'
 import { prepareQuery, rank, splitByRanges } from '@/features/search/Lib/matcher'
 
@@ -57,6 +59,10 @@ function SettingsSearch({
   children,
 }: Pick<NavProps, 'features' | 'isCloud' | 'supportEnabled'> & { children?: React.ReactNode }) {
   const inMenu = children !== undefined
+  // Somebody who switched shortcuts off, or the ones made of a single key,
+  // gets no slash key and no hint of one.
+  const { prefs } = useShortcuts()
+  const slashKey = inMenu && prefs.enabled && prefs.singleKeys
   const t = useTranslations('search.settingsSearch')
   const tSettings = useTranslations('settings')
   const router = useRouter()
@@ -102,7 +108,7 @@ function SettingsSearch({
   // A bare slash from anywhere that is not being typed into. Only the box
   // beside the content listens, and only while it can be seen.
   useEffect(() => {
-    if (!inMenu) return
+    if (!slashKey) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || claimsPlainKeys(e)) return
       if (document.querySelector('[role="dialog"], [role="alertdialog"]')) return
@@ -114,7 +120,7 @@ function SettingsSearch({
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [inMenu])
+  }, [slashKey])
 
   const searching = query.trim().length > 0
 
@@ -148,7 +154,7 @@ function SettingsSearch({
               : 'bg-background shadow-xs'
           )}
         />
-        {inMenu && !searching && (
+        {slashKey && !searching && (
           <span
             aria-hidden="true"
             className="pointer-events-none absolute top-2 right-2 flex h-5 min-w-5 peer-focus:hidden items-center justify-center rounded border bg-background px-1 font-sans text-[11px] font-medium text-muted-foreground"
@@ -248,7 +254,8 @@ function SettingsSearch({
           )}
         </div>
       )}
-      {!searching && children}
+      {/* Kept in the page while results show, so it is found again as it was. */}
+      {inMenu && <div hidden={searching}>{children}</div>}
     </div>
   )
 }
@@ -325,60 +332,68 @@ export function SettingsNav({
 
   return (
     <SettingsSearch features={features} isCloud={isCloud} supportEnabled={supportEnabled}>
-      <nav ref={navRef} className="flex flex-col gap-4 pt-1">
-        {SETTINGS_CATEGORIES.map((category) => {
-          const visibleItems = pages.filter((p) => p.category === category)
-          if (visibleItems.length === 0) return null
-          return (
-            <div key={category}>
-              <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                {t(`nav.categories.${category}`)}
-              </p>
-              <div className="flex flex-col gap-0.5">
-                {visibleItems.map((item) => {
-                  const isActive = pathname === item.href
-                  const isLocked = !!(item.gate && features && !features[item.gate])
-                  const Icon = SETTINGS_PAGE_ICONS[item.key]
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      aria-current={isActive ? 'page' : undefined}
-                      title={t(`nav.items.${item.key}.description`)}
-                      className={cn(
-                        // Room above for the search box that stays on top.
-                        'group flex min-h-8 scroll-mt-12 items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors',
-                        isActive
-                          ? 'bg-primary/10 font-semibold text-primary'
-                          : isLocked
-                            ? 'text-muted-foreground/70 hover:bg-muted/50 hover:text-muted-foreground'
-                            : 'text-foreground hover:bg-muted'
-                      )}
-                    >
-                      <Icon
-                        className={cn(
-                          'h-4 w-4 shrink-0',
-                          !isActive && 'text-muted-foreground group-hover:text-foreground'
-                        )}
-                      />
-                      {/* Two lines at most: a long title wraps instead of being cut. */}
-                      <span className="line-clamp-2 min-w-0 flex-1">
-                        {t(`nav.items.${item.key}.title`)}
-                      </span>
-                      {isLocked && (
-                        <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
-                          {t('nav.pro')}
-                        </span>
-                      )}
-                      {newPill(item)}
-                    </Link>
-                  )
-                })}
+      <TooltipProvider delayDuration={500}>
+        <nav ref={navRef} className="flex flex-col gap-4 pt-1">
+          {SETTINGS_CATEGORIES.map((category) => {
+            const visibleItems = pages.filter((p) => p.category === category)
+            if (visibleItems.length === 0) return null
+            return (
+              <div key={category}>
+                <p className="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {t(`nav.categories.${category}`)}
+                </p>
+                <div className="flex flex-col gap-0.5">
+                  {visibleItems.map((item) => {
+                    const isActive = pathname === item.href
+                    const isLocked = !!(item.gate && features && !features[item.gate])
+                    const Icon = SETTINGS_PAGE_ICONS[item.key]
+                    return (
+                      // What the page is for, on hover and on keyboard focus.
+                      <Tooltip key={item.href}>
+                        <TooltipTrigger asChild>
+                          <Link
+                            href={item.href}
+                            aria-current={isActive ? 'page' : undefined}
+                            className={cn(
+                              // Room above for the search box that stays on top.
+                              'group flex min-h-8 scroll-mt-12 items-center gap-2.5 rounded-lg px-3 py-1.5 text-sm transition-colors',
+                              isActive
+                                ? 'bg-primary/10 font-semibold text-primary'
+                                : isLocked
+                                  ? 'text-muted-foreground/70 hover:bg-muted/50 hover:text-muted-foreground'
+                                  : 'text-foreground hover:bg-muted'
+                            )}
+                          >
+                            <Icon
+                              className={cn(
+                                'h-4 w-4 shrink-0',
+                                !isActive && 'text-muted-foreground group-hover:text-foreground'
+                              )}
+                            />
+                            {/* Two lines at most: a long title wraps instead of being cut. */}
+                            <span className="line-clamp-2 min-w-0 flex-1">
+                              {t(`nav.items.${item.key}.title`)}
+                            </span>
+                            {isLocked && (
+                              <span className="shrink-0 rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-600">
+                                {t('nav.pro')}
+                              </span>
+                            )}
+                            {newPill(item)}
+                          </Link>
+                        </TooltipTrigger>
+                        <TooltipContent side="right">
+                          {t(`nav.items.${item.key}.description`)}
+                        </TooltipContent>
+                      </Tooltip>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )
-        })}
-      </nav>
+            )
+          })}
+        </nav>
+      </TooltipProvider>
     </SettingsSearch>
   )
 }
