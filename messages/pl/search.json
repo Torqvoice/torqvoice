@@ -37,6 +37,7 @@
     "placeholder": "Szukaj ustawień…",
     "label": "Szukaj ustawień",
     "empty": "Żadne ustawienie nie pasuje do „{query}”",
-    "shortcutHint": "Naciśnij {shortcut} w dowolnym miejscu, aby wyszukać"
+    "shortcutHint": "Naciśnij {shortcut} w dowolnym miejscu, aby wyszukać",
+    "resultsHint": "{count, plural, one {# wynik} few {# wyniki} many {# wyników} other {# wyniku}} · ↑↓, aby nawigować · Esc, aby wyczyścić"
   }
 }

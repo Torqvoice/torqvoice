@@ -37,6 +37,7 @@
     "placeholder": "Cerca impostazioni…",
     "label": "Cerca impostazioni",
     "empty": "Nessuna impostazione corrisponde a \"{query}\"",
-    "shortcutHint": "Premi {shortcut} ovunque per cercare"
+    "shortcutHint": "Premi {shortcut} ovunque per cercare",
+    "resultsHint": "{count, plural, one {# risultato} other {# risultati}} · ↑↓ per navigare · Esc per cancellare"
   }
 }

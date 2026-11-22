@@ -24,11 +24,11 @@ describe('Support in the settings menu', () => {
     expect(linksUnder('General')).not.toContain('/settings/support')
   })
 
-  it('says what the page is for in a line short enough to read whole', () => {
+  it('says what the page is for when the row is pointed at', () => {
     render(<SettingsNav isCloud supportEnabled />)
 
     const row = screen.getByRole('link', { name: /Support/ })
-    expect(row).toHaveTextContent('Get help & the support button')
+    expect(row).toHaveAttribute('title', 'Get help & the support button')
   })
 
   it('stays out of the menu where support requests are switched off', () => {

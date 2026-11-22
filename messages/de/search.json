@@ -37,6 +37,7 @@
     "placeholder": "Einstellungen suchen…",
     "label": "Einstellungen suchen",
     "empty": "Keine Einstellung passt zu „{query}“",
-    "shortcutHint": "Drücken Sie überall {shortcut}, um zu suchen"
+    "shortcutHint": "Drücken Sie überall {shortcut}, um zu suchen",
+    "resultsHint": "{count, plural, one {# Ergebnis} other {# Ergebnisse}} · ↑↓ zum Navigieren · Esc zum Leeren"
   }
 }

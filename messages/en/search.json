@@ -37,6 +37,7 @@
     "placeholder": "Search settings…",
     "label": "Search settings",
     "empty": "No setting matches “{query}”",
-    "shortcutHint": "Press {shortcut} anywhere to search"
+    "shortcutHint": "Press {shortcut} anywhere to search",
+    "resultsHint": "{count, plural, one {# result} other {# results}} · ↑↓ to move · Esc to clear"
   }
 }

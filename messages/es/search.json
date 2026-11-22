@@ -37,6 +37,7 @@
     "placeholder": "Buscar ajustes…",
     "label": "Buscar ajustes",
     "empty": "Ningún ajuste coincide con \"{query}\"",
-    "shortcutHint": "Pulsa {shortcut} en cualquier lugar para buscar"
+    "shortcutHint": "Pulsa {shortcut} en cualquier lugar para buscar",
+    "resultsHint": "{count, plural, one {# resultado} other {# resultados}} · ↑↓ para navegar · Esc para borrar"
   }
 }

@@ -37,6 +37,7 @@
     "placeholder": "Søk i innstillinger…",
     "label": "Søk i innstillinger",
     "empty": "Ingen innstilling passer med «{query}»",
-    "shortcutHint": "Trykk {shortcut} hvor som helst for å søke"
+    "shortcutHint": "Trykk {shortcut} hvor som helst for å søke",
+    "resultsHint": "{count, plural, one {# treff} other {# treff}} · ↑↓ for å navigere · Esc for å tømme"
   }
 }
