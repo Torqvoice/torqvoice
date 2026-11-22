@@ -33,6 +33,7 @@
       "date": "Data",
       "total": "Suma",
       "promised": "Pažadėta",
+      "updated": "Atnaujinta",
       "promisedOverdue": "Pažadėta {date}, vėluoja"
     },
     "emailSubject": "Transporto priemonės būsenos atnaujinimas: {status}",

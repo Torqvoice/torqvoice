@@ -1448,6 +1448,9 @@ export async function getWorkOrders(params: {
                 return {
                   promisedAt: { sort: dir, nulls: 'last' as const },
                 }
+              // When the job itself was last saved, newest first by default.
+              case 'updatedAt':
+                return { updatedAt: dir }
               // Column shows "year make model"; sort make, model, year so
               // identical models group together
               case 'vehicle':

@@ -82,6 +82,8 @@ interface WorkOrder {
   startDateTime: Date | null
   /** When the customer was told the vehicle would be ready. */
   promisedAt: Date | null
+  /** When the job was last saved. */
+  updatedAt: Date
   techName: string | null
   invoiceNumber: string | null
   /** The customer's reference / PO; null unless the workshop uses the field. */
@@ -186,9 +188,24 @@ export function WorkOrdersClient({
   // Filtering by the promise and then hiding it would answer the question
   // without showing the answer, so the column comes along while it is on.
   const showsPromised = shows('promised') || dueToday
-  const visibleColumns = [shows('invoice'), shows('customer'), showsPromised, shows('tech')].filter(
-    Boolean
-  ).length
+  /**
+   * When the job was last changed: the time alone for a change made today,
+   * the date otherwise, in the workshop's own format. The full moment sits on
+   * the tooltip.
+   */
+  const updatedLabel = (r: WorkOrder) => {
+    const updated = new Date(r.updatedAt)
+    return formatDate(updated) === formatDate(new Date())
+      ? formatTime(updated)
+      : formatDate(updated)
+  }
+  const visibleColumns = [
+    shows('invoice'),
+    shows('customer'),
+    showsPromised,
+    shows('updated'),
+    shows('tech'),
+  ].filter(Boolean).length
   const t = useTranslations('workOrders.list')
   const tc = useTranslations('common')
   const serviceLabel = useServiceLabels()
@@ -239,7 +256,11 @@ export function WorkOrdersClient({
 
   const handleSort = useCallback(
     (column: string) => {
-      const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
+      // "Last changed" is asked newest first: its first click sorts that way,
+      // the second turns it round. Every other column starts ascending.
+      const first = column === 'updatedAt' ? 'desc' : 'asc'
+      const second = first === 'asc' ? 'desc' : 'asc'
+      const newOrder = sortBy === column && sortOrder === first ? second : first
       navigate({ sortBy: column, sortOrder: newOrder })
     },
     [navigate, sortBy, sortOrder]
@@ -591,6 +612,20 @@ export function WorkOrdersClient({
                   </button>
                 </TableHead>
               )}
+              {/* When the job was last changed. Off unless asked for; its
+                  first click sorts the newest change to the top. */}
+              {shows('updated') && (
+                <TableHead className="w-[84px]">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('updatedAt')}
+                  >
+                    {t('table.updated')}
+                    <SortIcon column="updatedAt" />
+                  </button>
+                </TableHead>
+              )}
               <TableHead className="w-[90px] text-right">
                 <button
                   type="button"
@@ -707,6 +742,16 @@ export function WorkOrdersClient({
                             ) : (
                               <span className="text-muted-foreground">-</span>
                             )}
+                          </TableCell>
+                        )}
+                        {shows('updated') && (
+                          <TableCell className="text-xs text-muted-foreground">
+                            <span
+                              suppressHydrationWarning
+                              title={formatDateTime(new Date(r.updatedAt))}
+                            >
+                              {updatedLabel(r)}
+                            </span>
                           </TableCell>
                         )}
                         <TableCell className="text-right font-semibold">
