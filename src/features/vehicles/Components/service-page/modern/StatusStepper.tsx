@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { Check, ChevronDown, Plus } from 'lucide-react'
 import {
@@ -70,6 +71,12 @@ export function StatusStepper({
       ? { id: WAITING_PARTS, name: waitingLabel, color: 'amber' }
       : customStatus
 
+  // Which stage's menu is open. The arrow and, for the stage the job is in,
+  // the stage itself open the same menu.
+  const [openMenu, setOpenMenu] = useState<Stage | null>(null)
+  const stageRef = useRef<HTMLButtonElement>(null)
+  const openedFromStage = useRef(false)
+
   return (
     <nav
       aria-label={t('modern.statusLabel')}
@@ -87,61 +94,93 @@ export function StatusStepper({
         const hasMenu = under.length > 0 || stage === 'in-progress'
         const sub = isCurrent ? chosen : null
         const name = sub ? `${label}: ${sub.name}` : label
+        // The stage the job is in opens its menu when it has one, the same
+        // menu as the arrow beside it. One with a status shown under it but
+        // no menu (an archived status alone under its stage) still lifts it,
+        // as it always has. Otherwise there is nothing to do there, so it is
+        // not a control at all: just the step the job is on.
+        const opensMenu = isCurrent && hasMenu
+        const inert = isCurrent && !hasMenu && !sub
+        const inside = (
+          <>
+            <span
+              className={cn(
+                'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold tabular-nums transition-colors',
+                isCurrent &&
+                  'border-primary bg-primary text-primary-foreground ring-4 ring-primary/15',
+                isDone && 'border-primary/60 bg-primary/15 text-primary',
+                !isCurrent &&
+                  !isDone &&
+                  'border-border text-muted-foreground group-hover/step:border-primary/60 group-hover/step:text-foreground group-disabled/step:group-hover/step:border-border group-disabled/step:group-hover/step:text-muted-foreground'
+              )}
+            >
+              {isDone ? <Check className="h-3 w-3" aria-hidden="true" /> : i + 1}
+            </span>
+            {/* On a narrow screen only the current stage is named; the
+                markers still say how many there are and where the job is. */}
+            <span
+              className={cn(
+                'min-w-0 truncate py-px text-[13px] leading-none',
+                isCurrent
+                  ? 'font-semibold text-foreground'
+                  : 'hidden text-muted-foreground group-hover/step:text-foreground group-disabled/step:group-hover/step:text-muted-foreground @2xl:inline'
+              )}
+            >
+              {label}
+            </span>
+            {sub && (
+              <span
+                data-testid="status-sub"
+                className={cn(
+                  'min-w-0 truncate rounded-full border px-2 py-0.5 text-[12px] font-medium leading-none',
+                  statusColorClasses(sub.color).chip
+                )}
+              >
+                {sub.name}
+              </span>
+            )}
+          </>
+        )
         return (
           <div key={stage} className={cn('flex min-w-0 items-center', !isLast && 'flex-1')}>
-            <button
-              type="button"
-              aria-current={isCurrent ? 'step' : undefined}
-              // Named even where only its number shows, for screen readers and
-              // for the tooltip on a stage whose label is cut short.
-              aria-label={name}
-              title={name}
-              onClick={() => {
-                // Clicking the stage a status sits under goes back to the
-                // plain stage, which is how a hold is lifted.
-                if (!isCurrent || sub) onChange(stage, null)
-              }}
-              // Allowed to shrink, so a long label (or a longer language) is
-              // cut with an ellipsis instead of running into the next stage.
-              className="group/step flex min-w-0 cursor-pointer items-center gap-2 rounded-md py-1 pr-1 outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
-            >
-              <span
-                className={cn(
-                  'flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[10px] font-semibold tabular-nums transition-colors',
-                  isCurrent &&
-                    'border-primary bg-primary text-primary-foreground ring-4 ring-primary/15',
-                  isDone && 'border-primary/60 bg-primary/15 text-primary',
-                  !isCurrent &&
-                    !isDone &&
-                    'border-border text-muted-foreground group-hover/step:border-primary/60 group-hover/step:text-foreground group-disabled/step:group-hover/step:border-border group-disabled/step:group-hover/step:text-muted-foreground'
-                )}
+            {inert ? (
+              <div
+                role="group"
+                aria-current="step"
+                aria-label={name}
+                title={name}
+                className="flex min-w-0 items-center gap-2 py-1 pr-1"
               >
-                {isDone ? <Check className="h-3 w-3" aria-hidden="true" /> : i + 1}
-              </span>
-              {/* On a narrow screen only the current stage is named; the
-                  markers still say how many there are and where the job is. */}
-              <span
-                className={cn(
-                  'min-w-0 truncate py-px text-[13px] leading-none',
-                  isCurrent
-                    ? 'font-semibold text-foreground'
-                    : 'hidden text-muted-foreground group-hover/step:text-foreground group-disabled/step:group-hover/step:text-muted-foreground @2xl:inline'
-                )}
+                {inside}
+              </div>
+            ) : (
+              <button
+                ref={opensMenu ? stageRef : undefined}
+                type="button"
+                aria-current={isCurrent ? 'step' : undefined}
+                aria-haspopup={opensMenu ? 'menu' : undefined}
+                aria-expanded={opensMenu ? openMenu === stage : undefined}
+                // Named even where only its number shows, for screen readers and
+                // for the tooltip on a stage whose label is cut short.
+                aria-label={name}
+                title={name}
+                onClick={() => {
+                  if (opensMenu) {
+                    openedFromStage.current = true
+                    setOpenMenu(stage)
+                    return
+                  }
+                  // Clicking the stage a status sits under goes back to the
+                  // plain stage, which is how a hold is lifted.
+                  if (!isCurrent || sub) onChange(stage, null)
+                }}
+                // Allowed to shrink, so a long label (or a longer language) is
+                // cut with an ellipsis instead of running into the next stage.
+                className="group/step flex min-w-0 cursor-pointer items-center gap-2 rounded-md py-1 pr-1 outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-default"
               >
-                {label}
-              </span>
-              {sub && (
-                <span
-                  data-testid="status-sub"
-                  className={cn(
-                    'min-w-0 truncate rounded-full border px-2 py-0.5 text-[12px] font-medium leading-none',
-                    statusColorClasses(sub.color).chip
-                  )}
-                >
-                  {sub.name}
-                </span>
-              )}
-            </button>
+                {inside}
+              </button>
+            )}
 
             {hasMenu && (
               <StageMenu
@@ -154,6 +193,17 @@ export function StatusStepper({
                 chosenId={sub?.id ?? null}
                 isCurrent={isCurrent}
                 onChange={onChange}
+                open={openMenu === stage}
+                onOpenChange={(open) => {
+                  if (open) openedFromStage.current = false
+                  setOpenMenu(open ? stage : null)
+                }}
+                onCloseAutoFocus={(event) => {
+                  // Opened from the stage, focus goes back to the stage.
+                  if (!openedFromStage.current) return
+                  event.preventDefault()
+                  stageRef.current?.focus()
+                }}
               />
             )}
 
@@ -173,8 +223,11 @@ export function StatusStepper({
   )
 }
 
-/** The arrow beside a stage, and the statuses filed under it. */
-function StageMenu({
+/**
+ * The arrow beside a stage, and the statuses filed under it. Uncontrolled
+ * unless `open` is passed, so it can be used on its own.
+ */
+export function StageMenu({
   stage,
   stageLabel,
   waitingLabel,
@@ -184,6 +237,9 @@ function StageMenu({
   chosenId,
   isCurrent,
   onChange,
+  open,
+  onOpenChange,
+  onCloseAutoFocus,
 }: {
   stage: Stage
   stageLabel: string
@@ -195,13 +251,16 @@ function StageMenu({
   chosenId: string | null
   isCurrent: boolean
   onChange: (status: string, custom: WorkOrderStatusOption | null) => void
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  onCloseAutoFocus?: (event: Event) => void
 }) {
   const row = 'flex cursor-pointer items-center gap-2 text-[13px]'
   const tick = (on: boolean) => (
     <Check className={cn('ml-auto h-3.5 w-3.5', on ? 'opacity-100' : 'opacity-0')} />
   )
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={onOpenChange}>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -215,7 +274,7 @@ function StageMenu({
           <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="start" className="min-w-52">
+      <DropdownMenuContent align="start" className="min-w-52" onCloseAutoFocus={onCloseAutoFocus}>
         <DropdownMenuItem className={row} onSelect={() => onChange(stage, null)}>
           <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />
           {stageLabel}

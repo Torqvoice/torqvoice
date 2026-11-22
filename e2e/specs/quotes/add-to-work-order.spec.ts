@@ -258,7 +258,7 @@ test.describe('a finished job is not offered', () => {
 
   /** The status stepper in the work order's header: one button per stage. */
   function stage(page: Page, name: string) {
-    return page.getByTestId('status-stepper').getByRole('button', { name: new RegExp(name) })
+    return page.getByTestId('status-stepper').getByLabel(new RegExp(name))
   }
 
   test.beforeAll(async () => {
@@ -286,7 +286,9 @@ test.describe('a finished job is not offered', () => {
     await page.goto(jobUrl)
     await settle(page)
     await expect(async () => {
-      await stage(page, 'Completed').click()
+      if ((await stage(page, 'Completed').getAttribute('aria-current')) !== 'step') {
+        await stage(page, 'Completed').click()
+      }
       await expect(stage(page, 'Completed')).toHaveAttribute('aria-current', 'step', {
         timeout: 2_000,
       })
