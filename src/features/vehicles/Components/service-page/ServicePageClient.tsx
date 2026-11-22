@@ -12,7 +12,7 @@ import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLock
 import { InvoiceDesignMenu } from './InvoiceDesignMenu'
 import { PayCodeButton } from './PayCodeButton'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
-import { useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from 'react'
+import { memo, useState, useCallback, useMemo, useRef, useEffect, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { sendInvoiceEmail } from '@/features/email/Actions/emailActions'
 import {
@@ -31,6 +31,7 @@ import { InventoryPickerDialog } from '../service-edit/InventoryPickerDialog'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
 import { useSaveShortcut } from '@/hooks/use-save-shortcut'
+import { useStableCallback } from '@/hooks/use-stable-callback'
 import { lookupPartByBarcode } from '@/features/inventory/Actions/lookupPartByBarcode'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -69,13 +70,20 @@ import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
 import { ModernDetails } from './modern/ModernDetails'
 import { useCustomerReferenceEnabled } from '@/components/customer-reference-context'
 import { referenceMissing } from '@/features/customer-reference/Lib/reference'
-import { ModernHero } from './modern/ModernHero'
+import { ModernHero as ModernHeroBase } from './modern/ModernHero'
 import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 import { vehicleName } from '@/lib/vehicle-name'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
+
+/**
+ * Memoized, with the handlers below kept stable for it: the form's state
+ * lives in this component, so it renders on every keystroke in a line, and
+ * the header shows nothing of what is typed there.
+ */
+const ModernHero = memo(ModernHeroBase)
 
 export function ServicePageClient({
   record,
@@ -504,62 +512,139 @@ export function ServicePageClient({
     actions.setShowShareDialog(true)
   }
 
-  // Status reports are a section under the job, outside the form.
-  const statusReportList = (
-    <StatusReportList
-      serviceRecordId={record.id}
-      organizationId={organizationId}
-      vehicleName={formState.vehicleName}
-      customer={
-        customer
-          ? {
-              id: customer.id,
-              name: customer.name,
-              email: customer.email,
-              phone: customer.phone,
-              telegramChatId: customer.telegramChatId || null,
-            }
-          : null
-      }
-      smsEnabled={smsEnabled}
-      emailEnabled={emailEnabled}
-      telegramEnabled={telegramEnabled}
-      initialReports={statusReports}
-    />
+  // Status reports are a section under the job, outside the form. Built once
+  // per change of what they show, so the files card they sit in is not drawn
+  // again on every keystroke elsewhere on the page.
+  const reportsVehicleName = formState.vehicleName
+  const statusReportList = useMemo(
+    () => (
+      <StatusReportList
+        serviceRecordId={record.id}
+        organizationId={organizationId}
+        vehicleName={reportsVehicleName}
+        customer={
+          customer
+            ? {
+                id: customer.id,
+                name: customer.name,
+                email: customer.email,
+                phone: customer.phone,
+                telegramChatId: customer.telegramChatId || null,
+              }
+            : null
+        }
+        smsEnabled={smsEnabled}
+        emailEnabled={emailEnabled}
+        telegramEnabled={telegramEnabled}
+        initialReports={statusReports}
+      />
+    ),
+    [
+      record.id,
+      organizationId,
+      reportsVehicleName,
+      customer,
+      smsEnabled,
+      emailEnabled,
+      telegramEnabled,
+      statusReports,
+    ]
+  )
+  const statusReportsSection = useMemo(
+    () => ({ count: statusReports.length, list: statusReportList }),
+    [statusReports.length, statusReportList]
   )
 
-  // What can be done with the job as a whole, drawn in the header.
-  const headerActionProps = {
-    meetingUrl: videoCall.link?.url ?? null,
-    downloading: actions.downloading,
-    saving: formState.loading,
-    hasUnsavedChanges: formState.hasUnsavedChanges,
-    showSaved: formState.showSaved,
-    onDownloadPDF: async () => {
-      if (!(await checkDates())) return
-      if (formState.hasUnsavedChanges) await actions.saveNow()
-      actions.handleDownloadPDF()
-    },
-    onPreviewPDF: previewInvoice,
-    // The sheet says the job as it stands, so what has been typed goes in first.
-    onPrintWorkOrder: async () => {
-      if (formState.hasUnsavedChanges) await actions.saveNow()
-      setShowWorkOrderPreview(true)
-    },
-    onDelete: actions.handleDelete,
-    onShowEmail: async () => {
-      if (!checkReference()) return
-      if (!(await checkDates())) return
-      if (formState.hasUnsavedChanges) await actions.saveNow()
-      actions.setShowEmailDialog(true)
-    },
-    onShowShare: shareInvoice,
-    onNotifyCustomer: handleNotifyCustomer,
-    hasCustomer: !!customer,
-    designMenu: canChangeIssuedDesign ? (
-      <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
-    ) : undefined,
-  }
+  // What can be done with the job as a whole, drawn in the header. Each
+  // handler keeps its identity and runs its latest version, so the header is
+  // drawn again only when what it shows changes.
+  const onDownloadPDF = useStableCallback(async () => {
+    if (!(await checkDates())) return
+    if (formState.hasUnsavedChanges) await actions.saveNow()
+    actions.handleDownloadPDF()
+  })
+  const onPreviewPDF = useStableCallback(previewInvoice)
+  // The sheet says the job as it stands, so what has been typed goes in first.
+  const onPrintWorkOrder = useStableCallback(async () => {
+    if (formState.hasUnsavedChanges) await actions.saveNow()
+    setShowWorkOrderPreview(true)
+  })
+  const onDelete = useStableCallback(actions.handleDelete)
+  const onShowEmail = useStableCallback(async () => {
+    if (!checkReference()) return
+    if (!(await checkDates())) return
+    if (formState.hasUnsavedChanges) await actions.saveNow()
+    actions.setShowEmailDialog(true)
+  })
+  const onShowShare = useStableCallback(shareInvoice)
+  const onNotifyCustomer = useStableCallback(handleNotifyCustomer)
+  const meetingUrl = videoCall.link?.url ?? null
+  const hasCustomer = !!customer
+  const headerDownloading = actions.downloading
+  const headerSaving = formState.loading
+  const headerUnsaved = formState.hasUnsavedChanges
+  const headerSaved = formState.showSaved
+  const heroActions = useMemo(
+    () => (
+      <>
+        <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
+        <ServiceHeaderActions
+          showSave
+          meetingUrl={meetingUrl}
+          downloading={headerDownloading}
+          saving={headerSaving}
+          hasUnsavedChanges={headerUnsaved}
+          showSaved={headerSaved}
+          onDownloadPDF={onDownloadPDF}
+          onPreviewPDF={onPreviewPDF}
+          onPrintWorkOrder={onPrintWorkOrder}
+          onDelete={onDelete}
+          onShowEmail={onShowEmail}
+          onShowShare={onShowShare}
+          onNotifyCustomer={onNotifyCustomer}
+          hasCustomer={hasCustomer}
+          designMenu={
+            canChangeIssuedDesign ? (
+              <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
+            ) : undefined
+          }
+        />
+      </>
+    ),
+    [
+      record.id,
+      meetingUrl,
+      headerDownloading,
+      headerSaving,
+      headerUnsaved,
+      headerSaved,
+      onDownloadPDF,
+      onPreviewPDF,
+      onPrintWorkOrder,
+      onDelete,
+      onShowEmail,
+      onShowShare,
+      onNotifyCustomer,
+      hasCustomer,
+      canChangeIssuedDesign,
+      designFollowsName,
+    ]
+  )
+  const onTitleChange = useStableCallback((next: string) => {
+    setTitle(next)
+    // Saved the moment the field is left, on its own, not with the
+    // form's autosave five seconds later: a rename followed by the
+    // back arrow inside those seconds was lost. Only a refused save
+    // marks the form dirty, so the ordinary path can try again.
+    void updateServiceRecordTitle(record.id, next).then((result) => {
+      if (result.success) {
+        formState.flashSaved()
+      } else {
+        toast.error(result.error || t('page.failedUpdate'))
+        formState.markDirty()
+      }
+    })
+  })
 
   // The invoice's link as a code for the customer at the desk. One element,
   // drawn wherever a payment is taken: beside "Record payment" and on the
@@ -574,6 +659,28 @@ export function ServicePageClient({
       beforeFirstShare={checkReference}
     />
   ) : null
+
+  // Handlers for the memoized sections of the body: the same function on
+  // every render, or each keystroke would draw every section again.
+  const { setShowPresetPicker, setShowBarcodeScanner } = formState
+  const onOpenPresets = useCallback(() => setShowPresetPicker(true), [setShowPresetPicker])
+  const onScanBarcode = useCallback(() => setShowBarcodeScanner(true), [setShowBarcodeScanner])
+  const onAddFinding = useCallback(() => obsControlsRef.current?.onAddFinding(), [])
+  const onEditFinding = useCallback<NonNullable<WorkOrderJobProps['onEditFinding']>>(
+    (f) => obsControlsRef.current?.onEditFinding(f),
+    []
+  )
+  const onShowExistingObservations = useCallback(
+    () => obsControlsRef.current?.onShowExistingObservations(),
+    []
+  )
+  const onAddFindingForConcern = useCallback(
+    (concernId: string) => obsControlsRef.current?.onAddFinding(concernId),
+    []
+  )
+  const onReferenceChange = useCallback((reference: string) => {
+    referenceTextRef.current = reference
+  }, [])
 
   // The page's body in two halves: the job itself, and the sidebar beside it.
   const jobProps: WorkOrderJobProps = {
@@ -590,21 +697,19 @@ export function ServicePageClient({
     defaultMarkupPercent,
     markupAppliesToInventory,
     hasPresets: laborPresets.length > 0,
-    onOpenPresets: () => formState.setShowPresetPicker(true),
-    onScanBarcode: () => formState.setShowBarcodeScanner(true),
+    onOpenPresets,
+    onScanBarcode,
     aiEnabled,
     vehicleId,
     findings,
-    onAddFinding: () => obsControlsRef.current?.onAddFinding(),
-    onEditFinding: (f) => obsControlsRef.current?.onEditFinding(f),
+    onAddFinding,
+    onEditFinding,
     openObservationsCount: otherObsCount,
-    onShowExistingObservations: () => obsControlsRef.current?.onShowExistingObservations(),
+    onShowExistingObservations,
     jobClock,
     locked: lockState.locked,
     payCode,
-    onReferenceChange: (reference) => {
-      referenceTextRef.current = reference
-    },
+    onReferenceChange,
   }
 
   const sidebarProps: WorkOrderSidebarProps = {
@@ -648,9 +753,24 @@ export function ServicePageClient({
     unsavedMessage: tTaxOffer('saveFirst'),
   })
 
+  const { concerns } = formState
+  const savedConcerns = useMemo(
+    () =>
+      concerns.filter(
+        (c): c is { id: string; description: string; sortOrder: number } =>
+          Boolean(c.id) && Boolean(c.description.trim())
+      ),
+    [concerns]
+  )
+
+  // One object while nothing in it changes: every part and labour line reads
+  // it, and a new one on each render drew them all again.
+  const untaxedDocument = formState.taxRate <= 0
+  const lineTaxValue = useMemo(() => ({ ...lineTax, untaxedDocument }), [lineTax, untaxedDocument])
+
   return (
     <ShopFeeProvider value={shopFee}>
-      <LineTaxProvider value={{ ...lineTax, untaxedDocument: formState.taxRate <= 0 }}>
+      <LineTaxProvider value={lineTaxValue}>
         <WorkshopTaxOfferProvider value={taxOfferValue}>
           <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <ModernHero
@@ -658,28 +778,9 @@ export function ServicePageClient({
               status={formState.status}
               paymentStatus={formState.paymentStatus}
               warranty={formState.warranty}
-              actions={
-                <>
-                  <PresenceChips kind="serviceRecord" id={record.id} className="mr-1" />
-                  <ServiceHeaderActions showSave {...headerActionProps} />
-                </>
-              }
+              actions={heroActions}
               title={title}
-              onTitleChange={(next) => {
-                setTitle(next)
-                // Saved the moment the field is left, on its own, not with the
-                // form's autosave five seconds later: a rename followed by the
-                // back arrow inside those seconds was lost. Only a refused save
-                // marks the form dirty, so the ordinary path can try again.
-                void updateServiceRecordTitle(record.id, next).then((result) => {
-                  if (result.success) {
-                    formState.flashSaved()
-                  } else {
-                    toast.error(result.error || t('page.failedUpdate'))
-                    formState.markDirty()
-                  }
-                })
-              }}
+              onTitleChange={onTitleChange}
               type={record.vehicle ? formState.type : undefined}
               onTypeChange={formState.dirtySetType}
               locked={lockState.locked}
@@ -721,10 +822,7 @@ export function ServicePageClient({
                 serviceRecordId={record.id}
                 locked={lockState.locked}
                 // Saved concerns only, as for findings.
-                concerns={formState.concerns.filter(
-                  (c): c is { id: string; description: string; sortOrder: number } =>
-                    Boolean(c.id) && Boolean(c.description.trim())
-                )}
+                concerns={savedConcerns}
               >
                 <ModernDetails
                   {...jobProps}
@@ -755,16 +853,14 @@ export function ServicePageClient({
                     // A link with `?tab=` opens that tab here.
                     initialTab:
                       isFileTab || requestedTab === 'statusReports' ? requestedTab : undefined,
-                    statusReports: { count: statusReports.length, list: statusReportList },
+                    statusReports: statusReportsSection,
                   }}
                   onPreviewInvoice={previewInvoice}
                   onSendToCustomer={shareInvoice}
                   title={title}
                   aiTranscription={aiTranscription}
                   dictationMode={dictationMode}
-                  onAddFindingForConcern={(concernId) =>
-                    obsControlsRef.current?.onAddFinding(concernId)
-                  }
+                  onAddFindingForConcern={onAddFindingForConcern}
                   scrollToFiles={isFileTab || requestedTab === 'statusReports'}
                 />
               </MaybeFaultCodes>
@@ -777,10 +873,7 @@ export function ServicePageClient({
                   addingObservations={addingObservations}
                   // Saved concerns only: a row still being typed has no id yet, so
                   // there is nothing a finding could point at.
-                  concerns={formState.concerns.filter(
-                    (c): c is { id: string; description: string; sortOrder: number } =>
-                      Boolean(c.id) && Boolean(c.description.trim())
-                  )}
+                  concerns={savedConcerns}
                   onControlsReady={(c) => {
                     obsControlsRef.current = c
                   }}

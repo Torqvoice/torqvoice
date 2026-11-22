@@ -80,12 +80,22 @@ export function PaymentsSection({
   useEffect(() => {
     if (openFormSignal === 0) return
     setShowForm(true)
-    // After the form has been drawn, so the view lands on it and not above it.
+  }, [openFormSignal])
+
+  // The signal the view and the cursor were last moved for. Moved in an
+  // effect of their own, which runs once the form is in the page: asked for
+  // in the same breath as the form, on the next frame, the frame could come
+  // before React had drawn the form, and the cursor stayed on the button.
+  const answeredSignal = useRef(0)
+  useEffect(() => {
+    if (!showForm || answeredSignal.current === openFormSignal) return
+    answeredSignal.current = openFormSignal
+    // After the form has been laid out, so the view lands on it and not above it.
     requestAnimationFrame(() => {
       sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
       formRef.current?.querySelector<HTMLInputElement>('[name="paymentAmount"]')?.focus()
     })
-  }, [openFormSignal])
+  }, [showForm, openFormSignal])
 
   const handleSubmit = async () => {
     if (!formRef.current) return

@@ -1,6 +1,14 @@
 'use client'
 
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useState } from 'react'
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { History, RefreshCw } from 'lucide-react'
@@ -64,14 +72,20 @@ export function FaultCodesJobProvider({
 }) {
   const [entryOpen, setEntryOpen] = useState(false)
   const [sheetCode, setSheetCode] = useState<string | null>(null)
-  const value: JobFaultCodes = {
-    ...info,
-    vehicleId,
-    serviceRecordId,
-    locked,
-    openEntry: () => setEntryOpen(true),
-    openCode: setSheetCode,
-  }
+  // One object while nothing in it changes: the labour card and the findings
+  // read it, and a new one on each render of the page drew them again for
+  // every character typed anywhere on the work order.
+  const value: JobFaultCodes = useMemo(
+    () => ({
+      ...info,
+      vehicleId,
+      serviceRecordId,
+      locked,
+      openEntry: () => setEntryOpen(true),
+      openCode: setSheetCode,
+    }),
+    [info, vehicleId, serviceRecordId, locked]
+  )
   return (
     <Ctx.Provider value={value}>
       {children}
