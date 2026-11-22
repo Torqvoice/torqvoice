@@ -23,6 +23,7 @@ vi.mock('@/lib/db', () => ({
 }))
 
 import {
+  getVehicleLookupAvailability,
   isVehicleLookupAvailable,
   lookupVehicle,
 } from '@/features/integrations/Actions/vehicleLookupActions'
@@ -159,6 +160,30 @@ describe('isVehicleLookupAvailable', () => {
     connected('nhtsa', 'regcheck')
     const res = await isVehicleLookupAvailable()
     expect(res).toMatchObject({ success: true, data: { plate: false, vin: false } })
+  })
+})
+
+describe('getVehicleLookupAvailability', () => {
+  it('says no registry answers to a plate when only a VIN decoder is connected', async () => {
+    connected('nhtsa')
+    const res = await getVehicleLookupAvailability()
+    expect(res).toMatchObject({
+      success: true,
+      data: { plate: false, vin: true, reason: 'notConnected', canEditSettings: true },
+    })
+  })
+
+  it('names the plan as the reason when it has no integrations', async () => {
+    vi.mocked(getFeatures).mockResolvedValue({ integrations: false } as never)
+    connected('regcheck')
+    const res = await getVehicleLookupAvailability()
+    expect(res).toMatchObject({ success: true, data: { plate: false, reason: 'notInPlan' } })
+  })
+
+  it('gives no reason when a registry answers to a plate', async () => {
+    connected('regcheck')
+    const res = await getVehicleLookupAvailability()
+    expect(res).toMatchObject({ success: true, data: { plate: true, reason: null } })
   })
 })
 

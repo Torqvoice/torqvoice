@@ -30,12 +30,12 @@ vi.mock('@/features/customers/Actions/customerActions', () => ({
 }))
 vi.mock('@/features/vehicles/Actions/aiAnalyzeVehicleDocument', () => ({
   aiAnalyzeVehicleDocument: vi.fn(),
-  isVehicleScanAvailable: vi.fn(async () => ({ success: true, data: false })),
+  getVehicleScanAvailability: vi.fn(async () => ({ success: true, data: false })),
 }))
-const isVehicleLookupAvailable = vi.hoisted(() => vi.fn())
+const getVehicleLookupAvailability = vi.hoisted(() => vi.fn())
 const lookupVehicle = vi.hoisted(() => vi.fn())
 vi.mock('@/features/integrations/Actions/vehicleLookupActions', () => ({
-  isVehicleLookupAvailable,
+  getVehicleLookupAvailability,
   lookupVehicle,
 }))
 vi.mock('@/features/vehicles/Actions/photoHandoffActions', () => ({
@@ -94,7 +94,7 @@ function renderForm(props: Partial<React.ComponentProps<typeof VehicleForm>> = {
 beforeEach(() => {
   vi.clearAllMocks()
   // No registry connected unless a test connects one.
-  isVehicleLookupAvailable.mockResolvedValue({ success: true, data: {} })
+  getVehicleLookupAvailability.mockResolvedValue({ success: true, data: {} })
 })
 
 describe('edit vehicle dialog', () => {
@@ -327,7 +327,7 @@ describe('adding a vehicle', () => {
   })
 
   it('asks the registry when Enter is pressed in the plate field', async () => {
-    isVehicleLookupAvailable.mockResolvedValue({ success: true, data: { plate: true } })
+    getVehicleLookupAvailability.mockResolvedValue({ success: true, data: { plate: true } })
     lookupVehicle.mockResolvedValue({ success: true, data: null })
     renderNew()
     await waitFor(() => expect(screen.getByRole('button', { name: 'Look up plate' })).toBeEnabled())
@@ -344,7 +344,7 @@ describe('adding a vehicle', () => {
   })
 
   it('does not save the form on a second Enter while the registry is still answering', async () => {
-    isVehicleLookupAvailable.mockResolvedValue({ success: true, data: { plate: true } })
+    getVehicleLookupAvailability.mockResolvedValue({ success: true, data: { plate: true } })
     // The registry never answers in this test.
     lookupVehicle.mockReturnValue(new Promise(() => undefined))
     renderNew()
@@ -370,7 +370,7 @@ describe('adding a vehicle', () => {
 
   it('asks nothing on Enter without a registry', async () => {
     renderNew()
-    await waitFor(() => expect(isVehicleLookupAvailable).toHaveBeenCalled())
+    await waitFor(() => expect(getVehicleLookupAvailability).toHaveBeenCalled())
     const plate = screen.getByLabelText('License Plate')
     expect(screen.getByRole('button', { name: 'Look up plate' })).toBeDisabled()
     fireEvent.change(plate, { target: { value: 'AB12345' } })

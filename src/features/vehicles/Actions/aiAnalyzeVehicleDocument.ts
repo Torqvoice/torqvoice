@@ -1,6 +1,8 @@
 'use server'
 
 import { withAuth } from '@/lib/with-auth'
+import { getFeatures } from '@/lib/features'
+import { canEditSettings } from '@/lib/settings-access'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { visionCompletion } from '@/lib/ai'
@@ -43,6 +45,40 @@ export async function isVehicleScanAvailable() {
   return withAuth(async ({ organizationId }) => isAiConfigured(organizationId), {
     requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
   })
+}
+
+export interface VehicleScanAvailability {
+  available: boolean
+  /** Set when scanning is off: the plan leaves AI out, or no AI provider is set up. */
+  reason: 'notInPlan' | 'notConfigured' | null
+  /** Whether this person may open settings to change that, so the line may link there. */
+  canEditSettings: boolean
+}
+
+/**
+ * The same answer as `isVehicleScanAvailable`, plus why scanning is off and
+ * whether this person could switch it on. A new name rather than a new shape
+ * for the old one: a tab opened before the deploy still reads a boolean.
+ */
+export async function getVehicleScanAvailability() {
+  return withAuth(
+    async ({ organizationId, userId, role, isAdmin }): Promise<VehicleScanAvailability> => {
+      const editor = isAdmin || (await canEditSettings(userId, role))
+      if (await isAiConfigured(organizationId))
+        return { available: true, reason: null, canEditSettings: editor }
+      // A provider can only be connected on a plan with AI, so without one
+      // the plan is the reason, not the missing key.
+      const features = await getFeatures(organizationId)
+      return {
+        available: false,
+        reason: features.ai ? 'notConfigured' : 'notInPlan',
+        canEditSettings: editor,
+      }
+    },
+    {
+      requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.VEHICLES }],
+    }
+  )
 }
 
 function validHsn(value: string): string | undefined {

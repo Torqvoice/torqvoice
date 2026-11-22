@@ -1128,7 +1128,8 @@ export function VehicleForm({
                     <Label htmlFor="licensePlate">
                       {isMarine ? t('licensePlateMarine') : t('licensePlate')}
                     </Label>
-                    <div className="flex gap-2">
+                    {/* Wraps so the lookup's reason, when it is off, sits under the field */}
+                    <div className="flex flex-wrap gap-2">
                       <Input
                         id="licensePlate"
                         name="licensePlate"
