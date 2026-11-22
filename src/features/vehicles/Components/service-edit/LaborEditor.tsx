@@ -5,7 +5,7 @@ import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/Sho
 import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
 import { useLineTax } from '@/features/settings/Components/LineTaxContext'
 import { laborTaxable } from '@/lib/taxable-lines'
-import { useRef, useCallback, useState, useEffect } from 'react'
+import { memo, useRef, useCallback, useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -73,7 +73,17 @@ interface LaborEditorProps {
   guideStock?: LaborGuideStock
 }
 
-function SortableLaborRow({
+// Stable, so the drag context keeps its identity between renders and a row
+// that did not change is not drawn again.
+const POINTER_SENSOR_OPTIONS = { activationConstraint: { distance: 5 } }
+const KEYBOARD_SENSOR_OPTIONS = { coordinateGetter: sortableKeyboardCoordinates }
+
+/**
+ * Memoized: typing in one line used to draw every line of the job again. A
+ * row is drawn again only when its own line, or its place in the list, changes,
+ * which is why the handlers take the index instead of closing over it.
+ */
+const SortableLaborRow = memo(function SortableLaborRow({
   id,
   labor,
   index,
@@ -82,22 +92,23 @@ function SortableLaborRow({
   onToggleTax,
   currencyCode,
   rateLabel,
-  t,
   dragEnabled,
 }: {
   id: string
   labor: ServiceLaborInput
   index: number
   updateLabor: (index: number, field: keyof ServiceLaborInput, value: string | number) => void
-  onDelete: () => void
+  onDelete: (index: number) => void
   /** Flips whether the job's tax is charged on this line. */
-  onToggleTax: () => void
+  onToggleTax: (index: number) => void
   currencyCode: string
   /** Pre-formatted "Rate (kr/hr)" header, which needs the currency symbol. */
   rateLabel: string
-  t: (key: string) => string
   dragEnabled: boolean
 }) {
+  // Read here, not handed down: a prop has to keep its identity for the row
+  // to be left alone, and nothing promises that of a translator.
+  const t = useTranslations('service.labor')
   const formatCurrency = useFormatCurrency()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -163,7 +174,10 @@ function SortableLaborRow({
               {isService ? t('serviceTag') : t('hourlyTag')}
             </button>
           )}
-          <LineTaxToggle taxable={laborTaxable(labor, applies)} onToggle={onToggleTax} />
+          <LineTaxToggle
+            taxable={laborTaxable(labor, applies)}
+            onToggle={() => onToggleTax(index)}
+          />
         </div>
         <FieldRow label={isService || isFee ? t('qty') : t('hours')}>
           <Input
@@ -198,7 +212,7 @@ function SortableLaborRow({
             variant="ghost"
             size="icon"
             className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
-            onClick={onDelete}
+            onClick={() => onDelete(index)}
             aria-label={t('deleteRow')}
           >
             <Trash2 className="h-4 w-4" />
@@ -207,7 +221,7 @@ function SortableLaborRow({
       </div>
     </div>
   )
-}
+})
 
 export function LaborEditor({
   laborItems,
@@ -247,8 +261,8 @@ export function LaborEditor({
   }
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(PointerSensor, POINTER_SENSOR_OPTIONS),
+    useSensor(KeyboardSensor, KEYBOARD_SENSOR_OPTIONS)
   )
 
   const handleDragEnd = useCallback(
@@ -424,11 +438,10 @@ export function LaborEditor({
                     labor={labor}
                     index={i}
                     updateLabor={updateLabor}
-                    onDelete={() => deleteLabor(i)}
-                    onToggleTax={() => toggleLaborTax(i)}
+                    onDelete={deleteLabor}
+                    onToggleTax={toggleLaborTax}
                     currencyCode={currencyCode}
                     rateLabel={t('rate', { currency: cs })}
-                    t={t}
                     dragEnabled
                   />
                 ))}
@@ -442,11 +455,10 @@ export function LaborEditor({
                 labor={labor}
                 index={i}
                 updateLabor={updateLabor}
-                onDelete={() => deleteLabor(i)}
-                onToggleTax={() => toggleLaborTax(i)}
+                onDelete={deleteLabor}
+                onToggleTax={toggleLaborTax}
                 currencyCode={currencyCode}
                 rateLabel={t('rate', { currency: cs })}
-                t={t}
                 dragEnabled={false}
               />
             ))

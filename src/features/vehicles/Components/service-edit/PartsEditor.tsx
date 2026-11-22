@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useCallback, useState, useEffect, useId, useMemo } from 'react'
+import { memo, useRef, useCallback, useState, useEffect, useId, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -69,7 +69,19 @@ interface PartsEditorProps {
   markupAppliesToInventory?: boolean
 }
 
-function SortablePartRow({
+const NO_INVENTORY: PartSuggestion[] = []
+
+// Stable, so the drag context keeps its identity between renders and a row
+// that did not change is not drawn again.
+const POINTER_SENSOR_OPTIONS = { activationConstraint: { distance: 5 } }
+const KEYBOARD_SENSOR_OPTIONS = { coordinateGetter: sortableKeyboardCoordinates }
+
+/**
+ * Memoized: typing in one line used to draw every line of the job again. A
+ * row is drawn again only when its own line, or its place in the list, changes,
+ * which is why the handlers take the index instead of closing over it.
+ */
+const SortablePartRow = memo(function SortablePartRow({
   id,
   part,
   index,
@@ -77,7 +89,6 @@ function SortablePartRow({
   onDelete,
   onToggleTax,
   currencyCode,
-  t,
   dragEnabled,
   inventoryParts,
   onSelectSuggestion,
@@ -96,17 +107,19 @@ function SortablePartRow({
     value: string | number,
     options?: { commit?: boolean }
   ) => void
-  onDelete: () => void
+  onDelete: (index: number) => void
   /** Flips whether the job's tax is charged on this line. */
-  onToggleTax: () => void
+  onToggleTax: (index: number) => void
   currencyCode: string
   inventoryParts: PartSuggestion[]
   onSelectSuggestion: (index: number, part: PartSuggestion) => void
   defaultMarkupPercent: number
   markupAppliesToInventory: boolean
-  t: (key: string) => string
   dragEnabled: boolean
 }) {
+  // Read here, not handed down: a prop has to keep its identity for the row
+  // to be left alone, and nothing promises that of a translator.
+  const t = useTranslations('service.parts')
   const formatCurrency = useFormatCurrency()
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id,
@@ -184,7 +197,10 @@ function SortablePartRow({
                 onSelect={(picked) => onSelectSuggestion(index, picked)}
               />
             </div>
-            <LineTaxToggle taxable={partTaxable(part, applies)} onToggle={onToggleTax} />
+            <LineTaxToggle
+              taxable={partTaxable(part, applies)}
+              onToggle={() => onToggleTax(index)}
+            />
           </div>
         </FieldRow>
         <FieldRow label={t('qty')}>
@@ -256,7 +272,7 @@ function SortablePartRow({
             variant="ghost"
             size="icon"
             className="h-9 w-9 shrink-0 text-muted-foreground hover:text-destructive"
-            onClick={onDelete}
+            onClick={() => onDelete(index)}
             aria-label={t('deleteRow')}
           >
             <Trash2 className="h-4 w-4" />
@@ -265,7 +281,7 @@ function SortablePartRow({
       </div>
     </div>
   )
-}
+})
 
 export function PartsEditor({
   partItems,
@@ -274,7 +290,7 @@ export function PartsEditor({
   partsSubtotal,
   currencyCode,
   hasInventory,
-  inventoryParts = [],
+  inventoryParts = NO_INVENTORY,
   onOpenInventory,
   onScanBarcode,
   defaultMarkupPercent = 0,
@@ -343,8 +359,8 @@ export function PartsEditor({
   }
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    useSensor(PointerSensor, POINTER_SENSOR_OPTIONS),
+    useSensor(KeyboardSensor, KEYBOARD_SENSOR_OPTIONS)
   )
 
   const handleDragEnd = useCallback(
@@ -471,10 +487,9 @@ export function PartsEditor({
                     part={part}
                     index={i}
                     updatePart={updatePart}
-                    onDelete={() => deletePart(i)}
-                    onToggleTax={() => togglePartTax(i)}
+                    onDelete={deletePart}
+                    onToggleTax={togglePartTax}
                     currencyCode={currencyCode}
-                    t={t}
                     dragEnabled
                     inventoryParts={inventoryParts}
                     onSelectSuggestion={handleSelectSuggestion}
@@ -493,10 +508,9 @@ export function PartsEditor({
                 part={part}
                 index={i}
                 updatePart={updatePart}
-                onDelete={() => deletePart(i)}
-                onToggleTax={() => togglePartTax(i)}
+                onDelete={deletePart}
+                onToggleTax={togglePartTax}
                 currencyCode={currencyCode}
-                t={t}
                 dragEnabled={false}
                 inventoryParts={inventoryParts}
                 onSelectSuggestion={handleSelectSuggestion}
