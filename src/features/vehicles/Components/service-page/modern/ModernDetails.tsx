@@ -1,12 +1,22 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, type ComponentProps, type ReactNode } from 'react'
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentProps,
+  type ReactNode,
+} from 'react'
 import { flushSync } from 'react-dom'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { Receipt } from 'lucide-react'
 import { AppCard } from '@/components/app-card'
 import { useConfirm } from '@/components/confirm-dialog'
+import { useStableCallback } from '@/hooks/use-stable-callback'
 import { Badge } from '@/components/ui/badge'
 import { SharedLinkCard } from '@/components/shared-link-card'
 import { CustomFieldsForm } from '@/features/custom-fields/Components/CustomFieldsForm'
@@ -23,24 +33,49 @@ import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal
 import { PaymentsSection } from '../../service-detail/PaymentsSection'
 import { ServiceFindingsSection } from '../../service-detail/ServiceFindingsSection'
 import { paymentStatusColors, paymentStatusLabels } from '../../service-detail/types'
-import { ConcernsSection } from '../../service-edit/ConcernsSection'
-import { InvoiceDetailsSection } from '../../service-edit/InvoiceDetailsSection'
-import { LaborEditor } from '../../service-edit/LaborEditor'
+import { ConcernsSection as ConcernsSectionBase } from '../../service-edit/ConcernsSection'
+import { InvoiceDetailsSection as InvoiceDetailsSectionBase } from '../../service-edit/InvoiceDetailsSection'
+import { LaborEditor as LaborEditorBase } from '../../service-edit/LaborEditor'
 import { servicePartFromFluid } from '../../labor-guide/guide-lines'
-import { NotesSection } from '../../service-edit/NotesSection'
-import { PartsEditor } from '../../service-edit/PartsEditor'
-import { ScheduleTimesSection } from '../../service-edit/ScheduleTimesSection'
+import { NotesSection as NotesSectionBase } from '../../service-edit/NotesSection'
+import { PartsEditor as PartsEditorBase } from '../../service-edit/PartsEditor'
+import { ScheduleTimesSection as ScheduleTimesSectionBase } from '../../service-edit/ScheduleTimesSection'
 import { TotalsSection } from '../../service-edit/TotalsSection'
-import { VideoCallSection } from '../VideoCallSection'
-import { WarrantySection } from '../WarrantySection'
+import { VideoCallSection as VideoCallSectionBase } from '../VideoCallSection'
+import { WarrantySection as WarrantySectionBase } from '../WarrantySection'
 import type { WorkOrderJobProps, WorkOrderSidebarProps } from './details-props'
-import { ActivityCard } from './ActivityCard'
-import { FilesMediaCard } from './FilesMediaCard'
-import { JobFactsCard } from './JobFactsCard'
+import { ActivityCard as ActivityCardBase } from './ActivityCard'
+import { FilesMediaCard as FilesMediaCardBase } from './FilesMediaCard'
+import { JobFactsCard as JobFactsCardBase } from './JobFactsCard'
 import { MoneyBar, MoneyLine } from './MoneyBar'
 import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
-import { StatusStepper } from './StatusStepper'
+import { StatusStepper as StatusStepperBase } from './StatusStepper'
 import { vehicleName } from '@/lib/vehicle-name'
+
+/**
+ * The sections of the page, memoized. The form's state lives at the top of
+ * the page, so every keystroke in a line renders this component; without
+ * these, it also rendered every card on the page, the ones that show nothing
+ * of what was typed included. Each is drawn again only when something it is
+ * handed changes, which is why the handlers below keep their identity.
+ */
+const StatusStepper = memo(StatusStepperBase)
+const JobFactsCard = memo(JobFactsCardBase)
+const ConcernsSection = memo(ConcernsSectionBase)
+const LaborEditor = memo(LaborEditorBase)
+const PartsEditor = memo(PartsEditorBase)
+const FilesMediaCard = memo(FilesMediaCardBase)
+const NotesSection = memo(NotesSectionBase)
+const ScheduleTimesSection = memo(ScheduleTimesSectionBase)
+const InvoiceDetailsSection = memo(InvoiceDetailsSectionBase)
+const WarrantySection = memo(WarrantySectionBase)
+const VideoCallSection = memo(VideoCallSectionBase)
+const ActivityCard = memo(ActivityCardBase)
+const CustomFieldsFormMemo = memo(CustomFieldsForm)
+const JobClockSectionMemo = memo(JobClockSection)
+
+const NO_FINDINGS: NonNullable<WorkOrderJobProps['findings']> = []
+const NO_NOTIFICATIONS: NonNullable<WorkOrderSidebarProps['notificationHistory']> = []
 
 export interface ModernDetailsProps
   extends WorkOrderJobProps,
@@ -77,7 +112,7 @@ export interface ModernDetailsProps
   dictationMode?: 'ai' | 'choice'
   /** Opens the finding form already pointed at one concern. */
   onAddFindingForConcern?: (concernId: string) => void
-  files: Omit<ComponentProps<typeof FilesMediaCard>, 'serviceRecordId' | 'customerId'>
+  files: Omit<ComponentProps<typeof FilesMediaCardBase>, 'serviceRecordId' | 'customerId'>
   onPreviewInvoice: () => void
   onSendToCustomer: () => void
 }
@@ -128,11 +163,11 @@ export function ModernDetails(props: ModernDetailsProps) {
     currencyCode,
     unitSystem = 'metric',
     vehicleId,
-    findings = [],
+    findings = NO_FINDINGS,
     tireSet = null,
     tireHotelEnabled = false,
     tireThresholds,
-    notificationHistory = [],
+    notificationHistory = NO_NOTIFICATIONS,
   } = props
   const t = useTranslations('service')
   const tClock = useTranslations('timeTracking.job')
@@ -242,6 +277,43 @@ export function ModernDetails(props: ModernDetailsProps) {
     }
   }
 
+  // The same handlers on every render, for the memoized sections: each runs
+  // the version from the latest render, so nothing it reads is stale.
+  const onStepperChange = useStableCallback(
+    (next: string, custom: WorkOrderStatusOption | null) => void changeStatus(next, custom)
+  )
+  const { flashSaved, dirtySetPartItems, dirtySetLaborItems, setShowInventoryPicker } = formState
+  const onReferenceSaved = useCallback(() => {
+    flashSaved()
+    router.refresh()
+  }, [flashSaved, router])
+  const onCustomerAdded = useCallback(() => router.refresh(), [router])
+  const onAddGuidePart = useCallback(
+    (line: Parameters<typeof servicePartFromFluid>[0]) =>
+      dirtySetPartItems((prev) => [servicePartFromFluid(line), ...prev]),
+    [dirtySetPartItems]
+  )
+  const onOpenInventory = useCallback(() => setShowInventoryPicker(true), [setShowInventoryPicker])
+  const clockLaborDescription = tClock('laborDescription')
+  const { defaultLaborRate } = props
+  const addClockLabor = useCallback(
+    (hours: number) =>
+      dirtySetLaborItems((prev) => [
+        ...prev,
+        {
+          description: clockLaborDescription,
+          hours,
+          rate: defaultLaborRate,
+          total: Math.round(hours * defaultLaborRate * 100) / 100,
+          pricingType: 'hourly' as const,
+        },
+      ]),
+    [dirtySetLaborItems, clockLaborDescription, defaultLaborRate]
+  )
+  const onTogglePaid = useStableCallback(actions.handleTogglePaid)
+  const helperIds = useMemo(() => record.helpers?.map((h) => h.technicianId), [record.helpers])
+  const vehicleLabel = record.vehicle ? `${vehicleName(record.vehicle)}` : undefined
+
   // Internal notes on a locked invoice. The form's save is refused there, but
   // these notes are never printed or shared, so they are saved on their own,
   // a moment after the typing stops. Unlocked, they go with the form as always.
@@ -252,22 +324,21 @@ export function ModernDetails(props: ModernDetailsProps) {
     if (result.success) formState.flashSaved()
     else toast.error(t('page.failedUpdate'))
   }
-  const onNotesChange = (
-    field: 'invoiceNotes' | 'diagnosticNotes' | 'description',
-    value: string
-  ) => {
-    // Keeps the form's copy current; it marks nothing dirty while locked.
-    formState.handleNotesChange(field, value)
-    if (!locked || field !== 'diagnosticNotes') return
-    pendingNotes.current = value
-    if (notesTimer.current) clearTimeout(notesTimer.current)
-    notesTimer.current = setTimeout(() => {
-      notesTimer.current = null
-      const html = pendingNotes.current
-      pendingNotes.current = null
-      if (html !== null) void saveInternalNotes(html)
-    }, 800)
-  }
+  const onNotesChange = useStableCallback(
+    (field: 'invoiceNotes' | 'diagnosticNotes' | 'description', value: string) => {
+      // Keeps the form's copy current; it marks nothing dirty while locked.
+      formState.handleNotesChange(field, value)
+      if (!locked || field !== 'diagnosticNotes') return
+      pendingNotes.current = value
+      if (notesTimer.current) clearTimeout(notesTimer.current)
+      notesTimer.current = setTimeout(() => {
+        notesTimer.current = null
+        const html = pendingNotes.current
+        pendingNotes.current = null
+        if (html !== null) void saveInternalNotes(html)
+      }, 800)
+    }
+  )
   // Leaving the page mid-sentence still saves what was typed.
   useEffect(() => {
     const recordId = record.id
@@ -281,10 +352,14 @@ export function ModernDetails(props: ModernDetailsProps) {
     if (scrollToFiles) document.getElementById('files-media')?.scrollIntoView()
   }, [scrollToFiles])
 
-  const answeredCounts = findings.reduce<Record<string, number>>((counts, finding) => {
-    if (finding.concernId) counts[finding.concernId] = (counts[finding.concernId] ?? 0) + 1
-    return counts
-  }, {})
+  const answeredCounts = useMemo(
+    () =>
+      findings.reduce<Record<string, number>>((counts, finding) => {
+        if (finding.concernId) counts[finding.concernId] = (counts[finding.concernId] ?? 0) + 1
+        return counts
+      }, {}),
+    [findings]
+  )
 
   const storeTires =
     tireHotelEnabled && record.vehicle ? (
@@ -342,7 +417,7 @@ export function ModernDetails(props: ModernDetailsProps) {
               customStatus={customStatus}
               options={props.workOrderStatuses}
               canAddStatus={props.canAddStatus}
-              onChange={(next, custom) => void changeStatus(next, custom)}
+              onChange={onStepperChange}
             />
 
             {/* The side column gives way before the job does: the parts and labour
@@ -365,15 +440,12 @@ export function ModernDetails(props: ModernDetailsProps) {
                   techName={formState.techName}
                   initialVehicle={props.initialVehicle}
                   onReferenceChange={props.onReferenceChange}
-                  onReferenceSaved={() => {
-                    formState.flashSaved()
-                    router.refresh()
-                  }}
+                  onReferenceSaved={onReferenceSaved}
                   distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
                   confirmedReading={formState.confirmedReading}
                   onConfirmReading={formState.confirmReading}
                   canSetCustomer={props.canSetCustomer}
-                  onCustomerAdded={() => router.refresh()}
+                  onCustomerAdded={onCustomerAdded}
                 />
 
                 <Lockable locked={locked}>
@@ -423,11 +495,9 @@ export function ModernDetails(props: ModernDetailsProps) {
                     openObservationsCount={props.openObservationsCount}
                     onShowExistingObservations={props.onShowExistingObservations}
                     vehicleId={record.vehicle?.id ?? null}
-                    vehicleLabel={record.vehicle ? `${vehicleName(record.vehicle)}` : undefined}
+                    vehicleLabel={vehicleLabel}
                     guideStock={guideStock}
-                    onAddGuidePart={(line) =>
-                      formState.dirtySetPartItems((prev) => [servicePartFromFluid(line), ...prev])
-                    }
+                    onAddGuidePart={onAddGuidePart}
                   />
 
                   <PartsEditor
@@ -438,7 +508,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                     currencyCode={currencyCode}
                     hasInventory={props.inventoryParts.length > 0}
                     inventoryParts={props.inventoryParts}
-                    onOpenInventory={() => formState.setShowInventoryPicker(true)}
+                    onOpenInventory={onOpenInventory}
                     onScanBarcode={props.onScanBarcode}
                     defaultMarkupPercent={props.defaultMarkupPercent}
                     markupAppliesToInventory={props.markupAppliesToInventory}
@@ -479,7 +549,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                   initialStartDateTime={formState.initialData.startDateTime}
                   initialEndDateTime={formState.initialData.endDateTime}
                   initialTechnicianId={record.technicianId}
-                  initialHelperIds={record.helpers?.map((h) => h.technicianId)}
+                  initialHelperIds={helperIds}
                   initialWorkBayId={record.workBayId}
                   initialPromisedAt={
                     record.promisedAt ? new Date(record.promisedAt).toISOString() : null
@@ -491,24 +561,10 @@ export function ModernDetails(props: ModernDetailsProps) {
                     and the parts: it says how the work is going, and the two
                     cards it sat between are the invoice being built. "Add as
                     labour" still puts its line in the labour card. */}
-                <JobClockSection
+                <JobClockSectionMemo
                   serviceRecordId={record.id}
                   initial={props.jobClock}
-                  onAddLabor={
-                    locked
-                      ? undefined
-                      : (hours) =>
-                          formState.dirtySetLaborItems((prev) => [
-                            ...prev,
-                            {
-                              description: tClock('laborDescription'),
-                              hours,
-                              rate: props.defaultLaborRate,
-                              total: Math.round(hours * props.defaultLaborRate * 100) / 100,
-                              pricingType: 'hourly' as const,
-                            },
-                          ])
-                  }
+                  onAddLabor={locked ? undefined : addClockLabor}
                 />
 
                 <AppCard
@@ -536,7 +592,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                         setStatus={formState.dirtySetStatus}
                         onDirty={formState.markDirty}
                         paymentStatus={formState.paymentStatus}
-                        onTogglePaid={actions.handleTogglePaid}
+                        onTogglePaid={onTogglePaid}
                         designOptions={props.designOptions}
                         designId={record.designId ?? null}
                         designFollowsName={props.designFollowsName}
@@ -628,7 +684,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                 )}
 
                 <Lockable locked={locked}>
-                  <CustomFieldsForm
+                  <CustomFieldsFormMemo
                     entityId={record.id}
                     entityType="service_record"
                     locked={locked}
