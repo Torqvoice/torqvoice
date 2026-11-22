@@ -41,7 +41,7 @@ import { getWarrantyStatus, type WarrantyStatus } from '@/lib/warranty'
 import { effectiveInvoiceDate } from '@/lib/invoice-utils'
 import { Download, ExternalLink, Gauge, Loader2, Paperclip, Plus, Search, User } from 'lucide-react'
 import { toast } from 'sonner'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { useServiceType } from '@/components/service-type-context'
 import { useServiceLabels } from '@/features/vehicles/Lib/useServiceLabels'
 
@@ -118,6 +118,7 @@ export function ServiceRecordsTable({
   const [navigatingId, setNavigatingId] = useState<string | null>(null)
   const [isExporting, setIsExporting] = useState(false)
   const t = useTranslations('vehicles.services')
+  const format = useFormatter()
   const serviceLabel = useServiceLabels()
   const tcm = useTranslations('common.contextMenu')
   const serviceType = useServiceType()
@@ -310,7 +311,7 @@ export function ServiceRecordsTable({
                   {record.mileage ? (
                     <span className="inline-flex items-center gap-1">
                       <Gauge className="h-3 w-3" />
-                      {record.mileage.toLocaleString()}
+                      {format.number(record.mileage)}
                     </span>
                   ) : null}
                   {record.techName && (
@@ -404,7 +405,7 @@ export function ServiceRecordsTable({
                           </StatusBadge>
                         </TableCell>
                         <TableCell className="text-right font-mono text-xs">
-                          {record.mileage ? record.mileage.toLocaleString() : '-'}
+                          {record.mileage ? format.number(record.mileage) : '-'}
                         </TableCell>
                         <TableCell className="hidden text-sm sm:table-cell">
                           {record.techName || '-'}

@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { ChevronDown, ChevronRight, Shield } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -50,6 +50,7 @@ export function WarrantySection({
   serviceDate,
 }: WarrantySectionProps) {
   const t = useTranslations('service.warranty')
+  const format = useFormatter()
   const { formatDate } = useFormatDate()
   const modern = useModernWorkOrder()
 
@@ -75,7 +76,7 @@ export function WarrantySection({
         ? [
             value.warrantyMonths ? t('summaryMonths', { count: value.warrantyMonths }) : null,
             value.warrantyMileage
-              ? `${value.warrantyMileage.toLocaleString()} ${distanceUnit}`
+              ? `${format.number(value.warrantyMileage)} ${distanceUnit}`
               : null,
           ]
             .filter(Boolean)
