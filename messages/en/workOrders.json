@@ -33,6 +33,7 @@
       "date": "Date",
       "total": "Total",
       "promised": "Promised",
+      "updated": "Updated",
       "promisedOverdue": "Promised {date}, overdue"
     },
     "emailSubject": "Vehicle Status Update: {status}",

@@ -65,6 +65,13 @@ beforeEach(() => {
   findMany.mockClear()
 })
 
+describe('the updated column', () => {
+  it('sorts by when the job was last saved, either way round', async () => {
+    expect(await orderByFor('updatedAt', 'desc')).toEqual({ updatedAt: 'desc' })
+    expect(await orderByFor('updatedAt', 'asc')).toEqual({ updatedAt: 'asc' })
+  })
+})
+
 describe('the promised column', () => {
   it('sorts by the promise, soonest first when ascending', async () => {
     expect(await orderByFor('promisedAt', 'asc')).toEqual({

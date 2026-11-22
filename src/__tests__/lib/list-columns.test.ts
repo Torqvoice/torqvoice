@@ -22,6 +22,8 @@ describe('the work order columns', () => {
   it('start with everything but the promise', () => {
     expect(defaultColumns(WORK_ORDER_COLUMNS)).toEqual(['invoice', 'customer', 'tech'])
     expect(WORK_ORDER_COLUMNS.promised).toBe(false)
+    // "Last changed" is there to be switched on, not shown to everyone.
+    expect(WORK_ORDER_COLUMNS.updated).toBe(false)
   })
 })
 

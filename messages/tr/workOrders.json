@@ -33,6 +33,7 @@
       "date": "Tarih",
       "total": "Toplam",
       "promised": "Söz verilen",
+      "updated": "Güncellendi",
       "promisedOverdue": "{date} için söz verildi, gecikti"
     },
     "emailSubject": "Araç Durum Güncellemesi: {status}",

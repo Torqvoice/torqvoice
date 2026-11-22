@@ -25,6 +25,11 @@ export const WORK_ORDER_COLUMNS = {
    * the columns that are read on every job.
    */
   promised: false,
+  /**
+   * When the job was last changed, for finding the one just worked on. Off by
+   * default for the same reason: one more timestamp in every row.
+   */
+  updated: false,
 } as const
 
 export type WorkOrderColumn = keyof typeof WORK_ORDER_COLUMNS

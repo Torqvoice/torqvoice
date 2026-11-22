@@ -33,6 +33,7 @@
       "date": "Datum",
       "total": "Totaal",
       "promised": "Beloofd",
+      "updated": "Gewijzigd",
       "promisedOverdue": "Beloofd {date}, te laat"
     },
     "emailSubject": "Voertuigstatus bijgewerkt: {status}",

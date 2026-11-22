@@ -33,6 +33,7 @@
       "date": "Datum",
       "total": "Gesamt",
       "promised": "Zugesagt",
+      "updated": "Geändert",
       "promisedOverdue": "Zugesagt {date}, überfällig"
     },
     "emailSubject": "Fahrzeugstatusupdate: {status}",

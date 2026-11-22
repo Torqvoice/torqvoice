@@ -33,6 +33,7 @@
       "date": "Dato",
       "total": "Total",
       "promised": "Lovet",
+      "updated": "Endret",
       "promisedOverdue": "Lovet {date}, forsinket"
     },
     "emailSubject": "Kjøretøystatus oppdatert: {status}",
