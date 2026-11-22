@@ -70,9 +70,9 @@ export interface VehicleLookupAvailability extends Record<VehicleLookupKey, bool
  */
 export async function getVehicleLookupAvailability() {
   return withAuth(
-    async ({ organizationId, userId, role, isAdmin }): Promise<VehicleLookupAvailability> => {
+    async ({ organizationId, userId, role }): Promise<VehicleLookupAvailability> => {
       const features = await getFeatures(organizationId)
-      const editor = isAdmin || (await canEditSettings(userId, role))
+      const editor = await canEditSettings(userId, role)
       if (!features.integrations)
         return { plate: false, vin: false, reason: 'notInPlan', canEditSettings: editor }
       const [plate, vin] = await Promise.all([

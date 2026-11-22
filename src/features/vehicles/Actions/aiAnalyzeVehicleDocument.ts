@@ -62,8 +62,8 @@ export interface VehicleScanAvailability {
  */
 export async function getVehicleScanAvailability() {
   return withAuth(
-    async ({ organizationId, userId, role, isAdmin }): Promise<VehicleScanAvailability> => {
-      const editor = isAdmin || (await canEditSettings(userId, role))
+    async ({ organizationId, userId, role }): Promise<VehicleScanAvailability> => {
+      const editor = await canEditSettings(userId, role)
       if (await isAiConfigured(organizationId))
         return { available: true, reason: null, canEditSettings: editor }
       // A provider can only be connected on a plan with AI, so without one
