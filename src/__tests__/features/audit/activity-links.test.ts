@@ -23,7 +23,13 @@ const tables = vi.hoisted(() => {
 })
 vi.mock('@/lib/db', () => ({ db: tables }))
 
-import { activityLinks } from '@/features/audit/Lib/activityLinks'
+import { activityLinks as linksFor } from '@/features/audit/Lib/activityLinks'
+import { PermissionSubject } from '@/lib/permissions'
+
+/** Someone who may read everything, as an owner does. */
+const everything = { reads: () => true }
+const activityLinks = (organizationId: string, rows: Parameters<typeof linksFor>[1]) =>
+  linksFor(organizationId, rows, everything)
 
 const row = (id: string, entity: string | null, entityId: string | null) => ({
   id,
@@ -107,5 +113,24 @@ describe('the links of the recent activity list', () => {
     await expect(
       activityLinks('org-1', [row('a', 'ServiceRecord', 'job-1'), row('b', 'Quote', 'q-1')])
     ).resolves.toEqual(new Map())
+  })
+
+  it('leaves a row plain for someone who may not read that kind of record', async () => {
+    tables.quote.findMany.mockResolvedValue([{ id: 'q-1' }])
+    tables.vehicle.findMany.mockResolvedValue([{ id: 'v-1' }])
+    tables.serviceRecord.findMany.mockResolvedValue([{ id: 'job-1', vehicleId: 'v-1' }])
+    // A role that reads vehicles and nothing else.
+    const vehiclesOnly = { reads: (subject: PermissionSubject) => subject === 'vehicles' }
+
+    const links = await linksFor(
+      'org-1',
+      [row('a', 'Quote', 'q-1'), row('b', 'Vehicle', 'v-1'), row('c', 'ServiceRecord', 'job-1')],
+      vehiclesOnly
+    )
+
+    expect(Object.fromEntries(links)).toEqual({ b: '/vehicles/v-1' })
+    // Not asked for at all, not asked and then hidden.
+    expect(tables.quote.findMany).not.toHaveBeenCalled()
+    expect(tables.serviceRecord.findMany).not.toHaveBeenCalled()
   })
 })

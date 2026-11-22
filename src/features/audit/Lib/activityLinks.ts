@@ -1,4 +1,6 @@
 import { db } from '@/lib/db'
+import { PermissionSubject } from '@/lib/permissions'
+import type { ViewerAccess } from '@/lib/viewer-access'
 
 type ActivityRow = { id: string; entity: string | null; entityId: string | null }
 
@@ -12,6 +14,16 @@ const PAGES = {
 } as const
 
 type PagedEntity = keyof typeof PAGES
+
+/** What a person must be allowed to read for a row of that kind to open. */
+const READS: Record<PagedEntity | 'ServiceRecord', PermissionSubject> = {
+  ServiceRecord: PermissionSubject.SERVICES,
+  Vehicle: PermissionSubject.VEHICLES,
+  Quote: PermissionSubject.QUOTES,
+  Customer: PermissionSubject.CUSTOMERS,
+  Inspection: PermissionSubject.INSPECTIONS,
+  InventoryPart: PermissionSubject.INVENTORY,
+}
 
 /** The ids of one kind that still exist in this workshop. */
 async function existing(
@@ -39,8 +51,10 @@ async function existing(
  * customer, inspection or part it is about. Keyed by the row's own id.
  *
  * A row gets a link only while its record is still there and belongs to this
- * workshop, so a "deleted" row, or one about something with no page of its
- * own, stays plain text. A work order needs its vehicle to be addressed, and a
+ * workshop, and only for a person who may read that kind of record: a link
+ * that ends in "no access" is worse than plain text, and opening it writes a
+ * refusal to the audit log. So a "deleted" row, one about something with no
+ * page of its own, and one this role may not open all stay plain text. A work order needs its vehicle to be addressed, and a
  * counter sale has none, which is why these are looked up rather than built
  * from the id alone.
  *
@@ -49,12 +63,14 @@ async function existing(
  */
 export async function activityLinks(
   organizationId: string,
-  rows: ActivityRow[]
+  rows: ActivityRow[],
+  access: ViewerAccess
 ): Promise<Map<string, string>> {
   const links = new Map<string, string>()
-  const idsOf = (entity: string) => [
-    ...new Set(rows.filter((r) => r.entity === entity && r.entityId).map((r) => r.entityId!)),
-  ]
+  const idsOf = (entity: PagedEntity | 'ServiceRecord') =>
+    access.reads(READS[entity])
+      ? [...new Set(rows.filter((r) => r.entity === entity && r.entityId).map((r) => r.entityId!))]
+      : []
   try {
     const jobIds = idsOf('ServiceRecord')
     const [jobs, ...paged] = await Promise.all([
