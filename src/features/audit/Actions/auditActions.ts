@@ -1,17 +1,22 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { accessFor } from '@/lib/viewer-access'
 import { withAuth } from '@/lib/with-auth'
+import { activityLinks } from '../Lib/activityLinks'
 
 export async function getRecentAuditLogs(limit = 10) {
-  return withAuth(async ({ organizationId }) => {
+  return withAuth(async ({ organizationId, userId, isAdmin }) => {
     const logs = await db.auditLog.findMany({
       where: { organizationId },
       include: { user: { select: { id: true, name: true, email: true } } },
       orderBy: { timestamp: 'desc' },
       take: limit,
     })
-    return logs
+    // Where each row leads, for the ones about a record that is still there
+    // and that this person may open.
+    const links = await activityLinks(organizationId, logs, await accessFor({ userId, isAdmin }))
+    return logs.map((log) => ({ ...log, href: links.get(log.id) ?? null }))
   })
 }
 

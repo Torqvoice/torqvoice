@@ -4,6 +4,7 @@ import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition } from 'react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useFormatter, useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
@@ -358,6 +359,8 @@ export function DashboardClient({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     metadata?: any
     user: { id: string; name: string | null; email: string | null } | null
+    /** The page of the record the row is about, while that record exists. */
+    href?: string | null
   }[]
   recentObservations?: DashboardObservation[]
   initialLayout?: unknown
@@ -2019,11 +2022,8 @@ export function DashboardClient({
                       const friendlyAction = tAudit.has(actionKey) ? tAudit(actionKey) : log.action
                       const entityLabel =
                         vehicleDisplay ?? quoteNumber ?? log.entityId?.substring(0, 8)
-                      return (
-                        <div
-                          key={log.id}
-                          className="px-5 py-3 text-sm flex items-center justify-between"
-                        >
+                      const row = (
+                        <>
                           <div className="min-w-0">
                             <p className="truncate">
                               <span className="font-medium">{userLabel}</span> {friendlyAction}
@@ -2043,6 +2043,21 @@ export function DashboardClient({
                           <div className="shrink-0 ml-3 text-xs text-muted-foreground">
                             {formatDate(new Date(log.timestamp))}
                           </div>
+                        </>
+                      )
+                      const rowClass = 'px-5 py-3 text-sm flex items-center justify-between'
+                      // A row about a record that is still there opens it.
+                      return log.href ? (
+                        <Link
+                          key={log.id}
+                          href={log.href}
+                          className={`${rowClass} transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none`}
+                        >
+                          {row}
+                        </Link>
+                      ) : (
+                        <div key={log.id} className={rowClass}>
+                          {row}
                         </div>
                       )
                     })}
