@@ -1,3 +1,4 @@
+import { runInNewContext } from 'node:vm'
 import { describe, expect, it } from 'vitest'
 import { isNetworkError } from '@/lib/network-error'
 
@@ -18,10 +19,14 @@ describe('isNetworkError', () => {
     expect(isNetworkError(new TypeError(message))).toBe(true)
   })
 
-  it('recognises a TypeError from another frame by its name', () => {
-    const error = new Error('network error')
-    error.name = 'TypeError'
-    expect(isNetworkError(error)).toBe(true)
+  it('recognises a TypeError made in another realm', () => {
+    // What an error thrown inside another frame is: neither this realm's
+    // TypeError nor its Error.
+    const foreign = runInNewContext('new TypeError("network error")')
+    expect(foreign instanceof TypeError).toBe(false)
+    expect(foreign instanceof Error).toBe(false)
+    expect(isNetworkError(foreign)).toBe(true)
+    expect(isNetworkError(runInNewContext('new Error("network error")'))).toBe(false)
   })
 
   it.each([
@@ -39,5 +44,6 @@ describe('isNetworkError', () => {
     expect(isNetworkError(new Error('Failed to fetch'))).toBe(false)
     expect(isNetworkError('network error')).toBe(false)
     expect(isNetworkError(null)).toBe(false)
+    expect(isNetworkError({ name: 'TypeError', message: 'network error' })).toBe(false)
   })
 })

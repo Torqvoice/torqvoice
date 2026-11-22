@@ -25,10 +25,11 @@ const NETWORK_ERROR_MESSAGES = [
  * notice and the error pages, so both draw the line in the same place.
  */
 export function isNetworkError(error: unknown): boolean {
-  // The name as well as the class: an error from another frame or realm is
-  // not an instance of this window's TypeError
-  if (!(error instanceof TypeError) && !(error instanceof Error && error.name === 'TypeError')) {
-    return false
-  }
-  return NETWORK_ERROR_MESSAGES.some((pattern) => pattern.test(error.message))
+  // By what it is, not by which window made it: an error thrown in another
+  // frame or realm is an instance of neither this window's TypeError nor its
+  // Error, but it still says what it is.
+  if (Object.prototype.toString.call(error) !== '[object Error]') return false
+  const { name, message } = error as { name?: unknown; message?: unknown }
+  if (name !== 'TypeError' || typeof message !== 'string') return false
+  return NETWORK_ERROR_MESSAGES.some((pattern) => pattern.test(message))
 }
