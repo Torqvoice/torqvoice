@@ -9,7 +9,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useCallback, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
 import { useFormatDate } from '@/lib/use-format-date'
 import { useFormatCurrency } from '@/components/currency-settings-context'
@@ -222,6 +222,7 @@ export function CustomerDetailClient({
   aiEnabled?: boolean
 }) {
   const t = useTranslations('customers.detail')
+  const format = useFormatter()
   const tVehicles = useTranslations('vehicles.list')
   const tForm = useTranslations('customers.form')
   const referenceEnabled = useCustomerReferenceEnabled()
@@ -639,7 +640,7 @@ export function CustomerDetailClient({
                       </div>
                       <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
                         <span className="font-mono">
-                          {v.mileage.toLocaleString()} {readingUnit}
+                          {format.number(v.mileage)} {readingUnit}
                         </span>
                         <span>
                           {t('vehicleTable.services')}: {v._count.serviceRecords}
@@ -682,7 +683,7 @@ export function CustomerDetailClient({
                           </TableCell>
                           <TableCell className="font-medium">{vehicleName(v)}</TableCell>
                           <TableCell className="hidden sm:table-cell text-right font-mono text-sm">
-                            {v.mileage.toLocaleString()} {readingUnit}
+                            {format.number(v.mileage)} {readingUnit}
                           </TableCell>
                           <TableCell className="text-center">{v._count.serviceRecords}</TableCell>
                         </TableRow>

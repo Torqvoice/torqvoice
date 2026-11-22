@@ -1,15 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { handleGated } from '@/components/upgrade-gate'
 import { Loader2, ScanLine } from 'lucide-react'
 import {
   aiAnalyzeVehicleDocument,
-  isVehicleScanAvailable,
+  getVehicleScanAvailability,
   type VehicleDocumentScan,
+  type VehicleScanAvailability,
 } from '../Actions/aiAnalyzeVehicleDocument'
 import { documentToDataUri } from '../Lib/documentImage'
 import { cn } from '@/lib/utils'
@@ -38,15 +40,22 @@ export function ScanDocumentButton({
   const t = useTranslations('vehicles.form')
   const [scanning, setScanning] = useState(false)
   /** null while the availability check is still in flight. */
-  const [available, setAvailable] = useState<boolean | null>(null)
+  const [availability, setAvailability] = useState<VehicleScanAvailability | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const reasonId = useId()
+  const available = availability ? availability.available : null
 
   // Scanning needs an AI provider configured for the organization. Checked
   // here rather than passed in, so no call site has to thread it down.
   useEffect(() => {
     let active = true
-    isVehicleScanAvailable().then((result) => {
-      if (active) setAvailable(result.success && result.data === true)
+    getVehicleScanAvailability().then((result) => {
+      if (!active) return
+      setAvailability(
+        result.success && result.data
+          ? result.data
+          : { available: false, reason: 'notConfigured', canEditSettings: false }
+      )
     })
     return () => {
       active = false
@@ -85,33 +94,39 @@ export function ScanDocumentButton({
         stacked ? 'flex flex-col gap-2' : 'flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3'
       }
     >
-      <Tooltip>
-        {/* A disabled button swallows pointer events, so the trigger has to be
-            the wrapper rather than the button itself. */}
-        <TooltipTrigger asChild>
-          <span className="block">
-            <Button
-              type="button"
-              variant="outline"
-              className={stacked ? 'w-full' : 'w-full sm:w-auto'}
-              onClick={() => inputRef.current?.click()}
-              disabled={scanning || !available}
-            >
-              {scanning ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <ScanLine className="mr-2 h-4 w-4" />
-              )}
-              {t('scanDocument')}
-            </Button>
-          </span>
-        </TooltipTrigger>
-        {available === false && <TooltipContent>{t('scanUnavailable')}</TooltipContent>}
-      </Tooltip>
-      {showHint && (
-        <p className={cn('text-xs text-muted-foreground', stacked ? 'leading-snug' : 'sm:flex-1')}>
-          {t('scanDocumentHint')}
+      <Button
+        type="button"
+        variant="outline"
+        className={stacked ? 'w-full' : 'w-full sm:w-auto'}
+        onClick={() => inputRef.current?.click()}
+        disabled={scanning || !available}
+        aria-describedby={available === false ? reasonId : undefined}
+      >
+        {scanning ? (
+          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        ) : (
+          <ScanLine className="mr-2 h-4 w-4" />
+        )}
+        {t('scanDocument')}
+      </Button>
+      {/* Unavailable: the reason takes the hint's place, in plain sight. A
+          tooltip on a disabled button never shows on a phone, and the hint
+          would promise fields that cannot fill. */}
+      {availability && !availability.available ? (
+        <p
+          id={reasonId}
+          className={cn('text-xs text-muted-foreground', stacked ? 'leading-snug' : 'sm:flex-1')}
+        >
+          <ScanUnavailableReason availability={availability} />
         </p>
+      ) : (
+        showHint && (
+          <p
+            className={cn('text-xs text-muted-foreground', stacked ? 'leading-snug' : 'sm:flex-1')}
+          >
+            {t('scanDocumentHint')}
+          </p>
+        )
       )}
       <input
         ref={inputRef}
@@ -121,5 +136,46 @@ export function ScanDocumentButton({
         className="hidden"
       />
     </div>
+  )
+}
+
+const linkClass = 'font-medium text-primary underline-offset-2 hover:underline'
+
+/**
+ * Why scanning is off, with the way to switch it on for whoever may: the AI
+ * providers in the integrations catalog, or the plans when the plan is what
+ * leaves it out. Someone who cannot change settings gets the reason alone.
+ */
+function ScanUnavailableReason({ availability }: { availability: VehicleScanAvailability }) {
+  const t = useTranslations('vehicles.form')
+  const ts = useTranslations('common.shared')
+  const { reason, canEditSettings } = availability
+  if (reason === 'notInPlan') {
+    return (
+      <>
+        {t('scanNotInPlan')}
+        {canEditSettings && (
+          <>
+            {' '}
+            <button
+              type="button"
+              className={linkClass}
+              onClick={() => handleGated({ gated: { feature: 'ai' } })}
+            >
+              {ts('viewPlans')}
+            </button>
+          </>
+        )}
+      </>
+    )
+  }
+  if (!canEditSettings) return <>{t('scanNeedsAiAsk')}</>
+  return (
+    <>
+      {t('scanNeedsAi')}{' '}
+      <Link href="/settings/integrations?category=ai" className={linkClass}>
+        {t('scanSetUpAi')}
+      </Link>
+    </>
   )
 }

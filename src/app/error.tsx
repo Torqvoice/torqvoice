@@ -2,19 +2,37 @@
 
 import { useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { Wrench } from 'lucide-react'
+import { WifiOff, Wrench } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { reportError } from '@/lib/analytics'
+import { isNetworkError } from '@/lib/network-error'
+
+interface ErrorPageProps {
+  error: Error & { digest?: string }
+  reset?: () => void
+  /** Next's reset that also fetches the page from the server again. */
+  retry?: () => void
+}
 
 // biome-ignore lint/suspicious/noShadowRestrictedNames: Next.js error boundary convention
-export default function Error({ error }: { error: Error & { digest?: string } }) {
+export default function Error({ error, reset, retry }: ErrorPageProps) {
   const t = useTranslations('common')
+  const lostConnection = isNetworkError(error)
 
   useEffect(() => {
+    // A dropped connection is the network, not a crash: nothing to report
+    if (lostConnection) {
+      console.warn(error)
+      return
+    }
     console.error(error)
     // The digest finds the error in the server log when the server threw it
     reportError(error, { error_page: 'page', digest: error.digest ?? null })
-  }, [error])
+  }, [error, lostConnection])
+
+  if (lostConnection) {
+    return <ConnectionLost onRetry={retry ?? reset ?? (() => window.location.reload())} />
+  }
 
   return (
     <div className="grid-bg flex min-h-screen items-center justify-center p-4">
@@ -44,6 +62,35 @@ export default function Error({ error }: { error: Error & { digest?: string } })
           <Button variant="outline" asChild>
             <a href="/">{t('errorPage.backToDashboard')}</a>
           </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/**
+ * Shown instead of the 500 page when the page broke because the connection
+ * dropped, in the words and look of the connection notice. Try again draws
+ * the page again in place, which works once the connection is back; nothing
+ * in the tab is wrong, so a reload is not needed.
+ */
+function ConnectionLost({ onRetry }: { onRetry: () => void }) {
+  const t = useTranslations('common')
+
+  return (
+    <div className="grid-bg flex min-h-screen items-center justify-center p-4">
+      <div className="glass relative w-full max-w-md overflow-hidden rounded-2xl p-8 text-center shadow-2xl">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary to-transparent"
+        />
+        <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-b from-primary/15 to-primary/5 text-primary shadow-[inset_0_1px_0_rgb(255_255_255/0.15)] ring-1 ring-primary/25 ring-inset">
+          <WifiOff className="h-7 w-7" strokeWidth={1.75} aria-hidden />
+        </div>
+        <h1 className="text-xl font-semibold tracking-tight">{t('connectionLost.title')}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t('connectionLost.description')}</p>
+        <div className="mt-8 flex justify-center">
+          <Button onClick={onRetry}>{t('errorPage.tryAgain')}</Button>
         </div>
       </div>
     </div>

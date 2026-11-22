@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl'
 import { useEffect } from 'react'
 import { WifiOff } from 'lucide-react'
 import { showNotice } from '@/components/notice-toast'
+import { isNetworkError } from '@/lib/network-error'
 
 const TOAST_ID = 'connection-lost'
 
@@ -16,23 +17,7 @@ const TOAST_ID = 'connection-lost'
  */
 export const RECENT_INPUT_MS = 60 * 1000
 
-/**
- * What each browser's fetch throws when the request never reached the
- * server: offline, a dropped connection, a network change. Chrome, Firefox
- * and Safari (old and new) word it differently.
- */
-const NETWORK_ERROR_MESSAGES = [
-  /^Failed to fetch/,
-  /^NetworkError when attempting to fetch resource/,
-  /^Load failed$/,
-  /^The network connection was lost/,
-  /^The Internet connection appears to be offline/,
-]
-
-export function isNetworkError(error: unknown): boolean {
-  if (!(error instanceof TypeError)) return false
-  return NETWORK_ERROR_MESSAGES.some((pattern) => pattern.test(error.message))
-}
+export { isNetworkError }
 
 /**
  * Says so when something the person just did did not reach the server.

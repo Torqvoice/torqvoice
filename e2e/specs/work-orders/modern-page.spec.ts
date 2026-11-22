@@ -89,7 +89,7 @@ function stepper(page: Page): Locator {
 }
 
 async function expectStatus(page: Page, name: RegExp): Promise<void> {
-  await expect(stepper(page).getByRole('button', { name })).toHaveAttribute('aria-current', 'step')
+  await expect(stepper(page).getByLabel(name)).toHaveAttribute('aria-current', 'step')
 }
 
 test.describe('the overhauled work order page', () => {

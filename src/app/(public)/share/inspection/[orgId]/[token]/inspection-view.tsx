@@ -365,7 +365,7 @@ export function InspectionView({
                     <dt className="text-xs text-gray-500">
                       {serviceType === 'marine' ? t('engineHoursLabel') : t('odometerLabel')}
                     </dt>
-                    <dd className="text-sm">{inspection.mileage.toLocaleString()}</dd>
+                    <dd className="text-sm">{inspection.mileage.toLocaleString(locale)}</dd>
                   </div>
                 )}
                 {inspection.vehicle.customer && (

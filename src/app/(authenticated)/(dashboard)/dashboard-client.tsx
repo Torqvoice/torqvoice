@@ -5,7 +5,7 @@ import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
 import { AppCard } from '@/components/app-card'
 import type { InspectionsDueSummary } from '@/features/vehicles/Actions/inspectionStatusActions'
@@ -371,6 +371,7 @@ export function DashboardClient({
 }) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('dashboard')
+  const format = useFormatter()
   const tcm = useTranslations('common.contextMenu')
   const serviceLabel = useServiceLabels()
   const tAudit = useTranslations('audit')
@@ -807,12 +808,12 @@ export function DashboardClient({
                               <p className="text-xs text-muted-foreground truncate">
                                 {v.licensePlate && `${v.licensePlate} · `}
                                 {t('maintenance.estimated', {
-                                  mileage: v.predictedMileage.toLocaleString(),
+                                  mileage: format.number(v.predictedMileage),
                                   unit: distUnit,
                                 })}
                                 {' · '}
                                 {t('maintenance.sinceLastService', {
-                                  mileage: v.mileageSinceLastService.toLocaleString(),
+                                  mileage: format.number(v.mileageSinceLastService),
                                   unit: distUnit,
                                 })}
                                 {' · '}
