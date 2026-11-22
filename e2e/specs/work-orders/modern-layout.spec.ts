@@ -153,11 +153,12 @@ test.describe('the work order page', () => {
     // Each control of the status stepper stays in its own space: a label is
     // cut short rather than running into the next. Three stages, and the
     // arrow beside "In Progress" that opens the statuses filed under it
-    // (always there, for "Waiting Parts"): four buttons in all on a workshop
-    // that has defined no statuses of its own.
+    // (always there, for "Waiting Parts"): four controls in all on a workshop
+    // that has defined no statuses of its own. The stage the job is in is not
+    // a button when it has no menu, so it is counted by being current.
     const stages = await page
       .getByTestId('status-stepper')
-      .getByRole('button')
+      .locator('button, [aria-current="step"]')
       .evaluateAll((buttons) => buttons.map((b) => b.getBoundingClientRect().toJSON()))
     expect(stages).toHaveLength(4)
     for (let i = 1; i < stages.length; i++) {
