@@ -501,7 +501,7 @@ export function InventoryPartForm({
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-h-[90vh] sm:max-w-3xl">
         <DialogHeader>
-          <div className="flex items-center justify-between gap-4 pr-6">
+          <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 pr-6">
             <DialogTitle>{part ? t('form.editPart') : t('form.addNewPart')}</DialogTitle>
             <DocsLink href="/docs/features/inventory" className="ml-auto" />
             {/* Only meaningful for a saved part — a new one has no history yet.
@@ -662,7 +662,7 @@ export function InventoryPartForm({
                     ) : (
                       <>
                         <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                        <span className="mt-2 text-xs text-muted-foreground">
+                        <span className="mt-2 px-2 text-center text-xs text-muted-foreground">
                           {t('form.dropOrClick')}
                         </span>
                       </>
@@ -686,7 +686,9 @@ export function InventoryPartForm({
                   className="hidden"
                   onChange={handleFileChange}
                 />
-                <div className="mt-2 flex gap-1">
+                {/* Side by side while both fit the photo column, one under the
+                    other when the words are longer than it. */}
+                <div className="mt-2 flex flex-wrap gap-1">
                   <Button
                     type="button"
                     variant="outline"
@@ -737,9 +739,11 @@ export function InventoryPartForm({
                 )}
               </div>
 
-              {/* Fields */}
-              <div className="flex-1 space-y-4">
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4">
+              {/* Fields. The rows count their columns from the width this
+                  column really has (a container), not the window's: beside
+                  the photo it is far narrower than the dialog. */}
+              <div className="@container min-w-0 flex-1 space-y-4">
+                <div className="grid grid-cols-1 items-end gap-3 @md:grid-cols-3 sm:gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="partNumber">{t('form.partNumber')}</Label>
                     <Input
@@ -770,7 +774,7 @@ export function InventoryPartForm({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="grid grid-cols-1 items-end gap-3 @md:grid-cols-2 sm:gap-4">
                   <div className="space-y-2">
                     <Label>{t('form.category')}</Label>
                     <Popover open={categoryOpen} onOpenChange={setCategoryOpen} modal>
@@ -782,7 +786,7 @@ export function InventoryPartForm({
                           aria-expanded={categoryOpen}
                           className="w-full justify-between font-normal h-9"
                         >
-                          <span className={category ? '' : 'text-muted-foreground'}>
+                          <span className={cn('truncate', !category && 'text-muted-foreground')}>
                             {category || t('form.categoryPlaceholder')}
                           </span>
                           <ChevronsUpDown className="ml-2 h-3.5 w-3.5 shrink-0 opacity-50" />
@@ -901,12 +905,7 @@ export function InventoryPartForm({
                   <Switch id="trackStock" checked={trackStock} onCheckedChange={setTrackStock} />
                 </div>
 
-                <div
-                  className={cn(
-                    'grid grid-cols-2 gap-3 sm:gap-4',
-                    trackStock ? 'sm:grid-cols-5' : 'sm:grid-cols-3'
-                  )}
-                >
+                <div className="grid grid-cols-1 items-end gap-3 @[16rem]:grid-cols-2 @md:grid-cols-3 sm:gap-4">
                   {trackStock && (
                     <div className="space-y-2">
                       <Label htmlFor="quantity">{t('form.quantity')}</Label>

@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import {
   AlertOctagon,
@@ -480,6 +480,7 @@ function Stat({
   tone: 'good' | 'warn' | 'danger' | 'neutral'
   hint?: string
 }) {
+  const format = useFormatter()
   const color =
     tone === 'danger'
       ? 'text-red-600'
@@ -494,7 +495,7 @@ function Stat({
         {label}
       </p>
       <p className={cn('mt-0.5 text-2xl font-semibold tabular-nums leading-tight', color)}>
-        {value.toLocaleString()}
+        {format.number(value)}
       </p>
       {hint && <p className="mt-0.5 truncate text-xs text-muted-foreground">{hint}</p>}
     </div>

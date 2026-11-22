@@ -3,6 +3,7 @@
 import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
+import { canEditSettings } from '@/lib/settings-access'
 import { withAuth } from '@/lib/with-auth'
 import { lookupAppliesTo } from '@/features/vehicles/Lib/registryLookup'
 import { recordRegistryAnswer } from '../Lib/inspection-sync'
@@ -46,6 +47,44 @@ export async function isVehicleLookupAvailable() {
         findLookupConnection(organizationId, 'vin'),
       ])
       return { plate: plate !== null, vin: vin !== null }
+    },
+    { requiredPermissions: READ_VEHICLES }
+  )
+}
+
+/** Why the plate lookup cannot be used, for the line under the button. */
+export type VehicleLookupUnavailableReason = 'notInPlan' | 'notConnected'
+
+export interface VehicleLookupAvailability extends Record<VehicleLookupKey, boolean> {
+  /** Set when the plate lookup is off: the plan leaves it out, or no registry is connected. */
+  reason: VehicleLookupUnavailableReason | null
+  /** Whether this person may open settings to change that, so the line may link there. */
+  canEditSettings: boolean
+}
+
+/**
+ * The same answer as `isVehicleLookupAvailable`, plus why the plate lookup is
+ * off and whether this person could switch it on. A new name rather than a
+ * new shape for the old one: a tab opened before the deploy still reads a
+ * plain pair of booleans from it.
+ */
+export async function getVehicleLookupAvailability() {
+  return withAuth(
+    async ({ organizationId, userId, role }): Promise<VehicleLookupAvailability> => {
+      const features = await getFeatures(organizationId)
+      const editor = await canEditSettings(userId, role)
+      if (!features.integrations)
+        return { plate: false, vin: false, reason: 'notInPlan', canEditSettings: editor }
+      const [plate, vin] = await Promise.all([
+        findLookupConnection(organizationId, 'plate'),
+        findLookupConnection(organizationId, 'vin'),
+      ])
+      return {
+        plate: plate !== null,
+        vin: vin !== null,
+        reason: plate === null ? 'notConnected' : null,
+        canEditSettings: editor,
+      }
     },
     { requiredPermissions: READ_VEHICLES }
   )

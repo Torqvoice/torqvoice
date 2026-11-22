@@ -100,7 +100,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import { useConfirm } from '@/components/confirm-dialog'
 import { useServiceType } from '@/components/service-type-context'
@@ -348,6 +348,7 @@ export function VehicleDetailClassic({
   const searchParams = useSearchParams()
   const { formatDate, formatDateTime } = useFormatDate()
   const t = useTranslations('vehicles.detail')
+  const format = useFormatter()
   const typeKeyEnabled = useTypeKeyEnabled()
   const ti = useTranslations('vehicles.inspections')
   const tr = useTranslations('vehicles.reminders')
@@ -836,9 +837,7 @@ export function VehicleDetailClassic({
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
           <div className="flex items-center gap-1.5 text-muted-foreground">
             <Gauge className="h-3.5 w-3.5" />
-            <span className="font-semibold text-foreground">
-              {vehicle.mileage.toLocaleString()}
-            </span>
+            <span className="font-semibold text-foreground">{format.number(vehicle.mileage)}</span>
             <span className="text-xs">{distUnit}</span>
           </div>
           {predictionData && (
@@ -856,7 +855,7 @@ export function VehicleDetailClassic({
                             : t('predictedMileage')}
                       </span>
                       <span className="font-semibold text-foreground">
-                        ~{predictionData.predictedMileage.toLocaleString()}
+                        ~{format.number(predictionData.predictedMileage)}
                       </span>
                       <span className="text-[10px] text-muted-foreground/70">
                         ({predictionData.confidencePercent}%)
@@ -1765,7 +1764,7 @@ export function VehicleDetailClassic({
                                   : formatDate(new Date(r.dueDate)),
                               })}
                             {r.dueMileage &&
-                              `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: r.dueMileage.toLocaleString(), unit: distUnit })}`}
+                              `${r.dueDate ? ' · ' : ''}${tr('dueAt', { mileage: format.number(r.dueMileage), unit: distUnit })}`}
                           </p>
                           {r.description && (
                             <p className="mt-1 text-xs text-muted-foreground">{r.description}</p>

@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Camera, CameraOff, Keyboard, RotateCcw } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { libraryScanBox } from '@/lib/barcode-scan-box'
 
 interface BarcodeScannerDialogProps {
   open: boolean
@@ -144,10 +145,7 @@ export function BarcodeScannerDialog({
 
         const scanConfig = {
           fps: 10,
-          qrbox: (viewfinderWidth: number, viewfinderHeight: number) => ({
-            width: Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.8),
-            height: Math.floor(Math.min(viewfinderWidth, viewfinderHeight) * 0.3),
-          }),
+          qrbox: libraryScanBox,
         }
         const onSuccess = (decodedText: string) => {
           if (mounted) handleScan(decodedText)

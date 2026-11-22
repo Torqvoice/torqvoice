@@ -209,13 +209,16 @@ test.describe('meters', () => {
 
 /** The status stepper in the page header: one button per stage. */
 function stage(page: Page, name: string) {
-  return page.getByTestId('status-stepper').getByRole('button', { name: new RegExp(name) })
+  return page.getByTestId('status-stepper').getByLabel(new RegExp(name))
 }
 
 /** Moves the job to a stage. A click before hydration does nothing, so it is repeated. */
 async function setStage(page: Page, name: string): Promise<void> {
   await expect(async () => {
-    await stage(page, name).click()
+    // Once there, a click would open the stage's menu, or do nothing.
+    if ((await stage(page, name).getAttribute('aria-current')) !== 'step') {
+      await stage(page, name).click()
+    }
     await expect(stage(page, name)).toHaveAttribute('aria-current', 'step', { timeout: 2_000 })
   }).toPass({ timeout: 30_000 })
 }
