@@ -51,6 +51,9 @@ export interface ModernDetailsProps
   canAddStatus?: boolean
   /** The viewer may edit vehicles, so an empty Customer box offers to add one. */
   canSetCustomer?: boolean
+  /** Bumped by every "Take payment", the money bar's and the header's: the payments form opens. */
+  paymentSignal: number
+  onTakePayment: () => void
   /** Offers to tell the customer about a status that asks for it. */
   onNotifyForStatus?: (status: WorkOrderStatusOption) => void
   /**
@@ -151,8 +154,6 @@ export function ModernDetails(props: ModernDetailsProps) {
   // comes back. It is asked about, not refused: a routine service has nothing
   // to confirm, and a shop may know better than the tick does.
   const confirmUnconfirmed = useConfirm()
-  // Bumped by the bar's "Take payment": the payments form opens and scrolls into view.
-  const [paymentSignal, setPaymentSignal] = useState(0)
   // The workshop's own status the job carries. Held here as well as on the
   // record so the stepper answers at once, before the page has been re-read.
   const [customStatus, setCustomStatus] = useState(record.customStatus ?? null)
@@ -580,7 +581,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                       onTogglePaid={actions.handleTogglePaid}
                       paymentLoading={actions.paymentLoading}
                       deletingPayment={actions.deletingPayment}
-                      openFormSignal={paymentSignal}
+                      openFormSignal={props.paymentSignal}
                       extraAction={props.payCode}
                     />
                   </div>
@@ -655,7 +656,7 @@ export function ModernDetails(props: ModernDetailsProps) {
         paid={formState.totalPaid}
         balance={formState.balanceDue}
         currencyCode={currencyCode}
-        onTakePayment={() => setPaymentSignal((n) => n + 1)}
+        onTakePayment={props.onTakePayment}
         payCode={props.payCode}
         onPreview={props.onPreviewInvoice}
         onSend={props.onSendToCustomer}

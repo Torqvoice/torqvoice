@@ -91,6 +91,7 @@ export function ServicePageClient({
   workOrderStatuses = [],
   canAddStatus = false,
   canSetCustomer = false,
+  canTakePayment = false,
   videoCall = { link: null, providers: [] },
   tireThresholds,
   defaultTaxRate,
@@ -175,6 +176,10 @@ export function ServicePageClient({
   // the page holds it and the form carries it as a hidden field. It follows
   // the record again after every save.
   const [title, setTitle] = useState(record.title)
+  // Bumped by "Take payment" in the money bar and by "Unpaid" in the header:
+  // the payments form opens and scrolls into view.
+  const [paymentSignal, setPaymentSignal] = useState(0)
+  const takePayment = useCallback(() => setPaymentSignal((n) => n + 1), [])
   useEffect(() => {
     setTitle(record.title)
   }, [record.title])
@@ -678,6 +683,8 @@ export function ServicePageClient({
               type={record.vehicle ? formState.type : undefined}
               onTypeChange={formState.dirtySetType}
               locked={lockState.locked}
+              // Not on a locked invoice: the header offers nothing there.
+              onTakePayment={canTakePayment && !lockState.locked ? takePayment : undefined}
             />
 
             <LaborAddedBanner
@@ -725,6 +732,8 @@ export function ServicePageClient({
                   workOrderStatuses={workOrderStatuses}
                   canAddStatus={canAddStatus}
                   canSetCustomer={canSetCustomer}
+                  paymentSignal={paymentSignal}
+                  onTakePayment={takePayment}
                   onNotifyForStatus={handleNotifyForStatus}
                   locked={lockState.locked}
                   lockedLabel={t('invoice.lockedFieldsetLabel')}
