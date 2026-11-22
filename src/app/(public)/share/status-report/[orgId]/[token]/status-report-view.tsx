@@ -17,7 +17,8 @@ interface StatusReportViewProps {
     videoUrl: string | null
     videoFileName: string | null
     status: string
-    createdAt: string
+    /** The day it was made, already written on the workshop's clock by the server. */
+    createdDay: string
     customerFeedback: string | null
     feedbackAt: string | null
   }
@@ -53,11 +54,6 @@ export function StatusReportView({
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(!!report.customerFeedback)
 
-  const createdDate = new Date(report.createdAt).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  })
   const vehicleLabel = vehicle ? `${vehicleName(vehicle)}` : null
 
   async function handleSubmitFeedback() {
@@ -153,7 +149,7 @@ export function StatusReportView({
             </span>
           )}
           <span className="flex items-center gap-1.5">
-            <Calendar className="h-4 w-4" /> {createdDate}
+            <Calendar className="h-4 w-4" /> {report.createdDay}
           </span>
         </div>
 

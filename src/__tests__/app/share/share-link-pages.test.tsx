@@ -15,6 +15,7 @@ vi.mock('server-only', () => ({}))
 vi.mock('next-intl/server', async () => {
   const { useTranslations } = await import('next-intl')
   return {
+    getLocale: async () => 'en',
     getTranslations: async (arg: string | { namespace: string }) =>
       useTranslations(typeof arg === 'string' ? arg : arg.namespace),
   }
