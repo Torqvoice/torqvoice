@@ -2,6 +2,7 @@
 
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
+import { activityLinks } from '../Lib/activityLinks'
 
 export async function getRecentAuditLogs(limit = 10) {
   return withAuth(async ({ organizationId }) => {
@@ -11,7 +12,9 @@ export async function getRecentAuditLogs(limit = 10) {
       orderBy: { timestamp: 'desc' },
       take: limit,
     })
-    return logs
+    // Where each row leads, for the ones about a record that is still there.
+    const links = await activityLinks(organizationId, logs)
+    return logs.map((log) => ({ ...log, href: links.get(log.id) ?? null }))
   })
 }
 
