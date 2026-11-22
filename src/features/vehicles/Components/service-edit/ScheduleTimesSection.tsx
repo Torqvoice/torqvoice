@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { useRouter } from 'next/navigation'
 import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -83,8 +83,8 @@ function initialsOf(name: string): string {
 }
 
 /** Minutes as hours with at most one decimal: 330 is 5.5, 480 is 8. */
-function hoursOf(minutes: number): string {
-  return (Math.round(minutes / 6) / 10).toLocaleString()
+function hoursOf(minutes: number): number {
+  return Math.round(minutes / 6) / 10
 }
 
 interface WorkBay {
@@ -128,6 +128,7 @@ export function ScheduleTimesSection({
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
+  const format = useFormatter()
   const tCal = useTranslations('workshopCalendar')
   const router = useRouter()
   const modern = useModernWorkOrder()
@@ -756,14 +757,19 @@ export function ScheduleTimesSection({
                             {tech.skills ||
                               (full
                                 ? t('loadFull')
-                                : t('loadFree', { hours: hoursOf(capacity - booked) }))}
+                                : t('loadFree', {
+                                    hours: format.number(hoursOf(capacity - booked)),
+                                  }))}
                           </span>
                         )}
                       </span>
                     </span>
                     <span className="flex flex-col gap-1">
                       <span className="text-right text-xs tabular-nums text-muted-foreground">
-                        {t('loadOf', { booked: hoursOf(booked), capacity: hoursOf(capacity) })}
+                        {t('loadOf', {
+                          booked: format.number(hoursOf(booked)),
+                          capacity: format.number(hoursOf(capacity)),
+                        })}
                       </span>
                       <span className="block h-1.5 overflow-hidden rounded-full bg-muted">
                         <span

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -84,6 +84,7 @@ function getUrgency(r: Reminder): 'overdue' | 'due-soon' | 'normal' {
 
 export function RemindersPageClient({ reminders, unitSystem }: RemindersPageClientProps) {
   const t = useTranslations('reminders')
+  const format = useFormatter()
   const tv = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
   const tcm = useTranslations('common.contextMenu')
@@ -250,7 +251,7 @@ export function RemindersPageClient({ reminders, unitSystem }: RemindersPageClie
                           )}
                           {r.dueMileage && (
                             <span>
-                              {r.dueMileage.toLocaleString()} {distUnit}
+                              {format.number(r.dueMileage)} {distUnit}
                             </span>
                           )}
                         </div>
