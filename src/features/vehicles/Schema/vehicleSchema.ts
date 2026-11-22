@@ -66,6 +66,10 @@ export const createVehicleSchema = z.object({
 
 export const updateVehicleSchema = createVehicleSchema.partial().extend({
   id: z.string(),
+  // Without the new vehicle's default: zod fills a default in even on an
+  // optional field, so an update that did not send the reading (adding a
+  // customer from the work order) came out with `mileage: 0` and wiped it.
+  mileage: z.coerce.number().min(0).optional(),
 })
 
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>

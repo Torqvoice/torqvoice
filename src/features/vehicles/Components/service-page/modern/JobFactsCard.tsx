@@ -27,6 +27,7 @@ import { setServiceRecordReference } from '@/features/customer-reference/Actions
 import { ReadingNotice, useReadingNotice } from '../../ReadingNotice'
 import { ReadingQuestion } from '../../ReadingQuestion'
 import { readingNeedsAnswer } from '../../../Lib/vehicleReading'
+import { AddJobCustomer, type AddedCustomer } from './AddJobCustomer'
 
 interface JobFactsCardProps {
   record: ServiceDetail
@@ -58,6 +59,13 @@ interface JobFactsCardProps {
   /** The Reference / PO box, as it is typed and once it has saved. */
   onReferenceChange?: (reference: string) => void
   onReferenceSaved?: () => void
+  /**
+   * The viewer may edit vehicles, so a job whose vehicle has no owner offers
+   * to add one. Without it the empty Customer box is the sentence alone.
+   */
+  canSetCustomer?: boolean
+  /** A customer was put on the vehicle: the page reads the job again. */
+  onCustomerAdded?: () => void
 }
 
 function initials(name: string): string {
@@ -148,6 +156,8 @@ export function JobFactsCard({
   distanceUnit,
   confirmedReading = null,
   onConfirmReading,
+  canSetCustomer = false,
+  onCustomerAdded,
 }: JobFactsCardProps) {
   const referenceEnabled = useCustomerReferenceEnabled()
   const t = useTranslations('service')
@@ -184,8 +194,23 @@ export function JobFactsCard({
     }
   }
 
-  const customer = record.customer ?? record.vehicle?.customer ?? null
+  // The customer just added here, shown until the page has read the job again.
+  const [addedCustomer, setAddedCustomer] = useState<AddedCustomer | null>(null)
   const vehicle = record.vehicle
+  const savedCustomer = record.customer ?? vehicle?.customer ?? null
+  const customer =
+    savedCustomer ??
+    (addedCustomer?.vehicleId === vehicle?.id ? (addedCustomer?.customer ?? null) : null)
+  // It stands in only until the page has the saved one, and only for the
+  // vehicle it was put on. Kept past that, an owner removed elsewhere would
+  // come back here on the next read and hide "Add customer".
+  const savedCustomerId = savedCustomer?.id ?? null
+  const savedVehicleId = vehicle?.id ?? null
+  useEffect(() => {
+    setAddedCustomer((added) =>
+      added && (savedCustomerId || added.vehicleId !== savedVehicleId) ? null : added
+    )
+  }, [savedCustomerId, savedVehicleId])
   // The picker can point the job at another vehicle before the save; the facts
   // on this card describe the saved one, so say which is which while they differ.
   const vehicleChanged = Boolean(vehicle && selectedVehicleId && selectedVehicleId !== vehicle.id)
@@ -295,6 +320,16 @@ export function JobFactsCard({
                 </div>
               </dl>
             </>
+          ) : vehicle && canSetCustomer && !locked ? (
+            // The owner is the vehicle's, so a job with no vehicle (or one the
+            // viewer may not edit, or a locked invoice) keeps the sentence alone.
+            <AddJobCustomer
+              vehicleId={vehicle.id}
+              onAdded={(added) => {
+                setAddedCustomer({ vehicleId: vehicle.id, customer: added })
+                onCustomerAdded?.()
+              }}
+            />
           ) : (
             <p className="text-sm text-muted-foreground">{t('modern.noCustomer')}</p>
           )}

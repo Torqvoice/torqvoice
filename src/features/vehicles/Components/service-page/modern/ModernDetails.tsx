@@ -49,6 +49,8 @@ export interface ModernDetailsProps
   workOrderStatuses?: WorkOrderStatusOption[]
   /** The viewer may change settings, so the status menus offer to add a status. */
   canAddStatus?: boolean
+  /** The viewer may edit vehicles, so an empty Customer box offers to add one. */
+  canSetCustomer?: boolean
   /** Offers to tell the customer about a status that asks for it. */
   onNotifyForStatus?: (status: WorkOrderStatusOption) => void
   /**
@@ -370,6 +372,8 @@ export function ModernDetails(props: ModernDetailsProps) {
                   distanceUnit={unitSystem === 'metric' ? 'km' : 'mi'}
                   confirmedReading={formState.confirmedReading}
                   onConfirmReading={formState.confirmReading}
+                  canSetCustomer={props.canSetCustomer}
+                  onCustomerAdded={() => router.refresh()}
                 />
 
                 <Lockable locked={locked}>

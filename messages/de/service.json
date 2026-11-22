@@ -687,6 +687,10 @@
     "email": "E-Mail",
     "notSet": "Nicht angegeben",
     "noCustomer": "Kein Kunde auf diesem Arbeitsauftrag.",
+    "addCustomer": "Kunde hinzufügen",
+    "addCustomerHint": "Der ausgewählte Kunde wird Halter dieses Fahrzeugs.",
+    "addCustomerHintMarine": "Der ausgewählte Kunde wird Halter dieses Wasserfahrzeugs.",
+    "addCustomerFailed": "Der Kunde konnte nicht hinzugefügt werden. Versuchen Sie es erneut.",
     "invoiceTitle": "Rechnung & Zahlung",
     "filesTitle": "Dateien & Medien",
     "activity": {

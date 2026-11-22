@@ -687,6 +687,10 @@
     "email": "E-post",
     "notSet": "Ikke satt",
     "noCustomer": "Ingen kunde på denne arbeidsordren.",
+    "addCustomer": "Legg til kunde",
+    "addCustomerHint": "Kunden du velger blir eier av dette kjøretøyet.",
+    "addCustomerHintMarine": "Kunden du velger blir eier av dette fartøyet.",
+    "addCustomerFailed": "Kunne ikke legge til kunden. Prøv igjen.",
     "invoiceTitle": "Faktura og betaling",
     "filesTitle": "Filer og media",
     "activity": {

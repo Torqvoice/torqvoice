@@ -687,6 +687,10 @@
     "email": "El. paštas",
     "notSet": "Nenustatyta",
     "noCustomer": "Šiame darbo užsakyme nėra kliento.",
+    "addCustomer": "Pridėti klientą",
+    "addCustomerHint": "Pasirinktas klientas tampa šios transporto priemonės savininku.",
+    "addCustomerHintMarine": "Pasirinktas klientas tampa šio laivo savininku.",
+    "addCustomerFailed": "Nepavyko pridėti kliento. Bandykite dar kartą.",
     "invoiceTitle": "Sąskaita ir mokėjimas",
     "filesTitle": "Failai ir nuotraukos",
     "activity": {
