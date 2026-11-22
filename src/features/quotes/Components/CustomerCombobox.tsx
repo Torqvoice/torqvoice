@@ -42,6 +42,8 @@ interface CustomerComboboxProps {
   disabled?: boolean
   /** The chosen customer's initials in a circle before the name, as an owner is shown */
   showAvatar?: boolean
+  /** Starts with the list open, for a picker shown because it was asked for */
+  defaultOpen?: boolean
 }
 
 export function CustomerCombobox({
@@ -55,8 +57,9 @@ export function CustomerCombobox({
   footer,
   disabled = false,
   showAvatar = false,
+  defaultOpen = false,
 }: CustomerComboboxProps) {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(defaultOpen)
   const [search, setSearch] = useState('')
   const [options, setOptions] = useState<CustomerOption[]>([])
   const [searching, setSearching] = useState(false)

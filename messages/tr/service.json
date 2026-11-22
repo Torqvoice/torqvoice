@@ -687,6 +687,10 @@
     "email": "E-posta",
     "notSet": "Belirtilmedi",
     "noCustomer": "Bu iş emrinde müşteri yok.",
+    "addCustomer": "Müşteri ekle",
+    "addCustomerHint": "Seçtiğiniz müşteri bu aracın sahibi olur.",
+    "addCustomerHintMarine": "Seçtiğiniz müşteri bu teknenin sahibi olur.",
+    "addCustomerFailed": "Müşteri eklenemedi. Tekrar deneyin.",
     "invoiceTitle": "Fatura ve ödeme",
     "filesTitle": "Dosyalar ve medya",
     "activity": {

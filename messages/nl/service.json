@@ -687,6 +687,10 @@
     "email": "E-mail",
     "notSet": "Niet ingevuld",
     "noCustomer": "Geen klant op deze werkorder.",
+    "addCustomer": "Klant toevoegen",
+    "addCustomerHint": "De klant die je kiest wordt de eigenaar van dit voertuig.",
+    "addCustomerHintMarine": "De klant die je kiest wordt de eigenaar van dit vaartuig.",
+    "addCustomerFailed": "Kan de klant niet toevoegen. Probeer het opnieuw.",
     "invoiceTitle": "Factuur en betaling",
     "filesTitle": "Bestanden en media",
     "activity": {

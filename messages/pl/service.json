@@ -687,6 +687,10 @@
     "email": "E-mail",
     "notSet": "Nie ustawiono",
     "noCustomer": "To zlecenie nie ma klienta.",
+    "addCustomer": "Dodaj klienta",
+    "addCustomerHint": "Wybrany klient zostanie właścicielem tego pojazdu.",
+    "addCustomerHintMarine": "Wybrany klient zostanie właścicielem tej jednostki pływającej.",
+    "addCustomerFailed": "Nie udało się dodać klienta. Spróbuj ponownie.",
     "invoiceTitle": "Faktura i płatność",
     "filesTitle": "Pliki i multimedia",
     "activity": {

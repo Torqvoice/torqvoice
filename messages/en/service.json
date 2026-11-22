@@ -687,6 +687,10 @@
     "email": "Email",
     "notSet": "Not set",
     "noCustomer": "No customer on this work order.",
+    "addCustomer": "Add customer",
+    "addCustomerHint": "The customer you pick becomes the owner of this vehicle.",
+    "addCustomerHintMarine": "The customer you pick becomes the owner of this vessel.",
+    "addCustomerFailed": "Could not add the customer. Try again.",
     "invoiceTitle": "Invoice & payment",
     "filesTitle": "Files & media",
     "activity": {

@@ -687,6 +687,10 @@
     "email": "Correo electrónico",
     "notSet": "Sin definir",
     "noCustomer": "No hay cliente en esta orden de trabajo.",
+    "addCustomer": "Agregar cliente",
+    "addCustomerHint": "El cliente que elijas pasa a ser el propietario de este vehículo.",
+    "addCustomerHintMarine": "El cliente que elijas pasa a ser el propietario de esta embarcación.",
+    "addCustomerFailed": "No se pudo agregar el cliente. Inténtalo de nuevo.",
     "invoiceTitle": "Factura y pago",
     "filesTitle": "Archivos y multimedia",
     "activity": {

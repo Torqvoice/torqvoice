@@ -48,6 +48,7 @@ import {
 import { invoiceDesignPrintsConditionMap } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { canEditSettings } from '@/lib/settings-access'
+import { canEditVehicles } from '@/lib/vehicle-access'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
@@ -189,6 +190,8 @@ export async function ServiceRecordPage({
   // Whether the status menus offer the way to add a status. Somebody who
   // cannot change settings is better off not seeing a link that turns them away.
   const canAddStatus = await canEditSettings(session?.user?.id ?? '', membership?.role)
+  // Whether a job whose vehicle has no owner offers to add one.
+  const canSetCustomer = await canEditVehicles(session?.user?.id ?? '', membership?.role)
 
   const [currentUser, features, aiProvider, dictation, tireHotel] = await Promise.all([
     session?.user?.id
@@ -510,6 +513,7 @@ export async function ServiceRecordPage({
         tireHotelEnabled={tireHotel.enabled}
         onlinePayments={onlinePayments}
         canAddStatus={canAddStatus}
+        canSetCustomer={canSetCustomer}
         workOrderStatuses={
           workOrderStatusesResult.success && workOrderStatusesResult.data
             ? workOrderStatusesResult.data
