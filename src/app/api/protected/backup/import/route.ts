@@ -6,7 +6,7 @@ import { isRestoring, RESTORE_IN_PROGRESS_MESSAGE } from '@/lib/backup/freeze'
 import { isDemoMode } from '@/lib/demo'
 import { canRestoreBackups } from '@/features/integrations/Lib/backup'
 import { backupLockHolder } from '@/lib/backup/engine'
-import { RestoreRefusedError, restoreLockHolder } from '@/lib/backup/tenancy'
+import { RestoreRefusedError, assertUrlSafeIds, restoreLockHolder } from '@/lib/backup/tenancy'
 import {
   type BackupData,
   assertSupportedBackup,
@@ -130,6 +130,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    assertUrlSafeIds(backup.data)
     const { redactedSettings } = await restoreBackup(
       ctx,
       backup,

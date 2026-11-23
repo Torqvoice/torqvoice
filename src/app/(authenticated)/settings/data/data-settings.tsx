@@ -249,7 +249,11 @@ export function DataSettings({
       if (!res.ok) {
         const body = await res.json()
         // A refusal names its reason; the sentence for it is in the workshop's language.
-        const code = typeof body.code === 'string' ? body.code : ''
+        // The code is snake_case (`foreign_ids`), the message key camelCase (`foreignIds`).
+        const code =
+          typeof body.code === 'string'
+            ? body.code.replace(/_([a-z])/g, (_: string, c: string) => c.toUpperCase())
+            : ''
         throw new Error(
           code && t.has(`data.restoreRefused.${code}`)
             ? t(`data.restoreRefused.${code}`)
