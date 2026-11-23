@@ -34,6 +34,8 @@ vi.mock('@/features/integrations/Lib/backup', () => ({
 vi.mock('@/lib/backup/engine', () => ({ backupLockHolder: vi.fn(() => null) }))
 vi.mock('@/lib/backup/tenancy', () => ({
   RestoreRefusedError: class RestoreRefusedError extends Error {},
+  assertUrlSafeIds: vi.fn(),
+  collectFileIds: vi.fn(() => new Map()),
   restoreLockHolder: vi.fn(() => null),
 }))
 vi.mock('@/lib/backup/import', () => ({

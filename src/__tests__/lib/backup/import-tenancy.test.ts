@@ -168,6 +168,38 @@ describe("a file that reuses another workshop's ids", () => {
   })
 })
 
+describe('a file with ids that cannot sit in a link', () => {
+  it('is refused before anything is written, naming the record', async () => {
+    const data = file()
+    data.customers[0].id = '{11111111-2222-3333-4444-555555555555}'
+    const response = await importJson(data)
+    expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({
+      error:
+        'The file holds a Customer id that cannot be used in a link: {11111111-2222-3333-4444-555555555555}',
+      code: 'unsafe_ids',
+    })
+    expect(state.calls).toEqual([])
+  })
+
+  it('is refused for a child row too', async () => {
+    const data = file()
+    data.vehicles[0].serviceRecords[0].partItems[0].id = 'part/a'
+    const response = await importJson(data)
+    expect(response.status).toBe(400)
+    expect((await response.json()).code).toBe('unsafe_ids')
+    expect(writes()).toEqual([])
+  })
+
+  it('accepts ids from another system that are safe in a link', async () => {
+    const data = file()
+    data.customers[0].id = '11111111222233334444555555555555'
+    data.vehicles[0].customerId = '11111111222233334444555555555555'
+    const response = await importJson(data)
+    expect(response.status).toBe(200)
+  })
+})
+
 describe('a file whose foreign keys point at another workshop', () => {
   it('never writes one of those ids', async () => {
     const response = await importJson(file())

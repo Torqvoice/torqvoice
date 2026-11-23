@@ -17,7 +17,7 @@ import { TENANCY_SCHEMA } from './tenancy-schema'
  * reaches the database.
  */
 
-export type RestoreRefusal = 'foreign_ids' | 'busy' | 'owner_only'
+export type RestoreRefusal = 'foreign_ids' | 'unsafe_ids' | 'busy' | 'owner_only'
 
 /** A refusal with a reason the browser can name, as opposed to a failure. */
 export class RestoreRefusedError extends Error {
@@ -35,6 +35,8 @@ export type IdsByModel = Map<string, Set<string>>
 const UNCHECKED_TARGETS = new Set(['User', 'Organization'])
 
 const CHUNK = 5000
+
+const URL_SAFE_ID = /^[A-Za-z0-9_-]+$/
 
 function add(map: IdsByModel, model: string, id: string): void {
   let set = map.get(model)
@@ -203,6 +205,25 @@ export async function assertNoForeignRows(
         throw new RestoreRefusedError(
           'foreign_ids',
           `The file holds ${foreign.length} ${model} id(s) that belong to another workshop`
+        )
+      }
+    }
+  }
+}
+
+/**
+ * Refuses an uploaded file with a row id that cannot sit in a URL as it is.
+ * Detail pages look a row up by the id in their path and links carry it
+ * unencoded, so such a row would restore and then never open. Restore points
+ * skip this: a workshop's own backup must always come back.
+ */
+export function assertUrlSafeIds(fileIds: IdsByModel): void {
+  for (const [model, ids] of fileIds) {
+    for (const id of ids) {
+      if (!URL_SAFE_ID.test(id)) {
+        throw new RestoreRefusedError(
+          'unsafe_ids',
+          `The file holds a ${model} id that cannot be used in a link: ${id.slice(0, 60)}`
         )
       }
     }
