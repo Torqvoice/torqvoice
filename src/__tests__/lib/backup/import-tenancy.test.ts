@@ -191,6 +191,18 @@ describe('a file with ids that cannot sit in a link', () => {
     expect(writes()).toEqual([])
   })
 
+  it('is refused for an empty id', async () => {
+    const data = file()
+    data.customers[0].id = ''
+    const response = await importJson(data)
+    expect(response.status).toBe(400)
+    expect(await response.json()).toEqual({
+      error: 'The file holds a Customer with an empty id',
+      code: 'unsafe_ids',
+    })
+    expect(state.calls).toEqual([])
+  })
+
   it('accepts ids from another system that are safe in a link', async () => {
     const data = file()
     data.customers[0].id = '11111111222233334444555555555555'

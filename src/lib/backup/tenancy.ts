@@ -214,20 +214,23 @@ export async function assertNoForeignRows(
 /**
  * Refuses an uploaded file with a row id that cannot sit in a URL as it is.
  * Detail pages look a row up by the id in their path and links carry it
- * unencoded, so such a row would restore and then never open. Restore points
- * skip this: a workshop's own backup must always come back.
+ * unencoded, so such a row would restore and then never open. An empty id
+ * is one of them: the link ends at the list. Restore points skip this: a
+ * workshop's own backup must always come back.
  */
-export function assertUrlSafeIds(fileIds: IdsByModel): void {
-  for (const [model, ids] of fileIds) {
-    for (const id of ids) {
-      if (!URL_SAFE_ID.test(id)) {
-        throw new RestoreRefusedError(
-          'unsafe_ids',
-          `The file holds a ${model} id that cannot be used in a link: ${id.slice(0, 60)}`
-        )
-      }
+export function assertUrlSafeIds(data: Row): void {
+  walkBackup(data, (model, row) => {
+    const id = row.id
+    if (typeof id === 'string' && !URL_SAFE_ID.test(id)) {
+      throw new RestoreRefusedError(
+        'unsafe_ids',
+        id === ''
+          ? `The file holds a ${model} with an empty id`
+          : `The file holds a ${model} id that cannot be used in a link: ${id.slice(0, 60)}`
+      )
     }
-  }
+    return 'keep'
+  })
 }
 
 /** Of the candidate ids, the ones that are rows of this workshop already. */
