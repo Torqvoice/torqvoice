@@ -86,6 +86,10 @@
     "invoiceNumber": "Номер счёта",
     "invoiceDate": "Дата счёта",
     "invoiceDueDate": "Срок оплаты",
+    "invoiceDateOnIssuePlaceholder": "Отправка",
+    "invoiceDueDateOnIssuePlaceholder": "По сроку",
+    "invoiceDateOnIssueHint": "Если оставить пустым, счёт будет датирован днём отправки, а срок оплаты рассчитается по вашим условиям оплаты.",
+    "invoiceDueDateOnIssueHint": "Если оставить пустым, срок оплаты будет установлен по вашим условиям оплаты при отправке счёта.",
     "typeOptions": {
       "maintenance": "Техобслуживание",
       "repair": "Ремонт",

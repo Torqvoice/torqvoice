@@ -1,4 +1,6 @@
 import { db } from '@/lib/db'
+import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { resolveWorkshopTimeZone, startOfZonedDay } from '@/lib/timezone'
 import type { Prisma } from '@/generated/prisma/client'
 import {
   ensureAssetSnapshot,
@@ -10,8 +12,12 @@ import {
   freezeConditionMap,
   freezeEquipment,
   freezeInspectionResults,
+  dueDateAtIssue,
+  invoiceDateAtIssue,
   ISSUED_INVOICE_VERSION,
+  readIssuedInvoiceData,
   shouldIssue,
+  wentOutBeforeIssue,
   type IssueReason,
   type IssuedInvoiceData,
 } from './issuedInvoice'
@@ -88,16 +94,31 @@ export function buildIssuedInvoiceData(a: InvoicePrintAssembly): IssuedInvoiceDa
 }
 
 /**
+ * How an issue treats the invoice date. `ifUnset` dates an invoice that has
+ * no date yet to the workshop's today; `redate` also moves a date the last
+ * issue wrote; `keep` never touches it (the backfill of invoices the
+ * customer already holds, dated as they were sent).
+ */
+type InvoiceDating = 'ifUnset' | 'redate' | 'keep'
+
+/**
  * Captures the invoice as it prints right now and dates the issue. What
  * decides whether this moment calls for a capture lives with the callers;
  * this only does the capture, the same way for a first issue and for a
  * deliberate refresh of one already issued.
  */
 async function captureIssue(
-  recordId: string,
+  record: {
+    id: string
+    invoiceDate?: Date | null
+    invoiceDueDate?: Date | null
+    issuedData?: unknown
+  },
   organizationId: string,
-  issuedAt: Date
+  issuedAt: Date,
+  dating: InvoiceDating
 ): Promise<boolean> {
+  const recordId = record.id
   // The inspection's rows are frozen, never its photographs, so they are not
   // decoded here only to be thrown away.
   // The photo is kept for good, so issuing waits longer for it than a
@@ -130,15 +151,51 @@ async function captureIssue(
       : Promise.resolve(null),
   ])
 
+  // Dated the day it is issued, on the workshop's calendar, unless somebody
+  // chose the date (invoiceDateAtIssue).
+  const timeZone = resolveWorkshopTimeZone(
+    assembly.settingsMap?.[SETTING_KEYS.TIMEZONE],
+    assembly.settingsMap?.[SETTING_KEYS.TIMEZONE_DETECTED]
+  )
+  const previous = readIssuedInvoiceData(record.issuedData)
+  const dated: ReturnType<typeof invoiceDateAtIssue> =
+    dating === 'keep'
+      ? { auto: null }
+      : invoiceDateAtIssue({
+          current: record.invoiceDate,
+          previousAuto: previous?.autoInvoiceDate,
+          today: startOfZonedDay(new Date(), timeZone),
+          redate: dating === 'redate',
+        })
+  // And falls due by the payment terms from that date, stored, because the
+  // past-due report, the portal and the books read the row, not the sheet.
+  const due: ReturnType<typeof dueDateAtIssue> =
+    dating === 'keep'
+      ? { auto: null }
+      : dueDateAtIssue({
+          current: record.invoiceDueDate,
+          previousAuto: previous?.autoInvoiceDueDate,
+          invoiceDate: dated.write ?? record.invoiceDate,
+          dueDays: Number(assembly.invoiceSettings?.dueDays) || 0,
+          timeZone,
+          redate: dating === 'redate',
+        })
+
   await db.serviceRecord.update({
     where: { id: recordId },
     data: {
       issuedAt,
+      ...(dated.write ? { invoiceDate: dated.write } : {}),
+      ...(due.write !== undefined ? { invoiceDueDate: due.write } : {}),
       issuedDesignSnapshotId,
       issuedLogoSnapshotId,
       issuedSignatureSnapshotId,
       issuedVehiclePhotoSnapshotId,
-      issuedData: buildIssuedInvoiceData(assembly) as unknown as Prisma.InputJsonValue,
+      issuedData: {
+        ...buildIssuedInvoiceData(assembly),
+        autoInvoiceDate: dated.auto,
+        autoInvoiceDueDate: due.auto,
+      } as unknown as Prisma.InputJsonValue,
     },
   })
   // Issuing is the moment an accounting connector wants the invoice, and
@@ -175,15 +232,28 @@ export async function issueInvoice(
 ): Promise<boolean> {
   const record = await db.serviceRecord.findFirst({
     where: { id: recordId, organizationId },
-    select: { id: true, issuedAt: true, editUnlockedAt: true, sentAt: true },
+    select: {
+      id: true,
+      issuedAt: true,
+      editUnlockedAt: true,
+      sentAt: true,
+      invoiceDate: true,
+      invoiceDueDate: true,
+      issuedData: true,
+      manuallyPaid: true,
+      payments: { select: { id: true } },
+    },
   })
   if (!record) return false
   if (!shouldIssue(record, reason)) return false
 
   // A backfilled invoice is dated to when it was sent, which is the
-  // nearest thing to when it was issued that the record knows.
+  // nearest thing to when it was issued that the record knows. Its dates
+  // are the ones the customer already holds, and stay; so do those of any
+  // invoice sent or paid before issuing tracked it.
   const issuedAt = reason === 'backfill' ? (record.sentAt ?? new Date()) : new Date()
-  return captureIssue(recordId, organizationId, issuedAt)
+  const dating = reason === 'backfill' || wentOutBeforeIssue(record, reason) ? 'keep' : 'ifUnset'
+  return captureIssue(record, organizationId, issuedAt, dating)
 }
 
 /**
@@ -196,14 +266,21 @@ export async function issueInvoice(
  * workshop, customer, vehicle, terms and design are read again as they are
  * now and the invoice is locked to them, dated to this moment. The lines
  * and totals are the record's own and were never frozen, so they are not
- * touched. Refused for an invoice that was never issued: a draft prints
+ * touched. The invoice date moves to today too when the last issue wrote it
+ * and nobody has changed it since; a date somebody chose stays. Refused for an invoice that was never issued: a draft prints
  * live already. Returns whether a capture was taken.
  */
 export async function reissueInvoice(recordId: string, organizationId: string): Promise<boolean> {
   const record = await db.serviceRecord.findFirst({
     where: { id: recordId, organizationId },
-    select: { id: true, issuedAt: true },
+    select: {
+      id: true,
+      issuedAt: true,
+      invoiceDate: true,
+      invoiceDueDate: true,
+      issuedData: true,
+    },
   })
   if (!record?.issuedAt) return false
-  return captureIssue(recordId, organizationId, new Date())
+  return captureIssue(record, organizationId, new Date(), 'redate')
 }
