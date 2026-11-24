@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { addZonedDays } from '@/lib/timezone'
 import type { Prisma } from '@/generated/prisma/client'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
@@ -248,6 +249,19 @@ export const issuedInvoiceDataSchema = z
       .nullable()
       .optional()
       .catch(null),
+    /**
+     * The invoice date this issue wrote, as an ISO instant, when the date was
+     * the app's and not somebody's choice. A later update to today's details
+     * moves a date that still matches it and keeps one edited since. Null or
+     * absent when the date was set by hand, or on invoices issued before
+     * issuing dated them.
+     */
+    autoInvoiceDate: z.string().nullable().optional().catch(null),
+    /**
+     * The due date this issue wrote from the payment terms, the same way:
+     * null or absent when somebody set it, or the terms gave none.
+     */
+    autoInvoiceDueDate: z.string().nullable().optional().catch(null),
   })
   .passthrough()
 
@@ -564,6 +578,102 @@ export function wasIssuedBeforeTracking(record: {
 }): boolean {
   if (record.issuedAt) return false
   return Boolean(record.sentAt || record.manuallyPaid || (record.payments?.length ?? 0) > 0)
+}
+
+/**
+ * The invoice date an issue writes, and what it records as the app's own.
+ *
+ * An invoice is dated the day it is issued, not the day the job was opened:
+ * that is the date of issue VAT law asks for, and what a customer expects on
+ * a job opened in one month and invoiced in the next. So a draft carries no
+ * invoice date of its own until it is issued, and the first issue writes the
+ * workshop's day. A date somebody typed is theirs and is kept.
+ *
+ * `redate` is the deliberate update to today's details: it moves a date the
+ * previous issue wrote and nobody has touched since, and still keeps one set
+ * by hand. A re-send after an owner's unlock does not redate: the corrected
+ * copy goes out as the same invoice, under the same date.
+ *
+ * `write` is undefined when the row's date stays as it is. `auto` is what
+ * the snapshot records: the app's date, or null when the date is a person's.
+ */
+export function invoiceDateAtIssue(opts: {
+  current: Date | null | undefined
+  previousAuto: string | null | undefined
+  today: Date
+  redate: boolean
+}): { write?: Date; auto: string | null } {
+  const { current, previousAuto, today, redate } = opts
+  if (!current) return { write: today, auto: today.toISOString() }
+  const untouched =
+    !!previousAuto && new Date(previousAuto).getTime() === new Date(current).getTime()
+  if (!untouched) return { auto: null }
+  if (redate) return { write: today, auto: today.toISOString() }
+  return { auto: previousAuto }
+}
+
+/**
+ * The due date an issue writes, and what it records as the app's own.
+ *
+ * Reports, the portal, reminders and the books read the stored due date, so
+ * an issued invoice carries one: the invoice date it ends up with plus the
+ * payment terms, on the workshop's calendar. The same rules as the invoice
+ * date: a due date somebody set is kept, and the update to today's details
+ * moves only one the app wrote and nobody has changed since, and clears it
+ * when the terms are now none. No terms at the first issue, no due date.
+ * `write` undefined leaves the row's due date as it is; null clears it.
+ */
+export function dueDateAtIssue(opts: {
+  current: Date | null | undefined
+  previousAuto: string | null | undefined
+  /** The invoice date after this issue; null when it has none. */
+  invoiceDate: Date | null | undefined
+  dueDays: number
+  timeZone: string
+  redate: boolean
+}): { write?: Date | null; auto: string | null } {
+  const { current, previousAuto, invoiceDate, dueDays, timeZone, redate } = opts
+  const fromTerms = () =>
+    invoiceDate && dueDays > 0 ? addZonedDays(new Date(invoiceDate), dueDays, timeZone) : null
+  if (!current) {
+    const due = fromTerms()
+    return due ? { write: due, auto: due.toISOString() } : { auto: null }
+  }
+  const untouched =
+    !!previousAuto && new Date(previousAuto).getTime() === new Date(current).getTime()
+  if (!untouched) return { auto: null }
+  if (!redate) return { auto: previousAuto }
+  // The app's due date follows the terms as they are now; terms since set
+  // to none take it away rather than leave a date nobody chose.
+  const due = fromTerms()
+  return due ? { write: due, auto: due.toISOString() } : { write: null, auto: null }
+}
+
+/**
+ * Whether an invoice being issued now had already gone out before issuing
+ * tracked it: sent, or paid, on a date the customer already holds. Such an
+ * invoice is frozen as it is and its dates are left alone; only one that is
+ * issued for the first time on this occasion is dated by it.
+ *
+ * Differs from wasIssuedBeforeTracking only in what this occasion did itself:
+ * a payment issues the invoice after it is written, so the payment (or the
+ * paid mark) that triggered this issue is not evidence of an earlier one.
+ * Sending issues before it stamps, so a sentAt is always an earlier send.
+ */
+export function wentOutBeforeIssue(
+  record: {
+    issuedAt: Date | null
+    sentAt: Date | null
+    manuallyPaid: boolean
+    payments?: { id?: string }[]
+  },
+  reason: IssueReason
+): boolean {
+  if (record.issuedAt) return false
+  if (record.sentAt) return true
+  const payments = record.payments?.length ?? 0
+  if (reason === 'paid') return payments > 1 || (payments > 0 && record.manuallyPaid)
+  return record.manuallyPaid || payments > 0
 }
 
 /**
