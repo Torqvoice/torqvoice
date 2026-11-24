@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ChevronDown, ChevronRight, Search } from 'lucide-react'
+import { presetTotals } from '@/features/labor-presets/Lib/presetTotals'
 
 export interface LaborPresetOption {
   id: string
@@ -82,10 +83,7 @@ export function LaborPresetPickerDialog({
         </div>
         <div className="max-h-75 overflow-y-auto space-y-1">
           {filtered.map((preset) => {
-            const hourlyItems = preset.items.filter((i) => i.pricingType !== 'service')
-            const serviceItems = preset.items.filter((i) => i.pricingType === 'service')
-            const totalHours = hourlyItems.reduce((sum, i) => sum + i.hours, 0)
-            const totalUnits = serviceItems.reduce((sum, i) => sum + i.hours, 0)
+            const { totalHours, totalUnits } = presetTotals(preset.items)
             const isExpanded = expandedId === preset.id
             const hasDetails = preset.items.length > 1 || (preset.parts && preset.parts.length > 0)
 
@@ -120,9 +118,7 @@ export function LaborPresetPickerDialog({
                   </div>
                   <div className="flex items-center gap-3 shrink-0 text-xs text-muted-foreground">
                     {hasDetails && <span>{t('items', { count: preset.items.length })}</span>}
-                    {totalHours > 0 && (
-                      <span>{t('totalHours', { hours: totalHours.toFixed(1) })}</span>
-                    )}
+                    {totalHours > 0 && <span>{t('totalHours', { hours: totalHours })}</span>}
                     {totalUnits > 0 && <span>{t('totalUnits', { units: totalUnits })}</span>}
                     {preset.parts && preset.parts.length > 0 && (
                       <span>{t('totalParts', { count: preset.parts.length })}</span>

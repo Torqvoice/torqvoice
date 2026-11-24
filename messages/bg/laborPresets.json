@@ -6,8 +6,8 @@
     "description": "Описание",
     "itemCount": "Позиции",
     "type": "Тип",
-    "hrs": "ч",
-    "units": "ед."
+    "hoursCount": "{hours, number} ч",
+    "unitsCount": "{units, number} ед."
   },
   "empty": {
     "noMatch": "Няма пакети, съответстващи на търсенето.",
@@ -43,7 +43,7 @@
     "itemDescriptionPlaceholder": "Описание *",
     "addItem": "Добави позиция",
     "cancel": "Отказ",
-    "create": "Създай пакет",
+    "create": "Създай",
     "saveChanges": "Запази промените",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
