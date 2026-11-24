@@ -22,6 +22,7 @@ import { shiftWorkshopTime, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { isRestoring } from '@/lib/backup/freeze'
+import { WENT_OUT_WHERE } from '@/features/invoices/Lib/issuedInvoice'
 import { createLogger } from '@/lib/logger'
 import { createTickSummary } from './tick-summary'
 
@@ -441,7 +442,13 @@ async function fetchInventory(orgId: string) {
 async function fetchPastDue(orgId: string, timeZone: string) {
   const now = new Date()
   const records = await db.serviceRecord.findMany({
-    where: { organizationId: orgId, invoiceDueDate: { lt: now }, status: { not: 'cancelled' } },
+    where: {
+      organizationId: orgId,
+      invoiceDueDate: { lt: now },
+      status: { not: 'cancelled' },
+      // The same rule as the report on screen: only invoices that went out.
+      AND: [WENT_OUT_WHERE],
+    },
     select: {
       id: true,
       invoiceNumber: true,
