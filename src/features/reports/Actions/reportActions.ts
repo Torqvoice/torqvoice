@@ -4,8 +4,9 @@ import { db } from '@/lib/db'
 import { listOrgEntries } from '@/features/time-tracking/Lib/timeEntries'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { earnedLineTotal, netLineTotal, taxedNetAmountOf } from '@/lib/tax'
-import { TaxByRateTable } from '../Lib/taxByRate'
+import { earnedLineTotal, netLineTotal } from '@/lib/tax'
+import { computeRevenue, computeTax } from '../Lib/financialReports'
+import { workDateIn, workDateOf } from '../Lib/reportDates'
 import { zonedDate, zonedDayKey, zonedParts } from '@/lib/timezone'
 import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
@@ -54,120 +55,9 @@ export async function getRevenueReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { tz, start, end } = await reportWindow(organizationId, params)
-
-      const records = await db.serviceRecord.findMany({
-        where: {
-          organizationId,
-          startDateTime: { gte: start, lt: end },
-          ...statusScope(params.completedOnly),
-        },
-        select: {
-          serviceDate: true,
-          startDateTime: true,
-          totalAmount: true,
-          cost: true,
-          type: true,
-          taxRate: true,
-          taxInclusive: true,
-          subtotal: true,
-          discountAmount: true,
-          manuallyPaid: true,
-          payments: { select: { amount: true } },
-          partItems: { select: { unitCost: true, quantity: true, total: true, taxable: true } },
-          laborItems: { select: { total: true, taxable: true } },
-        },
-        orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
+      return computeRevenue(organizationId, { gte: start, lt: end }, tz, {
+        completedOnly: params.completedOnly,
       })
-
-      // Monthly breakdown.
-      // `revenue` is the gross customer-facing total (what was charged).
-      // `partsRevenue` and `laborRevenue` are NET (pre-tax) and carry their
-      // share of the job's discount, so they add up consistently with
-      // `partsCost` (which is always net) for profit math.
-      const monthly: Record<
-        string,
-        {
-          revenue: number
-          collected: number
-          count: number
-          partsCost: number
-          partsRevenue: number
-          laborRevenue: number
-        }
-      > = {}
-      let totalRevenue = 0
-      let totalCollected = 0
-      let totalCount = 0
-      let totalPartsCost = 0
-      let totalPartsRevenue = 0
-      let totalLaborRevenue = 0
-
-      // Type breakdown
-      const byType: Record<string, { revenue: number; count: number }> = {}
-
-      for (const r of records) {
-        const total = r.totalAmount > 0 ? r.totalAmount : r.cost
-        const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
-        const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
-        const partsRevenue = r.partItems.reduce(
-          (s, p) => s + earnedLineTotal(p.total, r, p.taxable),
-          0
-        )
-        const laborRevenue = r.laborItems.reduce(
-          (s, l) => s + earnedLineTotal(l.total, r, l.taxable),
-          0
-        )
-        const _date = r.startDateTime ?? r.serviceDate
-        const month = workshopMonthKey(_date, tz)
-
-        if (!monthly[month])
-          monthly[month] = {
-            revenue: 0,
-            collected: 0,
-            count: 0,
-            partsCost: 0,
-            partsRevenue: 0,
-            laborRevenue: 0,
-          }
-        monthly[month].revenue += total
-        monthly[month].collected += paid
-        monthly[month].count += 1
-        monthly[month].partsCost += partsCost
-        monthly[month].partsRevenue += partsRevenue
-        monthly[month].laborRevenue += laborRevenue
-
-        totalRevenue += total
-        totalCollected += paid
-        totalCount += 1
-        totalPartsCost += partsCost
-        totalPartsRevenue += partsRevenue
-        totalLaborRevenue += laborRevenue
-
-        if (!byType[r.type]) byType[r.type] = { revenue: 0, count: 0 }
-        byType[r.type].revenue += total
-        byType[r.type].count += 1
-      }
-
-      return {
-        monthly: Object.entries(monthly).map(([month, data]) => ({
-          month,
-          ...data,
-          partsNetProfit: data.partsRevenue - data.partsCost,
-          netProfit: data.partsRevenue - data.partsCost + data.laborRevenue,
-        })),
-        byType: Object.entries(byType).map(([type, data]) => ({ type, ...data })),
-        summary: {
-          totalRevenue,
-          totalCollected,
-          outstanding: totalRevenue - totalCollected,
-          totalCount,
-          totalPartsCost,
-          totalPartsRevenue,
-          totalPartsNetProfit: totalPartsRevenue - totalPartsCost,
-          totalLaborRevenue,
-          netProfit: totalPartsRevenue - totalPartsCost + totalLaborRevenue,
-        },
-      }
     },
     { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] }
   )
@@ -181,7 +71,7 @@ export async function getServiceReport(params: ReportRange) {
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lt: end },
+          AND: [workDateIn({ gte: start, lt: end })],
           ...statusScope(params.completedOnly),
         },
         select: {
@@ -225,7 +115,7 @@ export async function getCustomerReport(params: ReportRange) {
             select: {
               serviceRecords: {
                 where: {
-                  startDateTime: { gte: start, lt: end },
+                  AND: [workDateIn({ gte: start, lt: end })],
                   ...statusScope(params.completedOnly),
                 },
                 select: { totalAmount: true, cost: true },
@@ -268,7 +158,7 @@ export async function getTechnicianReport(params: ReportRange) {
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lt: end },
+          AND: [workDateIn({ gte: start, lt: end })],
           ...statusScope(params.completedOnly),
           OR: [{ technicianId: { not: null } }, { techName: { not: null } }],
         },
@@ -343,7 +233,7 @@ export async function getTechnicianTimeReport(params: ReportRange) {
         db.serviceRecord.findMany({
           where: {
             organizationId,
-            startDateTime: { gte: start, lt: end },
+            AND: [workDateIn({ gte: start, lt: end })],
             ...statusScope(params.completedOnly),
             technicianId: { not: null },
           },
@@ -465,7 +355,7 @@ export async function getPartsUsageReport(params: ReportRange) {
         where: {
           serviceRecord: {
             organizationId,
-            startDateTime: { gte: start, lt: end },
+            AND: [workDateIn({ gte: start, lt: end })],
             ...statusScope(params.completedOnly),
           },
         },
@@ -560,7 +450,7 @@ export async function getJobAnalyticsReport(params: ReportRange) {
       const records = await db.serviceRecord.findMany({
         where: {
           organizationId,
-          startDateTime: { gte: start, lt: end },
+          AND: [workDateIn({ gte: start, lt: end })],
           ...statusScope(params.completedOnly),
         },
         select: {
@@ -611,15 +501,14 @@ export async function getJobAnalyticsReport(params: ReportRange) {
       ]
       const dayCount = [0, 0, 0, 0, 0, 0, 0]
       for (const r of records) {
-        dayCount[zonedParts(r.startDateTime ?? r.serviceDate, tz).weekday] += 1
+        dayCount[zonedParts(workDateOf(r), tz).weekday] += 1
       }
       const dayOfWeek = dayNames.map((day, i) => ({ day, count: dayCount[i] }))
 
       // Monthly trend
       const monthly: Record<string, { count: number; revenue: number }> = {}
       for (const r of records) {
-        const _d = r.startDateTime ?? r.serviceDate
-        const month = workshopMonthKey(_d, tz)
+        const month = workshopMonthKey(workDateOf(r), tz)
         if (!monthly[month]) monthly[month] = { count: 0, revenue: 0 }
         monthly[month].count += 1
         monthly[month].revenue += r.totalAmount > 0 ? r.totalAmount : r.cost
@@ -655,7 +544,7 @@ export async function getCustomerRetentionReport(params: ReportRange) {
             select: {
               serviceRecords: {
                 where: {
-                  startDateTime: { gte: start, lt: end },
+                  AND: [workDateIn({ gte: start, lt: end })],
                   ...statusScope(params.completedOnly),
                 },
                 select: { serviceDate: true, startDateTime: true, totalAmount: true, cost: true },
@@ -686,7 +575,7 @@ export async function getCustomerRetentionReport(params: ReportRange) {
         for (const v of c.vehicles) {
           for (const sr of v.serviceRecords) {
             visits.push({
-              date: sr.startDateTime ?? sr.serviceDate,
+              date: workDateOf(sr),
               amount: sr.totalAmount > 0 ? sr.totalAmount : sr.cost,
             })
           }
@@ -909,7 +798,7 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
         where: {
           vehicleId: params.vehicleId,
           organizationId,
-          startDateTime: { gte: start, lt: end },
+          AND: [workDateIn({ gte: start, lt: end })],
           ...statusScope(params.completedOnly),
         },
         select: {
@@ -939,6 +828,8 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
         },
         orderBy: [{ startDateTime: { sort: 'desc', nulls: 'last' } }, { serviceDate: 'desc' }],
       })
+      // Newest work first, a legacy job with no start among them by its service date.
+      records.sort((a, b) => workDateOf(b).getTime() - workDateOf(a).getTime())
 
       let totalCost = 0
       let totalPartsUsed = 0
@@ -973,8 +864,7 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
         typeCounts[r.type].count += 1
         typeCounts[r.type].totalCost += total
 
-        const _d = r.startDateTime ?? r.serviceDate
-        const month = workshopMonthKey(_d, tz)
+        const month = workshopMonthKey(workDateOf(r), tz)
         if (!monthly[month]) monthly[month] = { partsCost: 0, laborCost: 0, totalCost: 0, count: 0 }
         monthly[month].partsCost += partsCost
         monthly[month].laborCost += laborCost
@@ -1034,7 +924,7 @@ export async function getVehicleReport(params: ReportRange & { vehicleId: string
           title: r.title,
           type: r.type,
           status: r.status,
-          date: zonedDayKey(r.startDateTime ?? r.serviceDate, tz),
+          date: zonedDayKey(workDateOf(r), tz),
           totalAmount: r.totalAmount > 0 ? r.totalAmount : r.cost,
           partsCount: r.partItems.reduce((s, p) => s + p.quantity, 0),
           laborHours: r.laborItems.reduce((s, l) => s + laborHours(l), 0),
@@ -1050,64 +940,9 @@ export async function getTaxReport(params: ReportRange) {
   return withAuth(
     async ({ organizationId }) => {
       const { tz, start, end } = await reportWindow(organizationId, params)
-
-      const records = await db.serviceRecord.findMany({
-        where: {
-          organizationId,
-          startDateTime: { gte: start, lt: end },
-          ...statusScope(params.completedOnly),
-        },
-        select: {
-          serviceDate: true,
-          startDateTime: true,
-          subtotal: true,
-          taxableSubtotal: true,
-          taxRate: true,
-          taxAmount: true,
-          taxInclusive: true,
-          taxComponents: true,
-          totalAmount: true,
-        },
-        orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
+      return computeTax(organizationId, { gte: start, lt: end }, tz, {
+        completedOnly: params.completedOnly,
       })
-
-      const monthly: Record<
-        string,
-        { taxCollected: number; invoiceCount: number; taxableAmount: number }
-      > = {}
-      const byRate = new TaxByRateTable()
-      let totalTaxCollected = 0
-      let totalTaxableAmount = 0
-      let totalInvoices = 0
-
-      for (const r of records) {
-        if (r.taxAmount <= 0) continue
-
-        const _dt = r.startDateTime ?? r.serviceDate
-        const month = workshopMonthKey(_dt, tz)
-
-        // The taxable base = total - tax. This is the net amount on which tax
-        // was calculated, and it works in BOTH inclusive and exclusive modes
-        // (and accounts for any discount applied).
-        const taxableBase = taxedNetAmountOf(r)
-
-        if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 }
-        monthly[month].taxCollected += r.taxAmount
-        monthly[month].invoiceCount += 1
-        monthly[month].taxableAmount += taxableBase
-
-        byRate.add(r)
-
-        totalTaxCollected += r.taxAmount
-        totalTaxableAmount += taxableBase
-        totalInvoices += 1
-      }
-
-      return {
-        monthly: Object.entries(monthly).map(([month, data]) => ({ month, ...data })),
-        byRate: byRate.list(),
-        summary: { totalTaxCollected, totalTaxableAmount, totalInvoices },
-      }
     },
     { requiredPermissions: [{ action: PermissionAction.READ, subject: PermissionSubject.REPORTS }] }
   )

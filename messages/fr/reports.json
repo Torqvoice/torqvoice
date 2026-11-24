@@ -57,6 +57,7 @@
     "partsCostDesc": "Coût d'achat des pièces utilisées",
     "netProfitDesc": "Bénéfice net pièces plus revenus main-d'œuvre",
     "monthlyRevenue": "Revenus Mensuels",
+    "dateBasisHint": "Le chiffre d’affaires et la taxe comptent chaque facture à sa date de facturation. L’encaissé compte chaque paiement le jour de sa réception.",
     "revenueByType": "Revenus par Type",
     "monthlyBreakdown": "Répartition Mensuelle",
     "tableHeaders": {

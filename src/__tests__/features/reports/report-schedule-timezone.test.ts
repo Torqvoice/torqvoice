@@ -32,6 +32,7 @@ vi.mock('@/lib/db', () => ({
     user: { findUnique: vi.fn(), findMany: vi.fn() },
     appSetting: { findMany: vi.fn() },
     serviceRecord: { findMany: vi.fn() },
+    payment: { findMany: vi.fn() },
     organization: { findUnique: vi.fn() },
     reportSchedule: { create: vi.fn(), update: vi.fn() },
   },
@@ -108,6 +109,7 @@ describe('processOneSchedule', () => {
         laborItems: [],
       },
     ] as any)
+    vi.mocked(db.payment.findMany).mockResolvedValue([] as any)
     vi.mocked(db.user.findMany).mockResolvedValue([] as any)
     vi.mocked(db.organization.findUnique).mockResolvedValue({ name: 'Shop' } as any)
     vi.mocked(db.reportSchedule.update).mockResolvedValue({} as any)
@@ -126,11 +128,15 @@ describe('processOneSchedule', () => {
       'America/Chicago'
     )
 
-    const where = vi.mocked(db.serviceRecord.findMany).mock.calls[0][0]?.where as any
-    expect(where.startDateTime).toEqual({
+    // Whole days, the end exclusive: the start of tomorrow in Chicago.
+    const range = {
       gte: new Date('2026-06-24T05:00:00.000Z'),
-      lte: new Date('2026-07-02T04:59:59.999Z'),
-    })
+      lt: new Date('2026-07-02T05:00:00.000Z'),
+    }
+    const where = vi.mocked(db.serviceRecord.findMany).mock.calls[0][0]?.where as any
+    expect(where.AND[0].OR[0]).toEqual({ invoiceDate: range })
+    const paymentWhere = vi.mocked(db.payment.findMany).mock.calls[0][0]?.where as any
+    expect(paymentWhere.date).toEqual(range)
 
     const element = vi.mocked(renderToBuffer).mock.calls[0][0] as any
     expect(element.props.dateRange).toBe('Jun 24, 2026 – Jul 1, 2026')

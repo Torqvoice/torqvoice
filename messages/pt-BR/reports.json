@@ -57,6 +57,7 @@
     "partsCostDesc": "Custo de compra das peças usadas nos serviços",
     "netProfitDesc": "Lucro líquido de peças mais receita de mão de obra",
     "monthlyRevenue": "Receita Mensal",
+    "dateBasisHint": "Receita e impostos contam cada fatura na data da fatura. Recebido conta cada pagamento no dia em que foi recebido.",
     "revenueByType": "Receita por Tipo",
     "monthlyBreakdown": "Detalhamento Mensal",
     "tableHeaders": {

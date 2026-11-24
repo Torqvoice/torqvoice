@@ -57,6 +57,7 @@
     "partsCostDesc": "Innkjøpskostnad for deler brukt i tjenester",
     "netProfitDesc": "Netto fortjeneste deler pluss arbeidsinntekter",
     "monthlyRevenue": "Månedlige Inntekter",
+    "dateBasisHint": "Inntekter og avgift teller hver faktura på fakturadatoen. Innbetalt teller hver betaling på dagen den ble mottatt.",
     "revenueByType": "Inntekter etter Type",
     "monthlyBreakdown": "Månedlig Oversikt",
     "tableHeaders": {

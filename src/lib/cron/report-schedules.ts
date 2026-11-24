@@ -7,8 +7,9 @@ import React from 'react'
 import { sendOrgMail, getOrgFromAddress } from '@/lib/email'
 import { ReportPDF } from '@/features/reports/Components/ReportPDF'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
-import { earnedLineTotal, taxedNetAmountOf } from '@/lib/tax'
-import { TaxByRateTable } from '@/features/reports/Lib/taxByRate'
+import { earnedLineTotal } from '@/lib/tax'
+import { computeRevenue, computeTax } from '@/features/reports/Lib/financialReports'
+import { workDateIn, workDateOf } from '@/features/reports/Lib/reportDates'
 import {
   addZonedDays,
   atZonedTime,
@@ -62,10 +63,13 @@ function calculateNextRunDate(current: Date, frequency: string, timeZone: string
   return atZonedTime(next, '08:00', timeZone)
 }
 
-/** Whole workshop days, from the start of the period to the end of today. */
+/**
+ * Whole workshop days, from the start of the period to the end of today.
+ * `end` is exclusive, the start of tomorrow: query with `lt`.
+ */
 function getDateRange(dateRange: string, now: Date, timeZone: string): { start: Date; end: Date } {
   const today = startOfZonedDay(now, timeZone)
-  const end = new Date(addZonedDays(today, 1, timeZone).getTime() - 1)
+  const end = addZonedDays(today, 1, timeZone)
   let start: Date
 
   switch (dateRange) {
@@ -104,6 +108,7 @@ function getDateRange(dateRange: string, now: Date, timeZone: string): { start: 
   return { start, end }
 }
 
+/** The period as the email reads it; `end` is exclusive, so the last day shown is the one before. */
 function formatDateRange(start: Date, end: Date, timeZone: string): string {
   const fmt = (d: Date) =>
     d.toLocaleDateString('en-US', {
@@ -112,117 +117,16 @@ function formatDateRange(start: Date, end: Date, timeZone: string): string {
       day: 'numeric',
       year: 'numeric',
     })
-  return `${fmt(start)} – ${fmt(end)}`
+  return `${fmt(start)} – ${fmt(new Date(end.getTime() - 1))}`
 }
 
 // --------------- internal report fetchers ---------------
-// These replicate the logic from reportActions.ts but accept orgId directly
-
-async function fetchRevenue(orgId: string, start: Date, end: Date, timeZone: string) {
-  const records = await db.serviceRecord.findMany({
-    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
-    select: {
-      serviceDate: true,
-      startDateTime: true,
-      totalAmount: true,
-      cost: true,
-      type: true,
-      taxRate: true,
-      taxInclusive: true,
-      subtotal: true,
-      discountAmount: true,
-      manuallyPaid: true,
-      payments: { select: { amount: true } },
-      partItems: { select: { unitCost: true, quantity: true, total: true, taxable: true } },
-      laborItems: { select: { total: true, taxable: true } },
-    },
-    orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
-  })
-
-  const monthly: Record<
-    string,
-    {
-      revenue: number
-      collected: number
-      count: number
-      partsCost: number
-      partsRevenue: number
-      laborRevenue: number
-    }
-  > = {}
-  const byType: Record<string, { revenue: number; count: number }> = {}
-  let totalRevenue = 0,
-    totalCollected = 0,
-    totalCount = 0,
-    totalPartsCost = 0,
-    totalPartsRevenue = 0,
-    totalLaborRevenue = 0
-
-  for (const r of records) {
-    const total = r.totalAmount > 0 ? r.totalAmount : r.cost
-    const paid = r.manuallyPaid ? total : r.payments.reduce((s, p) => s + p.amount, 0)
-    const partsCost = r.partItems.reduce((s, p) => s + p.unitCost * p.quantity, 0)
-    // Net (pre-tax) parts/labor, after the job's discount, so profit math works in both tax modes.
-    const partsRevenue = r.partItems.reduce((s, p) => s + earnedLineTotal(p.total, r, p.taxable), 0)
-    const laborRevenue = r.laborItems.reduce(
-      (s, l) => s + earnedLineTotal(l.total, r, l.taxable),
-      0
-    )
-    const _d = r.startDateTime ?? r.serviceDate
-    const month = workshopMonthKey(_d, timeZone)
-
-    if (!monthly[month])
-      monthly[month] = {
-        revenue: 0,
-        collected: 0,
-        count: 0,
-        partsCost: 0,
-        partsRevenue: 0,
-        laborRevenue: 0,
-      }
-    monthly[month].revenue += total
-    monthly[month].collected += paid
-    monthly[month].count += 1
-    monthly[month].partsCost += partsCost
-    monthly[month].partsRevenue += partsRevenue
-    monthly[month].laborRevenue += laborRevenue
-    totalRevenue += total
-    totalCollected += paid
-    totalCount += 1
-    totalPartsCost += partsCost
-    totalPartsRevenue += partsRevenue
-    totalLaborRevenue += laborRevenue
-
-    if (!byType[r.type]) byType[r.type] = { revenue: 0, count: 0 }
-    byType[r.type].revenue += total
-    byType[r.type].count += 1
-  }
-
-  return {
-    monthly: Object.entries(monthly).map(([month, d]) => ({
-      month,
-      ...d,
-      partsNetProfit: d.partsRevenue - d.partsCost,
-      netProfit: d.partsRevenue - d.partsCost + d.laborRevenue,
-    })),
-    byType: Object.entries(byType).map(([type, d]) => ({ type, ...d })),
-    summary: {
-      totalRevenue,
-      totalCollected,
-      outstanding: totalRevenue - totalCollected,
-      totalCount,
-      totalPartsCost,
-      totalPartsRevenue,
-      totalPartsNetProfit: totalPartsRevenue - totalPartsCost,
-      totalLaborRevenue,
-      netProfit: totalPartsRevenue - totalPartsCost + totalLaborRevenue,
-    },
-  }
-}
+// Revenue and tax are the reports screen's own (Lib/financialReports.ts).
+// The rest replicate the logic from reportActions.ts but accept orgId directly.
 
 async function fetchServices(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
-    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
+    where: { organizationId: orgId, AND: [workDateIn({ gte: start, lt: end })] },
     select: { type: true, status: true },
   })
   const byStatus: Record<string, number> = {}
@@ -248,7 +152,7 @@ async function fetchCustomers(orgId: string, start: Date, end: Date) {
       vehicles: {
         select: {
           serviceRecords: {
-            where: { startDateTime: { gte: start, lte: end } },
+            where: { AND: [workDateIn({ gte: start, lt: end })] },
             select: { totalAmount: true, cost: true },
           },
         },
@@ -279,7 +183,7 @@ async function fetchTechnicians(orgId: string, start: Date, end: Date) {
   const records = await db.serviceRecord.findMany({
     where: {
       organizationId: orgId,
-      startDateTime: { gte: start, lte: end },
+      AND: [workDateIn({ gte: start, lt: end })],
       OR: [{ technicianId: { not: null } }, { techName: { not: null } }],
     },
     select: {
@@ -326,7 +230,7 @@ async function fetchTechnicians(orgId: string, start: Date, end: Date) {
 
 async function fetchParts(orgId: string, start: Date, end: Date) {
   const parts = await db.servicePart.findMany({
-    where: { serviceRecord: { organizationId: orgId, startDateTime: { gte: start, lte: end } } },
+    where: { serviceRecord: { organizationId: orgId, AND: [workDateIn({ gte: start, lt: end })] } },
     select: {
       name: true,
       partNumber: true,
@@ -388,7 +292,7 @@ async function fetchParts(orgId: string, start: Date, end: Date) {
 
 async function fetchJobAnalytics(orgId: string, start: Date, end: Date, timeZone: string) {
   const records = await db.serviceRecord.findMany({
-    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
+    where: { organizationId: orgId, AND: [workDateIn({ gte: start, lt: end })] },
     select: {
       type: true,
       totalAmount: true,
@@ -410,7 +314,7 @@ async function fetchJobAnalytics(orgId: string, start: Date, end: Date, timeZone
       (s, l) => s + (isShopFeeLine(l) ? 0 : l.hours),
       0
     )
-    const _d = r.startDateTime ?? r.serviceDate
+    const _d = workDateOf(r)
     dayCount[zonedParts(_d, timeZone).weekday] += 1
     const month = workshopMonthKey(_d, timeZone)
     if (!monthly[month]) monthly[month] = { count: 0, revenue: 0 }
@@ -447,7 +351,7 @@ async function fetchRetention(orgId: string, start: Date, end: Date) {
       vehicles: {
         select: {
           serviceRecords: {
-            where: { startDateTime: { gte: start, lte: end } },
+            where: { AND: [workDateIn({ gte: start, lt: end })] },
             select: { serviceDate: true, startDateTime: true, totalAmount: true, cost: true },
             orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
           },
@@ -471,7 +375,7 @@ async function fetchRetention(orgId: string, start: Date, end: Date) {
     for (const v of c.vehicles)
       for (const sr of v.serviceRecords)
         visits.push({
-          date: sr.startDateTime ?? sr.serviceDate,
+          date: workDateOf(sr),
           amount: sr.totalAmount > 0 ? sr.totalAmount : sr.cost,
         })
     if (visits.length === 0) continue
@@ -614,52 +518,6 @@ async function fetchPastDue(orgId: string, timeZone: string) {
   }
 }
 
-async function fetchTax(orgId: string, start: Date, end: Date, timeZone: string) {
-  const records = await db.serviceRecord.findMany({
-    where: { organizationId: orgId, startDateTime: { gte: start, lte: end } },
-    select: {
-      serviceDate: true,
-      startDateTime: true,
-      subtotal: true,
-      taxableSubtotal: true,
-      taxRate: true,
-      taxAmount: true,
-      taxInclusive: true,
-      taxComponents: true,
-      totalAmount: true,
-    },
-    orderBy: [{ startDateTime: { sort: 'asc', nulls: 'last' } }, { serviceDate: 'asc' }],
-  })
-  const monthly: Record<
-    string,
-    { taxCollected: number; invoiceCount: number; taxableAmount: number }
-  > = {}
-  const byRate = new TaxByRateTable()
-  let totalTaxCollected = 0,
-    totalTaxableAmount = 0,
-    totalInvoices = 0
-  for (const r of records) {
-    if (r.taxAmount <= 0) continue
-    const _d = r.startDateTime ?? r.serviceDate
-    const month = workshopMonthKey(_d, timeZone)
-    // Net taxable base = totalAmount - taxAmount, valid for both modes.
-    const taxableBase = taxedNetAmountOf(r)
-    if (!monthly[month]) monthly[month] = { taxCollected: 0, invoiceCount: 0, taxableAmount: 0 }
-    monthly[month].taxCollected += r.taxAmount
-    monthly[month].invoiceCount += 1
-    monthly[month].taxableAmount += taxableBase
-    byRate.add(r)
-    totalTaxCollected += r.taxAmount
-    totalTaxableAmount += taxableBase
-    totalInvoices += 1
-  }
-  return {
-    monthly: Object.entries(monthly).map(([month, d]) => ({ month, ...d })),
-    byRate: byRate.list(),
-    summary: { totalTaxCollected, totalTaxableAmount, totalInvoices },
-  }
-}
-
 // --------------- process a single schedule ---------------
 
 export async function processOneSchedule(
@@ -717,9 +575,11 @@ export async function processOneSchedule(
     inventoryData,
   ] = await Promise.all([
     sections.includes('revenue')
-      ? fetchRevenue(schedule.organizationId, start, end, timeZone)
+      ? computeRevenue(schedule.organizationId, { gte: start, lt: end }, timeZone)
       : null,
-    sections.includes('tax') ? fetchTax(schedule.organizationId, start, end, timeZone) : null,
+    sections.includes('tax')
+      ? computeTax(schedule.organizationId, { gte: start, lt: end }, timeZone)
+      : null,
     sections.includes('pastDue') ? fetchPastDue(schedule.organizationId, timeZone) : null,
     sections.includes('services') ? fetchServices(schedule.organizationId, start, end) : null,
     sections.includes('customers') ? fetchCustomers(schedule.organizationId, start, end) : null,
