@@ -7,6 +7,7 @@ import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
 import { servicePartSchema } from '../Schema/serviceSchema'
+import { markupFromCostAndPrice } from '@/features/inventory/Lib/partPricing'
 
 /**
  * Adds a part line to a job, recalculates the job's money, and moves the stock.
@@ -110,6 +111,9 @@ export async function addPart(args: {
         unitPrice: input.unitPrice,
         total: input.total,
         unitCost: input.unitCost,
+        // Stored beside the cost, as the work order's part row works it out,
+        // so the line reads the same margin there as everywhere else.
+        markupPercent: markupFromCostAndPrice(input.unitCost, input.unitPrice),
         inventoryPartId: input.inventoryPartId || null,
         taxable,
         serviceRecordId: record.id,

@@ -268,6 +268,17 @@ describe('a part booked onto a job', () => {
     unitCost: 120,
   }
 
+  it('keeps its cost and the markup its price implies', async () => {
+    // The technician app and the active-jobs scan add parts through here, and
+    // a line stored at markup 0 read as sold at cost on the job.
+    store.settings = PARTS_ONLY
+    store.labor = []
+
+    await addPart({ organizationId: 'org-1', userId: 'user-1', input })
+
+    expect(store.parts[0]).toMatchObject({ unitCost: 120, markupPercent: 66.7, unitPrice: 200 })
+  })
+
   it('is taxed where the workshop taxes parts, beside labor that is not', async () => {
     store.settings = PARTS_ONLY
     store.labor = [labor(300, false)]
