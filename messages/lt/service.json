@@ -86,6 +86,9 @@
     "invoiceNumber": "Sąskaitos numeris",
     "invoiceDate": "Sąskaitos data",
     "invoiceDueDate": "Mokėjimo terminas",
+    "invoiceDateOnIssuePlaceholder": "Išsiuntimo dieną",
+    "invoiceDueDateOnIssuePlaceholder": "Pagal mokėjimo sąlygas",
+    "invoiceDateOnIssueHint": "Palikus tuščią, sąskaita datuojama jos išsiuntimo diena, o apmokėjimo terminas skaičiuojamas pagal jūsų mokėjimo sąlygas.",
     "typeOptions": {
       "maintenance": "Priežiūra",
       "repair": "Remontas",

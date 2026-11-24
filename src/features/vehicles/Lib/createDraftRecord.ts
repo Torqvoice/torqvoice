@@ -282,7 +282,8 @@ export async function createDraftRecord(
       ...warranty,
       warrantyExpiresAt: warrantyExpiryFor(warranty, serviceDate, timeZone),
       serviceDate,
-      invoiceDate: serviceDate,
+      // No invoice date: the invoice is dated the day it is issued
+      // (invoiceDateAtIssue), not the day the job was opened.
       startDateTime: defaultStart,
       endDateTime: defaultEnd ?? new Date(defaultStart.getTime() + 3600000),
     },

@@ -86,6 +86,9 @@
     "invoiceNumber": "Número de Factura",
     "invoiceDate": "Fecha de factura",
     "invoiceDueDate": "Fecha de vencimiento",
+    "invoiceDateOnIssuePlaceholder": "Al enviarla",
+    "invoiceDueDateOnIssuePlaceholder": "Según condiciones de pago",
+    "invoiceDateOnIssueHint": "Si se deja vacío, la factura lleva la fecha del día en que se envía y vence según sus condiciones de pago.",
     "typeOptions": {
       "maintenance": "Mantenimiento",
       "repair": "Reparación",

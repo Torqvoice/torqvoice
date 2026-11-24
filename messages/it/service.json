@@ -86,6 +86,9 @@
     "invoiceNumber": "Numero Fattura",
     "invoiceDate": "Data fattura",
     "invoiceDueDate": "Data di scadenza",
+    "invoiceDateOnIssuePlaceholder": "All'invio",
+    "invoiceDueDateOnIssuePlaceholder": "Secondo i termini di pagamento",
+    "invoiceDateOnIssueHint": "Se lasciata vuota, la fattura è datata al giorno dell'invio e scade secondo i tuoi termini di pagamento.",
     "typeOptions": {
       "maintenance": "Manutenzione",
       "repair": "Riparazione",

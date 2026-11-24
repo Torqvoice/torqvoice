@@ -25,6 +25,7 @@ import { findingLine } from '@/features/fault-codes/Lib/codes'
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { readFile } from 'fs/promises'
 import { db } from '@/lib/db'
+import { resolveWorkshopTimeZone, startOfZonedDay } from '@/lib/timezone'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { resolveUploadPath } from '@/lib/resolve-upload-path'
 import { isOwnUploadUrl } from '@/lib/upload-url'
@@ -558,6 +559,19 @@ async function assembleLive(
 
   const data: InvoiceData = {
     ...record,
+    // A draft is dated the day it is issued (invoiceDateAtIssue), so until
+    // then it prints the workshop's today: the date it would go out with.
+    invoiceDate:
+      record.invoiceDate ??
+      (record.issuedAt
+        ? null
+        : startOfZonedDay(
+            new Date(),
+            resolveWorkshopTimeZone(
+              settingsMap[SETTING_KEYS.TIMEZONE],
+              settingsMap[SETTING_KEYS.TIMEZONE_DETECTED]
+            )
+          )),
     customer: partyOf(record.customer),
     vehicle: record.vehicle
       ? {

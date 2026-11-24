@@ -86,6 +86,9 @@
     "invoiceNumber": "Invoice Number",
     "invoiceDate": "Invoice Date",
     "invoiceDueDate": "Due Date",
+    "invoiceDateOnIssuePlaceholder": "When sent",
+    "invoiceDueDateOnIssuePlaceholder": "By payment terms",
+    "invoiceDateOnIssueHint": "Left empty, the invoice is dated the day it is sent, and falls due by your payment terms.",
     "typeOptions": {
       "maintenance": "Maintenance",
       "repair": "Repair",

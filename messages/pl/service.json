@@ -86,6 +86,9 @@
     "invoiceNumber": "Numer Faktury",
     "invoiceDate": "Data faktury",
     "invoiceDueDate": "Termin płatności",
+    "invoiceDateOnIssuePlaceholder": "Przy wysyłce",
+    "invoiceDueDateOnIssuePlaceholder": "Wg warunków płatności",
+    "invoiceDateOnIssueHint": "Jeśli pole pozostanie puste, faktura otrzyma datę dnia wysłania, a termin płatności wynika z Twoich warunków płatności.",
     "typeOptions": {
       "maintenance": "Konserwacja",
       "repair": "Naprawa",

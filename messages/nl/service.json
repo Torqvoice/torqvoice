@@ -86,6 +86,9 @@
     "invoiceNumber": "Factuurnummer",
     "invoiceDate": "Factuurdatum",
     "invoiceDueDate": "Vervaldatum",
+    "invoiceDateOnIssuePlaceholder": "Bij verzenden",
+    "invoiceDueDateOnIssuePlaceholder": "Volgens betalingstermijn",
+    "invoiceDateOnIssueHint": "Leeg gelaten krijgt de factuur de datum van de dag waarop hij wordt verzonden, en vervalt hij volgens je betalingsvoorwaarden.",
     "typeOptions": {
       "maintenance": "Onderhoud",
       "repair": "Reparatie",

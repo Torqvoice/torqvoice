@@ -112,6 +112,10 @@ export function InvoiceDetailsSection({
     setInvoiceDueDate(initialData.invoiceDueDate || '')
   }, [initialData.invoiceDueDate])
 
+  // A draft's empty invoice date is filled the day it is sent; the hint says
+  // so while nobody has typed a date of their own.
+  const datedOnIssue = Boolean(initialData.invoiceDatedOnIssue) && !invoiceDate
+
   // On the overhauled page the status is the stepper under the title, so the
   // select is not drawn a second time.
   const statusField = part ? null : (
@@ -205,6 +209,8 @@ export function InvoiceDetailsSection({
               setInvoiceDate(v)
               onDirty?.()
             }}
+            placeholder={datedOnIssue ? t('invoiceDateOnIssuePlaceholder') : undefined}
+            aria-describedby={datedOnIssue ? 'invoiceDateOnIssueHint' : undefined}
             className="h-9 text-sm"
           />
         </div>
@@ -220,10 +226,18 @@ export function InvoiceDetailsSection({
               setInvoiceDueDate(v)
               onDirty?.()
             }}
+            placeholder={
+              datedOnIssue && !invoiceDueDate ? t('invoiceDueDateOnIssuePlaceholder') : undefined
+            }
             className="h-9 text-sm"
           />
         </div>
       </div>
+      {datedOnIssue && (
+        <p id="invoiceDateOnIssueHint" className="text-xs text-muted-foreground">
+          {t('invoiceDateOnIssueHint')}
+        </p>
+      )}
 
       {designOptions.length > 0 && (
         <div className="space-y-1">

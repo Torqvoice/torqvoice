@@ -48,6 +48,8 @@ export interface InitialData {
   invoiceNumber?: string
   invoiceDate: string
   invoiceDueDate: string
+  /** A draft with no invoice date of its own: it is dated the day it is issued. */
+  invoiceDatedOnIssue?: boolean
   concerns: ConcernRow[]
   partItems: ServicePartInput[]
   laborItems: ServiceLaborInput[]

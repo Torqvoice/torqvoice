@@ -86,6 +86,9 @@
     "invoiceNumber": "Numéro de Facture",
     "invoiceDate": "Date de facture",
     "invoiceDueDate": "Date d'échéance",
+    "invoiceDateOnIssuePlaceholder": "À l'envoi",
+    "invoiceDueDateOnIssuePlaceholder": "Selon les conditions de paiement",
+    "invoiceDateOnIssueHint": "Laissée vide, la facture est datée du jour de son envoi et son échéance suit vos conditions de paiement.",
     "typeOptions": {
       "maintenance": "Maintenance",
       "repair": "Réparation",
