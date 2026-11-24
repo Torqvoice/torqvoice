@@ -20,6 +20,8 @@ import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceF
 import { LINE_TOTAL_MAX, QUANTITY_MAX, READING_MAX, UNIT_PRICE_MAX } from '@/lib/input-limits'
 import { WARRANTY_NONE } from '@/lib/warranty'
 import { useServiceType } from '@/components/service-type-context'
+import { useFieldErrorText } from '@/components/field-errors'
+import type { FieldError } from '@/lib/field-errors'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { ServiceDetail } from '../service-detail/types'
@@ -46,6 +48,36 @@ export function useServiceActions({
   const tv = useTranslations('vehicles.form')
   const readingKind = useServiceType() === 'marine' ? 'hours' : 'distance'
   const { number: formatNumber } = useFormatter()
+  const fieldErrorText = useFieldErrorText()
+
+  /**
+   * What the server's schema refused, in the person's language and under the
+   * name the page gives the field: "Mileage: Can't be negative." A part or
+   * labour line is named by its section. The field itself is focused when the
+   * page draws it.
+   */
+  const describeFieldErrors = (form: HTMLFormElement, errors: FieldError[]): string => {
+    const labelOf = (field: string): string | null => {
+      const [head] = field.split('.')
+      if (head === 'mileage') {
+        return t(readingKind === 'hours' ? 'basicInfo.mileageMarine' : 'basicInfo.mileage')
+      }
+      if (head === 'partItems') return t('parts.title')
+      if (head === 'laborItems') return t('labor.title')
+      return null
+    }
+    const control = errors
+      .map((error) => form.elements.namedItem(error.field))
+      .find((el): el is HTMLInputElement => el instanceof HTMLInputElement)
+    control?.focus()
+    return errors
+      .map((error) => {
+        const problem = fieldErrorText(error)
+        const label = labelOf(error.field)
+        return label ? tc('fieldErrors.withLabel', { label, problem }) : problem
+      })
+      .join(' ')
+  }
 
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [downloading, setDownloading] = useState(false)
@@ -94,6 +126,7 @@ export function useServiceActions({
     markDirty,
     confirmedReadingRef,
     acknowledgeSavedLines,
+    sendingLinesRef,
   } = formState
 
   /**
@@ -281,9 +314,13 @@ export function useServiceActions({
     }
 
     let result: Awaited<ReturnType<typeof updateServiceRecord>>
+    // A refresh that lands while this runs must not take these lines, the
+    // page's own, for ones added elsewhere.
+    sendingLinesRef.current = { parts: payload.partItems, labor: payload.laborItems }
     try {
       result = await updateServiceRecord(payload)
     } catch (err) {
+      sendingLinesRef.current = null
       // The request never came back (the connection dropped). Saving has to
       // end here, or the next save, and a link waiting on this one, waits
       // forever.
@@ -291,6 +328,7 @@ export function useServiceActions({
       setLoading(false)
       throw err
     }
+    sendingLinesRef.current = null
 
     if (result.success && holdReading) {
       commitLaborAddedElsewhere()
@@ -310,6 +348,10 @@ export function useServiceActions({
     } else if (result.success) {
       commitLaborAddedElsewhere()
       commitPartsAddedElsewhere()
+      // The same on every save: a preset or an edit made while it ran, or
+      // before the refresh below comes back, leaves the page unsaved when the
+      // saved lines arrive, and they must not read as added elsewhere.
+      acknowledgeSavedLines({ parts: payload.partItems, labor: payload.laborItems })
       markSaved(revision)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {
@@ -338,6 +380,9 @@ export function useServiceActions({
       revealRequiredMeters(initialData.id, result.requiredMeters, {
         focus: !autosave && !leavingRef.current,
       })
+    } else if (result.fieldErrors?.length) {
+      // Refused by the work order's own rules: said in words, nothing typed lost.
+      refuse(describeFieldErrors(form, result.fieldErrors))
     } else {
       const message = result.error || t('page.failedUpdate')
       refuse(message, () => modal.open('error', tc('errors.error'), message))

@@ -47,6 +47,7 @@ import {
 } from '@/features/custom-fields/Components/CustomFieldsForm'
 import { customFieldsRefusal } from '@/features/custom-fields/Lib/customFieldsRefusal'
 import type { CustomFieldError } from '@/features/custom-fields/Lib/customFieldValueRules'
+import { useFieldErrors } from '@/components/field-errors'
 
 interface CustomerFormProps {
   open: boolean
@@ -88,6 +89,12 @@ export function CustomerForm({
   const modal = useGlassModal()
   const tv = useTranslations('vehicles.form')
   const [loading, setLoading] = useState(false)
+  // What the server refused, said under each field it was about.
+  const fieldErrors = useFieldErrors()
+  const { reset: resetFieldErrors } = fieldErrors
+  useEffect(() => {
+    if (!open) resetFieldErrors()
+  }, [open, resetFieldErrors])
   // The workshop's own fields for a customer, when it has defined any. They
   // save through their own action: checked before the customer is written,
   // saved under its id once it has one.
@@ -211,6 +218,20 @@ export function CustomerForm({
       return
     }
 
+    // Refused by the customer's own rules (an email that is not one, a
+    // field too long): each is said under its field, the first is focused,
+    // and everything typed stays where it is.
+    if (!result.success && result.fieldErrors?.length) {
+      const unplaced = fieldErrors.report(formRef.current, result.fieldErrors)
+      toast.error(
+        unplaced.length > 0
+          ? unplaced.map((error) => fieldErrors.text(error)).join(' ')
+          : tc('fieldErrors.notSaved')
+      )
+      setLoading(false)
+      return
+    }
+
     if (result.success) {
       if (!customer) track('customer:create')
       const created = result.data as
@@ -286,6 +307,8 @@ export function CustomerForm({
           key={customer?.id ?? `${defaults?.name ?? ''}|${defaults?.address ?? ''}`}
           ref={formRef}
           onSubmit={handleSubmit}
+          // A refused field's mark goes as soon as it is changed.
+          onChange={(e) => fieldErrors.clear((e.target as Element).getAttribute('name') ?? '')}
           className="flex min-h-0 flex-1 flex-col"
         >
           <DialogBody className="grid content-start gap-x-8 gap-y-4 md:grid-cols-2">
@@ -319,20 +342,24 @@ export function CustomerForm({
                     id="name"
                     name="name"
                     maxLength={NAME_MAX_LENGTH}
+                    {...fieldErrors.invalidProps('name')}
                     placeholder={t('namePlaceholder')}
                     defaultValue={customer?.name ?? defaults?.name ?? ''}
                     required
                   />
+                  {fieldErrors.message('name')}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
                   <Input
                     id="customerNumber"
                     name="customerNumber"
+                    {...fieldErrors.invalidProps('customerNumber')}
                     placeholder={t('customerNumberAuto')}
                     defaultValue={customer?.customerNumber ?? ''}
                     maxLength={20}
                   />
+                  {fieldErrors.message('customerNumber')}
                 </div>
               </div>
 
@@ -343,10 +370,12 @@ export function CustomerForm({
                     id="email"
                     name="email"
                     maxLength={EMAIL_MAX_LENGTH}
+                    {...fieldErrors.invalidProps('email')}
                     type="email"
                     placeholder={t('emailPlaceholder')}
                     defaultValue={customer?.email ?? ''}
                   />
+                  {fieldErrors.message('email')}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">{tc('form.phone')}</Label>
@@ -354,9 +383,11 @@ export function CustomerForm({
                     id="phone"
                     name="phone"
                     maxLength={SHORT_TEXT_MAX_LENGTH}
+                    {...fieldErrors.invalidProps('phone')}
                     placeholder={t('phonePlaceholder')}
                     defaultValue={customer?.phone ?? ''}
                   />
+                  {fieldErrors.message('phone')}
                 </div>
               </div>
 
@@ -369,11 +400,13 @@ export function CustomerForm({
                   id="address"
                   name="address"
                   maxLength={ADDRESS_MAX_LENGTH}
+                  {...fieldErrors.invalidProps('address')}
                   placeholder={t('addressPlaceholder')}
                   rows={2}
                   className="min-h-9 resize-none"
                   defaultValue={customer?.address ?? defaults?.address ?? ''}
                 />
+                {fieldErrors.message('address')}
               </div>
             </div>
 
@@ -389,9 +422,11 @@ export function CustomerForm({
                   id="company"
                   name="company"
                   maxLength={NAME_MAX_LENGTH}
+                  {...fieldErrors.invalidProps('company')}
                   placeholder={t('companyPlaceholder')}
                   defaultValue={customer?.company ?? ''}
                 />
+                {fieldErrors.message('company')}
               </div>
 
               <div className="space-y-2">
@@ -400,9 +435,11 @@ export function CustomerForm({
                   id="taxId"
                   name="taxId"
                   maxLength={SHORT_TEXT_MAX_LENGTH}
+                  {...fieldErrors.invalidProps('taxId')}
                   placeholder={t('taxIdPlaceholder')}
                   defaultValue={customer?.taxId ?? ''}
                 />
+                {fieldErrors.message('taxId')}
                 <p className="text-xs text-muted-foreground">{t('taxIdHint')}</p>
               </div>
 
@@ -454,10 +491,12 @@ export function CustomerForm({
                 id="notes"
                 name="notes"
                 maxLength={NOTES_MAX_LENGTH}
+                {...fieldErrors.invalidProps('notes')}
                 placeholder={t('notesPlaceholder')}
                 rows={3}
                 defaultValue={customer?.notes ?? ''}
               />
+              {fieldErrors.message('notes')}
             </div>
 
             {hasCustomFields && open && (

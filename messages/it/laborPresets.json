@@ -71,6 +71,6 @@
     "saveFailed": "Impossibile salvare il modello di manodopera",
     "deleteFailed": "Impossibile eliminare il modello di manodopera",
     "loadFailed": "Impossibile caricare il modello di manodopera",
-    "noItems": "È richiesta almeno una voce"
+    "itemNameMissing": "Dai un nome a questa voce."
   }
 }

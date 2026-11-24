@@ -328,5 +328,19 @@
     "irreversible": "Bu işlem geri alınamaz.",
     "andMore": "ve {count} tane daha",
     "typeToConfirm": "Onaylamak için <b>{text}</b> yazın"
+  },
+  "fieldErrors": {
+    "required": "Bu alanı doldurun.",
+    "email": "ad@ornek.com gibi bir e-posta adresi girin.",
+    "tooShort": "En az {limit} karakter kullanın.",
+    "tooLong": "En fazla {limit} karakter kullanın.",
+    "negative": "Negatif olamaz.",
+    "tooSmall": "En az {limit} olmalı.",
+    "tooLarge": "{limit} veya daha az olmalı.",
+    "notNumber": "Bir sayı girin.",
+    "wholeNumber": "Tam sayı girin.",
+    "invalid": "Bu değer geçerli değil.",
+    "notSaved": "Kaydedilmedi. İşaretli alanları kontrol edin.",
+    "withLabel": "{label}: {problem}"
   }
 }

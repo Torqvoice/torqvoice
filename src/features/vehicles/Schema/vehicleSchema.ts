@@ -4,6 +4,7 @@ import { FLEET_NUMBER_MAX_LENGTH } from '../Lib/fleetNumber'
 import { optionalUploadUrlSchema } from '@/lib/upload-url'
 import { registryLookupSchema } from '../Lib/registryLookup'
 import { HSN_PATTERN, normalizeHsn, normalizeTsn, TSN_PATTERN } from '../Lib/typeKey'
+import { VEHICLE_YEAR_MIN, vehicleYearMax } from '../Lib/vehicleYear'
 
 // An empty string passes: on an update it is how a cleared field says so.
 const hsnSchema = z
@@ -20,8 +21,8 @@ export const createVehicleSchema = z.object({
   model: z.string().min(1, 'Model is required').max(NAME_MAX_LENGTH),
   year: z.coerce
     .number()
-    .min(1900, 'Year must be after 1900')
-    .max(new Date().getFullYear() + 2, 'Year is too far in the future'),
+    .min(VEHICLE_YEAR_MIN, 'Year must be after 1900')
+    .max(vehicleYearMax(), 'Year is too far in the future'),
   vin: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
   licensePlate: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
   color: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),

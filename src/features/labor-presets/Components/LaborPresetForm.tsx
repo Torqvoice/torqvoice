@@ -23,6 +23,9 @@ import { Loader2, Plus, Trash2 } from 'lucide-react'
 import { PresetPartsEditor } from './PresetPartsEditor'
 import type { PresetPartItem } from './PresetPartsEditor'
 import { clearableInput } from '@/lib/clearable'
+import { namelessItemRows } from '../Lib/namelessItems'
+import { useFieldErrorText } from '@/components/field-errors'
+import type { FieldError } from '@/lib/field-errors'
 
 type PricingType = 'hourly' | 'service'
 
@@ -129,6 +132,12 @@ export function LaborPresetForm({
   const router = useRouter()
   const modal = useGlassModal()
   const t = useTranslations('laborPresets')
+  const fieldErrorText = useFieldErrorText()
+  /** Why a save failed: what the schema refused in the person's words, else the server's. */
+  const failure = (result: { error?: string; fieldErrors?: FieldError[] }) =>
+    result.fieldErrors?.length
+      ? result.fieldErrors.map((error) => fieldErrorText(error)).join(' ')
+      : result.error || t('errors.saveFailed')
   const [loading, setLoading] = useState(false)
   const [mode, setMode] = useState<PresetMode>(() => detectMode(preset))
 
@@ -216,8 +225,32 @@ export function LaborPresetForm({
     onOpenChange(isOpen)
   }
 
+  /**
+   * Rows that were refused for want of a name, by index in the mode on
+   * screen. Said under the row's own name field rather than in a box about
+   * the whole form; a row's mark goes when it is named or removed.
+   */
+  const [namelessRows, setNamelessRows] = useState<number[]>([])
+  const nameFieldId = (index: number) => `preset-item-name-${index}`
+  const nameErrorId = (index: number) => `preset-item-name-error-${index}`
+  const markNameless = (rows: number[]) => {
+    setNamelessRows(rows)
+    document.getElementById(nameFieldId(rows[0]))?.focus()
+  }
+  const nameInvalidProps = (index: number) =>
+    namelessRows.includes(index)
+      ? { 'aria-invalid': true, 'aria-describedby': nameErrorId(index) }
+      : {}
+  const nameError = (index: number) =>
+    namelessRows.includes(index) ? (
+      <p id={nameErrorId(index)} role="alert" className="col-span-full text-xs text-destructive">
+        {t('errors.itemNameMissing')}
+      </p>
+    ) : null
+
   const handleModeChange = (newMode: PresetMode) => {
     setMode(newMode)
+    setNamelessRows([])
   }
 
   // Package mode helpers
@@ -227,6 +260,7 @@ export function LaborPresetForm({
       updated[index] = { ...updated[index], [field]: value }
       return updated
     })
+    if (field === 'description') setNamelessRows((rows) => rows.filter((row) => row !== index))
   }
 
   const addItem = () => {
@@ -238,6 +272,7 @@ export function LaborPresetForm({
 
   const removeItem = (index: number) => {
     setItems((prev) => prev.filter((_, i) => i !== index))
+    setNamelessRows([])
   }
 
   // Single item mode helpers
@@ -247,6 +282,7 @@ export function LaborPresetForm({
       updated[index] = { ...updated[index], [field]: value }
       return updated
     })
+    if (field === 'name') setNamelessRows((rows) => rows.filter((row) => row !== index))
   }
 
   const addSingleItem = () => {
@@ -258,6 +294,7 @@ export function LaborPresetForm({
 
   const removeSingleItem = (index: number) => {
     setSingleItems((prev) => prev.filter((_, i) => i !== index))
+    setNamelessRows([])
   }
 
   const buildPartsPayload = () =>
@@ -280,12 +317,13 @@ export function LaborPresetForm({
     const partsPayload = buildPartsPayload()
 
     if (mode === 'single') {
-      const validItems = singleItems.filter((i) => i.name.trim())
-      if (validItems.length === 0) {
-        modal.open('error', t('errors.error'), t('errors.noItems'))
+      const nameless = namelessItemRows(singleItems)
+      if (nameless.length > 0) {
+        markNameless(nameless)
         setLoading(false)
         return
       }
+      const validItems = singleItems.filter((i) => i.name.trim())
 
       if (preset) {
         const item = validItems[0]
@@ -309,7 +347,7 @@ export function LaborPresetForm({
           onOpenChange(false)
           router.refresh()
         } else {
-          modal.open('error', t('errors.error'), result.error || t('errors.saveFailed'))
+          modal.open('error', t('errors.error'), failure(result))
         }
       } else {
         let allSuccess = true
@@ -329,7 +367,7 @@ export function LaborPresetForm({
             parts: partsPayload,
           })
           if (!result.success) {
-            modal.open('error', t('errors.error'), result.error || t('errors.saveFailed'))
+            modal.open('error', t('errors.error'), failure(result))
             allSuccess = false
             break
           }
@@ -340,12 +378,15 @@ export function LaborPresetForm({
         }
       }
     } else {
-      const validItems = items.filter((i) => i.description.trim())
-      if (validItems.length === 0) {
-        modal.open('error', t('errors.error'), t('errors.noItems'))
+      const nameless = namelessItemRows(
+        items.map((item) => ({ name: item.description, hours: item.hours }))
+      )
+      if (nameless.length > 0) {
+        markNameless(nameless)
         setLoading(false)
         return
       }
+      const validItems = items.filter((i) => i.description.trim())
 
       const data = {
         name,
@@ -367,7 +408,7 @@ export function LaborPresetForm({
         onOpenChange(false)
         router.refresh()
       } else {
-        modal.open('error', t('errors.error'), result.error || t('errors.saveFailed'))
+        modal.open('error', t('errors.error'), failure(result))
       }
     }
 
@@ -428,6 +469,9 @@ export function LaborPresetForm({
                     <div className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
                       <div className="col-span-2 flex gap-2 sm:col-span-1">
                         <Input
+                          id={nameFieldId(i)}
+                          aria-label={t('form.singleNameLabel')}
+                          {...nameInvalidProps(i)}
                           placeholder={t('form.singleNamePlaceholder')}
                           value={item.name}
                           onChange={(e) => updateSingleItem(i, 'name', e.target.value)}
@@ -470,6 +514,7 @@ export function LaborPresetForm({
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                      {nameError(i)}
                     </div>
                     <Textarea
                       placeholder={t('form.descriptionPlaceholder')}
@@ -539,6 +584,9 @@ export function LaborPresetForm({
                     <div key={i} className="grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_auto]">
                       <div className="col-span-2 flex gap-2 sm:col-span-1">
                         <Input
+                          id={nameFieldId(i)}
+                          aria-label={t('form.itemDescription')}
+                          {...nameInvalidProps(i)}
                           placeholder={t('form.itemDescriptionPlaceholder')}
                           value={item.description}
                           onChange={(e) => updateItem(i, 'description', e.target.value)}
@@ -581,6 +629,7 @@ export function LaborPresetForm({
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                      {nameError(i)}
                     </div>
                   ))}
 
